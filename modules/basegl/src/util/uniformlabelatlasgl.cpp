@@ -42,8 +42,7 @@ namespace inviwo {
 
 UniformLabelAtlasGL::UniformLabelAtlasGL()
     : labels{"labels", "Enable Labels", false}
-    , font{"font", "Font", font::getFont(font::FontType::Default),
-           InvalidationLevel::InvalidResources}
+    , font{"font", "Font", font::FontType::Default, InvalidationLevel::InvalidResources}
     , fontSize{"fontSize", "Font Size",
                util::ordinalCount<int>(14, 144)
                    .set(PropertySemantics{"Fontsize"})

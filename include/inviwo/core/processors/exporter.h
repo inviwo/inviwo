@@ -36,6 +36,7 @@
 #include <string_view>
 #include <optional>
 #include <string>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -54,8 +55,8 @@ public:
      * @returns a string to the path of the exported file, or std::nullopt if no matching
      * extensions were found
      */
-    virtual std::optional<std::string> exportFile(
-        std::string_view path, std::string_view name,
+    virtual std::optional<std::filesystem::path> exportFile(
+        const std::filesystem::path& path, std::string_view name,
         const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const = 0;
 };
 
@@ -66,8 +67,8 @@ namespace util {
  * nameTemplate and candidate extensions.
  * @return names of exported files
  */
-IVW_CORE_API std::vector<std::string> exportAllFiles(
-    ProcessorNetwork& network, std::string_view dir, std::string_view nameTemplate,
+IVW_CORE_API std::vector<std::filesystem::path> exportAllFiles(
+    ProcessorNetwork& network, const std::filesystem::path& dir, std::string_view nameTemplate,
     const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite);
 
 }  // namespace util

@@ -33,6 +33,7 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <string_view>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -45,7 +46,7 @@ namespace util {
 
 IVW_CORE_API void saveNetwork(ProcessorNetwork* network, std::string_view filename);
 
-IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, std::string_view dir,
+IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, const std::filesystem::path& dir,
                                   std::string_view name = "UPN", std::string_view ext = ".png",
                                   bool onlyActiveCanvases = false);
 
@@ -79,7 +80,7 @@ IVW_CORE_API std::string cleanIdentifier(std::string_view identifier, std::strin
  * @param  filePath Path to module file
  * @return name of the module
  */
-IVW_CORE_API std::string stripModuleFileNameDecoration(std::string_view filePath);
+IVW_CORE_API std::string stripModuleFileNameDecoration(const std::filesystem::path& filePath);
 
 IVW_CORE_API std::string stripIdentifier(std::string_view identifier);
 

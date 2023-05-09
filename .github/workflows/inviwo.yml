@@ -13,7 +13,8 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-22.04]
+        # for now macos-latest == macos-12 since macos-13 is still "beta"
+        os: [windows-latest, macos-13, ubuntu-22.04]
         include:
           - os: 'windows-latest'
             triplet: 'x64-windows'
@@ -23,7 +24,7 @@ jobs:
             targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
-          - os: 'macos-latest'
+          - os: 'macos-13'
             triplet: 'x64-osx'
             mono: 'mono'
             cmake: '--preset ninja-dev-vcpkg -DIVW_MODULE_HDF5=OFF'
@@ -63,10 +64,27 @@ jobs:
         echo "/c/Program Files (x86)/NSIS" >> $GP
         echo "/c/tools/TinyTeX/bin/win32" >> $GP
 
+    - name: Brew Install
+      shell: bash
+      if: runner.os == 'macOS'
+      # xcode 14.2 is currently default. 
+      run: |
+        brew install ninja mono pkg-config
+        sudo xcode-select --switch /Applications/Xcode_14.3.app/Contents/Developer
+
+    - name: Apt Install, switch to gcc-12
+      shell: bash
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt install --fix-missing libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev ninja-build gcc-12 g++-12
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 120 --slave /usr/bin/g++ g++ /usr/bin/g++-12 --slave /usr/bin/gcov gcov /usr/bin/gcov-12
+        sudo update-alternatives --set gcc /usr/bin/gcc-12
+        
     #- name: Setup tmate session
     #  uses: mxschmitt/action-tmate@v3
     #  timeout-minutes: 60
-
+    
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
@@ -76,7 +94,7 @@ jobs:
     - name: Install Python Modules 
       shell: bash
       run: pip3 install numpy Sphinx sphinx-rtd-theme recommonmark
-    
+      
     - name: Clone VCPKG
       uses: actions/checkout@v3
       with:
@@ -95,21 +113,6 @@ jobs:
         -name "GitHub"
         -username "inviwo"
         -password "${{ secrets.GITHUB_TOKEN }}"
-
-    - name: Apt Install, switch to gcc-12
-      shell: bash
-      if: runner.os == 'Linux'
-      run: |
-        sudo apt-get update
-        sudo apt install --fix-missing libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev ninja-build gcc-12 g++-12
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 120 --slave /usr/bin/g++ g++ /usr/bin/g++-12 --slave /usr/bin/gcov gcov /usr/bin/gcov-12
-        sudo update-alternatives --set gcc /usr/bin/gcc-12
-  
-    - name: Brew Install
-      shell: bash
-      if: runner.os == 'macOS'
-      run: |
-        brew install ninja 
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v2

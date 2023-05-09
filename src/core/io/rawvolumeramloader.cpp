@@ -35,7 +35,8 @@
 
 namespace inviwo {
 
-RawVolumeRAMLoader::RawVolumeRAMLoader(const std::string& rawFile, size_t offset, bool littleEndian)
+RawVolumeRAMLoader::RawVolumeRAMLoader(const std::filesystem::path& rawFile, size_t offset,
+                                       bool littleEndian)
     : rawFile_(rawFile), offset_(offset), littleEndian_(littleEndian) {}
 
 RawVolumeRAMLoader* RawVolumeRAMLoader::clone() const { return new RawVolumeRAMLoader(*this); }

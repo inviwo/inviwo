@@ -31,16 +31,15 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/filesystem.h>
 
-#include <warn/push>
-#include <warn/ignore/non-virtual-dtor>
 #include <thread>
-#include <warn/pop>
+#include <iostream>
+#include <fmt/std.h>
 
 namespace inviwo {
 
-TextFileReader::TextFileReader(const std::string& filePath) : filePath_(filePath) {}
+TextFileReader::TextFileReader(const std::filesystem::path& filePath) : filePath_(filePath) {}
 
-std::string TextFileReader::read(const std::string& filePath) {
+std::string TextFileReader::read(const std::filesystem::path& filePath) {
     filePath_ = filePath;
     return read();
 }
@@ -48,9 +47,9 @@ std::string TextFileReader::read(const std::string& filePath) {
 std::string TextFileReader::read() {
     using iter = std::istreambuf_iterator<char>;
 
-    auto file = filesystem::ifstream(filePath_);
+    auto file = std::ifstream(filePath_);
     if (!file.is_open()) {
-        throw FileException("Could not open file: " + filePath_, IVW_CONTEXT);
+        throw FileException(IVW_CONTEXT, "Could not open file: {}", filePath_);
     }
     filesystem::skipByteOrderMark(file);
 

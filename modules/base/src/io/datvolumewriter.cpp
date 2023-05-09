@@ -52,9 +52,11 @@
 #include <unordered_set>  // for unordered_set
 #include <vector>         // for vector
 
-#include <fmt/core.h>            // for basic_string_view
-#include <fmt/format.h>          // for join
-#include <fmt/ostream.h>         // for print
+#include <fmt/core.h>     // for basic_string_view
+#include <fmt/format.h>   // for join
+#include <fmt/ostream.h>  // for print
+#include <fmt/std.h>
+
 #include <glm/fwd.hpp>           // for mat4, mat3, vec3
 #include <glm/gtc/type_ptr.hpp>  // for value_ptr
 #include <glm/gtx/range.hpp>     // for begin, end
@@ -74,18 +76,20 @@ DatVolumeWriter& DatVolumeWriter::operator=(const DatVolumeWriter& that) = defau
 
 DatVolumeWriter* DatVolumeWriter::clone() const { return new DatVolumeWriter(*this); }
 
-void DatVolumeWriter::writeData(const Volume* data, std::string_view filePath) const {
+void DatVolumeWriter::writeData(const Volume* data, const std::filesystem::path& filePath) const {
     util::writeDatVolume(*data, filePath, getOverwrite());
 }
 
 namespace util {
-void writeDatVolume(const Volume& data, std::string_view filePath, Overwrite overwrite) {
-    std::string rawPath = filesystem::replaceFileExtension(filePath, "raw");
+void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
+                    Overwrite overwrite) {
+    auto rawPath = filePath;
+    rawPath.replace_extension("raw");
 
     DataWriter::checkOverwrite(filePath, overwrite);
     DataWriter::checkOverwrite(rawPath, overwrite);
 
-    std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
+    auto fileName = filePath.stem().string();
     // Write the .dat file content
     std::stringstream ss;
     const VolumeRAM* vr = data.getRepresentation<VolumeRAM>();
@@ -107,7 +111,7 @@ void writeDatVolume(const Volume& data, std::string_view filePath, Overwrite ove
             fmt::print(ss, "{}: {}\n", key, fmt::join(begin(vec), end(vec), " "));
         }};
 
-    print("RawFile", fileName + ".raw");
+    print("RawFile", fmt::format("{}.raw", fileName));
     print("Resolution", vr->getDimensions());
     print("Format", vr->getDataFormatString());
     print("ByteOffset", std::string("0"));
@@ -141,14 +145,14 @@ void writeDatVolume(const Volume& data, std::string_view filePath, Overwrite ove
         if (auto sm = dynamic_cast<const StringMetaData*>(m)) print(key, sm->get());
     }
 
-    if (auto f = filesystem::ofstream(filePath)) {
+    if (auto f = std::ofstream(filePath)) {
         f << ss.str();
     } else {
         throw DataWriterException(IVW_CONTEXT_CUSTOM("util::writeDatVolume"),
                                   "Could not write to dat file: {}", filePath);
     }
 
-    if (auto f = filesystem::ofstream(rawPath, std::ios::out | std::ios::binary)) {
+    if (auto f = std::ofstream(rawPath, std::ios::out | std::ios::binary)) {
         f.write(static_cast<const char*>(vr->getData()), vr->getNumberOfBytes());
     } else {
         throw DataWriterException(IVW_CONTEXT_CUSTOM("util::writeDatVolume"),

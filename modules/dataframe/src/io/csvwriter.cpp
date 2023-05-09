@@ -61,7 +61,7 @@ CSVWriter::CSVWriter() : DataWriterType<DataFrame>() {
 
 CSVWriter* CSVWriter::clone() const { return new CSVWriter(*this); }
 
-void CSVWriter::writeData(const DataFrame* data, std::string_view filePath) const {
+void CSVWriter::writeData(const DataFrame* data, const std::filesystem::path& filePath) const {
     auto f = open(filePath);
     writeData(data, f);
 }

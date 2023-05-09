@@ -37,6 +37,8 @@
 
 #include <memory>  // for unique_ptr
 #include <string>  // for string
+#include <filesystem>
+#include <fmt/std.h>
 
 namespace inviwo {
 
@@ -46,7 +48,7 @@ class Processor;
 struct IVW_MODULE_PYTHON3_API PythonProcessorFactoryObjectData {
     ProcessorInfo info;
     std::string name;
-    std::string file;
+    std::filesystem::path file;
 };
 
 class IVW_MODULE_PYTHON3_API PythonProcessorFactoryObjectBase : public ProcessorFactoryObject {
@@ -56,30 +58,31 @@ public:
 
 protected:
     std::string name_;
-    std::string file_;
+    std::filesystem::path file_;
 };
 
 class IVW_MODULE_PYTHON3_API PythonProcessorFactoryObject : public PythonProcessorFactoryObjectBase,
                                                             public FileObserver {
 public:
-    PythonProcessorFactoryObject(InviwoApplication* app, const std::string& file);
+    PythonProcessorFactoryObject(InviwoApplication* app, const std::filesystem::path& file);
     virtual ~PythonProcessorFactoryObject() = default;
 
     virtual std::unique_ptr<Processor> create(InviwoApplication* app) override;
 
     virtual Document getMetaInformation() const override {
         Document doc;
-        doc.append("a", "", {{"href", "file:///" + file_}}).append("b", file_);
+        doc.append("a", "", {{"href", fmt::format("file:///{}", file_.string())}})
+            .append("b", file_.string());
         return doc;
     }
 
 private:
     InviwoApplication* app_;
-    virtual void fileChanged(const std::string& filename) override;
+    virtual void fileChanged(const std::filesystem::path& filename) override;
 
     void reloadProcessors();
 
-    static PythonProcessorFactoryObjectData load(const std::string& file);
+    static PythonProcessorFactoryObjectData load(const std::filesystem::path& file);
 };
 
 }  // namespace inviwo

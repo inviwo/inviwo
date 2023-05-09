@@ -53,7 +53,7 @@ PythonScript::~PythonScript() { Py_XDECREF(static_cast<PyObject*>(byteCode_)); }
 
 bool PythonScript::compile() {
     Py_XDECREF(static_cast<PyObject*>(byteCode_));
-    byteCode_ = Py_CompileString(source_.c_str(), filename_.c_str(), Py_file_input);
+    byteCode_ = Py_CompileString(source_.c_str(), filename_.string().c_str(), Py_file_input);
     isCompileNeeded_ = !checkCompileError();
 
     if (isCompileNeeded_) {
@@ -104,9 +104,9 @@ bool PythonScript::run(pybind11::dict locals, std::function<void(pybind11::dict)
     }
 }
 
-void PythonScript::setFilename(const std::string& filename) { filename_ = filename; }
+void PythonScript::setFilename(const std::filesystem::path& filename) { filename_ = filename; }
 
-const std::string& PythonScript::getFilename() const { return filename_; }
+const std::filesystem::path& PythonScript::getFilename() const { return filename_; }
 
 std::string PythonScript::getSource() const { return source_; }
 
@@ -213,7 +213,7 @@ bool PythonScript::checkRuntimeError() {
     return false;
 }
 
-PythonScriptDisk::PythonScriptDisk(const std::string& filename)
+PythonScriptDisk::PythonScriptDisk(const std::filesystem::path& filename)
     : PythonScript(), FileObserver(util::getInviwoApplication()) {
     setFilename(filename);
 }
@@ -227,12 +227,12 @@ void PythonScriptDisk::removeOnChange(const BaseCallBack* callback) {
 }
 
 void PythonScriptDisk::readFileAndSetSource() {
-    auto inFile = filesystem::ifstream(getFilename());
+    auto inFile = std::ifstream(getFilename());
     std::string src((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
     setSource(src);
 }
 
-void PythonScriptDisk::setFilename(const std::string& filename) {
+void PythonScriptDisk::setFilename(const std::filesystem::path& filename) {
     PythonScript::setFilename(filename);
     if (!filename.empty()) {
         stopAllObservation();
@@ -241,7 +241,7 @@ void PythonScriptDisk::setFilename(const std::string& filename) {
     readFileAndSetSource();
 }
 
-void PythonScriptDisk::fileChanged(const std::string&) {
+void PythonScriptDisk::fileChanged(const std::filesystem::path&) {
     readFileAndSetSource();
     onChangeCallbacks_.invokeAll();
 }

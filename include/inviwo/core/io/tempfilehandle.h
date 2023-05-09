@@ -33,6 +33,7 @@
 
 #include <cstdio>
 #include <string>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -55,7 +56,7 @@ public:
 
     ~TempFileHandle();
 
-    const std::string& getFileName() const;
+    const std::filesystem::path& getFileName() const;
 
     FILE* getHandle();
     operator FILE*();
@@ -64,7 +65,7 @@ private:
     void cleanup();
 
     FILE* handle_;
-    std::string filename_;
+    std::filesystem::path filename_;
 };
 
 }  // namespace util

@@ -59,7 +59,8 @@ namespace {
 
 class SelectVisualizerDialog : public QDialog {
 public:
-    SelectVisualizerDialog(const std::string& file, const std::vector<DataVisualizer*>& visualizers,
+    SelectVisualizerDialog(const std::filesystem::path& file,
+                           const std::vector<DataVisualizer*>& visualizers,
                            QWidget* parent = nullptr)
         : QDialog{parent} {
 
@@ -103,7 +104,7 @@ public:
 
 }  // namespace
 
-void util::insertNetworkForData(const std::string& dataFile, ProcessorNetwork* net,
+void util::insertNetworkForData(const std::filesystem::path& dataFile, ProcessorNetwork* net,
                                 bool alwaysFirst, bool onlySource, QWidget* parent) {
     auto app = net->getApplication();
 

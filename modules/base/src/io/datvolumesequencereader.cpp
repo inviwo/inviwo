@@ -72,6 +72,8 @@
 #include <glm/vec4.hpp>                // for vec
 #include <units/units.hpp>             // for unit_from_string
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 DatVolumeSequenceReader::DatVolumeSequenceReader()
@@ -88,15 +90,15 @@ DatVolumeSequenceReader* DatVolumeSequenceReader::clone() const {
 }
 
 std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader::readData(
-    std::string_view filePath) {
+    const std::filesystem::path& filePath) {
 
-    const std::string fileDirectory = filesystem::getFileDirectory(filePath);
+    const auto fileDirectory = filePath.parent_path();
 
     // Read the dat file content
     auto f = open(filePath);
 
     struct State {
-        std::string rawFile;
+        std::filesystem::path rawFile;
         size3_t dimensions{0u};
         size_t byteOffset = 0u;
         const DataFormatBase* format = nullptr;
@@ -125,7 +127,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         Wrapping3D wrapping{wrapping3d::clampAll};
 
         std::unordered_map<std::string, std::string> metadata;
-        std::vector<std::string> datFiles;
+        std::vector<std::filesystem::path> datFiles;
     };
 
     using parser = void (*)(State&, std::stringstream&);
@@ -309,9 +311,8 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         for (size_t t = 0; t < state.datFiles.size(); ++t) {
             auto datVolReader = std::make_unique<DatVolumeSequenceReader>();
             datVolReader->enableLogOutput_ = false;
-            auto path = filesystem::isAbsolutePath(state.datFiles[t])
-                            ? state.datFiles[t]
-                            : fileDirectory + "/" + state.datFiles[t];
+            auto path = state.datFiles[t].is_absolute() ? state.datFiles[t]
+                                                        : fileDirectory / state.datFiles[t];
             auto v = datVolReader->readData(path);
 
             std::copy(v->begin(), v->end(), std::back_inserter(*volumes));
@@ -406,7 +407,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
                                                          state.wrapping);
             const auto filePos = t * bytes + state.byteOffset;
 
-            auto loader = std::make_unique<RawVolumeRAMLoader>(fileDirectory + "/" + state.rawFile,
+            auto loader = std::make_unique<RawVolumeRAMLoader>(fileDirectory / state.rawFile,
                                                                filePos, state.littleEndian);
             diskRepr->setLoader(loader.release());
             volumes->back()->addRepresentation(diskRepr);

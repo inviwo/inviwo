@@ -48,13 +48,13 @@ public:
     virtual TIFFStackVolumeReader* clone() const override;
     virtual ~TIFFStackVolumeReader() = default;
 
-    virtual std::shared_ptr<Volume> readData(std::string_view filePath) override;
+    virtual std::shared_ptr<Volume> readData(const std::filesystem::path& filePath) override;
 };
 
 class IVW_MODULE_CIMG_API TIFFStackVolumeRAMLoader
     : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
-    TIFFStackVolumeRAMLoader(std::string_view sourceFile);
+    TIFFStackVolumeRAMLoader(const std::filesystem::path& sourceFile);
     virtual TIFFStackVolumeRAMLoader* clone() const override;
     virtual ~TIFFStackVolumeRAMLoader() = default;
 
@@ -64,7 +64,7 @@ public:
                                       const VolumeRepresentation& src) const override;
 
 private:
-    std::string sourceFile_;
+    std::filesystem::path sourceFile_;
 };
 
 }  // namespace inviwo

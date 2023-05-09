@@ -50,7 +50,7 @@ XMLWriter::XMLWriter() : DataWriterType<DataFrame>() {
 
 XMLWriter* XMLWriter::clone() const { return new XMLWriter(*this); }
 
-void XMLWriter::writeData(const DataFrame* data, std::string_view filePath) const {
+void XMLWriter::writeData(const DataFrame* data, const std::filesystem::path& filePath) const {
     auto f = open(filePath);
     writeData(data, f);
 }

@@ -33,6 +33,8 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(InviwoApplication* app)
@@ -46,12 +48,13 @@ WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(
     setCanvasImages(canvasImages);
 }
 
-WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(std::string_view path, InviwoApplication* app)
+WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(const std::filesystem::path& path,
+                                               InviwoApplication* app)
     : WorkspaceAnnotations{std::vector<Base64Image>{}, app} {
 
     // Can't delegate to the WorkspaceAnnotations since the virtual call to deserialize will not
     // work in the base constructor.
-    if (auto f = filesystem::ifstream(path)) {
+    if (auto f = std::ifstream(path)) {
         LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
         auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(f, path, &logger);
         d.deserialize("WorkspaceAnnotations", *this);
@@ -137,10 +140,10 @@ struct DummyNetwork : Serializable {
 
 }  // namespace
 
-QStringList WorkspaceAnnotationsQt::workspaceProcessors(std::string_view path,
+QStringList WorkspaceAnnotationsQt::workspaceProcessors(const std::filesystem::path& path,
                                                         InviwoApplication* app) {
 
-    if (auto f = filesystem::ifstream(path)) {
+    if (auto f = std::ifstream(path)) {
         LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
         auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(f, path, &logger);
 

@@ -59,8 +59,13 @@ public:
                  PropertySemantics semantics = PropertySemantics::Default);
 
     FontProperty(std::string_view identifier, std::string_view displayName,
-                 std::string_view fontFace, int size = 14, float lineSpacing = 0.0f,
+                 std::string_view fontFaceName, int size = 14, float lineSpacing = 0.0f,
                  vec2 anchorPos = vec2{-1.0f},
+                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                 PropertySemantics semantics = PropertySemantics::Default);
+
+    FontProperty(std::string_view identifier, std::string_view displayName, font::FontType fontType,
+                 int size = 14, float lineSpacing = 0.0f, vec2 anchorPos = vec2{-1.0f},
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 
@@ -74,7 +79,7 @@ public:
     FloatVec2Property anchorPos_;
 
     // Inherited via FontSettings
-    virtual std::string getFontFace() const override;
+    virtual const std::filesystem::path& getFontFace() const override;
     virtual int getFontSize() const override;
     virtual float getLineSpacing() const override;
     virtual vec2 getAnchorPos() const override;

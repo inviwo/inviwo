@@ -72,6 +72,8 @@
 #include <unordered_set>  // for unordered_set
 #include <utility>        // for pair, move
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 /**
@@ -184,11 +186,12 @@ const DataFormatBase* niftiDataTypeToInviwoDataFormat(const nifti_image* niftiIm
 
     return DataFormatBase::get(type, components, precision);
 }
-std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(std::string_view filePath) {
+std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(
+    const std::filesystem::path& filePath) {
     checkExists(filePath);
 
     /* read input dataset, but not data */
-    std::shared_ptr<nifti_image> niftiImage(nifti_image_read(SafeCStr{filePath}.c_str(), 0),
+    std::shared_ptr<nifti_image> niftiImage(nifti_image_read(filePath.string().c_str(), 0),
                                             nifti_image_free);
     if (!niftiImage) {
         throw DataReaderException(IVW_CONTEXT_CUSTOM("NiftiReader"),

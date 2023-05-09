@@ -87,17 +87,17 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
             throw ModuleInitException("Python is not Initialized", IVW_CONTEXT);
         }
 
-        auto binDir = filesystem::getFileDirectory(filesystem::getExecutablePath());
+        auto binDir = filesystem::getExecutablePath().parent_path();
         addModulePath(binDir);
 
 #if defined(__unix__) || defined(__APPLE__)
         auto execpath = filesystem::getExecutablePath();
-        auto folder = filesystem::getFileDirectory(execpath);
+        auto folder = execpath.parent_path();
         addModulePath(folder);
 #endif
 #if defined(__APPLE__)
         // On OSX the path returned by getExecutablePath includes folder-paths inside the app-binary
-        addModulePath(folder + "/../../../");
+        addModulePath(folder / "../../../");
 #endif
 
         try {
@@ -154,7 +154,9 @@ PythonInterpreter::~PythonInterpreter() {
     }
 }
 
-void PythonInterpreter::addModulePath(std::string_view path) { pyutil::addModulePath(path); }
+void PythonInterpreter::addModulePath(const std::filesystem::path& path) {
+    pyutil::addModulePath(path);
+}
 
 void PythonInterpreter::importModule(std::string_view moduleName) {
     namespace py = pybind11;

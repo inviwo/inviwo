@@ -73,7 +73,7 @@ class Deserializer;
 
 class IVW_MODULE_DATAFRAME_API CSVSource : public Processor {
 public:
-    CSVSource(const std::string& file = "");
+    CSVSource(const std::filesystem::path& file = "");
     virtual ~CSVSource() = default;
 
     virtual void process() override;

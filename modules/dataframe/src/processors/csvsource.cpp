@@ -78,7 +78,7 @@ const ProcessorInfo CSVSource::processorInfo_{
 };
 const ProcessorInfo CSVSource::getProcessorInfo() const { return processorInfo_; }
 
-CSVSource::CSVSource(const std::string& file)
+CSVSource::CSVSource(const std::filesystem::path& file)
     : Processor{}
     , data_{"data"}
     , inputFile_{"inputFile_", "CSV File", file, "dataframe"}
@@ -123,7 +123,7 @@ CSVSource::CSVSource(const std::string& file)
     excludeFilters_.setCollapsed(true);
 
     isReady_.setUpdate(
-        [this]() { return !loadingFailed_ && filesystem::fileExists(inputFile_.get()); });
+        [this]() { return !loadingFailed_ && std::filesystem::is_regular_file(inputFile_.get()); });
     for (auto&& item :
          util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_, firstRowIsHeaders_,
                              firstColumnIsIndices_, unitsInHeaders_, unitRegexp_, doublePrecision_,

@@ -134,19 +134,19 @@ InviwoModule::~InviwoModule() {
 
 std::string InviwoModule::getIdentifier() const { return identifier_; }
 
-std::string InviwoModule::getPath() const {
+std::filesystem::path InviwoModule::getPath() const {
     std::string moduleNameLowerCase = toLower(getIdentifier());
 
-    const auto defaultPath = filesystem::findBasePath() + "/modules/" + moduleNameLowerCase;
+    const auto defaultPath = filesystem::findBasePath() / "modules" / moduleNameLowerCase;
 
     // By default always use this one. i.e. the module folder in the deployed app
-    if (filesystem::directoryExists(defaultPath)) {
+    if (std::filesystem::is_directory(defaultPath)) {
         return defaultPath;
     } else {
         // try to use the module folder from the source location
         for (auto& elem : inviwoModulePaths_) {
-            const auto path = elem + "/" + moduleNameLowerCase;
-            if (filesystem::directoryExists(path)) {
+            const auto path = elem / moduleNameLowerCase;
+            if (std::filesystem::is_directory(path)) {
                 return path;
             }
         }
@@ -156,25 +156,25 @@ std::string InviwoModule::getPath() const {
     return defaultPath;
 }
 
-std::string InviwoModule::getPath(ModulePath type) const {
-    std::string path = getPath();
+std::filesystem::path InviwoModule::getPath(ModulePath type) const {
+    std::filesystem::path path = getPath();
     // clang-format off
     switch (type) {
-        case ModulePath::Data:               return path + "/data";
-        case ModulePath::Images:             return path + "/data/images";
-        case ModulePath::PortInspectors:     return path + "/data/portinspectors";
-        case ModulePath::Scripts:            return path + "/data/scripts";
-        case ModulePath::TransferFunctions:  return path + "/data/transferfunctions";
-        case ModulePath::Volumes:            return path + "/data/volumes";
-        case ModulePath::Workspaces:         return path + "/data/workspaces";
-        case ModulePath::Docs:               return path + "/docs";
-        case ModulePath::Tests:              return path + "/tests";
-        case ModulePath::TestImages:         return path + "/tests/images";
-        case ModulePath::TestVolumes:        return path + "/tests/volumes";
-        case ModulePath::UnitTests:          return path + "/tests/unittests";
-        case ModulePath::RegressionTests:    return path + "/tests/regression";
-        case ModulePath::GLSL:               return path + "/glsl";
-        case ModulePath::CL:                 return path + "/cl";
+        case ModulePath::Data:               return path / "data";
+        case ModulePath::Images:             return path / "data/images";
+        case ModulePath::PortInspectors:     return path / "data/portinspectors";
+        case ModulePath::Scripts:            return path / "data/scripts";
+        case ModulePath::TransferFunctions:  return path / "data/transferfunctions";
+        case ModulePath::Volumes:            return path / "data/volumes";
+        case ModulePath::Workspaces:         return path / "data/workspaces";
+        case ModulePath::Docs:               return path / "docs";
+        case ModulePath::Tests:              return path / "tests";
+        case ModulePath::TestImages:         return path / "tests/images";
+        case ModulePath::TestVolumes:        return path / "tests/volumes";
+        case ModulePath::UnitTests:          return path / "tests/unittests";
+        case ModulePath::RegressionTests:    return path / "tests/regression";
+        case ModulePath::GLSL:               return path / "glsl";
+        case ModulePath::CL:                 return path / "cl";
         default:                             return path;
     }
     // clang-format on
@@ -333,7 +333,7 @@ void InviwoModule::registerProcessor(std::unique_ptr<ProcessorFactoryObject> pfo
     }
 }
 
-void InviwoModule::registerCompositeProcessor(const std::string& file) {
+void InviwoModule::registerCompositeProcessor(const std::filesystem::path& file) {
     auto processor = std::make_unique<CompositeProcessorFactoryObject>(file);
     if (app_->getProcessorFactory()->registerObject(processor.get())) {
         processors_.push_back(std::move(processor));
@@ -347,7 +347,7 @@ void InviwoModule::registerProcessorWidget(std::unique_ptr<ProcessorWidgetFactor
 }
 
 void InviwoModule::registerPortInspector(std::string portClassIdentifier,
-                                         std::string inspectorPath) {
+                                         const std::filesystem::path& inspectorPath) {
     auto portInspector =
         std::make_unique<PortInspectorFactoryObject>(portClassIdentifier, inspectorPath);
 

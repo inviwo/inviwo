@@ -102,7 +102,8 @@ public:
     virtual DatVolumeSequenceReader* clone() const override;
     virtual ~DatVolumeSequenceReader() = default;
 
-    virtual std::shared_ptr<VolumeSequence> readData(std::string_view filePath) override;
+    virtual std::shared_ptr<VolumeSequence> readData(
+        const std::filesystem::path& filePath) override;
 
 private:
     bool enableLogOutput_;

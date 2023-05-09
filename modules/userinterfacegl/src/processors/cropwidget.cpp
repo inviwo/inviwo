@@ -331,8 +331,7 @@ void CropWidget::initMesh() {
         reader->setOption("FixInvalidData", false);
         reader->setOption("LogLevel", LogVerbosity::Error);
 
-        return reader->readData(
-            fmt::format("{}/meshes/{}", module->getPath(ModulePath::Data), file));
+        return reader->readData(module->getPath(ModulePath::Data) / "meshes" / file);
     };
 
     auto cache = [](std::weak_ptr<const Mesh>& cache, auto func,

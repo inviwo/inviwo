@@ -173,7 +173,7 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
 std::string WebBrowserProcessor::getSource() {
     std::string sourceString;
     if (sourceType_.get() == SourceType::LocalFile) {
-        sourceString = "file://" + fileName_.get();
+        sourceString = "file://" + fileName_.get().string();
     } else if (sourceType_.get() == SourceType::WebAddress) {
         sourceString = url_.get();
     }

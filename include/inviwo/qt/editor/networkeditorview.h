@@ -33,12 +33,10 @@
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/core/network/workspacemanager.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QGraphicsView>
 #include <QImage>
-#include <warn/pop>
 
+#include <filesystem>
 #include <optional>
 
 class QDropEvent;
@@ -60,7 +58,8 @@ public:
     void fitNetwork();
     virtual void onNetworkEditorFileChanged(const std::string& newFilename) override;
 
-    void exportViewToFile(const QString& filename, bool entireScene, bool backgroundVisible);
+    void exportViewToFile(const std::filesystem::path& filename, bool entireScene,
+                          bool backgroundVisible);
     QImage exportViewToImage(bool entireScene, bool backgroundVisible, QSize size = QSize());
 
     TextLabelOverlay& getOverlay() const;

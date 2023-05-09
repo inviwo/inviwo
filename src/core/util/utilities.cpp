@@ -54,8 +54,8 @@ void saveNetwork(ProcessorNetwork* network, std::string_view filename) {
     }
 }
 
-void saveAllCanvases(ProcessorNetwork* network, std::string_view dir, std::string_view name,
-                     std::string_view ext, bool onlyActiveCanvases) {
+void saveAllCanvases(ProcessorNetwork* network, const std::filesystem::path& dir,
+                     std::string_view name, std::string_view ext, bool onlyActiveCanvases) {
 
     // Get all canvases, possibly only the active ones. We need their count below.
     auto allCanvases = network->getProcessorsByType<inviwo::CanvasProcessor>();
@@ -81,8 +81,6 @@ void saveAllCanvases(ProcessorNetwork* network, std::string_view dir, std::strin
         } else {
 
             StrBuffer filepath;
-            filepath.append("{}/", dir);
-
             if (name.empty()) {
                 filepath.append("{}", cp->getIdentifier());
             } else if (name.find("UPN") != std::string::npos) {
@@ -100,8 +98,10 @@ void saveAllCanvases(ProcessorNetwork* network, std::string_view dir, std::strin
                 filepath.append("{}", ext);
             }
 
-            LogInfoCustom("util::saveAllCanvases", "Saving canvas to: " << filepath.view());
-            cp->saveImageLayer(filepath.view());
+            auto path = dir / filepath.view();
+
+            LogInfoCustom("util::saveAllCanvases", "Saving canvas to: " << path);
+            cp->saveImageLayer(path);
         }
         i++;
     }
@@ -158,8 +158,8 @@ std::string cleanIdentifier(std::string_view identifier, std::string_view extra)
     return str;
 }
 
-std::string stripModuleFileNameDecoration(std::string_view filePath) {
-    auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath);
+std::string stripModuleFileNameDecoration(const std::filesystem::path& filePath) {
+    auto fileNameWithoutExtension = filePath.stem().string();
 #if defined(WIN32)
     auto decoration1 = std::string_view("inviwo-module-");
     auto decoration2 = std::string_view("inviwo-");

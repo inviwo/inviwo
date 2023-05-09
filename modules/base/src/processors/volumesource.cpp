@@ -82,7 +82,7 @@ const ProcessorInfo VolumeSource::processorInfo_{
 
 const ProcessorInfo VolumeSource::getProcessorInfo() const { return processorInfo_; }
 
-VolumeSource::VolumeSource(InviwoApplication* app, std::string_view filePath)
+VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& filePath)
     : Processor()
     , app_(app)
     , outport_("data", "The loaded volume"_help)
@@ -107,7 +107,7 @@ VolumeSource::VolumeSource(InviwoApplication* app, std::string_view filePath)
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
     isReady_.setUpdate([this]() {
-        return !loadingFailed_ && filesystem::fileExists(file_.get()) &&
+        return !loadingFailed_ && std::filesystem::is_regular_file(file_.get()) &&
                !reader_.getSelectedValue().empty();
     });
     file_.onChange([this]() {
@@ -132,22 +132,22 @@ void VolumeSource::load(bool deserialize) {
     // use resource unless the "Reload data"-button (reload_) was pressed,
     // Note: reload_ will be marked as modified when deserializing.
     bool checkResource = deserialized_ || !reload_.isModified();
-    if (checkResource && rm->hasResource<VolumeSequence>(file_.get())) {
-        volumes_ = rm->getResource<VolumeSequence>(file_.get());
+    if (checkResource && rm->hasResource<VolumeSequence>(file_.get().generic_string())) {
+        volumes_ = rm->getResource<VolumeSequence>(file_.get().generic_string());
     } else {
         try {
             if (auto volVecReader =
                     rf->getReaderForTypeAndExtension<VolumeSequence>(sext, file_.get())) {
                 auto volumes = volVecReader->readData(file_.get(), this);
                 std::swap(volumes, volumes_);
-                rm->addResource(file_.get(), volumes_, reload_.isModified());
+                rm->addResource(file_.get().generic_string(), volumes_, reload_.isModified());
             } else if (auto volreader =
                            rf->getReaderForTypeAndExtension<Volume>(sext, file_.get())) {
                 auto volume = volreader->readData(file_.get(), this);
                 auto volumes = std::make_shared<VolumeSequence>();
                 volumes->push_back(volume);
                 std::swap(volumes, volumes_);
-                rm->addResource(file_.get(), volumes_, reload_.isModified());
+                rm->addResource(file_.get().generic_string(), volumes_, reload_.isModified());
             } else {
                 LogProcessorError("Could not find a data reader for file: " << file_.get());
                 volumes_.reset();
@@ -166,7 +166,7 @@ void VolumeSource::load(bool deserialize) {
         // store filename in metadata
         for (auto volume : *volumes_) {
             if (!volume->hasMetaData<StringMetaData>("filename"))
-                volume->setMetaData<StringMetaData>("filename", file_.get());
+                volume->setMetaData<StringMetaData>("filename", file_.get().generic_string());
         }
 
         basis_.updateForNewEntity(*(*volumes_)[0], deserialize);

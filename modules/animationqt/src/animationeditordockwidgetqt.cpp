@@ -357,14 +357,13 @@ void AnimationEditorDockWidgetQt::importAnimation() {
 
     if (openFileDialog.exec()) {
         QString path = openFileDialog.selectedFiles().at(0);
-        std::string fileName{utilqt::fromQString(path)};
-        fileName = filesystem::cleanupPath(fileName);
-        if (!filesystem::fileExists(fileName)) {
+        std::filesystem::path fileName{utilqt::toPath(path)};
+        if (!std::filesystem::is_regular_file(fileName)) {
             LogError("Could not find file: " << fileName);
             return;
         }
         try {
-            auto anim = filesystem::ifstream(fileName);
+            auto anim = std::ifstream(fileName);
             auto app = InviwoApplication::getPtr();
             auto deserializer =
                 app->getWorkspaceManager()->createWorkspaceDeserializer(anim, fileName);

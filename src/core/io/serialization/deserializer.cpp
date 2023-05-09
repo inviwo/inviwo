@@ -44,7 +44,7 @@
 
 namespace inviwo {
 
-Deserializer::Deserializer(std::string_view fileName) : SerializeBase(fileName) {
+Deserializer::Deserializer(const std::filesystem::path& fileName) : SerializeBase(fileName) {
     try {
         doc_->LoadFile();
         rootElement_ = doc_->FirstChildElement();
@@ -55,13 +55,45 @@ Deserializer::Deserializer(std::string_view fileName) : SerializeBase(fileName) 
     }
 }
 
-Deserializer::Deserializer(std::istream& stream, std::string_view path)
+Deserializer::Deserializer(std::istream& stream, const std::filesystem::path& path)
     : SerializeBase(stream, path) {
     try {
         // Base streamed in the xml data. Get the first node.
         rootElement_ = doc_->FirstChildElement();
     } catch (TxException& e) {
         throw AbortException(e.what(), IVW_CONTEXT);
+    }
+}
+
+void Deserializer::deserialize(std::string_view key, std::filesystem::path& path,
+                               const SerializationTarget& target) {
+
+    try {
+        if (target == SerializationTarget::Attribute) {
+            const auto val = detail::getNodeAttribute(rootElement_, key);
+            if (!val.empty()) {
+                path = val;
+            }
+        } else {
+            if (NodeSwitch ns{*this, key}) {
+                const auto val =
+                    detail::getNodeAttribute(rootElement_, SerializeConstants::ContentAttribute);
+                if (!val.empty()) {
+                    path = val;
+                }
+                return;
+            }
+            if (NodeSwitch ns{*this, key, true}) {
+                const auto val =
+                    detail::getNodeAttribute(rootElement_, SerializeConstants::ContentAttribute);
+                if (!val.empty()) {
+                    path = val;
+                }
+                return;
+            }
+        }
+    } catch (...) {
+        handleError(IVW_CONTEXT);
     }
 }
 

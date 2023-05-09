@@ -33,7 +33,7 @@
 #include <inviwo/core/util/fileobserver.h>  // for FileObserver
 
 #include <functional>  // for function
-#include <string>      // for string
+#include <filesystem>
 
 #include <QObject>  // for QObject
 #include <QString>  // for QString
@@ -48,7 +48,7 @@ namespace utilqt {
 class IVW_MODULE_QTWIDGETS_API EditorFileObserver : public QObject, public FileObserver {
 public:
     explicit EditorFileObserver(QWidget* parent, const QString& title = "Editor",
-                                const std::string filename = std::string{});
+                                const std::filesystem::path& filename = {});
     virtual ~EditorFileObserver() = default;
 
     void setTitle(const QString& title);
@@ -59,14 +59,14 @@ public:
 
     void ignoreNextUpdate();
 
-    void setFileName(const std::string& filename);
-    const std::string& getFileName() const;
+    void setFileName(const std::filesystem::path& filename);
+    const std::filesystem::path& getFileName() const;
 
     void setModifiedCallback(std::function<void(bool)> cb);
     void setReloadFileCallback(std::function<void()> cb);
 
 private:
-    virtual void fileChanged(const std::string& fileName) override;
+    virtual void fileChanged(const std::filesystem::path& fileName) override;
     virtual bool eventFilter(QObject* obj, QEvent* ev) override;
     void queryReloadFile();
     bool widgetIsFocused() const;
@@ -76,7 +76,7 @@ private:
 
     QWidget* parent_;
     QString title_;
-    std::string filename_;
+    std::filesystem::path filename_;
     bool fileChangedInBackground_ = false;
     bool reloadQueryInProgress_ = false;
     bool ignoreNextUpdate_ = false;

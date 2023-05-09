@@ -81,7 +81,8 @@ public:
      * @param volumes The volume sequence to export
      * @param filePath path to where the files will be written
      */
-    virtual void writeData(const VolumeSequence* volumes, const std::string filePath) const;
+    virtual void writeData(const VolumeSequence* volumes,
+                           const std::filesystem::path& filePath) const override;
 
     /**
      * \brief Writes a volume sequence to disk
@@ -96,10 +97,9 @@ public:
      * @param relativePathToTimeSteps relative path (from the path to the main file) to where the
      * sequence elements will be written.
      */
-    void writeData(const VolumeSequence* volumes, std::string_view name, std::string_view path,
+    void writeData(const VolumeSequence* volumes, std::string_view name,
+                   const std::filesystem::path& path,
                    std::string_view relativePathToTimeSteps = "") const;
-
-    virtual void writeData(const VolumeSequence* data, std::string_view filePath) const override;
 
 private:
     IvfVolumeWriter writer_;
@@ -123,10 +123,9 @@ namespace util {
  * @see inviwo::IvfSequenceVolumeWriter
  * @see inviwo::IvfSequenceVolumeReader
  */
-IVW_MODULE_BASE_API std::string writeIvfVolumeSequence(const VolumeSequence& volumes,
-                                                       std::string_view name, std::string_view path,
-                                                       std::string_view relativePathToElements = "",
-                                                       Overwrite overwrite = Overwrite::Yes);
+IVW_MODULE_BASE_API std::filesystem::path writeIvfVolumeSequence(
+    const VolumeSequence& volumes, std::string_view name, const std::filesystem::path& path,
+    std::string_view relativePathToElements = "", Overwrite overwrite = Overwrite::Yes);
 }  // namespace util
 
 }  // namespace inviwo

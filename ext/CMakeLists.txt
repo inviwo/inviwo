@@ -169,25 +169,6 @@ else()
     target_include_directories(tclap INTERFACE ${TCLAP_INCLUDE_DIRS})
 endif()
 
-# tinydir
-option(IVW_USE_EXTERNAL_TINYDIR "Tinydir is provided externaly" OFF)
-if(NOT IVW_USE_EXTERNAL_TINYDIR)
-    message(STATUS "add subdirectory: tinydir")
-    add_subdirectory(tinydir)
-    ivw_register_license_file(NAME "TinyDir" MODULE Core EXT
-        URL https://github.com/cxong/tinydir
-        TYPE "Simplified BSD"
-        FILES ${IVW_EXTENSIONS_DIR}/tinydir/COPYING
-    )
-else()
-    find_path(TINYDIR_INCLUDE_DIR NAMES tinydir.h REQUIRED)
-    add_library(tinydir INTERFACE)
-    add_library(inviwo::tinydir ALIAS tinydir)
-    target_include_directories(tinydir INTERFACE $<BUILD_INTERFACE:${TINYDIR_INCLUDE_DIR}>)
-    ivw_vcpkg_install(tinydir MODULE Core EXT)
-    ivw_register_package(tinydir tinydir)
-endif()
-
 # Half
 message(STATUS "add subdirectory: help")
 add_subdirectory(half)

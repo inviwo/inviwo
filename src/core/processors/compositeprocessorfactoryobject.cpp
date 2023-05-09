@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-CompositeProcessorFactoryObject::CompositeProcessorFactoryObject(const std::string& file)
+CompositeProcessorFactoryObject::CompositeProcessorFactoryObject(const std::filesystem::path& file)
     : ProcessorFactoryObject(makeProcessorInfo(file), "inviwo::CompositeProcessor"), file_{file} {}
 
 std::unique_ptr<Processor> CompositeProcessorFactoryObject::create(InviwoApplication* app) {
@@ -42,13 +42,16 @@ std::unique_ptr<Processor> CompositeProcessorFactoryObject::create(InviwoApplica
     return std::make_unique<CompositeProcessor>(pi.displayName, pi.displayName, app, file_);
 }
 
-Document CompositeProcessorFactoryObject::getMetaInformation() const { return Document(file_); }
+Document CompositeProcessorFactoryObject::getMetaInformation() const {
+    return Document(file_.string());
+}
 
-ProcessorInfo CompositeProcessorFactoryObject::makeProcessorInfo(const std::string& file) {
+ProcessorInfo CompositeProcessorFactoryObject::makeProcessorInfo(
+    const std::filesystem::path& file) {
 
     auto pi = ProcessorTraits<CompositeProcessor>::getProcessorInfo();
-    auto name = filesystem::getFileNameWithoutExtension(file);
-    auto id = pi.classIdentifier + util::stripIdentifier(file);
+    auto name = file.stem().string();
+    auto id = pi.classIdentifier + util::stripIdentifier(file.string());
 
     Deserializer d{file};
     std::string tags;

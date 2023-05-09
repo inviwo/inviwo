@@ -61,7 +61,7 @@
 namespace inviwo {
 
 PythonProcessorFactoryObject::PythonProcessorFactoryObject(InviwoApplication* app,
-                                                           const std::string& file)
+                                                           const std::filesystem::path& file)
     : PythonProcessorFactoryObjectBase(load(file)), FileObserver(app), app_{app} {
     startFileObservation(file);
 }
@@ -77,13 +77,13 @@ std::unique_ptr<Processor> PythonProcessorFactoryObject::create(InviwoApplicatio
         return proc.cast<std::unique_ptr<Processor>>();
 
     } catch (std::exception& e) {
-        throw Exception(
-            "Failed to create processor " + name_ + " from script: " + file_ + ".\n" + e.what(),
-            IVW_CONTEXT_CUSTOM("Python"));
+        throw Exception(IVW_CONTEXT_CUSTOM("Python"),
+                        "Failed to create processor {} from script: {}\n{}", name_, file_,
+                        e.what());
     }
 }
 
-void PythonProcessorFactoryObject::fileChanged(const std::string&) {
+void PythonProcessorFactoryObject::fileChanged(const std::filesystem::path&) {
     try {
         auto data = load(file_);
         name_ = data.name;
@@ -113,10 +113,11 @@ void PythonProcessorFactoryObject::reloadProcessors() {
     }
 }
 
-PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(const std::string& file) {
+PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
+    const std::filesystem::path& file) {
     namespace py = pybind11;
 
-    auto ifs = filesystem::ifstream(file);
+    auto ifs = std::ifstream(file);
     std::stringstream ss;
     ss << ifs.rdbuf();
     const auto script = std::move(ss).str();
@@ -128,7 +129,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(const std::s
             const auto endl = script.find_first_of('\n');
             return trim(script.substr(nameLabel.size(), endl - nameLabel.size()));
         } else {
-            return filesystem::getFileNameWithoutExtension(file);
+            return file.stem().string();
         }
     }();
 
@@ -139,8 +140,8 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(const std::s
             const auto missingModule = e.value().attr("name").cast<std::string>();
             throw Exception(
                 IVW_CONTEXT_CUSTOM("Python"),
-                "Failed to load python processor: '{}' due to missing module: '{}'. File: '{}'",
-                name, missingModule, file);
+                "Failed to load python processor: '{}' due to missing module: '{}'. File: {}", name,
+                missingModule, file);
         } else if (e.matches(PyExc_SyntaxError)) {
             const auto filename = e.value().attr("filename").cast<std::string>();
             auto lineno = e.value().attr("lineno").cast<int>();
@@ -160,12 +161,12 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(const std::s
 
         } else {
             throw Exception(IVW_CONTEXT_CUSTOM("Python"),
-                            "Failed to load python processor: '{}'. File: '{}'\n{}", name, file,
+                            "Failed to load python processor: '{}'. File: {}\n{}", name, file,
                             e.what());
         }
     } catch (const std::exception& e) {
         throw Exception(IVW_CONTEXT_CUSTOM("Python"),
-                        "Failed to load python processor: '{}'. File: '{}'\n{}", name, file,
+                        "Failed to load python processor: '{}'. File: {}\n{}", name, file,
                         e.what());
     }
 
@@ -180,7 +181,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(const std::s
         return {p, name, file};
     } catch (const std::exception& e) {
         throw Exception(IVW_CONTEXT_CUSTOM("Python"),
-                        "Failed to get ProcessorInfo for python processor: '{}'. File: '{}'\n{}",
+                        "Failed to get ProcessorInfo for python processor: '{}'. File: {}\n{}",
                         name, file, e.what());
     }
 }

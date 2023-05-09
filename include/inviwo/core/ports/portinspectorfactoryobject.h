@@ -33,6 +33,7 @@
 
 #include <string>
 #include <memory>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -41,7 +42,7 @@ class PortInspector;
 class IVW_CORE_API PortInspectorFactoryObject {
 public:
     PortInspectorFactoryObject(std::string_view portClassIdentifier,
-                               std::string_view inspectorWorkspaceFileName);
+                               const std::filesystem::path& inspectorWorkspaceFileName);
     ~PortInspectorFactoryObject() = default;
 
     std::unique_ptr<PortInspector> create();
@@ -50,7 +51,7 @@ public:
 
 private:
     std::string portClassIdentifier_;
-    std::string inspectorWorkspaceFileName_;
+    std::filesystem::path inspectorWorkspaceFileName_;
 };
 
 }  // namespace inviwo

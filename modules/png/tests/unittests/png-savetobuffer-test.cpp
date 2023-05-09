@@ -71,7 +71,7 @@ TEST(CImgUtils, cimgToBuffer) {
 
     // read file contents
     std::vector<unsigned char> fileContents;
-    auto in = filesystem::ifstream(tmpFile.getFileName(), std::ios::binary);
+    auto in = std::ifstream(tmpFile.getFileName(), std::ios::binary);
     if (in.is_open()) {
         in.seekg(0, in.end);
         size_t fileLen = in.tellg();

@@ -230,7 +230,9 @@ template class OptionProperty<OptionRegEnumUInt>;
 
 InviwoCore::Observer::Observer(InviwoCore& core, InviwoApplication* app)
     : FileObserver(app), core_(core) {}
-void InviwoCore::Observer::fileChanged(const std::string& dir) { core_.scanDirForComposites(dir); }
+void InviwoCore::Observer::fileChanged(const std::filesystem::path& dir) {
+    core_.scanDirForComposites(dir);
+}
 
 InviwoCore::InviwoCore(InviwoApplication* app)
     : InviwoModule(app, "Core")
@@ -455,15 +457,18 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerSettings(std::make_unique<UnitSettings>());
 }
 
-std::string InviwoCore::getPath() const { return filesystem::findBasePath(); }
+std::filesystem::path InviwoCore::getPath() const { return filesystem::findBasePath(); }
 
-void InviwoCore::scanDirForComposites(const std::string& dir) {
-    for (auto&& file :
-         filesystem::getDirectoryContentsRecursively(dir, filesystem::ListMode::Files)) {
-        if (filesystem::getFileExtension(file) == "inv") {
-            if (addedCompositeFiles_.count(file) == 0) {
-                registerCompositeProcessor(file);
-                addedCompositeFiles_.insert(file);
+void InviwoCore::scanDirForComposites(const std::filesystem::path& dir) {
+    if (!std::filesystem::is_directory(dir)) {
+        return;
+    }
+
+    for (auto&& item : std::filesystem::recursive_directory_iterator{dir}) {
+        if (item.is_regular_file() && item.path().extension() == ".inv") {
+            if (!addedCompositeFiles_.contains(item)) {
+                registerCompositeProcessor(item);
+                addedCompositeFiles_.insert(item);
             }
         }
     }

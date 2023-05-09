@@ -46,6 +46,8 @@
 #include <vector>
 #include <fstream>
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 namespace util {
@@ -222,7 +224,8 @@ vec2 PropertyDistanceSorter::getPosition(const Processor* processor) {
     return util::getPosition(processor);
 }
 
-void serializeSelected(ProcessorNetwork* network, std::ostream& os, const std::string& refPath) {
+void serializeSelected(ProcessorNetwork* network, std::ostream& os,
+                       const std::filesystem::path& refPath) {
     Serializer serializer(refPath);
 
     detail::PartialProcessorNetwork ppc(network);
@@ -231,7 +234,7 @@ void serializeSelected(ProcessorNetwork* network, std::ostream& os, const std::s
 }
 
 std::vector<Processor*> appendPartialProcessorNetwork(ProcessorNetwork* network, std::istream& is,
-                                                      const std::string& refPath,
+                                                      const std::filesystem::path& refPath,
                                                       InviwoApplication* app) {
     NetworkLock lock(network);
     auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(is, refPath);
@@ -533,10 +536,10 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
 }
 
 std::vector<Processor*> appendProcessorNetwork(ProcessorNetwork* destinationNetwork,
-                                               std::string_view workspaceFile,
+                                               const std::filesystem::path& workspaceFile,
                                                InviwoApplication* app) {
 
-    auto fs = filesystem::ifstream(workspaceFile);
+    auto fs = std::ifstream(workspaceFile);
     if (!fs) {
         throw Exception(IVW_CONTEXT_CUSTOM("util::appendProcessorNetwork"),
                         "Could not open workspace file: {}", workspaceFile);

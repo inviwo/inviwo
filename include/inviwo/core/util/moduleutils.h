@@ -38,6 +38,7 @@
 #include <vector>
 #include <string>
 #include <string_view>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -56,8 +57,8 @@ IVW_CORE_API InviwoModule* getModuleByIdentifier(std::string_view identifier);
 IVW_CORE_API InviwoModule* getModuleByIdentifier(InviwoApplication* app,
                                                  std::string_view identifier);
 
-IVW_CORE_API std::string getModulePath(InviwoModule* module);
-IVW_CORE_API std::string getModulePath(InviwoModule* module, ModulePath pathType);
+IVW_CORE_API std::filesystem::path getModulePath(InviwoModule* module);
+IVW_CORE_API std::filesystem::path getModulePath(InviwoModule* module, ModulePath pathType);
 
 /**
  * \brief return the path for a specific type located within the requested module
@@ -66,11 +67,12 @@ IVW_CORE_API std::string getModulePath(InviwoModule* module, ModulePath pathType
  * @param pathType     type of the requested path
  * @return subdirectory of the module matching the type
  */
-IVW_CORE_API std::string getModulePath(std::string_view identifier, ModulePath pathType);
-IVW_CORE_API std::string getModulePath(InviwoApplication* app, std::string_view identifier,
-                                       ModulePath pathType);
-IVW_CORE_API std::string getModulePath(std::string_view identifier);
-IVW_CORE_API std::string getModulePath(InviwoApplication* app, std::string_view identifier);
+IVW_CORE_API std::filesystem::path getModulePath(std::string_view identifier, ModulePath pathType);
+IVW_CORE_API std::filesystem::path getModulePath(InviwoApplication* app,
+                                                 std::string_view identifier, ModulePath pathType);
+IVW_CORE_API std::filesystem::path getModulePath(std::string_view identifier);
+IVW_CORE_API std::filesystem::path getModulePath(InviwoApplication* app,
+                                                 std::string_view identifier);
 
 template <class T>
 T* getModuleByType(InviwoApplication* app) {
@@ -89,8 +91,8 @@ T* getModuleByType() {
  * @return subdirectory of the module matching the type
  */
 template <typename T>
-std::string getModulePath(ModulePath pathType) {
-    std::string path;
+std::filesystem::path getModulePath(ModulePath pathType) {
+    std::filesystem::path path;
     if (auto m = getModuleByType<T>()) {
         path = m->getPath(pathType);
         if (path.empty() || path == m->getPath()) {
@@ -104,8 +106,8 @@ std::string getModulePath(ModulePath pathType) {
 }
 
 template <typename T>
-std::string getModulePath(InviwoApplication* app, ModulePath pathType) {
-    std::string path;
+std::filesystem::path getModulePath(InviwoApplication* app, ModulePath pathType) {
+    std::filesystem::path path;
     if (auto m = getModuleByType<T>(app)) {
         path = m->getPath(pathType);
         if (path.empty() || path == m->getPath()) {

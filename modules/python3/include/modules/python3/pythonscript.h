@@ -92,8 +92,8 @@ public:
     bool run(std::function<void(pybind11::dict)> callback);
     bool run(pybind11::dict locals, std::function<void(pybind11::dict)> callback = nullptr);
 
-    virtual void setFilename(const std::string& filename);
-    const std::string& getFilename() const;
+    virtual void setFilename(const std::filesystem::path& filename);
+    const std::filesystem::path& getFilename() const;
 
 private:
     bool checkCompileError();
@@ -108,7 +108,7 @@ private:
     bool compile();
 
     std::string source_;
-    std::string filename_;
+    std::filesystem::path filename_;
     void* byteCode_;
     bool isCompileNeeded_;
 };
@@ -122,11 +122,11 @@ private:
  */
 class IVW_MODULE_PYTHON3_API PythonScriptDisk : public PythonScript, public FileObserver {
 public:
-    PythonScriptDisk(const std::string& filename = "");
+    PythonScriptDisk(const std::filesystem::path& filename = "");
 
     virtual ~PythonScriptDisk() = default;
 
-    virtual void setFilename(const std::string& filename) override;
+    virtual void setFilename(const std::filesystem::path& filename) override;
 
     /**
      * Register a callback that will be called once the file has changed on disk.
@@ -140,7 +140,7 @@ public:
 private:
     void readFileAndSetSource();
 
-    virtual void fileChanged(const std::string& fileName) override;
+    virtual void fileChanged(const std::filesystem::path& fileName) override;
 
     CallBackList onChangeCallbacks_;
 };

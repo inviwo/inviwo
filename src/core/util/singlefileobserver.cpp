@@ -32,7 +32,7 @@
 
 namespace inviwo {
 
-SingleFileObserver::SingleFileObserver(std::string filename)
+SingleFileObserver::SingleFileObserver(const std::filesystem::path& filename)
     : FileObserver(util::getInviwoApplication()), filename_(filename) {
     start();
 }
@@ -54,15 +54,15 @@ void SingleFileObserver::removeOnChange(const BaseCallBack* callback) {
     onChangeCallbacks_.remove(callback);
 }
 
-void SingleFileObserver::setFilename(const std::string& filename) {
+void SingleFileObserver::setFilename(const std::filesystem::path& filename) {
     stop();
     filename_ = filename;
     start();
 }
 
-const std::string& SingleFileObserver::getFilename() const { return filename_; }
+const std::filesystem::path& SingleFileObserver::getFilename() const { return filename_; }
 
-void SingleFileObserver::fileChanged(const std::string& /*filename*/) {
+void SingleFileObserver::fileChanged(const std::filesystem::path&) {
     onChangeCallbacks_.invokeAll();
 }
 

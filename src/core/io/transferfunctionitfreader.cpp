@@ -39,7 +39,8 @@ TransferFunctionITFReader* TransferFunctionITFReader::clone() const {
     return new TransferFunctionITFReader{*this};
 }
 
-std::shared_ptr<TransferFunction> TransferFunctionITFReader::readData(std::string_view filePath) {
+std::shared_ptr<TransferFunction> TransferFunctionITFReader::readData(
+    const std::filesystem::path& filePath) {
     checkExists(filePath);
 
     auto data = std::make_shared<TransferFunction>();

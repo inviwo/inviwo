@@ -101,7 +101,7 @@ Python3Module::Python3Module(InviwoApplication* app)
     , argHolder_{app, pythonScriptArg_,
                  [this]() {
                      auto filename = pythonScriptArg_.getValue();
-                     if (!filesystem::fileExists(filename)) {
+                     if (!std::filesystem::is_regular_file(filename)) {
                          LogWarn("Could not run script, file does not exist: " << filename);
                          return;
                      }
@@ -110,8 +110,8 @@ Python3Module::Python3Module(InviwoApplication* app)
                  },
                  100}
     , pythonLogger_{}
-    , scripts_{getPath() + "/scripts"}
-    , pythonFolderObserver_{app, getPath() + "/processors", *this}
+    , scripts_{getPath() / "scripts"}
+    , pythonFolderObserver_{app, getPath() / "processors", *this}
     , settingsFolderObserver_{app, app->getPath(PathType::Settings, "/python_processors", true),
                               *this} {
 

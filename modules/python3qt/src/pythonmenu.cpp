@@ -61,6 +61,7 @@
 #include <Qt>                // for WA_DeleteOnClose
 #include <fmt/core.h>        // for basic_string_view, arg
 #include <fmt/ostream.h>     // for print
+#include <fmt/std.h>
 
 class QObject;
 
@@ -110,7 +111,7 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
         auto pyProperties = menu_->addAction("&List unexposed properties");
         win->connect(pyProperties, &QAction::triggered, [app]() {
             auto mod = app->getModuleByType<Python3Module>();
-            PythonScriptDisk(mod->getPath() + "/scripts/list_not_exposed_properties.py").run();
+            PythonScriptDisk(mod->getPath() / "scripts" / "list_not_exposed_properties.py").run();
         });
 
         auto newPythonProcessor =
@@ -123,24 +124,24 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
             saveFileDialog.setAcceptMode(AcceptMode::Save);
             saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
             saveFileDialog.addExtension("py", "Python file");
-            const auto dir = app->getPath(PathType::Settings) + "/python_processors";
-            filesystem::createDirectoryRecursively(dir);
+            const auto dir = app->getPath(PathType::Settings) / "python_processors";
+            std::filesystem::create_directories(dir);
             saveFileDialog.setCurrentDirectory(dir);
 
             if (saveFileDialog.exec()) {
                 QString qpath = saveFileDialog.selectedFiles().at(0);
-                const auto path = utilqt::fromQString(qpath);
+                const auto path = utilqt::toPath(qpath);
 
-                const auto templatePath = pymodule->getPath() + "/templates/templateprocessor.py";
+                const auto templatePath = pymodule->getPath() / "templates/templateprocessor.py";
 
-                auto ifs = filesystem::ifstream(templatePath);
+                auto ifs = std::ifstream(templatePath);
                 std::stringstream ss;
                 ss << ifs.rdbuf();
                 const auto script = std::move(ss).str();
 
-                const auto name = filesystem::getFileNameWithoutExtension(path);
+                const auto name = path.stem();
 
-                auto ofs = filesystem::ofstream(path);
+                auto ofs = std::ofstream(path);
                 fmt::print(ofs, fmt::runtime(script), fmt::arg("name", name));
 
                 QDesktopServices::openUrl(QUrl("file:///" + qpath, QUrl::TolerantMode));

@@ -37,6 +37,8 @@
 #include <functional>  // for hash
 #include <memory>      // for hash
 #include <string>      // for string
+#include <string_view>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -46,34 +48,33 @@ namespace inviwo {
  */
 class IVW_MODULE_OPENGL_API ShaderType {
 public:
-    ShaderType() = default;
-    explicit ShaderType(GLenum type);
-    ShaderType(const ShaderType&) = default;
-    ShaderType& operator=(const ShaderType&) = default;
-    ~ShaderType() = default;
+    explicit constexpr ShaderType(GLenum type) : type_(type) {}
 
     operator GLenum() const;
     operator bool() const;
 
     std::string extension() const;
-
     std::string name() const;
 
-    static ShaderType Vertex;
-    static ShaderType Geometry;
-    static ShaderType Fragment;
-    static ShaderType TessellationControl;
-    static ShaderType TessellationEvaluation;
-    static ShaderType Compute;
-
     static std::string extension(const ShaderType& type);
-    static ShaderType get(const std::string& ext);
+    static ShaderType typeFromExtension(std::string_view ext);
+    static ShaderType typeFromString(std::string_view str);
+    static ShaderType typeFromFile(const std::filesystem::path& ext);
+
+    inline friend bool operator==(const ShaderType& lhs, const ShaderType& rhs) {
+        return lhs.type_ == rhs.type_;
+    }
+
+    static const ShaderType Vertex;
+    static const ShaderType Geometry;
+    static const ShaderType Fragment;
+    static const ShaderType TessellationControl;
+    static const ShaderType TessellationEvaluation;
+    static const ShaderType Compute;
 
 private:
     GLenum type_ = 0;
 };
-
-bool operator==(const ShaderType& lhs, const ShaderType& rhs);
 
 }  // namespace inviwo
 

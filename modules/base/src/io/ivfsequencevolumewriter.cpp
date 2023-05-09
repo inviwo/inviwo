@@ -46,33 +46,26 @@
 namespace inviwo {
 
 void IvfSequenceVolumeWriter::writeData(const VolumeSequence* data,
-                                        const std::string filePath) const {
-    auto name = filesystem::getFileNameWithoutExtension(filePath);
-    auto path = filesystem::getFileDirectory(filePath);
+                                        const std::filesystem::path& filePath) const {
+    auto name = filePath.stem().string();
+    auto path = filePath.parent_path();
     return writeData(data, name, path);
 }
 
 void IvfSequenceVolumeWriter::writeData(const VolumeSequence* data, std::string_view name,
-                                        std::string_view path,
+                                        const std::filesystem::path& path,
                                         std::string_view relativePathToTimeSteps) const {
 
     util::writeIvfVolumeSequence(*data, name, path, relativePathToTimeSteps, overwrite_);
 }
 
-void IvfSequenceVolumeWriter::writeData(const VolumeSequence* data,
-                                        std::string_view filePath) const {
-    const auto name = filesystem::getFileNameWithExtension(filePath);
-    const auto path = filesystem::getFileDirectory(filePath);
-
-    util::writeIvfVolumeSequence(*data, name, path, "", overwrite_);
-}
-
 namespace util {
-std::string writeIvfVolumeSequence(const VolumeSequence& volumes, std::string_view name,
-                                   std::string_view path, std::string_view relativePathToTimeSteps,
-                                   Overwrite overwrite) {
+std::filesystem::path writeIvfVolumeSequence(const VolumeSequence& volumes, std::string_view name,
+                                             const std::filesystem::path& path,
+                                             std::string_view relativePathToTimeSteps,
+                                             Overwrite overwrite) {
 
-    auto ivfsFile = fmt::format("{}/{}.ivfs", path, name);
+    auto ivfsFile = path / fmt::format("{}.ivfs", name);
 
     DataWriter::checkOverwrite(ivfsFile, overwrite);
 
@@ -80,14 +73,14 @@ std::string writeIvfVolumeSequence(const VolumeSequence& volumes, std::string_vi
 
     auto fillLength = static_cast<int>(log10(volumes.size())) + 1;
 
-    filesystem::createDirectoryRecursively(fmt::format("{}/{}", path, relativePathToTimeSteps));
+    std::filesystem::create_directories(path / relativePathToTimeSteps);
     IvfVolumeWriter writer;
     writer.setOverwrite(overwrite);
-    std::vector<std::string> filenames;
+    std::vector<std::filesystem::path> filenames;
     size_t i = 0;
     for (const auto& vol : volumes) {
-        const auto absFilePath = filesystem::cleanupPath(
-            fmt::format("{}/{}/{}{:0{}}.ivf", path, relativePathToTimeSteps, name, i, fillLength));
+        const auto absFilePath =
+            path / relativePathToTimeSteps / fmt::format("{}{:0{}}.ivf", name, i, fillLength);
         const auto relFilePath =
             fmt::format("./{}/{}{:0{}}.ivf", relativePathToTimeSteps, name, i, fillLength);
 

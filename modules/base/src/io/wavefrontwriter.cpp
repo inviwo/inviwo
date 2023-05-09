@@ -72,7 +72,7 @@ WaveFrontWriter::WaveFrontWriter() : DataWriterType<Mesh>() {
 
 WaveFrontWriter* WaveFrontWriter::clone() const { return new WaveFrontWriter(*this); }
 
-void WaveFrontWriter::writeData(const Mesh* data, std::string_view filePath) const {
+void WaveFrontWriter::writeData(const Mesh* data, const std::filesystem::path& filePath) const {
     auto f = open(filePath);
     writeData(data, f);
 }

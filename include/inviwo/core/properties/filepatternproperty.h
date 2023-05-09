@@ -58,13 +58,12 @@ namespace inviwo {
 
 class IVW_CORE_API FilePatternProperty : public CompositeProperty {
 public:
-    typedef std::tuple<int, std::string> IndexFileTuple;
-
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     FilePatternProperty(std::string_view identifier, std::string_view displayName,
-                        std::string_view pattern = "", std::string_view contentType = "default",
+                        const std::filesystem::path& pattern = "",
+                        std::string_view contentType = "default",
                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                         PropertySemantics semantics = PropertySemantics::Default);
 
@@ -74,9 +73,9 @@ public:
     virtual ~FilePatternProperty();
 
     std::string getFilePattern() const;
-    std::string getFilePatternPath() const;
+    std::filesystem::path getFilePatternPath() const;
 
-    std::vector<std::string> getFileList() const;
+    std::vector<std::filesystem::path> getFileList() const;
 
     std::string getFormattedFileList() const;
 
@@ -114,7 +113,7 @@ private:
     IntProperty maxIndex_;
 
     // contains file names and the extracted numbers/indices
-    std::vector<IndexFileTuple> files_;
+    std::vector<std::tuple<int, std::filesystem::path>> files_;
     // flag is true if all matching files are outside the selected range
     bool outOfRangeMatches_ = false;
 };

@@ -72,12 +72,14 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QAbstractNativeEventFilter>
+#include <warn/pop>
+
 #include <string>
 #include <functional>
 #include <unordered_map>
 #include <memory>
 #include <vector>
-#include <warn/pop>
+#include <filesystem>
 
 class QMainWindow;
 
@@ -101,7 +103,7 @@ struct IVW_QTEDITOR_API FileAssociationCommand {
      */
     FileAssociationCommand(const std::string& command, const std::string& cmdLineArg,
                            const std::string& ddeCommand,
-                           std::function<void(const std::string&)> callback)
+                           std::function<void(const std::filesystem::path&)> callback)
         : command_{command}
         , cmdLineArg_{cmdLineArg}
         , ddeCommand_{ddeCommand}
@@ -109,7 +111,7 @@ struct IVW_QTEDITOR_API FileAssociationCommand {
     std::string command_;
     std::string cmdLineArg_;
     std::string ddeCommand_;
-    std::function<void(const std::string&)> callback_;
+    std::function<void(const std::filesystem::path&)> callback_;
 };
 
 class FileAssociationData;
@@ -147,7 +149,7 @@ private:
     void executeCommand(const std::string& command, const std::string& param);
 
     std::unique_ptr<FileAssociationData> data_;
-    std::unordered_map<std::string, std::function<void(const std::string&)>> commands_;
+    std::unordered_map<std::string, std::function<void(const std::filesystem::path&)>> commands_;
 };
 
 }  // namespace inviwo

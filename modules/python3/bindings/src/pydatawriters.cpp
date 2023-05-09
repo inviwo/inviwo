@@ -37,6 +37,8 @@
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/datastructures/isovaluecollection.h>
 
+#include <pybind11/stl/filesystem.h>
+
 namespace inviwo {
 
 // Allow overriding virtual functions from Python
@@ -66,7 +68,7 @@ public:
                           key                /* Argument(s) */
         );
     }
-    virtual void writeData(const T* data, std::string_view filePath) const override {
+    virtual void writeData(const T* data, const std::filesystem::path& filePath) const override {
         PYBIND11_OVERRIDE_PURE(void,              /* Return type */
                                DataWriterType<T>, /* Parent class */
                                writeData,     /* Name of function in C++ (must match Python name) */
@@ -82,21 +84,22 @@ void exposeFactoryWriterType(pybind11::class_<DataWriterFactory>& r, std::string
           (std::vector<FileExtension>(DataWriterFactory::*)() const) &
               DataWriterFactory::getExtensionsForType<T>)
         .def(fmt::format("get{}Writer", type).c_str(),
-             (std::unique_ptr<DataWriterType<T>>(DataWriterFactory::*)(std::string_view) const) &
+             (std::unique_ptr<DataWriterType<T>>(DataWriterFactory::*)(const std::filesystem::path&)
+                  const) &
                  DataWriterFactory::getWriterForTypeAndExtension<T>)
         .def(
             fmt::format("get{}Writer", type).c_str(),
             (std::unique_ptr<DataWriterType<T>>(DataWriterFactory::*)(const FileExtension&) const) &
                 DataWriterFactory::getWriterForTypeAndExtension<T>)
         .def(fmt::format("get{}Writer", type).c_str(),
-             (std::unique_ptr<DataWriterType<T>>(DataWriterFactory::*)(const FileExtension&,
-                                                                       std::string_view) const) &
+             (std::unique_ptr<DataWriterType<T>>(DataWriterFactory::*)(
+                 const FileExtension&, const std::filesystem::path&) const) &
                  DataWriterFactory::getWriterForTypeAndExtension<T>)
         .def(fmt::format("has{}Writer", type).c_str(),
-             (bool (DataWriterFactory::*)(std::string_view) const) &
+             (bool(DataWriterFactory::*)(const std::filesystem::path&) const) &
                  DataWriterFactory::hasWriterForTypeAndExtension<T>)
         .def(fmt::format("has{}Writer", type).c_str(),
-             (bool (DataWriterFactory::*)(const FileExtension&) const) &
+             (bool(DataWriterFactory::*)(const FileExtension&) const) &
                  DataWriterFactory::hasWriterForTypeAndExtension<T>)
         .def(fmt::format("write{}", type).c_str(),
              &DataWriterFactory::writeDataForTypeAndExtension<T>);
@@ -132,8 +135,8 @@ void exposeDataWriters(pybind11::module& m) {
                  (std::unique_ptr<DataWriter>(DataWriterFactory::*)(std::string_view) const) &
                      DataWriterFactory::create)
             .def("hasKey",
-                 (bool (DataWriterFactory::*)(std::string_view) const) & DataWriterFactory::hasKey)
-            .def("hasKey", (bool (DataWriterFactory::*)(const FileExtension&) const) &
+                 (bool(DataWriterFactory::*)(std::string_view) const) & DataWriterFactory::hasKey)
+            .def("hasKey", (bool(DataWriterFactory::*)(const FileExtension&) const) &
                                DataWriterFactory::hasKey);
 
     // No good way of dealing with template return types so we manually define one for each known

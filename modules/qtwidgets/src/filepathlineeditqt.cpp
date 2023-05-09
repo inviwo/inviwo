@@ -99,7 +99,7 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
     });
 }
 
-void FilePathLineEditQt::setPath(const std::string& path) {
+void FilePathLineEditQt::setPath(const std::filesystem::path& path) {
     if (path_ != path) {
         path_ = path;
         cursorPos_ = -1;
@@ -111,7 +111,7 @@ void FilePathLineEditQt::setPath(const std::string& path) {
     }
 }
 
-const std::string& FilePathLineEditQt::getPath() const { return path_; }
+const std::filesystem::path& FilePathLineEditQt::getPath() const { return path_; }
 
 void FilePathLineEditQt::setEditing(bool editing) {
     if (editing != editingEnabled_) {
@@ -135,8 +135,8 @@ void FilePathLineEditQt::focusInEvent(QFocusEvent* event) {
         // get current cursor position in line edit
         int pos = this->cursorPositionAt(this->mapFromGlobal(cursor));
         // transform position into position within entire path
-        auto lenFilename = filesystem::getFileNameWithExtension(path_).size();
-        cursorPos_ = static_cast<int>(path_.size() - lenFilename) + pos;
+        auto lenFilename = path_.stem().string().size();
+        cursorPos_ = static_cast<int>(path_.string().size() - lenFilename) + pos;
         // the cursor position has to be set again after the mouse click has been processed in
         // mousePressEvent()
         cursorPosDirty_ = true;
@@ -165,7 +165,7 @@ void FilePathLineEditQt::updateContents() {
         this->setText(utilqt::toQString(path_));
     } else {
         // abbreviate file path and show only the file name
-        this->setText(utilqt::toQString(filesystem::getFileNameWithExtension(path_)));
+        this->setText(utilqt::toQString(path_.stem()));
     }
     setModified(modified);
     updateIcon();
@@ -174,16 +174,16 @@ void FilePathLineEditQt::updateContents() {
 void FilePathLineEditQt::updateIcon() {
     // update visibility of warning icon
 
-    bool hasWildcard = (path_.find_first_of("*?#", 0) != std::string::npos);
+    bool hasWildcard = (path_.string().find_first_of("*?#", 0) != std::string::npos);
     bool visible = false;
     QString tooltip;
     if (hasWildcard) {
         // check, if the parent directory is valid
-        visible = !filesystem::fileExists(filesystem::getFileDirectory(path_));
+        visible = !std::filesystem::is_directory(path_.parent_path());
         tooltip = "Invalid Path";
     } else if (!path_.empty()) {
         // no wildcards, check for file existence
-        visible = !filesystem::fileExists(path_);
+        visible = !std::filesystem::is_regular_file(path_);
         tooltip = "Invalid File: Could not locate file";
     }
 

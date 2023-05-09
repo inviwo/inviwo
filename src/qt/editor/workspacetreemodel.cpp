@@ -58,8 +58,8 @@ public:
     static const int IconSize = 12;  // Icon size in em.
 
     explicit TreeItem(TreeItem* parent);
-    TreeItem(std::string_view filename, WorkspaceTreeModel::Type type);
-    TreeItem(std::string_view filename, InviwoApplication* app,
+    TreeItem(std::string_view caption, WorkspaceTreeModel::Type type);
+    TreeItem(const std::filesystem::path& filename, InviwoApplication* app,
              std::function<void(TreeItem*)> onChange, bool isExample);
 
     TreeItem(const TreeItem&) = delete;
@@ -124,14 +124,14 @@ TreeItem::TreeItem(TreeItem* parent)
 TreeItem::TreeItem(std::string_view caption, WorkspaceTreeModel::Type type)
     : type_{type}, parent_{nullptr}, row_{0}, caption_{utilqt::toQString(caption)} {}
 
-TreeItem::TreeItem(std::string_view filename, InviwoApplication* app,
+TreeItem::TreeItem(const std::filesystem::path& filename, InviwoApplication* app,
                    std::function<void(TreeItem*)> onChange, bool isExample)
     : type_{WorkspaceTreeModel::Type::File}
     , parent_{nullptr}
     , row_{0}
-    , caption_{utilqt::toQString(filesystem::getFileNameWithoutExtension(filename))}
-    , file_{utilqt::toQString(filesystem::getFileNameWithExtension(filename))}
-    , path_{utilqt::toQString(filesystem::getFileDirectory(filename))}
+    , caption_{utilqt::toQString(filename.stem())}
+    , file_{utilqt::toQString(filename.filename())}
+    , path_{utilqt::toQString(filename.parent_path())}
     , isExample_{isExample}
     , infoLoader_{std::make_shared<WorkspaceInfoLoader>(filename, app)}
     , info_{} {
@@ -407,8 +407,8 @@ QModelIndex WorkspaceTreeModel::getCategoryIndex(std::string_view category) {
 void WorkspaceTreeModel::updateRecentWorkspaces(const QStringList& recentFiles) {
     std::vector<std::unique_ptr<TreeItem>> items;
     for (auto& elem : recentFiles) {
-        const std::string filename = utilqt::fromQString(elem);
-        if (filesystem::fileExists(filename)) {
+        const std::filesystem::path filename = utilqt::fromQString(elem);
+        if (std::filesystem::is_regular_file(filename)) {
             items.push_back(std::make_unique<TreeItem>(
                 filename, app_,
                 [this](TreeItem* item) {
@@ -424,8 +424,8 @@ void WorkspaceTreeModel::updateRecentWorkspaces(const QStringList& recentFiles) 
 void WorkspaceTreeModel::updateModules(std::string_view category, ModulePath pathType,
                                        bool recursive) {
 
-    auto addFile = [this](const std::string& filePath, TreeItem& section) {
-        if (filesystem::getFileExtension(filePath) != "inv") return;
+    auto addFile = [this](const std::filesystem::path& filePath, TreeItem& section) {
+        if (filePath.extension() != ".inv") return;
         section.addChild(std::make_unique<TreeItem>(
             filePath, app_,
             [this](TreeItem* item) {
@@ -436,18 +436,18 @@ void WorkspaceTreeModel::updateModules(std::string_view category, ModulePath pat
     };
 
     std::vector<std::unique_ptr<TreeItem>> items;
-    for (const auto& module : app_->getModules()) {
-        auto path = module->getPath(pathType);
-        if (!filesystem::directoryExists(path)) continue;
+    for (const auto& inviwoModule : app_->getModules()) {
+        auto path = inviwoModule->getPath(pathType);
+        if (!std::filesystem::is_directory(path)) continue;
 
-        auto section = std::make_unique<TreeItem>(module->getIdentifier(), Type::SubSection);
+        auto section = std::make_unique<TreeItem>(inviwoModule->getIdentifier(), Type::SubSection);
         if (recursive) {
             for (auto filePath : filesystem::getDirectoryContentsRecursively(path)) {
-                addFile(filePath, *section);
+                addFile(path / filePath, *section);
             }
         } else {
             for (auto filePath : filesystem::getDirectoryContents(path)) {
-                addFile(fmt::format("{}/{}", path, filePath), *section);
+                addFile(path / filePath, *section);
             }
         }
         if (section->childCount() > 0) {

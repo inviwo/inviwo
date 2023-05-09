@@ -31,11 +31,14 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <string>
 #include <memory>
 #include <unordered_map>
 #include <ctime>
+#include <filesystem>
+#include <chrono>
 
 namespace inviwo {
 
@@ -51,25 +54,25 @@ public:
     InviwoModuleLibraryObserver(InviwoApplication* app);
     virtual ~InviwoModuleLibraryObserver() = default;
 
-    void observe(const std::string& file);
+    void observe(const std::filesystem::path& file);
     void reloadModules();
 
 private:
     class Observer : public FileObserver {
     public:
         Observer(InviwoModuleLibraryObserver& imo, InviwoApplication* app);
-        virtual void fileChanged(const std::string& dir) override;
+        virtual void fileChanged(const std::filesystem::path& dir) override;
 
     private:
         InviwoModuleLibraryObserver& imo_;
     };
 
-    void fileChanged(const std::string& dir);
+    void fileChanged(const std::filesystem::path& dir);
 
     InviwoApplication* app_;
     // Need to be pointer since we cannot initialize the observer before the application.
     std::unique_ptr<Observer> observer_;
-    std::unordered_map<std::string, std::time_t> observing_;
+    std::unordered_map<std::filesystem::path, std::filesystem::file_time_type, PathHash> observing_;
 };
 
 }  // namespace inviwo

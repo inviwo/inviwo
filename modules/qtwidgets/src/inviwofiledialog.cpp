@@ -50,7 +50,7 @@ class QWidget;
 namespace inviwo {
 
 InviwoFileDialog::InviwoFileDialog(QWidget* parent, const std::string& title,
-                                   const std::string& pathType, const std::string& path)
+                                   const std::string& pathType, const std::filesystem::path& path)
     : QFileDialog(parent, utilqt::toQString(title))
     , pathType_(utilqt::toQString(pathType))
     , currentPath_() {
@@ -184,9 +184,7 @@ void InviwoFileDialog::useNativeDialog(const bool& use) {
     QFileDialog::setOption(QFileDialog::DontUseNativeDialog, !use);
 }
 
-void InviwoFileDialog::setCurrentDirectory(const std::string& path) {
-    std::string fileName;
-
+void InviwoFileDialog::setCurrentDirectory(const std::filesystem::path& path) {
     if (!path.empty()) {
         currentPath_ = utilqt::toQString(path);
     } else {
@@ -198,37 +196,35 @@ void InviwoFileDialog::setCurrentDirectory(const std::string& path) {
     QFileDialog::setDirectory(currentPath_);
 
     // if the given path points to a file, select it when the dialog is opened
-    if (!fileName.empty()) {
-        if (filesystem::fileExists(utilqt::fromQString(currentPath_))) {
+    if (path.has_filename()) {
+        if (QFile::exists(currentPath_)) {
             QFileDialog::selectFile(currentPath_);
         }
     }
 }
 
-void InviwoFileDialog::setCurrentFile(const std::string& filename) {
-    std::string path;
-    bool fileExists = false;
+void InviwoFileDialog::setCurrentFile(const std::filesystem::path& filename) {
+    std::filesystem::path path;
     if (!filename.empty()) {
-        if (filesystem::directoryExists(filename)) {
+        if (std::filesystem::is_directory(filename)) {
             // given file name is a path
             path = filename;
         } else {
             // if a file is selected, extract the folder path for the dialog
-            path = filesystem::getFileDirectory(filename);
-            fileExists = filesystem::fileExists(filename);
+            path = filename.parent_path();
         }
     }
 
     setCurrentDirectory(path);
-    if (fileExists) {
+    if (std::filesystem::is_regular_file(filename)) {
         QFileDialog::selectFile(utilqt::toQString(filename));
     }
 }
 
-std::vector<std::string> InviwoFileDialog::getSelectedFiles() const {
-    std::vector<std::string> filenames;
+std::vector<std::filesystem::path> InviwoFileDialog::getSelectedFiles() const {
+    std::vector<std::filesystem::path> filenames;
     for (auto file : QFileDialog::selectedFiles()) {
-        filenames.push_back(utilqt::fromQString(file));
+        filenames.emplace_back(utilqt::toPath(file));
     }
     return filenames;
 }
@@ -285,8 +281,8 @@ void InviwoFileDialog::addSidebarPath(const PathType& path) {
     addSidebarPath(filesystem::getPath(path));
 }
 
-void InviwoFileDialog::addSidebarPath(const std::string& path) {
-    sidebarURLs_ << QUrl::fromLocalFile(QDir(path.c_str()).absolutePath());
+void InviwoFileDialog::addSidebarPath(const std::filesystem::path& path) {
+    addSidebarPath(utilqt::toQString(std::filesystem::absolute(path)));
 }
 
 void InviwoFileDialog::addSidebarPath(const QString& path) {

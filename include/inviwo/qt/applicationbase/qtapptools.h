@@ -32,6 +32,7 @@
 #include <inviwo/qt/applicationbase/qtlocale.h>
 
 #include <locale>
+#include <filesystem>
 #include <QString>
 #include <QObject>
 
@@ -85,7 +86,7 @@ IVW_QTAPPLICATIONBASE_API void configurePoolResizeWait(InviwoApplication& app, Q
 /**
  * Sets a new style sheet file in the QApplication
  */
-IVW_QTAPPLICATIONBASE_API void setStyleSheetFile(std::string_view file);
+IVW_QTAPPLICATIONBASE_API void setStyleSheetFile(const std::filesystem::path& file);
 
 /**
  * Configure the global palette to use the same link colors as in the help widget and stylesheet

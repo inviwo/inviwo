@@ -115,7 +115,7 @@ static std::string insert_linebreaks(std::string str, size_t distance) {
     size_t pos = distance;
 
     while (pos < str.size()) {
-        str.insert(pos, "\n");
+        str.insert(pos, '\n', 1);
         pos += distance + 1;
     }
 

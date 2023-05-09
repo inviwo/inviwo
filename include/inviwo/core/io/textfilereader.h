@@ -31,8 +31,8 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
-#include <iostream>
 #include <string>
+#include <filesystem>
 
 namespace inviwo {
 /**
@@ -41,8 +41,8 @@ namespace inviwo {
  */
 class IVW_CORE_API TextFileReader {
 public:
-    TextFileReader(const std::string& filePath);
-    virtual ~TextFileReader() {}
+    TextFileReader(const std::filesystem::path& filePath);
+    ~TextFileReader() = default;
 
     /**
      * Read a file and return the content as a string.
@@ -51,7 +51,7 @@ public:
      * @param filePath Path of file.
      * @return Content of file.
      */
-    virtual std::string read(const std::string& filePath);
+    std::string read(const std::filesystem::path& filePath);
 
     /**
      * Read a file and return the content as a string.
@@ -59,13 +59,13 @@ public:
      * and prints an error message to the error log.
      * @return Content of file.
      */
-    virtual std::string read();
+    std::string read();
 
-    void setFilePath(const std::string& filePath) { filePath_ = filePath; }
-    const std::string& getFilePath() const { return filePath_; }
+    void setFilePath(const std::filesystem::path& filePath) { filePath_ = filePath; }
+    const std::filesystem::path& getFilePath() const { return filePath_; }
 
 private:
-    std::string filePath_;
+    std::filesystem::path filePath_;
 };
 
 }  // namespace inviwo

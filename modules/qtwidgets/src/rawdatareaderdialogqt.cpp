@@ -245,8 +245,8 @@ bool RawDataReaderDialogQt::show() {
     return res == QDialog::Accepted;
 }
 
-void RawDataReaderDialogQt::setFile(std::string fileName) {
-    fileName_->setText(QString::fromStdString(fileName));
+void RawDataReaderDialogQt::setFile(const std::filesystem::path& fileName) {
+    fileName_->setText(utilqt::toQString(fileName));
 }
 
 const DataFormatBase* RawDataReaderDialogQt::getFormat() const {

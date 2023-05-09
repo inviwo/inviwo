@@ -75,15 +75,16 @@ const ProcessorInfo VolumeSequenceSource::getProcessorInfo() const { return proc
 
 namespace {
 
-std::string getFirstFileInFolder(const std::string& folder, const std::string& filter) {
+std::optional<std::filesystem::path> getFirstFileInFolder(const std::filesystem::path& folder,
+                                                          const std::string& filter) {
     auto files = filesystem::getDirectoryContents(folder);
     for (auto f : files) {
-        auto file = folder + "/" + f;
-        if (filesystem::wildcardStringMatch(filter, file)) {
+        auto file = folder / f;
+        if (filesystem::wildcardStringMatch(filter, file.generic_string())) {
             return file;
         }
     }
-    return "";
+    return std::nullopt;
 }
 
 }  // namespace
@@ -128,11 +129,14 @@ VolumeSequenceSource::VolumeSequenceSource(InviwoApplication* app)
     isSink_.setUpdate([]() { return true; });
     isReady_.setUpdate([this]() {
         if (inputType_ == InputType::SingleFile) {
-            return !loadingFailed_ && filesystem::fileExists(file_.get()) &&
+            return !loadingFailed_ && std::filesystem::is_regular_file(file_.get()) &&
                    !reader_.getSelectedValue().empty();
         } else {
-            return !loadingFailed_ &&
-                   filesystem::fileExists(getFirstFileInFolder(folder_, filter_));
+            if (auto first = getFirstFileInFolder(folder_, filter_)) {
+                return !loadingFailed_ && std::filesystem::is_regular_file(*first);
+            } else {
+                return false;
+            }
         }
     });
 
@@ -195,18 +199,18 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
 
     auto files = filesystem::getDirectoryContents(folder_.get());
     for (auto f : files) {
-        auto file = folder_.get() + "/" + f;
-        if (filesystem::wildcardStringMatch(filter_, file)) {
+        auto file = folder_.get() / f;
+        if (filesystem::wildcardStringMatch(filter_, file.generic_string())) {
             try {
                 if (auto reader1 = rf_->getReaderForTypeAndExtension<Volume>(file)) {
                     auto volume = reader1->readData(file, this);
-                    volume->setMetaData<StringMetaData>("filename", file);
+                    volume->setMetaData<StringMetaData>("filename", file.generic_string());
                     volumes_->push_back(volume);
 
                 } else if (auto reader2 = rf_->getReaderForTypeAndExtension<VolumeSequence>(file)) {
                     auto volumes = reader2->readData(file, this);
                     for (auto volume : *volumes) {
-                        volume->setMetaData<StringMetaData>("filename", file);
+                        volume->setMetaData<StringMetaData>("filename", file.generic_string());
                         volumes_->push_back(volume);
                     }
                 } else {
@@ -228,7 +232,7 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
         // store filename in metadata
         for (auto volume : *volumes_) {
             if (!volume->hasMetaData<StringMetaData>("filename"))
-                volume->setMetaData<StringMetaData>("filename", file_.get());
+                volume->setMetaData<StringMetaData>("filename", file_.get().generic_string());
         }
 
         // set basis of first volume

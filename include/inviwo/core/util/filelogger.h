@@ -33,6 +33,7 @@
 #include <inviwo/core/util/logcentral.h>
 
 #include <fstream>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -42,7 +43,7 @@ namespace inviwo {
  */
 class IVW_CORE_API FileLogger : public Logger {
 public:
-    FileLogger(std::string logPath);
+    FileLogger(const std::filesystem::path& logPath);
     virtual ~FileLogger();
 
     virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,

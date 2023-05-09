@@ -40,12 +40,12 @@ const std::string MultiFileProperty::classIdentifier = "org.inviwo.MultiFileProp
 std::string MultiFileProperty::getClassIdentifier() const { return classIdentifier; }
 
 MultiFileProperty::MultiFileProperty(std::string_view identifier, std::string_view displayName,
-                                     const std::vector<std::string>& value,
+                                     const std::vector<std::filesystem::path>& value,
                                      std::string_view contentType,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : TemplateProperty<std::vector<std::string>>(identifier, displayName, value, invalidationLevel,
-                                                 semantics)
+    : TemplateProperty<std::vector<std::filesystem::path>>(identifier, displayName, value,
+                                                           invalidationLevel, semantics)
     , acceptMode_(AcceptMode::Open)
     , fileMode_(FileMode::ExistingFiles)
     , contentType_(contentType) {
@@ -53,30 +53,24 @@ MultiFileProperty::MultiFileProperty(std::string_view identifier, std::string_vi
 }
 
 MultiFileProperty::MultiFileProperty(const MultiFileProperty& rhs)
-    : TemplateProperty<std::vector<std::string>>(rhs)
+    : TemplateProperty<std::vector<std::filesystem::path>>(rhs)
     , nameFilters_(rhs.nameFilters_)
     , acceptMode_(rhs.acceptMode_)
     , fileMode_(rhs.fileMode_) {}
 
-MultiFileProperty& MultiFileProperty::operator=(const std::vector<std::string>& value) {
-    TemplateProperty<std::vector<std::string>>::operator=(value);
+MultiFileProperty& MultiFileProperty::operator=(const std::vector<std::filesystem::path>& value) {
+    TemplateProperty<std::vector<std::filesystem::path>>::operator=(value);
     return *this;
 }
 
 MultiFileProperty* MultiFileProperty::clone() const { return new MultiFileProperty(*this); }
 
-void MultiFileProperty::set(std::string_view value) {
-    TemplateProperty<std::vector<std::string>>::set({filesystem::cleanupPath(value)});
+void MultiFileProperty::set(const std::filesystem::path& value) {
+    TemplateProperty<std::vector<std::filesystem::path>>::set({value});
 }
 
-void MultiFileProperty::set(const std::vector<std::string>& values) {
-    std::vector<std::string> tmp;
-    tmp.reserve(values.size());
-    // clean up paths first
-    for (auto elem : values) {
-        tmp.push_back(filesystem::cleanupPath(elem));
-    }
-    TemplateProperty<std::vector<std::string>>::set(tmp);
+void MultiFileProperty::set(const std::vector<std::filesystem::path>& values) {
+    TemplateProperty<std::vector<std::filesystem::path>>::set(values);
 
     // figure out best matching extension based on first filename
     const auto& files = get();
@@ -102,7 +96,7 @@ void MultiFileProperty::set(const std::vector<std::string>& values) {
 }
 
 void MultiFileProperty::set(const Property* property) {
-    TemplateProperty<std::vector<std::string>>::set(property);
+    TemplateProperty<std::vector<std::filesystem::path>>::set(property);
 }
 
 void MultiFileProperty::serialize(Serializer& s) const {
@@ -122,26 +116,27 @@ void MultiFileProperty::serialize(Serializer& s) const {
 
     value_.serialize(s, this->serializationMode_);
 
-    const auto workspacePath = filesystem::getFileDirectory(s.getFileName());
+    const auto workspacePath = s.getFileName().parent_path();
     const auto ivwdataPath = filesystem::getPath(PathType::Data);
 
     // save absolute and relative paths for each file pattern
-    std::vector<std::string> workspaceRelativePaths;  // paths relative to workspace directory
-    std::vector<std::string> ivwdataRelativePaths;    // paths relative to Inviwo data
-    for (auto item : this->get()) {
-        const auto basePath = filesystem::getFileDirectory(item);
+    std::vector<std::filesystem::path>
+        workspaceRelativePaths;  // paths relative to workspace directory
+    std::vector<std::filesystem::path> ivwdataRelativePaths;  // paths relative to Inviwo data
+    for (const auto& item : this->get()) {
+        const auto basePath = item.parent_path();
 
-        std::string workspaceRelative;
-        std::string ivwdataRelative;
+        std::filesystem::path workspaceRelative;
+        std::filesystem::path ivwdataRelative;
         if (!basePath.empty()) {
-            if (!workspacePath.empty() && filesystem::sameDrive(workspacePath, basePath)) {
-                workspaceRelative = filesystem::getRelativePath(workspacePath, basePath);
+            if (!workspacePath.empty() && workspacePath.root_name() == basePath.root_name()) {
+                workspaceRelative = std::filesystem::relative(basePath, workspacePath);
                 if (workspaceRelative.empty()) {
                     workspaceRelative = ".";
                 }
             }
-            if (!ivwdataPath.empty() && filesystem::sameDrive(ivwdataPath, basePath)) {
-                ivwdataRelative = filesystem::getRelativePath(ivwdataPath, basePath);
+            if (!ivwdataPath.empty() && ivwdataPath.root_name() == basePath.root_name()) {
+                ivwdataRelative = std::filesystem::relative(basePath, ivwdataPath);
                 if (ivwdataRelative.empty()) {
                     ivwdataRelative = ".";
                 }
@@ -160,42 +155,43 @@ void MultiFileProperty::serialize(Serializer& s) const {
 }
 
 void MultiFileProperty::deserialize(Deserializer& d) {
+    namespace fs = std::filesystem;
+
     Property::deserialize(d);
     bool modified = value_.deserialize(d, this->serializationMode_);
 
-    std::vector<std::string> absolutePaths = this->get();
-    std::vector<std::string> workspaceRelativePaths;  // paths relative to workspace directory
-    std::vector<std::string> ivwdataRelativePaths;    // paths relative to Inviwo data
+    std::vector<fs::path> absolutePaths = this->get();
+    std::vector<fs::path> workspaceRelativePaths;  // relative to workspace directory
+    std::vector<fs::path> ivwDataRelativePaths;    // relative to Inviwo data
 
     d.deserialize("workspaceRelativePath", workspaceRelativePaths, "files");
-    d.deserialize("ivwdataRelativePath", ivwdataRelativePaths, "files");
+    d.deserialize("ivwdataRelativePath", ivwDataRelativePaths, "files");
 
     // check whether all path lists have the same number of entries
     if ((absolutePaths.size() == workspaceRelativePaths.size()) &&
-        (absolutePaths.size() == ivwdataRelativePaths.size())) {
+        (absolutePaths.size() == ivwDataRelativePaths.size())) {
 
-        const auto workspacePath = filesystem::getFileDirectory(d.getFileName());
+        const auto workspacePath = d.getFileName().parent_path();
         const auto ivwdataPath = filesystem::getPath(PathType::Data);
 
         bool modifiedPath = false;
         for (std::size_t i = 0; i < absolutePaths.size(); ++i) {
-            const auto basePath = filesystem::getFileDirectory(absolutePaths[i]);
-            const auto pattern = filesystem::getFileNameWithExtension(absolutePaths[i]);
+            const auto basePath = absolutePaths[i].parent_path();
+            const auto pattern = absolutePaths[i].filename();
 
-            const auto workspaceBasedPath = filesystem::cleanupPath(
-                filesystem::getCanonicalPath(workspacePath + "/" + workspaceRelativePaths[i]));
-            const auto ivwdataBasedPath = filesystem::cleanupPath(
-                filesystem::getCanonicalPath(ivwdataPath + "/" + ivwdataRelativePaths[i]));
+            const auto workspaceBasedPath =
+                fs::weakly_canonical(workspacePath / workspaceRelativePaths[i]);
+            const auto ivwdataBasedPath =
+                fs::weakly_canonical(ivwdataPath / ivwDataRelativePaths[i]);
 
-            if (!basePath.empty() && filesystem::fileExists(basePath)) {
+            if (!basePath.empty() && fs::is_directory(basePath)) {
                 continue;
-            } else if (!ivwdataRelativePaths[i].empty() &&
-                       filesystem::fileExists(ivwdataBasedPath)) {
-                absolutePaths[i] = ivwdataBasedPath + "/" + pattern;
+            } else if (!ivwDataRelativePaths[i].empty() && fs::is_directory(ivwdataBasedPath)) {
+                absolutePaths[i] = ivwdataBasedPath / pattern;
                 modifiedPath = true;
             } else if (!workspaceRelativePaths[i].empty() &&
-                       filesystem::fileExists(workspaceBasedPath)) {
-                absolutePaths[i] = workspaceBasedPath + "/" + pattern;
+                       std::filesystem::is_directory(workspaceBasedPath)) {
+                absolutePaths[i] = workspaceBasedPath / pattern;
                 modifiedPath = true;
             }
         }
@@ -293,21 +289,21 @@ Document MultiFileProperty::getDescription() const {
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
 
-    Document doc = TemplateProperty<std::vector<std::string>>::getDescription();
+    Document doc = TemplateProperty<std::vector<std::filesystem::path>>::getDescription();
     auto table = doc.get({P("table", {{"class", "propertyInfo"}})});
 
-    std::string currentPath = "";
+    std::filesystem::path currentPath;
     // compile compact list of selected files, binning all files of the same directory
 
     StrBuffer buff;
     for (const auto& elem : value_.value) {
-        auto dir = filesystem::getFileDirectory(elem);
-        auto filename = filesystem::getFileNameWithExtension(elem);
+        auto dir = elem.parent_path();
+        auto filename = elem.filename();
         if (dir != currentPath) {
             currentPath = dir;
-            buff.append("<b>{}</b><br/>", dir);
+            buff.append("<b>{}</b><br/>", dir.string());
         }
-        buff.append("{}<br/>", filename);
+        buff.append("{}<br/>", filename.string());
     }
 
     utildoc::TableBuilder tb(table);

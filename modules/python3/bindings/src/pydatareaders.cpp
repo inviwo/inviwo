@@ -37,6 +37,8 @@
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/datastructures/isovaluecollection.h>
 
+#include <pybind11/stl/filesystem.h>
+
 namespace inviwo {
 
 // Allow overriding virtual functions from Python
@@ -66,14 +68,15 @@ public:
                           key                /* Argument(s) */
         );
     }
-    virtual std::shared_ptr<T> readData(std::string_view filePath) override {
+    virtual std::shared_ptr<T> readData(const std::filesystem::path& filePath) override {
         PYBIND11_OVERRIDE_PURE(std::shared_ptr<T>, /* Return type */
                                DataReaderType<T>,  /* Parent class */
                                readData, /* Name of function in C++ (must match Python name) */
                                filePath  /* Argument(s) */
         );
     }
-    virtual std::shared_ptr<T> readData(std::string_view filePath, MetaDataOwner* owner) override {
+    virtual std::shared_ptr<T> readData(const std::filesystem::path& filePath,
+                                        MetaDataOwner* owner) override {
         PYBIND11_OVERRIDE(std::shared_ptr<T>, /* Return type */
                           DataReaderType<T>,  /* Parent class */
                           readData,           /* Name of function in C++ (must match Python name) */
@@ -89,21 +92,22 @@ void exposeFactoryReaderType(pybind11::class_<DataReaderFactory>& r, std::string
           (std::vector<FileExtension>(DataReaderFactory::*)() const) &
               DataReaderFactory::getExtensionsForType<T>)
         .def(fmt::format("get{}Reader", type).c_str(),
-             (std::unique_ptr<DataReaderType<T>>(DataReaderFactory::*)(std::string_view) const) &
+             (std::unique_ptr<DataReaderType<T>>(DataReaderFactory::*)(const std::filesystem::path&)
+                  const) &
                  DataReaderFactory::getReaderForTypeAndExtension<T>)
         .def(
             fmt::format("get{}Reader", type).c_str(),
             (std::unique_ptr<DataReaderType<T>>(DataReaderFactory::*)(const FileExtension&) const) &
                 DataReaderFactory::getReaderForTypeAndExtension<T>)
         .def(fmt::format("get{}Reader", type).c_str(),
-             (std::unique_ptr<DataReaderType<T>>(DataReaderFactory::*)(const FileExtension&,
-                                                                       std::string_view) const) &
+             (std::unique_ptr<DataReaderType<T>>(DataReaderFactory::*)(
+                 const FileExtension&, const std::filesystem::path&) const) &
                  DataReaderFactory::getReaderForTypeAndExtension<T>)
         .def(fmt::format("has{}Reader", type).c_str(),
-             (bool (DataReaderFactory::*)(std::string_view) const) &
+             (bool(DataReaderFactory::*)(const std::filesystem::path&) const) &
                  DataReaderFactory::hasReaderForTypeAndExtension<T>)
         .def(fmt::format("has{}Reader", type).c_str(),
-             (bool (DataReaderFactory::*)(const FileExtension&) const) &
+             (bool(DataReaderFactory::*)(const FileExtension&) const) &
                  DataReaderFactory::hasReaderForTypeAndExtension<T>)
         .def(fmt::format("read{}", type).c_str(),
              &DataReaderFactory::readDataForTypeAndExtension<T>);
@@ -114,9 +118,10 @@ void exposeReaderType(pybind11::module& m, std::string_view name) {
     namespace py = pybind11;
     py::class_<DataReaderType<T>, DataReader, DataReaderTypeTrampoline<T>>(
         m, fmt::format("{}DataReader", name).c_str())
-        .def("readData", py::overload_cast<std::string_view>(&DataReaderType<T>::readData))
         .def("readData",
-             py::overload_cast<std::string_view, MetaDataOwner*>(&DataReaderType<T>::readData));
+             py::overload_cast<const std::filesystem::path&>(&DataReaderType<T>::readData))
+        .def("readData", py::overload_cast<const std::filesystem::path&, MetaDataOwner*>(
+                             &DataReaderType<T>::readData));
 }
 
 void exposeDataReaders(pybind11::module& m) {
@@ -139,8 +144,8 @@ void exposeDataReaders(pybind11::module& m) {
                  (std::unique_ptr<DataReader>(DataReaderFactory::*)(std::string_view) const) &
                      DataReaderFactory::create)
             .def("hasKey",
-                 (bool (DataReaderFactory::*)(std::string_view) const) & DataReaderFactory::hasKey)
-            .def("hasKey", (bool (DataReaderFactory::*)(const FileExtension&) const) &
+                 (bool(DataReaderFactory::*)(std::string_view) const) & DataReaderFactory::hasKey)
+            .def("hasKey", (bool(DataReaderFactory::*)(const FileExtension&) const) &
                                DataReaderFactory::hasKey);
 
     // No good way of dealing with template return types so we manually define one for each known

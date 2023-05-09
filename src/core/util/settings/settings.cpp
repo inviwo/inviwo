@@ -53,7 +53,7 @@ void Settings::addProperty(Property& property) { addProperty(&property, false); 
 
 const std::string& Settings::getIdentifier() const { return identifier_; }
 
-std::string Settings::getFileName() const {
+std::filesystem::path Settings::getFileName() const {
     auto settingname = identifier_;
     replaceInString(settingname, " ", "_");
     const auto appname = util::stripIdentifier(app_->getDisplayName());
@@ -67,7 +67,7 @@ void Settings::load() {
     util::KeepTrueWhileInScope guard{&isDeserializing_};
     auto filename = getFileName();
 
-    if (filesystem::fileExists(filename)) {
+    if (std::filesystem::is_regular_file(filename)) {
         // An error is not critical as the default setting will be used.
         try {
             Deserializer d(filename);

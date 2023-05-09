@@ -72,8 +72,8 @@ public:
     virtual void unRegisterFileObserver(FileObserver* fileObserver) override;
 
 private:
-    virtual void startFileObservation(const std::string& fileName) override;
-    virtual void stopFileObservation(const std::string& fileName) override;
+    virtual void startFileObservation(const std::filesystem::path& fileName) override;
+    virtual void stopFileObservation(const std::filesystem::path& fileName) override;
 
     void fileChanged(QString fileName);
 
@@ -92,18 +92,23 @@ void FileSystemObserverQt::unRegisterFileObserver(FileObserver* fileObserver) {
     std::erase(fileObservers_, fileObserver);
 }
 
-void FileSystemObserverQt::startFileObservation(const std::string& fileName) {
-    QString qFileName = QString::fromStdString(fileName);
+void FileSystemObserverQt::startFileObservation(const std::filesystem::path& fileName) {
+    auto str = fileName.generic_string();
+    QString qFileName = QString::fromUtf8(str.data(), str.size());
     // Will add the path if file exists and is not already being watched.
     fileWatcher_->addPath(qFileName);
 }
 
-void FileSystemObserverQt::stopFileObservation(const std::string& fileName) {
+void FileSystemObserverQt::stopFileObservation(const std::filesystem::path& fileName) {
     auto it =
         std::find_if(std::begin(fileObservers_), std::end(fileObservers_),
                      [fileName](const auto observer) { return observer->isObserved(fileName); });
     // Make sure that no observer is observing the file
-    if (it == std::end(fileObservers_)) fileWatcher_->removePath(QString::fromStdString(fileName));
+    if (it == std::end(fileObservers_)) {
+        auto str = fileName.generic_string();
+        QString qFileName = QString::fromUtf8(str.data(), str.size());
+        fileWatcher_->removePath(qFileName);
+    }
 }
 
 void FileSystemObserverQt::fileChanged(QString fileName) {
@@ -173,6 +178,15 @@ void utilqt::logQtMessages([[maybe_unused]] QtMsgType type,
 }
 
 void utilqt::configureInviwoQtApp() {
+#ifdef __linux__
+    /*
+     * Suppress warning "QApplication: invalid style override passed, ignoring it." when starting
+     * Inviwo on Linux. See
+     * https://forum.qt.io/topic/75398/qt-5-8-0-qapplication-invalid-style-override-passed-ignoring-it/2
+     */
+    qputenv("QT_STYLE_OVERRIDE", "");
+#endif
+
     QCoreApplication::setAttribute(Qt::AA_NativeWindows);
     QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
@@ -213,8 +227,9 @@ void utilqt::configureFileSystemObserver(InviwoApplication& app) {
     app.setFileSystemObserver(std::make_unique<FileSystemObserverQt>());
 }
 
-void utilqt::setStyleSheetFile(std::string_view file) {
-    QFile styleSheetFile(QString::fromUtf8(file.data(), file.size()));
+void utilqt::setStyleSheetFile(const std::filesystem::path& file) {
+    auto str = file.generic_string();
+    QFile styleSheetFile{QString::fromUtf8(str.data(), str.size())};
     styleSheetFile.open(QFile::ReadOnly);
     QString styleSheet = QString::fromUtf8(styleSheetFile.readAll());
     qApp->setStyleSheet(styleSheet);

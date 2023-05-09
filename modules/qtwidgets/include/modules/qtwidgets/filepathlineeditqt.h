@@ -33,7 +33,7 @@
 
 #include <modules/qtwidgets/lineeditqt.h>  // for LineEditQt
 
-#include <string>  // for string
+#include <filesystem>
 
 #include <QObject>  // for Q_OBJECT
 
@@ -57,8 +57,8 @@ public:
     FilePathLineEditQt(QWidget* parent = nullptr);
     virtual ~FilePathLineEditQt() = default;
 
-    void setPath(const std::string& path);
-    const std::string& getPath() const;
+    void setPath(const std::filesystem::path& path);
+    const std::filesystem::path& getPath() const;
 
     void setEditing(bool editing);
     bool isEditingEnabled() const;
@@ -72,8 +72,8 @@ protected:
     void updateIcon();
 
 private:
-    QLabel* warningLabel_;  //!< warning icon which is visible if the path is invalid
-    std::string path_;      //!< full path including file name
+    QLabel* warningLabel_;        //!< warning icon which is visible if the path is invalid
+    std::filesystem::path path_;  //!< full path including file name
     bool editingEnabled_;  //!< if this flag is set, the full path is shown. Otherwise only the file
                            //!< name is shown
     int cursorPos_;

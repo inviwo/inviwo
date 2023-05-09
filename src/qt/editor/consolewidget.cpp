@@ -414,54 +414,48 @@ void ConsoleWidget::updateIndicators(LogLevel level) {
 void ConsoleWidget::log(std::string_view source, LogLevel level, LogAudience audience,
                         std::string_view file, std::string_view function, int line,
                         std::string_view msg) {
-    LogTableModelEntry e = {std::chrono::system_clock::now(),
-                            std::string(source),
-                            level,
-                            audience,
-                            std::string(file),
-                            line,
-                            std::string(function),
-                            std::string(msg)};
+    LogTableModelEntry e{
+        std::chrono::system_clock::now(), source, level, audience, file, line, function, msg};
     logEntry(std::move(e));
 }
 
 void ConsoleWidget::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
                                  std::string_view msg, std::string_view file,
                                  std::string_view function, int line) {
-    LogTableModelEntry e = {std::chrono::system_clock::now(),
-                            processor->getIdentifier(),
-                            level,
-                            audience,
-                            std::string(file),
-                            line,
-                            std::string(function),
-                            std::string(msg)};
+    LogTableModelEntry e{std::chrono::system_clock::now(),
+                         processor->getIdentifier(),
+                         level,
+                         audience,
+                         file,
+                         line,
+                         function,
+                         msg};
     logEntry(std::move(e));
 }
 
 void ConsoleWidget::logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
                                std::string_view file, std::string_view function, int line) {
-    LogTableModelEntry e = {std::chrono::system_clock::now(),
-                            "ProcessorNetwork",
-                            level,
-                            audience,
-                            std::string(file),
-                            line,
-                            std::string(function),
-                            std::string(msg)};
+    LogTableModelEntry e{std::chrono::system_clock::now(),
+                         "ProcessorNetwork",
+                         level,
+                         audience,
+                         file,
+                         line,
+                         function,
+                         msg};
     logEntry(std::move(e));
 }
 
 void ConsoleWidget::logAssertion(std::string_view file, std::string_view function, int line,
                                  std::string_view msg) {
-    LogTableModelEntry e = {std::chrono::system_clock::now(),
-                            "Assertion",
-                            LogLevel::Error,
-                            LogAudience::Developer,
-                            std::string(file),
-                            line,
-                            std::string(function),
-                            std::string(msg)};
+    LogTableModelEntry e{std::chrono::system_clock::now(),
+                         "Assertion",
+                         LogLevel::Error,
+                         LogAudience::Developer,
+                         file,
+                         line,
+                         function,
+                         msg};
     logEntry(std::move(e));
 
     auto error = QString{"<b>Assertion Failed</b><br>File: %1:%2<br>Function: %3<p>%4"}
@@ -558,15 +552,11 @@ void ConsoleWidget::closeEvent(QCloseEvent* event) {
     InviwoDockWidget::closeEvent(event);
 }
 
-LogTableModel::LogTableModel()
-    : model_(0, static_cast<int>(LogTableModelEntry::size()))
-    , logFont_{QFontDatabase::systemFont(QFontDatabase::FixedFont)}
-    , lineHeight_{0}
-    , margin_{0} {
-
+namespace {
+std::pair<int, int> getLineHeightAndMargin(const QFont& font) {
     QStyleOptionViewItem opt;
-    opt.font = logFont_;
-    opt.fontMetrics = QFontMetrics{logFont_};
+    opt.font = font;
+    opt.fontMetrics = QFontMetrics{font};
     opt.features |= QStyleOptionViewItem::HasDisplay;
     opt.styleObject = nullptr;
     opt.text = "One line text";
@@ -576,8 +566,15 @@ LogTableModel::LogTableModel()
     opt.text.replace(QLatin1Char('\n'), QChar::LineSeparator);
     auto size2 = style->sizeFromContents(QStyle::CT_ItemViewItem, &opt, QSize(), nullptr);
 
-    lineHeight_ = size2.height() - size1.height();
-    margin_ = size1.height() - lineHeight_;
+    int lineHeight = size2.height() - size1.height();
+    int margin = size1.height() - lineHeight;
+
+    return {lineHeight, margin};
+}
+
+}  // namespace
+
+LogTableModel::LogTableModel() : model_(0, static_cast<int>(LogTableModelEntry::size())) {
 
     for (size_t i = 0; i < LogTableModelEntry::size(); ++i) {
         auto item = new QStandardItem(getName(static_cast<LogTableModelEntry::ColumnID>(i)));
@@ -587,38 +584,8 @@ LogTableModel::LogTableModel()
 }
 
 void LogTableModel::log(LogTableModelEntry entry) {
-    entry.message = rtrim(std::move(entry.message));
-
-    QList<QStandardItem*> items;
-    items.reserve(static_cast<int>(LogTableModelEntry::size()));
-    for (size_t i = 0; i < LogTableModelEntry::size(); ++i) {
-        items.append(entry.get(static_cast<LogTableModelEntry::ColumnID>(i)));
-        items.last()->setFont(logFont_);
-        items.last()->setTextAlignment(Qt::AlignLeft);
-        items.last()->setEditable(false);
-
-        switch (entry.level) {
-            case LogLevel::Info:
-                items.last()->setForeground(QBrush(infoTextColor_));
-                break;
-            case LogLevel::Warn:
-                items.last()->setForeground(QBrush(warnTextColor_));
-                break;
-            case LogLevel::Error:
-                items.last()->setForeground(QBrush(errorTextColor_));
-                break;
-            default:
-                items.last()->setForeground(QBrush(infoTextColor_));
-                break;
-        }
-    }
-
-    model_.appendRow(items);
-
-    auto lines = std::count(entry.message.begin(), entry.message.end(), '\n') + 1;
-    auto* vHeaderItem = new QStandardItem();
-    vHeaderItem->setSizeHint(QSize(1, static_cast<int>(margin_ + lines * lineHeight_)));
-    model_.setVerticalHeaderItem(model_.rowCount() - 1, vHeaderItem);
+    model_.appendRow(entry.items());
+    model_.setVerticalHeaderItem(model_.rowCount() - 1, entry.header());
 }
 
 LogModel* LogTableModel::model() { return &model_; }
@@ -652,53 +619,90 @@ QString LogTableModel::getName(LogTableModelEntry::ColumnID ind) const {
     }
 }
 
-std::string LogTableModelEntry::getDate() const {
+const QFont& LogTableModelEntry::logFont() {
+    static QFont font{QFontDatabase::systemFont(QFontDatabase::FixedFont)};
+    return font;
+}
+
+const std::pair<int, int>& LogTableModelEntry::lineHeightAndMargin() {
+    static std::pair<int, int> lineAndMargin{getLineHeightAndMargin(logFont())};
+    return lineAndMargin;
+}
+
+LogTableModelEntry::LogTableModelEntry(std::chrono::system_clock::time_point time,
+                                       std::string_view source, LogLevel level,
+                                       LogAudience audience, const std::filesystem::path& file,
+                                       int line, std::string_view function, std::string_view msg)
+
+    : level{level}
+    , header_(new QStandardItem())
+    , date_{new QStandardItem(utilqt::toQString(getDate(time)))}
+    , time_{new QStandardItem(utilqt::toQString(getTime(time)))}
+    , source_{new QStandardItem(utilqt::toQString(source))}
+    , level_{new QStandardItem(utilqt::toQString(toString(level)))}
+    , audience_{new QStandardItem(utilqt::toQString(toString(audience)))}
+    , path_{new QStandardItem(utilqt::toQString(file.parent_path()))}
+    , file_{new QStandardItem(utilqt::toQString(file.filename()))}
+    , line_{new QStandardItem(utilqt::toQString(toString(line)))}
+    , function_{new QStandardItem(utilqt::toQString(function))}
+    , message_{new QStandardItem()} {
+
+    msg = util::rtrim(msg);
+    message_->setData(utilqt::toQString(msg), detail::Roles::Fulltext);
+    message_->setData(utilqt::toQString(util::elideLines(msg)), Qt::DisplayRole);
+
+    const auto lines = std::count(msg.begin(), msg.end(), '\n') + 1;
+    const auto [lineHeight, margin] = lineHeightAndMargin();
+    header_->setSizeHint(QSize(1, static_cast<int>(margin + lines * lineHeight)));
+
+    QColor infoTextColor = {153, 153, 153};
+    QColor warnTextColor = {221, 165, 8};
+    QColor errorTextColor = {255, 107, 107};
+
+    for (auto& item :
+         {date_, time_, source_, level_, audience_, path_, file_, line_, function_, message_}) {
+        item->setFont(logFont());
+        item->setTextAlignment(Qt::AlignLeft);
+        item->setEditable(false);
+        switch (level) {
+            case LogLevel::Info:
+                item->setForeground(QBrush(infoTextColor));
+                break;
+            case LogLevel::Warn:
+                item->setForeground(QBrush(warnTextColor));
+                break;
+            case LogLevel::Error:
+                item->setForeground(QBrush(errorTextColor));
+                break;
+            default:
+                item->setForeground(QBrush(infoTextColor));
+                break;
+        }
+    }
+}
+
+std::string LogTableModelEntry::getDate(std::chrono::system_clock::time_point time) {
     auto in_time_t = std::chrono::system_clock::to_time_t(time);
     std::stringstream ss;
     ss << std::put_time(std::localtime(&in_time_t), "%F");
-    return ss.str();
+    return std::move(ss).str();
 }
-std::string LogTableModelEntry::getTime() const {
+std::string LogTableModelEntry::getTime(std::chrono::system_clock::time_point time) {
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()) % 1000;
 
     auto in_time_t = std::chrono::system_clock::to_time_t(time);
     std::stringstream ss;
     ss << std::put_time(std::localtime(&in_time_t), "%T");
     ss << '.' << std::setfill('0') << std::setw(3) << ms.count();
-    return ss.str();
+    return std::move(ss).str();
 }
 
-QStandardItem* LogTableModelEntry::get(ColumnID ind) const {
-    switch (ind) {
-        case ColumnID::Date:
-            return new QStandardItem(utilqt::toQString(getDate()));
-        case ColumnID::Time:
-            return new QStandardItem(utilqt::toQString(getTime()));
-        case ColumnID::Source:
-            return new QStandardItem(utilqt::toQString(source));
-        case ColumnID::Level:
-            return new QStandardItem(utilqt::toQString(toString(level)));
-        case ColumnID::Audience:
-            return new QStandardItem(utilqt::toQString(toString(audience)));
-        case ColumnID::Path:
-            return new QStandardItem(utilqt::toQString(filesystem::getFileDirectory(fileName)));
-        case ColumnID::File:
-            return new QStandardItem(
-                utilqt::toQString(filesystem::getFileNameWithExtension(fileName)));
-        case ColumnID::Line:
-            return new QStandardItem(utilqt::toQString(toString(lineNumber)));
-        case ColumnID::Function:
-            return new QStandardItem(utilqt::toQString(functionName));
-        case ColumnID::Message: {
-            auto item = std::make_unique<QStandardItem>();
-            item->setData(utilqt::toQString(message), detail::Roles::Fulltext);
-            item->setData(utilqt::toQString(util::elideLines(message)), Qt::DisplayRole);
-            return item.release();
-        }
-        default:
-            return new QStandardItem();
-    }
+QList<QStandardItem*> LogTableModelEntry::items() {
+    return QList<QStandardItem*>{date_, time_, source_, level_,    audience_,
+                                 path_, file_, line_,   function_, message_};
 }
+
+QStandardItem* LogTableModelEntry::header() { return header_; }
 
 LogModel::LogModel(int rows, int columns, QObject* parent)
     : QStandardItemModel(rows, columns, parent) {}

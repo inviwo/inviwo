@@ -87,7 +87,7 @@ public:
 private:
     void updateSlideImage();
     void onFindFiles();
-    bool isValidImageFile(std::string);
+    bool isValidImageFile(const std::filesystem::path& file);
     void updateProperties();
     void updateFileName();
 
@@ -115,7 +115,7 @@ private:
     EventProperty mousePrevSlide_;
 
     std::vector<FileExtension> validExtensions_;
-    std::vector<std::string> fileList_;
+    std::vector<std::filesystem::path> fileList_;
 
     std::shared_ptr<Image> currentSlide_;
 };

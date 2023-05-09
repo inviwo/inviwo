@@ -44,6 +44,9 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <fmt/format.h>
+#include <fmt/std.h>
+
+#include <filesystem>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -83,7 +86,7 @@ protected:
 private:
     InviwoApplication* app_;
     QUrl current_;
-    std::string currentModulePath_;
+    std::filesystem::path currentModulePath_;
 };
 
 HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
@@ -350,7 +353,7 @@ InviwoModule& findModule(InviwoApplication& app, std::string_view processorClass
                     "ProcessorClassIdentifier {} is not registered", processorClassIdentifier);
 }
 
-std::tuple<std::string, std::string> loadIdUrl(const QUrl& url, InviwoApplication* app) {
+std::tuple<std::string, std::filesystem::path> loadIdUrl(const QUrl& url, InviwoApplication* app) {
     auto list = url.path().split('/');
     if (list.front().isEmpty()) list.pop_front();
 
@@ -399,7 +402,6 @@ HelpBrowser::HelpBrowser(HelpWidget* parent, InviwoApplication* app)
     : QTextBrowser(parent), app_(app) {
     setReadOnly(true);
     setUndoRedoEnabled(false);
-    setContextMenuPolicy(Qt::NoContextMenu);
     setAcceptRichText(false);
     setOpenExternalLinks(true);
 
@@ -420,13 +422,11 @@ void HelpBrowser::setCurrent(std::string_view processorClassIdentifier) {
 
 QVariant HelpBrowser::loadResource(int type, const QUrl& resourceUrl) {
     std::string s = utilqt::fromQString(resourceUrl.toString(QUrl::None));
-    replaceInString(s, "~modulePath~", currentModulePath_);
-    replaceInString(s, "~basePath~", app_->getBasePath());
+    replaceInString(s, "~modulePath~", currentModulePath_.generic_string());
+    replaceInString(s, "~basePath~", app_->getBasePath().generic_string());
     const QUrl url(utilqt::toQString(s), QUrl::TolerantMode);
+
     const QUrlQuery query(url);
-
-    auto toFilePath = [&](const QUrl& url) { return utilqt::fromQString(url.toLocalFile()); };
-
     if (query.hasQueryItem("type")) {
         const QString requestType = query.queryItemValue("type");
 
@@ -441,23 +441,17 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& resourceUrl) {
         }
     }
 
-    const auto filePath = toFilePath(url);
-
-    if (type == QTextDocument::ImageResource) {
-        auto qFilePath = utilqt::toQString(filePath);
-        if (QFile::exists(qFilePath)) {
+    const auto filePath = utilqt::toPath(url.toLocalFile());
+    if (std::filesystem::is_regular_file(filePath)) {
+        if (type == QTextDocument::ImageResource) {
             const auto maxImageWidth = (95 * width()) / 100;
-            auto image = QImage(qFilePath);
+            auto image = QImage(url.toLocalFile());
             if (image.width() > maxImageWidth) {
                 return image.scaledToWidth(maxImageWidth);
             } else {
                 return image;
             }
-        }
-    }
-
-    if (filesystem::fileExists(filePath)) {
-        if (filesystem::getFileExtension(filePath) == "inv") {
+        } else if (filePath.extension() == ".inv") {
             try {
                 util::appendProcessorNetwork(app_->getProcessorNetwork(), filePath, app_);
             } catch (const Exception& e) {

@@ -42,6 +42,8 @@
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/processors/processorfactory.h>
 
+#include <pybind11/stl/filesystem.h>
+
 namespace inviwo {
 
 void exposeInviwoApplication(pybind11::module& m) {

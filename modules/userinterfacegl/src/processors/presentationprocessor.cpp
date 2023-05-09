@@ -170,8 +170,9 @@ void PresentationProcessor::process() {
         // i.e. a data reader exists
         fileList_ = imageFilePattern_.getFileList();
         const auto numElems = fileList_.size();
-        std::erase_if(fileList_,
-                      [this](const std::string& file) { return !isValidImageFile(file); });
+        std::erase_if(fileList_, [this](const std::filesystem::path& file) {
+            return !isValidImageFile(file);
+        });
         if (numElems != fileList_.size()) {
             // number of valid files has changed, need to update properties
             updateProperties();
@@ -202,13 +203,13 @@ void PresentationProcessor::updateSlideImage() {
         return;
     }
 
-    const std::string currentFileName = fileList_[index];
+    const auto currentFileName = fileList_[index];
 
     auto factory = getInviwoApplication()->getDataReaderFactory();
     auto reader = factory->getReaderForTypeAndExtension<Layer>(currentFileName);
 
     // there should always be a reader since we asked the reader for valid extensions
-    ivwAssert(reader != nullptr, "Could not find reader for \"" << currentFileName << "\"");
+    IVW_ASSERT(reader != nullptr, "Could not find reader for " << currentFileName);
 
     try {
         auto layer = reader->readData(currentFileName);
@@ -255,11 +256,11 @@ void PresentationProcessor::updateFileName() {
     if ((index < 0) || (static_cast<std::size_t>(index) >= fileList_.size())) {
         imageFileName_.set("<no images found>");
     } else {
-        imageFileName_.set(fileList_[index]);
+        imageFileName_.set(fileList_[index].filename().string());
     }
 }
 
-bool PresentationProcessor::isValidImageFile(std::string fileName) {
+bool PresentationProcessor::isValidImageFile(const std::filesystem::path& fileName) {
     return util::contains_if(validExtensions_,
                              [&](const FileExtension& f) { return f.matches(fileName); });
 }

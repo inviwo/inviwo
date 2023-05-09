@@ -1,6 +1,7 @@
 #pragma once
 
 #include <modules/opengl/shader/shadermanager.h>
+#include <filesystem>
 
 @ADD_INCLUDES@
 
@@ -12,7 +13,7 @@ inline void addGeneratedShaderResources([[maybe_unused]] ShaderManager* manager)
 @ADD_RESOURCES@
 }
 
-inline void addShaderResources(ShaderManager* manager, std::vector<std::string> includePaths) {
+inline void addShaderResources(ShaderManager* manager, std::vector<std::filesystem::path> includePaths) {
 #ifdef @U_MODULE@_INCLUDE_SHADER_RESOURCES
     addGeneratedShaderResources(manager);
 #else

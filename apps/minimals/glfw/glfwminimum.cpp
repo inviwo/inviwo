@@ -46,6 +46,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
+#include <inviwo/core/util/localetools.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/consolelogger.h>
@@ -53,12 +54,16 @@
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/networkdebugobserver.h>
 
+#include <fmt/std.h>
+
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 using namespace inviwo;
 
 int main(int argc, char** argv) {
+    inviwo::util::configureCodePage();
+
     inviwo::LogCentral logger;
     inviwo::LogCentral::init(&logger);
     auto consoleLogger = std::make_shared<inviwo::ConsoleLogger>();
@@ -86,7 +91,7 @@ int main(int argc, char** argv) {
     cmdparser.add(
         &snapshotArg,
         [&]() {
-            std::string path = cmdparser.getOutputPath();
+            auto path = cmdparser.getOutputPath();
             if (path.empty()) path = inviwoApp.getPath(PathType::Images);
             util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, snapshotArg.getValue());
         },
@@ -132,9 +137,9 @@ int main(int argc, char** argv) {
 
     // Load simple scene
     inviwoApp.getProcessorNetwork()->lock();
-    const std::string workspace = cmdparser.getLoadWorkspaceFromArg()
-                                      ? cmdparser.getWorkspacePath()
-                                      : inviwoApp.getPath(PathType::Workspaces, "/boron.inv");
+    const auto workspace = cmdparser.getLoadWorkspaceFromArg()
+                               ? cmdparser.getWorkspacePath()
+                               : (inviwoApp.getPath(PathType::Workspaces) / "boron.inv");
 
     try {
         if (!workspace.empty()) {
@@ -142,22 +147,18 @@ int main(int argc, char** argv) {
                 try {
                     throw;
                 } catch (const IgnoreException& e) {
-                    util::log(
-                        e.getContext(),
-                        "Incomplete network loading " + workspace + " due to " + e.getMessage(),
-                        LogLevel::Error);
+                    util::logError(e.getContext(), "Incomplete network loading {} due to {}",
+                                   workspace, e.getMessage());
                 }
             });
         }
     } catch (const AbortException& exception) {
-        util::log(exception.getContext(),
-                  "Unable to load network " + workspace + " due to " + exception.getMessage(),
-                  LogLevel::Error);
+        util::logError(exception.getContext(), "Unable to load network {} due to {}", workspace,
+                       exception.getMessage());
         return 1;
     } catch (const IgnoreException& exception) {
-        util::log(exception.getContext(),
-                  "Incomplete network loading " + workspace + " due to " + exception.getMessage(),
-                  LogLevel::Error);
+        util::logError(exception.getContext(), "Incomplete network loading {} due to {}", workspace,
+                       exception.getMessage(), LogLevel::Error);
         return 1;
     }
 

@@ -39,6 +39,7 @@
 
 #include <map>     // for map, operator!=
 #include <string>  // for string
+#include <filesystem>
 
 namespace inviwo {
 class InviwoApplication;
@@ -57,7 +58,7 @@ class Mesh;
  */
 class IVW_MODULE_BASE_API MeshSource : public DataSource<Mesh, MeshOutport> {
 public:
-    MeshSource(InviwoApplication* app, std::string_view filePath = "");
+    MeshSource(InviwoApplication* app, const std::filesystem::path& filePath = {});
     virtual ~MeshSource() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;

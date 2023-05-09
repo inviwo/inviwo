@@ -75,7 +75,7 @@ public:
 
 protected:
     virtual void onFindFiles();
-    bool isValidImageFile(std::string);
+    bool isValidImageFile(const std::filesystem::path& path);
     void updateProperties();
     void updateFileName();
 
@@ -88,7 +88,7 @@ private:
     StringProperty imageFileName_;
 
     std::vector<FileExtension> validExtensions_;
-    std::vector<std::string> fileList_;
+    std::vector<std::filesystem::path> fileList_;
 };
 
 }  // namespace inviwo

@@ -39,11 +39,14 @@
 #include <inviwo/core/util/filesystem.h>            // for cleanupPath, getDirectoryContents
 #include <inviwo/core/util/logcentral.h>            // for log, LogLevel, LogLevel::Error
 #include <inviwo/core/util/stringconversion.h>      // for toLower
+#include <inviwo/core/util/utilities.h>
 
 #include <cstddef>      // for size_t
 #include <functional>   // for __base
 #include <string_view>  // for string_view
 #include <vector>       // for vector
+
+#include <fmt/std.h>
 
 namespace inviwo {
 
@@ -65,24 +68,21 @@ DemoController::DemoController(InviwoApplication* app)
 DemoController::~DemoController() = default;
 
 void DemoController::setFileOptions() {
-
-    std::string selectedPath = filesystem::cleanupPath(demoFolder_.get());
-
     updateWorkspace_ = false;
     // Get all files and gather interesting ones.
     demoFile_.clearOptions();
-    std::vector<std::string> elements =
-        filesystem::getDirectoryContents(selectedPath, filesystem::ListMode::Files);
+    auto elements =
+        filesystem::getDirectoryContents(demoFolder_.get(), filesystem::ListMode::Files);
 
     int invNum = 0;
     for (size_t elIdx = 0; elIdx < elements.size(); ++elIdx) {
-        std::string& elem = elements[elIdx];
-        std::string ext = filesystem::getFileExtension(elem);
+        auto& elem = elements[elIdx];
+        std::string ext = elem.extension().string();
         ext = toLower(ext);
-        if (ext.compare("inv") == 0) {  // Found a workspace
-            auto cleanName = filesystem::getFileNameWithoutExtension(elem);
-            auto cleanNameExt = filesystem::cleanupPath(elem);
-            demoFile_.addOption(cleanNameExt, cleanName, invNum++);
+        if (ext.compare(".inv") == 0) {  // Found a workspace
+            auto cleanName = elem.stem();
+            auto cleanNameExt = util::stripIdentifier(elem.string());
+            demoFile_.addOption(cleanNameExt, cleanName.string(), invNum++);
         }
     }
 
@@ -126,15 +126,15 @@ void DemoController::onChangeSelection(Offset offset) {
 
     updateWorkspace_ = false;
     demoFile_.set(nextFileIndex);
-    loadWorkspaceApp(demoFolder_.get() + "/" + demoFile_.getIdentifiers()[demoFile_.get()]);
+    loadWorkspaceApp(demoFolder_.get() / demoFile_.getIdentifiers()[demoFile_.get()]);
 
     updateWorkspace_ = true;
 }
 
-void DemoController::setFolder(const std::string& path) { demoFolder_.set(path); }
+void DemoController::setFolder(const std::filesystem::path& path) { demoFolder_.set(path); }
 
 // Copied from InviwoMainWindow::openWorkspace
-void DemoController::loadWorkspaceApp(const std::string& fileName) {
+void DemoController::loadWorkspaceApp(const std::filesystem::path& fileName) {
     NetworkLock lock(app_->getProcessorNetwork());
     app_->getWorkspaceManager()->clear();
     try {
@@ -143,13 +143,14 @@ void DemoController::loadWorkspaceApp(const std::string& fileName) {
                 throw;
             } catch (const IgnoreException& e) {
                 util::log(e.getContext(),
-                          "Incomplete network loading " + fileName + " due to " + e.getMessage(),
+                          fmt::format("Incomplete network loading {} due to {}", fileName,
+                                      e.getMessage()),
                           LogLevel::Error);
             }
         });
     } catch (const Exception& e) {
         util::log(e.getContext(),
-                  "Unable to load network " + fileName + " due to " + e.getMessage(),
+                  fmt::format("Unable to load network {} due to {}", fileName, e.getMessage()),
                   LogLevel::Error);
         app_->getWorkspaceManager()->clear();
     }

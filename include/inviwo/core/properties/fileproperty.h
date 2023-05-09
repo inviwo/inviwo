@@ -54,7 +54,7 @@ public:
  *
  * @see TemplateProperty
  */
-class IVW_CORE_API FileProperty : public TemplateProperty<std::string> {
+class IVW_CORE_API FileProperty : public TemplateProperty<std::filesystem::path> {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -75,7 +75,8 @@ public:
      * @param semantics Can be set to Editor
      */
     FileProperty(std::string_view identifier, std::string_view displayName, Document help,
-                 std::string_view value = "", std::string_view contentType = defaultContentType,
+                 const std::filesystem::path& value = {},
+                 std::string_view contentType = defaultContentType,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 
@@ -93,27 +94,28 @@ public:
      * @param semantics Can be set to Editor
      */
     FileProperty(std::string_view identifier, std::string_view displayName,
-                 std::string_view value = "", std::string_view contentType = defaultContentType,
+                 const std::filesystem::path& value = {},
+                 std::string_view contentType = defaultContentType,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 
     FileProperty(const FileProperty& rhs) = default;
 
-    FileProperty& operator=(std::string_view value);
+    FileProperty& operator=(const std::filesystem::path& value);
     virtual FileProperty* clone() const override;
     virtual ~FileProperty() = default;
 
     /**
      * Set the file name and also update the selected extension to the first one matching file.
      */
-    virtual void set(const std::string& file) override;
+    virtual void set(const std::filesystem::path& file) override;
     /**
      * Set the file name and the selected extension.
      */
-    virtual void set(std::string_view file, const FileExtension& selectedExtension);
+    virtual void set(const std::filesystem::path& file, const FileExtension& selectedExtension);
     virtual void set(const Property* property) override;
 
-    operator std::string_view() const;
+    operator const std::filesystem::path&() const;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

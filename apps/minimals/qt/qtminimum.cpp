@@ -41,6 +41,7 @@
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/util/consolelogger.h>
+#include <inviwo/core/util/localetools.h>
 #include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/networkdebugobserver.h>
@@ -50,8 +51,11 @@
 
 #include <QApplication>
 #include <QMainWindow>
+#include <fmt/std.h>
 
 int main(int argc, char** argv) {
+    inviwo::util::configureCodePage();
+
     inviwo::LogCentral logger;
     inviwo::LogCentral::init(&logger);
 
@@ -104,7 +108,7 @@ int main(int argc, char** argv) {
     cmdparser.add(
         &snapshotArg,
         [&]() {
-            std::string path = cmdparser.getOutputPath();
+            auto path = cmdparser.getOutputPath();
             if (path.empty()) path = inviwoApp.getPath(inviwo::PathType::Images);
             inviwo::util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path,
                                           snapshotArg.getValue());
@@ -194,10 +198,9 @@ int main(int argc, char** argv) {
     // Load workspace
     inviwoApp.getProcessorNetwork()->lock();
 
-    const std::string workspace =
-        cmdparser.getLoadWorkspaceFromArg()
-            ? cmdparser.getWorkspacePath()
-            : inviwoApp.getPath(inviwo::PathType::Workspaces, "/boron.inv");
+    const auto workspace = cmdparser.getLoadWorkspaceFromArg()
+                               ? cmdparser.getWorkspacePath()
+                               : inviwoApp.getPath(inviwo::PathType::Workspaces, "/boron.inv");
 
     try {
         if (!workspace.empty()) {
@@ -205,24 +208,19 @@ int main(int argc, char** argv) {
                 try {
                     throw;
                 } catch (const inviwo::IgnoreException& e) {
-                    inviwo::util::log(
-                        e.getContext(),
-                        "Incomplete network loading " + workspace + " due to " + e.getMessage(),
-                        inviwo::LogLevel::Error);
+                    inviwo::util::logError(e.getContext(),
+                                           "Incomplete network loading {} due to {}", workspace,
+                                           e.getMessage());
                 }
             });
         }
     } catch (const inviwo::AbortException& exception) {
-        inviwo::util::log(
-            exception.getContext(),
-            "Unable to load network " + workspace + " due to " + exception.getMessage(),
-            inviwo::LogLevel::Error);
+        inviwo::util::logError(exception.getContext(), "Unable to load network {} due to {}",
+                               workspace, exception.getMessage());
         return 1;
     } catch (const inviwo::IgnoreException& exception) {
-        inviwo::util::log(
-            exception.getContext(),
-            "Incomplete network loading " + workspace + " due to " + exception.getMessage(),
-            inviwo::LogLevel::Error);
+        inviwo::util::logError(exception.getContext(), "Incomplete network loading {} due to {}",
+                               workspace, exception.getMessage());
         return 1;
     }
 

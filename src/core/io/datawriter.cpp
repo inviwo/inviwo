@@ -31,6 +31,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datawriterexception.h>
 #include <fmt/format.h>
+#include <fmt/std.h>
 
 namespace inviwo {
 
@@ -56,21 +57,24 @@ void DataWriter::addExtension(FileExtension ext) { extensions_.push_back(ext); }
 Overwrite DataWriter::getOverwrite() const { return overwrite_; }
 void DataWriter::setOverwrite(Overwrite val) { overwrite_ = val; }
 
-void DataWriter::checkOverwrite(std::string_view path, Overwrite overwrite) {
-    if (filesystem::fileExists(path) && overwrite == Overwrite::No)
+void DataWriter::checkOverwrite(const std::filesystem::path& path, Overwrite overwrite) {
+    if (std::filesystem::is_regular_file(path) && overwrite == Overwrite::No)
         throw DataWriterException(IVW_CONTEXT_CUSTOM("DataWriter"),
                                   "Output file: {} already exists", path);
 }
 
-std::ofstream DataWriter::open(std::string_view path, std::ios_base::openmode mode) const {
+std::ofstream DataWriter::open(const std::filesystem::path& path,
+                               std::ios_base::openmode mode) const {
     checkOverwrite(path);
-    auto f = filesystem::ofstream(path, mode);
+    auto f = std::ofstream(path, mode);
     if (!f) {
         throw FileException(IVW_CONTEXT, "Could not open file '{}'", path);
     }
     return f;
 }
 
-void DataWriter::checkOverwrite(std::string_view path) const { checkOverwrite(path, overwrite_); }
+void DataWriter::checkOverwrite(const std::filesystem::path& path) const {
+    checkOverwrite(path, overwrite_);
+}
 
 }  // namespace inviwo

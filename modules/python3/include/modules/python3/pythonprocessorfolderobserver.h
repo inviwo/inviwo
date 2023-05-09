@@ -41,17 +41,17 @@ class InviwoModule;
 
 class IVW_MODULE_PYTHON3_API PythonProcessorFolderObserver : public FileObserver {
 public:
-    PythonProcessorFolderObserver(InviwoApplication* app, const std::string& directory,
+    PythonProcessorFolderObserver(InviwoApplication* app, const std::filesystem::path& directory,
                                   InviwoModule& module);
     virtual ~PythonProcessorFolderObserver() = default;
 
 private:
-    bool registerFile(const std::string& filename);
-    virtual void fileChanged(const std::string& filename) override;
+    bool registerFile(const std::filesystem::path& filename);
+    virtual void fileChanged(const std::filesystem::path& filename) override;
 
     InviwoApplication* app_;
-    std::string directory_;
-    std::vector<std::string> registeredFiles_;
+    std::filesystem::path directory_;
+    std::vector<std::filesystem::path> registeredFiles_;
     InviwoModule& module_;
 };
 

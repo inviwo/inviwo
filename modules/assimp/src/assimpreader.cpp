@@ -73,6 +73,7 @@
 #include <unordered_set>  // for unordered_set
 #include <vector>         // for vector
 #include <fmt/format.h>
+#include <fmt/std.h>
 
 namespace inviwo {
 
@@ -84,10 +85,10 @@ namespace inviwo {
 class InviwoAssimpLogStream : public Assimp::LogStream {
 private:
     LogLevel loglevel_;
-    const std::string fileName_;
+    const std::filesystem::path fileName_;
 
 public:
-    InviwoAssimpLogStream(LogLevel ploglevel, std::string_view filename = "")
+    InviwoAssimpLogStream(LogLevel ploglevel, const std::filesystem::path& filename)
         : loglevel_{ploglevel}, fileName_{filename} {}
     virtual ~InviwoAssimpLogStream() = default;
 
@@ -139,7 +140,7 @@ void AssimpReader::setFixInvalidDataFlag(bool enable) { fixInvalidData_ = enable
 
 bool AssimpReader::getFixInvalidDataFlag() const { return fixInvalidData_; }
 
-std::shared_ptr<Mesh> AssimpReader::readData(std::string_view filePath) {
+std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& filePath) {
     Assimp::Importer importer;
 
     std::clock_t start_readmetadata = std::clock();
@@ -188,7 +189,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(std::string_view filePath) {
         flags |= aiProcess_FindInvalidData;
     }
 
-    const aiScene* scene = importer.ReadFile(std::string(filePath), flags);
+    const aiScene* scene = importer.ReadFile(filePath.string(), flags);
 
     std::clock_t start_convert = std::clock();
     if (logging) {

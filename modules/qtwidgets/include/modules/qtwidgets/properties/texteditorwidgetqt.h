@@ -37,6 +37,7 @@
 #include <functional>  // for function
 #include <memory>      // for shared_ptr
 #include <string>      // for string
+#include <filesystem>
 
 class QCloseEvent;
 
@@ -72,7 +73,7 @@ protected:
     void propertyModified();
 
     void save();
-    void saveToFile(const std::string& filename);
+    void saveToFile(const std::filesystem::path& filename);
 
     FileProperty* fileProperty_;
     StringProperty* stringProperty_;

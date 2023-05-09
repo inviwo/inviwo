@@ -40,32 +40,31 @@
 #include <iterator>   // for back_insert_iterator, back_inserter
 
 #include <fmt/core.h>  // for format
+#include <fmt/std.h>
 
 namespace inviwo {
 
 namespace font {
 
-std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::string& fontPath) {
-    const std::vector<std::string> supportedExt = {"ttf", "otf", "cff", "pcf"};
+std::vector<std::pair<std::string, std::filesystem::path>> getAvailableFonts(
+    const std::filesystem::path& fontPath) {
 
-    const std::string path = (fontPath.empty() ? getDefaultFontPath() : fontPath);
+    const std::vector<std::string> supportedExt = {".ttf", ".otf", ".cff", ".pcf"};
+
+    const std::filesystem::path path = (fontPath.empty() ? getDefaultFontPath() : fontPath);
 
     // scan for available fonts in the given path
     auto fonts = filesystem::getDirectoryContents(path, filesystem::ListMode::Files);
 
     // remove unsupported files
-    std::erase_if(fonts, [supportedExt](const std::string& str) {
-        return !util::contains(supportedExt, filesystem::getFileExtension(str));
+    std::erase_if(fonts, [supportedExt](const std::filesystem::path& font) {
+        return !util::contains(supportedExt, font.extension().string());
     });
-
-    // sort file names case insensitive
-    std::sort(fonts.begin(), fonts.end(),
-              [](std::string a, std::string b) { return toLower(a) < toLower(b); });
 
     // capitalize the first letter and each one following a space.
     // Also replace '-' with space for improved readability
-    auto makeReadable = [](const std::string& str) {
-        std::string dst(str);
+    auto makeReadable = [](const std::filesystem::path& stem) {
+        std::string dst(stem.string());
         auto it = dst.begin();
         *it = static_cast<char>(std::toupper(*it));
         while (it != dst.end()) {
@@ -80,40 +79,44 @@ std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::st
         return dst;
     };
 
-    std::vector<std::pair<std::string, std::string>> result;
+    std::vector<std::pair<std::string, std::filesystem::path>> result;
     // create readable font names from file names and add full path to each file
-    std::transform(
-        fonts.begin(), fonts.end(), std::back_inserter(result),
-        [path, makeReadable](const std::string& str) -> std::pair<std::string, std::string> {
-            return {makeReadable(filesystem::getFileNameWithoutExtension(str)), path + '/' + str};
-        });
+    std::transform(fonts.begin(), fonts.end(), std::back_inserter(result),
+                   [path, makeReadable](const std::filesystem::path& str)
+                       -> std::pair<std::string, std::filesystem::path> {
+                       return {makeReadable(str.stem()), path / str};
+                   });
+
+    // sort file names case insensitive
+    std::sort(result.begin(), result.end(),
+              [](const auto& a, const auto& b) { return iCaseLess(a.first, b.first); });
 
     return result;
 }
 
-std::string getDefaultFontPath() {
-    return InviwoApplication::getPtr()->getModuleByType<FontRenderingModule>()->getPath() +
-           "/fonts";
+std::filesystem::path getDefaultFontPath() {
+    return InviwoApplication::getPtr()->getModuleByType<FontRenderingModule>()->getPath() / "fonts";
 }
 
-std::string getFont(FontType type, FullPath path) {
-    const auto& [name, ext] = [type]() -> std::pair<std::string, std::string> {
+std::filesystem::path getFont(FontType type, FullPath path) {
+    auto [name, ext] = [type]() -> std::pair<std::filesystem::path, std::string> {
         switch (type) {
             case FontType::Default:
-                return {"OpenSans-Semibold", "ttf"};
+                return {"OpenSans-Semibold", ".ttf"};
             case FontType::Bold:
-                return {"OpenSans-Bold", "ttf"};
+                return {"OpenSans-Bold", ".ttf"};
             case FontType::Caption:
-                return {"OpenSans-Semibold", "ttf"};
+                return {"OpenSans-Semibold", ".ttf"};
             case FontType::Label:
-                return {"OpenSans-Regular", "ttf"};
+                return {"OpenSans-Regular", ".ttf"};
             default:
-                return {"OpenSans-Semibold", "ttf"};
+                return {"OpenSans-Semibold", ".ttf"};
         }
     }();
 
     if (path == FullPath::Yes) {
-        return fmt::format("{}/{}.{}", getDefaultFontPath(), name, ext);
+        name = getDefaultFontPath() / name;
+        name += ext;
     }
 
     return name;

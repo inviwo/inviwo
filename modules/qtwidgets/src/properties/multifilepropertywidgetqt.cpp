@@ -38,6 +38,7 @@
 #include <modules/qtwidgets/filepathlineeditqt.h>           // for FilePathLineEditQt
 #include <modules/qtwidgets/inviwofiledialog.h>             // for InviwoFileDialog
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <string>  // for string, basic_string, operator+
 #include <vector>  // for vector, __vector_base<>::valu...
@@ -106,12 +107,12 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
     revealButton->setIcon(QIcon(":/svgicons/about-enabled.svg"));
     hWidgetLayout->addWidget(revealButton);
     connect(revealButton, &QToolButton::pressed, this, [&]() {
-        auto fileName = (!property_->get().empty() ? property_->get().front() : "");
-        auto dir = filesystem::directoryExists(fileName) ? fileName
-                                                         : filesystem::getFileDirectory(fileName);
+        const auto fileName = (!property_->get().empty() ? property_->get().front() : "");
+        const auto dir =
+            std::filesystem::is_directory(fileName) ? fileName : fileName.parent_path();
 
         QDesktopServices::openUrl(
-            QUrl(QString::fromStdString("file:///" + dir), QUrl::TolerantMode));
+            QUrl(QString::fromStdString("file:///" + dir.string()), QUrl::TolerantMode));
     });
 
     auto openButton = new QToolButton(this);
@@ -128,7 +129,7 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
 }
 
 void MultiFilePropertyWidgetQt::setPropertyValue() {
-    std::string fileName = (!property_->get().empty() ? property_->get().front() : "");
+    auto fileName = (!property_->get().empty() ? property_->get().front() : "");
 
     // Setup Extensions
     std::vector<FileExtension> filters = property_->getNameFilters();
@@ -144,9 +145,9 @@ void MultiFilePropertyWidgetQt::setPropertyValue() {
     if (!ext.empty()) importFileDialog.setSelectedExtension(ext);
 
     if (importFileDialog.exec()) {
-        std::vector<std::string> filenames;
+        std::vector<std::filesystem::path> filenames;
         for (auto item : importFileDialog.selectedFiles()) {
-            filenames.push_back(item.toStdString());
+            filenames.emplace_back(utilqt::toPath(item));
         }
         property_->set(filenames);
         property_->setSelectedExtension(importFileDialog.getSelectedFileExtension());
@@ -196,7 +197,7 @@ void MultiFilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
 
                             case FileMode::Directory:
                             case FileMode::DirectoryOnly: {
-                                if (filesystem::directoryExists(file)) {
+                                if (std::filesystem::is_directory(file)) {
                                     event->accept();
                                     return;
                                 }

@@ -50,6 +50,7 @@
 #include <unordered_map>
 #include <map>
 #include <memory>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -63,7 +64,7 @@ public:
      * @param fileName full path to xml file.
      * @throws SerializationException
      */
-    Serializer(std::string_view fileName);
+    Serializer(const std::filesystem::path& fileName);
 
     virtual ~Serializer();
 
@@ -146,6 +147,10 @@ public:
     // bitsets
     template <size_t N>
     void serialize(std::string_view key, const std::bitset<N>& bits);
+
+    // path
+    void serialize(std::string_view key, const std::filesystem::path& path,
+                   const SerializationTarget& target = SerializationTarget::Node);
 
     // serializable classes
     void serialize(std::string_view key, const Serializable& sObj);

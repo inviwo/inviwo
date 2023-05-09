@@ -43,6 +43,7 @@
 #include <string_view>  // for string_view
 #include <utility>      // for forward
 #include <vector>       // for vector
+#include <filesystem>
 
 namespace inviwo {
 
@@ -67,8 +68,8 @@ public:
 
     int getGlobalGLSLVersion();
 
-    void addShaderSearchPath(std::string);
-    const std::vector<std::string>& getShaderSearchPaths();
+    void addShaderSearchPath(const std::filesystem::path& path);
+    const std::vector<std::filesystem::path>& getShaderSearchPaths();
 
     void addShaderResource(std::string key, std::string resource);
     void addShaderResource(std::unique_ptr<ShaderResource> resource);
@@ -90,10 +91,10 @@ public:
     OpenGLCapabilities* getOpenGLCapabilities();
 
 private:
-    bool addShaderSearchPathImpl(const std::string&);
+    bool addShaderSearchPathImpl(const std::filesystem::path& path);
     std::vector<Shader*> shaders_;
     OpenGLCapabilities* openGLInfoRef_;
-    std::vector<std::string> shaderSearchPaths_;
+    std::vector<std::filesystem::path> shaderSearchPaths_;
 
     std::vector<std::shared_ptr<ShaderResource>> ownedResources_;
     std::map<std::string, std::weak_ptr<ShaderResource>, std::less<>> shaderResources_;

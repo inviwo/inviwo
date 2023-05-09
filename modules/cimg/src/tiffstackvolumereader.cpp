@@ -51,6 +51,8 @@
 #include <glm/vec3.hpp>                  // for operator/, operator*
 #include <glm/vec4.hpp>                  // for operator*
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 TIFFStackVolumeReader::TIFFStackVolumeReader() : DataReaderType<Volume>() {
@@ -62,7 +64,7 @@ TIFFStackVolumeReader* TIFFStackVolumeReader::clone() const {
     return new TIFFStackVolumeReader(*this);
 }
 
-std::shared_ptr<Volume> TIFFStackVolumeReader::readData(std::string_view filePath) {
+std::shared_ptr<Volume> TIFFStackVolumeReader::readData(const std::filesystem::path& filePath) {
     checkExists(filePath);
 
     auto header = cimgutil::getTIFFHeader(filePath);
@@ -84,7 +86,7 @@ std::shared_ptr<Volume> TIFFStackVolumeReader::readData(std::string_view filePat
     return volume;
 }
 
-TIFFStackVolumeRAMLoader::TIFFStackVolumeRAMLoader(std::string_view sourceFile)
+TIFFStackVolumeRAMLoader::TIFFStackVolumeRAMLoader(const std::filesystem::path& sourceFile)
     : sourceFile_{sourceFile} {}
 
 TIFFStackVolumeRAMLoader* TIFFStackVolumeRAMLoader::clone() const {
@@ -93,12 +95,12 @@ TIFFStackVolumeRAMLoader* TIFFStackVolumeRAMLoader::clone() const {
 
 std::shared_ptr<VolumeRepresentation> TIFFStackVolumeRAMLoader::createRepresentation(
     const VolumeRepresentation& src) const {
-    std::string fileName = sourceFile_;
+    auto fileName = sourceFile_;
 
-    if (!filesystem::fileExists(fileName)) {
+    if (!std::filesystem::is_regular_file(fileName)) {
         const auto newPath = filesystem::addBasePath(fileName);
 
-        if (filesystem::fileExists(newPath)) {
+        if (std::filesystem::is_regular_file(newPath)) {
             fileName = newPath;
         } else {
             throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);
@@ -120,11 +122,11 @@ void TIFFStackVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepres
                                                     const VolumeRepresentation& src) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
-    std::string fileName = sourceFile_;
-    if (!filesystem::fileExists(fileName)) {
+    auto fileName = sourceFile_;
+    if (!std::filesystem::is_regular_file(fileName)) {
         const auto newPath = filesystem::addBasePath(fileName);
 
-        if (filesystem::fileExists(newPath)) {
+        if (std::filesystem::is_regular_file(newPath)) {
             fileName = newPath;
         } else {
             throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);

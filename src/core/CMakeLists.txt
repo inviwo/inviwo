@@ -353,6 +353,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/inviwosetupinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/iterrange.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/licenseinfo.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/localetools.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logcentral.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logerrorcounter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logfilter.h
@@ -390,7 +391,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/threadpool.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/threadutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/tinydirinterface.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/typetraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/unindent.h
@@ -705,6 +705,7 @@ set(SOURCE_FILES
     util/inviwosetupinfo.cpp
     util/iterrange.cpp
     util/licenseinfo.cpp
+    util/localetools.cpp
     util/logcentral.cpp
     util/logerrorcounter.cpp
     util/logfilter.cpp
@@ -736,7 +737,6 @@ set(SOURCE_FILES
     util/threadpool.cpp
     util/threadutil.cpp
     util/timer.cpp
-    util/tinydirinterface.cpp
     util/typetraits.cpp
     util/unindent.cpp
     util/utilities.cpp
@@ -772,7 +772,6 @@ set(TEST_FILES
     tests/unittests/dispatch-test.cpp
     tests/unittests/document-test.cpp
     tests/unittests/enumoptionproperty-test.cpp
-    tests/unittests/filesystem-test.cpp
     tests/unittests/glm-test.cpp
     tests/unittests/image-tests.cpp
     tests/unittests/indirectiterator-tests.cpp
@@ -872,7 +871,7 @@ target_link_libraries(inviwo-core
         $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
         $<$<BOOL:${WIN32}>:inviwo::stackwalker>
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
-        inviwo::tinydir
+        $<$<BOOL:${IVW_USE_TRACY}>:inviwo::tracy>
         units::units
     PRIVATE
         roaring::roaring

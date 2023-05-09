@@ -38,7 +38,7 @@
 namespace inviwo {
 
 TEST(SerializationTest, initTest) {
-    std::string refpath = filesystem::findBasePath();
+    auto refpath = filesystem::findBasePath();
     std::stringstream ss;
     Serializer serializer(refpath);
     serializer.writeFile(ss);
@@ -47,7 +47,7 @@ TEST(SerializationTest, initTest) {
 
 template <typename T>
 T serializationOfType(T inValue) {
-    std::string refpath = filesystem::findBasePath();
+    auto refpath = filesystem::findBasePath();
     std::stringstream ss;
     Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);
@@ -147,7 +147,7 @@ public:
 
 TEST(SerializationTest, IvwSerializableClassTest) {
     MinimumSerilizableClass inValue(12), outValue;
-    std::string refpath = filesystem::findBasePath();
+    auto refpath = filesystem::findBasePath();
     std::stringstream ss;
     Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);
@@ -161,7 +161,7 @@ TEST(SerializationTest, IvwSerializableClassTest) {
 
 TEST(SerializationTest, IvwSerializableClassAsPointerTest) {
     MinimumSerilizableClass *inValue = new MinimumSerilizableClass(12), *outValue = 0;
-    std::string refpath = filesystem::findBasePath();
+    auto refpath = filesystem::findBasePath();
     std::stringstream ss;
     Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);
@@ -180,7 +180,7 @@ TEST(SerializationTest, floatVectorTest) {
     inVector.push_back(0.1f);
     inVector.push_back(0.2f);
     inVector.push_back(0.3f);
-    std::string refpath = filesystem::findBasePath();
+    auto refpath = filesystem::findBasePath();
     std::stringstream ss;
     Serializer serializer(refpath);
     serializer.serialize("serializedVector", inVector, "value");
@@ -197,7 +197,7 @@ TEST(SerializationTest, vectorOfNonPointersTest) {
     inVector.push_back(MinimumSerilizableClass(0.1f));
     inVector.push_back(MinimumSerilizableClass(0.2f));
     inVector.push_back(MinimumSerilizableClass(0.3f));
-    std::string refpath = filesystem::findBasePath();
+    auto refpath = filesystem::findBasePath();
     std::stringstream ss;
     Serializer serializer(refpath);
     serializer.serialize("serializedVector", inVector, "value");
@@ -214,7 +214,7 @@ TEST(SerializationTest, vectorOfPointersTest) {
     inVector.push_back(new MinimumSerilizableClass(0.1f));
     inVector.push_back(new MinimumSerilizableClass(0.2f));
     inVector.push_back(new MinimumSerilizableClass(0.3f));
-    std::string refpath = filesystem::findBasePath();
+    auto refpath = filesystem::findBasePath();
     std::stringstream ss;
     Serializer serializer(refpath);
     serializer.serialize("serializedVector", inVector, "value");

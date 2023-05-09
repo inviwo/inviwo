@@ -108,8 +108,8 @@ public:
      *       deployed and the module does not contain any resources.
      * @return std::string Path to module directory
      */
-    virtual std::string getPath() const;
-    std::string getPath(ModulePath type) const;
+    virtual std::filesystem::path getPath() const;
+    std::filesystem::path getPath(ModulePath type) const;
 
     /**
      * Returns the module version. This is used for converting old processor networks in connection
@@ -173,13 +173,14 @@ public:
      * Register a workspace file as a CompositeProcessor.
      * The CompositeProcessor will load the file as its sub network on construction.
      */
-    void registerCompositeProcessor(const std::string& file);
+    void registerCompositeProcessor(const std::filesystem::path& file);
 
     void registerProcessorWidget(std::unique_ptr<ProcessorWidgetFactoryObject> widget);
     template <typename T, typename P>
     void registerProcessorWidget();
 
-    void registerPortInspector(std::string portClassIdentifier, std::string inspectorPath);
+    void registerPortInspector(std::string portClassIdentifier,
+                               const std::filesystem::path& inspectorPath);
 
     void registerDataVisualizer(std::unique_ptr<DataVisualizer> visualizer);
 

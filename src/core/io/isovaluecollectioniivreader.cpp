@@ -40,7 +40,7 @@ IsoValueCollectionIIVReader* IsoValueCollectionIIVReader::clone() const {
 }
 
 std::shared_ptr<IsoValueCollection> IsoValueCollectionIIVReader::readData(
-    std::string_view filePath) {
+    const std::filesystem::path& filePath) {
     checkExists(filePath);
 
     auto data = std::make_shared<IsoValueCollection>();

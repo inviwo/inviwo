@@ -303,8 +303,8 @@ ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderRe
     LGL_ERROR_CLASS;
 
     // Help developer to spot errors
-    std::string fileExtension = filesystem::getFileExtension(resource_->key());
-    if (fileExtension != shaderType_.extension()) {
+    auto resourceType = ShaderType::typeFromString(resource_->key());
+    if (resourceType != shaderType_) {
         LogWarn("File extension does not match shader type: "
                 << resource_->key() << "\n    expected extension: " << shaderType_.extension());
     }
@@ -317,16 +317,15 @@ ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderRe
 }
 
 ShaderObject::ShaderObject(std::shared_ptr<const ShaderResource> resource)
-    : ShaderObject(ShaderType::get(filesystem::getFileExtension(resource->key())), resource) {}
+    : ShaderObject(ShaderType::typeFromString(resource->key()), resource) {}
 
-ShaderObject::ShaderObject(ShaderType shaderType, std::string fileName)
+ShaderObject::ShaderObject(ShaderType shaderType, std::string_view fileName)
     : ShaderObject(shaderType, loadResource(fileName)) {}
 
-ShaderObject::ShaderObject(std::string fileName)
-    : ShaderObject(ShaderType::get(filesystem::getFileExtension(fileName)),
-                   loadResource(fileName)) {}
+ShaderObject::ShaderObject(std::string_view fileName)
+    : ShaderObject(ShaderType::typeFromString(fileName), loadResource(fileName)) {}
 
-ShaderObject::ShaderObject(GLenum shaderType, std::string fileName)
+ShaderObject::ShaderObject(GLenum shaderType, std::string_view fileName)
     : ShaderObject(ShaderType(shaderType), loadResource(fileName)) {}
 
 ShaderObject::ShaderObject(ShaderObject&& rhs) noexcept
@@ -399,7 +398,7 @@ const std::vector<std::shared_ptr<const ShaderResource>>& ShaderObject::getResou
 
 ShaderType ShaderObject::getShaderType() const { return shaderType_; }
 
-std::shared_ptr<const ShaderResource> ShaderObject::loadResource(std::string fileName) {
+std::shared_ptr<const ShaderResource> ShaderObject::loadResource(std::string_view fileName) {
     return utilgl::findShaderResource(fileName);
 }
 

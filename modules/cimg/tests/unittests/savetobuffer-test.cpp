@@ -55,19 +55,19 @@ namespace inviwo {
 TEST(CImgUtils, cimgToBuffer) {
     // load source image
 
-    std::string testExtension = "bmp";
-    const auto filename = filesystem::getPath(PathType::Tests, "/images/swirl." + testExtension);
+    std::string testExtension = ".bmp";
+    const auto filename = filesystem::getPath(PathType::Tests, "/images/swirl" + testExtension);
     CImgLayerReader reader;
     auto layer = reader.readData(filename);
 
     // write layer to a temporary file
-    util::TempFileHandle tmpFile("cimg", std::string(".") + testExtension);
+    util::TempFileHandle tmpFile("cimg", testExtension);
 
     cimgutil::saveLayer(tmpFile.getFileName(), layer.get());
 
     // read file contents
     std::vector<unsigned char> fileContents;
-    auto in = filesystem::ifstream(tmpFile.getFileName(), std::ios::binary);
+    auto in = std::ifstream(tmpFile.getFileName(), std::ios::binary);
     if (in.is_open()) {
         in.seekg(0, in.end);
         size_t fileLen = in.tellg();

@@ -67,6 +67,8 @@
 #include <glm/vec2.hpp>               // for vec, operator==
 #include <glm/vector_relational.hpp>  // for any, notEqual
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 namespace glui {
@@ -89,8 +91,8 @@ Renderer::Renderer()
 }
 
 Texture2DArray* Renderer::createUITextures(const std::string& name,
-                                           const std::vector<std::string>& files,
-                                           const std::string& sourcePath) {
+                                           const std::vector<std::filesystem::path>& files,
+                                           const std::filesystem::path& sourcePath) {
     if (auto textures = getUITextures(name)) {
         return textures;
     }
@@ -223,13 +225,14 @@ void Renderer::setupRectangleMesh() {
 }
 
 std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
-    const std::vector<std::string>& textureFiles, const std::string& sourcePath) const {
+    const std::vector<std::filesystem::path>& textureFiles,
+    const std::filesystem::path& sourcePath) const {
     // read in textures
     std::vector<std::shared_ptr<Layer>> textureLayers;
     auto factory = InviwoApplication::getPtr()->getDataReaderFactory();
     if (auto reader = factory->getReaderForTypeAndExtension<Layer>("png")) {
         for (auto filename : textureFiles) {
-            auto layer = reader->readData(sourcePath + "/" + filename);
+            auto layer = reader->readData(sourcePath / filename);
             textureLayers.push_back(layer);
         }
     } else {
@@ -240,14 +243,14 @@ std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
     const size2_t texDim = textureLayers.front()->getDimensions();
     if (!std::all_of(textureLayers.begin(), textureLayers.end(),
                      [&](const auto& layer) { return layer->getDimensions() == texDim; })) {
-        throw Exception("Textures have inconsistent sizes: " + joinString(textureFiles, ", "),
-                        IVW_CONTEXT);
+        throw Exception(IVW_CONTEXT, "Textures have inconsistent sizes: {} at {}",
+                        joinString(textureFiles, ", "), sourcePath);
     }
     const DataFormatBase* const dataformat = textureLayers.front()->getDataFormat();
     if (!std::all_of(textureLayers.begin(), textureLayers.end(),
                      [&](const auto& layer) { return layer->getDataFormat() == dataformat; })) {
-        throw Exception("Textures have inconsistent formats: " + joinString(textureFiles, ", "),
-                        IVW_CONTEXT);
+        throw Exception(IVW_CONTEXT, "Textures have inconsistent formats: {} at {}",
+                        joinString(textureFiles, ", "), sourcePath);
     }
 
     // upload the individual textures, rescale where necessary

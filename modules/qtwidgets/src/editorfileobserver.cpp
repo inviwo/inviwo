@@ -36,6 +36,8 @@
 
 #include <algorithm>  // for any_of
 
+#include <fmt/std.h>
+
 #include <QEvent>       // for QEvent, QEvent::FocusIn
 #include <QList>        // for QList
 #include <QMessageBox>  // for QMessageBox, operator|, QMessageBo...
@@ -47,7 +49,7 @@ namespace inviwo {
 namespace utilqt {
 
 EditorFileObserver::EditorFileObserver(QWidget* parent, const QString& title,
-                                       const std::string filename)
+                                       const std::filesystem::path& filename)
     : QObject(parent), FileObserver(util::getInviwoApplication()), parent_(parent), title_(title) {
     if (parent_) {
         parent_->installEventFilter(this);
@@ -65,7 +67,7 @@ void EditorFileObserver::suspendObservingFile() { stopAllObservation(); }
 
 void EditorFileObserver::ignoreNextUpdate() { ignoreNextUpdate_ = true; }
 
-void EditorFileObserver::setFileName(const std::string& filename) {
+void EditorFileObserver::setFileName(const std::filesystem::path& filename) {
     if (filename_ == filename) {
         return;
     }
@@ -74,7 +76,7 @@ void EditorFileObserver::setFileName(const std::string& filename) {
     startFileObservation(filename_);
 }
 
-const std::string& EditorFileObserver::getFileName() const { return filename_; }
+const std::filesystem::path& EditorFileObserver::getFileName() const { return filename_; }
 
 void EditorFileObserver::setModifiedCallback(std::function<void(bool)> cb) {
     modifiedCallback_ = cb;
@@ -83,7 +85,7 @@ void EditorFileObserver::setReloadFileCallback(std::function<void()> cb) {
     reloadFileCallback_ = cb;
 }
 
-void EditorFileObserver::fileChanged(const std::string&) {
+void EditorFileObserver::fileChanged(const std::filesystem::path&) {
     if (ignoreNextUpdate_) {
         ignoreNextUpdate_ = false;
         return;
@@ -109,9 +111,10 @@ bool EditorFileObserver::eventFilter(QObject* obj, QEvent* event) {
 void EditorFileObserver::queryReloadFile() {
     if (widgetIsFocused() && fileChangedInBackground_ && !reloadQueryInProgress_) {
         reloadQueryInProgress_ = true;
-        std::string msg =
-            "The file " + filesystem::getFileNameWithExtension(filename_) +
-            " has been modified outside of Inwivo, do you want to reload its contents?";
+        std::string msg = fmt::format(
+            "The file {} has been modified outside of Inwivo, do you want to reload its "
+            "contents?",
+            filename_.stem());
 
         QMessageBox msgBox(QMessageBox::Question, title_, utilqt::toQString(msg),
                            QMessageBox::Yes | QMessageBox::No, parent_);

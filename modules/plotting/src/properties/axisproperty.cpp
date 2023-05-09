@@ -112,8 +112,10 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     scalingFactor_.setVisible(false);
 
     // change default fonts, make axis labels slightly less pronounced
-    captionSettings_.font_.fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Caption));
-    labelSettings_.font_.fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Label));
+    captionSettings_.font_.fontFace_.setSelectedIdentifier(
+        font::getFont(font::FontType::Caption).string());
+    labelSettings_.font_.fontFace_.setSelectedIdentifier(
+        font::getFont(font::FontType::Label).string());
 
     captionSettings_.title_.set("Axis Title");
 
@@ -256,7 +258,7 @@ AxisProperty& AxisProperty::setColor(const vec4& c) {
     return *this;
 }
 
-AxisProperty& AxisProperty::setFontFace(std::string_view fontFace) {
+AxisProperty& AxisProperty::setFontFace(const std::filesystem::path& fontFace) {
     captionSettings_.font_.fontFace_.set(fontFace);
     labelSettings_.font_.fontFace_.set(fontFace);
     return *this;

@@ -42,18 +42,18 @@
 namespace inviwo {
 
 struct TestImgs {
-    static std::string testdir() { return filesystem::getPath(PathType::Tests); }
-    static std::string rgb() { return testdir() + "/images/2x2.bmp"; }
-    static std::string white() { return testdir() + "/images/white.bmp"; }
-    static std::string range() { return testdir() + "/images/range.bmp"; }
+    static std::filesystem::path testdir() { return filesystem::getPath(PathType::Tests); }
+    static std::filesystem::path rgb() { return testdir() / "images/2x2.bmp"; }
+    static std::filesystem::path white() { return testdir() / "images/white.bmp"; }
+    static std::filesystem::path range() { return testdir() / "images/range.bmp"; }
 };
 
 TEST(ImageTests, ImageLoadWhite) {
     auto imgFile = TestImgs::white();
-    ASSERT_TRUE(filesystem::fileExists(imgFile));
+    ASSERT_TRUE(std::filesystem::is_regular_file(imgFile));
 
-    auto ext = filesystem::getFileExtension(imgFile);
-    EXPECT_EQ(ext, "bmp");
+    auto ext = imgFile.extension();
+    EXPECT_EQ(ext, ".bmp");
 
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(
@@ -90,10 +90,10 @@ TEST(ImageTests, ImageLoadWhite) {
 TEST(ImageTests, ImageLoadRGB) {
     auto imgFile = TestImgs::rgb();
 
-    ASSERT_TRUE(filesystem::fileExists(imgFile));
+    ASSERT_TRUE(std::filesystem::is_regular_file(imgFile));
 
-    auto ext = filesystem::getFileExtension(imgFile);
-    EXPECT_EQ(ext, "bmp");
+    auto ext = imgFile.extension();
+    EXPECT_EQ(ext, ".bmp");
 
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(
@@ -127,12 +127,12 @@ TEST(ImageTests, ImageLoadRGB) {
 }
 
 TEST(ImageTests, ImageLoadRange) {
-    std::string imgFile = TestImgs::range();
+    auto imgFile = TestImgs::range();
 
-    ASSERT_TRUE(filesystem::fileExists(imgFile));
+    ASSERT_TRUE(std::filesystem::is_regular_file(imgFile));
 
-    std::string ext = filesystem::getFileExtension(imgFile);
-    EXPECT_EQ(ext, "bmp");
+    std::string ext = imgFile.extension().string();
+    EXPECT_EQ(ext, ".bmp");
 
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(
@@ -157,11 +157,11 @@ TEST(ImageTests, ImageLoadRange) {
 }
 
 TEST(ImageTests, ImageResize) {
-    std::string imgFile = TestImgs::rgb();
-    ASSERT_TRUE(filesystem::fileExists(imgFile));
+    auto imgFile = TestImgs::rgb();
+    ASSERT_TRUE(std::filesystem::is_regular_file(imgFile));
 
-    std::string ext = filesystem::getFileExtension(imgFile);
-    EXPECT_EQ(ext, "bmp");
+    std::string ext = imgFile.extension().string();
+    EXPECT_EQ(ext, ".bmp");
 
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(

@@ -57,6 +57,8 @@
 #include <ostream>      // for operator<<
 #include <type_traits>  // for remove_extent_t
 
+#include <fmt/std.h>
+
 namespace inviwo {
 class Deserializer;
 class Layer;
@@ -70,7 +72,7 @@ const ProcessorInfo ImageSource::processorInfo_{
 };
 const ProcessorInfo ImageSource::getProcessorInfo() const { return processorInfo_; }
 
-ImageSource::ImageSource(InviwoApplication* app, const std::string& filePath)
+ImageSource::ImageSource(InviwoApplication* app, const std::filesystem::path& filePath)
     : Processor()
     , rf_(util::getDataReaderFactory(app))
     , outport_("image", DataVec4UInt8::get(), false)
@@ -90,7 +92,7 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& filePath)
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
     isReady_.setUpdate([this]() {
-        return !loadingFailed_ && filesystem::fileExists(file_.get()) &&
+        return !loadingFailed_ && std::filesystem::is_regular_file(file_.get()) &&
                !reader_.getSelectedValue().empty();
     });
     file_.onChange([this]() {
@@ -114,7 +116,8 @@ void ImageSource::process() {
             outport_.setData(std::make_shared<Image>(outLayer));
             imageDimension_.set(outLayer->getDimensions());
         } catch (DataReaderException const& e) {
-            util::log(e.getContext(), "Could not load data: " + file_.get() + ", " + e.getMessage(),
+            util::log(e.getContext(),
+                      fmt::format("Could not load data: {}, {}", file_.get(), e.getMessage()),
                       LogLevel::Error);
             loadingFailed_ = true;
             outport_.detachData();

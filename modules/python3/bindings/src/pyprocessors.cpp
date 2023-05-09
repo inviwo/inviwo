@@ -28,6 +28,15 @@
  *********************************************************************************/
 
 #include <inviwopy/pyprocessors.h>
+
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/operators.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+#include <pybind11/trampoline_self_life_support.h>  // for trampoline_self_life_support
+#include <warn/pop>
+
 #include <inviwopy/vectoridentifierwrapper.h>
 #include <inviwopy/pypropertytypehook.h>
 
@@ -48,11 +57,8 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/python3/processortrampoline.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
-#include <warn/pop>
+#include <fmt/format.h>
+#include <fmt/std.h>
 
 namespace inviwo {
 
@@ -289,32 +295,32 @@ void exposeProcessors(pybind11::module& m) {
             py::return_value_policy::reference)
         .def_property_readonly("ready", &CanvasProcessor::isReady)
         .def("snapshot",
-             [](CanvasProcessor* canvas, std::string filepath) {
+             [](CanvasProcessor* canvas, const std::filesystem::path& filePath) {
                  auto writer = canvas->getInviwoApplication()
                                    ->getDataWriterFactory()
-                                   ->getWriterForTypeAndExtension<Layer>(filepath);
+                                   ->getWriterForTypeAndExtension<Layer>(filePath);
                  if (!writer) {
-                     throw Exception("No writer for " + filepath,
-                                     IVW_CONTEXT_CUSTOM("exposeProcessors"));
+                     throw Exception(IVW_CONTEXT_CUSTOM("exposeProcessors"), "No writer for {}",
+                                     filePath);
                  }
 
                  if (auto layer = canvas->getVisibleLayer()) {
                      rendercontext::activateDefault();
-                     writer->writeData(layer, filepath);
+                     writer->writeData(layer, filePath);
                  } else {
-                     throw Exception("No image in canvas " + canvas->getIdentifier(),
-                                     IVW_CONTEXT_CUSTOM("exposeProcessors"));
+                     throw Exception(IVW_CONTEXT_CUSTOM("exposeProcessors"),
+                                     "No image in canvas {}", canvas->getIdentifier());
                  }
              })
 
-        .def("snapshotAsync", [](CanvasProcessor* canvas, std::string filepath) {
+        .def("snapshotAsync", [](CanvasProcessor* canvas, const std::filesystem::path& filePath) {
             auto writer = std::shared_ptr<DataWriterType<Layer>>{
                 canvas->getInviwoApplication()
                     ->getDataWriterFactory()
-                    ->getWriterForTypeAndExtension<Layer>(filepath)};
+                    ->getWriterForTypeAndExtension<Layer>(filePath)};
             if (!writer) {
-                throw Exception("No writer for " + filepath,
-                                IVW_CONTEXT_CUSTOM("exposeProcessors"));
+                throw Exception(IVW_CONTEXT_CUSTOM("exposeProcessors"), "No writer for {}",
+                                filePath);
             }
 
             if (auto layer = canvas->getVisibleLayer()) {
@@ -323,13 +329,13 @@ void exposeProcessors(pybind11::module& m) {
                  * the next evaluation.
                  */
                 dispatchPool(
-                    [layerClone = std::shared_ptr<Layer>{layer->clone()}, writer, filepath]() {
+                    [layerClone = std::shared_ptr<Layer>{layer->clone()}, writer, filePath]() {
                         rendercontext::activateLocal();
-                        writer->writeData(layerClone.get(), filepath);
+                        writer->writeData(layerClone.get(), filePath);
                     });
             } else {
-                throw Exception("No image in canvas " + canvas->getIdentifier(),
-                                IVW_CONTEXT_CUSTOM("exposeProcessors"));
+                throw Exception(IVW_CONTEXT_CUSTOM("exposeProcessors"), "No image in canvas {}",
+                                canvas->getIdentifier());
             }
         });
 }

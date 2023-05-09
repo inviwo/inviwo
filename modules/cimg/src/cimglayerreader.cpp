@@ -86,7 +86,7 @@ struct Dispatch {
 
 }  // namespace
 
-std::shared_ptr<Layer> CImgLayerReader::readData(std::string_view fileName) {
+std::shared_ptr<Layer> CImgLayerReader::readData(const std::filesystem::path& fileName) {
     checkExists(fileName);
 
     uvec2 dimensions{0u};

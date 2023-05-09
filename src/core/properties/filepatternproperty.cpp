@@ -42,14 +42,15 @@ const std::string FilePatternProperty::classIdentifier = "org.inviwo.FilePattern
 std::string FilePatternProperty::getClassIdentifier() const { return classIdentifier; }
 
 FilePatternProperty::FilePatternProperty(std::string_view identifier, std::string_view displayName,
-                                         std::string_view pattern, std::string_view contentType,
+                                         const std::filesystem::path& pattern,
+                                         std::string_view contentType,
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , helpText_("helpText", "",
                 "A pattern might include '#' as placeholder for digits, where "
                 "multiple '###' indicate leading zeros. Wildcards('*', '?') are supported.")
-    , pattern_("pattern", "Pattern", {std::string{pattern}}, contentType)
+    , pattern_("pattern", "Pattern", {pattern}, contentType)
     , updateBtn_("updateBtn", "Update File List")
     , sort_("sorting", "Sort File Names", true)
     , matchShorterNumbers_("matchShorterNumbers", "Match Numbers with less Digits", true)
@@ -147,31 +148,31 @@ FilePatternProperty::~FilePatternProperty() = default;
 
 std::string FilePatternProperty::getFilePattern() const {
     if (!pattern_.get().empty()) {
-        return filesystem::getFileNameWithExtension(pattern_.get().front());
+        return pattern_.get().front().filename().string();
     } else {
         return std::string();
     }
 }
 
-std::string FilePatternProperty::getFilePatternPath() const {
+std::filesystem::path FilePatternProperty::getFilePatternPath() const {
     if (!pattern_.get().empty()) {
-        return filesystem::getFileDirectory(pattern_.get().front());
+        return pattern_.get().front().parent_path();
     } else {
-        return std::string();
+        return {};
     }
 }
 
-std::vector<std::string> FilePatternProperty::getFileList() const {
-    std::vector<std::string> fileList;
+std::vector<std::filesystem::path> FilePatternProperty::getFileList() const {
+    std::vector<std::filesystem::path> fileList;
     std::transform(files_.begin(), files_.end(), std::back_inserter(fileList),
-                   [](IndexFileTuple elem) { return std::get<1>(elem); });
+                   [](const auto& elem) { return std::get<1>(elem); });
     return fileList;
 }
 
 std::vector<int> FilePatternProperty::getFileIndices() const {
     std::vector<int> indexList;
     std::transform(files_.begin(), files_.end(), std::back_inserter(indexList),
-                   [](IndexFileTuple elem) { return std::get<0>(elem); });
+                   [](const auto& elem) { return std::get<0>(elem); });
     return indexList;
 }
 
@@ -199,16 +200,18 @@ void FilePatternProperty::updateFileList() {
         return;
     }
 
-    for (auto item : pattern_.get()) {
+    for (const auto& item : pattern_.get()) {
         try {
-            const std::string filePath = filesystem::getFileDirectory(item);
-            const std::string pattern = filesystem::getFileNameWithExtension(item);
+            const std::filesystem::path filePath = item.parent_path();
+            const std::filesystem::path pattern = item.filename();
+            const std::string strPattern = pattern.generic_string();
 
-            std::vector<std::string> fileList = filesystem::getDirectoryContents(filePath);
+            auto fileList = filesystem::getDirectoryContents(filePath);
 
             // apply pattern
-            bool hasDigits = (pattern.find('#') != std::string::npos);
-            bool hasWildcard = hasDigits || (pattern.find_first_of("*?", 0) != std::string::npos);
+            bool hasDigits = (strPattern.find('#') != std::string::npos);
+            bool hasWildcard =
+                hasDigits || (strPattern.find_first_of("*?", 0) != std::string::npos);
 
             if (!hasWildcard) {
                 // look for exact match
@@ -226,14 +229,14 @@ void FilePatternProperty::updateFileList() {
                 bool found = false;
                 for (auto file : fileList) {
                     int index = -1;
-                    if (filesystem::wildcardStringMatchDigits(
-                            pattern, file, index, matchShorterNumbers, matchLongerNumbers)) {
+                    if (filesystem::wildcardStringMatchDigits(strPattern, file.generic_string(),
+                                                              index, matchShorterNumbers,
+                                                              matchLongerNumbers)) {
                         // match found
                         found = true;
                         // check index
                         if ((index >= indexRange.x) && (index <= indexRange.y)) {
-                            std::string filename = filePath + '/' + file;
-                            files_.push_back(std::make_tuple(index, filename));
+                            files_.push_back(std::make_tuple(index, filePath / file));
                         }
                     }
                 }
@@ -254,11 +257,10 @@ void FilePatternProperty::updateFileList() {
                             fileList.begin() + static_cast<std::size_t>(indexRange.y + 1));
                     }
                 }
-                for (auto file : fileList) {
-                    if (filesystem::wildcardStringMatch(pattern, file)) {
+                for (const auto& file : fileList) {
+                    if (filesystem::wildcardStringMatch(strPattern, file.generic_string())) {
                         // match found
-                        std::string filename = filePath + '/' + file;
-                        files_.push_back(std::make_tuple(-1, filename));
+                        files_.push_back(std::make_tuple(-1, filePath / file));
                     }
                 }
             }
@@ -275,7 +277,7 @@ void FilePatternProperty::updateFileList() {
 
 std::string FilePatternProperty::getFormattedFileList() const {
     std::ostringstream oss;
-    for (auto elem : files_) {
+    for (const auto& elem : files_) {
         oss << std::setw(6) << std::get<0>(elem) << ": " << std::get<1>(elem) << "\n";
     }
     return oss.str();
@@ -284,14 +286,7 @@ std::string FilePatternProperty::getFormattedFileList() const {
 void FilePatternProperty::sort() {
     if (!sort_.get()) return;
 
-    std::sort(files_.begin(), files_.end(), [](IndexFileTuple a, IndexFileTuple b) {
-        // do a lexical comparison if indices are equal
-        // TODO: consider . in file names as the lowest character to ensure that
-        //    abc.png is listed before abc-01.png
-        return (std::get<0>(a) < std::get<0>(b)
-                    ? true
-                    : (std::get<0>(a) > std::get<0>(b) ? false : std::get<1>(a) < std::get<1>(b)));
-    });
+    std::sort(files_.begin(), files_.end());
 }
 
 std::string FilePatternProperty::guessFilePattern() const {

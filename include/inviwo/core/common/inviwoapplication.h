@@ -144,7 +144,7 @@ public:
      * Get the base path of the application.
      * i.e. where the core data and modules folder and etc are.
      */
-    std::string getBasePath() const;
+    std::filesystem::path getBasePath() const;
 
     /**
      * Get basePath + pathType + suffix.
@@ -154,8 +154,8 @@ public:
      * @param createFolder whether to create the folder if it does not exist.
      * @return basePath + pathType + suffix
      */
-    std::string getPath(PathType pathType, const std::string& suffix = "",
-                        const bool& createFolder = false);
+    std::filesystem::path getPath(PathType pathType, const std::string& suffix = "",
+                                  const bool& createFolder = false);
 
     ModuleManager& getModuleManager();
     const ModuleManager& getModuleManager() const;

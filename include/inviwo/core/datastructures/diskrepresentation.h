@@ -36,6 +36,7 @@
 #include <string>
 #include <string_view>
 #include <memory>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -50,13 +51,14 @@ template <typename Repr, typename Self>
 class DiskRepresentation {
 public:
     DiskRepresentation() = default;
-    DiskRepresentation(std::string_view srcFile, DiskRepresentationLoader<Repr>* loader = nullptr);
+    DiskRepresentation(const std::filesystem::path& srcFile,
+                       DiskRepresentationLoader<Repr>* loader = nullptr);
     DiskRepresentation(const DiskRepresentation& rhs) = default;
     DiskRepresentation& operator=(const DiskRepresentation& that) = default;
     virtual ~DiskRepresentation() = default;
     virtual DiskRepresentation* clone() const;
 
-    const std::string& getSourceFile() const;
+    const std::filesystem::path& getSourceFile() const;
     bool hasSourceFile() const;
 
     void setLoader(DiskRepresentationLoader<Repr>* loader);
@@ -65,14 +67,14 @@ public:
     void updateRepresentation(std::shared_ptr<Repr> dest) const;
 
 private:
-    std::string sourceFile_;
+    std::filesystem::path sourceFile_;
 
     // DiskRepresentation owns a DataReader to be able to convert itself into RAM.
     util::cloneable_ptr<DiskRepresentationLoader<Repr>> loader_;
 };
 
 template <typename Repr, typename Self>
-DiskRepresentation<Repr, Self>::DiskRepresentation(std::string_view srcFile,
+DiskRepresentation<Repr, Self>::DiskRepresentation(const std::filesystem::path& srcFile,
                                                    DiskRepresentationLoader<Repr>* loader)
     : sourceFile_(srcFile), loader_(loader) {}
 
@@ -82,7 +84,7 @@ DiskRepresentation<Repr, Self>* DiskRepresentation<Repr, Self>::clone() const {
 }
 
 template <typename Repr, typename Self>
-const std::string& DiskRepresentation<Repr, Self>::getSourceFile() const {
+const std::filesystem::path& DiskRepresentation<Repr, Self>::getSourceFile() const {
     return sourceFile_;
 }
 

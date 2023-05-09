@@ -34,6 +34,8 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/colorconversion.h>
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 namespace {
@@ -110,7 +112,8 @@ TransferFunctionXMLReader* TransferFunctionXMLReader::clone() const {
     return new TransferFunctionXMLReader{*this};
 }
 
-std::shared_ptr<TransferFunction> TransferFunctionXMLReader::readData(std::string_view filePath) {
+std::shared_ptr<TransferFunction> TransferFunctionXMLReader::readData(
+    const std::filesystem::path& filePath) {
     auto in = open(filePath);
 
     // determine file size

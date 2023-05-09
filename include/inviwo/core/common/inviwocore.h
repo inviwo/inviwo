@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <inviwo/core/io/transferfunctionlayerreader.h>
 #include <inviwo/core/io/transferfunctionlayerwriter.h>
@@ -48,21 +49,21 @@ class IVW_CORE_API InviwoCore : public InviwoModule {
 public:
     InviwoCore(InviwoApplication* app);
 
-    virtual std::string getPath() const override;
+    virtual std::filesystem::path getPath() const override;
 
 private:
     class Observer : public FileObserver {
     public:
         Observer(InviwoCore& core, InviwoApplication* app);
-        virtual void fileChanged(const std::string& dir) override;
+        virtual void fileChanged(const std::filesystem::path& dir) override;
 
     private:
         InviwoCore& core_;
     };
-    void scanDirForComposites(const std::string& dir);
+    void scanDirForComposites(const std::filesystem::path& dir);
 
     Observer compositeDirObserver_;
-    std::unordered_set<std::string> addedCompositeFiles_;
+    std::unordered_set<std::filesystem::path, PathHash> addedCompositeFiles_;
 
     TransferFunctionLayerWriterWrapper tfLayerWriters_;
     TransferFunctionLayerReaderWrapper tfLayerReaders_;

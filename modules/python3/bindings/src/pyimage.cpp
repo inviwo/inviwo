@@ -49,9 +49,11 @@
 #include <warn/ignore/shadow>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 #include <warn/pop>
 
 #include <fmt/format.h>
+#include <fmt/std.h>
 
 namespace py = pybind11;
 
@@ -157,12 +159,13 @@ void exposeImage(py::module& m) {
             [](Layer& self) { return self.getEditableRepresentation<LayerPy>(); },
             pybind11::return_value_policy::reference_internal)
         .def("save",
-             [](Layer& self, std::string filepath) {
+             [](Layer& self, const std::filesystem::path& filepath) {
                  auto writer = InviwoApplication::getPtr()
                                    ->getDataWriterFactory()
                                    ->getWriterForTypeAndExtension<Layer>(filepath);
                  if (!writer) {
-                     throw Exception("No write for " + filepath, IVW_CONTEXT_CUSTOM("exposeImage"));
+                     throw Exception(IVW_CONTEXT_CUSTOM("exposeImage"), "No writer for {}",
+                                     filepath);
                  }
                  writer->writeData(&self, filepath);
              })

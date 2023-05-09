@@ -54,13 +54,13 @@ InviwoModule* getModuleByIdentifier(std::string_view identifier) {
     return getModuleByIdentifier(InviwoApplication::getPtr(), identifier);
 }
 
-std::string getModulePath(InviwoModule* module) { return module->getPath(); }
+std::filesystem::path getModulePath(InviwoModule* module) { return module->getPath(); }
 
-std::string getModulePath(InviwoModule* module, ModulePath pathType) {
+std::filesystem::path getModulePath(InviwoModule* module, ModulePath pathType) {
     return module->getPath(pathType);
 }
 
-std::string getModulePath(InviwoApplication* app, std::string_view identifier) {
+std::filesystem::path getModulePath(InviwoApplication* app, std::string_view identifier) {
     if (auto m = getModuleByIdentifier(app, identifier)) {
         return m->getPath();
     } else {
@@ -69,13 +69,12 @@ std::string getModulePath(InviwoApplication* app, std::string_view identifier) {
     }
 }
 
-std::string getModulePath(std::string_view identifier) {
+std::filesystem::path getModulePath(std::string_view identifier) {
     return getModulePath(InviwoApplication::getPtr(), identifier);
 }
-
-std::string getModulePath(InviwoApplication* app, std::string_view identifier,
-                          ModulePath pathType) {
-    std::string path;
+std::filesystem::path getModulePath(InviwoApplication* app, std::string_view identifier,
+                                    ModulePath pathType) {
+    std::filesystem::path path;
     if (auto m = getModuleByIdentifier(app, identifier)) {
         path = m->getPath(pathType);
         if (path.empty() || path == m->getPath()) {
@@ -92,7 +91,7 @@ std::string getModulePath(InviwoApplication* app, std::string_view identifier,
     return path;
 }
 
-std::string getModulePath(std::string_view identifier, ModulePath pathType) {
+std::filesystem::path getModulePath(std::string_view identifier, ModulePath pathType) {
     return getModulePath(InviwoApplication::getPtr(), identifier, pathType);
 }
 

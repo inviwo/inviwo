@@ -39,7 +39,8 @@ public:
     TransferFunctionXMLReader();
     virtual TransferFunctionXMLReader* clone() const override;
 
-    virtual std::shared_ptr<TransferFunction> readData(std::string_view filePath) override;
+    virtual std::shared_ptr<TransferFunction> readData(
+        const std::filesystem::path& filePath) override;
 };
 
 }  // namespace inviwo

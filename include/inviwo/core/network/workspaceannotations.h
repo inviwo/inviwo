@@ -63,7 +63,7 @@ public:
      * An error is logged in case loading fails.
      * @return WorkspaceAnnotations if successfully loaded, empty WorkspaceAnnotations otherwise.
      */
-    WorkspaceAnnotations(std::string_view path,
+    WorkspaceAnnotations(const std::filesystem::path& path,
                          InviwoApplication* app = util::getInviwoApplication());
 
     virtual ~WorkspaceAnnotations() = default;

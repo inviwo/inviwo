@@ -67,13 +67,13 @@ public:
      * Verify that you don't overwrite @p path unless @p overwrite is `Yes`.
      * @throws DataWriterException if the condition is broken.
      */
-    static void checkOverwrite(std::string_view path, Overwrite overwrite);
+    static void checkOverwrite(const std::filesystem::path& path, Overwrite overwrite);
 
     /**
      * Verify that you don't overwrite @p path unless @p overwrite is `Yes`.
      * @throws DataWriterException if the condition is broken.
      */
-    void checkOverwrite(std::string_view path) const;
+    void checkOverwrite(const std::filesystem::path& path) const;
 
     /**
      * @brief Set writer specific options
@@ -101,7 +101,7 @@ protected:
      * @throws DataWriterException if the condition is broken, and FileException if the file can't
      * be opened.
      */
-    std::ofstream open(std::string_view path,
+    std::ofstream open(const std::filesystem::path& path,
                        std::ios_base::openmode mode = std::ios_base::out) const;
 
     Overwrite overwrite_;
@@ -128,7 +128,7 @@ public:
      * @brief Write @p data to @p filePath
      * @throws DataWriterException if anything goes wrong
      */
-    virtual void writeData(const T* data, std::string_view filePath) const = 0;
+    virtual void writeData(const T* data, const std::filesystem::path& filePath) const = 0;
 
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
         const T* /*data*/, std::string_view /*fileExtension*/) const {

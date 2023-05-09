@@ -328,7 +328,7 @@ void NetworkEditorView::onNetworkEditorFileChanged(const std::string& /*newFilen
     fitNetwork();
 }
 
-void NetworkEditorView::exportViewToFile(const QString& filename, bool entireScene,
+void NetworkEditorView::exportViewToFile(const std::filesystem::path& filename, bool entireScene,
                                          bool backgroundVisible) {
     QRectF rect;
     if (entireScene) {
@@ -348,12 +348,12 @@ void NetworkEditorView::exportViewToFile(const QString& filename, bool entireSce
         }
     };
 
-    if (toLower(filesystem::getFileExtension(utilqt::fromQString(filename))) == "pdf") {
-        QPdfWriter pdfwriter(filename);
-        pdfwriter.setPageSize(QPageSize(destRect.size(), QPageSize::Point));
-        pdfwriter.setPageMargins(QMarginsF(), QPageLayout::Point);
-        pdfwriter.setResolution(72);
-        QPainter painter(&pdfwriter);
+    if (toLower(filename.extension().string()) == ".pdf") {
+        QPdfWriter pdfWriter(utilqt::toQString(filename));
+        pdfWriter.setPageSize(QPageSize(destRect.size(), QPageSize::Point));
+        pdfWriter.setPageMargins(QMarginsF(), QPageLayout::Point);
+        pdfWriter.setResolution(72);
+        QPainter painter(&pdfWriter);
         renderCall(painter);
         painter.end();
     } else {
@@ -362,7 +362,7 @@ void NetworkEditorView::exportViewToFile(const QString& filename, bool entireSce
         painter.setRenderHint(QPainter::Antialiasing);
         renderCall(painter);
         painter.end();
-        image.save(filename);
+        image.save(utilqt::toQString(filename));
     }
 
     editor_->setBackgroundVisible(true);

@@ -139,7 +139,7 @@ public:
      *   should hold column headers, but they cannot be found, or if there are
      *   unmatched quotes at the end of the file
      */
-    virtual std::shared_ptr<DataFrame> readData(std::string_view fileName) override;
+    virtual std::shared_ptr<DataFrame> readData(const std::filesystem::path& fileName) override;
 
     /**
      * read a CSV file from a input stream, e.g. a std::ifstream. In case

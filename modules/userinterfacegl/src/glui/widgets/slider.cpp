@@ -83,12 +83,12 @@ Slider::Slider(const std::string& label, int value, int minValue, int maxValue,
 
     const auto texSourcePath = util::getModulePath("UserInterfaceGL", ModulePath::Images);
 
-    const std::vector<std::string> sliderFiles = {
+    const std::vector<std::filesystem::path> sliderFiles = {
         "sliderhandle-normal.png", "sliderhandle-pressed.png", "sliderhandle-checked.png",
         "sliderhandle-halo.png", "sliderhandle-border.png"};
     uiTextures_ = uiRenderer_->createUITextures("Slider", sliderFiles, texSourcePath);
 
-    const std::vector<std::string> sliderGrooveFiles = {
+    const std::vector<std::filesystem::path> sliderGrooveFiles = {
         "slidergroove-normal.png", "slidergroove-pressed.png", "slidergroove-checked.png",
         "slidergroove-halo.png", "slidergroove-border.png"};
     grooveTextures_ =

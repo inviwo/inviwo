@@ -59,6 +59,8 @@
 #include <glm/vec3.hpp>                // for vec<>::(anonymous), operator+, vec
 #include <tidds/ddsbase.h>             // for readPVMvolume, swapbytes
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 PVMVolumeReader::PVMVolumeReader() : DataReaderType<Volume>() {
@@ -67,7 +69,7 @@ PVMVolumeReader::PVMVolumeReader() : DataReaderType<Volume>() {
 
 PVMVolumeReader* PVMVolumeReader::clone() const { return new PVMVolumeReader(*this); }
 
-std::shared_ptr<Volume> PVMVolumeReader::readData(std::string_view filePath) {
+std::shared_ptr<Volume> PVMVolumeReader::readData(const std::filesystem::path& filePath) {
     checkExists(filePath);
 
     auto volume = readPVMData(filePath);
@@ -86,7 +88,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readData(std::string_view filePath) {
     return volume;
 }
 
-std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string_view filePath) {
+std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path& filePath) {
     uvec3 udim{0};
     vec3 spacing(0.0f);
     unsigned int bytesPerVoxel = 0;
@@ -97,7 +99,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string_view filePath) 
     unsigned char* parameter = nullptr;
     unsigned char* comment = nullptr;
 
-    unsigned char* pvmdata = readPVMvolume(SafeCStr{filePath}.c_str(), &udim.x, &udim.y, &udim.z,
+    unsigned char* pvmdata = readPVMvolume(filePath.string().c_str(), &udim.x, &udim.y, &udim.z,
                                            &bytesPerVoxel, &spacing.x, &spacing.y, &spacing.z,
                                            &description, &courtesy, &parameter, &comment);
 

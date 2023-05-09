@@ -35,6 +35,7 @@
 #include <inviwo/core/io/serialization/serializationexception.h>
 
 #include <sstream>
+#include <fmt/std.h>
 
 namespace inviwo {
 
@@ -42,33 +43,32 @@ InviwoModuleLibraryObserver::Observer::Observer(InviwoModuleLibraryObserver& imo
                                                 InviwoApplication* app)
     : FileObserver(app), imo_(imo) {}
 
-void InviwoModuleLibraryObserver::Observer::fileChanged(const std::string& dir) {
+void InviwoModuleLibraryObserver::Observer::fileChanged(const std::filesystem::path& dir) {
     imo_.fileChanged(dir);
 }
 
 InviwoModuleLibraryObserver::InviwoModuleLibraryObserver(InviwoApplication* app) : app_(app) {}
 
-void InviwoModuleLibraryObserver::observe(const std::string& file) {
+void InviwoModuleLibraryObserver::observe(const std::filesystem::path& file) {
     // We cannot create the observer in the constructor since
     // deriving applications will implement observer behavior
     // and they will not have been created when InviwoApplication
     // constructor is called.
     if (!observer_) observer_ = std::make_unique<Observer>(*this, app_);
     if (observing_.count(file) != 0) return;
-    auto dir = filesystem::getFileDirectory(file);
+    auto dir = file.parent_path();
     if (!observer_->isObserved(dir)) observer_->startFileObservation(dir);
 
-    auto time = filesystem::fileModificationTime(file);
-    observing_[file] = time;
+    observing_[file] = std::filesystem::last_write_time(file);
 }
 
-void InviwoModuleLibraryObserver::fileChanged(const std::string& dir) {
+void InviwoModuleLibraryObserver::fileChanged(const std::filesystem::path& dir) {
     bool reload = false;
     for (const auto& f : filesystem::getDirectoryContents(dir)) {
-        const auto file = dir + "/" + f;
+        const auto file = dir / f;
         auto it = observing_.find(file);
         if (it != observing_.end()) {
-            auto time = filesystem::fileModificationTime(file);
+            auto time = std::filesystem::last_write_time(file);
             if (time > it->second) {
                 it->second = time;
                 reload = true;

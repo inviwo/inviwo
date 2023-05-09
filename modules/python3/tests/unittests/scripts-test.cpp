@@ -46,15 +46,15 @@
 namespace inviwo {
 
 namespace {
-std::string getPath() {
+std::filesystem::path getPath() {
     auto path = util::getInviwoApplication()->getModuleByType<Python3Module>()->getPath(
         ModulePath::UnitTests);
-    return path + "/scripts/";
+    return path / "scripts";
 }
 }  // namespace
 
 TEST(Python3Scripts, GrabReturnValues) {
-    PythonScriptDisk script(getPath() + "grabreturnvalue.py");
+    PythonScriptDisk script(getPath() / "grabreturnvalue.py");
 
     bool status = false;
     script.run([&](pybind11::dict dict) {
@@ -83,7 +83,7 @@ TEST(Python3Scripts, GrabReturnValues) {
 }
 
 TEST(Python3Scripts, PassValues) {
-    PythonScriptDisk script(getPath() + "passvalues.py");
+    PythonScriptDisk script(getPath() / "passvalues.py");
 
     bool status = false;
     int a = 1;
@@ -108,7 +108,7 @@ TEST(Python3Scripts, PassValues) {
 }
 
 TEST(Python3Scripts, GLMTest) {
-    PythonScriptDisk script(getPath() + "glm.py");
+    PythonScriptDisk script(getPath() / "glm.py");
 
     bool status = false;
     script.run([&](pybind11::dict dict) {
@@ -176,7 +176,7 @@ TEST(Python3Scripts, GLMTest) {
 }
 
 TEST(Python3Scripts, OptionPropertyTest) {
-    PythonScriptDisk script(getPath() + "option_property.py");
+    PythonScriptDisk script(getPath() / "option_property.py");
 
     bool status = false;
     script.run([&](pybind11::dict dict) {

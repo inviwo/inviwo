@@ -30,12 +30,11 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
+#include <filesystem>
+
 #include <QModelIndex>
 #include <QSplitter>
 #include <QStringList>
-#include <warn/pop>
 
 class QToolButton;
 class QLineEdit;
@@ -55,10 +54,7 @@ class ChangeLog;
 class WorkspaceFilter;
 
 class IVW_QTEDITOR_API WelcomeWidget : public QSplitter {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     WelcomeWidget(InviwoApplication* app, QWidget* parent);
     virtual ~WelcomeWidget() = default;
@@ -67,8 +63,8 @@ public:
     void enableRestoreButton(bool hasRestoreWorkspace);
 
 signals:
-    void loadWorkspace(const QString& filename, bool isExample);
-    void appendWorkspace(const QString& filename);
+    void loadWorkspace(const std::filesystem::path& filename, bool isExample);
+    void appendWorkspace(const std::filesystem::path& filename);
     void newWorkspace();
     void openWorkspace();
     void restoreWorkspace();

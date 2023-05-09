@@ -69,7 +69,7 @@ public:
     size2_t getCustomDimensions() const;
 
     void saveImageLayer();
-    void saveImageLayer(std::string_view filePath,
+    void saveImageLayer(const std::filesystem::path& filePath,
                         const FileExtension& extension = FileExtension());
     const Layer* getVisibleLayer() const;
 
@@ -89,8 +89,8 @@ public:
     /**
      * @see Exporter::exportFile
      */
-    virtual std::optional<std::string> exportFile(
-        std::string_view path, std::string_view name,
+    virtual std::optional<std::filesystem::path> exportFile(
+        const std::filesystem::path& path, std::string_view name,
         const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const override;
 
 protected:

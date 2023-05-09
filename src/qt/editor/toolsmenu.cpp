@@ -159,17 +159,17 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
                     LogInfoCustom("ToolMenu", "Creating regression test " << lname);
                     if (auto module = app->getModuleByIdentifier(modulename)) {
                         const auto regressiondir = module->getPath(ModulePath::RegressionTests);
-                        const auto testdir = regressiondir + "/" + lname;
-                        if (filesystem::directoryExists(testdir)) {
+                        const auto testdir = regressiondir / lname;
+                        if (std::filesystem::is_directory(testdir)) {
                             LogErrorCustom(
                                 "ToolMenu",
                                 "Dir: \"" << testdir << "\" already exits. use a different name");
                             return;
                         }
                         try {
-                            filesystem::createDirectoryRecursively(testdir);
+                            std::filesystem::create_directories(testdir);
 
-                            const auto workspaceName = testdir + "/" + lname + ".inv";
+                            const auto workspaceName = testdir / (lname + ".inv");
                             LogInfoCustom("ToolMenu",
                                           "Saving regression workspace to: " << workspaceName);
 

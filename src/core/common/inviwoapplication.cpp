@@ -108,17 +108,13 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     , filelogger_{[&]() {
         if (commandLineParser_->getLogToFile()) {
             auto filename = commandLineParser_->getLogToFileFileName();
-            if (!filesystem::isAbsolutePath(filename)) {
+            if (!filename.is_absolute()) {
                 auto outputDir = commandLineParser_->getOutputPath();
                 if (!outputDir.empty()) {
-                    filename = outputDir + "/" + filename;
+                    filename = outputDir / filename;
                 } else {
-                    filename = filesystem::getWorkingDirectory() + "/" + filename;
+                    filename = filesystem::getWorkingDirectory() / filename;
                 }
-            }
-            auto dir = filesystem::getFileDirectory(filename);
-            if (!filesystem::directoryExists(dir)) {
-                filesystem::createDirectoryRecursively(dir);
             }
             auto flog = std::make_shared<FileLogger>(filename);
             LogCentral::getPtr()->registerLogger(flog);
@@ -249,10 +245,10 @@ void InviwoApplication::registerModules(RuntimeModuleLoading token,
     moduleManager_.registerModules(token, isEnabled);
 }
 
-std::string InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }
+std::filesystem::path InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }
 
-std::string InviwoApplication::getPath(PathType pathType, const std::string& suffix,
-                                       const bool& createFolder) {
+std::filesystem::path InviwoApplication::getPath(PathType pathType, const std::string& suffix,
+                                                 const bool& createFolder) {
     return filesystem::getPath(pathType, suffix, createFolder);
 }
 

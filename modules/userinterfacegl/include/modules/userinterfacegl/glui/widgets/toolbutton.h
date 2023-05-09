@@ -37,6 +37,7 @@
 
 #include <memory>  // for shared_ptr
 #include <string>  // for string
+#include <filesystem>
 
 namespace inviwo {
 
@@ -62,7 +63,7 @@ public:
                const ivec2& extent = ivec2(24, 24));
     virtual ~ToolButton() = default;
 
-    void setImage(const std::string& filename);
+    void setImage(const std::filesystem::path& filename);
     void setImage(std::shared_ptr<Texture2D> texture);
 
     void setMargins(int top, int left, int bottom, int right);
@@ -71,7 +72,7 @@ public:
 private:
     virtual void renderWidget(const ivec2& origin, const size2_t& canvasDim) override;
 
-    static std::shared_ptr<Texture2D> loadImage(const std::string& filename);
+    static std::shared_ptr<Texture2D> loadImage(const std::filesystem::path& filename);
 
     std::shared_ptr<Texture2D> labelImage_;
     ivec4 margins_ = ivec4(6, 6, 6, 6);  //!< top, left, bottom, right
