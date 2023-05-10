@@ -40,8 +40,8 @@ enum class FileMode { AnyFile, ExistingFile, Directory, ExistingFiles };
 
 IVW_CORE_API std::string_view enumToStr(AcceptMode mode);
 IVW_CORE_API std::string_view enumToStr(FileMode mode);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, AcceptMode& mode);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, FileMode& mode);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, AcceptMode mode);
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, FileMode mode);
 
 }  // namespace inviwo
 

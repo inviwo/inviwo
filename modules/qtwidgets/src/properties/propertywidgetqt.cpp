@@ -444,7 +444,11 @@ bool PropertyWidgetQt::event(QEvent* event) {
             }
         )"_unindent);
 
-        html.append("body").append(property_->getDescription());
+        try {
+            html.append("body").append(property_->getDescription());
+        } catch (const Exception& e) {
+            util::log(e.getContext(), e.getFullMessage());
+        }
 
         QToolTip::showText(helpEvent->globalPos(), utilqt::toQString(desc));
         return true;

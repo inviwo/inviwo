@@ -59,7 +59,7 @@ std::string_view enumToStr(FileMode mode) {
                     static_cast<int>(mode));
 }
 
-std::ostream& operator<<(std::ostream& ss, AcceptMode& mode) { return ss << enumToStr(mode); }
-std::ostream& operator<<(std::ostream& ss, FileMode& mode) { return ss << enumToStr(mode); }
+std::ostream& operator<<(std::ostream& ss, AcceptMode mode) { return ss << enumToStr(mode); }
+std::ostream& operator<<(std::ostream& ss, FileMode mode) { return ss << enumToStr(mode); }
 
 }  // namespace inviwo
