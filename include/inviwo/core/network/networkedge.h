@@ -44,14 +44,12 @@ class ProcessorNetwork;
  * Represents a edge in the ProcesorNetwork, either a PortConnection or a PropertyLink, as a
  * pair of paths, i.e. dot separated identifiers.
  */
-struct IVW_CORE_API NetworkEdge : Serializable {
+struct IVW_CORE_API NetworkEdge {
     NetworkEdge() = default;
     NetworkEdge(std::string src, std::string dst);
 
     NetworkEdge(const PropertyLink& link);
     NetworkEdge(const PortConnection& connection);
-
-    virtual ~NetworkEdge() = default;
 
     PortConnection toConnection(const ProcessorNetwork& net) const;
     PropertyLink toLink(const ProcessorNetwork& net) const;
@@ -72,8 +70,8 @@ struct IVW_CORE_API NetworkEdge : Serializable {
      */
     void updateProcessorID(const std::map<std::string, std::string, std::less<>>& map);
 
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
+    void serialize(Serializer& s) const;
+    void deserialize(Deserializer& d);
 
     std::string srcPath;
     std::string dstPath;
