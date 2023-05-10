@@ -41,7 +41,7 @@ endif()
 set(IVW_CFG_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
 project(${IVW_CFG_PROJECT_NAME} 
     HOMEPAGE_URL https://github.com/inviwo/inviwo
-    LANGUAGES CXX
+    LANGUAGES C CXX
 )
 
 #Verify that git submodules has been cloned
@@ -61,6 +61,8 @@ include(cmake/globalconfig.cmake)
 if(MSVC)
     find_program(ccache_exe ccache)
     if(ccache_exe)
+        message(STATUS "Setting up ccache: ${ccache_exe}")
+
         file(COPY_FILE
             ${ccache_exe} ${CMAKE_BINARY_DIR}/cl.exe
             ONLY_IF_DIFFERENT
