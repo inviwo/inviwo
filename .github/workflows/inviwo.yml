@@ -158,7 +158,10 @@ jobs:
       run: |
         which ccache
         ls -al C:/ProgramData/chocolatey/bin/ccache.exe
-        cat C:/ProgramData/chocolatey/bin/ccache.exe
+        ls -alR C:/ProgramData/chocolatey/**/ccache
+        ls -alR C:/ProgramData/chocolatey/**/ccache.exe
+        ls -alR C:/ProgramData/chocolatey/**/*.exe
+
 
     - name: Configure CMake
       shell: bash
@@ -173,9 +176,9 @@ jobs:
     - name: Setup C++ Log matchers
       uses: Trass3r/setup-cpp@v1
 
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 15
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
+    #  timeout-minutes: 15
 
     - name: Build
       timeout-minutes: 360
