@@ -64,7 +64,9 @@ if(MSVC)
         message(STATUS "Setting up ccache: ${ccache_exe}")
 
         file(COPY_FILE
-            ${ccache_exe} ${CMAKE_BINARY_DIR}/cl.exe
+            # ${ccache_exe}
+            C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/ccache.exe 
+            ${CMAKE_BINARY_DIR}/cl.exe
             ONLY_IF_DIFFERENT
         )
 

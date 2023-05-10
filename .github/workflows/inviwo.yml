@@ -61,15 +61,15 @@ jobs:
           inviwo-${{ matrix.triplet }}-${{ env.BUILD_TYPE }}-refs/heads/master
           inviwo-${{ matrix.triplet }}-${{ env.BUILD_TYPE }}-
 
-    - name: Test
-      shell: bash 
-      run: |
-        which ccache
-        ls -al C:/ProgramData/chocolatey/bin/ccache.exe
-        ls -alR C:/ProgramData/chocolatey/**/ccache
-        ls -alR C:/ProgramData/chocolatey/**/ccache.exe
-
-        C:/ProgramData/chocolatey/bin/ccache.exe --shimgen-help
+    #- name: Test
+    #  shell: bash 
+    #  run: |
+    #    which ccache
+    #    ls -al C:/ProgramData/chocolatey/bin/ccache.exe
+    #    ls -alR C:/ProgramData/chocolatey/**/ccache
+    #    ls -alR C:/ProgramData/chocolatey/**/ccache.exe
+    #
+    #    C:/ProgramData/chocolatey/bin/ccache.exe --shimgen-help
 
     - name: Chocolatey Install 
       if: runner.os == 'Windows'
