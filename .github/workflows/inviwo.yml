@@ -153,7 +153,8 @@ jobs:
           inviwo-${{ matrix.triplet }}-${{ env.BUILD_TYPE }}-
 
     - name: Test
-      shell: bash |
+      shell: bash 
+      run: |
         which ccache
         ls -al C:/ProgramData/chocolatey/bin/ccache.exe
         cut C:/ProgramData/chocolatey/bin/ccache.exe
