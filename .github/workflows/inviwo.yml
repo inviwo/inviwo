@@ -49,6 +49,28 @@ jobs:
     timeout-minutes: 360
     
     steps:
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        variant: ${{ matrix.cache }}
+        max-size: "500M"
+        verbose: 1
+        key: inviwo-${{ matrix.triplet }}-${{ env.BUILD_TYPE }}-${{ github.ref }}
+        restore-keys: |
+          inviwo-${{ matrix.triplet }}-${{ env.BUILD_TYPE }}-${{ github.ref }}
+          inviwo-${{ matrix.triplet }}-${{ env.BUILD_TYPE }}-refs/heads/master
+          inviwo-${{ matrix.triplet }}-${{ env.BUILD_TYPE }}-
+
+    - name: Test
+      shell: bash 
+      run: |
+        which ccache
+        ls -al C:/ProgramData/chocolatey/bin/ccache.exe
+        ls -alR C:/ProgramData/chocolatey/**/ccache
+        ls -alR C:/ProgramData/chocolatey/**/ccache.exe
+
+        C:/ProgramData/chocolatey/bin/ccache.exe --shimgen-help
+
     - name: Chocolatey Install 
       if: runner.os == 'Windows'
       shell: pwsh
@@ -140,27 +162,6 @@ jobs:
         echo "-- Changes --"
         echo "${{ steps.build_changelog.outputs.changelog }}"
         echo "-- End --"
-
-    - name: ccache
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        variant: ${{ matrix.cache }}
-        max-size: "500M"
-        verbose: 1
-        key: inviwo-${{ matrix.triplet }}-${{ env.BUILD_TYPE }}-${{ github.ref }}
-        restore-keys: |
-          inviwo-${{ matrix.triplet }}-${{ env.BUILD_TYPE }}-${{ github.ref }}
-          inviwo-${{ matrix.triplet }}-${{ env.BUILD_TYPE }}-refs/heads/master
-          inviwo-${{ matrix.triplet }}-${{ env.BUILD_TYPE }}-
-
-    - name: Test
-      shell: bash 
-      run: |
-        which ccache
-        ls -al C:/ProgramData/chocolatey/bin/ccache.exe
-        ls -alR C:/ProgramData/chocolatey/**/ccache
-        ls -alR C:/ProgramData/chocolatey/**/ccache.exe
-        ls -alR C:/ProgramData/chocolatey/**/*.exe
 
 
     - name: Configure CMake
