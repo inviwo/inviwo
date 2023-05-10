@@ -158,7 +158,7 @@ jobs:
       run: |
         which ccache
         ls -al C:/ProgramData/chocolatey/bin/ccache.exe
-        cut C:/ProgramData/chocolatey/bin/ccache.exe
+        cat C:/ProgramData/chocolatey/bin/ccache.exe
 
     - name: Configure CMake
       shell: bash
