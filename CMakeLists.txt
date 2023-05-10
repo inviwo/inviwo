@@ -58,6 +58,24 @@ find_package(Python3 COMPONENTS Interpreter Development NumPy)
 
 include(cmake/globalconfig.cmake)
 
+if(MSVC)
+    find_program(ccache_exe ccache)
+    if(ccache_exe)
+        file(COPY_FILE
+            ${ccache_exe} ${CMAKE_BINARY_DIR}/cl.exe
+            ONLY_IF_DIFFERENT
+        )
+
+         set(CMAKE_VS_GLOBALS
+            "CLToolExe=cl.exe"
+            "CLToolPath=${CMAKE_BINARY_DIR}"
+            "TrackFileAccess=false"
+            "UseMultiToolTask=true"
+            "DebugInformationFormat=OldStyle"
+        )
+    endif()
+endif()
+
 #--------------------------------------------------------------------
 # Application setup
 option(IVW_APP_QTBASE       "Build base for Qt apps. Used by the Qt network editor and the Tiny Qt app" ON)
