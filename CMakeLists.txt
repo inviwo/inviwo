@@ -63,16 +63,16 @@ if(MSVC)
     if(ccache_exe)
         message(STATUS "Setting up ccache: ${ccache_exe}")
 
-        file(COPY_FILE
-            # ${ccache_exe}
-            C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/ccache.exe 
-            ${CMAKE_BINARY_DIR}/cl.exe
-            ONLY_IF_DIFFERENT
-        )
+        #file(COPY_FILE
+        #.   ${ccache_exe}
+        #    C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/ccache.exe 
+        #    ${CMAKE_BINARY_DIR}/cl.exe
+        #    ONLY_IF_DIFFERENT
+        #)
 
          set(CMAKE_VS_GLOBALS
-            "CLToolExe=cl.exe"
-            "CLToolPath=${CMAKE_BINARY_DIR}"
+            "CLToolExe=C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/ccache.exe"
+            # "CLToolPath=${CMAKE_BINARY_DIR}"
             "TrackFileAccess=false"
             "UseMultiToolTask=true"
             "DebugInformationFormat=OldStyle"
