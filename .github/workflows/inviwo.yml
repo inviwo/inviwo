@@ -21,7 +21,7 @@ jobs:
             mono: ''
             cmake: '--preset ninja-dev-vcpkg -DIVW_MODULE_HDF5=ON -DIVW_DOXYGEN_PROJECT=ON
                    -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"'
-            targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
+            targets: 'all DOXY-Inviwo DOXY-Python package'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
             cache: 'ccache'
