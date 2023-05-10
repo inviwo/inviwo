@@ -114,9 +114,10 @@ jobs:
         -password "${{ secrets.GITHUB_TOKEN }}"
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2
+      uses: jurplel/install-qt-action@v4
       with:
-        version: 6.3.2
+        version: 6.4.2
+        setup-python: false
         dir: ${{ github.workspace }}
     
     - name: Clone Inviwo
