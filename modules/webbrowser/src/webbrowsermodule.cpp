@@ -253,14 +253,16 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     CefSettings settings;
     // Non-mac systems uses a single helper executable so here we can specify name
     // Linux will have empty extension
-    auto subProcessExecutable = exeDirectory / fmt::format("{}{}", "cef_web_helper", exeExtension);
-    if (!filesystem::fileExists(subProcessExecutable)) {
-        throw ModuleInitException("Could not find web helper executable:" + subProcessExecutable);
+    auto subProcessExecutable = exeDirectory / "cef_web_helper";
+    subProcessExecutable += exeExtension;
+    if (!std::filesystem::is_regular_file(subProcessExecutable)) {
+        throw ModuleInitException(
+            fmt::format("Could not find web helper executable: {}", subProcessExecutable));
     }
 
     // Necessary to run helpers in separate sub-processes
     // Needed since we do not want to edit the "main" function
-    CefString(&settings.browser_subprocess_path).FromWString(util::toWstring(subProcessExecutable));
+    CefString(&settings.browser_subprocess_path).FromWString(subProcessExecutable.wstring());
 #endif
 
 #ifdef WIN32

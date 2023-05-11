@@ -124,8 +124,8 @@ inline QString toQString(const std::string& str) {
     return QString::fromUtf8(str.data(), str.size());
 }
 inline QString toQString(const std::filesystem::path& path) {
-    auto str = path.generic_string();
-    return QString::fromUtf8(str.data(), str.size());
+    auto str = path.generic_u8string();
+    return QString::fromUtf8(reinterpret_cast<char*>(str.data()), str.size());
 }
 /**
  * \brief create a UTF8-encoded std::string from a QString
