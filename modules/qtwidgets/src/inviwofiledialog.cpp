@@ -119,7 +119,7 @@ void InviwoFileDialog::setAcceptMode(inviwo::AcceptMode mode) {
     }
 }
 
-inviwo::AcceptMode InviwoFileDialog::getAcceptMode() const {
+AcceptMode InviwoFileDialog::getAcceptMode() const {
     switch (QFileDialog::acceptMode()) {
         case QFileDialog::AcceptSave:
             return inviwo::AcceptMode::Save;

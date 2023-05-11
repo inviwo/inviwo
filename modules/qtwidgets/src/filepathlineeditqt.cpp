@@ -69,7 +69,7 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
     warningLabel_->setScaledContents(true);
     warningLabel_->setPixmap(QPixmap(":/svgicons/file-warning.svg"));
     warningLabel_->setFixedSize(labelSize);
-    warningLabel_->setToolTip("Could not locate file!");
+    warningLabel_->setToolTip("Could not locate file");
     warningLabel_->hide();
 
     auto fsModel = new QFileSystemModel(this);

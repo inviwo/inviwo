@@ -442,7 +442,6 @@ QGroupBox::title {
 ************************/
 QListView {
     background: transparent;
-    background: #3a3a3d;
     /*using border here breaks the QCombobox */
 }
 

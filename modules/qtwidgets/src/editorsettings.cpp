@@ -38,7 +38,7 @@ EditorSettings::EditorSettings(InviwoApplication* app)
                      {1, ConstraintBehavior::Immutable}, {100, ConstraintBehavior::Ignore})
     , numRestoreFiles(
           "numRestoreFiles", "Number of Restore Files",
-          "The maximum number of backup files to store, the oldest will be removed frist"_help, 24,
+          "The maximum number of backup files to keep, the oldest will be removed first"_help, 24,
           {1, ConstraintBehavior::Immutable}, {100, ConstraintBehavior::Ignore})
     , restoreFrequency("restoreFrequency", "Restore Frequency",
                        "Minutes between new backup files"_help, 10,
