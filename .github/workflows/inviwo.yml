@@ -169,6 +169,9 @@ jobs:
         echo "${{ steps.build_changelog.outputs.changelog }}"
         echo "-- End --"
 
+    - name: Activate MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+
     - name: Configure CMake
       shell: bash
       env:
