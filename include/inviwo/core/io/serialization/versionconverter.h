@@ -194,6 +194,45 @@ void visitMatchingNodesRecursive(TxElement* root, const ElementMatcher& selector
     visitNodes(visitNodes, root);
 }
 
+template <typename Visitor>
+void visitMatchingNodesRecursive(TxElement* root, const std::vector<ElementMatcher>& selectors,
+                                 Visitor visitor) {
+
+    const auto match = [](const ElementMatcher& matcher, const TxElement* node) {
+        std::string name;
+        node->GetValue(&name);
+        if (name == matcher.name) {
+            bool match = true;
+            for (const auto& attribute : matcher.attributes) {
+                auto val = node->GetAttributeOrDefault(attribute.name, "");
+                match = match && val == attribute.value;
+            }
+            return match;
+        }
+        return false;
+    };
+
+    std::vector<TxElement*> stack;
+
+    auto visitNodes = [&](auto& self, TxElement* node) -> void {
+        stack.push_back(node);
+
+        if (stack.size() >= selectors.size() &&
+            std::equal(selectors.rbegin(), selectors.rend(), stack.rbegin(),
+                       stack.rbegin() + selectors.size(), match)) {
+            std::invoke(visitor, node);
+        }
+
+        ticpp::Iterator<ticpp::Element> child;
+        for (child = child.begin(node); child != child.end(); child++) {
+            self(self, child.Get());
+        }
+
+        stack.pop_back();
+    };
+    visitNodes(visitNodes, root);
+}
+
 /**
  * Helper class to specify a processor network xml path. For example
  * {

@@ -37,6 +37,7 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
+#include <modules/qtwidgets/editorsettings.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -60,7 +61,7 @@ public:
     explicit TreeItem(TreeItem* parent);
     TreeItem(std::string_view caption, WorkspaceTreeModel::Type type);
     TreeItem(const std::filesystem::path& filename, InviwoApplication* app,
-             std::function<void(TreeItem*)> onChange, bool isExample);
+             std::function<void(TreeItem*)> onChange, bool readOnly);
 
     TreeItem(const TreeItem&) = delete;
     TreeItem& operator=(const TreeItem&) = delete;
@@ -286,6 +287,8 @@ WorkspaceTreeModel::WorkspaceTreeModel(InviwoApplication* app, QObject* parent)
     : QAbstractItemModel(parent), app_(app), root_{std::make_unique<TreeItem>(nullptr)} {
 
     addEntry(root_.get(), std::make_unique<TreeItem>(recent, Type::SubSection));
+    addEntry(root_.get(), std::make_unique<TreeItem>(restore, Type::SubSection));
+    addEntry(root_.get(), std::make_unique<TreeItem>(custom, Type::Section));
     addEntry(root_.get(), std::make_unique<TreeItem>(examples, Type::Section));
     addEntry(root_.get(), std::make_unique<TreeItem>(tests, Type::Section));
 }
@@ -407,7 +410,7 @@ QModelIndex WorkspaceTreeModel::getCategoryIndex(std::string_view category) {
 void WorkspaceTreeModel::updateRecentWorkspaces(const QStringList& recentFiles) {
     std::vector<std::unique_ptr<TreeItem>> items;
     for (auto& elem : recentFiles) {
-        const std::filesystem::path filename = utilqt::fromQString(elem);
+        const std::filesystem::path filename = utilqt::toPath(elem);
         if (std::filesystem::is_regular_file(filename)) {
             items.push_back(std::make_unique<TreeItem>(
                 filename, app_,
@@ -419,6 +422,79 @@ void WorkspaceTreeModel::updateRecentWorkspaces(const QStringList& recentFiles) 
         }
     }
     updateCategory(getCategory(recent), std::move(items));
+}
+
+void WorkspaceTreeModel::updateRestoreEntries() {
+    const auto restores = filesystem::getPath(PathType::Settings) / "autosaves";
+
+    if (!std::filesystem::is_directory(restores)) return;
+
+    std::filesystem::directory_iterator it(restores);
+
+    std::vector<std::filesystem::path> files{};
+    std::copy_if(it, end(it), std::back_inserter(files), [](const std::filesystem::path& path) {
+        return path.extension().string() == ".inv";
+    });
+
+    std::sort(files.begin(), files.end(),
+              [](const std::filesystem::path& a, const std::filesystem::path& b) {
+                  return std::filesystem::last_write_time(a) > std::filesystem::last_write_time(b);
+              });
+
+    std::vector<std::unique_ptr<TreeItem>> items;
+
+    std::transform(files.begin(), files.end(), std::back_inserter(items),
+                   [&](const std::filesystem::path& path) {
+                       return std::make_unique<TreeItem>(
+                           path, app_,
+                           [this](TreeItem* item) {
+                               auto id = getIndex(item);
+                               dataChanged(id, id);
+                           },
+                           true);
+                   });
+
+    updateCategory(getCategory(restore), std::move(items));
+}
+
+void WorkspaceTreeModel::updateCustomEntries() {
+    const auto& props = app_->getSettingsByType<EditorSettings>()->workspaceDirectories;
+
+    std::vector<std::unique_ptr<TreeItem>> items;
+    for (const auto* fileProp : props.getPropertiesByType<FileProperty>()) {
+        auto& path = fileProp->get();
+
+        if (!std::filesystem::is_directory(path)) continue;
+
+        auto section = std::make_unique<TreeItem>(path.generic_string(), Type::SubSection);
+
+        std::filesystem::directory_iterator it(path);
+
+        std::vector<std::filesystem::path> files{};
+        std::copy_if(it, end(it), std::back_inserter(files), [](const std::filesystem::path& path) {
+            return path.extension().string() == ".inv";
+        });
+
+        std::sort(files.begin(), files.end(),
+                  [](const std::filesystem::path& a, const std::filesystem::path& b) {
+                      return std::filesystem::last_write_time(a) >
+                             std::filesystem::last_write_time(b);
+                  });
+
+        std::for_each(files.begin(), files.end(), [&](const std::filesystem::path& path) {
+            section->addChild(std::make_unique<TreeItem>(
+                path, app_,
+                [this](TreeItem* item) {
+                    auto id = getIndex(item);
+                    dataChanged(id, id);
+                },
+                false));
+        });
+        if (section->childCount() > 0) {
+            items.push_back(std::move(section));
+        }
+    }
+    updateCategory(getCategory(custom), std::move(items));
 }
 
 void WorkspaceTreeModel::updateModules(std::string_view category, ModulePath pathType,

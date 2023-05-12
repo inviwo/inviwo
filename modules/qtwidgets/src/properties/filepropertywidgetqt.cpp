@@ -203,8 +203,7 @@ void FilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
                                 break;
                             }
 
-                            case FileMode::Directory:
-                            case FileMode::DirectoryOnly: {
+                            case FileMode::Directory: {
                                 if (std::filesystem::is_directory(file)) {
                                     event->accept();
                                     return;

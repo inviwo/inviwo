@@ -29,6 +29,7 @@
 
 #include <modules/qtwidgets/filepathlineeditqt.h>
 
+#include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/filesystem.h>      // for fileExists, getFileNameWithExtension, getFi...
 #include <modules/qtwidgets/inviwoqtutils.h>  // for toQString, fromQString
 #include <modules/qtwidgets/lineeditqt.h>     // for LineEditQt
@@ -42,6 +43,9 @@
 #include <QString>      // for QString, operator!=
 #include <QStyle>       // for QStyle, QStyle::PM_DefaultFrameWidth
 #include <Qt>           // for MouseFocusReason
+#include <QCompleter>
+#include <QFileSystemModel>
+#include <QListView>
 
 class QFocusEvent;
 class QMouseEvent;
@@ -51,16 +55,34 @@ class QWidget;
 namespace inviwo {
 
 FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
-    : LineEditQt(parent), editingEnabled_(false), cursorPos_(-1), cursorPosDirty_(false) {
-    // warning icon at the right side of the line edit for indication of "file not found"
-    warningLabel_ = new QLabel(this);
+    : LineEditQt{parent}
+    , warningLabel_{new QLabel(this)}
+    , path_{}
+    , acceptMode_{AcceptMode::Open}
+    , fileMode_{FileMode::AnyFile}
+    , editingEnabled_{false}
+    , cursorPos_{0}
+    , cursorPosDirty_{false} {
+
     int width = this->sizeHint().height();
     QSize labelSize(width, width);
     warningLabel_->setScaledContents(true);
     warningLabel_->setPixmap(QPixmap(":/svgicons/file-warning.svg"));
     warningLabel_->setFixedSize(labelSize);
-    warningLabel_->setToolTip("Invalid File: Could not locate file");
+    warningLabel_->setToolTip("Could not locate file");
     warningLabel_->hide();
+
+    auto fsModel = new QFileSystemModel(this);
+    fsModel->setRootPath(QString());
+    // Need to access the model once to have it cache the current path
+    // Otherwise there will be no suggestions.
+    connect(this, &QLineEdit::textChanged,
+            [fsModel](const QString& path) { fsModel->index(path); });
+    QCompleter* completer = new QCompleter(fsModel, this);
+    completer->setCompletionMode(QCompleter::PopupCompletion);
+    completer->setCaseSensitivity(Qt::CaseInsensitive);
+    setCompleter(completer);
+    completer->popup()->setObjectName("Completer");
 
     auto trimFilename = [this]() {
         auto str = text().trimmed();
@@ -72,37 +94,47 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
         }
     };
 
-    QObject::connect(this, &QLineEdit::returnPressed, [this, trimFilename]() {
+    connect(this, &QLineEdit::returnPressed, [this, trimFilename]() {
         if (editingEnabled_) {
-            cursorPos_ = -1;
             trimFilename();
-            path_ = utilqt::fromQString(text().trimmed());
+            path_ = utilqt::toPath(text().trimmed());
             setEditing(false);
         }
     });
-    QObject::connect(this, &QLineEdit::editingFinished, [this, trimFilename]() {
+    connect(this, &QLineEdit::editingFinished, [this, trimFilename]() {
         if (editingEnabled_) {
-            cursorPos_ = this->cursorPosition();
             trimFilename();
-            path_ = utilqt::fromQString(text());
+            path_ = utilqt::toPath(text());
             setEditing(false);
         }
     });
-    QObject::connect(this, &LineEditQt::editingCanceled, [this]() {
+
+    connect(this, &LineEditQt::editingCanceled, [this]() {
         // revert changes
         if (editingEnabled_) {
             setModified(false);
-            cursorPos_ = -1;
             updateContents();
             setEditing(false);
         }
     });
 }
 
+void FilePathLineEditQt::setAcceptMode(AcceptMode acceptMode) {
+    if (acceptMode_ != acceptMode) {
+        acceptMode_ = acceptMode;
+        updateIcon();
+    }
+}
+void FilePathLineEditQt::setFileMode(FileMode fileMode) {
+    if (fileMode_ != fileMode) {
+        fileMode_ = fileMode;
+        updateIcon();
+    }
+}
+
 void FilePathLineEditQt::setPath(const std::filesystem::path& path) {
     if (path_ != path) {
         path_ = path;
-        cursorPos_ = -1;
         setModified(false);
         updateContents();
     } else {
@@ -129,43 +161,50 @@ void FilePathLineEditQt::resizeEvent(QResizeEvent*) {
 }
 
 void FilePathLineEditQt::focusInEvent(QFocusEvent* event) {
+    cursorPosDirty_ = false;
     if (event->reason() == Qt::MouseFocusReason) {
         // user has used the mouse to click into this widget
         auto cursor = QCursor::pos();
         // get current cursor position in line edit
-        int pos = this->cursorPositionAt(this->mapFromGlobal(cursor));
-        // transform position into position within entire path
-        auto lenFilename = path_.stem().string().size();
-        cursorPos_ = static_cast<int>(path_.string().size() - lenFilename) + pos;
+        cursorPos_ = this->cursorPositionAt(this->mapFromGlobal(cursor));
         // the cursor position has to be set again after the mouse click has been processed in
         // mousePressEvent()
         cursorPosDirty_ = true;
     }
     setEditing(true);
+
     QLineEdit::focusInEvent(event);
-    if (cursorPos_ >= 0) {
-        // update cursor position
-        this->setCursorPosition(cursorPos_);
-    }
 }
 
 void FilePathLineEditQt::mousePressEvent(QMouseEvent* event) {
     LineEditQt::mousePressEvent(event);
+
     if (cursorPosDirty_) {
-        // adjust cursor position since the text has changed
-        this->setCursorPosition(cursorPos_);
+
+        const auto length = static_cast<int>(path_.string().size());
+        const auto lenFilename = static_cast<int>(path_.filename().string().size());
+        const auto lenDir = static_cast<int>(path_.parent_path().string().size());
+
+        if (cursorPos_ >= lenFilename) {
+            this->setSelection(lenDir, lenFilename);
+            this->setCursorPosition(length);
+        } else {
+            this->setCursorPosition(lenDir + cursorPos_);
+        }
+
         cursorPosDirty_ = false;
     }
 }
 
 void FilePathLineEditQt::updateContents() {
+
     const bool modified = isModified();
     if (editingEnabled_) {
         // show entire path
         this->setText(utilqt::toQString(path_));
     } else {
         // abbreviate file path and show only the file name
-        this->setText(utilqt::toQString(path_.stem()));
+        this->setText(utilqt::toQString(path_.filename()));
     }
     setModified(modified);
     updateIcon();
@@ -174,17 +213,71 @@ void FilePathLineEditQt::updateContents() {
 void FilePathLineEditQt::updateIcon() {
     // update visibility of warning icon
 
-    bool hasWildcard = (path_.string().find_first_of("*?#", 0) != std::string::npos);
     bool visible = false;
     QString tooltip;
-    if (hasWildcard) {
-        // check, if the parent directory is valid
-        visible = !std::filesystem::is_directory(path_.parent_path());
-        tooltip = "Invalid Path";
-    } else if (!path_.empty()) {
-        // no wildcards, check for file existence
-        visible = !std::filesystem::is_regular_file(path_);
-        tooltip = "Invalid File: Could not locate file";
+
+    bool hasWildcard = (path_.string().find_first_of("*?#", 0) != std::string::npos);
+
+    auto status = std::filesystem::status(path_);
+    const bool isFile = std::filesystem::is_regular_file(status);
+    const bool isDir = std::filesystem::is_directory(status);
+
+    const bool parentDir = std::filesystem::is_directory(path_.parent_path());
+
+    switch (acceptMode_) {
+        case AcceptMode::Open: {
+            switch (fileMode_) {
+                case FileMode::AnyFile: {
+                    break;
+                }
+                case FileMode::ExistingFile: {
+                    if (!hasWildcard) {
+                        visible = !isFile;
+                        tooltip = "Could not locate file!";
+                    } else {
+                        visible = !parentDir;
+                        tooltip = "Could not locate parent directory!";
+                    }
+                    break;
+                }
+                case FileMode::ExistingFiles: {
+                    if (!hasWildcard) {
+                        visible = !isFile;
+                        tooltip = "Could not locate file!";
+                    } else {
+                        visible = !parentDir;
+                        tooltip = "Could not locate parent directory!";
+                    }
+                    break;
+                }
+                case FileMode::Directory: {
+                    visible = !isDir;
+                    tooltip = "Could not locate directory!";
+                    break;
+                }
+            }
+            break;
+        }
+        case AcceptMode::Save: {
+            switch (fileMode_) {
+                case FileMode::AnyFile: {
+                    break;
+                }
+                case FileMode::ExistingFile: {
+                    break;
+                }
+                case FileMode::ExistingFiles: {
+                    break;
+                }
+                case FileMode::Directory: {
+                    visible = !isDir;
+                    tooltip = "Could not locate directory!";
+                    break;
+                }
+            }
+
+            break;
+        }
     }
 
     warningLabel_->setVisible(visible);

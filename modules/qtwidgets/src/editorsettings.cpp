@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,30 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/util/filedialogstate.h>
-#include <inviwo/core/util/exception.h>
-
-#include <ostream>
+#include <modules/qtwidgets/editorsettings.h>
 
 namespace inviwo {
 
-std::string_view enumToStr(AcceptMode mode) {
-    switch (mode) {
-        case AcceptMode::Open:
-            return "Open";
-        case AcceptMode::Save:
-            return "Save";
-    }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid AcceptMode enum value '{}'",
-                    static_cast<int>(mode));
-}
-std::string_view enumToStr(FileMode mode) {
-    switch (mode) {
-        case FileMode::AnyFile:
-            return "Any File";
-        case FileMode::ExistingFile:
-            return "Existing File";
-        case FileMode::Directory:
-            return "Directory";
-        case FileMode::ExistingFiles:
-            return "Existing Files";
-    }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid FileMode enum value '{}'",
-                    static_cast<int>(mode));
-}
+EditorSettings::EditorSettings(InviwoApplication* app)
+    : Settings("Editor Settings", app)
+    , workspaceAuthor("workspaceAuthor", "Default Workspace Author", "")
+    , numRecentFiles("numRecentFiles", "Number of Recent Files", 12,
+                     {1, ConstraintBehavior::Immutable}, {100, ConstraintBehavior::Ignore})
+    , numRestoreFiles(
+          "numRestoreFiles", "Number of Restore Files",
+          "The maximum number of backup files to keep, the oldest will be removed first"_help, 24,
+          {1, ConstraintBehavior::Immutable}, {100, ConstraintBehavior::Ignore})
+    , restoreFrequency("restoreFrequency", "Restore Frequency",
+                       "Minutes between new backup files"_help, 10,
+                       {1, ConstraintBehavior::Immutable}, {100, ConstraintBehavior::Ignore})
 
-std::ostream& operator<<(std::ostream& ss, AcceptMode mode) { return ss << enumToStr(mode); }
-std::ostream& operator<<(std::ostream& ss, FileMode mode) { return ss << enumToStr(mode); }
+    , workspaceDirectories("workspaceDirectories", "Workspace Directories",
+                           std::make_unique<FileProperty>("directory", "Directory")) {
+
+    addProperties(workspaceAuthor, numRecentFiles, numRestoreFiles, restoreFrequency,
+                  workspaceDirectories);
+
+    load();
+}
 
 }  // namespace inviwo

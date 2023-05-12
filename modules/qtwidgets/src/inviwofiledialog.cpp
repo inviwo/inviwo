@@ -61,8 +61,8 @@ InviwoFileDialog::InviwoFileDialog(QWidget* parent, const std::string& title,
     sidebarURLs_ << QUrl::fromLocalFile(
         QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
 
-    useNativeDialog();
-    QFileDialog::setOption(QFileDialog::DontUseCustomDirectoryIcons);
+    QFileDialog::setOption(QFileDialog::DontUseNativeDialog, false);
+    QFileDialog::setOption(QFileDialog::DontResolveSymlinks, true);
     QObject::connect(this, SIGNAL(filterSelected(const QString&)), this,
                      SLOT(filterSelectionChanged(const QString&)));
 }
@@ -145,10 +145,6 @@ void InviwoFileDialog::setFileMode(inviwo::FileMode mode) {
         case inviwo::FileMode::ExistingFiles:
             QFileDialog::setFileMode(QFileDialog::ExistingFiles);
             break;
-        case inviwo::FileMode::DirectoryOnly:
-            QFileDialog::setFileMode(QFileDialog::Directory);
-            QFileDialog::setOption(QFileDialog::ShowDirsOnly, true);
-            break;
         default:
             QFileDialog::setFileMode(QFileDialog::AnyFile);
             break;
@@ -161,13 +157,8 @@ FileMode InviwoFileDialog::getFileMode() const {
             return inviwo::FileMode::AnyFile;
         case FileMode::ExistingFile:
             return inviwo::FileMode::ExistingFile;
-        case FileMode::Directory: {
-            if (testOption(ShowDirsOnly)) {
-                return inviwo::FileMode::DirectoryOnly;
-            } else {
-                return inviwo::FileMode::Directory;
-            }
-        }
+        case FileMode::Directory:
+            return inviwo::FileMode::Directory;
         case FileMode::ExistingFiles:
             return inviwo::FileMode::ExistingFiles;
         default:
@@ -179,10 +170,6 @@ void InviwoFileDialog::setContentType(const std::string& contentType) {
 }
 
 std::string InviwoFileDialog::getContentType() const { return utilqt::fromQString(pathType_); }
-
-void InviwoFileDialog::useNativeDialog(const bool& use) {
-    QFileDialog::setOption(QFileDialog::DontUseNativeDialog, !use);
-}
 
 void InviwoFileDialog::setCurrentDirectory(const std::filesystem::path& path) {
     if (!path.empty()) {

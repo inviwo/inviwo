@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,40 +26,29 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/core/util/filedialogstate.h>
-#include <inviwo/core/util/exception.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <ostream>
+#include <inviwo/core/util/settings/settings.h>
+
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
 
 namespace inviwo {
 
-std::string_view enumToStr(AcceptMode mode) {
-    switch (mode) {
-        case AcceptMode::Open:
-            return "Open";
-        case AcceptMode::Save:
-            return "Save";
-    }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid AcceptMode enum value '{}'",
-                    static_cast<int>(mode));
-}
-std::string_view enumToStr(FileMode mode) {
-    switch (mode) {
-        case FileMode::AnyFile:
-            return "Any File";
-        case FileMode::ExistingFile:
-            return "Existing File";
-        case FileMode::Directory:
-            return "Directory";
-        case FileMode::ExistingFiles:
-            return "Existing Files";
-    }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid FileMode enum value '{}'",
-                    static_cast<int>(mode));
-}
+class IVW_MODULE_QTWIDGETS_API EditorSettings : public Settings {
+public:
+    EditorSettings(InviwoApplication* app);
+    virtual ~EditorSettings() = default;
 
-std::ostream& operator<<(std::ostream& ss, AcceptMode mode) { return ss << enumToStr(mode); }
-std::ostream& operator<<(std::ostream& ss, FileMode mode) { return ss << enumToStr(mode); }
+    StringProperty workspaceAuthor;
+    IntProperty numRecentFiles;
+    IntProperty numRestoreFiles;
+    IntProperty restoreFrequency;
+    ListProperty workspaceDirectories;
+};
 
 }  // namespace inviwo

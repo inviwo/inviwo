@@ -64,7 +64,7 @@ namespace {
 
 class SectionDelegate : public QStyledItemDelegate {
 public:
-    SectionDelegate(int itemSize, QWidget* parent = nullptr);
+    SectionDelegate(int itemSize, QTreeView* parent);
     virtual ~SectionDelegate() override = default;
 
     virtual void paint(QPainter* painter, const QStyleOptionViewItem& option,
@@ -72,16 +72,20 @@ public:
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
 private:
+    QString elidedText(const QString& str, const QFontMetrics& metrics, int width) const;
+
     QImage rightArrow;
     QImage downArrow;
     int itemSize_;
+    QTreeView* view_;
 };
 
-SectionDelegate::SectionDelegate(int itemSize, QWidget* parent)
+SectionDelegate::SectionDelegate(int itemSize, QTreeView* parent)
     : QStyledItemDelegate(parent)
     , rightArrow{":/svgicons/arrow-right-enabled.svg"}
     , downArrow{":/svgicons/arrow-down-enabled.svg"}
-    , itemSize_(itemSize) {}
+    , itemSize_(itemSize)
+    , view_{parent} {}
 
 void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
                             const QModelIndex& index) const {
@@ -161,14 +165,66 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
         painter->drawImage(imgRect, img, img.rect());
 
         auto nameRect = option.rect;
+
+        auto cols = view_->header()->count();
+        auto width = nameRect.width();
+        for (int i = 1; i < cols; ++i) {
+            width += view_->columnWidth(i);
+        }
+        nameRect.setWidth(width);
+
         nameRect.adjust(level * indent + rect.height(), 0, 0, 0);
 
         painter->setFont(option.font);
         painter->drawText(nameRect,
                           Qt::AlignLeft | Qt::AlignVCenter | Qt::TextDontClip | Qt::TextSingleLine,
-                          name);
+                          elidedText(name, QFontMetrics(option.font), nameRect.width()));
     }
     painter->restore();
+}
+
+QString SectionDelegate::elidedText(const QString& str, const QFontMetrics& metrics,
+                                    int width) const {
+    if (str.isEmpty() || (metrics.boundingRect(str).width() <= width)) {
+        return str;
+    }
+
+    auto directories = str.split('/');
+
+    bool keepFirst = str[0] != '/';
+    const int widthFirst = (keepFirst ? metrics.boundingRect(directories.front()).width() : 0);
+    const QString strFirst = (keepFirst ? directories.front() : "");
+    if (keepFirst) {
+        directories.erase(directories.begin());
+    }
+
+    std::reverse(directories.begin(), directories.end());
+
+    std::vector<int> widthDirs;
+    std::transform(directories.begin(), directories.end(), std::back_inserter(widthDirs),
+                   [&](const auto& dir) { return metrics.boundingRect("/" + dir).width(); });
+
+    const int widthDots = metrics.boundingRect("/...").width();
+
+    if (widthFirst + widthDots + widthDirs.front() > width) {
+        // eliding path components is not sufficient, elide entire string
+        return metrics.elidedText(str, Qt::ElideRight, width);
+    }
+
+    int leftWidth = width - widthFirst - widthDots;
+    QString result =
+        std::accumulate(directories.begin(), directories.end(), QString(),
+                        [&, index = 0, leftWidth](QString str, const QString& dir) mutable {
+                            if (leftWidth >= widthDirs[index]) {
+                                str.prepend("/" + dir);
+                                leftWidth -= widthDirs[index];
+                            } else {
+                                leftWidth = 0;
+                            }
+                            ++index;
+                            return str;
+                        });
+    return strFirst + "/..." + result;
 }
 
 QSize SectionDelegate::sizeHint(const QStyleOptionViewItem& o, const QModelIndex& index) const {

@@ -107,11 +107,15 @@ public:
     virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
     void updateRecentWorkspaces(const QStringList& recentFiles);
+    void updateRestoreEntries();
+    void updateCustomEntries();
     void updateExampleEntries();
     void updateRegressionTestEntries();
 
     QModelIndex getCategoryIndex(std::string_view category);
     static constexpr std::string_view recent = "Recent Workspaces";
+    static constexpr std::string_view restore = "Restore";
+    static constexpr std::string_view custom = "Custom";
     static constexpr std::string_view examples = "Examples";
     static constexpr std::string_view tests = "Regression Tests";
 

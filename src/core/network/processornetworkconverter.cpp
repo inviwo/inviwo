@@ -99,6 +99,9 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             [[fallthrough]];
         case 18:
             traverseNodes(root, &ProcessorNetworkConverter::updateShadingModeEnum);
+            [[fallthrough]];
+        case 19:
+            updateFileMode(root);
             return true;  // Changes has been made.
         default:
             return false;  // No changes
@@ -881,6 +884,12 @@ void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
             child->SetAttribute("dst", properties[dst]);
         }
     }
+}
+
+void ProcessorNetworkConverter::updateFileMode(TxElement* node) {
+    xml::visitMatchingNodesRecursive(
+        node, {{"Property", {}}, {"fileMode", {{"content", "4"}}}},
+        [](TxElement* matchingNode) { matchingNode->SetAttribute("content", "2"); });
 }
 
 }  // namespace inviwo

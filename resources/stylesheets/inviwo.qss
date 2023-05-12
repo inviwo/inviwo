@@ -445,6 +445,10 @@ QListView {
     /*using border here breaks the QCombobox */
 }
 
+QListVie#Completer {
+    background: #3a3a3d;
+}
+
 QDockWidget#AnimationEditorWidget QListView {
     margin: 0em;
     padding: 0em;

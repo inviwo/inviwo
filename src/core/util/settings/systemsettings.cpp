@@ -36,9 +36,6 @@ namespace inviwo {
 
 SystemSettings::SystemSettings(InviwoApplication* app)
     : Settings("System Settings", app)
-    , workspaceAuthor_("workspaceAuthor", "Default Workspace Author", "")
-    , maxNumRecentFiles_("maxNumRecentFiles", "Max Number of Recent Files", 10,
-                         {1, ConstraintBehavior::Immutable}, {100, ConstraintBehavior::Ignore})
     , poolSize_("poolSize", "Pool Size", defaultPoolSize(), 0, 32)
     , enablePortInspectors_("enablePortInspectors", "Enable port inspectors", true)
     , portInspectorSize_("portInspectorSize", "Port inspector size", 128, 1, 1024)
@@ -63,11 +60,11 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     , redirectCout_{"redirectCout", "Redirect cout to LogCentral", false}
     , redirectCerr_{"redirectCerr", "Redirect cerr to LogCentral", false} {
 
-    addProperties(workspaceAuthor_, maxNumRecentFiles_, poolSize_, enablePortInspectors_,
-                  portInspectorSize_, enableTouchProperty_, enableGesturesProperty_,
-                  enablePickingProperty_, enableSoundProperty_, logStackTraceProperty_,
-                  runtimeModuleReloading_, enableResourceManager_, breakOnMessage_,
-                  breakOnException_, stackTraceInException_, redirectCout_, redirectCerr_);
+    addProperties(poolSize_, enablePortInspectors_, portInspectorSize_, enableTouchProperty_,
+                  enableGesturesProperty_, enablePickingProperty_, enableSoundProperty_,
+                  logStackTraceProperty_, runtimeModuleReloading_, enableResourceManager_,
+                  breakOnMessage_, breakOnException_, stackTraceInException_, redirectCout_,
+                  redirectCerr_);
 
     logStackTraceProperty_.onChange(
         [this]() { LogCentral::getPtr()->setLogStacktrace(logStackTraceProperty_.get()); });

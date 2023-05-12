@@ -419,7 +419,7 @@ void ProcessorNetwork::removePropertyOwnerObservation(PropertyOwner* po) {
 
 int ProcessorNetwork::getVersion() const { return processorNetworkVersion_; }
 
-const int ProcessorNetwork::processorNetworkVersion_ = 19;
+const int ProcessorNetwork::processorNetworkVersion_ = 20;
 
 void ProcessorNetwork::deserialize(Deserializer& d) {
     NetworkLock lock(this);

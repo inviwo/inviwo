@@ -622,9 +622,16 @@ void WelcomeWidget::expandTreeView() const {
 
 void WelcomeWidget::showEvent(QShowEvent* event) {
     if (!event->spontaneous()) {
-        model_->updateExampleEntries();
-        model_->updateRegressionTestEntries();
-
+        try {
+            model_->updateRestoreEntries();
+            model_->updateCustomEntries();
+            model_->updateExampleEntries();
+            model_->updateRegressionTestEntries();
+        } catch (const Exception& e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+        } catch (const std::exception& e) {
+            util::log(IVW_CONTEXT, e.what(), LogLevel::Error);
+        }
         expandTreeView();
     }
 
@@ -695,9 +702,10 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
     const QFileInfo info(filename);
 
     // extract annotations including network screenshot and canvas images from workspace
+    auto path = utilqt::toPath(filename);
     std::optional<WorkspaceAnnotationsQt> annotations;
     try {
-        annotations.emplace(utilqt::toPath(filename), app_);
+        annotations.emplace(path, app_);
     } catch (Exception&) {
     }
 
@@ -719,7 +727,7 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
     auto addRow = [&](std::string_view name, std::string_view value) {
         if (value.empty()) return;
         auto tr = table.append("tr");
-        tr.append("td", name, {{"style", "text-align:right;"}});
+        tr.append("td", name, {{"style", "text-align:right;padding-right:0.4em"}});
         tr.append("td", util::htmlEncode(value), {{"style", "color:#ebe5df; font-weight:500;"}});
     };
 
@@ -737,7 +745,7 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
                     {{"style", "color:firebrick;font-weight:600;"}});
     }
 
-    auto content = body.append("span");
+    auto content = body.append("div").append("span");
     const int maxImageSize = utilqt::emToPx(this, 32);
     auto addImage = [&content, maxImageSize](auto item) {
         if (!item.isValid()) return;
@@ -760,6 +768,27 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
             addImage(elem);
         }
         addImage(annotations->getNetworkImage());
+    }
+
+    try {
+        auto processorCounts = WorkspaceAnnotationsQt::workspaceProcessorsCounts(path, app_);
+
+        auto processorList = content.append("tabel", "", {{"style", "float: left;"}});
+        processorList.append("tr").append("td").append("h3", "Processors",
+                                                       {{"style", "font-weight:600;"}});
+        if (!processorCounts.empty()) {
+            auto pTable = processorList.append("tr").append("td").append(
+                "table", "", {{"style", "min-width:15em"}});
+            for (auto&& [name, count] : processorCounts) {
+                auto tr = pTable.append("tr");
+                tr.append("td", util::htmlEncode(name),
+                          {{"style", "text-align:left;padding-right:1em"}});
+                tr.append("td", fmt::to_string(count), {{"style", "font-weight:500;"}});
+            }
+        } else {
+            processorList.append("tr").append("td", "Network is empty");
+        }
+    } catch (Exception&) {
     }
 
     details_->setHtml(utilqt::toQString(doc));

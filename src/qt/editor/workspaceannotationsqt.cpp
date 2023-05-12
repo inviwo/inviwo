@@ -165,4 +165,27 @@ QStringList WorkspaceAnnotationsQt::workspaceProcessors(const std::filesystem::p
     }
 }
 
+std::map<std::string, int> WorkspaceAnnotationsQt::workspaceProcessorsCounts(
+    const std::filesystem::path& path, InviwoApplication* app) {
+    if (auto f = std::ifstream(path)) {
+        LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
+        auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(f, path, &logger);
+
+        DummyNetwork dummy;
+        d.deserialize("ProcessorNetwork", dummy);
+
+        std::map<std::string, int> list;
+
+        for (const auto& p : dummy.processors) {
+            ++list[p.displayName];
+        }
+
+        return list;
+
+    } else {
+        throw Exception(IVW_CONTEXT_CUSTOM("WorkspaceAnnotationsQt"), "Unable to open file {}",
+                        path);
+    }
+}
+
 }  // namespace inviwo

@@ -54,11 +54,35 @@ public:
  *
  * @see TemplateProperty
  */
-class IVW_CORE_API FileProperty : public TemplateProperty<std::filesystem::path> {
+class IVW_CORE_API FileProperty : public Property {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
     static constexpr std::string_view defaultContentType = "default";
+    using value_type = std::filesystem::path;
+
+    /**
+     * \brief Constructor for the FileProperty
+     *
+     * The PropertySemantics can be set to TextEditor. Then a TextEditorWidget will be used instead
+     * of a FilePropertyWidget
+     *
+     * @param identifier identifier for the property
+     * @param displayName displayName for the property
+     * @param help descriptive text
+     * @param value the path to the file
+     * @param acceptMode
+     * @param fileMode
+     * @param contentType
+     * @param invalidationLevel
+     * @param semantics Can be set to Editor
+     */
+    FileProperty(std::string_view identifier, std::string_view displayName, Document help,
+                 const std::filesystem::path& value, AcceptMode acceptMode = AcceptMode::Open,
+                 FileMode fileMode = FileMode::AnyFile,
+                 std::string_view contentType = defaultContentType,
+                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                 PropertySemantics semantics = PropertySemantics::Default);
 
     /**
      * \brief Constructor for the FileProperty
@@ -108,14 +132,19 @@ public:
     /**
      * Set the file name and also update the selected extension to the first one matching file.
      */
-    virtual void set(const std::filesystem::path& file) override;
+    virtual void set(const std::filesystem::path& file);
     /**
      * Set the file name and the selected extension.
      */
     virtual void set(const std::filesystem::path& file, const FileExtension& selectedExtension);
-    virtual void set(const Property* property) override;
 
-    operator const std::filesystem::path&() const;
+    virtual void set(const Property* property) override;
+    virtual void set(const FileProperty* property);
+
+    operator const std::filesystem::path&() const { return file_; }
+    const std::filesystem::path& get() const { return file_; }
+    const std::filesystem::path& operator*() const { return file_; };
+    const std::filesystem::path* operator->() const { return &file_.value; }
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -126,10 +155,10 @@ public:
     virtual void clearNameFilters();
     virtual const std::vector<FileExtension>& getNameFilters() const;
 
-    virtual void setAcceptMode(AcceptMode mode);
+    virtual void setAcceptMode(AcceptMode acceptMode);
     AcceptMode getAcceptMode() const;
 
-    virtual void setFileMode(FileMode mode);
+    virtual void setFileMode(FileMode fileMode);
     FileMode getFileMode() const;
 
     void setContentType(std::string_view contentType);
@@ -145,7 +174,17 @@ public:
 
     virtual Document getDescription() const override;
 
+    virtual FileProperty& setCurrentStateAsDefault() override;
+    FileProperty& setDefault(const std::filesystem::path& value);
+    virtual FileProperty& resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
+
+    friend std::ostream& operator<<(std::ostream& os, const FileProperty& prop) {
+        return os << prop.file_.value;
+    }
+
 private:
+    ValueWrapper<std::filesystem::path> file_;
     std::vector<FileExtension> nameFilters_;
     FileExtension selectedExtension_;
     AcceptMode acceptMode_;
