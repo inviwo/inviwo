@@ -124,7 +124,7 @@ jobs:
     
     - name: Install Python Modules 
       shell: bash
-      run: pip3 install -r requirements.txt
+      run: pip3 install -r inviwo/requirements.txt
       
     - name: Clone VCPKG
       uses: actions/checkout@v3
