@@ -52,6 +52,12 @@ jobs:
     timeout-minutes: 360
     
     steps:
+    - name: Clone Inviwo
+      uses: actions/checkout@v3
+      with: 
+        path: inviwo
+        submodules: recursive
+
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
       with:
@@ -145,12 +151,7 @@ jobs:
         version: 6.4.2
         setup-python: false
         dir: ${{ github.workspace }}
-    
-    - name: Clone Inviwo
-      uses: actions/checkout@v3
-      with: 
-        path: inviwo
-        submodules: recursive
+
 
     - name: "Build Changelog"
       id: build_changelog
