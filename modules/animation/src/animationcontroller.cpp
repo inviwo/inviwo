@@ -133,8 +133,7 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
     , exportWriter_{"writer", "Type",
                     [&]() {
                         OptionPropertyState<FileExtension> state;
-                        const auto exts =
-                            util::getDataWriterFactory(app)->getExtensionsForType<Layer>();
+                        const auto exts = util::getDataWriterFactory(app)->getKeyView();
                         std::transform(exts.begin(), exts.end(), std::back_inserter(state.options),
                                        [](const auto& ext) -> OptionPropertyOption<FileExtension> {
                                            return ext;
@@ -146,7 +145,7 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
                         }
                         return state;
                     }()}
-
+    , exportOverwrite_{"overwrite", "Overwrite", false}
     , controlOptions("controlOptions", "Special Tracks")
     , insertControlTrack("insertControlTrack", "Add Control Track",
                          [this]() { animation_->add(std::make_unique<ControlTrack>()); })
@@ -198,7 +197,8 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
         renderOptions.addProperty(recorderFactory->options(), false);
     }
 
-    exportOptions_.addProperties(exportOutputDirectory_, exportBaseName_, exportWriter_);
+    exportOptions_.addProperties(exportOutputDirectory_, exportBaseName_, exportWriter_,
+                                 exportOverwrite_);
 
     renderOptions.addProperty(exportOptions_);
 
@@ -338,60 +338,6 @@ void AnimationController::render() {
     std::optional<NetworkLock> lock{network};
 
     setState(AnimationState::Rendering);
-
-    // Gather rendering info
-    const Seconds firstTime =
-        (renderWindowMode.get() == 0) ? animation_->getFirstTime() : Seconds(renderWindow.get()[0]);
-    const Seconds lastTime =
-        (renderWindowMode.get() == 0) ? animation_->getLastTime() : Seconds(renderWindow.get()[1]);
-    const int numFrames =
-        std::max(2, static_cast<int>((lastTime - firstTime) / Seconds{1.0 / renderFPS.get()}));
-
-    std::vector<std::function<void()>> recordingFunctors;
-
-    const auto& recorderFactories = manager_->getRecorderFactories();
-
-    network->forEachProcessor([&](Processor* p) {
-        if (p->isSink()) {
-
-            if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(p)) {
-                for (auto& key : recorderFactories.getKeyView()) {
-                    auto* recorderFactory = recorderFactories.getFactoryObject(key);
-                    if (recorderFactory->options()->isChecked()) {
-                        std::shared_ptr<Recorder> recorder = recorderFactory->create(
-                            {.dimensions = canvasProcessor->getImage()->getDimensions(),
-                             .frameRate = static_cast<int>(framesPerSecond.get()),
-                             .expectedNumberOfFrames = numFrames,
-                             .sourceName = canvasProcessor->getIdentifier()});
-
-                        recordingFunctors.emplace_back(
-                            [recorder = std::move(recorder), canvasProcessor]() {
-                                // Hackish: Make sure LayerRAM is the last valid rep, so
-                                // that it is the one that will be cloned. This also
-                                // forces the download to happen on the main thread
-                                // instead of in the background.
-                                auto layer = canvasProcessor->getImage()
-                                                 ->getColorLayer()
-                                                 ->getRepresentation<LayerRAM>();
-                                recorder->record(*layer);
-                            });
-                    }
-                }
-            } else if (auto exporter = dynamic_cast<Exporter*>(p)) {
-                if (exportOptions_.isChecked()) {
-
-                    auto base = exportBaseName_.get();
-                    replaceInString(base, "UPN", p->getIdentifier());
-
-                    recordingFunctors.emplace_back(
-                        [exporter, writer = exportWriter_.get(), dir = exportOutputDirectory_.get(),
-                         base]() { exporter->exportFile(dir, base, {writer}, Overwrite::Yes); });
-                }
-            }
-        }
-    });
-
-    // Switch Buttons
     renderAction.setReadOnly(true);
     renderActionStop.setReadOnly(false);
 
@@ -401,36 +347,108 @@ void AnimationController::render() {
         renderActionStop.setReadOnly(true);
     }};
 
-    // render frames
-    for (int currentFrame = 0; currentFrame < numFrames; ++currentFrame) {
-        // Evaluate animation
-        Seconds newTime = firstTime + (lastTime - firstTime) / (numFrames - 1) * currentFrame;
-        eval(currentTime_, newTime);
+    try {
 
-        lock.reset();
+        // Gather rendering info
+        const Seconds firstTime = (renderWindowMode.get() == 0) ? animation_->getFirstTime()
+                                                                : Seconds(renderWindow.get()[0]);
+        const Seconds lastTime = (renderWindowMode.get() == 0) ? animation_->getLastTime()
+                                                               : Seconds(renderWindow.get()[1]);
+        const int numFrames =
+            std::max(2, static_cast<int>((lastTime - firstTime) / Seconds{1.0 / renderFPS.get()}));
 
-        while (app_->getProcessorNetwork()->runningBackgroundJobs() > 0) {
-            app_->processFront();
+        std::vector<std::function<void()>> recordingFunctors;
+        const auto& recorderFactories = manager_->getRecorderFactories();
+
+        network->forEachProcessor([&](Processor* p) {
+            if (p->isSink()) {
+                if (auto imageExporter = dynamic_cast<ImageExporter*>(p)) {
+                    for (auto& key : recorderFactories.getKeyView()) {
+                        auto* recorderFactory = recorderFactories.getFactoryObject(key);
+                        if (recorderFactory->options()->isChecked()) {
+                            std::shared_ptr<Recorder> recorder = recorderFactory->create(
+                                {.dimensions = imageExporter->getImage()->getDimensions(),
+                                 .frameRate = static_cast<int>(framesPerSecond.get()),
+                                 .expectedNumberOfFrames = numFrames,
+                                 .sourceName = p->getIdentifier()});
+
+                            recordingFunctors.emplace_back(
+                                [recorder = std::move(recorder), imageExporter]() {
+                                    auto layer = imageExporter->getImage()->getColorLayer();
+                                    recorder->record(*layer);
+                                });
+                        }
+                    }
+                }
+                if (auto exporter = dynamic_cast<Exporter*>(p)) {
+                    if (exportOptions_.isChecked()) {
+                        auto base = exportBaseName_.get();
+                        replaceInString(base, "UPN", p->getIdentifier());
+
+                        const auto digits =
+                            std::max(fmt::formatted_size("{}", numFrames), size_t{4});
+
+                        recordingFunctors.emplace_back(
+                            [exporter, writer = exportWriter_.get(),
+                             dir = exportOutputDirectory_.get(), base,
+                             overwrite = exportOverwrite_ ? Overwrite::Yes : Overwrite::No,
+                             counter = size_t{0}, digits]() mutable {
+                                auto name = fmt::format("{}{:0{}}", base, counter, digits);
+                                exporter->exportFile(dir, name, {writer}, overwrite);
+                                ++counter;
+                            });
+                    }
+                }
+            }
+        });
+
+        if (recordingFunctors.empty()) {
+            util::log(IVW_CONTEXT, "No applicable exporters selected for rendering",
+                      LogLevel::Warn);
+            return;
+        }
+
+        // render frames
+        for (int currentFrame = 0; currentFrame < numFrames; ++currentFrame) {
+            // Evaluate animation
+            Seconds newTime = firstTime + (lastTime - firstTime) / (numFrames - 1) * currentFrame;
+            eval(currentTime_, newTime);
+
+            lock.reset();
+
+            while (app_->getProcessorNetwork()->runningBackgroundJobs() > 0) {
+                app_->processFront();
+                app_->processEvents();
+                std::this_thread::yield();
+            }
             app_->processEvents();
-            std::this_thread::yield();
+
+            for (auto& recorder : recordingFunctors) {
+                recorder();
+            }
+
+            lock.emplace(network);
+
+            if (state_ != AnimationState::Rendering) break;
         }
-        app_->processEvents();
 
-        for (auto& recorder : recordingFunctors) {
-            recorder();
-        }
+        using duration_double = std::chrono::duration<double, std::ratio<1>>;
+        auto seconds = std::chrono::duration_cast<duration_double>(
+                           std::chrono::high_resolution_clock::now() - start)
+                           .count();
 
-        lock.emplace(network);
+        util::logInfo(IVW_CONTEXT, "Rendered {} frames in {:.3f} seconds, {:.3f} per frame",
+                      numFrames, seconds, seconds / numFrames);
 
-        if (state_ != AnimationState::Rendering) break;
+    } catch (const Exception& e) {
+        util::log(IVW_CONTEXT, "Rendering aborted", LogLevel::Error);
+        util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+    } catch (const std::exception& e) {
+        util::log(IVW_CONTEXT, "Rendering aborted", LogLevel::Error);
+        util::log(IVW_CONTEXT, e.what(), LogLevel::Error);
+    } catch (...) {
+        util::log(IVW_CONTEXT, "Rendering aborted", LogLevel::Error);
     }
-
-    using duration_double = std::chrono::duration<double, std::ratio<1>>;
-    auto seconds = std::chrono::duration_cast<duration_double>(
-                       std::chrono::high_resolution_clock::now() - start)
-                       .count();
-    LogInfo(fmt::format("Rendered {} frames in {:.3f} seconds, {:.3f} per frame", numFrames,
-                        seconds, seconds / numFrames));
 }
 
 void AnimationController::eval(Seconds oldTime, Seconds newTime) {

@@ -38,35 +38,97 @@
 
 namespace inviwo::animation {
 
+class ExceptionPropagator {
+    class State {
+    public:
+        State() = default;
+        State(const State&) = delete;
+        State(State&&) = delete;
+        State& operator=(const State&) = delete;
+        State& operator=(State&&) = delete;
+        ~State() noexcept {
+            try {
+                throwOnError();
+            } catch (const Exception& e) {
+                util::log(e.getContext(), e.getMessage());
+            } catch (const std::exception& e) {
+                util::log(IVW_CONTEXT, e.what());
+            } catch (...) {
+                util::log(IVW_CONTEXT, "unknown error");
+            }
+        }
+        void setException() {
+            std::scoped_lock lock{exceptionMutex_};
+            if (!exception_) {
+                exception_ = std::current_exception();
+            }
+        }
+        void throwOnError() {
+            std::scoped_lock lock{exceptionMutex_};
+            if (exception_) {
+                std::rethrow_exception(std::exchange(exception_, nullptr));
+            }
+        }
+
+    private:
+        std::mutex exceptionMutex_;
+        std::exception_ptr exception_;
+    };
+
+public:
+    ExceptionPropagator() : state_{std::make_shared<State>()} {}
+
+    void setException() { state_->setException(); }
+    void throwOnError() { state_->throwOnError(); }
+
+    std::shared_ptr<State> get() { return state_; }
+
+private:
+    std::shared_ptr<State> state_;
+};
+
 namespace {
 class ImageRecorder : public Recorder {
 public:
     ImageRecorder(InviwoApplication* app, const std::filesystem::path& dir, std::string_view format,
-                  std::shared_ptr<DataWriterType<LayerRAM>> writer)
+                  std::shared_ptr<DataWriterType<Layer>> writer)
         : Recorder{}
         , app_{app}
         , dir_{dir}
         , format_{format}
         , writer_{std::move(writer)}
-        , count_{0} {}
+        , count_{1} {}
 
     virtual ~ImageRecorder() = default;
-    virtual void record(const LayerRAM& layer) override;
+    virtual void record(const Layer& layer) override;
 
 private:
     InviwoApplication* app_;
     std::filesystem::path dir_;
     std::string format_;
-    std::shared_ptr<DataWriterType<LayerRAM>> writer_;
+    std::shared_ptr<DataWriterType<Layer>> writer_;
     size_t count_;
+    ExceptionPropagator exceptionProp_;
 };
 
-void ImageRecorder::record(const LayerRAM& layer) {
-    util::dispatchPool(app_,
-                       [writer = writer_, file = dir_ / fmt::format(fmt::runtime(format_), count_),
-                        copy = std::shared_ptr<LayerRAM>(layer.clone())]() {
-                           writer->writeData(copy.get(), file);
-                       });
+void ImageRecorder::record(const Layer& layer) {
+    exceptionProp_.throwOnError();
+
+    // Hackish: Make sure LayerRAM is the last valid rep, so
+    // that it is the one that will be cloned. This also
+    // forces the download to happen on the main thread
+    // instead of in the background.
+    layer.getRepresentation<LayerRAM>();
+    util::dispatchPool(
+        app_, [writer = writer_, file = dir_ / fmt::format(fmt::runtime(format_), count_),
+               copy = std::shared_ptr<Layer>(layer.clone()), exception = exceptionProp_.get()]() {
+            try {
+                writer->writeData(copy.get(), file);
+            } catch (const Exception& e) {
+                exception->setException();
+            }
+        });
+
     ++count_;
 }
 }  // namespace
@@ -81,9 +143,10 @@ ImageRecorderFactory::ImageRecorderFactory(InviwoApplication* app)
                 "The final name will be '[base name][zero padded number].[file extension]'."
                 " For example: 'frame0001.png'"_help,
                 "frame"}
-    , writer_{"writer", "Type"} {
+    , writer_{"writer", "Writer"}
+    , overwrite_{"overwrite", "Overwrite", false} {
 
-    options_.addProperties(outputDirectory_, baseName_, writer_);
+    options_.addProperties(outputDirectory_, baseName_, writer_, overwrite_);
 }
 
 const std::string& ImageRecorderFactory::getClassIdentifier() const { return name_; }
@@ -104,27 +167,21 @@ BoolCompositeProperty* ImageRecorderFactory::options() {
 std::unique_ptr<Recorder> ImageRecorderFactory::create(const RecorderOptions& opts) {
 
     auto writerFactory = util::getDataWriterFactory(app_);
+    auto writer = writerFactory->getWriterForTypeAndExtension<Layer>(writer_.getSelectedValue());
+    if (!writer) {
+        throw Exception(IVW_CONTEXT, "No writer found for extension {}",
+                        writer_.getSelectedValue());
+    }
 
-    std::shared_ptr<DataWriterType<LayerRAM>> writer =
-        writerFactory->getWriterForTypeAndExtension<LayerRAM>(writer_.getSelectedValue());
+    writer->setOverwrite(overwrite_ ? Overwrite::Yes : Overwrite::No);
 
-    // digits of the frame counter
-    const int digits = [&]() {
-        int d = 0;
-        int number(opts.expectedNumberOfFrames - 1);
-        while (number) {
-            number /= 10;
-            d++;
-        }
-        // use at least 4 digits, so we nicely overwrite the files from a previous test rendering
-        // with less frames
-        return std::max(d, 4);
-    }();
+    const auto digits = std::max(fmt::formatted_size("{}", opts.expectedNumberOfFrames), size_t{4});
 
-    auto format = fmt::format("{}{{:{}}}", baseName_, digits);
+    auto format =
+        fmt::format("{}{{:0{}}}.{}", baseName_, digits, writer_.getSelectedValue().extension_);
     replaceInString(format, "UPN", opts.sourceName);
 
-    return std::make_unique<ImageRecorder>(app_, outputDirectory_.get(), format, writer);
+    return std::make_unique<ImageRecorder>(app_, outputDirectory_.get(), format, std::move(writer));
 }
 
 }  // namespace inviwo::animation

@@ -41,6 +41,7 @@
 namespace inviwo {
 
 class ProcessorNetwork;
+class Image;
 
 /**
  * \brief A base class for a Processor that might export a file. For example a CanvasProcessor
@@ -58,6 +59,13 @@ public:
     virtual std::optional<std::filesystem::path> exportFile(
         const std::filesystem::path& path, std::string_view name,
         const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const = 0;
+};
+
+class IVW_CORE_API ImageExporter {
+public:
+    virtual ~ImageExporter() = default;
+    
+    virtual std::shared_ptr<const Image> getImage() const = 0;
 };
 
 namespace util {

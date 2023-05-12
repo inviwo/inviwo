@@ -38,7 +38,7 @@
 namespace inviwo {
 
 class BoolCompositeProperty;
-class LayerRAM;
+class Layer;
 
 namespace animation {
 
@@ -51,7 +51,7 @@ public:
     Recorder& operator=(Recorder&&) = delete;
     virtual ~Recorder() = default;
 
-    virtual void record(const LayerRAM& layer) = 0;
+    virtual void record(const Layer& layer) = 0;
 };
 
 struct IVW_MODULE_ANIMATION_API RecorderOptions {

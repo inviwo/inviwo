@@ -215,7 +215,7 @@ AnimationModule::AnimationModule(InviwoApplication* app)
 
     registerTrack<CallbackTrack>();
     registerTrack<ControlTrack>();
-    
+
     registerRecorderFactory(std::make_unique<ImageRecorderFactory>(app));
 }
 

@@ -30,7 +30,7 @@
 
 #include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
 
-#include <inviwo/core/common/inviwoapplicationutil.h>         // for getInviwoApplication
+#include <inviwo/core/common/inviwoapplicationutil.h>  // for getInviwoApplication
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>            // for ButtonProperty
 #include <inviwo/core/properties/compositeproperty.h>         // for CompositeProperty
@@ -133,6 +133,7 @@ public:
     DirectoryProperty exportOutputDirectory_;
     StringProperty exportBaseName_;
     OptionProperty<FileExtension> exportWriter_;
+    BoolProperty exportOverwrite_;
 
     CompositeProperty controlOptions;
     ButtonProperty insertControlTrack;
@@ -144,7 +145,7 @@ protected:
 
     /// The animation to control, non-owning reference.
     Animation* animation_;
-    
+
     AnimationManager* manager_;
 
     /// Host application

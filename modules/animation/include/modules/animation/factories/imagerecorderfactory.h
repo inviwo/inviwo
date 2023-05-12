@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 #include <modules/animation/factories/recorderfactory.h>
 
@@ -59,6 +60,7 @@ private:
     DirectoryProperty outputDirectory_;
     StringProperty baseName_;
     OptionProperty<FileExtension> writer_;
+    BoolProperty overwrite_;
 };
 
 }  // namespace animation

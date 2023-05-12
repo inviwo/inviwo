@@ -29,6 +29,4 @@
 
 #include <modules/animation/factories/recorderfactory.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

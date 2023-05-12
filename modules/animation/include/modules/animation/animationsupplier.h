@@ -78,9 +78,7 @@ public:
     void registerPropertyTrackConnection(const std::string& propertyClassID,
                                          const std::string& trackClassID);
 
-    
     void registerRecorderFactory(std::unique_ptr<RecorderFactory> recorderFactory);
-
 
     void unRegisterAll();
 

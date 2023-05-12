@@ -347,7 +347,7 @@ Canvas* CanvasProcessor::getCanvas() const {
 }
 
 void CanvasProcessor::process() {
-    if (processorWidget_->isVisible()) {
+    if (processorWidget_ && processorWidget_->isVisible()) {
         if (auto c = getCanvas()) {
             c->render(inport_.getData(), visibleLayer_, colorLayer_);
         }
@@ -355,7 +355,7 @@ void CanvasProcessor::process() {
 }
 
 void CanvasProcessor::doIfNotReady() {
-    if (processorWidget_->isVisible()) {
+    if (processorWidget_ && processorWidget_->isVisible()) {
         if (auto c = getCanvas()) {
             c->render(nullptr, visibleLayer_, colorLayer_);
         }

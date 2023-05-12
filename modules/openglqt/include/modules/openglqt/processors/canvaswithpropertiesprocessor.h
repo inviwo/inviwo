@@ -80,7 +80,9 @@ struct PWObserver;
  * the property list in the widget.
  *
  */
-class IVW_MODULE_OPENGLQT_API CanvasWithPropertiesProcessor : public Processor, public Exporter {
+class IVW_MODULE_OPENGLQT_API CanvasWithPropertiesProcessor : public Processor,
+                                                              public Exporter,
+                                                              public ImageExporter {
 public:
     CanvasWithPropertiesProcessor();
     virtual ~CanvasWithPropertiesProcessor();
@@ -100,6 +102,8 @@ public:
     virtual std::optional<std::filesystem::path> exportFile(
         const std::filesystem::path& path, std::string_view name,
         const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const override;
+
+    virtual std::shared_ptr<const Image> getImage() const override;
 
 private:
     std::unique_ptr<PWObserver> pwObserver_;
