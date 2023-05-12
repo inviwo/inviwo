@@ -25,6 +25,7 @@ jobs:
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
             cache: 'ccache'
+            compiler: 'cl'
           - os: 'macos-13'
             triplet: 'x64-osx'
             mono: 'mono'
@@ -33,6 +34,7 @@ jobs:
             installer: 'inviwo-installer-macos'
             artifact: 'build/Inviwo-v*.dmg'
             cache: 'ccache'
+            compiler: ''
           - os: 'ubuntu-22.04'
             triplet: 'x64-linux'
             mono: 'mono'
@@ -43,6 +45,7 @@ jobs:
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.deb'
             cache: 'ccache'
+            compiler: ''
       fail-fast: false
       
     runs-on: ${{ matrix.os }}
@@ -163,9 +166,11 @@ jobs:
         echo "${{ steps.build_changelog.outputs.changelog }}"
         echo "-- End --"
 
-
     - name: Configure CMake
       shell: bash
+      env:
+        CC: ${{ matrix.compiler }}
+        CCX: ${{ matrix.compiler }}
       run: >
         cmake -S inviwo -B build
         -DVCPKG_TARGET_TRIPLET='${{ matrix.triplet }}'
