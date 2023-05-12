@@ -25,7 +25,7 @@ jobs:
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
             cache: 'ccache'
-            compiler: 'cl'
+            compiler: 'cl.exe'
           - os: 'macos-13'
             triplet: 'x64-osx'
             mono: 'mono'
@@ -118,7 +118,7 @@ jobs:
     
     - name: Install Python Modules 
       shell: bash
-      run: pip3 install numpy Sphinx sphinx-rtd-theme recommonmark
+      run: pip3 install -r requirements.txt
       
     - name: Clone VCPKG
       uses: actions/checkout@v3
