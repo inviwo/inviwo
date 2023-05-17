@@ -59,7 +59,7 @@ public:
 
     virtual bool hasKey(std::string_view key) const override;
     virtual bool hasKey(const FileExtension& key) const override;
-    
+
     auto getKeyView() const {
         constexpr auto getFirst = [](auto&& pair) -> decltype(auto) { return pair.first; };
         return util::as_range(util::makeTransformIterator(getFirst, map_.begin()),

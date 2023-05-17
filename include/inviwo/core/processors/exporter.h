@@ -64,7 +64,7 @@ public:
 class IVW_CORE_API ImageExporter {
 public:
     virtual ~ImageExporter() = default;
-    
+
     virtual std::shared_ptr<const Image> getImage() const = 0;
 };
 
