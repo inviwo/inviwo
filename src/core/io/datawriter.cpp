@@ -58,7 +58,7 @@ Overwrite DataWriter::getOverwrite() const { return overwrite_; }
 void DataWriter::setOverwrite(Overwrite val) { overwrite_ = val; }
 
 void DataWriter::checkOverwrite(const std::filesystem::path& path, Overwrite overwrite) {
-    if (std::filesystem::is_regular_file(path) && overwrite == Overwrite::No)
+    if (overwrite == Overwrite::No && std::filesystem::is_regular_file(path))
         throw DataWriterException(IVW_CONTEXT_CUSTOM("DataWriter"),
                                   "Output file: {} already exists", path);
 }
@@ -68,7 +68,7 @@ std::ofstream DataWriter::open(const std::filesystem::path& path,
     checkOverwrite(path);
     auto f = std::ofstream(path, mode);
     if (!f) {
-        throw FileException(IVW_CONTEXT, "Could not open file '{}'", path);
+        throw FileException(IVW_CONTEXT, "Could not open file {}", path);
     }
     return f;
 }

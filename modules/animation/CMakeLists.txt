@@ -43,8 +43,11 @@ set(HEADER_FILES
     include/modules/animation/datastructures/valuekeyframesequence.h
     include/modules/animation/demo/democontroller.h
     include/modules/animation/demo/democontrollerobserver.h
+    include/modules/animation/factories/imagerecorderfactory.h
     include/modules/animation/factories/interpolationfactory.h
     include/modules/animation/factories/interpolationfactoryobject.h
+    include/modules/animation/factories/recorderfactories.h
+    include/modules/animation/factories/recorderfactory.h
     include/modules/animation/factories/trackfactory.h
     include/modules/animation/factories/trackfactoryobject.h
     include/modules/animation/interpolation/cameralinearinterpolation.h
@@ -97,8 +100,11 @@ set(SOURCE_FILES
     src/datastructures/valuekeyframesequence.cpp
     src/demo/democontroller.cpp
     src/demo/democontrollerobserver.cpp
+    src/factories/imagerecorderfactory.cpp
     src/factories/interpolationfactory.cpp
     src/factories/interpolationfactoryobject.cpp
+    src/factories/recorderfactories.cpp
+    src/factories/recorderfactory.cpp
     src/factories/trackfactory.cpp
     src/factories/trackfactoryobject.cpp
     src/interpolation/cameralinearinterpolation.cpp

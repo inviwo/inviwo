@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,57 +28,51 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/fileextension.h>
-#include <inviwo/core/io/datawriter.h>
+#include <modules/animation/animationmoduledefine.h>
 
-#include <vector>
-#include <string_view>
-#include <optional>
+#include <inviwo/core/util/glmvec.h>
+
 #include <string>
-#include <filesystem>
+#include <memory>
 
 namespace inviwo {
 
-class ProcessorNetwork;
-class Image;
+class BoolCompositeProperty;
+class Layer;
 
-/**
- * \brief A base class for a Processor that might export a file. For example a CanvasProcessor
- */
-class IVW_CORE_API Exporter {
+namespace animation {
+
+class IVW_MODULE_ANIMATION_API Recorder {
 public:
-    virtual ~Exporter() = default;
+    Recorder() = default;
+    Recorder(const Recorder&) = delete;
+    Recorder& operator=(const Recorder&) = delete;
+    Recorder(Recorder&&) = delete;
+    Recorder& operator=(Recorder&&) = delete;
+    virtual ~Recorder() = default;
 
-    /**
-     * Export some content to `path/name.ext` where ext is the first ext on candidateExtensions that
-     * is supported.
-     * @returns a string to the path of the exported file, or std::nullopt if no matching
-     * extensions were found
-     */
-    virtual std::optional<std::filesystem::path> exportFile(
-        const std::filesystem::path& path, std::string_view name,
-        const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const = 0;
+    virtual void record(const Layer& layer) = 0;
 };
 
-class IVW_CORE_API ImageExporter {
-public:
-    virtual ~ImageExporter() = default;
-
-    virtual std::shared_ptr<const Image> getImage() const = 0;
+struct IVW_MODULE_ANIMATION_API RecorderOptions {
+    size2_t dimensions = size2_t{512, 512};
+    int frameRate = 25;
+    int expectedNumberOfFrames = 1000;
+    std::string sourceName = "";
 };
 
-namespace util {
+class IVW_MODULE_ANIMATION_API RecorderFactory {
+public:
+    RecorderFactory() = default;
+    RecorderFactory(const RecorderFactory&) = delete;
+    RecorderFactory& operator=(const RecorderFactory&) = delete;
+    RecorderFactory(RecorderFactory&&) = delete;
+    RecorderFactory& operator=(RecorderFactory&&) = delete;
+    virtual ~RecorderFactory() = default;
 
-/**
- * Exports the data from all export processors in \p network into the directory \p dir using a \p
- * nameTemplate and candidate extensions.
- * @return names of exported files
- */
-IVW_CORE_API std::vector<std::filesystem::path> exportAllFiles(
-    ProcessorNetwork& network, const std::filesystem::path& dir, std::string_view nameTemplate,
-    const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite);
-
-}  // namespace util
-
+    virtual const std::string& getClassIdentifier() const = 0;
+    virtual BoolCompositeProperty* options() = 0;
+    virtual std::unique_ptr<Recorder> create(const RecorderOptions& opts) = 0;
+};
+}  // namespace animation
 }  // namespace inviwo

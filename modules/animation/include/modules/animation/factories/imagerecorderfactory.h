@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,57 +28,40 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/fileextension.h>
-#include <inviwo/core/io/datawriter.h>
+#include <modules/animation/animationmoduledefine.h>
 
-#include <vector>
-#include <string_view>
-#include <optional>
-#include <string>
-#include <filesystem>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/directoryproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+
+#include <modules/animation/factories/recorderfactory.h>
 
 namespace inviwo {
 
-class ProcessorNetwork;
-class Image;
+class InviwoApplication;
 
-/**
- * \brief A base class for a Processor that might export a file. For example a CanvasProcessor
- */
-class IVW_CORE_API Exporter {
+namespace animation {
+
+class IVW_MODULE_ANIMATION_API ImageRecorderFactory : public RecorderFactory {
 public:
-    virtual ~Exporter() = default;
+    ImageRecorderFactory(InviwoApplication* app);
+    virtual ~ImageRecorderFactory() = default;
 
-    /**
-     * Export some content to `path/name.ext` where ext is the first ext on candidateExtensions that
-     * is supported.
-     * @returns a string to the path of the exported file, or std::nullopt if no matching
-     * extensions were found
-     */
-    virtual std::optional<std::filesystem::path> exportFile(
-        const std::filesystem::path& path, std::string_view name,
-        const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const = 0;
+    virtual const std::string& getClassIdentifier() const override;
+    virtual BoolCompositeProperty* options() override;
+    virtual std::unique_ptr<Recorder> create(const RecorderOptions& opts) override;
+
+private:
+    InviwoApplication* app_;
+    std::string name_;
+    BoolCompositeProperty options_;
+    DirectoryProperty outputDirectory_;
+    StringProperty baseName_;
+    OptionProperty<FileExtension> writer_;
+    BoolProperty overwrite_;
 };
 
-class IVW_CORE_API ImageExporter {
-public:
-    virtual ~ImageExporter() = default;
-
-    virtual std::shared_ptr<const Image> getImage() const = 0;
-};
-
-namespace util {
-
-/**
- * Exports the data from all export processors in \p network into the directory \p dir using a \p
- * nameTemplate and candidate extensions.
- * @return names of exported files
- */
-IVW_CORE_API std::vector<std::filesystem::path> exportAllFiles(
-    ProcessorNetwork& network, const std::filesystem::path& dir, std::string_view nameTemplate,
-    const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite);
-
-}  // namespace util
-
+}  // namespace animation
 }  // namespace inviwo

@@ -76,6 +76,7 @@
 #include <modules/animation/interpolation/interpolation.h>                 // for InterpolationT...
 #include <modules/animation/interpolation/linearinterpolation.h>           // for LinearInterpol...
 #include <modules/animation/workspaceanimations.h>                         // for WorkspaceAnima...
+#include <modules/animation/factories/imagerecorderfactory.h>
 
 #include <cstddef>     // for size_t
 #include <functional>  // for __base
@@ -214,6 +215,8 @@ AnimationModule::AnimationModule(InviwoApplication* app)
 
     registerTrack<CallbackTrack>();
     registerTrack<ControlTrack>();
+
+    registerRecorderFactory(std::make_unique<ImageRecorderFactory>(app));
 }
 
 AnimationModule::~AnimationModule() {

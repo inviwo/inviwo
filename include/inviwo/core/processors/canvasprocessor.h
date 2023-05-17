@@ -54,7 +54,8 @@ class DataWriterType;
 
 class IVW_CORE_API CanvasProcessor : public Processor,
                                      public ProcessorWidgetMetaDataObserver,
-                                     public Exporter {
+                                     public Exporter,
+                                     public ImageExporter {
 public:
     CanvasProcessor(InviwoApplication* app);
     virtual ~CanvasProcessor();
@@ -73,7 +74,7 @@ public:
                         const FileExtension& extension = FileExtension());
     const Layer* getVisibleLayer() const;
 
-    std::shared_ptr<const Image> getImage() const;
+    virtual std::shared_ptr<const Image> getImage() const override;
 
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) override;
     virtual void propagateEvent(Event* event, Outport* source) override;

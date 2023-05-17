@@ -244,4 +244,8 @@ std::optional<std::filesystem::path> CanvasWithPropertiesProcessor::exportFile(
     throw Exception("Could not find visible layer", IVW_CONTEXT);
 }
 
+std::shared_ptr<const Image> CanvasWithPropertiesProcessor::getImage() const {
+    return inport_.getData();
+}
+
 }  // namespace inviwo
