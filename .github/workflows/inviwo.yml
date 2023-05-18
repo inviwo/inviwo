@@ -19,15 +19,22 @@ jobs:
           - os: 'windows-latest'
             triplet: 'x64-windows'
             mono: ''
-            cmake: '--preset msvc-dev-vcpkg -DIVW_MODULE_HDF5=ON -DIVW_DOXYGEN_PROJECT=ON
-                   -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"'
+            cmake: > 
+              --preset msvc-dev-vcpkg
+              -DIVW_MODULE_HDF5=ON
+              -DIVW_MODULE_FFMPEG=ON
+              -DIVW_DOXYGEN_PROJECT=ON 
+              -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"
             targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
           - os: 'macos-13'
             triplet: 'x64-osx'
             mono: 'mono'
-            cmake: '--preset ninja-dev-vcpkg -DIVW_MODULE_HDF5=OFF'
+            cmake: >
+              --preset ninja-dev-vcpkg 
+              -DIVW_MODULE_HDF5=ON
+              -DIVW_MODULE_FFMPEG=ON
             targets: 'all package'
             installer: 'inviwo-installer-macos'
             artifact: 'build/Inviwo-v*.dmg'
@@ -36,7 +43,11 @@ jobs:
             mono: 'mono'
             # Disable benchmark for now due to error: 
             # memcpy’ is not a member of ‘std’; did you mean ‘wmemcpy’
-            cmake: '--preset ninja-dev-vcpkg -DIVW_MODULE_HDF5=OFF -DIVW_TEST_BENCHMARKS=OFF' 
+            cmake: >
+              --preset ninja-dev-vcpkg 
+              -DIVW_MODULE_HDF5=ON
+              -DIVW_MODULE_FFMPEG=ON
+              -DIVW_TEST_BENCHMARKS=OFF
             targets: 'all package'
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.deb'
@@ -69,7 +80,7 @@ jobs:
       if: runner.os == 'macOS'
       # xcode 14.2 is currently default. 
       run: |
-        brew install ninja mono pkg-config
+        brew install ninja mono pkg-config nasm
         sudo xcode-select --switch /Applications/Xcode_14.3.app/Contents/Developer
 
     - name: Apt Install, switch to gcc-12
@@ -77,9 +88,12 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt install --fix-missing libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev ninja-build gcc-12 g++-12
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 120 --slave /usr/bin/g++ g++ /usr/bin/g++-12 --slave /usr/bin/gcov gcov /usr/bin/gcov-12
-        sudo update-alternatives --set gcc /usr/bin/gcc-12
+        sudo apt install --fix-missing libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev \
+                         libglew-dev ninja-build gcc-13 g++-13 nasm
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 130 \
+                                 --slave /usr/bin/g++ g++ /usr/bin/g++-13 \
+                                 --slave /usr/bin/gcov gcov /usr/bin/gcov-12
+        sudo update-alternatives --set gcc /usr/bin/gcc-13
         
     #- name: Setup tmate session
     #  uses: mxschmitt/action-tmate@v3
