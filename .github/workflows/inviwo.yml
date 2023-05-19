@@ -56,9 +56,9 @@ jobs:
             artifact: 'build/inviwo-v*.deb'
           
           - linkage: 'dynamic'
-            cmake_linkage: '-DBUILD_SHARED_LIBS=ON'
+            cmake_linkage: -DBUILD_SHARED_LIBS=ON
           - linkage: 'static'
-            cmake_linkage: '-DBUILD_SHARED_LIBS=OFF'
+            cmake_linkage: -DBUILD_SHARED_LIBS=OFF
           
           - system: 'windows'
             linkage: 'dynamic'
