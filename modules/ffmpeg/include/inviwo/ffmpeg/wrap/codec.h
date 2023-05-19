@@ -51,14 +51,13 @@ public:
     int receivePacket(Packet& pkt);
 
     CodecID codecID() const;
-    
+
     void open(AVDictionary* opt_arg);
 
     AVCodecContext* ctx;
 
 private:
     const AVCodec* findEncoder(CodecID codecId);
-
 };
 
-}  // namespace inviwo
+}  // namespace inviwo::ffmpeg

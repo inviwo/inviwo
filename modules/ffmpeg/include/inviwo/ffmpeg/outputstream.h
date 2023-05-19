@@ -74,4 +74,4 @@ struct IVW_MODULE_FFMPEG_API OutputStream : NoMoveCopy {
     std::optional<SwScale> scaler;
 };
 
-}  // namespace inviwo
+}  // namespace inviwo::ffmpeg

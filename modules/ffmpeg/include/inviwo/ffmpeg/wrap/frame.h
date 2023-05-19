@@ -54,4 +54,4 @@ public:
     AVFrame* frame;
 };
 
-}  // namespace inviwo
+}  // namespace inviwo::ffmpeg

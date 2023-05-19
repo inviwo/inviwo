@@ -70,7 +70,7 @@ public:
     static OutputFormat guess(const std::filesystem::path& path);
 
     static std::string listFormats();
-    
+
     operator bool() const;
 
     const AVOutputFormat* of;

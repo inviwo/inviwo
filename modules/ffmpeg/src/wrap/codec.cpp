@@ -82,7 +82,7 @@ const AVCodec* Codec::findEncoder(CodecID codecId) {
     auto codec = avcodec_find_encoder(codecId.id);
     if (!codec) {
         throw Exception(IVW_CONTEXT_CUSTOM("Codec"), "Could not find encoder for '{}'",
-                                codecId.name());
+                        codecId.name());
     }
     return codec;
 }

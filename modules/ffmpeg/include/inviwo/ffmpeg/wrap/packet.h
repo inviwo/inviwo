@@ -42,4 +42,4 @@ public:
     AVPacket* pkt;
 };
 
-}  // namespace inviwo
+}  // namespace inviwo::ffmpeg
