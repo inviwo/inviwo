@@ -5,7 +5,6 @@ on:
   workflow_dispatch:
 
 env:
-  BUILD_TYPE: Release
   VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'         # recognized by vcpkg
   # QT_DEBUG_PLUGINS: 1                                        # print qt plugin debug info
 
@@ -13,11 +12,13 @@ jobs:
   build:
     strategy:
       matrix:
-        # for now macos-latest == macos-12 since macos-13 is still "beta"
-        os: [windows-latest, macos-13, ubuntu-22.04]
+        system: [windows, macos, linux]
+        linkage: [dynamic, static]
+        configuration: [Release, Debug]
+        
         include:
-          - os: 'windows-latest'
-            triplet: 'x64-windows'
+          - system: windows
+            os: 'windows-latest'
             mono: ''
             cmake: > 
               --preset msvc-dev-vcpkg
@@ -25,21 +26,23 @@ jobs:
               -DIVW_MODULE_FFMPEG=ON
               -DIVW_DOXYGEN_PROJECT=ON 
               -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"
-            targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
+            targets: 'ALL_BUILD'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
-          - os: 'macos-13'
-            triplet: 'x64-osx'
+          
+          - system: macos
+            os: 'macos-13' # for now macos-latest == macos-12 since macos-13 is still "beta"
             mono: 'mono'
             cmake: >
               --preset ninja-dev-vcpkg 
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=ON
-            targets: 'all package'
+            targets: 'all'
             installer: 'inviwo-installer-macos'
             artifact: 'build/Inviwo-v*.dmg'
-          - os: 'ubuntu-22.04'
-            triplet: 'x64-linux'
+          
+          - system: linux
+            os: 'ubuntu-22.04'
             mono: 'mono'
             # Disable benchmark for now due to error: 
             # memcpy’ is not a member of ‘std’; did you mean ‘wmemcpy’
@@ -48,9 +51,39 @@ jobs:
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=ON
               -DIVW_TEST_BENCHMARKS=OFF
-            targets: 'all package'
+            targets: 'all'
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.deb'
+          
+          - linkage: 'dynamic'
+            cmake_linkage: '-DBUILD_SHARED_LIBS=ON'
+          - linkage: 'static'
+            cmake_linkage: '-DBUILD_SHARED_LIBS=OFF'
+          
+          - system: 'windows'
+            linkage: 'dynamic'
+            triplet: 'x64-windows'
+            targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
+          - os: 'windows-latest'
+            linkage: 'static'
+            triplet: 'x64-windows-static-md'
+            
+          - system: 'macos'
+            linkage: 'dynamic'
+            triplet: 'x64-osx-dynamic'
+            targets: 'all package'
+          - os: 'macos-13'
+            linkage: 'static'
+            triplet: 'x64-osx'
+            
+          - system: 'linux'
+            linkage: 'dynamic'
+            triplet: 'x64-linux-dynamic'
+            targets: 'all package'
+          - os: 'ubuntu-22.04'
+            linkage: 'static'
+            triplet: 'x64-linux'
+            
       fail-fast: false
       
     runs-on: ${{ matrix.os }}
@@ -160,8 +193,9 @@ jobs:
       run: >
         cmake -S inviwo -B build
         -DVCPKG_TARGET_TRIPLET='${{ matrix.triplet }}'
-        -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
         ${{ matrix.cmake }}
+        ${{ matrix.cmake_linkage }}
 
     - name: Setup C++ Log matchers
       uses: Trass3r/setup-cpp@v1
@@ -169,7 +203,9 @@ jobs:
     - name: Build
       timeout-minutes: 360
       shell: bash
-      run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel --target ${{ matrix.targets }}
+      run: > 
+        cmake --build build --config ${{ matrix.configuration }} 
+        --parallel --target ${{ matrix.targets }}
 
     - name: Upload installer
       uses: actions/upload-artifact@v3
