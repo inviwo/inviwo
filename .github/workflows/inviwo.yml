@@ -56,9 +56,9 @@ jobs:
             artifact: 'build/inviwo-v*.deb'
           
           - linkage: 'dynamic'
-            cmake_linkage: -DBUILD_SHARED_LIBS=ON
+            cmake_linkage: 'ON'
           - linkage: 'static'
-            cmake_linkage: -DBUILD_SHARED_LIBS=OFF
+            cmake_linkage: 'OFF'
           
           - system: 'windows'
             linkage: 'dynamic'
@@ -191,12 +191,11 @@ jobs:
     - name: Configure CMake
       shell: bash
       run: >
-        cmake -S inviwo -B build
-        -DVCPKG_TARGET_TRIPLET='${{ matrix.triplet }}'
-        -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
-        ${{ matrix.cmake }}
-        ${{ matrix.cmake_linkage }}
-
+        cmake -S inviwo -B build ${{ matrix.cmake }}
+        -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+        -DBUILD_SHARED_LIBS=${{ matrix.cmake_linkage }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} 
+        
     - name: Setup C++ Log matchers
       uses: Trass3r/setup-cpp@v1
 
