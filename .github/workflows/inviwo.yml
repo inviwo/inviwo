@@ -21,11 +21,11 @@ jobs:
             os: 'windows-latest'
             mono: ''
             cmake: > 
-              --preset msvc-dev-vcpkg
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=ON
               -DIVW_DOXYGEN_PROJECT=ON 
               -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"
+            preset: msvc-dev-vcpkg
             targets: 'ALL_BUILD'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
@@ -34,9 +34,9 @@ jobs:
             os: 'macos-13' # for now macos-latest == macos-12 since macos-13 is still "beta"
             mono: 'mono'
             cmake: >
-              --preset ninja-dev-vcpkg 
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=ON
+            preset: ninja-dev-vcpkg
             targets: 'all'
             installer: 'inviwo-installer-macos'
             artifact: 'build/Inviwo-v*.dmg'
@@ -47,10 +47,10 @@ jobs:
             # Disable benchmark for now due to error: 
             # memcpy’ is not a member of ‘std’; did you mean ‘wmemcpy’
             cmake: >
-              --preset ninja-dev-vcpkg 
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=ON
               -DIVW_TEST_BENCHMARKS=OFF
+            preset: ninja-dev-vcpkg
             targets: 'all'
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.deb'
@@ -191,10 +191,11 @@ jobs:
     - name: Configure CMake
       shell: bash
       run: >
-        cmake -S inviwo -B build ${{ matrix.cmake }}
+        cmake -S inviwo -B build --preset ${{ matrix.preset }}
         -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
         -DBUILD_SHARED_LIBS=${{ matrix.cmake_linkage }}
-        -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} 
+        -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
+        ${{ matrix.cmake }}
         
     - name: Setup C++ Log matchers
       uses: Trass3r/setup-cpp@v1
@@ -225,6 +226,16 @@ jobs:
       with:
         name: inviwo-python-api
         path: build/docs/python-api/*
+    
+    - name: Upload logs
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: logs-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
+        path: |
+          **/*.log
+          **/*.txt
+          **/*.cmake
 
   test-installer:
     needs: build
