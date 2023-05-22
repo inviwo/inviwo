@@ -36,6 +36,8 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/factoryutil.h>
 
+#include <fmt/format.h>
+
 namespace inviwo::animation {
 
 class ExceptionPropagator {
@@ -177,8 +179,8 @@ std::unique_ptr<Recorder> ImageRecorderFactory::create(const RecorderOptions& op
 
     const auto digits = std::max(fmt::formatted_size("{}", opts.expectedNumberOfFrames), size_t{4});
 
-    auto format =
-        fmt::format("{}{{:0{}}}.{}", baseName_, digits, writer_.getSelectedValue().extension_);
+    auto format = fmt::format("{}{{:0{}}}.{}", baseName_.get(), digits,
+                              writer_.getSelectedValue().extension_);
     replaceInString(format, "UPN", opts.sourceName);
 
     return std::make_unique<ImageRecorder>(app_, outputDirectory_.get(), format, std::move(writer));

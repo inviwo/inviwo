@@ -22,6 +22,17 @@
 #ifndef HALF_HALF_HPP
 #define HALF_HALF_HPP
 
+#if defined(__clang__)
+    #pragma clang diagnostic push
+    #if __has_warning("-Wcomma")
+        #pragma clang diagnostic ignored "-Wcomma"
+    #endif
+    #if __has_warning("-Wimplicit-int-conversion")
+        #pragma clang diagnostic ignored "-Wimplicit-int-conversion"
+    #endif
+#endif
+
+
 /// Combined gcc version number.
 #define HALF_GNUC_VERSION (__GNUC__*100+__GNUC_MINOR__)
 
@@ -3065,5 +3076,11 @@ namespace std
 	#pragma warning(pop)
 	#undef HALF_POP_WARNINGS
 #endif
+
+
+#if defined(__clang__)
+    #pragma clang diagnostic pop
+#endif
+
 
 #endif
