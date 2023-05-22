@@ -64,7 +64,7 @@ jobs:
             linkage: 'dynamic'
             triplet: 'x64-windows'
             targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
-          - os: 'windows-latest'
+          - system: 'windows'
             linkage: 'static'
             triplet: 'x64-windows-static-md'
             
@@ -72,7 +72,7 @@ jobs:
             linkage: 'dynamic'
             triplet: 'x64-osx-dynamic'
             targets: 'all package'
-          - os: 'macos-13'
+          - system: 'macos'
             linkage: 'static'
             triplet: 'x64-osx'
             
@@ -80,7 +80,7 @@ jobs:
             linkage: 'dynamic'
             triplet: 'x64-linux-dynamic'
             targets: 'all package'
-          - os: 'ubuntu-22.04'
+          - system: 'linux'
             linkage: 'static'
             triplet: 'x64-linux'
             
@@ -90,6 +90,10 @@ jobs:
     timeout-minutes: 360
     
     steps:
+    - name: Print space
+      if: runner.os == 'Windows'
+      run: Get-PSDrive
+    
     - name: Chocolatey Install 
       if: runner.os == 'Windows'
       shell: pwsh
@@ -116,7 +120,7 @@ jobs:
         brew install ninja mono pkg-config nasm
         sudo xcode-select --switch /Applications/Xcode_14.3.app/Contents/Developer
 
-    - name: Apt Install, switch to gcc-12
+    - name: Apt Install, switch to gcc-13
       shell: bash
       if: runner.os == 'Linux'
       run: |
@@ -164,7 +168,7 @@ jobs:
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
-        version: 6.3.2
+        version: 6.4.2
         dir: ${{ github.workspace }}
     
     - name: Clone Inviwo
@@ -193,6 +197,7 @@ jobs:
       run: >
         cmake -S inviwo -B build --preset ${{ matrix.preset }}
         -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+        -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
         -DBUILD_SHARED_LIBS=${{ matrix.cmake_linkage }}
         -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
         ${{ matrix.cmake }}
@@ -200,6 +205,10 @@ jobs:
     - name: Setup C++ Log matchers
       uses: Trass3r/setup-cpp@v1
 
+    - name: Print space 2
+      if: runner.os == 'Windows'
+      run: Get-PSDrive
+    
     - name: Build
       timeout-minutes: 360
       shell: bash
