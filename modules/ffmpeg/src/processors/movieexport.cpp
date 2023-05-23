@@ -58,11 +58,11 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo MovieExport::processorInfo_{"org.inviwo.MovieExport",  // Class identifier
-                                                "Movie Export",            // Display name
-                                                "Data Output",             // Category
-                                                CodeState::Stable,         // Code state
-                                                Tags::CPU | Tag("Export"), // Tags
+const ProcessorInfo MovieExport::processorInfo_{"org.inviwo.MovieExport",   // Class identifier
+                                                "Movie Export",             // Display name
+                                                "Data Output",              // Category
+                                                CodeState::Stable,          // Code state
+                                                Tags::CPU | Tag("Export"),  // Tags
                                                 R"(Export image data to a movie)"_unindentHelp};
 
 const ProcessorInfo MovieExport::getProcessorInfo() const { return processorInfo_; }
