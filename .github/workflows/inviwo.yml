@@ -83,7 +83,12 @@ jobs:
           - system: 'linux'
             linkage: 'static'
             triplet: 'x64-linux'
-            
+
+        exclude:
+          # Windows debug build are to big, they run out of diskspace
+          - system: windows
+            configuration: Debug
+
       fail-fast: false
       
     runs-on: ${{ matrix.os }}
@@ -166,7 +171,7 @@ jobs:
         -password "${{ secrets.GITHUB_TOKEN }}"
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2
+      uses: jurplel/install-qt-action@v3
       with:
         version: 6.4.2
         dir: ${{ github.workspace }}
@@ -191,6 +196,9 @@ jobs:
         echo "-- Changes --"
         echo "${{ steps.build_changelog.outputs.changelog }}"
         echo "-- End --"
+
+    - name: Activate MSVC
+      uses: ilammy/msvc-dev-cmd@v1
 
     - name: Configure CMake
       shell: bash

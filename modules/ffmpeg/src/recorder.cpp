@@ -130,7 +130,7 @@ void Recorder::queueFrame(const LayerRAM& layer) {
             if (static_cast<int>(layer.getDimensions().x) != width ||
                 static_cast<int>(layer.getDimensions().y) != height) {
                 throw inviwo::Exception(
-                    IVW_CONTEXT, "Video dimensions does not match, expected: {}x{} got: {}x{}",
+                    IVW_CONTEXT, "Video dimensions do not match, expected: {}x{} got: {}x{}",
                     width, height, layer.getDimensions().x, layer.getDimensions().y);
             }
 

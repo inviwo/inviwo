@@ -61,8 +61,8 @@ namespace inviwo {
 const ProcessorInfo MovieExport::processorInfo_{"org.inviwo.MovieExport",  // Class identifier
                                                 "Movie Export",            // Display name
                                                 "Data Output",             // Category
-                                                CodeState::Experimental,   // Code state
-                                                Tags::None,                // Tags
+                                                CodeState::Stable,         // Code state
+                                                Tags::CPU | Tag("Export"), // Tags
                                                 R"(Export image data to a movie)"_unindentHelp};
 
 const ProcessorInfo MovieExport::getProcessorInfo() const { return processorInfo_; }
@@ -73,7 +73,7 @@ MovieExport::MovieExport()
     , file_{"file", "File", "File to export movie to"_help, {}, AcceptMode::Save, FileMode::AnyFile}
     , format_{"format", "Format", ffmpeg::formatOptionsState()}
     , activeFormat_{"activeFormat", "Selected Format"}
-    , codec_{"codex",
+    , codec_{"codec",
              "Codec",
              "Video codec, automatic will derive the format from the filename"_help,
              {{"automatic", "Automatic", ffmpeg::CodecID{}}},

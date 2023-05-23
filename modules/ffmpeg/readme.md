@@ -1,3 +1,2 @@
 # ffmpeg Module
-
-Description of the ffmpeg module
+Adds ffmpeg integration for exporting movies, both as a processor and as an animation editor recorder 

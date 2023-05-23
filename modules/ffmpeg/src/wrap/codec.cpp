@@ -52,7 +52,6 @@ void Codec::open(AVDictionary* opt_arg) {
     av_dict_copy(&opt, opt_arg, 0);
 
     /* open the codec */
-    // int ret = avcodec_open2(codec.ctx, codec.ctx->codec, &opt);
     int ret = avcodec_open2(ctx, ctx->codec, &opt);
 
     av_dict_free(&opt);

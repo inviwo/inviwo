@@ -51,7 +51,6 @@ OutputStream::OutputStream(Format& format, Options opts)
 
     codec.ctx->bit_rate = opts.bitRate;
 
-    /* Resolution must be a multiple of two. */
     codec.ctx->width = opts.width;
     codec.ctx->height = opts.height;
 
