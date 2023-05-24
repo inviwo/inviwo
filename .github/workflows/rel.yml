@@ -1,0 +1,66 @@
+name: Rel Inviwo
+
+on: 
+  push:
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
+  VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'         # recognized by vcpkg
+  # QT_DEBUG_PLUGINS: 1                                        # print qt plugin debug info
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest]
+        include:
+          - os: 'windows-latest'
+            triplet: 'x64-windows'
+            mono: ''
+            cmake: '--preset msvc-dev-vcpkg -DIVW_MODULE_HDF5=ON -DIVW_DOXYGEN_PROJECT=ON 
+                    -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"'
+            targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
+            installer: 'inviwo-installer-win'
+            artifact: 'build/inviwo-v*.exe'
+
+      fail-fast: false
+      
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 360
+    
+    steps:
+    - name: Clone Inviwo
+      uses: actions/checkout@v2
+      with: 
+        path: inviwo
+        submodules: recursive
+
+    - name: "Build Changelog"
+      id: build_changelog
+      uses: mikepenz/release-changelog-builder-action@v3
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        toTag: ${{ github.ref }}
+        configurationJson: |
+          {
+            "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+            "categories": [
+              {
+                "title": "## 💬 Other",
+                "labels": ["other"]
+              },
+              {
+                "title": "## 📦 Dependencies",
+                "labels": ["dependencies"]
+              }
+            ]
+          }
+
+    - name: changelog
+      shell: bash
+      run: |
+        echo "-- Changes --"
+        echo "${{ steps.build_changelog.outputs.changelog }}"
+        echo "-- End --"
