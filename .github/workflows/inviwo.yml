@@ -55,15 +55,16 @@ jobs:
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.deb'
           
+          # linkage
           - linkage: 'dynamic'
             cmake_linkage: 'ON'
           - linkage: 'static'
             cmake_linkage: 'OFF'
           
+          # set triplets
           - system: 'windows'
             linkage: 'dynamic'
             triplet: 'x64-windows'
-            targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
           - system: 'windows'
             linkage: 'static'
             triplet: 'x64-windows-static-md'
@@ -71,7 +72,6 @@ jobs:
           - system: 'macos'
             linkage: 'dynamic'
             triplet: 'x64-osx-dynamic'
-            targets: 'all package'
           - system: 'macos'
             linkage: 'static'
             triplet: 'x64-osx'
@@ -79,10 +79,31 @@ jobs:
           - system: 'linux'
             linkage: 'dynamic'
             triplet: 'x64-linux-dynamic'
-            targets: 'all package'
           - system: 'linux'
             linkage: 'static'
             triplet: 'x64-linux'
+
+          # extra targets 
+          - system: windows
+            linkage: dynamic
+            configuration: Release
+            targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
+          - system: macos
+            linkage: dynamic
+            configuration: Release
+            targets: 'all package'
+          - system: linux
+            linkage: dynamic
+            configuration: Release
+            targets: 'all package'
+
+          # need /MD for static to go with x64-windows-static-md
+          - system: windows
+            linkage: static
+            cmake: > 
+              -DIVW_MODULE_HDF5=ON
+              -DIVW_MODULE_FFMPEG=ON
+              -DIVW_CFG_MSVC_FORCE_SHARED_CRT=ON            
 
         exclude:
           # Windows debug build are to big, they run out of diskspace
