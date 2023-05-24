@@ -56,7 +56,7 @@ jobs:
                           "on_property": "branch",
                           "flags": "gu"
                         }
-                      ]
+                    ]
                 },
                 {
                     "title": "## 🐛 Fixes",
@@ -66,8 +66,8 @@ jobs:
                           "on_property": "branch",
                           "flags": "gu"
                         }
-                      ]
-                },
+                    ]
+                }
             ],
             "max_tags_to_fetch": 1000,
             "max_pull_requests": 1000,
