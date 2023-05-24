@@ -45,17 +45,33 @@ jobs:
         toTag: ${{ github.ref }}
         configurationJson: |
           {
-            "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+            "template": "# Changelog\n#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+            "pr_template": "- PR: <a href=#{{URL}}>##{{NUMBER}}</a> #{{TITLE}} - #{{AUTHOR}}",
             "categories": [
-              {
-                "title": "## 💬 Other",
-                "labels": ["other"]
-              },
-              {
-                "title": "## 📦 Dependencies",
-                "labels": ["dependencies"]
-              }
-            ]
+                {
+                    "title": "## 🚀 Features",
+                    "rules": [
+                        {
+                          "pattern": "feature/",
+                          "on_property": "branch",
+                          "flags": "gu"
+                        }
+                      ]
+                },
+                {
+                    "title": "## 🐛 Fixes",
+                    "rules": [
+                        {
+                          "pattern": "fix/",
+                          "on_property": "branch",
+                          "flags": "gu"
+                        }
+                      ]
+                },
+            ],
+            "max_tags_to_fetch": 1000,
+            "max_pull_requests": 1000,
+            "max_back_track_time_days": 5000
           }
 
     - name: changelog
