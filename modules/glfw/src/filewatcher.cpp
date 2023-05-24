@@ -163,7 +163,7 @@ private:
         std::vector<std::pair<std::filesystem::path, Action>> changed;
 
         std::erase_if(files, [&](const auto& item) {
-            if (!filesystem::fileExists(item.first)) {
+            if (!std::filesystem::is_regular_file(item.first)) {
                 changed.emplace_back(item.first, Action::Removed);
                 return true;
             } else {

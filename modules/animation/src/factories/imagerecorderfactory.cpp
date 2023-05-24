@@ -126,7 +126,7 @@ void ImageRecorder::record(const Layer& layer) {
                copy = std::shared_ptr<Layer>(layer.clone()), exception = exceptionProp_.get()]() {
             try {
                 writer->writeData(copy.get(), file);
-            } catch (const Exception& e) {
+            } catch (...) {
                 exception->setException();
             }
         });

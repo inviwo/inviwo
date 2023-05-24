@@ -116,10 +116,6 @@ jobs:
     timeout-minutes: 360
     
     steps:
-    - name: Print space
-      if: runner.os == 'Windows'
-      run: Get-PSDrive
-    
     - name: Chocolatey Install 
       if: runner.os == 'Windows'
       shell: pwsh
@@ -232,12 +228,8 @@ jobs:
         ${{ matrix.cmake }}
         
     - name: Setup C++ Log matchers
-      uses: Trass3r/setup-cpp@v1
+      uses: Trass3r/setup-cpp@master
 
-    - name: Print space 2
-      if: runner.os == 'Windows'
-      run: Get-PSDrive
-    
     - name: Build
       timeout-minutes: 360
       shell: bash
@@ -246,20 +238,21 @@ jobs:
         --parallel --target ${{ matrix.targets }}
 
     - name: Upload installer
+      if: matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.installer }}
         path: ${{ matrix.artifact }}
 
     - name: Upload doxygen
-      if: runner.os == 'Windows'
+      if: matrix.system == 'windows' &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
       uses: actions/upload-artifact@v3
       with:
         name: inviwo-cpp-api
         path: build/docs/inviwo/html/*
 
     - name: Upload shpinx
-      if: runner.os == 'Windows'
+      if: matrix.system == 'windows' &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
       uses: actions/upload-artifact@v3
       with:
         name: inviwo-python-api

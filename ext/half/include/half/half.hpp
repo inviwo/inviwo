@@ -30,6 +30,11 @@
     #if __has_warning("-Wimplicit-int-conversion")
         #pragma clang diagnostic ignored "-Wimplicit-int-conversion"
     #endif
+#elif defined(__GNUC__)
+	#pragma GCC diagnostic push
+	#if __GNUC__ > 3 || (__GNUC__ == 3  && __GNUC_MINOR__ >= 4)
+		#pragma GCC diagnostic ignored "-Wparentheses"
+	#endif
 #endif
 
 
@@ -3080,6 +3085,8 @@ namespace std
 
 #if defined(__clang__)
     #pragma clang diagnostic pop
+#elif defined(__GNUC__)
+	#pragma GCC diagnostic pop
 #endif
 
 
