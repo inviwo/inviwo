@@ -106,9 +106,7 @@ FFmpegRecorderFactory::FFmpegRecorderFactory()
     activeCodec_.setSerializationMode(PropertySerializationMode::None);
     activeCodec_.setReadOnly(true);
 
-    auto updateCodecs = [this]() {
-        codec_.replaceOptions(codecsOptionsFor(getOutputFormat()));
-    };
+    auto updateCodecs = [this]() { codec_.replaceOptions(codecsOptionsFor(getOutputFormat())); };
 
     auto updateActive = [this]() {
         auto outputFormat = getOutputFormat();
@@ -133,9 +131,7 @@ FFmpegRecorderFactory::FFmpegRecorderFactory()
     codec_.onChange([updateActive]() { updateActive(); });
 }
 
-bool FFmpegRecorderFactory::guessFormat() const {
-    return codec_.getSelectedIndex() == 0;
-}
+bool FFmpegRecorderFactory::guessFormat() const { return codec_.getSelectedIndex() == 0; }
 
 ffmpeg::OutputFormat FFmpegRecorderFactory::getOutputFormat() const {
     if (guessFormat()) {
@@ -145,9 +141,7 @@ ffmpeg::OutputFormat FFmpegRecorderFactory::getOutputFormat() const {
     }
 }
 
-bool FFmpegRecorderFactory::guessCodec() const {
-    return codec_.getSelectedIndex() == 0;
-}
+bool FFmpegRecorderFactory::guessCodec() const { return codec_.getSelectedIndex() == 0; }
 ffmpeg::CodecID FFmpegRecorderFactory::getCodec(const ffmpeg::OutputFormat& outputFormat) const {
     if (guessCodec()) {
         return outputFormat.guessVideoCodec(file_.get());
@@ -155,7 +149,6 @@ ffmpeg::CodecID FFmpegRecorderFactory::getCodec(const ffmpeg::OutputFormat& outp
         return codec_.getSelectedValue();
     }
 }
-
 
 const std::string& FFmpegRecorderFactory::getClassIdentifier() const { return name_; }
 

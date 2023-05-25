@@ -133,9 +133,7 @@ MovieExport::MovieExport()
 
 MovieExport::~MovieExport() = default;
 
-bool MovieExport::guessFormat() const {
-    return codec_.getSelectedIndex() == 0;
-}
+bool MovieExport::guessFormat() const { return codec_.getSelectedIndex() == 0; }
 
 ffmpeg::OutputFormat MovieExport::getOutputFormat() const {
     if (guessFormat()) {
@@ -145,9 +143,7 @@ ffmpeg::OutputFormat MovieExport::getOutputFormat() const {
     }
 }
 
-bool MovieExport::guessCodec() const {
-    return codec_.getSelectedIndex() == 0;
-}
+bool MovieExport::guessCodec() const { return codec_.getSelectedIndex() == 0; }
 ffmpeg::CodecID MovieExport::getCodec(const ffmpeg::OutputFormat& outputFormat) const {
     if (guessCodec()) {
         return outputFormat.guessVideoCodec(file_.get());

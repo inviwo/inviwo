@@ -57,7 +57,7 @@ private:
     ffmpeg::OutputFormat getOutputFormat() const;
 
     bool guessCodec() const;
-    ffmpeg::CodecID getCodec(const ffmpeg::OutputFormat& outputFormat) const; 
+    ffmpeg::CodecID getCodec(const ffmpeg::OutputFormat& outputFormat) const;
 
     ImageInport inport_;
     FileProperty file_;
