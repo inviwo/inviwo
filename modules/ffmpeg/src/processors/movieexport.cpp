@@ -69,20 +69,20 @@ const ProcessorInfo MovieExport::getProcessorInfo() const { return processorInfo
 
 MovieExport::MovieExport()
     : Processor{}
-    , inport_{"inport", "Imagedata to export"_help, OutportDeterminesSize::Yes}
+    , inport_{"inport", "Image data to export"_help, OutportDeterminesSize::Yes}
     , file_{"file", "File", "File to export movie to"_help, {}, AcceptMode::Save, FileMode::AnyFile}
     , format_{"format", "Format", ffmpeg::formatOptionsState()}
     , activeFormat_{"activeFormat", "Selected Format"}
     , codec_{"codec",
              "Codec",
-             "Video codec, automatic will derive the format from the filename"_help,
+             "Video codec - automatic will derive the format from the filename"_help,
              {{"automatic", "Automatic", ffmpeg::CodecID{}}},
              0}
     , activeCodec_{"activeCodec", "Selected Codec"}
     , mode_{"mode",
             "Mode",
-            {{"time", "Time based recoding", ffmpeg::Recorder::Mode::Time},
-             {"eval", "Evaluation based recoding", ffmpeg::Recorder::Mode::Evaluation}},
+            {{"time", "Time-based recoding", ffmpeg::Recorder::Mode::Time},
+             {"eval", "Evaluation-based recoding", ffmpeg::Recorder::Mode::Evaluation}},
             0}
     , frameRate_{"frameRate", "Frame Rate",
                  util::ordinalCount<int>(25, 120).setMin(0).set(
@@ -90,7 +90,7 @@ MovieExport::MovieExport()
     , bitRate_{"bitRate", "Bit Rate",
                util::ordinalCount<int>(8'000'000, 100'000'000)
                    .setMin(100'000)
-                   .set("How many bit to spend per second"_help)}
+                   .set("How many bits to spend per second"_help)}
     , start_{"start", "Start"}
     , stop_{"stop", "Stop"} {
 
@@ -104,40 +104,20 @@ MovieExport::MovieExport()
     activeCodec_.setReadOnly(true);
 
     auto updateCodecs = [this]() {
-        auto outputFormat = [&]() {
-            if (format_.getSelectedIndex() == 0) {
-                return ffmpeg::OutputFormat::guess(file_.get());
-            } else {
-                return ffmpeg::OutputFormat(format_.getSelectedValue());
-            }
-        }();
+        auto outputFormat = getOutputFormat();
         codec_.replaceOptions(ffmpeg::codecsOptionsFor(outputFormat));
     };
 
     auto updateActive = [this]() {
-        auto outputFormat = [&]() {
-            if (format_.getSelectedIndex() == 0) {
-                return ffmpeg::OutputFormat::guess(file_.get());
-            } else {
-                return ffmpeg::OutputFormat(format_.getSelectedValue());
-            }
-        }();
-
+        auto outputFormat = getOutputFormat();
         activeFormat_.set(fmt::format("{} ({})", outputFormat.name(), outputFormat.longName()));
 
-        auto codec = [&]() {
-            if (codec_.getSelectedIndex() == 0) {
-                return outputFormat.guessVideoCodec(file_.get());
-            } else {
-                return codec_.getSelectedValue();
-            }
-        }();
-
+        auto codec = getCodec(outputFormat);
         activeCodec_.set(fmt::format("{} ({})", codec.name(), codec.longName().value_or("-")));
     };
 
     file_.onChange([updateCodecs, updateActive, this]() {
-        if (auto outputFormat = ffmpeg::OutputFormat::guess(file_.get())) {
+        if (ffmpeg::OutputFormat::guess(file_.get())) {
             updateCodecs();
             updateActive();
         }
@@ -153,14 +133,36 @@ MovieExport::MovieExport()
 
 MovieExport::~MovieExport() = default;
 
+bool MovieExport::guessFormat() const {
+    return codec_.getSelectedIndex() == 0;
+}
+
+ffmpeg::OutputFormat MovieExport::getOutputFormat() const {
+    if (guessFormat()) {
+        return ffmpeg::OutputFormat::guess(file_.get());
+    } else {
+        return ffmpeg::OutputFormat(format_.getSelectedValue());
+    }
+}
+
+bool MovieExport::guessCodec() const {
+    return codec_.getSelectedIndex() == 0;
+}
+ffmpeg::CodecId MovieExport::getCodec(const ffmpeg::OutputFormat& outputFormat) const {
+    if (guessCodec()) {
+        return outputFormat.guessVideoCodec(file_.get());
+    } else {
+        return codec_.getSelectedValue();
+    }
+}
+
 void MovieExport::process() {
     auto img = inport_.getData();
 
     if (start_.isModified()) {
 
-        auto format =
-            (format_.getSelectedIndex() != 0 ? ffmpeg::OutputFormat(format_.getSelectedValue())
-                                             : ffmpeg::OutputFormat{});
+        auto format = (!guessFormat() ? ffmpeg::OutputFormat(format_.getSelectedValue())
+                                      : ffmpeg::OutputFormat{});
 
         recorder = std::make_unique<ffmpeg::Recorder>(
             file_.get(), format, mode_,

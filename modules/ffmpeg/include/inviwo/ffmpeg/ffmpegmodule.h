@@ -35,11 +35,11 @@
 
 namespace inviwo {
 
-class IVW_MODULE_FFMPEG_API ffmpegModule : public InviwoModule,
+class IVW_MODULE_FFMPEG_API FFmpegModule : public InviwoModule,
                                            public animation::AnimationSupplier {
 public:
-    ffmpegModule(InviwoApplication* app);
-    virtual ~ffmpegModule() = default;
+    FFmpegModule(InviwoApplication* app);
+    virtual ~FFmpegModule() = default;
 };
 
 }  // namespace inviwo

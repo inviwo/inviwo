@@ -1,4 +1,4 @@
-ivw_module(ffmpeg)
+ivw_module(FFmpeg)
 
 set(HEADER_FILES
     include/inviwo/ffmpeg/ffmpeganimationrecorder.h

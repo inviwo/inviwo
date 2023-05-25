@@ -88,7 +88,7 @@ FFmpegRecorderFactory::FFmpegRecorderFactory()
     , activeFormat_{"activeFormat", "Selected Format"}
     , codec_{"codex",
              "Codec",
-             "Video codec, automatic will derive the format from the filename"_help,
+             "Video codec - automatic will derive the format from the filename"_help,
              {{"automatic", "Automatic", ffmpeg::CodecID{}}},
              0}
     , activeCodec_{"activeCodec", "Selected Codec"}
@@ -107,40 +107,19 @@ FFmpegRecorderFactory::FFmpegRecorderFactory()
     activeCodec_.setReadOnly(true);
 
     auto updateCodecs = [this]() {
-        auto outputFormat = [&]() {
-            if (format_.getSelectedIndex() == 0) {
-                return ffmpeg::OutputFormat::guess(file_.get());
-            } else {
-                return ffmpeg::OutputFormat(format_.getSelectedValue());
-            }
-        }();
-        codec_.replaceOptions(codecsOptionsFor(outputFormat));
+        codec_.replaceOptions(codecsOptionsFor(getOutputFormat()));
     };
 
     auto updateActive = [this]() {
-        auto outputFormat = [&]() {
-            if (format_.getSelectedIndex() == 0) {
-                return ffmpeg::OutputFormat::guess(file_.get());
-            } else {
-                return ffmpeg::OutputFormat(format_.getSelectedValue());
-            }
-        }();
-
+        auto outputFormat = getOutputFormat();
         activeFormat_.set(fmt::format("{} ({})", outputFormat.name(), outputFormat.longName()));
 
-        auto codec = [&]() {
-            if (codec_.getSelectedIndex() == 0) {
-                return outputFormat.guessVideoCodec(file_.get());
-            } else {
-                return codec_.getSelectedValue();
-            }
-        }();
-
+        auto codec = getCodec(outputFormat);
         activeCodec_.set(fmt::format("{} ({})", codec.name(), codec.longName().value_or("-")));
     };
 
     file_.onChange([updateCodecs, updateActive, this]() {
-        if (auto outputFormat = ffmpeg::OutputFormat::guess(file_.get())) {
+        if (ffmpeg::OutputFormat::guess(file_.get())) {
             updateCodecs();
             updateActive();
         }
@@ -154,15 +133,38 @@ FFmpegRecorderFactory::FFmpegRecorderFactory()
     codec_.onChange([updateActive]() { updateActive(); });
 }
 
+bool FFmpegRecorderFactory::guessFormat() const {
+    return codec_.getSelectedIndex() == 0;
+}
+
+ffmpeg::OutputFormat FFmpegRecorderFactory::getOutputFormat() const {
+    if (guessFormat()) {
+        return ffmpeg::OutputFormat::guess(file_.get());
+    } else {
+        return ffmpeg::OutputFormat(format_.getSelectedValue());
+    }
+}
+
+bool FFmpegRecorderFactory::guessCodec() const {
+    return codec_.getSelectedIndex() == 0;
+}
+ffmpeg::CodecId FFmpegRecorderFactory::getCodec(const ffmpeg::OutputFormat& outputFormat) const {
+    if (guessCodec()) {
+        return outputFormat.guessVideoCodec(file_.get());
+    } else {
+        return codec_.getSelectedValue();
+    }
+}
+
+
 const std::string& FFmpegRecorderFactory::getClassIdentifier() const { return name_; }
 
 BoolCompositeProperty* FFmpegRecorderFactory::options() { return &options_; }
 
 std::unique_ptr<animation::Recorder> FFmpegRecorderFactory::create(
     const animation::RecorderOptions& opts) {
-    const auto format =
-        (format_.getSelectedIndex() != 0 ? ffmpeg::OutputFormat(format_.getSelectedValue())
-                                         : ffmpeg::OutputFormat{});
+    const auto format = (!guessFormat() ? ffmpeg::OutputFormat(format_.getSelectedValue())
+                                        : ffmpeg::OutputFormat{});
 
     auto file = file_.get();
 

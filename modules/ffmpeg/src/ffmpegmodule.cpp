@@ -75,7 +75,7 @@ void ffmpeg_log_callback(void* ptr, int level, const char* fmt, va_list vl) {
 
 namespace inviwo {
 
-ffmpegModule::ffmpegModule(InviwoApplication* app)
+FFmpegModule::FFmpegModule(InviwoApplication* app)
     : InviwoModule(app, "ffmpeg"), animation::AnimationSupplier(app) {
 
     // Processors

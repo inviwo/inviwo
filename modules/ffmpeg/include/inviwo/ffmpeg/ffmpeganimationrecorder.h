@@ -42,6 +42,7 @@
 
 #include <inviwo/ffmpeg/recorder.h>
 #include <inviwo/ffmpeg/wrap/codecid.h>
+#include <inviwo/ffmpeg/wrap/outputformat.h>
 
 namespace inviwo {
 
@@ -56,6 +57,12 @@ public:
         const animation::RecorderOptions& opts) override;
 
 private:
+    bool guessFormat() const;
+    ffmpeg::OutputFormat getOutputFormat() const;
+
+    bool guessCodec() const;
+    ffmpeg::CodecId getCodec(const ffmpeg::OutputFormat& outputFormat) const; 
+
     std::string name_;
     BoolCompositeProperty options_;
 

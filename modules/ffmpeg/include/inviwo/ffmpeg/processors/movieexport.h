@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/ffmpeg/wrap/codecid.h>
+#include <inviwo/ffmpeg/wrap/outputformat.h>
 #include <inviwo/ffmpeg/recorder.h>
 
 namespace inviwo {
@@ -52,6 +53,12 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    bool guessFormat() const;
+    ffmpeg::OutputFormat getOutputFormat() const;
+
+    bool guessCodec() const;
+    ffmpeg::CodecId getCodec(const ffmpeg::OutputFormat& outputFormat) const; 
+
     ImageInport inport_;
     FileProperty file_;
     OptionPropertyString format_;

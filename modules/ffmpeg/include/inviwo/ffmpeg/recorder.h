@@ -56,6 +56,10 @@ public:
     const OutputStream& getStream();
     const Format& getFormat();
 
+    /**
+     * Copies the image data in layer into a ffmpeg frames and enques that for encoding
+     * The layer will not be used after the return of the function.
+     */
     void queueFrame(const LayerRAM& layer);
 
 private:
