@@ -148,7 +148,7 @@ ffmpeg::OutputFormat MovieExport::getOutputFormat() const {
 bool MovieExport::guessCodec() const {
     return codec_.getSelectedIndex() == 0;
 }
-ffmpeg::CodecId MovieExport::getCodec(const ffmpeg::OutputFormat& outputFormat) const {
+ffmpeg::CodecID MovieExport::getCodec(const ffmpeg::OutputFormat& outputFormat) const {
     if (guessCodec()) {
         return outputFormat.guessVideoCodec(file_.get());
     } else {
