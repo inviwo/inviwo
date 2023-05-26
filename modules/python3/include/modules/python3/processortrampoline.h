@@ -42,8 +42,6 @@ class Event;
 class Outport;
 class Property;
 
-
-
 /*
  * We need to export this class other wise pybind11 will not see that it derives from
  * trampoline_self_life_support and we get runtime errors like "Alias class (also known as
@@ -78,4 +76,3 @@ public:
 #include <warn/pop>
 
 }  // namespace inviwo
-

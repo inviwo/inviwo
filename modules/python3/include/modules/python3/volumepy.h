@@ -46,7 +46,6 @@ namespace inviwo {
 
 class DataFormatBase;
 
-
 #include <warn/push>
 #include <warn/ignore/attributes>
 class IVW_MODULE_PYTHON3_API VolumePy : public VolumeRepresentation {
