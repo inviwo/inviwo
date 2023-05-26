@@ -316,7 +316,6 @@ Map defaultCMakeOptions(String buildType) {
         "IVW_APP_MINIMAL_GLFW" : "ON",
         "IVW_APP_MINIMAL_QT" : "ON",
         "IVW_TEST_UNIT_TESTS" : "ON",
-        "IVW_TEST_UNIT_TESTS_RUN_ON_BUILD" : "OFF",
         "IVW_TEST_INTEGRATION_TESTS" : "ON",
     ]
 }

@@ -278,7 +278,7 @@ function(ivw_register_modules retval)
                 ivw_remove_from_list(deps ${mod}_dependencies InviwoCoreModule)
                 ivw_mod_name_to_name(deps ${deps})
                 ivw_join(";" ", " deps ${deps})
-                ivw_pad_right(padded_name "${${mod}_name}," " " 30)
+                ivw_pad_right(padded_name "${${mod}_name}," " " 32)
                 ivw_debug_message(STATUS "Register Module: ${padded_name}"
                     "Default: ${${mod}_enableByDefault}, \t"
                     "Group: ${group_name}, \t"
