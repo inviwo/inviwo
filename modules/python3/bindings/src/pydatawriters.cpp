@@ -41,6 +41,8 @@
 
 namespace inviwo {
 
+#include <warn/push>
+#include <warn/ignore/attributes>
 // Allow overriding virtual functions from Python
 template <typename T>
 class DataWriterTypeTrampoline : public DataWriterType<T>,
@@ -76,6 +78,7 @@ public:
         );
     }
 };
+#include <warn/pop>
 
 template <typename T>
 void exposeFactoryWriterType(pybind11::class_<DataWriterFactory>& r, std::string_view type) {
