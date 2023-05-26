@@ -42,17 +42,17 @@ namespace inviwo {
 namespace {
 
 constexpr std::array<
-    std::tuple<std::string_view, std::string_view, int (units::detail::unit_data::*)() const>, 10>
-    baseUnits{{{"meter", "m", &units::detail::unit_data::meter},
-               {"kilogram", "kg", &units::detail::unit_data::kg},
-               {"second", "s", &units::detail::unit_data::second},
-               {"ampere", "A", &units::detail::unit_data::ampere},
-               {"kelvin", "K", &units::detail::unit_data::kelvin},
-               {"mole", "mol", &units::detail::unit_data::mole},
-               {"candela", "Cd", &units::detail::unit_data::candela},
-               {"currency", "$", &units::detail::unit_data::currency},
-               {"count", "#", &units::detail::unit_data::count},
-               {"radian", "rad", &units::detail::unit_data::radian}}};
+    std::tuple<std::string_view, std::string_view, int (*)(units::detail::unit_data)>, 10>
+    baseUnits{{{"meter", "m", [](units::detail::unit_data u) { return u.meter(); }},
+               {"kilogram", "kg", [](units::detail::unit_data u) { return u.kg(); }},
+               {"second", "s", [](units::detail::unit_data u) { return u.second(); }},
+               {"ampere", "A", [](units::detail::unit_data u) { return u.ampere(); }},
+               {"kelvin", "K", [](units::detail::unit_data u) { return u.kelvin(); }},
+               {"mole", "mol", [](units::detail::unit_data u) { return u.mole(); }},
+               {"candela", "Cd", [](units::detail::unit_data u) { return u.candela(); }},
+               {"currency", "$", [](units::detail::unit_data u) { return u.currency(); }},
+               {"count", "#", [](units::detail::unit_data u) { return u.count(); }},
+               {"radian", "rad", [](units::detail::unit_data u) { return u.radian(); }}}};
 
 template <typename OP>
 constexpr bool any(units::detail::unit_data a, units::detail::unit_data b, OP op) {

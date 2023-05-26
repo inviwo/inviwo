@@ -41,6 +41,8 @@
 
 namespace inviwo {
 
+#include <warn/push>
+#include <warn/ignore/attributes>
 // Allow overriding virtual functions from Python
 template <typename T>
 class DataReaderTypeTrampoline : public DataReaderType<T>,
@@ -84,6 +86,7 @@ public:
         );
     }
 };
+#include <warn/pop>
 
 template <typename T>
 void exposeFactoryReaderType(pybind11::class_<DataReaderFactory>& r, std::string_view type) {

@@ -21,8 +21,10 @@ jobs:
             os: 'windows-latest'
             mono: ''
             cmake: > 
+              -DIVW_MODULE_EIGENUTILS=ON
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=ON
+              -DIVW_MODULE_WEBBROWSER=ON
               -DIVW_DOXYGEN_PROJECT=ON 
               -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"
             preset: msvc-dev-vcpkg
@@ -34,8 +36,10 @@ jobs:
             os: 'macos-13' # for now macos-latest == macos-12 since macos-13 is still "beta"
             mono: 'mono'
             cmake: >
+              -DIVW_MODULE_EIGENUTILS=ON
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=ON
+              -DIVW_MODULE_WEBBROWSER=ON
             preset: ninja-dev-vcpkg
             targets: 'all'
             installer: 'inviwo-installer-macos'
@@ -47,8 +51,10 @@ jobs:
             # Disable benchmark for now due to error: 
             # memcpy’ is not a member of ‘std’; did you mean ‘wmemcpy’
             cmake: >
+              -DIVW_MODULE_EIGENUTILS=ON
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=ON
+              -DIVW_MODULE_WEBBROWSER=ON
               -DIVW_TEST_BENCHMARKS=OFF
             preset: ninja-dev-vcpkg
             targets: 'all'
@@ -101,8 +107,10 @@ jobs:
           - system: windows
             linkage: static
             cmake: > 
+              -DIVW_MODULE_EIGENUTILS=ON
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=ON
+              -DIVW_MODULE_WEBBROWSER=ON
               -DIVW_CFG_MSVC_FORCE_SHARED_CRT=ON            
 
         exclude:

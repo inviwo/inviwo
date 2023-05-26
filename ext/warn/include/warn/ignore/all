@@ -81,6 +81,9 @@
 #    if __GNUC__ > 4 || (__GNUC__ == 4  && __GNUC_MINOR__ >= 0)
 #        pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #    endif
+#    if __GNUC__ > 4 || (__GNUC__ == 4  && __GNUC_MINOR__ >= 1)
+#        pragma GCC diagnostic ignored "-Wattributes"
+#    endif
 #    if __GNUC__ > 4 || (__GNUC__ == 4  && __GNUC_MINOR__ >= 3)
 #        pragma GCC diagnostic ignored "-Wempty-body"
 #        pragma GCC diagnostic ignored "-Wsign-conversion"

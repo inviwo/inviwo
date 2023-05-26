@@ -3,6 +3,7 @@ Name                              | Clang              | GCC                  | 
 arithmetic-overflow               | *no*               | *no*                 | C26451 (15)       
 assign-base-inaccessible          | *no*               | *no*                 | C4626 (12)        
 assign-could-not-be-generated     | *no*               | *no*                 | C4512 (13)        
+attributes                        | *same* (3.2)       | *same* (4.1)         | *no*              
 automatic-inline                  | *no*               | *no*                 | C4711 (12)        
 behavior-change                   | *no*               | *no*                 | C4350 (13)        
 bool-conversion                   | *same* (3.2)       | *no*                 | *no*              

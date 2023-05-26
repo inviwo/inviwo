@@ -46,6 +46,9 @@ namespace inviwo {
 
 class DataFormatBase;
 
+
+#include <warn/push>
+#include <warn/ignore/attributes>
 class IVW_MODULE_PYTHON3_API VolumePy : public VolumeRepresentation {
 public:
     VolumePy(pybind11::array data, const SwizzleMask& swizzleMask = swizzlemasks::rgba,
@@ -85,6 +88,7 @@ private:
     pybind11::array data_;
     size3_t dims_;
 };
+#include <warn/pop>
 
 class IVW_MODULE_PYTHON3_API VolumeRAM2PyConverter
     : public RepresentationConverterType<VolumeRepresentation, VolumeRAM, VolumePy> {

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2023 Inviwo Foundation
+ * Copyright (c) 2017-2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,52 +26,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/python3/python3moduledefine.h>
+/*
+ * This complete file is auto-generated please do not modify. 
+ * See tools/codegen/warn/README.md
+ */
 
-#include <pybind11/pybind11.h>  /// IWYU pragma: keep
+#if !defined(WARN_INCLUDE_PUSH)
+#   error "`warn/ignore/attributes` used without `warn/push`"
+#endif
 
-#include <inviwo/core/ports/porttraits.h>
-#include <inviwo/core/ports/outport.h>
-#include <inviwo/core/util/glmvec.h>
+#if defined(WARN_IGNORE_ATTRIBUTES)
+#   error "`warn/ignore/attributes` already included"
+#endif
 
-namespace inviwo {
+#define WARN_IGNORE_ATTRIBUTES
 
-#include <warn/push>
-#include <warn/ignore/attributes>
-class IVW_MODULE_PYTHON3_API PythonOutport : public Outport {
-public:
-    PythonOutport(std::string_view identifier, Document help = {});
-    virtual ~PythonOutport() = default;
-
-    virtual std::string getClassIdentifier() const override;
-    virtual glm::uvec3 getColorCode() const override { return uvec3{12, 240, 153}; }
-    virtual Document getInfo() const override;
-
-    pybind11::object getData() const;
-
-    virtual void clear() override;
-
-    virtual void setData(pybind11::object data);
-
-    virtual bool hasData() const override;
-
-private:
-    pybind11::object data_;
-};
-#include <warn/pop>
-
-template <>
-struct PortTraits<PythonOutport> {
-    static const std::string& classIdentifier() {
-        static std::string id{"org.inviwo.pythonoutport"};
-        return id;
-    }
-};
-
-inline std::string PythonOutport::getClassIdentifier() const {
-    return PortTraits<PythonOutport>::classIdentifier();
-}
-
-}  // namespace inviwo
+#if defined(__clang__)
+#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ >= 2)
+#       if __has_warning("-Wattributes")
+#           pragma clang diagnostic ignored "-Wattributes"
+#       endif
+#   endif
+#elif defined(__GNUC__)
+#   if __GNUC__ > 4 || (__GNUC__ == 4  && __GNUC_MINOR__ >= 1)
+#       pragma GCC diagnostic ignored "-Wattributes"
+#   endif
+#elif defined(_MSC_VER)
+//  Not available
+#endif

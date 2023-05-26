@@ -264,7 +264,6 @@ function(ivw_register_modules retval)
             endif()
             ivw_private_is_valid_module_dir(${module_path} ${dir} valid)
             if(${valid})
-                ivw_debug_message(STATUS "register module: ${dir}")
                 list(APPEND modules ${mod})
                 ivw_private_get_ivw_module_name(${module_path}/${dir}/CMakeLists.txt name)
                 ivw_private_get_ivw_module_version(${module_path}/${dir}/CMakeLists.txt version)
@@ -275,6 +274,15 @@ function(ivw_register_modules retval)
                     DIR ${dir} 
                     BASE ${module_path}
                 )
+
+                ivw_remove_from_list(deps ${mod}_dependencies InviwoCoreModule)
+                ivw_mod_name_to_name(deps ${deps})
+                ivw_join(";" ", " deps ${deps})
+                ivw_pad_right(padded_name "${${mod}_name}," " " 30)
+                ivw_debug_message(STATUS "Register Module: ${padded_name}"
+                    "Default: ${${mod}_enableByDefault}, \t"
+                    "Group: ${group_name}, \t"
+                    "Depends: ${deps}")
             endif()
         endforeach()
     endforeach()

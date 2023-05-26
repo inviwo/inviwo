@@ -72,6 +72,20 @@ function(ivw_prepend var prefix)
 endfunction(ivw_prepend)
 
 #--------------------------------------------------------------------
+# ivw_pad_right(output output str padchar length)
+# ivw_pad_right add padding to the right of str
+function(ivw_pad_right output str padchar length)
+  string(LENGTH "${str}" _strlen)
+  math(EXPR _strlen "${length} - ${_strlen}")
+  if(_strlen GREATER 0)
+    string(REPEAT ${padchar} ${_strlen} _pad)
+    string(APPEND str ${_pad})
+  endif()
+  set(${output} "${str}" PARENT_SCOPE)
+endfunction()
+
+
+#--------------------------------------------------------------------
 # encodeLineBreaks(output strings)
 # encodes the contents of the string given as last argument and saves the 
 # result in output.
@@ -141,10 +155,10 @@ function(remove_duplicates retval)
 endfunction()
 
 #--------------------------------------------------------------------
-# remove_from_list(retval thelist toRemove0 toRemove1 ...)
+# ivw_remove_from_list(retval thelist toRemove0 toRemove1 ...)
 # Remove entries in one list from another list
-function(remove_from_list retval thelist)
-    set(new_items ${thelist})
+function(ivw_remove_from_list retval thelist)
+    set(new_items ${${thelist}})
     set(old_items ${ARGN})
     if(old_items AND new_items)
         foreach(item ${old_items})
@@ -256,6 +270,7 @@ endfunction()
 # ivw_mod_name_to_dir          InviwoOpenGLModule -> opengl
 # ivw_mod_name_to_target_name  InviwoOpenGLModule -> inviwo-module-opengl
 # ivw_mod_name_to_class        InviwoOpenGLModule -> OpenGL
+# ivw_mod_name_to_name         InviwoOpenGLModule -> OpenGL (Will return any input as is if it does not match)
 # ivw_mod_name_to_mod_dep      InviwoOpenGLModule -> INVIWOOPENGLMODULE
 # ivw_mod_name_to_reg          InviwoOpenGLModule -> REG_INVIWOOPENGLMODULE
 # ivw_to_mod_name              OpenGL             -> InviwoOpenGLModule
@@ -363,6 +378,24 @@ function(ivw_mod_name_to_class retval)
             list(APPEND the_list ${new_item})
         else()
             message(FATAL_ERROR "Error argument format error: ${item}, should be in the form Inviwo<Name>Module")
+        endif()
+    endforeach()
+    set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()
+
+#--------------------------------------------------------------------
+# ivw_mod_name_to_name(retval item1 item2 ...)
+# Convert module name to directory name, i.e. InviwoOpenGLModule -> OpenGL
+# Will return any input as is if it does not match
+function(ivw_mod_name_to_name retval)
+    set(the_list "")
+    foreach(item ${ARGN})
+        string(REGEX MATCH "(^Inviwo.*.Module$)" found_item ${item})
+        if(found_item)
+            string(REGEX REPLACE "(^Inviwo)|(Module$)" "" new_item ${item})
+            list(APPEND the_list ${new_item})
+        else()
+            list(APPEND the_list ${item})
         endif()
     endforeach()
     set(${retval} ${the_list} PARENT_SCOPE)
