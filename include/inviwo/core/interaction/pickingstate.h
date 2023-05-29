@@ -86,6 +86,7 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingHoverStates s);
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::PickingState> : inviwo::FlagFormatter<inviwo::PickingState> {};
 template <>
@@ -111,3 +112,4 @@ struct fmt::formatter<inviwo::PickingHoverState>
 template <>
 struct fmt::formatter<inviwo::PickingHoverStates>
     : inviwo::FlagsFormatter<inviwo::PickingHoverStates> {};
+#endif

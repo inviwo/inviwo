@@ -124,9 +124,11 @@ IVW_CORE_API std::vector<Family> getFamiliesForCategory(const Category& category
 }  // namespace colorbrewer
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::colorbrewer::Colormap> : ostream_formatter {};
 template <>
 struct fmt::formatter<inviwo::colorbrewer::Category> : ostream_formatter {};
 template <>
 struct fmt::formatter<inviwo::colorbrewer::Family> : ostream_formatter {};
+#endif

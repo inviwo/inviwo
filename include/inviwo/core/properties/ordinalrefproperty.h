@@ -768,6 +768,7 @@ extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<glm::fquat>;
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <typename T>
 struct fmt::formatter<inviwo::OrdinalRefProperty<T>> : fmt::formatter<fmt::string_view> {
     template <typename FormatContext>
@@ -777,3 +778,4 @@ struct fmt::formatter<inviwo::OrdinalRefProperty<T>> : fmt::formatter<fmt::strin
         return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
     }
 };
+#endif

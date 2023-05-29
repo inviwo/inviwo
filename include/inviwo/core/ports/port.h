@@ -108,6 +108,7 @@ protected:
      * @param identifier Port identifier used for serialization. Has to be unique within the scope
      *                   of a processor. Port identifiers should only contain alpha numeric
      *                   characters, "-" and "_".
+     * @param help       The help should describe what data the port expects/produces and how it is used.
      * @see Processor::addPort()
      */
     Port(std::string_view identifier, Document help);

@@ -391,9 +391,11 @@ Document BaseImageInport<N>::getInfo() const {
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::OutportDeterminesSize>
     : inviwo::FlagFormatter<inviwo::OutportDeterminesSize> {};
 template <>
 struct fmt::formatter<inviwo::HandleResizeEvents>
     : inviwo::FlagFormatter<inviwo::HandleResizeEvents> {};
+#endif

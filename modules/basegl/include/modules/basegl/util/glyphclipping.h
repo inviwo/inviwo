@@ -42,7 +42,7 @@ class Shader;
 class IVW_MODULE_BASEGL_API GlyphClipping {
 public:
     /**
-     * \enum GlyphClippingMode
+     * \enum Mode
      * defines how glyphs are rendering if the first intersection, i.e. the front side,
      * lies behind the near clip plane of the camera.
      */

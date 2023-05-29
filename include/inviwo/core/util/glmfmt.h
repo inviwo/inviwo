@@ -37,6 +37,7 @@
 #include <fmt/ostream.h>
 #include <half/half.hpp>
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <glm::length_t L, typename T, glm::qualifier Q>
 struct fmt::formatter<glm::vec<L, T, Q>> : fmt::ostream_formatter {};
 
@@ -52,3 +53,4 @@ struct fmt::formatter<half_float::half> : fmt::formatter<float> {
         return fmt::formatter<float>::format(static_cast<float>(x), ctx);
     }
 };
+#endif

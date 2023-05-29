@@ -85,6 +85,7 @@ struct inviwo::OptionPropertyTraits<inviwo::ffmpeg::CodecID> {
     }
 };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::ffmpeg::CodecID> : fmt::formatter<fmt::string_view> {
     template <typename FormatContext>
@@ -99,3 +100,4 @@ struct fmt::formatter<inviwo::ffmpeg::CodecID> : fmt::formatter<fmt::string_view
         return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
     }
 };
+#endif

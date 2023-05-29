@@ -55,7 +55,9 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, TouchStates s);
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::TouchState> : inviwo::FlagFormatter<inviwo::TouchState> {};
 template <>
 struct fmt::formatter<inviwo::TouchStates> : inviwo::FlagsFormatter<inviwo::TouchStates> {};
+#endif

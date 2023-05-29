@@ -63,6 +63,7 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, GestureStates s);
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::GestureType> : inviwo::FlagFormatter<inviwo::GestureType> {};
 template <>
@@ -71,3 +72,4 @@ template <>
 struct fmt::formatter<inviwo::GestureState> : inviwo::FlagFormatter<inviwo::GestureState> {};
 template <>
 struct fmt::formatter<inviwo::GestureStates> : inviwo::FlagsFormatter<inviwo::GestureStates> {};
+#endif

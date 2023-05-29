@@ -70,6 +70,7 @@ IVW_MODULE_FFMPEG_API OptionPropertyState<std::string> formatOptionsState();
 
 }  // namespace inviwo::ffmpeg
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::ffmpeg::Error> : fmt::formatter<fmt::string_view> {
     template <typename FormatContext>
@@ -77,3 +78,4 @@ struct fmt::formatter<inviwo::ffmpeg::Error> : fmt::formatter<fmt::string_view> 
         return formatter<fmt::string_view>::format(error.str(), ctx);
     }
 };
+#endif

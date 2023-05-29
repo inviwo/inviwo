@@ -45,7 +45,9 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, FileMode mode);
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::AcceptMode> : inviwo::FlagFormatter<inviwo::AcceptMode> {};
 template <>
 struct fmt::formatter<inviwo::FileMode> : inviwo::FlagFormatter<inviwo::FileMode> {};
+#endif

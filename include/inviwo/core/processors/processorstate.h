@@ -42,5 +42,7 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, CodeState cs);
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::CodeState> : inviwo::FlagFormatter<inviwo::CodeState> {};
+#endif
