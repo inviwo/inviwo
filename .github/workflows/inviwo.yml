@@ -113,23 +113,13 @@ jobs:
               -DIVW_MODULE_WEBBROWSER=ON
               -DIVW_CFG_MSVC_FORCE_SHARED_CRT=ON            
 
-          # think this build runs out of space, disable tests to save space
-          - system: linux
-            linkage: static
-            configuration: Debug
-            cmake: >
-              -DIVW_MODULE_EIGENUTILS=ON
-              -DIVW_MODULE_HDF5=ON
-              -DIVW_MODULE_FFMPEG=ON
-              -DIVW_MODULE_WEBBROWSER=ON
-              -DIVW_TEST_BENCHMARKS=OFF
-              -DIVW_TEST_UNIT_TESTS=OFF
-              -DIVW_TEST_INTEGRATION_TESTS=OFF
-
-
         exclude:
           # Windows debug build are to big, they run out of diskspace
           - system: windows
+            configuration: Debug
+          # This build fails very close to the end with "ninja: build stopped: interrupted by user."
+          - system: linux
+            linkage: static
             configuration: Debug
 
       fail-fast: false
