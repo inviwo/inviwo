@@ -113,7 +113,7 @@ class PropertyOwner;
  *  * __PropertySemantics__: A property can be set to one or several different semantics, which is
  *    often used to display different PropertyWidets. For example using a color picker for Color
  *    Semantic or a text field for Text Semantics.
- *  
+ *
  *  * __Reset__: A property has a default state specified in the constructor, or optionally be
  *    calling Property::setCurrentStateAsDefault. The property can then also be reset to it's
  *    default state  by calling Property::resetToDefaultState. Both these functions are virtual and

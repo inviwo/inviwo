@@ -63,17 +63,17 @@
 #include <warn/ignore/all>
 #if defined(__clang__)
 #elif defined(__GNUC__)
-    #pragma GCC diagnostic ignored "-Wformat-truncation"
+#pragma GCC diagnostic ignored "-Wformat-truncation"
 #elif (_MSC_VER)
-    #pragma warning(disable : 4146)
-    #pragma warning(disable : 4197)
-    #pragma warning(disable : 4293)
-    #pragma warning(disable : 4309)
-    #pragma warning(disable : 4319)
-    #pragma warning(disable : 4324)
-    #pragma warning(disable : 4456)
-    #pragma warning(disable : 4458)
-    #pragma warning(disable : 4611)
+#pragma warning(disable : 4146)
+#pragma warning(disable : 4197)
+#pragma warning(disable : 4293)
+#pragma warning(disable : 4309)
+#pragma warning(disable : 4319)
+#pragma warning(disable : 4324)
+#pragma warning(disable : 4456)
+#pragma warning(disable : 4458)
+#pragma warning(disable : 4611)
 #endif
 #include <CImg.h>                    // for CImgException
 #include <fmt/core.h>                // for format
