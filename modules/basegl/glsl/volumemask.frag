@@ -35,11 +35,22 @@ uniform sampler3D mask;
 uniform VolumeParameters volumeParameters;
 uniform VolumeParameters maskParameters;
 
+uniform mat4 texTrafo = mat4(1);
+uniform bool textureWrap = false;
+
 in vec4 texCoord_;
 
 void main() {
     vec4 voxel = getVoxel(volume, volumeParameters, texCoord_.xyz);
-    float mask = getVoxel(mask, maskParameters, texCoord_.xyz).r;
+    float maskValue = 0.0;
+    
+    vec3 maskTexCoord = (texTrafo * texCoord_).xyz;
 
-    FragData0 = voxel * mask;
+    bool outside = any(lessThan(maskTexCoord, vec3(0.0))) || any(greaterThan(maskTexCoord, vec3(1.0)));
+
+    if (!outside || textureWrap) {
+        maskValue = getNormalizedVoxel(mask, maskParameters, maskTexCoord).r;
+    }
+
+    FragData0 = voxel * maskValue;
 }

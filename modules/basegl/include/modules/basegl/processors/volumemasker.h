@@ -31,6 +31,7 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
@@ -46,6 +47,9 @@ private:
     virtual void preProcess(TextureUnitContainer& cont) override;
 
     VolumeInport mask_;
+
+    BoolProperty useWorldSpace_;
+    BoolProperty textureWrap_;
 };
 
 }  // namespace inviwo

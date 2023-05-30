@@ -33,25 +33,56 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo VolumeMasker::processorInfo_{
-    "org.inviwo.VolumeMasker",  // Class identifier
-    "Volume Masker",            // Display name
-    "Volume Operation",         // Category
-    CodeState::Experimental,    // Code state
-    Tags::GL,                   // Tags
-    R"(Applies the mask, given in the second volume, to the input volume.)"_unindentHelp};
+const ProcessorInfo VolumeMasker::processorInfo_{"org.inviwo.VolumeMasker",  // Class identifier
+                                                 "Volume Masker",            // Display name
+                                                 "Volume Operation",         // Category
+                                                 CodeState::Experimental,    // Code state
+                                                 Tags::GL,                   // Tags
+                                                 R"(
+Mask `inputVolume` with the second `mask` volume through multiplication. The output volume inherits all 
+parameters from the input volume including value/data ranges and transformations. Its contents are set to
+```glsl
+output = input * mask.r,
+```
+where the mask volume is assumed to be a single-channel volume.
+
+**Note:** 
+Depending on the data ranges of the input volume and the mask volume, the result may lie outside the 
+data range of the input.
+)"_unindentHelp};
 
 const ProcessorInfo VolumeMasker::getProcessorInfo() const { return processorInfo_; }
 
 VolumeMasker::VolumeMasker()
     : VolumeGLProcessor{"volumemask.frag"}
-    , mask_{"mask", "Volume mask applied to the input volume"_help} {
+    , mask_{"mask", "Volume mask applied to the input volume"_help}
+    , useWorldSpace_{"useWorldSpace", "Use World Coordinates",
+                     "If enabled, world coordinates are used for texture lookups meaning that "
+                     "basis and world transformations of the input volume and the mask are "
+                     "considered. Otherwise texture lookups use [0, 1] texture coordinates "
+                     "assuming overlapping volumes."_help,
+                     false}
+    , textureWrap_{"textureWrap", "Apply Texture Wrapping",
+                   "Accessing the mask volume considers its texture wrapping settings, if enabled. "
+                   "Otherwise texture accesses outside [0,1] automatically result in 0. Only "
+                   "affects the masking when using world coordinates."_help,
+                   false} {
 
     addPorts(mask_);
+    addProperties(useWorldSpace_, textureWrap_);
 }
 
 void VolumeMasker::preProcess(TextureUnitContainer& cont) {
     utilgl::bindAndSetUniforms(shader_, cont, *mask_.getData(), "mask");
+
+    if (useWorldSpace_) {
+        shader_.setUniform(
+            "texTrafo", mask_.getData()->getCoordinateTransformer().getWorldToDataMatrix() *
+                            inport_.getData()->getCoordinateTransformer().getDataToWorldMatrix());
+    } else {
+        shader_.setUniform("texTrafo", mat4(1.0f));
+    }
+    shader_.setUniform("textureWrap", textureWrap_);
 }
 
 }  // namespace inviwo
