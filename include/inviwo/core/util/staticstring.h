@@ -201,6 +201,7 @@ constexpr std::string_view to_string_view(const StaticString<N>& s) {
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <size_t N>
 struct fmt::formatter<::inviwo::StaticString<N>> : ::fmt::formatter<string_view> {
     // parse is inherited from formatter<string_view>.
@@ -209,3 +210,4 @@ struct fmt::formatter<::inviwo::StaticString<N>> : ::fmt::formatter<string_view>
         return ::fmt::formatter<string_view>::format(str.view(), ctx);
     }
 };
+#endif

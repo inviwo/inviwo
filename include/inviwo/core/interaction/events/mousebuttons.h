@@ -59,6 +59,7 @@ IVW_CORE_API std::string_view enumToStr(MouseState b);
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::MouseButton> : inviwo::FlagFormatter<inviwo::MouseButton> {};
 template <>
@@ -67,3 +68,4 @@ template <>
 struct fmt::formatter<inviwo::MouseState> : inviwo::FlagFormatter<inviwo::MouseState> {};
 template <>
 struct fmt::formatter<inviwo::MouseStates> : inviwo::FlagsFormatter<inviwo::MouseStates> {};
+#endif

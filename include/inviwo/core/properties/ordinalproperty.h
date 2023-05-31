@@ -367,8 +367,6 @@ OrdinalPropertyState<T> ordinalLength(const T& value = T{0}, const U& max = U{10
  * InvalidOutput, and the property semantics to Slider.
  * @param value the default value for the property
  * @param max used to construct the max value. The max constraint behavior will be Ignore.
- * @param invalidationLevel property invalidation level, defaults to InvalidOutput
- * @param semantics property semantics, defaults to Slider
  */
 template <typename T = double, typename U = T>
 OrdinalPropertyState<T> ordinalScale(const T& value = T{0}, const U& max = U{100}) {
@@ -818,6 +816,7 @@ extern template class IVW_CORE_TMPL_EXP OrdinalProperty<glm::fquat>;
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <typename T>
 struct fmt::formatter<inviwo::OrdinalProperty<T>> : fmt::formatter<fmt::string_view> {
     template <typename FormatContext>
@@ -827,3 +826,4 @@ struct fmt::formatter<inviwo::OrdinalProperty<T>> : fmt::formatter<fmt::string_v
         return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
     }
 };
+#endif

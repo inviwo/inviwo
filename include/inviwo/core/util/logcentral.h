@@ -244,6 +244,7 @@ void logError(SourceContext context, fmt::format_string<Args...> format, Args&&.
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::LogLevel> : inviwo::FlagFormatter<inviwo::LogLevel> {};
 template <>
@@ -251,3 +252,4 @@ struct fmt::formatter<inviwo::LogAudience> : inviwo::FlagFormatter<inviwo::LogAu
 template <>
 struct fmt::formatter<inviwo::MessageBreakLevel>
     : inviwo::FlagFormatter<inviwo::MessageBreakLevel> {};
+#endif

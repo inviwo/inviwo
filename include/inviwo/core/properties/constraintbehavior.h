@@ -78,6 +78,8 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, ConstraintBehavior cb);
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::ConstraintBehavior>
     : inviwo::FlagFormatter<inviwo::ConstraintBehavior> {};
+#endif

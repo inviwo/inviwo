@@ -61,7 +61,10 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#if (_MSC_VER)
+#if defined(__clang__)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+#elif (_MSC_VER)
 #pragma warning(disable : 4146)
 #pragma warning(disable : 4197)
 #pragma warning(disable : 4293)
@@ -86,7 +89,10 @@
 #include <warn/push>
 #include <warn/ignore/switch-enum>
 #include <warn/ignore/conversion>
-#if (_MSC_VER)
+#if defined(__clang__)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+#elif (_MSC_VER)
 #pragma warning(disable : 4297)
 #pragma warning(disable : 4267)
 #endif

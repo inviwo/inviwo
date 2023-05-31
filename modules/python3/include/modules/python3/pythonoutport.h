@@ -38,6 +38,8 @@
 
 namespace inviwo {
 
+#include <warn/push>
+#include <warn/ignore/attributes>
 class IVW_MODULE_PYTHON3_API PythonOutport : public Outport {
 public:
     PythonOutport(std::string_view identifier, Document help = {});
@@ -58,6 +60,7 @@ public:
 private:
     pybind11::object data_;
 };
+#include <warn/pop>
 
 template <>
 struct PortTraits<PythonOutport> {

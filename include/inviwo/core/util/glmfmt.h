@@ -35,7 +35,9 @@
 
 #include <fmt/core.h>
 #include <fmt/ostream.h>
+#include <half/half.hpp>
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <glm::length_t L, typename T, glm::qualifier Q>
 struct fmt::formatter<glm::vec<L, T, Q>> : fmt::ostream_formatter {};
 
@@ -44,3 +46,11 @@ struct fmt::formatter<glm::mat<C, R, T, Q>> : fmt::ostream_formatter {};
 
 template <typename T, glm::qualifier Q>
 struct fmt::formatter<glm::qua<T, Q>> : fmt::ostream_formatter {};
+
+template <>
+struct fmt::formatter<half_float::half> : fmt::formatter<float> {
+    auto format(half_float::half x, format_context& ctx) const {
+        return fmt::formatter<float>::format(static_cast<float>(x), ctx);
+    }
+};
+#endif

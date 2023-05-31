@@ -138,6 +138,7 @@ inline bool typeContainsPicking(ImageType type) {
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::ImageType> : inviwo::FlagFormatter<inviwo::ImageType> {};
 template <>
@@ -158,3 +159,4 @@ template <>
 struct fmt::formatter<inviwo::Wrapping2D> : inviwo::FlagsFormatter<inviwo::Wrapping2D> {};
 template <>
 struct fmt::formatter<inviwo::Wrapping3D> : inviwo::FlagsFormatter<inviwo::Wrapping3D> {};
+#endif

@@ -162,8 +162,8 @@ StreamParticles::StreamParticles(InviwoApplication* app)
         buffersDirty_ = true;
     });
 
-    seedingSpace_.onChange([=]() { buffersDirty_ = true; });
-    seeds_.onChange([=]() { buffersDirty_ = true; });
+    seedingSpace_.onChange([this]() { buffersDirty_ = true; });
+    seeds_.onChange([this]() { buffersDirty_ = true; });
 
     timer_.start();
 }

@@ -735,5 +735,7 @@ inline auto CategoricalColumn::values() const -> util::iter_range<ConstIterator>
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::ColumnType> : inviwo::FlagFormatter<inviwo::ColumnType> {};
+#endif

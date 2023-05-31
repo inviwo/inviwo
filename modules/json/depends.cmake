@@ -4,6 +4,8 @@ set(dependencies
     #InviwoOpenGLModule  
 )
 
+set(EnableByDefault ON)
+
 # Add an alias for this module. Several modules can share an alias. 
 # Useful if several modules implement the same functionality.
 # A depending module can depend on the alias, and a drop down of 

@@ -83,6 +83,7 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, BufferTarget bt);
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::DrawType> : inviwo::FlagFormatter<inviwo::DrawType> {};
 template <>
@@ -94,3 +95,4 @@ template <>
 struct fmt::formatter<inviwo::BufferUsage> : inviwo::FlagFormatter<inviwo::BufferUsage> {};
 template <>
 struct fmt::formatter<inviwo::BufferTarget> : inviwo::FlagFormatter<inviwo::BufferTarget> {};
+#endif

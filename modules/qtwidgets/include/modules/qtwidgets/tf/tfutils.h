@@ -55,7 +55,7 @@ IVW_MODULE_QTWIDGETS_API std::shared_ptr<TransferFunction> importTransferFunctio
 /**
  * \brief Shows an InviwoFileDialog to export a TFPrimitiveSet to a file.
  *
- * @param primitiveSet   TransferFunction set to be exported
+ * @param tf             TransferFunction set to be exported
  * @param parent         parent widget of the file dialog
  */
 IVW_MODULE_QTWIDGETS_API void exportTransferFunctionDialog(const TransferFunction& tf,
@@ -72,7 +72,7 @@ IVW_MODULE_QTWIDGETS_API std::shared_ptr<IsoValueCollection> importIsoValueColle
 /**
  * \brief Shows an InviwoFileDialog to export a TFPrimitiveSet to a file.
  *
- * @param primitiveSet   IsoValueCollection set to be exported
+ * @param iso            IsoValueCollection set to be exported
  * @param parent         parent widget of the file dialog
  */
 IVW_MODULE_QTWIDGETS_API void exportIsoValueCollectionDialog(const IsoValueCollection& iso,

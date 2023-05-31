@@ -93,7 +93,7 @@ class DataSource : public Processor {
 public:
     /**
      * Construct a DataSource
-     * @param app An InviwoApplication.
+     * @param rf An DataReaderFactory.
      * @param filePath A file path passed into the FileProperty
      * @param contentType A content type passed into the FileProperty, usually 'volume', 'image',
      * 'geometry', etc.

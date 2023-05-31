@@ -117,6 +117,7 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PropertyPresetTypes ps);
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::PropertyPresetType>
     : inviwo::FlagFormatter<inviwo::PropertyPresetType> {};
@@ -124,3 +125,4 @@ struct fmt::formatter<inviwo::PropertyPresetType>
 template <>
 struct fmt::formatter<inviwo::PropertyPresetTypes>
     : inviwo::FlagsFormatter<inviwo::PropertyPresetTypes> {};
+#endif

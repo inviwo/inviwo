@@ -93,7 +93,7 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     bitDepth_->addItem("float (32-bit floating point)", static_cast<int>(DataFormatId::Float32));
     bitDepth_->addItem("double (64-bit floating point)", static_cast<int>(DataFormatId::Float64));
     connect(bitDepth_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
-            [=](int index) { selectedDataTypeChanged(index); });
+            [this](int index) { selectedDataTypeChanged(index); });
     QLabel* channelLabel = new QLabel("Data channels");
     channels_ = new QSpinBox();
     channels_->setRange(1, 4);

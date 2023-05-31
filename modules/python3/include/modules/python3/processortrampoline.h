@@ -42,13 +42,27 @@ class Event;
 class Outport;
 class Property;
 
+/*
+ * We need to export this class other wise pybind11 will not see that it derives from
+ * trampoline_self_life_support and we get runtime errors like "Alias class (also known as
+ * trampoline) does not inherit from py::trampoline_self_life_support, therefore the ownership of
+ * this instance cannot safely be transferred to C++.". Down side it that this will cause warnings:
+ * "inviwo::ProcessorTrampoline’ declared with greater visibility than its base
+ * ‘pybind11::trampoline_self_life_support’" for now we will ignore those.
+ *
+ * Im currently not 100% sure if we need do this for all trampolines.
+ */
+
+#include <warn/push>
+#include <warn/ignore/dll-interface-base>
+#include <warn/ignore/attributes>
 class IVW_MODULE_PYTHON3_API ProcessorTrampoline : public Processor,
                                                    public pybind11::trampoline_self_life_support {
 public:
-    /* Inherit the constructors */
+    // Inherit the constructors
     using Processor::Processor;
 
-    /* Trampoline (need one for each virtual function) */
+    // Trampoline (need one for each virtual function)
     virtual void initializeResources() override;
     virtual void process() override;
     virtual void doIfNotReady() override;
@@ -59,4 +73,6 @@ public:
     virtual void invokeEvent(Event* event) override;
     virtual void propagateEvent(Event* event, Outport* source) override;
 };
+#include <warn/pop>
+
 }  // namespace inviwo

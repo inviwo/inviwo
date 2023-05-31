@@ -1692,5 +1692,7 @@ glm::mat<N+1, N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorld
 // clang-format on
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::CoordinateSpace> : inviwo::FlagFormatter<inviwo::CoordinateSpace> {};
+#endif

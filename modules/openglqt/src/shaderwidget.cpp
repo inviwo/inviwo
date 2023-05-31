@@ -157,7 +157,7 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
     QObject::connect(redo, &QAction::triggered, this, [this]() { shadercode_->redo(); });
     QObject::connect(shadercode_, &QPlainTextEdit::redoAvailable, redo, &QAction::setEnabled);
 
-    QObject::connect(preprocess_, &QAction::toggled, this, [=](bool checked) {
+    QObject::connect(preprocess_, &QAction::toggled, this, [this](bool checked) {
         if (checked && shadercode_->document()->isModified()) {
             QMessageBox msgBox(
                 QMessageBox::Question, "Shader Editor", "Do you want to save unsaved changes?",

@@ -40,8 +40,8 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
- * \brief The Button Group property class provides a group of button that you can bind functions to.
+ * @ingroup properties
+ * @brief The Button Group property class provides a group of button that you can bind functions to.
  * The button group property has a widget which creates a row of buttons and register functions to
  * them.
  * @see ButtonGroupPropertyWidgetQt

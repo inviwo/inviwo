@@ -46,6 +46,8 @@ namespace inviwo {
 
 class DataFormatBase;
 
+#include <warn/push>
+#include <warn/ignore/attributes>
 class IVW_MODULE_PYTHON3_API LayerPy : public LayerRepresentation {
 public:
     LayerPy(pybind11::array data, LayerType type = LayerType::Color,
@@ -88,6 +90,7 @@ private:
     pybind11::array data_;
     size2_t dims_;
 };
+#include <warn/pop>
 
 class IVW_MODULE_PYTHON3_API LayerRAM2PyConverter
     : public RepresentationConverterType<LayerRepresentation, LayerRAM, LayerPy> {

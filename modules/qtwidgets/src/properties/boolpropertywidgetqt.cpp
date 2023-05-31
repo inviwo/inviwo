@@ -76,7 +76,7 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
         setFocusPolicy(lineEdit_->focusPolicy());
         setFocusProxy(lineEdit_);
 
-        auto setPropertyValueFromString = [=]() {
+        auto setPropertyValueFromString = [this]() {
             QString str(lineEdit_->text());
             RenderContext::getPtr()->activateDefaultRenderContext();
             property_->set(str == "true" || str == "1");
@@ -91,7 +91,7 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
         setFocusPolicy(checkBox_->focusPolicy());
         setFocusProxy(checkBox_);
 
-        auto setPropertyValueFromCheckbox = [=](bool checked) {
+        auto setPropertyValueFromCheckbox = [this](bool checked) {
             RenderContext::getPtr()->activateDefaultRenderContext();
             property_->set(checked);
         };

@@ -225,6 +225,7 @@ IVW_CORE_API std::string_view enumToStr(IvwKey k);
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::KeyModifier> : inviwo::FlagFormatter<inviwo::KeyModifier> {};
 template <>
@@ -237,3 +238,4 @@ struct fmt::formatter<inviwo::KeyStates> : inviwo::FlagsFormatter<inviwo::KeySta
 
 template <>
 struct fmt::formatter<inviwo::IvwKey> : inviwo::FlagFormatter<inviwo::IvwKey> {};
+#endif

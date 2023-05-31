@@ -806,16 +806,17 @@ set(GEN_FILES
 source_group("Header Files\\common" FILES ${CMAKE_CURRENT_BINARY_DIR}/include/inviwo/core/common/coremodulesharedlibrary.h)
 source_group("Source Files\\common" FILES ${CMAKE_CURRENT_BINARY_DIR}/src/common/coremodulesharedlibrary.cpp)
 
-set(cmake_files 
+set(CMAKE_FILES 
     "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt"
 )
-source_group("CMake Files" FILES ${cmake_files})
+source_group("CMake Files" FILES ${CMAKE_FILES})
 
 # Create library
 add_library(inviwo-core 
-    ${SOURCE_FILES} ${HEADER_FILES} ${GEN_FILES}
+    ${SOURCE_FILES} ${HEADER_FILES} ${GEN_FILES} ${CMAKE_FILES}
     $<$<BOOL:${WIN32}>:${IVW_ROOT_DIR}/tools/natvis/inviwo.natvis>
     $<$<BOOL:${WIN32}>:${IVW_ROOT_DIR}/tools/natvis/glm.natvis>
+    ${IVW_ROOT_DIR}/.editorconfig
 )
 add_library(inviwo::core ALIAS inviwo-core)
 
@@ -844,6 +845,7 @@ find_package(glm REQUIRED)
 find_package(tclap REQUIRED)
 find_package(roaring REQUIRED)
 find_package(units REQUIRED)
+find_package(utf8cpp CONFIG REQUIRED)
 if(APPLE)
    find_library(CORESERVICES_LIBRARY CoreServices)
 endif()
@@ -876,7 +878,7 @@ target_link_libraries(inviwo-core
     PRIVATE
         roaring::roaring
         inviwo::md4c
-        utf8::cpp
+        utf8cpp
 )
 
 # Core header files used in PCH file

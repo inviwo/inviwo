@@ -5,7 +5,6 @@ on:
   workflow_dispatch:
 
 env:
-  BUILD_TYPE: Release
   VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'         # recognized by vcpkg
   # QT_DEBUG_PLUGINS: 1                                        # print qt plugin debug info
 
@@ -13,33 +12,116 @@ jobs:
   build:
     strategy:
       matrix:
-        # for now macos-latest == macos-12 since macos-13 is still "beta"
-        os: [windows-latest, macos-13, ubuntu-22.04]
+        system: [windows, macos, linux]
+        linkage: [dynamic, static]
+        configuration: [Release, Debug]
+        
         include:
-          - os: 'windows-latest'
-            triplet: 'x64-windows'
+          - system: windows
+            os: 'windows-latest'
             mono: ''
-            cmake: '--preset msvc-dev-vcpkg -DIVW_MODULE_HDF5=ON -DIVW_DOXYGEN_PROJECT=ON
-                   -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"'
-            targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
+            cmake: > 
+              -DIVW_MODULE_EIGENUTILS=ON
+              -DIVW_MODULE_HDF5=ON
+              -DIVW_MODULE_FFMPEG=ON
+              -DIVW_MODULE_WEBBROWSER=ON
+              -DIVW_DOXYGEN_PROJECT=ON 
+              -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"
+            preset: msvc-dev-vcpkg
+            targets: 'ALL_BUILD'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
-          - os: 'macos-13'
-            triplet: 'x64-osx'
+          
+          - system: macos
+            os: 'macos-13' # for now macos-latest == macos-12 since macos-13 is still "beta"
             mono: 'mono'
-            cmake: '--preset ninja-dev-vcpkg -DIVW_MODULE_HDF5=OFF'
-            targets: 'all package'
+            cmake: >
+              -DIVW_MODULE_EIGENUTILS=ON
+              -DIVW_MODULE_HDF5=ON
+              -DIVW_MODULE_FFMPEG=ON
+              -DIVW_MODULE_WEBBROWSER=ON
+            preset: ninja-dev-vcpkg
+            targets: 'all'
             installer: 'inviwo-installer-macos'
             artifact: 'build/Inviwo-v*.dmg'
-          - os: 'ubuntu-22.04'
-            triplet: 'x64-linux'
+          
+          - system: linux
+            os: 'ubuntu-22.04'
             mono: 'mono'
             # Disable benchmark for now due to error: 
             # memcpy’ is not a member of ‘std’; did you mean ‘wmemcpy’
-            cmake: '--preset ninja-dev-vcpkg -DIVW_MODULE_HDF5=OFF -DIVW_TEST_BENCHMARKS=OFF' 
-            targets: 'all package'
+            cmake: >
+              -DIVW_MODULE_EIGENUTILS=ON
+              -DIVW_MODULE_HDF5=ON
+              -DIVW_MODULE_FFMPEG=ON
+              -DIVW_MODULE_WEBBROWSER=ON
+              -DIVW_TEST_BENCHMARKS=OFF
+            preset: ninja-dev-vcpkg
+            targets: 'all'
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.deb'
+          
+          # linkage
+          - linkage: 'dynamic'
+            cmake_linkage: 'ON'
+          - linkage: 'static'
+            cmake_linkage: 'OFF'
+          
+          # set triplets
+          - system: 'windows'
+            linkage: 'dynamic'
+            triplet: 'x64-windows'
+          - system: 'windows'
+            linkage: 'static'
+            triplet: 'x64-windows-static-md'
+            
+          - system: 'macos'
+            linkage: 'dynamic'
+            triplet: 'x64-osx-dynamic'
+          - system: 'macos'
+            linkage: 'static'
+            triplet: 'x64-osx'
+            
+          - system: 'linux'
+            linkage: 'dynamic'
+            triplet: 'x64-linux-dynamic'
+          - system: 'linux'
+            linkage: 'static'
+            triplet: 'x64-linux'
+
+          # extra targets 
+          - system: windows
+            linkage: dynamic
+            configuration: Release
+            targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
+          - system: macos
+            linkage: dynamic
+            configuration: Release
+            targets: 'all package'
+          - system: linux
+            linkage: dynamic
+            configuration: Release
+            targets: 'all package'
+
+          # need /MD for static to go with x64-windows-static-md
+          - system: windows
+            linkage: static
+            cmake: > 
+              -DIVW_MODULE_EIGENUTILS=ON
+              -DIVW_MODULE_HDF5=ON
+              -DIVW_MODULE_FFMPEG=ON
+              -DIVW_MODULE_WEBBROWSER=ON
+              -DIVW_CFG_MSVC_FORCE_SHARED_CRT=ON            
+
+        exclude:
+          # Windows debug build are to big, they run out of diskspace
+          - system: windows
+            configuration: Debug
+          # This build fails very close to the end with "ninja: build stopped: interrupted by user."
+          - system: linux
+            linkage: static
+            configuration: Debug
+
       fail-fast: false
       
     runs-on: ${{ matrix.os }}
@@ -69,17 +151,20 @@ jobs:
       if: runner.os == 'macOS'
       # xcode 14.2 is currently default. 
       run: |
-        brew install ninja mono pkg-config
+        brew install ninja mono pkg-config nasm
         sudo xcode-select --switch /Applications/Xcode_14.3.app/Contents/Developer
 
-    - name: Apt Install, switch to gcc-12
+    - name: Apt Install, switch to gcc-13
       shell: bash
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt install --fix-missing libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev ninja-build gcc-12 g++-12
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 120 --slave /usr/bin/g++ g++ /usr/bin/g++-12 --slave /usr/bin/gcov gcov /usr/bin/gcov-12
-        sudo update-alternatives --set gcc /usr/bin/gcc-12
+        sudo apt install --fix-missing libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev \
+                         libglew-dev ninja-build gcc-13 g++-13 nasm
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 130 \
+                                 --slave /usr/bin/g++ g++ /usr/bin/g++-13 \
+                                 --slave /usr/bin/gcov gcov /usr/bin/gcov-12
+        sudo update-alternatives --set gcc /usr/bin/gcc-13
         
     #- name: Setup tmate session
     #  uses: mxschmitt/action-tmate@v3
@@ -115,9 +200,9 @@ jobs:
         -password "${{ secrets.GITHUB_TOKEN }}"
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2
+      uses: jurplel/install-qt-action@v3
       with:
-        version: 6.3.2
+        version: 6.4.2
         dir: ${{ github.workspace }}
     
     - name: Clone Inviwo
@@ -141,41 +226,59 @@ jobs:
         echo "${{ steps.build_changelog.outputs.changelog }}"
         echo "-- End --"
 
+    - name: Activate MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+
     - name: Configure CMake
       shell: bash
       run: >
-        cmake -S inviwo -B build
-        -DVCPKG_TARGET_TRIPLET='${{ matrix.triplet }}'
-        -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+        cmake -S inviwo -B build --preset ${{ matrix.preset }}
+        -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+        -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
+        -DBUILD_SHARED_LIBS=${{ matrix.cmake_linkage }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
         ${{ matrix.cmake }}
-
+        
     - name: Setup C++ Log matchers
-      uses: Trass3r/setup-cpp@v1
+      uses: Trass3r/setup-cpp@master
 
     - name: Build
       timeout-minutes: 360
       shell: bash
-      run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel --target ${{ matrix.targets }}
+      run: > 
+        cmake --build build --config ${{ matrix.configuration }} 
+        --parallel --target ${{ matrix.targets }}
 
     - name: Upload installer
+      if: matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.installer }}
         path: ${{ matrix.artifact }}
 
     - name: Upload doxygen
-      if: runner.os == 'Windows'
+      if: matrix.system == 'windows' &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
       uses: actions/upload-artifact@v3
       with:
         name: inviwo-cpp-api
         path: build/docs/inviwo/html/*
 
     - name: Upload shpinx
-      if: runner.os == 'Windows'
+      if: matrix.system == 'windows' &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
       uses: actions/upload-artifact@v3
       with:
         name: inviwo-python-api
         path: build/docs/python-api/*
+    
+    - name: Upload logs
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: logs-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
+        path: |
+          **/*.log
+          **/*.txt
+          **/*.cmake
 
   test-installer:
     needs: build

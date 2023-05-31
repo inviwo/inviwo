@@ -162,6 +162,7 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, const SourceLocation& ec
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::SourceContext> : fmt::formatter<fmt::string_view> {
     template <typename FormatContext>
@@ -206,3 +207,4 @@ struct std::hash<::inviwo::SourceContext> {
         return h;
     }
 };
+#endif

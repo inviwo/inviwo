@@ -139,6 +139,7 @@ struct ValueWrapper {
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <typename T>
 struct fmt::formatter<inviwo::ValueWrapper<T>> : fmt::formatter<T> {
     template <typename FormatContext>
@@ -146,3 +147,4 @@ struct fmt::formatter<inviwo::ValueWrapper<T>> : fmt::formatter<T> {
         return fmt::formatter<T>::format(val.value, ctx);
     }
 };
+#endif

@@ -179,10 +179,8 @@ ivw_register_license_file(NAME "half" VERSION 1.12.0 MODULE Core EXT
 )
 
 # utfcpp
-# As of 20220816 the latest version (3.2.1 p0) of UTFCPP in vcpkg is missing an export so the utfcpp target does not exist
-# Use the internal submodule until vcpkg is updated. 
-# option(IVW_USE_EXTERNAL_UTFCPP "UTFCPP is provided externaly" OFF)
-# if(NOT IVW_USE_EXTERNAL_UTFCPP)
+option(IVW_USE_EXTERNAL_UTFCPP "UTFCPP is provided externaly" OFF)
+if(NOT IVW_USE_EXTERNAL_UTFCPP)
     message(STATUS "add subdirectory: utf")
     add_subdirectory(utf)
     ivw_register_license_file(NAME "UTF8-CPP" VERSION ${utf8cpp_VERSION} MODULE Core EXT
@@ -190,10 +188,10 @@ ivw_register_license_file(NAME "half" VERSION 1.12.0 MODULE Core EXT
         TYPE "Boost Software License"
         FILES ${IVW_EXTENSIONS_DIR}/utf/LICENSE
     )
-#else()  
-#    find_package(utf8cpp CONFIG REQUIRED)
-#    ivw_vcpkg_install(utfcpp MODULE Core EXT)
-#endif()
+else()  
+    find_package(utf8cpp CONFIG REQUIRED)
+    ivw_vcpkg_install(utfcpp MODULE Core EXT)
+endif()
 
 # nlohmann json
 option(IVW_USE_EXTERNAL_JSON "JSON is provided externaly" OFF)

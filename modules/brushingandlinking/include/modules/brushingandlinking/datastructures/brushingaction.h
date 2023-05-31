@@ -154,6 +154,7 @@ struct std::hash<typename inviwo::BrushingTarget> {
     }
 };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::BrushingAction> : inviwo::FlagFormatter<inviwo::BrushingAction> {};
 
@@ -164,3 +165,4 @@ struct fmt::formatter<inviwo::BrushingModification>
 template <>
 struct fmt::formatter<inviwo::BrushingModifications>
     : inviwo::FlagsFormatter<inviwo::BrushingModifications> {};
+#endif

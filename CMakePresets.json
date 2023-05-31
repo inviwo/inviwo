@@ -16,7 +16,6 @@
         "IVW_APP_MINIMAL_GLFW":             { "type": "BOOL", "value": "ON"},
         "IVW_APP_MINIMAL_QT":               { "type": "BOOL", "value": "ON"},
 
-        "IVW_TEST_UNIT_TESTS_RUN_ON_BUILD": { "type": "BOOL", "value": "OFF"},
         "IVW_TEST_BENCHMARKS":              { "type": "BOOL", "value": "ON"},
         "IVW_TEST_INTEGRATION_TESTS":       { "type": "BOOL", "value": "ON"},
 
@@ -53,7 +52,6 @@
         "IVW_USE_EXTERNAL_SGCT":      { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_TCLAP":     { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_TIFF":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_TINYDIR":   { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_UTFCPP":    { "type": "BOOL", "value": "ON"}
       }
     },

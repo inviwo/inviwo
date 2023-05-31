@@ -62,6 +62,8 @@
 
 namespace inviwo {
 
+#include <warn/push>
+#include <warn/ignore/attributes>
 class ProcessorFactoryObjectTrampoline : public ProcessorFactoryObject,
                                          public pybind11::trampoline_self_life_support {
 public:
@@ -94,6 +96,7 @@ public:
         return p;
     }
 };
+#include <warn/pop>
 
 void exposeProcessors(pybind11::module& m) {
     namespace py = pybind11;

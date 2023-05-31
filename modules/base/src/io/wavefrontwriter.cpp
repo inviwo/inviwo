@@ -41,9 +41,10 @@
 #include <inviwo/core/util/formatdispatching.h>                         // for Vec3s, Vec2s
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
 #include <inviwo/core/util/glmmat.h>                                    // for mat3
-#include <inviwo/core/util/glmutils.h>                                  // for Matrix
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
-#include <modules/base/algorithm/meshutils.h>                           // for forEachTriangle
+#include <inviwo/core/util/glmfmt.h>
+#include <inviwo/core/util/glmutils.h>         // for Matrix
+#include <inviwo/core/util/sourcecontext.h>    // for IVW_CONTEXT
+#include <modules/base/algorithm/meshutils.h>  // for forEachTriangle
 
 #include <cstdint>        // for uint32_t
 #include <fstream>        // for basic_ofstream
