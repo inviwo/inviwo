@@ -60,7 +60,7 @@ void Serializer::serialize(std::string_view key, const std::filesystem::path& pa
         setAttribute(rootElement_, key, path.string());
     } else {
         auto nodeSwitch = switchToNewNode(key);
-        setAttribute(rootElement_, SerializeConstants::ContentAttribute, path.string());
+        setAttribute(rootElement_, SerializeConstants::ContentAttribute, path.generic_string());
     }
 }
 
