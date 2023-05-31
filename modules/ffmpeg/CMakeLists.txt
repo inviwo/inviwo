@@ -35,22 +35,15 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-set(SHADER_FILES
-	# Add shaders
-)
-ivw_group("Shader Files" ${SHADER_FILES})
-
 set(TEST_FILES
     tests/unittests/ffmpeg-unittest-main.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
-
-# Add shader directory to install package
-#ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/glsl)
+ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
 find_package(FFMPEG REQUIRED)
+ivw_vcpkg_install(ffmpeg MODULE FFmpeg)
 target_include_directories(inviwo-module-ffmpeg PUBLIC ${FFMPEG_INCLUDE_DIRS})
 target_link_directories(inviwo-module-ffmpeg PUBLIC ${FFMPEG_LIBRARY_DIRS})
 target_link_libraries(inviwo-module-ffmpeg PUBLIC ${FFMPEG_LIBRARIES})
