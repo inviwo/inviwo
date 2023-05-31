@@ -271,32 +271,40 @@ TEST(SerialitionContainerTest, ContainerTest4) {
     vector.insert(vector.begin(), new Item("d", 1));
 
     Deserializer deserializer(ss, "");
-    auto des = util::IdentifiedDeserializer<std::string, Item*>("Vector", "Item")
-                   .setGetId([](Item* const& i) { return i->id_; })
-                   .setMakeNew([]() { return new Item(); })
-                   .onNew([&](Item*& i) { vector.push_back(i); })
-                   .onRemove([&](const std::string& id) {
-                       std::erase_if(vector, [&](Item* i) {
-                           if (id == i->id_) {
-                               delete i;
-                               return true;
-                           } else {
-                               return false;
-                           }
-                       });
-                   });
+    auto des =
+        util::IdentifiedDeserializer<std::string, Item*>("Vector", "Item")
+            .setGetId([](Item* const& i) -> const std::string& { return i->id_; })
+            .setMakeNew([]() { return new Item(); })
+            .onNew([&](Item*& i) { vector.push_back(i); })
+            .onRemove([&](const std::string& id) {
+                std::erase_if(vector, [&](Item* i) {
+                    if (id == i->id_) {
+                        delete i;
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
+            })
+            .onMove([&](Item*& i, size_t newIndex) {
+                if (auto it = std::find(vector.begin(), vector.end(), i); it != vector.end()) {
+                    Item* item = i;
+                    vector.erase(it);
+                    vector.insert(vector.begin() + newIndex, item);
+                }
+            });
 
     des(deserializer, vector);
 
     ASSERT_EQ(3, vector.size());
 
-    ASSERT_EQ("a", vector[2]->id_);
+    ASSERT_EQ("a", vector[0]->id_);
     ASSERT_EQ("b", vector[1]->id_);
-    ASSERT_EQ("c", vector[0]->id_);
+    ASSERT_EQ("c", vector[2]->id_);
 
-    ASSERT_EQ(1, vector[2]->value_);
+    ASSERT_EQ(1, vector[0]->value_);
     ASSERT_EQ(2, vector[1]->value_);
-    ASSERT_EQ(3, vector[0]->value_);
+    ASSERT_EQ(3, vector[2]->value_);
 
     for (auto& item : vector) delete item;
 }

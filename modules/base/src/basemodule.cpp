@@ -282,6 +282,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProperty<transform::RotateProperty>();
     registerProperty<transform::ScaleProperty>();
     registerProperty<transform::CustomTransformProperty>();
+    registerProperty<TransformationList>();
     registerProperty<TransformListProperty>();
 
     // Register Data readers

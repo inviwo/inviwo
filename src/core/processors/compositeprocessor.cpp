@@ -318,8 +318,7 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
             } else {
                 auto superOwner = dynamic_cast<CompositeProperty*>(superProp->getOwner());
                 auto subOwner = dynamic_cast<CompositeProperty*>(self(self, superOwner));
-                auto pos = std::distance(superOwner->begin(),
-                                         find(superOwner->begin(), superOwner->end(), superProp));
+                auto pos = std::distance(superOwner->cbegin(), superOwner->find(superProp));
                 return (*subOwner)[pos];
             }
         };

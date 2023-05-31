@@ -197,7 +197,13 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
                         PropertyPresetManager::appendPropertyPresets(property_,
                                                                      properties.front().get());
                     }
-                } catch (AbortException&) {
+                } catch (const AbortException&) {
+                } catch (const Exception& e) {
+                    util::log(e.getContext(), e.getMessage());
+                } catch (const std::exception& e) {
+                    util::log(IVW_CONTEXT, e.what());
+                } catch (...) {
+                    util::log(IVW_CONTEXT, "unknown error");
                 }
             });
 

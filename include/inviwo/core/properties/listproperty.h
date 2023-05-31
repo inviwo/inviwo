@@ -37,6 +37,8 @@
 
 #include <set>
 #include <vector>
+#include <memory>
+#include <utility>
 
 namespace inviwo {
 
@@ -207,6 +209,7 @@ public:
     virtual Property* removeProperty(Property* property) override;
     virtual Property* removeProperty(Property& property) override;
     virtual Property* removeProperty(size_t index) override;
+    virtual bool move(Property* property, size_t newIndex) override;
 
     /**
      * \brief return number of prefab objects
@@ -227,15 +230,63 @@ public:
 
     ListPropertyUIFlags getUIFlags() const;
 
+
+    virtual ListProperty& setCurrentStateAsDefault() override;
+    virtual ListProperty& resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
+    virtual bool needsSerialization() const override;
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
 private:
+    struct Prefabs {
+        Prefabs(std::vector<std::unique_ptr<Property>> prefabs) : properties{std::move(prefabs)} {}
+
+        Prefabs(const Prefabs& rhs) {
+            properties.reserve(rhs.properties.size());
+            std::transform(rhs.properties.begin(), rhs.properties.end(),
+                           std::back_inserter(properties),
+                           [](auto& p) { return std::unique_ptr<Property>(p->clone()); });
+        }
+        Prefabs(Prefabs&& rhs) : properties{std::move(rhs.properties)} {}
+        Prefabs& operator=(const Prefabs& that) {
+            if (this != &that) {
+                Prefabs tmp(that);
+                std::swap(tmp.properties, properties);
+            }
+            return *this;
+        }
+        Prefabs& operator=(Prefabs&& that) {
+            if (this != &that) {
+                properties = std::move(that.properties);
+            }
+            return *this;
+        }
+
+        size_t size() const { return properties.size(); }
+        std::unique_ptr<Property>& operator[](size_t i){return properties[i];}
+        const std::unique_ptr<Property>& operator[](size_t i) const {return properties[i];}
+
+        friend bool operator==(const Prefabs& a, const Prefabs& b) {
+            return std::equal(
+                a.properties.begin(), a.properties.end(), b.properties.begin(), b.properties.end(),
+                [](const std::unique_ptr<Property>& pa, const std::unique_ptr<Property>& pb) {
+                    return pa->getClassIdentifier() == pb->getClassIdentifier() &&
+                           pa->getIdentifier() == pb->getIdentifier();
+                });
+        }
+
+        void serialize(Serializer& s) const { s.serialize("prefabs", properties, "prefab"); }
+        void deserialize(Deserializer& d) { d.deserialize("prefabs", properties, "prefab"); }
+
+        std::vector<std::unique_ptr<Property>> properties;
+    };
+
     std::set<std::string> getPrefabIDs() const;
 
     ListPropertyUIFlags uiFlags_;
     ValueWrapper<size_t> maxNumElements_;
-    std::vector<std::unique_ptr<Property>> prefabs_;
+    ValueWrapper<Prefabs> prefabs_;
 };
 
 }  // namespace inviwo

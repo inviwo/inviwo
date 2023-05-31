@@ -596,21 +596,18 @@ std::unique_ptr<QWidget> CollapsibleGroupBoxWidgetQt::createPropertyLayoutWidget
 }
 
 void CollapsibleGroupBoxWidgetQt::addButtonLayout(QGridLayout* layout, int row, Property* prop) {
-    auto createButton = [this](const std::string& objectName, const std::string& tooltip = "") {
+    auto createButton = [this](const std::string& objectName, const std::string& tooltip) {
         auto button = new QToolButton(this);
         button->setObjectName(utilqt::toQString(objectName));
-        if (!tooltip.empty()) {
-            button->setToolTip(utilqt::toQString(tooltip));
-        }
+        button->setToolTip(utilqt::toQString(tooltip));
         return button;
     };
 
     auto buttonWidget = new QWidget(this);
     layout->addWidget(buttonWidget, row, 2);
 
-    const std::string str = "Remove property '" + prop->getDisplayName() + "'";
-
-    auto removePropertyBtn = createButton("removeListItemButton", str);
+    auto removePropertyBtn = createButton(
+        "removeListItemButton", fmt::format("Remove property '{}'", prop->getDisplayName()));
 
     connect(removePropertyBtn, &QToolButton::clicked, this, [layout, prop, buttonWidget]() {
         // need to activate the default render context in case the property contains member
@@ -624,25 +621,35 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(QGridLayout* layout, int row, 
         }
     });
 
-    /*
-    // TODO: future functionality for reordering properties, see issue #178
-    auto moveUpBtn = createButton(
-        "moveListItemUpButton", "Move up");
-    auto moveDownBtn = createButton(
-        "moveListItemDownButton", "Move down");
-
-    connect(moveUpBtn, &QToolButton::clicked, this,
-            [this, prop]() { LogInfo("move up Property: " << prop->getDisplayName()); });
-    connect(moveDownBtn, &QToolButton::clicked, this,
-            [this, prop]() { LogInfo("move down Property: " << prop->getDisplayName()); });
-    */
+    auto moveUpBtn = createButton("moveListItemUpButton", "Move up");
+    auto moveDownBtn = createButton("moveListItemDownButton", "Move down");
+    connect(moveUpBtn, &QToolButton::clicked, this, [prop]() {
+        if (auto owner = prop->getOwner()) {
+            if (auto it = owner->find(prop); it != owner->cend()) {
+                if (it != owner->cbegin()) {
+                    RenderContext::getPtr()->activateDefaultRenderContext();
+                    owner->move(prop, std::distance(owner->cbegin(), it) - 1);
+                }
+            }
+        }
+    });
+    connect(moveDownBtn, &QToolButton::clicked, this, [prop]() {
+        if (auto owner = prop->getOwner()) {
+            if (auto it = owner->find(prop); it != owner->cend()) {
+                if (it + 1 != owner->cend()) {
+                    RenderContext::getPtr()->activateDefaultRenderContext();
+                    owner->move(prop, std::distance(owner->cbegin(), it) + 1);
+                }
+            }
+        }
+    });
 
     auto buttonLayout = new QVBoxLayout();
     buttonLayout->setContentsMargins(0, 0, 0, 0);
     buttonLayout->setSpacing(0);
     buttonLayout->addWidget(removePropertyBtn);
-    // buttonLayout->addWidget(moveUpBtn);
-    // buttonLayout->addWidget(moveDownBtn);
+    buttonLayout->addWidget(moveUpBtn);
+    buttonLayout->addWidget(moveDownBtn);
     buttonLayout->addStretch(1);
 
     buttonWidget->setLayout(buttonLayout);

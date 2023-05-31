@@ -54,6 +54,23 @@
 
 namespace inviwo {
 
+class IVW_MODULE_BASE_API TransformationList : public ListProperty {
+public:
+    TransformationList(std::string_view identifier, std::string_view displayName,
+                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                          PropertySemantics semantics = PropertySemantics::Default);
+    TransformationList(const TransformationList& other) = default;
+    ~TransformationList() = default;
+
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
+    virtual TransformationList* clone() const override;
+
+    mat4 getMatrix() const;
+};
+
+
 /** \docpage{org.inviwo.TransformListProperty, Transform List Property}
  * ![](org.inviwo.TransformListProperty.png?classIdentifier=org.inviwo.TransformListProperty)
  * List of transformations being applied on each other.
@@ -73,7 +90,7 @@ public:
 
     const mat4& getMatrix() const;
 
-    ListProperty transforms_;
+    TransformationList transforms_;
     FloatMat4Property result_;
 };
 

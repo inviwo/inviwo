@@ -44,20 +44,6 @@ namespace inviwo {
 const std::string ListProperty::classIdentifier = "org.inviwo.ListProperty";
 std::string ListProperty::getClassIdentifier() const { return classIdentifier; }
 
-namespace detail {
-
-std::vector<std::unique_ptr<Property>> clonePropertyVector(
-    const std::vector<std::unique_ptr<Property>>& v) {
-    std::vector<std::unique_ptr<Property>> result;
-    result.reserve(v.size());
-    std::transform(v.begin(), v.end(), std::back_inserter(result),
-                   [](auto& p) { return std::unique_ptr<Property>(p->clone()); });
-
-    return result;
-}
-
-}  // namespace detail
-
 ListProperty::ListProperty(std::string_view identifier, std::string_view displayName, Document help,
                            std::vector<std::unique_ptr<Property>> prefabs,
                            size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
@@ -65,7 +51,7 @@ ListProperty::ListProperty(std::string_view identifier, std::string_view display
     : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , uiFlags_(uiFlags)
     , maxNumElements_("maxNumberOfElements", maxNumberOfElements)
-    , prefabs_{std::move(prefabs)} {}
+    , prefabs_{"prefabs", std::move(prefabs)} {}
 
 ListProperty::ListProperty(std::string_view identifier, std::string_view displayName,
                            std::vector<std::unique_ptr<Property>> prefabs,
@@ -97,7 +83,7 @@ ListProperty::ListProperty(const ListProperty& rhs)
     : CompositeProperty(rhs)
     , uiFlags_(rhs.uiFlags_)
     , maxNumElements_(rhs.maxNumElements_)
-    , prefabs_(detail::clonePropertyVector(rhs.prefabs_)) {}
+    , prefabs_(rhs.prefabs_) {}
 
 ListProperty* ListProperty::clone() const { return new ListProperty(*this); }
 
@@ -171,16 +157,17 @@ void ListProperty::clear() {
 }
 
 Property* ListProperty::constructProperty(size_t prefabIndex) {
-    if (prefabIndex >= prefabs_.size()) {
+    if (prefabIndex >= prefabs_.value.size()) {
         throw RangeException("Invalid prefab index " + std::to_string(prefabIndex) + " (" +
-                                 std::to_string(prefabs_.size()) + " prefabs)",
+                                 std::to_string(prefabs_.value.size()) + " prefabs)",
                              IVW_CONTEXT);
     }
 
     if ((maxNumElements_ == size_t{0}) || (size() + 1 < maxNumElements_)) {
-        auto property = prefabs_[prefabIndex]->clone();
-        IVW_ASSERT(property->getClassIdentifier() == prefabs_[prefabIndex]->getClassIdentifier(),
-                   "Class identifer missmatch after cloning, does your property implement clone?");
+        auto property = prefabs_.value[prefabIndex]->clone();
+        IVW_ASSERT(
+            property->getClassIdentifier() == prefabs_.value[prefabIndex]->getClassIdentifier(),
+            "Class identifier mismatch after cloning, does your property implement clone?");
         property->setSerializationMode(PropertySerializationMode::All);
         property->setIdentifier(util::findUniqueIdentifier(
             property->getIdentifier(),
@@ -223,9 +210,10 @@ void ListProperty::addProperty(Property& property) {
 }
 
 void ListProperty::insertProperty(size_t index, Property* property, bool owner) {
-    if (!util::contains_if(prefabs_, [&, id = property->getClassIdentifier()](auto& elem) {
-            return elem->getClassIdentifier() == id;
-        })) {
+    if (!util::contains_if(prefabs_.value.properties,
+                           [&, id = property->getClassIdentifier()](auto& elem) {
+                               return elem->getClassIdentifier() == id;
+                           })) {
         throw Exception("Unsupported property type, no prefab matching `" +
                             property->getClassIdentifier() + "`.",
                         IVW_CONTEXT);
@@ -268,27 +256,56 @@ Property* ListProperty::removeProperty(size_t index) {
     return result;
 }
 
-size_t ListProperty::getPrefabCount() const { return prefabs_.size(); }
+bool ListProperty::move(Property* property, size_t newIndex) {
+    auto result = CompositeProperty::move(property, newIndex);
+    invalidate(Property::getInvalidationLevel());
+    return result;
+}
 
-void ListProperty::addPrefab(std::unique_ptr<Property> p) { prefabs_.emplace_back(std::move(p)); }
+size_t ListProperty::getPrefabCount() const { return prefabs_.value.size(); }
 
-const std::vector<std::unique_ptr<Property>>& ListProperty::getPrefabs() const { return prefabs_; }
+void ListProperty::addPrefab(std::unique_ptr<Property> p) {
+    prefabs_.value.properties.emplace_back(std::move(p));
+}
+
+const std::vector<std::unique_ptr<Property>>& ListProperty::getPrefabs() const {
+    return prefabs_.value.properties;
+}
 
 ListPropertyUIFlags ListProperty::getUIFlags() const { return uiFlags_; }
 
+ListProperty& ListProperty::setCurrentStateAsDefault() {
+    CompositeProperty::setCurrentStateAsDefault();
+    return *this;
+}
+ListProperty& ListProperty::resetToDefaultState() {
+    CompositeProperty::resetToDefaultState();
+    return *this;
+}
+bool ListProperty::isDefaultState() const {
+    return CompositeProperty::isDefaultState() && maxNumElements_.isDefault() &&
+           prefabs_.isDefault();
+}
+bool ListProperty::needsSerialization() const {
+    return CompositeProperty::needsSerialization() || !maxNumElements_.isDefault() ||
+           !prefabs_.isDefault();
+}
+
 void ListProperty::serialize(Serializer& s) const {
-    maxNumElements_.serialize(s, PropertySerializationMode::All);
+    maxNumElements_.serialize(s);
+    prefabs_.serialize(s);
     CompositeProperty::serialize(s);
 }
 
 void ListProperty::deserialize(Deserializer& d) {
-    maxNumElements_.deserialize(d, PropertySerializationMode::All);
+    maxNumElements_.deserialize(d);
+    prefabs_.deserialize(d);
     CompositeProperty::deserialize(d);
 }
 
 std::set<std::string> ListProperty::getPrefabIDs() const {
     std::set<std::string> ids;
-    for (auto& elem : prefabs_) {
+    for (const auto& elem : prefabs_.value.properties) {
         ids.insert(elem->getClassIdentifier());
     }
 

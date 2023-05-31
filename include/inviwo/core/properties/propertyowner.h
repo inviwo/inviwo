@@ -105,6 +105,8 @@ public:
      * @throw RangeException if \p index is not valid
      */
     virtual Property* removeProperty(size_t index);
+    
+    virtual bool move(Property* property, size_t newIndex);
 
     /**
      * @brief Remove all properties;
@@ -129,6 +131,9 @@ public:
     size_t size() const;
     Property* operator[](size_t);
     const Property* operator[](size_t) const;
+    
+    const_iterator find(Property* property) const;
+    
     iterator begin();
     iterator end();
     const_iterator begin() const;
