@@ -212,7 +212,12 @@ QVariant TreeItem::data(int column, int role) const {
             case static_cast<int>(Role::Path):
                 return path_;
             case static_cast<int>(Role::FilePath):
-                return path_ + "/" + file_;
+                if (path_.endsWith("/")) {
+                    // path already ends with '/' in case of root directory '/' or disk drive 'C:/'
+                    return path_ + file_;
+                } else {
+                    return path_ + "/" + file_;
+                }
             case static_cast<int>(Role::isExample):
                 return isExample_;
 

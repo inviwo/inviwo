@@ -168,8 +168,8 @@ void FilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
     auto mimeData = drop->mimeData();
     if (mimeData->hasUrls()) {
         if (mimeData->urls().size() > 0) {
-            auto url = mimeData->urls().first();
-            property_->set(utilqt::fromQString(url.toLocalFile()));
+            auto url = mimeData->urls().front();
+            property_->set(utilqt::toPath(url.toLocalFile()));
 
             drop->accept();
         }
@@ -187,8 +187,8 @@ void FilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
                 auto mimeData = event->mimeData();
                 if (mimeData->hasUrls()) {
                     if (mimeData->urls().size() > 0) {
-                        auto url = mimeData->urls().first();
-                        auto file = url.toLocalFile().toStdString();
+                        auto url = mimeData->urls().front();
+                        std::filesystem::path file = utilqt::toPath(url.toLocalFile());
 
                         switch (property_->getFileMode()) {
                             case FileMode::AnyFile:

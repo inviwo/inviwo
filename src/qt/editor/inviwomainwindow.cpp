@@ -1304,7 +1304,7 @@ bool InviwoMainWindow::saveWorkspace(const std::filesystem::path& fileName) {
         });
         getNetworkEditor()->setModified(false);
         updateWindowTitle();
-        LogInfo("Workspace saved to: " << fileName);
+        LogInfo(fmt::format("Workspace saved to: {}", fileName));
         return true;
     } catch (const Exception& e) {
         util::logError(e.getContext(), "Unable to save network {} due to {}", fileName,

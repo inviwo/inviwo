@@ -217,12 +217,12 @@ Deserializer WorkspaceManager::createWorkspaceDeserializer(std::istream& stream,
             if (moduleInfo->version < module->getVersion()) {
                 auto converter = module->getConverter(moduleInfo->version);
                 deserializer.convertVersion(converter.get());
-                LogNetworkSpecial((&deserializer), LogLevel::Warn,
-                                  "Loading old workspace ("
-                                      << deserializer.getFileName() << ") "
-                                      << module->getIdentifier()
-                                      << "Module version: " << moduleInfo->version
-                                      << ". Updating to version: " << module->getVersion() << ".");
+                LogNetworkSpecial(
+                    (&deserializer), LogLevel::Warn,
+                    fmt::format(
+                        "Loading old workspace ({}) Module version: {}. Updating to version: {}.",
+                        deserializer.getFileName(), module->getIdentifier(), moduleInfo->version,
+                        module->getVersion()));
             }
         }
     }

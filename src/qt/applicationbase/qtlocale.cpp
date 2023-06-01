@@ -46,6 +46,9 @@ std::locale utilqt::getCurrentStdLocale() {
 #else
         std::string localeName(QLocale::system().name().toStdString());
 #endif
+        if (localeName.size() < 6 || localeName.substr(localeName.size() - 6) != ".UTF-8") {
+            localeName += ".UTF-8";
+        }
 
         // try to use the system locale provided by Qt
         std::vector<std::string> localeNames = {localeName, "en_US.UTF-8", "en_US.UTF8",
