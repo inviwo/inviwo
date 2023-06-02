@@ -46,7 +46,7 @@ std::locale utilqt::getCurrentStdLocale() {
 #else
         std::string localeName(QLocale::system().name().toStdString());
 #endif
-        if (localeName.size() < 6 || localeName.substr(localeName.size() - 6) != ".UTF-8") {
+        if (localeName.rfind('.') == std::string::npos) {
             localeName += ".UTF-8";
         }
 
