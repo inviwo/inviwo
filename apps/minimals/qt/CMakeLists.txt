@@ -16,7 +16,12 @@ ivw_group("CMake Files" ${CMAKE_FILES})
 
 set(RES_FILES "")
 if(WIN32)
-    set(RES_FILES ${RES_FILES} "${IVW_RESOURCES_DIR}/inviwo.rc")
+    set(RES_FILES ${RES_FILES} 
+        "${IVW_RESOURCES_DIR}/inviwo.rc"
+        # manifest file for using UTF-8 codepages on Windows
+        # see https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page
+        "${IVW_RESOURCES_DIR}/inviwo.manifest"
+    )
 elseif(APPLE)
     set_source_files_properties(${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
     set(RES_FILES ${RES_FILES} ${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns)

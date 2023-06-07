@@ -43,12 +43,16 @@ EditorSettings::EditorSettings(InviwoApplication* app)
     , restoreFrequency("restoreFrequency", "Restore Frequency",
                        "Minutes between new backup files"_help, 10,
                        {1, ConstraintBehavior::Immutable}, {100, ConstraintBehavior::Ignore})
-
-    , workspaceDirectories("workspaceDirectories", "Workspace Directories",
-                           std::make_unique<FileProperty>("directory", "Directory")) {
+    , workspaceDirectories(
+          "workspaceDirectories", "Workspace Directories",
+          std::make_unique<FileProperty>("directory", "Directory", "Workspace directory"_help, "",
+                                         AcceptMode::Open, FileMode::Directory)) {
 
     addProperties(workspaceAuthor, numRecentFiles, numRestoreFiles, restoreFrequency,
                   workspaceDirectories);
+
+    workspaceDirectories.setHelp(
+        "Additional workspace directories listed on the Get Started screen."_help);
 
     load();
 }

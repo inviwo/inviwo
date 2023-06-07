@@ -194,7 +194,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     auto locale = app->getUILocale().name();
     if (locale == "C") {
         // Crash when default locale "C" is used. Reproduce with GLFWMinimum application
-        locale = std::locale("en_US").name();
+        locale = std::locale("en_US.UTF-8").name();
     }
 
     void* sandbox_info = NULL;  // Windows specific

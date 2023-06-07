@@ -1,4 +1,4 @@
-/*********************************************************************************
+﻿/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -46,7 +46,7 @@ namespace inviwo {
 
 Deserializer::Deserializer(const std::filesystem::path& fileName) : SerializeBase(fileName) {
     try {
-        doc_->LoadFile();
+        doc_->LoadFile(TIXML_ENCODING_UTF8);
         rootElement_ = doc_->FirstChildElement();
         rootElement_->GetAttribute(std::string{SerializeConstants::VersionAttribute},
                                    &inviwoWorkspaceVersion_, false);

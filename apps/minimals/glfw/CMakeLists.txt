@@ -18,8 +18,18 @@ foreach(module ${enabled_modules})
     endif()
 endforeach()
 
+set(RES_FILES "")
+if(WIN32)
+    set(RES_FILES ${RES_FILES} 
+        # manifest file for using UTF-8 codepages on Windows
+        # see https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page
+        "${IVW_RESOURCES_DIR}/inviwo.manifest"
+    )
+endif()
+source_group("Resource Files" FILES ${RES_FILES})
+
 # Create application
-add_executable(inviwo_glfwminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
+add_executable(inviwo_glfwminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES} ${RES_FILES})
 target_link_libraries(inviwo_glfwminimum PUBLIC inviwo::core inviwo::module::glfw)
 ivw_configure_application_module_dependencies(inviwo_glfwminimum ${enabled_modules})
 ivw_define_standard_definitions(inviwo_glfwminimum inviwo_glfwminimum)
