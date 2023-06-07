@@ -139,7 +139,7 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
                 ss << ifs.rdbuf();
                 const auto script = std::move(ss).str();
 
-                const auto name = path.stem();
+                const auto name = path.stem().generic_string();
 
                 auto ofs = std::ofstream(path);
                 fmt::print(ofs, fmt::runtime(script), fmt::arg("name", name));
