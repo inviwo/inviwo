@@ -73,6 +73,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/sphererenderer.h
     include/modules/basegl/processors/splitimage.h
     include/modules/basegl/processors/tuberendering.h
+    include/modules/basegl/processors/volumemasker.h
     include/modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h
     include/modules/basegl/processors/volumeprocessing/volumebinary.h
     include/modules/basegl/processors/volumeprocessing/volumecombiner.h
@@ -189,6 +190,7 @@ set(SOURCE_FILES
     src/processors/sphererenderer.cpp
     src/processors/splitimage.cpp
     src/processors/tuberendering.cpp
+    src/processors/volumemasker.cpp
     src/processors/volumeprocessing/vectormagnitudeprocessor.cpp
     src/processors/volumeprocessing/volumebinary.cpp
     src/processors/volumeprocessing/volumecombiner.cpp
@@ -300,6 +302,7 @@ set(SHADER_FILES
     glsl/volume_lowpass.frag
     glsl/volume_mapping.frag
     glsl/volumegradientmagnitude.frag
+    glsl/volumemask.frag
     glsl/volumemerger.frag
     glsl/volumenormalization.frag
     glsl/volumeslice.frag
