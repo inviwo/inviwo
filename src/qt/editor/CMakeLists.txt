@@ -187,8 +187,6 @@ if(IVW_CFG_BUILD_CHANGELOG)
     add_dependencies(inviwo-qteditor inviwo-changelog)
 endif()
 
-ivw_deploy_qt(inviwo-qteditor)
-
 ivw_default_install_targets(inviwo-qteditor)
 # Make package (for other projects to find)
 ivw_make_package(InviwoQtEditor inviwo-qteditor)

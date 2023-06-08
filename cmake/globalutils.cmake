@@ -1038,7 +1038,12 @@ function(ivw_deploy_qt target)
             add_custom_command(
                 TARGET ${target} POST_BUILD 
                 COMMAND ${WINDEPLOYQT_EXECUTABLE} 
-                    --no-compiler-runtime --verbose 1 $<TARGET_FILE:${target}>
+                    --no-compiler-runtime 
+                    --no-translations
+                    --no-system-d3d-compiler
+                    --no-opengl-sw
+                    --verbose 1 
+                    $<TARGET_FILE:${target}>
             )    
         endif()
     endif()
