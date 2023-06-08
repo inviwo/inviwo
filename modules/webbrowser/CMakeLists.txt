@@ -42,21 +42,18 @@ endif()
 # Save the original value of CMAKE_OSX_DEPLOYMENT_TARGET since FindCEF sets it to a very old 10.13
 set(ORG_CMAKE_OSX_DEPLOYMENT_TARGET ${CMAKE_OSX_DEPLOYMENT_TARGET})
 
+# Inviwo: make sure we use the same c runtime library linkage as Inviwo
+if(WIN32 AND MSVC)
+    if(BUILD_SHARED_LIBS OR IVW_CFG_MSVC_FORCE_SHARED_CRT)
+        set(CEF_RUNTIME_LIBRARY_FLAG "/MD" CACHE STRING "" FORCE)
+    endif()
+endif()
+
 # Load the CEF configuration.
 # Execute FindCEF.cmake which must exist in CMAKE_MODULE_PATH.
 find_package(CEF REQUIRED)
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET ${ORG_CMAKE_OSX_DEPLOYMENT_TARGET})
-
-# Inviwo: libcef_dll_wrapper must use same compiler settings to be able to link.
-set(CEF_COMPILER_FLAGS ${CMAKE_CXX_FLAGS})
-set(CEF_COMPILER_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
-set(CEF_COMPILER_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
-set(CEF_SHARED_LINKER_FLAGS_DEBUG ${CMAKE_SHARED_LINKER_FLAGS_DEBUG})
-set(CEF_SHARED_LINKER_FLAGS_RELEASE ${CMAKE_SHARED_LINKER_FLAGS_RELASE}})
-
-# Inviwo: Split space separated flags into a list (fixes mac compile errors)
-separate_arguments(CEF_COMPILER_FLAGS_RELEASE)
 
 # Include the libcef_dll_wrapper target.
 # Comes from the libcef_dll/CMakeLists.txt file in the binary distribution
