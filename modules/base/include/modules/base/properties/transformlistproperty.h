@@ -57,8 +57,8 @@ namespace inviwo {
 class IVW_MODULE_BASE_API TransformationList : public ListProperty {
 public:
     TransformationList(std::string_view identifier, std::string_view displayName,
-                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                          PropertySemantics semantics = PropertySemantics::Default);
+                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                       PropertySemantics semantics = PropertySemantics::Default);
     TransformationList(const TransformationList& other) = default;
     ~TransformationList() = default;
 
@@ -69,7 +69,6 @@ public:
 
     mat4 getMatrix() const;
 };
-
 
 /** \docpage{org.inviwo.TransformListProperty, Transform List Property}
  * ![](org.inviwo.TransformListProperty.png?classIdentifier=org.inviwo.TransformListProperty)

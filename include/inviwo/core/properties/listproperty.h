@@ -230,7 +230,6 @@ public:
 
     ListPropertyUIFlags getUIFlags() const;
 
-
     virtual ListProperty& setCurrentStateAsDefault() override;
     virtual ListProperty& resetToDefaultState() override;
     virtual bool isDefaultState() const override;
@@ -264,8 +263,8 @@ private:
         }
 
         size_t size() const { return properties.size(); }
-        std::unique_ptr<Property>& operator[](size_t i){return properties[i];}
-        const std::unique_ptr<Property>& operator[](size_t i) const {return properties[i];}
+        std::unique_ptr<Property>& operator[](size_t i) { return properties[i]; }
+        const std::unique_ptr<Property>& operator[](size_t i) const { return properties[i]; }
 
         friend bool operator==(const Prefabs& a, const Prefabs& b) {
             return std::equal(

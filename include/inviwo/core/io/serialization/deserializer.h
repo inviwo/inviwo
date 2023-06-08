@@ -520,17 +520,18 @@ public:
         std::vector<K> foundIdentifiers;
 
         ContainerWrapper<T, K> cont(
-            itemKey_, [&](const K& identifier, size_t ind) -> typename ContainerWrapper<T, K>::Item {
+            itemKey_,
+            [&](const K& identifier, size_t ind) -> typename ContainerWrapper<T, K>::Item {
                 std::erase(toRemove, identifier);
                 foundIdentifiers.push_back(identifier);
-                auto it = util::find_if(container, [&](const T& i) {
-                    return getID_(i) == identifier;
-                });
+                auto it =
+                    util::find_if(container, [&](const T& i) { return getID_(i) == identifier; });
                 if (it != container.end()) {
                     return {true, *it, [&](T& /*val*/) {}};
                 } else {
                     tmp = makeNewItem_();
-                    return {filter_(identifier, ind), tmp, [this, ind](T& val) { onNewItem_(val, ind); }};
+                    return {filter_(identifier, ind), tmp,
+                            [this, ind](T& val) { onNewItem_(val, ind); }};
                 }
             });
 
