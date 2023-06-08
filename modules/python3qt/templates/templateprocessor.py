@@ -7,6 +7,7 @@ class {name}(ivw.Processor):
     """
     Documentation of {name}
     """
+
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
         self.inport = ivw.data.ImageInport("inport")
