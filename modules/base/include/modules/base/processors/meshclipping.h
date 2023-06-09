@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/buttonproperty.h>      // for ButtonProperty
 #include <inviwo/core/properties/cameraproperty.h>      // for CameraProperty
 #include <inviwo/core/properties/ordinalproperty.h>     // for FloatVec3Property, FloatProperty
+#include <inviwo/core/properties/optionproperty.h>
 
 #include <string>  // for operator+, string
 
@@ -47,35 +48,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MeshClipping, Mesh Clipping}
- * ![](org.inviwo.MeshClipping.png?classIdentifier=org.inviwo.MeshClipping)
- *
- * Remove parts of a mesh that is on the back side of a plane.
- * Replaces removed parts with triangles aligned with the plane.
- * Link the camera property to move the camera along the plane, or to align plane with view
- * direction. Coordinates are specified in world space.
- *
- * Supports SimpleMesh and BasicMesh
- *
- * ### Inports
- *   * __inputMesh__ Input mesh
- *
- * ### Outports
- *   * __clippedMesh__ Clipped output mesh
- *   * __clippingPlane__ Plane used for clipping the mesh in world space coordinate system
- *
- * ### Properties
- *   * __Move Plane Point Along Normal__ Enable slider for adjusting plane position
- *   * __Plane Point Along Normal Move__ Offset plane along its normal
- *   * __Move Camera Along Normal__ Moves camera along with plane movement.
- *   * __Plane Point__ World space space position of plane
- *   * __Plane Normal__ ... World space space normal of plane
- *   * __Camera__ Camera used for moving or aligning plane.
- *   * __Align Plane Normal To Camera Normal__ Aligns plane normal with camera
- *   * __Enable clipping__ Pass through mesh if disabled.
- *
-
- */
 class IVW_MODULE_BASE_API MeshClipping : public Processor {
 public:
     MeshClipping();
@@ -90,11 +62,14 @@ protected:
 private:
     void onAlignPlaneNormalToCameraNormalPressed();
 
+    enum class ClipSide { Back, Front };
+
     MeshInport inport_;
     MeshOutport outport_;
     DataOutport<Plane> clippingPlane_;
 
     BoolProperty clippingEnabled_;
+    OptionProperty<ClipSide> clipSide_;
     BoolProperty movePointAlongNormal_;
     BoolProperty moveCameraAlongNormal_;
     FloatProperty pointPlaneMove_;
@@ -103,7 +78,6 @@ private:
 
     FloatVec3Property planePoint_;   ///< World space plane position
     FloatVec3Property planeNormal_;  ///< World space plane normal
-
     ButtonProperty alignPlaneNormalToCameraNormal_;
     CameraProperty camera_;
 

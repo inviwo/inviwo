@@ -75,48 +75,55 @@
 
 namespace inviwo {
 
-const ProcessorInfo MeshClipping::processorInfo_{
-    "org.inviwo.MeshClipping",  // Class identifier
-    "Mesh Clipping",            // Display name
-    "Mesh Creation",            // Category
-    CodeState::Experimental,    // Code state
-    Tags::CPU,                  // Tags
-};
+const ProcessorInfo MeshClipping::processorInfo_{"org.inviwo.MeshClipping",  // Class identifier
+                                                 "Mesh Clipping",            // Display name
+                                                 "Mesh Creation",            // Category
+                                                 CodeState::Stable,          // Code state
+                                                 Tags::CPU,                  // Tags
+                                                 R"(
+    Remove parts of a mesh that are on the backside of a plane. Replaces removed
+    parts with triangles aligned with the plane. Link the camera property to move
+    the camera along the plane or to align plane with the view direction.
+    Coordinates are specified in world space.
+
+    Supports `SimpleMesh` and `BasicMesh`.
+)"_unindentHelp};
 const ProcessorInfo MeshClipping::getProcessorInfo() const { return processorInfo_; }
 
 MeshClipping::MeshClipping()
     : Processor()
-    , inport_("inputMesh")
-    , outport_("clippedMesh")
-    , clippingPlane_("clippingPlane")
-    , clippingEnabled_("clippingEnabled", "Enable clipping", true)
-    , movePointAlongNormal_("movePointAlongNormal", "Move Plane Point Along Normal", false,
-                            InvalidationLevel::Valid)
+    , inport_("inputMesh", "Input mesh (`SimpleMesh` or `BasicMesh`) to be clipped"_help)
+    , outport_("clippedMesh", "Clipped output mesh"_help)
+    , clippingPlane_("clippingPlane",
+                     "Plane used for clipping the mesh in world space coordinate system"_help)
+    , clippingEnabled_("clippingEnabled", "Enable Clipping",
+                       "The unmodified input mesh is returned, if not enabled."_help, true)
+    , clipSide_("clipSide", "Clipping", ""_help,
+                {{"back", "Back", ClipSide::Back}, {"front", "Front", ClipSide::Front}}, 0)
+    , movePointAlongNormal_(
+          "movePointAlongNormal", "Move Plane Point Along Normal",
+          "Enable single slider for adjusting plane position along the normal"_help, false,
+          InvalidationLevel::Valid)
     , moveCameraAlongNormal_("moveCameraAlongNormal", "Move Camera Along Normal", true,
                              InvalidationLevel::Valid)
     , pointPlaneMove_("pointPlaneMove", "Plane Point Along Normal Move", 0.f, 0.f, 2.f, 0.01f)
     , capClippedHoles_("capClippedHoles", "Cap clipped holes", true)
-    , planePoint_("planePoint", "Plane Point", vec3(0.0f), vec3(-10000.0f), vec3(10000.0f),
-                  vec3(0.1f))
-    , planeNormal_("planeNormal", "Plane Normal", vec3(0.0f, 0.0f, -1.0f), vec3(-1.0f), vec3(1.0f),
-                   vec3(0.1f))
-    , alignPlaneNormalToCameraNormal_("alignPlaneNormalToCameraNormal",
-                                      "Align Plane Normal To Camera Normal",
-                                      InvalidationLevel::Valid)
+    , planePoint_(
+          "planePoint", "Plane Point",
+          util::ordinalSymmetricVector(vec3(0.0f)).set("World space space position of plane"_help))
+    , planeNormal_("planeNormal", "Plane Normal",
+                   util::ordinalSymmetricVector(vec3(0.0f, 0.0f, -1.0f), vec3(1.0f))
+                       .set("World space space normal of plane"_help))
+    , alignPlaneNormalToCameraNormal_(
+          "alignPlaneNormalToCameraNormal", "Align Normal with Camera",
+          "Align plane normal with the view direction of the camera"_help, InvalidationLevel::Valid)
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), nullptr, InvalidationLevel::Valid) {
     addPort(inport_);
     addPort(outport_);
     addPort(clippingPlane_);
-    addProperty(clippingEnabled_);
-    addProperty(movePointAlongNormal_);
-    addProperty(moveCameraAlongNormal_);
-    addProperty(pointPlaneMove_);
-
-    addProperty(capClippedHoles_);
-
-    addProperty(planePoint_);
-    addProperty(planeNormal_);
+    addProperties(clippingEnabled_, clipSide_, movePointAlongNormal_, moveCameraAlongNormal_,
+                  pointPlaneMove_, capClippedHoles_, planePoint_, planeNormal_);
 
     addProperty(alignPlaneNormalToCameraNormal_);
     alignPlaneNormalToCameraNormal_.onChange(
@@ -149,16 +156,18 @@ void MeshClipping::process() {
      *     triangle strip list.
      *   - Build new mesh from the triangle strip list and return it.
      */
-    auto plane = std::make_shared<Plane>(planePoint_.get(), planeNormal_.get());
+    const auto normal =
+        clipSide_.getSelectedValue() == ClipSide::Back ? planeNormal_.get() : -planeNormal_.get();
+    auto plane = std::make_shared<Plane>(planePoint_.get(), normal);
 
     if (clippingEnabled_.get()) {
 
-        if (movePointAlongNormal_.get()) {
+        if (movePointAlongNormal_) {
             // Set new plane position based on offset
             vec3 offsetPlaneDiff = plane->getNormal() * pointPlaneMove_.get();
             plane->setPoint(plane->getPoint() + offsetPlaneDiff);
             // Move camera along the offset as well
-            if (moveCameraAlongNormal_.get()) {
+            if (moveCameraAlongNormal_) {
 
                 float planeMoveDiff = pointPlaneMove_.get() - previousPointPlaneMove_;
                 // Move camera half of the plane movement distance.
