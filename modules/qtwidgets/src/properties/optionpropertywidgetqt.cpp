@@ -131,4 +131,6 @@ void OptionPropertyWidgetQt::updateFromProperty() {
     comboBox_->setCurrentIndex(static_cast<int>(property_->getSelectedIndex()));
 }
 
+void OptionPropertyWidgetQt::setReadOnly(bool readonly) { comboBox_->setDisabled(readonly); }
+
 }  // namespace inviwo

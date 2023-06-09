@@ -109,4 +109,9 @@ void BoolPropertyWidgetQt::updateFromProperty() {
     if (lineEdit_) lineEdit_->setText(property_->get() ? "true" : "false");
 }
 
+void BoolPropertyWidgetQt::setReadOnly(bool readonly) {
+    if (checkBox_) checkBox_->setDisabled(readonly);
+    if (lineEdit_) lineEdit_->setDisabled(readonly);
+}
+
 }  // namespace inviwo
