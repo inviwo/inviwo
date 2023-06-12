@@ -47,8 +47,6 @@ public:
 
     virtual void updateFromProperty() override;
 
-    virtual void setReadOnly(bool readonly) override;
-
 private:
     BoolProperty* property_;
     QCheckBox* checkBox_;

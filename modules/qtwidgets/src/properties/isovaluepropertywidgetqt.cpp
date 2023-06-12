@@ -87,7 +87,12 @@ bool IsoValuePropertyWidgetQt::hasEditorWidget() const { return tfDialog_ != nul
 
 void IsoValuePropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
 
-void IsoValuePropertyWidgetQt::setReadOnly(bool readonly) { label_->setDisabled(readonly); }
+void IsoValuePropertyWidgetQt::setReadOnly(bool readonly) {
+    // We only want to modify the label. The TF preview button needs to be enabled at all times.
+    // Otherwise it will not be possible to open the TF editor for read-only TFs.
+    // Do _not_ call the base class as this would disable the entire widget.
+    label_->setDisabled(readonly);
+}
 
 std::unique_ptr<QMenu> IsoValuePropertyWidgetQt::getContextMenu() {
     auto menu = PropertyWidgetQt::getContextMenu();

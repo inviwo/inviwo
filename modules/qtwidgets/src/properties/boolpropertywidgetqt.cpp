@@ -68,7 +68,6 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
         sizePolicy.setVerticalPolicy(QSizePolicy::Fixed);
         lineEdit_->setSizePolicy(sizePolicy);
 
-        lineEdit_->setEnabled(!property_->getReadOnly());
         // set up a validator accepting "true"/1 and "false"/0
         lineEdit_->setValidator(
             new QRegularExpressionValidator(QRegularExpression("true|false|1|0"), lineEdit_));
@@ -85,7 +84,6 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
         hLayout->addWidget(lineEdit_);
     } else {
         checkBox_ = new QCheckBox();
-        checkBox_->setEnabled(!property_->getReadOnly());
         checkBox_->setFixedSize(QSize(15, 15));
 
         setFocusPolicy(checkBox_->focusPolicy());
@@ -98,6 +96,7 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
         connect(checkBox_, &QCheckBox::toggled, setPropertyValueFromCheckbox);
         hLayout->addWidget(checkBox_);
     }
+    setDisabled(property_->getReadOnly());
 
     setLayout(hLayout);
 
@@ -107,11 +106,6 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
 void BoolPropertyWidgetQt::updateFromProperty() {
     if (checkBox_) checkBox_->setChecked(property_->get());
     if (lineEdit_) lineEdit_->setText(property_->get() ? "true" : "false");
-}
-
-void BoolPropertyWidgetQt::setReadOnly(bool readonly) {
-    if (checkBox_) checkBox_->setDisabled(readonly);
-    if (lineEdit_) lineEdit_->setDisabled(readonly);
 }
 
 }  // namespace inviwo

@@ -112,7 +112,13 @@ TFPropertyDialog* TFPropertyWidgetQt::getEditorWidget() const {
 
 bool TFPropertyWidgetQt::hasEditorWidget() const { return transferFunctionDialog_ != nullptr; }
 
-void TFPropertyWidgetQt::setReadOnly(bool readonly) { label_->setDisabled(readonly); }
+void TFPropertyWidgetQt::setReadOnly(bool readonly) {
+    // We only want to modify the label. The TF preview button needs to be enabled at all times.
+    // Otherwise it will not be possible to open the TF editor for read-only TFs.
+    // Do _not_ call the base class as this would disable the entire
+    // widget.
+    label_->setDisabled(readonly);
+}
 
 std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
     auto menu = PropertyWidgetQt::getContextMenu();
@@ -120,7 +126,7 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
     menu->addSeparator();
 
     auto clearTF = menu->addAction("&Clear TF");
-    clearTF->setEnabled(!property_->getReadOnly());
+    clearTF->setDisabled(property_->getReadOnly());
 
     connect(clearTF, &QAction::triggered, this, [this]() {
         NetworkLock lock(property_);
@@ -137,7 +143,7 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
 
     auto importTF = menu->addAction("&Import TF...");
     auto exportTF = menu->addAction("&Export TF...");
-    importTF->setEnabled(!property_->getReadOnly());
+    importTF->setDisabled(property_->getReadOnly());
     connect(importTF, &QAction::triggered, this, [this]() {
         if (auto tf = util::importTransferFunctionDialog(this)) {
             NetworkLock lock{property_};

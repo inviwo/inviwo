@@ -340,6 +340,8 @@ QSize CollapsibleGroupBoxWidgetQt::minimumSizeHint() const {
 }
 
 void CollapsibleGroupBoxWidgetQt::setReadOnly(bool readonly) {
+    // Disable only child widgets so that the group box can still be collapsed and uncollapsed.
+    // Do _not_ call the base class as this would disable the entire group box widget.
     label_->setDisabled(readonly);
     checkBox_->setDisabled(readonly);
     resetButton_->setDisabled(readonly);

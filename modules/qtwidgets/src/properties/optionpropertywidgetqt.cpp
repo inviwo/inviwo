@@ -68,7 +68,6 @@ OptionPropertyWidgetQt::OptionPropertyWidgetQt(BaseOptionProperty* property)
     hLayout->setSpacing(7);
     setLayout(hLayout);
 
-    comboBox_->setEnabled(!property_->getReadOnly());
     comboBox_->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(comboBox_, &IvwComboBox::customContextMenuRequested, this, [this](const QPoint& pos) {
         if (auto menu = getContextMenu()) {
@@ -96,6 +95,7 @@ OptionPropertyWidgetQt::OptionPropertyWidgetQt(BaseOptionProperty* property)
         hLayout->addWidget(widget);
     }
 
+    setDisabled(property_->getReadOnly());
     connect(comboBox_, static_cast<void (QComboBox::*)(int)>(&IvwComboBox::currentIndexChanged),
             this, &OptionPropertyWidgetQt::optionChanged);
 
@@ -130,7 +130,5 @@ void OptionPropertyWidgetQt::updateFromProperty() {
 
     comboBox_->setCurrentIndex(static_cast<int>(property_->getSelectedIndex()));
 }
-
-void OptionPropertyWidgetQt::setReadOnly(bool readonly) { comboBox_->setDisabled(readonly); }
 
 }  // namespace inviwo

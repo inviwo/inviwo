@@ -207,7 +207,11 @@ void TextEditorDockWidget::closeEvent(QCloseEvent* e) {
 
 void TextEditorDockWidget::onSetDisplayName(Property*, const std::string&) { updateWindowTitle(); }
 
-void TextEditorDockWidget::setReadOnly(bool readonly) { editor_->setReadOnly(readonly); }
+void TextEditorDockWidget::setReadOnly(bool readonly) {
+    // only disable the editor widget
+    // Do _not_ call the base class as this would disable the entire dock widget.
+    editor_->setReadOnly(readonly);
+}
 
 void TextEditorDockWidget::updateWindowTitle() {
     auto str = [&]() -> std::string {
