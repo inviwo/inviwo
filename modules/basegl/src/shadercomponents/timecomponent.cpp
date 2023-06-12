@@ -94,9 +94,12 @@ TimeComponent::TimeComponent(std::string_view name,
 std::string_view TimeComponent::getName() const { return name_; }
 
 void TimeComponent::process(Shader& shader, TextureUnitContainer&) {
-    shader.setUniform(name_, std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(
-                                 std::chrono::steady_clock::now().time_since_epoch())
-                                 .count());
+    std::chrono::duration<float, std::milli> t(0.0f);
+    if (enabled_) {
+        t = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(
+            std::chrono::steady_clock::now().time_since_epoch());
+    }
+    shader.setUniform(name_, t.count());
 }
 
 auto TimeComponent::getSegments() -> std::vector<Segment> {
@@ -110,7 +113,11 @@ void TimeComponent::start() { running_.set(true); }
 
 void TimeComponent::stop() { running_.set(false); }
 
-void TimeComponent::setRunning(bool run) { running_.set(run); }
+void TimeComponent::setRunning(bool run) {
+    if (enabled_) {
+        running_.set(run);
+    }
+}
 
 bool TimeComponent::getRunning() const { return timer_.isRunning(); }
 

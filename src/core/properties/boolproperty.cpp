@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/util/document.h>
 
 namespace inviwo {
 
@@ -54,5 +55,18 @@ BoolProperty& BoolProperty::operator=(const bool& value) {
 BoolProperty* BoolProperty::clone() const { return new BoolProperty(*this); }
 
 BoolProperty::~BoolProperty() = default;
+
+Document BoolProperty::getDescription() const {
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+
+    Document doc = Property::getDescription();
+    auto t = doc.get({P{"table"}});
+
+    utildoc::TableBuilder tb(t);
+    tb(H("Value"), get());
+
+    return doc;
+}
 
 }  // namespace inviwo

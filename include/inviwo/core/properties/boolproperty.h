@@ -60,6 +60,8 @@ public:
     BoolProperty& operator=(const bool& value);
     virtual BoolProperty* clone() const override;
     virtual ~BoolProperty();
+
+    virtual Document getDescription() const override;
 };
 
 }  // namespace inviwo
