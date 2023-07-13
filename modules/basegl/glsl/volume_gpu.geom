@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "utils/structs.glsl"
@@ -33,33 +33,33 @@
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 
-uniform VolumeParameters volumeParameters;
+uniform VolumeParameters outputVolumeParameters;
 
 in int instanceID_[3];
 in vec2 texCoord2D_[3];
 
-out vec4 texCoord_; 
+out vec4 texCoord_;
 out vec4 dataposition_;
 out vec4 worldPos_;
 out vec4 permutedPosInv_;
 out vec4 permutedPosInvSec_;
 
 void main() {
-    float reciprocalz = 1.0 / (volumeParameters.dimensions.z - 1.0);
+    float reciprocalz = 1.0 / (outputVolumeParameters.dimensions.z - 1.0);
 
     dataposition_.z = instanceID_[0] * reciprocalz;
-    texCoord_.z = (instanceID_[0] * volumeParameters.reciprocalDimensions.z)
-        + (0.5 * volumeParameters.reciprocalDimensions.z);
+    texCoord_.z = (instanceID_[0] * outputVolumeParameters.reciprocalDimensions.z) +
+                  (0.5 * outputVolumeParameters.reciprocalDimensions.z);
     texCoord_.w = 1.f;
     dataposition_.w = 1.f;
     gl_Layer = instanceID_[0];
 
-    for (int i = 0; i < gl_in.length(); ++i) { 
+    for (int i = 0; i < gl_in.length(); ++i) {
         gl_Position = gl_in[i].gl_Position;
         texCoord_.xy = texCoord2D_[i];
-        dataposition_.xy = texCoord2D_[i] - volumeParameters.reciprocalDimensions.xy * 0.5f;
-        dataposition_.xy /= 1.0f-volumeParameters.reciprocalDimensions.xy;
-        worldPos_ = volumeParameters.textureToWorld * texCoord_;
+        dataposition_.xy = texCoord2D_[i] - outputVolumeParameters.reciprocalDimensions.xy * 0.5f;
+        dataposition_.xy /= 1.0f - outputVolumeParameters.reciprocalDimensions.xy;
+        worldPos_ = outputVolumeParameters.textureToWorld * texCoord_;
         EmitVertex();
     }
 

@@ -161,7 +161,10 @@ private:
 
             auto avgsChannel = std::make_shared<BufferChannel<T, N>>(
                 numGridVerts, fmt::format("avg_{}", dataChannel->getName()));
+            auto smoothAvgsChannel = std::make_shared<BufferChannel<T, N>>(
+                numGridVerts, fmt::format("smoothAvg_{}", dataChannel->getName()));
             avgsChannel->setInvalidValue(T());
+            smoothAvgsChannel->setInvalidValue(T());
             auto sumCountChannel = std::make_shared<BufferChannel<size_t, 1>>(
                 numGridVerts, fmt::format("avg_numContributors_{}", dataChannel->getName()));
             sumCountChannel->setInvalidValue(0);
@@ -170,11 +173,17 @@ private:
                 dataCopy->getGrid()->getNumElements(),
                 fmt::format("avg_difference_{}", dataChannel->getName()));
             avgDiffChannel->setInvalidValue(dataChannel->getInvalidValue());
+            auto smoothAvgDiffChannel = std::make_shared<BufferChannel<T, N>>(
+                dataCopy->getGrid()->getNumElements(),
+                fmt::format("smoothAvg_difference_{}", dataChannel->getName()));
+            smoothAvgDiffChannel->setInvalidValue(dataChannel->getInvalidValue());
 
             std::array<T, N> data;
             std::array<float, SpatialDims> pos;
             std::array<T, N>* avgData = nullptr;
+            std::array<T, N>* smoothAvgData = nullptr;
             std::array<T, N>* avgDiffData = nullptr;
+            std::array<T, N>* smoothAvgDiffData = nullptr;
 
             for (ind idx = 0; idx < dataChannel->size(); ++idx) {
 
@@ -182,6 +191,7 @@ private:
                 dataChannel->fill(data, idx);  // Maybe do several idxs at once ?
                 positionChannel->fill(pos, idx);
                 avgDiffChannel->template get<std::array<T, N>>(idx) = data;
+                smoothAvgDiffChannel->template get<std::array<T, N>>(idx) = data;
                 if (!dataChannel->isValid(data[0]) || !positionChannel->isValid(pos[0])) continue;
 
                 // Find correct index (0 in averaging dim).
@@ -194,6 +204,21 @@ private:
                 avgData = &avgsChannel->template get<std::array<T, N>>(linIdx);
                 for (size_t n = 0; n < N; ++n) avgData->at(n) += data[n];
                 sumCountChannel->get(linIdx)++;
+
+                // Smooth sine fit, hard coded...
+                // Amplitude: 15.4804182319356
+                // Angular Freq: 6.83635638584113
+                // Phase: -PI/2
+                // Offset: 12.963938520487
+
+                smoothAvgData = &smoothAvgsChannel->template get<std::array<T, N>>(linIdx);
+                double amp = 15.4804182319356;
+                double angularFreq = 6.83635638584113 * 2.0;
+                double phase = M_PI * 0.5;
+                double offset = 12.963938520487;
+                smoothAvgData->at(0) += amp * sin(pos[0] / 360.0 * angularFreq + phase) + offset;
+                // 15.4804182319 * sin((x / 360.0) * 6.83635638584 - M_PI * 0.5) + 12.963938520;
+                // = amp * SIN($H$5 * A2 / 360 + $H$6) + $H$7
             }
 
             // Divide sum by cell count and spread out.
@@ -213,7 +238,12 @@ private:
                 size_t count = sumCountChannel->get(fullDimIndex);
                 if (count != 0) {
                     avgData = &avgsChannel->template get<std::array<T, N>>(fullDimIndex);
-                    for (size_t n = 0; n < N; ++n) avgData->at(n) /= count;
+                    smoothAvgData =
+                        &smoothAvgsChannel->template get<std::array<T, N>>(fullDimIndex);
+                    for (size_t n = 0; n < N; ++n) {
+                        avgData->at(n) /= count;
+                        smoothAvgData->at(n) /= count;
+                    }
                 }
 
                 // Spread out into averaging dim.
@@ -221,6 +251,7 @@ private:
                     size_t fullIdx = fullDimIndex + avgIdx * numVertsBelowAvgDim;
                     if (count != 0) {
                         avgsChannel->template get<std::array<T, N>>(fullIdx) = *avgData;
+                        smoothAvgsChannel->template get<std::array<T, N>>(fullIdx) = *smoothAvgData;
                     }
                 }
             }
@@ -230,6 +261,7 @@ private:
 
                 // Check validity.
                 avgDiffData = &avgDiffChannel->template get<std::array<T, N>>(idx);
+                smoothAvgDiffData = &smoothAvgDiffChannel->template get<std::array<T, N>>(idx);
                 positionChannel->fill(pos, idx);
                 if (!dataChannel->isValid((*avgDiffData)[0]) || !positionChannel->isValid(pos[0]))
                     continue;
@@ -240,11 +272,18 @@ private:
 
                 // Increment counter.
                 avgData = &avgsChannel->template get<std::array<T, N>>(linIdx);
+                smoothAvgData = &smoothAvgsChannel->template get<std::array<T, N>>(linIdx);
                 if (!processor->relativeDiff_.get()) {
-                    for (size_t n = 0; n < N; ++n) (*avgDiffData)[n] -= avgData->at(n);
+                    for (size_t n = 0; n < N; ++n) {
+                        (*avgDiffData)[n] -= (*avgData)[n];
+                        (*smoothAvgDiffData)[n] -= (*smoothAvgData)[n];
+                    }
                 } else {
-                    for (size_t n = 0; n < N; ++n)
+                    for (size_t n = 0; n < N; ++n) {
                         (*avgDiffData)[n] = ((*avgDiffData)[n] - avgData->at(n)) / avgData->at(n);
+                        (*smoothAvgDiffData)[n] =
+                            ((*smoothAvgDiffData)[n] - smoothAvgData->at(n)) / smoothAvgData->at(n);
+                    }
                 }
             }
 
@@ -252,9 +291,11 @@ private:
             auto avgDataset = std::make_shared<DataSet>("AverageField", gridSize);
             avgDataset->addChannel(uniformPositions);
             avgDataset->addChannel(avgsChannel);
+            avgDataset->addChannel(smoothAvgsChannel);
             avgDataset->addChannel(sumCountChannel);
 
             dataCopy->addChannel(avgDiffChannel);
+            dataCopy->addChannel(smoothAvgDiffChannel);
 
             return avgDataset;
         }

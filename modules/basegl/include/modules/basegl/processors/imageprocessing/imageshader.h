@@ -68,6 +68,7 @@ private:
     StringProperty fragmentSrc_;
     BoolProperty differentOutputFormat_;
     TemplateOptionProperty<DataFormatId> outputFormat_;
+    BoolProperty outportDeterminedSize_;
 };
 
 }  // namespace inviwo

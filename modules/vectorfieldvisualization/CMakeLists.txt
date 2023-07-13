@@ -18,19 +18,29 @@ set(HEADER_FILES
     include/modules/vectorfieldvisualization/processors/3d/streamribbons.h
     include/modules/vectorfieldvisualization/processors/addvalueperline.h
     include/modules/vectorfieldvisualization/processors/arrowglyphs.h
+    include/modules/vectorfieldvisualization/processors/currents/highvelocitylineregions.h
+    include/modules/vectorfieldvisualization/processors/currents/pathsbetweenregions.h
+    include/modules/vectorfieldvisualization/processors/currents/showstreampath.h
+    include/modules/vectorfieldvisualization/processors/currents/streamspanningtree.h
+    include/modules/vectorfieldvisualization/processors/currents/streamspanningtree3d.h
+    include/modules/vectorfieldvisualization/processors/currents/streamspanningtreejit.h
     include/modules/vectorfieldvisualization/processors/datageneration/holgersthreelines.h
     include/modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h
     include/modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h
     include/modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h
     include/modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask.h
+    include/modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask2d.h
     include/modules/vectorfieldvisualization/processors/discardshortlines.h
     include/modules/vectorfieldvisualization/processors/flowfieldprocessor.h
+    include/modules/vectorfieldvisualization/processors/integrallineannotation.h
     include/modules/vectorfieldvisualization/processors/integrallinestocomets.h
     include/modules/vectorfieldvisualization/processors/integrallinetracerprocessor.h
     include/modules/vectorfieldvisualization/processors/integrallinevectortomesh.h
     include/modules/vectorfieldvisualization/processors/linesfromdataframe.h
     include/modules/vectorfieldvisualization/processors/linesourceascii.h
     include/modules/vectorfieldvisualization/processors/linestoarrows.h
+    include/modules/vectorfieldvisualization/processors/meshtocomets.h
+    include/modules/vectorfieldvisualization/processors/meshtointegrallines.h
     include/modules/vectorfieldvisualization/processors/perpendicularsimilarity.h
     include/modules/vectorfieldvisualization/processors/scalarconvolutionprocessor.h
     include/modules/vectorfieldvisualization/processors/seed3dto4d.h
@@ -63,18 +73,28 @@ set(SOURCE_FILES
     src/processors/3d/streamribbons.cpp
     src/processors/addvalueperline.cpp
     src/processors/arrowglyphs.cpp
+    src/processors/currents/highvelocitylineregions.cpp
+    src/processors/currents/pathsbetweenregions.cpp
+    src/processors/currents/showstreampath.cpp
+    src/processors/currents/streamspanningtree.cpp
+    src/processors/currents/streamspanningtree3d.cpp
+    src/processors/currents/streamspanningtreejit.cpp
     src/processors/datageneration/holgersthreelines.cpp
     src/processors/datageneration/rbfvectorfieldgenerator2d.cpp
     src/processors/datageneration/rbfvectorfieldgenerator3d.cpp
     src/processors/datageneration/seedpointgenerator.cpp
     src/processors/datageneration/seedpointsfrommask.cpp
+    src/processors/datageneration/seedpointsfrommask2d.cpp
     src/processors/discardshortlines.cpp
     src/processors/flowfieldprocessor.cpp
+    src/processors/integrallineannotation.cpp
     src/processors/integrallinestocomets.cpp
     src/processors/integrallinevectortomesh.cpp
     src/processors/linesfromdataframe.cpp
     src/processors/linesourceascii.cpp
     src/processors/linestoarrows.cpp
+    src/processors/meshtocomets.cpp
+    src/processors/meshtointegrallines.cpp
     src/processors/perpendicularsimilarity.cpp
     src/processors/scalarconvolutionprocessor.cpp
     src/processors/seed3dto4d.cpp

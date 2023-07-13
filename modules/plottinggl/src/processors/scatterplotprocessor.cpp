@@ -206,5 +206,4 @@ void ScatterPlotProcessor::onRadiusChange() {
 }
 
 }  // namespace plot
-
 }  // namespace inviwo

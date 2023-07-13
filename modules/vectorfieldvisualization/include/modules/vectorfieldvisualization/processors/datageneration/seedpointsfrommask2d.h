@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,47 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESHADER_H
-#define IVW_VOLUMESHADER_H
+#pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
+
+#include <random>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API VolumeShader : public VolumeGLProcessor {
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointsFromMask2D : public Processor {
 public:
-    VolumeShader();
-    virtual ~VolumeShader();
-
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+    SeedPointsFromMask2D();
+    virtual ~SeedPointsFromMask2D() {}
+
+protected:
     virtual void process() override;
-    virtual void initializeResources() override;
+
+    DataInport<Image, 0> images_;
+    SeedPoints2DOutport seedPoints_;
+
+    DoubleProperty threshold_;
+
+    BoolProperty enableSuperSample_;
+    IntProperty superSample_;
+
+    CompositeProperty randomness_;
+    BoolProperty useSameSeed_;
+    IntProperty seed_;
+    BoolProperty transformToWorld_;
 
 private:
-    VolumeShader(std::shared_ptr<StringShaderResource> fragmentShader);
-
-    std::shared_ptr<StringShaderResource> fragmentShader_;
-    StringProperty fragmentSrc_;
-    BoolCompositeProperty differentOutputFormat_;
-    TemplateOptionProperty<DataFormatId> outputFormat_;
-    BoolCompositeProperty differentOutputSize_;
-    IntSize3Property outputSize_;
+    std::mt19937 mt_;
+    std::uniform_real_distribution<float> dis_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESHADER_H

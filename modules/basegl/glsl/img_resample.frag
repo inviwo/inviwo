@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "utils/structs.glsl"
@@ -34,8 +34,8 @@ uniform ImageParameters outportParameters_;
 uniform sampler2D inport_;
 
 #ifdef BICUBIC_INTERPOLATION
-vec4 cubic(float v)
-{
+
+vec4 cubic(float v) {
     vec4 n = vec4(1.0, 2.0, 3.0, 4.0) - v;
     vec4 s = n * n * n;
     float x = s.x;
@@ -45,7 +45,8 @@ vec4 cubic(float v)
     return vec4(x, y, z, w);
 }
 
-vec4 bicubicInterpolation(sampler2D tex, vec2 coord, vec2 scale){
+// bicubicInterpolation
+vec4 interpolate(sampler2D tex, vec2 coord, vec2 scale) {
     float fx = fract(coord.x);
     float fy = fract(coord.y);
     coord.x -= fx;
@@ -55,8 +56,8 @@ vec4 bicubicInterpolation(sampler2D tex, vec2 coord, vec2 scale){
     vec4 ycubic = cubic(fy);
 
     vec4 c = vec4(coord.x - 0.5, coord.x + 1.5, coord.y - 0.5, coord.y + 1.5);
-    vec4 s = vec4(xcubic.x + xcubic.y, xcubic.z + xcubic.w, ycubic.x +
-        ycubic.y, ycubic.z + ycubic.w);
+    vec4 s =
+        vec4(xcubic.x + xcubic.y, xcubic.z + xcubic.w, ycubic.x + ycubic.y, ycubic.z + ycubic.w);
     vec4 offset = c + vec4(xcubic.y, xcubic.w, ycubic.y, ycubic.w) / s;
 
     vec4 sample0 = texture(tex, vec2(offset.x, offset.z) * scale);
@@ -69,19 +70,34 @@ vec4 bicubicInterpolation(sampler2D tex, vec2 coord, vec2 scale){
 
     return mix(mix(sample3, sample2, sx), mix(sample1, sample0, sx), sy);
 }
+
 #else
-vec4 bilinearInterpolation(sampler2D tex, vec2 coord, vec2 scale){
+#ifdef NEAREST_INTERPOLATION
+
+// nearestInterpolation
+vec4 interpolate(sampler2D tex, vec2 coord, vec2 scale) {
+    vec2 texCoords = coord.xy * scale;
+    ivec2 texSize = textureSize(tex, 0);
+    vec4 inputColor = texelFetch(tex, ivec2(texSize.x * texCoords.x, texSize.y * texCoords.y), 0);
+    return inputColor;
+}
+
+#else
+
+// bilinearInterpolation
+vec4 interpolate(sampler2D tex, vec2 coord, vec2 scale) {
     vec2 texCoords = coord.xy * scale;
     vec4 inputColor = texture(tex, texCoords);
     return inputColor;
 }
 #endif
+#endif
 
 void main() {
-#ifdef BICUBIC_INTERPOLATION
-    vec4 outputColor = bicubicInterpolation(inport_, gl_FragCoord.xy, outportParameters_.reciprocalDimensions);
-#else
-    vec4 outputColor = bilinearInterpolation(inport_, gl_FragCoord.xy, outportParameters_.reciprocalDimensions);
-#endif
-    FragData0 = outputColor;
+    /*#ifdef BICUBIC_INTERPOLATION
+        vec4 outputColor = bicubicInterpolation(inport_, gl_FragCoord.xy,
+    outportParameters_.reciprocalDimensions); #else #ifdef NEAREST_INTERPOLATION vec4 outputColor =
+    bilinearInterpolation(inport_, gl_FragCoord.xy, outportParameters_.reciprocalDimensions);
+    #endif*/
+    FragData0 = interpolate(inport_, gl_FragCoord.xy, outportParameters_.reciprocalDimensions);
 }

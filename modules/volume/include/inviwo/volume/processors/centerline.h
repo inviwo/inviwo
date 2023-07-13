@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,42 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESHADER_H
-#define IVW_VOLUMESHADER_H
+#pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/volume/volumemoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/meshport.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API VolumeShader : public VolumeGLProcessor {
+/** \docpage{org.inviwo.CenterLine, Center Line}
+ * ![](org.inviwo.CenterLine.png?classIdentifier=org.inviwo.CenterLine)
+ * Extract the centerline of a given volume.
+ */
+class IVW_MODULE_VOLUME_API CenterLine : public Processor {
 public:
-    VolumeShader();
-    virtual ~VolumeShader();
+    CenterLine();
+    virtual ~CenterLine() = default;
+
+    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    virtual void process() override;
-    virtual void initializeResources() override;
 
 private:
-    VolumeShader(std::shared_ptr<StringShaderResource> fragmentShader);
+    VolumeInport volume_;
+    VolumeOutport distanceField_;
+    MeshOutport lines_, points_;
+    FloatProperty threshold_;
 
-    std::shared_ptr<StringShaderResource> fragmentShader_;
-    StringProperty fragmentSrc_;
-    BoolCompositeProperty differentOutputFormat_;
-    TemplateOptionProperty<DataFormatId> outputFormat_;
-    BoolCompositeProperty differentOutputSize_;
-    IntSize3Property outputSize_;
+    enum Method {
+        DistanceField,
+        Topology,
+        AStar,
+    };
+    TemplateOptionProperty<Method> method_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESHADER_H

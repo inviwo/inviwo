@@ -88,7 +88,6 @@ set(HEADER_FILES
     include/modules/base/processors/randommeshgenerator.h
     include/modules/base/processors/randomspheregenerator.h
     include/modules/base/processors/singlevoxel.h
-    # include/modules/base/processors/spatialsamplertovolume.h
     include/modules/base/processors/spotlightsourceprocessor.h
     include/modules/base/processors/stereocamerasyncer.h
     include/modules/base/processors/surfaceextractionprocessor.h
@@ -107,6 +106,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumegradientcpuprocessor.h
     include/modules/base/processors/volumeinformation.h
     include/modules/base/processors/volumelaplacianprocessor.h
+    include/modules/base/processors/volumerotation.h
     include/modules/base/processors/volumesequenceelementselectorprocessor.h
     include/modules/base/processors/volumesequencesingletimestepsampler.h
     include/modules/base/processors/volumesequencesource.h
@@ -212,7 +212,6 @@ set(SOURCE_FILES
     src/processors/randommeshgenerator.cpp
     src/processors/randomspheregenerator.cpp
     src/processors/singlevoxel.cpp
-    # src/processors/spatialsamplertovolume.cpp
     src/processors/spotlightsourceprocessor.cpp
     src/processors/stereocamerasyncer.cpp
     src/processors/surfaceextractionprocessor.cpp
@@ -229,6 +228,7 @@ set(SOURCE_FILES
     src/processors/volumegradientcpuprocessor.cpp
     src/processors/volumeinformation.cpp
     src/processors/volumelaplacianprocessor.cpp
+    src/processors/volumerotation.cpp
     src/processors/volumesequenceelementselectorprocessor.cpp
     src/processors/volumesequencesingletimestepsampler.cpp
     src/processors/volumesequencesource.cpp

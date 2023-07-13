@@ -91,22 +91,38 @@ VolumeShader::VolumeShader(std::shared_ptr<StringShaderResource> fragmentShader)
               util::for_each_type<DefaultDataFormats>{}(Helper(), formats);
               return formats;
           }(),
-          1) {
+          1)
+    , differentOutputSize_("differentOutputSize", "Different Output Size", false)
+    , outputSize_("outputSize", "Output Size", {512, 512, 512},
+                  {{32, 32, 32}, ConstraintBehavior::Immutable},
+                  {{1024, 1024, 1024}, ConstraintBehavior::Ignore}) {
     outputFormat_.onChange([&]() { internalInvalid_ = true; });
+    outputSize_.onChange([&]() { internalInvalid_ = true; });
     differentOutputFormat_.onChange([&]() {
-        outputFormat_.setReadOnly(!differentOutputFormat_.get());
+        outputFormat_.setReadOnly(!differentOutputFormat_);
         internalInvalid_ = true;
     });
-    addProperties(fragmentSrc_, differentOutputFormat_, outputFormat_);
+    differentOutputSize_.onChange([&]() {
+        outputSize_.setReadOnly(!differentOutputSize_);
+        internalInvalid_ = true;
+    });
+    differentOutputFormat_.addProperty(outputFormat_);
+    differentOutputSize_.addProperty(outputSize_);
+    addProperties(fragmentSrc_, differentOutputFormat_, differentOutputSize_);
 
     fragmentSrc_.onChange([&]() { fragmentShader_->setSource(fragmentSrc_.get()); });
 }
 
 void VolumeShader::process() {
-    if (differentOutputFormat_.get()) {
+    if (differentOutputFormat_) {
         dataFormat_ = DataFormatBase::get(outputFormat_.get());
     } else {
         dataFormat_ = nullptr;
+    }
+    if (differentOutputSize_) {
+        dataSize_ = outputSize_.get();
+    } else {
+        dataSize_ = {};
     }
     VolumeGLProcessor::process();
 }

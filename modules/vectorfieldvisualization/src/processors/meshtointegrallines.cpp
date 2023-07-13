@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,31 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESHADER_H
-#define IVW_VOLUMESHADER_H
-
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <modules/vectorfieldvisualization/processors/meshtointegrallines.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API VolumeShader : public VolumeGLProcessor {
-public:
-    VolumeShader();
-    virtual ~VolumeShader();
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-    virtual void process() override;
-    virtual void initializeResources() override;
-
-private:
-    VolumeShader(std::shared_ptr<StringShaderResource> fragmentShader);
-
-    std::shared_ptr<StringShaderResource> fragmentShader_;
-    StringProperty fragmentSrc_;
-    BoolCompositeProperty differentOutputFormat_;
-    TemplateOptionProperty<DataFormatId> outputFormat_;
-    BoolCompositeProperty differentOutputSize_;
-    IntSize3Property outputSize_;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo MeshToIntegralLines::processorInfo_{
+    "org.inviwo.MeshToIntegralLines",      // Class identifier
+    "Mesh To Integral Lines",                // Display name
+    "Undefined",              // Category
+    CodeState::Experimental,  // Code state
+    Tags::None,               // Tags
 };
+const ProcessorInfo MeshToIntegralLines::getProcessorInfo() const { return processorInfo_; }
+
+MeshToIntegralLines::MeshToIntegralLines()
+    : Processor()
+    , outport_("outport")
+    , position_("position", "Position", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
+
+    addPort(outport_);
+    addProperty(position_);
+}
+
+void MeshToIntegralLines::process() {
+    // outport_.setData(myImage);
+}
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESHADER_H

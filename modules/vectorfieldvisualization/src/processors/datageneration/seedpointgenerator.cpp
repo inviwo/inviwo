@@ -37,6 +37,7 @@
 #define PLANE 2
 #define LINE 3
 #define SPHERE 4
+#define UNIFORM 5
 
 namespace inviwo {
 
@@ -66,6 +67,9 @@ SeedPointGenerator::SeedPointGenerator()
     , sphereRadius_("sphereRadius", "Radius")
     , lineStart_("lineStart", "Start", vec3(0.5f, 0.0f, 0.5f), vec3(-1, -1, -1), vec3(1, 1, 1))
     , lineEnd_("lineEnd_", "End", vec3(0.5f, 1.0f, 0.5f), vec3(-1, -1, -1), vec3(1, 1, 1))
+    , uniformSize_("uniformSize", "Size", size3_t(64, 64, 64),
+                   {size3_t(32, 32, 32), ConstraintBehavior::Ignore},
+                   {size3_t(128, 128, 128), ConstraintBehavior::Ignore})
     , generator_("generator", "Generator")
     , randomness_("randomness", "Randomness")
     , useSameSeed_("useSameSeed", "Use same seed", true)
@@ -78,6 +82,7 @@ SeedPointGenerator::SeedPointGenerator()
     generator_.addOption("line", "Line", LINE);
     generator_.addOption("plane", "Plane", PLANE);
     generator_.addOption("sphere", "Sphere", SPHERE);
+    generator_.addOption("uniform", "Uniform", UNIFORM);
     generator_.setCurrentStateAsDefault();
     generator_.onChange([this]() { onGeneratorChange(); });
     addProperty(generator_);
@@ -125,6 +130,9 @@ void SeedPointGenerator::process() {
             break;
         case SPHERE:
             spherePoints();
+            break;
+        case UNIFORM:
+            uniformPoints();
             break;
         default:
             LogWarn("No points generated since given type is not yet implemented");
@@ -218,6 +226,18 @@ void SeedPointGenerator::randomPoints() {
         const float z = util::randomNumber<float>(mt_);
         points->emplace_back(x, y, z);
     }
+    seedPoints_.setData(points);
+}
+
+void SeedPointGenerator::uniformPoints() {
+    const size3_t& size = uniformSize_.get();
+    auto points = std::make_shared<std::vector<vec3>>();
+    points->reserve(size.x * size.y * size.z);
+    for (size_t z = 0; z < size.z; ++z)
+        for (size_t y = 0; y < size.y; ++y)
+            for (size_t x = 0; x < size.x; ++x) {
+                points->emplace_back((0.5f + x) / size.x, (0.5f + y) / size.y, (0.5f + z) / size.z);
+            }
     seedPoints_.setData(points);
 }
 

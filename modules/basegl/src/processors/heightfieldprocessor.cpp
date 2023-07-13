@@ -131,7 +131,7 @@ void HeightFieldProcessor::process() {
 
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
     utilgl::DepthMaskState depthMask(GL_TRUE);
-    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+    utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
     utilgl::setUniforms(shader_, camera_, lightingProperty_, heightScale_);
 

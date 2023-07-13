@@ -50,6 +50,8 @@ LinesFromDataFrame::LinesFromDataFrame()
     , startTime_("startTime", "Start Time", 0.06, {0.0, ConstraintBehavior::Ignore},
                  {3.0, ConstraintBehavior::Ignore})
     , maximizeStartTime_("maximizeStartTime", "Maximize Line Output", true)
+    , timeStep_("timeStep", "Time Step", 0.01, {0.0, ConstraintBehavior::Immutable},
+                {3.0, ConstraintBehavior::Ignore})
     , columnsForPosition_("positionData", "Position Columns")
     , columnsForVelocity_("VelocityData", "Velocity Columns", true)
     , columnsForAcceleration_("AccelerationData", "Acceleration Columns", true)
@@ -57,7 +59,7 @@ LinesFromDataFrame::LinesFromDataFrame()
 
     addPort(dataIn_);
     addPort(linesOut_);
-    addProperties(timeColumn_, startTime_, maximizeStartTime_, columnsForPosition_,
+    addProperties(timeColumn_, startTime_, maximizeStartTime_, timeStep_, columnsForPosition_,
                   columnsForVelocity_, columnsForAcceleration_, updateOutput_);
 }
 void LinesFromDataFrame::updateColumns() {
@@ -160,7 +162,7 @@ void LinesFromDataFrame::process() {
 
     auto timeCol = data->getColumn(timeColumn_.get());
     double startTime = startTime_.get();  // timeCol->getAsDouble(0);
-    double timeStep = 0.01;
+    double timeStep = timeStep_.get();
     std::cout << "Start time: " << startTime << std::endl;
     std::vector<size_t> dataPerFrame(30000, 0);
 

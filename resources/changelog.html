@@ -27,58 +27,58 @@
 </head>
 <body>
 <h2>2021-04-28 Column &amp; Row Layout</h2>
-<p>Added two processors for interactive layouting with splitters using the mouse or touch events: <code>Column Layout</code> and <code>Row Layout</code>. <code>Column Layout</code> renders all connected image ports side-by-side whereas <code>Row Layout</code> renders them on top of each other. The interaction handles of the splitters are rendered using a <code>SplitterRenderer</code> which also handles the interactions.</p>
+<p>Added two processors for interactive layouting with splitters using the mouse or touch events: <code class="notranslate">Column Layout</code> and <code class="notranslate">Row Layout</code>. <code class="notranslate">Column Layout</code> renders all connected image ports side-by-side whereas <code class="notranslate">Row Layout</code> renders them on top of each other. The interaction handles of the splitters are rendered using a <code class="notranslate">SplitterRenderer</code> which also handles the interactions.</p>
 <h2>2021-04-19 Font changes</h2>
 <ul>
-<li>namespace in <code>fontutils.h</code> changed to <code>font</code> (previously <code>util</code>) and added a function to query the default type faces (<code>std::string font::getFont(font::FontType type, font::FullPath path)</code>)</li>
+<li>namespace in <code class="notranslate">fontutils.h</code> changed to <code class="notranslate">font</code> (previously <code class="notranslate">util</code>) and added a function to query the default type faces (<code class="notranslate">std::string font::getFont(font::FontType type, font::FullPath path)</code>)</li>
 <li>Default font changed to OpenSans semibold</li>
 <li>Added Lato typeface by Łukasz Dziedzic</li>
 </ul>
 <h2>2021-03-18 Nifti loader, WebBrowser zoom</h2>
 <p>Added support for vector data to the Nifti loader (up to vec4).<br>
-The <code>WebBrowserProcessor</code> now features a seamless zoom for enlarging/shrinking web contents..</p>
+The <code class="notranslate">WebBrowserProcessor</code> now features a seamless zoom for enlarging/shrinking web contents..</p>
 <h2>2021-02-15 OpenGL 32bit float depth texture, Qt Widgets performance</h2>
-<p>Depth layers of <code>ImageGL</code> now use 32bit float depth textures by default instead of 24bit int.<br>
-Improved performance in the Qt property lists by disabling and enabling layouting when doing lots of changes. <code>PropertyOwner</code> got <code>clear()</code> and <code>empty()</code> methods.</p>
+<p>Depth layers of <code class="notranslate">ImageGL</code> now use 32bit float depth textures by default instead of 24bit int.<br>
+Improved performance in the Qt property lists by disabling and enabling layouting when doing lots of changes. <code class="notranslate">PropertyOwner</code> got <code class="notranslate">clear()</code> and <code class="notranslate">empty()</code> methods.</p>
 <h2>2021-01-28 TF editor update and TF presets</h2>
-<p>The functionality of the TF editor was extended and now includes a simplification and more transformations (context menu: <code>Simplify</code> and <code>Transform</code>).<br>
-TF presets, accessible via the context menu, are shown along with a preview. ColorBrewer color palettes can also be directly accessed and also include a utility function to create a ColorBrewer palette with offsets or more/less colors (context menu: ColorBrewer palette, <code>Generate...</code>).</p>
+<p>The functionality of the TF editor was extended and now includes a simplification and more transformations (context menu: <code class="notranslate">Simplify</code> and <code class="notranslate">Transform</code>).<br>
+TF presets, accessible via the context menu, are shown along with a preview. ColorBrewer color palettes can also be directly accessed and also include a utility function to create a ColorBrewer palette with offsets or more/less colors (context menu: ColorBrewer palette, <code class="notranslate">Generate...</code>).</p>
 <h2>2020-12-16 OpenGL Shader refactoring</h2>
-<p>The constructor of a Shader now takes a specific type <code>Shader::Build</code> as argument for indicating whether the shader should be compiled and linked immediately.<br>
-When using a bool argument, you will see a deprecation warning and should consider using <code>Shader::Build::Yes</code> or <code>No</code> instead.</p>
+<p>The constructor of a Shader now takes a specific type <code class="notranslate">Shader::Build</code> as argument for indicating whether the shader should be compiled and linked immediately.<br>
+When using a bool argument, you will see a deprecation warning and should consider using <code class="notranslate">Shader::Build::Yes</code> or <code class="notranslate">No</code> instead.</p>
 <h2>2020-12-10 Fixes for Qt6 and improved syntax highlighting</h2>
 <p>The Qt codebase of Inviwo was updated toward supporting Qt6. The syntax highlighting in the Python and GLSL editors was refactored and improved.</p>
 <h2>2020-11-10 Improved Filtering in Processor List Widget</h2>
-<p>Filtering in the Processor List Widget is now based on matching substrings (space is the separator). For example, searching for <code>Vol Source</code> will return <code>Volume Source</code>, <code>Volume Sequence Source</code>, and <code>Image Stack Volume Source</code>.<br>
-This also enables searching for processor names and tags at the same time, e.g. <code>Slice GL</code>.</p>
+<p>Filtering in the Processor List Widget is now based on matching substrings (space is the separator). For example, searching for <code class="notranslate">Vol Source</code> will return <code class="notranslate">Volume Source</code>, <code class="notranslate">Volume Sequence Source</code>, and <code class="notranslate">Image Stack Volume Source</code>.<br>
+This also enables searching for processor names and tags at the same time, e.g. <code class="notranslate">Slice GL</code>.</p>
 <h2>2020-10-28 Performance refactoring</h2>
 <ul>
 <li>Serialization no longer supports use of the "allowReferences" to serialize pointer to the same object multiple times. Reasoning being that it requires all properties and ports to always be present in the xml even if they don't have any state that needs serialization. The new solution uses "paths" (a dot separated list of identifiers) instead of pointers where needed.</li>
 <li>Some of the serialization functions now supports filters and projections to avoid having to create temporary objects to serialize.</li>
-<li>Property now has a <code>virtual bool isDefaultState() const</code> function. Should generally be overridden by subclasses to return true if they are in the default state or not.</li>
-<li>Property now has a <code>virtual bool needsDerialization() const</code> function, the default implementation returns true, when the serialization mode is <code>All</code> or <code>Default</code> and <code>!isDefaultState()</code> otherwise false.</li>
-<li><code>PropertyOwner</code> now only serializes property that <code>needsDeserialization</code> this reduces amount of items that need serialization by a large fraction.</li>
-<li><code>DefaultValues</code> now uses <code>StaticString</code> to make the implementation constexpr</li>
-<li>Many classIdentifiers now return <code>const std::string&amp;</code> instead of <code>std::string</code> to avoid creating new strings. This can easily be done by keeping a static <code>std::string</code> around.</li>
-<li>Now uses std::string_view instead of <code>const std::string&amp;</code> in many places to avoid having to create strings with dynamic allocations.</li>
-<li>StringConversion.h now has a <code>StrBuffer</code> class to make it easier to format string using a buffer on the Stack. Very useful for concatenation.</li>
-<li>StringConversion.h now has a <code>forEachStringPart</code> function to call a callback on parts of a string.</li>
+<li>Property now has a <code class="notranslate">virtual bool isDefaultState() const</code> function. Should generally be overridden by subclasses to return true if they are in the default state or not.</li>
+<li>Property now has a <code class="notranslate">virtual bool needsDerialization() const</code> function, the default implementation returns true, when the serialization mode is <code class="notranslate">All</code> or <code class="notranslate">Default</code> and <code class="notranslate">!isDefaultState()</code> otherwise false.</li>
+<li><code class="notranslate">PropertyOwner</code> now only serializes property that <code class="notranslate">needsDeserialization</code> this reduces amount of items that need serialization by a large fraction.</li>
+<li><code class="notranslate">DefaultValues</code> now uses <code class="notranslate">StaticString</code> to make the implementation constexpr</li>
+<li>Many classIdentifiers now return <code class="notranslate">const std::string&amp;</code> instead of <code class="notranslate">std::string</code> to avoid creating new strings. This can easily be done by keeping a static <code class="notranslate">std::string</code> around.</li>
+<li>Now uses std::string_view instead of <code class="notranslate">const std::string&amp;</code> in many places to avoid having to create strings with dynamic allocations.</li>
+<li>StringConversion.h now has a <code class="notranslate">StrBuffer</code> class to make it easier to format string using a buffer on the Stack. Very useful for concatenation.</li>
+<li>StringConversion.h now has a <code class="notranslate">forEachStringPart</code> function to call a callback on parts of a string.</li>
 <li>Processor identifiers now follow the same rules as other identifiers</li>
-<li><code>MinMaxProperty</code> is no longer derives from <code>TemplateProperty</code>.</li>
+<li><code class="notranslate">MinMaxProperty</code> is no longer derives from <code class="notranslate">TemplateProperty</code>.</li>
 </ul>
 <h2>2020-09-30 FBO Asserts</h2>
 <p>Added asserts for using the wrong context in the FBO. An FBO has to be created, used, and deleted in the same OpenGL context. We now have runtime checks to verify that this is the case.</p>
 <h2>2020-07-17 Volume and DataFrame converter</h2>
-<p>The <code>VolumeConverter</code> processor provides functionality for converting a <code>Volume</code> to a different data format with optional mapping of data values and custom ranges. The base module now also features a <code>DataRangeProperty</code> holding data &amp;value ranges of a volume plus optional overrides.</p>
-<p>The CSV reader now distinguishes between integral, floating point, and string/categorical values. Floating point values are stored either in float32 (default) or float64/double columns depending on the <code>doubleprec</code> argument in the CSVReader constructor. Since some of the plotting processors are relying on float32 columns, a <code>DataFrame Float32 Converter</code> processor was added which converts float64 columns to float32.</p>
+<p>The <code class="notranslate">VolumeConverter</code> processor provides functionality for converting a <code class="notranslate">Volume</code> to a different data format with optional mapping of data values and custom ranges. The base module now also features a <code class="notranslate">DataRangeProperty</code> holding data &amp;value ranges of a volume plus optional overrides.</p>
+<p>The CSV reader now distinguishes between integral, floating point, and string/categorical values. Floating point values are stored either in float32 (default) or float64/double columns depending on the <code class="notranslate">doubleprec</code> argument in the CSVReader constructor. Since some of the plotting processors are relying on float32 columns, a <code class="notranslate">DataFrame Float32 Converter</code> processor was added which converts float64 columns to float32.</p>
 <h2>2020-06-09 Remove use of deprecated QGLWidget and OpenGL compatibility mode</h2>
 <p>In case you have built a custom Qt application your main file need be updated to enable shared OpenGL context, see apps/inviwo/inviwo.cpp.<br>
 We now also use QOffScreenSurface for default OpenGL context and threaded rendering instead of a custom hidden window.</p>
 <h2>2020-06-30 DataFrame</h2>
-<p>Moved DataFrame utils files to <code>dataframe/util/dataframeutil.h</code> (previously <code>dataframe/datastructures/dataframeutil.h</code>). Renamed namespace from <code>dataframeutil</code> to <code>dataframe</code>.</p>
-<p>Added utility functions for joining two DataFrames: <code>appendRows()</code>, <code>appendColumns()</code>, <code>innerJoin()</code>.</p>
+<p>Moved DataFrame utils files to <code class="notranslate">dataframe/util/dataframeutil.h</code> (previously <code class="notranslate">dataframe/datastructures/dataframeutil.h</code>). Renamed namespace from <code class="notranslate">dataframeutil</code> to <code class="notranslate">dataframe</code>.</p>
+<p>Added utility functions for joining two DataFrames: <code class="notranslate">appendRows()</code>, <code class="notranslate">appendColumns()</code>, <code class="notranslate">innerJoin()</code>.</p>
 <h2>2020-06-26 Vcpkg support</h2>
-<p>We now support using <a href="https://github.com/microsoft/vcpkg">vcpkg</a> for handling external dependencies. The following packages from vcpkg can be used <code>assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib</code>.</p>
+<p>We now support using <a href="https://github.com/microsoft/vcpkg">vcpkg</a> for handling external dependencies. The following packages from vcpkg can be used <code class="notranslate">assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib</code>.</p>
 <p>To install vcpkg and the dependencies in a directory of your choice (outside of inviwo) do:</p>
 <div class="highlight highlight-source-batchfile"><pre><span class="pl-k">&gt;</span> git clone https://github.com/Microsoft/vcpkg.git
 <span class="pl-k">&gt;</span> <span class="pl-k">cd</span> vcpkg
@@ -87,39 +87,39 @@ We now also use QOffScreenSurface for default OpenGL context and threaded render
     eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] 
     libjpeg-turbo libpng minizip nlohmann-json openexr pybind11
     python3 tclap tiff tinydir tinyxml2 utfcpp zlib      </pre></div>
-<p>Then set the <code>CMAKE_TOOLCHAIN_FILE</code> to <code>&lt;vcpkg-install-dir&gt;/scripts/buildsystems/vcpkg.cmake</code> when configuring CMake (see <a href="https://stackoverflow.com/questions/29982505/setting-a-cross-compiler-file-using-the-cmake-gui" rel="nofollow">https://stackoverflow.com/questions/29982505/setting-a-cross-compiler-file-using-the-cmake-gui</a> ). Finally, set all the corresponding <code>IVW_USE_EXTERNAL_&lt;package&gt;</code> to <code>TRUE</code>.</p>
-<p>To help interact with vcpkg <code>cmake/vcpkghelpers.cmake</code> provides functions for installing the vcpkg packages needed to create installers (only windows so far).</p>
+<p>Then set the <code class="notranslate">CMAKE_TOOLCHAIN_FILE</code> to <code class="notranslate">&lt;vcpkg-install-dir&gt;/scripts/buildsystems/vcpkg.cmake</code> when configuring CMake (see <a href="https://stackoverflow.com/questions/29982505/setting-a-cross-compiler-file-using-the-cmake-gui" rel="nofollow">https://stackoverflow.com/questions/29982505/setting-a-cross-compiler-file-using-the-cmake-gui</a> ). Finally, set all the corresponding <code class="notranslate">IVW_USE_EXTERNAL_&lt;package&gt;</code> to <code class="notranslate">TRUE</code>.</p>
+<p>To help interact with vcpkg <code class="notranslate">cmake/vcpkghelpers.cmake</code> provides functions for installing the vcpkg packages needed to create installers (only windows so far).</p>
 <h2>2020-06-26 CMake refactor</h2>
 <p>We have renamed many cmake options to make the naming more consistent and the options easier to find. But you might need to review your cmake settings when updating to make sure you have the correct settings.<br>
 We now group the cmake settings like this:</p>
 <ul>
-<li><code>IVW_APP_*</code> Enable disable building various apps</li>
-<li><code>IVV_CFG_*</code> All configuration options, like  PRECOMPILED_HEADERS and PROFILING</li>
-<li><code>IVW_DOXYGEN_*</code> Doxygen options</li>
-<li><code>IVW_EXTERNAL_*</code> Add external modules / projects</li>
-<li><code>IVW_MODULE_*</code> enable/disable modules</li>
-<li><code>IVW_PACKAGE_*</code> options for installing/creating installers</li>
-<li><code>IVW_TEST_*</code> option for unit test, integration test, regressions test.</li>
-<li><code>IVW_USE_*</code> options for enabling/disabling some libraries / tools (sigar, openmp, openexr)</li>
-<li><code>IVW_USE_EXTERNAL_*</code> enable/disable building various dependences. if off then dependences must be provided externally</li>
+<li><code class="notranslate">IVW_APP_*</code> Enable disable building various apps</li>
+<li><code class="notranslate">IVV_CFG_*</code> All configuration options, like  PRECOMPILED_HEADERS and PROFILING</li>
+<li><code class="notranslate">IVW_DOXYGEN_*</code> Doxygen options</li>
+<li><code class="notranslate">IVW_EXTERNAL_*</code> Add external modules / projects</li>
+<li><code class="notranslate">IVW_MODULE_*</code> enable/disable modules</li>
+<li><code class="notranslate">IVW_PACKAGE_*</code> options for installing/creating installers</li>
+<li><code class="notranslate">IVW_TEST_*</code> option for unit test, integration test, regressions test.</li>
+<li><code class="notranslate">IVW_USE_*</code> options for enabling/disabling some libraries / tools (sigar, openmp, openexr)</li>
+<li><code class="notranslate">IVW_USE_EXTERNAL_*</code> enable/disable building various dependences. if off then dependences must be provided externally</li>
 </ul>
 <p>Notable changes include:</p>
 <ul>
-<li><code>PRECOMPILED_HEADERS -&gt; IVW_CFG_PRECOMPILED_HEADERS</code></li>
-<li><code>IVW_PROFILING -&gt; IVW_CFG_PROFILING</code></li>
-<li><code>IVW_OPENMP_ON -&gt; IVW_USE_OPENMP</code></li>
+<li><code class="notranslate">PRECOMPILED_HEADERS -&gt; IVW_CFG_PRECOMPILED_HEADERS</code></li>
+<li><code class="notranslate">IVW_PROFILING -&gt; IVW_CFG_PROFILING</code></li>
+<li><code class="notranslate">IVW_OPENMP_ON -&gt; IVW_USE_OPENMP</code></li>
 </ul>
 <h2>2020-06-16 StipplingProperty now in BaseGL</h2>
 <p>Moved StipplingProperty and associated settings from Base module to BaseGL.</p>
 <h2>2020-06-03 WebBrowser Javascript API</h2>
-<p>Changed redirection of <code>https://inviwo</code> to <code>inviwo://</code> to avoid confusion with the https scheme.<br>
+<p>Changed redirection of <code class="notranslate">https://inviwo</code> to <code class="notranslate">inviwo://</code> to avoid confusion with the https scheme.<br>
 Your html-files will need to update from<br>
 '<a href="https://inviwo/modules/yourmodule" rel="nofollow">https://inviwo/modules/yourmodule</a>'<br>
 to<br>
 'inviwo://yourmodule'</p>
 <h2>2020-04-03 OrdinalPropertyState</h2>
 <p>Added a OrdinalPropertyState helper for constructing ordinal properties.<br>
-And a factory function <code>util::ordinalColor</code> for OrdinalProperties representing Colors<br>
+And a factory function <code class="notranslate">util::ordinalColor</code> for OrdinalProperties representing Colors<br>
 When instantiating a Ordinal Property for a color value one would need to write something along<br>
 there lines</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-en">color</span>(<span class="pl-s"><span class="pl-pds">"</span>cubeColor<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Cube Color<span class="pl-pds">"</span></span>, vec4(<span class="pl-c1">0</span>.<span class="pl-c1">11f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">42f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">63f</span>, <span class="pl-c1">1</span>.<span class="pl-c1">0f</span>),
@@ -129,7 +129,7 @@ there lines</p>
 <p>by using the helper function most of the boilerplate can be removed:</p>
 <div class="highlight highlight-source-c++"><pre>color{<span class="pl-s"><span class="pl-pds">"</span>cubeColor<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Cube Color<span class="pl-pds">"</span></span>, <span class="pl-c1">util::ordinalColor</span>(<span class="pl-c1">0</span>.<span class="pl-c1">11f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">42f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">63f</span>)}</pre></div>
 <h2>2020-04-01 Constraint Behavior</h2>
-<p>Extends the behavior of the Ordinal Property's min and max bound with a <code>ConstraintBehavior</code> mode.<br>
+<p>Extends the behavior of the Ordinal Property's min and max bound with a <code class="notranslate">ConstraintBehavior</code> mode.<br>
 Four settings are available:</p>
 <ul>
 <li><strong>Editable</strong>: The default behavior and the same as we have had before. Clamps values and the boundary is editable by the user in the GUI and by the programmer from code. The bounds are linked to other properties. Typical use case would be when you have a good default value for a bound, but other values are still valid.</li>
@@ -147,7 +147,7 @@ Four settings are available:</p>
                 <span class="pl-k">const</span> T&amp; increment = Defaultvalues&lt;T&gt;::getInc(),
                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                 PropertySemantics semantics = PropertySemantics::Default);</pre></div>
-<p>where the <code>ConstraintBehavior</code> can be specified together with the <code>minValue</code> and <code>maxValue</code>.</p>
+<p>where the <code class="notranslate">ConstraintBehavior</code> can be specified together with the <code class="notranslate">minValue</code> and <code class="notranslate">maxValue</code>.</p>
 <h2>2020-03-13 Webbrowser API - get parent processor</h2>
 <p>Added functionality to retrieve which processor is responsible for the browser API-calls. See InviwoAPI.js and web browser property synchronization example workspace.</p>
 <h2>2019-12-02 PoolProcessor</h2>
@@ -165,7 +165,7 @@ Four settings are available:</p>
     <span class="pl-c"><span class="pl-c">//</span> Let the network know that the processor has new results on the outport.</span>
     <span class="pl-c1">newResults</span>();
 });</pre></div>
-<p>The <code>PoolProcessor</code> automatically manages the Activity Indicator and the Progress Bar. It handles stopping old jobs and it manages the lifetimes of the jobs and the processor. The Example module has an <code>ExampleProgressBar</code> processor with example code. And the <code>PoolProcessor</code> has examples in its documentation as well.</p>
+<p>The <code class="notranslate">PoolProcessor</code> automatically manages the Activity Indicator and the Progress Bar. It handles stopping old jobs and it manages the lifetimes of the jobs and the processor. The Example module has an <code class="notranslate">ExampleProgressBar</code> processor with example code. And the <code class="notranslate">PoolProcessor</code> has examples in its documentation as well.</p>
 <h2>2019-11-05 Mesh Plane Clipping</h2>
 <p>The mesh clipping processor can now handle most mesh types.</p>
 <h2>2019-10-02 DataFrameQt</h2>
@@ -185,7 +185,7 @@ Four settings are available:</p>
 <li>New transfer function transforms: flip positions, interpolate alpha, equalize alpha (#618)</li>
 <li>Better import of transfer functions from images (#626)</li>
 <li>Source processors now have an option to see and explicitly set the data reader used. (#635)</li>
-<li>We now group add the module targets in a folder per external modules directory. The folder name can be customized by adding a <code> meta.cmake</code> file to the external modules directory with <code>set(group_name &lt;name&gt;)</code> otherwise the folder name is used. (#637)</li>
+<li>We now group add the module targets in a folder per external modules directory. The folder name can be customized by adding a <code class="notranslate"> meta.cmake</code> file to the external modules directory with <code class="notranslate">set(group_name &lt;name&gt;)</code> otherwise the folder name is used. (#637)</li>
 <li>Image port resize refactoring. The handling of image resize event is now more robust. (#645, #658)</li>
 <li>The Volume '.dat' reader now supports a ByteOffset option.</li>
 <li>The Camera now has a set off buttons to easily fit data into the view. The buttons are also available via the canvas context menu. (#656)</li>
@@ -208,10 +208,10 @@ Four settings are available:</p>
 <li><strong>interpolate alpha</strong> - interpolates the alpha values of all TF primitives in between the left-most and right-most TF primitive</li>
 <li><strong>equalize alpha</strong> - averages the alpha value of all selected TF primitives</li>
 </ul>
-<p>These functions are accessible under <code>Transform</code> in the context menus of both TF editor and respective TF properties. All functions are applied to the current selection or the entire TF, if nothing is selected.</p>
+<p>These functions are accessible under <code class="notranslate">Transform</code> in the context menus of both TF editor and respective TF properties. All functions are applied to the current selection or the entire TF, if nothing is selected.</p>
 <h2>2019-07-05 Plotting Improvements</h2>
-<p>We added a <code>AxisStyleProperty</code> for simplifying the setup of multiple axes in plots. Multiple axis properties can be registered with this new style property (<code>AxisStyleProperty::registerProperty()</code>). Changes to any of the style properties (line and text color, font size, tick length, etc.) are propagated to all registered axes, i.e. all axis share the same style. Note: this modifications can be overwritten in the individual axis.</p>
-<p>There is now also an <code>Image Plot Processor</code> which allows to plot a 2D image with matching x-y axes. Interactions are forwarded to the image port which allows, e.g., to browse through volume slices. See image plot example in <code>PlottingGL</code>.</p>
+<p>We added a <code class="notranslate">AxisStyleProperty</code> for simplifying the setup of multiple axes in plots. Multiple axis properties can be registered with this new style property (<code class="notranslate">AxisStyleProperty::registerProperty()</code>). Changes to any of the style properties (line and text color, font size, tick length, etc.) are propagated to all registered axes, i.e. all axis share the same style. Note: this modifications can be overwritten in the individual axis.</p>
+<p>There is now also an <code class="notranslate">Image Plot Processor</code> which allows to plot a 2D image with matching x-y axes. Interactions are forwarded to the image port which allows, e.g., to browse through volume slices. See image plot example in <code class="notranslate">PlottingGL</code>.</p>
 <h2>2019-07-04 New Inviwo version 0.9.10</h2>
 <p>Major change since the last release include:</p>
 <ul>
@@ -272,10 +272,10 @@ Bellow follows an example of a python processor:</p>
         <span class="pl-en">print</span>(<span class="pl-s">"process: "</span>, <span class="pl-s1">self</span>.<span class="pl-s1">slider</span>.<span class="pl-s1">value</span>)
         <span class="pl-s1">self</span>.<span class="pl-s1">outport</span>.<span class="pl-en">setData</span>(<span class="pl-s1">self</span>.<span class="pl-s1">inport</span>.<span class="pl-en">getData</span>())</pre></div>
 <p>The initial '# Name:' comment is needed for Inviwo to know what python class that is should look for.<br>
-To register an Inviwo python processor one can put in in the /python_processor or by adding a <code>PythonProcessorFolderObserver</code> to an Inviwo module and have that observe a folder.</p>
+To register an Inviwo python processor one can put in in the /python_processor or by adding a <code class="notranslate">PythonProcessorFolderObserver</code> to an Inviwo module and have that observe a folder.</p>
 <h2>2019-04-30 Python Applications</h2>
-<p>It is now possible to run inviwo directly from python using a new inviwopyapp python package found in <code>apps/inviwopyapp</code>.<br>
-An example of running inviwo can be found in <code>apps/inviwopyapp/inviwo.py</code>.</p>
+<p>It is now possible to run inviwo directly from python using a new inviwopyapp python package found in <code class="notranslate">apps/inviwopyapp</code>.<br>
+An example of running inviwo can be found in <code class="notranslate">apps/inviwopyapp/inviwo.py</code>.</p>
 <div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> <span class="pl-s1">inviwopy</span> <span class="pl-k">as</span> <span class="pl-s1">ivw</span>
 <span class="pl-k">import</span> <span class="pl-s1">inviwopyapp</span> <span class="pl-k">as</span> <span class="pl-s1">qt</span>
 
@@ -304,7 +304,7 @@ An example of running inviwo can be found in <code>apps/inviwopyapp/inviwo.py</c
     <span class="pl-c"># run the app event loop</span>
     <span class="pl-s1">app</span>.<span class="pl-en">run</span>()</pre></div>
 <h2>2019-04-26 Parallel Coordinate Plot Update: flipped axes</h2>
-<p>Axes of the parallel coordinate plot can now be inverted via a double click with the left mouse button or using the corresponding <code>Invert Range</code> property of the axis. In addition, the filtering handles can be hidden if necessary (<code>Axes Settings</code> → <code>Handles Visible</code>).</p>
+<p>Axes of the parallel coordinate plot can now be inverted via a double click with the left mouse button or using the corresponding <code class="notranslate">Invert Range</code> property of the axis. In addition, the filtering handles can be hidden if necessary (<code class="notranslate">Axes Settings</code> → <code class="notranslate">Handles Visible</code>).</p>
 <h2>2019-04-16 Moved DataFrame data structure from Plotting to new module (DataFrame)</h2>
 <p>Types of breaking changes:</p>
 <div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>modules/plotting/datastructures/dataframe.h<span class="pl-pds">&gt;</span></span>
@@ -322,40 +322,40 @@ DataFrame
 Column</pre></div>
 <p>Also added a reader for JSON-files which outputs a DataFrame.</p>
 <h2>2019-03-06</h2>
-<p>New processor <code>Geometry Entry Exit Points</code> generates entry point and exit point images from any closed mesh to be used in raycasting. The positions of the input mesh are directly mapped to texture coordinates of a volume. This enables volume rendering within arbitrary bounding geometry.</p>
+<p>New processor <code class="notranslate">Geometry Entry Exit Points</code> generates entry point and exit point images from any closed mesh to be used in raycasting. The positions of the input mesh are directly mapped to texture coordinates of a volume. This enables volume rendering within arbitrary bounding geometry.</p>
 <h2>2019-02-24 Unified line rendering</h2>
-<p>Line renderer vertex shader outputs <code>flat out uint pickID_;</code> and geometry shader takes <code>flat in uint pickID_[];</code> as input.<br>
+<p>Line renderer vertex shader outputs <code class="notranslate">flat out uint pickID_;</code> and geometry shader takes <code class="notranslate">flat in uint pickID_[];</code> as input.<br>
 Vertex shaders depending on linerenderer.geom must write the pickID_ instead of the picking color.</p>
 <p>Geometry shaders depending on previous linerenderer.vert should add the following:<br>
-<code>#include "utils/pickingutils.glsl"</code></p>
+<code class="notranslate">#include "utils/pickingutils.glsl"</code></p>
 <p>and modify the output to for example:<br>
-<code>pickColor_ = vec4(pickingIndexToColor(pickID_[0]), pickID_[0] == 0 ? 0.0 : 1.0);</code></p>
+<code class="notranslate">pickColor_ = vec4(pickingIndexToColor(pickID_[0]), pickID_[0] == 0 ? 0.0 : 1.0);</code></p>
 <h2>2019-01-17 Get Started and Workspace Annotations</h2>
 <p>Get Started screen provides an overview over recently used workspaces and available examples next to the latest changes.</p>
 <p>Inviwo workspaces now also feature annotations like title, author, tags, and a description stored along with the network. The annotation widget allows to edit the annotations in the Qt application (accessible via the "View" menu). A default author for new workspaces can be specified in the System Settings of Inviwo.</p>
 <h2>2018-12-18 Transfer Function Import/Export</h2>
-<p>Extended context menu of transfer function properties. It is now possible to import and export TFs directly in the property widget. Transfer functions located in <code>data/transferfunctions/</code> are accessible as TF presets in the context menu of both TF editor and TF property.</p>
+<p>Extended context menu of transfer function properties. It is now possible to import and export TFs directly in the property widget. Transfer functions located in <code class="notranslate">data/transferfunctions/</code> are accessible as TF presets in the context menu of both TF editor and TF property.</p>
 <h2>2018-11-22</h2>
 <p>Better handling of linking in port inspectors. Show auto links when dragging in processors, disable auto links by pressing alt. Pressing shift while dragging when dragging in processors enables auto connection for inports.</p>
 <h2>2018-11-19</h2>
 <p>Converted all Inviwo core modules to use the new structure with include and src folders.</p>
 <h2>2018-11-19</h2>
-<p>Added a <code>--updateModule</code> option to inviwo-meta-cli.exe it will update a module to use include and src folders.<br>
-Move all <code>.h</code> file into the <code>include/&lt;org&gt;/&lt;module&gt;</code> sub folder and all <code>.cpp</code> into the <code>src </code> folder.<br>
-except for files under <code>/ext</code>, <code>/tests</code>, or paths excluded be the given filters.</p>
+<p>Added a <code class="notranslate">--updateModule</code> option to inviwo-meta-cli.exe it will update a module to use include and src folders.<br>
+Move all <code class="notranslate">.h</code> file into the <code class="notranslate">include/&lt;org&gt;/&lt;module&gt;</code> sub folder and all <code class="notranslate">.cpp</code> into the <code class="notranslate">src </code> folder.<br>
+except for files under <code class="notranslate">/ext</code>, <code class="notranslate">/tests</code>, or paths excluded be the given filters.</p>
 <h2>2018-11-14</h2>
 <p>Added an option to control if a module should be on by default, and remove the old global setting.<br>
-To enable the module by default add the following to the module <code>depends.cmake</code> file:</p>
+To enable the module by default add the following to the module <code class="notranslate">depends.cmake</code> file:</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-en">set</span>(EnableByDefault ON)</pre></div>
 <h2>2018-11-14</h2>
-<p>A new inviwo-meta library and an inviwo-meta-cli commandline app has been added to supersede the <code>make-new-module.py</code> and <code>make-new-file.py</code> python scripts. The library is also exposed in the tools menu of inviwo. Note that the inviwo-meta library relies on C++17 features and, thus, requires a recent compiler.</p>
+<p>A new inviwo-meta library and an inviwo-meta-cli commandline app has been added to supersede the <code class="notranslate">make-new-module.py</code> and <code class="notranslate">make-new-file.py</code> python scripts. The library is also exposed in the tools menu of inviwo. Note that the inviwo-meta library relies on C++17 features and, thus, requires a recent compiler.</p>
 <h2>2018-11-14</h2>
-<p>Generated files are now stored in the corresponding <code>CMAKE_CURRENT_BINAY_DIR</code> for the subdirectory in question.<br>
-For a module this means <code>{build folder}/modules/{module name}</code>. <code>CMAKE_CURRENT_BINAY_DIR/include</code> path is added as an include path for each module. Hence, the generated headers are put in</p>
-<pre><code>{build folder}/modules/{module name}/include/{organization}/{module name}/
+<p>Generated files are now stored in the corresponding <code class="notranslate">CMAKE_CURRENT_BINAY_DIR</code> for the subdirectory in question.<br>
+For a module this means <code class="notranslate">{build folder}/modules/{module name}</code>. <code class="notranslate">CMAKE_CURRENT_BINAY_DIR/include</code> path is added as an include path for each module. Hence, the generated headers are put in</p>
+<pre class="notranslate"><code class="notranslate">{build folder}/modules/{module name}/include/{organization}/{module name}/
 </code></pre>
-<p>Same is true for the generated headers of inviwo core, like <code>moduleregistration.h</code>. They are now placed in:</p>
-<pre><code>{build folder}/modules/core/include/inviwo/core/
+<p>Same is true for the generated headers of inviwo core, like <code class="notranslate">moduleregistration.h</code>. They are now placed in:</p>
+<pre class="notranslate"><code class="notranslate">{build folder}/modules/core/include/inviwo/core/
 </code></pre>
 <p>Which means that for the module loading in apps</p>
 <div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>moduleregistration.h<span class="pl-pds">&gt;</span></span></pre></div>
@@ -363,12 +363,12 @@ For a module this means <code>{build folder}/modules/{module name}</code>. <code
 <div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/core/moduleregistration.h<span class="pl-pds">&gt;</span></span></pre></div>
 <h2>2018-11-14</h2>
 <p>New Module structure. We have introduced a new module structure where we separate headers and source files in the same way as it was already done for the core part of inviwo. Hence, module headers should now be placed under the include folder like:</p>
-<pre><code>.../{module name}/include/{organization}/{module name}/
+<pre class="notranslate"><code class="notranslate">.../{module name}/include/{organization}/{module name}/
 </code></pre>
 <p>and sources goes in the source folder:</p>
-<pre><code>.../{module name}/src/
+<pre class="notranslate"><code class="notranslate">.../{module name}/src/
 </code></pre>
-<p><code>{module name}</code> it the lower case name of the module, <code>{organization}</code> default to inviwo but can be user-specified.<br>
+<p><code class="notranslate">{module name}</code> it the lower case name of the module, <code class="notranslate">{organization}</code> default to inviwo but can be user-specified.<br>
 The headers can then be included using</p>
 <div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>{organization}/{module name}/header.h<span class="pl-pds">&gt;</span></span></pre></div>
 <p>The implementation is backwards compatible so old modules can continue to exist, but the structure is considered deprecated.<br>
@@ -385,37 +385,37 @@ You will need to change the key mapping again if you have changed it from shift 
 <p>Adding the DiscreteData module. The idea is to handle datasets that support all kinds of grids, data representations and interpolations on them.<br>
 Current status: Dataset; Explicit and implicit channel; Structured and periodic structured grid.</p>
 <h2>2018-09-24 Color property improvements</h2>
-<p>Updated the color property widget which allows to edit colors directly. Supports floating point range <code>[0,1]</code>, int range <code>[0,255]</code>, and hex color codes (<code>#RGB</code>, <code>#RGBA</code>, <code>#RRGGBB</code>, <code>#RRGGBBAA</code>).<br>
-Invalid input is indicated by red border and changes discarded if either <code>&lt;Esc&gt;</code> is pressed or the widget looses focus.</p>
+<p>Updated the color property widget which allows to edit colors directly. Supports floating point range <code class="notranslate">[0,1]</code>, int range <code class="notranslate">[0,255]</code>, and hex color codes (<code class="notranslate">#RGB</code>, <code class="notranslate">#RGBA</code>, <code class="notranslate">#RRGGBB</code>, <code class="notranslate">#RRGGBBAA</code>).<br>
+Invalid input is indicated by red border and changes discarded if either <code class="notranslate">&lt;Esc&gt;</code> is pressed or the widget looses focus.</p>
 <h2>2018-09-24 Spinbox semantics for ordinal properties</h2>
-<p>New property semantics for ordinal properties: <code>SpinBox</code></p>
+<p>New property semantics for ordinal properties: <code class="notranslate">SpinBox</code></p>
 <p>This widget allows to adjust the value by dragging the arrow up/down indicator with the mouse. The rate of change per sec is shown in a tooltip. Alternatively, use the mouse wheel to adjust the value.</p>
 <h2>2018-09-21</h2>
-<p>Settings are no longer shared between executables. I.e. The Inviwo app and the integration test will not use the same settings any more. We now prefix the settings with the InviwoApplication display name. This also implies that any existing Inviwo app settings will be lost. To keep old setting one can prefix all the ".ivs" file in the inviwo settings folder with "Inviwo_".  On windows the inviwo settings can be found in <code>%APPDATA%/inviwo</code>.</p>
+<p>Settings are no longer shared between executables. I.e. The Inviwo app and the integration test will not use the same settings any more. We now prefix the settings with the InviwoApplication display name. This also implies that any existing Inviwo app settings will be lost. To keep old setting one can prefix all the ".ivs" file in the inviwo settings folder with "Inviwo_".  On windows the inviwo settings can be found in <code class="notranslate">%APPDATA%/inviwo</code>.</p>
 <p>Added System settings for breaking into the debugger on various log message levels, and on throwing exceptions. Also added an option to add stacktraces to exceptions. All to help with debugging.</p>
 <p>The inviwo app will now catch uncaught inviwo exceptions in main and present an dialog with information and an option to continue or abort. It will also give an option to save your workspace before closing.</p>
 <p>InviwoApplicationQt now has the same order of constructor arguments as InviwoApplication.</p>
 <h2>2018-08-21</h2>
-<p>The property class identifier system no longer uses the <code>InviwoPropertyInfo</code> / <code>PropertyClassIdentifier</code> macros but rather implements</p>
+<p>The property class identifier system no longer uses the <code class="notranslate">InviwoPropertyInfo</code> / <code class="notranslate">PropertyClassIdentifier</code> macros but rather implements</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-k">virtual</span> std::string <span class="pl-en">getClassIdentifier</span>() <span class="pl-k">const</span> <span class="pl-k">override</span></pre></div>
 <p>The static class identifier</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-k">static</span> <span class="pl-k">const</span> std::string CLASS_IDENTIFIER</pre></div>
 <p>can still be added manually, but the preferred way is to either use</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-k">static</span> <span class="pl-k">const</span> std::string classIdentifier</pre></div>
-<p>or specialize the <code>PropertyTraits</code> like:</p>
+<p>or specialize the <code class="notranslate">PropertyTraits</code> like:</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-k">template </span>&lt;&gt;
 <span class="pl-k">struct</span> <span class="pl-en">PropertyTraits</span>&lt;MyProperty&gt; {
     <span class="pl-k">static</span> std::string <span class="pl-en">classIdentifier</span>() {
         <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>org.somename.myproperty<span class="pl-pds">"</span></span>;
     }
 };</pre></div>
-<p>To access a class identifier of a property type statically, the <code>PropertyTraits</code> class should be used</p>
+<p>To access a class identifier of a property type statically, the <code class="notranslate">PropertyTraits</code> class should be used</p>
 <div class="highlight highlight-source-c++"><pre>PropertyTraits&lt;MyProperty&gt;::classIdentifier()</pre></div>
-<p>instead of accessing the <code>CLASS_IDENTIFIER</code> directly.</p>
+<p>instead of accessing the <code class="notranslate">CLASS_IDENTIFIER</code> directly.</p>
 <p>An enum traits class has been added to help working with enums and serialization, especially in the case of OptionProperties.<br>
 For example given an enum:</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-k">enum</span> <span class="pl-k">class</span> <span class="pl-en">MyEnum</span> { a, b };</pre></div>
-<p>EnumTraits can be specialized to provided a name for <code>MyEnum</code>, i.e.</p>
+<p>EnumTraits can be specialized to provided a name for <code class="notranslate">MyEnum</code>, i.e.</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-k">template </span>&lt;&gt;
 <span class="pl-k">struct</span> <span class="pl-en">EnumTraits</span>&lt;MyEnum&gt; {
     <span class="pl-k">static</span> std::string <span class="pl-en">name</span>() {<span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>MyEnum<span class="pl-pds">"</span></span>; }
@@ -427,12 +427,12 @@ prop.getClassIdentifier();</pre></div>
 <div class="highlight highlight-source-c++"><pre>PropertyTraits&lt;TemplateOptionProperty&lt;MyEnum&gt;&gt;::classIdentifier;</pre></div>
 <p>which then resolves to</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-s"><span class="pl-pds">"</span>org.inviwo.OptionPropertyMyEnum<span class="pl-pds">"</span></span>;</pre></div>
-<p>This makes it possible to differentiate <code>MyEnum</code> from other enum TemplateOptionPropertys.</p>
+<p>This makes it possible to differentiate <code class="notranslate">MyEnum</code> from other enum TemplateOptionPropertys.</p>
 <h2>2018-09-19 Web browser</h2>
 <p>Use html5 web pages inside of Inviwo. Uses Chromium Embedded Framework (CEF) to render web pages off-screen. The rendered web page is transferred to an Inviwo Image.<br>
 Inviwo properties can be synchronized using javascript, see the web browser module example.</p>
 <h2>2018-07-26 ListProperty</h2>
-<p>Added <code>ListProperty</code>, a new property for dynamically adding and removing properties.<br>
+<p>Added <code class="notranslate">ListProperty</code>, a new property for dynamically adding and removing properties.<br>
 A ListProperty holds a number of "prefab" objects, i.e. unique_ptr to properties, which are used to instantiate new list entries. The property widget features small "x" buttons for removing individual elements (if removal is enabled). Pressing the "+" button next to the property label adds new elements (if adding is enabled). In case multiple prefabs exist, a drop-down menu is shown when pressing the "+" button.</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-c"><span class="pl-c">//</span> using a single prefab object and at most 10 elements</span>
 ListProperty <span class="pl-en">listProperty</span>(<span class="pl-s"><span class="pl-pds">"</span>myListProperty<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>My ListProperty<span class="pl-pds">"</span></span>,
@@ -457,14 +457,14 @@ ListProperty <span class="pl-en">listProperty</span>(<span class="pl-s"><span cl
         };
         <span class="pl-k">return</span> v;
     }());</pre></div>
-<p>Prefabs can be added later on as well using <code>ListProperty::addPrefab(std::unique_ptr&lt;Property&gt;&amp;&amp; p)</code>.</p>
+<p>Prefabs can be added later on as well using <code class="notranslate">ListProperty::addPrefab(std::unique_ptr&lt;Property&gt;&amp;&amp; p)</code>.</p>
 <h2>2018-07-25 Integral Line Tracing updates</h2>
 <p>Before this change we had two Tracers, one for streamlines and one for pathlines, both in three spatial dimensions only.<br>
 These two classes were very similar and have now been merged/rewritten into a single templated class supporting both<br>
 streamline and pathline tracing and is no longer limited to three dimensions.<br>
 A new processor has been added which uses this tracer class to integrate stream/pathlines. The old processors, i.e.<br>
-<code>StreamLines</code>, <code>PathLines</code> and <code>StreamRibbons</code> are now deprecated and were renamed to <code>[Name]Deprecated</code> for backwards compatibility.<br>
-The processors that are recommended to use are <code>StreamLines3D</code>, <code>PathLines3D</code> and <code>StreamLines2D</code>, see example workspaces to<br>
+<code class="notranslate">StreamLines</code>, <code class="notranslate">PathLines</code> and <code class="notranslate">StreamRibbons</code> are now deprecated and were renamed to <code class="notranslate">[Name]Deprecated</code> for backwards compatibility.<br>
+The processors that are recommended to use are <code class="notranslate">StreamLines3D</code>, <code class="notranslate">PathLines3D</code> and <code class="notranslate">StreamLines2D</code>, see example workspaces to<br>
 see how they are used.</p>
 <h2>2018-06-28 GLM Version Update</h2>
 <p>GLM was updated to the new 0.9.9.0 version. Major changes are listed at <a href="https://github.com/g-truc/glm/releases/tag/0.9.9.0">https://github.com/g-truc/glm/releases/tag/0.9.9.0</a><br>
@@ -477,21 +477,21 @@ glm::mat&lt;C, R, T, Q&gt;</pre></div>
 <p>Most code should continue working as before. Except for <strong>default constructed values that now are left uninitialized</strong>. Where as before vec where initialized to 0 and mat to identify. This change can <strong>break</strong> user code we have seen.</p>
 <h2>2018-05-02 Refactored Transfer Function</h2>
 <ul>
-<li>Renamed <code>TransferFunctionDataPoint </code>to <code>TFPrimitive</code></li>
-<li>Renamed <code>TransferFunctionDataPoint::getRGBA</code>. Instead use <code>TFPrimitive::getColor</code></li>
-<li>Renamed <code>TransferFunctionDataPoint::getPos</code>. Instead use <code>TFPrimitive::getPosition</code></li>
-<li>Renamed <code>TransferFunctionObserver</code>. Instead use <code>TFPrimitiveSetObserver</code></li>
-<li>Renamed <code>TransferFunctionPointObserver</code>. Instead use <code>TFPrimitiveObserver</code></li>
+<li>Renamed <code class="notranslate">TransferFunctionDataPoint </code>to <code class="notranslate">TFPrimitive</code></li>
+<li>Renamed <code class="notranslate">TransferFunctionDataPoint::getRGBA</code>. Instead use <code class="notranslate">TFPrimitive::getColor</code></li>
+<li>Renamed <code class="notranslate">TransferFunctionDataPoint::getPos</code>. Instead use <code class="notranslate">TFPrimitive::getPosition</code></li>
+<li>Renamed <code class="notranslate">TransferFunctionObserver</code>. Instead use <code class="notranslate">TFPrimitiveSetObserver</code></li>
+<li>Renamed <code class="notranslate">TransferFunctionPointObserver</code>. Instead use <code class="notranslate">TFPrimitiveObserver</code></li>
 <li>TF primitive position type changed from float to double</li>
 <li>Deprecated many Transfer function methods, see deprecation messages.</li>
 </ul>
 <h2>2018-04-11 Deprecating Callback Registration of Member Functions</h2>
 <p>The interface of ports and properties offers callback registration using lambda expressions as well as member functions. It was decided to deprecate the usage of member functions in this context. Consider registering lambda expression instead.<br>
-The functions in question have been marked as deprecated (<code>[[deprecated]]</code>) and warnings should appear during compilation. Using pre-compiled headers on MSVC is known to suppress those, though.</p>
-<p>This immediately affects <code>Inport</code>, <code>Outport</code>, and <code>Property</code> (in particular <code>onChange(T* object, void (T::*method)())</code>, <code>onInvalid()</code>, <code>removeOnChange()</code>, <code>removeOnInvalid()</code>.</p>
+The functions in question have been marked as deprecated (<code class="notranslate">[[deprecated]]</code>) and warnings should appear during compilation. Using pre-compiled headers on MSVC is known to suppress those, though.</p>
+<p>This immediately affects <code class="notranslate">Inport</code>, <code class="notranslate">Outport</code>, and <code class="notranslate">Property</code> (in particular <code class="notranslate">onChange(T* object, void (T::*method)())</code>, <code class="notranslate">onInvalid()</code>, <code class="notranslate">removeOnChange()</code>, <code class="notranslate">removeOnInvalid()</code>.</p>
 <p>We will remove the respective deprecated functions at some point in the future.</p>
 <h2>2018-01-15 Updates in UserInterfaceGL module</h2>
-<p>The UserInterfaceGL module has experienced some major updates. For one, sliders and range sliders are now available within <code>glui</code> and secondly touch interaction is now supported. This includes all glui elements (buttons, sliders, ...) as well as the widgets for camera manipulation (Camera Widget), widgets for volume cropping (Cropping Widget), and the presentation mode (Presentation Processor). The <code>Presentation Processor</code> can be used, e.g. during demonstrations, as it allows to show images in a PowerPoint fashion instead of its regular image input.</p>
+<p>The UserInterfaceGL module has experienced some major updates. For one, sliders and range sliders are now available within <code class="notranslate">glui</code> and secondly touch interaction is now supported. This includes all glui elements (buttons, sliders, ...) as well as the widgets for camera manipulation (Camera Widget), widgets for volume cropping (Cropping Widget), and the presentation mode (Presentation Processor). The <code class="notranslate">Presentation Processor</code> can be used, e.g. during demonstrations, as it allows to show images in a PowerPoint fashion instead of its regular image input.</p>
 <p>So far, the following UI elements are supported by glui:</p>
 <ul class="contains-task-list">
 <li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> box layout (vertical and horizontal)</li>
@@ -500,8 +500,8 @@ The functions in question have been marked as deprecated (<code>[[deprecated]]</
 <li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> sliders (vertical and horizontal)</li>
 <li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> range sliders (vertical and horizontal)</li>
 </ul>
-<p>For all UI elements, matching property widgets exist, i.e. <code>glui::BoolPropertyWidget</code>, <code>glui::ButtonPropertyWidget</code>, <code>glui::IntPropertyWidget</code>, <code>glui::FloatPropertyWidget</code>, <code>glui::IntMinMaxPropertyWidget</code>, and <code>glui::FloatMinMaxPropertyWidget</code>. This allows to link the UI elements with the respective properties.</p>
-<p>For examples and usage see <code>readme.md</code> in the UserInterfaceGL module and check out <code>modules/UserInterfaceGL/processors/GLUITestProcessor.h</code>.</p>
+<p>For all UI elements, matching property widgets exist, i.e. <code class="notranslate">glui::BoolPropertyWidget</code>, <code class="notranslate">glui::ButtonPropertyWidget</code>, <code class="notranslate">glui::IntPropertyWidget</code>, <code class="notranslate">glui::FloatPropertyWidget</code>, <code class="notranslate">glui::IntMinMaxPropertyWidget</code>, and <code class="notranslate">glui::FloatMinMaxPropertyWidget</code>. This allows to link the UI elements with the respective properties.</p>
+<p>For examples and usage see <code class="notranslate">readme.md</code> in the UserInterfaceGL module and check out <code class="notranslate">modules/UserInterfaceGL/processors/GLUITestProcessor.h</code>.</p>
 <h2>2018-01-12 Moved OpenEXR from ext to modules/cimg/ext</h2>
 <p>OpenEXR is only used by the CImg module. Root/ext folder is for core dependencies and libraries used by multiple modules.</p>
 <h2>2017-12-01 Composite Processors</h2>
@@ -511,9 +511,9 @@ The functions in question have been marked as deprecated (<code>[[deprecated]]</
 <h2>2017-11-23 Drag&amp;Drop of Inviwo Workspace files</h2>
 <p>Workspace files can now be dropped onto the Inviwo Qt Application which in turn will open the respective workspace.</p>
 <h2>2017-11-23 UTF-8 support</h2>
-<p>Internally, Inviwo relies on UTF-8 encoded strings, i.e. strings with multibyte encoding stored in a std::string. In order to access files which contain unicode characters in the file name, one should use <code>filesystem::fstream()</code>, <code>filesystem::ifstream()</code>, and <code>filesystem::ofstream()</code>. These functions create and return a <code>std::*stream</code> object for the given file name.</p>
-<p>The call <code>auto f = filesystem::fstream(filename, mode);</code> is functionally equivalent to the statement <code>std::fstream f(filename, mode);</code>. No checks whether the file exists or was successfully opened are performed. That is, the caller has to check it. For more details check the documentation of <code>std::fstream</code>.</p>
-<p>This is necessary since the Visual Studio compiler does not have support for handling UTF-8 encoded strings in <code>std::*stream(filename)</code>. See also comments on <code>filesystem::*stream()</code> in <code>core/util/filesystem.h</code>.</p>
+<p>Internally, Inviwo relies on UTF-8 encoded strings, i.e. strings with multibyte encoding stored in a std::string. In order to access files which contain unicode characters in the file name, one should use <code class="notranslate">filesystem::fstream()</code>, <code class="notranslate">filesystem::ifstream()</code>, and <code class="notranslate">filesystem::ofstream()</code>. These functions create and return a <code class="notranslate">std::*stream</code> object for the given file name.</p>
+<p>The call <code class="notranslate">auto f = filesystem::fstream(filename, mode);</code> is functionally equivalent to the statement <code class="notranslate">std::fstream f(filename, mode);</code>. No checks whether the file exists or was successfully opened are performed. That is, the caller has to check it. For more details check the documentation of <code class="notranslate">std::fstream</code>.</p>
+<p>This is necessary since the Visual Studio compiler does not have support for handling UTF-8 encoded strings in <code class="notranslate">std::*stream(filename)</code>. See also comments on <code class="notranslate">filesystem::*stream()</code> in <code class="notranslate">core/util/filesystem.h</code>.</p>
 <h2>2017-11-21 Dependency fixes</h2>
 <p>InviwoCore is now registered together with the rest of the modules, moved SystemSettings and SystemCapabilities from InviwoCore to InviwoApplication, since the app depends on them. And there was no reason the had to be owned by InviwoCore.</p>
 <p>Added convenience getSystemSettings and getSystemCapabilities to InviwoApplication. Also added getModuleCapabilities and getCapabilitesByType to InviwoApplication, similarly to settings.</p>
@@ -521,8 +521,8 @@ The functions in question have been marked as deprecated (<code>[[deprecated]]</
 <p>Removed the static usedIdentifiers from Processor, the network now checks that the id is unique or increments it instead. The processor displayname is now used as the main userfaceing name instead of identifier, it does not have any of the format limitations of the identifier and does not need to be unique. Made the displayName is now user configurable.</p>
 <h2>2017-11-09 Lightsource refactoring, LightSourceType is now an enum class and uses lower case.</h2>
 <ul>
-<li>Replace <code>LightSourceType::Enum</code> with <code>LightSourceType</code></li>
-<li>Replace <code>LIGHT_AREA</code>, <code>LIGHT_CONE</code>, <code>LIGHT_POINT</code>, <code>LIGHT_DIRECTIONAL</code> with <code>area</code>, <code>cone</code>, <code>point</code>, <code>directional</code></li>
+<li>Replace <code class="notranslate">LightSourceType::Enum</code> with <code class="notranslate">LightSourceType</code></li>
+<li>Replace <code class="notranslate">LIGHT_AREA</code>, <code class="notranslate">LIGHT_CONE</code>, <code class="notranslate">LIGHT_POINT</code>, <code class="notranslate">LIGHT_DIRECTIONAL</code> with <code class="notranslate">area</code>, <code class="notranslate">cone</code>, <code class="notranslate">point</code>, <code class="notranslate">directional</code></li>
 </ul>
 <h2>2017-11-09 Port traits refactoring</h2>
 <p>The old port_traits was previously used to acquire information, mainly class identifiers, about data objects used in ports and ports them self. Here we have separated port_traits into PortTraits (only classIdentifier) and DataTraits (with classIdentifier, dataName, colorCode and info). Where DataTraits are only used for data objects and PortTraits only for ports. The naming has also been updated to match the inviwo style better.</p>
@@ -555,11 +555,11 @@ The functions in question have been marked as deprecated (<code>[[deprecated]]</
 };</pre></div>
 <p>Port registration also now gets the port classIdentifier via PortTraits, so no need to specify the class identifier that registering the port.</p>
 <h2>2017-11-07 Breaking changes: Static functioned moved from BasicMesh</h2>
-<p>Before this change, BasicMesh had various static functions to create meshes. These methods have been moved to a new file and namespace. They are now located in <code>&lt;modules/base/algorithm/meshutils.h&gt;</code> and the namespace meshutil.<br>
-Hence, where you have used methods like <code>BasicMesh::sphere(...)</code>: you have to change to use <code>meshutil::sphere(...)</code> and add include <code>#include &lt;modules/base/algorithm/meshutils.h&gt;</code>. You also have to add <code>InviwoBaseModule</code> to your modules <code>depends.cmake</code></p>
+<p>Before this change, BasicMesh had various static functions to create meshes. These methods have been moved to a new file and namespace. They are now located in <code class="notranslate">&lt;modules/base/algorithm/meshutils.h&gt;</code> and the namespace meshutil.<br>
+Hence, where you have used methods like <code class="notranslate">BasicMesh::sphere(...)</code>: you have to change to use <code class="notranslate">meshutil::sphere(...)</code> and add include <code class="notranslate">#include &lt;modules/base/algorithm/meshutils.h&gt;</code>. You also have to add <code class="notranslate">InviwoBaseModule</code> to your modules <code class="notranslate">depends.cmake</code></p>
 <h2>2017-10-22 New feature: Runtime module loading and module versioning</h2>
 <p>Modules can now be dynamically loaded when starting an Inviwo application instead if linking them into the application. This means that the application does not need to know about all modules at compile time.<br>
-Enable <code>IVW_RUNTIME_MODULE_LOADING</code> in Cmake to use this feature.<br>
+Enable <code class="notranslate">IVW_RUNTIME_MODULE_LOADING</code> in Cmake to use this feature.<br>
 You can choose to only load a subset of existing modules by modifying inviwo-enabled-modules.txt in the application binary directory.</p>
 <p>Modules can be automatically reloaded when changed while running inviwo by enabling runtime module reloading in the application settings. <strong>This means that you can compile a module while running inviwo!</strong> The workspace will automatically be serialized, modules will be reloaded, and then the workspace will be deserialized again.</p>
 <h3>Module versioning</h3>
@@ -571,20 +571,20 @@ You can choose to only load a subset of existing modules by modifying inviwo-ena
 <h2>2017-10-01 Breaking changes for Processor::isReady, Processor::performEvaluationRequest</h2>
 <p>Before this change, we could not detect when the Processor::isReady status changed. We introduced a StateCoordinator to resolve this issue and improve network evaluation. Only processors that have a sink among its decedents will now be evaluated.</p>
 <ul>
-<li>Processor performEvaluationRequest has been removed, instead call <code>Processor::invalidate</code> to trigger a network evaluation.</li>
-<li>If you happen to override <code>Processor::isReady()</code>, that will no longer work. You instead have to set the updater for the <code>isReady_</code> StateCoordinator. Most likely, you will just need to move your isReady code to a functor and set it in the constructor of your processor:</li>
+<li>Processor performEvaluationRequest has been removed, instead call <code class="notranslate">Processor::invalidate</code> to trigger a network evaluation.</li>
+<li>If you happen to override <code class="notranslate">Processor::isReady()</code>, that will no longer work. You instead have to set the updater for the <code class="notranslate">isReady_</code> StateCoordinator. Most likely, you will just need to move your isReady code to a functor and set it in the constructor of your processor:</li>
 </ul>
 <div class="highlight highlight-source-c++"><pre><span class="pl-c"><span class="pl-c">//</span> (default isReady() behavior)</span>
 isReady_.setUpdate([<span class="pl-c1">this</span>]() { <span class="pl-k">return</span> <span class="pl-c1">allInportsAreReady</span>(); });</pre></div>
 <ul>
-<li>This also applies to <code>isSink_</code> and <code>isSource_</code> in a similar manner. To mark a processor as sink, use <code>isSink_.setUpdate([]() { return true; });</code></li>
+<li>This also applies to <code class="notranslate">isSink_</code> and <code class="notranslate">isSource_</code> in a similar manner. To mark a processor as sink, use <code class="notranslate">isSink_.setUpdate([]() { return true; });</code></li>
 </ul>
-<p>Note that you can use <code>Inport::setOptional(true)</code> if you want your processor to process even though the port is not connected instead of changing isReady.</p>
+<p>Note that you can use <code class="notranslate">Inport::setOptional(true)</code> if you want your processor to process even though the port is not connected instead of changing isReady.</p>
 <p>Ready status is now pushed from outport to inport to processor, making it an observable in ProcessorObserver.<br>
-As this is now a state that is pushed instead of pulled you should also call <code>isReady_.update()</code> when ever the outcome of the functor above might change. This does not apply to ports, e.g. <code>onConnect</code> and <code>onDisconnect</code>, since ports already call  <code>isReady_.update()</code> on connect and disconnect.</p>
+As this is now a state that is pushed instead of pulled you should also call <code class="notranslate">isReady_.update()</code> when ever the outcome of the functor above might change. This does not apply to ports, e.g. <code class="notranslate">onConnect</code> and <code class="notranslate">onDisconnect</code>, since ports already call  <code class="notranslate">isReady_.update()</code> on connect and disconnect.</p>
 <h2>2016-11-11 - Moved the QtWidgets project into the modules folder.</h2>
-<p>Moved <code>InviwoApplicationQt</code> from <code>QtWidgets</code> into a new project InviwoQtApplicationBase.<br>
-If a module was using <code>InviwoApplicationQt</code> to get the main window, for example:</p>
+<p>Moved <code class="notranslate">InviwoApplicationQt</code> from <code class="notranslate">QtWidgets</code> into a new project InviwoQtApplicationBase.<br>
+If a module was using <code class="notranslate">InviwoApplicationQt</code> to get the main window, for example:</p>
 <div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/qt/qtwidgets/inviwoapplicationqt.h<span class="pl-pds">&gt;</span></span> 
 <span class="pl-k">auto</span> app = <span class="pl-k">dynamic_cast</span>&lt;InviwoApplicationQt*&gt;(InviwoApplication::getPtr());
 <span class="pl-k">auto</span> mainWindow = app-&gt;<span class="pl-en">getMainWindow</span>();</pre></div>
@@ -592,40 +592,40 @@ If a module was using <code>InviwoApplicationQt</code> to get the main window, f
 <div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>modules/qtwidgets/inviwoqtutils.h<span class="pl-pds">&gt;</span></span>  
 <span class="pl-k">auto</span> mainWindow = utilqt::getApplicationMainWindow();</pre></div>
 <p>Perform search and replace to accommodate changes:<br>
-Search:  <code>#include &lt;inviwo/qt/widgets/inviwoapplicationqt.h&gt;`` Replace: </code>#include &lt;inviwo/qt/applicationbase/inviwoapplicationqt.h&gt;<code>  Furthermore, make your project depend on</code>InviwoQtApplicationBase<code>instead of</code>InviwoQtWidgets`</p>
-<p>Search: <code>inviwo/qt/widgets/</code><br>
-Replace: <code>modules/qtwidgets/</code></p>
+Search:  <code class="notranslate">#include &lt;inviwo/qt/widgets/inviwoapplicationqt.h&gt;`` Replace: </code>#include &lt;inviwo/qt/applicationbase/inviwoapplicationqt.h&gt;<code class="notranslate">  Furthermore, make your project depend on</code>InviwoQtApplicationBase<code class="notranslate">instead of</code>InviwoQtWidgets`</p>
+<p>Search: <code class="notranslate">inviwo/qt/widgets/</code><br>
+Replace: <code class="notranslate">modules/qtwidgets/</code></p>
 <p>##2016-11-08<br>
 The vector interpolation was removed from the Interpolation helper class. The reason for this is that having the function pointer as a parameter for the function made the function impossible to inline and hence much slower, the interpolation calls become about 50% faster when the argument was removed.</p>
 <h2>2016-02-03</h2>
-<p>The <code>setValueFrom*</code> and <code>getValueAs*</code> in buffer-, layer- and volumeRAM has been renamed to <code>getAs*</code> and <code>setFrom*</code> Previously only get function would use normalization. Now there are instead an other set of functions <code>getAsNormalized*</code> and <code>setFromNormalized*</code> that will apply normalization. Where as neither <code>setFrom*</code> or <code>getAs*</code> will use any normalization, just plain casting.</p>
+<p>The <code class="notranslate">setValueFrom*</code> and <code class="notranslate">getValueAs*</code> in buffer-, layer- and volumeRAM has been renamed to <code class="notranslate">getAs*</code> and <code class="notranslate">setFrom*</code> Previously only get function would use normalization. Now there are instead an other set of functions <code class="notranslate">getAsNormalized*</code> and <code class="notranslate">setFromNormalized*</code> that will apply normalization. Where as neither <code class="notranslate">setFrom*</code> or <code class="notranslate">getAs*</code> will use any normalization, just plain casting.</p>
 <p>##2015-12-03</p>
 <ul>
-<li><strong>Generic Types</strong> <code>BufferType</code>, <code>BufferUsage</code>, <code>DrawType</code>, and <code>ConnectivityType</code> have had their members renamed to pascal case. Use <code>tools/refactoring/enumfixes.py</code> to update your code.</li>
+<li><strong>Generic Types</strong> <code class="notranslate">BufferType</code>, <code class="notranslate">BufferUsage</code>, <code class="notranslate">DrawType</code>, and <code class="notranslate">ConnectivityType</code> have had their members renamed to pascal case. Use <code class="notranslate">tools/refactoring/enumfixes.py</code> to update your code.</li>
 <li><strong>Processor</strong> InviwoProcessorInfo macros has been removed. Use ProcessorInfo class.</li>
 <li><strong>Processor</strong> Virtual initialize and deinitialize function has be removed. Use constructor.</li>
 <li><strong>Processor</strong> enable/disable evaluation function has been removed. It was rarely used and the new NetworkLock is easier to use.</li>
 </ul>
 <h2>2015-11-16</h2>
-<p><strong>Singeltons</strong> The factories are not singletons any longer. They are now owned by InviwoApplication, one can ask InviwoApplication for them. There is a script <code>tools/refactoring/factoryfixes.py</code> to update code.</p>
+<p><strong>Singeltons</strong> The factories are not singletons any longer. They are now owned by InviwoApplication, one can ask InviwoApplication for them. There is a script <code class="notranslate">tools/refactoring/factoryfixes.py</code> to update code.</p>
 <h2>2015-11-04</h2>
-<p><strong>Serialization</strong> Removed the ivw prefix from all serialization classes, and related filenames.  Use <code>tools/refactoring/serializerename.py</code> to update you own code. Just modify the "path = [paths, to, code]" variable first.</p>
+<p><strong>Serialization</strong> Removed the ivw prefix from all serialization classes, and related filenames.  Use <code class="notranslate">tools/refactoring/serializerename.py</code> to update you own code. Just modify the "path = [paths, to, code]" variable first.</p>
 <h2>2015-10-29</h2>
 <p><strong>Enum refactoring:</strong></p>
 <ul>
-<li><code>enum DataFromatEnums::Id</code> -&gt; <code>enum class DataFormatId</code>, camelcased</li>
-<li><code>enum DataFromatEnums::NumericType</code> -&gt; <code>enum class NumericType</code>, camelcased</li>
-<li><code>enum ShadingFunctionEnum</code> -&gt; <code>enum class ShadingFunctionKind</code>, camelcased</li>
-<li><code>enum UsageMode</code> -&gt; <code>enum class UsageMode</code>, camelcased</li>
-<li><code>DrawMode</code> camelcased</li>
-<li><code>enum InteractionEventType</code> -&gt; <code>enum class InteractionEventType</code>, camelcased</li>
-<li><code>enum GlVendor</code> -&gt; <code>enum class GlVendor</code>, camelcased</li>
-<li><code>enum GLFormats::Normalization</code> -&gt; <code>enum class GLFormats::Normalization</code>, camelcased</li>
-<li><code>enum CLFormats::Normalization</code> -&gt; <code>enum class CLFormats::Normalization</code>, camelcased</li>
-<li><code>enum InvalidationLevel</code> -&gt; <code>enum class InvalidationLevel</code>, camelcased</li>
+<li><code class="notranslate">enum DataFromatEnums::Id</code> -&gt; <code class="notranslate">enum class DataFormatId</code>, camelcased</li>
+<li><code class="notranslate">enum DataFromatEnums::NumericType</code> -&gt; <code class="notranslate">enum class NumericType</code>, camelcased</li>
+<li><code class="notranslate">enum ShadingFunctionEnum</code> -&gt; <code class="notranslate">enum class ShadingFunctionKind</code>, camelcased</li>
+<li><code class="notranslate">enum UsageMode</code> -&gt; <code class="notranslate">enum class UsageMode</code>, camelcased</li>
+<li><code class="notranslate">DrawMode</code> camelcased</li>
+<li><code class="notranslate">enum InteractionEventType</code> -&gt; <code class="notranslate">enum class InteractionEventType</code>, camelcased</li>
+<li><code class="notranslate">enum GlVendor</code> -&gt; <code class="notranslate">enum class GlVendor</code>, camelcased</li>
+<li><code class="notranslate">enum GLFormats::Normalization</code> -&gt; <code class="notranslate">enum class GLFormats::Normalization</code>, camelcased</li>
+<li><code class="notranslate">enum CLFormats::Normalization</code> -&gt; <code class="notranslate">enum class CLFormats::Normalization</code>, camelcased</li>
+<li><code class="notranslate">enum InvalidationLevel</code> -&gt; <code class="notranslate">enum class InvalidationLevel</code>, camelcased</li>
 </ul>
 <p>The enums has also been made into a consistent camel case.<br>
-To simplify refactoring there is a script in <code>tools/refactoring/enumfixes.py</code> that one can run to update code. You only have to specify the relevant paths in the script first.</p>
+To simplify refactoring there is a script in <code class="notranslate">tools/refactoring/enumfixes.py</code> that one can run to update code. You only have to specify the relevant paths in the script first.</p>
 <h2>2015-10-28</h2>
 <p>Processors: Updated to use new structure of ProcessorInfo. The macro</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-en">InviwoProcessorInfo</span>();</pre></div>
@@ -633,7 +633,7 @@ To simplify refactoring there is a script in <code>tools/refactoring/enumfixes.p
 <div class="highlight highlight-source-c++"><pre><span class="pl-k">virtual</span> <span class="pl-k">const</span> ProcessorInfo <span class="pl-en">getProcessorInfo</span>() <span class="pl-k">const</span> <span class="pl-k">override</span>;
 <span class="pl-k">static</span> <span class="pl-k">const</span> ProcessorInfo processorInfo_;</pre></div>
 <p>in the header file.</p>
-<p>In the cpp file the macros, <code>ProcessorClassIdentifier(VolumeRaycaster, "org.inviwo.VolumeRaycaster");</code> etc. for the static members are replaced with:</p>
+<p>In the cpp file the macros, <code class="notranslate">ProcessorClassIdentifier(VolumeRaycaster, "org.inviwo.VolumeRaycaster");</code> etc. for the static members are replaced with:</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-k">const</span> ProcessorInfo VolumeRaycaster::processorInfo_{
     <span class="pl-s"><span class="pl-pds">"</span>org.inviwo.VolumeRaycaster<span class="pl-pds">"</span></span>,  <span class="pl-c"><span class="pl-c">//</span> Class identifer</span>
     <span class="pl-s"><span class="pl-pds">"</span>Volume Raycaster<span class="pl-pds">"</span></span>,            <span class="pl-c"><span class="pl-c">//</span> Display name</span>
@@ -645,7 +645,7 @@ To simplify refactoring there is a script in <code>tools/refactoring/enumfixes.p
     <span class="pl-k">return</span> processorInfo_;
 }</pre></div>
 <p>The old macros should still work, but will be deprecated before next release.</p>
-<p>The name of the static member <code>processorInfo_</code> is important since that is what the <code>ProcessorTraits</code> looks for when it tries to find the information statically. If you want to have a different name or generate the information dynamically you can specialize the <code>ProcessorTraits</code> for your processor. Here is an example for the template processor BasisTransform:</p>
+<p>The name of the static member <code class="notranslate">processorInfo_</code> is important since that is what the <code class="notranslate">ProcessorTraits</code> looks for when it tries to find the information statically. If you want to have a different name or generate the information dynamically you can specialize the <code class="notranslate">ProcessorTraits</code> for your processor. Here is an example for the template processor BasisTransform:</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-k">template </span>&lt;&gt;
 <span class="pl-k">struct</span> <span class="pl-en">ProcessorTraits</span>&lt;BasisTransform&lt;Mesh&gt;&gt; {
     <span class="pl-k">static</span> ProcessorInfo <span class="pl-en">getProcessorInfo</span>() {
@@ -659,7 +659,7 @@ To simplify refactoring there is a script in <code>tools/refactoring/enumfixes.p
     }
 };</pre></div>
 <p>If you have many processor that needs updating there is a utility script<br>
-<code>tools/refactoring/processorinfo.py</code>.<br>
+<code class="notranslate">tools/refactoring/processorinfo.py</code>.<br>
 You will need to edit some path information in it, but otherwise it should be automatic.</p>
 <p><strong>Converting files to UTF-8</strong></p>
 <p>If you need to convert your files to UTF-8 you can use notepad++ and the following python script (python plugin installer can be found at <a href="http://sourceforge.net/projects/npppythonscript/files/" rel="nofollow">http://sourceforge.net/projects/npppythonscript/files/</a>):</p>
@@ -678,29 +678,29 @@ You will need to edit some path information in it, but otherwise it should be au
             <span class="pl-s1">notepad</span>.<span class="pl-en">save</span>()
             <span class="pl-s1">notepad</span>.<span class="pl-en">close</span>()</pre></div>
 <h2>2015-10-27</h2>
-<p><strong>CodeState</strong> CodeState is now an enum class, i.e. <code>CODE_STATE_STABLE</code> -&gt; <code>CodeState::Stable</code> etc</p>
+<p><strong>CodeState</strong> CodeState is now an enum class, i.e. <code class="notranslate">CODE_STATE_STABLE</code> -&gt; <code class="notranslate">CodeState::Stable</code> etc</p>
 <h2>2015-10-07</h2>
-<p><strong>Modules</strong> The module registration has change a bit a module now has to take a  <code>InviwoApplication*</code> in the constructor, like:</p>
+<p><strong>Modules</strong> The module registration has change a bit a module now has to take a  <code class="notranslate">InviwoApplication*</code> in the constructor, like:</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-k">class</span> <span class="pl-en">IVW_MODULE_BASEGL_API</span> BaseGLModule : public InviwoModule {
 <span class="pl-k">public:</span>
     <span class="pl-en">BaseGLModule</span>(InviwoApplication* app);
 };</pre></div>
 <p>And then pass that on to the base class together with the module name</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-en">BaseGLModule::BaseGLModule</span>(InviwoApplication* app) : InviwoModule(app, <span class="pl-s"><span class="pl-pds">"</span>BaseGL<span class="pl-pds">"</span></span>) {</pre></div>
-<p>There is also not any <code>initialize()</code> do <code>deinitialize()</code> function anymore, just use the constructor and destructor.</p>
+<p>There is also not any <code class="notranslate">initialize()</code> do <code class="notranslate">deinitialize()</code> function anymore, just use the constructor and destructor.</p>
 <p>The MACROS for registering object in the module are now replaced by proper function. The most common one for processor now look like this:</p>
 <div class="highlight highlight-source-c++"><pre>registerProcessor&lt;Background&gt;();</pre></div>
 <p>For other object refer to InviwoModule.</p>
 <p>Is is also generally encouraged to avoid using any singletons, especially during initialization but also in general. In the long run we are working on removing most of the.</p>
 <h2>2015-10-01</h2>
 <ul>
-<li><strong>Data</strong> <code>Data</code> and <code>DataGroup" is now templated with respect to the </code>DataRepresentation` that they have.</li>
+<li><strong>Data</strong> <code class="notranslate">Data</code> and <code class="notranslate">DataGroup" is now templated with respect to the </code>DataRepresentation` that they have.</li>
 <li><strong>Converters</strong> The converter are now typed with From and To templates.</li>
 <li><strong>Geometry Types</strong> all the enums CoordinatePlane, CartesianCoordinateAxis, BufferUsage, DrawType, ConnectivityType are now enum classes.</li>
-<li><strong>Buffers</strong> The buffers have been updated. The old <code>Buffer</code> is now a abstract <code>BufferBase</code> and the old <code>BufferPrecision&lt;T&gt;</code> is now <code>Buffer&lt;T&gt;</code> this is the class you should use. The BufferType member/template argument has been removed from both <code>Buffer</code> and <code>BufferRepresentation</code> and is now handled by the <code>Mesh</code>. Because of this most typedef for <code>Buffer</code> and <code>BufferRAM</code> has now been removed. To create a <code>BufferRAM</code> you would now to this: <code>auto repr = std::make_shared&lt;BufferRAMPrecision&lt;vec3&gt;&gt;()</code> and then add it to a <code>Buffer</code> with <code>auto buffer = std::make_shared&lt;Buffer&lt;vec3&gt;&gt;(repr);</code></li>
-<li><strong>Multiple context</strong> there is now basic support for using OpenGL from multiple thread. Call <code>RenderContext::getPtr()-&gt;activateLocalRenderContext();</code> before using OpenGL.</li>
-<li><strong>Data Readers</strong> The Data Reader base class has been clean up. Now there is only one function to implement: <code>virtual std::shared_ptr&lt;T&gt; readData(const std::string filePath) = 0;</code></li>
-<li><strong>DiskRepresentationLoader</strong> there is a new class DiskRepresentationLoader to handle the old <code>DataReader::readData</code>, and <code>DataReader::readDataInto</code> with a cleaner interface without any <code>void*</code>. and a <code>RawVolumeRAMLoader</code> class that is used in by the "dat", "ivf", "raw" readers.</li>
+<li><strong>Buffers</strong> The buffers have been updated. The old <code class="notranslate">Buffer</code> is now a abstract <code class="notranslate">BufferBase</code> and the old <code class="notranslate">BufferPrecision&lt;T&gt;</code> is now <code class="notranslate">Buffer&lt;T&gt;</code> this is the class you should use. The BufferType member/template argument has been removed from both <code class="notranslate">Buffer</code> and <code class="notranslate">BufferRepresentation</code> and is now handled by the <code class="notranslate">Mesh</code>. Because of this most typedef for <code class="notranslate">Buffer</code> and <code class="notranslate">BufferRAM</code> has now been removed. To create a <code class="notranslate">BufferRAM</code> you would now to this: <code class="notranslate">auto repr = std::make_shared&lt;BufferRAMPrecision&lt;vec3&gt;&gt;()</code> and then add it to a <code class="notranslate">Buffer</code> with <code class="notranslate">auto buffer = std::make_shared&lt;Buffer&lt;vec3&gt;&gt;(repr);</code></li>
+<li><strong>Multiple context</strong> there is now basic support for using OpenGL from multiple thread. Call <code class="notranslate">RenderContext::getPtr()-&gt;activateLocalRenderContext();</code> before using OpenGL.</li>
+<li><strong>Data Readers</strong> The Data Reader base class has been clean up. Now there is only one function to implement: <code class="notranslate">virtual std::shared_ptr&lt;T&gt; readData(const std::string filePath) = 0;</code></li>
+<li><strong>DiskRepresentationLoader</strong> there is a new class DiskRepresentationLoader to handle the old <code class="notranslate">DataReader::readData</code>, and <code class="notranslate">DataReader::readDataInto</code> with a cleaner interface without any <code class="notranslate">void*</code>. and a <code class="notranslate">RawVolumeRAMLoader</code> class that is used in by the "dat", "ivf", "raw" readers.</li>
 </ul>
 <h2>2015-10-01</h2>
 <p>Updates to Data:</p>
@@ -718,16 +718,16 @@ You will need to edit some path information in it, but otherwise it should be au
 <h2>2015-09-10</h2>
 <ul>
 <li>
-<p><strong>Ports</strong> now uses <code>std::shared_ptr&lt;const T&gt;</code> for everything. I.e. <code>DataInport::getData()</code> now returns a <code>std::shared_ptr&lt;const T&gt;</code> and <code>DataOutport::setData(std::shared_ptr&lt;const T&gt; data)</code> also takes a shared ptr. Notably the argument to the <code>DataOutport::setData</code> is now a <code>std::shared_ptr&lt;__const__ T&gt;</code> this means that you can now do <code>outport.setData(inport.getData());</code> But on the other hand will you not be able to do:<br>
-<code>outport.getData()-&gt;getEditableRepresentation&lt;T&gt;()</code> since the data is now const. To solve this it is recommended to keep a copy of the <code>std::shared_ptr&lt;T&gt;</code> around in the processor instead.<br>
-One should take special care when changing data that has already been added to a outport since a different processor might be using that data in a background thread. One might for example use <code>std::shared_ptr&lt;T&gt;::unique()</code> to check whether there is someone else holding the data.</p>
+<p><strong>Ports</strong> now uses <code class="notranslate">std::shared_ptr&lt;const T&gt;</code> for everything. I.e. <code class="notranslate">DataInport::getData()</code> now returns a <code class="notranslate">std::shared_ptr&lt;const T&gt;</code> and <code class="notranslate">DataOutport::setData(std::shared_ptr&lt;const T&gt; data)</code> also takes a shared ptr. Notably the argument to the <code class="notranslate">DataOutport::setData</code> is now a <code class="notranslate">std::shared_ptr&lt;__const__ T&gt;</code> this means that you can now do <code class="notranslate">outport.setData(inport.getData());</code> But on the other hand will you not be able to do:<br>
+<code class="notranslate">outport.getData()-&gt;getEditableRepresentation&lt;T&gt;()</code> since the data is now const. To solve this it is recommended to keep a copy of the <code class="notranslate">std::shared_ptr&lt;T&gt;</code> around in the processor instead.<br>
+One should take special care when changing data that has already been added to a outport since a different processor might be using that data in a background thread. One might for example use <code class="notranslate">std::shared_ptr&lt;T&gt;::unique()</code> to check whether there is someone else holding the data.</p>
 </li>
 <li>
-<p><strong>Image port</strong> has special overloads for non-const data since they might need to resize the data during resize events. Hence <code>ImageOutport::setData(std::shared_ptr&lt;T&gt; data)</code> and <code>std::shared_ptr&lt;T&gt; ImageOutport::getEditableData()</code> exists.</p>
+<p><strong>Image port</strong> has special overloads for non-const data since they might need to resize the data during resize events. Hence <code class="notranslate">ImageOutport::setData(std::shared_ptr&lt;T&gt; data)</code> and <code class="notranslate">std::shared_ptr&lt;T&gt; ImageOutport::getEditableData()</code> exists.</p>
 </li>
 <li>
 <p><strong>utilgl</strong> All the opengl utility functions in shaderutils, textureutils, etc, now uses reference arguments instead of points.<br>
-Notably the: <code>void setShaderUniforms(Shader&amp; shader, ...)</code><br>
+Notably the: <code class="notranslate">void setShaderUniforms(Shader&amp; shader, ...)</code><br>
 functions now take the shader by reference not pointer.</p>
 </li>
 </ul>
@@ -742,12 +742,12 @@ functions now take the shader by reference not pointer.</p>
 </ul>
 <h2>2015-07-16</h2>
 <ul>
-<li><strong>Shaders</strong> A shader now has a <code>onReload(std::function&lt;void()&gt;)</code> callback that processors that want to be reloaded on shader reload has to use. So now only affected processors will be invalidated on shader modifications. To get the same behavior as before this needs to be added to an processor using shaders:</li>
+<li><strong>Shaders</strong> A shader now has a <code class="notranslate">onReload(std::function&lt;void()&gt;)</code> callback that processors that want to be reloaded on shader reload has to use. So now only affected processors will be invalidated on shader modifications. To get the same behavior as before this needs to be added to an processor using shaders:</li>
 </ul>
 <div class="highlight highlight-source-c++"><pre>shader_.onReload([<span class="pl-c1">this</span>]() { <span class="pl-c1">invalidate</span>(INVALID_RESOURCES); });</pre></div>
 <h2>2015-07-15</h2>
 <ul>
-<li><strong>Timers</strong> The <code>InviwoApplication::createTimer()</code> factory has been removed in favor of a pure c++11 timer. Hence there is no need for a factory. The new class is very similar and can be found in <code>inviwo/core/util/timer.h</code></li>
+<li><strong>Timers</strong> The <code class="notranslate">InviwoApplication::createTimer()</code> factory has been removed in favor of a pure c++11 timer. Hence there is no need for a factory. The new class is very similar and can be found in <code class="notranslate">inviwo/core/util/timer.h</code></li>
 </ul>
 <h2>2015-07-14</h2>
 <ul>
@@ -769,9 +769,9 @@ functions now take the shader by reference not pointer.</p>
 template &lt;class F, class... Args&gt;
 auto dispatchPool(F&amp;&amp; f, Args&amp;&amp;... args) -&gt; 
     std::future&lt;typename std::result_of&lt;F(Args...)&gt;::type&gt; </pre></div>
-<p><code>dispatchFront</code> is used to submit a task to the Front thread, i.e. the thread that does handles the GUI and so far all the evaluation. Everything that can have side effects should be run in this thread, changing properties, updating the GUI, triggering evaluation etc.</p>
-<p><code>dispatchPool</code> is used to submit tasks to the thread pool. The size of the thread pool will by default be half of the number of cores and can be change is the system settings. It the pool size is 0 all submitted tasks will be run immediately. This is used in the regression to make sure everything is finished before we close inviwo. At this point we can not run OpenGL operations in the thread pool since we don't have any routines for how to handle the contexts.</p>
-<p>The return value of both <code>dispatchFront</code> and <code>dispatchPool</code> is a future&lt;...&gt; of the return value of the task given. Apart for getting the result of the task this future can be used to check whether the task has finished or is still running. Here is a small example:</p>
+<p><code class="notranslate">dispatchFront</code> is used to submit a task to the Front thread, i.e. the thread that does handles the GUI and so far all the evaluation. Everything that can have side effects should be run in this thread, changing properties, updating the GUI, triggering evaluation etc.</p>
+<p><code class="notranslate">dispatchPool</code> is used to submit tasks to the thread pool. The size of the thread pool will by default be half of the number of cores and can be change is the system settings. It the pool size is 0 all submitted tasks will be run immediately. This is used in the regression to make sure everything is finished before we close inviwo. At this point we can not run OpenGL operations in the thread pool since we don't have any routines for how to handle the contexts.</p>
+<p>The return value of both <code class="notranslate">dispatchFront</code> and <code class="notranslate">dispatchPool</code> is a future&lt;...&gt; of the return value of the task given. Apart for getting the result of the task this future can be used to check whether the task has finished or is still running. Here is a small example:</p>
 <div class="highlight highlight-source-c++"><pre>std::future&lt;std::unique_ptr&lt;Volume&gt;&gt; result_;</pre></div>
 <p>result here is a future holding the resulting volume from a subsampling. The following code submits the subsampling task to the thread pool and extracts the result from the future when the calculation is done.</p>
 <div class="highlight highlight-source-c++"><pre><span class="pl-k">void</span> <span class="pl-en">VolumeSubsample::process</span>() { 
@@ -796,4 +796,4 @@ auto dispatchPool(F&amp;&amp; f, Args&amp;&amp;... args) -&gt;
             vol, subSampleFactor_.<span class="pl-c1">get</span>());
     }
 }</pre></div>
-<p>Here we start by checking if there is a valid future, that means that there is either a result available or the calculation is running. In the case when the result is ready we extract the result and set it to the outport. If it is still running we do nothing since we don't what to fill the pool with jobs. To check if a future is ready we use wait_for with a timeout of 0. In the case that the result is invalid we submit a new task the pool using <code>dispatchPool</code> and assign the result to <code>result_</code>. To make sure that we get back to the process function when the task is done we also add a nested task submit inside of the pool task <code>dispatchFront([this]() { invalidate(INVALID_OUTPUT); });</code> this will run when that task is finished submitting an invalidation on the Front thread casing a new evaluation of the processor. Where we then will find the result of the task.</p></body></html>
+<p>Here we start by checking if there is a valid future, that means that there is either a result available or the calculation is running. In the case when the result is ready we extract the result and set it to the outport. If it is still running we do nothing since we don't what to fill the pool with jobs. To check if a future is ready we use wait_for with a timeout of 0. In the case that the result is invalid we submit a new task the pool using <code class="notranslate">dispatchPool</code> and assign the result to <code class="notranslate">result_</code>. To make sure that we get back to the process function when the task is done we also add a nested task submit inside of the pool task <code class="notranslate">dispatchFront([this]() { invalidate(INVALID_OUTPUT); });</code> this will run when that task is finished submitting an invalidation on the Front thread casing a new evaluation of the processor. Where we then will find the result of the task.</p></body></html>

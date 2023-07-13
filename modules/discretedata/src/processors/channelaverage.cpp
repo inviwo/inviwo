@@ -69,6 +69,8 @@ ChannelAverage::ChannelAverage()
 
     addPorts(dataIn_, dataOut_, avgOut_);
     addProperties(positions_, data_, averagingDim_, dimRanges_, avgGridSize_, relativeDiff_);
+
+    // positions_.onChange([&](){});
 }
 
 void ChannelAverage::process() {
@@ -117,6 +119,9 @@ void ChannelAverage::process() {
                                                              DISCRETEDATA_MAX_NUM_DIMENSIONS>(
         positions_.getCurrentChannel()->getNumComponents(), AverageSpatialDispatcher(),
         datasetOut.get(), this, numDimsUnchanged);
+
+    // auto avgUniformData = data_.getCurrentChannel()->dispatch<std::shared_ptr<DataSet>>(
+    //     AverageDispatcher(), datasetOut.get(), this, numDimsUnchanged);
 
     if (avgUniformData) {
         avgOut_.setData(avgUniformData);

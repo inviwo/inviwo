@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,52 +32,54 @@
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <unordered_map>
-#include <string>
+#include <inviwo/core/ports/volumeport.h>
+#include <modules/vectorfieldvisualization/algorithms/integrallineoperations.h>
+#include <modules/vectorfieldvisualization/integrallinetracer.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <inviwo/core/processors/poolprocessor.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.LinesFromDataFrame, Lines From Data Frame}
- * ![](org.inviwo.LinesFromDataFrame.png?classIdentifier=org.inviwo.LinesFromDataFrame)
- * Create an IntegralLineSet from a DataFrame.
+/** \docpage{org.inviwo.PathsBetweenRegions, Streamline Pathways}
+ * ![](org.inviwo.PathsBetweenRegions.png?classIdentifier=org.inviwo.PathsBetweenRegions)
+ * Given two areas, find streamliens that connect them.
  *
- * Midges: id x z y t vx vz vy ax az ay
- * Column 1, Column 2 ....
+ * ### Inports
+ *   * __sampler__ SpatialSampler to integrate in.
+ *   * __startEndVolume__ Volume with valid region (x) and flags for start and end regions (y).
+ *
+ * ### Outports
+ *   * __lines__ The lines connecting the two regions.
+ *   * __startEndVolume__ Volume marking start cells (x) that made it through and the end cells (y)
+ * that were reached.
+ *
+ * ### Properties
+ *   * __integrationProperties__
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API LinesFromDataFrame : public Processor {
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathsBetweenRegions : public PoolProcessor {
 public:
-    LinesFromDataFrame();
-    virtual ~LinesFromDataFrame() = default;
+    using Sampler = SpatialSampler<3, 3, double>;
+    using Tracer = IntegralLineTracer<Sampler>;
+
+    PathsBetweenRegions();
+    virtual ~PathsBetweenRegions() = default;
 
     virtual void process() override;
-    void updateColumns();
-
-    // void deserialize(Deserializer& d) override;
-    // void serialize(Serializer& s) const override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataFrameInport dataIn_;
-    IntegralLineSetOutport linesOut_;
+    DataInport<Sampler> sampler_;
+    VolumeInport startEndVolume_;  // This volume is expected to contain:
+                                   // U: all valid nodes for the graph search (!=0)
+                                   // V: the start nodes (>0) and end nodes (<0).
 
-    OptionPropertyString timeColumn_;
-    DoubleProperty startTime_;
-    BoolProperty maximizeStartTime_;
-    DoubleProperty timeStep_;
-    CompositeProperty columnsForPosition_;
-    BoolCompositeProperty columnsForVelocity_, columnsForAcceleration_;
-    BoolProperty updateOutput_;
+    IntegralLineProperties integrationProperties_;
+    BoolProperty filter_;
 
-    // enum PointData : char { None = 0, Position = 1, Velocity = 2, Acceleration = 4 };
-    // // Maps from the DataFrame column name to a flag of the line data it is assigned to.
-    // std::unordered_map<std::string, char> columnDataMap_;
+    VolumeOutport validStartEndVolume_;
+    IntegralLineSetOutport integralLines_;
 };
 
 }  // namespace inviwo

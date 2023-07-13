@@ -80,6 +80,7 @@
 #include <modules/base/processors/volumesource.h>
 #include <modules/base/processors/volumeexport.h>
 #include <modules/base/processors/volumebasistransformer.h>
+#include <modules/base/processors/volumerotation.h>
 #include <modules/base/processors/volumeshifter.h>
 #include <modules/base/processors/volumeslice.h>
 #include <modules/base/processors/volumesubsample.h>
@@ -173,6 +174,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<TransformMesh>();
     registerProcessor<TransformVolume>();
     registerProcessor<VolumeConverter>();
+    registerProcessor<VolumeRotation>();
     registerProcessor<WorldTransformMeshDeprecated>();
     registerProcessor<WorldTransformVolumeDeprecated>();
     registerProcessor<VolumeSlice>();

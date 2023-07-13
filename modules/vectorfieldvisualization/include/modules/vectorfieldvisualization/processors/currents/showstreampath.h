@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,54 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESHADER_H
-#define IVW_VOLUMESHADER_H
+#pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <modules/vectorfieldvisualization/integrallinetracer.h>
+#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API VolumeShader : public VolumeGLProcessor {
+/** \docpage{org.inviwo.ShowStreamPath, Show Stream Path}
+ * ![](org.inviwo.ShowStreamPath.png?classIdentifier=org.inviwo.ShowStreamPath)
+ * Takes the output of the StreamSpanningTree processor and shows the path to a chosen end point.
+ */
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API ShowStreamPath : public Processor {
 public:
-    VolumeShader();
-    virtual ~VolumeShader();
+    ShowStreamPath();
+    virtual ~ShowStreamPath() = default;
+
+    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    virtual void process() override;
-    virtual void initializeResources() override;
 
 private:
-    VolumeShader(std::shared_ptr<StringShaderResource> fragmentShader);
+    using Sampler = SpatialSampler<3, 3, double>;
+    using Tracer = IntegralLineTracer<Sampler>;
 
-    std::shared_ptr<StringShaderResource> fragmentShader_;
-    StringProperty fragmentSrc_;
-    BoolCompositeProperty differentOutputFormat_;
-    TemplateOptionProperty<DataFormatId> outputFormat_;
-    BoolCompositeProperty differentOutputSize_;
-    IntSize3Property outputSize_;
+    // Inports
+    DataInport<Sampler> velocitySampler_;
+    VolumeInport indexVolume_;
+    VolumeInport destinationVolume_;
+
+    // Properties
+    IntSize3Property destination_;
+    IntegralLineProperties integrationProperties_;
+    IntSizeTProperty samplingStride_;
+    FloatVec4Property lineColor_, jumpColor_;
+    BoolProperty markJumps_;
+    BoolProperty integrate_;
+
+    // Outports
+    MeshOutport pointMesh_, lineMesh_, jumpMesh_;
+    IntegralLineSetOutport integralLines_;
+    SeedPoints3DOutport endPointSeed_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESHADER_H

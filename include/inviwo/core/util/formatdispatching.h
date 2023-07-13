@@ -301,6 +301,12 @@ template <typename Format>
 struct FloatVecs
     : std::integral_constant<bool, Format::comp >= 2 && Format::numtype == NumericType::Float> {};
 
+/**
+ *	All types T that allow for an OrdinalProperty<T>.
+ */
+template <typename Format>
+struct PropertyCompatible : std::integral_constant<bool, !(Format::precision() != 16)> {};
+
 }  // namespace filter
 
 }  // namespace dispatching

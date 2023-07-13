@@ -56,6 +56,7 @@
 #include <modules/discretedata/processors/extrudedataset.h>
 #include <modules/discretedata/processors/sphericalcoordinates.h>
 
+#include <modules/discretedata/processors/vectorfromdataset.h>
 #include <modules/discretedata/sampling/interpolant.h>
 #include <modules/discretedata/sampling/celltree.h>
 using namespace inviwo::discretedata;
@@ -90,6 +91,7 @@ DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(ap
     registerProcessor<SegmentationVoxelizer>();
     registerProcessor<DataSetSource>();
     registerProcessor<ExampleDataSet>();
+    registerProcessor<VectorFromDataset>();
 
     // Ports
     registerPort<DataSetOutport>();

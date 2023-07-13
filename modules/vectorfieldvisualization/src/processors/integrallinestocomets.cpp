@@ -456,9 +456,9 @@ void IntegralLinesToComets::process() {
                 auto color = coloring(mdContainter[time], line.getIndex(), lineIdx);
                 vec3 propSample = util::glm_convert<vec3>(mdContainter[(size_t)time]);
 
+                indexBuffer->add(static_cast<std::uint32_t>(lineVertices.size()));
                 lineVertices.push_back({funcRemoveRF(pos, size_t(time)), velocity[(size_t)time],
                                         propSample, color.first});
-                indexBuffer->add(static_cast<std::uint32_t>(lineVertices.size()));
 
                 pointIndex->add(static_cast<std::uint32_t>(pointVertices.size()));
                 // color.a = 1.0;

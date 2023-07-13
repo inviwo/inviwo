@@ -1,7 +1,7 @@
 import inviwopy
 from inviwopy.glm import ivec3, dvec2
 from inviwopy.properties import IntVec3Property
-from inviwopy.data import VolumeOutport
+from inviwopy.data import VolumeOutport, VolumeInport
 from inviwopy.data import Volume
 import numpy
 
@@ -14,22 +14,17 @@ The PythonScriptProcessor is exposed as the local variable 'self'.
 #if not "dim" in self.properties:
 #	self.addProperty(IntVec3Property("dim", "dim", ivec3(5), ivec3(0), ivec3(20)))
 
-#if not "outport" in self.outports:
-#	self.addOutport(VolumeOutport("outport"))
+if not "outport" in self.outports:
+	self.addOutport(VolumeOutport("outport"))
+if not "inport" in self.inports:
+	self.addInport(VolumeInport("inport"))
 
 def process(self):
-	"""
-	The PythonScriptProcessor will call this process function whenever the processor process 
-	function is called. The argument 'self' represents the PythonScriptProcessor.
-	"""
-	# create a small float volume filled with random noise
-	#numpy.random.seed(546465)
-	#dim = self.properties.dim.value;
-	#volume = Volume(numpy.random.rand(dim[0], dim[1], dim[2]).astype(numpy.float32))
 	#volume.dataMap.dataRange = dvec2(0.0, 1.0)
-	#volume.dataMap.valueRange = dvec2(0.0, 1.0)
-	#self.outports.outport.setData(volume)
-	pass
+    #volume.dataMap.valueRange = dvec2(0.0, 1.0)
+    if not "inport" in self.inports or not "outport" in self.outports or not self.inports.inport.hasData():
+        pass
+    self.outports.outport.setData(self.inports.inport.getData())
 
 def initializeResources(self):
 	pass

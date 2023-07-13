@@ -43,6 +43,7 @@ VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragm
     , inport_("inputVolume")
     , outport_("outputVolume")
     , dataFormat_(nullptr)
+    , dataSize_{}
     , internalInvalid_(true)
     , shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
                {ShaderType::Geometry, utilgl::findShaderResource("volume_gpu.geom")},
@@ -67,12 +68,13 @@ VolumeGLProcessor::~VolumeGLProcessor() {}
 void VolumeGLProcessor::process() {
     bool reattach = false;
 
+    size3_t dim = dataSize_.value_or(inport_.getData()->getDimensions());
     if (internalInvalid_) {
         reattach = true;
         internalInvalid_ = false;
         const DataFormatBase* format =
             dataFormat_ ? dataFormat_ : inport_.getData()->getDataFormat();
-        volume_ = std::make_shared<Volume>(inport_.getData()->getDimensions(), format);
+        volume_ = std::make_shared<Volume>(dim, format);
         volume_->setModelMatrix(inport_.getData()->getModelMatrix());
         volume_->setWorldMatrix(inport_.getData()->getWorldMatrix());
         // pass meta data on
@@ -85,10 +87,10 @@ void VolumeGLProcessor::process() {
 
     TextureUnitContainer cont;
     utilgl::bindAndSetUniforms(shader_, cont, *inport_.getData(), "volume");
+    utilgl::setShaderUniforms(shader_, *volume_, "outputVolumeParameters");
 
     preProcess(cont);
 
-    const size3_t dim{inport_.getData()->getDimensions()};
     fbo_.activate();
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 

@@ -62,6 +62,7 @@ set(HEADER_FILES
     include/modules/discretedata/processors/meshfromdataset.h
     include/modules/discretedata/processors/segmentationvoxelizer.h
     include/modules/discretedata/processors/sphericalcoordinates.h
+    include/modules/discretedata/processors/vectorfromdataset.h
     include/modules/discretedata/processors/volumefromdataset.h
     include/modules/discretedata/properties/datachannelproperty.h
     include/modules/discretedata/properties/datasamplerproperty.h
@@ -127,6 +128,7 @@ set(SOURCE_FILES
     src/processors/meshfromdataset.cpp
     src/processors/segmentationvoxelizer.cpp
     src/processors/sphericalcoordinates.cpp
+    src/processors/vectorfromdataset.cpp
     src/processors/volumefromdataset.cpp
     src/properties/datachannelproperty.cpp
     src/properties/datasamplerproperty.cpp

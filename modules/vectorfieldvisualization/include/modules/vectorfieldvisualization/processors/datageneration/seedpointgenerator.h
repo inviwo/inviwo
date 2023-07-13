@@ -78,6 +78,8 @@ private:
     FloatVec3Property lineStart_;
     FloatVec3Property lineEnd_;
 
+    IntSize3Property uniformSize_;
+
     OptionPropertyInt generator_;
 
     CompositeProperty randomness_;
@@ -88,6 +90,7 @@ private:
     void planePoints();
     void linePoints();
     void spherePoints();
+    void uniformPoints();
 
     std::random_device rd_;
     std::mt19937 mt_;

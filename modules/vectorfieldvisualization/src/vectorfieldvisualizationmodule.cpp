@@ -29,13 +29,19 @@
 
 #include <modules/vectorfieldvisualization/generatestreamfunction.h>
 #include <modules/vectorfieldvisualization/processors/2d/seedstomesh2d.h>
+#include <modules/vectorfieldvisualization/processors/currents/highvelocitylineregions.h>
+#include <modules/vectorfieldvisualization/processors/currents/pathsbetweenregions.h>
+#include <modules/vectorfieldvisualization/processors/currents/streamspanningtree3d.h>
+#include <modules/vectorfieldvisualization/processors/currents/streamspanningtreejit.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/holgersthreelines.h>
+#include <modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask2d.h>
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmodule.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask.h>
 
+#include <modules/vectorfieldvisualization/processors/integrallineannotation.h>
 #include <modules/vectorfieldvisualization/processors/linesourceascii.h>
 #include <modules/vectorfieldvisualization/processors/perpendicularsimilarity.h>
 #include <modules/vectorfieldvisualization/processors/unsteadyvolumetospatialsampler.h>
@@ -63,8 +69,12 @@
 #include <modules/base/processors/volumetospatialsampler.h>
 #include <modules/vectorfieldvisualization/processors/addvalueperline.h>
 #include <modules/vectorfieldvisualization/processors/arrowglyphs.h>
+#include <modules/vectorfieldvisualization/processors/currents/showstreampath.h>
+#include <modules/vectorfieldvisualization/processors/currents/streamspanningtree.h>
 #include <modules/vectorfieldvisualization/processors/flowfieldprocessor.h>
 #include <modules/vectorfieldvisualization/processors/linesfromdataframe.h>
+#include <modules/vectorfieldvisualization/processors/meshtocomets.h>
+#include <modules/vectorfieldvisualization/processors/meshtointegrallines.h>
 #include <modules/vectorfieldvisualization/processors/seedsfrommesh.h>
 
 namespace inviwo {
@@ -90,8 +100,12 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<ArrowGlyphs3D>();
     registerProcessor<FlowField2DProcessor>();
     registerProcessor<GenerateStreamFunction>();
+    registerProcessor<HighVelocityLineRegions>();
     registerProcessor<HolgersThreeLines>();
+    registerProcessor<IntegralLineAnnotation>();
     registerProcessor<LineSourceASCII>();
+    registerProcessor<MeshToIntegralLines>();
+    registerProcessor<PathsBetweenRegions>();
     registerProcessor<RBFVectorFieldGenerator2D>();
     registerProcessor<RBFVectorFieldGenerator3D>();
     registerProcessor<SeedPointGenerator>();
@@ -117,16 +131,23 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<LineSetSelector>();
     registerProcessor<LinesFromDataFrame>();
     registerProcessor<LinesToArrows>();
+    registerProcessor<MeshToComets>();
     registerProcessor<ScalarConvolutionProcessor>();
+    registerProcessor<SeedPointsFromMask2D>();
     registerProcessor<SeedsFromMesh>();
     registerProcessor<SeedsToMesh2D>();
     registerProcessor<SeedsToMesh3D>();
     registerProcessor<SeedsToMesh4D>();
+    registerProcessor<ShowStreamPath>();
+    registerProcessor<StreamSpanningTree>();
+    registerProcessor<StreamSpanningTree3D>();
+    registerProcessor<StreamSpanningTreeJIT>();
     registerProcessor<StreamlinePathways>();
 
     registerProperty<StreamLineProperties>();
     registerProperty<PathLineProperties>();
     registerProperty<IntegralLineVectorToMesh::ColorByProperty>();
+    registerProperty<IntegralLinesToComets::ColorByProperty>();
 
     registerDefaultsForDataType<IntegralLineSet>();
 }

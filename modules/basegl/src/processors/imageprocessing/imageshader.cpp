@@ -52,7 +52,7 @@ struct Helper {
         formats.emplace_back(Format::str(), Format::str(), Format::id());
     }
 };
-}
+}  // namespace
 
 const ProcessorInfo ImageShader::processorInfo_{
     "org.inviwo.ImageShader",  // Class identifier
@@ -78,22 +78,25 @@ ImageShader::ImageShader(std::shared_ptr<StringShaderResource> fragmentShader)
     , fragmentSrc_("shader", "Shader", std::string(defaultFrag),
                    InvalidationLevel::InvalidResources, PropertySemantics::ShaderEditor)
     , differentOutputFormat_("differentOutputFormat", "Different Output Format", false)
-    , outputFormat_("outputFormat", "Output Format",
-              [&]() {
-                  std::vector<OptionPropertyOption<DataFormatId>> formats;
-                  util::for_each_type<DefaultDataFormats>{}(
-                      Helper(), formats);
-                  return formats;
-              }(),
-              1){
-    
+    , outputFormat_(
+          "outputFormat", "Output Format",
+          [&]() {
+              std::vector<OptionPropertyOption<DataFormatId>> formats;
+              util::for_each_type<DefaultDataFormats>{}(Helper(), formats);
+              return formats;
+          }(),
+          1)
+    , outportDeterminedSize_("sizeByOutport", "Outport determines size", false) {
+
     fragmentSrc_.onChange([&]() { fragmentShader_->setSource(fragmentSrc_.get()); });
-    outputFormat_.onChange([&](){ internalInvalid_ = true; });
-    differentOutputFormat_.onChange([&](){
+    outputFormat_.onChange([&]() { internalInvalid_ = true; });
+    differentOutputFormat_.onChange([&]() {
         outputFormat_.setReadOnly(!differentOutputFormat_.get());
         internalInvalid_ = true;
     });
-    addProperties(fragmentSrc_, differentOutputFormat_, outputFormat_);
+    outportDeterminedSize_.onChange(
+        [&]() { outport_.setHandleResizeEvents(outportDeterminedSize_.get()); });
+    addProperties(fragmentSrc_, differentOutputFormat_, outputFormat_, outportDeterminedSize_);
 }
 
 void ImageShader::process() {

@@ -43,7 +43,7 @@ namespace inviwo {
  * \brief Base class for volume processing on the GPU using OpenGL.
  *
  * The VolumeGLProcessor provides the basic structure for volume processing on the GPU.
- * Derived shaders have to provide a custom fragment shader which is used during rendering.
+ * Derived shaders have to provide a custom fragment shader which is used during rendering.VolumeGLProcessor
  * Optionally, derived classes can overwrite VolumeGLProcessor::postProcess() to perform
  * post-processing of the output data stored in the outport. Furthermore, it is possible to
  * be notified of inport changes by overwriting VolumeGLProcessor::afterInportChanged().
@@ -83,6 +83,7 @@ protected:
     std::shared_ptr<Volume> volume_;
 
     const DataFormatBase* dataFormat_;
+    std::optional<size3_t> dataSize_;
     bool internalInvalid_;
     std::string fragmentShader_;
     Shader shader_;

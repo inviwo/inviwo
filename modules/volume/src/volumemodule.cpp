@@ -27,8 +27,10 @@
  *
  *********************************************************************************/
 
+#include <inviwo/volume/processors/centerline.h>
 #include <inviwo/volume/processors/concatvolumes.h>
 #include <inviwo/volume/processors/correlateslices.h>
+#include <inviwo/volume/processors/imagepadding.h>
 #include <inviwo/volume/processors/volumevoronoisegmentation.h>
 #include <inviwo/volume/volumemodule.h>
 
@@ -41,8 +43,10 @@ VolumeModule::VolumeModule(InviwoApplication* app) : InviwoModule(app, "Volume")
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
+    registerProcessor<CenterLine>();
     registerProcessor<ConcatVolumes>();
     registerProcessor<CorrelateSlices>();
+    registerProcessor<ImagePadding>();
     // registerProcessor<VolumeProcessor>();
     registerProcessor<VolumeVoronoiSegmentation>();
 
