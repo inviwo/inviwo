@@ -24,6 +24,7 @@ set(HEADER_FILES
     include/modules/vectorfieldvisualization/processors/currents/streamspanningtree.h
     include/modules/vectorfieldvisualization/processors/currents/streamspanningtree3d.h
     include/modules/vectorfieldvisualization/processors/currents/streamspanningtreejit.h
+    include/modules/vectorfieldvisualization/processors/currents/volumeremapvertical.h
     include/modules/vectorfieldvisualization/processors/datageneration/holgersthreelines.h
     include/modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h
     include/modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h
@@ -79,6 +80,7 @@ set(SOURCE_FILES
     src/processors/currents/streamspanningtree.cpp
     src/processors/currents/streamspanningtree3d.cpp
     src/processors/currents/streamspanningtreejit.cpp
+    src/processors/currents/volumeremapvertical.cpp
     src/processors/datageneration/holgersthreelines.cpp
     src/processors/datageneration/rbfvectorfieldgenerator2d.cpp
     src/processors/datageneration/rbfvectorfieldgenerator3d.cpp

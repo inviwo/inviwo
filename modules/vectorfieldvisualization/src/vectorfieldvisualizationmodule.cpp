@@ -71,6 +71,7 @@
 #include <modules/vectorfieldvisualization/processors/arrowglyphs.h>
 #include <modules/vectorfieldvisualization/processors/currents/showstreampath.h>
 #include <modules/vectorfieldvisualization/processors/currents/streamspanningtree.h>
+#include <modules/vectorfieldvisualization/processors/currents/volumeremapvertical.h>
 #include <modules/vectorfieldvisualization/processors/flowfieldprocessor.h>
 #include <modules/vectorfieldvisualization/processors/linesfromdataframe.h>
 #include <modules/vectorfieldvisualization/processors/meshtocomets.h>
@@ -143,6 +144,7 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<StreamSpanningTree3D>();
     registerProcessor<StreamSpanningTreeJIT>();
     registerProcessor<StreamlinePathways>();
+    registerProcessor<VolumeRemapVertical>();
 
     registerProperty<StreamLineProperties>();
     registerProperty<PathLineProperties>();

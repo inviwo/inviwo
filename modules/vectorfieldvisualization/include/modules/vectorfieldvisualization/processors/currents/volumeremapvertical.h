@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,37 +32,20 @@
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <modules/vectorfieldvisualization/algorithms/integrallineoperations.h>
-#include <modules/vectorfieldvisualization/integrallinetracer.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
-#include <inviwo/core/processors/poolprocessor.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.PathsBetweenRegions, Streamline Pathways}
- * ![](org.inviwo.PathsBetweenRegions.png?classIdentifier=org.inviwo.PathsBetweenRegions)
- * Given two areas, find streamliens that connect them.
- *
- * ### Inports
- *   * __sampler__ SpatialSampler to integrate in.
- *   * __startEndVolume__ Volume with valid region (x) and flags for start and end regions (y).
- *
- * ### Outports
- *   * __lines__ The lines connecting the two regions.
- *   * __startEndVolume__ Volume marking start cells (x) that made it through and the end cells (y)
- * that were reached.
- *
- * ### Properties
- *   * __integrationProperties__
+/** \docpage{org.inviwo.VolumeRemapVertical, Volume Remap Vertical}
+ * ![](org.inviwo.VolumeRemapVertical.png?classIdentifier=org.inviwo.VolumeRemapVertical)
+ * Given a volume using a known vertical coordinate system, remap the volume onto a new one
+ * (with probably higher resolution).
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathsBetweenRegions : public PoolProcessor {
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API VolumeRemapVertical : public Processor {
 public:
-    using Sampler = SpatialSampler<3, 3, double>;
-    using Tracer = IntegralLineTracer<Sampler>;
-
-    PathsBetweenRegions();
-    virtual ~PathsBetweenRegions() = default;
+    VolumeRemapVertical();
+    virtual ~VolumeRemapVertical() = default;
 
     virtual void process() override;
 
@@ -70,16 +53,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataInport<Sampler> sampler_;
-    VolumeInport startEndVolume_;  // This volume is expected to contain:
-                                   // U: all valid nodes for the graph search (!=0)
-                                   // V: the start nodes (>0) and end nodes (<0).
-
-    IntegralLineProperties integrationProperties_;
-    BoolProperty filterEnd_, filterPath_, colorLine_;
-
-    VolumeOutport validStartEndVolume_;
-    IntegralLineSetOutport integralLines_;
+    VolumeInport volumeIn_;
+    IntSize3Property newSize_;
+    BoolProperty negativeDepth_;
+    VolumeOutport volumeOut_;
 };
 
 }  // namespace inviwo
