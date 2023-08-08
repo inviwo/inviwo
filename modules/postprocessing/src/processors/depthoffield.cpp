@@ -212,11 +212,14 @@ void DepthOfField::process() {
             std::swap(nextOutImg_, prevOutImg_);
         }
         evalCount_++;
-        dispatchFront([this, maxEvalCount, focusDepth]() {
-            if (auto* SkewedCamera = dynamic_cast<SkewedPerspectiveCamera*>(&camera_.get())) {
-                moveCamera(SkewedCamera, maxEvalCount, focusDepth);
-            } else {
-                invalidate(InvalidationLevel::InvalidOutput);
+        dispatchFront([weakSelf = weak_from_this(), maxEvalCount, focusDepth]() {
+            if (auto self = std::dynamic_pointer_cast<DepthOfField>(weakSelf.lock())) {
+                if (auto* SkewedCamera =
+                        dynamic_cast<SkewedPerspectiveCamera*>(&(self->camera_.get()))) {
+                    self->moveCamera(SkewedCamera, maxEvalCount, focusDepth);
+                } else {
+                    self->invalidate(InvalidationLevel::InvalidOutput);
+                }
             }
         });
     } else {
@@ -229,7 +232,11 @@ void DepthOfField::process() {
 
         // Reset camera
         evalCount_ = maxEvalCount;
-        dispatchFront([this]() { camera_.setCamera(std::unique_ptr<Camera>(ogCamera_->clone())); });
+        dispatchFront([weakSelf = weak_from_this()]() {
+            if (auto self = std::dynamic_pointer_cast<DepthOfField>(weakSelf.lock())) {
+                self->camera_.setCamera(std::unique_ptr<Camera>(self->ogCamera_->clone()));
+            }
+        });
     }
 }
 
@@ -290,20 +297,25 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
     const auto minDepthWorld = ndcToWorldDepth(minmax.first);
     const auto maxDepthWorld = ndcToWorldDepth(minmax.second);
 
-    dispatchFront([this, minDepthWorld, maxDepthWorld]() {
-        NetworkLock lock(this);
+    dispatchFront([weakSelf = weak_from_this(), minDepthWorld, maxDepthWorld]() {
+        if (auto self = std::dynamic_pointer_cast<DepthOfField>(weakSelf.lock())) {
 
-        focusDepth_.set(focusDepth_.get(), std::min(minDepthWorld, focusDepth_.get()),
-                        std::max(maxDepthWorld, focusDepth_.get()),
-                        (maxDepthWorld - minDepthWorld) / 100.0);
+            NetworkLock lock(self.get());
 
-        int depthScale = static_cast<int>(floor(log10(minDepthWorld)));
-        double minAperture = pow(10, depthScale - 1);
-        double maxAperture = pow(10, depthScale);
-        aperture_.set(aperture_.get(), std::min(minAperture, aperture_.get()),
-                      std::max(maxAperture, aperture_.get()), (maxAperture - minAperture) / 90.0);
+            self->focusDepth_.set(self->focusDepth_.get(),
+                                  std::min(minDepthWorld, self->focusDepth_.get()),
+                                  std::max(maxDepthWorld, self->focusDepth_.get()),
+                                  (maxDepthWorld - minDepthWorld) / 100.0);
 
-        camera_.setCamera(SkewedPerspectiveCamera::classIdentifier);
+            int depthScale = static_cast<int>(floor(log10(minDepthWorld)));
+            double minAperture = pow(10, depthScale - 1);
+            double maxAperture = pow(10, depthScale);
+            self->aperture_.set(self->aperture_.get(), std::min(minAperture, self->aperture_.get()),
+                                std::max(maxAperture, self->aperture_.get()),
+                                (maxAperture - minAperture) / 90.0);
+
+            self->camera_.setCamera(SkewedPerspectiveCamera::classIdentifier);
+        }
     });
 }
 
@@ -381,7 +393,8 @@ void DepthOfField::warpToLightfieldGPU(TextureUnitContainer& cont, double fovy, 
     addToLightFieldShader_.setUniform("lightFieldDepth", 1);
 
     if (evalCount_ == 0) {
-        // Warp central (first) view to all simulated views to approximate the view from each point.
+        // Warp central (first) view to all simulated views to approximate the view from each
+        // point.
         addToLightFieldShader_.setUniform("segmentStart", 0);
         glDispatchCompute(static_cast<GLuint>(dim.x), static_cast<GLuint>(dim.y),
                           static_cast<GLuint>(simViewCountApprox_.get()));
@@ -426,8 +439,8 @@ void DepthOfField::warpToLightfieldCPU(std::shared_ptr<const Image> img, double 
                          focusDepth);
                 }
             } else {
-                // Warp peripheral views to a circle segment of simulated views to fill visibility
-                // holes left after warping the central view.
+                // Warp peripheral views to a circle segment of simulated views to fill
+                // visibility holes left after warping the central view.
                 const double segmentWidth =
                     double(simViewCountApprox_.get()) / double(viewCountApprox_.get() - 1);
                 const int start = static_cast<int>((evalCount_ - 1) * segmentWidth);
