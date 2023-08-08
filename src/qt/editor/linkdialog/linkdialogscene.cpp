@@ -68,7 +68,7 @@ LinkDialogGraphicsScene::LinkDialogGraphicsScene(QWidget* parent, ProcessorNetwo
     network_->addObserver(this);
 
     QColor bgColor;
-    bgColor.setNamedColor("#4d4d4d");
+    bgColor.fromString("#4d4d4d");
     setBackgroundBrush(bgColor);
 
     srcProcessor_ =

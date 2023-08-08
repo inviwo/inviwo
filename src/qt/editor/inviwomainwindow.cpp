@@ -323,11 +323,21 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
 
     app->getCommandLineParser().add(
         &updateExampleWorkspaces_,
-        [this]() { util::updateExampleWorkspaces(app_, util::DryRun::No); }, 1250);
+        [this]() {
+            util::updateExampleWorkspaces(app_, util::DryRun::No, []() {
+                qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+            });
+        },
+        1250);
 
     app->getCommandLineParser().add(
         &updateRegressionWorkspaces_,
-        [this]() { util::updateRegressionWorkspaces(app_, util::DryRun::No); }, 1250);
+        [this]() {
+            util::updateRegressionWorkspaces(app_, util::DryRun::No, []() {
+                qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+            });
+        },
+        1250);
 
     app->getCommandLineParser().add(
         &updateWorkspacesInPath_,

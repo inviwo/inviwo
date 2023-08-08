@@ -1606,7 +1606,7 @@ TiXmlAttributeSet::~TiXmlAttributeSet()
 void TiXmlAttributeSet::Add( TiXmlAttribute* addMe )
 {
     #ifdef TIXML_USE_STL
-	assert( !Find( TIXML_STRING( addMe->Name() ) ) );	// Shouldn't be multiply adding to the set.
+	assert( !Find( addMe->NameTStr() ) );	// Shouldn't be multiply adding to the set.
 	#else
 	assert( !Find( addMe->Name() ) );	// Shouldn't be multiply adding to the set.
 	#endif

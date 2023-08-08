@@ -360,6 +360,10 @@ QPushButton:hover, QToolButton:hover {
     border: 0.0625em solid #268bd2;
 }
 
+QPushButton:focus, QToolButton:focus {
+    border: 0.0625em solid #268bd2;
+}
+
 QLineEdit#ColorLineEdit[input="valid"] {
     border: 0.0625em solid #1a800d;
 }

@@ -103,14 +103,8 @@ private:
 
 void WorkspaceInfoLoader::operator()() {
     try {
-        WorkspaceAnnotationsQt annotations{filename_, app_};
-
-        emit workspaceInfoLoaded(WorkspaceInfo{
-            utilqt::toQString(annotations.getTitle()), utilqt::toQString(annotations.getAuthor()),
-            utilqt::toQString(annotations.getTags()),
-            utilqt::toQString(annotations.getCategories()),
-            utilqt::toQString(annotations.getDescription()), annotations.getPrimaryCanvasQImage(),
-            WorkspaceAnnotationsQt::workspaceProcessors(filename_, app_)});
+        auto annotations = std::make_shared<WorkspaceAnnotationsQt>(filename_, app_);
+        emit workspaceInfoLoaded(WorkspaceInfo{annotations});
     } catch (const Exception&) {
     }
 }
@@ -223,30 +217,36 @@ QVariant TreeItem::data(int column, int role) const {
 
             case static_cast<int>(Role::Title):
                 infoLoader_->submit();
-                return info_.title;
+                if (!info_.annotations) return {};
+                return utilqt::toQString(info_.annotations->getTitle());
             case static_cast<int>(Role::Author):
                 infoLoader_->submit();
-                return info_.author;
+                if (!info_.annotations) return {};
+                return utilqt::toQString(info_.annotations->getAuthor());
             case static_cast<int>(Role::Tags):
                 infoLoader_->submit();
-                return info_.tags;
+                if (!info_.annotations) return {};
+                return utilqt::toQString(info_.annotations->getTags());
             case static_cast<int>(Role::Categories):
                 infoLoader_->submit();
-                return info_.categories;
+                if (!info_.annotations) return {};
+                return utilqt::toQString(info_.annotations->getCategories());
             case static_cast<int>(Role::Description):
                 infoLoader_->submit();
-                return info_.description;
+                if (!info_.annotations) return {};
+                return utilqt::toQString(info_.annotations->getDescription());
             case static_cast<int>(Role::Processors):
                 infoLoader_->submit();
-                return info_.processors;
-            case static_cast<int>(Role::PrimaryImage): {
+                if (!info_.annotations) return {};
+                return info_.annotations->getProcessorsQString();
+            case static_cast<int>(Role::PrimaryImage):
                 infoLoader_->submit();
-                if (info_.image.isNull()) {
-                    return QImage{":/inviwo/inviwo-logo-light.svg"};
-                } else {
-                    return info_.image;
-                }
-            }
+                if (!info_.annotations) return {};
+                return info_.annotations->getPrimaryCanvasQImage();
+            case static_cast<int>(Role::Annotations):
+                infoLoader_->submit();
+                if (!info_.annotations) return {};
+                return QVariant::fromValue(info_);
 
             default:
                 return {};

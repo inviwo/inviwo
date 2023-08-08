@@ -112,12 +112,12 @@ IVW_CORE_API bool copyMatchingSubPropsIntoComposite(TxElement* node, const Compo
 
 IVW_CORE_API bool hasProp(TxElement* node, const Property& prop);
 
-IVW_CORE_API std::vector<TxElement*> getMatchingElements(TxElement* processornode, std::string key);
+IVW_CORE_API std::vector<TxElement*> getMatchingElements(TxElement* processornode, std::string_view key);
 
 IVW_CORE_API bool findMatchingSubPropertiesForComposites(
     TxElement* node, const std::vector<const CompositeProperty*>& props);
 
-IVW_CORE_API TxElement* getElement(TxElement* node, std::string path);
+IVW_CORE_API TxElement* getElement(TxElement* node, std::string_view path);
 
 IVW_CORE_API bool copyMatchingCompositeProperty(TxElement* node, const CompositeProperty& prop);
 
@@ -141,14 +141,16 @@ struct ElementMatcher {
 template <typename Visitor>
 void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& selector,
                         Visitor visitor) {
+
+    std::string childName;
     auto visitNodes = [&](auto& self, TxElement* node,
                           std::vector<ElementMatcher>::const_iterator begin,
                           std::vector<ElementMatcher>::const_iterator end) -> void {
         ticpp::Iterator<ticpp::Element> child;
-        for (child = child.begin(node); child != child.end(); child++) {
-            std::string childname;
-            child->GetValue(&childname);
-            if (childname == begin->name) {
+        
+        for (child = child.begin(node); child != child.end(); ++child) {
+            child->GetValue(&childName);
+            if (childName == begin->name) {
                 bool match = true;
                 for (const auto& attribute : begin->attributes) {
                     auto val = child->GetAttributeOrDefault(attribute.name, "");
@@ -173,12 +175,12 @@ void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& sele
  */
 template <typename Visitor>
 void visitMatchingNodesRecursive(TxElement* root, const ElementMatcher& selector, Visitor visitor) {
+    std::string childName;
     auto visitNodes = [&](auto& self, TxElement* node) -> void {
         ticpp::Iterator<ticpp::Element> child;
-        for (child = child.begin(node); child != child.end(); child++) {
-            std::string childname;
-            child->GetValue(&childname);
-            if (childname == selector.name) {
+        for (child = child.begin(node); child != child.end(); ++child) {
+            child->GetValue(&childName);
+            if (childName == selector.name) {
                 bool match = true;
                 for (const auto& attribute : selector.attributes) {
                     auto val = child->GetAttributeOrDefault(attribute.name, "");
@@ -198,8 +200,8 @@ template <typename Visitor>
 void visitMatchingNodesRecursive(TxElement* root, const std::vector<ElementMatcher>& selectors,
                                  Visitor visitor) {
 
-    const auto match = [](const ElementMatcher& matcher, const TxElement* node) {
-        std::string name;
+    std::string name;
+    const auto match = [&](const ElementMatcher& matcher, const TxElement* node) {
         node->GetValue(&name);
         if (name == matcher.name) {
             bool match = true;
@@ -224,7 +226,7 @@ void visitMatchingNodesRecursive(TxElement* root, const std::vector<ElementMatch
         }
 
         ticpp::Iterator<ticpp::Element> child;
-        for (child = child.begin(node); child != child.end(); child++) {
+        for (child = child.begin(node); child != child.end(); ++child) {
             self(self, child.Get());
         }
 
@@ -311,8 +313,8 @@ struct IVW_CORE_API IdentifierReplacement {
     IdentifierReplacement(const IdentifierReplacement&) = default;
     IdentifierReplacement& operator=(const IdentifierReplacement&) = default;
 
-    IdentifierReplacement(IdentifierReplacement&&);
-    IdentifierReplacement& operator=(IdentifierReplacement&&);
+    IdentifierReplacement(IdentifierReplacement&&) noexcept;
+    IdentifierReplacement& operator=(IdentifierReplacement&&) noexcept;
 
     std::vector<Kind> path;
     std::string oldId;

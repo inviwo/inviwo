@@ -36,6 +36,7 @@
 #include <warn/ignore/all>
 #include <QImage>
 #include <QStringList>
+#include <QMetaType>
 #include <warn/pop>
 
 #include <vector>
@@ -45,6 +46,12 @@
 namespace inviwo {
 
 class IVW_QTEDITOR_API WorkspaceAnnotationsQt : public WorkspaceAnnotations {
+    struct ProcessorId {
+        std::string type;
+        std::string identifier;
+        std::string displayName;
+    };
+
 public:
     WorkspaceAnnotationsQt(InviwoApplication* app = util::getInviwoApplication());
     WorkspaceAnnotationsQt(const QImage& network,
@@ -60,6 +67,7 @@ public:
     QImage getNetworkQImage() const;
     QImage getCanvasQImage(size_t i) const;
     QImage getPrimaryCanvasQImage() const;
+    QStringList getProcessorsQString() const;
 
     using WorkspaceAnnotations::setCanvasImages;
     void setCanvasImages(const std::vector<std::pair<std::string, QImage>>& canvasImages);
@@ -67,14 +75,13 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    static QStringList workspaceProcessors(const std::filesystem::path& path,
-                                           InviwoApplication* app = util::getInviwoApplication());
-
-    static std::map<std::string, int> workspaceProcessorsCounts(
-        const std::filesystem::path& path, InviwoApplication* app = util::getInviwoApplication());
+    const std::vector<ProcessorId>& getProcessorList() const;
+    const std::map<std::string, int> getProcessorCounts() const;
 
 private:
     Base64Image network_;
+    std::vector<ProcessorId> processorList_;
+    std::map<std::string, int> processorCounts_;
 };
 
 }  // namespace inviwo

@@ -53,8 +53,7 @@ ALLOW_FLAGS_FOR_ENUM(ListPropertyUIFlag)
 using ListPropertyUIFlags = flags::flags<ListPropertyUIFlag>;
 
 /**
- * \class ListProperty
- * \brief A property that has specified sub-properties which can be added using the graphical user
+ * @brief A property that has specified sub-properties which can be added using the graphical user
  * interface.
  *
  * Represents a list of properties. Properties can be added by using the prefab objects registered
@@ -138,7 +137,7 @@ public:
     void set(const ListProperty* src);
 
     /**
-     * \brief set the max number of list elements. This will remove additional properties if the
+     * @brief set the max number of list elements. This will remove additional properties if the
      * list property contains more than \p n items.
      *
      * @param n    maximum number of elements in this list property
@@ -147,12 +146,12 @@ public:
     size_t getMaxNumberOfElements() const;
 
     /**
-     * \brief remove all list entries
+     * @brief remove all list entries
      */
     virtual void clear() override;
 
     /**
-     * \brief construct a list entry which is created from the respective prefab object.
+     * @brief construct a list entry which is created from the respective prefab object.
      * This function has no effect if the list size will exceed the maximum number of elements.
      *
      * @param prefabIndex   index of prefab object used for creating the new entry
@@ -162,7 +161,7 @@ public:
     Property* constructProperty(size_t prefabIndex);
 
     /**
-     * \brief add \p property as new list entry. The type of the property must match one of the
+     * @brief add \p property as new list entry. The type of the property must match one of the
      * prefab objects. This function has no effect if the list size will exceed the maximum number
      * of elements.
      *
@@ -173,7 +172,7 @@ public:
     virtual void addProperty(Property* property, bool owner = true) override;
 
     /**
-     * \brief add \p property as new list entry. The type of the property must match one of the
+     * @brief add \p property as new list entry. The type of the property must match one of the
      * prefab objects. This function has no effect if the list size will exceed the maximum number
      * of elements.
      *
@@ -183,7 +182,7 @@ public:
     virtual void addProperty(Property& property) override;
 
     /**
-     * \brief insert \p property in the list at position \p index
+     * @brief insert \p property in the list at position \p index
      * If \p index is not valid, the property is appended. The type of the property must match one
      * of the prefab objects. This function has no effect if the list size will exceed the maximum
      * number of elements.
@@ -195,7 +194,7 @@ public:
     virtual void insertProperty(size_t index, Property* property, bool owner = true) override;
 
     /**
-     * \brief insert \p property in the list at position \p index
+     * @brief insert \p property in the list at position \p index
      * If \p index is not valid, the property is appended. The type of the property must match one
      * of the prefab objects. This function has no effect if the list size will exceed the maximum
      * number of elements.
@@ -212,14 +211,14 @@ public:
     virtual bool move(Property* property, size_t newIndex) override;
 
     /**
-     * \brief return number of prefab objects
+     * @brief return number of prefab objects
      *
      * @return count of prefabs
      */
     size_t getPrefabCount() const;
 
     /**
-     * \brief add a new prefab object \p p to be used as template when instantiating new list
+     * @brief add a new prefab object \p p to be used as template when instantiating new list
      * elements
      *
      * @param p  prefab object
@@ -247,7 +246,7 @@ private:
                            std::back_inserter(properties),
                            [](auto& p) { return std::unique_ptr<Property>(p->clone()); });
         }
-        Prefabs(Prefabs&& rhs) : properties{std::move(rhs.properties)} {}
+        Prefabs(Prefabs&& rhs) noexcept : properties{std::move(rhs.properties)} {}
         Prefabs& operator=(const Prefabs& that) {
             if (this != &that) {
                 Prefabs tmp(that);
@@ -255,7 +254,7 @@ private:
             }
             return *this;
         }
-        Prefabs& operator=(Prefabs&& that) {
+        Prefabs& operator=(Prefabs&& that) noexcept {
             if (this != &that) {
                 properties = std::move(that.properties);
             }

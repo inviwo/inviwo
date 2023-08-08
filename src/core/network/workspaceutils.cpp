@@ -44,18 +44,21 @@ namespace inviwo {
 
 namespace util {
 
-void forEachWorkspaceInDirRecusive(const std::filesystem::path& path,
-                                   std::function<void(const std::filesystem::path&)> callback) {
+void forEachWorkspaceInDirRecursive(const std::filesystem::path& path,
+                                    std::function<void(const std::filesystem::path&)> callback) {
+    namespace fs = std::filesystem;
 
-    for (const auto& file :
-         filesystem::getDirectoryContentsRecursively(path, filesystem::ListMode::Files)) {
-        if (filesystem::wildcardStringMatch("*.inv", file.string())) {
-            callback(file);
+    if (!std::filesystem::is_directory(path)) return;
+
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
+        if (entry.is_regular_file() && entry.path().extension() == ".inv") {
+            callback(entry.path());
         }
     }
 }
 
-void updateWorkspaces(InviwoApplication* app, const std::filesystem::path& path, DryRun dryRun) {
+void updateWorkspaces(InviwoApplication* app, const std::filesystem::path& path, DryRun dryRun,
+                      std::function<void()> updateGui) {
     auto update = [&](const std::filesystem::path& fileName) {
         LogInfoCustom("util::updateWorkspaces", "Updating workspace: " << fileName);
         auto errorCounter = std::make_shared<LogErrorCounter>();
@@ -65,6 +68,9 @@ void updateWorkspaces(InviwoApplication* app, const std::filesystem::path& path,
             NetworkLock lock(app->getProcessorNetwork());
             app->getWorkspaceManager()->clear();
         }
+
+        updateGui();
+
         try {
             {
                 NetworkLock lock(app->getProcessorNetwork());
@@ -83,9 +89,11 @@ void updateWorkspaces(InviwoApplication* app, const std::filesystem::path& path,
             }
 
             do {
+                updateGui();
                 app->processFront();
-                app->waitForPool();
             } while (app->getProcessorNetwork()->runningBackgroundJobs() > 0);
+
+            updateGui();
 
             if (dryRun == DryRun::No) {
                 app->getWorkspaceManager()->save(fileName, [&](ExceptionContext ec) {
@@ -103,23 +111,24 @@ void updateWorkspaces(InviwoApplication* app, const std::filesystem::path& path,
                 LogLevel::Error);
             NetworkLock lock(app->getProcessorNetwork());
             app->getWorkspaceManager()->clear();
+            updateGui();
         }
     };
 
-    forEachWorkspaceInDirRecusive(path, update);
+    forEachWorkspaceInDirRecursive(path, update);
 }
 
-void updateExampleWorkspaces(InviwoApplication* app, DryRun dryRun) {
-    updateWorkspaces(app, filesystem::getPath(PathType::Workspaces), dryRun);
-
+void updateExampleWorkspaces(InviwoApplication* app, DryRun dryRun,
+                             std::function<void()> updateGui) {
     for (const auto& m : app->getModules()) {
-        updateWorkspaces(app, m->getPath(ModulePath::Workspaces), dryRun);
+        updateWorkspaces(app, m->getPath(ModulePath::Workspaces), dryRun, updateGui);
     }
 }
 
-void updateRegressionWorkspaces(InviwoApplication* app, DryRun dryRun) {
+void updateRegressionWorkspaces(InviwoApplication* app, DryRun dryRun,
+                                std::function<void()> updateGui) {
     for (const auto& m : app->getModules()) {
-        updateWorkspaces(app, m->getPath(ModulePath::RegressionTests), dryRun);
+        updateWorkspaces(app, m->getPath(ModulePath::RegressionTests), dryRun, updateGui);
     }
 }
 

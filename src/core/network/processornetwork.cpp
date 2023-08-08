@@ -436,7 +436,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         LogNetworkSpecial(
             (&d), LogLevel::Warn,
             fmt::format(
-                "Loading old workspace ({}) Processor Network version: {}. Updating to version: .",
+                "Loading old workspace ({}) Processor Network version: {}. Updating to version: {}.",
                 d.getFileName(), version, processorNetworkVersion_));
         ProcessorNetworkConverter nv(version);
         d.convertVersion(&nv);

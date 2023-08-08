@@ -81,27 +81,28 @@ public:
                        int line, std::string_view function, std::string_view msg);
 
     static constexpr size_t size() { return 10; }
-    QList<QStandardItem*> items();
-    QStandardItem* header();
+
     LogLevel level;
+    QString date;
+    QString time;
+    QString source;
+    QString levelStr;
+    QString audience;
+    QString path;
+    QString file;
+    QString line;
+    QString function;
+    QString message;
+    QString fullMessage;
+    int height;
+
+    static const QFont& logFont();
 
 private:
-    QStandardItem* header_;
-    QStandardItem* date_;
-    QStandardItem* time_;
-    QStandardItem* source_;
-    QStandardItem* level_;
-    QStandardItem* audience_;
-    QStandardItem* path_;
-    QStandardItem* file_;
-    QStandardItem* line_;
-    QStandardItem* function_;
-    QStandardItem* message_;
-
     static std::string getDate(std::chrono::system_clock::time_point time);
     static std::string getTime(std::chrono::system_clock::time_point time);
 
-    static const QFont& logFont();
+
     static const std::pair<int, int>& lineHeightAndMargin();
 };
 
@@ -118,33 +119,32 @@ public:
                               const QModelIndex& index) const override;
 };
 
-class IVW_QTEDITOR_API LogModel : public QStandardItemModel {
-public:
-    LogModel(int rows, int columns, QObject* parent = nullptr);
-    virtual ~LogModel() = default;
-
-    virtual Qt::ItemFlags flags(const QModelIndex& index) const override;
-};
-
-class IVW_QTEDITOR_API LogTableModel {
+class IVW_QTEDITOR_API LogTableModel : public QAbstractTableModel {
 public:
     LogTableModel();
 
     QString getName(LogTableModelEntry::ColumnID ind) const;
-    LogModel* model();
 
     void clear();
-    void log(LogTableModelEntry entry);
+    void log(std::vector<LogTableModelEntry>& entries);
+
+    virtual int rowCount(const QModelIndex& = QModelIndex()) const override {
+        return static_cast<int>(entries_.size());
+    }
+    virtual int columnCount(const QModelIndex& = QModelIndex()) const override {
+        return static_cast<int>(LogTableModelEntry::size());
+    }
+    virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+    virtual QVariant headerData(int section, Qt::Orientation orientation,
+                        int role = Qt::DisplayRole) const override;
+    virtual Qt::ItemFlags flags(const QModelIndex& index) const override;
 
 private:
-    LogModel model_;
+    std::vector<LogTableModelEntry> entries_;
 };
 
 class IVW_QTEDITOR_API ConsoleWidget : public InviwoDockWidget, public Logger {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     ConsoleWidget(InviwoMainWindow* parent);
     ~ConsoleWidget();
@@ -167,19 +167,22 @@ public:
     QTableView* view() { return tableView_; }
 
 public slots:
-    void logEntry(LogTableModelEntry);
     void updateIndicators(LogLevel level);
     void clear();
+    void onNewEntries();
 
 signals:
-    void logSignal(LogTableModelEntry level);
     void clearSignal();
+    void hasNewEntries();
+    void scrollToBottom();
 
 protected:
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
     virtual void closeEvent(QCloseEvent* event) override;
 
 private:
+    void logEntry(LogTableModelEntry);
+
     QModelIndex mapToSource(int row, int col);
     QModelIndex mapFromSource(int row, int col);
     void copy();
@@ -206,8 +209,11 @@ private:
     QLabel* threadPoolInfo_;
     QLineEdit* filterPattern_;
     QAction* clearAction_;
-    InviwoMainWindow* mainwindow_;
+    InviwoMainWindow* mainWindow_;
     std::shared_ptr<MenuItem> editActionsHandle_;
+
+    std::mutex entriesMutex_;
+    std::vector<LogTableModelEntry> newEntries_;
 };
 
 }  // namespace inviwo

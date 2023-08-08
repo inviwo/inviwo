@@ -221,7 +221,9 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
         "the workspaces");
     connect(loadExampleWorkspaces, &QAction::triggered, [win]() {
         try {
-            util::updateExampleWorkspaces(win->getInviwoApplication(), util::DryRun::Yes);
+            util::updateExampleWorkspaces(win->getInviwoApplication(), util::DryRun::Yes, []() {
+                qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+            });
         } catch (const Exception& e) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Error);
         }
@@ -232,7 +234,9 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
         "Load and save each workspace after each other, useful to update workspace versions");
     connect(updateExampleWorkspaces, &QAction::triggered, [win]() {
         try {
-            util::updateExampleWorkspaces(win->getInviwoApplication(), util::DryRun::No);
+            util::updateExampleWorkspaces(win->getInviwoApplication(), util::DryRun::No, []() {
+                qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+            });
         } catch (const Exception& e) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Error);
         }
@@ -244,7 +248,9 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
         "the workspaces");
     connect(loadRegressionWorkspaces, &QAction::triggered, [win]() {
         try {
-            util::updateRegressionWorkspaces(win->getInviwoApplication(), util::DryRun::Yes);
+            util::updateRegressionWorkspaces(win->getInviwoApplication(), util::DryRun::Yes, []() {
+                qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+            });
         } catch (const Exception& e) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Error);
         }
@@ -256,7 +262,9 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
 
     connect(updateRegressionWorkspaces, &QAction::triggered, [win]() {
         try {
-            util::updateRegressionWorkspaces(win->getInviwoApplication(), util::DryRun::No);
+            util::updateRegressionWorkspaces(win->getInviwoApplication(), util::DryRun::No, []() {
+                qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+            });
         } catch (const Exception& e) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Error);
         }
@@ -275,7 +283,9 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
             QString qpath = dialog.selectedFiles().at(0);
             const auto path = utilqt::fromQString(qpath);
             try {
-                util::updateWorkspaces(win->getInviwoApplication(), path, util::DryRun::Yes);
+                util::updateWorkspaces(win->getInviwoApplication(), path, util::DryRun::Yes, []() {
+                    qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+                });
             } catch (const Exception& e) {
                 util::log(e.getContext(), e.getMessage(), LogLevel::Error);
             }
@@ -296,7 +306,9 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
             QString qpath = dialog.selectedFiles().at(0);
             const auto path = utilqt::fromQString(qpath);
             try {
-                util::updateWorkspaces(win->getInviwoApplication(), path, util::DryRun::No);
+                util::updateWorkspaces(win->getInviwoApplication(), path, util::DryRun::No, []() {
+                    qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+                });
             } catch (const Exception& e) {
                 util::log(e.getContext(), e.getMessage(), LogLevel::Error);
             }

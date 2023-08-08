@@ -126,7 +126,9 @@ public:
     }
 
     void resizeEvent(QResizeEvent* event) override {
-        loadLog();
+        if (!document() || document()->isEmpty()) {
+            loadLog();
+        }
         QTextEdit::resizeEvent(event);
     }
 
@@ -445,7 +447,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             auto buttonLayout = new QHBoxLayout();
             buttonLayout->setSpacing(6);
             auto createButton = [&](const QString& str, const QString& iconpath,
-                                    const QString& toolTip, const QString& objName) {
+                                    const QString& toolTip, const QString& objName,
+                                    auto&& function) {
                 auto button = new QToolButton(leftWidget);
                 button->setText(str);
                 button->setIcon(QIcon(iconpath));
@@ -454,43 +457,39 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                 button->setToolTip(toolTip);
                 button->setObjectName(objName);
                 buttonLayout->addWidget(button);
+
+                if constexpr (!std::is_same_v<std::decay_t<decltype(function)>, std::nullopt_t>) {
+                    QObject::connect(button, &QToolButton::clicked, this,
+                                     std::forward<decltype(function)>(function));
+                }
+
                 return button;
             };
 
-            loadWorkspaceBtn_ = createButton("Load", ":/svgicons/open.svg",
-                                             "Open selected workspace", "LoadWorkspaceToolButton");
+            loadWorkspaceBtn_ =
+                createButton("Load", ":/svgicons/open.svg", "Open selected workspace",
+                             "LoadWorkspaceToolButton", std::nullopt);
             loadWorkspaceBtn_->setEnabled(false);
             appendWorkspaceBtn_ = createButton("Append", ":/svgicons/open-append.svg",
                                                "Append selected workspace to current one",
-                                               "AppendWorkspaceToolButton");
+                                               "AppendWorkspaceToolButton", std::nullopt);
             appendWorkspaceBtn_->setEnabled(false);
-            auto horizontalSpacer =
-                new QSpacerItem(utilqt::emToPx(this, 2.0), utilqt::emToPx(this, 2.0),
-                                QSizePolicy::Expanding, QSizePolicy::Minimum);
-            buttonLayout->addItem(horizontalSpacer);
 
-            auto newButton = createButton("New", ":/svgicons/newfile.svg",
-                                          "Create an empty workspace", "NewWorkspaceToolButton");
-            QObject::connect(newButton, &QToolButton::clicked, this,
-                             [this]() { emit newWorkspace(); });
+            buttonLayout->addItem(new QSpacerItem(utilqt::emToPx(this, 2.0),
+                                                  utilqt::emToPx(this, 2.0), QSizePolicy::Expanding,
+                                                  QSizePolicy::Minimum));
 
-            auto openFileButton =
+            newButton_ = createButton("New", ":/svgicons/newfile.svg", "Create an empty workspace",
+                                      "NewWorkspaceToolButton", [this]() { emit newWorkspace(); });
+
+            openButton_ =
                 createButton("Open...", ":/svgicons/open.svg", "Open workspace from disk",
-                             "OpenWorkspaceToolButton");
-            QObject::connect(openFileButton, &QToolButton::clicked, this,
-                             [this]() { emit openWorkspace(); });
+                             "OpenWorkspaceToolButton", [this]() { emit openWorkspace(); });
 
-            restoreButton_ = createButton("Restore", ":/svgicons/revert.svg",
-                                          "Restore last automatically saved workspace if available",
-                                          "OpenWorkspaceToolButton");
-            QObject::connect(restoreButton_, &QToolButton::clicked, this,
-                             [this]() { emit restoreWorkspace(); });
-
-            setTabOrder(loadWorkspaceBtn_, appendWorkspaceBtn_);
-            setTabOrder(appendWorkspaceBtn_, newButton);
-            setTabOrder(newButton, openFileButton);
-            setTabOrder(openFileButton, restoreButton_);
-            setTabOrder(restoreButton_, details_);
+            restoreButton_ =
+                createButton("Restore", ":/svgicons/revert.svg",
+                             "Restore last automatically saved workspace if available",
+                             "OpenWorkspaceToolButton", [this]() { emit restoreWorkspace(); });
 
             auto centerWidget = new QWidget();
             auto centerLayout = new QVBoxLayout();
@@ -549,9 +548,6 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             QObject::connect(showOnStartup, &QCheckBox::toggled, this,
                              [this](bool checked) { setSetting("showWelcomePage", checked); });
             rightColumnLayout->addWidget(showOnStartup);
-
-            setTabOrder(changelog_, autoloadWorkspace);
-            setTabOrder(autoloadWorkspace, showOnStartup);
         }
     }
     // ensure that the splitter handle responds to hover events
@@ -571,11 +567,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     splitterMoved(sizes()[0], 1);
     workspaceSplitter_->restoreState(getSetting("workspaceSplitter").toByteArray());
 
-    setTabOrder(filterLineEdit_, workspaceTreeView_);
-    setTabOrder(workspaceTreeView_, workspaceGridView_);
-    setTabOrder(workspaceGridView_, loadWorkspaceBtn_);
-    setTabOrder(details_, changelog_);
-
+    setTabOrder({filterLineEdit_, workspaceTreeView_, workspaceGridView_, loadWorkspaceBtn_,
+                 appendWorkspaceBtn_, newButton_, openButton_, restoreButton_, details_, changelog_});
     setFocusProxy(filterLineEdit_);
 }
 
@@ -702,11 +695,17 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
     const QFileInfo info(filename);
 
     // extract annotations including network screenshot and canvas images from workspace
-    auto path = utilqt::toPath(filename);
-    std::optional<WorkspaceAnnotationsQt> annotations;
-    try {
-        annotations.emplace(path, app_);
-    } catch (Exception&) {
+    QVariant variant = utilqt::getData(index, Role::Annotations);
+    std::shared_ptr<WorkspaceAnnotationsQt> annotations;
+    if (variant.isValid()) {
+        WorkspaceInfo workspaceInfo = qvariant_cast<WorkspaceInfo>(variant);
+        annotations = workspaceInfo.annotations;
+    } else {
+        auto path = utilqt::toPath(filename);
+        try {
+            annotations = std::make_shared<WorkspaceAnnotationsQt>(path, app_);
+        } catch (Exception&) {
+        }
     }
 
     const auto dateFormat = "yyyy-MM-dd hh:mm:ss";
@@ -768,10 +767,8 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
             addImage(elem);
         }
         addImage(annotations->getNetworkImage());
-    }
 
-    try {
-        auto processorCounts = WorkspaceAnnotationsQt::workspaceProcessorsCounts(path, app_);
+        auto processorCounts = annotations->getProcessorCounts();
 
         auto processorList = content.append("tabel", "", {{"style", "float: left;"}});
         processorList.append("tr").append("td").append("h3", "Processors",
@@ -788,7 +785,6 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
         } else {
             processorList.append("tr").append("td", "Network is empty");
         }
-    } catch (Exception&) {
     }
 
     details_->setHtml(utilqt::toQString(doc));

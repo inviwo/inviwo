@@ -212,8 +212,12 @@ void DepthOfField::process() {
             std::swap(nextOutImg_, prevOutImg_);
         }
         evalCount_++;
-        dispatchFront([this, camera, maxEvalCount, focusDepth]() {
-            moveCamera(camera, maxEvalCount, focusDepth);
+        dispatchFront([this, maxEvalCount, focusDepth]() {
+            if (auto* SkewedCamera = dynamic_cast<SkewedPerspectiveCamera*>(&camera_.get())) {
+                moveCamera(SkewedCamera, maxEvalCount, focusDepth);
+            } else {
+                invalidate(InvalidationLevel::InvalidOutput);
+            }
         });
     } else {
         // Set output
@@ -480,6 +484,8 @@ void DepthOfField::synthesizeLightfield(TextureUnitContainer& cont) {
 
 void DepthOfField::moveCamera(SkewedPerspectiveCamera* camera, int maxEvalCount,
                               double focusDepth) {
+    if (evalCount_ >= maxEvalCount) return;
+
     vec3 lookFrom = ogCamera_->getLookFrom();
     vec3 lookTo = ogCamera_->getLookTo();
     vec3 lookUp = ogCamera_->getLookUp();

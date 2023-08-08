@@ -99,9 +99,14 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
     unsigned char* parameter = nullptr;
     unsigned char* comment = nullptr;
 
-    unsigned char* pvmdata = readPVMvolume(filePath.string().c_str(), &udim.x, &udim.y, &udim.z,
+    auto file = filePath.string(); // convert to string before changing locale
+
+    auto locale = setlocale(LC_ALL, nullptr); // save current locale
+    setlocale(LC_ALL, "C"); // pvm files are always written with a dot as decimal separator
+    unsigned char* pvmdata = readPVMvolume(file.c_str(), &udim.x, &udim.y, &udim.z,
                                            &bytesPerVoxel, &spacing.x, &spacing.y, &spacing.z,
                                            &description, &courtesy, &parameter, &comment);
+    setlocale(LC_ALL, locale);
 
     util::OnScopeExit release([&]() { free(pvmdata); });
 

@@ -101,6 +101,8 @@ private:
     ChangeLog* changelog_;
     QToolButton* loadWorkspaceBtn_;
     QToolButton* appendWorkspaceBtn_;
+    QToolButton* newButton_;
+    QToolButton* openButton_;
     QToolButton* restoreButton_;
 };
 

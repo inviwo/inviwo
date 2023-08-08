@@ -1042,6 +1042,7 @@ function(ivw_deploy_qt target)
                     --no-translations
                     --no-system-d3d-compiler
                     --no-opengl-sw
+                    --pdb
                     --verbose 1 
                     $<TARGET_FILE:${target}>
             )    

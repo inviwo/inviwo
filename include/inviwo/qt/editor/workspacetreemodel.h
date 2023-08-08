@@ -31,6 +31,7 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/qt/editor/workspacemodelroles.h>
+#include <inviwo/qt/editor/workspaceannotationsqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -50,13 +51,7 @@ class TreeItem;
 class InviwoApplication;
 
 struct IVW_QTEDITOR_API WorkspaceInfo {
-    QString title;
-    QString author;
-    QString tags;
-    QString categories;
-    QString description;
-    QImage image;
-    QStringList processors;
+    std::shared_ptr<WorkspaceAnnotationsQt> annotations;
 };
 
 }  // namespace inviwo
@@ -84,7 +79,7 @@ signals:
 
 private:
     std::filesystem::path filename_;
-    InviwoApplication* app_;
+    InviwoApplication* app_ = nullptr;
     std::once_flag flag_;
 };
 

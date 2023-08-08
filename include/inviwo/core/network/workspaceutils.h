@@ -41,17 +41,20 @@ class InviwoApplication;
 
 namespace util {
 
-IVW_CORE_API void forEachWorkspaceInDirRecusive(std::string_view path,
-                                                std::function<void(std::string_view)> callback);
+IVW_CORE_API void forEachWorkspaceInDirRecursive(std::string_view path,
+                                                 std::function<void(std::string_view)> callback);
 
 enum class DryRun { Yes, No };
 
-IVW_CORE_API void updateWorkspaces(InviwoApplication* app, const std::filesystem::path& path,
-                                   DryRun dryRun);
+IVW_CORE_API void updateWorkspaces(
+    InviwoApplication* app, const std::filesystem::path& path, DryRun dryRun,
+    std::function<void()> updateGui = []() {});
 
-IVW_CORE_API void updateExampleWorkspaces(InviwoApplication* app, DryRun dryRun);
+IVW_CORE_API void updateExampleWorkspaces(
+    InviwoApplication* app, DryRun dryRun, std::function<void()> updateGui = []() {});
 
-IVW_CORE_API void updateRegressionWorkspaces(InviwoApplication* app, DryRun dryRun);
+IVW_CORE_API void updateRegressionWorkspaces(
+    InviwoApplication* app, DryRun dryRun, std::function<void()> updateGui = []() {});
 
 }  // namespace util
 

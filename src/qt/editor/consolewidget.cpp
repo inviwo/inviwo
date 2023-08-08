@@ -103,7 +103,7 @@ struct BackgroundJobs : QLabel, ProcessorNetworkObserver {
         update(0);
     }
 
-    void update(int jobs) { setText(QString("Backgrund Jobs: %1").arg(jobs)); }
+    void update(int jobs) { setText(QString("Background Jobs: %1").arg(jobs)); }
 
     virtual void onProcessorBackgroundJobsChanged(Processor*, int, int total) override {
         update(total);
@@ -118,7 +118,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     , levelFilter_(new QSortFilterProxyModel(this))
     , textSelectionDelegate_(new TextSelectionDelegate(this))
     , filterPattern_(new QLineEdit(this))
-    , mainwindow_(parent)
+    , mainWindow_(parent)
     , editActionsHandle_{} {
 
     setAllowedAreas(Qt::BottomDockWidgetArea);
@@ -126,7 +126,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     qRegisterMetaType<LogTableModelEntry>("LogTableModelEntry");
 
-    filter_->setSourceModel(model_.model());
+    filter_->setSourceModel(&model_);
     filter_->setFilterKeyColumn(static_cast<int>(LogTableModelEntry::ColumnID::Message));
 
     levelFilter_->setSourceModel(filter_);
@@ -151,9 +151,6 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->hideColumn(static_cast<int>(LogTableModelEntry::ColumnID::Line));
     tableView_->hideColumn(static_cast<int>(LogTableModelEntry::ColumnID::Function));
 
-    tableView_->horizontalHeader()->setContextMenuPolicy(Qt::ActionsContextMenu);
-    tableView_->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-
     const auto cols = tableView_->horizontalHeader()->count();
 
     auto viewColGroup = new QMenu(this);
@@ -175,8 +172,11 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     auto visibleColumnsAction = new QAction("Visible Columns", this);
     visibleColumnsAction->setMenu(viewColGroup);
 
+    tableView_->horizontalHeader()->setContextMenuPolicy(Qt::ActionsContextMenu);
     tableView_->horizontalHeader()->setResizeContentsPrecision(0);
     tableView_->horizontalHeader()->setSectionResizeMode(cols - 1, QHeaderView::Stretch);
+
+    tableView_->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     tableView_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     tableView_->verticalHeader()->setVisible(false);
@@ -251,15 +251,15 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     statusBar->addWidget(threadPoolInfo_);
     auto timer = new QTimer(this);
     connect(timer, &QTimer::timeout, threadPoolInfo_, [this]() {
-        const auto threads = mainwindow_->getInviwoApplication()->getThreadPool().getSize();
-        const auto queueSize = mainwindow_->getInviwoApplication()->getThreadPool().getQueueSize();
+        const auto threads = mainWindow_->getInviwoApplication()->getThreadPool().getSize();
+        const auto queueSize = mainWindow_->getInviwoApplication()->getThreadPool().getQueueSize();
         threadPoolInfo_->setText(
             QString("Pool: %1 Queued Jobs / %2 Threads").arg(queueSize, 3).arg(threads, 2));
     });
     timer->start(1000);
 
     statusBar->addWidget(
-        new BackgroundJobs(this, mainwindow_->getInviwoApplication()->getProcessorNetwork()));
+        new BackgroundJobs(this, mainWindow_->getInviwoApplication()->getProcessorNetwork()));
 
     statusBar->addSpacing(20);
     statusBar->addWidget(new QLabel("Filter", this));
@@ -321,7 +321,12 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->setItemDelegateForColumn(static_cast<int>(LogTableModelEntry::ColumnID::Message),
                                          textSelectionDelegate_);
 
-    connect(this, &ConsoleWidget::logSignal, this, &ConsoleWidget::logEntry);
+    connect(this, &ConsoleWidget::hasNewEntries, this, &ConsoleWidget::onNewEntries,
+            Qt::QueuedConnection);
+
+    connect(this, &ConsoleWidget::scrollToBottom, tableView_, &QTableView::scrollToBottom,
+            Qt::QueuedConnection);
+
     connect(this, &ConsoleWidget::clearSignal, this, &ConsoleWidget::clear);
 
     // Restore State
@@ -345,7 +350,9 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         auto levelsActive = settings.value("levelsActive", QVariantList());
         int i = 0;
         for (const auto& level : levelsActive.toList()) {
-            levels[i++].action->setChecked(level.toBool());
+            if (i < levels.size()) {
+                levels[i++].action->setChecked(level.toBool());
+            }
         }
     }
 
@@ -354,8 +361,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     settings.endGroup();
 
-    auto editmenu = mainwindow_->getInviwoEditMenu();
-    editActionsHandle_ = editmenu->registerItem(std::make_shared<MenuItem>(
+    auto editMenu = mainWindow_->getInviwoEditMenu();
+    editActionsHandle_ = editMenu->registerItem(std::make_shared<MenuItem>(
         this,
         [this](MenuItemType t) -> bool {
             switch (t) {
@@ -467,16 +474,26 @@ void ConsoleWidget::logAssertion(std::string_view file, std::string_view functio
 }
 
 void ConsoleWidget::logEntry(LogTableModelEntry e) {
-    if (QThread::currentThread() != QCoreApplication::instance()->thread()) {
-        emit logSignal(e);
-        return;
+    {
+        std::unique_lock lock{entriesMutex_};
+        newEntries_.push_back(std::move(e));
+    }
+    emit hasNewEntries();
+}
+
+void ConsoleWidget::onNewEntries() {
+    {
+        std::unique_lock lock{entriesMutex_};
+        if (newEntries_.empty()) return;
+
+        for (auto& e : newEntries_) {
+            updateIndicators(e.level);
+        }
+        model_.log(newEntries_);
+        newEntries_.clear();
     }
 
-    tableView_->setUpdatesEnabled(false);
-    updateIndicators(e.level);
-    model_.log(std::move(e));
-    tableView_->scrollToBottom();
-    tableView_->setUpdatesEnabled(true);
+    emit scrollToBottom();
 }
 
 void ConsoleWidget::keyPressEvent(QKeyEvent* keyEvent) {
@@ -492,7 +509,7 @@ QModelIndex ConsoleWidget::mapToSource(int row, int col) {
 }
 
 QModelIndex ConsoleWidget::mapFromSource(int row, int col) {
-    auto mind = model_.model()->index(row, col);
+    auto mind = model_.index(row, col);
     auto lind = filter_->mapFromSource(mind);
     return levelFilter_->mapFromSource(lind);
 }
@@ -571,26 +588,135 @@ std::pair<int, int> getLineHeightAndMargin(const QFont& font) {
 
     return {lineHeight, margin};
 }
-
 }  // namespace
 
-LogTableModel::LogTableModel() : model_(0, static_cast<int>(LogTableModelEntry::size())) {
+LogTableModel::LogTableModel() : QAbstractTableModel{} {}
 
-    for (size_t i = 0; i < LogTableModelEntry::size(); ++i) {
-        auto item = new QStandardItem(getName(static_cast<LogTableModelEntry::ColumnID>(i)));
-        item->setTextAlignment(Qt::AlignLeft);
-        model_.setHorizontalHeaderItem(static_cast<int>(i), item);
+void LogTableModel::log(std::vector<LogTableModelEntry>& entries) {
+    if (entries.empty()) return;
+
+    beginInsertRows(QModelIndex{}, static_cast<int>(entries_.size()),
+                    static_cast<int>(entries_.size() + entries.size()) - 1);
+
+    entries_.insert(entries_.end(), std::make_move_iterator(entries.begin()),
+                    std::make_move_iterator(entries.end()));
+
+    endInsertRows();
+}
+
+void LogTableModel::clear() {
+    beginResetModel();
+    entries_.clear();
+    endResetModel();
+}
+
+QVariant LogTableModel::data(const QModelIndex& index, int role) const {
+    if (!index.isValid()) return {};
+    if (index.row() >= entries_.size()) return {};
+
+    static const QColor infoTextColor = {153, 153, 153};
+    static const QColor warnTextColor = {221, 165, 8};
+    static const QColor errorTextColor = {255, 107, 107};
+
+    const auto& entry = entries_[index.row()];
+    const auto id = static_cast<LogTableModelEntry::ColumnID>(index.column());
+
+    switch (role) {
+        case Qt::DisplayRole: {
+            switch (id) {
+                case LogTableModelEntry::ColumnID::Date:
+                    return entry.date;
+                case LogTableModelEntry::ColumnID::Time:
+                    return entry.time;
+                case LogTableModelEntry::ColumnID::Source:
+                    return entry.source;
+                case LogTableModelEntry::ColumnID::Level:
+                    return entry.levelStr;
+                case LogTableModelEntry::ColumnID::Audience:
+                    return entry.audience;
+                case LogTableModelEntry::ColumnID::Path:
+                    return entry.path;
+                case LogTableModelEntry::ColumnID::File:
+                    return entry.file;
+                case LogTableModelEntry::ColumnID::Line:
+                    return entry.line;
+                case LogTableModelEntry::ColumnID::Function:
+                    return entry.function;
+                case LogTableModelEntry::ColumnID::Message:
+                    return entry.message;
+                default:
+                    return {};
+            }
+        }
+        case Qt::TextAlignmentRole:
+            return Qt::AlignLeft;
+        case Qt::ForegroundRole: {
+            switch (entry.level) {
+                case LogLevel::Info:
+                    return QBrush(infoTextColor);
+                case LogLevel::Warn:
+                    return QBrush(warnTextColor);
+                case LogLevel::Error:
+                    return QBrush(errorTextColor);
+                default:
+                    return QBrush(infoTextColor);
+            }
+        }
+        case Qt::FontRole:
+            return LogTableModelEntry::logFont();
+
+        case Qt::EditRole:
+            [[fallthrough]];
+        case detail::Roles::Fulltext:
+            if (id == LogTableModelEntry::ColumnID::Message) {
+                return entry.fullMessage;
+            } else {
+                return {};
+            }
+
+        default:
+            return {};
     }
 }
 
-void LogTableModel::log(LogTableModelEntry entry) {
-    model_.appendRow(entry.items());
-    model_.setVerticalHeaderItem(model_.rowCount() - 1, entry.header());
+QVariant LogTableModel::headerData(int section, Qt::Orientation orientation, int role) const {
+    switch (orientation) {
+        case Qt::Horizontal: {
+            switch (role) {
+                case Qt::DisplayRole:
+                    return section < static_cast<int>(LogTableModelEntry::size())
+                               ? getName(static_cast<LogTableModelEntry::ColumnID>(section))
+                               : QVariant{};
+                case Qt::TextAlignmentRole:
+                    return Qt::AlignLeft;
+                default:
+                    return {};
+            }
+        }
+        case Qt::Vertical: {
+            switch (role) {
+                case Qt::SizeHintRole: {
+                    if (section >= entries_.size()) return {};
+                    const auto& entry = entries_[section];
+                    return QSize{1, entry.height};
+                }
+                default:
+                    return {};
+            }
+        }
+    }
+    return {};
 }
 
-LogModel* LogTableModel::model() { return &model_; }
-
-void LogTableModel::clear() { model_.removeRows(0, model_.rowCount()); }
+Qt::ItemFlags LogTableModel::flags(const QModelIndex& index) const {
+    auto flags = QAbstractTableModel::flags(index);
+    // make only the message column editable
+    const auto col = static_cast<LogTableModelEntry::ColumnID>(index.column());
+    if (col == LogTableModelEntry::ColumnID::Message) {
+        flags |= Qt::ItemIsEditable;
+    }
+    return flags;
+}
 
 QString LogTableModel::getName(LogTableModelEntry::ColumnID ind) const {
     switch (ind) {
@@ -635,50 +761,22 @@ LogTableModelEntry::LogTableModelEntry(std::chrono::system_clock::time_point tim
                                        int line, std::string_view function, std::string_view msg)
 
     : level{level}
-    , header_(new QStandardItem())
-    , date_{new QStandardItem(utilqt::toQString(getDate(time)))}
-    , time_{new QStandardItem(utilqt::toQString(getTime(time)))}
-    , source_{new QStandardItem(utilqt::toQString(source))}
-    , level_{new QStandardItem(utilqt::toQString(toString(level)))}
-    , audience_{new QStandardItem(utilqt::toQString(toString(audience)))}
-    , path_{new QStandardItem(utilqt::toQString(file.parent_path()))}
-    , file_{new QStandardItem(utilqt::toQString(file.filename()))}
-    , line_{new QStandardItem(utilqt::toQString(toString(line)))}
-    , function_{new QStandardItem(utilqt::toQString(function))}
-    , message_{new QStandardItem()} {
-
-    msg = util::rtrim(msg);
-    message_->setData(utilqt::toQString(msg), detail::Roles::Fulltext);
-    message_->setData(utilqt::toQString(util::elideLines(msg)), Qt::DisplayRole);
+    , date{utilqt::toQString(getDate(time))}
+    , time{utilqt::toQString(getTime(time))}
+    , source{utilqt::toQString(source)}
+    , levelStr{utilqt::toQString(toString(level))}
+    , audience{utilqt::toQString(toString(audience))}
+    , path{utilqt::toQString(file.parent_path())}
+    , file{utilqt::toQString(file.filename())}
+    , line{utilqt::toQString(toString(line))}
+    , function{utilqt::toQString(function)}
+    , message{utilqt::toQString(util::elideLines(util::rtrim(msg)))}
+    , fullMessage{utilqt::toQString(util::rtrim(msg))}
+    , height{0} {
 
     const auto lines = std::count(msg.begin(), msg.end(), '\n') + 1;
-    const auto [lineHeight, margin] = lineHeightAndMargin();
-    header_->setSizeHint(QSize(1, static_cast<int>(margin + lines * lineHeight)));
-
-    QColor infoTextColor = {153, 153, 153};
-    QColor warnTextColor = {221, 165, 8};
-    QColor errorTextColor = {255, 107, 107};
-
-    for (auto& item :
-         {date_, time_, source_, level_, audience_, path_, file_, line_, function_, message_}) {
-        item->setFont(logFont());
-        item->setTextAlignment(Qt::AlignLeft);
-        item->setEditable(false);
-        switch (level) {
-            case LogLevel::Info:
-                item->setForeground(QBrush(infoTextColor));
-                break;
-            case LogLevel::Warn:
-                item->setForeground(QBrush(warnTextColor));
-                break;
-            case LogLevel::Error:
-                item->setForeground(QBrush(errorTextColor));
-                break;
-            default:
-                item->setForeground(QBrush(infoTextColor));
-                break;
-        }
-    }
+    const auto& [lineHeight, margin] = lineHeightAndMargin();
+    height = static_cast<int>(margin + lines * lineHeight);
 }
 
 std::string LogTableModelEntry::getDate(std::chrono::system_clock::time_point time) {
@@ -695,26 +793,6 @@ std::string LogTableModelEntry::getTime(std::chrono::system_clock::time_point ti
     ss << std::put_time(std::localtime(&in_time_t), "%T");
     ss << '.' << std::setfill('0') << std::setw(3) << ms.count();
     return std::move(ss).str();
-}
-
-QList<QStandardItem*> LogTableModelEntry::items() {
-    return QList<QStandardItem*>{date_, time_, source_, level_,    audience_,
-                                 path_, file_, line_,   function_, message_};
-}
-
-QStandardItem* LogTableModelEntry::header() { return header_; }
-
-LogModel::LogModel(int rows, int columns, QObject* parent)
-    : QStandardItemModel(rows, columns, parent) {}
-
-Qt::ItemFlags LogModel::flags(const QModelIndex& index) const {
-    auto flags = QStandardItemModel::flags(index);
-    // make only the message column editable
-    const auto col = static_cast<LogTableModelEntry::ColumnID>(index.column());
-    if (col == LogTableModelEntry::ColumnID::Message) {
-        flags |= Qt::ItemIsEditable;
-    }
-    return flags;
 }
 
 }  // namespace inviwo

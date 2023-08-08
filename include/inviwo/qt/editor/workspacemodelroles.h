@@ -49,7 +49,8 @@ enum class WorkspaceModelRole {
     Tags,
     Categories,
     Description,
-    Processors
+    Processors,
+    Annotations
 };
 enum class WorkspaceModelType { File = 1, Section, SubSection, None };
 
