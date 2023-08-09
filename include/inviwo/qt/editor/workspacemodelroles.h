@@ -41,15 +41,8 @@ enum class WorkspaceModelRole {
     Name = Qt::UserRole + 100,
     Path,
     FilePath,
-    PrimaryImage,
     Type,
     isExample,
-    Title,
-    Author,
-    Tags,
-    Categories,
-    Description,
-    Processors,
     Annotations
 };
 enum class WorkspaceModelType { File = 1, Section, SubSection, None };

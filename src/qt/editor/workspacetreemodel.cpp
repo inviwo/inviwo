@@ -214,35 +214,6 @@ QVariant TreeItem::data(int column, int role) const {
                 }
             case static_cast<int>(Role::isExample):
                 return isExample_;
-
-            case static_cast<int>(Role::Title):
-                infoLoader_->submit();
-                if (!info_.annotations) return {};
-                return utilqt::toQString(info_.annotations->getTitle());
-            case static_cast<int>(Role::Author):
-                infoLoader_->submit();
-                if (!info_.annotations) return {};
-                return utilqt::toQString(info_.annotations->getAuthor());
-            case static_cast<int>(Role::Tags):
-                infoLoader_->submit();
-                if (!info_.annotations) return {};
-                return utilqt::toQString(info_.annotations->getTags());
-            case static_cast<int>(Role::Categories):
-                infoLoader_->submit();
-                if (!info_.annotations) return {};
-                return utilqt::toQString(info_.annotations->getCategories());
-            case static_cast<int>(Role::Description):
-                infoLoader_->submit();
-                if (!info_.annotations) return {};
-                return utilqt::toQString(info_.annotations->getDescription());
-            case static_cast<int>(Role::Processors):
-                infoLoader_->submit();
-                if (!info_.annotations) return {};
-                return info_.annotations->getProcessorsQString();
-            case static_cast<int>(Role::PrimaryImage):
-                infoLoader_->submit();
-                if (!info_.annotations) return {};
-                return info_.annotations->getPrimaryCanvasQImage();
             case static_cast<int>(Role::Annotations):
                 infoLoader_->submit();
                 if (!info_.annotations) return {};

@@ -143,30 +143,37 @@ const WorkspaceAnnotationsQt::Base64Image& WorkspaceAnnotationsQt::getNetworkIma
     return network_;
 }
 
-QImage WorkspaceAnnotationsQt::getNetworkQImage() const {
-    return utilqt::fromBase64(network_.base64jpeg, "JPEG");
+const QImage& WorkspaceAnnotationsQt::getNetworkQImage() const {
+    if (networkCache_.isNull()) {
+        networkCache_ == utilqt::fromBase64(network_.base64jpeg, "JPEG");
+    }
+    return networkCache_;
 }
-QImage WorkspaceAnnotationsQt::getCanvasQImage(size_t i) const {
-    return utilqt::fromBase64(canvases_[i].base64jpeg, "JPEG");
-}
-
-QImage WorkspaceAnnotationsQt::getPrimaryCanvasQImage() const {
-    if (auto img = getPrimaryCanvasImage()) {
-        return utilqt::fromBase64(img->base64jpeg, "JPEG");
+const QImage& WorkspaceAnnotationsQt::getCanvasQImage(size_t i) const {
+    if (i < canvases_.size()) {
+        if (imageCache_.size() != canvases_.size()) {
+            imageCache_.resize(canvases_.size());
+        }
+        if (imageCache_[i].isNull()) {
+            imageCache_[i] = utilqt::fromBase64(canvases_[i].base64jpeg, "JPEG");
+        }
+        return imageCache_[i];
     } else {
-        return QImage{":/inviwo/inviwo-logo-light.svg"};
+        return getMissingImage();
     }
 }
 
-QStringList WorkspaceAnnotationsQt::getProcessorsQString() const {
-    QStringList list{};
-    for (const auto& p : processorList_) {
-        list << utilqt::toQString(p.type) << utilqt::toQString(p.identifier)
-             << utilqt::toQString(p.displayName);
+const QImage& WorkspaceAnnotationsQt::getPrimaryCanvasQImage() const {
+    if (auto index = getPrimaryCanvasIndex()) {
+        return getCanvasQImage(*index);
+    } else {
+        return getMissingImage();
     }
-    list.removeDuplicates();
-    return list;
+}
 
+const QImage& WorkspaceAnnotationsQt::getMissingImage() {
+    static QImage img{":/inviwo/inviwo-logo-light.svg"};
+    return img;
 }
 
 }  // namespace inviwo

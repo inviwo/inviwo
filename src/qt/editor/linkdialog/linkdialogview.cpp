@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/qt/editor/linkdialog/linkdialogview.h>
-#include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
 
 namespace inviwo {
 

@@ -83,6 +83,10 @@
 #include <QSplitterHandle>
 #include <QMainWindow>
 
+#include <string_view>
+#include <algorithm>
+#include <functional>
+
 #ifndef INVIWO_ALL_DYN_LINK
 struct InitQtChangelogResources {
     // Needed for loading of resources when building statically
@@ -159,14 +163,36 @@ using Role = WorkspaceTreeModel::Role;
 
 namespace {
 
+bool contains(std::string_view str, std::string_view substr) {
+    auto it =
+        std::search(str.begin(), str.end(),
+                    std::boyer_moore_horspool_searcher(
+                        substr.begin(), substr.end(),
+                        [h = std::hash<char>{}](char c) { return h(std::tolower(c)); },
+                        [](char l1, char r1) { return std::tolower(l1) == std::tolower(r1); }));
+
+    return it != str.end();
+}
+
+auto annotationMatcher = [](auto getter) {
+    return [getter](std::string_view str, const QModelIndex& i) -> bool {
+        QVariant variant = utilqt::getData(i, Role::Annotations);
+        if (variant.isValid()) {
+            WorkspaceInfo info = qvariant_cast<WorkspaceInfo>(variant);
+            return contains(std::invoke(getter, *info.annotations), str);
+        } else {
+            return false;
+        }
+    };
+};
+
 auto matcher = [](Role role) {
     return [role](std::string_view str, const QModelIndex& i) -> bool {
         return utilqt::getData(i, role).toString().contains(utilqt::toQString(str),
                                                             Qt::CaseInsensitive);
     };
 };
-
-}
+}  // namespace
 
 class WorkspaceFilter : public QSortFilterProxyModel {
 public:
@@ -174,18 +200,25 @@ public:
         : QSortFilterProxyModel(parent)
         , dsl_{{{"file", "f", "file name", true, matcher(Role::Name)},
                 {"path", "/", "file path", true, matcher(Role::Path)},
-                {"title", "t", "workspace title", true, matcher(Role::Title)},
-                {"author", "a", "workspace author", true, matcher(Role::Author)},
-                {"tags", "#", "workspace tags", true, matcher(Role::Tags)},
-                {"category", "c", "workspace category", true, matcher(Role::Categories)},
+                {"title", "t", "workspace title", true,
+                 annotationMatcher(&WorkspaceAnnotationsQt::getTitle)},
+                {"author", "a", "workspace author", true,
+                 annotationMatcher(&WorkspaceAnnotationsQt::getAuthor)},
+                {"tags", "#", "workspace tags", true,
+                 annotationMatcher(&WorkspaceAnnotationsQt::getTags)},
+                {"category", "c", "workspace category", true,
+                 annotationMatcher(&WorkspaceAnnotationsQt::getCategories)},
                 {"processors", "p",
                  "search processor identifiers, display names, and class identifiers", false,
                  [](std::string_view str, const QModelIndex& i) -> bool {
-                     const auto list = utilqt::getData(i, Role::Processors).toStringList();
-                     const auto qstr = utilqt::toQString(str);
-                     for (const auto& item : list) {
-                         if (item.contains(qstr, Qt::CaseInsensitive)) {
-                             return true;
+                     QVariant variant = utilqt::getData(i, Role::Annotations);
+                     if (variant.isValid()) {
+                         WorkspaceInfo info = qvariant_cast<WorkspaceInfo>(variant);
+                         for (const auto& item : info.annotations->getProcessorList()) {
+                             if (contains(item.type, str) || contains(item.identifier, str) ||
+                                 contains(item.displayName, str)) {
+                                 return true;
+                             }
                          }
                      }
                      return false;
@@ -311,18 +344,42 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             workspaceTreeView_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
             workspaceTreeView_->setVisible(!getSetting("showWorkSpaceGridView", true).toBool());
 
-            QObject::connect(workspaceTreeView_, &WorkspaceTreeView::loadFile, this, loadFile);
-            QObject::connect(workspaceTreeView_, &WorkspaceTreeView::selectFile, this,
-                             updateLoadButtons);
+            connect(workspaceTreeView_, &WorkspaceTreeView::loadFile, this, loadFile);
+            connect(workspaceTreeView_, &WorkspaceTreeView::selectFile, this, updateLoadButtons);
 
             workspaceGridView_ = new WorkspaceGridView(filterModel_, this);
             workspaceGridView_->setMinimumWidth(utilqt::emToPx(this, 25));
             workspaceGridView_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
             workspaceGridView_->setVisible(getSetting("showWorkSpaceGridView", true).toBool());
 
-            QObject::connect(workspaceGridView_, &WorkspaceGridView::loadFile, this, loadFile);
-            QObject::connect(workspaceGridView_, &WorkspaceGridView::selectFile, this,
-                             updateLoadButtons);
+            connect(workspaceGridView_, &WorkspaceGridView::loadFile, this, loadFile);
+            connect(workspaceGridView_, &WorkspaceGridView::selectFile, this, updateLoadButtons);
+
+            connect(
+                model_, &WorkspaceTreeModel::dataChanged, this,
+                [this](const QModelIndex& topLeft, const QModelIndex&, const QVector<int>&) {
+                    if (detailsIndex_.isValid() && topLeft.isValid()) {
+                        auto detailsFile = utilqt::fromQString(
+                            utilqt::getData(detailsIndex_, Role::FilePath).toString());
+                        auto changedFile = utilqt::fromQString(
+                            utilqt::getData(topLeft, Role::FilePath).toString());
+
+                        if (detailsFile == changedFile) {
+                            const QFileInfo info(
+                                utilqt::getData(detailsIndex_, Role::FilePath).toString());
+                            QVariant variant = utilqt::getData(detailsIndex_, Role::Annotations);
+                            if (variant.isValid()) {
+                                WorkspaceInfo workspaceInfo = qvariant_cast<WorkspaceInfo>(variant);
+                                auto doc = createDetailsDocument(info, *workspaceInfo.annotations);
+                                details_->setHtml(utilqt::toQString(doc));
+                            } else {
+                                auto doc = createDetailsDocument(info);
+                                details_->setHtml(utilqt::toQString(doc));
+                            }
+                        }
+                    }
+                },
+                Qt::QueuedConnection);
 
             auto toolbarLayout = new QHBoxLayout();
             filterLineEdit_ = new QLineEdit();
@@ -568,7 +625,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     workspaceSplitter_->restoreState(getSetting("workspaceSplitter").toByteArray());
 
     setTabOrder({filterLineEdit_, workspaceTreeView_, workspaceGridView_, loadWorkspaceBtn_,
-                 appendWorkspaceBtn_, newButton_, openButton_, restoreButton_, details_, changelog_});
+                 appendWorkspaceBtn_, newButton_, openButton_, restoreButton_, details_,
+                 changelog_});
     setFocusProxy(filterLineEdit_);
 }
 
@@ -683,6 +741,8 @@ std::string formatDescription(std::string_view str) {
 }  // namespace
 
 void WelcomeWidget::updateDetails(const QModelIndex& index) {
+    detailsIndex_ = index;
+
     loadWorkspaceBtn_->setEnabled(index.isValid());
     appendWorkspaceBtn_->setEnabled(index.isValid());
     if (!index.isValid()) {
@@ -691,31 +751,24 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
         return;
     }
 
-    const auto filename = utilqt::getData(index, Role::FilePath).toString();
-    const QFileInfo info(filename);
-
-    // extract annotations including network screenshot and canvas images from workspace
+    const QFileInfo info(utilqt::getData(index, Role::FilePath).toString());
     QVariant variant = utilqt::getData(index, Role::Annotations);
-    std::shared_ptr<WorkspaceAnnotationsQt> annotations;
     if (variant.isValid()) {
         WorkspaceInfo workspaceInfo = qvariant_cast<WorkspaceInfo>(variant);
-        annotations = workspaceInfo.annotations;
+        auto doc = createDetailsDocument(info, *workspaceInfo.annotations);
+        details_->setHtml(utilqt::toQString(doc));
     } else {
-        auto path = utilqt::toPath(filename);
-        try {
-            annotations = std::make_shared<WorkspaceAnnotationsQt>(path, app_);
-        } catch (Exception&) {
-        }
+        auto doc = createDetailsDocument(info);
+        details_->setHtml(utilqt::toQString(doc));
     }
+    centerStackedWidget_->setCurrentIndex(1);
+}
 
+Document WelcomeWidget::createDetailsDocument(const QFileInfo& info) const {
     const auto dateFormat = "yyyy-MM-dd hh:mm:ss";
     const auto createdStr = utilqt::fromQString(info.birthTime().toString(dateFormat));
     const auto modifiedStr = utilqt::fromQString(info.lastModified().toString(dateFormat));
-    const auto titleStr = (annotations && !annotations->getTitle().empty())
-                              ? annotations->getTitle()
-                              : formatTitle(utilqt::fromQString(info.completeBaseName()));
-    const auto description =
-        annotations ? formatDescription(annotations->getDescription()) : std::string{};
+    const auto titleStr = formatTitle(utilqt::fromQString(info.completeBaseName()));
 
     Document doc;
     auto body = doc.append("html").append("body");
@@ -734,15 +787,42 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
     addRow("Path", utilqt::fromQString(info.path()));
     addRow("Modified", modifiedStr);
     addRow("Created", createdStr);
-    if (annotations) {
-        addRow("Author", annotations->getAuthor());
-        addRow("Tags", annotations->getTags());
-        addRow("Categories", annotations->getCategories());
-        addRow("Description", description);
-    } else {
-        body.append("h3", "Workspace file could not be opened!",
-                    {{"style", "color:firebrick;font-weight:600;"}});
-    }
+
+    return doc;
+}
+
+Document WelcomeWidget::createDetailsDocument(const QFileInfo& info,
+                                              const WorkspaceAnnotationsQt& annotations) const {
+
+    const auto dateFormat = "yyyy-MM-dd hh:mm:ss";
+    const auto createdStr = utilqt::fromQString(info.birthTime().toString(dateFormat));
+    const auto modifiedStr = utilqt::fromQString(info.lastModified().toString(dateFormat));
+    const auto titleStr = (!annotations.getTitle().empty())
+                              ? annotations.getTitle()
+                              : formatTitle(utilqt::fromQString(info.completeBaseName()));
+    const auto description = formatDescription(annotations.getDescription());
+
+    Document doc;
+    auto body = doc.append("html").append("body");
+    body.append("div", titleStr,
+                {{"style", "font-size:45pt; color:#268bd2; margin-top:0em; padding-top:0em;"}});
+
+    auto table = body.append("table", "", {{"style", "margin-bottom:1em;"}});
+    auto addRow = [&](std::string_view name, std::string_view value) {
+        if (value.empty()) return;
+        auto tr = table.append("tr");
+        tr.append("td", name, {{"style", "text-align:right;padding-right:0.4em"}});
+        tr.append("td", util::htmlEncode(value), {{"style", "color:#ebe5df; font-weight:500;"}});
+    };
+
+    addRow("File", utilqt::fromQString(info.fileName()));
+    addRow("Path", utilqt::fromQString(info.path()));
+    addRow("Modified", modifiedStr);
+    addRow("Created", createdStr);
+    addRow("Author", annotations.getAuthor());
+    addRow("Tags", annotations.getTags());
+    addRow("Categories", annotations.getCategories());
+    addRow("Description", description);
 
     auto content = body.append("div").append("span");
     const int maxImageSize = utilqt::emToPx(this, 32);
@@ -762,33 +842,31 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
              {"src", "data:image/jpeg;base64," + item.base64jpeg}});
     };
 
-    if (annotations) {
-        for (auto& elem : annotations->getCanvasImages()) {
-            addImage(elem);
-        }
-        addImage(annotations->getNetworkImage());
+    for (auto& elem : annotations.getCanvasImages()) {
+        addImage(elem);
+    }
+    if (annotations.getNetworkImage().isValid()) {
+        addImage(annotations.getNetworkImage());
+    }
+    const auto processorCounts = annotations.getProcessorCounts();
 
-        auto processorCounts = annotations->getProcessorCounts();
-
-        auto processorList = content.append("tabel", "", {{"style", "float: left;"}});
-        processorList.append("tr").append("td").append("h3", "Processors",
-                                                       {{"style", "font-weight:600;"}});
-        if (!processorCounts.empty()) {
-            auto pTable = processorList.append("tr").append("td").append(
-                "table", "", {{"style", "min-width:15em"}});
-            for (auto&& [name, count] : processorCounts) {
-                auto tr = pTable.append("tr");
-                tr.append("td", util::htmlEncode(name),
-                          {{"style", "text-align:left;padding-right:1em"}});
-                tr.append("td", fmt::to_string(count), {{"style", "font-weight:500;"}});
-            }
-        } else {
-            processorList.append("tr").append("td", "Network is empty");
+    auto processorList = content.append("tabel", "", {{"style", "float: left;"}});
+    processorList.append("tr").append("td").append("h3", "Processors",
+                                                   {{"style", "font-weight:600;"}});
+    if (!processorCounts.empty()) {
+        auto pTable = processorList.append("tr").append("td").append("table", "",
+                                                                     {{"style", "min-width:15em"}});
+        for (auto&& [name, count] : processorCounts) {
+            auto tr = pTable.append("tr");
+            tr.append("td", util::htmlEncode(name),
+                      {{"style", "text-align:left;padding-right:1em"}});
+            tr.append("td", fmt::to_string(count), {{"style", "font-weight:500;"}});
         }
+    } else {
+        processorList.append("tr").append("td", "Network is empty");
     }
 
-    details_->setHtml(utilqt::toQString(doc));
-    centerStackedWidget_->setCurrentIndex(1);
+    return doc;
 }
 
 QModelIndex WelcomeWidget::findFirstLeaf(QAbstractItemModel* model, QModelIndex parent) {
@@ -906,5 +984,4 @@ QSize ChangelogSplitterHandle::sizeHint() const {
 QSplitterHandle* WelcomeWidget::createHandle() {
     return new detail::ChangelogSplitterHandle(orientation(), this);
 }
-
 }  // namespace inviwo

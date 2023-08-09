@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/network/workspaceannotations.h>
+#include <inviwo/qt/editor/workspaceannotationsqt.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -104,7 +105,15 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
 
         const auto name = utilqt::getData(index, Qt::DisplayRole).toString();
         const auto path = utilqt::getData(index, Role::Path).toString();
-        const auto image = utilqt::getData(index, Role::PrimaryImage).value<QImage>();
+        const auto& image = [&]() {
+            QVariant annotations = utilqt::getData(index, Role::Annotations);
+            if (annotations.isValid()) {
+                WorkspaceInfo workspaceInfo = qvariant_cast<WorkspaceInfo>(annotations);
+                return workspaceInfo.annotations->getPrimaryCanvasQImage();
+            } else {
+                return WorkspaceAnnotationsQt::getMissingImage();
+            }
+        }();
 
         const auto margin = utilqt::emToPx(option.fontMetrics, 0.5);
 

@@ -32,16 +32,14 @@
 
 #include <inviwo/core/network/workspaceannotations.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QImage>
 #include <QStringList>
 #include <QMetaType>
-#include <warn/pop>
 
 #include <vector>
 #include <filesystem>
 #include <map>
+#include <string>
 
 namespace inviwo {
 
@@ -64,10 +62,10 @@ public:
 
     void setNetworkImage(const QImage& network);
     const Base64Image& getNetworkImage() const;
-    QImage getNetworkQImage() const;
-    QImage getCanvasQImage(size_t i) const;
-    QImage getPrimaryCanvasQImage() const;
-    QStringList getProcessorsQString() const;
+
+    const QImage& getNetworkQImage() const;
+    const QImage& getCanvasQImage(size_t i) const;
+    const QImage& getPrimaryCanvasQImage() const;
 
     using WorkspaceAnnotations::setCanvasImages;
     void setCanvasImages(const std::vector<std::pair<std::string, QImage>>& canvasImages);
@@ -78,10 +76,21 @@ public:
     const std::vector<ProcessorId>& getProcessorList() const;
     const std::map<std::string, int> getProcessorCounts() const;
 
+    static const QImage& getMissingImage();
+
 private:
     Base64Image network_;
     std::vector<ProcessorId> processorList_;
     std::map<std::string, int> processorCounts_;
+
+    mutable std::vector<QImage> imageCache_;
+    mutable QImage networkCache_;
+};
+
+struct IVW_QTEDITOR_API WorkspaceInfo {
+    std::shared_ptr<WorkspaceAnnotationsQt> annotations;
 };
 
 }  // namespace inviwo
+
+Q_DECLARE_METATYPE(inviwo::WorkspaceInfo);  // To be able to use queued Qt connect

@@ -50,22 +50,10 @@ namespace inviwo {
 class TreeItem;
 class InviwoApplication;
 
-struct IVW_QTEDITOR_API WorkspaceInfo {
-    std::shared_ptr<WorkspaceAnnotationsQt> annotations;
-};
-
-}  // namespace inviwo
-Q_DECLARE_METATYPE(inviwo::WorkspaceInfo);  // To be able to use queued Qt connect
-
-namespace inviwo {
-
 class IVW_QTEDITOR_API WorkspaceInfoLoader
     : public QObject,
       public std::enable_shared_from_this<WorkspaceInfoLoader> {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     WorkspaceInfoLoader() = default;
     WorkspaceInfoLoader(const std::filesystem::path& filename, InviwoApplication* app)

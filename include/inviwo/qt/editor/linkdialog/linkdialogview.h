@@ -31,14 +31,9 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QGraphicsView>
-#include <warn/pop>
 
 namespace inviwo {
-
-class LinkDialogGraphicsScene;
 
 class IVW_QTEDITOR_API LinkDialogGraphicsView : public QGraphicsView {
 public:

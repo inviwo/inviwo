@@ -34,7 +34,9 @@
 
 #include <QModelIndex>
 #include <QSplitter>
+#include <QString>
 #include <QStringList>
+#include <QVariant>
 
 class QToolButton;
 class QLineEdit;
@@ -43,6 +45,7 @@ class QStackedWidget;
 class QScrollArea;
 class QSortFilterProxyModel;
 class QSplitterHandle;
+class QFileInfo;
 
 namespace inviwo {
 
@@ -52,6 +55,8 @@ class WorkspaceGridView;
 class InviwoApplication;
 class ChangeLog;
 class WorkspaceFilter;
+class WorkspaceAnnotationsQt;
+class Document;
 
 class IVW_QTEDITOR_API WelcomeWidget : public QSplitter {
     Q_OBJECT
@@ -81,6 +86,12 @@ private:
     QVariant getSetting(const QString& key, const QVariant& defaultValue = QVariant()) const;
 
     void updateDetails(const QModelIndex& index);
+
+    Document createDetailsDocument(const QFileInfo& info) const;
+
+    Document createDetailsDocument(const QFileInfo& info,
+                                   const WorkspaceAnnotationsQt& annotations) const;
+
     static QModelIndex findFirstLeaf(QAbstractItemModel* model, QModelIndex parent = QModelIndex());
 
     void selectFirstLeaf();
@@ -98,6 +109,7 @@ private:
     QLineEdit* filterLineEdit_;
     QStackedWidget* centerStackedWidget_;
     QTextEdit* details_;
+    QPersistentModelIndex detailsIndex_;
     ChangeLog* changelog_;
     QToolButton* loadWorkspaceBtn_;
     QToolButton* appendWorkspaceBtn_;
