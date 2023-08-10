@@ -38,7 +38,7 @@ class IVW_CORE_API SerializeConstants {
 public:
     static constexpr std::string_view XmlVersion = "1.0";
     static constexpr std::string_view InviwoWorkspace = "InviwoWorkspace";
-    static constexpr int InviwoWorkspaceVersion = 2;
+    static constexpr int InviwoWorkspaceVersion = 3;
     static constexpr std::string_view VersionAttribute = "version";
     static constexpr std::string_view ContentAttribute = "content";
     static constexpr std::string_view KeyAttribute = "key";

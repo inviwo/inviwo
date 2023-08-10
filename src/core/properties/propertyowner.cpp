@@ -303,9 +303,11 @@ void PropertyOwner::serialize(Serializer& s) const {
 }
 
 void PropertyOwner::deserialize(Deserializer& d) {
-    // This is for finding renamed composites, and moving old properties to new composites.
-    NodeVersionConverter tvc(this, &PropertyOwner::findPropsForComposites);
-    d.convertVersion(&tvc);
+    if (d.getInviwoWorkspaceVersion() < 3) {
+        // This is for finding renamed composites, and moving old properties to new composites.
+        NodeVersionConverter tvc(this, &PropertyOwner::findPropsForComposites);
+        d.convertVersion(&tvc);
+    }
 
     std::vector<std::string> ownedIdentifiers;
     d.deserialize("OwnedPropertyIdentifiers", ownedIdentifiers, "PropertyIdentifier");
