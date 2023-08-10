@@ -275,10 +275,14 @@ const std::vector<std::unique_ptr<Property>>& ListProperty::getPrefabs() const {
 ListPropertyUIFlags ListProperty::getUIFlags() const { return uiFlags_; }
 
 ListProperty& ListProperty::setCurrentStateAsDefault() {
+    prefabs_.setAsDefault();
+    maxNumElements_.setAsDefault();
     CompositeProperty::setCurrentStateAsDefault();
     return *this;
 }
 ListProperty& ListProperty::resetToDefaultState() {
+    prefabs_.reset();
+    maxNumElements_.reset();
     CompositeProperty::resetToDefaultState();
     return *this;
 }
