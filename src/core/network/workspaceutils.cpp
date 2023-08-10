@@ -57,10 +57,15 @@ void forEachWorkspaceInDirRecursive(const std::filesystem::path& path,
     }
 }
 
-void updateWorkspaces(InviwoApplication* app, const std::filesystem::path& path, DryRun dryRun,
-                      std::function<void()> updateGui) {
-    auto update = [&](const std::filesystem::path& fileName) {
-        LogInfoCustom("util::updateWorkspaces", "Updating workspace: " << fileName);
+size_t updateWorkspaces(InviwoApplication* app, const std::filesystem::path& path, DryRun dryRun,
+                        std::function<void()> updateGui, size_t current, size_t total) {
+    if (total == 0) {
+        forEachWorkspaceInDirRecursive(path, [&](const std::filesystem::path&) { ++total; });
+    }
+
+    auto update = [&, count = 0](const std::filesystem::path& fileName) mutable {
+        util::logInfo(IVW_CONTEXT_CUSTOM("util::updateWorkspaces"), "Updating workspace {}/{}: {}",
+                      ++current, total, fileName);
         auto errorCounter = std::make_shared<LogErrorCounter>();
         LogCentral::getPtr()->registerLogger(errorCounter);
 
@@ -116,19 +121,37 @@ void updateWorkspaces(InviwoApplication* app, const std::filesystem::path& path,
     };
 
     forEachWorkspaceInDirRecursive(path, update);
+
+    return current;
 }
 
 void updateExampleWorkspaces(InviwoApplication* app, DryRun dryRun,
                              std::function<void()> updateGui) {
+    size_t total = 0;
     for (const auto& m : app->getModules()) {
-        updateWorkspaces(app, m->getPath(ModulePath::Workspaces), dryRun, updateGui);
+        forEachWorkspaceInDirRecursive(m->getPath(ModulePath::Workspaces),
+                                       [&](const std::filesystem::path&) { ++total; });
+    }
+
+    size_t current = 0;
+    for (const auto& m : app->getModules()) {
+        current = updateWorkspaces(app, m->getPath(ModulePath::Workspaces), dryRun, updateGui,
+                                   current, total);
     }
 }
 
 void updateRegressionWorkspaces(InviwoApplication* app, DryRun dryRun,
                                 std::function<void()> updateGui) {
+    size_t total = 0;
     for (const auto& m : app->getModules()) {
-        updateWorkspaces(app, m->getPath(ModulePath::RegressionTests), dryRun, updateGui);
+        forEachWorkspaceInDirRecursive(m->getPath(ModulePath::RegressionTests),
+                                       [&](const std::filesystem::path&) { ++total; });
+    }
+
+    size_t current = 0;
+    for (const auto& m : app->getModules()) {
+        current = updateWorkspaces(app, m->getPath(ModulePath::RegressionTests), dryRun, updateGui,
+                                   current, total);
     }
 }
 
