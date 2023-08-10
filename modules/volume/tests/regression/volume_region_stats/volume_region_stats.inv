@@ -1,398 +1,491 @@
-<?xml version="1.0" ?>
-<InviwoWorkspace version="2">
-    <ProcessorNetworkVersion content="19" />
-    <Processors>
-        <Processor type="org.inviwo.DataFrameTable" identifier="DataFrameTable" displayName="DataFrame Table">
-            <PortGroups />
-            <Properties>
-                <Property type="org.inviwo.IntVec2Property" identifier="position">
-                    <value x="1103" y="548" />
-                </Property>
-            </Properties>
-            <MetaDataMap>
-                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
-                    <position x="175" y="250" />
-                    <visibility content="1" />
-                    <selection content="0" />
-                </MetaDataItem>
-                <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
-                    <position x="1103" y="548" />
-                    <dimensions x="256" y="256" />
-                    <visibility content="1" />
-                    <fullScreen content="0" />
-                    <onTop content="1" />
-                </MetaDataItem>
-            </MetaDataMap>
-        </Processor>
-        <Processor type="org.inviwo.VolumeVoronoiSegmentation" identifier="VolumeVoronoiSegmentation" displayName="Volume Voronoi Segmentation">
-            <PortGroups />
-            <Properties>
-                <Property type="org.inviwo.DataFrameColumnProperty" identifier="iCol">
-                    <displayName content="Segment Index Column" />
-                    <semantics semantics="Default" />
-                    <usageMode content="1" />
-                    <visible content="1" />
-                    <readonly content="0" />
-                    <options>
-                        <option>
-                            <id content="index" />
-                            <name content="index" />
-                            <value content="0" />
-                        </option>
-                        <option>
-                            <id content="atomid" />
-                            <name content="atomid" />
-                            <value content="1" />
-                        </option>
-                        <option>
-                            <id content="x" />
-                            <name content="x" />
-                            <value content="2" />
-                        </option>
-                        <option>
-                            <id content="y" />
-                            <name content="y" />
-                            <value content="3" />
-                        </option>
-                        <option>
-                            <id content="z" />
-                            <name content="z" />
-                            <value content="4" />
-                        </option>
-                    </options>
-                    <selectedIdentifier content="atomid" />
-                </Property>
-                <Property type="org.inviwo.DataFrameColumnProperty" identifier="xCol">
-                    <displayName content="X Coordinate Column" />
-                    <semantics semantics="Default" />
-                    <usageMode content="1" />
-                    <visible content="1" />
-                    <readonly content="0" />
-                    <options>
-                        <option>
-                            <id content="index" />
-                            <name content="index" />
-                            <value content="0" />
-                        </option>
-                        <option>
-                            <id content="atomid" />
-                            <name content="atomid" />
-                            <value content="1" />
-                        </option>
-                        <option>
-                            <id content="x" />
-                            <name content="x" />
-                            <value content="2" />
-                        </option>
-                        <option>
-                            <id content="y" />
-                            <name content="y" />
-                            <value content="3" />
-                        </option>
-                        <option>
-                            <id content="z" />
-                            <name content="z" />
-                            <value content="4" />
-                        </option>
-                    </options>
-                    <selectedIdentifier content="x" />
-                </Property>
-                <Property type="org.inviwo.DataFrameColumnProperty" identifier="yCol">
-                    <displayName content="Y Coordinate Column" />
-                    <semantics semantics="Default" />
-                    <usageMode content="1" />
-                    <visible content="1" />
-                    <readonly content="0" />
-                    <options>
-                        <option>
-                            <id content="index" />
-                            <name content="index" />
-                            <value content="0" />
-                        </option>
-                        <option>
-                            <id content="atomid" />
-                            <name content="atomid" />
-                            <value content="1" />
-                        </option>
-                        <option>
-                            <id content="x" />
-                            <name content="x" />
-                            <value content="2" />
-                        </option>
-                        <option>
-                            <id content="y" />
-                            <name content="y" />
-                            <value content="3" />
-                        </option>
-                        <option>
-                            <id content="z" />
-                            <name content="z" />
-                            <value content="4" />
-                        </option>
-                    </options>
-                    <selectedIdentifier content="y" />
-                </Property>
-                <Property type="org.inviwo.DataFrameColumnProperty" identifier="zCol">
-                    <displayName content="Z Coordinate Column" />
-                    <semantics semantics="Default" />
-                    <usageMode content="1" />
-                    <visible content="1" />
-                    <readonly content="0" />
-                    <options>
-                        <option>
-                            <id content="index" />
-                            <name content="index" />
-                            <value content="0" />
-                        </option>
-                        <option>
-                            <id content="atomid" />
-                            <name content="atomid" />
-                            <value content="1" />
-                        </option>
-                        <option>
-                            <id content="x" />
-                            <name content="x" />
-                            <value content="2" />
-                        </option>
-                        <option>
-                            <id content="y" />
-                            <name content="y" />
-                            <value content="3" />
-                        </option>
-                        <option>
-                            <id content="z" />
-                            <name content="z" />
-                            <value content="4" />
-                        </option>
-                    </options>
-                    <selectedIdentifier content="z" />
-                </Property>
-                <Property type="org.inviwo.DataFrameColumnProperty" identifier="wCol">
-                    <displayName content="Weight Column" />
-                    <semantics semantics="Default" />
-                    <usageMode content="1" />
-                    <visible content="1" />
-                    <readonly content="0" />
-                    <options>
-                        <option>
-                            <id content="none" />
-                            <name content="None" />
-                            <value content="-1" />
-                        </option>
-                        <option>
-                            <id content="index" />
-                            <name content="index" />
-                            <value content="0" />
-                        </option>
-                        <option>
-                            <id content="atomid" />
-                            <name content="atomid" />
-                            <value content="1" />
-                        </option>
-                        <option>
-                            <id content="x" />
-                            <name content="x" />
-                            <value content="2" />
-                        </option>
-                        <option>
-                            <id content="y" />
-                            <name content="y" />
-                            <value content="3" />
-                        </option>
-                        <option>
-                            <id content="z" />
-                            <name content="z" />
-                            <value content="4" />
-                        </option>
-                    </options>
-                    <selectedIdentifier content="none" />
-                </Property>
-            </Properties>
-            <MetaDataMap>
-                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
-                    <position x="200" y="100" />
-                    <visibility content="1" />
-                    <selection content="0" />
-                </MetaDataItem>
-            </MetaDataMap>
-        </Processor>
-        <Processor type="org.inviwo.VolumeSource" identifier="VolumeSource" displayName="Volume Source">
-            <PortGroups />
-            <Properties>
-                <Property type="org.inviwo.FileProperty" identifier="filename">
-                    <absolutePath content="/Users/peter/Documents/Inviwo/inviwo/data/volumes/boron.dat" />
-                    <workspaceRelativePath content="../../../../../data/volumes/boron.dat" />
-                    <ivwdataRelativePath content="volumes/boron.dat" />
-                    <selectedExtension>
-                        <extension content="dat" />
-                        <description content="Inviwo dat file format" />
-                    </selectedExtension>
-                    <acceptMode content="0" />
-                    <fileMode content="0" />
-                </Property>
-                <Property type="org.inviwo.OptionPropertyFileExtension" identifier="reader">
-                    <selectedIdentifier content="Inviwo dat file format (*.dat)" />
-                </Property>
-                <Property type="org.inviwo.SequenceTimerProperty" identifier="Sequence">
-                    <visible content="0" />
-                    <Properties>
-                        <Property type="org.inviwo.Size_tProperty" identifier="selectedSequenceIndex">
-                            <displayName content="Sequence Index" />
-                            <semantics semantics="Default" />
-                            <usageMode content="0" />
-                            <visible content="0" />
-                            <readonly content="0" />
-                            <minConstraint content="0" />
-                            <maxConstraint content="0" />
-                            <minvalue content="1" />
-                            <maxvalue content="1" />
-                            <increment content="1" />
-                            <value content="1" />
-                        </Property>
-                    </Properties>
-                </Property>
-            </Properties>
-            <MetaDataMap>
-                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
-                    <position x="150" y="0" />
-                    <visibility content="1" />
-                    <selection content="0" />
-                </MetaDataItem>
-            </MetaDataMap>
-        </Processor>
-        <Processor type="org.inviwo.CSVSource" identifier="CSVSource" displayName="CSV Source">
-            <PortGroups />
-            <Properties>
-                <Property type="org.inviwo.FileProperty" identifier="inputFile_">
-                    <absolutePath content="/Users/peter/Documents/Inviwo/inviwo/modules/volume/data/boron.csv" />
-                    <workspaceRelativePath content="../../../data/boron.csv" />
-                    <ivwdataRelativePath content="../modules/volume/data/boron.csv" />
-                    <selectedExtension>
-                        <extension content="*" />
-                        <description content="All Files" />
-                    </selectedExtension>
-                    <acceptMode content="0" />
-                    <fileMode content="0" />
-                </Property>
-                <Property type="org.inviwo.ColumnMetaDataListProperty" identifier="columns">
-                    <maxNumberOfElements content="0" />
-                    <displayName content="Column MetaData" />
-                    <semantics semantics="Default" />
-                    <usageMode content="1" />
-                    <visible content="1" />
-                    <readonly content="0" />
-                    <OwnedPropertyIdentifiers>
-                        <PropertyIdentifier content="column1" />
-                        <PropertyIdentifier content="column2" />
-                        <PropertyIdentifier content="column3" />
-                        <PropertyIdentifier content="column4" />
-                        <PropertyIdentifier content="column5" />
-                    </OwnedPropertyIdentifiers>
-                    <Properties>
-                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column1">
-                            <displayName content="index" />
-                            <semantics semantics="Default" />
-                            <usageMode content="1" />
-                            <visible content="1" />
-                            <readonly content="0" />
-                            <Properties />
-                            <collapsed content="1" />
-                        </Property>
-                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column2">
-                            <displayName content="atomid" />
-                            <semantics semantics="Default" />
-                            <usageMode content="1" />
-                            <visible content="1" />
-                            <readonly content="0" />
-                            <Properties />
-                            <collapsed content="1" />
-                        </Property>
-                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column3">
-                            <displayName content="x" />
-                            <semantics semantics="Default" />
-                            <usageMode content="1" />
-                            <visible content="1" />
-                            <readonly content="0" />
-                            <Properties>
-                                <Property type="org.inviwo.BoolProperty" identifier="checked">
-                                    <value content="1" />
-                                </Property>
-                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
-                                    <value x="-2.5299999999999998" y="2.5299999999999998" />
-                                </Property>
-                                <Property type="org.inviwo.StringProperty" identifier="unit">
-                                    <value content="Å" />
-                                </Property>
-                            </Properties>
-                            <collapsed content="0" />
-                        </Property>
-                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column4">
-                            <displayName content="y" />
-                            <semantics semantics="Default" />
-                            <usageMode content="1" />
-                            <visible content="1" />
-                            <readonly content="0" />
-                            <Properties>
-                                <Property type="org.inviwo.BoolProperty" identifier="checked">
-                                    <value content="1" />
-                                </Property>
-                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
-                                    <value x="-2.8125" y="2.8125" />
-                                </Property>
-                                <Property type="org.inviwo.StringProperty" identifier="unit">
-                                    <value content="Å" />
-                                </Property>
-                            </Properties>
-                            <collapsed content="0" />
-                        </Property>
-                        <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column5">
-                            <displayName content="z" />
-                            <semantics semantics="Default" />
-                            <usageMode content="1" />
-                            <visible content="1" />
-                            <readonly content="0" />
-                            <Properties>
-                                <Property type="org.inviwo.BoolProperty" identifier="checked">
-                                    <value content="1" />
-                                </Property>
-                                <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
-                                    <value x="-3.4942500600000002" y="3.4942500000000001" />
-                                </Property>
-                                <Property type="org.inviwo.StringProperty" identifier="unit">
-                                    <value content="Å" />
-                                </Property>
-                            </Properties>
-                            <collapsed content="0" />
-                        </Property>
-                    </Properties>
-                    <collapsed content="0" />
-                </Property>
-            </Properties>
-            <MetaDataMap>
-                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
-                    <position x="325" y="0" />
-                    <visibility content="1" />
-                    <selection content="0" />
-                </MetaDataItem>
-            </MetaDataMap>
-        </Processor>
-        <Processor type="org.inviwo.VolumeRegionStatistics" identifier="VolumeRegionStatistics" displayName="Volume Region Statistics">
-            <PortGroups />
-            <Properties />
-            <MetaDataMap>
-                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
-                    <position x="175" y="175" />
-                    <visibility content="1" />
-                    <selection content="0" />
-                </MetaDataItem>
-            </MetaDataMap>
-        </Processor>
-    </Processors>
-    <Connections>
-        <Connection src="CSVSource.data" dst="VolumeVoronoiSegmentation.seedPoints" />
-        <Connection src="VolumeSource.data" dst="VolumeVoronoiSegmentation.inputVolume" />
-        <Connection src="VolumeVoronoiSegmentation.outport" dst="VolumeRegionStatistics.atlas" />
-        <Connection src="VolumeSource.data" dst="VolumeRegionStatistics.volume" />
-        <Connection src="VolumeRegionStatistics.statistics" dst="DataFrameTable.inport" />
-    </Connections>
+<?xml version="1.0" encoding="UTF-8" ?>
+<InviwoWorkspace version="3">
+    <InviwoSetup>
+        <Modules>
+            <Module name="Base" version="5">
+                <Processors>
+                    <Processor content="org.inviwo.VolumeSource" />
+                </Processors>
+            </Module>
+            <Module name="DataFrame" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.CSVSource" />
+                </Processors>
+            </Module>
+            <Module name="DataFrameQt" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.DataFrameTable" />
+                </Processors>
+            </Module>
+            <Module name="Volume" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.VolumeRegionStatistics" />
+                    <Processor content="org.inviwo.VolumeVoronoiSegmentation" />
+                </Processors>
+            </Module>
+        </Modules>
+    </InviwoSetup>
+    <ProcessorNetwork>
+        <ProcessorNetworkVersion content="20" />
+        <Processors>
+            <Processor type="org.inviwo.CSVSource" identifier="CSVSource" displayName="CSV Source">
+                <PortGroups />
+                <Properties>
+                    <Property type="org.inviwo.FileProperty" identifier="inputFile_">
+                        <absolutePath content="C:/Users/petst55.AD/Documents/Inviwo/inviwo/modules/volume/data/boron.csv" />
+                        <workspaceRelativePath content="../../../data/boron.csv" />
+                        <ivwdataRelativePath content="../modules/volume/data/boron.csv" />
+                        <selectedExtension>
+                            <extension content="*" />
+                            <description content="All Files" />
+                        </selectedExtension>
+                        <acceptMode content="0" />
+                        <fileMode content="0" />
+                        <contentType content="dataframe" />
+                    </Property>
+                    <Property type="org.inviwo.FilterListProperty" identifier="includeFilters">
+                        <collapsed content="1" />
+                    </Property>
+                    <Property type="org.inviwo.FilterListProperty" identifier="excludeFilters">
+                        <collapsed content="1" />
+                    </Property>
+                    <Property type="org.inviwo.ColumnMetaDataListProperty" identifier="columns">
+                        <displayName content="Column MetaData" />
+                        <semantics semantics="Default" />
+                        <visible content="1" />
+                        <readonly content="0" />
+                        <OwnedPropertyIdentifiers>
+                            <PropertyIdentifier content="column1" />
+                            <PropertyIdentifier content="column2" />
+                            <PropertyIdentifier content="column3" />
+                            <PropertyIdentifier content="column4" />
+                            <PropertyIdentifier content="column5" />
+                        </OwnedPropertyIdentifiers>
+                        <Properties>
+                            <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column1">
+                                <displayName content="index" />
+                                <semantics semantics="Default" />
+                                <visible content="1" />
+                                <readonly content="0" />
+                                <Properties />
+                                <collapsed content="1" />
+                            </Property>
+                            <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column2">
+                                <displayName content="atomid" />
+                                <semantics semantics="Default" />
+                                <visible content="1" />
+                                <readonly content="0" />
+                                <Properties />
+                                <collapsed content="1" />
+                            </Property>
+                            <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column3">
+                                <displayName content="x" />
+                                <semantics semantics="Default" />
+                                <visible content="1" />
+                                <readonly content="0" />
+                                <Properties>
+                                    <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                        <value content="1" />
+                                    </Property>
+                                    <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                        <value x="-2.53" y="2.53" />
+                                    </Property>
+                                </Properties>
+                                <collapsed content="0" />
+                            </Property>
+                            <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column4">
+                                <displayName content="y" />
+                                <semantics semantics="Default" />
+                                <visible content="1" />
+                                <readonly content="0" />
+                                <Properties>
+                                    <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                        <value content="1" />
+                                    </Property>
+                                    <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                        <value x="-2.8125" y="2.8125" />
+                                    </Property>
+                                </Properties>
+                                <collapsed content="0" />
+                            </Property>
+                            <Property type="org.inviwo.ColumnMetaDataProperty" identifier="column5">
+                                <displayName content="z" />
+                                <semantics semantics="Default" />
+                                <visible content="1" />
+                                <readonly content="0" />
+                                <Properties>
+                                    <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                        <value content="1" />
+                                    </Property>
+                                    <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                        <value x="-3.49425006" y="3.49425" />
+                                    </Property>
+                                </Properties>
+                                <collapsed content="0" />
+                            </Property>
+                        </Properties>
+                        <collapsed content="0" />
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="325" y="0" />
+                        <visibility content="1" />
+                        <selection content="0" />
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.DataFrameTable" identifier="DataFrameTable" displayName="DataFrame Table">
+                <PortGroups />
+                <Properties>
+                    <Property type="org.inviwo.IntVec2Property" identifier="position">
+                        <value x="1103" y="548" />
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="175" y="250" />
+                        <visibility content="1" />
+                        <selection content="0" />
+                    </MetaDataItem>
+                    <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
+                        <position x="1103" y="548" />
+                        <dimensions x="256" y="256" />
+                        <visibility content="1" />
+                        <fullScreen content="0" />
+                        <onTop content="1" />
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.VolumeVoronoiSegmentation" identifier="VolumeVoronoiSegmentation" displayName="Volume Voronoi Segmentation">
+                <PortGroups />
+                <Properties>
+                    <Property type="org.inviwo.DataFrameColumnProperty" identifier="iCol">
+                        <displayName content="Segment Index Column" />
+                        <semantics semantics="Default" />
+                        <visible content="1" />
+                        <readonly content="0" />
+                        <options>
+                            <option>
+                                <id content="index" />
+                                <name content="index" />
+                                <value content="0" />
+                            </option>
+                            <option>
+                                <id content="atomid" />
+                                <name content="atomid" />
+                                <value content="1" />
+                            </option>
+                            <option>
+                                <id content="x" />
+                                <name content="x" />
+                                <value content="2" />
+                            </option>
+                            <option>
+                                <id content="y" />
+                                <name content="y" />
+                                <value content="3" />
+                            </option>
+                            <option>
+                                <id content="z" />
+                                <name content="z" />
+                                <value content="4" />
+                            </option>
+                        </options>
+                        <selectedIdentifier content="atomid" />
+                    </Property>
+                    <Property type="org.inviwo.DataFrameColumnProperty" identifier="xCol">
+                        <displayName content="X Coordinate Column" />
+                        <semantics semantics="Default" />
+                        <visible content="1" />
+                        <readonly content="0" />
+                        <options>
+                            <option>
+                                <id content="index" />
+                                <name content="index" />
+                                <value content="0" />
+                            </option>
+                            <option>
+                                <id content="atomid" />
+                                <name content="atomid" />
+                                <value content="1" />
+                            </option>
+                            <option>
+                                <id content="x" />
+                                <name content="x" />
+                                <value content="2" />
+                            </option>
+                            <option>
+                                <id content="y" />
+                                <name content="y" />
+                                <value content="3" />
+                            </option>
+                            <option>
+                                <id content="z" />
+                                <name content="z" />
+                                <value content="4" />
+                            </option>
+                        </options>
+                        <selectedIdentifier content="x" />
+                    </Property>
+                    <Property type="org.inviwo.DataFrameColumnProperty" identifier="yCol">
+                        <displayName content="Y Coordinate Column" />
+                        <semantics semantics="Default" />
+                        <visible content="1" />
+                        <readonly content="0" />
+                        <options>
+                            <option>
+                                <id content="index" />
+                                <name content="index" />
+                                <value content="0" />
+                            </option>
+                            <option>
+                                <id content="atomid" />
+                                <name content="atomid" />
+                                <value content="1" />
+                            </option>
+                            <option>
+                                <id content="x" />
+                                <name content="x" />
+                                <value content="2" />
+                            </option>
+                            <option>
+                                <id content="y" />
+                                <name content="y" />
+                                <value content="3" />
+                            </option>
+                            <option>
+                                <id content="z" />
+                                <name content="z" />
+                                <value content="4" />
+                            </option>
+                        </options>
+                        <selectedIdentifier content="y" />
+                    </Property>
+                    <Property type="org.inviwo.DataFrameColumnProperty" identifier="zCol">
+                        <displayName content="Z Coordinate Column" />
+                        <semantics semantics="Default" />
+                        <visible content="1" />
+                        <readonly content="0" />
+                        <options>
+                            <option>
+                                <id content="index" />
+                                <name content="index" />
+                                <value content="0" />
+                            </option>
+                            <option>
+                                <id content="atomid" />
+                                <name content="atomid" />
+                                <value content="1" />
+                            </option>
+                            <option>
+                                <id content="x" />
+                                <name content="x" />
+                                <value content="2" />
+                            </option>
+                            <option>
+                                <id content="y" />
+                                <name content="y" />
+                                <value content="3" />
+                            </option>
+                            <option>
+                                <id content="z" />
+                                <name content="z" />
+                                <value content="4" />
+                            </option>
+                        </options>
+                        <selectedIdentifier content="z" />
+                    </Property>
+                    <Property type="org.inviwo.DataFrameColumnProperty" identifier="wCol">
+                        <displayName content="Weight Column" />
+                        <semantics semantics="Default" />
+                        <visible content="1" />
+                        <readonly content="0" />
+                        <options>
+                            <option>
+                                <id content="none" />
+                                <name content="None" />
+                                <value content="-1" />
+                            </option>
+                            <option>
+                                <id content="index" />
+                                <name content="index" />
+                                <value content="0" />
+                            </option>
+                            <option>
+                                <id content="atomid" />
+                                <name content="atomid" />
+                                <value content="1" />
+                            </option>
+                            <option>
+                                <id content="x" />
+                                <name content="x" />
+                                <value content="2" />
+                            </option>
+                            <option>
+                                <id content="y" />
+                                <name content="y" />
+                                <value content="3" />
+                            </option>
+                            <option>
+                                <id content="z" />
+                                <name content="z" />
+                                <value content="4" />
+                            </option>
+                        </options>
+                        <selectedIdentifier content="none" />
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="200" y="100" />
+                        <visibility content="1" />
+                        <selection content="0" />
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.VolumeSource" identifier="VolumeSource" displayName="Volume Source">
+                <PortGroups />
+                <Properties>
+                    <Property type="org.inviwo.FileProperty" identifier="filename">
+                        <absolutePath content="C:/Users/petst55.AD/Documents/Inviwo/inviwo/data/volumes/boron.dat" />
+                        <workspaceRelativePath content="../../../../../data/volumes/boron.dat" />
+                        <ivwdataRelativePath content="volumes/boron.dat" />
+                        <selectedExtension>
+                            <extension content="dat" />
+                            <description content="Inviwo dat file format" />
+                        </selectedExtension>
+                        <acceptMode content="0" />
+                        <fileMode content="0" />
+                        <contentType content="volume" />
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyFileExtension" identifier="reader">
+                        <selectedIdentifier content="Inviwo dat file format (*.dat)" />
+                    </Property>
+                    <Property type="org.inviwo.SequenceTimerProperty" identifier="Sequence">
+                        <visible content="0" />
+                        <Properties>
+                            <Property type="org.inviwo.Size_tProperty" identifier="selectedSequenceIndex">
+                                <displayName content="Sequence Index" />
+                                <semantics semantics="Default" />
+                                <visible content="0" />
+                                <readonly content="0" />
+                                <minConstraint content="0" />
+                                <maxConstraint content="0" />
+                                <minvalue content="1" />
+                                <maxvalue content="1" />
+                                <increment content="1" />
+                                <value content="1" />
+                            </Property>
+                        </Properties>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="150" y="0" />
+                        <visibility content="1" />
+                        <selection content="0" />
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.VolumeRegionStatistics" identifier="VolumeRegionStatistics" displayName="Volume Region Statistics">
+                <PortGroups />
+                <Properties />
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="175" y="175" />
+                        <visibility content="1" />
+                        <selection content="0" />
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+        </Processors>
+        <Connections>
+            <Connection src="CSVSource.data" dst="VolumeVoronoiSegmentation.seedPoints" />
+            <Connection src="VolumeSource.data" dst="VolumeVoronoiSegmentation.inputVolume" />
+            <Connection src="VolumeVoronoiSegmentation.outport" dst="VolumeRegionStatistics.atlas" />
+            <Connection src="VolumeSource.data" dst="VolumeRegionStatistics.volume" />
+            <Connection src="VolumeRegionStatistics.statistics" dst="DataFrameTable.inport" />
+        </Connections>
+    </ProcessorNetwork>
+    <PortInspectors />
+    <WorkspaceAnnotations>
+        <Properties />
+        <Network>
+            <name content="Network" />
+            <size x="256" y="256" />
+            <base64 content="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" />
+        </Network>
+    </WorkspaceAnnotations>
+    <AnimationController>
+        <Properties>
+            <Property type="org.inviwo.CompositeProperty" identifier="PlayOptions">
+                <Properties />
+                <collapsed content="1" />
+            </Property>
+            <Property type="org.inviwo.CompositeProperty" identifier="RenderOptions">
+                <Properties>
+                    <Property type="org.inviwo.BoolCompositeProperty" identifier="image">
+                        <Properties>
+                            <Property type="org.inviwo.DirectoryProperty" identifier="outputDirectory">
+                                <absolutePath content="" />
+                                <workspaceRelativePath content="" />
+                                <ivwdataRelativePath content="" />
+                                <selectedExtension>
+                                    <extension content="" />
+                                    <description content="" />
+                                </selectedExtension>
+                                <acceptMode content="0" />
+                                <fileMode content="2" />
+                                <contentType content="default" />
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.BoolCompositeProperty" identifier="ffmpeg">
+                        <Properties>
+                            <Property type="org.inviwo.FileProperty" identifier="file">
+                                <absolutePath content="" />
+                                <workspaceRelativePath content="" />
+                                <ivwdataRelativePath content="" />
+                                <selectedExtension>
+                                    <extension content="" />
+                                    <description content="" />
+                                </selectedExtension>
+                                <acceptMode content="1" />
+                                <fileMode content="0" />
+                                <contentType content="default" />
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.BoolCompositeProperty" identifier="exporter">
+                        <Properties>
+                            <Property type="org.inviwo.DirectoryProperty" identifier="outputDirectory">
+                                <absolutePath content="" />
+                                <workspaceRelativePath content="" />
+                                <ivwdataRelativePath content="" />
+                                <selectedExtension>
+                                    <extension content="" />
+                                    <description content="" />
+                                </selectedExtension>
+                                <acceptMode content="0" />
+                                <fileMode content="2" />
+                                <contentType content="default" />
+                            </Property>
+                        </Properties>
+                    </Property>
+                </Properties>
+                <collapsed content="1" />
+            </Property>
+            <Property type="org.inviwo.CompositeProperty" identifier="controlOptions">
+                <Properties />
+                <collapsed content="1" />
+            </Property>
+        </Properties>
+    </AnimationController>
+    <MainAnimationIndex content="0" />
+    <Animations>
+        <Animation>
+            <name content="Animation 1" />
+        </Animation>
+    </Animations>
 </InviwoWorkspace>

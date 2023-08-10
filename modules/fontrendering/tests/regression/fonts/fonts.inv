@@ -1,422 +1,87 @@
-<?xml version="1.0" ?>
-<InviwoWorkspace version="2">
-    <InviwoSetup>
-        <Modules>
-            <Module name="Core" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.Image.outport.metasource" />
-                    <Processor content="org.inviwo.Image.outport.metasink" />
-                    <Processor content="org.inviwo.CompositeProcessor" />
-                    <Processor content="org.inviwo.Mesh.outport.metasink" />
-                    <Processor content="org.inviwo.Mesh.outport.metasource" />
-                    <Processor content="org.inviwo.Volume.outport.metasink" />
-                    <Processor content="org.inviwo.Volume.outport.metasource" />
-                    <Processor content="org.inviwo.Volume.shared_ptr.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Volume.shared_ptr.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Buffer.outport.metasink" />
-                    <Processor content="org.inviwo.Buffer.outport.metasource" />
-                    <Processor content="org.inviwo.LightSource.outport.metasink" />
-                    <Processor content="org.inviwo.LightSource.outport.metasource" />
-                    <Processor content="org.inviwo.FLOAT32.outport.metasink" />
-                    <Processor content="org.inviwo.FLOAT32.outport.metasource" />
-                    <Processor content="org.inviwo.FLOAT32.vector.outport.metasink" />
-                    <Processor content="org.inviwo.FLOAT32.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec2FLOAT32.outport.metasink" />
-                    <Processor content="org.inviwo.Vec2FLOAT32.outport.metasource" />
-                    <Processor content="org.inviwo.Vec2FLOAT32.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec2FLOAT32.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec3FLOAT32.outport.metasink" />
-                    <Processor content="org.inviwo.Vec3FLOAT32.outport.metasource" />
-                    <Processor content="org.inviwo.Vec3FLOAT32.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec3FLOAT32.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec4FLOAT32.outport.metasink" />
-                    <Processor content="org.inviwo.Vec4FLOAT32.outport.metasource" />
-                    <Processor content="org.inviwo.Vec4FLOAT32.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec4FLOAT32.vector.outport.metasource" />
-                    <Processor content="org.inviwo.FLOAT64.outport.metasink" />
-                    <Processor content="org.inviwo.FLOAT64.outport.metasource" />
-                    <Processor content="org.inviwo.FLOAT64.vector.outport.metasink" />
-                    <Processor content="org.inviwo.FLOAT64.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec2FLOAT64.outport.metasink" />
-                    <Processor content="org.inviwo.Vec2FLOAT64.outport.metasource" />
-                    <Processor content="org.inviwo.Vec2FLOAT64.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec2FLOAT64.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec3FLOAT64.outport.metasink" />
-                    <Processor content="org.inviwo.Vec3FLOAT64.outport.metasource" />
-                    <Processor content="org.inviwo.Vec3FLOAT64.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec3FLOAT64.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec4FLOAT64.outport.metasink" />
-                    <Processor content="org.inviwo.Vec4FLOAT64.outport.metasource" />
-                    <Processor content="org.inviwo.Vec4FLOAT64.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec4FLOAT64.vector.outport.metasource" />
-                    <Processor content="org.inviwo.INT32.outport.metasink" />
-                    <Processor content="org.inviwo.INT32.outport.metasource" />
-                    <Processor content="org.inviwo.INT32.vector.outport.metasink" />
-                    <Processor content="org.inviwo.INT32.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec2INT32.outport.metasink" />
-                    <Processor content="org.inviwo.Vec2INT32.outport.metasource" />
-                    <Processor content="org.inviwo.Vec2INT32.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec2INT32.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec3INT32.outport.metasink" />
-                    <Processor content="org.inviwo.Vec3INT32.outport.metasource" />
-                    <Processor content="org.inviwo.Vec3INT32.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec3INT32.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec4INT32.outport.metasink" />
-                    <Processor content="org.inviwo.Vec4INT32.outport.metasource" />
-                    <Processor content="org.inviwo.Vec4INT32.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec4INT32.vector.outport.metasource" />
-                    <Processor content="org.inviwo.UINT32.outport.metasink" />
-                    <Processor content="org.inviwo.UINT32.outport.metasource" />
-                    <Processor content="org.inviwo.UINT32.vector.outport.metasink" />
-                    <Processor content="org.inviwo.UINT32.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec2UINT32.outport.metasink" />
-                    <Processor content="org.inviwo.Vec2UINT32.outport.metasource" />
-                    <Processor content="org.inviwo.Vec2UINT32.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec2UINT32.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec3UINT32.outport.metasink" />
-                    <Processor content="org.inviwo.Vec3UINT32.outport.metasource" />
-                    <Processor content="org.inviwo.Vec3UINT32.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec3UINT32.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec4UINT32.outport.metasink" />
-                    <Processor content="org.inviwo.Vec4UINT32.outport.metasource" />
-                    <Processor content="org.inviwo.Vec4UINT32.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec4UINT32.vector.outport.metasource" />
-                    <Processor content="org.inviwo.INT64.outport.metasink" />
-                    <Processor content="org.inviwo.INT64.outport.metasource" />
-                    <Processor content="org.inviwo.INT64.vector.outport.metasink" />
-                    <Processor content="org.inviwo.INT64.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec2INT64.outport.metasink" />
-                    <Processor content="org.inviwo.Vec2INT64.outport.metasource" />
-                    <Processor content="org.inviwo.Vec2INT64.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec2INT64.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec3INT64.outport.metasink" />
-                    <Processor content="org.inviwo.Vec3INT64.outport.metasource" />
-                    <Processor content="org.inviwo.Vec3INT64.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec3INT64.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec4INT64.outport.metasink" />
-                    <Processor content="org.inviwo.Vec4INT64.outport.metasource" />
-                    <Processor content="org.inviwo.Vec4INT64.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec4INT64.vector.outport.metasource" />
-                    <Processor content="org.inviwo.UINT64.outport.metasink" />
-                    <Processor content="org.inviwo.UINT64.outport.metasource" />
-                    <Processor content="org.inviwo.UINT64.vector.outport.metasink" />
-                    <Processor content="org.inviwo.UINT64.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec2UINT64.outport.metasink" />
-                    <Processor content="org.inviwo.Vec2UINT64.outport.metasource" />
-                    <Processor content="org.inviwo.Vec2UINT64.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec2UINT64.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec3UINT64.outport.metasink" />
-                    <Processor content="org.inviwo.Vec3UINT64.outport.metasource" />
-                    <Processor content="org.inviwo.Vec3UINT64.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec3UINT64.vector.outport.metasource" />
-                    <Processor content="org.inviwo.Vec4UINT64.outport.metasink" />
-                    <Processor content="org.inviwo.Vec4UINT64.outport.metasource" />
-                    <Processor content="org.inviwo.Vec4UINT64.vector.outport.metasink" />
-                    <Processor content="org.inviwo.Vec4UINT64.vector.outport.metasource" />
-                    <Processor content="org.inviwo.CompositeProcessorCdevinviwoinviwodataworkspacescompositesVolumeRaycasterCompositeinv" />
-                </Processors>
-            </Module>
-            <Module name="OpenGL" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.CanvasGL" />
-                </Processors>
-            </Module>
-            <Module name="Base" version="4">
-                <Processors>
-                    <Processor content="org.inviwo.ConvexHull2DProcessor" />
-                    <Processor content="org.inviwo.CubeProxyGeometry" />
-                    <Processor content="org.inviwo.Diffuselightsource" />
-                    <Processor content="org.inviwo.Directionallightsource" />
-                    <Processor content="org.inviwo.DistanceTransformRAM" />
-                    <Processor content="org.inviwo.GeometrySource" />
-                    <Processor content="org.inviwo.HeightFieldMapper" />
-                    <Processor content="org.inviwo.ImageExport" />
-                    <Processor content="org.inviwo.ImageInformation" />
-                    <Processor content="org.inviwo.ImageSnapshot" />
-                    <Processor content="org.inviwo.ImageSource" />
-                    <Processor content="org.inviwo.ImageSourceSeries" />
-                    <Processor content="org.inviwo.ImageStackVolumeSource" />
-                    <Processor content="org.inviwo.LayerDistanceTransformRAM" />
-                    <Processor content="org.inviwo.MeshClipping" />
-                    <Processor content="org.inviwo.MeshColorFromNormals" />
-                    <Processor content="org.inviwo.MeshCreator" />
-                    <Processor content="org.inviwo.MeshInformation" />
-                    <Processor content="org.inviwo.MeshMapping" />
-                    <Processor content="org.inviwo.MeshPlaneClipping" />
-                    <Processor content="org.inviwo.NoiseProcessor" />
-                    <Processor content="org.inviwo.PixelToBufferProcessor" />
-                    <Processor content="org.inviwo.Pointlightsource" />
-                    <Processor content="org.inviwo.OrdinalPropertyAnimator" />
-                    <Processor content="org.inviwo.Spotlightsource" />
-                    <Processor content="org.inviwo.SurfaceExtraction" />
-                    <Processor content="org.inviwo.VolumeBoundaryPlanes" />
-                    <Processor content="org.inviwo.VolumeSource" />
-                    <Processor content="org.inviwo.VolumeExport" />
-                    <Processor content="org.inviwo.BasisTransformGeometry" />
-                    <Processor content="org.inviwo.BasisTransformVolume" />
-                    <Processor content="org.inviwo.TrianglesToWireframe" />
-                    <Processor content="org.inviwo.TransformMesh" />
-                    <Processor content="org.inviwo.TransformVolume" />
-                    <Processor content="org.inviwo.VolumeConverter" />
-                    <Processor content="org.inviwo.WorldTransformMeshDeprecated" />
-                    <Processor content="org.inviwo.WorldTransformVolumeDeprecated" />
-                    <Processor content="org.inviwo.VolumeSlice" />
-                    <Processor content="org.inviwo.VolumeSubsample" />
-                    <Processor content="org.inviwo.VolumeSubset" />
-                    <Processor content="org.inviwo.ImageContourProcessor" />
-                    <Processor content="org.inviwo.VolumeVectorSource" />
-                    <Processor content="org.inviwo.TimeStepSelector" />
-                    <Processor content="org.inviwo.ImageTimeStepSelector" />
-                    <Processor content="org.inviwo.MeshTimeStepSelector" />
-                    <Processor content="org.inviwo.VolumeBoundingBox" />
-                    <Processor content="org.inviwo.SingleVoxel" />
-                    <Processor content="org.inviwo.StereoCameraSyncer" />
-                    <Processor content="org.inviwo.VolumeToSpatialSampler" />
-                    <Processor content="org.inviwo.OrientationIndicator" />
-                    <Processor content="org.inviwo.PixelValue" />
-                    <Processor content="org.inviwo.VolumeSequenceToSpatial4DSampler" />
-                    <Processor content="org.inviwo.VolumeGradientCPUProcessor" />
-                    <Processor content="org.inviwo.VolumeCurlCPUProcessor" />
-                    <Processor content="org.inviwo.VolumeDivergenceCPUProcessor" />
-                    <Processor content="org.inviwo.VolumeLaplacianProcessor" />
-                    <Processor content="org.inviwo.MeshExport" />
-                    <Processor content="org.inviwo.RandomMeshGenerator" />
-                    <Processor content="org.inviwo.RandomSphereGenerator" />
-                    <Processor content="org.inviwo.NoiseVolumeProcessor" />
-                    <Processor content="org.inviwo.BufferToMeshProcessor" />
-                    <Processor content="org.inviwo.ImageToSpatialSampler" />
-                    <Processor content="org.inviwo.CameraFrustum" />
-                    <Processor content="org.inviwo.VolumeSequenceSingleTimestepSampler" />
-                    <Processor content="org.inviwo.VolumeCreator" />
-                    <Processor content="org.inviwo.MeshConverter" />
-                    <Processor content="org.inviwo.VolumeInformation" />
-                    <Processor content="org.inviwo.TFSelector" />
-                    <Processor content="org.inviwo.VolumeShifter" />
-                    <Processor content="org.inviwo.Volume.InputSelector" />
-                    <Processor content="org.inviwo.Mesh.InputSelector" />
-                    <Processor content="org.inviwo.Image.InputSelector" />
-                </Processors>
-            </Module>
-            <Module name="BrushingAndLinking" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.BrushingAndLinkingProcessor" />
-                </Processors>
-            </Module>
-            <Module name="BaseGL" version="4">
-                <Processors>
-                    <Processor content="org.inviwo.AxisAlignedCutPlane" />
-                    <Processor content="org.inviwo.Background" />
-                    <Processor content="org.inviwo.CubeRenderer" />
-                    <Processor content="org.inviwo.DrawLines" />
-                    <Processor content="org.inviwo.DrawPoints" />
-                    <Processor content="org.inviwo.EmbeddedVolumeSlice" />
-                    <Processor content="org.inviwo.EntryExitPoints" />
-                    <Processor content="org.inviwo.FirstIVWProcessor" />
-                    <Processor content="org.inviwo.GeometryEntryExitPoints" />
-                    <Processor content="org.inviwo.HeightFieldRenderGL" />
-                    <Processor content="org.inviwo.ImageCompositeProcessorGL" />
-                    <Processor content="org.inviwo.ImageLayoutGL" />
-                    <Processor content="org.inviwo.ImageMixer" />
-                    <Processor content="org.inviwo.ImageOverlayGL" />
-                    <Processor content="org.inviwo.ISORaycaster" />
-                    <Processor content="org.inviwo.Jacobian2D" />
-                    <Processor content="org.inviwo.LightingRaycaster" />
-                    <Processor content="org.inviwo.LightVolumeGL" />
-                    <Processor content="org.inviwo.LineRenderer" />
-                    <Processor content="org.inviwo.Mesh2DRenderProcessorGL" />
-                    <Processor content="org.inviwo.GeometryPicking" />
-                    <Processor content="org.inviwo.GeometryRenderGL" />
-                    <Processor content="org.inviwo.MultichannelRaycaster" />
-                    <Processor content="org.inviwo.PointRenderer" />
-                    <Processor content="org.inviwo.RedGreenProcessor" />
-                    <Processor content="org.inviwo.SphereRenderer" />
-                    <Processor content="org.inviwo.TubeRendering" />
-                    <Processor content="org.inviwo.VolumeRaycaster" />
-                    <Processor content="org.inviwo.VolumeSliceGL" />
-                    <Processor content="org.inviwo.FindEdges" />
-                    <Processor content="org.inviwo.ImageBinary" />
-                    <Processor content="org.inviwo.ImageChannelCombine" />
-                    <Processor content="org.inviwo.ImageChannelSelect" />
-                    <Processor content="org.inviwo.ImageGamma" />
-                    <Processor content="org.inviwo.ImageGradient" />
-                    <Processor content="org.inviwo.ImageGrayscale" />
-                    <Processor content="org.inviwo.ImageHighPass" />
-                    <Processor content="org.inviwo.ImageInvert" />
-                    <Processor content="org.inviwo.ImageLayer" />
-                    <Processor content="org.inviwo.ImageLowPass" />
-                    <Processor content="org.inviwo.ImageMapping" />
-                    <Processor content="org.inviwo.ImageNormalization" />
-                    <Processor content="org.inviwo.ImageResample" />
-                    <Processor content="org.inviwo.ImageScaling" />
-                    <Processor content="org.inviwo.ImageSubsetGL" />
-                    <Processor content="org.inviwo.SplitImage" />
-                    <Processor content="org.inviwo.VectorMagnitude" />
-                    <Processor content="org.inviwo.VolumeBinary" />
-                    <Processor content="org.inviwo.VolumeCombiner" />
-                    <Processor content="org.inviwo.VolumeDiff" />
-                    <Processor content="org.inviwo.VolumeGradientMagnitude" />
-                    <Processor content="org.inviwo.VolumeGradient" />
-                    <Processor content="org.inviwo.VolumeLowPass" />
-                    <Processor content="org.inviwo.VolumeMapping" />
-                    <Processor content="org.inviwo.VolumeMerger" />
-                    <Processor content="org.inviwo.VolumeShader" />
-                </Processors>
-            </Module>
-            <Module name="CImg" version="0" />
-            <Module name="QtWidgets" version="0" />
-            <Module name="assimp" version="0" />
-            <Module name="OpenGLQt" version="0" />
-            <Module name="JSON" version="0" />
-            <Module name="DataFrame" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.CSVSource" />
-                    <Processor content="org.inviwo.DataFrameJoin" />
-                    <Processor content="org.inviwo.DataFrameSource" />
-                    <Processor content="org.inviwo.DataFrameExporter" />
-                    <Processor content="org.inviwo.DataFrameFloat32Converter" />
-                    <Processor content="org.inviwo.ImageToDataFrame" />
-                    <Processor content="org.inviwo.SyntheticDataFrame" />
-                    <Processor content="org.inviwo.VolumeToDataFrame" />
-                    <Processor content="org.inviwo.VolumeSequenceToDataFrame" />
-                    <Processor content="org.inviwo.DataFrame.outport.metasink" />
-                    <Processor content="org.inviwo.DataFrame.outport.metasource" />
-                </Processors>
-            </Module>
-            <Module name="Python3" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.FlickrImport" />
-                    <Processor content="org.inviwo.PythonExample" />
-                    <Processor content="org.inviwo.VolumeTest" />
-                    <Processor content="org.inviwo.NumPyVolume" />
-                    <Processor content="org.inviwo.NumpyMandelbrot" />
-                    <Processor content="org.inviwo.NumPyMeshCreateTest" />
-                    <Processor content="org.inviwo.PythonScriptProcessor" />
-                </Processors>
-            </Module>
-            <Module name="EigenUtils" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.EigenMatrixToImage" />
-                    <Processor content="org.inviwo.EigenMix" />
-                    <Processor content="org.inviwo.EigenNormalize" />
-                    <Processor content="org.inviwo.TestMatrix" />
-                    <Processor content="EigenMatrixXf.outport.metasink" />
-                    <Processor content="EigenMatrixXf.outport.metasource" />
-                </Processors>
-            </Module>
-            <Module name="FontRendering" version="3">
-                <Processors>
-                    <Processor content="org.inviwo.TextOverlayGL" />
-                </Processors>
-            </Module>
-            <Module name="Nifti" version="0" />
-            <Module name="Plotting" version="1">
-                <Processors>
-                    <Processor content="org.inviwo.DataFrameColumnToColorVector" />
-                </Processors>
-            </Module>
-            <Module name="UserInterfaceGL" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.CameraWidget" />
-                    <Processor content="org.inviwo.CropWidget" />
-                    <Processor content="org.inviwo.GLUIProcessor" />
-                    <Processor content="org.inviwo.PresentationProcessor" />
-                    <Processor content="org.inviwo.GLUITestProcessor" />
-                </Processors>
-            </Module>
-            <Module name="PlottingGL" version="2">
-                <Processors>
-                    <Processor content="org.inviwo.AxisRenderProcessor" />
-                    <Processor content="org.inviwo.ColorScaleLegend" />
-                    <Processor content="org.inviwo.ImagePlotProcessor" />
-                    <Processor content="org.inviwo.ParallelCoordinates" />
-                    <Processor content="org.inviwo.PersistenceDiagramPlotProcessor" />
-                    <Processor content="org.inviwo.ScatterPlotMatrixProcessor" />
-                    <Processor content="org.inviwo.ScatterPlotProcessor" />
-                    <Processor content="org.inviwo.VolumeAxis" />
-                </Processors>
-            </Module>
-            <Module name="png" version="0" />
-            <Module name="PostProcessing" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.DepthOfField" />
-                    <Processor content="org.inviwo.SSAO" />
-                    <Processor content="org.inviwo.FXAA" />
-                    <Processor content="org.inviwo.Fog" />
-                    <Processor content="org.inviwo.Tonemapping" />
-                    <Processor content="org.inviwo.HdrBloom" />
-                    <Processor content="org.inviwo.ImageBrightnessContrast" />
-                    <Processor content="org.inviwo.ImageEdgeDarken" />
-                    <Processor content="org.inviwo.DepthDarkening" />
-                    <Processor content="org.inviwo.ImageHueSaturationLuminance" />
-                    <Processor content="org.inviwo.ImageFilter" />
-                    <Processor content="org.inviwo.ImageOpacity" />
-                </Processors>
-            </Module>
-            <Module name="PVM" version="0" />
-            <Module name="Python3Qt" version="0" />
-            <Module name="VectorFieldVisualization" version="4">
-                <Processors>
-                    <Processor content="org.inviwo.RBFVectorFieldGenerator2D" />
-                    <Processor content="org.inviwo.RBFBased3DVectorFieldGenerator" />
-                    <Processor content="org.inviwo.SeedPointGenerator3D" />
-                    <Processor content="org.inviwo.SeedPointsFromMask" />
-                    <Processor content="org.inviwo.StreamLinesDeprecated" />
-                    <Processor content="org.inviwo.PathLinesDeprecated" />
-                    <Processor content="org.inviwo.StreamRibbonsDeprecated" />
-                    <Processor content="org.inviwo.IntegralLineVectorToMesh" />
-                    <Processor content="org.inviwo.Seed3Dto4D" />
-                    <Processor content="org.inviwo.StreamLines2D" />
-                    <Processor content="org.inviwo.StreamLines3D" />
-                    <Processor content="org.inviwo.PathLines3D" />
-                    <Processor content="org.inviwo.SeedsFromMaskSequence" />
-                    <Processor content="org.inviwo.DiscardShortLines" />
-                    <Processor content="org.inviwo.SeedPointGenerator2D" />
-                    <Processor content="org.inviwo.IntegralLineSetSelector" />
-                    <Processor content="org.inviwo.IntegralLineSet.outport.metasink" />
-                    <Processor content="org.inviwo.IntegralLineSet.outport.metasource" />
-                </Processors>
-            </Module>
-            <Module name="VectorFieldVisualizationGL" version="1">
-                <Processors>
-                    <Processor content="org.inviwo.LorenzSystem" />
-                    <Processor content="org.inviwo.VectorFieldGenerator2D" />
-                    <Processor content="org.inviwo.VectorFieldGenerator3D" />
-                    <Processor content="org.inviwo.LIC2D" />
-                    <Processor content="org.inviwo.HedgeHog2D" />
-                    <Processor content="org.inviwo.Vector2DMagnitude" />
-                    <Processor content="org.inviwo.Vector2DCurl" />
-                    <Processor content="org.inviwo.Vector2DDivergence" />
-                    <Processor content="org.inviwo.LIC3D" />
-                    <Processor content="org.inviwo.Vector3DCurl" />
-                    <Processor content="org.inviwo.Vector3DDivergence" />
-                    <Processor content="org.inviwo.TMIP" />
-                    <Processor content="org.inviwo.VectorFieldGenerator4D" />
-                    <Processor content="org.inviwo.StreamParticles" />
-                </Processors>
-            </Module>
-            <Module name="WebBrowser" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.webbrowser" />
-                </Processors>
-            </Module>
-        </Modules>
-    </InviwoSetup>
+<?xml version="1.0" encoding="UTF-8" ?>
+<InviwoWorkspace version="3">
+    <InviwoSetup />
     <ProcessorNetwork>
-        <ProcessorNetworkVersion content="17" />
+        <ProcessorNetworkVersion content="20" />
     </ProcessorNetwork>
     <PortInspectors />
     <WorkspaceAnnotations>
-        <Properties>
-            <Property type="org.inviwo.StringProperty" identifier="title" />
-            <Property type="org.inviwo.StringProperty" identifier="author" />
-            <Property type="org.inviwo.StringProperty" identifier="tags" />
-            <Property type="org.inviwo.StringProperty" identifier="categories" />
-            <Property type="org.inviwo.StringProperty" identifier="description" />
-        </Properties>
+        <Properties />
         <Network>
             <name content="Network" />
             <size x="256" y="256" />
-            <base64 content="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/XH+pryuvVPBP/Iq2X/XH+pqKmxcNw8bf8ire/8AXH+oryuvVPG3/Iq3v/XH+oryuiGwVNwoooqyAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK9U8E/8irZf9cf6mvK69U8E/8AIq2X/XH+pqKmxcNw8bf8ire/9cf6ivK69U8bf8ire/8AXH+oryuiGwVNwoooqyAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK9U8E/8AIq2X/XH+pryuvVPBP/Iq2X/XH+pqKmxcNw8bf8ire/8AXH+oryuvVPG3/Iq3v/XH+oryuiGwVNwoooqyAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK9U8E/8irZf9cf6mvK69U8E/8AIq2X/XH+pqKmxcNw8bf8ire/9cf6ivK69U8bf8ire/8AXH+oryuiGwVNwoooqyAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK9U8E/8AIq2X/XH+pryuvVPBP/Iq2X/XH+pqKmxcNw8bf8ire/8AXH+oryuvVPG3/Iq3v/XH+oryuiGwVNwoooqyAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK9U8E/8irZf9cf6mvK69U8E/8AIq2X/XH+pqKmxcNw8bf8ire/9cf6ivK69U8bf8ire/8AXH+oryuiGwT3CiiirICiiigAooooAKKKKACiiigAooooAKKKKAP/2Q==" />
+            <base64 content="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/XH+pryuvVPBP/Iq2X/XH+pqKmxcNw8bf8ire/8AXH+oryuvVPG3/Iq3v/XH+oryuiGwVNwoooqyAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK9U8E/8irZf9cf6mvK69U8E/8AIq2X/XH+pqKmxcNw8bf8ire/9cf6ivK69U8bf8ire/8AXH+oryuiGwVNwoooqyAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK9U8E/8AIq2X/XH+pryuvVPBP/Iq2X/XH+pqKmxcNw8bf8ire/8AXH+oryuvVPG3/Iq3v/XH+oryuiGwVNwoooqyAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK9U8E/8irZf9cf6mvK69U8E/8AIq2X/XH+pqKmxcNw8bf8ire/9cf6ivK69U8bf8ire/8AXH+oryuiGwVNwoooqyAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK9U8E/8AIq2X/XH+pryuvVPBP/Iq2X/XH+pqKmxcNw8bf8ire/8AXH+oryuvVPG3/Iq3v/XH+oryuiGwVNwoooqyAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK9U8E/8irZf9cf6mvK69U8E/8AIq2X/XH+pqKmxcNw8bf8ire/9cf6ivK69U8bf8ire/8AXH+oryuiGwVNwoooqyAooooAKKKKACiiigAooooAKKKKACiiigD/2Q==" />
         </Network>
     </WorkspaceAnnotations>
+    <AnimationController>
+        <Properties>
+            <Property type="org.inviwo.CompositeProperty" identifier="PlayOptions">
+                <Properties />
+                <collapsed content="1" />
+            </Property>
+            <Property type="org.inviwo.CompositeProperty" identifier="RenderOptions">
+                <Properties>
+                    <Property type="org.inviwo.BoolCompositeProperty" identifier="image">
+                        <Properties>
+                            <Property type="org.inviwo.DirectoryProperty" identifier="outputDirectory">
+                                <absolutePath content="" />
+                                <workspaceRelativePath content="" />
+                                <ivwdataRelativePath content="" />
+                                <selectedExtension>
+                                    <extension content="" />
+                                    <description content="" />
+                                </selectedExtension>
+                                <acceptMode content="0" />
+                                <fileMode content="2" />
+                                <contentType content="default" />
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.BoolCompositeProperty" identifier="ffmpeg">
+                        <Properties>
+                            <Property type="org.inviwo.FileProperty" identifier="file">
+                                <absolutePath content="" />
+                                <workspaceRelativePath content="" />
+                                <ivwdataRelativePath content="" />
+                                <selectedExtension>
+                                    <extension content="" />
+                                    <description content="" />
+                                </selectedExtension>
+                                <acceptMode content="1" />
+                                <fileMode content="0" />
+                                <contentType content="default" />
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.BoolCompositeProperty" identifier="exporter">
+                        <Properties>
+                            <Property type="org.inviwo.DirectoryProperty" identifier="outputDirectory">
+                                <absolutePath content="" />
+                                <workspaceRelativePath content="" />
+                                <ivwdataRelativePath content="" />
+                                <selectedExtension>
+                                    <extension content="" />
+                                    <description content="" />
+                                </selectedExtension>
+                                <acceptMode content="0" />
+                                <fileMode content="2" />
+                                <contentType content="default" />
+                            </Property>
+                        </Properties>
+                    </Property>
+                </Properties>
+                <collapsed content="1" />
+            </Property>
+            <Property type="org.inviwo.CompositeProperty" identifier="controlOptions">
+                <Properties />
+                <collapsed content="1" />
+            </Property>
+        </Properties>
+    </AnimationController>
+    <MainAnimationIndex content="0" />
+    <Animations>
+        <Animation>
+            <name content="Animation 1" />
+        </Animation>
+    </Animations>
 </InviwoWorkspace>
