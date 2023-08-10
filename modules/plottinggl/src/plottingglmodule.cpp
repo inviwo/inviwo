@@ -170,11 +170,6 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                     return true;
                 }
 
-                const bool isScatterPlotProc = (type == "org.inviwo.ScatterPlotProcessor");
-
-                std::string_view identifier =
-                    isScatterPlotProc ? "scatterplot" : "scatterPlotproperties";
-
                 if (auto elem = xml::getElement(node, "Properties/Property&identifier=fontFace")) {
                     elem->SetAttribute("type", "org.inviwo.FontFaceOptionProperty");
                     res = true;
@@ -189,6 +184,10 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                     elem->SetAttribute("identifier", "correlationTF");
                     res = true;
                 }
+
+                const bool isScatterPlotProc = (type == "org.inviwo.ScatterPlotProcessor");
+                const std::string_view identifier =
+                    isScatterPlotProc ? "scatterplot" : "scatterPlotproperties";
 
                 if (auto plot = xml::getElement(
                         node,
