@@ -8,7 +8,6 @@ set(HEADER_FILES
     include/ticpp/ticpp.h
     include/ticpp/ticppapi.h
     include/ticpp/ticpprc.h
-    include/ticpp/tinystr.h
     include/ticpp/tinyxml.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -17,7 +16,6 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     src/ticpp.cpp
-    src/tinystr.cpp
     src/tinyxml.cpp
     src/tinyxmlerror.cpp
     src/tinyxmlparser.cpp
