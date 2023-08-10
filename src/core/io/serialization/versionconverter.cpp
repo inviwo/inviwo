@@ -57,27 +57,17 @@ bool TraversingVersionConverter::traverseNodes(TxElement* node) {
 }
 
 bool xml::copyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProperty& prop) {
-    TxElement propitem("Property");
-    propitem.SetAttribute("type", prop.getClassIdentifier());
-    propitem.SetAttribute("identifier", prop.getIdentifier());
-    propitem.SetAttribute("displayName", prop.getDisplayName());
-    propitem.SetAttribute("key", prop.getIdentifier());
+
     TxElement list("Properties");
-
-    std::vector<Property*> props = prop.getProperties();
-
     bool res = false;
-
-    // temp list
     std::vector<TxElement*> toBeDeleted;
 
-    for (auto& p : props) {
+    for (auto& p : prop.getProperties()) {
         bool match = false;
 
         ticpp::Iterator<ticpp::Element> child;
         for (child = child.begin(node); child != child.end(); ++child) {
-            std::string name;
-            child->GetValue(&name);
+
             std::string type = child->GetAttributeOrDefault("type", "");
             std::string id = child->GetAttributeOrDefault("identifier", "");
 
@@ -100,8 +90,15 @@ bool xml::copyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProp
         node->RemoveChild(elem);
     }
 
-    propitem.InsertEndChild(list);
-    node->InsertEndChild(propitem);
+    if (res) {
+        TxElement propitem("Property");
+        propitem.SetAttribute("type", prop.getClassIdentifier());
+        propitem.SetAttribute("identifier", prop.getIdentifier());
+        propitem.SetAttribute("displayName", prop.getDisplayName());
+        propitem.SetAttribute("key", prop.getIdentifier());
+        propitem.InsertEndChild(list);
+        node->InsertEndChild(propitem);
+    }
 
     return res;
 }
@@ -187,8 +184,7 @@ TxElement* xml::getElement(TxElement* node, std::string_view path) {
 bool xml::copyMatchingCompositeProperty(TxElement* node, const CompositeProperty& prop) {
     ticpp::Iterator<ticpp::Element> child;
     for (child = child.begin(node); child != child.end(); ++child) {
-        std::string name;
-        child->GetValue(&name);
+
         std::string type = child->GetAttributeOrDefault("type", "");
         std::string id = child->GetAttributeOrDefault("identifier", "");
 
