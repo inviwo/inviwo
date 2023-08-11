@@ -26,10 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * - added ticppapi.h include and TICPP_API dll-interface to support building DLL using VS200X
  */
 
-#ifdef TIXML_USE_TICPP
-
-#ifndef TICPPRC_INCLUDED
-#define TICPPRC_INCLUDED
+#pragma once
 
 #include "ticppapi.h"
 #include <vector>
@@ -76,6 +73,7 @@ public:
     void DeleteSpawnedWrappers();
 };
 
+
 class TICPP_API TiCppRCImp {
 private:
     int m_count; /**< Holds reference count to me, and to the node I point to */
@@ -119,7 +117,3 @@ public:
     */
     bool IsNull();
 };
-
-#endif  // TICPP_INCLUDED
-
-#endif  // TIXML_USE_TICPP

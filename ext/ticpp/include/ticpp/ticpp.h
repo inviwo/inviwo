@@ -46,15 +46,11 @@ improved THROW() macro.
  * - added ticppapi.h include and TICPP_API dll-interface to support building DLL using VS200X
  */
 
-#ifndef TIXML_USE_TICPP
-#define TIXML_USE_TICPP
-#endif
-
-#ifndef TICPP_INCLUDED
-#define TICPP_INCLUDED
+#pragma once
 
 #include "ticppapi.h"
 #include "tinyxml.h"
+
 #include <sstream>
 #include <vector>
 #include <memory>
@@ -1853,5 +1849,3 @@ public:
     std::string Href() const;
 };
 }  // namespace ticpp
-
-#endif  // TICPP_INCLUDED

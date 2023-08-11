@@ -20,14 +20,13 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef TIXML_USE_TICPP
-
 #include "ticpp.h"
 #include "ticpprc.h"
 #include "tinyxml.h"
+
 #include <sstream>
 
-using namespace ticpp;
+namespace ticpp {
 
 // In the following Visitor functions, casting away const should be safe, as the object can only be
 // referred to by a const &
@@ -831,51 +830,6 @@ Exception::~Exception() throw() {}
 
 const char* Exception::what() const throw() { return m_details.c_str(); }
 
-//*****************************************************************************
 
-TiCppRC::TiCppRC() {
-    // Spawn reference counter for this object
-    m_tiRC = new TiCppRCImp(this);
-}
 
-void TiCppRC::DeleteSpawnedWrappers() {
-    std::vector<Base*>::reverse_iterator wrapper;
-    for (wrapper = m_spawnedWrappers.rbegin(); wrapper != m_spawnedWrappers.rend(); ++wrapper) {
-        delete *wrapper;
-    }
-    m_spawnedWrappers.clear();
-}
-
-TiCppRC::~TiCppRC() {
-    DeleteSpawnedWrappers();
-
-    // Set pointer held by reference counter to NULL
-    this->m_tiRC->Nullify();
-
-    // Decrement reference - so reference counter will delete itself if necessary
-    this->m_tiRC->DecRef();
-}
-
-//*****************************************************************************
-
-TiCppRCImp::TiCppRCImp(TiCppRC* tiCppRC) : m_count(1), m_tiCppRC(tiCppRC) {}
-
-void TiCppRCImp::IncRef() { m_count++; }
-
-void TiCppRCImp::DecRef() {
-    m_count--;
-    if (0 == m_count) {
-        delete m_tiCppRC;
-        delete this;
-    }
-}
-
-void TiCppRCImp::InitRef() { m_count = 1; }
-
-void TiCppRCImp::Nullify() { m_tiCppRC = 0; }
-
-TiCppRC* TiCppRCImp::Get() { return m_tiCppRC; }
-
-bool TiCppRCImp::IsNull() { return 0 == m_tiCppRC; }
-
-#endif  // TIXML_USE_TICPP
+}  // namespace ticpp
