@@ -37,8 +37,8 @@ namespace inviwo {
 
 NodeDebugger::NodeDebugger(TxElement* elem) {
     while (elem) {
-        nodes_.push_back(Node(elem->Value(), elem->GetAttributeOrDefault("identifier", ""),
-                              elem->GetAttributeOrDefault("type", ""), elem->Row()));
+        nodes_.push_back(Node(elem->Value(), elem->GetAttribute("identifier"),
+                              elem->GetAttribute("type"), elem->Row()));
         TxNode* node = elem->Parent(false);
         if (node) {
             elem = dynamic_cast<TxElement*>(node);

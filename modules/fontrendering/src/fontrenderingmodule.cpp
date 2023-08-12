@@ -179,7 +179,7 @@ bool FontRenderingModule::Converter::convert(TxElement* root) {
                 std::string key;
                 node->GetValue(&key);
                 if (key != "Property") return true;
-                const auto type = node->GetAttributeOrDefault("type", "");
+                const auto& type = node->GetAttribute("type");
                 if (type != "org.inviwo.FontProperty") return true;
 
                 if (auto elem = xml::getElement(

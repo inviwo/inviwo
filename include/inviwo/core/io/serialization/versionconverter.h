@@ -143,18 +143,17 @@ template <typename Visitor>
 void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& selector,
                         Visitor visitor) {
 
-    std::string childName;
     auto visitNodes = [&](auto& self, TxElement* node,
                           std::vector<ElementMatcher>::const_iterator begin,
                           std::vector<ElementMatcher>::const_iterator end) -> void {
         ticpp::Iterator<ticpp::Element> child;
 
         for (child = child.begin(node); child != child.end(); ++child) {
-            child->GetValue(&childName);
+            const auto& childName = child->Value();
             if (childName == begin->name) {
                 bool match = true;
                 for (const auto& attribute : begin->attributes) {
-                    auto val = child->GetAttributeOrDefault(attribute.name, "");
+                    auto val = child->GetAttribute(attribute.name);
                     match = match && val == attribute.value;
                 }
                 if (match) {
@@ -176,15 +175,14 @@ void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& sele
  */
 template <typename Visitor>
 void visitMatchingNodesRecursive(TxElement* root, const ElementMatcher& selector, Visitor visitor) {
-    std::string childName;
     auto visitNodes = [&](auto& self, TxElement* node) -> void {
         ticpp::Iterator<ticpp::Element> child;
         for (child = child.begin(node); child != child.end(); ++child) {
-            child->GetValue(&childName);
+            const auto& childName = child->Value();
             if (childName == selector.name) {
                 bool match = true;
                 for (const auto& attribute : selector.attributes) {
-                    auto val = child->GetAttributeOrDefault(attribute.name, "");
+                    const auto& val = child->GetAttribute(attribute.name);
                     match = match && val == attribute.value;
                 }
                 if (match) {
@@ -201,13 +199,12 @@ template <typename Visitor>
 void visitMatchingNodesRecursive(TxElement* root, const std::vector<ElementMatcher>& selectors,
                                  Visitor visitor) {
 
-    std::string name;
     const auto match = [&](const ElementMatcher& matcher, const TxElement* node) {
-        node->GetValue(&name);
+        const auto& name = node->Value();
         if (name == matcher.name) {
             bool match = true;
             for (const auto& attribute : matcher.attributes) {
-                auto val = node->GetAttributeOrDefault(attribute.name, "");
+                const auto& val = node->GetAttribute(attribute.name);
                 match = match && val == attribute.value;
             }
             return match;

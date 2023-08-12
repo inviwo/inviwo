@@ -37,13 +37,13 @@ namespace inviwo {
 
 Serializer::Serializer(const std::filesystem::path& fileName) : SerializeBase(fileName) {
     try {
-        auto decl = std::make_unique<TxDeclaration>(std::string{SerializeConstants::XmlVersion},
+        auto decl = std::make_unique<TxDeclaration>(SerializeConstants::XmlVersion,
                                                     "UTF-8", "");
         doc_->LinkEndChild(decl.get());
-        rootElement_ = new TxElement(SafeCStr{SerializeConstants::InviwoWorkspace});
+        rootElement_ = new TxElement(SerializeConstants::InviwoWorkspace);
 
-        rootElement_->SetAttribute(SafeCStr{SerializeConstants::VersionAttribute},
-                                   SerializeConstants::InviwoWorkspaceVersion);
+        rootElement_->SetAttribute(SerializeConstants::VersionAttribute,
+                                   detail::toStr(SerializeConstants::InviwoWorkspaceVersion));
         doc_->LinkEndChild(rootElement_);
 
     } catch (TxException& e) {
@@ -65,14 +65,14 @@ void Serializer::serialize(std::string_view key, const std::filesystem::path& pa
 }
 
 void Serializer::serialize(std::string_view key, const Serializable& sObj) {
-    auto node = std::make_unique<TxElement>(SafeCStr{key});
+    auto node = std::make_unique<TxElement>(key);
     rootElement_->LinkEndChild(node.get());
     NodeSwitch nodeSwitch(*this, std::move(node));
     sObj.serialize(*this);
 }
 
 NodeSwitch Serializer::switchToNewNode(std::string_view key) {
-    auto node = std::make_unique<TxElement>(SafeCStr{key});
+    auto node = std::make_unique<TxElement>(key);
     rootElement_->LinkEndChild(node.get());
     NodeSwitch nodeSwitch(*this, std::move(node));
     return nodeSwitch;
@@ -82,10 +82,10 @@ TxElement* Serializer::getLastChild() const { return rootElement_->LastChild()->
 
 void Serializer::linkEndChild(TxElement* child) { rootElement_->LinkEndChild(child); }
 
-void Serializer::setValue(TxElement* node, std::string_view val) { node->SetValue(SafeCStr{val}); }
+void Serializer::setValue(TxElement* node, std::string_view val) { node->SetValue(val); }
 
 void Serializer::setAttribute(TxElement* node, std::string_view key, std::string_view val) {
-    node->SetAttribute(SafeCStr{key}, SafeCStr{val});
+    node->SetAttribute(key, val);
 }
 
 void Serializer::serialize(std::string_view key, const signed char& data,

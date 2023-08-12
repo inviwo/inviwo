@@ -68,8 +68,8 @@ bool xml::copyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProp
         ticpp::Iterator<ticpp::Element> child;
         for (child = child.begin(node); child != child.end(); ++child) {
 
-            std::string type = child->GetAttributeOrDefault("type", "");
-            std::string id = child->GetAttributeOrDefault("identifier", "");
+            const auto& type = child->GetAttribute("type");
+            const auto& id = child->GetAttribute("identifier");
 
             if (p->getIdentifier() == id &&
                 (p->getClassIdentifier() == type ||
@@ -107,8 +107,8 @@ bool xml::hasProp(TxElement* node, const Property& prop) {
     bool result = false;
     ticpp::Iterator<ticpp::Element> child;
     for (child = child.begin(node); child != child.end(); ++child) {
-        if (prop.getClassIdentifier() == child->GetAttributeOrDefault("type", "") &&
-            prop.getIdentifier() == child->GetAttributeOrDefault("identifier", "")) {
+        if (prop.getClassIdentifier() == child->GetAttribute("type") &&
+            prop.getIdentifier() == child->GetAttribute("identifier")) {
             result = true;
         }
     }
@@ -162,7 +162,7 @@ TxElement* xml::getElement(TxElement* node, std::string_view path) {
             if (childname == name) {
                 for (size_t i = 1; i < components.size(); ++i) {
                     const auto [attr, value] = util::splitByFirst(components[i], '=');
-                    auto val = child->GetAttributeOrDefault(std::string{attr}, "");
+                    auto val = child->GetAttribute(attr);
                     match = match && val == value;
                 }
             } else {
@@ -185,8 +185,8 @@ bool xml::copyMatchingCompositeProperty(TxElement* node, const CompositeProperty
     ticpp::Iterator<ticpp::Element> child;
     for (child = child.begin(node); child != child.end(); ++child) {
 
-        std::string type = child->GetAttributeOrDefault("type", "");
-        std::string id = child->GetAttributeOrDefault("identifier", "");
+        const auto& type = child->GetAttribute("type");
+        const auto& id = child->GetAttribute("identifier");
 
         if ((type == "CompositeProperty" || type == "org.inviwo.CompositeProperty") &&
             prop.getIdentifier() == id) {

@@ -74,8 +74,8 @@ TEST(SerialitionContainerTest, ContainerTest1) {
 
     int tmp = 0;
     std::vector<bool> visited(vector.size(), false);
-    ContainerWrapper<int> cont(
-        "Item", [&](std::string id, size_t ind) -> ContainerWrapper<int>::Item {
+    auto cont = util::makeContainerWrapper<int>(
+        "Item", [&](std::string id, size_t ind) -> ContainerWrapperItem<int> {
             if (ind < vector.size()) {
                 return {true, vector[ind], [&visited, ind](int&) { visited[ind] = true; }};
             } else {
@@ -134,8 +134,8 @@ TEST(SerialitionContainerTest, ContainerTest2) {
 
     Item tmp;
     std::vector<std::string> visited;
-    ContainerWrapper<Item> cont(
-        "Item", [&](std::string id, size_t) -> ContainerWrapper<Item>::Item {
+    auto cont = util::makeContainerWrapper<Item>(
+        "Item", [&](std::string id, size_t) -> ContainerWrapperItem<Item> {
             visited.push_back(id);
             auto it = util::find_if(vector, [&](const Item& i) { return i.id_ == id; });
             if (it != vector.end()) {
@@ -198,8 +198,8 @@ TEST(SerialitionContainerTest, ContainerTest3) {
 
     Item* tmp = nullptr;
     std::vector<std::string> visited;
-    ContainerWrapper<Item*> cont(
-        "Item", [&](std::string id, size_t) -> ContainerWrapper<Item*>::Item {
+    auto cont = util::makeContainerWrapper<Item*>(
+        "Item", [&](std::string id, size_t) -> ContainerWrapperItem<Item*> {
             visited.push_back(id);
             auto it = util::find_if(vector, [&](Item*& i) { return i->id_ == id; });
             if (it != vector.end()) {

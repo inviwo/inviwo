@@ -418,10 +418,9 @@ bool BaseModule::Converter::convert(TxElement* root) {
         }
         case 2: {
             TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                std::string key;
-                node->GetValue(&key);
+                const auto& key = node->Value();
                 if (key != "Property") return true;
-                const auto type = node->GetAttributeOrDefault("type", "");
+                const auto& type = node->GetAttribute("type");
                 if (type != "org.inviwo.VolumeBasisProperty") return true;
 
                 TxElement newNode{"overrideModel"};
