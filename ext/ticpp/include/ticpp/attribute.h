@@ -18,25 +18,35 @@ class TICPP_API TiXmlAttribute : public TiXmlBase {
 public:
     /// Construct an empty attribute.
     TiXmlAttribute() : TiXmlBase() {
-        document = 0;
-        prev = next = 0;
+        document = nullptr;
+        prev = next = nullptr;
     }
 
     /// std::string constructor.
     TiXmlAttribute(const std::string& _name, const std::string& _value) {
         name = _name;
         value = _value;
-        document = 0;
-        prev = next = 0;
+        document = nullptr;
+        prev = next = nullptr;
+    }
+
+    TiXmlAttribute(std::string_view _name, std::string_view _value) {
+        name = _name;
+        value = _value;
+        document = nullptr;
+        prev = next = nullptr;
     }
 
     /// Construct an attribute with a name and value.
     TiXmlAttribute(const char* _name, const char* _value) {
         name = _name;
         value = _value;
-        document = 0;
-        prev = next = 0;
+        document = nullptr;
+        prev = next = nullptr;
     }
+
+    TiXmlAttribute(const TiXmlAttribute&) = delete;
+    TiXmlAttribute& operator=(const TiXmlAttribute& base) = delete;
 
     const char* Name() const { return name.c_str(); }    ///< Return the name of this attribute.
     const char* Value() const { return value.c_str(); }  ///< Return the value of this attribute.
@@ -54,7 +64,7 @@ public:
      * If the value is an integer, it is stored in 'value' and
      * the call returns TIXML_SUCCESS. If it is not
      * an integer, it returns TIXML_WRONG_TYPE.
-     * 
+     *
      * A specialized but useful call. Note that for success it returns 0,
      * which is the opposite of almost all other TinyXml calls.
      */
@@ -70,8 +80,10 @@ public:
 
     /// STL std::string form.
     void SetName(const std::string& _name) { name = _name; }
+    void SetName(std::string_view _name) { name = _name; }
     /// STL std::string form.
     void SetValue(const std::string& _value) { value = _value; }
+    void SetValue(std::string_view _value) { value = _value; }
 
     /// Get the next sibling attribute in the DOM. Returns null at end.
     const TiXmlAttribute* Next() const;
@@ -103,9 +115,6 @@ public:
     void SetDocument(TiXmlDocument* doc) { document = doc; }
 
 private:
-    TiXmlAttribute(const TiXmlAttribute&);       // not implemented.
-    void operator=(const TiXmlAttribute& base);  // not allowed.
-
     TiXmlDocument* document;  // A pointer back to a document, for error reporting.
     std::string name;
     std::string value;
@@ -129,6 +138,8 @@ class TICPP_API TiXmlAttributeSet {
 public:
     TiXmlAttributeSet();
     ~TiXmlAttributeSet();
+    TiXmlAttributeSet(const TiXmlAttributeSet&) = delete;
+    TiXmlAttributeSet& operator=(const TiXmlAttributeSet&) = delete;
 
     void Add(TiXmlAttribute* attribute);
     void Remove(TiXmlAttribute* attribute);
@@ -150,11 +161,13 @@ public:
             (const_cast<const TiXmlAttributeSet*>(this))->Find(_name));
     }
 
+    const TiXmlAttribute* Find(std::string_view _name) const;
+    TiXmlAttribute* Find(std::string_view _name) {
+        return const_cast<TiXmlAttribute*>(
+            (const_cast<const TiXmlAttributeSet*>(this))->Find(_name));
+    }
+
 private:
-    //*ME:	Because of hidden/disabled copy-construktor in TiXmlAttribute (sentinel-element),
-    //*ME:	this class must be also use a hidden/disabled copy-constructor !!!
-    TiXmlAttributeSet(const TiXmlAttributeSet&);  // not allowed
-    void operator=(const TiXmlAttributeSet&);     // not allowed (as TiXmlAttribute)
 
     TiXmlAttribute sentinel;
 };

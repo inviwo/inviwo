@@ -17,6 +17,7 @@ public:
 
     /// std::string constructor.
     TiXmlElement(const std::string& _value);
+    TiXmlElement(std::string_view _value);
 
     TiXmlElement(const TiXmlElement&);
 
@@ -28,6 +29,7 @@ public:
             for the attribute of that name, or null if none exists.
     */
     const char* Attribute(const char* name) const;
+    const std::string* AttributeStr(const char* name) const;
 
     /** Given an attribute name, Attribute() returns the value
             for the attribute of that name, or null if none exists.
@@ -104,6 +106,8 @@ public:
     */
     void SetAttribute(const char* name, const char* _value);
 
+    const std::string* Attribute(std::string_view name) const;
+
     const std::string* Attribute(const std::string& name) const;
     const std::string* Attribute(const std::string& name, int* i) const;
     const std::string* Attribute(const std::string& name, double* d) const;
@@ -112,6 +116,9 @@ public:
 
     /// STL std::string form.
     void SetAttribute(const std::string& name, const std::string& _value);
+    void SetAttribute(std::string_view name, std::string_view _value);
+
+
     ///< STL std::string form.
     void SetAttribute(const std::string& name, int _value);
 
@@ -132,6 +139,8 @@ public:
     void RemoveAttribute(const std::string& name) {
         RemoveAttribute(name.c_str());
     }  ///< STL std::string form.
+
+    void RemoveAttribute(std::string_view name);
 
     const TiXmlAttribute* FirstAttribute() const {
         return attributeSet.First();
@@ -175,6 +184,8 @@ public:
                              safe type casts on the referenced node.
     */
     const char* GetText() const;
+
+    const std::string* GetTextStr() const;
 
     /// Creates a new Element and returns it - the returned element is a copy.
     virtual TiXmlNode* Clone() const;

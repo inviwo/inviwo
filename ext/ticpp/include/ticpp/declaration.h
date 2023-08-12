@@ -27,6 +27,9 @@ public:
     TiXmlDeclaration(const std::string& _version, const std::string& _encoding,
                      const std::string& _standalone);
 
+    TiXmlDeclaration(std::string_view _version, std::string_view _encoding,
+                     std::string_view _standalone);
+
     /// Construct.
     TiXmlDeclaration(const char* _version, const char* _encoding, const char* _standalone);
 

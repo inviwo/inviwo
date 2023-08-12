@@ -118,6 +118,8 @@ public:
     /// STL std::string form.
     void SetValue(const std::string& _value) { value = _value; }
 
+    void SetValue(std::string_view _value) { value = _value; }
+
     /// Delete all the children of this node. Does not affect 'this'.
     void Clear();
 
@@ -138,6 +140,12 @@ public:
         // this to a const (always safe) call the method, cast the return back to non-const.
         return const_cast<TiXmlNode*>((const_cast<const TiXmlNode*>(this))->FirstChild(_value));
     }
+
+    const TiXmlNode* FirstChild(std::string_view value) const;
+    TiXmlNode* FirstChild(std::string_view _value) {
+        return const_cast<TiXmlNode*>((const_cast<const TiXmlNode*>(this))->FirstChild(_value));
+    }
+
     const TiXmlNode* LastChild() const {
         return lastChild;
     }  /// The last child of this node. Will be null if there are no children.
@@ -266,6 +274,12 @@ public:
         return const_cast<TiXmlNode*>((const_cast<const TiXmlNode*>(this))->NextSibling(_next));
     }
 
+    const TiXmlNode* NextSibling(std::string_view) const;
+    TiXmlNode* NextSibling(std::string_view _next) {
+        return const_cast<TiXmlNode*>((const_cast<const TiXmlNode*>(this))->NextSibling(_next));
+    }
+
+
     /** Convenience function to get through elements.
             Calls NextSibling and ToElement. Will skip all non-Element
             nodes. Returns 0 if there is not another element.
@@ -302,6 +316,12 @@ public:
     /// Convenience function to get through elements.
     const TiXmlElement* FirstChildElement(const char* _value) const;
     TiXmlElement* FirstChildElement(const char* _value) {
+        return const_cast<TiXmlElement*>(
+            (const_cast<const TiXmlNode*>(this))->FirstChildElement(_value));
+    }
+
+    const TiXmlElement* FirstChildElement(std::string_view _value) const;
+    TiXmlElement* FirstChildElement(std::string_view _value) {
         return const_cast<TiXmlElement*>(
             (const_cast<const TiXmlNode*>(this))->FirstChildElement(_value));
     }

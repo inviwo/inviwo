@@ -129,8 +129,8 @@ void TiXmlAttributeSet::Remove(TiXmlAttribute* removeMe) {
         if (node == removeMe) {
             node->prev->next = node->next;
             node->next->prev = node->prev;
-            node->next = 0;
-            node->prev = 0;
+            node->next = nullptr;
+            node->prev = nullptr;
             return;
         }
     }
@@ -141,47 +141,27 @@ const TiXmlAttribute* TiXmlAttributeSet::Find(const std::string& name) const {
     for (const TiXmlAttribute* node = sentinel.next; node != &sentinel; node = node->next) {
         if (node->name == name) return node;
     }
-    return 0;
+    return nullptr;
 }
 
-/*
-TiXmlAttribute*	TiXmlAttributeSet::Find( const std::string& name )
-{
-        for( TiXmlAttribute* node = sentinel.next; node != &sentinel; node = node->next )
-        {
-                if ( node->name == name )
-                        return node;
-        }
-        return 0;
+const TiXmlAttribute* TiXmlAttributeSet::Find(std::string_view name) const {
+    for (const TiXmlAttribute* node = sentinel.next; node != &sentinel; node = node->next) {
+        if (node->name == name) return node;
+    }
+    return nullptr;
 }
-*/
 
 const TiXmlAttribute* TiXmlAttributeSet::Find(const char* name) const {
     for (const TiXmlAttribute* node = sentinel.next; node != &sentinel; node = node->next) {
         if (strcmp(node->name.c_str(), name) == 0) return node;
     }
-    return 0;
+    return nullptr;
 }
 
-/*
-TiXmlAttribute*	TiXmlAttributeSet::Find( const char* name )
-{
-        for( TiXmlAttribute* node = sentinel.next; node != &sentinel; node = node->next )
-        {
-                if ( strcmp( node->name.c_str(), name ) == 0 )
-                        return node;
-        }
-        return 0;
-}
-*/
 
 const char* TiXmlAttribute::Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding) {
     p = SkipWhiteSpace(p, encoding);
-    if (!p || !*p) return 0;
-
-    //	int tabsize = 4;
-    //	if ( document )
-    //		tabsize = document->TabSize();
+    if (!p || !*p) return nullptr;
 
     if (data) {
         data->Stamp(p, encoding);
@@ -197,14 +177,14 @@ const char* TiXmlAttribute::Parse(const char* p, TiXmlParsingData* data, TiXmlEn
     p = SkipWhiteSpace(p, encoding);
     if (!p || !*p || *p != '=') {
         if (document) document->SetError(TIXML_ERROR_READING_ATTRIBUTES, p, data, encoding);
-        return 0;
+        return nullptr;
     }
 
     ++p;  // skip '='
     p = SkipWhiteSpace(p, encoding);
     if (!p || !*p) {
         if (document) document->SetError(TIXML_ERROR_READING_ATTRIBUTES, p, data, encoding);
-        return 0;
+        return nullptr;
     }
 
     const char* end;
@@ -233,7 +213,7 @@ const char* TiXmlAttribute::Parse(const char* p, TiXmlParsingData* data, TiXmlEn
                 // We did not have an opening quote but seem to have a
                 // closing one. Give up and throw an error.
                 if (document) document->SetError(TIXML_ERROR_READING_ATTRIBUTES, p, data, encoding);
-                return 0;
+                return nullptr;
             }
             value += *p;
             ++p;

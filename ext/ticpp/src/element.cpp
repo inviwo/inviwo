@@ -17,6 +17,15 @@ void TiXmlElement::RemoveAttribute(const char* name) {
     }
 }
 
+void TiXmlElement::RemoveAttribute(std::string_view name) {
+    TiXmlAttribute* node = attributeSet.Find(name);
+
+    if (node) {
+        attributeSet.Remove(node);
+        delete node;
+    }
+}
+
 const TiXmlElement* TiXmlNode::FirstChildElement() const {
     const TiXmlNode* node;
 
@@ -27,6 +36,15 @@ const TiXmlElement* TiXmlNode::FirstChildElement() const {
 }
 
 const TiXmlElement* TiXmlNode::FirstChildElement(const char* _value) const {
+    const TiXmlNode* node;
+
+    for (node = FirstChild(_value); node; node = node->NextSibling(_value)) {
+        if (node->ToElement()) return node->ToElement();
+    }
+    return 0;
+}
+
+const TiXmlElement* TiXmlNode::FirstChildElement(std::string_view _value) const {
     const TiXmlNode* node;
 
     for (node = FirstChild(_value); node; node = node->NextSibling(_value)) {
@@ -72,6 +90,11 @@ TiXmlElement::TiXmlElement(const std::string& _value) : TiXmlNode(TiXmlNode::ELE
     value = _value;
 }
 
+TiXmlElement::TiXmlElement(std::string_view _value) : TiXmlNode(TiXmlNode::ELEMENT) {
+    firstChild = lastChild = 0;
+    value = _value;
+}
+
 TiXmlElement::TiXmlElement(const TiXmlElement& copy) : TiXmlNode(TiXmlNode::ELEMENT) {
     firstChild = lastChild = 0;
     copy.CopyTo(this);
@@ -96,14 +119,26 @@ void TiXmlElement::ClearThis() {
 const char* TiXmlElement::Attribute(const char* name) const {
     const TiXmlAttribute* node = attributeSet.Find(name);
     if (node) return node->Value();
-    return 0;
+    return nullptr;
+}
+const std::string* TiXmlElement::AttributeStr(const char* name) const {
+    const TiXmlAttribute* node = attributeSet.Find(name);
+    if (node) return &node->ValueStr();
+    return nullptr;
 }
 
 const std::string* TiXmlElement::Attribute(const std::string& name) const {
     const TiXmlAttribute* node = attributeSet.Find(name);
     if (node) return &node->ValueStr();
-    return 0;
+    return nullptr;
 }
+
+const std::string* TiXmlElement::Attribute(std::string_view name) const {
+    const TiXmlAttribute* node = attributeSet.Find(name);
+    if (node) return &node->ValueStr();
+    return nullptr;
+}
+
 
 const char* TiXmlElement::Attribute(const char* name, int* i) const {
     const char* s = Attribute(name);
@@ -235,6 +270,22 @@ void TiXmlElement::SetAttribute(const std::string& name, const std::string& _val
     }
 }
 
+void TiXmlElement::SetAttribute(std::string_view name, std::string_view _value) {
+    TiXmlAttribute* node = attributeSet.Find(name);
+    if (node) {
+        node->SetValue(_value);
+        return;
+    }
+
+    TiXmlAttribute* attrib = new TiXmlAttribute(name, _value);
+    if (attrib) {
+        attributeSet.Add(attrib);
+    } else {
+        TiXmlDocument* document = GetDocument();
+        if (document) document->SetError(TIXML_ERROR_OUT_OF_MEMORY, 0, 0, TIXML_ENCODING_UNKNOWN);
+    }
+}
+
 void TiXmlElement::Print(FILE* cfile, int depth) const {
     int i;
     assert(cfile);
@@ -313,14 +364,21 @@ TiXmlNode* TiXmlElement::Clone() const {
 }
 
 const char* TiXmlElement::GetText() const {
-    const TiXmlNode* child = this->FirstChild();
-    if (child) {
-        const TiXmlText* childText = child->ToText();
-        if (childText) {
+    if (const auto* child = this->FirstChild()) {
+        if (const auto childText = child->ToText()) {
             return childText->Value();
         }
     }
-    return 0;
+    return nullptr;
+}
+
+const std::string* TiXmlElement::GetTextStr() const {
+    if (const auto* child = this->FirstChild()) {
+        if (const auto childText = child->ToText()) {
+            return &childText->ValueTStr();
+        }
+    }
+    return nullptr;
 }
 
 

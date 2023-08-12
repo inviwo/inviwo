@@ -20,6 +20,14 @@ TiXmlDeclaration::TiXmlDeclaration(const std::string& _version, const std::strin
     standalone = _standalone;
 }
 
+TiXmlDeclaration::TiXmlDeclaration(std::string_view _version, std::string_view _encoding,
+                                   std::string_view _standalone)
+    : TiXmlNode(TiXmlNode::DECLARATION) {
+    version = _version;
+    encoding = _encoding;
+    standalone = _standalone;
+}
+
 TiXmlDeclaration::TiXmlDeclaration(const TiXmlDeclaration& copy)
     : TiXmlNode(TiXmlNode::DECLARATION) {
     copy.CopyTo(this);

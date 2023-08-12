@@ -191,6 +191,14 @@ const TiXmlNode* TiXmlNode::FirstChild(const char* _value) const {
     return 0;
 }
 
+const TiXmlNode* TiXmlNode::FirstChild(std::string_view _value) const {
+    const TiXmlNode* node;
+    for (node = firstChild; node; node = node->next) {
+        if (node->ValueStr() ==_value) return node;
+    }
+    return nullptr;
+}
+
 const TiXmlNode* TiXmlNode::LastChild(const char* _value) const {
     const TiXmlNode* node;
     for (node = lastChild; node; node = node->prev) {
@@ -224,6 +232,15 @@ const TiXmlNode* TiXmlNode::NextSibling(const char* _value) const {
     }
     return 0;
 }
+
+const TiXmlNode* TiXmlNode::NextSibling(std::string_view _value) const {
+    const TiXmlNode* node;
+    for (node = next; node; node = node->next) {
+        if (node->ValueStr() == _value) return node;
+    }
+    return 0;
+}
+
 
 const TiXmlNode* TiXmlNode::PreviousSibling(const char* _value) const {
     const TiXmlNode* node;

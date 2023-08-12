@@ -48,15 +48,26 @@ improved THROW() macro.
 
 #pragma once
 
-#include "ticppapi.h"
-#include "tinyxml.h"
+#include <ticpp/ticppapi.h>
+
+#include <ticpp/visitor.h>
+#include <ticpp/base.h>
+#include <ticpp/node.h>
+#include <ticpp/document.h>
+#include <ticpp/attribute.h>
+#include <ticpp/element.h>
+#include <ticpp/comment.h>
+#include <ticpp/text.h>
+#include <ticpp/declaration.h>
+#include <ticpp/stylesheet.h>
 
 #include <sstream>
-#include <vector>
 #include <memory>
-#include <exception>
+#include <stdexcept>
 #include <typeinfo>
 #include <type_traits>
+#include <string>
+#include <string_view>
 
 /**
 @subpage ticpp is a TinyXML wrapper that uses a lot more C++ ideals.
@@ -72,18 +83,9 @@ namespace ticpp {
 /**
     This is a ticpp exception class
     */
-class TICPP_API Exception : public std::exception {
+class TICPP_API Exception : public std::runtime_error {
 public:
-    /**
-    Construct an exception with a message
-    */
-    Exception(const std::string& details);
-    ~Exception() throw();
-
-    /// Override std::exception::what() to return m_details
-    const char* what() const throw();
-
-    std::string m_details; /**< Exception Details */
+    using std::runtime_error::runtime_error;
 };
 
 /**
@@ -130,7 +132,6 @@ public:
     /// @internal
     virtual bool Visit(const TiXmlComment& comment);
 
-public:
     /// Visit a document.
     virtual bool VisitEnter(const Document& /*doc*/) { return true; }
     /// Visit a document.
@@ -278,7 +279,7 @@ public:
     */
     std::string BuildDetailedErrorString() const {
         std::ostringstream full_message;
-#ifndef TICPP_NO_RTTI
+
         TiXmlNode* node = dynamic_cast<TiXmlNode*>(GetBasePointer());
         if (node != 0) {
             TiXmlDocument* doc = node->GetDocument();
@@ -291,7 +292,6 @@ public:
                 }
             }
         }
-#endif
         return full_message.str();
     }
 
@@ -377,7 +377,7 @@ public:
 
     @see GetValue
     */
-    std::string Value() const;
+    const std::string& Value() const;
 
     /**
     Set the value of this node.
@@ -410,7 +410,7 @@ public:
 
     @see GetName
     */
-    std::string Name() const;
+    const std::string& Name() const;
 
     /**
     Set the value of this attribute.
@@ -508,7 +508,7 @@ public:
 
     @see GetValue
     */
-    std::string Value() const;
+    const std::string& Value() const;
 
     /**
     Set the value of this node.
@@ -522,6 +522,8 @@ public:
     }
 
     void SetValue(const char* value) { GetTiXmlPointer()->SetValue(value); }
+
+    void SetValue(std::string_view value) { GetTiXmlPointer()->SetValue(value); }
 
     /**
     Clear all Nodes below this.
@@ -895,6 +897,8 @@ public:
     */
     Element* FirstChildElement(const std::string& value, bool throwIfNoChildren = true) const;
 
+    Element* FirstChildElement(std::string_view value, bool throwIfNoChildren = true) const;
+
     /**
     Query the type (as TiXmlNode::NodeType ) of this node.
     */
@@ -918,7 +922,6 @@ public:
     */
     bool NoChildren() const;
 
-#ifndef TICPP_NO_RTTI
     /**
     Pointer conversion ( NOT OBJECT CONVERSION ) - replaces TiXmlNode::ToElement,
     TiXmlNode::ToDocument, TiXmlNode::ToComment, etc.
@@ -941,7 +944,6 @@ public:
         }
         return pointer;
     }
-#endif
 
     /**
     Pointer conversion - replaces TiXmlNode::ToDocument.
@@ -1109,10 +1111,10 @@ public:
     for ( child = child.begin( parent ); child != child.end(); child++ )
     @endcode
     */
-    Iterator(const std::string& value = "") : m_p(0), m_value(value) {}
+    Iterator(std::string_view value = "") : m_p(0), m_value(value) {}
 
     /// Constructor
-    Iterator(T* node, const std::string& value = "") : m_p(node), m_value(value) {}
+    Iterator(T* node, std::string_view value = "") : m_p(node), m_value(value) {}
 
     /// Constructor
     Iterator(const Iterator& it) : m_p(it.m_p), m_value(it.m_value) {}
@@ -1237,11 +1239,7 @@ protected:
     NodeImp(T* tiXmlPointer) {
         // Check for NULL pointers
         if (0 == tiXmlPointer) {
-#ifdef TICPP_NO_RTTI
-            TICPPTHROW("Can not create TinyXML objext");
-#else
             TICPPTHROW("Can not create a " << typeid(T).name());
-#endif
         }
         SetTiXmlPointer(tiXmlPointer);
         m_impRC->IncRef();
@@ -1420,9 +1418,6 @@ public:
 /** Wrapper around TiXmlElement */
 class TICPP_API Element : public NodeImp<TiXmlElement> {
 public:
-    /**
-    Default Constructor.
-    */
     Element();
 
     /**
@@ -1430,6 +1425,8 @@ public:
     @param value The value of the element.
     */
     Element(const std::string& value);
+
+    Element(std::string_view value);
 
     /**
     Default	Constructor. Initializes all the variables.
@@ -1509,6 +1506,10 @@ public:
         ValidatePointer();
         m_tiXmlPointer->SetAttribute(name, value);
     }
+    void SetAttribute(std::string_view name, std::string_view value) {
+        ValidatePointer();
+        m_tiXmlPointer->SetAttribute(name, value);
+    }
     void SetAttribute(const char* name, int value) {
         ValidatePointer();
         m_tiXmlPointer->SetAttribute(name, value);
@@ -1527,16 +1528,17 @@ public:
     @see GetTextOrDefault( T* value, const DefaultT& defaultValue )
     @see TiXmlElement::GetText
     */
-    std::string GetText(bool throwIfNotFound = true) const {
+    const std::string& GetText(bool throwIfNotFound = true) const {
         // Get the element's text value as a std::string
-        std::string temp;
-        if (!GetTextImp(&temp)) {
-            if (throwIfNotFound) {
-                TICPPTHROW("Text does not exists in the current element");
-            }
+
+        if (auto* str = GetTextImp()) {
+            return *str;
+        } else if (throwIfNotFound) {
+            TICPPTHROW("Text does not exists in the current element");
         }
 
-        return temp;
+        static std::string empty;
+        return empty;
     }
 
     /**
@@ -1550,15 +1552,14 @@ public:
     @see GetTextOrDefault( T* value, const DefaultT& defaultValue )
     @see TiXmlElement::GetText
     */
-    std::string GetTextOrDefault(const std::string& defaultValue) const {
-        // Get the element's text value as a std::string
-        std::string temp;
-        if (!GetTextImp(&temp)) {
+    const std::string& GetTextOrDefault(const std::string& defaultValue) const {
+        if (auto* str = GetTextImp()) {
+            return *str;
+        } else {
             return defaultValue;
         }
-
-        return temp;
     }
+    const std::string& GetTextOrDefault(std::string&& defaultValue) const = delete;
 
     /**
     Gets the text value of an Element, if it doesn't exist it will return the defaultValue.
@@ -1577,16 +1578,11 @@ public:
     */
     template <class T, class DefaultT>
     void GetTextOrDefault(T* value, const DefaultT& defaultValue) const {
-        // Get the element's text value as a std::string
-        std::string temp;
-        if (!GetTextImp(&temp)) {
-            // The text value does not exist - set value to the default
+        if (auto* str = GetTextImp()) {
+            FromString(*str, value);
+        } else {
             *value = defaultValue;
-            return;
         }
-
-        // Stream the value from the string to T
-        FromString(temp, value);
     }
 
     /**
@@ -1608,18 +1604,11 @@ public:
     */
     template <class T>
     void GetText(T* value, bool throwIfNotFound = true) const {
-        // Get the element's text value as a std::string
-        std::string temp;
-        if (!GetTextImp(&temp)) {
-            if (throwIfNotFound) {
-                TICPPTHROW("Text does not exists in the current element");
-            } else {
-                return;
-            }
+        if (auto* str = GetTextImp()) {
+            FromString(*str, value);
+        } else if (throwIfNotFound) {
+            TICPPTHROW("Text does not exists in the current element");
         }
-
-        // Stream the value from the string to T
-        FromString(temp, value);
     }
 
     /**
@@ -1660,16 +1649,11 @@ public:
     template <class T, class DefaulT>
     void GetAttributeOrDefault(const std::string& name, T* value,
                                const DefaulT& defaultValue) const {
-        // Get the attribute's value as a std::string
-        std::string temp;
-        if (!GetAttributeImp(name, &temp)) {
-            // The attribute does not exist - set value to the default
+        if (auto* str = GetAttributePtr(name)) {
+            FromString(*str, value);
+        } else {
             *value = defaultValue;
-            return;
         }
-
-        // Stream the value from the string to T
-        FromString(temp, value);
     }
 
     /**
@@ -1681,8 +1665,13 @@ public:
 
     @see GetAttribute
     */
-    std::string GetAttributeOrDefault(const std::string& name,
-                                      const std::string& defaultValue) const;
+    const std::string& GetAttributeOrDefault(std::string_view name,
+                                             const std::string& defaultValue) const;
+
+    [[deprecated(
+        "Use GetAttributeOrDefault(std::string_view, const std::string&) or "
+        "GetAttribute(std::string_view) or GetAttributePtr(std::string_view)")]] std::string
+    GetAttributeOrDefault(const std::string_view name, std::string&& defaultValue) const;
 
     /**
     Returns an attribute of @a name from an element.
@@ -1695,21 +1684,15 @@ public:
     @see GetAttributeOrDefault
     */
     template <class T>
-    T GetAttribute(const std::string& name, bool throwIfNotFound = true) const {
-        // Get the attribute's value as a std::string
-        std::string temp;
+    T GetAttribute(std::string_view name, bool throwIfNotFound = true) const {
         T value;
-        if (!GetAttributeImp(name, &temp)) {
-            if (throwIfNotFound) {
-                const std::string error(std::string("Attribute '") + name +
-                                        std::string("' does not exist"));
-                TICPPTHROW(error);
-            }
-        } else {
-            // Stream the value from the string to T
-            FromString(temp, &value);
+        if (auto* str = GetAttributePtr(name)) {
+            FromString(*str, &value);
+        } else if (throwIfNotFound) {
+            const std::string error(std::string("Attribute '") + std::string{name} +
+                                    std::string("' does not exist"));
+            TICPPTHROW(error);
         }
-
         return value;
     }
 
@@ -1726,21 +1709,14 @@ public:
     @see GetAttributeOrDefault
     */
     template <class T>
-    void GetAttribute(const std::string& name, T* value, bool throwIfNotFound = true) const {
-        // Get the attribute's value as a std::string
-        std::string temp;
-        if (!GetAttributeImp(name, &temp)) {
-            if (throwIfNotFound) {
-                const std::string error(std::string("Attribute '") + name +
-                                        std::string("' does not exist"));
-                TICPPTHROW(error);
-            } else {
-                return;
-            }
+    void GetAttribute(std::string_view name, T* value, bool throwIfNotFound = true) const {
+        if (auto* str = GetAttributePtr(name)) {
+            FromString(*str, value);
+        } else if (throwIfNotFound) {
+            const std::string error(std::string("Attribute '") + std::string{name} +
+                                    std::string("' does not exist"));
+            TICPPTHROW(error);
         }
-
-        // Stream the value from the string to T
-        FromString(temp, value);
     }
 
     /**
@@ -1752,8 +1728,18 @@ public:
 
     @see GetAttributeOrDefault
     */
-    std::string GetAttribute(const std::string& name) const;
-    std::string GetAttribute(const char* name) const;
+    const std::string& GetAttribute(const std::string& name) const;
+    const std::string& GetAttribute(const char* name) const;
+    const std::string& GetAttribute(std::string_view name) const;
+
+    /**
+    Gets an attribute of @a name from an element.
+    Returns an nullptr if the attribute does not exist.
+
+    @param name	The name of the attribute you are querying.
+    @return a pointer to the value of the attribute, or nullptr if it does not exist.
+    */
+    const std::string* GetAttributePtr(std::string_view name) const;
 
     /**
     Returns true, if attribute exists
@@ -1761,48 +1747,31 @@ public:
     @param name The name of the attribute you are checking.
     @return Existence of attribute
     */
-    bool HasAttribute(const std::string& name) const;
+    bool HasAttribute(std::string_view name) const;
 
     /**
     Removes attribute from element.
 
     @param name The name of the attribute to remove.
     */
-    void RemoveAttribute(const std::string& name);
+    void RemoveAttribute(std::string_view name);
 
 private:
-    /**
-    @internal
-    Implimentation of the GetAttribute and GetAttributeOrDefault template methods.
-    */
-    bool GetAttributeImp(const std::string& name, std::string* value) const;
-
     /**
     @internal
     Implimentation of the GetText, GetTextOrDefault, GetTextValue, and GetTextValueOrDefault
     template methods.
     */
-    bool GetTextImp(std::string* value) const;
+    const std::string* GetTextImp() const;
 };
 
 /** Wrapper around TiXmlDeclaration */
 class TICPP_API Declaration : public NodeImp<TiXmlDeclaration> {
 public:
-    /**
-    Default	Constructor. Construct an empty declaration.
-    */
     Declaration();
-
-    /**
-    Constructor.
-    */
     Declaration(TiXmlDeclaration* declaration);
-
-    /**
-    Constructor.
-    */
-    Declaration(const std::string& version, const std::string& encoding,
-                const std::string& standalone);
+    Declaration(const std::string_view version, std::string_view encoding,
+                std::string_view standalone);
 
     /**
     Version. Will return an empty string if none was found.
@@ -1823,19 +1792,8 @@ public:
 /** Wrapper around TiXmlStylesheetReference */
 class TICPP_API StylesheetReference : public NodeImp<TiXmlStylesheetReference> {
 public:
-    /**
-    Default	Constructor. Construct an empty declaration.
-    */
     StylesheetReference();
-
-    /**
-    Constructor.
-    */
     StylesheetReference(TiXmlStylesheetReference* stylesheetReference);
-
-    /**
-    Constructor.
-    */
     StylesheetReference(const std::string& type, const std::string& href);
 
     /**

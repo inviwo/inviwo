@@ -104,14 +104,14 @@ Attribute::Attribute(const Attribute& copy) : Base() {
 
 Attribute::~Attribute() { m_impRC->DecRef(); }
 
-std::string Attribute::Value() const {
+const std::string& Attribute::Value() const {
     ValidatePointer();
     return m_tiXmlPointer->ValueStr();
 }
 
-std::string Attribute::Name() const {
+const std::string& Attribute::Name() const {
     ValidatePointer();
-    return m_tiXmlPointer->Name();
+    return m_tiXmlPointer->NameTStr();
 }
 
 Attribute* Attribute::Next(bool throwIfNoAttribute) const {
@@ -211,7 +211,7 @@ Node* Node::NodeFactory(TiXmlNode* tiXmlNode, bool throwIfNull, bool rememberSpa
     return temp;
 }
 
-std::string Node::Value() const { return GetTiXmlPointer()->ValueStr(); }
+const std::string& Node::Value() const { return GetTiXmlPointer()->ValueStr(); }
 
 void Node::Clear() { GetTiXmlPointer()->Clear(); }
 
@@ -459,6 +459,29 @@ Element* Node::FirstChildElement(const std::string& value, bool throwIfNoChildre
     return FirstChildElement(value.c_str(), throwIfNoChildren);
 }
 
+Element* Node::FirstChildElement(std::string_view value, bool throwIfNoChildren) const {
+    TiXmlElement* element;
+    if (value.empty()) {
+        element = GetTiXmlPointer()->FirstChildElement();
+    } else {
+        element = GetTiXmlPointer()->FirstChildElement(value);
+    }
+
+    if (0 == element) {
+        if (throwIfNoChildren) {
+            TICPPTHROW("Element (" << Value() << ") does NOT contain a child with the value of '"
+                                   << value << "'")
+        } else {
+            return 0;
+        }
+    }
+
+    Element* temp = new Element(element);
+    element->m_spawnedWrappers.push_back(temp);
+
+    return temp;
+}
+
 Element* Node::FirstChildElement(const char* value, bool throwIfNoChildren) const {
     TiXmlElement* element;
     if (0 == strlen(value)) {
@@ -668,6 +691,10 @@ Element::Element(const std::string& value) : NodeImp<TiXmlElement>(new TiXmlElem
     m_impRC->InitRef();
 }
 
+Element::Element(std::string_view value) : NodeImp<TiXmlElement>(new TiXmlElement(value)) {
+    m_impRC->InitRef();
+}
+
 Element::Element(const char* value) : NodeImp<TiXmlElement>(new TiXmlElement(value)) {
     m_impRC->InitRef();
 }
@@ -716,71 +743,67 @@ Attribute* Element::LastAttribute(bool throwIfNoAttributes) const {
     return temp;
 }
 
-std::string Element::GetAttributeOrDefault(const std::string& name,
-                                           const std::string& defaultValue) const {
-    std::string value;
-    if (!GetAttributeImp(name, &value)) {
+const std::string& Element::GetAttributeOrDefault(std::string_view name,
+                                                  const std::string& defaultValue) const {
+    if (auto* str = GetAttributePtr(name)) {
+        return *str;
+    } else {
         return defaultValue;
     }
-    return value;
 }
 
-std::string Element::GetAttribute(const std::string& name) const {
-    return GetAttributeOrDefault(name, std::string());
-}
-
-std::string ticpp::Element::GetAttribute(const char* name) const {
-    ValidatePointer();
-
-    // Get value from TinyXML, if the attribute exists
-    const char* retVal = m_tiXmlPointer->Attribute(name);
-
-    // TinyXML returns NULL if the attribute doesn't exist
-    if (0 == retVal) {
-        return {};
+std::string Element::GetAttributeOrDefault(std::string_view name,
+                                           std::string&& defaultValue) const {
+    if (auto* str = GetAttributePtr(name)) {
+        return *str;
     } else {
-        return {retVal};
+        return defaultValue;
     }
 }
 
-bool Element::HasAttribute(const std::string& name) const {
-    ValidatePointer();
-    return (0 != m_tiXmlPointer->Attribute(name.c_str()));
+
+const std::string& Element::GetAttribute(const std::string& name) const {
+    static const std::string empty;
+    return GetAttributeOrDefault(name, empty);
 }
 
-void Element::RemoveAttribute(const std::string& name) {
-    ValidatePointer();
-    m_tiXmlPointer->RemoveAttribute(name.c_str());
-}
-
-bool Element::GetAttributeImp(const std::string& name, std::string* value) const {
+const std::string& ticpp::Element::GetAttribute(const char* name) const {
     ValidatePointer();
 
     // Get value from TinyXML, if the attribute exists
-    const char* retVal = m_tiXmlPointer->Attribute(name.c_str());
-
-    // TinyXML returns NULL if the attribute doesn't exist
-    if (0 == retVal) {
-        return false;
+    if (auto* str = m_tiXmlPointer->AttributeStr(name)) {
+        return *str;
     } else {
-        *value = retVal;
-        return true;
+        static const std::string empty;
+        return empty;
     }
 }
 
-bool Element::GetTextImp(std::string* value) const {
+const std::string& Element::GetAttribute(std::string_view name) const {
+    static const std::string empty;
+    return GetAttributeOrDefault(name, empty);
+}
+
+bool Element::HasAttribute(std::string_view name) const {
+    ValidatePointer();
+    return (0 != m_tiXmlPointer->Attribute(name));
+}
+
+void Element::RemoveAttribute(std::string_view name) {
+    ValidatePointer();
+    m_tiXmlPointer->RemoveAttribute(name);
+}
+
+const std::string* Element::GetAttributePtr(std::string_view name) const {
     ValidatePointer();
 
-    // Get value from TinyXML, if the attribute exists
-    const char* retVal = m_tiXmlPointer->GetText();
+    return m_tiXmlPointer->Attribute(name);
+}
 
-    // TinyXML returns NULL if the attribute doesn't exist
-    if (0 == retVal) {
-        return false;
-    } else {
-        *value = retVal;
-        return true;
-    }
+const std::string* Element::GetTextImp() const {
+    ValidatePointer();
+
+    return m_tiXmlPointer->GetTextStr();
 }
 
 //*****************************************************************************
@@ -791,8 +814,8 @@ Declaration::Declaration() : NodeImp<TiXmlDeclaration>(new TiXmlDeclaration()) {
 
 Declaration::Declaration(TiXmlDeclaration* declaration) : NodeImp<TiXmlDeclaration>(declaration) {}
 
-Declaration::Declaration(const std::string& version, const std::string& encoding,
-                         const std::string& standalone)
+Declaration::Declaration(std::string_view version, std::string_view encoding,
+                         std::string_view standalone)
     : NodeImp<TiXmlDeclaration>(new TiXmlDeclaration(version, encoding, standalone)) {
     m_impRC->InitRef();
 }
@@ -821,15 +844,5 @@ StylesheetReference::StylesheetReference(const std::string& type, const std::str
 std::string StylesheetReference::Type() const { return m_tiXmlPointer->Type(); }
 
 std::string StylesheetReference::Href() const { return m_tiXmlPointer->Href(); }
-
-//*****************************************************************************
-
-Exception::Exception(const std::string& details) : m_details(details) {}
-
-Exception::~Exception() throw() {}
-
-const char* Exception::what() const throw() { return m_details.c_str(); }
-
-
 
 }  // namespace ticpp
