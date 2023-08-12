@@ -112,7 +112,8 @@ IVW_CORE_API bool copyMatchingSubPropsIntoComposite(TxElement* node, const Compo
 
 IVW_CORE_API bool hasProp(TxElement* node, const Property& prop);
 
-IVW_CORE_API std::vector<TxElement*> getMatchingElements(TxElement* processornode, std::string_view key);
+IVW_CORE_API std::vector<TxElement*> getMatchingElements(TxElement* processornode,
+                                                         std::string_view key);
 
 IVW_CORE_API bool findMatchingSubPropertiesForComposites(
     TxElement* node, const std::vector<const CompositeProperty*>& props);
@@ -147,7 +148,7 @@ void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& sele
                           std::vector<ElementMatcher>::const_iterator begin,
                           std::vector<ElementMatcher>::const_iterator end) -> void {
         ticpp::Iterator<ticpp::Element> child;
-        
+
         for (child = child.begin(node); child != child.end(); ++child) {
             child->GetValue(&childName);
             if (childName == begin->name) {

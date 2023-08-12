@@ -102,7 +102,6 @@ private:
     static std::string getDate(std::chrono::system_clock::time_point time);
     static std::string getTime(std::chrono::system_clock::time_point time);
 
-
     static const std::pair<int, int>& lineHeightAndMargin();
 };
 
@@ -136,7 +135,7 @@ public:
     }
     virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
     virtual QVariant headerData(int section, Qt::Orientation orientation,
-                        int role = Qt::DisplayRole) const override;
+                                int role = Qt::DisplayRole) const override;
     virtual Qt::ItemFlags flags(const QModelIndex& index) const override;
 
 private:

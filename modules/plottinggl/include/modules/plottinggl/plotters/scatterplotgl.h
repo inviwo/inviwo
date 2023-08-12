@@ -128,12 +128,8 @@ public:
         AxisProperty xAxis_;
         AxisProperty yAxis_;
 
-        virtual void serialize(Serializer& s) const override {
-            CompositeProperty::serialize(s);
-        }
-        virtual void deserialize(Deserializer& d) override {
-            CompositeProperty::deserialize(d);
-        }
+        virtual void serialize(Serializer& s) const override { CompositeProperty::serialize(s); }
+        virtual void deserialize(Deserializer& d) override { CompositeProperty::deserialize(d); }
 
     private:
         auto props() {

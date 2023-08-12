@@ -211,7 +211,6 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
         addPrefab(std::move(doubleRange));
     }
     setCurrentStateAsDefault();
-
 }
 
 FilterListProperty* FilterListProperty::clone() const { return new FilterListProperty(*this); }

@@ -345,8 +345,6 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
         return repl;
     };
 
-    
-
     bool res = false;
     switch (version_) {
         case 0: {
