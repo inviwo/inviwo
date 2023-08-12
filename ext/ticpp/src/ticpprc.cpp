@@ -1,8 +1,8 @@
 #include <ticpp/ticpprc.h>
 
-TiCppRC::TiCppRC() {
+TiCppRC::TiCppRC() : privRC{this}, m_tiRC{&privRC} {
     // Spawn reference counter for this object
-    m_tiRC = new TiCppRCImp(this);
+    // m_tiRC = new TiCppRCImp(this);
 }
 
 void TiCppRC::DeleteSpawnedWrappers() {
@@ -33,7 +33,7 @@ void TiCppRCImp::DecRef() {
     m_count--;
     if (0 == m_count) {
         delete m_tiCppRC;
-        delete this;
+        //delete this;
     }
 }
 

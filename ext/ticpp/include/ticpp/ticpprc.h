@@ -39,40 +39,7 @@ class TICPP_API Base;
 // Forward declare TiCppRCImp so TiCppRC can hold a pointer to it
 class TICPP_API TiCppRCImp;
 
-/**
-Base class for reference counting functionality
-*/
-class TICPP_API TiCppRC {
-    // Allow ticpp::Node to directly modify reference count
-    friend class ticpp::Base;
-
-private:
-    TiCppRCImp* m_tiRC; /**< Pointer to reference counter */
-
-public:
-    /**
-    Constructor
-    Spawns new reference counter with a pointer to this
-    */
-    TiCppRC();
-
-    /**
-    Destructor
-    Nullifies the pointer to this held by the reference counter
-    Decrements reference count
-    */
-    virtual ~TiCppRC();
-
-    std::vector<ticpp::Base*>
-        m_spawnedWrappers; /**< Remember all wrappers that we've created with 'new' - ( e.g.
-                              NodeFactory, FirstChildElement, etc. )*/
-
-    /**
-    Delete all container objects we've spawned with 'new'.
-    */
-    void DeleteSpawnedWrappers();
-};
-
+class TICPP_API TiCppRC;
 
 class TICPP_API TiCppRCImp {
 private:
@@ -116,4 +83,41 @@ public:
     Returns state of internal pointer - will be null if the object was deleted
     */
     bool IsNull();
+};
+
+
+/**
+Base class for reference counting functionality
+*/
+class TICPP_API TiCppRC {
+    // Allow ticpp::Node to directly modify reference count
+    friend class ticpp::Base;
+
+private:
+    TiCppRCImp privRC;
+
+    TiCppRCImp* m_tiRC; /**< Pointer to reference counter */
+
+public:
+    /**
+    Constructor
+    Spawns new reference counter with a pointer to this
+    */
+    TiCppRC();
+
+    /**
+    Destructor
+    Nullifies the pointer to this held by the reference counter
+    Decrements reference count
+    */
+    virtual ~TiCppRC();
+
+    std::vector<ticpp::Base*>
+        m_spawnedWrappers; /**< Remember all wrappers that we've created with 'new' - ( e.g.
+                              NodeFactory, FirstChildElement, etc. )*/
+
+    /**
+    Delete all container objects we've spawned with 'new'.
+    */
+    void DeleteSpawnedWrappers();
 };
