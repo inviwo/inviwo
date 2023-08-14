@@ -6,6 +6,8 @@
 #include <ticpp/node.h>
 #include <ticpp/attribute.h>
 
+#include <sstream>
+
 /** The element is a container class. It has a value, the element name,
         and can contain other elements, text, comments, and unknowns.
         Elements also contain an arbitrary number of attributes.
