@@ -45,7 +45,6 @@ namespace inviwo {
 
 class IVW_QTEDITOR_API WorkspaceAnnotationsQt : public WorkspaceAnnotations {
 public:
-
     WorkspaceAnnotationsQt(InviwoApplication* app = util::getInviwoApplication());
     WorkspaceAnnotationsQt(const QImage& network,
                            const std::vector<std::pair<std::string, QImage>>& canvasImages,

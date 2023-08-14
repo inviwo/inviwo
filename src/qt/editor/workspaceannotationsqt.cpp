@@ -47,9 +47,7 @@ namespace {
 
 struct NetworkShim {
     void serialize([[maybe_unused]] Serializer& s) const {}
-    void deserialize(Deserializer& d) {
-        d.deserialize("Processors", processors, "Processor");
-    }
+    void deserialize(Deserializer& d) { d.deserialize("Processors", processors, "Processor"); }
     std::vector<WorkspaceAnnotationsQt::ProcessorShim>& processors;
 };
 
@@ -76,7 +74,7 @@ WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(const std::filesystem::path& path
         LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
         auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(f, path, &logger);
         d.deserialize("WorkspaceAnnotations", *this);
-        
+
         processorList_.clear();
         processorCounts_.clear();
 
