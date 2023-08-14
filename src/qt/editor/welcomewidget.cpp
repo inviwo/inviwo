@@ -644,8 +644,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     workspaceSplitter_->restoreState(getSetting("workspaceSplitter").toByteArray());
 
     ::setTabOrder({filterLineEdit_, workspaceTreeView_, workspaceGridView_, loadWorkspaceBtn_,
-                 appendWorkspaceBtn_, newButton_, openButton_, restoreButton_, details_,
-                 changelog_});
+                   appendWorkspaceBtn_, newButton_, openButton_, restoreButton_, details_,
+                   changelog_});
     setFocusProxy(filterLineEdit_);
 }
 
