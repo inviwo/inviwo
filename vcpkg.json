@@ -46,6 +46,54 @@
     "zlib",
     "pegtl",
     "inja",
-    "ffmpeg"
-  ]
+    "ffmpeg",
+    "zlib"
+  ],
+  "features": {
+    "qt":  {
+      "description": "Get Qt from vcpkg",
+      "dependencies": [    
+        { 
+          "name": "qtbase",
+          "features": [
+            "gui",
+            "jpeg",
+            "png",
+            "widgets",
+            "zstd"
+          ]
+        },
+        "qtsvg"
+      ]
+    },
+    "ttk": { 
+      "description": "Support topology-tool-kit modules", 
+      "dependencies": ["topology-tool-kit"]
+    },
+    "vtk": {
+      "description": "Support VTK modules", 
+      "dependencies": [    
+        { 
+          "name": "vtk",
+          "features": [
+            "opengl",
+            "utf8"
+          ]
+        }
+      ]
+    },
+    "dome" : {
+      "description": "Inviwo Dome dependencies",
+      "dependencies": [    
+        {
+            "name": "tracy",
+            "features" : ["gui-tools"]
+        },
+        {
+            "name": "sgct",
+            "features" : ["tracy", "freetype"]
+        }
+      ]
+    }
+  }
 }
