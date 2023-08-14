@@ -37,27 +37,20 @@
 
 namespace inviwo {
 
+void WorkspaceAnnotationsQt::ProcessorShim::deserialize(Deserializer& d) {
+    d.deserialize("type", type, SerializationTarget::Attribute);
+    d.deserialize("identifier", identifier, SerializationTarget::Attribute);
+    d.deserialize("displayName", displayName, SerializationTarget::Attribute);
+}
+
 namespace {
 
-struct DummyProcessor : Serializable {
-    virtual void serialize([[maybe_unused]] Serializer& s) const override {}
-    virtual void deserialize(Deserializer& d) override {
-        d.deserialize("type", type, SerializationTarget::Attribute);
-        d.deserialize("identifier", identifier, SerializationTarget::Attribute);
-        d.deserialize("displayName", displayName, SerializationTarget::Attribute);
-    }
-    std::string type;
-    std::string identifier;
-    std::string displayName;
-};
-
-struct DummyNetwork : Serializable {
-
-    virtual void serialize([[maybe_unused]] Serializer& s) const override {}
-    virtual void deserialize(Deserializer& d) override {
+struct NetworkShim {
+    void serialize([[maybe_unused]] Serializer& s) const {}
+    void deserialize(Deserializer& d) {
         d.deserialize("Processors", processors, "Processor");
     }
-    std::vector<DummyProcessor> processors;
+    std::vector<WorkspaceAnnotationsQt::ProcessorShim>& processors;
 };
 
 }  // namespace
@@ -83,15 +76,14 @@ WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(const std::filesystem::path& path
         LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
         auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(f, path, &logger);
         d.deserialize("WorkspaceAnnotations", *this);
-
-        DummyNetwork dummy;
-        d.deserialize("ProcessorNetwork", dummy);
-
+        
         processorList_.clear();
         processorCounts_.clear();
 
+        NetworkShim dummy{processorList_};
+        d.deserialize("ProcessorNetwork", dummy);
+
         for (const auto& p : dummy.processors) {
-            processorList_.emplace_back(p.type, p.identifier, p.displayName);
             ++processorCounts_[p.displayName];
         }
     } else {
@@ -112,7 +104,7 @@ void WorkspaceAnnotationsQt::deserialize(Deserializer& d) {
     d.deserialize("Network", network_);
 }
 
-auto WorkspaceAnnotationsQt::getProcessorList() const -> const std::vector<ProcessorId>& {
+auto WorkspaceAnnotationsQt::getProcessorList() const -> const std::vector<ProcessorShim>& {
     return processorList_;
 }
 const std::map<std::string, int> WorkspaceAnnotationsQt::getProcessorCounts() const {
@@ -145,7 +137,7 @@ const WorkspaceAnnotationsQt::Base64Image& WorkspaceAnnotationsQt::getNetworkIma
 
 const QImage& WorkspaceAnnotationsQt::getNetworkQImage() const {
     if (networkCache_.isNull()) {
-        networkCache_ == utilqt::fromBase64(network_.base64jpeg, "JPEG");
+        networkCache_ = utilqt::fromBase64(network_.base64jpeg, "JPEG");
     }
     return networkCache_;
 }

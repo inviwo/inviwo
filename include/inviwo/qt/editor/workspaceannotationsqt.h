@@ -44,13 +44,8 @@
 namespace inviwo {
 
 class IVW_QTEDITOR_API WorkspaceAnnotationsQt : public WorkspaceAnnotations {
-    struct ProcessorId {
-        std::string type;
-        std::string identifier;
-        std::string displayName;
-    };
-
 public:
+
     WorkspaceAnnotationsQt(InviwoApplication* app = util::getInviwoApplication());
     WorkspaceAnnotationsQt(const QImage& network,
                            const std::vector<std::pair<std::string, QImage>>& canvasImages,
@@ -73,14 +68,22 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    const std::vector<ProcessorId>& getProcessorList() const;
+    struct ProcessorShim {
+        void serialize([[maybe_unused]] Serializer& s) const {}
+        void deserialize(Deserializer& d);
+        std::string type;
+        std::string identifier;
+        std::string displayName;
+    };
+
+    const std::vector<ProcessorShim>& getProcessorList() const;
     const std::map<std::string, int> getProcessorCounts() const;
 
     static const QImage& getMissingImage();
 
 private:
     Base64Image network_;
-    std::vector<ProcessorId> processorList_;
+    std::vector<ProcessorShim> processorList_;
     std::map<std::string, int> processorCounts_;
 
     mutable std::vector<QImage> imageCache_;
