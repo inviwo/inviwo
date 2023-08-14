@@ -96,6 +96,26 @@ struct InitQtChangelogResources {
 } initQtChangelogResources;
 #endif
 
+namespace {
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 6, 0)
+
+inline void setTabOrder(std::initializer_list<QWidget*> widgets) {
+    QWidget* prev = nullptr;
+    for (const auto& widget : widgets) {
+        if (!prev) {
+            prev = widget;
+        } else {
+            QWidget::setTabOrder(prev, widget);
+            prev = widget;
+        }
+    }
+}
+
+#endif
+
+}  // namespace
+
 namespace inviwo {
 
 constexpr std::string_view placeholder = R"(<!DOCTYPE html>
