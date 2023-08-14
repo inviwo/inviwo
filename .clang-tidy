@@ -1,0 +1,25 @@
+Checks: >
+  -*,
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  modernize-*,
+  performance-*,
+  portability-*,
+  readability-*,
+  bugprone-*,
+  -modernize-use-trailing-return-type,
+  -readability-redundant-member-init,
+  -readability-identifier-length,
+
+CheckOptions: 
+  readability-braces-around-statements.ShortStatementLines: '1'
+  readability-identifier-length.MinimumExceptionNameLength: '1'
+  readability-identifier-length.MinimumLoopCounterNameLength: '1'
+  readability-identifier-length.IgnoredVariableNames: '^(it|id)$'
+  readability-identifier-length.IgnoredParameterNames: '^(it|id)$'
+
+FormatStyle: file
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+AnalyzeTemporaryDtors: false
