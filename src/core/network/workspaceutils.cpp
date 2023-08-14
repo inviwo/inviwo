@@ -63,7 +63,7 @@ size_t updateWorkspaces(InviwoApplication* app, const std::filesystem::path& pat
         forEachWorkspaceInDirRecursive(path, [&](const std::filesystem::path&) { ++total; });
     }
 
-    auto update = [&, count = 0](const std::filesystem::path& fileName) mutable {
+    auto update = [&](const std::filesystem::path& fileName) mutable {
         util::logInfo(IVW_CONTEXT_CUSTOM("util::updateWorkspaces"), "Updating workspace {}/{}: {}",
                       ++current, total, fileName);
         auto errorCounter = std::make_shared<LogErrorCounter>();

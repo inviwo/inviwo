@@ -98,9 +98,8 @@ struct InitQtChangelogResources {
 
 namespace {
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 6, 0)
-
 inline void setTabOrder(std::initializer_list<QWidget*> widgets) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 6, 0)
     QWidget* prev = nullptr;
     for (const auto& widget : widgets) {
         if (!prev) {
@@ -110,10 +109,10 @@ inline void setTabOrder(std::initializer_list<QWidget*> widgets) {
             prev = widget;
         }
     }
-}
-
+#else
+    QWidget::setTabOrder(widgets);
 #endif
-
+}
 }  // namespace
 
 namespace inviwo {
@@ -184,12 +183,12 @@ using Role = WorkspaceTreeModel::Role;
 namespace {
 
 bool contains(std::string_view str, std::string_view substr) {
-    auto it =
-        std::search(str.begin(), str.end(),
-                    std::boyer_moore_horspool_searcher(
-                        substr.begin(), substr.end(),
-                        [h = std::hash<char>{}](char c) { return h(std::tolower(c)); },
-                        [](char l1, char r1) { return std::tolower(l1) == std::tolower(r1); }));
+    auto it = std::search(
+        str.begin(), str.end(),
+        std::boyer_moore_horspool_searcher(
+            substr.begin(), substr.end(),
+            [h = std::hash<char>{}](char c) { return h(static_cast<char>(std::tolower(c))); },
+            [](char l1, char r1) { return std::tolower(l1) == std::tolower(r1); }));
 
     return it != str.end();
 }
@@ -644,7 +643,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     splitterMoved(sizes()[0], 1);
     workspaceSplitter_->restoreState(getSetting("workspaceSplitter").toByteArray());
 
-    setTabOrder({filterLineEdit_, workspaceTreeView_, workspaceGridView_, loadWorkspaceBtn_,
+    ::setTabOrder({filterLineEdit_, workspaceTreeView_, workspaceGridView_, loadWorkspaceBtn_,
                  appendWorkspaceBtn_, newButton_, openButton_, restoreButton_, details_,
                  changelog_});
     setFocusProxy(filterLineEdit_);
