@@ -37,6 +37,22 @@
 
 namespace inviwo {
 
+void WorkspaceAnnotationsQt::ProcessorShim::deserialize(Deserializer& d) {
+    d.deserialize("type", type, SerializationTarget::Attribute);
+    d.deserialize("identifier", identifier, SerializationTarget::Attribute);
+    d.deserialize("displayName", displayName, SerializationTarget::Attribute);
+}
+
+namespace {
+
+struct NetworkShim {
+    void serialize([[maybe_unused]] Serializer& s) const {}
+    void deserialize(Deserializer& d) { d.deserialize("Processors", processors, "Processor"); }
+    std::vector<WorkspaceAnnotationsQt::ProcessorShim>& processors;
+};
+
+}  // namespace
+
 WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(InviwoApplication* app)
     : WorkspaceAnnotations(app){};
 
@@ -50,7 +66,7 @@ WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(
 
 WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(const std::filesystem::path& path,
                                                InviwoApplication* app)
-    : WorkspaceAnnotations{std::vector<Base64Image>{}, app} {
+    : WorkspaceAnnotations{app} {
 
     // Can't delegate to the WorkspaceAnnotations since the virtual call to deserialize will not
     // work in the base constructor.
@@ -58,6 +74,16 @@ WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(const std::filesystem::path& path
         LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
         auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(f, path, &logger);
         d.deserialize("WorkspaceAnnotations", *this);
+
+        processorList_.clear();
+        processorCounts_.clear();
+
+        NetworkShim dummy{processorList_};
+        d.deserialize("ProcessorNetwork", dummy);
+
+        for (const auto& p : dummy.processors) {
+            ++processorCounts_[p.displayName];
+        }
     } else {
         throw Exception(IVW_CONTEXT, "Unable to open file {}", path);
     }
@@ -74,6 +100,13 @@ void WorkspaceAnnotationsQt::deserialize(Deserializer& d) {
 
     network_ = Base64Image{"Network"};
     d.deserialize("Network", network_);
+}
+
+auto WorkspaceAnnotationsQt::getProcessorList() const -> const std::vector<ProcessorShim>& {
+    return processorList_;
+}
+const std::map<std::string, int> WorkspaceAnnotationsQt::getProcessorCounts() const {
+    return processorCounts_;
 }
 
 void WorkspaceAnnotationsQt::setNetworkImage(const QImage& network) {
@@ -100,92 +133,37 @@ const WorkspaceAnnotationsQt::Base64Image& WorkspaceAnnotationsQt::getNetworkIma
     return network_;
 }
 
-QImage WorkspaceAnnotationsQt::getNetworkQImage() const {
-    return utilqt::fromBase64(network_.base64jpeg, "JPEG");
-}
-QImage WorkspaceAnnotationsQt::getCanvasQImage(size_t i) const {
-    return utilqt::fromBase64(canvases_[i].base64jpeg, "JPEG");
-}
-
-QImage WorkspaceAnnotationsQt::getPrimaryCanvasQImage() const {
-    if (auto img = getPrimaryCanvasImage()) {
-        return utilqt::fromBase64(img->base64jpeg, "JPEG");
-    } else {
-        return QImage{};
+const QImage& WorkspaceAnnotationsQt::getNetworkQImage() const {
+    if (networkCache_.isNull()) {
+        networkCache_ = utilqt::fromBase64(network_.base64jpeg, "JPEG");
     }
+    return networkCache_;
 }
-
-namespace {
-
-struct DummyProcessor : Serializable {
-    virtual void serialize([[maybe_unused]] Serializer& s) const override {}
-    virtual void deserialize(Deserializer& d) override {
-        d.deserialize("type", type, SerializationTarget::Attribute);
-        d.deserialize("identifier", identifier, SerializationTarget::Attribute);
-        d.deserialize("displayName", displayName, SerializationTarget::Attribute);
-    }
-    std::string type;
-    std::string identifier;
-    std::string displayName;
-};
-
-struct DummyNetwork : Serializable {
-
-    virtual void serialize([[maybe_unused]] Serializer& s) const override {}
-    virtual void deserialize(Deserializer& d) override {
-        d.deserialize("Processors", processors, "Processor");
-    }
-    std::vector<DummyProcessor> processors;
-};
-
-}  // namespace
-
-QStringList WorkspaceAnnotationsQt::workspaceProcessors(const std::filesystem::path& path,
-                                                        InviwoApplication* app) {
-
-    if (auto f = std::ifstream(path)) {
-        LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
-        auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(f, path, &logger);
-
-        DummyNetwork dummy;
-        d.deserialize("ProcessorNetwork", dummy);
-
-        QStringList list{};
-
-        for (const auto& p : dummy.processors) {
-            list << utilqt::toQString(p.type) << utilqt::toQString(p.identifier)
-                 << utilqt::toQString(p.displayName);
+const QImage& WorkspaceAnnotationsQt::getCanvasQImage(size_t i) const {
+    if (i < canvases_.size()) {
+        if (imageCache_.size() != canvases_.size()) {
+            imageCache_.resize(canvases_.size());
         }
-        list.removeDuplicates();
-        return list;
-
+        if (imageCache_[i].isNull()) {
+            imageCache_[i] = utilqt::fromBase64(canvases_[i].base64jpeg, "JPEG");
+        }
+        return imageCache_[i];
     } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("WorkspaceAnnotationsQt"), "Unable to open file {}",
-                        path);
+        return getMissingImage();
     }
 }
 
-std::map<std::string, int> WorkspaceAnnotationsQt::workspaceProcessorsCounts(
-    const std::filesystem::path& path, InviwoApplication* app) {
-    if (auto f = std::ifstream(path)) {
-        LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
-        auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(f, path, &logger);
-
-        DummyNetwork dummy;
-        d.deserialize("ProcessorNetwork", dummy);
-
-        std::map<std::string, int> list;
-
-        for (const auto& p : dummy.processors) {
-            ++list[p.displayName];
-        }
-
-        return list;
-
+const QImage& WorkspaceAnnotationsQt::getPrimaryCanvasQImage() const {
+    if (auto index = getPrimaryCanvasIndex()) {
+        return getCanvasQImage(*index);
     } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("WorkspaceAnnotationsQt"), "Unable to open file {}",
-                        path);
+        return getMissingImage();
     }
+}
+
+const QImage& WorkspaceAnnotationsQt::getMissingImage() {
+    static QImage img{":/inviwo/inviwo-logo-light.svg"};
+    return img;
 }
 
 }  // namespace inviwo

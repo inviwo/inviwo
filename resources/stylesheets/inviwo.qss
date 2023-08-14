@@ -360,6 +360,10 @@ QPushButton:hover, QToolButton:hover {
     border: 0.0625em solid #268bd2;
 }
 
+QPushButton:focus, QToolButton:focus {
+    border: 0.0625em solid #268bd2;
+}
+
 QLineEdit#ColorLineEdit[input="valid"] {
     border: 0.0625em solid #1a800d;
 }
@@ -877,20 +881,25 @@ QWidget#CompositeWidget QToolButton#collapseButton {
     height: 0.8em;
     margin-right: 0.0625em;
 }
-QWidget#CompositeWidget QToolButton#addListItemButton,
-QWidget#CompositeWidget QToolButton#removeListItemButton {
+QWidget#CompositeWidget QToolButton#addListItemButton  {
     border: 0.0625em solid transparent;
     background-color: transparent;
     width: 0.75em;
     height: 0.75em;
 }
-QWidget#CompositeWidget QToolButton#removeListItemButton {
+QWidget#CompositeWidget QToolButton#removeListItemButton,
+QWidget#CompositeWidget QToolButton#moveListItemUpButton,
+QWidget#CompositeWidget QToolButton#moveListItemDownButton {
+    border: 0.0625em solid transparent;
+    background-color: transparent;
     width: 0.5em;
     height: 0.5em;
 }
 QWidget#CompositeWidget QToolButton#collapseButton:hover,
 QWidget#CompositeWidget QToolButton#addListItemButton:hover,
-QWidget#CompositeWidget QToolButton#removeListItemButton:hover {
+QWidget#CompositeWidget QToolButton#removeListItemButton:hover,
+QWidget#CompositeWidget QToolButton#moveListItemUpButton:hover,
+QWidget#CompositeWidget QToolButton#moveListItemDownButton:hover {
     border: 0.0625em solid #268bd2;
 }
 QWidget#CompositeWidget QToolButton#collapseButton:open {
@@ -910,6 +919,18 @@ QWidget#CompositeWidget QToolButton#removeListItemButton {
 }
 QWidget#CompositeWidget QToolButton#removeListItemButton:disabled {
     image: url(:svgicons/listitem-remove-disabled.svg);
+}
+QWidget#CompositeWidget QToolButton#moveListItemUpButton {
+    image: url(:svgicons/listitem-up-enabled.svg);
+}
+QWidget#CompositeWidget QToolButton#moveListItemUpButton:disabled {
+    image: url(:svgicons/listitem-up-disabled.svg);
+}
+QWidget#CompositeWidget QToolButton#moveListItemDownButton {
+    image: url(:svgicons/listitem-down-enabled.svg);
+}
+QWidget#CompositeWidget QToolButton#moveListItemDownButton:disabled {
+    image: url(:svgicons/listitem-down-disabled.svg);
 }
 
 /************************ 

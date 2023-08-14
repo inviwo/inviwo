@@ -227,9 +227,9 @@ private:
 
     virtual void addObserver(Observer* observer) override;
     virtual void removeObserver(Observer* observer) override;
-    virtual void removeObservers() override;
-    virtual bool addObserverInternal(Observer* observer) override;
-    virtual bool removeObserverInternal(Observer* observer) override;
+    virtual void removeObservers() final;
+    virtual bool addObserverInternal(Observer* observer) final;
+    virtual bool removeObserverInternal(Observer* observer) final;
 };
 
 template <typename T>

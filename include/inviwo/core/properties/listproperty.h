@@ -37,6 +37,8 @@
 
 #include <set>
 #include <vector>
+#include <memory>
+#include <utility>
 
 namespace inviwo {
 
@@ -51,8 +53,7 @@ ALLOW_FLAGS_FOR_ENUM(ListPropertyUIFlag)
 using ListPropertyUIFlags = flags::flags<ListPropertyUIFlag>;
 
 /**
- * \class ListProperty
- * \brief A property that has specified sub-properties which can be added using the graphical user
+ * @brief A property that has specified sub-properties which can be added using the graphical user
  * interface.
  *
  * Represents a list of properties. Properties can be added by using the prefab objects registered
@@ -136,7 +137,7 @@ public:
     void set(const ListProperty* src);
 
     /**
-     * \brief set the max number of list elements. This will remove additional properties if the
+     * @brief set the max number of list elements. This will remove additional properties if the
      * list property contains more than \p n items.
      *
      * @param n    maximum number of elements in this list property
@@ -145,12 +146,12 @@ public:
     size_t getMaxNumberOfElements() const;
 
     /**
-     * \brief remove all list entries
+     * @brief remove all list entries
      */
     virtual void clear() override;
 
     /**
-     * \brief construct a list entry which is created from the respective prefab object.
+     * @brief construct a list entry which is created from the respective prefab object.
      * This function has no effect if the list size will exceed the maximum number of elements.
      *
      * @param prefabIndex   index of prefab object used for creating the new entry
@@ -160,7 +161,7 @@ public:
     Property* constructProperty(size_t prefabIndex);
 
     /**
-     * \brief add \p property as new list entry. The type of the property must match one of the
+     * @brief add \p property as new list entry. The type of the property must match one of the
      * prefab objects. This function has no effect if the list size will exceed the maximum number
      * of elements.
      *
@@ -171,7 +172,7 @@ public:
     virtual void addProperty(Property* property, bool owner = true) override;
 
     /**
-     * \brief add \p property as new list entry. The type of the property must match one of the
+     * @brief add \p property as new list entry. The type of the property must match one of the
      * prefab objects. This function has no effect if the list size will exceed the maximum number
      * of elements.
      *
@@ -181,7 +182,7 @@ public:
     virtual void addProperty(Property& property) override;
 
     /**
-     * \brief insert \p property in the list at position \p index
+     * @brief insert \p property in the list at position \p index
      * If \p index is not valid, the property is appended. The type of the property must match one
      * of the prefab objects. This function has no effect if the list size will exceed the maximum
      * number of elements.
@@ -193,7 +194,7 @@ public:
     virtual void insertProperty(size_t index, Property* property, bool owner = true) override;
 
     /**
-     * \brief insert \p property in the list at position \p index
+     * @brief insert \p property in the list at position \p index
      * If \p index is not valid, the property is appended. The type of the property must match one
      * of the prefab objects. This function has no effect if the list size will exceed the maximum
      * number of elements.
@@ -207,16 +208,17 @@ public:
     virtual Property* removeProperty(Property* property) override;
     virtual Property* removeProperty(Property& property) override;
     virtual Property* removeProperty(size_t index) override;
+    virtual bool move(Property* property, size_t newIndex) override;
 
     /**
-     * \brief return number of prefab objects
+     * @brief return number of prefab objects
      *
      * @return count of prefabs
      */
     size_t getPrefabCount() const;
 
     /**
-     * \brief add a new prefab object \p p to be used as template when instantiating new list
+     * @brief add a new prefab object \p p to be used as template when instantiating new list
      * elements
      *
      * @param p  prefab object
@@ -227,15 +229,62 @@ public:
 
     ListPropertyUIFlags getUIFlags() const;
 
+    virtual ListProperty& setCurrentStateAsDefault() override;
+    virtual ListProperty& resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
+    virtual bool needsSerialization() const override;
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
 private:
+    struct Prefabs {
+        Prefabs(std::vector<std::unique_ptr<Property>> prefabs) : properties{std::move(prefabs)} {}
+
+        Prefabs(const Prefabs& rhs) {
+            properties.reserve(rhs.properties.size());
+            std::transform(rhs.properties.begin(), rhs.properties.end(),
+                           std::back_inserter(properties),
+                           [](auto& p) { return std::unique_ptr<Property>(p->clone()); });
+        }
+        Prefabs(Prefabs&& rhs) noexcept : properties{std::move(rhs.properties)} {}
+        Prefabs& operator=(const Prefabs& that) {
+            if (this != &that) {
+                Prefabs tmp(that);
+                std::swap(tmp.properties, properties);
+            }
+            return *this;
+        }
+        Prefabs& operator=(Prefabs&& that) noexcept {
+            if (this != &that) {
+                properties = std::move(that.properties);
+            }
+            return *this;
+        }
+
+        size_t size() const { return properties.size(); }
+        std::unique_ptr<Property>& operator[](size_t i) { return properties[i]; }
+        const std::unique_ptr<Property>& operator[](size_t i) const { return properties[i]; }
+
+        friend bool operator==(const Prefabs& a, const Prefabs& b) {
+            return std::equal(
+                a.properties.begin(), a.properties.end(), b.properties.begin(), b.properties.end(),
+                [](const std::unique_ptr<Property>& pa, const std::unique_ptr<Property>& pb) {
+                    return pa->getClassIdentifier() == pb->getClassIdentifier() &&
+                           pa->getIdentifier() == pb->getIdentifier();
+                });
+        }
+
+        void serialize(Serializer& s) const { s.serialize("prefabs", properties, "prefab"); }
+        void deserialize(Deserializer& d) { d.deserialize("prefabs", properties, "prefab"); }
+
+        std::vector<std::unique_ptr<Property>> properties;
+    };
+
     std::set<std::string> getPrefabIDs() const;
 
     ListPropertyUIFlags uiFlags_;
     ValueWrapper<size_t> maxNumElements_;
-    std::vector<std::unique_ptr<Property>> prefabs_;
+    ValueWrapper<Prefabs> prefabs_;
 };
 
 }  // namespace inviwo

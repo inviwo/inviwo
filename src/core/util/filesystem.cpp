@@ -662,7 +662,7 @@ fs::path getPath(PathType pathType, const std::string& suffix, const bool create
         fs::create_directories(result);
     }
     result += suffix;
-    return result;
+    return result.lexically_normal();
 }
 
 void createDirectoryRecursively(const fs::path& path) { fs::create_directories(path); }

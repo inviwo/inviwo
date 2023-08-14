@@ -31,14 +31,9 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-
 #include <QtGlobal>
 #include <QTreeView>
 #include <QAbstractProxyModel>
-
-#include <warn/pop>
 
 class QItemSelectionModel;
 class QAbstractItemModel;
@@ -52,10 +47,7 @@ class WorkspaceTreeModel;
 class ChunkProxyModel;
 
 class IVW_QTEDITOR_API WorkspaceGridView : public QTreeView {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     explicit WorkspaceGridView(QAbstractItemModel* model, QWidget* parent = nullptr);
     virtual ~WorkspaceGridView() = default;

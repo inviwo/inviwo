@@ -34,6 +34,10 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/common/inviwoapplicationutil.h>
 
+#include <optional>
+#include <string>
+#include <vector>
+
 namespace inviwo {
 
 class IVW_CORE_API WorkspaceAnnotations : public PropertyOwner {
@@ -69,19 +73,19 @@ public:
     virtual ~WorkspaceAnnotations() = default;
 
     void setTitle(const std::string& title);
-    std::string getTitle() const;
+    const std::string& getTitle() const;
 
     void setAuthor(const std::string& author);
-    std::string getAuthor() const;
+    const std::string& getAuthor() const;
 
     void setTags(const std::string& tags);
-    std::string getTags() const;
+    const std::string& getTags() const;
 
     void setCategories(const std::string& cat);
-    std::string getCategories() const;
+    const std::string& getCategories() const;
 
     void setDescription(const std::string& desc);
-    std::string getDescription() const;
+    const std::string& getDescription() const;
 
     void setCanvasImages(const std::vector<Base64Image>& canvases);
 
@@ -89,6 +93,8 @@ public:
     const Base64Image& getCanvasImage(size_t i) const;
 
     const Base64Image* getPrimaryCanvasImage() const;
+
+    std::optional<size_t> getPrimaryCanvasIndex() const;
 
     const std::vector<Base64Image>& getCanvasImages() const;
 

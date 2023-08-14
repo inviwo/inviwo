@@ -482,7 +482,7 @@ public:
     IdentifiedDeserializer(std::string_view key, std::string_view itemKey)
         : key_(key), itemKey_(itemKey) {}
 
-    IdentifiedDeserializer<K, T>& setGetId(std::function<K(const T&)> getID) {
+    IdentifiedDeserializer<K, T>& setGetId(std::function<const K&(const T&)> getID) {
         getID_ = getID;
         return *this;
     }
@@ -507,30 +507,66 @@ public:
         onRemoveItem_ = onRemoveItem;
         return *this;
     }
+    IdentifiedDeserializer<K, T>& onMove(std::function<void(T&, size_t)> onMoveItem) {
+        move_ = onMoveItem;
+        return *this;
+    }
 
     template <typename C>
     void operator()(Deserializer& d, C& container) {
         T tmp{};
         auto toRemove = util::transform(container, [&](const T& x) -> K { return getID_(x); });
+
+        std::vector<K> foundIdentifiers;
+
         ContainerWrapper<T, K> cont(
-            itemKey_, [&](const K& id, size_t ind) -> typename ContainerWrapper<T, K>::Item {
-                std::erase(toRemove, id);
-                auto it = util::find_if(container, [&](T& i) { return getID_(i) == id; });
+            itemKey_,
+            [&](const K& identifier, size_t ind) -> typename ContainerWrapper<T, K>::Item {
+                std::erase(toRemove, identifier);
+                foundIdentifiers.push_back(identifier);
+                auto it =
+                    util::find_if(container, [&](const T& i) { return getID_(i) == identifier; });
                 if (it != container.end()) {
                     return {true, *it, [&](T& /*val*/) {}};
                 } else {
                     tmp = makeNewItem_();
-                    return {filter_(id, ind), tmp, [this, ind](T& val) { onNewItem_(val, ind); }};
+                    return {filter_(identifier, ind), tmp,
+                            [this, ind](T& val) { onNewItem_(val, ind); }};
                 }
             });
 
         d.deserialize(key_, cont);
         for (auto& id : toRemove) onRemoveItem_(id);
+
+        reorder(container, foundIdentifiers);
     }
 
 private:
+    template <typename C>
+    void reorder(C& list, const std::vector<K>& order) {
+        size_t dst = 0;
+        for (size_t i = 0; i < order.size() && dst < list.size(); ++i) {
+            if (order[i] == getID_(list[dst])) {
+                ++dst;
+                continue;
+            }
+
+            while (dst < list.size() &&
+                   std::find(order.begin() + i, order.end(), getID_(list[dst])) == order.end()) {
+                ++dst;
+            }
+
+            if (auto it = std::find_if(list.begin() + dst, list.end(),
+                                       [&](const T& item) { return getID_(item) == order[i]; });
+                it != list.end() && it != list.begin() + dst) {
+                move_(*it, dst);
+            }
+            ++dst;
+        }
+    }
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-    std::function<K(const T&)> getID_ = [](const T&) -> K {
+    std::function<const K&(const T&)> getID_ = [](const T&) -> const K& {
         throw Exception("IdentifiedDeserializer: GetID callback is not set!");
     };
     std::function<T()> makeNewItem_ = []() -> T {
@@ -542,10 +578,14 @@ private:
     std::function<void(const K&)> onRemoveItem_ = [](const K&) {
         throw Exception("IdentifiedDeserializer: OnRemove callback is not set!");
     };
+    std::function<void(T&, size_t)> move_ = [](T&, size_t) {
+        throw Exception("IdentifiedDeserializer: OnMove callback is not set!");
+    };
 
     std::function<bool(const K& id, size_t ind)> filter_ = [](const K& /*id*/, size_t /*ind*/) {
         return true;
     };
+
 #endif
 
     std::string key_;

@@ -345,11 +345,10 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
         return repl;
     };
 
-    auto replV1 = makerulesV1();
-
     bool res = false;
     switch (version_) {
         case 0: {
+            auto replV1 = makerulesV1();
             res |= xml::changeIdentifiers(root, replV1);
             [[fallthrough]];
         }
@@ -483,7 +482,6 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
         default:
             return false;  // No changes
     }
-    return true;
 }
 
 }  // namespace inviwo

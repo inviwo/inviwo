@@ -48,7 +48,7 @@
         "IVW_USE_EXTERNAL_OPENEXR":   { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_PEGTL":     { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_PYBIND11":  { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_ROARING":   { "type": "BOOL", "value": "OFF"},
+        "IVW_USE_EXTERNAL_ROARING":   { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_SGCT":      { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_TCLAP":     { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_TIFF":      { "type": "BOOL", "value": "ON"},

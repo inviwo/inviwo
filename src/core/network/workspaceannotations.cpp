@@ -120,23 +120,23 @@ InviwoApplication* WorkspaceAnnotations::getInviwoApplication() { return app_; }
 
 void WorkspaceAnnotations::setTitle(const std::string& title) { title_ = title; }
 
-std::string WorkspaceAnnotations::getTitle() const { return title_; }
+const std::string& WorkspaceAnnotations::getTitle() const { return title_; }
 
 void WorkspaceAnnotations::setAuthor(const std::string& author) { author_ = author; }
 
-std::string WorkspaceAnnotations::getAuthor() const { return author_; }
+const std::string& WorkspaceAnnotations::getAuthor() const { return author_; }
 
 void WorkspaceAnnotations::setTags(const std::string& tags) { tags_ = tags; }
 
-std::string WorkspaceAnnotations::getTags() const { return tags_; }
+const std::string& WorkspaceAnnotations::getTags() const { return tags_; }
 
 void WorkspaceAnnotations::setCategories(const std::string& cat) { categories_ = cat; }
 
-std::string WorkspaceAnnotations::getCategories() const { return categories_; }
+const std::string& WorkspaceAnnotations::getCategories() const { return categories_; }
 
 void WorkspaceAnnotations::setDescription(const std::string& desc) { description_ = desc; }
 
-std::string WorkspaceAnnotations::getDescription() const { return description_; }
+const std::string& WorkspaceAnnotations::getDescription() const { return description_; }
 
 void WorkspaceAnnotations::setCanvasImages(const std::vector<Base64Image>& canvases) {
     canvases_ = canvases;
@@ -147,14 +147,22 @@ const WorkspaceAnnotations::Base64Image& WorkspaceAnnotations::getCanvasImage(si
     return canvases_[i];
 }
 
-const WorkspaceAnnotations::Base64Image* WorkspaceAnnotations::getPrimaryCanvasImage() const {
+std::optional<size_t> WorkspaceAnnotations::getPrimaryCanvasIndex() const {
     auto it = std::find_if(canvases_.begin(), canvases_.end(), [&](const Base64Image& img) {
         return img.name == primaryCanvasId_.get();
     });
     if (it != canvases_.end()) {
-        return &*it;
+        return std::distance(canvases_.begin(), it);
     } else if (!canvases_.empty()) {
-        return &canvases_.front();
+        return 0;
+    } else {
+        return std::nullopt;
+    }
+}
+
+const WorkspaceAnnotations::Base64Image* WorkspaceAnnotations::getPrimaryCanvasImage() const {
+    if (auto index = getPrimaryCanvasIndex()) {
+        return &canvases_[*index];
     } else {
         return nullptr;
     }

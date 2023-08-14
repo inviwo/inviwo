@@ -128,6 +128,9 @@ public:
         AxisProperty xAxis_;
         AxisProperty yAxis_;
 
+        virtual void serialize(Serializer& s) const override { CompositeProperty::serialize(s); }
+        virtual void deserialize(Deserializer& d) override { CompositeProperty::deserialize(d); }
+
     private:
         auto props() {
             return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, showHighlighted_,

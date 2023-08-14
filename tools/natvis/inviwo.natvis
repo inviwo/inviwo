@@ -365,7 +365,6 @@
     </Expand>
   </Type>
 
-
   <!--
   <Type Name="QImage">
     <UIVisualizer ServiceId="{A452AFEA-3DF6-46BB-9177-C0B08F318025}" Id="1" />
@@ -438,7 +437,6 @@
       <Item Name="Display Name">displayName_.value</Item>
       <Item Name="Read only">readOnly_.value</Item>
       <Item Name="Semantics">semantics_.value</Item>
-      <Item Name="Usage mode">usageMode_.value</Item>
       <Item Name="Visible">visible_.value</Item>
       <Item Name="Property Modified">propertyModified_</Item>
       <Item Name="Invalidation level">invalidationLevel_</Item>
@@ -449,7 +447,7 @@
 
 
   <Type Name="inviwo::TemplateProperty&lt;*&gt;">
-    <DisplayString>TemplateProperty {identifier_} = {value_.value}</DisplayString>
+    <DisplayString>Template {identifier_} = {value_.value}</DisplayString>
     <Expand>
       <Item Name="Identifier">identifier_</Item>
       <Item Name="Display Name">displayName_.value</Item>
@@ -457,7 +455,40 @@
       <Item Name="Deafult">value_.defaultValue</Item>
       <Item Name="Read only">readOnly_.value</Item>
       <Item Name="Semantics">semantics_.value</Item>
-      <Item Name="Usage mode">usageMode_.value</Item>
+      <Item Name="Visible">visible_.value</Item>
+      <Item Name="Property Modified">propertyModified_</Item>
+      <Item Name="Invalidation level">invalidationLevel_</Item>
+      <Item Name="Owner">owner_</Item>
+      <Item Name="Property Widgets">propertyWidgets_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::BoolProperty">
+    <DisplayString>Bool {identifier_} = {value_.value}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">identifier_</Item>
+      <Item Name="Display Name">displayName_.value</Item>
+      <Item Name="Value">value_.value</Item>
+      <Item Name="Deafult">value_.defaultValue</Item>
+      <Item Name="Read only">readOnly_.value</Item>
+      <Item Name="Semantics">semantics_.value</Item>
+      <Item Name="Visible">visible_.value</Item>
+      <Item Name="Property Modified">propertyModified_</Item>
+      <Item Name="Invalidation level">invalidationLevel_</Item>
+      <Item Name="Owner">owner_</Item>
+      <Item Name="Property Widgets">propertyWidgets_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::StringProperty">
+    <DisplayString>String {identifier_} = {value_.value}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">identifier_</Item>
+      <Item Name="Display Name">displayName_.value</Item>
+      <Item Name="Value">value_.value</Item>
+      <Item Name="Deafult">value_.defaultValue</Item>
+      <Item Name="Read only">readOnly_.value</Item>
+      <Item Name="Semantics">semantics_.value</Item>
       <Item Name="Visible">visible_.value</Item>
       <Item Name="Property Modified">propertyModified_</Item>
       <Item Name="Invalidation level">invalidationLevel_</Item>
@@ -488,18 +519,16 @@
       <Item Name="Deafult Options">defaultOptions_</Item>
       <Item Name="Read only">readOnly_.value</Item>
       <Item Name="Semantics">semantics_.value</Item>
-      <Item Name="Usage mode">usageMode_.value</Item>
       <Item Name="Visible">visible_.value</Item>
       <Item Name="Property Modified">propertyModified_</Item>
       <Item Name="Invalidation level">invalidationLevel_</Item>
       <Item Name="Owner">owner_</Item>
       <Item Name="Property Widgets">propertyWidgets_</Item>
     </Expand>
-  </Type>  
-  
+  </Type>
 
-  <Type Name="inviwo::OrdinalProperty&lt;*&gt;">
-    <DisplayString>Ordinal {identifier_} = {value_.value}</DisplayString>
+  <Type Name="inviwo::OrdinalProperty&lt;glm::vec&lt;*,*,*&gt;&gt;">
+    <DisplayString>Ordinal {"$T2",sb} {$T1} {identifier_} = {value_.value}</DisplayString>
     <Expand>
       <Item Name="Identifier">identifier_</Item>
       <Item Name="Display Name">displayName_.value</Item>
@@ -510,7 +539,6 @@
       <Item Name="Inc">increment_.value</Item>
       <Item Name="Read only">readOnly_.value</Item>
       <Item Name="Semantics">semantics_.value</Item>
-      <Item Name="Usage mode">usageMode_.value</Item>
       <Item Name="Visible">visible_.value</Item>
       <Item Name="Property Modified">propertyModified_</Item>
       <Item Name="Invalidation level">invalidationLevel_</Item>
@@ -519,8 +547,28 @@
     </Expand>
   </Type>
     
-  <Type Name="inviwo::OrdinalRefProperty&lt;*&gt;">
-    <DisplayString>OrdinalRef {identifier_}</DisplayString>
+  <Type Name="inviwo::OrdinalProperty&lt;*&gt;">
+    <DisplayString>Ordinal {"$T1",sb} {identifier_} = {value_.value}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">identifier_</Item>      
+      <Item Name="Display Name">displayName_.value</Item>
+      <Item Name="Value">value_.value</Item>
+      <Item Name="Deafult">value_.defaultValue</Item>
+      <Item Name="Min">minValue_.value</Item>
+      <Item Name="Max">maxValue_.value</Item>
+      <Item Name="Inc">increment_.value</Item>
+      <Item Name="Read only">readOnly_.value</Item>
+      <Item Name="Semantics">semantics_.value</Item>
+      <Item Name="Visible">visible_.value</Item>
+      <Item Name="Property Modified">propertyModified_</Item>
+      <Item Name="Invalidation level">invalidationLevel_</Item>
+      <Item Name="Owner">owner_</Item>
+      <Item Name="Property Widgets">propertyWidgets_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::OrdinalRefProperty&lt;glm::vec&lt;*,*,*&gt;&gt;">
+    <DisplayString>OrdinalRef {"$T2",sb} {$T1} {identifier_} = {value_.value}</DisplayString>
     <Expand>
       <Item Name="Identifier">identifier_</Item>
       <Item Name="Display Name">displayName_.value</Item>
@@ -531,7 +579,26 @@
       <Item Name="Inc">increment_.value</Item>
       <Item Name="Read only">readOnly_.value</Item>
       <Item Name="Semantics">semantics_.value</Item>
-      <Item Name="Usage mode">usageMode_.value</Item>
+      <Item Name="Visible">visible_.value</Item>
+      <Item Name="Property Modified">propertyModified_</Item>
+      <Item Name="Invalidation level">invalidationLevel_</Item>
+      <Item Name="Owner">owner_</Item>
+      <Item Name="Property Widgets">propertyWidgets_</Item>
+    </Expand>
+  </Type>
+    
+  <Type Name="inviwo::OrdinalRefProperty&lt;*&gt;">
+    <DisplayString>OrdinalRef {"$T1",sb} {identifier_}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">identifier_</Item>
+      <Item Name="Display Name">displayName_.value</Item>
+      <Item Name="Get">get_</Item>
+      <Item Name="Set">set_</Item>
+      <Item Name="Min">minValue_.value</Item>
+      <Item Name="Max">maxValue_.value</Item>
+      <Item Name="Inc">increment_.value</Item>
+      <Item Name="Read only">readOnly_.value</Item>
+      <Item Name="Semantics">semantics_.value</Item>
       <Item Name="Visible">visible_.value</Item>
       <Item Name="Property Modified">propertyModified_</Item>
       <Item Name="Invalidation level">invalidationLevel_</Item>
@@ -564,7 +631,32 @@
       <Item Name="Property Widgets">propertyWidgets_</Item>
     </Expand>
   </Type>
- 
+
+  <Type Name="inviwo::BoolCompositeProperty">
+    <DisplayString>BoolComposite {identifier_} size = {properties_._Mypair._Myval2._Mylast -  properties_._Mypair._Myval2._Myfirst}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">identifier_</Item>
+      <Item Name="Display Name">displayName_.value</Item>
+      <IndexListItems>
+        <Size>properties_._Mypair._Myval2._Mylast -  properties_._Mypair._Myval2._Myfirst</Size>
+        <ValueNode>*(properties_._Mypair._Myval2._Myfirst[$i])</ValueNode>
+      </IndexListItems>
+      <Item Name="Owned Properties">ownedProperties_</Item>
+      <Item Name="Event Properties">eventProperties_</Item>
+      <Item Name="Composite Properties">compositeProperties_</Item>
+      <Item Name="Owner">*owner_</Item>
+      <Item Name="Read only">readOnly_.value</Item>
+      <Item Name="Semantics">semantics_.value</Item>
+      <Item Name="Visible">visible_.value</Item>
+      <Item Name="Collapsed">collapsed_</Item>
+      <Item Name="Property Modified">propertyModified_</Item>
+      <Item Name="Property Invalidation level">Property::invalidationLevel_</Item>
+      <Item Name="PropertyOwner Invalidation level">PropertyOwner::invalidationLevel_</Item>
+      <Item Name="Sub Invalidation level">subPropertyInvalidationLevel_</Item>
+      <Item Name="Property Widgets">propertyWidgets_</Item>
+    </Expand>
+  </Type>
+
     
   <Type Name="inviwo::Camera">
     <DisplayString>Camera from = {lookFrom_} to = {lookTo_}</DisplayString>
@@ -642,4 +734,80 @@
     </Expand>
   </Type>
 
+
+  <Type Name="TiXmlAttribute">
+    <DisplayString>{name} = {value}</DisplayString>
+    <Expand>
+      <Item Name="name">name</Item>
+      <Item Name="value">value</Item>
+    </Expand>
+  </Type>
+    
+  <Type Name="TiXmlAttributeSet">
+    <DisplayString>TiXmlAttributeSet</DisplayString>
+      <Expand>
+          <CustomListItems>
+              <Variable Name="curr" InitialValue="sentinel.next" />
+              <Variable Name="last" InitialValue="sentinel.prev" />
+              <Variable Name="root" InitialValue="&amp;sentinel" />
+
+              <Loop>
+                  <Break Condition="curr == nullptr" />
+                  <Break Condition="curr == root" />
+                  <Item>*curr</Item>
+                  <Break Condition="curr == last" />
+                  <Exec>curr = curr->next</Exec>
+              </Loop>
+          </CustomListItems>
+      </Expand>
+  </Type>
+    
+  <Type Name="TiXmlNode">
+    <DisplayString>{value}</DisplayString>
+    <Expand>
+      <Item Name="value">value</Item>
+      <Item Name="type">type</Item>
+
+      <Synthetic Name="# attributes"><DisplayString> </DisplayString></Synthetic>
+      <CustomListItems Optional="true">
+        <Variable Name="curr" InitialValue="((TiXmlElement*)this)->attributeSet.sentinel.next" />
+        <Variable Name="last" InitialValue="((TiXmlElement*)this)->attributeSet.sentinel.prev" />
+        <Variable Name="root" InitialValue="&amp;((TiXmlElement*)this)->attributeSet.sentinel" />
+
+        <Loop>
+          <Break Condition="curr == nullptr" />
+          <Break Condition="curr == root" />
+          <Item>*curr</Item>
+          <Break Condition="curr == last" />
+            <Exec>curr = curr->next</Exec>
+        </Loop>
+      </CustomListItems>
+
+      <Synthetic Name="# children"><DisplayString> </DisplayString></Synthetic>
+      <CustomListItems MaxItemsPerView="5000" ExcludeView="Test">
+        <Variable Name="curr" InitialValue="firstChild" />
+        <Variable Name="last" InitialValue="lastChild" />
+
+        <Exec>curr = firstChild</Exec>
+        <Exec>last = lastChild</Exec>
+        <Loop>
+          <Break Condition="curr == nullptr" />
+          <Item>*curr</Item>
+          <Break Condition="curr == last" />
+          <Exec>curr = curr->next</Exec>
+        </Loop>
+      </CustomListItems>
+
+      <Synthetic Name="parent" Optional="true" Condition="parent == 0"><DisplayString>Null</DisplayString></Synthetic>
+      <Item Condition="parent != 0" Name="parent">*parent</Item>
+    </Expand>
+  </Type>
+    
+  <Type Name="ticpp::Element">
+    <DisplayString>TiCpp {m_tiXmlPointer->type} {m_tiXmlPointer->value}</DisplayString>
+    <Expand>
+      <Item Name="value">*m_tiXmlPointer</Item>
+    </Expand>
+  </Type>
+    
 </AutoVisualizer>

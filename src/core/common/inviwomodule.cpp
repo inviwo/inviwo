@@ -141,43 +141,46 @@ std::filesystem::path InviwoModule::getPath() const {
 
     // By default always use this one. i.e. the module folder in the deployed app
     if (std::filesystem::is_directory(defaultPath)) {
-        return defaultPath;
+        return defaultPath.lexically_normal();
     } else {
         // try to use the module folder from the source location
         for (auto& elem : inviwoModulePaths_) {
             const auto path = elem / moduleNameLowerCase;
             if (std::filesystem::is_directory(path)) {
-                return path;
+                return path.lexically_normal();
             }
         }
     }
     // In the case that there was no module folder, just return the default path
     // This can happen in a deployed app without any installed resources in the module.
-    return defaultPath;
+    return defaultPath.lexically_normal();
 }
 
 std::filesystem::path InviwoModule::getPath(ModulePath type) const {
     std::filesystem::path path = getPath();
     // clang-format off
-    switch (type) {
-        case ModulePath::Data:               return path / "data";
-        case ModulePath::Images:             return path / "data/images";
-        case ModulePath::PortInspectors:     return path / "data/portinspectors";
-        case ModulePath::Scripts:            return path / "data/scripts";
-        case ModulePath::TransferFunctions:  return path / "data/transferfunctions";
-        case ModulePath::Volumes:            return path / "data/volumes";
-        case ModulePath::Workspaces:         return path / "data/workspaces";
-        case ModulePath::Docs:               return path / "docs";
-        case ModulePath::Tests:              return path / "tests";
-        case ModulePath::TestImages:         return path / "tests/images";
-        case ModulePath::TestVolumes:        return path / "tests/volumes";
-        case ModulePath::UnitTests:          return path / "tests/unittests";
-        case ModulePath::RegressionTests:    return path / "tests/regression";
-        case ModulePath::GLSL:               return path / "glsl";
-        case ModulePath::CL:                 return path / "cl";
-        default:                             return path;
-    }
+    path = [&](){
+        switch (type) {
+            case ModulePath::Data:               return path / "data";
+            case ModulePath::Images:             return path / "data/images";
+            case ModulePath::PortInspectors:     return path / "data/portinspectors";
+            case ModulePath::Scripts:            return path / "data/scripts";
+            case ModulePath::TransferFunctions:  return path / "data/transferfunctions";
+            case ModulePath::Volumes:            return path / "data/volumes";
+            case ModulePath::Workspaces:         return path / "data/workspaces";
+            case ModulePath::Docs:               return path / "docs";
+            case ModulePath::Tests:              return path / "tests";
+            case ModulePath::TestImages:         return path / "tests/images";
+            case ModulePath::TestVolumes:        return path / "tests/volumes";
+            case ModulePath::UnitTests:          return path / "tests/unittests";
+            case ModulePath::RegressionTests:    return path / "tests/regression";
+            case ModulePath::GLSL:               return path / "glsl";
+            case ModulePath::CL:                 return path / "cl";
+            default:                             return path;
+        }
+    }();
     // clang-format on
+    return path.lexically_normal();
 }
 
 int InviwoModule::getVersion() const { return 0; }

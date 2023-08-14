@@ -240,6 +240,26 @@ Property* PropertyOwner::operator[](size_t i) { return properties_[i]; }
 
 const Property* PropertyOwner::operator[](size_t i) const { return properties_[i]; }
 
+auto PropertyOwner::find(Property* property) const -> const_iterator {
+    return std::find(begin(), end(), property);
+}
+
+bool PropertyOwner::move(Property* property, size_t newIndex) {
+    if (auto it = find(property); it != cend()) {
+        auto index = std::distance(cbegin(), it);
+        notifyObserversWillRemoveProperty(property, index);
+        properties_.erase(it);
+        notifyObserversDidRemoveProperty(this, property, index);
+
+        notifyObserversWillAddProperty(this, property, newIndex);
+        properties_.insert(properties_.begin() + newIndex, property);
+        notifyObserversDidAddProperty(property, newIndex);
+        return true;
+    } else {
+        return false;
+    }
+}
+
 PropertyOwner::iterator PropertyOwner::begin() { return properties_.begin(); }
 
 PropertyOwner::iterator PropertyOwner::end() { return properties_.end(); }
@@ -283,27 +303,31 @@ void PropertyOwner::serialize(Serializer& s) const {
 }
 
 void PropertyOwner::deserialize(Deserializer& d) {
-    // This is for finding renamed composites, and moving old properties to new composites.
-    NodeVersionConverter tvc(this, &PropertyOwner::findPropsForComposites);
-    d.convertVersion(&tvc);
+    if (d.getInviwoWorkspaceVersion() < 3) {
+        // This is for finding renamed composites, and moving old properties to new composites.
+        NodeVersionConverter tvc(this, &PropertyOwner::findPropsForComposites);
+        d.convertVersion(&tvc);
+    }
 
     std::vector<std::string> ownedIdentifiers;
     d.deserialize("OwnedPropertyIdentifiers", ownedIdentifiers, "PropertyIdentifier");
 
-    auto des = util::IdentifiedDeserializer<std::string, Property*>("Properties", "Property")
-                   .setGetId([](Property* const& p) { return p->getIdentifier(); })
-                   .setMakeNew([]() { return nullptr; })
-                   .setNewFilter([&](const std::string& id, size_t /*ind*/) {
-                       return util::contains(ownedIdentifiers, id);
-                   })
-                   .onNewIndexed([&](Property*& p, size_t i) { insertProperty(i, p, true); })
-                   .onRemove([&](const std::string& id) {
-                       if (util::contains_if(ownedProperties_, [&](std::unique_ptr<Property>& op) {
-                               return op->getIdentifier() == id;
-                           })) {
-                           delete removeProperty(id);
-                       }
-                   });
+    auto des =
+        util::IdentifiedDeserializer<std::string, Property*>("Properties", "Property")
+            .setGetId([](Property* const& p) -> decltype(auto) { return p->getIdentifier(); })
+            .setMakeNew([]() { return nullptr; })
+            .setNewFilter([&](const std::string& id, size_t /*ind*/) {
+                return util::contains(ownedIdentifiers, id);
+            })
+            .onNewIndexed([&](Property*& p, size_t i) { insertProperty(i, p, true); })
+            .onRemove([&](const std::string& id) {
+                if (util::contains_if(ownedProperties_, [&](std::unique_ptr<Property>& op) {
+                        return op->getIdentifier() == id;
+                    })) {
+                    delete removeProperty(id);
+                }
+            })
+            .onMove([&](Property*& p, size_t i) { move(p, i); });
 
     des(d, properties_);
 }

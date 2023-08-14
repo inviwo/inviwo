@@ -32,15 +32,14 @@
 
 #include <inviwo/core/network/workspaceannotations.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QImage>
 #include <QStringList>
-#include <warn/pop>
+#include <QMetaType>
 
 #include <vector>
 #include <filesystem>
 #include <map>
+#include <string>
 
 namespace inviwo {
 
@@ -57,9 +56,10 @@ public:
 
     void setNetworkImage(const QImage& network);
     const Base64Image& getNetworkImage() const;
-    QImage getNetworkQImage() const;
-    QImage getCanvasQImage(size_t i) const;
-    QImage getPrimaryCanvasQImage() const;
+
+    const QImage& getNetworkQImage() const;
+    const QImage& getCanvasQImage(size_t i) const;
+    const QImage& getPrimaryCanvasQImage() const;
 
     using WorkspaceAnnotations::setCanvasImages;
     void setCanvasImages(const std::vector<std::pair<std::string, QImage>>& canvasImages);
@@ -67,14 +67,32 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    static QStringList workspaceProcessors(const std::filesystem::path& path,
-                                           InviwoApplication* app = util::getInviwoApplication());
+    struct ProcessorShim {
+        void serialize([[maybe_unused]] Serializer& s) const {}
+        void deserialize(Deserializer& d);
+        std::string type;
+        std::string identifier;
+        std::string displayName;
+    };
 
-    static std::map<std::string, int> workspaceProcessorsCounts(
-        const std::filesystem::path& path, InviwoApplication* app = util::getInviwoApplication());
+    const std::vector<ProcessorShim>& getProcessorList() const;
+    const std::map<std::string, int> getProcessorCounts() const;
+
+    static const QImage& getMissingImage();
 
 private:
     Base64Image network_;
+    std::vector<ProcessorShim> processorList_;
+    std::map<std::string, int> processorCounts_;
+
+    mutable std::vector<QImage> imageCache_;
+    mutable QImage networkCache_;
+};
+
+struct IVW_QTEDITOR_API WorkspaceInfo {
+    std::shared_ptr<WorkspaceAnnotationsQt> annotations;
 };
 
 }  // namespace inviwo
+
+Q_DECLARE_METATYPE(inviwo::WorkspaceInfo);  // To be able to use queued Qt connect

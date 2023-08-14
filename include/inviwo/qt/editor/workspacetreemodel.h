@@ -31,6 +31,7 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/qt/editor/workspacemodelroles.h>
+#include <inviwo/qt/editor/workspaceannotationsqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -49,28 +50,10 @@ namespace inviwo {
 class TreeItem;
 class InviwoApplication;
 
-struct IVW_QTEDITOR_API WorkspaceInfo {
-    QString title;
-    QString author;
-    QString tags;
-    QString categories;
-    QString description;
-    QImage image;
-    QStringList processors;
-};
-
-}  // namespace inviwo
-Q_DECLARE_METATYPE(inviwo::WorkspaceInfo);  // To be able to use queued Qt connect
-
-namespace inviwo {
-
 class IVW_QTEDITOR_API WorkspaceInfoLoader
     : public QObject,
       public std::enable_shared_from_this<WorkspaceInfoLoader> {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 public:
     WorkspaceInfoLoader() = default;
     WorkspaceInfoLoader(const std::filesystem::path& filename, InviwoApplication* app)
@@ -84,7 +67,7 @@ signals:
 
 private:
     std::filesystem::path filename_;
-    InviwoApplication* app_;
+    InviwoApplication* app_ = nullptr;
     std::once_flag flag_;
 };
 
