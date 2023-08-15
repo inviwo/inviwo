@@ -38,6 +38,7 @@
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/qt/applicationbase/qtapptools.h>
+#include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/util/consolelogger.h>
@@ -125,7 +126,7 @@ int main(int argc, char** argv) {
             inviwoApp.getProcessorNetwork()->addObserver(&obs);
             inviwoApp.getProcessorNetworkEvaluator()->addObserver(&obs);
             inviwoApp.getProcessorNetwork()->forEachProcessor(
-                [&](auto* p) { p->ProcessorObservable::addObserver(&obs); });
+                [&](auto* p) { p->inviwo::ProcessorObservable::addObserver(&obs); });
         },
         200);
 
