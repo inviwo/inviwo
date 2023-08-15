@@ -154,7 +154,8 @@ public:
 
     void setXAxis(std::shared_ptr<const Column> col);
 
-    void setYAxis(std::shared_ptr<const Column> col);
+    enum class Type {Death, Persistence};
+    void setYAxis(std::shared_ptr<const Column> col, Type type = Type::Death);
 
     void setXAxisData(std::shared_ptr<const BufferBase> buffer);
     void setYAxisData(std::shared_ptr<const BufferBase> buffer);
@@ -182,6 +183,7 @@ protected:
     void objectPicked(PickingEvent* p);
     uint32_t getGlobalPickId(uint32_t localIndex) const;
 
+    Type type = Type::Death;
     std::shared_ptr<const BufferBase> xAxis_;
     std::shared_ptr<const BufferBase> yAxis_;
     std::shared_ptr<const BufferBase> color_;

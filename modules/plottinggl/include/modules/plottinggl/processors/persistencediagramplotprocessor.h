@@ -93,8 +93,9 @@ private:
 
     PersistenceDiagramPlotGL persistenceDiagramPlot_;
 
-    ColumnOptionProperty xAxis_;
-    ColumnOptionProperty yAxis_;
+    ColumnOptionProperty birth_;
+    ColumnOptionProperty death_;
+    ColumnOptionProperty persistence_;
     ColumnOptionProperty colorCol_;
 
     using CallbackHandle = std::shared_ptr<std::function<void(PickingEvent*, size_t)>>;

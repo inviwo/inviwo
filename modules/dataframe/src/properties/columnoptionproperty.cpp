@@ -104,7 +104,7 @@ void ColumnOptionProperty::setOptions(const DataFrame& dataframe) {
         options.emplace_back("none", "None", -1);
     }
 
-    for (const auto&& [idx, col] : util::enumerate<int>(dataframe)) {
+    for (auto&& [idx, col] : util::enumerate<int>(dataframe)) {
         const auto header = col->getHeader();
         options.emplace_back(util::stripIdentifier(header), header, idx);
     }
@@ -113,7 +113,7 @@ void ColumnOptionProperty::setOptions(const DataFrame& dataframe) {
         options_.empty() || ((options_.size() == 1) && (options_[0].id_ == "none"));
     replaceOptions(std::move(options));
     if (wasEmpty) {
-        setSelectedIndex(defaultColumnIndex_);
+        setSelectedValue(defaultColumnIndex_);
     }
     setCurrentStateAsDefault();
 }
