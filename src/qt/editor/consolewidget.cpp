@@ -348,7 +348,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     {
         auto levelsActive = settings.value("levelsActive", QVariantList());
-        int i = 0;
+        size_t i = 0;
         for (const auto& level : levelsActive.toList()) {
             if (i < levels.size()) {
                 levels[i++].action->setChecked(level.toBool());
@@ -612,7 +612,7 @@ void LogTableModel::clear() {
 
 QVariant LogTableModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) return {};
-    if (index.row() >= entries_.size()) return {};
+    if (index.row() >= std::ssize(entries_)) return {};
 
     static const QColor infoTextColor = {153, 153, 153};
     static const QColor warnTextColor = {221, 165, 8};
@@ -696,7 +696,7 @@ QVariant LogTableModel::headerData(int section, Qt::Orientation orientation, int
         case Qt::Vertical: {
             switch (role) {
                 case Qt::SizeHintRole: {
-                    if (section >= entries_.size()) return {};
+                    if (section >= std::ssize(entries_)) return {};
                     const auto& entry = entries_[section];
                     return QSize{1, entry.height};
                 }
