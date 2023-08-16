@@ -170,11 +170,9 @@ protected:
             const auto path = ":/" + name.path();
             if (QFile{path}.exists()) {
                 auto img = QImage{path};
-                int imgw = img.width();
-                int w = width();
-                if (width() == 0) {
-                    return img;
-                }
+
+                if (width() == 0) return img;
+
                 return img.scaled(std::min(img.width(), width()), img.height(), Qt::KeepAspectRatio,
                                   Qt::SmoothTransformation);
             }
