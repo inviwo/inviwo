@@ -25,6 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "tinyxml.h"
 
 #include <sstream>
+#include <cstring>
 
 namespace ticpp {
 

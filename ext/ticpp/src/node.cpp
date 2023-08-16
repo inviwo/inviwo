@@ -8,8 +8,8 @@
 #include <ticpp/unknown.h>
 #include <ticpp/stylesheet.h>
 
-
 #include <ostream>
+#include <cstring>
 
 TiXmlNode::TiXmlNode(NodeType _type) : TiXmlBase() {
     parent = 0;

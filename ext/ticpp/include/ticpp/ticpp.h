@@ -68,6 +68,7 @@ improved THROW() macro.
 #include <type_traits>
 #include <string>
 #include <string_view>
+#include <cstring>
 
 /**
 @subpage ticpp is a TinyXML wrapper that uses a lot more C++ ideals.

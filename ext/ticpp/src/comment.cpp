@@ -3,6 +3,8 @@
 #include <ticpp/document.h>
 #include <ticpp/parsingdata.h>
 
+#include <cstring>
+
 TiXmlComment::TiXmlComment(const TiXmlComment& copy) : TiXmlNode(TiXmlNode::COMMENT) {
     copy.CopyTo(this);
 }

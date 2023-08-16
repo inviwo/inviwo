@@ -5,8 +5,8 @@
 #include <ticpp/text.h>
 #include <ticpp/parsingdata.h>
 
-
 #include <sstream>
+#include <cstring>
 
 void TiXmlElement::RemoveAttribute(const char* name) {
     TiXmlAttribute* node = attributeSet.Find(name);

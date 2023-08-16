@@ -3,6 +3,8 @@
 #include <ticpp/document.h>
 #include <ticpp/parsingdata.h>
 
+#include <cstring>
+
 const TiXmlAttribute* TiXmlAttribute::Next() const {
     // We are using knowledge of the sentinel. The sentinel
     // have a value or name.

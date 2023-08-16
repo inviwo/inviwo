@@ -3,6 +3,8 @@
 #include <ticpp/document.h>
 #include <ticpp/parsingdata.h>
 
+#include <cstring>
+
 void TiXmlText::Print(FILE* cfile, int depth) const {
     assert(cfile);
     if (cdata) {
