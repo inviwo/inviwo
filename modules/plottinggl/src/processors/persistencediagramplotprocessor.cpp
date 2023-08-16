@@ -78,7 +78,8 @@ PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
     , persistenceDiagramPlot_(this)
     , birth_("xAxis", "Birth", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 1)
     , death_("yAxis", "Death", dataFrame_, ColumnOptionProperty::AddNoneOption::Yes, 2)
-    , persistence_("persistence", "Persistence", dataFrame_, ColumnOptionProperty::AddNoneOption::Yes, -1)
+    , persistence_("persistence", "Persistence", dataFrame_,
+                   ColumnOptionProperty::AddNoneOption::Yes, -1)
     , colorCol_("colorCol", "Color column", dataFrame_, ColumnOptionProperty::AddNoneOption::Yes,
                 3) {
 
@@ -170,10 +171,13 @@ void PersistenceDiagramPlotProcessor::onXAxisChange() {
 void PersistenceDiagramPlotProcessor::onYAxisChange() {
     if (!dataFrame_.hasData()) return;
     auto data = dataFrame_.getData();
-    if (auto idx = death_.get(); idx > 0) {
-        persistenceDiagramPlot_.setYAxis(data->getColumn(idx), PersistenceDiagramPlotGL::Type::Death);
-    } else if (idx = persistence_.get(); idx > 0) {
-        persistenceDiagramPlot_.setYAxis(data->getColumn(idx), PersistenceDiagramPlotGL::Type::Persistence);
+
+    if (death_.size() > 0 && death_.get() > 0) {
+        persistenceDiagramPlot_.setYAxis(data->getColumn(death_.get()),
+                                         PersistenceDiagramPlotGL::Type::Death);
+    } else if (persistence_.size() > 0 && persistence_.get() > 0) {
+        persistenceDiagramPlot_.setYAxis(data->getColumn(persistence_.get()),
+                                         PersistenceDiagramPlotGL::Type::Persistence);
     } else {
         persistenceDiagramPlot_.setYAxis(nullptr, PersistenceDiagramPlotGL::Type::Death);
     }
