@@ -1,6 +1,8 @@
 #include <ticpp/base.h>
 
 #include <istream>
+#include <cstring>
+
 
 bool TiXmlBase::condenseWhiteSpace = true;
 
