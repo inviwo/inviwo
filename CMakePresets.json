@@ -92,7 +92,7 @@
       "environment": {
         "VCPKG_OVERLAY_PORTS" : "${sourceDir}/tools/vcpkg;${sourceParentDir}/modules/tools/vcpkg",
         "COMMENT_PATH": "We need the path to dumpbin for VTK",
-        "Path" : "C:/Qt/6.6.0/msvc2019_64/bin;C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.37.32822/bin/Hostx64/x64;$penv{Path}"
+        "Path" : "C:/Qt/6.5.2/msvc2019_64/bin;C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.37.32822/bin/Hostx64/x64;$penv{Path}"
       },
       "cacheVariables": {
         "VCPKG_MANIFEST_FEATURES" : "vtk;ttk",
@@ -105,7 +105,7 @@
       "name": "qt",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH" :           { "type": "PATH", "value": "C:/Qt/6.6.0/msvc2019_64"}
+        "CMAKE_PREFIX_PATH" :           { "type": "PATH", "value": "C:/Qt/6.5.2/msvc2019_64"}
       }
     },
     {
