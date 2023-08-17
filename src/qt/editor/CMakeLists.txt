@@ -168,7 +168,7 @@ if(IVW_CFG_BUILD_CHANGELOG)
     )
 
     add_custom_command(OUTPUT ${buildFile}
-        COMMAND ${Python3_EXECUTABLE} 
+        COMMAND ${Python3_EXECUTABLE}
              ${IVW_ROOT_DIR}/tools/changelog-to-html.py 
             -i ${srcFile}
             -o ${buildFile}
@@ -186,6 +186,8 @@ if(IVW_CFG_BUILD_CHANGELOG)
     set_target_properties(inviwo-changelog PROPERTIES FOLDER tools)
     add_dependencies(inviwo-qteditor inviwo-changelog)
 endif()
+
+ivw_deploy_qt(inviwo-qteditor)
 
 ivw_default_install_targets(inviwo-qteditor)
 # Make package (for other projects to find)
