@@ -447,7 +447,7 @@ void BrushingAndLinkingManager::deserialize(Deserializer& d) {
                            .onRemove([&](const BrushingTarget& key) { map.erase(key); })
                            .setIdentifierTransform(
                                [](const std::string& id) { return BrushingTarget(id); });
-                
+
             des(d, map);
         } else if (std::holds_alternative<IndexListTargets>(targetmap)) {
             auto& map = std::get<IndexListTargets>(targetmap);

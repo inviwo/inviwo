@@ -561,12 +561,12 @@ void ProcessorNetworkConverter::updateTransferfunctions(TxElement* node) {
         xml::visitMatchingNodes(node, {{"Points", {}}, {"point", {}}},
                                 [](TxElement* node) { node->SetValue("Point"); });
 
-        xml::visitMatchingNodes(node, {{"Points", {}}, {"Point", {}}, {"pos", {}}},
-                                [](TxElement* posNode) {
-                                    const std::string defaultVal = "0.0";
-                                    const auto& pos = posNode->GetAttributeOrDefault("x", defaultVal);
-                                    posNode->SetAttribute("content", pos);
-                                });
+        xml::visitMatchingNodes(
+            node, {{"Points", {}}, {"Point", {}}, {"pos", {}}}, [](TxElement* posNode) {
+                const std::string defaultVal = "0.0";
+                const auto& pos = posNode->GetAttributeOrDefault("x", defaultVal);
+                posNode->SetAttribute("content", pos);
+            });
     }
 }
 

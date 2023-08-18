@@ -37,8 +37,7 @@ namespace inviwo {
 
 Serializer::Serializer(const std::filesystem::path& fileName) : SerializeBase(fileName) {
     try {
-        auto decl = std::make_unique<TxDeclaration>(SerializeConstants::XmlVersion,
-                                                    "UTF-8", "");
+        auto decl = std::make_unique<TxDeclaration>(SerializeConstants::XmlVersion, "UTF-8", "");
         doc_->LinkEndChild(decl.get());
         rootElement_ = new TxElement(SerializeConstants::InviwoWorkspace);
 

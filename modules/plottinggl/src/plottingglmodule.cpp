@@ -225,7 +225,7 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                                 } else {
                                     valueNode.SetAttribute("content", "1.0");
                                 }
-                                
+
                                 alphaNode.InsertEndChild(valueNode);
                                 propNode.InsertEndChild(alphaNode);
                             }
