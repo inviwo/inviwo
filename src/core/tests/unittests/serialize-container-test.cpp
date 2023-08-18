@@ -385,7 +385,12 @@ TEST(SerialitionContainerTest, ContainerTest7) {
     auto des = util::MapDeserializer<int, std::string>("Map", "Item")
                    .setMakeNew([]() { return ""; })
                    .onNew([&](const int& k, std::string& v) { map[k] = v; })
-                   .onRemove([&](const int& k) { map.erase(k); });
+                   .onRemove([&](const int& k) { map.erase(k); })
+                   .setIdentifierTransform([](const std::string& s) -> int {
+                       int val{};
+                       std::from_chars(s.data(), s.data() + s.size(), val);
+                       return val;
+                   });
 
     des(deserializer, map);
 
