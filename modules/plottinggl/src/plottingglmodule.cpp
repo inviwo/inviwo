@@ -89,10 +89,9 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
     switch (version_) {
         case 0: {
             TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                std::string key;
-                node->GetValue(&key);
+                const auto& key = node->Value();
                 if (key != "Processor") return true;
-                const auto type = node->GetAttributeOrDefault("type", "");
+                const auto& type = node->GetAttribute("type");
                 if (type != "org.inviwo.ParallelCoordinates") return true;
 
                 auto props = xml::getElement(node, "Properties");
@@ -118,10 +117,9 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
         }
         case 1: {
             TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                std::string key;
-                node->GetValue(&key);
+                const auto& key = node->Value();
                 if (key != "Processor") return true;
-                const auto type = node->GetAttributeOrDefault("type", "");
+                const auto& type = node->GetAttribute("type");
                 if (type != "org.inviwo.ParallelCoordinates") return true;
 
                 auto props = xml::getElement(node, "Properties");
@@ -161,10 +159,9 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
         }
         case 2: {
             TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                std::string key;
-                node->GetValue(&key);
+                const auto& key = node->Value();
                 if (key != "Processor") return true;
-                const auto type = node->GetAttributeOrDefault("type", "");
+                const auto& type = node->GetAttribute("type");
                 if ((type != "org.inviwo.ScatterPlotProcessor") &&
                     (type != "org.inviwo.ScatterPlotMatrixProcessor")) {
                     return true;
@@ -218,13 +215,16 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                             propNode.InsertEndChild(*highlightColor);
 
                             if (auto value = xml::getElement(highlightColor, "value")) {
-                                auto str = value->GetAttributeOrDefault("w", "1.0");
-
                                 TxElement alphaNode{"Property"};
                                 alphaNode.SetAttribute("type", "org.inviwo.FloatProperty");
                                 alphaNode.SetAttribute("identifier", "highlightAlpha");
                                 TxElement valueNode("value");
-                                valueNode.SetAttribute("content", str);
+
+                                if (const auto* str = value->GetAttributePtr("w")) {
+                                    valueNode.SetAttribute("content", *str);
+                                } else {
+                                    valueNode.SetAttribute("content", "1.0");
+                                }
 
                                 alphaNode.InsertEndChild(valueNode);
                                 propNode.InsertEndChild(alphaNode);
@@ -249,13 +249,15 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                             propNode.InsertEndChild(*highlightColor);
 
                             if (auto value = xml::getElement(highlightColor, "value")) {
-                                auto str = value->GetAttributeOrDefault("w", "1.0");
-
                                 TxElement alphaNode{"Property"};
                                 alphaNode.SetAttribute("type", "org.inviwo.FloatProperty");
                                 alphaNode.SetAttribute("identifier", "selectionAlpha");
                                 TxElement valueNode("value");
-                                valueNode.SetAttribute("content", str);
+                                if (const auto* str = value->GetAttributePtr("w")) {
+                                    valueNode.SetAttribute("content", *str);
+                                } else {
+                                    valueNode.SetAttribute("content", "1.0");
+                                }
 
                                 alphaNode.InsertEndChild(valueNode);
                                 propNode.InsertEndChild(alphaNode);
@@ -273,11 +275,9 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
         }
         case 3: {
             TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                std::string key;
-                node->GetValue(&key);
+                const auto& key = node->Value();
                 if (key != "Processor") return true;
-                if (auto type = node->GetAttributeOrDefault("type", "");
-                    type != "org.inviwo.ParallelCoordinates") {
+                if (node->GetAttribute("type") != "org.inviwo.ParallelCoordinates") {
                     return true;
                 }
                 if (auto elem =

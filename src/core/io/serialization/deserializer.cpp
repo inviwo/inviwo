@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -30,15 +30,8 @@
 #include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/processors/processorfactory.h>
-#include <inviwo/core/metadata/metadatafactory.h>
-#include <inviwo/core/properties/propertyfactory.h>
-#include <inviwo/core/ports/portfactory.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/safecstr.h>
 
 #include <inviwo/core/io/serialization/ticpp.h>
 
@@ -70,22 +63,20 @@ void Deserializer::deserialize(std::string_view key, std::filesystem::path& path
 
     try {
         if (target == SerializationTarget::Attribute) {
-            const auto val = detail::getNodeAttribute(rootElement_, key);
+            const auto& val = rootElement_->GetAttribute(key);
             if (!val.empty()) {
                 path = val;
             }
         } else {
             if (NodeSwitch ns{*this, key}) {
-                const auto val =
-                    detail::getNodeAttribute(rootElement_, SerializeConstants::ContentAttribute);
+                const auto& val = rootElement_->GetAttribute(SerializeConstants::ContentAttribute);
                 if (!val.empty()) {
                     path = val;
                 }
                 return;
             }
             if (NodeSwitch ns{*this, key, true}) {
-                const auto val =
-                    detail::getNodeAttribute(rootElement_, SerializeConstants::ContentAttribute);
+                const auto& val = rootElement_->GetAttribute(SerializeConstants::ContentAttribute);
                 if (!val.empty()) {
                     path = val;
                 }
@@ -137,7 +128,7 @@ void Deserializer::handleError(const ExceptionContext& context) {
 }
 
 TxElement* Deserializer::retrieveChild(std::string_view key) {
-    return retrieveChild_ ? rootElement_->FirstChildElement(SafeCStr{key}, false) : rootElement_;
+    return retrieveChild_ ? rootElement_->FirstChildElement(key, false) : rootElement_;
 }
 
 void Deserializer::registerFactory(FactoryBase* factory) {
@@ -146,14 +137,14 @@ void Deserializer::registerFactory(FactoryBase* factory) {
 
 int Deserializer::getInviwoWorkspaceVersion() const { return inviwoWorkspaceVersion_; }
 
-std::string detail::getNodeAttribute(TxElement* node, std::string_view key) {
-    return node->GetAttribute(SafeCStr{key});
+const std::string& detail::getAttribute(TxElement* node, std::string_view key) {
+    return node->GetAttribute(key);
 }
 
 void detail::forEachChild(TxElement* node, std::string_view key,
                           std::function<void(TxElement*)> func) {
 
-    TxEIt child(std::string{key});
+    TxEIt child{key};
 
     for (child = child.begin(node); child != child.end(); ++child) {
         func(&(*child));

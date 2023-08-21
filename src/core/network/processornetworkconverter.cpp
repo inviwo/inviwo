@@ -119,11 +119,10 @@ void ProcessorNetworkConverter::traverseNodes(TxElement* node, updateType update
 }
 
 void ProcessorNetworkConverter::updateProcessorType(TxElement* node) {
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "Processor") {
-        std::string type = node->GetAttributeOrDefault("type", "");
+        const auto& type = node->GetAttribute("type");
         if (util::splitStringView(type, '.').size() < 3) {
             node->SetAttribute("type", "org.inviwo." + type);
         }
@@ -131,8 +130,7 @@ void ProcessorNetworkConverter::updateProcessorType(TxElement* node) {
 }
 
 void ProcessorNetworkConverter::updateMetaDataTree(TxElement* node) {
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "MetaDataList") {
         node->SetValue("MetaDataMap");
@@ -202,11 +200,10 @@ void ProcessorNetworkConverter::updatePropertType(TxElement* node) {
                              "StringProperty",
                              "TransferFunctionProperty"};
 
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "Property") {
-        std::string type = node->GetAttributeOrDefault("type", "");
+        const auto& type = node->GetAttribute("type");
         int size = sizeof(renamed) / sizeof(std::string);
         if (std::find(renamed, renamed + size, type) != renamed + size) {
             node->SetAttribute("type", "org.inviwo." + type);
@@ -256,11 +253,10 @@ void ProcessorNetworkConverter::updateMetaDataType(TxElement* node) {
                              "PropertyEditorWidgetMetaData"
 
     };
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "MetaDataItem") {
-        std::string type = node->GetAttributeOrDefault("type", "");
+        const auto& type = node->GetAttribute("type");
         int size = sizeof(renamed) / sizeof(std::string);
         if (std::find(renamed, renamed + size, type) != renamed + size) {
             node->SetAttribute("type", "org.inviwo." + type);
@@ -269,12 +265,11 @@ void ProcessorNetworkConverter::updateMetaDataType(TxElement* node) {
 }
 
 void ProcessorNetworkConverter::updateShadingMode(TxElement* node) {
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "Property") {
-        std::string type = node->GetAttributeOrDefault("type", "");
-        std::string identifier = node->GetAttributeOrDefault("identifier", "");
+        const auto& type = node->GetAttribute("type");
+        const auto& identifier = node->GetAttribute("identifier");
         if (type == "org.inviwo.OptionPropertyString" && identifier == "shadingMode") {
             node->SetAttribute("type", "org.inviwo.OptionPropertyInt");
         }
@@ -282,12 +277,11 @@ void ProcessorNetworkConverter::updateShadingMode(TxElement* node) {
 }
 
 void ProcessorNetworkConverter::updateShadingModeEnum(TxElement* node) {
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "Property") {
-        std::string type = node->GetAttributeOrDefault("type", "");
-        std::string identifier = node->GetAttributeOrDefault("identifier", "");
+        const auto& type = node->GetAttribute("type");
+        const auto& identifier = node->GetAttribute("identifier");
         if (type == "org.inviwo.OptionPropertyInt" && identifier == "shadingMode") {
             node->SetAttribute("type", "org.inviwo.OptionPropertyEnumInt");
         }
@@ -295,11 +289,10 @@ void ProcessorNetworkConverter::updateShadingModeEnum(TxElement* node) {
 }
 
 void ProcessorNetworkConverter::updateCameraToComposite(TxElement* node) {
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "Property") {
-        std::string type = node->GetAttributeOrDefault("type", "");
+        const auto& type = node->GetAttribute("type");
         if (type == "org.inviwo.CameraProperty") {
             // create
             TxElement newNode;
@@ -340,11 +333,10 @@ void ProcessorNetworkConverter::updateMetaDataKeys(TxElement* node) {
     std::string renamed[] = {"PositionMetaData", "ProcessorMetaData", "ProcessorWidgetMetaData",
                              "PropertyEditorWidgetMetaData"};
 
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "MetaDataItem") {
-        std::string keyname = node->GetAttributeOrDefault("key", "");
+        const auto keyname = node->GetAttribute("key");
         int size = sizeof(renamed) / sizeof(std::string);
         if (std::find(renamed, renamed + size, keyname) != renamed + size) {
             node->SetAttribute("key", "org.inviwo." + keyname);
@@ -353,8 +345,7 @@ void ProcessorNetworkConverter::updateMetaDataKeys(TxElement* node) {
 }
 
 void ProcessorNetworkConverter::updateDimensionTag(TxElement* node) {
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "dimension") {
         node->SetValue("dimensions");
@@ -362,8 +353,7 @@ void ProcessorNetworkConverter::updateDimensionTag(TxElement* node) {
 }
 
 void ProcessorNetworkConverter::updatePropertyLinks(TxElement* node) {
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "PropertyLink") {
         TxElement* properties = node->FirstChildElement(false);
@@ -384,7 +374,7 @@ void ProcessorNetworkConverter::updatePropertyLinks(TxElement* node) {
 void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
     struct RefManager : public ticpp::Visitor {
         virtual bool VisitEnter(const TxElement& node, const TxAttribute*) override {
-            std::string id = node.GetAttributeOrDefault("id", "");
+            const auto& id = node.GetAttribute("id");
             if (!id.empty()) {
                 ids_.push_back(id);
                 std::sort(ids_.begin(), ids_.end());
@@ -428,25 +418,24 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
 
         TxElement* outports = new TxElement("OutPorts");
         child->LinkEndChild(outports);
-        processorsOutports[child->GetAttributeOrDefault("identifier", "")] = outports;
+        processorsOutports[child->GetAttribute("identifier")] = outports;
 
         TxElement* inports = new TxElement("InPorts");
         child->LinkEndChild(inports);
-        processorsInports[child->GetAttributeOrDefault("identifier", "")] = inports;
+        processorsInports[child->GetAttribute("identifier")] = inports;
     }
 
     TxNode* connectionlist = root->FirstChild("Connections");
     for (child = child.begin(connectionlist); child != child.end(); child++) {
         TxElement* outport = child->FirstChild("OutPort")->ToElement();
-        if (outport->GetAttributeOrDefault("reference", "").empty()) {
-            std::string pid = outport->FirstChild("Processor")
-                                  ->ToElement()
-                                  ->GetAttributeOrDefault("identifier", "");
+        if (outport->GetAttribute("reference").empty()) {
+            const auto& pid =
+                outport->FirstChild("Processor")->ToElement()->GetAttribute("identifier");
             outport->RemoveChild(outport->FirstChild());
 
             TxElement* outclone = outport->Clone()->ToElement();
 
-            std::string id = outport->GetAttributeOrDefault("id", "");
+            auto id = outport->GetAttribute("id");
             if (id.empty()) id = refs.getNewRef();
 
             outport->SetAttribute("reference", id);
@@ -457,15 +446,14 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
         }
 
         TxElement* inport = child->FirstChild("InPort")->ToElement();
-        if (inport->GetAttributeOrDefault("reference", "").empty()) {
-            std::string pid = inport->FirstChild("Processor")
-                                  ->ToElement()
-                                  ->GetAttributeOrDefault("identifier", "");
+        if (inport->GetAttribute("reference").empty()) {
+            const auto& pid =
+                inport->FirstChild("Processor")->ToElement()->GetAttribute("identifier");
             inport->RemoveChild(inport->FirstChild());
 
             TxElement* inclone = inport->Clone()->ToElement();
 
-            std::string id = inport->GetAttributeOrDefault("id", "");
+            auto id = inport->GetAttribute("id");
             if (id.empty()) id = refs.getNewRef();
 
             inport->SetAttribute("reference", id);
@@ -512,11 +500,10 @@ void ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifers(TxElemen
                              "org.inviwo.Volume Laplacian",
                              "org.inviwo.Bader Partition"};
 
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "Processor") {
-        std::string type = node->GetAttributeOrDefault("type", "");
+        const auto& type = node->GetAttribute("type");
         int size = sizeof(renamed) / sizeof(std::string);
         if (std::find(renamed, renamed + size, type) != renamed + size) {
             std::string newtype = removeFromString(type, ' ');
@@ -530,12 +517,11 @@ void ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifers(TxElemen
 }
 
 void ProcessorNetworkConverter::updateDisplayName(TxElement* node) {
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "Property") {
         if (node->HasAttribute("displayName")) {
-            std::string displayName = node->GetAttributeOrDefault("displayName", "");
+            const auto& displayName = node->GetAttribute("displayName");
 
             TxElement newNode;
             newNode.SetValue("displayName");
@@ -546,12 +532,11 @@ void ProcessorNetworkConverter::updateDisplayName(TxElement* node) {
 }
 
 void ProcessorNetworkConverter::updateProcessorIdentifiers(TxElement* node) {
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "Processor") {
-        std::string identifier = node->GetAttributeOrDefault("identifier", "");
-        if (identifier != "") {
+        auto identifier = node->GetAttribute("identifier");
+        if (!identifier.empty()) {
             std::transform(identifier.begin(), identifier.end(), identifier.begin(), [](char c) {
                 if (!util::isValidIdentifierCharacter(c, " ()=&")) {
                     return ' ';
@@ -565,8 +550,7 @@ void ProcessorNetworkConverter::updateProcessorIdentifiers(TxElement* node) {
 }
 
 void ProcessorNetworkConverter::updateTransferfunctions(TxElement* node) {
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "transferFunction") {
         node->SetValue("TransferFunction");
@@ -577,20 +561,20 @@ void ProcessorNetworkConverter::updateTransferfunctions(TxElement* node) {
         xml::visitMatchingNodes(node, {{"Points", {}}, {"point", {}}},
                                 [](TxElement* node) { node->SetValue("Point"); });
 
-        xml::visitMatchingNodes(node, {{"Points", {}}, {"Point", {}}, {"pos", {}}},
-                                [](TxElement* posNode) {
-                                    auto pos = posNode->GetAttributeOrDefault("x", "0.0");
-                                    posNode->SetAttribute("content", pos);
-                                });
+        xml::visitMatchingNodes(
+            node, {{"Points", {}}, {"Point", {}}, {"pos", {}}}, [](TxElement* posNode) {
+                const std::string defaultVal = "0.0";
+                const auto& pos = posNode->GetAttributeOrDefault("x", defaultVal);
+                posNode->SetAttribute("content", pos);
+            });
     }
 }
 
 void ProcessorNetworkConverter::updateProcessorIdentifiersStriped(TxElement* node) {
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "Processor") {
-        std::string identifier = node->GetAttributeOrDefault("identifier", "");
+        const auto& identifier = node->GetAttribute("identifier");
         if (identifier != "") {
 
             std::string baseIdentifier = identifier;
@@ -669,7 +653,7 @@ void ProcessorNetworkConverter::updatePropertyEditorMetadata(TxElement* parent) 
             TxElement* node = child.Get();
             node->GetValue(&childKey);
             if (childKey == "MetaDataItem") {
-                std::string nodeKey = node->GetAttributeOrDefault("key", "");
+                const auto& nodeKey = node->GetAttribute("key");
                 if (nodeKey == "org.inviwo.PropertyEditorWidgetMetaData") {
                     for (const auto& item : replacements) {
                         if (auto n = node->FirstChild(std::get<0>(item), false)) {
@@ -698,11 +682,10 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
     std::unordered_map<std::string, std::string> refrencemap;
 
     auto fixcamera = [&](TxElement* node) {
-        std::string key;
-        node->GetValue(&key);
+        const auto& key = node->Value();
 
         if (key == "Property") {
-            std::string type = node->GetAttributeOrDefault("type", "");
+            const auto& type = node->GetAttribute("type");
             if (type == "org.inviwo.CameraProperty") {
 
                 // create
@@ -711,7 +694,7 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
 
                 xml::visitMatchingNodes(
                     node, {{"Properties", {}}, {"Property", {}}}, [&](TxElement* subNode) {
-                        auto name = subNode->GetAttribute("identifier");
+                        const auto& name = subNode->GetAttribute("identifier");
 
                         if (name == "lookFrom" || name == "lookTo" || name == "lookUp") {
                             subNode->SetAttribute("type", "org.inviwo.FloatVec3RefProperty");
@@ -738,7 +721,7 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
                             }
                         }
 
-                        if (auto id = subNode->GetAttributeOrDefault("id", ""); !id.empty()) {
+                        if (const auto& id = subNode->GetAttribute("id"); !id.empty()) {
                             refrencemap[id] = subNode->GetAttribute("type");
                         }
 
@@ -777,7 +760,7 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
     visit(root, fixcamera);
 
     auto fixrefs = [&](TxElement* node) {
-        if (auto id = node->GetAttributeOrDefault("reference", ""); !id.empty()) {
+        if (const auto& id = node->GetAttribute("reference"); !id.empty()) {
             if (auto it = refrencemap.find(id); it != refrencemap.end()) {
                 node->SetAttribute("type", it->second);
             }
@@ -805,18 +788,18 @@ void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
 
     if (auto processorsNode = xml::getElement(root, "Processors")) {
         visit(processorsNode, "InPort", [&](TxElement* node) {
-            const auto xmlId = node->GetAttribute("id");
+            const auto& xmlId = node->GetAttribute("id");
             if (xmlId.empty()) return;
-            auto portId = node->GetAttribute("identifier");
+            const auto& portId = node->GetAttribute("identifier");
             auto processorId = util::stripIdentifier(
                 node->Parent()->Parent()->ToElement()->GetAttribute("identifier"));
             ports[xmlId] = fmt::format("{}.{}", processorId, portId);
         });
 
         visit(processorsNode, "OutPort", [&](TxElement* node) {
-            auto xmlId = node->GetAttribute("id");
+            const auto& xmlId = node->GetAttribute("id");
             if (xmlId.empty()) return;
-            auto portId = node->GetAttribute("identifier");
+            const auto& portId = node->GetAttribute("identifier");
             auto processorId = util::stripIdentifier(
                 node->Parent()->Parent()->ToElement()->GetAttribute("identifier"));
             ports[xmlId] = fmt::format("{}.{}", processorId, portId);
@@ -824,18 +807,18 @@ void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
 
         // Composite networks
         visit(processorsNode, "SuperInport", [&](TxElement* node) {
-            const auto xmlId = node->GetAttribute("id");
+            const auto& xmlId = node->GetAttribute("id");
             if (xmlId.empty()) return;
-            auto portId = node->GetAttribute("identifier");
+            const auto& portId = node->GetAttribute("identifier");
             auto processorId = util::stripIdentifier(
                 node->Parent()->Parent()->Parent()->Parent()->ToElement()->GetAttribute(
                     "identifier"));
             ports[xmlId] = fmt::format("{}.{}", processorId, portId);
         });
         visit(processorsNode, "SuperOutport", [&](TxElement* node) {
-            const auto xmlId = node->GetAttribute("id");
+            const auto& xmlId = node->GetAttribute("id");
             if (xmlId.empty()) return;
-            auto portId = node->GetAttribute("identifier");
+            const auto& portId = node->GetAttribute("identifier");
             auto processorId = util::stripIdentifier(
                 node->Parent()->Parent()->Parent()->Parent()->ToElement()->GetAttribute(
                     "identifier"));
@@ -843,12 +826,12 @@ void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
         });
 
         visit(processorsNode, "Property", [&](TxElement* node) {
-            auto xmlId = node->GetAttribute("id");
+            const auto& xmlId = node->GetAttribute("id");
             if (xmlId.empty()) return;
 
             std::vector<std::string> path;
             while (true) {
-                auto id = node->GetAttribute("identifier");
+                const auto& id = node->GetAttribute("identifier");
                 path.push_back(id);
                 if (node->Value() == "Processor") break;
                 node = node->Parent()->Parent()->ToElement();

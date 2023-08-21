@@ -135,11 +135,10 @@ bool VectorFieldVisualizationModule::Converter::traverseNodes(TxElement* node, u
 }
 
 bool VectorFieldVisualizationModule::Converter::updateAllowLooping(TxElement* node) {
-    std::string key;
-    node->GetValue(&key);
+    const auto& key = node->Value();
 
     if (key == "Processor") {
-        std::string type = node->GetAttributeOrDefault("type", "");
+        const auto& type = node->GetAttribute("type");
         if (type == "org.inviwo.PathLines") {
 
             TxElement* propertiesNode = nullptr;
@@ -150,8 +149,7 @@ bool VectorFieldVisualizationModule::Converter::updateAllowLooping(TxElement* no
 
             ticpp::Iterator<ticpp::Element> child;
             for (child = child.begin(node); child != child.end(); child++) {
-                std::string childkey;
-                child->GetValue(&childkey);
+                const auto& childkey = child->Value();
                 if (childkey == "Properties") {
                     propertiesNode = child.Get();
                     break;
@@ -162,10 +160,9 @@ bool VectorFieldVisualizationModule::Converter::updateAllowLooping(TxElement* no
             }
 
             for (child = child.begin(propertiesNode); child != child.end(); child++) {
-                std::string childkey;
-                child->GetValue(&childkey);
+                const auto& childkey = child->Value();
                 if (childkey == "Property") {
-                    std::string childType = child->GetAttributeOrDefault("type", "");
+                    const auto& childType = child->GetAttribute("type");
 
                     if (childType == "org.inviwo.PathLineProperties") {
                         pathLinePropertiesNode = child.Get();
@@ -178,8 +175,7 @@ bool VectorFieldVisualizationModule::Converter::updateAllowLooping(TxElement* no
                 return false;
             }
             for (child = child.begin(pathLinePropertiesNode); child != child.end(); child++) {
-                std::string childkey;
-                child->GetValue(&childkey);
+                const auto& childkey = child->Value();
                 if (childkey == "Properties") {
                     pathLinePropertiesPropertiesNode = child.Get();
                     break;
@@ -191,11 +187,10 @@ bool VectorFieldVisualizationModule::Converter::updateAllowLooping(TxElement* no
 
             for (child = child.begin(pathLinePropertiesPropertiesNode); child != child.end();
                  child++) {
-                std::string childkey;
-                child->GetValue(&childkey);
+                const auto& childkey = child->Value();
                 if (childkey == "Property") {
-                    std::string childType = child->GetAttributeOrDefault("type", "");
-                    std::string childIdentifier = child->GetAttributeOrDefault("identifier", "");
+                    const auto& childType = child->GetAttribute("type");
+                    const auto& childIdentifier = child->GetAttribute("identifier");
 
                     if (childType == "org.inviwo.BoolProperty" &&
                         childIdentifier == "allowLooping") {

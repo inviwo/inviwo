@@ -34,6 +34,7 @@
 
 #include <inviwo/core/io/serialization/serialization.h>
 #include <vector>
+#include <charconv>
 
 namespace inviwo {
 
@@ -74,8 +75,8 @@ TEST(SerialitionContainerTest, ContainerTest1) {
 
     int tmp = 0;
     std::vector<bool> visited(vector.size(), false);
-    ContainerWrapper<int> cont(
-        "Item", [&](std::string id, size_t ind) -> ContainerWrapper<int>::Item {
+    auto cont = util::makeContainerWrapper<int>(
+        "Item", [&](std::string id, size_t ind) -> ContainerWrapperItem<int> {
             if (ind < vector.size()) {
                 return {true, vector[ind], [&visited, ind](int&) { visited[ind] = true; }};
             } else {
@@ -134,8 +135,8 @@ TEST(SerialitionContainerTest, ContainerTest2) {
 
     Item tmp;
     std::vector<std::string> visited;
-    ContainerWrapper<Item> cont(
-        "Item", [&](std::string id, size_t) -> ContainerWrapper<Item>::Item {
+    auto cont = util::makeContainerWrapper<Item>(
+        "Item", [&](std::string id, size_t) -> ContainerWrapperItem<Item> {
             visited.push_back(id);
             auto it = util::find_if(vector, [&](const Item& i) { return i.id_ == id; });
             if (it != vector.end()) {
@@ -198,8 +199,8 @@ TEST(SerialitionContainerTest, ContainerTest3) {
 
     Item* tmp = nullptr;
     std::vector<std::string> visited;
-    ContainerWrapper<Item*> cont(
-        "Item", [&](std::string id, size_t) -> ContainerWrapper<Item*>::Item {
+    auto cont = util::makeContainerWrapper<Item*>(
+        "Item", [&](std::string id, size_t) -> ContainerWrapperItem<Item*> {
             visited.push_back(id);
             auto it = util::find_if(vector, [&](Item*& i) { return i->id_ == id; });
             if (it != vector.end()) {
@@ -385,7 +386,12 @@ TEST(SerialitionContainerTest, ContainerTest7) {
     auto des = util::MapDeserializer<int, std::string>("Map", "Item")
                    .setMakeNew([]() { return ""; })
                    .onNew([&](const int& k, std::string& v) { map[k] = v; })
-                   .onRemove([&](const int& k) { map.erase(k); });
+                   .onRemove([&](const int& k) { map.erase(k); })
+                   .setIdentifierTransform([](const std::string& s) -> int {
+                       int val{};
+                       std::from_chars(s.data(), s.data() + s.size(), val);
+                       return val;
+                   });
 
     des(deserializer, map);
 

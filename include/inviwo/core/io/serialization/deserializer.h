@@ -57,7 +57,8 @@ namespace inviwo {
 class Serializable;
 class VersionConverter;
 class InviwoApplication;
-template <typename T, typename K>
+
+template <typename T, typename ValueGetter, typename IdGetter>
 class ContainerWrapper;
 
 class IVW_CORE_API Deserializer : public SerializeBase, public LogFilter {
@@ -195,8 +196,8 @@ public:
                      std::string_view itemKey = "item",
                      std::string_view comparisonAttribute = SerializeConstants::KeyAttribute);
 
-    template <typename T, typename K>
-    void deserialize(std::string_view key, ContainerWrapper<T, K>& container);
+    template <typename T, typename ValueGetter, typename IdGetter>
+    void deserialize(std::string_view key, ContainerWrapper<T, ValueGetter, IdGetter>& container);
 
     // Specializations for chars
     void deserialize(std::string_view key, signed char& data,
@@ -291,7 +292,7 @@ public:
     T* getNonRegisteredType();
 
     friend class NodeSwitch;
-    template <typename T, typename K>
+    template <typename T, typename ValueGetter, typename IdGetter>
     friend class ContainerWrapper;
 
     void registerFactory(FactoryBase* factory);
@@ -331,13 +332,12 @@ constexpr bool canDeserialize() {
            util::is_detected_v<isDeserializable, T> || std::is_enum_v<T>;
 }
 
-IVW_CORE_API std::string getNodeAttribute(TxElement* node, std::string_view key);
+IVW_CORE_API const std::string& getAttribute(TxElement* node, std::string_view key);
 
 template <typename T>
 void getNodeAttribute(TxElement* node, std::string_view key, T& dest) {
-    const auto val = getNodeAttribute(node, key);
-    if (!val.empty()) {
-        detail::fromStr(val, dest);
+    if (const auto& str = detail::getAttribute(node, key); !str.empty()) {
+        detail::fromStr(str, dest);
     }
 }
 
@@ -346,27 +346,29 @@ IVW_CORE_API void forEachChild(TxElement* node, std::string_view key,
 
 }  // namespace detail
 
+template <typename T>
+struct ContainerWrapperItem {
+    bool doDeserialize;
+    T& value;
+    std::function<void(T&)> callback;
+};
+
 /**
  * \class ContainerWrapper
  */
-template <typename T, typename K = std::string>
+template <typename T, typename ValueGetter, typename IdGetter>
+//    requires std::is_invocable_v<IdGetter, const TxElement*> &&
+//             std::is_invocable_r_v<ContainerWrapperItem<T>, ValueGetter,
+//                                   std::invoke_result_t<IdGetter, const TxElement*>, size_t>
 class ContainerWrapper {
 public:
-    struct Item {
-        bool doDeserialize;
-        T& value;
-        std::function<void(T&)> callback;
-    };
-    using Getter = std::function<Item(const K& id, size_t ind)>;
-    using IdentityGetter = std::function<K(TxElement* node)>;
-
-    ContainerWrapper(std::string itemKey, Getter getItem) : getItem_(getItem), itemKey_(itemKey) {}
-    ~ContainerWrapper() = default;
+    ContainerWrapper(std::string_view itemKey, ValueGetter getItem, IdGetter idGetter)
+        : idGetter_{std::move(idGetter)}, valueGetter_(std::move(getItem)), itemKey_(itemKey) {}
 
     std::string_view getItemKey() const { return itemKey_; }
 
     void deserialize(Deserializer& d, TxElement* node, size_t ind) {
-        auto item = getItem_(idGetter_(node), ind);
+        auto item = valueGetter_(idGetter_(node), ind);
         if (item.doDeserialize) {
             try {
                 d.deserialize(itemKey_, item.value);
@@ -377,22 +379,24 @@ public:
         }
     }
 
-    void setIdentityGetter(IdentityGetter getter) { idGetter_ = getter; }
-
 private:
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-    IdentityGetter idGetter_ = [](TxElement* node) {
-        K val{};
-        detail::getNodeAttribute(node, "identifier", val);
-        return val;
-    };
-
-    Getter getItem_;
+    IdGetter idGetter_;
+    ValueGetter valueGetter_;
     const std::string itemKey_;
-#endif
 };
 
 namespace util {
+
+constexpr auto defaultIdGetter = [](TxElement* node) -> decltype(auto) {
+    return inviwo::detail::getAttribute(node, "identifier");
+};
+
+template <typename T, typename ValueGetter, typename IdGetter = decltype(defaultIdGetter)>
+auto makeContainerWrapper(std::string_view key, ValueGetter valueGetter,
+                          IdGetter idGetter = defaultIdGetter) {
+    return ContainerWrapper<T, ValueGetter, IdGetter>{key, std::move(valueGetter),
+                                                      std::move(idGetter)};
+}
 
 template <typename T>
 using classIdentifierType = decltype(std::declval<T>().getClassIdentifier());
@@ -442,8 +446,8 @@ public:
     void operator()(Deserializer& d, C& container) {
         size_t count = 0;
         T tmp{};
-        ContainerWrapper<T> cont(
-            itemKey_, [&](std::string_view, size_t ind) -> typename ContainerWrapper<T>::Item {
+        auto cont = util::makeContainerWrapper<T>(
+            itemKey_, [&](std::string_view, size_t ind) -> ContainerWrapperItem<T> {
                 if (ind < container.size()) {
                     return {true, container[ind], [&](T&) { ++count; }};
                 } else {
@@ -516,18 +520,16 @@ public:
     void operator()(Deserializer& d, C& container) {
         T tmp{};
         auto toRemove = util::transform(container, [&](const T& x) -> K { return getID_(x); });
-
         std::vector<K> foundIdentifiers;
 
-        ContainerWrapper<T, K> cont(
-            itemKey_,
-            [&](const K& identifier, size_t ind) -> typename ContainerWrapper<T, K>::Item {
+        auto cont = util::makeContainerWrapper<T>(
+            itemKey_, [&](const K& identifier, size_t ind) -> ContainerWrapperItem<T> {
                 std::erase(toRemove, identifier);
                 foundIdentifiers.push_back(identifier);
                 auto it =
                     util::find_if(container, [&](const T& i) { return getID_(i) == identifier; });
                 if (it != container.end()) {
-                    return {true, *it, [&](T& /*val*/) {}};
+                    return {true, *it, [&](T&) {}};
                 } else {
                     tmp = makeNewItem_();
                     return {filter_(identifier, ind), tmp,
@@ -597,7 +599,16 @@ class MapDeserializer {
 public:
     MapDeserializer(std::string_view key, std::string_view itemKey,
                     std::string_view attribKey = SerializeConstants::KeyAttribute)
-        : key_(key), itemKey_(itemKey), attribKey_(attribKey) {}
+        : key_(key), itemKey_(itemKey), attribKey_(attribKey) {
+
+        if constexpr (std::is_same_v<K, std::string>) {
+            identifierTransform_ = [](const std::string& identifier) -> K { return identifier; };
+        } else {
+            identifierTransform_ = [](const std::string&) -> K {
+                throw Exception("MapDeserializer: setIdentifierTransform callback is not set!");
+            };
+        }
+    }
 
     MapDeserializer<K, T>& setMakeNew(std::function<T()> makeNewItem) {
         makeNewItem_ = makeNewItem;
@@ -615,7 +626,8 @@ public:
         onRemoveItem_ = onRemoveItem;
         return *this;
     }
-    MapDeserializer<K, T>& setIdentifierTransform(std::function<K(const K&)> identifierTransform) {
+    MapDeserializer<K, T>& setIdentifierTransform(
+        std::function<K(const std::string&)> identifierTransform) {
         identifierTransform_ = identifierTransform;
         return *this;
     }
@@ -625,8 +637,9 @@ public:
         T tmp{};
         auto toRemove = util::transform(
             container, [](const std::pair<const K, T>& item) { return item.first; });
-        ContainerWrapper<T, K> cont(
-            itemKey_, [&](const K& id, size_t ind) -> typename ContainerWrapper<T, K>::Item {
+        auto cont = util::makeContainerWrapper<T>(
+            itemKey_,
+            [&](const K& id, size_t ind) -> ContainerWrapperItem<T> {
                 std::erase(toRemove, id);
                 auto it = container.find(id);
                 if (it != container.end()) {
@@ -635,13 +648,10 @@ public:
                     tmp = makeNewItem_();
                     return {filter_(id, ind), tmp, [&, id](T& val) { onNewItem_(id, val); }};
                 }
+            },
+            [&](TxElement* node) {
+                return identifierTransform_(::inviwo::detail::getAttribute(node, attribKey_));
             });
-
-        cont.setIdentityGetter([&](TxElement* node) {
-            K key{};
-            inviwo::detail::getNodeAttribute(node, attribKey_, key);
-            return identifierTransform_(key);
-        });
 
         d.deserialize(key_, cont);
 
@@ -662,9 +672,7 @@ private:
     std::function<bool(const K& id, size_t ind)> filter_ = [](const K& /*id*/, size_t /*ind*/) {
         return true;
     };
-    std::function<K(const K&)> identifierTransform_ = [](const K& identifier) {
-        return identifier;
-    };
+    std::function<K(const std::string&)> identifierTransform_;
 #endif
 
     const std::string key_;
@@ -1193,7 +1201,7 @@ void Deserializer::deserialize(std::string_view key, T*& data) {
     auto keyNode = retrieveChild(key);
     if (!keyNode) return;
 
-    const auto type_attr{detail::getNodeAttribute(keyNode, SerializeConstants::TypeAttribute)};
+    const auto& type_attr = detail::getAttribute(keyNode, SerializeConstants::TypeAttribute);
 
     if (!data && !type_attr.empty()) {
         try {
@@ -1238,8 +1246,8 @@ void Deserializer::deserialize(std::string_view key, std::unique_ptr<T>& data) {
 
     if constexpr (util::HasGetClassIdentifier<T>::value) {
         if (auto keyNode = retrieveChild(key)) {
-            const std::string type_attr{
-                detail::getNodeAttribute(keyNode, SerializeConstants::TypeAttribute)};
+            const std::string& type_attr =
+                detail::getAttribute(keyNode, SerializeConstants::TypeAttribute);
             if (data && !type_attr.empty() && type_attr != data->getClassIdentifier()) {
                 // object has wrong type, delete it and let the deserialization create a new object
                 // with the correct type
@@ -1264,7 +1272,7 @@ void Deserializer::deserialize(std::string_view key, std::shared_ptr<T>& data) {
     auto keyNode = retrieveChild(key);
     if (!keyNode) return;
 
-    const std::string typeId{detail::getNodeAttribute(keyNode, SerializeConstants::TypeAttribute)};
+    const std::string& typeId = detail::getAttribute(keyNode, SerializeConstants::TypeAttribute);
 
     if constexpr (util::HasGetClassIdentifier<T>::value) {
         if (data && !typeId.empty() && typeId != data->getClassIdentifier()) {
@@ -1323,8 +1331,9 @@ void Deserializer::deserialize(std::string_view key, std::shared_ptr<T>& data) {
     }
 }
 
-template <typename T, typename K>
-void Deserializer::deserialize(std::string_view key, ContainerWrapper<T, K>& container) {
+template <typename T, typename ValueGetter, typename IdGetter>
+void Deserializer::deserialize(std::string_view key,
+                               ContainerWrapper<T, ValueGetter, IdGetter>& container) {
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
     size_t i = 0;
