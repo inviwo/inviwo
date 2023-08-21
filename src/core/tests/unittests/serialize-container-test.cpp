@@ -34,6 +34,7 @@
 
 #include <inviwo/core/io/serialization/serialization.h>
 #include <vector>
+#include <charconv>
 
 namespace inviwo {
 
