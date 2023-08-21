@@ -154,7 +154,7 @@ public:
 
     void setXAxis(std::shared_ptr<const Column> col);
 
-    enum class Type {Death, Persistence};
+    enum class Type { Death, Persistence };
     void setYAxis(std::shared_ptr<const Column> col, Type type = Type::Death);
 
     void setXAxisData(std::shared_ptr<const BufferBase> buffer);
