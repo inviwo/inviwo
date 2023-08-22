@@ -260,20 +260,32 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
         }
     }
 
-    std::vector<vec2> xyPairs(xAxis_->getSize());
-    auto copyBufferToComponent = [&](std::shared_ptr<const BufferBase> buffer,
-                                     int targetComponent) {
-        buffer->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
+    std::vector<vec2> xyPairs;
+
+    if (xAxis_) {
+        xyPairs.resize(xAxis_->getSize());
+        xAxis_->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](auto bufferpr) {
-                bufferpr->getDataContainer();
-                for (auto&& i : util::zip(xyPairs, bufferpr->getDataContainer())) {
-                    get<0>(i)[targetComponent] = static_cast<float>(get<1>(i));
+                for (auto&& [dst, src] : util::zip(xyPairs, bufferpr->getDataContainer())) {
+                    dst.x = static_cast<float>(src);
                 }
             });
-    };
-
-    copyBufferToComponent(xAxis_, 0);
-    copyBufferToComponent(yAxis_, 1);
+    }
+    if (yAxis_ && type == Type::Death) {
+        yAxis_->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
+            [&](auto bufferpr) {
+                for (auto&& [dst, src] : util::zip(xyPairs, bufferpr->getDataContainer())) {
+                    dst.y = static_cast<float>(src);
+                }
+            });
+    } else if (yAxis_ && type == Type::Persistence) {
+        yAxis_->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
+            [&](auto bufferpr) {
+                for (auto&& [dst, src] : util::zip(xyPairs, bufferpr->getDataContainer())) {
+                    dst.y = dst.x + static_cast<float>(src);
+                }
+            });
+    }
 
     std::vector<uint32_t> selectedIndices;
     if (indices) {
@@ -422,13 +434,24 @@ void PersistenceDiagramPlotGL::setYAxisLabel(const std::string& caption) {
 }
 
 void PersistenceDiagramPlotGL::setXAxis(std::shared_ptr<const Column> col) {
-    setXAxisLabel(fmt::format("{}{: [}", col->getHeader(), col->getUnit()));
-    setXAxisData(col->getBuffer());
+    if (col) {
+        setXAxisLabel(fmt::format("{}{: [}", col->getHeader(), col->getUnit()));
+        setXAxisData(col->getBuffer());
+    } else {
+        setXAxisLabel("");
+        setXAxisData(nullptr);
+    }
 }
 
-void PersistenceDiagramPlotGL::setYAxis(std::shared_ptr<const Column> col) {
-    setYAxisLabel(fmt::format("{}{: [}", col->getHeader(), col->getUnit()));
-    setYAxisData(col->getBuffer());
+void PersistenceDiagramPlotGL::setYAxis(std::shared_ptr<const Column> col, Type aType) {
+    type = aType;
+    if (col) {
+        setYAxisLabel(fmt::format("{}{: [}", col->getHeader(), col->getUnit()));
+        setYAxisData(col->getBuffer());
+    } else {
+        setYAxisLabel("");
+        setYAxisData(nullptr);
+    }
 }
 
 void PersistenceDiagramPlotGL::setXAxisData(std::shared_ptr<const BufferBase> buffer) {

@@ -229,10 +229,9 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
         for (auto file : files) {
             if (auto reader = factory->getReaderForTypeAndExtension<TransferFunction>(file)) {
                 try {
-                    auto tf = reader->readData(file);
+                    auto tf = reader->readData(basePath / file);
                     // remove basepath and trailing directory separator from filename
-                    auto action = presets->addAction(
-                        utilqt::toQString(file.string().substr(basePath.string().length() + 1)));
+                    auto action = presets->addAction(utilqt::toQString(file.string()));
                     action->setIcon(QIcon(utilqt::toQPixmap(*tf, QSize{iconWidth, 20})));
                     QObject::connect(action, &QAction::triggered, parent,
                                      [property, tf = std::move(tf)]() {

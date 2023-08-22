@@ -116,7 +116,7 @@ Similarly there is a `inviwo/core/common/factoryutil.h` to easily access various
 ## 2022-09-14 New CompositeProcessor property configuration dialog
 The long deprecated UsageMode has now been removed and with that the only way to select which properties was shown in a `CompositeProcessor`. 
 To fix that, the `CompositeProcessor` got a new dialog `Configure Properties`, accessible from the context menu in the network editor.
-![Configure Properties](resources/changelog/configure-properties.png) 
+![Configure Properties](resources/changelog/configure-properties.jpg) 
 In the dialog one can select which of the properties in the sub network that should be exposed in the `CompositeProcessor`,It is also possible to mark sub properties as read only or invisible to potentially reduce complexity.
 
 ## 2022-09-09 Updated ext/libtiff
@@ -272,7 +272,7 @@ The tabular view of the `DataFrame Table` processor was updated: support for sor
 ## 2021-10-29 Internal Processor Links
 It is now possible to link different properties internally within a processor. One can for example link the style of x, y, and z Axis Properties.
 The internal links are accessible in the processor context menu.
-![Internal Links](resources/changelog/internal-links.png)
+![Internal Links](resources/changelog/internal-links.jpg)
 
 ## 2021-10-15 Updated Brushing & Linking
 ![Brushing & Linking](resources/changelog/brushing.jpg)
@@ -322,7 +322,7 @@ to use `#pragma once` instead of the ifdef dance. There is a helper script in
 `tools/refactoring/update-inc-guard.py` that can be used on other repos.
 
 ## 2021-08-19 Canvas With Properties
-![Canvas With Properties](resources/changelog/canvas-with-properties.png)
+![Canvas With Properties](resources/changelog/canvas-with-properties.jpg)
 A new canvas processor was added which holds a canvas together with a list of
 configurable properties from the network. Properties are added to the widget by appending the
 property path to the `paths` property in the processor. There is an example workspace in 

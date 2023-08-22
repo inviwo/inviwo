@@ -118,8 +118,8 @@ InterpolationType convertInterpolationFromGL(GLenum interpolation) {
         case GL_NEAREST:
             return InterpolationType::Nearest;
         default:
-            throw OpenGLException("Unsupported filtering mode encountered",
-                                  IVW_CONTEXT_CUSTOM("convertInterpolationFromGL"));
+            throw OpenGLException(IVW_CONTEXT_CUSTOM("convertInterpolationFromGL"),
+                                  "Unsupported filtering mode encountered ({:x})", interpolation);
     }
 }
 

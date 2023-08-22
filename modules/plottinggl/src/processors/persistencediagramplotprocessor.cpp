@@ -76,8 +76,10 @@ PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
     , backgroundPort_("background")
     , outport_("outport")
     , persistenceDiagramPlot_(this)
-    , xAxis_("xAxis", "X-axis", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 1)
-    , yAxis_("yAxis", "Y-axis", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 2)
+    , birth_("xAxis", "Birth", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 1)
+    , death_("yAxis", "Death", dataFrame_, ColumnOptionProperty::AddNoneOption::Yes, 2)
+    , persistence_("persistence", "Persistence", dataFrame_,
+                   ColumnOptionProperty::AddNoneOption::Yes, -1)
     , colorCol_("colorCol", "Color column", dataFrame_, ColumnOptionProperty::AddNoneOption::Yes,
                 3) {
 
@@ -100,12 +102,14 @@ PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
         [this](const BitSet& indices) { brushingPort_.select(indices); });
 
     addProperty(persistenceDiagramPlot_.properties_);
-    addProperty(xAxis_);
-    addProperty(yAxis_);
+    addProperty(birth_);
+    addProperty(death_);
+    addProperty(persistence_);
     addProperty(colorCol_);
 
-    xAxis_.onChange([this]() { onXAxisChange(); });
-    yAxis_.onChange([this]() { onYAxisChange(); });
+    birth_.onChange([this]() { onXAxisChange(); });
+    death_.onChange([this]() { onYAxisChange(); });
+    persistence_.onChange([this]() { onYAxisChange(); });
     colorCol_.onChange([this]() { onColorChange(); });
 
     dataFrame_.onChange([this]() {
@@ -160,15 +164,23 @@ void PersistenceDiagramPlotProcessor::process() {
 void PersistenceDiagramPlotProcessor::onXAxisChange() {
     if (!dataFrame_.hasData()) return;
     auto data = dataFrame_.getData();
-    auto idx = xAxis_.get();
+    auto idx = birth_.get();
     persistenceDiagramPlot_.setXAxis(data->getColumn(idx));
 }
 
 void PersistenceDiagramPlotProcessor::onYAxisChange() {
     if (!dataFrame_.hasData()) return;
     auto data = dataFrame_.getData();
-    auto idx = yAxis_.get();
-    persistenceDiagramPlot_.setYAxis(data->getColumn(idx));
+
+    if (death_.size() > 0 && death_.get() > 0) {
+        persistenceDiagramPlot_.setYAxis(data->getColumn(death_.get()),
+                                         PersistenceDiagramPlotGL::Type::Death);
+    } else if (persistence_.size() > 0 && persistence_.get() > 0) {
+        persistenceDiagramPlot_.setYAxis(data->getColumn(persistence_.get()),
+                                         PersistenceDiagramPlotGL::Type::Persistence);
+    } else {
+        persistenceDiagramPlot_.setYAxis(nullptr, PersistenceDiagramPlotGL::Type::Death);
+    }
 }
 
 void PersistenceDiagramPlotProcessor::onColorChange() {
