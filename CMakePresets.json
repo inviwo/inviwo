@@ -79,18 +79,23 @@
       "inherits" : ["vcpkg", "msvc-dev"]
     },
     {
+      "name": "ninja",
+      "hidden": true,
+      "generator": "Ninja"
+    },
+    {
       "name": "ninja-dev-vcpkg",
       "displayName": "Ninja using vcpkg",
       "description": "Ninja development using vcpkg configuration",
       "generator": "Ninja",
-      "inherits" : ["vcpkg", "develop"]
+      "inherits" : ["ninja", "vcpkg", "develop"]
     },
     {
       "name": "ttk",
       "hidden": true,
       "inherits" : [],
       "environment": {
-        "VCPKG_OVERLAY_PORTS" : "${sourceDir}/tools/vcpkg;${sourceParentDir}/modules/tools/vcpkg",
+        "VCPKG_OVERLAY_PORTS" : "${sourceDir}/tools/vcpkg:${sourceParentDir}/modules/tools/vcpkg",
         "COMMENT_PATH": "We need the path to dumpbin for VTK",
         "Path" : "C:/Qt/6.5.2/msvc2019_64/bin;C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.37.32822/bin/Hostx64/x64;$penv{Path}"
       },
@@ -114,6 +119,19 @@
       "description": "MSVC 2022 Development using vcpkg configuration with TTK",
       "binaryDir" : "${sourceParentDir}/builds/inviwo-ttk",
       "inherits" : ["vcpkg", "msvc-dev", "modules", "ttk", "qt"]
+    },
+    {
+      "name": "ninja-dev-vcpkg-ttk",
+      "displayName": "Ninja Using vcpkg with TTK",
+      "description": "Ninja Development using vcpkg configuration with TTK",
+      "binaryDir" : "${sourceParentDir}/builds/inviwo-ttk",
+      "inherits" : ["vcpkg", "ninja", "modules", "ttk"],
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS":   { "type": "BOOL", "value": "OFF"},
+        "IVW_MODULE_FFMPEG":   { "type": "BOOL", "value": "OFF"},
+        "CMAKE_BUILD_TYPE":    { "type": "STRING", "value": "Debug" }
+      },
+      "environment": {"PATH" : "/usr/bin:$penv{PATH}"}
     }
   ]
 }

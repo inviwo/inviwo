@@ -141,7 +141,7 @@ fs::path getWorkingDirectory() {
                         IVW_CONTEXT_CUSTOM("filesystem::getWorkingDirectory"));
     return fs::path{buff};
 #else
-    std::array<char, FILENAME_MAX> workingDir;
+    std::array<char, FILENAME_MAX> workingDir = {0};
     if (!getcwd(workingDir.data(), workingDir.size()))
         throw Exception("Error querying current directory",
                         IVW_CONTEXT_CUSTOM("filesystem::getWorkingDirectory"));
@@ -207,7 +207,7 @@ fs::path getExecutablePath() {
     return std::string(executablePath.data());
 
 #else  // Linux
-    std::array<char, FILENAME_MAX> executablePath;
+    std::array<char, FILENAME_MAX> executablePath ;
     auto size = ::readlink("/proc/self/exe", executablePath.data(), executablePath.size() - 1);
     if (size != -1) {
         // readlink does not append a NUL character to the path
