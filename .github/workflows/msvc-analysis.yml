@@ -81,7 +81,7 @@ jobs:
     #  run: cmake --build build --config Release --parallel --target ALL_BUILD
 
     - name: Initialize MSVC Code Analysis
-      uses: microsoft/msvc-code-analysis-action@04825f6d9e00f87422d6bf04e1a38b1f3ed60d99
+      uses: microsoft/msvc-code-analysis-action@v0.1.1
       # Provide a unique ID to access the sarif output path
       id: inviwo-msvc-code-analysis
       with:
