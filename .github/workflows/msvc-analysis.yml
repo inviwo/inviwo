@@ -86,7 +86,7 @@ jobs:
       id: inviwo-msvc-code-analysis
       with:
         cmakeBuildDirectory: build
-        ignoredTargetPaths: "inviwo/ext;inviwo/modules;inviwo/src/qt;inviwo/include/qt"
+        ignoredTargetPaths: "inviwo/apps;inviwo/ext;inviwo/modules;inviwo/src/qt;inviwo/include/qt"
         # Ruleset file that will determine what checks will be run
         ruleset: NativeRecommendedRules.ruleset
         buildConfiguration: Debug
