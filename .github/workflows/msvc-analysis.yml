@@ -89,6 +89,7 @@ jobs:
         ignoredTargetPaths: "inviwo/ext;inviwo/modules;inviwo/src/qt;inviwo/include/qt"
         # Ruleset file that will determine what checks will be run
         ruleset: NativeRecommendedRules.ruleset
+        buildConfiguration: Debug
 
     # Upload SARIF file to GitHub Code Scanning Alerts
     - name: Upload SARIF to GitHub
