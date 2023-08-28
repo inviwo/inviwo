@@ -347,7 +347,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Clone Inviwo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with: 
           ref: gh-pages
           path: inviwo
