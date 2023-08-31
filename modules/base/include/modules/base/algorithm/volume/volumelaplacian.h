@@ -59,7 +59,7 @@
 #include <glm/mat4x4.hpp>                // for operator*, mat
 #include <glm/vec3.hpp>                  // for operator-, operator+
 #include <glm/vec4.hpp>                  // for operator*, operator+
-#include <units/units_decl.hpp>          // for precise_unit
+#include <llnl-units/units_decl.hpp>          // for precise_unit
 
 namespace inviwo {
 class Volume;

@@ -57,7 +57,6 @@ function(ivw_vcpkg_install name)
 
 	string(TOLOWER "${name}" lowercase_name)
 
-    set(overlay "--overlay" "${VCPKG_OVERLAY_PORTS}")
     set(install "--install" "${VCPKG_INSTALLED_DIR}")
     set(installdir "${VCPKG_INSTALLED_DIR}/")
 
@@ -69,7 +68,7 @@ function(ivw_vcpkg_install name)
                 --vcpkg "${Z_VCPKG_EXECUTABLE}" 
                 --pkg ${lowercase_name}
                 --triplet ${VCPKG_TARGET_TRIPLET}
-                ${overlay}
+                --manifest_dir ${VCPKG_MANIFEST_DIR}
                 ${install}
             RESULT_VARIABLE returnCode
             OUTPUT_VARIABLE pkgInfo
@@ -81,7 +80,7 @@ function(ivw_vcpkg_install name)
                 "  vcpkg: ${Z_VCPKG_EXECUTABLE}\n"
                 "  triplet: ${VCPKG_TARGET_TRIPLET}\n"
                 "  package: ${lowercase_name}\n"
-                "  overlay: ${overlay}\n"
+                "  manifest ${VCPKG_MANIFEST_DIR}\n"
                 "  install: ${install}\n"
                 "  return:  ${returnCode}\n"
                 "  stdout:  ${pkgInfo}\n"  

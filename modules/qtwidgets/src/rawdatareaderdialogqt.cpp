@@ -57,7 +57,7 @@
 #include <glm/fwd.hpp>       // for dvec3
 #include <glm/vec2.hpp>      // for vec<>::(anonymous)
 #include <glm/vec3.hpp>      // for vec<>::(anonymous)
-#include <units/units.hpp>   // for to_string, unit_from_string
+#include <llnl-units/units.hpp>   // for to_string, unit_from_string
 
 class QHBoxLayout;
 

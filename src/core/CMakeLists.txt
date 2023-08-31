@@ -849,7 +849,7 @@ find_package(fmt REQUIRED)
 find_package(glm REQUIRED)
 find_package(tclap REQUIRED)
 find_package(roaring REQUIRED)
-find_package(units REQUIRED)
+find_package(llnl-units REQUIRED)
 find_package(utf8cpp CONFIG REQUIRED)
 find_package(ticpp CONFIG REQUIRED)
 find_package(sml CONFIG REQUIRED)
@@ -884,7 +884,7 @@ target_link_libraries(inviwo-core
         $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
         $<$<BOOL:${WIN32}>:inviwo::stackwalker>
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
-        units::units
+        llnl-units::units
     PRIVATE
         roaring::roaring
         inviwo::md4c

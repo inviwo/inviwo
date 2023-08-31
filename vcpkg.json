@@ -42,6 +42,7 @@
     "tiff",
     "tinydir",
     "tinyxml2",
+    "llnl-units",
     "utfcpp",
     "zlib",
     "pegtl",

@@ -260,14 +260,14 @@ option(IVW_USE_EXTERNAL_UNITS "Units is provided externaly (https://github.com/L
 if(NOT IVW_USE_EXTERNAL_UNITS)
     message(STATUS "add subdirectory: units")
     add_subdirectory(units)
-    ivw_register_license_file(NAME "Units" VERSION 0.5.0 TARGET units::units MODULE Core EXT
+    ivw_register_license_file(NAME "Units" VERSION 0.5.0 TARGET llnl-units::units MODULE Core EXT
         URL "https://github.com/LLNL/units"
         TYPE "BSD 3-Clause"
         FILES ${IVW_EXTENSIONS_DIR}/units/units/LICENSE
     )
 else()
-    find_package(units CONFIG REQUIRED)
-    ivw_vcpkg_install(units MODULE Core EXT)
+    find_package(llnl-units CONFIG REQUIRED)
+    ivw_vcpkg_install(llnl-units MODULE Core EXT)
 endif()
 
 # Markdown

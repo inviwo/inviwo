@@ -44,11 +44,12 @@ def makeCmdParser():
     parser.add_argument('-p', '--pkg', type=str, action="store", dest="pkg",
                         help='Vcpkg package name', required=True)
     parser.add_argument('-t', '--triplet', type=str, action="store", dest="triplet",
-                        help='Triplet')
-    parser.add_argument('-o', '--overlay', nargs='*', action="store", dest="overlay",
-                        help='Extra vcpkg overlays', default="")
+                        help='Vcpkg Triplet')
     parser.add_argument('-i', '--install', type=str, action="store", dest="install",
                         help='Vcpkg install root', default="")
+    parser.add_argument('-m', '--manifest_dir',  type=str, action="store", dest="manifest_dir",
+                        help='Vcpkg manifest dir, need to run vcpkg from the manifest dir'
+                        ' to pick up settings (overlays) from the manifest', required=True)
 
     return parser
 
@@ -75,12 +76,12 @@ if __name__ == '__main__':
     cmd = subprocess.run(
         [
             args.vcpkg,
-            *overlay,
             install,
             "x-package-info",
             "--x-json",
             args.pkg
         ],
+        cwd=args.manifest_dir,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True
@@ -89,10 +90,14 @@ if __name__ == '__main__':
         print(f"Error calling vcpkg return {cmd.returncode}", file=sys.stderr)
         print(f"Stdout: {cmd.stdout}", file=sys.stderr)
         print(f"Stderr: {cmd.stderr}", file=sys.stderr)
+        print(f"manifest_dir {args.manifest_dir}", file=sys.stderr)
         print("Call:", file=sys.stderr)
-        print([args.vcpkg, *overlay, install, "x-package-info", "--x-json", f"{args.pkg}"],
+        print([args.vcpkg, install, "x-package-info", "--x-json", f"{args.pkg}"],
               file=sys.stderr)
         exit(100)
+
+    if cmd.stdout.startswith("warning: Embedding `vcpkg-configuration` in a manifest file is an EXPERIMENTAL feature."):
+        cmd.stdout = '\n'.join(cmd.stdout.splitlines()[1:])
 
     try:
         portInfo = json.loads(cmd.stdout)
@@ -111,13 +116,13 @@ if __name__ == '__main__':
     cmd = subprocess.run(
         [
             args.vcpkg,
-            *overlay,
             install,
             "x-package-info",
             "--x-installed",
             "--x-json",
             f"{args.pkg}:{args.triplet}"
         ],
+        cwd=args.manifest_dir,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True
@@ -126,10 +131,14 @@ if __name__ == '__main__':
         print(f"Error calling vcpkg return {cmd.returncode}", file=sys.stderr)
         print(f"Stdout: {cmd.stdout}", file=sys.stderr)
         print(f"Stderr: {cmd.stderr}", file=sys.stderr)
+        print(f"manifest_dir {args.manifest_dir}", file=sys.stderr)
         print("Call:", file=sys.stderr)
-        print([args.vcpkg, *overlay, install, "x-package-info", "--x-json", f"{args.pkg}"],
+        print([args.vcpkg, install, "x-package-info", "--x-json", f"{args.pkg}"],
               file=sys.stderr)
         exit(4)
+
+    if cmd.stdout.startswith("warning: Embedding `vcpkg-configuration` in a manifest file is an EXPERIMENTAL feature."):
+        cmd.stdout = '\n'.join(cmd.stdout.splitlines()[1:])
 
     try:
         installInfo = json.loads(cmd.stdout)

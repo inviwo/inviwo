@@ -70,7 +70,7 @@
 #include <glm/vec2.hpp>                // for vec<>::(anonymous)
 #include <glm/vec3.hpp>                // for vec<>::(anonymous), vec, opera...
 #include <glm/vec4.hpp>                // for vec
-#include <units/units.hpp>             // for unit_from_string
+#include <llnl-units/units.hpp>             // for unit_from_string
 
 #include <fmt/std.h>
 

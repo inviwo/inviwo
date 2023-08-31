@@ -51,7 +51,7 @@
 #include <unordered_set>  // for unordered_set
 
 #include <glm/gtx/component_wise.hpp>  // for compMul
-#include <units/units.hpp>             // for to_string
+#include <llnl-units/units.hpp>        // for to_string
 
 #include <fmt/std.h>
 

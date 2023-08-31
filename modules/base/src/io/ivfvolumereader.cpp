@@ -54,7 +54,7 @@
 #include <string>       // for string, basic_string<>:...
 #include <type_traits>  // for remove_extent_t
 
-#include <units/units.hpp>  // for unit_from_string
+#include <llnl-units/units.hpp>  // for unit_from_string
 
 namespace inviwo {
 

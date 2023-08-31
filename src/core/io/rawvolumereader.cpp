@@ -36,7 +36,7 @@
 #include <inviwo/core/io/rawvolumeramloader.h>
 #include <inviwo/core/metadata/metadataowner.h>
 
-#include <units/units.hpp>
+#include <llnl-units/units.hpp>
 #include <fmt/format.h>
 
 namespace inviwo {

@@ -71,7 +71,7 @@
 #include <fmt/core.h>  // for format
 #include <fmt/std.h>
 #include <glm/gtc/type_ptr.hpp>  // for value_ptr
-#include <units/units.hpp>       // for unit_from_string
+#include <llnl-units/units.hpp>       // for unit_from_string
 
 namespace inviwo {
 

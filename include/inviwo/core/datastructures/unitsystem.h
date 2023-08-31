@@ -34,7 +34,7 @@
 
 #include <flags/flags.h>
 #include <fmt/format.h>
-#include <units/units.hpp>
+#include <llnl-units/units.hpp>
 
 #include <string_view>
 #include <tuple>
