@@ -29,6 +29,8 @@
 
 #include <inviwo/core/io/serialization/serializebase.h>
 #include <inviwo/core/io/serialization/ticpp.h>
+#include <inviwo/core/io/serialization/serializationexception.h>
+#include <inviwo/core/io/serialization/serializeconstants.h>
 
 #include <charconv>
 #include <sstream>

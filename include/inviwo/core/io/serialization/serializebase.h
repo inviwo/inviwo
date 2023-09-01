@@ -30,16 +30,13 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/serialization/serializeconstants.h>
-#include <inviwo/core/io/serialization/serializationexception.h>
 
 #include <map>
 #include <string>
 #include <array>
-#include <sstream>
 #include <filesystem>
 
-#include <fmt/core.h>
+#include <fmt/format.h>
 
 namespace ticpp {
 class Element;

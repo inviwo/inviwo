@@ -31,6 +31,8 @@
 
 #include <inviwo/core/io/serialization/serializebase.h>
 #include <inviwo/core/io/serialization/nodedebugger.h>
+#include <inviwo/core/io/serialization/serializationexception.h>
+#include <inviwo/core/io/serialization/serializeconstants.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/logfilter.h>
