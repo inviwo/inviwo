@@ -37,6 +37,10 @@ SerializationException::SerializationException(std::string_view message, Excepti
                                                std::string_view id, TxElement* node)
     : Exception(message, context), data_(key, type, id, node) {}
 
+SerializationException::SerializationException(std::string_view format, fmt::format_args&& args,
+                                               ExceptionContext context)
+    : Exception(format, std::move(args), context) {}
+
 const std::string& SerializationException::getKey() const noexcept { return data_.key; }
 
 const std::string& SerializationException::getType() const noexcept { return data_.type; }

@@ -31,12 +31,10 @@
 
 #include <inviwo/core/io/serialization/serializebase.h>
 #include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/io/serialization/serializeconstants.h>
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmutils.h>
 #include <inviwo/core/util/typetraits.h>
-#include <inviwo/core/io/serialization/serializationexception.h>
 #include <inviwo/core/util/detected.h>
 
 #include <flags/flags.h>

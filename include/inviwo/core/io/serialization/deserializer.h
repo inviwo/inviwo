@@ -31,6 +31,8 @@
 
 #include <inviwo/core/io/serialization/serializebase.h>
 #include <inviwo/core/io/serialization/nodedebugger.h>
+#include <inviwo/core/io/serialization/serializationexception.h>
+#include <inviwo/core/io/serialization/serializeconstants.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/logfilter.h>
@@ -300,15 +302,6 @@ public:
     int getInviwoWorkspaceVersion() const;
 
 private:
-    // integers, strings
-    template <typename T,
-              typename std::enable_if<!util::is_floating_point<T>::value, int>::type = 0>
-    void getSafeValue(std::string_view key, T& data);
-
-    // reals
-    template <typename T, typename std::enable_if<util::is_floating_point<T>::value, int>::type = 0>
-    void getSafeValue(std::string_view key, T& data);
-
     TxElement* retrieveChild(std::string_view key);
 
     ExceptionHandler exceptionHandler_;
@@ -712,63 +705,6 @@ T& DeserializationErrorHandle<T>::getHandler() {
     return handler_;
 }
 
-template <typename T>
-struct ParseWrapper {
-    ParseWrapper(T& val) : value(val) {}
-    T& value;
-};
-
-template <class Elem, class Traits, typename T>
-std::basic_istream<Elem, Traits>& operator>>(std::basic_istream<Elem, Traits>& is,
-                                             ParseWrapper<T>& wrapper) {
-    auto sp = is.tellg();  // Save position
-    if (is >> wrapper.value) return is;
-
-    // Handle parse errors
-    if (is.rdstate() != std::ios_base::failbit) return is;
-
-    is.clear();
-    is.seekg(sp);  // restore position
-
-    std::string tmp;
-    if (is >> tmp) {
-        if (tmp == "inf")
-            wrapper.value = std::numeric_limits<T>::infinity();
-        else if (tmp == "-inf")
-            wrapper.value = -std::numeric_limits<T>::infinity();
-        else if (tmp == "nan")
-            wrapper.value = std::numeric_limits<T>::quiet_NaN();
-        else if (tmp == "-nan" || tmp == "-nan(ind)")
-            wrapper.value = -std::numeric_limits<T>::quiet_NaN();
-        else
-            is.setstate(std::ios_base::failbit);
-
-        throw SerializationException("Error deserializing value: \"" + tmp + "\"",
-                                     IVW_CONTEXT_CUSTOM("Deserialization"));
-    }
-
-    return is;
-}
-
-// integers, strings
-template <typename T, typename std::enable_if<!util::is_floating_point<T>::value, int>::type>
-void Deserializer::getSafeValue(std::string_view key, T& data) {
-    detail::getNodeAttribute(rootElement_, key, data);
-}
-
-// reals specialization for reals to handled inf/nan values
-template <typename T, typename std::enable_if<util::is_floating_point<T>::value, int>::type>
-void Deserializer::getSafeValue(std::string_view key, T& data) {
-    ParseWrapper<T> wrapper(data);
-    try {
-        detail::getNodeAttribute(rootElement_, key, wrapper);
-    } catch (SerializationException& e) {
-        NodeDebugger nd(rootElement_);
-        throw SerializationException(e.getMessage() + ". At " + nd.getDescription(),
-                                     e.getContext());
-    }
-}
-
 // integers, strings, reals
 template <typename T,
           typename std::enable_if<std::is_integral<T>::value || util::is_floating_point<T>::value ||
@@ -779,16 +715,9 @@ void Deserializer::deserialize(std::string_view key, T& data, const Serializatio
 
     try {
         if (target == SerializationTarget::Attribute) {
-            getSafeValue(key, data);
-        } else {
-            if (NodeSwitch ns{*this, key}) {
-                getSafeValue(SerializeConstants::ContentAttribute, data);
-                return;
-            }
-            if (NodeSwitch ns{*this, key, true}) {
-                getSafeValue(SerializeConstants::ContentAttribute, data);
-                return;
-            }
+            detail::getNodeAttribute(rootElement_, key, data);
+        } else if (NodeSwitch ns{*this, key}) {
+            detail::getNodeAttribute(rootElement_, SerializeConstants::ContentAttribute, data);
         }
     } catch (...) {
         handleError(IVW_CONTEXT);
@@ -820,7 +749,8 @@ void Deserializer::deserialize(std::string_view key, Vec& data) {
     if (NodeSwitch ns{*this, key}) {
         for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
             try {
-                getSafeValue(SerializeConstants::VectorAttributes[i], data[i]);
+                detail::getNodeAttribute(rootElement_, SerializeConstants::VectorAttributes[i],
+                                         data[i]);
             } catch (...) {
                 handleError(IVW_CONTEXT);
             }

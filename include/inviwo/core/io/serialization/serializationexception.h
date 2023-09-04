@@ -58,6 +58,13 @@ public:
                            ExceptionContext context = ExceptionContext(), std::string_view key = "",
                            std::string_view type = "", std::string_view id = "",
                            TxElement* n = nullptr);
+    SerializationException(std::string_view format, fmt::format_args&& args,
+                           ExceptionContext context);
+    template <typename... Args>
+    SerializationException(ExceptionContext context, std::string_view format, Args&&... args)
+        : Exception{format, fmt::make_format_args(std::forward<Args>(args)...),
+                    std::move(context)} {}
+
     virtual ~SerializationException() noexcept = default;
 
     virtual const std::string& getKey() const noexcept;
