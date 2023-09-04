@@ -176,15 +176,23 @@ IVW_CORE_API void numericalFromStr(std::string_view value, unsigned long& dest);
 IVW_CORE_API void numericalFromStr(std::string_view value, long long& dest);
 IVW_CORE_API void numericalFromStr(std::string_view value, unsigned long long& dest);
 
+IVW_CORE_API void reportSerializationError();
+
+template <typename T>
+constexpr bool alwaysFalse() {
+    return false;
+}
+
 template <class T>
 decltype(auto) toStr(const T& value) {
     if constexpr (std::is_same_v<std::string, T>) {
         return value;
     } else if constexpr (std::is_same_v<std::string_view, T>) {
-        return std::string{value};
+        return value;
     } else if constexpr (std::is_same_v<bool, T>) {
-        // necessary since fmt::to_string(bool) defaults to "true"/"false" instead of 0/1
-        return fmt::format("{:d}", value);
+        static std::string_view trueVal = "1";
+        static std::string_view falseVal = "0";
+        return value ? trueVal : falseVal;
     } else {
         return fmt::to_string(value);
     }
@@ -197,9 +205,18 @@ void fromStr(const std::string& value, T& dest) {
     } else if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T> ||
                          (!std::is_same_v<bool, T> && std::is_integral_v<T>)) {
         numericalFromStr(value, dest);
+    } else if constexpr (std::is_same_v<bool, T>) {
+        static std::string_view trueVal = "1";
+        static std::string_view falseVal = "0";
+        if (value == trueVal) {
+            dest = true;
+        } else if (value == falseVal) {
+            dest = false;
+        } else {
+            reportSerializationError();
+        }
     } else {
-        std::istringstream stream{value};
-        stream >> dest;
+        static_assert(alwaysFalse<T>(), "unsupported type");
     }
 }
 

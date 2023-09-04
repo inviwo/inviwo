@@ -34,6 +34,8 @@
 
 #include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmmat.h>
 
 namespace inviwo {
 

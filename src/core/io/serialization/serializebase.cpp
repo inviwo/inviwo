@@ -159,7 +159,34 @@ void fromStrInternal(std::string_view value, T& dest) {
         const auto end = value.data() + value.size();
         if (auto [p, ec] = std::from_chars(value.data(), end, dest);
             ec != std::errc() || p != end) {
-            throw SerializationException("Error parsing number", IVW_CONTEXT_CUSTOM("fromStr"));
+            if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T>) {
+                if (value == "inf") {
+                    dest = std::numeric_limits<T>::infinity();
+                } else if (value == "-inf") {
+                    dest = -std::numeric_limits<T>::infinity();
+                } else if (value == "nan") {
+                    dest = std::numeric_limits<T>::quiet_NaN();
+                } else if (value == "-nan" || value == "-nan(ind)") {
+                    dest = -std::numeric_limits<T>::quiet_NaN();
+                } else {
+                    throw SerializationException(IVW_CONTEXT_CUSTOM("SerializationBase"),
+                                                 "Error parsing floating point number ({})", value);
+                }
+            } else {
+                throw SerializationException(IVW_CONTEXT_CUSTOM("SerializationBase"),
+                                             "Error parsing number ({})", value);
+            }
+        }
+    } else if constexpr (std::is_same_v<bool, T>) {
+        static std::string_view trueVal = "1";
+        static std::string_view falseVal = "0";
+        if (value == trueVal) {
+            dest = true;
+        } else if (value == falseVal) {
+            dest = false;
+        } else {
+            throw SerializationException(IVW_CONTEXT_CUSTOM("SerializationBase"),
+                                         "Error parsing boolean value ({})", value);
         }
     } else {
         std::istringstream stream{std::string{value}};
@@ -197,6 +224,10 @@ void detail::numericalFromStr(std::string_view value, long long& dest) {
 }
 void detail::numericalFromStr(std::string_view value, unsigned long long& dest) {
     fromStrInternal(value, dest);
+}
+
+void detail::reportSerializationError() {
+    throw SerializationException("Error parsing number", IVW_CONTEXT_CUSTOM("fromStr"));
 }
 
 }  // namespace inviwo
