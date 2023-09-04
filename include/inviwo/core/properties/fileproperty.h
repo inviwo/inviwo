@@ -99,8 +99,7 @@ public:
      * @param semantics Can be set to Editor
      */
     FileProperty(std::string_view identifier, std::string_view displayName, Document help,
-                 const std::filesystem::path& value,
-                 std::string_view contentType,
+                 const std::filesystem::path& value, std::string_view contentType,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 
