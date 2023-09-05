@@ -78,7 +78,7 @@ public:
      * @param semantics Can be set to Editor
      */
     FileProperty(std::string_view identifier, std::string_view displayName, Document help,
-                 const std::filesystem::path& value, AcceptMode acceptMode = AcceptMode::Open,
+                 const std::filesystem::path& value = {}, AcceptMode acceptMode = AcceptMode::Open,
                  FileMode fileMode = FileMode::AnyFile,
                  std::string_view contentType = defaultContentType,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
@@ -99,8 +99,7 @@ public:
      * @param semantics Can be set to Editor
      */
     FileProperty(std::string_view identifier, std::string_view displayName, Document help,
-                 const std::filesystem::path& value = {},
-                 std::string_view contentType = defaultContentType,
+                 const std::filesystem::path& value, std::string_view contentType,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 
