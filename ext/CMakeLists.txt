@@ -149,7 +149,7 @@ ivw_register_license_file(NAME "warn" MODULE Core EXT
 
 # tclap
 option(IVW_USE_EXTERNAL_TCLAP "TCLAP is provided externaly" OFF)
-    if(NOT IVW_USE_EXTERNAL_TCLAP)
+if(NOT IVW_USE_EXTERNAL_TCLAP)
     message(STATUS "add subdirectory: tclap")
     add_subdirectory(tclap)
     ivw_register_license_file(NAME "tclap" TARGET tclap_dummy MODULE Core EXT
@@ -166,7 +166,13 @@ else()
     add_library(tclap INTERFACE)
     ivw_register_package(tclap tclap)
     add_library(inviwo::tclap ALIAS tclap)
-    target_include_directories(tclap INTERFACE ${TCLAP_INCLUDE_DIRS})
+    target_include_directories(tclap 
+        INTERFACE 
+            $<INSTALL_INTERFACE:include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    )
+    ivw_install_helper(TARGET tclap NAMESPACE inviwo DESTINATION inviwo)
+
 endif()
 
 # Half

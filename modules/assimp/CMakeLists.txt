@@ -37,5 +37,3 @@ else()
 endif()
 
 target_link_libraries(inviwo-module-assimp PUBLIC assimp::assimp)
-
-ivw_make_package(InviwoAssimpModule inviwo-module-assimp)

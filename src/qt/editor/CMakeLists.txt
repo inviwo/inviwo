@@ -190,8 +190,6 @@ endif()
 ivw_deploy_qt(inviwo-qteditor)
 
 ivw_default_install_targets(inviwo-qteditor)
-# Make package (for other projects to find)
-ivw_make_package(InviwoQtEditor inviwo-qteditor)
 
 ivw_register_license_file(NAME "DocumentWindow" MODULE QtWidgets
     URL "https://wiki.qt.io/Assigning_a_file_type_to_an_Application_on_Windows"

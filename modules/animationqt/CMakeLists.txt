@@ -76,5 +76,4 @@ target_link_libraries(inviwo-module-animationqt PUBLIC
     Qt6::Widgets
 )
 
-ivw_make_package(InviwoAnimationQtModule inviwo-module-animationqt)
 

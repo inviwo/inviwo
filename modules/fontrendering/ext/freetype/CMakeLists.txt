@@ -32,5 +32,5 @@ ivw_folder(freetype ext)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_make_package(Freetype freetype)
+ivw_register_package(Freetype freetype)
 

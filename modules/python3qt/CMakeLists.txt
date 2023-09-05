@@ -47,5 +47,3 @@ target_link_libraries(inviwo-module-python3qt PUBLIC
 
 # Add templates directory to packaging
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/templates)
-
-ivw_make_package(InviwoPython3QtModule inviwo-module-python3qt)

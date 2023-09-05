@@ -533,7 +533,6 @@ endfunction()
 function(ivw_create_module)
     set(options "NO_PCH" "QT")
     set(oneValueArgs "VERSION" "GROUP")
-    set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -571,10 +570,23 @@ function(ivw_create_module)
     )
 
     remove_duplicates(ivw_unique_mod_files ${ARG_UNPARSED_ARGUMENTS} ${mod_class_files} ${cmake_files})
+    set(mod_header_files ${ivw_unique_mod_files})
+    list(FILTER mod_header_files INCLUDE REGEX ".*\\.h")
+
+    set(mod_nonheader_files ${ivw_unique_mod_files})
+    list(FILTER mod_nonheader_files EXCLUDE REGEX ".*\\.h")
+    # Add module source files
 
     # Create library
-    add_library(${${mod}_target} ${ivw_unique_mod_files})
+    add_library(${${mod}_target} ${mod_nonheader_files})
     add_library(${${mod}_alias} ALIAS ${${mod}_target})
+
+    target_sources(${${mod}_target} PUBLIC 
+        FILE_SET HEADERS
+        TYPE HEADERS
+        BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/include include
+        FILES ${mod_header_files}
+    )
 
     get_filename_component(base_parent ${${mod}_base} PATH)
     target_include_directories(${${mod}_target} PUBLIC 
@@ -599,7 +611,7 @@ function(ivw_create_module)
     endif()
 
     # Add stuff to the installer
-    ivw_default_install_targets(${${mod}_target})
+    ivw_install_module(${mod})
     ivw_private_install_module_dirs()
 
     ivw_make_unittest_target("${${mod}_dir}" "${${mod}_target}")

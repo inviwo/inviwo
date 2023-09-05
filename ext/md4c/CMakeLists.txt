@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15...3.22 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.23...3.27 FATAL_ERROR)
 project(md4c C)
 
 if(${CMAKE_C_COMPILER_ID} MATCHES GNU|Clang)
@@ -8,21 +8,28 @@ elseif(MSVC)
     add_definitions(/D_CRT_SECURE_NO_WARNINGS /W0)
 endif()
 
-set(HEADER_FILES 
-    include/md4c/md4c.h
-)
-set(SOURCE_FILES 
-    src/md4c.c
-)
-
-ivw_group("Header Files" ${HEADER_FILES} )
-ivw_group("Source Files" ${SOURCE_FILES} )
-
 # shared libs are not supported
-add_library(md4c STATIC ${HEADER_FILES} ${SOURCE_FILES})
+add_library(md4c STATIC)
 add_library(inviwo::md4c ALIAS md4c)
 
-target_include_directories(md4c INTERFACE include PRIVATE include/md4c)
-ivw_suppress_compiler_warnings(md4c)
+target_include_directories(md4c 
+    INTERFACE 
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>    
+    PRIVATE 
+        include/md4c)
 
+target_sources(md4c
+    PUBLIC
+    FILE_SET HEADERS
+    TYPE HEADERS
+    BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
+    FILES
+        include/md4c/md4c.h
+    PRIVATE
+        src/md4c.c
+)
+
+ivw_suppress_compiler_warnings(md4c)
+ivw_default_install_targets(md4c)
 ivw_folder(md4c ext)

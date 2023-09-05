@@ -130,3 +130,5 @@ if(IVW_TEST_META_BUILD_TESTS)
 endif()
 
 ivw_default_install_targets(inviwo-meta)
+
+ivw_make_package(InviwoMeta inviwo-meta)

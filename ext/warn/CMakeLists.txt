@@ -21,3 +21,6 @@ target_include_directories(warn INTERFACE
 
 add_custom_target(warn_dummy SOURCES ${HEADER_FILES} ${TEXT_FILES})
 ivw_folder(warn_dummy ext)
+
+ivw_register_package(warn warn)
+ivw_install_helper(TARGET warn NAMESPACE inviwo DESTINATION inviwo)

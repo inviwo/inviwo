@@ -44,7 +44,7 @@ if(NOT IVW_USE_EXTERNAL_GLFW)
     ivw_make_package(glfw3 glfw)
 else()
     find_package(glfw3 REQUIRED)
-    ivw_vcpkg_install(glfw3 MODULE GLFW)    
+    ivw_vcpkg_install(glfw3 MODULE GLFW)
 endif()
 
 target_link_libraries(inviwo-module-glfw PUBLIC glfw)

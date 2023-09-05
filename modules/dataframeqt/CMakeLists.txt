@@ -48,5 +48,3 @@ target_link_libraries(inviwo-module-dataframeqt PUBLIC
 )
 
 ivw_compile_optimize_on_target(inviwo-module-dataframeqt)
-
-ivw_make_package(InviwoDataFrameQtModule inviwo-module-dataframeqt)

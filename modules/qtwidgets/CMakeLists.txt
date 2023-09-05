@@ -206,9 +206,6 @@ set(PCH_HEADERS_QT
 )
 ivw_compile_optimize_on_target(inviwo-module-qtwidgets HEADERS ${PCH_HEADERS_QT})
 
-ivw_make_package(InviwoQtWidgetsModule inviwo-module-qtwidgets)
-ivw_default_install_targets(inviwo-module-qtwidgets)
-
 ivw_deploy_qt(inviwo-module-qtwidgets)
 
 ivw_register_license_file(NAME "Qt" VERSION ${QtWidgets_VERSION} MODULE QtWidgets TYPE "LGPLv3"

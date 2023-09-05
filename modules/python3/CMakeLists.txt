@@ -142,4 +142,3 @@ endif()
 # Add scripts directory to pack
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/scripts)
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/processors)
-ivw_make_package(InviwoPython3Module inviwo-module-python3)

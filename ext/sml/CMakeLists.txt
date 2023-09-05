@@ -12,3 +12,6 @@ target_include_directories(sml INTERFACE
 add_custom_target(sml_dummy SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/include/sml/sml.hpp)
 # Creates VS folder structure
 ivw_folder(sml_dummy ext)
+
+ivw_register_package(sml sml)
+ivw_install_helper(TARGET sml NAMESPACE inviwo DESTINATION inviwo)

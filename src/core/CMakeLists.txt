@@ -813,12 +813,17 @@ source_group("CMake Files" FILES ${CMAKE_FILES})
 
 # Create library
 add_library(inviwo-core 
-    ${SOURCE_FILES} ${HEADER_FILES} ${GEN_FILES} ${CMAKE_FILES}
+    ${GEN_FILES} ${CMAKE_FILES}
     $<$<BOOL:${WIN32}>:${IVW_ROOT_DIR}/tools/natvis/inviwo.natvis>
     $<$<BOOL:${WIN32}>:${IVW_ROOT_DIR}/tools/natvis/glm.natvis>
     ${IVW_ROOT_DIR}/.editorconfig
 )
 add_library(inviwo::core ALIAS inviwo-core)
+
+target_sources(inviwo-core PRIVATE ${SOURCE_FILES})
+target_sources(inviwo-core PUBLIC FILE_SET HEADERS
+    BASE_DIRS ${IVW_INCLUDE_DIR}
+    FILES ${HEADER_FILES})
 
 # Define standard defintions
 ivw_define_standard_definitions(inviwo-core inviwo-core)
@@ -846,6 +851,12 @@ find_package(tclap REQUIRED)
 find_package(roaring REQUIRED)
 find_package(units REQUIRED)
 find_package(utf8cpp CONFIG REQUIRED)
+find_package(ticpp CONFIG REQUIRED)
+find_package(sml CONFIG REQUIRED)
+find_package(half CONFIG REQUIRED)
+find_package(flags CONFIG REQUIRED)
+find_package(tracywrap CONFIG REQUIRED)
+
 if(APPLE)
    find_library(CORESERVICES_LIBRARY CoreServices)
 endif()
@@ -860,20 +871,19 @@ target_compile_definitions(inviwo-core
 
 target_link_libraries(inviwo-core 
     PUBLIC
-        ticpp
+        ticpp::ticpp
         glm::glm
         inviwo::tclap
         inviwo::warn
         inviwo::sml
         inviwo::half
         inviwo::flags
-        inviwo::tracy
+        inviwo::tracywrap
         fmt::fmt
         $<$<BOOL:${IVW_ENABLE_OPENMP}>:OpenMP::OpenMP_CXX>
         $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
         $<$<BOOL:${WIN32}>:inviwo::stackwalker>
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
-        $<$<BOOL:${IVW_USE_TRACY}>:inviwo::tracy>
         units::units
     PRIVATE
         roaring::roaring
@@ -922,9 +932,10 @@ set(PCH_HEADERS_EXTERNAL
 ivw_compile_optimize_on_target(inviwo-core HEADERS ${PCH_HEADERS_EXTERNAL} ${PCH_HEADERS_CORE})
 
 # Make package (for other projects to find)
-ivw_default_install_targets(inviwo-core)
-ivw_make_package(InviwoCore inviwo-core)
+ivw_install_helper(TARGET inviwo-core NAMESPACE inviwo DESTINATION inviwo)
+
 ivw_make_unittest_target(core inviwo-core)
+
 
 get_property(core_install_list TARGET inviwo-core PROPERTY IVW_INSTALL_LIST)
 get_property(ext_install_list DIRECTORY ${IVW_ROOT_DIR}/ext PROPERTY IVW_INSTALL_LIST)
@@ -950,7 +961,6 @@ ivw_register_license_file(NAME "base64" VERSION 2.rc.08 MODULE Core
     FILES ${IVW_ROOT_DIR}/include/inviwo/core/algorithm/base64_license.txt
 )
 
-#----------------------------------------------------------------
 # Generate build info - the build info will be updated during every compilation
 # make a clean help script
 set(build_info_script_list

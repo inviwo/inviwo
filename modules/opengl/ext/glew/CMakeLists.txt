@@ -57,4 +57,4 @@ ivw_folder(GLEW ext)
 #--------------------------------------------------------------------
 # Add to package
 ivw_default_install_targets(GLEW)
-ivw_make_package(GLEW GLEW)
+ivw_register_package(GLEW GLEW)

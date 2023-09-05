@@ -72,5 +72,3 @@ target_link_libraries(inviwo-module-fontrendering
     PRIVATE
         utf8cpp
 )
-
-ivw_make_package(InviwoFontRenderingModule inviwo-module-fontrendering)

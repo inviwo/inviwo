@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "Fxaa3_11.h"
+#include "Fxaa3_11.glsl"
 
 uniform sampler2D tex_;
 uniform vec2 oneOverRes_;

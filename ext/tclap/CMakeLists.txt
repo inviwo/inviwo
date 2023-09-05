@@ -20,3 +20,5 @@ set_target_properties(tclap_dummy PROPERTIES VERSION 1.2.5 SOVERSION 1.2)
 ivw_register_package(tclap tclap)
 # Creates VS folder structure
 ivw_folder(tclap_dummy ext)
+
+ivw_install_helper(TARGET tclap NAMESPACE inviwo DESTINATION inviwo)

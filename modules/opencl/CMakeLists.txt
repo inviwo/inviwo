@@ -126,5 +126,3 @@ target_compile_definitions(inviwo-module-opencl PUBLIC __CL_ENABLE_EXCEPTIONS)
 if(APPLE)
     target_compile_definitions(inviwo-module-opencl PUBLIC CL_SILENCE_DEPRECATION)
 endif()
-
-ivw_make_package(InviwoOpenCLModule inviwo-module-opencl)

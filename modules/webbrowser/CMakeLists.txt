@@ -156,7 +156,11 @@ ivw_add_unittest(${TEST_FILES})
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES} ${JS_FILES})
-target_include_directories(inviwo-module-webbrowser PUBLIC ${CEF_INCLUDE_PATH})
+target_include_directories(inviwo-module-webbrowser 
+    PUBLIC 
+        $<BUILD_INTERFACE:${CEF_INCLUDE_PATH}>
+        $<INSTALL_INTERFACE:include>
+)
 
 find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(inviwo-module-webbrowser PUBLIC

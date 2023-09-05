@@ -1,1 +1,5 @@
-include("${CMAKE_CURRENT_LIST_DIR}/@NAME@-targets.cmake")
+@PACKAGE_INIT@ 
+
+@PACKAGES@
+
+include("${CMAKE_CURRENT_LIST_DIR}/@NAME@Targets.cmake")

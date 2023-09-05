@@ -6,19 +6,13 @@ endif()
 set(BUILD_SHARED_LIBS ON) 
 add_subdirectory(tidds)
 
-#--------------------------------------------------------------------
-# Supress warnings
 ivw_suppress_compiler_warnings(tidds)
-
-#--------------------------------------------------------------------
-# Define defintions
 ivw_define_standard_definitions(tidds tidds)
 
-#--------------------------------------------------------------------
 # Creates VS folder structure
 ivw_folder(tidds ext)
 
-#--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_default_install_targets(tidds)
-ivw_make_package(TiDDS tidds)
+add_library(tidds::tidds ALIAS tidds)
+ivw_register_package(tidds tidds)
+ivw_install_helper(TARGET tidds NAMESPACE tidds DESTINATION inviwo)

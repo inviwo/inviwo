@@ -64,7 +64,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fullscreenquad.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fullscreenquad.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fxaa.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/Fxaa3_11.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/Fxaa3_11.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/hbao.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/hbao_blur.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/hbao_deinterleave.frag

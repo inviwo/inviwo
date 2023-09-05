@@ -88,5 +88,3 @@ if(IVW_ENABLE_OPENEXR)
         target_link_libraries(inviwo-module-cimg PRIVATE  OpenEXR::OpenEXR)
     endif()
 endif()
-
-ivw_make_package(InviwoCImgModule inviwo-module-cimg)

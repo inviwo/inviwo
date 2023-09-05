@@ -11,9 +11,26 @@ ivw_group("Header Files" ${HEADER_FILES})
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 add_library(flags INTERFACE)
-target_include_directories(flags INTERFACE include)
 add_library(inviwo::flags ALIAS flags)
+target_include_directories(flags 
+    INTERFACE 
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+target_sources(
+    flags
+    INTERFACE
+    FILE_SET HEADERS
+    TYPE HEADERS
+    BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
+    FILES
+        ${HEADER_FILES}
+)
 
 #  HACK: have the files showing in the IDE, under the name 'flags'
 add_custom_target(flags_dummy SOURCES ${HEADER_FILES})
 ivw_folder(flags_dummy ext)
+
+
+ivw_register_package(flags flags)
+ivw_install_helper(TARGET flags NAMESPACE inviwo DESTINATION inviwo)
