@@ -174,9 +174,8 @@ function(ivw_vcpkg_install name)
     list(TRANSFORM copyright PREPEND ${installdir})
 
     set(headers ${INFO_VCPKG_OWNED_FILES})
-    list(FILTER headers INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/include/.*\\..?.*")
+    list(FILTER headers INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/include/[a-zA-Z].*[a-zA-Z0-9]$")
     list(TRANSFORM headers PREPEND ${installdir})
-
 
     if(INFO_VCPKG_HOMEPAGE)
         set(homepage URL ${INFO_VCPKG_HOMEPAGE})

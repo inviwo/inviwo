@@ -53,7 +53,8 @@
         "IVW_USE_EXTERNAL_TCLAP":     { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_TIFF":      { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_UTFCPP":    { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_UNITS":     { "type": "BOOL", "value": "ON"}
+        "IVW_USE_EXTERNAL_UNITS":     { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_WARN":      { "type": "BOOL", "value": "ON"}
       }
     },
 

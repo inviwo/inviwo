@@ -139,13 +139,20 @@ if(IVW_TEST_BENCHMARKS)
     endif()
 endif()
 
-message(STATUS "add subdirectory: warn")
-add_subdirectory(warn)     # No package available
-ivw_register_license_file(NAME "warn" MODULE Core EXT
-    URL "https://github.com/petersteneteg/warn"
-    TYPE "BSD 2-clause"
-    FILES ${IVW_TOOLS_DIR}/codegen/warn/warn/LICENSE
-)
+# Warn
+option(IVW_USE_EXTERNAL_WARN "Warn is provided externaly" OFF)
+if(NOT IVW_USE_EXTERNAL_WARN)
+    message(STATUS "add subdirectory: warn")
+    add_subdirectory(warn)     # No package available
+    ivw_register_license_file(NAME "warn" MODULE Core EXT
+        URL "https://github.com/petersteneteg/warn"
+        TYPE "BSD 2-clause"
+        FILES ${IVW_TOOLS_DIR}/codegen/warn/warn/LICENSE
+    )
+else()
+    find_package(warn CONFIG REQUIRED)
+    ivw_vcpkg_install(warn MODULE Core EXT)
+endif()
 
 # tclap
 option(IVW_USE_EXTERNAL_TCLAP "TCLAP is provided externaly" OFF)

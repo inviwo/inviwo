@@ -23,8 +23,9 @@ target_include_directories(inviwo-testutil PUBLIC
 )
 
 find_package(GTest CONFIG REQUIRED)
+find_package(warn CONFIG REQUIRED)
 target_link_libraries(inviwo-testutil PUBLIC
-	inviwo::warn 
+	warn::warn 
     GTest::gtest
     GTest::gmock
 )

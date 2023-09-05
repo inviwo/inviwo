@@ -851,6 +851,7 @@ find_package(tclap REQUIRED)
 find_package(roaring REQUIRED)
 find_package(llnl-units REQUIRED)
 find_package(utf8cpp CONFIG REQUIRED)
+find_package(warn CONFIG REQUIRED)
 find_package(ticpp CONFIG REQUIRED)
 find_package(sml CONFIG REQUIRED)
 find_package(half CONFIG REQUIRED)
@@ -873,8 +874,8 @@ target_link_libraries(inviwo-core
     PUBLIC
         ticpp::ticpp
         glm::glm
+        warn::warn
         inviwo::tclap
-        inviwo::warn
         inviwo::sml
         inviwo::half
         inviwo::flags

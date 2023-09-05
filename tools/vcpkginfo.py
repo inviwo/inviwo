@@ -62,17 +62,12 @@ if __name__ == '__main__':
     parser = makeCmdParser()
     args = parser.parse_args()
 
-    #  x-package-info --x-installed --x-json zlib:x64-windows
-    if len(args.overlay) > 0:
-        overlay = [f"--overlay-ports={o}" for o in args.overlay]
-    else:
-        overlay = ""
-
     if len(args.install) > 0:
         install = "--x-install-root=" + args.install
     else:
         install = ""
 
+    #  vcpkg x-package-info --x-installed --x-json zlib:x64-windows
     cmd = subprocess.run(
         [
             args.vcpkg,

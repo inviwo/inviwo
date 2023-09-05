@@ -26,6 +26,7 @@ set(WEBBROWSER_HELPER_SOURCES
 # place helper in separate executable. 
 set(CEF_HELPER_TARGET "cef_inviwo_helper" CACHE INTERNAL "CEF_HELPER_TARGET")
 
+find_package(warn CONFIG REQUIRED)
 
 if (NOT OS_MAC)
     add_executable(${CEF_HELPER_TARGET} WIN32 MACOSX_BUNDLE ${WEBBROWSER_HELPER_SOURCES})
@@ -35,11 +36,12 @@ if (NOT OS_MAC)
     add_dependencies(${CEF_HELPER_TARGET} libcef_dll_wrapper)
     # Build helper before module so that we can copy it
     add_dependencies(inviwo-module-webbrowser ${CEF_HELPER_TARGET})
+
     target_link_libraries(${CEF_HELPER_TARGET} PRIVATE
         $<$<NOT:$<BOOL:${OS_MAC}>>:libcef_lib>
         libcef_dll_wrapper
         ${CEF_STANDARD_LIBS}
-        inviwo::warn
+        warn::warn
     )
     target_include_directories(${CEF_HELPER_TARGET} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -97,7 +99,7 @@ if (OS_MAC)
 		# Inviwo: Use Inviwo properties instead of CEF 
         #SET_EXECUTABLE_TARGET_PROPERTIES(${_helper_target})
         add_dependencies(${_helper_target} libcef_dll_wrapper)
-        target_link_libraries(${_helper_target} libcef_dll_wrapper ${CEF_STANDARD_LIBS} inviwo::warn)
+        target_link_libraries(${_helper_target} libcef_dll_wrapper ${CEF_STANDARD_LIBS} warn::warn)
         set_target_properties(${_helper_target} PROPERTIES
             MACOSX_BUNDLE_INFO_PLIST ${_helper_info_plist}
             # Remove XCode warning (must match plist)

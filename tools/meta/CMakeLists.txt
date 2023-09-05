@@ -64,10 +64,11 @@ ivw_define_standard_definitions(${PROJECT_NAME} inviwo-meta)
 
 find_package(fmt REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(warn CONFIG REQUIRED)
 
 target_link_libraries(inviwo-meta PUBLIC
     std::filesystem 
-    inviwo::warn
+    warn::warn
     fmt::fmt
     nlohmann_json::nlohmann_json
 )
