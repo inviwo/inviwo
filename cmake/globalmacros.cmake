@@ -533,6 +533,7 @@ endfunction()
 function(ivw_create_module)
     set(options "NO_PCH" "QT")
     set(oneValueArgs "VERSION" "GROUP")
+    set(multiValueArgs "PACKAGES" "FILES")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -545,6 +546,12 @@ function(ivw_create_module)
         set(qt "QT")
     else()
         set(qt "")
+    endif()
+
+    if(ARG_FILES) 
+        set(files ${ARG_FILES})
+    else()
+        set(files ${ARG_UNPARSED_ARGUMENTS})
     endif()
 
     string(TOLOWER ${PROJECT_NAME} l_project_name)
@@ -569,7 +576,7 @@ function(ivw_create_module)
         $<$<BOOL:${LEGACY}>:${CMAKE_CURRENT_SOURCE_DIR}/${l_project_name}moduledefine.h>
     )
 
-    remove_duplicates(ivw_unique_mod_files ${ARG_UNPARSED_ARGUMENTS} ${mod_class_files} ${cmake_files})
+    remove_duplicates(ivw_unique_mod_files ${files} ${mod_class_files} ${cmake_files})
     set(mod_header_files ${ivw_unique_mod_files})
     list(FILTER mod_header_files INCLUDE REGEX ".*\\.h")
 
@@ -578,21 +585,24 @@ function(ivw_create_module)
     # Add module source files
 
     # Create library
-    add_library(${${mod}_target} ${mod_nonheader_files})
+    add_library(${${mod}_target})
     add_library(${${mod}_alias} ALIAS ${${mod}_target})
 
-    target_sources(${${mod}_target} PUBLIC 
+    target_sources(${${mod}_target} 
+        PUBLIC 
         FILE_SET HEADERS
         TYPE HEADERS
-        BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/include include
-        FILES ${mod_header_files}
+        BASE_DIRS 
+            ${CMAKE_CURRENT_BINARY_DIR}/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/include
+        FILES 
+            ${mod_header_files}
+        PRIVATE
+            ${mod_nonheader_files}
     )
 
     get_filename_component(base_parent ${${mod}_base} PATH)
     target_include_directories(${${mod}_target} PUBLIC 
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-        $<INSTALL_INTERFACE:include>
         $<$<BOOL:${LEGACY}>:${${mod}_base}>
         $<$<BOOL:${LEGACY}>:${base_parent}>
     )
@@ -611,7 +621,7 @@ function(ivw_create_module)
     endif()
 
     # Add stuff to the installer
-    ivw_install_module(${mod})
+    ivw_install_module(MOD ${mod} PACKAGES ${ARG_PACKAGES})
     ivw_private_install_module_dirs()
 
     ivw_make_unittest_target("${${mod}_dir}" "${${mod}_target}")

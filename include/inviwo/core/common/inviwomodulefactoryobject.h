@@ -54,22 +54,26 @@ public:
                               std::vector<std::string> aliases, std::vector<LicenseInfo> licenses,
                               ProtectedModule protectedModule);
     virtual ~InviwoModuleFactoryObject() = default;
+    InviwoModuleFactoryObject(const InviwoModuleFactoryObject&) = delete;
+    InviwoModuleFactoryObject& operator=(const InviwoModuleFactoryObject&) = delete;
+    InviwoModuleFactoryObject(InviwoModuleFactoryObject&&) = delete;
+    InviwoModuleFactoryObject& operator=(InviwoModuleFactoryObject&&) = delete;
 
     virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) = 0;
 
-    const std::string name;           // Module name
-    const Version version;            // Module version (Major.Minor.Patch)
-    const std::string description;    // Module description
-    const Version inviwoCoreVersion;  // Supported inviwo core version (Major.Minor.Patch)
+    std::string name;           // Module name
+    Version version;            // Module version (Major.Minor.Patch)
+    std::string description;    // Module description
+    Version inviwoCoreVersion;  // Supported inviwo core version (Major.Minor.Patch)
     // Module dependencies Major.Minor.Patch version of each dependency
-    const std::vector<std::pair<std::string, Version>> dependencies;
+    std::vector<std::pair<std::string, Version>> dependencies;
     // A module can have one or more aliases. Several modules can have the same alias. Useful when
     // several modules implement the same functionality
-    const std::vector<std::string> aliases;
+    std::vector<std::string> aliases;
     // License information related to the module
-    const std::vector<LicenseInfo> licenses;
+    std::vector<LicenseInfo> licenses;
     // A protected module does not participate in runtime reloading
-    const ProtectedModule protectedModule;
+    ProtectedModule protectedModule;
 };
 
 template <typename T>
@@ -112,7 +116,7 @@ InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
  *
  * https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
  *
- * @param start Start of range to sort
+ * @param start Start of range to sorttopological
  * @param end End of range to sort
  */
 IVW_CORE_API void topologicalModuleFactoryObjectSort(

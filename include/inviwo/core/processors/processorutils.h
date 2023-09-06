@@ -124,7 +124,7 @@ std::unique_ptr<T> makeProcessor(ivec2 pos, Args&&... args) {
  * @return the InviwoModule that registered the processor or nullptr if not found
  */
 IVW_CORE_API InviwoModule* getProcessorModule(const Processor* processor,
-                                              const InviwoApplication& app);
+                                              InviwoApplication& app);
 
 /**
  * @brief Find which module that registered a processor
@@ -133,7 +133,7 @@ IVW_CORE_API InviwoModule* getProcessorModule(const Processor* processor,
  * @return the InviwoModule that registered the processor or nullptr if not found
  */
 IVW_CORE_API InviwoModule* getProcessorModule(std::string_view classIdentifier,
-                                              const InviwoApplication& app);
+                                              InviwoApplication& app);
 
 /**
  * @brief Tries to set a processor's property to a given value.
@@ -171,7 +171,7 @@ T& trySetProperty(Processor* proc, std::string_view identifier, V&& val, bool re
  * @return the identifer of the module that registered the processor or nullopt if not found
  */
 IVW_CORE_API std::optional<std::string> getProcessorModuleIdentifier(
-    std::string_view classIdentifier, const InviwoApplication& app);
+    std::string_view classIdentifier, InviwoApplication& app);
 
 }  // namespace util
 

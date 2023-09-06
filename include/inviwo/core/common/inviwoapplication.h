@@ -159,7 +159,7 @@ public:
 
     ModuleManager& getModuleManager();
     const ModuleManager& getModuleManager() const;
-    const std::vector<std::unique_ptr<InviwoModule>>& getModules() const;
+    
     template <class T>
     T* getModuleByType() const;
     InviwoModule* getModuleByIdentifier(const std::string& identifier) const;

@@ -820,10 +820,16 @@ add_library(inviwo-core
 )
 add_library(inviwo::core ALIAS inviwo-core)
 
-target_sources(inviwo-core PRIVATE ${SOURCE_FILES})
-target_sources(inviwo-core PUBLIC FILE_SET HEADERS
+target_sources(inviwo-core 
+    PUBLIC 
+    FILE_SET HEADERS
+    TYPE HEADERS
     BASE_DIRS ${IVW_INCLUDE_DIR}
-    FILES ${HEADER_FILES})
+    FILES 
+        ${HEADER_FILES}
+    PRIVATE
+        ${SOURCE_FILES}
+)
 
 # Define standard defintions
 ivw_define_standard_definitions(inviwo-core inviwo-core)
@@ -933,7 +939,29 @@ set(PCH_HEADERS_EXTERNAL
 ivw_compile_optimize_on_target(inviwo-core HEADERS ${PCH_HEADERS_EXTERNAL} ${PCH_HEADERS_CORE})
 
 # Make package (for other projects to find)
-ivw_install_helper(TARGET inviwo-core NAMESPACE inviwo DESTINATION inviwo)
+ivw_install_helper(TARGET inviwo-core 
+    NAMESPACE inviwo 
+    DESTINATION inviwo
+    POSTCONFIG 
+        "
+        if(NOT TARGET inviwo::core)
+            add_library(inviwo::core ALIAS inviwo::inviwo-core)
+        endif()
+        "
+    PACKAGES
+        fmt
+        glm
+        tclap
+        roaring
+        units
+        utf8cpp
+        warn
+        ticpp
+        sml
+        half
+        flags
+        tracywrap
+)
 
 ivw_make_unittest_target(core inviwo-core)
 

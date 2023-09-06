@@ -458,11 +458,11 @@ void ProcessorTreeWidget::addProcessorsToTree() {
 
     dsl_.setSearchString(utilqt::fromQString(lineEdit_->text()));
 
-    for (auto& elem : app_->getModules()) {
-        for (auto& processor : elem->getProcessors()) {
+    for (auto& elem : app_->getModuleManager().getInviwoModules()) {
+        for (auto& processor : elem.getProcessors()) {
             if (processor->isVisible() &&
-                (lineEdit_->text().isEmpty() || dsl_.match(*processor, *elem))) {
-                extractInfoAndAddProcessor(processor, elem.get());
+                (lineEdit_->text().isEmpty() || dsl_.match(*processor, elem))) {
+                extractInfoAndAddProcessor(processor, &elem);
             }
         }
     }

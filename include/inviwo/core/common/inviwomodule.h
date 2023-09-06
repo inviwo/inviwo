@@ -87,6 +87,8 @@ public:
     InviwoModule(InviwoApplication* app, const std::string& identifier);
     InviwoModule(const InviwoModule&) = delete;
     InviwoModule& operator=(const InviwoModule&) = delete;
+    InviwoModule(InviwoModule&&) = delete;
+    InviwoModule& operator=(InviwoModule&&) = delete;
     virtual ~InviwoModule();
 
     /**

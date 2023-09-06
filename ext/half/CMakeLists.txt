@@ -8,14 +8,8 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 add_library(half INTERFACE)
 add_library(inviwo::half ALIAS half)
-target_include_directories(half 
-    INTERFACE 
-        $<INSTALL_INTERFACE:include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-)
 
-target_sources(
-    half
+target_sources(half
     INTERFACE
     FILE_SET HEADERS
     TYPE HEADERS

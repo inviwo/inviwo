@@ -8,9 +8,14 @@ source_group("CMake Files" FILES CMakeLists.txt)
 
 add_library(tclap INTERFACE)
 add_library(inviwo::tclap ALIAS tclap)
-target_include_directories(tclap INTERFACE 
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
+
+target_sources(tclap
+    INTERFACE
+    FILE_SET HEADERS
+    TYPE HEADERS
+    BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
+    FILES
+        ${HEADER_FILES}
 )
 
 #  HACK: have the files showing in the IDE, under the name 'flags'

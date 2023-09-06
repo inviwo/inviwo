@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/moduleaction.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/datastructures/camera/camerafactory.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderfactory.h>
@@ -247,10 +248,8 @@ const std::vector<MeshDrawer*> InviwoModule::getDrawers() const { return uniqueT
 const std::vector<Settings*>& InviwoModule::getSettings() const { return settings_; }
 
 std::string InviwoModule::getDescription() const {
-    for (auto& item : app_->getModuleManager().getModuleFactoryObjects()) {
-        if (item->name == identifier_) {
-            return item->description;
-        }
+    if (auto* item = app_->getModuleManager().getFactoryObject(identifier_)) {
+        return item->description;
     }
     return "No description available";
 }

@@ -42,6 +42,7 @@
 #include <cstdint>
 #include <algorithm>
 #include <iterator>
+#include <ranges>
 
 namespace inviwo {
 

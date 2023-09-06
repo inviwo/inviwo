@@ -30,6 +30,7 @@
 #include <inviwo/qt/editor/toolsmenu.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -75,7 +76,10 @@ namespace {
 void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
     auto factory = app->getProcessorFactory();
 
-    const auto& modules = app->getModules();
+    std::vector<InviwoModule*> modules;
+    for(auto& m : app->getModuleManager().getInviwoModules()){
+        modules.push_back(&m);
+    }
     auto order = util::ordering(modules, [](auto& a, auto& b) {
         return iCaseLess(a->getIdentifier(), b->getIdentifier());
     });
@@ -139,7 +143,10 @@ void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
 }
 
 void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* menu) {
-    const auto& modules = app->getModules();
+    std::vector<InviwoModule*> modules;
+    for(auto& m : app->getModuleManager().getInviwoModules()){
+        modules.push_back(&m);
+    }
     auto order = util::ordering(modules, [](auto& a, auto& b) {
         return iCaseLess(a->getIdentifier(), b->getIdentifier());
     });

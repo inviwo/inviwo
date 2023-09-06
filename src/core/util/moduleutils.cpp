@@ -39,12 +39,14 @@ ModuleManager& getModuleManager(InviwoApplication* app) { return app->getModuleM
 
 ModuleManager& getModuleManager() { return getModuleManager(InviwoApplication::getPtr()); }
 
-const std::vector<std::unique_ptr<InviwoModule>>& getModules(InviwoApplication* app) {
-    return getModuleManager(app).getModules();
-}
+size_t getNumberOfModules() { return getNumberOfModules(InviwoApplication::getPtr()); }
+size_t getNumberOfModules(InviwoApplication* app) { return getModuleManager(app).size(); }
 
-const std::vector<std::unique_ptr<InviwoModule>>& getModules() {
-    return getModules(InviwoApplication::getPtr());
+InviwoModule* getModuleByIndex(size_t index) {
+    return getModuleByIndex(InviwoApplication::getPtr(), index);
+}
+InviwoModule* getModuleByIndex(InviwoApplication* app, size_t index) {
+    return getModuleManager(app).getModuleByIndex(index);
 }
 
 InviwoModule* getModuleByIdentifier(InviwoApplication* app, std::string_view identifier) {

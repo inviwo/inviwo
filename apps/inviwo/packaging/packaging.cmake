@@ -44,7 +44,10 @@ set(CPACK_PACKAGE_FILE_NAME           "${CPACK_PACKAGE_NAME}-v${IVW_VERSION}")
 
 set(CPACK_MONOLITHIC_INSTALL OFF)
 set(CPACK_NSIS_MANIFEST_DPI_AWARE ON)
-ivw_get_target_property_recursive(install_list inviwo INTERFACE_IVW_INSTALL_LIST OFF)
+ivw_get_target_property_recursive(install_list inviwo INTERFACE_IVW_INSTALL_LIST ON)
+get_property(install_list_global GLOBAL PROPERTY INTERFACE_IVW_INSTALL_LIST)
+list(APPEND install_list ${install_list_global})
+
 # ivw_filter_install_list(LIST install_list REMOVE_COMPONENTS Development Testing)
 # ivw_filter_install_list(LIST install_list REMOVE_COMPONENTS Testing)
 list(TRANSFORM install_list REPLACE "\\|%\\|" ";")

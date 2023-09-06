@@ -725,10 +725,11 @@ void InviwoMainWindow::addActions() {
         menuEventFilter_->add(exampleMenu_);
 
         exampleMenu_->clear();
-        for (const auto& module : app_->getModules()) {
-            const auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
+        for (const auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
+            const auto moduleWorkspacePath = inviwoModule.getPath(ModulePath::Workspaces);
             if (!std::filesystem::is_directory(moduleWorkspacePath)) continue;
-            auto menu = std::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
+            auto menu =
+                std::make_unique<QMenu>(QString::fromStdString(inviwoModule.getIdentifier()));
             for (auto file : filesystem::getDirectoryContents(moduleWorkspacePath)) {
                 // only accept inviwo workspace files
                 if (file.extension() != ".inv") continue;
@@ -771,10 +772,11 @@ void InviwoMainWindow::addActions() {
         menuEventFilter_->add(testMenu_);
 
         testMenu_->clear();
-        for (const auto& module : app_->getModules()) {
-            auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
+        for (const auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
+            auto moduleTestPath = inviwoModule.getPath(ModulePath::RegressionTests);
             if (!std::filesystem::is_directory(moduleTestPath)) continue;
-            auto menu = std::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
+            auto menu =
+                std::make_unique<QMenu>(QString::fromStdString(inviwoModule.getIdentifier()));
             for (auto test : filesystem::getDirectoryContents(moduleTestPath,
                                                               filesystem::ListMode::Directories)) {
                 const auto testDir = moduleTestPath / test;

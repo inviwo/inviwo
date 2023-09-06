@@ -256,10 +256,6 @@ ModuleManager& InviwoApplication::getModuleManager() { return moduleManager_; }
 
 const ModuleManager& InviwoApplication::getModuleManager() const { return moduleManager_; }
 
-const std::vector<std::unique_ptr<InviwoModule>>& InviwoApplication::getModules() const {
-    return moduleManager_.getModules();
-}
-
 InviwoModule* InviwoApplication::getModuleByIdentifier(const std::string& identifier) const {
     return moduleManager_.getModuleByIdentifier(identifier);
 }
@@ -335,8 +331,8 @@ std::vector<std::unique_ptr<ModuleCallbackAction>>& InviwoApplication::getCallba
 std::vector<Settings*> InviwoApplication::getModuleSettings() {
     std::vector<Settings*> allModuleSettings;
     allModuleSettings.push_back(systemSettings_.get());
-    for (auto& module : moduleManager_.getModules()) {
-        auto modSettings = module->getSettings();
+    for (auto& inviwoModule : moduleManager_.getInviwoModules()) {
+        const auto& modSettings = inviwoModule.getSettings();
         allModuleSettings.insert(allModuleSettings.end(), modSettings.begin(), modSettings.end());
     }
     return allModuleSettings;
@@ -346,8 +342,8 @@ SystemSettings& InviwoApplication::getSystemSettings() { return *systemSettings_
 
 std::vector<Capabilities*> InviwoApplication::getModuleCapabilities() {
     std::vector<Capabilities*> allModuleCapabilities;
-    for (auto& inviwoModule : moduleManager_.getModules()) {
-        auto modCapabilities = inviwoModule->getCapabilities();
+    for (auto& inviwoModule : moduleManager_.getInviwoModules()) {
+        auto modCapabilities = inviwoModule.getCapabilities();
         allModuleCapabilities.insert(allModuleCapabilities.end(), modCapabilities.begin(),
                                      modCapabilities.end());
     }

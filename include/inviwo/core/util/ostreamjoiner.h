@@ -51,7 +51,7 @@ class ostream_joiner {
 public:
     using iterator_category = std::output_iterator_tag;
     using value_type = void;
-    using difference_type = void;
+    using difference_type = std::ptrdiff_t;
     using pointer = void;
     using reference = void;
 

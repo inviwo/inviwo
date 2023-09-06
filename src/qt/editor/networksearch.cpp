@@ -231,9 +231,9 @@ bool NetworkSearch::eventFilter(QObject* watched, QEvent* event) {
 
 std::unordered_map<std::string, std::string> NetworkSearch::getModuleMap(InviwoApplication* app) {
     std::unordered_map<std::string, std::string> moduleMap;
-    for (const auto& m : app->getModuleManager().getModules()) {
-        for (const auto& p : m->getProcessors()) {
-            moduleMap[p->getClassIdentifier()] = m->getIdentifier();
+    for (const auto& m : app->getModuleManager().getInviwoModules()) {
+        for (const auto& p : m.getProcessors()) {
+            moduleMap[p->getClassIdentifier()] = m.getIdentifier();
         }
     }
     return moduleMap;

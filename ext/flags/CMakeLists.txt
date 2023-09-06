@@ -12,11 +12,7 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 add_library(flags INTERFACE)
 add_library(inviwo::flags ALIAS flags)
-target_include_directories(flags 
-    INTERFACE 
-        $<INSTALL_INTERFACE:include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-)
+
 target_sources(
     flags
     INTERFACE

@@ -725,6 +725,14 @@ fs::path cleanupPath(std::string_view path) {
     return result;
 }
 
+int getCurrentProcessId() {
+#ifdef WIN32
+    return GetCurrentProcessId();
+#else
+    return getpid();
+#endif
+}
+
 #if WIN32
 
 std::vector<fs::path> getLoadedLibraries() {

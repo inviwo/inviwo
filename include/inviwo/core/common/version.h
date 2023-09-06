@@ -160,3 +160,14 @@ constexpr bool Version::semanticVersionEqual(const Version& other) const {
 }
 
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::Version> : fmt::formatter<fmt::string_view> {
+    template <typename FormatContext>
+    auto format(const inviwo::Version& val, FormatContext& ctx) const {
+        fmt::memory_buffer buff;
+        fmt::format_to(std::back_inserter(buff), "{}.{}.{}.{}", val.major, val.minor, val.patch,
+                       val.build);
+        return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
+    }
+};

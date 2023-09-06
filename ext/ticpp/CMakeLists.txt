@@ -4,13 +4,7 @@ project(ticpp)
 add_library(ticpp)
 add_library(ticpp::ticpp ALIAS ticpp)
 set_target_properties(ticpp PROPERTIES VERSION 0.5 SOVERSION 0.5)
-target_include_directories(ticpp 
-    PUBLIC
-        $<INSTALL_INTERFACE:include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    PRIVATE 
-        include/ticpp
-)
+target_include_directories(ticpp PRIVATE include/ticpp)
 target_compile_definitions(ticpp 
     INTERFACE 
         $<$<AND:$<BOOL:${WIN32}>,$<BOOL:${BUILD_SHARED_LIBS}>>:TICPP_DLL>

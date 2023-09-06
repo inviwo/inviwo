@@ -9,11 +9,6 @@ set(HEADER_FILES
 add_library(tracywrap INTERFACE)
 add_library(inviwo::tracywrap ALIAS tracywrap)
 
-target_include_directories(tracywrap 
-    INTERFACE 
-        $<INSTALL_INTERFACE:include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-)
 target_sources(
     tracywrap
     INTERFACE
@@ -36,4 +31,4 @@ add_custom_target(tracywrap_dummy SOURCES ${HEADER_FILES})
 ivw_folder(tracywrap_dummy ext)
 
 ivw_register_package(tracywrap tracywrap)
-ivw_install_helper(TARGET tracywrap NAMESPACE inviwo  DESTINATION inviwo)
+ivw_install_helper(TARGET tracywrap NAMESPACE inviwo DESTINATION inviwo)

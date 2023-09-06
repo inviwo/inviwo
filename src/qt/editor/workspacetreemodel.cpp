@@ -34,6 +34,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/modulemanager.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
@@ -488,11 +489,11 @@ void WorkspaceTreeModel::updateModules(std::string_view category, ModulePath pat
     };
 
     std::vector<std::unique_ptr<TreeItem>> items;
-    for (const auto& inviwoModule : app_->getModules()) {
-        auto path = inviwoModule->getPath(pathType);
+    for (const auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
+        auto path = inviwoModule.getPath(pathType);
         if (!std::filesystem::is_directory(path)) continue;
 
-        auto section = std::make_unique<TreeItem>(inviwoModule->getIdentifier(), Type::SubSection);
+        auto section = std::make_unique<TreeItem>(inviwoModule.getIdentifier(), Type::SubSection);
         if (recursive) {
             for (auto filePath : filesystem::getDirectoryContentsRecursively(path)) {
                 addFile(path / filePath, *section);

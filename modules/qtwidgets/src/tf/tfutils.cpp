@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwomodule.h>         // for InviwoModule
 #include <inviwo/core/common/modulepath.h>           // for ModulePath, ModulePath::Tra...
 #include <inviwo/core/common/factoryutil.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/datastructures/datamapper.h>        // for DataMapper
 #include <inviwo/core/datastructures/tfprimitiveset.h>    // for TFPrimitiveSet
 #include <inviwo/core/datastructures/transferfunction.h>  // for TransferFunction
@@ -250,8 +251,9 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
     QObject::connect(
         presets, &QMenu::aboutToShow, presets,
         [presets, addPresetActions]() {
-            for (const auto& im : InviwoApplication::getPtr()->getModules()) {
-                auto moduleTFPath = im->getPath(ModulePath::TransferFunctions);
+            for (const auto& im :
+                 InviwoApplication::getPtr()->getModuleManager().getInviwoModules()) {
+                auto moduleTFPath = im.getPath(ModulePath::TransferFunctions);
                 if (!std::filesystem::is_directory(moduleTFPath)) continue;
                 addPresetActions(moduleTFPath);
             }

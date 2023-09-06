@@ -173,11 +173,16 @@ else()
     add_library(tclap INTERFACE)
     ivw_register_package(tclap tclap)
     add_library(inviwo::tclap ALIAS tclap)
-    target_include_directories(tclap 
-        INTERFACE 
-            $<INSTALL_INTERFACE:include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+
+    target_sources(tclap
+        PUBLIC
+        FILE_SET HEADERS
+        TYPE HEADERS
+        BASE_DIRS ${TCLAP_INCLUDE_DIRS}
+        FILES
+            ${TCLAP_INCLUDE_DIRS}/tclap/Arg.h
     )
+
     ivw_install_helper(TARGET tclap NAMESPACE inviwo DESTINATION inviwo)
 
 endif()

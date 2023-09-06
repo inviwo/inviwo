@@ -59,6 +59,7 @@
 #include <QToolBar>          // for QToolBar
 #include <QUrl>              // for QUrl, QUrl::TolerantMode
 #include <Qt>                // for WA_DeleteOnClose
+#include <QMenuBar>          // for QMenuBar
 #include <fmt/core.h>        // for basic_string_view, arg
 #include <fmt/ostream.h>     // for print
 #include <fmt/std.h>
@@ -104,7 +105,8 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
         win->connect(newEditorOpen, &QAction::triggered, newEditor);
 
         menu_.reset(utilqt::addMenu("&Python"));
-        win->connect(menu_.get(), &QMenu::destroyed, [this](QObject*) { menu_.release(); });
+        menu_->setParent(nullptr);
+
         auto pythonEditorOpen = menu_->addAction(QIcon(":/svgicons/python.svg"), "&Python Editor");
         win->connect(pythonEditorOpen, &QAction::triggered, newEditor);
 
@@ -150,6 +152,12 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
     }
 }
 
-PythonMenu::~PythonMenu() = default;
+PythonMenu::~PythonMenu() {
+    if (auto win = utilqt::getApplicationMainWindow()) {
+        if (menu_) {
+            win->menuBar()->removeAction(menu_->menuAction());
+        }
+    }
+}
 
 }  // namespace inviwo

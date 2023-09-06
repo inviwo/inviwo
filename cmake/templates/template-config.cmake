@@ -2,4 +2,6 @@
 
 @PACKAGES@
 
-include("${CMAKE_CURRENT_LIST_DIR}/@NAME@Targets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/@NAME@-targets.cmake")
+
+@POSTCONFIG@

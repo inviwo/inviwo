@@ -39,6 +39,8 @@
 
 namespace inviwo {
 
+class OpenGLQtMenu;
+
 class IVW_MODULE_OPENGLQT_API OpenGLQtModule : public InviwoModule,
                                                public ProcessorNetworkEvaluationObserver {
 public:
@@ -51,6 +53,7 @@ public:
 private:
     ContextHolder* holder_ = nullptr;
     HiddenCanvasQt sharedCanvas_;
+    std::unique_ptr<OpenGLQtMenu> openglMenu_;
 };
 
 }  // namespace inviwo

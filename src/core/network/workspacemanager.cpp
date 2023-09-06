@@ -212,17 +212,17 @@ Deserializer WorkspaceManager::createWorkspaceDeserializer(std::istream& stream,
     InviwoSetupInfo info;
     deserializer.deserialize("InviwoSetup", info);
 
-    for (const auto& module : app_->getModuleManager().getModules()) {
-        if (auto moduleInfo = info.getModuleInfo(module->getIdentifier())) {
-            if (moduleInfo->version < module->getVersion()) {
-                auto converter = module->getConverter(moduleInfo->version);
+    for (const auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
+        if (auto moduleInfo = info.getModuleInfo(inviwoModule.getIdentifier())) {
+            if (moduleInfo->version < inviwoModule.getVersion()) {
+                auto converter = inviwoModule.getConverter(moduleInfo->version);
                 deserializer.convertVersion(converter.get());
                 LogNetworkSpecial(
                     (&deserializer), LogLevel::Warn,
                     fmt::format(
                         "Loading old workspace ({}) Module version: {}. Updating to version: {}.",
-                        deserializer.getFileName(), module->getIdentifier(), moduleInfo->version,
-                        module->getVersion()));
+                        deserializer.getFileName(), inviwoModule.getIdentifier(),
+                        moduleInfo->version, inviwoModule.getVersion()));
             }
         }
     }

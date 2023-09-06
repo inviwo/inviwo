@@ -33,6 +33,7 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/modulemanager.h>
 
 #include <algorithm>
 
@@ -79,27 +80,26 @@ void setSelected(Processor* processor, bool selected) {
     }
 }
 
-InviwoModule* getProcessorModule(const Processor* processor, const InviwoApplication& app) {
+InviwoModule* getProcessorModule(const Processor* processor, InviwoApplication& app) {
     if (!processor) return nullptr;
     return getProcessorModule(processor->getClassIdentifier(), app);
 }
 
-InviwoModule* getProcessorModule(std::string_view classIdentifier, const InviwoApplication& app) {
+InviwoModule* getProcessorModule(std::string_view classIdentifier, InviwoApplication& app) {
 
-    const auto it = std::find_if(app.getModules().begin(), app.getModules().end(),
-                                 [&](const std::unique_ptr<InviwoModule>& module) {
-                                     const auto processors = module->getProcessors();
-                                     return std::find_if(processors.begin(), processors.end(),
-                                                         [&](const ProcessorFactoryObject* pfo) {
-                                                             return pfo->getClassIdentifier() ==
-                                                                    classIdentifier;
-                                                         }) != processors.end();
-                                 });
-    return it != app.getModules().end() ? it->get() : nullptr;
+    auto inviwoModules = app.getModuleManager().getInviwoModules();
+    const auto it = std::ranges::find_if(
+        inviwoModules, [&](const InviwoModule& inviwoModule) {
+            const auto processors = inviwoModule.getProcessors();
+            return std::ranges::find_if(processors, [&](const ProcessorFactoryObject* pfo) {
+                       return pfo->getClassIdentifier() == classIdentifier;
+                   }) != processors.end();
+        });
+    return it != inviwoModules.end() ? &(*it) : nullptr;
 }
 
 std::optional<std::string> getProcessorModuleIdentifier(std::string_view classIdentifier,
-                                                        const InviwoApplication& app) {
+                                                        InviwoApplication& app) {
 
     if (auto m = getProcessorModule(classIdentifier, app)) {
         return m->getIdentifier();

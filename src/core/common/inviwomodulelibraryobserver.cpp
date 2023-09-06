@@ -76,41 +76,10 @@ void InviwoModuleLibraryObserver::fileChanged(const std::filesystem::path& dir) 
             }
         }
     }
-    if (reload) reloadModules();
-}
-
-void InviwoModuleLibraryObserver::reloadModules() {
-    // 1. Serialize network
-    // 2. Clear modules/unload module libraries
-    // 3. Load module libraries and register them
-    // 4. De-serialize network
-
-    LogInfo("Reloading modules");
-
-    // Serialize network
-    std::stringstream stream;
-    try {
-        app_->getWorkspaceManager()->save(stream, app_->getBasePath());
-    } catch (SerializationException& exception) {
-        util::log(exception.getContext(), "Unable to save network due to " + exception.getMessage(),
-                  LogLevel::Error);
-        return;
-    }
-    // Unregister modules and clear network
-    app_->getModuleManager().unregisterModules();
-
-    // Register modules again
-    app_->getModuleManager().registerModules(RuntimeModuleLoading{});
-
-    // De-serialize network
-    try {
-        // Lock the network that so no evaluations are triggered during the de-serialization
-        app_->getWorkspaceManager()->load(stream, app_->getBasePath());
-    } catch (SerializationException& e) {
-        util::log(e.getContext(), "Unable to load network due to " + e.getMessage(),
-                  LogLevel::Error);
-        return;
+    if (reload) {
+        app_->getModuleManager().reloadModules();
     }
 }
+
 
 }  // namespace inviwo

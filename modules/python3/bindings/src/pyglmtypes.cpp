@@ -31,6 +31,7 @@
 #include <inviwopy/pyglmmattypes.h>
 
 #include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/logcentral.h>
 #include <modules/python3/pyportutils.h>
 
 #include <warn/push>
@@ -232,14 +233,18 @@ void vecx(py::module& m, const std::string& prefix, const std::string& name,
         }
     }
 
-    if constexpr (Dim == 1) {
-        PYBIND11_NUMPY_DTYPE(Vec, x);
-    } else if constexpr (Dim == 2) {
-        PYBIND11_NUMPY_DTYPE(Vec, x, y);
-    } else if constexpr (Dim == 3) {
-        PYBIND11_NUMPY_DTYPE(Vec, x, y, z);
-    } else if constexpr (Dim == 4) {
-        PYBIND11_NUMPY_DTYPE(Vec, x, y, z, w);
+    try {
+        if constexpr (Dim == 1) {
+            PYBIND11_NUMPY_DTYPE(Vec, x);
+        } else if constexpr (Dim == 2) {
+            PYBIND11_NUMPY_DTYPE(Vec, x, y);
+        } else if constexpr (Dim == 3) {
+            PYBIND11_NUMPY_DTYPE(Vec, x, y, z);
+        } else if constexpr (Dim == 4) {
+            PYBIND11_NUMPY_DTYPE(Vec, x, y, z, w);
+        }
+    } catch (const std::exception& e) {
+        util::log(IVW_CONTEXT_CUSTOM("pyglmtypes"), e.what());
     }
 
     switch (Dim) {
