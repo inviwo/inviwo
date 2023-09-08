@@ -105,13 +105,19 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
 import sys
 import distutils.sysconfig
 
+import traceback
+
 def formatError(e):
-    paths = sys.path
-    pathlist = '\n'.join(paths)
+    pathlist = '\n'.join(f'{i:>2}: {p}' for i, p in enumerate(sys.path))
     config = '\n'.join(f"{k:15}{v}" for k,v in distutils.sysconfig.get_config_vars().items())
-    return f"{e} \nname: {e.name}\npaths:\n{pathlist}\nconfig: {config}"
+    tb = ''.join(traceback.format_exception(e))
+    helpmsg = 'Note: Inviwo will not access user site-package folders. Make sure to install the packages site-wide or add\n' \
+           'your user site-package folder to the environment variable `PYTHONPATH`,\n' \
+           'for example "PYTHONHOME=%appdata%\\Python\\Python311\\site-packages".'
+    return f"{e}\n{tb}\n{helpmsg}\n\nsys.path:\n{pathlist}\nconfig:\n{config}"
 
 try:
+    import numpy
     import inviwopy
 except ModuleNotFoundError as e:
     raise ModuleNotFoundError(formatError(e))
