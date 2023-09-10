@@ -138,10 +138,20 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
     } catch (const py::error_already_set& e) {
         if (e.matches(PyExc_ModuleNotFoundError)) {
             const auto missingModule = e.value().attr("name").cast<std::string>();
+            static bool printedNoteOnce = false;
+            std::string_view note =
+                printedNoteOnce
+                    ? ""
+                    : "\n\nNote: Inviwo will not access user site-package folders. Make sure to "
+                      "install the packages site-wide or add\n"
+                      "your user site-package folder to the environment variable `PYTHONPATH`,\n"
+                      "for example \"PYTHONHOME=%appdata%\\Python\\Python311\\site-packages\".";
+            printedNoteOnce = true;
+
             throw Exception(
                 IVW_CONTEXT_CUSTOM("Python"),
-                "Failed to load python processor: '{}' due to missing module: '{}'. File: {}", name,
-                missingModule, file);
+                "Failed to load python processor: '{}' due to missing module: '{}'. File: {}{}",
+                name, missingModule, file, note);
         } else if (e.matches(PyExc_SyntaxError)) {
             const auto filename = e.value().attr("filename").cast<std::string>();
             auto lineno = e.value().attr("lineno").cast<int>();
