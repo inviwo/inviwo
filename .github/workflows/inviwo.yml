@@ -181,7 +181,7 @@ jobs:
       run: pip3 install numpy Sphinx sphinx-rtd-theme recommonmark
       
     - name: Clone VCPKG
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: 'microsoft/vcpkg'
         fetch-depth: 0
@@ -206,7 +206,7 @@ jobs:
         dir: ${{ github.workspace }}
     
     - name: Clone Inviwo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with: 
         path: inviwo
         submodules: recursive
@@ -347,7 +347,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Clone Inviwo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with: 
           ref: gh-pages
           path: inviwo
