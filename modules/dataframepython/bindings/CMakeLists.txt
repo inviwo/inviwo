@@ -1,5 +1,10 @@
 #--------------------------------------------------------------------
-# Create python module
+# Create bindings for dataframe python module
+
+if(NOT IVW_USE_PYTHON)
+    message(FATAL_ERROR "Python support is not enabled for Inviwo (see IVW_USE_PYTHON)")
+endif()
+
 set(HEADER_FILES
     include/ivwdataframe/ivwdataframe.h
     include/ivwdataframe/pydataframe.h

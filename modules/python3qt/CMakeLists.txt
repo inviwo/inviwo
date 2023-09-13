@@ -1,6 +1,10 @@
 # Inviwo PythonQt Module
 ivw_module(Python3Qt)
 
+if(NOT IVW_USE_PYTHON)
+    message(FATAL_ERROR "Python support is not enabled for Inviwo (see IVW_USE_PYTHON)")
+endif()
+
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg)
 
 # Add MOC files

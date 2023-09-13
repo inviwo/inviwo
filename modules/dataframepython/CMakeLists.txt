@@ -2,6 +2,10 @@
 # Inviwo DataFramePython Module
 ivw_module(DataFramePython)
 
+if(NOT IVW_USE_PYTHON)
+    message(FATAL_ERROR "Python support is not enabled for Inviwo (see IVW_USE_PYTHON)")
+endif()
+
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES

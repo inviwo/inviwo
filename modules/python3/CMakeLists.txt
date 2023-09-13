@@ -1,6 +1,10 @@
 # Inviwo Python3 Module
 ivw_module(Python3)
 
+if(NOT IVW_USE_PYTHON)
+    message(FATAL_ERROR "Python support is not enabled for Inviwo (see IVW_USE_PYTHON)")
+endif()
+
 find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)
 
 set(HEADER_FILES

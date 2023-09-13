@@ -1,5 +1,9 @@
 ivw_module(Python3GL)
 
+if(NOT IVW_USE_PYTHON)
+    message(FATAL_ERROR "Python support is not enabled for Inviwo (see IVW_USE_PYTHON)")
+endif()
+
 set(HEADER_FILES
     include/inviwo/python3gl/layerpytoglconverter.h
     include/inviwo/python3gl/python3glmodule.h

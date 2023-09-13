@@ -44,7 +44,7 @@ project(${IVW_CFG_PROJECT_NAME}
     LANGUAGES CXX
 )
 
-#Verify that git submodules has been cloned
+# verify that git submodules have been cloned
 include(cmake/verifysubmodules.cmake)
 verify_submodules("${CMAKE_CURRENT_LIST_DIR}/.gitmodules")
 
@@ -53,8 +53,6 @@ option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/pkg)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/modules)
-
-find_package(Python3 COMPONENTS Interpreter Development NumPy)
 
 include(cmake/globalconfig.cmake)
 
@@ -78,7 +76,9 @@ ivw_enable_modules_if(IVW_APP_INVIWO QtWidgets)
 ivw_enable_modules_if(IVW_APP_MINIMAL_QT QtWidgets)
 ivw_enable_modules_if(IVW_APP_MINIMAL_GLFW GLFW)
 ivw_enable_modules_if(IVW_APP_INVIWO_DOME SGCT)
-ivw_enable_modules_if(IVW_APP_PYTHON Python3 Python3Qt QtWidgets)
+if(IVW_USE_PYTHON)
+    ivw_enable_modules_if(IVW_APP_PYTHON Python3 Python3Qt QtWidgets)
+endif()
 
 option(IVW_TEST_INTEGRATION_TESTS "Build inviwo integration test" ON)
 ivw_enable_modules_if(IVW_TEST_INTEGRATION_TESTS GLFW Base)

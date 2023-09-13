@@ -281,6 +281,6 @@ if(IVW_TEST_BENCHMARKS)
     add_subdirectory(tests/benchmarks)
 endif()
 
-if(IVW_MODULE_PYTHON3)
+if(IVW_USE_PYTHON)
     add_subdirectory(bindings)
 endif()

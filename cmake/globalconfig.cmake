@@ -259,9 +259,21 @@ endif()
 option(IVW_CFG_RUNTIME_MODULE_LOADING 
        "Load modules from dynamic libraries (dll/so) at application startup" OFF)
 
-# Check if OpenMP is available and set it to use, and include the dll in packs
+# Provide option to enable Python support in Inviwo
+option(IVW_USE_PYTHON "Enable Python support in Inviwo" ON)
+find_package(Python3 COMPONENTS Interpreter Development NumPy)
+if(IVW_USE_PYTHON AND NOT Python3_Development_FOUND)
+    message(FATAL_ERROR "Python3 not available and/or NumPy module not installed")
+endif()
+
+# Check if OpenMP is available and set it to use, and include the dll in packs, except for MSVC
 find_package(OpenMP QUIET)
-option(IVW_USE_OPENMP "Use OpenMP" ${OpenMP_CXX_FOUND})
+if(MSVC)
+    option(IVW_USE_OPENMP "Use OpenMP" OFF)
+else()
+    option(IVW_USE_OPENMP "Use OpenMP" ON)
+endif()
+
 if(IVW_USE_OPENMP AND NOT OpenMP_CXX_FOUND)
     message(FATAL_ERROR "OpenMP not available")
 endif()

@@ -283,7 +283,7 @@ if(WIN32) # Stackwalker for windows for stack traces in the log
     )
 endif()
 
-if(Python3_Development_FOUND)
+if(IVW_USE_PYTHON)
     option(IVW_USE_EXTERNAL_PYBIND11 "Pybind11 is provided externaly" OFF)
     if(NOT IVW_USE_EXTERNAL_PYBIND11)
         message(STATUS "add subdirectory: pybind11")
