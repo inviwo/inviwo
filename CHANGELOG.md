@@ -1,5 +1,12 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2023-09-13 CMake option `IVW_USE_PYTHON` and improved Python error handling
+A CMake option `IVW_USE_PYTHON` was added to allow for enabling/disabling Inviwo's support globally. Python support is enabled by default. Enabling any Python-related modules without `IVW_USE_PYTHON` being enabled will result in a CMake error.
+
+Error handling when initializing Python modules has been improved in case the Python executable or Python modules cannot be found. 
+
+*Note:* Inviwo will not access user site-package folders. Make sure to install the packages site-wide or add your user site-package folder to the environment variable `PYTHONPATH`, for example `PYTHONHOME="%appdata%\Python\Python311\site-packages"` on Windows.
+
 ## 2023-05-05 `std::filesystem` adoption
 Inviwo has been updated to use `std::filesystem` instead of our own custom functions.
 This change is not backwards compatible and will require code changes. 
