@@ -1,9 +1,4 @@
 # Create python bindings for base module
-
-if(NOT IVW_USE_PYTHON)
-    message(FATAL_ERROR "Python support is not enabled for Inviwo (see IVW_USE_PYTHON)")
-endif()
-
 find_package(pybind11 CONFIG REQUIRED)
 
 set(HEADER_FILES

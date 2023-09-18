@@ -70,9 +70,9 @@ target_compile_definitions(inviwo-module-cimg PRIVATE
 
 # The current OpenEXR has some problems with regards to packaging. So for now we make it optional.
 # When the packaging is fixed this option should be removed.
-option(IVW_USE_OPENEXR  "Add OpenEXR image format support (HDR images)" ON)
+option(IVW_ENABLE_OPENEXR  "Add OpenEXR image format support (HDR images)" ON)
 option(IVW_USE_EXTERNAL_OPENEXR  "OpenEXR is provided externaly" OFF)
-if(IVW_USE_OPENEXR)
+if(IVW_ENABLE_OPENEXR)
     target_compile_definitions(inviwo-module-cimg PRIVATE cimg_use_openexr)
     if(IVW_USE_EXTERNAL_OPENEXR)
         find_package(OpenEXR CONFIG REQUIRED)

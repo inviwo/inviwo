@@ -46,6 +46,10 @@ function(ivw_vcpkg_install name)
 		return()
 	endif()
 
+    if(NOT Python3_Interpreter_FOUND)
+        return()
+    endif()
+
     set(options EXT)
     set(oneValueArgs OUT_COPYRIGHT OUT_VERSION MODULE)
     set(multiValueArgs "")

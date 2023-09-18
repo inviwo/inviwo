@@ -1,8 +1,6 @@
-#--------------------------------------------------------------------
 # Inviwo DataFrame Module
 ivw_module(DataFrame)
 
-#--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     include/inviwo/dataframe/dataframemodule.h
@@ -38,7 +36,6 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
     src/dataframemodule.cpp
@@ -73,13 +70,11 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
-#--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
     tests/unittests/column-test.cpp
@@ -95,6 +90,5 @@ if(IVW_TEST_BENCHMARKS)
     add_subdirectory(tests/benchmarks)
 endif()
 
-#--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})

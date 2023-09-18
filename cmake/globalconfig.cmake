@@ -202,15 +202,6 @@ if(WIN32 AND MSVC)
     # Add debug postfix if WIN32
     SET(CMAKE_DEBUG_POSTFIX "d")
 
-    # set iterator debug level (default=2)
-    # https://msdn.microsoft.com/en-us/library/hh697468.aspx
-    set(IVW_CFG_MSVC_ITERATOR_DEBUG_LEVEL "2" CACHE STRING "Iterator debug level (IDL, default=2). 
-    IDL=0: Disables checked iterators and disables iterator debugging.
-    IDL=1: Enables checked iterators and disables iterator debugging.
-    IDL=2: Enables iterator debugging. Note: QT needs to be built with the same flag")
-    set_property(CACHE IVW_CFG_MSVC_ITERATOR_DEBUG_LEVEL PROPERTY STRINGS 0 1 2)
-    add_compile_options($<$<CONFIG:Debug>:/D_ITERATOR_DEBUG_LEVEL=${IVW_CFG_MSVC_ITERATOR_DEBUG_LEVEL}>)
-
     # Multicore builds
     option(IVW_CFG_MSVC_MULTI_PROCESSOR_BUILD "Build with multiple processors" ON)
     set(IVW_CFG_MSVC_MULTI_PROCESSOR_COUNT 0 CACHE STRING "Number of cores to use (defalt 0 = all)")
@@ -259,23 +250,14 @@ endif()
 option(IVW_CFG_RUNTIME_MODULE_LOADING 
        "Load modules from dynamic libraries (dll/so) at application startup" OFF)
 
-# Provide option to enable Python support in Inviwo
-option(IVW_USE_PYTHON "Enable Python support in Inviwo" ON)
-find_package(Python3 COMPONENTS Interpreter Development NumPy)
-if(IVW_USE_PYTHON AND NOT Python3_Development_FOUND)
-    message(FATAL_ERROR "Python3 not available and/or NumPy module not installed")
-endif()
-
 # Check if OpenMP is available and set it to use, and include the dll in packs, except for MSVC
 find_package(OpenMP QUIET)
 if(MSVC)
-    option(IVW_USE_OPENMP "Use OpenMP" OFF)
+    option(IVW_ENABLE_OPENMP "Use OpenMP" OFF)
 else()
-    option(IVW_USE_OPENMP "Use OpenMP" ON)
+    option(IVW_ENABLE_OPENMP "Use OpenMP" ${OpenMP_CXX_FOUND})
 endif()
 
-if(IVW_USE_OPENMP AND NOT OpenMP_CXX_FOUND)
-    message(FATAL_ERROR "OpenMP not available")
+if(IVW_ENABLE_OPENMP AND NOT OpenMP_CXX_FOUND)
+    message(FATAL_ERROR "OpenMP not available, Uncheck IVW_ENABLE_OPENMP to disable using OpenMP")
 endif()
-
-include(${CMAKE_CURRENT_LIST_DIR}/utilities/clean_library_list.cmake)

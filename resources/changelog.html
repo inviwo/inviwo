@@ -26,10 +26,13 @@
 </style>
 </head>
 <body>
-<h2>2023-09-13 CMake option <code class="notranslate">IVW_USE_PYTHON</code> and improved Python error handling</h2>
-<p>A CMake option <code class="notranslate">IVW_USE_PYTHON</code> was added to allow for enabling/disabling Inviwo's support globally. Python support is enabled by default. Enabling any Python-related modules without <code class="notranslate">IVW_USE_PYTHON</code> being enabled will result in a CMake error.</p>
+<h2>2023-09-15 CMake option <code class="notranslate">IVW_ENABLE_QT</code></h2>
+<p>A CMake option <code class="notranslate">IVW_ENABLE_QT</code> was added to allow for enabling/disabling Inviwo's Qt support globally. Qt support is enabled by default. If Qt support is disabled all modules that depends on Qt will automatically be disabled.</p>
+<p>At the same time the <code class="notranslate">IVW_USE_*</code> (<code class="notranslate">IVW_USE_OPENMP</code>, <code class="notranslate">IVW_USE_OPENEXR</code>, <code class="notranslate">IVW_USE_TRACY</code>) variables were renamed to <code class="notranslate">IVW_ENABLE_*</code> for consistency.</p>
+<h2>2023-09-13 CMake option <code class="notranslate">IVW_ENABLE_PYTHON</code> and improved Python error handling</h2>
+<p>A CMake option <code class="notranslate">IVW_ENABLE_PYTHON</code> was added to allow for enabling/disabling Inviwo's Python support globally. Python support is enabled by default. If Python support is disabled all modules that depends on python will automatically be disabled.</p>
 <p>Error handling when initializing Python modules has been improved in case the Python executable or Python modules cannot be found.</p>
-<p><em>Note:</em> Inviwo will not access user site-package folders. Make sure to install the packages site-wide or add your user site-package folder to the environment variable <code class="notranslate">PYTHONPATH</code>, for example <code class="notranslate">PYTHONHOME="%appdata%\Python\Python311\site-packages"</code> on Windows.</p>
+<p><em>Note:</em> Inviwo will not access user site-package folders. Make sure to install the packages site-wide or add your user site-package folder to the environment variable <code class="notranslate">PYTHONPATH</code>, for example <code class="notranslate">PYTHONPATH="%appdata%\Python\Python311\site-packages"</code> on Windows.</p>
 <h2>2023-05-05 <code class="notranslate">std::filesystem</code> adoption</h2>
 <p>Inviwo has been updated to use <code class="notranslate">std::filesystem</code> instead of our own custom functions.<br>
 This change is not backwards compatible and will require code changes.<br>

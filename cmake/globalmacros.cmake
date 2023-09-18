@@ -28,19 +28,16 @@
 #################################################################################
 include(CMakeParseArguments)
 
-#--------------------------------------------------------------------
 # Creates a inviwo module
 macro(ivw_module project_name)
     project(${project_name} ${ARGN})
 endmacro()
 
-#--------------------------------------------------------------------
 # Retrieve all enabled modules as a list
 function(ivw_retrieve_all_modules module_list)
     set(${module_list} ${ivw_all_registered_modules} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # Determine application dependencies. 
 # Creates a list of enabled modules in executable directory if runtime
 # module loading is enabled. Otherwise sets the registration macros and
@@ -103,7 +100,7 @@ endfunction()
 
 function(ivw_private_setup_module_data)
     set(options CORE)
-    set(oneValueArgs DIR BASE NAME GROUP)
+    set(oneValueArgs DIR BASE NAME GROUP VERSION)
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -145,7 +142,6 @@ function(ivw_private_setup_module_data)
     set(sharedLibHpp ${CMAKE_BINARY_DIR}/modules/${dir}/include/${sharedLibInc})
 
     # Get module version
-    ivw_private_get_ivw_module_version(${module_path}/${dir}/CMakeLists.txt version)
     set("${mod}_name"         "${name}"               CACHE INTERNAL "Module name")
     set("${mod}_dir"          "${dir}"                CACHE INTERNAL "Module dir")
     set("${mod}_base"         "${module_path}"        CACHE INTERNAL "Module base")
@@ -156,7 +152,7 @@ function(ivw_private_setup_module_data)
     set("${mod}_alias"        "${alias}"              CACHE INTERNAL "Module alias")
     set("${mod}_class"        "${class}"              CACHE INTERNAL "Module class")
     set("${mod}_modName"      "Inviwo${name}Module"   CACHE INTERNAL "Module mod name")
-    set("${mod}_version"      "${version}"            CACHE INTERNAL "Module version")
+    set("${mod}_version"      "${ARG_VERSION}"        CACHE INTERNAL "Module version")
     set("${mod}_header"       "${header}"             CACHE INTERNAL "Module header")
     set("${mod}_incPrefix"    "${includePrefix}"      CACHE INTERNAL "Module include Prefix")
     set("${mod}_incPath"      "${includePath}"        CACHE INTERNAL "Module include Path")
@@ -177,11 +173,13 @@ function(ivw_private_setup_module_data)
     set(aliases "")
     set(protected OFF)
     set(EnableByDefault OFF)
+    set(Disabled OFF)
+    set(DisabledReason "")
     if(EXISTS "${${mod}_path}/depends.cmake")
         include(${${mod}_path}/depends.cmake)
     endif()
 
-    # set by ivw_add_build_module_dependency to enable non modules to force modules to build
+    # set by ivw_enable_modules_if to enable non modules to force modules to build
     if(DEFINED ${mod}_enableExternal)
         set(EnableByDefault ${${mod}_enableExternal})
     endif()
@@ -190,10 +188,14 @@ function(ivw_private_setup_module_data)
         set("${mod}_dependencies"    ${dependencies} CACHE INTERNAL "Module dependencies")
         set("${mod}_protected"       ON              CACHE INTERNAL "Protected Module")
         set("${mod}_enableByDefault" ON              CACHE INTERNAL "Enable module by default")
+        set("${mod}_disabled"        OFF             CACHE INTERNAL "Disabled module")
+        set("${mod}_disabledReason"  ""              CACHE INTERNAL "Reason for the module begin disabled")
     else()
         set("${mod}_dependencies"   "InviwoCoreModule;${dependencies}" CACHE INTERNAL "Module dependencies")
         set("${mod}_protected"       ${protected}                      CACHE INTERNAL "Protected Module")
         set("${mod}_enableByDefault" ${EnableByDefault}                CACHE INTERNAL "Enable module by default")
+        set("${mod}_disabled"        ${Disabled}                       CACHE INTERNAL "Disabled module")
+        set("${mod}_disabledReason"  ${DisabledReason}                 CACHE INTERNAL "Reason for the module begin disabled")
     endif()
     set("${mod}_aliases" ${aliases} CACHE INTERNAL "Module aliases")
     unset(dependencies)
@@ -217,7 +219,6 @@ function(ivw_private_setup_module_data)
     endif()
 endfunction()
 
-#--------------------------------------------------------------------
 # Register modules
 # Generate module options (which was not specified before) and,
 # Sort directories based on dependencies inside directories
@@ -241,16 +242,16 @@ function(ivw_register_modules retval)
         # Check of there is a meta.cmake
         # Optionally defines: group_name
         if(EXISTS "${module_path}/meta.cmake")
-            include("${module_path}/meta.cmake")  
+            include("${module_path}/meta.cmake")
         endif()
 
         string(STRIP ${module_path} module_path)
         if(NOT EXISTS ${module_path})
-             message("External module path does not exist: '${module_path}'")
+             message(WARNING "External module path does not exist: '${module_path}'")
              continue()
         endif()
         if(NOT IS_DIRECTORY ${module_path})
-             message("External module path is not a directory: '${module_path}'")
+             message(WARNING "External module path is not a directory: '${module_path}'")
              continue()
         endif()
 
@@ -259,7 +260,7 @@ function(ivw_register_modules retval)
             ivw_dir_to_mod_dep(mod ${dir})
             list(FIND modules ${mod} found)
             if(NOT ${found} EQUAL -1)
-                message("Module with name ${dir} already added at ${${mod}_path}")
+                message(WARNING "Module with name ${dir} already added at ${${mod}_path}")
                 continue()
             endif()
             ivw_private_is_valid_module_dir(${module_path} ${dir} valid)
@@ -274,15 +275,6 @@ function(ivw_register_modules retval)
                     DIR ${dir} 
                     BASE ${module_path}
                 )
-
-                ivw_remove_from_list(deps ${mod}_dependencies InviwoCoreModule)
-                ivw_mod_name_to_name(deps ${deps})
-                ivw_join(";" ", " deps ${deps})
-                ivw_pad_right(padded_name "${${mod}_name}," " " 32)
-                ivw_debug_message(STATUS "Register Module: ${padded_name}"
-                    "Default: ${${mod}_enableByDefault}, \t"
-                    "Group: ${group_name}, \t"
-                    "Depends: ${deps}")
             endif()
         endforeach()
     endforeach()
@@ -365,9 +357,9 @@ function(ivw_register_modules retval)
     # Sort modules by dependencies
     ivw_topological_sort(modules _udependencies sorted_modules)
 
-    # enable dependencies
+    # enable dependencies transitively if they are disabled
     ivw_reverse_list_copy(sorted_modules rev_sorted_modules)
-    foreach(mod ${rev_sorted_modules})
+    foreach(mod IN LISTS rev_sorted_modules)
         if(${${mod}_opt})
             foreach(dep ${${mod}_udependencies})
                 if(NOT ${${dep}_opt})
@@ -378,8 +370,56 @@ function(ivw_register_modules retval)
             endforeach()
         endif()
     endforeach()
-    
-    ivw_copy_if(enabled_sorted_modules LIST sorted_modules EVAL PROJECTOR _opt)
+
+    # Transitively disable modules if they depend on a disabled module
+    foreach(mod IN LISTS sorted_modules)
+        set(disabled OFF)
+        set(disabledDep "")
+        foreach(dep ${${mod}_udependencies})
+            if(${${dep}_disabled})
+                set(disabled ON)
+                set(disabledDep ${dep})
+                break()
+            endif()
+        endforeach()
+
+        if(disabled AND NOT ${mod}_disabled)
+            set("${mod}_disabled" ON CACHE INTERNAL "Disabled module" FORCE)
+            set("${mod}_disabledReason"  "Disabled due to a dependency toward the disabled module ${${disabledDep}_name}"
+                CACHE INTERNAL "Reason for the module begin disabled"
+            )
+        endif()
+    endforeach()
+
+    ivw_format(STATUS 
+        FORMAT "\n{0:<30} {1:>3} {2:^8} {3:^8} {4:20} {5}"
+        ARGUMENTS "Name" "On" "Disabled" "Default" "Group" "Dependencies"
+    )
+    ivw_format(STATUS FORMAT "{:=<90}" ARGUMENTS "=")
+    foreach(mod IN LISTS sorted_modules)
+        ivw_remove_from_list(deps ${mod}_dependencies InviwoCoreModule)
+        ivw_mod_name_to_name(deps ${deps})
+        if(${${mod}_disabled})
+            ivw_join(";" ", " deps ${deps} "**${${mod}_disabledReason}**")
+        else()
+            ivw_join(";" ", " deps ${deps})
+        endif()
+
+        ivw_format(STATUS
+            FORMAT "{0:<30} {1:>3} {2:^8} {3:^8} {4:20} {5}"
+            ARGUMENTS
+                ${${mod}_name}
+                ${${${mod}_opt}}
+                ${${mod}_disabled}
+                ${${mod}_enableByDefault}
+                "${${mod}_group} "
+                "${deps} "
+        )
+    endforeach()
+    ivw_format(STATUS FORMAT "{:=<90}" ARGUMENTS "=")
+
+    ivw_copy_if(on_sorted_modules LIST sorted_modules EVAL PROJECTOR _opt)
+    ivw_copy_if(enabled_sorted_modules LIST on_sorted_modules NOT PROJECTOR _disabled)
 
     # Generate module registration file
     ivw_private_generate_module_registration_files(enabled_sorted_modules)
@@ -388,15 +428,13 @@ function(ivw_register_modules retval)
     set(ivw_module_names "")
     foreach(mod IN LISTS enabled_sorted_modules)
         message(STATUS "create module: ${${mod}_name}")
-        if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.16.0)
-            list(APPEND CMAKE_MESSAGE_INDENT "    ")
-        endif()
+        list(APPEND CMAKE_MESSAGE_INDENT "    ")
+
         add_subdirectory(${${mod}_path} ${IVW_BINARY_DIR}/modules/${${mod}_dir})
         list(APPEND ivw_module_names ${${mod}_modName})
         ivw_private_generate_module_registration_file(${mod})
-        if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.16.0)
-            list(POP_BACK CMAKE_MESSAGE_INDENT)
-        endif()
+
+        list(POP_BACK CMAKE_MESSAGE_INDENT)
     endforeach()
 
     # Save list of modules
@@ -405,7 +443,6 @@ function(ivw_register_modules retval)
     set(${retval} ${sorted_modules} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # Set module to build by default if value is true
 # Example ivw_enable_modules_if(IVW_INTEGRATION_TESTS GLFW Base)
 # Needs to be called before ivw_register_modules
@@ -419,7 +456,7 @@ function(ivw_enable_modules_if value)
         if(DEFINED ${mod}_opt)
             if(NOT ${${mod}_opt})
                 ivw_add_module_option_to_cache(${mod} ON FORCE)
-                message(STATUS "${dir} was set to on, due to dependency from ${value}")                
+                message(STATUS "${dir} was set to on, due to dependency from ${value}")
             endif()
         elseif(DEFINED ${opt})
              set(${opt} ON CACHE BOOL "Build inviwo module ${dir}" FORCE)
@@ -431,14 +468,12 @@ function(ivw_enable_modules_if value)
     endforeach()
 endfunction()
 
-#--------------------------------------------------------------------
 # Set module build option to true
 function(ivw_enable_module the_module)
     ivw_dir_to_mod_dep(mod ${the_module})
     ivw_add_module_option_to_cache(${mod} ON)
 endfunction()
 
-#--------------------------------------------------------------------
 # Creates source group structure recursively
 function(ivw_group group_name)
     set(options "")
@@ -469,13 +504,11 @@ function(ivw_group group_name)
     source_group(TREE ${base} PREFIX ${group_name} FILES ${ARG_UNPARSED_ARGUMENTS})
 endfunction()
 
-#--------------------------------------------------------------------
 # Creates VS folder structure
 function(ivw_folder target folder_name)
     set_target_properties(${target} PROPERTIES FOLDER ${folder_name})
 endfunction()
 
-#--------------------------------------------------------------------
 # Creates project module from name
 # This it called from the inviwo module CMakeLists.txt 
 # that is included from ivw_register_modules. 
@@ -542,7 +575,7 @@ function(ivw_create_module)
     ivw_mod_name_to_alias(ivw_dep_targets ${${mod}_dependencies})
     target_link_libraries(${${mod}_target} PUBLIC ${ivw_dep_targets})
 
-    # Optimize compilation with pre-compilied headers
+    # Optimize compilation with pre-compiled headers
     if(NOT ARG_NO_PCH)
         ivw_compile_optimize_on_target(${${mod}_target})
     endif()
@@ -558,10 +591,10 @@ function(ivw_create_module)
     else()
         ivw_folder(${${mod}_target} "${${mod}_group}")
     endif() 
-    
+
+    set_target_properties(${${mod}_target} PROPERTIES VERSION ${${mod}_version})
 endfunction()
 
-#--------------------------------------------------------------------
 # Add all external projects specified in cmake string IVW_EXTERNAL_PROJECTS
 function(ivw_add_external_projects)
     foreach(project_root_path ${IVW_EXTERNAL_PROJECTS})

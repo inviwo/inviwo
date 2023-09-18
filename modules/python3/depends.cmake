@@ -1,10 +1,12 @@
 #--------------------------------------------------------------------
 # Dependencies for current module
-# List modules on the format "Inviwo<ModuleName>Module"
 set(dependencies
 )
 set(protected ON)
 
-if(Python3_Development_FOUND)
-    set(EnableByDefault ON)
+if(NOT IVW_ENABLE_PYTHON) 
+    set(Disabled ON)
+    set(DisabledReason "Disabled since IVW_ENABLE_PYTHON is OFF")
 endif()
+
+set(EnableByDefault ON)

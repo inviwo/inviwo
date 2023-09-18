@@ -147,9 +147,7 @@ function(ivw_define_standard_properties)
             list(APPEND comp_opts "/wd4505") # unreferenced funtion  https://msdn.microsoft.com/en-us/library/mt694070.aspx
             list(APPEND comp_opts "/w35038") # class member reorder
             list(APPEND comp_opts "/wd4250") # inherits via dominance https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-2-c4250?view=msvc-160
-            if(NOT IVW_USE_OPENMP)
-                list(APPEND comp_opts "/permissive-")
-            endif()
+
             list(APPEND comp_opts "/utf-8")
             # make __cplusplus macro report version matching C++ standard  https://docs.microsoft.com/en-us/cpp/build/reference/zc-cplusplus?view=msvc-170
             # This option is added in modules depending on Qt. If not set consistently, using precompiled headers will cause fatal compile errors.
@@ -159,8 +157,7 @@ function(ivw_define_standard_properties)
                 list(APPEND comp_opts "/wd4459") # declaration of 'identifier' hides global declaration
             endif()
             target_link_options(${target} PRIVATE 
-                $<$<CONFIG:Debug>:/debug:fastlink>
-                $<$<CONFIG:RelWithDebInfo>:/debug:fastlink>
+                $<$<CONFIG:Debug,RelWithDebInfo>:/debug:fastlink>
             )
         endif()
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
@@ -199,7 +196,7 @@ macro(ivw_define_standard_definitions project_name target)
         $<$<BOOL:${BUILD_SHARED_LIBS}>:INVIWO_ALL_DYN_LINK>
         $<$<BOOL:${IVW_CFG_PROFILING}>:IVW_PROFILING>
         $<$<BOOL:${IVW_CFG_FORCE_ASSERTIONS}>:IVW_FORCE_ASSERTIONS>
-        $<$<BOOL:${IVW_USE_OPENMP}>:IVW_USE_OPENMP>
+        $<$<BOOL:${IVW_ENABLE_OPENMP}>:IVW_USE_OPENMP>
         $<$<CONFIG:Debug>:IVW_DEBUG>
         $<$<CONFIG:Release>:IVW_RELEASE>
     )
