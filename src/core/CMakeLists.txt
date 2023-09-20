@@ -869,7 +869,7 @@ target_link_libraries(inviwo-core
         inviwo::flags
         inviwo::tracy
         fmt::fmt
-        $<$<BOOL:${IVW_USE_OPENMP}>:OpenMP::OpenMP_CXX>
+        $<$<BOOL:${IVW_ENABLE_OPENMP}>:OpenMP::OpenMP_CXX>
         $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
         $<$<BOOL:${WIN32}>:inviwo::stackwalker>
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>

@@ -44,7 +44,6 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
 # Add script files
 set(SCRIPT_FILES
     scripts/ivw/__init__.py

@@ -5,6 +5,4 @@ set(dependencies
     InviwoPython3Module
 )
 
-if(Python3_Development_FOUND)
-    set(EnableByDefault ON)
-endif()
+set(EnableByDefault ON)

@@ -1,8 +1,6 @@
-#--------------------------------------------------------------------
 # Inviwo DataFramePython Module
 ivw_module(DataFramePython)
 
-#--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     include/inviwo/dataframepython/dataframepythonmodule.h
@@ -10,14 +8,12 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
     src/dataframepythonmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
     tests/unittests/dataframepython-unittest-main.cpp
@@ -26,7 +22,6 @@ set(TEST_FILES
 )
 ivw_add_unittest(${TEST_FILES})
 
-#--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 

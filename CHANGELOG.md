@@ -1,5 +1,17 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2023-09-15 CMake option `IVW_ENABLE_QT`
+A CMake option `IVW_ENABLE_QT` was added to allow for enabling/disabling Inviwo's Qt support globally. Qt support is enabled by default. If Qt support is disabled all modules that depend on Qt will automatically be disabled. 
+
+At the same time the `IVW_USE_*` (`IVW_USE_OPENMP`, `IVW_USE_OPENEXR`, `IVW_USE_TRACY`) variables were renamed to `IVW_ENABLE_*` for consistency.
+
+## 2023-09-13 CMake option `IVW_ENABLE_PYTHON` and improved Python error handling
+A CMake option `IVW_ENABLE_PYTHON` was added to allow for enabling/disabling Inviwo's Python support globally. Python support is enabled by default. If Python support is disabled all modules that depends on python will automatically be disabled. 
+
+Error handling when initializing Python modules has been improved in case the Python executable or Python modules cannot be found. 
+
+*Note:* Inviwo will not access user site-package folders. Make sure to install the packages site-wide or add your user site-package folder to the environment variable `PYTHONPATH`, for example `PYTHONPATH="%appdata%\Python\Python311\site-packages"` on Windows.
+
 ## 2023-05-05 `std::filesystem` adoption
 Inviwo has been updated to use `std::filesystem` instead of our own custom functions.
 This change is not backwards compatible and will require code changes. 

@@ -1,5 +1,4 @@
-#--------------------------------------------------------------------
-# Create python module
+# Create bindings for dataframe python module
 set(HEADER_FILES
     include/ivwdataframe/ivwdataframe.h
     include/ivwdataframe/pydataframe.h

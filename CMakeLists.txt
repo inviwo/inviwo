@@ -27,15 +27,11 @@
  #
  #################################################################################
 
-cmake_minimum_required(VERSION 3.16...3.25 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
-
-if(DEFINED IVW_CFG_INCLUDE)
-    include(${IVW_CFG_INCLUDE})
-endif()
 
 # option for setting the project/solution name of the Inviwo project
 set(IVW_CFG_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
@@ -44,7 +40,7 @@ project(${IVW_CFG_PROJECT_NAME}
     LANGUAGES CXX
 )
 
-#Verify that git submodules has been cloned
+# verify that git submodules have been cloned
 include(cmake/verifysubmodules.cmake)
 verify_submodules("${CMAKE_CURRENT_LIST_DIR}/.gitmodules")
 
@@ -54,25 +50,50 @@ set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/pkg)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/modules)
 
-find_package(Python3 COMPONENTS Interpreter Development NumPy)
+# Provide option to enable Python support in Inviwo
+option(IVW_ENABLE_PYTHON "Enable Python support in Inviwo" ON)
+if(IVW_ENABLE_PYTHON)
+    find_package(Python3 COMPONENTS Interpreter Development NumPy)
+    if(NOT Python3_FOUND OR 
+       NOT Python3_Interpreter_FOUND OR 
+       NOT Python3_Development_FOUND OR 
+       NOT Python3_NumPy_FOUND)
+        message(FATAL_ERROR "Python3 not available and/or NumPy module not installed.\n"
+            "Please install Python3 and NumPy or disable IVW_ENABLE_PYTHON.\n"
+            "If you have a python installation that is not found, consider "
+            "setting Python3_ROOT_DIR to the root directory of your "
+            "Python 3 installation.\n"
+            "Note: Inviwo will not access user site-package folders. "
+            "Make sure to install the packages site-wide or add "
+            "your user site-package folder to the environment variable `PYTHONPATH`,\n"
+            "for example \"PYTHONPATH=%appdata%\\Python\\Python311\\site-packages\"."
+            )
+    endif()
+
+    message(STATUS "    executable:  ${Python3_EXECUTABLE}")
+    message(STATUS "    sitelib:     ${Python3_SITELIB}")
+    message(STATUS "    include dir: ${Python3_INCLUDE_DIRS}")
+    message(STATUS "    numpy:       ${Python3_NumPy_INCLUDE_DIRS}")
+endif()
+
+option(IVW_ENABLE_QT "Enable Qt support in Inviwo" ON)
+if(IVW_ENABLE_QT)
+    find_package(Qt6 COMPONENTS Core)
+    if(NOT Qt6Core_FOUND) 
+        message(FATAL_ERROR
+            "Qt6 not available. Please install Qt or disable IVW_ENABLE_QT.\n"
+            "Consider adding Qt to the CMAKE_PREFIX_PATH,\n" 
+            "i.e. start cmake with the option -DCMAKE_PREFIX_PATH=\"/path/to/qt\"")
+    endif()
+endif()
 
 include(cmake/globalconfig.cmake)
 
-#--------------------------------------------------------------------
 # Application setup
-option(IVW_APP_QTBASE       "Build base for Qt apps. Used by the Qt network editor and the Tiny Qt app" ON)
 option(IVW_APP_INVIWO       "Build Inviwo Qt network editor application" ON)
 option(IVW_APP_MINIMAL_GLFW "Build Inviwo Tiny GLFW Application" OFF)
-option(IVW_APP_MINIMAL_QT   "Build Inviwo Tiny QT Application" OFF)
+option(IVW_APP_MINIMAL_QT   "Build Inviwo Tiny QT Application" ON)
 option(IVW_APP_PYTHON       "Build Inviwo Python Application" ON)
-
-if((IVW_APP_INVIWO OR IVW_APP_MINIMAL_QT OR IVW_APP_PYTHON) AND NOT IVW_APP_QTBASE)
-    set(IVW_APP_QTBASE ON CACHE BOOL 
-        "Build base for qt applications. Used by Qt network editor and Qt minimal application" 
-        FORCE
-    )
-    message(STATUS "IVW_APP_QTBASE was set to build, due to dependencies")
-endif()
 
 ivw_enable_modules_if(IVW_APP_INVIWO QtWidgets)
 ivw_enable_modules_if(IVW_APP_MINIMAL_QT QtWidgets)
@@ -83,16 +104,6 @@ ivw_enable_modules_if(IVW_APP_PYTHON Python3 Python3Qt QtWidgets)
 option(IVW_TEST_INTEGRATION_TESTS "Build inviwo integration test" ON)
 ivw_enable_modules_if(IVW_TEST_INTEGRATION_TESTS GLFW Base)
 
-# Try to find qt and add it if it is not already in CMAKE_PREFIX_PATH
-if(NOT "${CMAKE_PREFIX_PATH}" MATCHES "[Qq][Tt]")
-    include(cmake/locateqt.cmake)
-    ivw_locateqt(QT_PATH)
-    if(QT_PATH)
-        ivw_debug_message(STATUS "Found qt at: ${QT_PATH}")
-        list(APPEND CMAKE_PREFIX_PATH ${QT5_PATH})
-    endif()
-endif()
-
 add_custom_target(uninstall COMMENT "Dummy target to prevent other uninstalls")
 
 add_subdirectory(ext)                        # Add external libraries.
@@ -100,10 +111,31 @@ add_subdirectory(tools/meta)                 # Add inviwo meta library, used in 
 add_subdirectory(tools/tracy)                # Add tracy wrapper, used for profiling
 if(IVW_TEST_INTEGRATION_TESTS OR IVW_TEST_UNIT_TESTS)
     add_subdirectory(tests/testutil)         # Add test utils, used in the module unit tests
-endif()                    
+endif()
+
 ivw_register_modules(all_modules)            # Add inviwo modules
-add_subdirectory(src/qt)                     # Add the Qt network editor
-add_subdirectory(apps)                       # Add all the applications, uses the modules.
+
+# Add all the applications, uses the modules.
+if(IVW_ENABLE_QT)
+    add_subdirectory(src/qt/applicationbase)
+    if(IVW_APP_INVIWO)
+        add_subdirectory(src/qt/editor)
+        add_subdirectory(apps/inviwo)
+    endif()
+    if(IVW_APP_PYTHON)
+        add_subdirectory(apps/inviwopyapp)
+    endif()
+    if(IVW_APP_MINIMAL_QT)
+        add_subdirectory(apps/inviwo_qtminimum)
+    endif()
+else()
+    message(STATUS "QT support is not enabled, needed for IVW_APP_INVIWO, IVW_APP_PYTHON, IVW_APP_MINIMAL_QT\n"
+            "Enable IVW_ENABLE_QT to use")
+endif()
+if(IVW_APP_MINIMAL_GLFW)
+    add_subdirectory(apps/inviwo_glfwminimum)
+endif()
+
 ivw_add_external_projects()                  # Add external projects
 if(IVW_TEST_INTEGRATION_TESTS)
     add_subdirectory(tests/integrationtests) # Add integration tests, uses the modules.

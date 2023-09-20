@@ -113,7 +113,7 @@ def formatError(e):
     tb = ''.join(traceback.format_exception(e))
     helpmsg = 'Note: Inviwo will not access user site-package folders. Make sure to install the packages site-wide or add\n' \
            'your user site-package folder to the environment variable `PYTHONPATH`,\n' \
-           'for example "PYTHONHOME=%appdata%\\Python\\Python311\\site-packages".'
+           'for example "PYTHONPATH=%appdata%\\Python\\Python311\\site-packages".'
     return f"{e}\n{tb}\n{helpmsg}\n\nsys.path:\n{pathlist}\nconfig:\n{config}"
 
 try:

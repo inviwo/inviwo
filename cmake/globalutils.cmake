@@ -27,10 +27,8 @@
 # 
 #################################################################################
 
-#--------------------------------------------------------------------
 # This file contains a collection of CMake utility scripts
 
-#--------------------------------------------------------------------
 # first_case_upper(retval string)
 # Make the first letter uppercase and the rest lower
 function(first_case_upper retval value)
@@ -50,7 +48,6 @@ function(lowercase retval)
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # ivw_join(sep glue output)
 # Joins list by replacing the separator with glue
 function(ivw_join sep glue output)
@@ -60,7 +57,6 @@ function(ivw_join sep glue output)
     set(${output} "${_TMP_STR}" PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # ivw_prepend(output str)
 # ivw_prepends str to each element of the input
 function(ivw_prepend var prefix)
@@ -71,7 +67,6 @@ function(ivw_prepend var prefix)
    set(${var} "${listVar}" PARENT_SCOPE)
 endfunction(ivw_prepend)
 
-#--------------------------------------------------------------------
 # ivw_pad_right(output output str padchar length)
 # ivw_pad_right add padding to the right of str
 function(ivw_pad_right output str padchar length)
@@ -85,7 +80,6 @@ function(ivw_pad_right output str padchar length)
 endfunction()
 
 
-#--------------------------------------------------------------------
 # encodeLineBreaks(output strings)
 # encodes the contents of the string given as last argument and saves the 
 # result in output.
@@ -101,7 +95,6 @@ function(encodeLineBreaks output)
     set(${output} "${_tmp_str}" PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # decodeLineBreaks(output strings)
 # reverse the encoding done by encodeLineBreaks(), i.e. __LINEBREAK__ and 
 # __SEMICOLON__ are reverted to '\n' and ';', respectively.
@@ -115,7 +108,6 @@ function(decodeLineBreaks output)
     set(${output} "${_tmp_str}" PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # list_all_variables()
 # prints all variables and values.
 macro(list_all_variables)
@@ -125,7 +117,6 @@ macro(list_all_variables)
     endforeach()
 endmacro()
 
-#--------------------------------------------------------------------
 # list_subdirectories(ret curdir return_relative)
 # List subdirectories, excluding dirs starting with "."
 function(list_subdirectories retval curdir return_relative)
@@ -143,7 +134,6 @@ function(list_subdirectories retval curdir return_relative)
     set(${retval} ${list_of_dirs} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # remove_duplicates(retval item item ...)
 # Clean duplicates from list subdirectories
 function(remove_duplicates retval)
@@ -154,7 +144,6 @@ function(remove_duplicates retval)
     set(${retval} ${list_of_dirs} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # ivw_remove_from_list(retval thelist toRemove0 toRemove1 ...)
 # Remove entries in one list from another list
 function(ivw_remove_from_list retval thelist)
@@ -168,8 +157,6 @@ function(ivw_remove_from_list retval thelist)
     set(${retval} ${new_items} PARENT_SCOPE)
 endfunction()
 
-
-#--------------------------------------------------------------------
 # list_intersection(retval list_a list_b)
 # return items that are in both lists
 function(list_intersection retval list_a list_b)
@@ -186,7 +173,6 @@ function(list_intersection retval list_a list_b)
     set(${retval} ${intersection} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # list_to_stringvector(retval item1 item2 ...) -> {"item1", "item2", ...}
 # builds a string vector 
 function(list_to_stringvector retval)
@@ -199,6 +185,7 @@ function(list_to_stringvector retval)
         set(${retval} "{}" PARENT_SCOPE)
     endif()
 endfunction()
+
 function(list_to_longstringvector retval) # same but with linebreaks
     set (items ${ARGN})
     list(LENGTH items len)
@@ -210,14 +197,12 @@ function(list_to_longstringvector retval) # same but with linebreaks
     endif()
 endfunction()
 
-#--------------------------------------------------------------------
 # mark_as_internal(var)
 # hides the given variable in all CMake UIs
 macro ( mark_as_internal _var )
   set ( ${_var} ${${_var}} CACHE INTERNAL "hide this!" FORCE )
 endmacro( mark_as_internal _var )
 
-#--------------------------------------------------------------------
 # ivw_add_module_option_to_cache(mod ON/OFF [FORCE])
 # add/update a module to the CMake cache
 function(ivw_add_module_option_to_cache mod onoff)
@@ -278,7 +263,6 @@ endfunction()
 # ivw_mod_name_to_alias        InviwoOpenGLModule -> inviwo::module::opengl
 #--------------------------------------------------------------------
 
-#--------------------------------------------------------------------
 # ivw_to_macro_name(retval item1 item2 ...)
 # Convert a name to a macro name, i.e. OpenGL-test -> OPENGL_TEST
 function(ivw_to_macro_name retval)
@@ -291,8 +275,6 @@ function(ivw_to_macro_name retval)
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
 
-
-#--------------------------------------------------------------------
 # ivw_dir_to_mod_dep(retval item1 item2 ...)
 # Convert directory name tp module dep, i.e. opengl -> INVIWOOPENGLMODULE
 function(ivw_dir_to_mod_dep retval)
@@ -304,8 +286,6 @@ function(ivw_dir_to_mod_dep retval)
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
 
-
-#--------------------------------------------------------------------
 # ivw_dir_to_mod_prefix(retval item1 item2 ...)
 # Convert dir name to  module prefix, i.e. opengl -> IVW_MODULE_OPENGL
 function(ivw_dir_to_mod_prefix retval)
@@ -317,7 +297,6 @@ function(ivw_dir_to_mod_prefix retval)
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # ivw_mod_dep_to_dir(relval item1 item2 ...)
 # Convert module dep to directory name, i.e. INVIWOOPENGLMODULE -> opengl
 function(ivw_mod_dep_to_dir retval)
@@ -332,7 +311,6 @@ function(ivw_mod_dep_to_dir retval)
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # ivw_mod_prefix_to_dir(relval item1 item2 ...)
 # Convert module prefix to directory name, i.e. IVW_MODULE_OPENGL -> opengl
 function(ivw_mod_prefix_to_dir retval)
@@ -348,7 +326,6 @@ function(ivw_mod_prefix_to_dir retval)
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # ivw_mod_name_to_dir(retval item1 item2 ...)
 # Convert module name to directory name, i.e. InviwoOpenGLModule -> opengl
 function(ivw_mod_name_to_dir retval)
@@ -366,7 +343,6 @@ function(ivw_mod_name_to_dir retval)
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # ivw_mod_name_to_class(retval item1 item2 ...)
 # Convert module name to directory name, i.e. InviwoOpenGLModule -> OpenGL
 function(ivw_mod_name_to_class retval)
@@ -383,7 +359,6 @@ function(ivw_mod_name_to_class retval)
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # ivw_mod_name_to_name(retval item1 item2 ...)
 # Convert module name to directory name, i.e. InviwoOpenGLModule -> OpenGL
 # Will return any input as is if it does not match
@@ -401,7 +376,6 @@ function(ivw_mod_name_to_name retval)
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # ivw_mod_name_to_alias(retval item1 item2 ...)
 # Convert module name to alias name, i.e. InviwoOpenGLModule -> inviwo::module::alias
 # using module data
@@ -414,7 +388,6 @@ function(ivw_mod_name_to_alias retval)
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # ivw_mod_name_to_target_name(retval item1 item2 ...)
 # Convert module name to target name, i.e. InviwoOpenGLModule -> inviwo-opengl-module
 function(ivw_mod_name_to_target_name retval)
@@ -425,7 +398,6 @@ function(ivw_mod_name_to_target_name retval)
     set(${retval} ${targets} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # ivw_to_mod_name(retval item1 item2 ...)
 # Convert module name to directory name, i.e. OpenGL -> InviwoOpenGLModule
 function(ivw_to_mod_name retval)
@@ -436,8 +408,6 @@ function(ivw_to_mod_name retval)
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
 
-
-#--------------------------------------------------------------------
 # ivw_dir_to_module_taget_name(retval item1 item2 ...)
 # Convert module name to directory name, i.e. opengl -> inviwo-module-opengl
 function(ivw_dir_to_module_taget_name retval)
@@ -448,7 +418,6 @@ function(ivw_dir_to_module_taget_name retval)
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # ivw_mod_name_to_mod_dep(retval item1 item2 ...)
 # Convert module name to module dep, i.e. InviwoOpenGLModule -> INVIWOOPENGLMODULE
 function(ivw_mod_name_to_mod_dep retval)
@@ -460,7 +429,6 @@ function(ivw_mod_name_to_mod_dep retval)
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # ivw_mod_name_to_reg(retval item1 item2 ...)
 # Convert module name to module dep, i.e. InviwoOpenGLModule -> REG_INVIWOOPENGLMODULE
 function(ivw_mod_name_to_reg retval)
@@ -497,7 +465,6 @@ function(ivw_find_package_name name retval)
     endif()
 endfunction()
 
-#--------------------------------------------------------------------
 # pritty print a list .
 # ivw_print_list(list) -> "list  = list1, list2, list3"
 function(ivw_print_list list_var)
@@ -505,19 +472,6 @@ function(ivw_print_list list_var)
     message(STATUS "${list_var} = ${res}")
 endfunction()
 
-#--------------------------------------------------------------------
-# repeat a string n times.
-# ivw_repeat_str("-" 10 ret) -> "----------"
-function(ivw_repeat_str str n retval)
-    set(res "")
-    while(${n} GREATER 0)
-        set(res "${res}${str}")
-        MATH(EXPR n "${n}-1")
-    endwhile()
-    set(${retval} ${res} PARENT_SCOPE)
-endfunction()
-
-#--------------------------------------------------------------------
 # create a reverse copy of a list
 # ivw_reverse_copy(retval list) 
 function(ivw_reverse_list_copy list_var revlist)
@@ -529,7 +483,6 @@ function(ivw_reverse_list_copy list_var revlist)
     set(${revlist} ${alist} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # Assign one of two values to a variable as a result of a condition
 # ivw_set_if(COND <bool value> TRUEVAL <if true> FALSEVAL <if false> RETVAL <output var>)
 function(ivw_set_if)
@@ -541,7 +494,6 @@ function(ivw_set_if)
     endif()
 endfunction()
 
-#--------------------------------------------------------------------
 # helper function for topological sort
 function(ivw_private_visit_node node sorted_var marked_var tempmarked_var node_list_var node_edge_var count)
     MATH(EXPR count "${count}+1")
@@ -601,7 +553,6 @@ function(ivw_topological_sort node_list_var node_edge_var sorted_var)
     set(${sorted_var} ${sorted} PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # Get the module name from a CMakeLists.txt
 function(ivw_private_get_ivw_module_name path retval)
     file(READ ${path} contents)
@@ -613,7 +564,6 @@ function(ivw_private_get_ivw_module_name path retval)
      set(${retval} NOTFOUND PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # Get the module include path
 function(ivw_private_get_ivw_module_include_path path includePrefix includePath orgName)
     get_filename_component(name ${path} NAME)
@@ -642,7 +592,6 @@ function(ivw_private_get_ivw_module_include_path path includePrefix includePath 
     
 endfunction()
 
-#--------------------------------------------------------------------
 # Get the module version from a CMakeLists.txt
 # Major.Minor.Path
 # Returns 1.0.0 if no version is found
@@ -663,7 +612,6 @@ function(ivw_private_get_ivw_module_version path retval)
             endif()
         endif()
     endforeach()
-    #ivw_message("Did not find version in (${path})")
     set(${retval} "1.0.0" PARENT_SCOPE)
 endfunction()
 
@@ -698,7 +646,6 @@ function(ivw_private_is_valid_module_dir path dir retval)
     set(${retval} FALSE PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # Query if a lib is compiled with 32 or 64 bits, will return 0 if it 
 # could not find out. 
 function(ivw_library_bits lib retval)
@@ -747,8 +694,7 @@ function(ivw_library_bits lib retval)
     set(${retval} 0 PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
-# From a 
+# From a list of paths find the unique path segments
 function(ivw_find_unique_path_segements retval paths)
     list(LENGTH paths npaths)
 
@@ -808,8 +754,6 @@ function(ivw_find_unique_path_segements retval paths)
     set(${retval} ${ret} PARENT_SCOPE)
 endfunction()
 
-
-#--------------------------------------------------------------------
 # A function to try to retrive the git hash of the last commit in a 
 # directory
 function(ivw_git_get_hash dir retval)
@@ -828,7 +772,6 @@ function(ivw_git_get_hash dir retval)
     set(${retval} "????????" PARENT_SCOPE)
 endfunction()
 
-#--------------------------------------------------------------------
 # A helper funtion to generate a header file with inviwo build 
 # information, like the build date and the commit hash
 # ivw_generate_build_info(<template> <outputfile> <module dir1> <module dir2> ...
@@ -876,15 +819,6 @@ function(ivw_generate_build_info source_template ini_template buildinfo_sourcefi
     configure_file("${ini_template}" "${ini_dest_path}${buildinfo_inifile}" @ONLY)
 endfunction()
 
-#--------------------------------------------------------------------
-# Append to cmake module path
-macro(ivw_add_cmake_find_package_path)
-    foreach(item ${ARGN})
-        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${item})
-    endforeach()
-endmacro()
-
-#--------------------------------------------------------------------
 # Get target properties recursively by following all INTERFACE_LINK_LIBRARIES
 function(ivw_get_target_property_recursive retval target property alsoInterfaceTargets)
     set(res "")
@@ -961,63 +895,91 @@ function(ivw_get_targets_in_dir_recursive retval directory)
 endfunction()
 
 function(ivw_copy_if retval)
-    set(options "EVAL")
-    set(oneValueArgs LIST PROJECTOR VALUE)
+    set(options EVAL NOT)
+    set(oneValueArgs LIST PROJECTOR VALUE COMPARE)
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+    if(NOT ARG_LIST)
+        message(FATAL_ERROR "ivw_copy_if: LIST not set")
+    endif()
+    if(ARG_NOT)
+        set(negate NOT)
+    else()
+        set(negate "")
+    endif()
+    if(ARG_COMPARE)
+        set(compare ${ARG_COMPARE})
+    else()
+        set(compare STREQUAL)
+    endif()
+
     set(res "")
-    foreach(item IN LISTS ${ARG_LIST})
-        if(ARG_PROJECTOR AND ARG_VALUE)
-            if (ARG_EVAL)
-                if ("${${${item}${ARG_PROJECTOR}}}" STREQUAL "${ARG_VALUE}")
+    
+    if(ARG_PROJECTOR AND ARG_VALUE)
+        if (ARG_EVAL)
+            foreach(item IN LISTS ${ARG_LIST})
+                if (${negate} "${${${item}${ARG_PROJECTOR}}}" ${compare} "${ARG_VALUE}")
                     list(APPEND res ${item})
                 endif()
-            else()
-                if ("${${item}${ARG_PROJECTOR}}" STREQUAL "${ARG_VALUE}")
-                    list(APPEND res ${item})
-                endif()
-            endif()
-        elseif(ARG_PROJECTOR)
-            if(ARG_EVAL)
-                if ("${${${item}${ARG_PROJECTOR}}}")
-                    list(APPEND res ${item})
-                endif()
-            else()
-                if ("${${item}${ARG_PROJECTOR}}")
-                    list(APPEND res ${item})
-                endif()
-            endif()
-        elseif(ARG_VALUE)
-            if(ARG_EVAL)
-                if ("${${item}}" STREQUAL "${ARG_VALUE}")
-                libist(APPEND res ${item})
-                endif()
-            else() 
-                if ("${item}" STREQUAL "${ARG_VALUE}")
-                    list(APPEND res ${item})
-                endif()
-            endif()
+            endforeach()
         else()
-            if(ARG_EVAL)
-                if (${${item}})
+            foreach(item IN LISTS ${ARG_LIST})
+                if (${negate} "${${item}${ARG_PROJECTOR}}" ${compare} "${ARG_VALUE}")
                     list(APPEND res ${item})
                 endif()
-            else() 
-                if (${item})
-                    list(APPEND res ${item})
-                endif()
-            endif()
+            endforeach()
         endif()
-    endforeach()
+    elseif(ARG_PROJECTOR)
+        if(ARG_EVAL)
+            foreach(item IN LISTS ${ARG_LIST})
+                if (${negate} "${${${item}${ARG_PROJECTOR}}}")
+                    list(APPEND res ${item})
+                endif()
+            endforeach()
+        else()
+            foreach(item IN LISTS ${ARG_LIST})
+                if (${negate} "${${item}${ARG_PROJECTOR}}")
+                    list(APPEND res ${item})
+                endif()
+            endforeach()
+        endif()
+    elseif(ARG_VALUE)
+        if(ARG_EVAL)
+            foreach(item IN LISTS ${ARG_LIST})
+                if (${negate} "${${item}}" ${compare} "${ARG_VALUE}")
+                    list(APPEND res ${item})
+                endif()
+            endforeach()
+        else()
+            foreach(item IN LISTS ${ARG_LIST})
+                if (${negate} "${item}" ${compare} "${ARG_VALUE}")
+                    list(APPEND res ${item})
+                endif()
+            endforeach()
+        endif()
+    else()
+        if(ARG_EVAL)
+            foreach(item IN LISTS ${ARG_LIST})
+                if (${negate} ${${item}})
+                    list(APPEND res ${item})
+                endif()
+            endforeach()
+        else()
+            foreach(item IN LISTS ${ARG_LIST}) 
+                if (${negate} ${item})
+                    list(APPEND res ${item})
+                endif()
+            endforeach()
+        endif()
+    endif()
     set(${retval} ${res} PARENT_SCOPE)
 endfunction()
 
-#-----------------------------------------------------------------------
 # Uses QT's windeployqt.exe to copy necessary QT-dependencies (dlls etc) 
 # for the given target to the build folder for development purposes. 
 # Does nothing on platforms other than Windows. 
-# Use ivw_default_install_targets (installutils.cmake) for deployment.  
+# Use ivw_default_install_targets (installutils.cmake) for deployment.
 function(ivw_deploy_qt target)
     if(WIN32)
         get_target_property(target_type ${target} TYPE)
@@ -1047,5 +1009,180 @@ function(ivw_deploy_qt target)
                     $<TARGET_FILE:${target}>
             )    
         endif()
+    endif()
+endfunction()
+
+# Formats a string using python-like format strings.
+# Format strings contain ?replacement fields? surrounded by curly braces {}.
+# Anything that is not contained in braces is considered literal text, 
+# which is copied unchanged to the output. If you need to include a brace 
+# character in the literal text, it can be escaped by doubling: {{ and }}.
+# 
+# The grammar for a replacement field is as follows:
+# replacement_field ::=  "{" [arg_id] [":" format_spec] "}"
+# arg_id            ::=  integer
+# integer           ::=  digit+
+# digit             ::=  "0"..."9"
+# format_spec       ::=  [[fill]align][width]
+# fill              ::=  <a character other than '{' or '}'>
+# align             ::=  "<" | ">" | "^"
+# width             ::=  integer
+# 
+# The result can ether be returned in a variable given by RESULT
+# or printed right away by passing one of the message types
+# 
+# Example:
+#    ivw_format(RESULT str
+#        FORMAT "some string '{0:>10}' more string '{1:_^11}' even move '{2:<10}'" 
+#            " multiple format strings will be concatenated '{0:10}'" 
+#        ARGUMENTS "Arg0" "Arg1" "Arg2")
+# 
+#    ivw_format(STATUS FORMAT "will be printed using message(STATUS) '{:*^10}'" ARGUMENTS "Arg0")
+# 
+function(ivw_format)
+    set(options FATAL_ERROR SEND_ERROR WARNING AUTHOR_WARNING DEPRECATION NOTICE STATUS VERBOSE DEBUG TRACE)
+    set(oneValueArgs RESULT)
+    set(multiValueArgs FORMAT ARGUMENTS)
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if(NOT ARG_FORMAT)
+        message(FATAL_ERROR "ivw_format: FORMAT not set")
+    endif()
+    if(ARG_KEYWORDS_MISSING_VALUES) 
+        message(FATAL_ERROR "ivw_format: Missing values for keywords ${ARG_KEYWORDS_MISSING_VALUES}")
+    endif()
+    if(ARG_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR "ivw_format: Unparsed arguments ${ARG_UNPARSED_ARGUMENTS}")
+    endif()
+
+    set(message_type "")
+    foreach(item IN LISTS options)
+        if(ARG_${item})
+            list(APPEND message_type ${item})
+        endif()
+    endforeach()
+    list(LENGTH message_type message_type_length)
+    if(message_type_length GREATER 1)
+        message(FATAL_ERROR "ivw_format: Only one message type can be set, got '${message_type}'")
+    endif()
+
+    list(LENGTH ARG_ARGUMENTS vars_length)
+
+    set(result "")
+    set(count 0)
+
+    string(CONCAT format ${ARG_FORMAT})
+    string(LENGTH "${format}" format_length)
+    set(curr 0)
+    while(curr LESS ${format_length})
+        math(EXPR next "${curr} + 1")
+        string(SUBSTRING "${format}" ${curr} 1 char)
+        string(SUBSTRING "${format}" ${next} 1 nextChar)
+        
+        ## Handle exscaped { and }
+        if(char STREQUAL "{" AND nextChar STREQUAL "{")
+            string(APPEND result "{")
+            math(EXPR curr "${curr} + 2")
+        elseif(char STREQUAL "}" AND nextChar STREQUAL "}")
+            string(APPEND result "}")
+            math(EXPR curr "${curr} + 2")
+
+        #  Handle format argument
+        elseif(char STREQUAL "{")
+            set(index "")
+            set(fill " ")
+            set(align "<")
+            set(size "")
+
+            # find argument index
+            math(EXPR curr "${curr} + 1")
+            string(SUBSTRING "${format}" ${curr} 1 char)
+            while(curr LESS ${format_length} AND NOT char STREQUAL "}" AND NOT char STREQUAL ":")
+                if(NOT char MATCHES [0-9])
+                    message(FATAL_ERROR "ivw_format: Index must be a number, got '${char}'")
+                endif()
+                string(APPEND index ${char})
+                math(EXPR curr "${curr} + 1")
+                string(SUBSTRING "${format}" ${curr} 1 char)
+            endwhile()
+            if(index STREQUAL "")
+                set(index ${count})
+            endif()
+
+            # find argument fill, alignment and size
+            if(char STREQUAL ":")
+                math(EXPR curr "${curr} + 1")
+                math(EXPR next "${curr} + 1")
+                string(SUBSTRING "${format}" ${curr} 1 char)
+                string(SUBSTRING "${format}" ${next} 1 nextChar)
+                if(nextChar MATCHES [<>^])
+                    set(fill ${char})
+                    set(align ${nextChar})
+                    math(EXPR curr "${curr} + 2")
+                elseif(char MATCHES [<>^])
+                    set(align ${char})
+                    math(EXPR curr "${curr} + 1")
+                endif()
+
+                string(SUBSTRING "${format}" ${curr} 1 char)
+                while(curr LESS ${format_length} AND NOT char STREQUAL "}")
+                    if(char MATCHES [0-9])
+                        string(APPEND size ${char})
+                    else()
+                        message(FATAL_ERROR "ivw_format: Size must be a number, got '${char}'")
+                    endif()
+
+                    math(EXPR curr "${curr} + 1")
+                    string(SUBSTRING "${format}" ${curr} 1 char)
+                endwhile()
+            endif()
+
+            # get the indexed argument
+            if(index GREATER_EQUAL vars_length)
+                math(EXPR expected "${index} + 1")
+                message(FATAL_ERROR "Missing variables in ivw_format, got ${vars_length} but expected at least ${expected}\nARGUMENTS: ${ARG_ARGUMENTS}")
+            endif()
+            list(GET ARG_ARGUMENTS ${index} var_name)
+
+            # calculate padding
+            string(LENGTH ${var_name} var_name_length)
+            math(EXPR padding_length "${size} - ${var_name_length}")
+            if(padding_length LESS 0)
+                set(padding_length 0)
+            endif()
+            if(align STREQUAL "^")
+                math(EXPR padd_right "${padding_length} / 2")
+                math(EXPR padd_left "${padding_length} / 2 + ${padding_length} % 2")
+            elseif(align STREQUAL "<")
+                set(padd_right 0)
+                set(padd_left ${padding_length})
+            elseif(align STREQUAL ">")
+                set(padd_right ${padding_length})
+                set(padd_left 0)
+            endif()
+
+            # append padded argument to result
+            string(REPEAT ${fill} ${padd_right} padding)
+            string(APPEND result ${padding})
+            string(APPEND result ${var_name})
+            string(REPEAT ${fill} ${padd_left} padding)
+            string(APPEND result ${padding})
+
+            math(EXPR count "${count} + 1")
+            math(EXPR curr "${curr} + 1")
+
+        # pass normal char directly to result
+        else()
+            string(APPEND result "${char}")
+            math(EXPR curr "${curr} + 1")
+        endif()
+    endwhile()
+
+    if(ARG_RESULT)
+        set(${ARG_RESULT} ${result} PARENT_SCOPE)
+    endif()
+
+    if(message_type_length EQUAL 1)
+        message(${message_type} ${result})
     endif()
 endfunction()

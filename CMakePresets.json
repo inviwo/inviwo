@@ -12,6 +12,8 @@
         "IVW_CFG_PRECOMPILED_HEADERS":      { "type": "BOOL", "value": "OFF"},
         "IVW_CFG_FORCE_ASSERTIONS":         { "type": "BOOL", "value": "ON"},
         "IVW_CFG_BUILD_CHANGELOG":          { "type": "BOOL", "value": "ON"},
+        "IVW_ENABLE_OPENMP":                { "type": "BOOL", "value": "OFF"},
+        "IVW_ENABLE_OPENEXR":               { "type": "BOOL", "value": "ON"},
 
         "IVW_APP_MINIMAL_GLFW":             { "type": "BOOL", "value": "ON"},
         "IVW_APP_MINIMAL_QT":               { "type": "BOOL", "value": "ON"},
@@ -19,9 +21,7 @@
         "IVW_TEST_BENCHMARKS":              { "type": "BOOL", "value": "ON"},
         "IVW_TEST_INTEGRATION_TESTS":       { "type": "BOOL", "value": "ON"},
 
-        "IVW_PACKAGE_INSTALLER":            { "type": "BOOL", "value": "ON"},
-        "IVW_USE_OPENMP":                   { "type": "BOOL", "value": "OFF"},
-        "IVW_USE_OPENEXR":                  { "type": "BOOL", "value": "ON"}
+        "IVW_PACKAGE_INSTALLER":            { "type": "BOOL", "value": "ON"}
       }
     },
     {

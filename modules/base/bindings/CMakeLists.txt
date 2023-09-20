@@ -1,5 +1,4 @@
-# Create python module
-
+# Create python bindings for base module
 find_package(pybind11 CONFIG REQUIRED)
 
 set(HEADER_FILES

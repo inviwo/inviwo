@@ -1,5 +1,4 @@
 # Create python module
-
 find_package(pybind11 CONFIG REQUIRED)
 
 set(HEADER_FILES

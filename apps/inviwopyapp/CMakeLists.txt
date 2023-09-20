@@ -21,4 +21,4 @@ list(REMOVE_ITEM enabled_modules InviwoGLFWModule)
 add_custom_target(inviwopyapp SOURCES ${PYTHON_FILES} ${CMAKE_FILES})
 
 # Move to folder
-ivw_folder(inviwopyapp minimals)
+ivw_folder(inviwopyapp apps)
