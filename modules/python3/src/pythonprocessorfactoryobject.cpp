@@ -145,7 +145,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
                     : "\n\nNote: Inviwo will not access user site-package folders. Make sure to "
                       "install the packages site-wide or add\n"
                       "your user site-package folder to the environment variable `PYTHONPATH`,\n"
-                      "for example \"PYTHONHOME=%appdata%\\Python\\Python311\\site-packages\".";
+                      "for example \"PYTHONPATH=%appdata%\\Python\\Python311\\site-packages\".";
             printedNoteOnce = true;
 
             throw Exception(

@@ -104,6 +104,18 @@ function(ivw_private_setup_module_data)
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+    foreach(item IN LISTS oneValueArgs)
+        if(NOT ARG_${item})
+            message(FATAL_ERROR "ivw_private_setup_module_data: ${item} not specified")
+        endif()
+    endforeach()
+    if(ARG_KEYWORDS_MISSING_VALUES) 
+        message(FATAL_ERROR "ivw_private_setup_module_data: Missing values for keywords ${ARG_KEYWORDS_MISSING_VALUES}")
+    endif()
+    if(ARG_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR "ivw_private_setup_module_data: Unparsed arguments ${ARG_UNPARSED_ARGUMENTS}")
+    endif()
+
     set(dir ${ARG_DIR})
     set(name ${ARG_NAME})
     set(module_path ${ARG_BASE})
@@ -232,7 +244,13 @@ function(ivw_register_modules retval)
 
     ivw_dir_to_mod_dep(mod core)
     list(APPEND modules ${mod})
-    ivw_private_setup_module_data(CORE NAME "Core" GROUP "" DIR "core" BASE ${IVW_SOURCE_DIR})
+    ivw_private_setup_module_data(CORE 
+        NAME "Core" 
+        VERSION "1.0.0" 
+        GROUP "core" 
+        DIR "core" 
+        BASE ${IVW_SOURCE_DIR}
+    )
     ivw_add_module_option_to_cache(${mod} ON)
 
     foreach(module_path ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})
@@ -338,7 +356,7 @@ function(ivw_register_modules retval)
     # Add module versions dependencies
     foreach(mod ${modules})
         set(dependencies_version "")
-        foreach(dependency ${${mod}_dependencies})
+        foreach(dependency IN LISTS ${mod}_dependencies)
             ivw_mod_name_to_mod_dep(dep ${dependency})
             list(FIND modules ${dep} found)
             if(NOT ${found} EQUAL -1)
@@ -348,7 +366,7 @@ function(ivw_register_modules retval)
                 # Dependency was not found, not an inviwo module...
                 # We do not take responsibility for external library versions.
                 # Distribute the dependency along with the library!
-                # ivw_message("${${mod}_name}: ${dependency} dependency not found")
+                message(WARNING "${${mod}_name}: ${dependency} dependency not found")
             endif()
         endforeach()
         set("${mod}_dependenciesversion" ${dependencies_version} CACHE INTERNAL "Module dependency versions")
@@ -590,7 +608,7 @@ function(ivw_create_module)
         ivw_folder(${${mod}_target} "${ARG_GROUP}")
     else()
         ivw_folder(${${mod}_target} "${${mod}_group}")
-    endif() 
+    endif()
 
     set_target_properties(${${mod}_target} PROPERTIES VERSION ${${mod}_version})
 endfunction()

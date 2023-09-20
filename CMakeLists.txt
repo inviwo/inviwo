@@ -62,8 +62,18 @@ if(IVW_ENABLE_PYTHON)
             "Please install Python3 and NumPy or disable IVW_ENABLE_PYTHON.\n"
             "If you have a python installation that is not found, consider "
             "setting Python3_ROOT_DIR to the root directory of your "
-            "Python 3 installation.")
+            "Python 3 installation.\n"
+            "Note: Inviwo will not access user site-package folders. "
+            "Make sure to install the packages site-wide or add "
+            "your user site-package folder to the environment variable `PYTHONPATH`,\n"
+            "for example \"PYTHONPATH=%appdata%\\Python\\Python311\\site-packages\"."
+            )
     endif()
+
+    message(STATUS "    executable:  ${Python3_EXECUTABLE}")
+    message(STATUS "    sitelib:     ${Python3_SITELIB}")
+    message(STATUS "    include dir: ${Python3_INCLUDE_DIRS}")
+    message(STATUS "    numpy:       ${Python3_NumPy_INCLUDE_DIRS}")
 endif()
 
 option(IVW_ENABLE_QT "Enable Qt support in Inviwo" ON)
@@ -71,7 +81,7 @@ if(IVW_ENABLE_QT)
     find_package(Qt6 COMPONENTS Core)
     if(NOT Qt6Core_FOUND) 
         message(FATAL_ERROR
-            "Qt6 not available. Please instal Qt or disable IVW_ENABLE_QT.\n"
+            "Qt6 not available. Please install Qt or disable IVW_ENABLE_QT.\n"
             "Consider adding Qt to the CMAKE_PREFIX_PATH,\n" 
             "i.e. start cmake with the option -DCMAKE_PREFIX_PATH=\"/path/to/qt\"")
     endif()
@@ -119,7 +129,7 @@ if(IVW_ENABLE_QT)
         add_subdirectory(apps/inviwo_qtminimum)
     endif()
 else()
-    message(STATUS "QT support is not enabled, neeed for IVW_APP_INVIWO, IVW_APP_PYTHON, IVW_APP_MINIMAL_QT\n"
+    message(STATUS "QT support is not enabled, needed for IVW_APP_INVIWO, IVW_APP_PYTHON, IVW_APP_MINIMAL_QT\n"
             "Enable IVW_ENABLE_QT to use")
 endif()
 if(IVW_APP_MINIMAL_GLFW)

@@ -1,7 +1,7 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
 ## 2023-09-15 CMake option `IVW_ENABLE_QT`
-A CMake option `IVW_ENABLE_QT` was added to allow for enabling/disabling Inviwo's Qt support globally. Qt support is enabled by default. If Qt support is disabled all modules that depends on Qt will automatically be disabled. 
+A CMake option `IVW_ENABLE_QT` was added to allow for enabling/disabling Inviwo's Qt support globally. Qt support is enabled by default. If Qt support is disabled all modules that depend on Qt will automatically be disabled. 
 
 At the same time the `IVW_USE_*` (`IVW_USE_OPENMP`, `IVW_USE_OPENEXR`, `IVW_USE_TRACY`) variables were renamed to `IVW_ENABLE_*` for consistency.
 
