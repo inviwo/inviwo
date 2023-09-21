@@ -35,31 +35,32 @@ namespace inviwo {
 const ProcessorInfo DummyProcessor::processorInfo_{
     "org.inviwo.DummyProcessor",  // Class identifier
     "Dummy Processor",        // Display name
-    "Undefined",                   // Category
+    "Testing",                   // Category
     CodeState::Experimental,       // Code state
-    Tags::None,                    // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp};
+    Tags::GL,                    // Tags
+};
 
 const ProcessorInfo DummyProcessor::getProcessorInfo() const { return processorInfo_; }
 
 DummyProcessor::DummyProcessor()
     : Processor{}
-    /*
+    
     , inport_{"inport", "<description of the inport data and any requirements on the data>"_help}
     , outport_{"outport", "<description of the generated outport data>"_help}
-    , position_{"position",
-                "Position",
-                "<description of the property>"_help,
-                vec3(0.0f),
-                {vec3(-100.0f), ConstraintBehavior::Ignore},
-                {vec3(-100.0f), ConstraintBehavior::Ignore}} */ {
+    , value_{
+        "value",
+        "Value",
+        1,
+        0,
+        100,
+        } {
 
-    //addPorts(inport_, outport_);
-    //addProperties(position_);
+    addPorts(inport_, outport_);
+    addProperties(value_);
 }
 
 void DummyProcessor::process() {
-    // outport_.setData(std::make_shared<SomeOtherData>(position_.get()));
+    outport_.setData(inport_.getData());
 }
 
 }  // namespace inviwo
