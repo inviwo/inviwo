@@ -32,8 +32,7 @@
 #include <inviwo/pathtracing/pathtracingmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
@@ -47,9 +46,9 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    //DataInport<SomeType> inport_;
-    //DataOutport<SomeOtherType> outport_;
-    //FloatVec3Property position_;
+    ImageInport inport_;
+    ImageOutport outport_;
+    FloatProperty value_;
 };
 
 }  // namespace inviwo
