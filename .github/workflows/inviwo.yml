@@ -4,8 +4,13 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write  # Enable vcpkg to write to the dependency graph
+
 env:
   VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'         # recognized by vcpkg
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  VCPKG_FEATURE_FLAGS: dependencygraph
   # QT_DEBUG_PLUGINS: 1                                        # print qt plugin debug info
 
 jobs:
@@ -94,10 +99,10 @@ jobs:
             linkage: dynamic
             configuration: Release
             targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
-          - system: macos
-            linkage: dynamic
-            configuration: Release
-            targets: 'all package'
+          #- system: macos  # Disable mac packaging since it probably runs out of diskspace
+          #  linkage: dynamic
+          #  configuration: Release
+          #  targets: 'all package'
           - system: linux
             linkage: dynamic
             configuration: Release
@@ -320,6 +325,10 @@ jobs:
       run: |
         $ver = (Get-ChildItem -Name C:/"Program Files"/Inviwo/*)
         Invoke-expression "C:/'Program Files'/Inviwo/$ver/bin/Inviwo-cli.exe --logconsole --quit"
+        if($LASTEXITCODE -ne 0) {
+          Invoke-expression "C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\gflags.exe /i C:/'Program Files'/Inviwo/$ver/bin/Inviwo-cli.exe +sls"
+          Invoke-Expression "C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\cdb.exe -g -c q C:/'Program Files'/Inviwo/$ver/bin/Inviwo-cli.exe"
+        }
     
     # Macos
     - name: Run MacOS Installer
