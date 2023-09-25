@@ -28,6 +28,16 @@
  *********************************************************************************/
 
 #include <inviwo/pathtracing/processors/dummyprocessor.h>
+#include <modules/opengl/openglmodule.h>
+#include <modules/opengl/shader/shadermanager.h>
+
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <modules/opengl/texture/texture2d.h>
+#include <modules/opengl/image/layergl.h>
+
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
@@ -47,20 +57,48 @@ DummyProcessor::DummyProcessor()
     
     , inport_{"inport", "<description of the inport data and any requirements on the data>"_help}
     , outport_{"outport", "<description of the generated outport data>"_help}
+    , shader_({{ShaderType::Compute, "simpleshift.comp"}})
     , value_{
-        "value",
-        "Value",
-        1,
-        0,
-        100,
-        } {
+        "value", "Value", 1, 0, 100 } {
 
     addPorts(inport_, outport_);
     addProperties(value_);
+
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); } );
 }
 
 void DummyProcessor::process() {
-    outport_.setData(inport_.getData());
+    /* On how Textures/Images work in OGL
+        https://www.khronos.org/opengl/wiki/Texture
+        https://community.khronos.org/t/what-is-a-texture-unit/63250/2
+    */
+
+    glActiveTexture(GL_TEXTURE0);
+
+    auto img = std::make_shared<Image>(size2_t{512, 512}, DataFormat<float>::get());
+    //auto img = inport_.getData();
+
+    auto layerGL = img->getColorLayer()->getEditableRepresentation<LayerGL>();
+    auto texHandle = layerGL->getTexture()->getID();
+
+    glBindImageTexture(0, texHandle, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F);
+
+    layerGL->setSwizzleMask(swizzlemasks::luminance); // ??? does something i geuss...
+
+    // I have written something new
+
+    shader_.activate();
+    utilgl::setUniforms(shader_, value_);
+
+    layerGL->getTexture()->bind();
+
+    shader_.setUniform("dest", 0);
+
+    glDispatchCompute(512/16, 512/16, 1);
+
+    shader_.deactivate();
+
+    outport_.setData(img);
 }
 
 }  // namespace inviwo

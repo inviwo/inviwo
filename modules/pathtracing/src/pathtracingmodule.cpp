@@ -30,11 +30,13 @@
 #include <inviwo/pathtracing/pathtracingmodule.h>
 #include <inviwo/pathtracing/processors/dummyprocessor.h>
 
+#include <modules/opengl/shader/shadermanager.h>
+
 namespace inviwo {
 
 pathtracingModule::pathtracingModule(InviwoApplication* app) : InviwoModule(app, "pathtracing") {
     // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Register objects that can be shared with the rest of inviwo here:
 

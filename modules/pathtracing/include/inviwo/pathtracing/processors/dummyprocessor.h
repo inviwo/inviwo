@@ -34,11 +34,15 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>
 
+
+// our relative path starts at inviwo in inviwo/include. utter nonsense
+#include <../modules/opengl/include/modules/opengl/shader/shader.h>
 namespace inviwo {
 
 class IVW_MODULE_PATHTRACING_API DummyProcessor : public Processor {
 public:
     DummyProcessor();
+    virtual ~DummyProcessor() = default;
 
     virtual void process() override;
 
@@ -48,6 +52,8 @@ public:
 private:
     ImageInport inport_;
     ImageOutport outport_;
+
+    Shader shader_;
     FloatProperty value_;
 };
 
