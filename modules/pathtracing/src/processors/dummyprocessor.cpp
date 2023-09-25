@@ -39,6 +39,8 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 
+#include <inviwo/core/util/consolelogger.h>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -75,24 +77,28 @@ void DummyProcessor::process() {
 
     glActiveTexture(GL_TEXTURE0);
 
-    auto img = std::make_shared<Image>(size2_t{512, 512}, DataFormat<float>::get());
-    //auto img = inport_.getData();
+    // How do we get a LayerGL out of inport data? 
+    //It seems that all is stopping us is the fact that getData returns a const Image shrd pointer instead just Image shrd pointer.
+    //
 
+    auto imgInternal = std::make_shared<Image>(size2_t{512, 512}, DataFormat<float>::get());
+    auto img = inport_.getData()->clone();
+
+    //auto layerGL = imgInternal->getColorLayer()->getEditableRepresentation<LayerGL>();
     auto layerGL = img->getColorLayer()->getEditableRepresentation<LayerGL>();
+
     auto texHandle = layerGL->getTexture()->getID();
 
-    glBindImageTexture(0, texHandle, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F);
+    glBindImageTexture(0, texHandle, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
 
     layerGL->setSwizzleMask(swizzlemasks::luminance); // ??? does something i geuss...
-
-    // I have written something new
 
     shader_.activate();
     utilgl::setUniforms(shader_, value_);
 
     layerGL->getTexture()->bind();
 
-    shader_.setUniform("dest", 0);
+    shader_.setUniform("img", 0);
 
     glDispatchCompute(512/16, 512/16, 1);
 

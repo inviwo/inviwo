@@ -1,5 +1,6 @@
 uniform float value = 1;
-writeonly uniform image2D dest;
+
+layout(binding = 0, r32f) uniform image2D img;
 
 layout (local_size_x = 16, local_size_y = 16) in;
 void main(){
@@ -7,8 +8,12 @@ void main(){
 
     vec2 texCoord = vec2(gl_GlobalInvocationID.xy) / 512.0;
 
+    vec4 color = imageLoad(img, storePos);
+
     float localCoef = length(vec2(ivec2(gl_LocalInvocationID.xy)-8)/8.0);
     float globalCoef = sin(float(gl_WorkGroupID.x+gl_WorkGroupID.y)*0.1 + value)*0.5;
 
-    imageStore(dest, storePos, vec4(globalCoef*localCoef , 0.0, 0.0, 0.0)); 
+    color.x *= globalCoef*localCoef;
+
+    imageStore(img, storePos, color); 
 }
