@@ -13,7 +13,9 @@ void main(){
     float localCoef = length(vec2(ivec2(gl_LocalInvocationID.xy)-8)/8.0);
     float globalCoef = sin(float(gl_WorkGroupID.x+gl_WorkGroupID.y)*0.1 + value)*0.5;
 
-    color.x *= globalCoef*localCoef;
+    color.r *= globalCoef*localCoef;
+    color.g *= globalCoef*localCoef;
+    color.b *= globalCoef*localCoef;
 
     imageStore(img, storePos, color); 
 }
