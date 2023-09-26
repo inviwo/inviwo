@@ -30,6 +30,7 @@
 #include <inviwo/pathtracing/pathtracingmodule.h>
 #include <inviwo/pathtracing/processors/dummyprocessor.h>
 
+#include <inviwo/pathtracing/processors/volumepathtracer.h>
 #include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
@@ -43,6 +44,7 @@ pathtracingModule::pathtracingModule(InviwoApplication* app) : InviwoModule(app,
     // Processors
     registerProcessor<DummyProcessor>();
     // registerProcessor<pathtracingProcessor>();
+    registerProcessor<VolumePathTracer>();
 
     // Properties
     // registerProperty<pathtracingProperty>();
