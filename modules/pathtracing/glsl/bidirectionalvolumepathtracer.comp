@@ -1,0 +1,22 @@
+
+
+layout(binding = 0, r32f) uniform image2D entry;
+layout(binding = 1, r32f) uniform image2D exit;
+layout(binding = 2, r32f) uniform image2D outputImg;
+
+layout (local_size_x = 16, local_size_y = 16) in;
+void main(){
+    ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
+
+    vec2 texCoord = vec2(gl_GlobalInvocationID.xy) / 512.0;
+    
+    vec4 color1 = imageLoad(entry, storePos);
+    vec4 color2 = imageLoad(exit, storePos);
+
+    vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
+    color.r = color1.r;
+    color.g += color2.g;
+    color.b += (color1.b + color2.b)*0.5;
+
+    imageStore(exit, storePos, color); 
+}
