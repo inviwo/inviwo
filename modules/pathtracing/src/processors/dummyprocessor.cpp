@@ -91,7 +91,7 @@ void DummyProcessor::process() {
 
     glBindImageTexture(0, texHandle, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
 
-    layerGL->setSwizzleMask(swizzlemasks::luminance); // ??? does something i geuss...
+    layerGL->setSwizzleMask(swizzlemasks::luminance); // sets how the layer should be read, or something
 
     shader_.activate();
     utilgl::setUniforms(shader_, value_);

@@ -17,6 +17,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add shaders
 set(SHADER_FILES
+    glsl/bidirectionalvolumepathtracer.comp
     glsl/simpleshift.comp
 )
 ivw_group("Shader Files" ${SHADER_FILES})

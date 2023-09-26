@@ -28,6 +28,17 @@
  *********************************************************************************/
 
 #include <inviwo/pathtracing/processors/volumepathtracer.h>
+#include <modules/opengl/openglmodule.h>
+#include <modules/opengl/shader/shadermanager.h>
+
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <modules/opengl/texture/texture2d.h>
+#include <modules/opengl/image/layergl.h>
+#include <modules/opengl/image/imagegl.h>
+
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
@@ -35,22 +46,23 @@ namespace inviwo {
 const ProcessorInfo VolumePathTracer::processorInfo_{
     "org.inviwo.VolumePathTracer",  // Class identifier
     "VolumePathTracer",        // Display name
-    "Undefined",                   // Category
+    "Volume",                   // Category
     CodeState::Experimental,       // Code state
-    Tags::None,                    // Tags
+    Tags::GL,                    // Tags
     R"(<Explanation of how to use the processor.>)"_unindentHelp};
 
 const ProcessorInfo VolumePathTracer::getProcessorInfo() const { return processorInfo_; }
 
 VolumePathTracer::VolumePathTracer()
-    : Processor{}
-    , volumePort_{"Volume"}
-    , entryPort_{"EntryPoints"}
-    , exitPort_{"ExitPoints"}
-    , lights_{"LightSources"}
+    : Processor()
+    , volumePort_("Volume")
+    , entryPort_("EntryPoints")
+    , exitPort_("ExitPoints")
+    , lights_("LightSources")
     //, minMaxOpacity_{"VolumeMinMaxOpacity"}
-    , outport_{"Outport"} {
-        addPort(volumePort_, "VolumePortGroup");
+    , outport_("Outport")
+    , shader_({{ShaderType::Compute, "bidirectionalvolumepathtracer.comp"}}) {
+    addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
@@ -70,10 +82,80 @@ VolumePathTracer::VolumePathTracer()
         partitionedTransmittance_.setVisible(false);
     }
     */
+
+   // What can we set up before process
+   shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); } );
+
+   //exitPort_.setOptional(true);
+   lights_.setOptional(true);
+   volumePort_.setOptional(true);
 }
 
+
 void VolumePathTracer::process() {
-    outport_.setData(entryPort_.getData());
+
+    // gets a pointer to outport_ data, and entry writes to that;
+    Image* outImage = outport_.getEditableData().get();
+    ImageGL* outImageGL = outImage->getEditableRepresentation<ImageGL>();
+    
+    /*
+        i got a strange vector related error when doing
+        auto entry = entryPort_.getData()->getEditableRepresentation<ImageGL>->clone();
+        LayerGL* entryGL = entry->getColorLayerGL();
+
+        it went away when i went back to
+        auto entry = entryPort_.getData()->clone();
+        auto layerGL = imgInternal->getColorLayer()->getEditableRepresentation<LayerGL>();
+    */
+
+    glActiveTexture(GL_TEXTURE1);
+    auto exit = exitPort_.getData()->clone();
+    LayerGL* exitGL = exit->getColorLayer()->getEditableRepresentation<LayerGL>();
+    auto exitTexHandle = exitGL->getTexture()->getID();
+    glBindImageTexture(1, exitTexHandle, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
+
+    exitGL->setSwizzleMask(swizzlemasks::luminance);
+
+    glActiveTexture(GL_TEXTURE0);
+    auto entry = entryPort_.getData()->clone();
+    //auto layerGL = imgInternal->getColorLayer()->getEditableRepresentation<LayerGL>();
+    LayerGL* entryGL = entry->getColorLayer()->getEditableRepresentation<LayerGL>();
+    auto entryTexHandle = entryGL->getTexture()->getID();
+    glBindImageTexture(0, entryTexHandle, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
+
+    entryGL->setSwizzleMask(swizzlemasks::luminance); // sets the data format (sort of) of the layer.
+
+    
+    
+
+    /*
+    glActiveTexture(GL_TEXTURE2);
+    auto output = outport_.getEditableData().get();
+    LayerGL* outputGL = output->getEditableRepresentation<ImageGL>()->getColorLayerGL();
+    auto outputTexHandle = exitGL->getTexture()->getID();
+    glBindImageTexture(1, exitTexHandle, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+
+    outputGL->setSwizzleMask(swizzlemasks::rgba);
+    */
+
+    dispatchPathTracerComputeShader(entryGL, exitGL, entryGL);
+
+    //entry->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
+    outport_.setData(entry);
+}
+
+void VolumePathTracer::dispatchPathTracerComputeShader(LayerGL* entryGL, LayerGL* exitGL, LayerGL* outportGL) {
+    shader_.activate();
+
+    entryGL->getTexture()->bind();
+    shader_.setUniform("entry", 0);
+
+    exitGL->getTexture()->bind();
+    shader_.setUniform("exit", 1);
+
+    glDispatchCompute(512/16, 512/16, 1);
+
+    shader_.deactivate();
 }
 
 }  // namespace inviwo

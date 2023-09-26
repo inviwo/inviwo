@@ -40,23 +40,42 @@
 // outsider of include/inviwo
 #include <../modules/opengl/include/modules/opengl/volume/volumegl.h>
 #include <../modules/opengl/include/modules/opengl/volume/volumeutils.h>
+#include <../modules/opengl/include/modules/opengl/shader/shader.h>
+#include <../modules/opengl/include/modules/opengl/image/layergl.h>
 
 namespace inviwo {
 
 class IVW_MODULE_PATHTRACING_API VolumePathTracer : public Processor {
 public:
     VolumePathTracer();
+    ~VolumePathTracer() = default;
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+protected:
+
+    // What helper functions are used in CL version? Do we need equivalances?
+    
+    void dispatchPathTracerComputeShader(LayerGL* entryGL, LayerGL* exitGL, LayerGL* outportGL); //Needed args; dimension of workgroups
+
+    void numSamplesChanged(); // Creates new samples if changed
+    void updateLightSources(); // Updates light sources 
+    void invalidateProgressiveRendering(); // Restarts progressive render
+    void evaluateProgressiveRefinement(); // Invalidates processor, and you know what that means, its a message.
+    void progressiveRefinementChanged(); // does something with the progressivetimer.
+    //void phaseFunctionChanged(); // related to advanced material
+    //void buildKernel(); // OCL shit
+    //void kernelArgChanged(); // Calls invalidateRendering
+    //void onTimerEvent(); // Button to call invalidateRendering (I think)
+
 private:
     // Ports
     VolumeInport volumePort_;
-    ImageInport entryPort_;
-    ImageInport exitPort_;
+    ImageInport entryPort_; // Entry and Exit determine the direction of each sample.
+    ImageInport exitPort_; // Imagine worldcoords - screenspace in world coords 
     
     MultiDataInport<LightSource> lights_;
 
@@ -70,6 +89,7 @@ private:
     // vars for the path tracer?
     // vars for compute shader work groups?
 
+    Shader shader_;
 
     // What internal data types would I need?
     //light sources
