@@ -1,7 +1,7 @@
 
 #include "utils/structs.glsl"
 
-uniform ImageParameters entryParameters;
+uniform ImageParameters outportParameters;
 uniform sampler2D entryColor;
 uniform sampler2D exitColor;
 writeonly uniform image2D outportColor;
@@ -10,7 +10,7 @@ layout (local_size_x = 16, local_size_y = 16) in;
 void main(){
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 
-    vec2 texCoord = vec2(gl_GlobalInvocationID.xy) / entryParameters.dimensions;
+    vec2 texCoord = vec2(gl_GlobalInvocationID.xy) / outportParameters.dimensions;
     
     vec4 color1 = texture(entryColor, texCoord);
     vec4 color2 = texture(exitColor, texCoord);
