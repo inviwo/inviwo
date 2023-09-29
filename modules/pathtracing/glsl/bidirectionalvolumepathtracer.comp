@@ -1,22 +1,28 @@
 
+#include "utils/structs.glsl"
 
-layout(binding = 0, r32f) uniform image2D entry;
-layout(binding = 1, r32f) uniform image2D exit;
-layout(binding = 2, r32f) uniform image2D outputImg;
+uniform ImageParameters entryParameters;
+uniform sampler2D entryColor;
+uniform sampler2D exitColor;
+writeonly uniform image2D outportColor;
 
 layout (local_size_x = 16, local_size_y = 16) in;
 void main(){
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 
-    vec2 texCoord = vec2(gl_GlobalInvocationID.xy) / 512.0;
+    vec2 texCoord = vec2(gl_GlobalInvocationID.xy) / entryParameters.dimensions;
     
-    vec4 color1 = imageLoad(entry, storePos);
-    vec4 color2 = imageLoad(exit, storePos);
+    vec4 color1 = texture(entryColor, texCoord);
+    vec4 color2 = texture(exitColor, texCoord);
 
-    vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
-    color.r = color1.r;
-    color.g += color2.g;
-    color.b += (color1.b + color2.b)*0.5;
-
-    imageStore(exit, storePos, color); 
+    vec4 color = vec4(1);
+    
+    color.r = (color1.r + color2.r)*0.5;
+    //color.r = 250;
+    color.g = (color1.g + color2.g)*0.5;
+    //color.g = 250;
+    color.b = (color1.b + color2.b)*0.5;
+    //color.b = 250;
+    
+    imageStore(outportColor, storePos, color); 
 }
