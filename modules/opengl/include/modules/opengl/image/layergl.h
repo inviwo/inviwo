@@ -80,6 +80,7 @@ public:
 
     void bindTexture(GLenum texUnit) const;
     void bindTexture(const TextureUnit& texUnit) const;
+    void bindImageTexture(const TextureUnit& texUnit) const;
     void unbindTexture() const;
 
     virtual bool copyRepresentationsTo(LayerRepresentation*) const override;

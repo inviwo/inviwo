@@ -38,6 +38,7 @@
 #include <modules/opengl/image/imagegl.h>
 
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
@@ -56,11 +57,11 @@ const ProcessorInfo VolumePathTracer::getProcessorInfo() const { return processo
 VolumePathTracer::VolumePathTracer()
     : Processor()
     , volumePort_("Volume")
-    , entryPort_("EntryPoints")
-    , exitPort_("ExitPoints")
+    , entryPort_("entry")
+    , exitPort_("exit")
     , lights_("LightSources")
     //, minMaxOpacity_{"VolumeMinMaxOpacity"}
-    , outport_("Outport")
+    , outport_("outport")
     , shader_({{ShaderType::Compute, "bidirectionalvolumepathtracer.comp"}}) {
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
@@ -94,64 +95,40 @@ VolumePathTracer::VolumePathTracer()
 
 void VolumePathTracer::process() {
 
-    // gets a pointer to outport_ data, and entry writes to that;
-    Image* outImage = outport_.getEditableData().get();
-    ImageGL* outImageGL = outImage->getEditableRepresentation<ImageGL>();
-    
-    /*
-        i got a strange vector related error when doing
-        auto entry = entryPort_.getData()->getEditableRepresentation<ImageGL>->clone();
-        LayerGL* entryGL = entry->getColorLayerGL();
+    shader_.activate();
 
-        it went away when i went back to
-        auto entry = entryPort_.getData()->clone();
-        auto layerGL = imgInternal->getColorLayer()->getEditableRepresentation<LayerGL>();
-    */
+    TextureUnitContainer units;
+    //utilgl::bindAndSetUniforms(shader_, units, volume, "volume");
+    //utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
+    {
+        TextureUnit unit;
+        auto image = outport_.getEditableData();
+        auto layerGL = image->getColorLayer()->getEditableRepresentation<LayerGL>();
+        layerGL->bindImageTexture(unit);
+        shader_.setUniform("outportColor", unit);
+        units.push_back(std::move(unit));
+    }
+    utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
+    utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
 
-    glActiveTexture(GL_TEXTURE1);
-    auto exit = exitPort_.getData()->clone();
-    LayerGL* exitGL = exit->getColorLayer()->getEditableRepresentation<LayerGL>();
-    auto exitTexHandle = exitGL->getTexture()->getID();
-    glBindImageTexture(1, exitTexHandle, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
+    glDispatchCompute(512/16, 512/16, 1);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+    shader_.deactivate();
 
-    exitGL->setSwizzleMask(swizzlemasks::luminance);
-
-    glActiveTexture(GL_TEXTURE0);
-    auto entry = entryPort_.getData()->clone();
-    //auto layerGL = imgInternal->getColorLayer()->getEditableRepresentation<LayerGL>();
-    LayerGL* entryGL = entry->getColorLayer()->getEditableRepresentation<LayerGL>();
-    auto entryTexHandle = entryGL->getTexture()->getID();
-    glBindImageTexture(0, entryTexHandle, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
-
-    entryGL->setSwizzleMask(swizzlemasks::luminance); // sets the data format (sort of) of the layer.
-
-    
-    
-
-    /*
-    glActiveTexture(GL_TEXTURE2);
-    auto output = outport_.getEditableData().get();
-    LayerGL* outputGL = output->getEditableRepresentation<ImageGL>()->getColorLayerGL();
-    auto outputTexHandle = exitGL->getTexture()->getID();
-    glBindImageTexture(1, exitTexHandle, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-
-    outputGL->setSwizzleMask(swizzlemasks::rgba);
-    */
-
-    dispatchPathTracerComputeShader(entryGL, exitGL, entryGL);
-
-    //entry->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
-    outport_.setData(entry);
 }
 
 void VolumePathTracer::dispatchPathTracerComputeShader(LayerGL* entryGL, LayerGL* exitGL, LayerGL* outportGL) {
     shader_.activate();
 
+    
     entryGL->getTexture()->bind();
     shader_.setUniform("entry", 0);
 
     exitGL->getTexture()->bind();
     shader_.setUniform("exit", 1);
+
+    outportGL->getTexture()->bind();
+    shader_.setUniform("outImg", 2);
 
     glDispatchCompute(512/16, 512/16, 1);
 

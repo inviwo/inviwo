@@ -101,6 +101,13 @@ void LayerGL::bindTexture(const TextureUnit& texUnit) const {
     utilgl::bindTexture(*texture_, texUnit_);
 }
 
+void LayerGL::bindImageTexture(const TextureUnit& texUnit) const {
+    texUnit_ = texUnit.getEnum();
+    glActiveTexture(texUnit_);
+    glBindImageTexture(texUnit.getUnitNumber(), texture_->getID(), 0, GL_FALSE, 0, GL_WRITE_ONLY, texture_->getInternalFormat());
+    glActiveTexture(GL_TEXTURE0);
+}
+
 void LayerGL::unbindTexture() const {
     glActiveTexture(texUnit_);
     texture_->unbind();
