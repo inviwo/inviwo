@@ -101,10 +101,10 @@ void LayerGL::bindTexture(const TextureUnit& texUnit) const {
     utilgl::bindTexture(*texture_, texUnit_);
 }
 
-void LayerGL::bindImageTexture(const TextureUnit& texUnit) const {
+void LayerGL::bindImageTexture(const TextureUnit& texUnit, GLenum MEM_ACCESS) const {
     texUnit_ = texUnit.getEnum();
     glActiveTexture(texUnit_);
-    glBindImageTexture(texUnit.getUnitNumber(), texture_->getID(), 0, GL_FALSE, 0, GL_WRITE_ONLY, texture_->getInternalFormat());
+    glBindImageTexture(texUnit.getUnitNumber(), texture_->getID(), 0, GL_FALSE, 0, MEM_ACCESS, texture_->getInternalFormat());
     glActiveTexture(GL_TEXTURE0);
 }
 
