@@ -100,13 +100,27 @@ void VolumePathTracer::process() {
     TextureUnitContainer units;
     //utilgl::bindAndSetUniforms(shader_, units, volume, "volume");
     //utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
-    {
-        TextureUnit unit;
+    /* utilgl::bindAndSetUniforms(shader_, units, outport_, ImageType::ColorDepthPicking); */{
+        TextureUnit unit1, unit2, unit3;
         auto image = outport_.getEditableData();
-        auto layerGL = image->getColorLayer()->getEditableRepresentation<LayerGL>();
-        layerGL->bindImageTexture(unit);
-        shader_.setUniform("outportColor", unit);
-        units.push_back(std::move(unit));
+        auto colorLayerGL = image->getColorLayer()->getEditableRepresentation<LayerGL>();
+        colorLayerGL->bindImageTexture(unit1, GL_WRITE_ONLY);
+        auto depthLayerGL = image->getDepthLayer()->getEditableRepresentation<LayerGL>();
+        depthLayerGL->bindTexture(unit2);
+        auto pickingLayerGL = image->getPickingLayer()->getEditableRepresentation<LayerGL>();
+        pickingLayerGL->bindTexture(unit3);
+        
+        shader_.setUniform("outportColor", unit1);
+        shader_.setUniform("outportDepth", unit2);
+        shader_.setUniform("outportPicking", unit3);
+        
+        units.push_back(std::move(unit1));
+        units.push_back(std::move(unit2));
+        units.push_back(std::move(unit3));
+
+
+
+        //utilgl::setShaderUniforms(shader, image, buff.replace("{}Parameters", id));
     }
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
