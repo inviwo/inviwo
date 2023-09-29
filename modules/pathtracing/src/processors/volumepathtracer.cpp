@@ -119,8 +119,8 @@ void VolumePathTracer::process() {
         units.push_back(std::move(unit3));
 
 
-
-        //utilgl::setShaderUniforms(shader, image, buff.replace("{}Parameters", id));
+        StrBuffer buff;
+        utilgl::setShaderUniforms(shader_, *image, buff.replace("{}Parameters", outport_.getIdentifier()));
     }
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
