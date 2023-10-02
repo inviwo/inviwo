@@ -37,6 +37,11 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/timer.h>
 
+#include <inviwo/core/properties/raycastingproperty.h>       // for RaycastingProperty
+#include <inviwo/core/properties/cameraproperty.h>           // for CameraProperty
+#include <inviwo/core/properties/optionproperty.h>           // for OptionPropertyInt
+#include <inviwo/core/properties/volumeindicatorproperty.h>  // for VolumeIndicatorProperty
+
 // outsider of include/inviwo
 #include <../modules/opengl/include/modules/opengl/volume/volumegl.h>
 #include <../modules/opengl/include/modules/opengl/volume/volumeutils.h>
@@ -50,6 +55,7 @@ public:
     VolumePathTracer();
     ~VolumePathTracer() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -82,17 +88,19 @@ private:
     //OpacityMinMaxUniformGrid3DInport minMaxOpacity_; // Cant find module. Is it even relevant?
 
     ImageOutport outport_;
-
-    // Properties
-    // transfer function
-    // advanced material
-    // vars for the path tracer?
-    // vars for compute shader work groups?
-
     Shader shader_;
 
+    // Properties
+    
+    OptionPropertyInt channel_;
+    RaycastingProperty raycasting_;
+
+    CameraProperty camera_;
+    VolumeIndicatorProperty positionIndicator_;
+    
     // What internal data types would I need?
     //light sources
+    
 };
 
 }  // namespace inviwo

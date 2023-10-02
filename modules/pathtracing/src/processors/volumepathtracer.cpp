@@ -40,6 +40,14 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/volume/volumegl.h>                             // IWYU pragma: keep
+#include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
+
+#include <inviwo/core/properties/cameraproperty.h>                      // for CameraProperty
+#include <inviwo/core/properties/raycastingproperty.h>                  // for RaycastingProperty
+#include <inviwo/core/properties/volumeindicatorproperty.h>             // for VolumeIndicatorPr...
+#include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyOption
+#include <inviwo/core/algorithm/boundingbox.h>                          // for boundingBox
 
 namespace inviwo {
 
@@ -62,7 +70,14 @@ VolumePathTracer::VolumePathTracer()
     , lights_("LightSources")
     //, minMaxOpacity_{"VolumeMinMaxOpacity"}
     , outport_("outport")
-    , shader_({{ShaderType::Compute, "bidirectionalvolumepathtracer.comp"}}) {
+    , shader_({{ShaderType::Compute, "bidirectionalvolumepathtracer.comp"}}) 
+    //, lighting_("lighting", "Lighting", &camera_)
+    , channel_("channel", "Render Channel", {{"Channel 1", "Channel 1", 0}}, 0)
+    , raycasting_("raycaster", "Raycasting")
+    , camera_("camera", "Camera", util::boundingBox(volumePort_))
+    , positionIndicator_("positionindicator", "Position Indicator")
+    
+    {
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -83,16 +98,60 @@ VolumePathTracer::VolumePathTracer()
         partitionedTransmittance_.setVisible(false);
     }
     */
+    
+    channel_.setSerializationMode(PropertySerializationMode::All);
+    // from volumeraycasetr.cpp TODO: What does this mean exactly?
+    volumePort_.onChange([this]() {
+        if (volumePort_.hasData()) {
+            size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
 
-   // What can we set up before process
-   shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); } );
+            if (channels == channel_.size()) return;
 
-   //exitPort_.setOptional(true);
-   lights_.setOptional(true);
-   volumePort_.setOptional(true);
+            std::vector<OptionPropertyIntOption> channelOptions;
+            for (size_t i = 0; i < channels; i++) {
+                channelOptions.emplace_back("Channel " + toString(i + 1),
+                                            "Channel " + toString(i + 1), static_cast<int>(i));
+            }
+            channel_.replaceOptions(channelOptions);
+            channel_.setCurrentStateAsDefault();
+        }
+    });
+
+    // from volumeraycasetr.cpp TODO: What does this mean exactly?
+    raycasting_.gradientComputation_.onChange([this]() {
+        if (channel_.size() == 4) {
+            if (raycasting_.gradientComputation_.get() ==
+                RaycastingProperty::GradientComputation::PrecomputedXYZ) {
+                channel_.set(3);
+            } else if (raycasting_.gradientComputation_.get() ==
+                       RaycastingProperty::GradientComputation::PrecomputedYZW) {
+                channel_.set(0);
+            }
+        }
+    });
+    
+    addProperty(channel_);
+    addProperty(raycasting_);
+
+    addProperty(camera_);
+    addProperty(positionIndicator_);
+    
+    // What can we set up before process
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); } );
+
+    //exitPort_.setOptional(true);
+    lights_.setOptional(true);
+    volumePort_.setOptional(true);
 }
 
+void VolumePathTracer::initializeResources() {
+    //utilgl::addDefines(shader_, raycasting_, /*isotfComposite_,*/camera_, /*lighting_,*/
+    //                   positionIndicator_);
+    //utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
+    shader_.build();
+}
 
+// TODO: Copy volumeraycaster and daniels bidirVolumePathTracer
 void VolumePathTracer::process() {
 
     shader_.activate();
@@ -106,9 +165,9 @@ void VolumePathTracer::process() {
         auto colorLayerGL = image->getColorLayer()->getEditableRepresentation<LayerGL>();
         colorLayerGL->bindImageTexture(unit1, GL_WRITE_ONLY);
         auto depthLayerGL = image->getDepthLayer()->getEditableRepresentation<LayerGL>();
-        depthLayerGL->bindTexture(unit2);
+        depthLayerGL->bindImageTexture(unit2, GL_WRITE_ONLY);
         auto pickingLayerGL = image->getPickingLayer()->getEditableRepresentation<LayerGL>();
-        pickingLayerGL->bindTexture(unit3);
+        pickingLayerGL->bindImageTexture(unit3, GL_WRITE_ONLY);
         
         shader_.setUniform("outportColor", unit1);
         shader_.setUniform("outportDepth", unit2);
@@ -118,17 +177,20 @@ void VolumePathTracer::process() {
         units.push_back(std::move(unit2));
         units.push_back(std::move(unit3));
 
-
         StrBuffer buff;
         utilgl::setShaderUniforms(shader_, *image, buff.replace("{}Parameters", outport_.getIdentifier()));
     }
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
 
+    
+    utilgl::setUniforms(shader_, camera_/*, lighting_*/, raycasting_, positionIndicator_,
+                        channel_/*, isotfComposite_*/);
+
+
     glDispatchCompute(512/16, 512/16, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     shader_.deactivate();
-
 }
 
 void VolumePathTracer::dispatchPathTracerComputeShader(LayerGL* entryGL, LayerGL* exitGL, LayerGL* outportGL) {
