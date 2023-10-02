@@ -1,28 +1,73 @@
-
 #include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
+#include "utils/sampler3d.glsl"
 
-uniform ImageParameters outportParameters;
+#include "utils/classification.glsl"
+#include "utils/compositing.glsl"
+#include "utils/depth.glsl"
+#include "utils/gradients.glsl"
+#include "utils/shading.glsl"
+#include "utils/raycastgeometry.glsl"
+
+#include "utils/isosurface.glsl"
+
+
+// volume
+uniform sampler3D volume;
+uniform VolumeParameters volumeParameters;
+
+// entry
 uniform sampler2D entryColor;
+uniform sampler2D entryDepth;
+uniform ImageParameters entryParameters;
+
+// exit
 uniform sampler2D exitColor;
+uniform sampler2D exitDepth;
+uniform ImageParameters exitParameters;
+
+// output
 writeonly uniform image2D outportColor;
+writeonly uniform image2D outportDepth;
+writeonly uniform image2D outportPicking;
+uniform ImageParameters outportParameters;
+
+//Lights
+
+uniform CameraParameters camera;
+uniform VolumeIndicatorParameters positionindicator;
+uniform RaycastingParameters raycaster;
+
+uniform int channel;
+
+#define ERT_THRESHOLD 0.99  // threshold for early ray termination
+
+#define INCLUDE_DVR
+
 
 layout (local_size_x = 16, local_size_y = 16) in;
 void main(){
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 
     vec2 texCoord = vec2(gl_GlobalInvocationID.xy) / outportParameters.dimensions;
-    
+    vec3 texCoord_z0 = vec3(texCoord, 0);
+
     vec4 color1 = texture(entryColor, texCoord);
     vec4 color2 = texture(exitColor, texCoord);
 
+
     vec4 color = vec4(1);
-    
+    //vec4 Voxel = getNormalizedVoxel(volume, volumeParameters, texCoord_z0);
     color.r = (color1.r + color2.r)*0.5;
     //color.r = 250;
     color.g = (color1.g + color2.g)*0.5;
     //color.g = 250;
     color.b = (color1.b + color2.b)*0.5;
     //color.b = 250;
+
+    //vec4 color_Voxel = color*0.5 + Voxel*0.5;
+
+    color.rgb = camera.position;
     
     imageStore(outportColor, storePos, color); 
 }
