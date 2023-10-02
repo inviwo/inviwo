@@ -44,8 +44,20 @@ ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
 find_package(FFMPEG REQUIRED)
 ivw_vcpkg_install(ffmpeg MODULE FFmpeg)
-target_include_directories(inviwo-module-ffmpeg PUBLIC ${FFMPEG_INCLUDE_DIRS})
-target_link_directories(inviwo-module-ffmpeg PUBLIC ${FFMPEG_LIBRARY_DIRS})
-target_link_libraries(inviwo-module-ffmpeg PUBLIC ${FFMPEG_LIBRARIES})
+target_include_directories(inviwo-module-ffmpeg 
+    PUBLIC 
+        $<BUILD_INTERFACE:${FFMPEG_INCLUDE_DIRS}>
+        $<BUILD_INTERFACE:${SWSCALE_INCLUDE_DIRS}>
+)
+target_link_directories(inviwo-module-ffmpeg 
+    PUBLIC 
+        $<BUILD_INTERFACE:${FFMPEG_LIBRARY_DIRS}>
+        $<BUILD_INTERFACE:${SWSCALE_LIBRARY_DIRS}>
+)
+target_link_libraries(inviwo-module-ffmpeg 
+    PUBLIC 
+        ${FFMPEG_LIBRARIES}
+        ${SWSCALE_LIBRARIES}
+)
 
 target_compile_definitions(inviwo-module-ffmpeg PUBLIC __STDC_CONSTANT_MACROS)
