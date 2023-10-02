@@ -32,7 +32,7 @@ jobs:
               -DIVW_MODULE_WEBBROWSER=ON
               -DIVW_DOXYGEN_PROJECT=ON 
               -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"
-            preset: msvc-dev-vcpkg
+            preset: msvc-developer
             targets: 'ALL_BUILD'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
@@ -45,7 +45,7 @@ jobs:
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=ON
               -DIVW_MODULE_WEBBROWSER=ON
-            preset: ninja-dev-vcpkg
+            preset: ninja-developer
             targets: 'all'
             installer: 'inviwo-installer-macos'
             artifact: 'build/Inviwo-v*.dmg'
@@ -61,7 +61,7 @@ jobs:
               -DIVW_MODULE_FFMPEG=ON
               -DIVW_MODULE_WEBBROWSER=ON
               -DIVW_TEST_BENCHMARKS=OFF
-            preset: ninja-dev-vcpkg
+            preset: ninja-developer
             targets: 'all'
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.deb'
