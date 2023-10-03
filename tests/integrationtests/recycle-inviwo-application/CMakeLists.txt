@@ -11,10 +11,6 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-set(enabled_modules
-    InviwoCoreModule
-)
-
 # Create application
 add_executable(${test_name} ${SOURCE_FILES})
 
@@ -27,7 +23,6 @@ target_link_libraries(${test_name} PRIVATE
 )
 set_target_properties(${test_name} PROPERTIES FOLDER integrationtests)
 
-ivw_configure_application_module_dependencies(${test_name} ${enabled_modules})
 ivw_define_standard_definitions(${test_name} ${test_name})
 ivw_define_standard_properties(${test_name})
 

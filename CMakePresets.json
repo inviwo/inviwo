@@ -35,8 +35,7 @@
         "IVW_TEST_BENCHMARKS":              { "type": "BOOL", "value": "ON"},
         "IVW_TEST_INTEGRATION_TESTS":       { "type": "BOOL", "value": "ON"},
         "IVW_PACKAGE_INSTALLER":            { "type": "BOOL", "value": "ON"},
-        "IVW_USE_OPENMP":                   { "type": "BOOL", "value": "OFF"},
-        "IVW_USE_OPENEXR":                  { "type": "BOOL", "value": "ON"}
+        "IVW_ENABLE_OPENEXR":               { "type": "BOOL", "value": "ON"}
       }
     },
     {

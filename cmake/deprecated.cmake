@@ -35,6 +35,11 @@ macro(ivw_qt_add_to_install ivw_comp)
     )
 endmacro()
 
+function(ivw_configure_application_module_dependencies target)
+    message(FATAL_ERROR "removed infavor of linking to inviwo::module-system")
+endfunction()
+
+
 # A helper funtion to install targets.  deprecated
 function(ivw_default_install_comp_targets comp)
     message(DEPRECATION "Use ivw_default_install_targets")

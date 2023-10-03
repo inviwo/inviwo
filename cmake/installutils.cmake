@@ -43,35 +43,44 @@ if(APPLE)
          Override if you are packaging a custom application. 
          Installed libraries and modules 
          will be placed inside bundle <name>.app")
-    set(IVW_INSTALL_PREFIX          ${IVW_APP_INSTALL_NAME}.app/Contents/)
-    set(IVW_RUNTIME_INSTALL_DIR     ${IVW_INSTALL_PREFIX}MacOS)
-    set(IVW_BUNDLE_INSTALL_DIR      .)
-    set(IVW_LIBRARY_INSTALL_DIR     ${IVW_INSTALL_PREFIX}lib)
-    set(IVW_ARCHIVE_INSTALL_DIR     ${IVW_INSTALL_PREFIX}lib)
-    set(IVW_FRAMEWORK_INSTALL_DIR   ${IVW_INSTALL_PREFIX}Frameworks)
-    set(IVW_INCLUDE_INSTALL_DIR     ${IVW_INSTALL_PREFIX}include)
-    set(IVW_SHARE_INSTALL_DIR       ${IVW_INSTALL_PREFIX}share)
-    set(IVW_RESOURCE_INSTALL_PREFIX ${IVW_INSTALL_PREFIX}Resources/)
+    set(IVW_INSTALL_PREFIX              ${IVW_APP_INSTALL_NAME}.app/Contents/)
+    set(IVW_RUNTIME_INSTALL_DIR         ${IVW_INSTALL_PREFIX}MacOS)
+    set(IVW_RUNTIME_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/MacOS)
+    set(IVW_LIBRARY_INSTALL_DIR         ${IVW_INSTALL_PREFIX}lib)
+    set(IVW_LIBRARY_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/lib)
+    set(IVW_ARCHIVE_INSTALL_DIR         ${IVW_INSTALL_PREFIX}lib)
+    set(IVW_ARCHIVE_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/lib)
+    set(IVW_BUNDLE_INSTALL_DIR          .)
+    set(IVW_FRAMEWORK_INSTALL_DIR       ${IVW_INSTALL_PREFIX}Frameworks)
+    set(IVW_INCLUDE_INSTALL_DIR         ${IVW_INSTALL_PREFIX}include)
+    set(IVW_SHARE_INSTALL_DIR           ${IVW_INSTALL_PREFIX}share)
+    set(IVW_RESOURCE_INSTALL_PREFIX     ${IVW_INSTALL_PREFIX}Resources/)
 elseif(WIN32)
-    set(IVW_INSTALL_PREFIX          "")
-    set(IVW_RUNTIME_INSTALL_DIR     ${IVW_INSTALL_PREFIX}bin)
-    set(IVW_BUNDLE_INSTALL_DIR      "not used!!!")
-    set(IVW_LIBRARY_INSTALL_DIR     ${IVW_RUNTIME_INSTALL_DIR})
-    set(IVW_ARCHIVE_INSTALL_DIR     ${IVW_RUNTIME_INSTALL_DIR})
-    set(IVW_FRAMEWORK_INSTALL_DIR   "not used!!!")
-    set(IVW_INCLUDE_INSTALL_DIR     ${IVW_INSTALL_PREFIX}include)
-    set(IVW_SHARE_INSTALL_DIR       ${IVW_INSTALL_PREFIX}share)
-    set(IVW_RESOURCE_INSTALL_PREFIX ${IVW_INSTALL_PREFIX})
+    set(IVW_INSTALL_PREFIX              "")
+    set(IVW_RUNTIME_INSTALL_DIR         ${IVW_INSTALL_PREFIX}bin)
+    set(IVW_RUNTIME_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/bin)
+    set(IVW_LIBRARY_INSTALL_DIR         ${IVW_INSTALL_PREFIX}bin)
+    set(IVW_LIBRARY_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/bin)
+    set(IVW_ARCHIVE_INSTALL_DIR         ${IVW_INSTALL_PREFIX}lib)
+    set(IVW_ARCHIVE_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/lib)
+    set(IVW_BUNDLE_INSTALL_DIR          "not used!!!")
+    set(IVW_FRAMEWORK_INSTALL_DIR       "not used!!!")
+    set(IVW_INCLUDE_INSTALL_DIR         ${IVW_INSTALL_PREFIX}include)
+    set(IVW_SHARE_INSTALL_DIR           ${IVW_INSTALL_PREFIX}share)
+    set(IVW_RESOURCE_INSTALL_PREFIX     ${IVW_INSTALL_PREFIX})
 else()
-    set(IVW_INSTALL_PREFIX          "")
-    set(IVW_RUNTIME_INSTALL_DIR     ${IVW_INSTALL_PREFIX}bin)
-    set(IVW_BUNDLE_INSTALL_DIR      "not used!!!")
-    set(IVW_LIBRARY_INSTALL_DIR     ${IVW_INSTALL_PREFIX}lib)
-    set(IVW_ARCHIVE_INSTALL_DIR     ${IVW_INSTALL_PREFIX}lib)
-    set(IVW_FRAMEWORK_INSTALL_DIR   "not used!!!")
-    set(IVW_INCLUDE_INSTALL_DIR     ${IVW_INSTALL_PREFIX}include)
-    set(IVW_SHARE_INSTALL_DIR       ${IVW_INSTALL_PREFIX}share)
-    set(IVW_RESOURCE_INSTALL_PREFIX ${IVW_INSTALL_PREFIX})
+    set(IVW_INSTALL_PREFIX              "")
+    set(IVW_RUNTIME_INSTALL_DIR         ${IVW_INSTALL_PREFIX}bin)
+    set(IVW_RUNTIME_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/bin)
+    set(IVW_LIBRARY_INSTALL_DIR         ${IVW_INSTALL_PREFIX}lib)
+    set(IVW_LIBRARY_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/lib)
+    set(IVW_ARCHIVE_INSTALL_DIR         ${IVW_INSTALL_PREFIX}lib)
+    set(IVW_ARCHIVE_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/lib)
+    set(IVW_BUNDLE_INSTALL_DIR          "not used!!!")
+    set(IVW_FRAMEWORK_INSTALL_DIR       "not used!!!")
+    set(IVW_INCLUDE_INSTALL_DIR         ${IVW_INSTALL_PREFIX}include)
+    set(IVW_SHARE_INSTALL_DIR           ${IVW_INSTALL_PREFIX}share)
+    set(IVW_RESOURCE_INSTALL_PREFIX     ${IVW_INSTALL_PREFIX})
 endif()
 
 set(IVW_PACKAGE_SELECT_APP "inviwo" CACHE STRING "Select which app to package")
@@ -231,22 +240,55 @@ endfunction()
 # A helper funtion to install module targets
 function(ivw_default_install_targets)
     foreach(target IN LISTS ARGN)
-        install(TARGETS ${target} EXPORT "${target}-targets"
-            RUNTIME        # DLLs, Exes, 
+        install(TARGETS ${target} 
+            CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+            EXPORT "${target}-targets"
+            RUNTIME        # DLLs, Exes
                 COMPONENT Application 
                 DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
+            ARCHIVE        # Static libs, .libs
+                COMPONENT Development 
+                DESTINATION ${IVW_ARCHIVE_INSTALL_DIR}
+            LIBRARY        # Shared libs - DLLs
+                COMPONENT Application
+                DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
+            
             BUNDLE         # Targets marked as BUNDLE
                 COMPONENT Application
                 DESTINATION ${IVW_BUNDLE_INSTALL_DIR}
-            ARCHIVE        # Static libs, .libs 
-                COMPONENT Development 
-                DESTINATION ${IVW_ARCHIVE_INSTALL_DIR}
-            LIBRARY        # Shared libs - DLLs   
-                COMPONENT Application
-                DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
             FRAMEWORK      # Targets marked as FRAMEWORK
                 COMPONENT Application
                 DESTINATION ${IVW_FRAMEWORK_INSTALL_DIR}
+            
+            PUBLIC_HEADER  # Public headers
+                COMPONENT Development 
+                DESTINATION ${IVW_INCLUDE_INSTALL_DIR}
+            FILE_SET HEADERS
+                COMPONENT Development 
+                DESTINATION ${IVW_INCLUDE_INSTALL_DIR}
+            RESOURCE       # Resource files
+                COMPONENT Application
+                DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}
+        )
+        install(TARGETS ${target} 
+            CONFIGURATIONS Debug
+            RUNTIME        # DLLs, Exes
+                COMPONENT Application 
+                DESTINATION ${IVW_RUNTIME_DEBUG_INSTALL_DIR}
+            ARCHIVE        # Static libs, .libs
+                COMPONENT Development 
+                DESTINATION ${IVW_ARCHIVE_DEBUG_INSTALL_DIR}
+            LIBRARY        # Shared libs - DLLs
+                COMPONENT Application
+                DESTINATION ${IVW_LIBRARY_DEBUG_INSTALL_DIR}
+
+            BUNDLE         # Targets marked as BUNDLE
+                COMPONENT Application
+                DESTINATION ${IVW_BUNDLE_INSTALL_DIR}
+            FRAMEWORK      # Targets marked as FRAMEWORK
+                COMPONENT Application
+                DESTINATION ${IVW_FRAMEWORK_INSTALL_DIR}
+            
             PUBLIC_HEADER  # Public headers
                 COMPONENT Development 
                 DESTINATION ${IVW_INCLUDE_INSTALL_DIR}

@@ -38,30 +38,6 @@ function(ivw_retrieve_all_modules module_list)
     set(${module_list} ${ivw_all_registered_modules} PARENT_SCOPE)
 endfunction()
 
-# Determine application dependencies. 
-# Creates a list of enabled modules in executable directory if runtime
-# module loading is enabled. Otherwise sets the registration macros and
-# adds module dependencies
-# Example: ivw_configure_application_module_dependencies(inviwo ${list_of_modules})
-# The list of modules is usually fetched from ivw_retrieve_all_modules
-function(ivw_configure_application_module_dependencies target)
-    if(IVW_CFG_RUNTIME_MODULE_LOADING)
-        # Specify which modules to load at runtime (all will be loaded if the file does not exist)
-        ivw_create_enabled_modules_file(${target} ${ARGN})
-        target_compile_definitions(${target} PUBLIC IVW_RUNTIME_MODULE_LOADING)
-        # Dependencies to build before this project when they are changed.
-        # Needed if modules are loaded at runtime since they should be built
-        # when this project is set as startup project
-        ivw_mod_name_to_alias(dep_targets ${ARGN})
-        add_dependencies(${target} ${dep_targets})
-    else()
-        ivw_mod_name_to_reg(reg_targets ${ARGN})
-        target_compile_definitions(${target} PUBLIC ${reg_targets})
-        ivw_mod_name_to_alias(dep_targets ${ARGN})
-        target_link_libraries(${target} PUBLIC ${dep_targets})
-    endif()
-endfunction()
-
 function(ivw_private_filter_dependency_list retval module)
     set(the_list "")
     if(ARGN)

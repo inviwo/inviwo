@@ -107,7 +107,7 @@ if(WIN32)
         Qt6::Core 
         Qt6::Widgets
     )
-    ivw_configure_application_module_dependencies(inviwo-cli ${enabled_modules})
+
     ivw_define_standard_definitions(inviwo-cli inviwo-cli)
     ivw_define_standard_properties(inviwo-cli)
 
@@ -124,9 +124,6 @@ if(WIN32)
     ivw_default_install_targets(inviwo-cli)
 endif()
 
-# Save information for python tools.
-ivw_mod_name_to_class(ivw_module_classes ${enabled_modules})
-ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_module_classes}" inviwo)
 ivw_deploy_qt(inviwo)
 
 if(IVW_PACKAGE_SELECT_APP STREQUAL "inviwo")

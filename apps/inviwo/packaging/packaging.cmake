@@ -29,7 +29,26 @@
 set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
 set(CMAKE_INSTALL_OPENMP_LIBRARIES TRUE)
 set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT Application)
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
 include (InstallRequiredSystemLibraries)
+
+if(WIN32)
+    set(SYSTEM_INSTALL_DIR ${IVW_RUNTIME_INSTALL_DIR})
+    set(SYSTEM_DEBUG_INSTALL_DIR ${IVW_RUNTIME_DEBUG_INSTALL_DIR})
+else()
+    set(SYSTEM_INSTALL_DIR ${IVW_LIBRARY_INSTALL_DIR})
+    set(SYSTEM_DEBUG_INSTALL_DIR ${IVW_LIBRARY_DEBUG_INSTALL_DIR})
+endif()
+install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+    COMPONENT Application
+    CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+    DESTINATION ${SYSTEM_INSTALL_DIR}
+)
+install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+    COMPONENT Application
+    CONFIGURATIONS Debug
+    DESTINATION ${SYSTEM_DEBUG_INSTALL_DIR}
+)
 
 set(CPACK_PACKAGE_NAME                "Inviwo")
 set(CPACK_PACKAGE_CONTACT             "Inviwo Foundation <info@inviwo.org>")
@@ -89,13 +108,14 @@ if(WIN32)
     else()
         set(CPACK_GENERATOR "ZIP")
     endif()
-    get_target_property(qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
+    get_target_property(qmake_executable Qt::qmake IMPORTED_LOCATION)
     get_filename_component(qt_bin_dir "${qmake_executable}" DIRECTORY)
     find_program(WINDEPLOYQT windeployqt HINTS "${qt_bin_dir}")
     
     # Copies necessary Qt libraries to the staging install directory
     configure_file("${IVW_ROOT_DIR}/cmake/deploy-windows.cmake.in" "${PROJECT_BINARY_DIR}/deploy-windows.cmake" @ONLY)
     set(CPACK_PRE_BUILD_SCRIPTS "${PROJECT_BINARY_DIR}/deploy-windows.cmake")
+
 elseif(APPLE)
     if(IVW_PACKAGE_INSTALLER)
         set(CPACK_GENERATOR           "DragNDrop")
@@ -105,7 +125,7 @@ elseif(APPLE)
         set(CPACK_GENERATOR "TGZ")
     endif()
     
-    get_target_property(qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
+    get_target_property(qmake_executable Qt::qmake IMPORTED_LOCATION)
     get_filename_component(qt_bin_dir "${qmake_executable}" DIRECTORY)
     find_program(MACDEPLOYQT macdeployqt HINTS "${qt_bin_dir}")
     

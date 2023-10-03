@@ -1,18 +1,47 @@
 set(WINDEPLOYQT "@WINDEPLOYQT@")
 set(APP_PATH "${CPACK_TEMPORARY_INSTALL_DIRECTORY}/bin")
 file(GLOB files 
-          "${APP_PATH}/*.dll" 
-          "${APP_PATH}/*.exe")
-foreach(file ${files})
+    "${APP_PATH}/*qt*.dll"
+    "${APP_PATH}/inviwo.exe"
+)
+message(STATUS "qt deploy files: ${files}")
+foreach(file IN LISTS files)
     set(COMMAND_ARGS
         ${WINDEPLOYQT}
         ${file}
-        --no-compiler-runtime # handled by include(InstallRequiredSystemLibraries)
-        -verbose=3
+        --no-compiler-runtime  # handled by include(InstallRequiredSystemLibraries)
+        --no-translations
+        --no-system-d3d-compiler
+        --no-opengl-sw
+        --verbose 3
     )
     execute_process(COMMAND ${COMMAND_ARGS} RESULT_VARIABLE EXIT_CODE)
     if(NOT EXIT_CODE EQUAL 0)
-        message(
-            \"Running ${COMMAND_ARGS} failed with exit code \${EXIT_CODE}.\")
+        list(JOIN COMMAND_ARGS " " COMMAND_STR)
+        message(WARNING "Running ${COMMAND_STR} failed with exit code ${EXIT_CODE}.")
+    endif()
+endforeach()
+
+
+set(APP_PATH "${CPACK_TEMPORARY_INSTALL_DIRECTORY}/debug/bin")
+file(GLOB files 
+    "${APP_PATH}/*qt*.dll"
+    "${APP_PATH}/inviwo.exe"
+)
+message(STATUS "qt deploy debug files: ${files}")
+foreach(file IN LISTS files)
+    set(COMMAND_ARGS
+        ${WINDEPLOYQT}
+        ${file}
+        --no-compiler-runtime  # handled by include(InstallRequiredSystemLibraries)
+        --no-translations
+        --no-system-d3d-compiler
+        --no-opengl-sw
+        --verbose 3 
+    )
+    execute_process(COMMAND ${COMMAND_ARGS} RESULT_VARIABLE EXIT_CODE)
+    if(NOT EXIT_CODE EQUAL 0)
+        list(JOIN COMMAND_ARGS " " COMMAND_STR)
+        message(WARNING "Running ${COMMAND_STR} failed with exit code ${EXIT_CODE}.")
     endif()
 endforeach()

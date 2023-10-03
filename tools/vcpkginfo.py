@@ -150,8 +150,10 @@ if __name__ == '__main__':
         exit(6)
 
     result = ""
-    if "version-string" in portInfo:
-        result += f"VCPKG_VERSION;{portInfo['version-string']};"
+    if "version" in portInfo:
+        result += f"VCPKG_VERSION;{portInfo['version']};"
+    elif "version-string" in installInfo:
+        result += f"VCPKG_VERSION;{installInfo['version-string']};"
 
     if "homepage" in portInfo:
         result += f"VCPKG_HOMEPAGE;{portInfo['homepage']};"

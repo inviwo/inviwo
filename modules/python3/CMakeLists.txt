@@ -135,7 +135,16 @@ if(BUILD_SHARED_LIBS AND IVW_PACKAGE_EMBED_PYTHON)
                 WORKING_DIRECTORY "${py_dir}/python")
         endif()
 
-        install(DIRECTORY "${py_dir}/python/" DESTINATION bin COMPONENT Application)
+        install(DIRECTORY "${py_dir}/python/" 
+            DESTINATION ${IVW_RUNTIME_INSTALL_DIR} 
+            COMPONENT Application
+            CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+        )
+        install(DIRECTORY "${py_dir}/python/" 
+            DESTINATION ${IVW_RUNTIME_DEBUG_INSTALL_DIR}
+            COMPONENT Application
+            CONFIGURATIONS Debug
+        )
     endif()
 endif()
 

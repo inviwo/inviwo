@@ -126,12 +126,12 @@ function(ivw_register_license_file)
         matH(EXPR fileCount "${fileCount} + 1")
     endforeach()
     
-    set("ivw_license_${ARG_ID}_name"    "${ARG_NAME}"    CACHE INTERNAL "License name")
-    set("ivw_license_${ARG_ID}_version" "${ARG_VERSION}" CACHE INTERNAL "License version")
-    set("ivw_license_${ARG_ID}_url"     "${ARG_URL}"     CACHE INTERNAL "License url")
-    set("ivw_license_${ARG_ID}_files"   "${files}"       CACHE INTERNAL "License files")
-    set("ivw_license_${ARG_ID}_module"  "${ARG_MODULE}"  CACHE INTERNAL "License module")
-    set("ivw_license_${ARG_ID}_type"    "${ARG_TYPE}"    CACHE INTERNAL "License type")
+    set_property(GLOBAL PROPERTY "ivw_license_${ARG_ID}_name"    "${ARG_NAME}")
+    set_property(GLOBAL PROPERTY "ivw_license_${ARG_ID}_version" "${ARG_VERSION}")
+    set_property(GLOBAL PROPERTY "ivw_license_${ARG_ID}_url"     "${ARG_URL}")
+    set_property(GLOBAL PROPERTY "ivw_license_${ARG_ID}_files"   "${files}")
+    set_property(GLOBAL PROPERTY "ivw_license_${ARG_ID}_module"  "${ARG_MODULE}")
+    set_property(GLOBAL PROPERTY "ivw_license_${ARG_ID}_type"    "${ARG_TYPE}")
 endfunction()
 
 
@@ -147,15 +147,22 @@ function(ivw_private_generate_license_header)
     get_property(license_list TARGET ${${ARG_MOD}_target} PROPERTY IVW_LICENSE_LIST)
     set(licenses "")
     foreach(id IN LISTS license_list)
+        get_property(name    GLOBAL PROPERTY "ivw_license_${ARG_ID}_name")
+        get_property(version GLOBAL PROPERTY "ivw_license_${ARG_ID}_version")
+        get_property(url     GLOBAL PROPERTY "ivw_license_${ARG_ID}_url")
+        get_property(files   GLOBAL PROPERTY "ivw_license_${ARG_ID}_files")
+        get_property(module  GLOBAL PROPERTY "ivw_license_${ARG_ID}_module")
+        get_property(type    GLOBAL PROPERTY "ivw_license_${ARG_ID}_type")
+
         # LicenseInfo(const std::string& id, const std::string& name, const Version& version,
         #             const std::string& module, const std::vector<std::string>& files);
-        list_to_stringvector(files ${ivw_license_${id}_files})
+        list_to_stringvector(files ${files})
         set(license "{\"${id}\", // License id"
-                     "\"${ivw_license_${id}_name}\", // Name"
-                     "\"${ivw_license_${id}_version}\", // Version"
-                     "\"${ivw_license_${id}_url}\", // URL"
-                     "\"${ivw_license_${id}_module}\", // Module"
-                     "\"${ivw_license_${id}_type}\", // Type"
+                     "\"${name}\", // Name"
+                     "\"${version}\", // Version"
+                     "\"${url}\", // URL"
+                     "\"${module}\", // Module"
+                     "\"${type}\", // Type"
                      "${files}}")
         ivw_join(";" "\n          " license ${license})
         list(APPEND licenses "${license}")

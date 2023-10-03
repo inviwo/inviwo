@@ -35,16 +35,29 @@ endif()
 function(ivw_private_vcpkg_install_helper)
     set(options "")
     set(oneValueArgs FILES_VAR PATTERN DESTINATION COMPONENT)
-    set(multiValueArgs "")
+    set(multiValueArgs "CONFIGURATIONS")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    foreach(item IN LISTS oneValueArgs multiValueArgs)
+        if(NOT ARG_${item})
+            message(FATAL_ERROR "ivw_private_vcpkg_install_helper: ${item} not set")
+        endif()
+    endforeach()
+    if(ARG_KEYWORDS_MISSING_VALUES)
+        message(FATAL_ERROR "ivw_private_vcpkg_install_helper: Missing values for keywords ${ARG_KEYWORDS_MISSING_VALUES}")
+    endif()
+    if(ARG_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR "ivw_private_vcpkg_install_helper: Unparsed arguments ${ARG_UNPARSED_ARGUMENTS}")
+    endif()
 
     set(files ${${ARG_FILES_VAR}})
     list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/${ARG_PATTERN}")
     list(TRANSFORM files PREPEND ${VCPKG_INSTALLED_DIR}/)
     install(
-        FILES ${files} 
+        FILES ${files}
         DESTINATION ${ARG_DESTINATION}
         COMPONENT ${ARG_COMPONENT}
+        CONFIGURATIONS ${CONFIGURATIONS}
     )
 endfunction()
 
@@ -59,9 +72,9 @@ endfunction()
 #  * MODULE the module to use for ivw_register_license_file
 #  * EXT pass on to ivw_register_license_file
 function(ivw_vcpkg_install name)
-	if(NOT VCPKG_TOOLCHAIN)
-		return()
-	endif()
+    if(NOT VCPKG_TOOLCHAIN)
+        return()
+    endif()
 
     if(NOT Python3_Interpreter_FOUND)
         return()
@@ -72,7 +85,7 @@ function(ivw_vcpkg_install name)
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-	string(TOLOWER "${name}" lowercase_name)
+    string(TOLOWER "${name}" lowercase_name)
 
     set(install "--install" "${VCPKG_INSTALLED_DIR}")
     set(installdir "${VCPKG_INSTALLED_DIR}/")
@@ -111,10 +124,10 @@ function(ivw_vcpkg_install name)
         set(pkgInfo ${ivw_vcpkg_info_${lowercase_name}})
     endif()
 
-    set(vcoptions "")
-    set(vconeValueArgs VCPKG_VERSION VCPKG_HOMEPAGE VCPKG_DESCRIPTION)
-    set(vcmultiValueArgs VCPKG_DEPENDENCIES VCPKG_OWNED_FILES)
-    cmake_parse_arguments(INFO "${vcoptions}" "${vconeValueArgs}" "${vcmultiValueArgs}" ${pkgInfo})
+    set(vcOptions "")
+    set(vcOneValueArgs VCPKG_VERSION VCPKG_HOMEPAGE VCPKG_DESCRIPTION)
+    set(vcMultiValueArgs VCPKG_DEPENDENCIES VCPKG_OWNED_FILES)
+    cmake_parse_arguments(INFO "${vcOptions}" "${vcOneValueArgs}" "${vcMultiValueArgs}" ${pkgInfo})
 
     if(NOT INFO_VCPKG_OWNED_FILES)
         set(INFO_VCPKG_OWNED_FILES "")
@@ -161,41 +174,61 @@ function(ivw_vcpkg_install name)
     if(WIN32)
         ivw_private_vcpkg_install_helper(
             FILES_VAR INFO_VCPKG_OWNED_FILES
-            PATTERN bin/.*\\.(dll|pdb)
+            PATTERN "bin/.*\\.(dll|pdb)"
             DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
             COMPONENT Application
+            CONFIGURATIONS Release MinSizeRel RelWithDebInfo
         )
         ivw_private_vcpkg_install_helper(
             FILES_VAR INFO_VCPKG_OWNED_FILES
-            PATTERN lib/.*\\.lib
-            DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
+            PATTERN "debug/bin/.*\\.(dll|pdb)"
+            DESTINATION ${IVW_RUNTIME_DEBUG_INSTALL_DIR}
             COMPONENT Application
+            CONFIGURATIONS Debug
+        )
+        ivw_private_vcpkg_install_helper(
+            FILES_VAR INFO_VCPKG_OWNED_FILES
+            PATTERN "lib/.*\\.lib"
+            DESTINATION ${IVW_ARCHIVE_INSTALL_DIR}
+            COMPONENT Application
+            CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+        )
+        ivw_private_vcpkg_install_helper(
+            FILES_VAR INFO_VCPKG_OWNED_FILES
+            PATTERN "debug/lib/.*\\.lib"
+            DESTINATION ${IVW_ARCHIVE_DEBUG_INSTALL_DIR}
+            COMPONENT Application
+            CONFIGURATIONS Debug
         )
     elseif(APPLE)
         ivw_private_vcpkg_install_helper(
             FILES_VAR INFO_VCPKG_OWNED_FILES
-            PATTERN lib/.*\\.(dylib|a)
-            DESTINATION ${IVW_INSTALL_PREFIX}lib
+            PATTERN "lib/.*\\.(dylib|a)"
+            DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
             COMPONENT Application
+            CONFIGURATIONS Release MinSizeRel RelWithDebInfo
         )
         ivw_private_vcpkg_install_helper(
             FILES_VAR INFO_VCPKG_OWNED_FILES
-            PATTERN debug/lib/.*\\.(dylib|a)
-            DESTINATION ${IVW_INSTALL_PREFIX}debug/lib
+            PATTERN "debug/lib/.*\\.(dylib|a)"
+            DESTINATION ${IVW_LIBRARY_DEBUG_INSTALL_DIR}
             COMPONENT Application
+            CONFIGURATIONS Debug
         )
     else()
         ivw_private_vcpkg_install_helper(
             FILES_VAR INFO_VCPKG_OWNED_FILES
-            PATTERN lib/.*\\.(so|a)
-            DESTINATION ${IVW_INSTALL_PREFIX}lib
+            PATTERN "lib/.*\\.(so|a)"
+            DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
             COMPONENT Application
+            CONFIGURATIONS Release MinSizeRel RelWithDebInfo
         )
         ivw_private_vcpkg_install_helper(
             FILES_VAR INFO_VCPKG_OWNED_FILES
-            PATTERN debug/lib/.*\\.(so|a)
-            DESTINATION ${IVW_INSTALL_PREFIX}debug/lib
+            PATTERN "debug/lib/.*\\.(so|a)"
+            DESTINATION ${IVW_LIBRARY_DEBUG_INSTALL_DIR}
             COMPONENT Application
+            CONFIGURATIONS Debug
         )
     endif()
 

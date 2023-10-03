@@ -70,7 +70,6 @@ function(ivw_private_create_pyconfig modulepaths activemodules target)
 
 endfunction()
 
-#--------------------------------------------------------------------
 # Generate a module registration header file (with configure file etc)
 function(ivw_private_generate_module_registration_file mod)
     ivw_mod_name_to_dir(module_dependencies ${${mod}_dependencies})
@@ -120,29 +119,35 @@ function(ivw_private_generate_module_registration_file mod)
     )
 endfunction()
 
-
-#--------------------------------------------------------------------
 # Generate a module registration header files (with configure file etc)
-function(ivw_private_generate_module_registration_files modules_var)
+function(ivw_private_generate_module_registration_files)
     # For runtime loading export a module factory function for all modules.
     # Function will be requested by the application after loading the library (dll/so)
     # Does not require modules to be linked to the application
     # For static loading generate function for creating modules in a single function
     # Requires all modules to be linked to the application
 
+    set(options )
+    set(oneValueArgs DESTINATION)
+    set(multiValueArgs MODULES)
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if(NOT ARG_DESTINATION)
+        message(FATAL_ERROR "ivw_private_generate_module_registration_files: DESTINATION not specified")
+    endif()
+    if(NOT ARG_MODULES)
+        message(FATAL_ERROR "ivw_private_generate_module_registration_files: MODULES not specified")
+    endif()
+
     set(static_headers "")
     set(static_functions "")
 
-    foreach(mod ${${modules_var}})
+    foreach(mod IN LISTS ARG_MODULES)
         list(APPEND static_headers
-            "#ifdef REG_${mod}\n"
             "#include <${${mod}_sharedLibInc}>\n"
-            "#endif\n"
         )
         list(APPEND static_functions
-            "    #ifdef REG_${mod}\n" 
             "    modules.emplace_back(create${${mod}_class}())__SEMICOLON__\n"
-            "    #endif\n"
         )
     endforeach()
 
@@ -156,7 +161,7 @@ function(ivw_private_generate_module_registration_files modules_var)
     # uses: MODULE_HEADERS MODULE_CLASS_FUNCTIONS
     configure_file(
         ${IVW_CMAKE_TEMPLATES}/mod_registration_template.h 
-        ${CMAKE_BINARY_DIR}/modules/core/include/inviwo/core/moduleregistration.h 
+        ${ARG_DESTINATION}
         @ONLY
     )
 endfunction()
