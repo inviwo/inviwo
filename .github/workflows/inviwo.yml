@@ -156,8 +156,8 @@ jobs:
       if: runner.os == 'macOS'
       # xcode 14.2 is currently default. 
       run: |
-        brew install ninja mono pkg-config nasm
-        sudo xcode-select --switch /Applications/Xcode_14.3.app/Contents/Developer
+        brew install ninja pkg-config nasm
+        sudo xcode-select --switch /Applications/Xcode_15.0.app/Contents/Developer
 
     - name: Apt Install, switch to gcc-13
       shell: bash
