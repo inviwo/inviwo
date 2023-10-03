@@ -8,10 +8,10 @@ permissions:
   contents: write  # Enable vcpkg to write to the dependency graph
 
 env:
-  VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'         # recognized by vcpkg
+  VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'   # recognized by vcpkg
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
-  # QT_DEBUG_PLUGINS: 1                                        # print qt plugin debug info
+  # QT_DEBUG_PLUGINS: 1                           # print qt plugin debug info
 
 jobs:
   build:
@@ -24,8 +24,7 @@ jobs:
         include:
           - system: windows
             os: 'windows-latest'
-            mono: ''
-            cmake: > 
+            cmake: >
               -DIVW_MODULE_EIGENUTILS=ON
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=ON
@@ -39,7 +38,6 @@ jobs:
           
           - system: macos
             os: 'macos-13' # for now macos-latest == macos-12 since macos-13 is still "beta"
-            mono: 'mono'
             cmake: >
               -DIVW_MODULE_EIGENUTILS=ON
               -DIVW_MODULE_HDF5=ON
@@ -52,7 +50,6 @@ jobs:
           
           - system: linux
             os: 'ubuntu-22.04'
-            mono: 'mono'
             # Disable benchmark for now due to error: 
             # memcpy’ is not a member of ‘std’; did you mean ‘wmemcpy’
             cmake: >
@@ -111,12 +108,12 @@ jobs:
           # need /MD for static to go with x64-windows-static-md
           - system: windows
             linkage: static
-            cmake: > 
+            cmake: >
               -DIVW_MODULE_EIGENUTILS=ON
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=ON
               -DIVW_MODULE_WEBBROWSER=ON
-              -DIVW_CFG_MSVC_FORCE_SHARED_CRT=ON            
+              -DIVW_CFG_MSVC_FORCE_SHARED_CRT=ON
 
         exclude:
           # Windows debug build are to big, they run out of diskspace
@@ -154,7 +151,7 @@ jobs:
     - name: Brew Install
       shell: bash
       if: runner.os == 'macOS'
-      # xcode 14.2 is currently default. 
+      # xcode 14.3 is currently default.
       run: |
         brew install ninja pkg-config nasm
         sudo xcode-select --switch /Applications/Xcode_15.0.app/Contents/Developer
@@ -191,25 +188,23 @@ jobs:
       shell: bash
       run: pip3 install numpy Sphinx sphinx-rtd-theme recommonmark
       
-    - name: Clone VCPKG
-      uses: actions/checkout@v4
-      with:
-        repository: 'microsoft/vcpkg'
-        fetch-depth: 0
-        path: 'vcpkg' # The cmake vcpkg present expects vcpkg to be next to the inviwo source folder
+    - name: Update VCPKG
+      shell: bash
+      run: |
+        echo $VCPKG_INSTALLATION_ROOT
+        cd $VCPKG_INSTALLATION_ROOT
+        git reset --hard
+        git pull
     
     # Cache built dependencies for faster subsequent builds
-    - name: 'Setup NuGet Credentials'
-      shell: bash
-      run: >
-        ${{ matrix.mono }} `vcpkg fetch nuget | tail -n 1`
-        sources add
-        -source "https://nuget.pkg.github.com/inviwo/index.json"
-        -storepasswordincleartext
-        -name "GitHub"
-        -username "inviwo"
-        -password "${{ secrets.GITHUB_TOKEN }}"
-    
+    # https://learn.microsoft.com/en-us/vcpkg/users/binarycaching#gha
+    - uses: actions/github-script@v6
+      with:
+        script: |
+          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+
     - name: Clone Inviwo
       uses: actions/checkout@v4
       with: 
@@ -231,13 +226,12 @@ jobs:
         echo "${{ steps.build_changelog.outputs.changelog }}"
         echo "-- End --"
 
-    - name: Activate MSVC
-      uses: ilammy/msvc-dev-cmd@v1
-
     - name: Configure CMake
       shell: bash
       run: >
         cmake -S inviwo -B build --preset ${{ matrix.preset }}
+        --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+        -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
         -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
         -DBUILD_SHARED_LIBS=${{ matrix.cmake_linkage }}
@@ -250,7 +244,7 @@ jobs:
     - name: Build
       timeout-minutes: 360
       shell: bash
-      run: > 
+      run: >
         cmake --build build --config ${{ matrix.configuration }} 
         --parallel --target ${{ matrix.targets }}
 
