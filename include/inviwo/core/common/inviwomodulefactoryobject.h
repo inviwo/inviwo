@@ -47,9 +47,8 @@ enum class ProtectedModule : bool { on, off };
 
 class IVW_CORE_API InviwoModuleFactoryObject {
 public:
-    InviwoModuleFactoryObject(const std::string& name, Version version,
-                              const std::string& description, Version inviwoCoreVersion,
-                              std::vector<std::string> dependencies,
+    InviwoModuleFactoryObject(std::string_view name, Version version, std::string_view description,
+                              Version inviwoCoreVersion, std::vector<std::string> dependencies,
                               std::vector<Version> dependenciesVersion,
                               std::vector<std::string> aliases, std::vector<LicenseInfo> licenses,
                               ProtectedModule protectedModule);
@@ -79,8 +78,8 @@ public:
 template <typename T>
 class InviwoModuleFactoryObjectTemplate : public InviwoModuleFactoryObject {
 public:
-    InviwoModuleFactoryObjectTemplate(const std::string& name, Version version,
-                                      const std::string& description, Version inviwoCoreVersion,
+    InviwoModuleFactoryObjectTemplate(std::string_view name, Version version,
+                                      std::string_view description, Version inviwoCoreVersion,
                                       std::vector<std::string> dependencies,
                                       std::vector<Version> dependenciesVersion,
                                       std::vector<std::string> aliases,
@@ -104,12 +103,13 @@ using f_getModule = InviwoModuleFactoryObject* (*)();
 
 template <typename T>
 InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
-    const std::string& name, Version version, const std::string& description,
-    Version inviwoCoreVersion, std::vector<std::string> dependencies,
-    std::vector<Version> dependenciesVersion, std::vector<std::string> aliases,
-    std::vector<LicenseInfo> licenses, ProtectedModule protectedModule)
-    : InviwoModuleFactoryObject(name, version, description, inviwoCoreVersion, dependencies,
-                                dependenciesVersion, aliases, licenses, protectedModule) {}
+    std::string_view name, Version version, std::string_view description, Version inviwoCoreVersion,
+    std::vector<std::string> dependencies, std::vector<Version> dependenciesVersion,
+    std::vector<std::string> aliases, std::vector<LicenseInfo> licenses,
+    ProtectedModule protectedModule)
+    : InviwoModuleFactoryObject(name, version, description, inviwoCoreVersion,
+                                std::move(dependencies), std::move(dependenciesVersion),
+                                std::move(aliases), std::move(licenses), protectedModule) {}
 
 /**
  * \brief Topological sort to make sure that we load modules in correct order

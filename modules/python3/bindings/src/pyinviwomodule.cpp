@@ -82,23 +82,30 @@ void exposeInviwoModule(pybind11::module& m) {
     namespace py = pybind11;
 
     py::class_<Version>(m, "Version")
-        .def(py::init<std::string>())
-        .def(py::init<unsigned int, unsigned int, unsigned int, unsigned int>())
-        .def("__repr__", [](Version* m) { return toString(*m); })
+        .def(py::init<std::string_view>())
+        .def(py::init<unsigned int, unsigned int, unsigned int, std::string_view,
+                      std::string_view>(),
+             py::arg("major") = 1, py::arg("minor") = 0, py::arg("patch") = 0,
+             py::arg("preRelease") = "", py::arg("build") = "")
+        .def("__repr__", [](Version* m) { return fmt::to_string(*m); })
         .def_readwrite("major", &Version::major)
         .def_readwrite("minor", &Version::minor)
         .def_readwrite("patch", &Version::patch)
-        .def_readwrite("build", &Version::build)
+        .def("preRelease", &Version::preRelease)
+        .def("build()", &Version::build)
         .def(py::self < py::self)
+        .def(py::self > py::self)
+        .def(py::self <= py::self)
+        .def(py::self >= py::self)
         .def(py::self != py::self)
+        .def(py::self == py::self)
         .def("semanticVersionEqual", &Version::semanticVersionEqual);
 
     py::class_<LicenseInfo>(m, "LicenseInfo")
-        .def(
-            py::init<const std::string&, const std::string&, const std::string&, const std::string&,
-                     const std::string&, const std::string&, const std::vector<std::string>&>(),
-            py::arg("id"), py::arg("name"), py::arg("version"), py::arg("url"), py::arg("module"),
-            py::arg("type"), py::arg("files"))
+        .def(py::init<std::string_view, std::string_view, std::string_view, std::string_view,
+                      std::string_view, std::string_view, const std::vector<std::string>&>(),
+             py::arg("id"), py::arg("name"), py::arg("version"), py::arg("url"), py::arg("module"),
+             py::arg("type"), py::arg("files"))
         .def_readonly("id", &LicenseInfo::id)
         .def_readonly("name", &LicenseInfo::name)
         .def_readonly("version", &LicenseInfo::version)
@@ -127,9 +134,11 @@ void exposeInviwoModule(pybind11::module& m) {
         .value("CL", ModulePath::CL);
 
     py::class_<InviwoModule>(m, "InviwoModule")
-        .def(py::init<InviwoApplication*, const std::string&>())
+        .def(py::init<InviwoApplication*, std::string_view>())
         .def("__repr__",
-             [](InviwoModule* m) { return m->getIdentifier() + " v" + toString(m->getVersion()); })
+             [](InviwoModule* m) {
+                 return fmt::format("{} v{}", m->getIdentifier(), m->getVersion());
+             })
         .def_property_readonly("identifier", &InviwoModule::getIdentifier)
         .def_property_readonly("description", &InviwoModule::getDescription)
         .def_property_readonly("path", [](InviwoModule* m) { return m->getPath(); })
@@ -141,7 +150,7 @@ void exposeInviwoModule(pybind11::module& m) {
 
     py::class_<InviwoModuleFactoryObject, InviwoModuleFactoryObjectTrampoline>(
         m, "InviwoModuleFactoryObject")
-        .def(py::init<const std::string&, Version, const std::string&, Version,
+        .def(py::init<std::string_view, Version, std::string_view, Version,
                       std::vector<std::string>, std::vector<Version>, std::vector<std::string>,
                       std::vector<LicenseInfo>, ProtectedModule>(),
              py::arg("name"), py::arg("version"), py::arg("description") = "",
@@ -150,8 +159,9 @@ void exposeInviwoModule(pybind11::module& m) {
              py::arg("aliases") = std::vector<std::string>{},
              py::arg("licenses") = std::vector<LicenseInfo>{},
              py::arg("protectedModule") = ProtectedModule::off)
-        .def("__repr__",
-             [](InviwoModuleFactoryObject* m) { return m->name + " v" + toString(m->version); })
+        .def(
+            "__repr__",
+            [](InviwoModuleFactoryObject* m) { return fmt::format("{} v{}", m->name, m->version); })
         .def("create", &InviwoModuleFactoryObject::create)
         .def_readonly("name", &InviwoModuleFactoryObject::name)
         .def_readonly("version", &InviwoModuleFactoryObject::version)

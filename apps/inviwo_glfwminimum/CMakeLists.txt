@@ -7,15 +7,6 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-ivw_retrieve_all_modules(enabled_modules)
-# Remove Qt stuff from list
-foreach(module ${enabled_modules})
-    string(TOUPPER ${module} u_module)
-    if(u_module MATCHES "QT+")
-        list(REMOVE_ITEM enabled_modules ${module})
-    endif()
-endforeach()
-
 set(RES_FILES "")
 if(WIN32)
     set(RES_FILES ${RES_FILES} 
@@ -28,8 +19,12 @@ source_group("Resource Files" FILES ${RES_FILES})
 
 # Create application
 add_executable(inviwo_glfwminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES} ${RES_FILES})
-target_link_libraries(inviwo_glfwminimum PUBLIC inviwo::core inviwo::module::glfw)
-ivw_configure_application_module_dependencies(inviwo_glfwminimum ${enabled_modules})
+target_link_libraries(inviwo_glfwminimum 
+    PUBLIC 
+        inviwo::core
+        inviwo::module-system
+        inviwo::module::glfw
+)
 ivw_define_standard_definitions(inviwo_glfwminimum inviwo_glfwminimum)
 ivw_define_standard_properties(inviwo_glfwminimum)
 

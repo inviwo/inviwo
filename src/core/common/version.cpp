@@ -30,19 +30,55 @@
 #include <inviwo/core/common/version.h>
 
 #include <ostream>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 
 namespace inviwo {
 
 namespace {
-constexpr Version ver{std::string_view{"9.8.3.21"}};
+constexpr Version ver{std::string_view{"9.8.3-pre+modules"}};
 static_assert(ver.major == 9);
 static_assert(ver.minor == 8);
 static_assert(ver.patch == 3);
-static_assert(ver.build == 21);
+static_assert(ver.build() == "modules");
+static_assert(ver.preRelease() == "pre");
+
+static_assert(Version{"1.0.0"} < Version{"2.0.0"});
+static_assert(Version{"2.0.0"} < Version{"2.1.0"});
+static_assert(Version{"2.1.0"} < Version{"2.1.1"});
+static_assert(Version{"1.0.0-alpha"} < Version{"1.0.0"});
+static_assert(Version{"1.0.0-alpha"} < Version{"1.0.0-alpha.1"});
+static_assert(Version{"1.0.0-alpha.1"} < Version{"1.0.0-alpha.beta"});
+static_assert(Version{"1.0.0-alpha.beta"} < Version{"1.0.0-beta"});
+static_assert(Version{"1.0.0-beta"} < Version{"1.0.0-beta.2"});
+static_assert(Version{"1.0.0-beta.2"} < Version{"1.0.0-beta.11"});
+static_assert(Version{"1.0.0-beta.11"} < Version{"1.0.0-rc.1"});
+static_assert(Version{"1.0.0-rc.1"} < Version{"1.0.0"});
+
+static_assert(Version{"2.0.0"} > Version{"1.0.0"});
+static_assert(Version{"2.1.0"} > Version{"2.0.0"});
+static_assert(Version{"2.1.1"} > Version{"2.1.0"});
+static_assert(Version{"1.0.0"} > Version{"1.0.0-alpha"});
+static_assert(Version{"1.0.0-alpha.1"} > Version{"1.0.0-alpha"});
+static_assert(Version{"1.0.0-alpha.beta"} > Version{"1.0.0-alpha.1"});
+static_assert(Version{"1.0.0-beta"} > Version{"1.0.0-alpha.beta"});
+static_assert(Version{"1.0.0-beta.2"} > Version{"1.0.0-beta"});
+static_assert(Version{"1.0.0-beta.11"} > Version{"1.0.0-beta.2"});
+static_assert(Version{"1.0.0-rc.1"} > Version{"1.0.0-beta.11"});
+static_assert(Version{"1.0.0"} > Version{"1.0.0-rc.1"});
+
+static_assert(Version{"1.0.0+asdf"} < Version{"2.0.0+werg"});
+static_assert(Version{"1.0.0-alpha.beta+bar"} > Version{"1.0.0-alpha.1+bar"});
+
+static_assert(Version{"1.0.0"} == Version{"1.0.0"});
+static_assert(Version{"1.0.0-beta"} == Version{"1.0.0-beta"});
+static_assert(Version{"1.0.0+asdf"} == Version{"1.0.0+werg"});
+static_assert(Version{"1.0.0-beta+asdf"} == Version{"1.0.0-beta+werg"});
+
 }  // namespace
 
 std::ostream& operator<<(std::ostream& ss, const Version& v) {
-    ss << v.major << "." << v.minor << "." << v.patch << "." << v.build;
+    fmt::print(ss, "{}", v);
     return ss;
 }
 

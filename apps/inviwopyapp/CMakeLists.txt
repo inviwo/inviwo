@@ -13,10 +13,6 @@ set(CMAKE_FILES
 )
 ivw_group("CMake Files" ${CMAKE_FILES})
 
-ivw_retrieve_all_modules(enabled_modules)
-# Only include one OpenGL context creation module
-list(REMOVE_ITEM enabled_modules InviwoGLFWModule)
-
 # Create application
 add_custom_target(inviwopyapp SOURCES ${PYTHON_FILES} ${CMAKE_FILES})
 

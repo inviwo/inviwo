@@ -28,14 +28,11 @@ elseif(APPLE)
 endif()
 source_group("Resource Files" FILES ${RES_FILES})
 
-ivw_retrieve_all_modules(enabled_modules)
-# Only include one OpenGL context creation module
-list(REMOVE_ITEM enabled_modules InviwoGLFWModule)
-
 # Create application
 add_executable(inviwo_qtminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES} ${RES_FILES} ${CMAKE_FILES})
 target_link_libraries(inviwo_qtminimum PUBLIC 
     inviwo::core
+    inviwo::module-system
     inviwo::module::qtwidgets
     inviwo::qtapplicationbase
     Qt6::Core
@@ -43,7 +40,6 @@ target_link_libraries(inviwo_qtminimum PUBLIC
     Qt6::Widgets
 )
 
-ivw_configure_application_module_dependencies(inviwo_qtminimum ${enabled_modules})
 ivw_define_standard_definitions(inviwo_qtminimum inviwo_qtminimum) 
 ivw_define_standard_properties(inviwo_qtminimum)
 

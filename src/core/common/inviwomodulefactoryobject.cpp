@@ -37,27 +37,27 @@
 namespace inviwo {
 
 InviwoModuleFactoryObject::InviwoModuleFactoryObject(
-    const std::string& name_, Version version_, const std::string& description_,
-    Version inviwoCoreVersion_, std::vector<std::string> dependencies_,
-    std::vector<Version> dependenciesVersion_, std::vector<std::string> aliases_,
-    std::vector<LicenseInfo> licenses_, ProtectedModule protectedModule_)
-    : name(name_)
-    , version(version_)
-    , description(description_)
-    , inviwoCoreVersion(inviwoCoreVersion_)
+    std::string_view aName, Version aVersion, std::string_view aDescription,
+    Version aInviwoCoreVersion, std::vector<std::string> someDependencies,
+    std::vector<Version> someDependenciesVersion, std::vector<std::string> someAliases,
+    std::vector<LicenseInfo> someLicenses, ProtectedModule aProtectedModule)
+    : name(aName)
+    , version(aVersion)
+    , description(aDescription)
+    , inviwoCoreVersion(aInviwoCoreVersion)
     , dependencies([&]() {
-        if (dependencies_.size() != dependenciesVersion_.size()) {
+        if (someDependencies.size() != someDependenciesVersion.size()) {
             throw Exception("Each module dependency must have a version", IVW_CONTEXT);
         }
         std::vector<std::pair<std::string, Version>> deps;
-        for (auto&& item : util::zip(dependencies_, dependenciesVersion_)) {
-            deps.emplace_back(get<0>(item), get<1>(item));
+        for (auto&& item : util::zip(someDependencies, someDependenciesVersion)) {
+            deps.emplace_back(std::move(get<0>(item)), std::move(get<1>(item)));
         }
         return deps;
     }())
-    , aliases(aliases_)
-    , licenses(licenses_)
-    , protectedModule(protectedModule_) {}
+    , aliases(std::move(someAliases))
+    , licenses(std::move(someLicenses))
+    , protectedModule(aProtectedModule) {}
 
 /**
  * \brief Sorts modules according to their dependencies.

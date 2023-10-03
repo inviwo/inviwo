@@ -50,9 +50,10 @@
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/consolelogger.h>
-#include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/networkdebugobserver.h>
+
+#include <inviwo/sys/moduleregistration.h>
 
 #include <fmt/std.h>
 

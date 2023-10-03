@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2023 Inviwo Foundation
+ * Copyright (c) 2013-2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,19 +27,38 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/util/licenseinfo.h>
+#pragma once
 
-namespace inviwo {
-
-LicenseInfo::LicenseInfo(std::string_view aId, std::string_view aName, std::string_view aVersion,
-                         std::string_view aUrl, std::string_view aModule, std::string_view aType,
-                         const std::vector<std::string>& someFiles)
-    : id{aId}
-    , name{aName}
-    , version{aVersion}
-    , url{aUrl}
-    , module{aModule}
-    , type{aType}
-    , files{someFiles} {}
-
-}  // namespace inviwo
+#ifdef INVIWO_ALL_DYN_LINK  // DYNAMIC
+// If we are building DLL files we must declare dllexport/dllimport
+#ifdef IVW_SYS_EXPORTS
+#ifdef _WIN32
+#define IVW_SYS_API __declspec(dllexport)
+#define IVW_SYS_EXT
+#define IVW_SYS_TMPL_EXP
+#define IVW_SYS_TMPL_INST __declspec(dllexport)
+#else  // UNIX (GCC)
+#define IVW_SYS_API __attribute__((visibility("default")))
+#define IVW_SYS_EXT
+#define IVW_SYS_TMPL_EXP __attribute__((__visibility__("default")))
+#define IVW_SYS_TMPL_INST
+#endif
+#else
+#ifdef _WIN32
+#define IVW_SYS_API __declspec(dllimport)
+#define IVW_SYS_EXT extern
+#define IVW_SYS_TMPL_EXP __declspec(dllimport)
+#define IVW_SYS_TMPL_INST
+#else
+#define IVW_SYS_API
+#define IVW_SYS_EXT extern
+#define IVW_SYS_TMPL_EXP __attribute__((__visibility__("default")))
+#define IVW_SYS_TMPL_INST
+#endif
+#endif
+#else  // STATIC
+#define IVW_SYS_API
+#define IVW_SYS_EXT extern
+#define IVW_SYS_TMPL_EXP
+#define IVW_SYS_TMPL_INST
+#endif

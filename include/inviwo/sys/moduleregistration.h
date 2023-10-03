@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2023 Inviwo Foundation
+ * Copyright (c) 2022-2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,19 +27,16 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/util/licenseinfo.h>
+#pragma once
+
+#include <inviwo/sys/inviwosysdefine.h>
+#include <inviwo/core/common/inviwomodulefactoryobject.h>
+
+#include <vector>
+#include <memory>
 
 namespace inviwo {
 
-LicenseInfo::LicenseInfo(std::string_view aId, std::string_view aName, std::string_view aVersion,
-                         std::string_view aUrl, std::string_view aModule, std::string_view aType,
-                         const std::vector<std::string>& someFiles)
-    : id{aId}
-    , name{aName}
-    , version{aVersion}
-    , url{aUrl}
-    , module{aModule}
-    , type{aType}
-    , files{someFiles} {}
+IVW_SYS_API std::vector<std::unique_ptr<InviwoModuleFactoryObject>> getModuleList();
 
-}  // namespace inviwo
+}

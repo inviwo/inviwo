@@ -84,7 +84,7 @@ public:
      * @param app the inviwo application.
      * @param identifier Name of module folder.
      */
-    InviwoModule(InviwoApplication* app, const std::string& identifier);
+    InviwoModule(InviwoApplication* app, std::string_view identifier);
     InviwoModule(const InviwoModule&) = delete;
     InviwoModule& operator=(const InviwoModule&) = delete;
     InviwoModule(InviwoModule&&) = delete;

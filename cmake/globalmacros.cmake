@@ -238,7 +238,12 @@ endfunction()
 # INVIWOOPENGLMODULE_description  -> </readme.md>
 # INVIWOOPENGLMODULE_dependencies -> </depends.cmake::dependencies>
 # 
-function(ivw_register_modules retval)
+function(ivw_register_modules)
+    set(options )
+    set(oneValueArgs ALL_MODULES_OUT ENABLED_MODULES_OUT)
+    set(multiValueArgs)
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
     # Collect all modules and information
     set(modules "")
 
@@ -438,9 +443,6 @@ function(ivw_register_modules retval)
 
     ivw_copy_if(on_sorted_modules LIST sorted_modules EVAL PROJECTOR _opt)
     ivw_copy_if(enabled_sorted_modules LIST on_sorted_modules NOT PROJECTOR _disabled)
-
-    # Generate module registration file
-    ivw_private_generate_module_registration_files(enabled_sorted_modules)
     
     # Add enabled modules in sorted order
     set(ivw_module_names "")
@@ -458,7 +460,12 @@ function(ivw_register_modules retval)
     # Save list of modules
     set(ivw_all_registered_modules ${ivw_module_names} CACHE INTERNAL "All registered inviwo modules")
 
-    set(${retval} ${sorted_modules} PARENT_SCOPE)
+    if(ARG_ALL_MODULES_OUT)
+        set(${ARG_ALL_MODULES_OUT} ${sorted_modules} PARENT_SCOPE)
+    endif()
+    if(ARG_ENABLED_MODULES_OUT)
+        set(${ARG_ENABLED_MODULES_OUT} ${enabled_sorted_modules} PARENT_SCOPE)
+    endif()
 endfunction()
 
 # Set module to build by default if value is true

@@ -113,7 +113,7 @@ if(IVW_TEST_INTEGRATION_TESTS OR IVW_TEST_UNIT_TESTS)
     add_subdirectory(tests/testutil)         # Add test utils, used in the module unit tests
 endif()
 
-ivw_register_modules(all_modules)            # Add inviwo modules
+add_subdirectory(src/sys)                    # Add inviwo module system
 
 # Add all the applications, uses the modules.
 if(IVW_ENABLE_QT)

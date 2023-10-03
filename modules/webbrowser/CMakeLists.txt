@@ -24,14 +24,14 @@ determineCEFPlatform(CEF_PLATFORM)
 
 # Download and extract the CEF binary distribution (executes cmake/DownloadCEF.cmake).
 include("cmake/DownloadCEF.cmake")
-DownloadCEF("${CEF_PLATFORM}" "${CEF_VERSION}" "${PROJECT_BINARY_DIR}/ext/cef")
+DownloadCEF("${CEF_PLATFORM}" "${CEF_VERSION}" "${IVW_BINARY_DIR}/ext/cef")
 
 # Add the CEF binary distribution's cmake/ directory to the module path.
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
 
 # sandbox lib is built with MT_StaticRelease but Inviwo is built with 
 # MD_DynamicRelease and hence are not compatible
-if (WIN32)
+if(WIN32)
     option(USE_SANDBOX "Enable or disable use of the sandbox." OFF)
 endif()
 
@@ -63,6 +63,12 @@ set(BUILD_SHARED_LIBS_TMP ${BUILD_SHARED_LIBS})
 set(BUILD_SHARED_LIBS OFF)
 add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
 # Group in folder 
+
+ivw_install_helper(TARGET libcef_dll_wrapper
+    NAMESPACE cef
+    DESTINATION cef
+)
+
 ivw_folder(libcef_dll_wrapper ext/CEF)
 # Inviwo: Remove warnings (-w), and build error due to 'OSAtomicCompareAndSwap32' is deprecated
 if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
@@ -83,11 +89,9 @@ endif()
 # Display configuration settings.
 #PRINT_CEF_CONFIG()
 
-#--------------------------------------------------------------------
 # Inviwo WebBrowser Module
 ivw_module(WebBrowser)
 
-#--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     include/modules/webbrowser/cefimageconverter.h
@@ -110,7 +114,6 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
     src/cefimageconverter.cpp
@@ -132,32 +135,28 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_convert_cef.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
-#--------------------------------------------------------------------
 # Add javascript
 set(JS_FILES
     data/js/inviwoapi.js
 )
 ivw_group("Javascript Files" BASE "${CMAKE_CURRENT_SOURCE_DIR}/data/js" ${JS_FILES})
 
-#--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/webbrowser-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
-#--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES} ${JS_FILES})
-target_include_directories(inviwo-module-webbrowser 
-    PUBLIC 
+target_include_directories(inviwo-module-webbrowser
+    PUBLIC
         $<BUILD_INTERFACE:${CEF_INCLUDE_PATH}>
         $<INSTALL_INTERFACE:include>
 )
@@ -172,7 +171,7 @@ target_link_libraries(inviwo-module-webbrowser PUBLIC
 target_compile_definitions(inviwo-module-webbrowser PRIVATE
     $<$<BOOL:${USE_SANDBOX}>:CEF_USE_SANDBOX>
 )
-#--------------------------------------------------------------------
+
 # Package or build shaders into resources
 ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
 
@@ -183,13 +182,15 @@ target_link_libraries(inviwo-module-webbrowser PRIVATE
     utf8cpp
 )
 
-# Inviwo: CEF only provides release/debug configurations. Set RelWithDebInfo and MinSizeRel to use release 
-set(CEF_BINARY_DIR "${_CEF_ROOT}/$<$<CONFIG:RelWithDebInfo>:Release>$<$<CONFIG:MinSizeRel>:Release>$<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>")
-
 ivw_register_license_file(NAME "Chromium Embedded Framework" VERSION ${CEF_VERSION} MODULE WebBrowser
     URL "https://bitbucket.org/chromiumembedded/cef"
     TYPE "BSD-license"
     FILES ${CEF_ROOT}/LICENSE.txt
+)
+
+# Inviwo: CEF only provides release/debug configurations. Set RelWithDebInfo and MinSizeRel to use release 
+set(CEF_BINARY_DIR 
+    "${_CEF_ROOT}/$<$<CONFIG:RelWithDebInfo,MinSizeRel,Release>:Release>$<$<CONFIG:Debug>:Debug>"
 )
 
 if (OS_MAC)
@@ -214,8 +215,11 @@ if (OS_MAC)
     # loaded from the app bundle Resources directory"
     # The files are the same for debug/release, simply use release
     # (file does not support generator expressions).
-    file(GLOB resource_files LIST_DIRECTORIES TRUE "${_CEF_ROOT}/Release/Chromium Embedded Framework.framework/Resources/*")
-    foreach(cur_file ${resource_files})
+    file(GLOB resource_files 
+        LIST_DIRECTORIES TRUE 
+        "${_CEF_ROOT}/Release/Chromium Embedded Framework.framework/Resources/*"
+    )
+    foreach(cur_file IN LISTS resource_files)
         get_filename_component(name ${cur_file} NAME)
         add_custom_command(
             TARGET inviwo-module-webbrowser

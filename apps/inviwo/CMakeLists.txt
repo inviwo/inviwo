@@ -21,12 +21,6 @@ ivw_group("Source Files" ${SOURCE_FILES})
 qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOCED_FILES})
 
-# Define libraries that should be linked
-ivw_retrieve_all_modules(enabled_modules)
-
-# Only include one OpenGL context creation module
-list(REMOVE_ITEM enabled_modules InviwoGLFWModule)
-
 set(RES_FILES "")
 if(WIN32)
     set(RES_FILES ${RES_FILES} 
@@ -49,17 +43,13 @@ add_executable(inviwo MACOSX_BUNDLE WIN32
     ${RES_FILES})
 target_link_libraries(inviwo PUBLIC 
     inviwo::core
+    inviwo::module-system
     inviwo::qtapplicationbase
     inviwo::qteditor
     Qt6::Core
     Qt6::Widgets
 )
 
-set_target_properties(inviwo PROPERTIES OUTPUT_NAME "Inviwo")
-
-# Register the use of modules
-# Determine dendendencies and set runtime module loading defines
-ivw_configure_application_module_dependencies(inviwo ${enabled_modules})
 ivw_define_standard_definitions(inviwo inviwo)
 ivw_define_standard_properties(QT inviwo)
 
@@ -110,13 +100,13 @@ if(WIN32)
         ${RES_FILES}
     )
     target_link_libraries(inviwo-cli PUBLIC
-        inviwo::core 
+        inviwo::core
+        inviwo::module-system
         inviwo::qtapplicationbase
         inviwo::qteditor
         Qt6::Core 
         Qt6::Widgets
     )
-    set_target_properties(inviwo-cli PROPERTIES OUTPUT_NAME "Inviwo-cli")
     ivw_configure_application_module_dependencies(inviwo-cli ${enabled_modules})
     ivw_define_standard_definitions(inviwo-cli inviwo-cli)
     ivw_define_standard_properties(inviwo-cli)

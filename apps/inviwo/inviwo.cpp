@@ -44,7 +44,7 @@
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/core/util/filelogger.h>
 #include "inviwosplashscreen.h"
-#include <inviwo/core/moduleregistration.h>
+#include <inviwo/sys/moduleregistration.h>
 
 #include <sstream>
 #include <algorithm>
@@ -110,6 +110,10 @@ int main(int argc, char** argv) {
         inviwoApp.getModuleManager().isRuntimeModuleReloadingEnabled());
     inviwoModules.insert(inviwoModules.end(), std::make_move_iterator(runtimeModules.begin()),
                          std::make_move_iterator(runtimeModules.end()));
+
+    // Remove GLFW module from list of modules to register size we will use Qt for opengl context
+    std::erase_if(inviwoModules,
+                  [](const inviwo::ModuleContainer& m) { return m.identifier() == "glfw"; });
 
     inviwoApp.getModuleManager().registerModules(std::move(inviwoModules));
 

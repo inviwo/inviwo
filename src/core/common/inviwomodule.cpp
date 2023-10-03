@@ -65,7 +65,7 @@
 
 namespace inviwo {
 
-InviwoModule::InviwoModule(InviwoApplication* app, const std::string& identifier)
+InviwoModule::InviwoModule(InviwoApplication* app, std::string_view identifier)
     : app_(app), identifier_(identifier) {}
 
 InviwoModule::~InviwoModule() {

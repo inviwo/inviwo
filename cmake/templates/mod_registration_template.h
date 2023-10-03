@@ -1,18 +1,8 @@
-// Automatically generated file do not change! (see globalmacros.cmake, ivw_private_generate_module_registration_file)
-#pragma once
-
-#ifdef IVW_RUNTIME_MODULE_LOADING
-
-#include <inviwo/core/common/runtimemoduleregistration.h>
-namespace inviwo {
-RuntimeModuleLoading getModuleList() { return RuntimeModuleLoading{}; }
-}  //namespace
-
-#else
-
-#include <inviwo/core/common/inviwomodulefactoryobject.h>
+// Automatically generated file do not change! (see filegeneration.cmake, ivw_private_generate_module_registration_file)
 
 @MODULE_HEADERS@
+
+#include <inviwo/sys/moduleregistration.h>
 
 namespace inviwo {
 
@@ -30,5 +20,3 @@ std::vector<std::unique_ptr<InviwoModuleFactoryObject>> getModuleList() {
 }
 
 }  //namespace
-
-#endif // IVW_RUNTIME_MODULE_LOADING

@@ -31,6 +31,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/inviwocommondefines.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>
@@ -1120,7 +1121,7 @@ void InviwoMainWindow::addActions() {
 
 void InviwoMainWindow::updateWindowTitle() {
     setWindowTitle(utilqt::toQString(
-        fmt::format("Inviwo - Interactive Visualization Workshop - {}{}", currentWorkspaceFileName_,
+        fmt::format("Inviwo v{} - Interactive Visualization Workshop - {}{}", inviwo::build::version, currentWorkspaceFileName_,
                     getNetworkEditor()->isModified() ? "*" : "")));
 }
 

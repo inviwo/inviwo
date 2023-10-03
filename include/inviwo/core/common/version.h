@@ -37,6 +37,7 @@
 #include <iosfwd>
 #include <tuple>
 #include <array>
+#include <optional>
 
 #include <fmt/format.h>
 
@@ -44,15 +45,19 @@ namespace inviwo {
 
 /**
  * \class Version
- * \brief Parses a version string "Major.Minor.Patch.Build" and allow versions to be compared.
- * Try to follow semantic versioning: http://semver.org/
- * A nuanced picture, i.e. reasons why you do not necessarily need to follow semantic versioning:
- * "Why Semantic Versioning Isn't": https://gist.github.com/jashkenas/cbd2b088e20279ae2c8e
+ * \brief Parses a version string "Major.Minor.Patch-PreRelease+Build" and allow versions to be
+ * compared. Try to follow semantic versioning: http://semver.org/ A nuanced picture, i.e. reasons
+ * why you do not necessarily need to follow semantic versioning: "Why Semantic Versioning Isn't":
+ * https://gist.github.com/jashkenas/cbd2b088e20279ae2c8e
  *
  * 1. MAJOR version when you make incompatible API changes,
  * 2. MINOR version when you add functionality in a backwards-compatible manner, and
  * 3. PATCH version when you make backwards-compatible bug fixes.
- * 4. BUILD version can be used as metadata.
+ * 4. PRE-RELEASE Annotate pre-release versions with a hyphen and a series of dot separated
+ *    identifiers.
+ * 5. BUILD Build metadata denoted by appending a plus sign and a series of dot separated
+ *    identifiers immediately following the patch or pre-release version. The build metadata is
+ *    ignored when comparing versions.
  *
  * Major and minor versions are used during equal comparison since
  * API changes should not exist in patch and build version changes
@@ -71,7 +76,7 @@ public:
     constexpr Version(std::string_view version);
     constexpr Version(const char* version);
     constexpr Version(unsigned int major = 1, unsigned int minor = 0, unsigned int patch = 0,
-                      unsigned int build = 0);
+                      std::string_view preRelease = "", std::string_view build = "");
 
     /**
      * Major version >= 1: Return true if major and minor versions are equal, false otherwise.
@@ -84,34 +89,20 @@ public:
     constexpr bool semanticVersionEqual(const Version& other) const;
 
     /**
-     * \brief Compares major, minor, patch and build versions in order.
-     * @return bool true if lhs is less than rhs, false otherwise.
+     * \brief Compares major, minor, patch and prerelease versions in order.
      */
-    friend constexpr bool operator<(const Version& lhs, const Version& rhs) {
+    constexpr std::strong_ordering operator<=>(const Version& rhs) const {
         // Keep ordering using lexicographical comparison provided by std::tie:
-        return std::tie(lhs.major, lhs.minor, lhs.patch, lhs.build) <
-               std::tie(rhs.major, rhs.minor, rhs.patch, rhs.build);
+        const auto order =
+            std::tie(major, minor, patch) <=> std::tie(rhs.major, rhs.minor, rhs.patch);
+
+        if (order != std::strong_ordering::equal) return order;
+
+        // Compare pre-release versions
+        return Version::comparePreRelease(preRelease(), rhs.preRelease());
     }
-    /**
-     * \brief Compares major, minor, patch and build versions in order.
-     * @return bool true if lhs is exactly the same as rhs, false otherwise.
-     */
-    friend constexpr bool operator==(const Version& lhs, const Version& rhs) {
-        // Keep ordering using lexicographical comparison provided by std::tie:
-        return std::tie(lhs.major, lhs.minor, lhs.patch, lhs.build) ==
-               std::tie(rhs.major, rhs.minor, rhs.patch, rhs.build);
-    }
-    friend constexpr bool operator!=(const Version& lhs, const Version& rhs) {
-        return !(lhs == rhs);
-    }
-    friend constexpr bool operator>(const Version& lhs, const Version& rhs) {
-        return !(lhs <= rhs);
-    }
-    friend constexpr bool operator>=(const Version& lhs, const Version& rhs) {
-        return !(lhs < rhs);
-    }
-    friend constexpr bool operator<=(const Version& lhs, const Version& rhs) {
-        return (lhs < rhs) || (lhs == rhs);
+    constexpr bool operator==(const Version& rhs) const {
+        return operator<=>(rhs) == std::strong_ordering::equal;
     }
 
     IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, const Version& v);
@@ -120,34 +111,140 @@ public:
     unsigned int minor =
         0;  ///< Increases when you add functionality in a backwards-compatible manner
     unsigned int patch = 0;  ///< Increases when you make backwards-compatible bug fixes
-    unsigned int build = 0;  ///< Version metadata
+
+    constexpr std::string_view preRelease() const { return preReleaseBuffer.data(); }
+    constexpr std::string_view build() const { return buildBuffer.data(); }
+
+private:
+    static constexpr std::strong_ordering comparePreRelease(std::string_view lhsPre,
+                                                            std::string_view rhsPre) {
+        if (lhsPre.empty() && rhsPre.empty()) {
+            return std::strong_ordering::equal;
+        } else if (lhsPre.empty()) {
+            return std::strong_ordering::greater;
+        } else if (rhsPre.empty()) {
+            return std::strong_ordering::less;
+        } else {
+            size_t lhsBegin = 0;
+            size_t rhsBegin = 0;
+
+            while (true) {
+                size_t lhsEnd = lhsPre.find_first_of(".", lhsBegin);
+                size_t rhsEnd = rhsPre.find_first_of(".", rhsBegin);
+
+                auto lhsPart = lhsPre.substr(lhsBegin, lhsEnd - lhsBegin);
+                auto rhsPart = rhsPre.substr(rhsBegin, rhsEnd - rhsBegin);
+
+                auto lhsNum = toNumber(lhsPart);
+                auto rhsNum = toNumber(rhsPart);
+
+                if (lhsNum && rhsNum) {
+                    const auto numOrder = *lhsNum <=> *rhsNum;
+                    if (numOrder != std::strong_ordering::equal) {
+                        return numOrder;
+                    }
+                } else if (lhsNum) {
+                    return std::strong_ordering::less;
+                } else if (rhsNum) {
+                    return std::strong_ordering::greater;
+                } else {
+                    const auto strOrder = lhsPart <=> rhsPart;
+                    if (strOrder != std::strong_ordering::equal) {
+                        return strOrder;
+                    }
+                }
+
+                lhsBegin = lhsEnd != std::string_view::npos ? lhsEnd + 1 : lhsEnd;
+                rhsBegin = rhsEnd != std::string_view::npos ? rhsEnd + 1 : rhsEnd;
+
+                if (lhsBegin >= lhsPre.size() && rhsBegin >= rhsPre.size()) {
+                    return std::strong_ordering::equal;
+                } else if (lhsBegin >= lhsPre.size()) {
+                    return std::strong_ordering::less;
+                } else if (rhsBegin >= rhsPre.size()) {
+                    return std::strong_ordering::greater;
+                }
+            }
+        }
+    }
+    static constexpr std::optional<unsigned int> toNumber(std::string_view num) {
+        unsigned int result = 0;
+        for (auto c : num) {
+            if (c < '0' || c > '9') {
+                return std::nullopt;
+            }
+            result = result * 10 + (c - '0');
+        }
+        return result;
+    }
+
+    std::array<char, 32> preReleaseBuffer{0};  ///< Pre-release version annotation
+    std::array<char, 32> buildBuffer{0};       ///< Build metadata
 };
 
 constexpr Version::Version(const char* version) : Version(std::string_view{version}) {}
 
 constexpr Version::Version(std::string_view version) {
-    const std::array<unsigned int*, 4> v{&major, &minor, &patch, &build};
+    const std::array<unsigned int*, 3> v{&major, &minor, &patch};
+
+    auto majorMinorPatch = version.substr(0, version.find_first_of("-+"));
 
     size_t begin = 0;
-    size_t end = version.find('.', 0);
+    size_t end = majorMinorPatch.find('.', 0);
     for (auto e : v) {
-        const auto num = version.substr(begin, end - begin);
-        for (auto c : num) {
-            if (c < '0' || c > '9') {
-                throw Exception(IVW_CONTEXT, "Invalid character found: '{}' in version string '{}'",
-                                c, version);
-            }
-            *e = *e * 10 + (c - '0');
+        const auto num = majorMinorPatch.substr(begin, end - begin);
+        if (auto val = toNumber(num)) {
+            *e = *val;
+        } else {
+            throw Exception(IVW_CONTEXT, "Invalid number found: '{}' in version string '{}'", num,
+                            version);
         }
         if (end == std::string_view::npos) break;
         begin = end + 1;
-        end = version.find('.', begin);
+        end = majorMinorPatch.find('.', begin);
+    }
+
+    const auto preReleaseBegin = version.find_first_of("-", 0);
+    if (preReleaseBegin != std::string_view::npos) {
+        auto preReleaseEnd = version.find_first_of("+", preReleaseBegin);
+        if (preReleaseEnd == std::string_view::npos) {
+            preReleaseEnd = version.size();
+        }
+        const auto preRelease =
+            version.substr(preReleaseBegin + 1, preReleaseEnd - preReleaseBegin - 1);
+        if (preRelease.size() > preReleaseBuffer.size() - 1) {
+            throw Exception(IVW_CONTEXT, "Pre-release version string too long: len('{}') >= {} ",
+                            preRelease, preReleaseBuffer.size());
+        }
+        std::copy(preRelease.begin(), preRelease.end(), preReleaseBuffer.begin());
+    }
+
+    auto buildBegin = version.find_first_of("+", 0);
+    if (buildBegin != std::string_view::npos) {
+        const auto build = version.substr(buildBegin + 1);
+        if (build.size() > buildBuffer.size() - 1) {
+            throw Exception(IVW_CONTEXT, "Build version string too long: len('{}') >= {} ", build,
+                            buildBuffer.size());
+        }
+        std::copy(build.begin(), build.end(), buildBuffer.begin());
     }
 }
 
 constexpr Version::Version(unsigned int major, unsigned int minor, unsigned int patch,
-                           unsigned int build)
-    : major{major}, minor{minor}, patch{patch}, build{build} {}
+                           std::string_view preRelease, std::string_view build)
+    : major{major}, minor{minor}, patch{patch} {
+
+    if (preRelease.size() > preReleaseBuffer.size() - 1) {
+        throw Exception(IVW_CONTEXT, "Pre-release version string too long: len('{}') >= {} ",
+                        preRelease, preReleaseBuffer.size());
+    }
+    if (build.size() > buildBuffer.size() - 1) {
+        throw Exception(IVW_CONTEXT, "Build version string too long: len('{}') >= {} ", build,
+                        buildBuffer.size());
+    }
+    std::copy(preRelease.begin(), preRelease.end(), preReleaseBuffer.begin());
+    std::copy(build.begin(), build.end(), buildBuffer.begin());
+}
 
 constexpr bool Version::semanticVersionEqual(const Version& other) const {
     if (major < 1 || other.major < 1) {
@@ -166,8 +263,15 @@ struct fmt::formatter<inviwo::Version> : fmt::formatter<fmt::string_view> {
     template <typename FormatContext>
     auto format(const inviwo::Version& val, FormatContext& ctx) const {
         fmt::memory_buffer buff;
-        fmt::format_to(std::back_inserter(buff), "{}.{}.{}.{}", val.major, val.minor, val.patch,
-                       val.build);
+
+        fmt::format_to(std::back_inserter(buff), "{}.{}.{}", val.major, val.minor, val.patch);
+
+        if (!val.preRelease().empty()) {
+            fmt::format_to(std::back_inserter(buff), "-{}", val.preRelease());
+        }
+        if (!val.build().empty()) {
+            fmt::format_to(std::back_inserter(buff), "+{}", val.build());
+        }
         return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
     }
 };
