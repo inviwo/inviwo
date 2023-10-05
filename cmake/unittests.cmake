@@ -59,12 +59,12 @@ function(ivw_make_unittest_target name target)
     add_executable(${test_name} ${SOURCE_FILES})
 
     find_package(GTest CONFIG REQUIRED)
-    target_link_libraries(${test_name} 
+    target_link_libraries(${test_name}
         PUBLIC 
-        GTest::gtest
-        GTest::gmock
-        inviwo::testutil
-        ${target}
+            GTest::gtest
+            GTest::gmock
+            inviwo::testutil
+            ${target}
     )
     set_target_properties(${test_name} PROPERTIES FOLDER unittests)
 

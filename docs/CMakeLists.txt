@@ -61,9 +61,6 @@ endif()
 
 include(docutils.cmake)
 
-ivw_retrieve_all_modules(reg_modules)
-ivw_mod_name_to_mod_dep(modules ${reg_modules})
-
 set(ivw_doxy_dir ${IVW_ROOT_DIR}/docs)
 set(output_dir ${CMAKE_CURRENT_BINARY_DIR})
 set(tag_files "")
@@ -93,6 +90,7 @@ set(all_input
     "${IVW_APPLICATION_DIR}"
     "${IVW_ROOT_DIR}/docs"
 )
+set(incpaths "")
 
 set(file_patterns "*.hpp *.h *.cl *.dox")
 set(glsl_file_patterns "*.comp *.frag *.vert *.geom *.glsl")
@@ -110,22 +108,28 @@ add_custom_target(DOXY-ALL
 )
 set_target_properties("DOXY-ALL" PROPERTIES FOLDER "docs" EXCLUDE_FROM_ALL TRUE)
 
-# Modules
-set(module_bases "")
-set(module_targets "")
-foreach(mod IN LISTS modules)
-    if(${${mod}_opt}) # Only include enabled modules
-        list(APPEND all_input ${${mod}_incPath})
-        list(APPEND module_targets ${${mod}_target})
-        if(EXISTS "${${mod}_path}/docs/images")
-            list(APPEND image_path_list "${${mod}_path}/docs/images")
-        endif()
+get_property(input_dirs GLOBAL PROPERTY IVW_DOC_INPUT_DIRS)
+foreach(dir IN LISTS input_dirs)
+    if(EXISTS ${dir})
+        list(APPEND all_input ${dir})
     endif()
 endforeach()
 
-# include paths
-ivw_get_include_dirs(incpaths ${module_targets})
-ivw_get_glsl_dirs(glslpaths ${modules})
+get_property(image_paths GLOBAL PROPERTY IVW_DOC_IMAGE_PATHS)
+foreach(dir IN LISTS image_paths)
+    if(EXISTS ${dir})
+        list(APPEND image_path_list ${dir})
+    endif()
+endforeach()
+
+get_property(include_paths GLOBAL PROPERTY IVW_DOC_INCLUDE_PATHS)
+foreach(dir IN LISTS include_paths)
+    if(EXISTS ${dir})
+        list(APPEND incpaths ${dir})
+    endif()
+endforeach()
+
+
 # Inviwo
 ivw_private_make_doxyfile(
     NAME "Inviwo"
@@ -134,7 +138,7 @@ ivw_private_make_doxyfile(
     OUTPUT_DIR "${output_dir}"
     WARNING_FORMAT ${warn_format}
     INPUTS ${all_input}
-    INCLUDE_PATHS "${incpaths} ${glslpaths}"
+    INCLUDE_PATHS "${incpaths}"
     FILE_PATTERNS "${file_patterns} ${glsl_file_patterns}"
     EXCLUDE_PATTERNS ${exclude_patterns}
     IMAGE_PATHS ${image_path_list}

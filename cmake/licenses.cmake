@@ -147,12 +147,12 @@ function(ivw_private_generate_license_header)
     get_property(license_list TARGET ${${ARG_MOD}_target} PROPERTY IVW_LICENSE_LIST)
     set(licenses "")
     foreach(id IN LISTS license_list)
-        get_property(name    GLOBAL PROPERTY "ivw_license_${ARG_ID}_name")
-        get_property(version GLOBAL PROPERTY "ivw_license_${ARG_ID}_version")
-        get_property(url     GLOBAL PROPERTY "ivw_license_${ARG_ID}_url")
-        get_property(files   GLOBAL PROPERTY "ivw_license_${ARG_ID}_files")
-        get_property(module  GLOBAL PROPERTY "ivw_license_${ARG_ID}_module")
-        get_property(type    GLOBAL PROPERTY "ivw_license_${ARG_ID}_type")
+        get_property(name    GLOBAL PROPERTY "ivw_license_${id}_name")
+        get_property(version GLOBAL PROPERTY "ivw_license_${id}_version")
+        get_property(url     GLOBAL PROPERTY "ivw_license_${id}_url")
+        get_property(files   GLOBAL PROPERTY "ivw_license_${id}_files")
+        get_property(module  GLOBAL PROPERTY "ivw_license_${id}_module")
+        get_property(type    GLOBAL PROPERTY "ivw_license_${id}_type")
 
         # LicenseInfo(const std::string& id, const std::string& name, const Version& version,
         #             const std::string& module, const std::vector<std::string>& files);

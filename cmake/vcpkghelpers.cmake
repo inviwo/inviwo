@@ -35,7 +35,7 @@ endif()
 function(ivw_private_vcpkg_install_helper)
     set(options "")
     set(oneValueArgs FILES_VAR PATTERN DESTINATION COMPONENT)
-    set(multiValueArgs "CONFIGURATIONS")
+    set(multiValueArgs )
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     foreach(item IN LISTS oneValueArgs multiValueArgs)
@@ -57,7 +57,6 @@ function(ivw_private_vcpkg_install_helper)
         FILES ${files}
         DESTINATION ${ARG_DESTINATION}
         COMPONENT ${ARG_COMPONENT}
-        CONFIGURATIONS ${CONFIGURATIONS}
     )
 endfunction()
 
@@ -177,28 +176,12 @@ function(ivw_vcpkg_install name)
             PATTERN "bin/.*\\.(dll|pdb)"
             DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
             COMPONENT Application
-            CONFIGURATIONS Release MinSizeRel RelWithDebInfo
-        )
-        ivw_private_vcpkg_install_helper(
-            FILES_VAR INFO_VCPKG_OWNED_FILES
-            PATTERN "debug/bin/.*\\.(dll|pdb)"
-            DESTINATION ${IVW_RUNTIME_DEBUG_INSTALL_DIR}
-            COMPONENT Application
-            CONFIGURATIONS Debug
         )
         ivw_private_vcpkg_install_helper(
             FILES_VAR INFO_VCPKG_OWNED_FILES
             PATTERN "lib/.*\\.lib"
             DESTINATION ${IVW_ARCHIVE_INSTALL_DIR}
             COMPONENT Application
-            CONFIGURATIONS Release MinSizeRel RelWithDebInfo
-        )
-        ivw_private_vcpkg_install_helper(
-            FILES_VAR INFO_VCPKG_OWNED_FILES
-            PATTERN "debug/lib/.*\\.lib"
-            DESTINATION ${IVW_ARCHIVE_DEBUG_INSTALL_DIR}
-            COMPONENT Application
-            CONFIGURATIONS Debug
         )
     elseif(APPLE)
         ivw_private_vcpkg_install_helper(
@@ -206,14 +189,6 @@ function(ivw_vcpkg_install name)
             PATTERN "lib/.*\\.(dylib|a)"
             DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
             COMPONENT Application
-            CONFIGURATIONS Release MinSizeRel RelWithDebInfo
-        )
-        ivw_private_vcpkg_install_helper(
-            FILES_VAR INFO_VCPKG_OWNED_FILES
-            PATTERN "debug/lib/.*\\.(dylib|a)"
-            DESTINATION ${IVW_LIBRARY_DEBUG_INSTALL_DIR}
-            COMPONENT Application
-            CONFIGURATIONS Debug
         )
     else()
         ivw_private_vcpkg_install_helper(
@@ -221,14 +196,6 @@ function(ivw_vcpkg_install name)
             PATTERN "lib/.*\\.(so|a)"
             DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
             COMPONENT Application
-            CONFIGURATIONS Release MinSizeRel RelWithDebInfo
-        )
-        ivw_private_vcpkg_install_helper(
-            FILES_VAR INFO_VCPKG_OWNED_FILES
-            PATTERN "debug/lib/.*\\.(so|a)"
-            DESTINATION ${IVW_LIBRARY_DEBUG_INSTALL_DIR}
-            COMPONENT Application
-            CONFIGURATIONS Debug
         )
     endif()
 

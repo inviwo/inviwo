@@ -4,16 +4,16 @@
 #
 # Copyright (c) 2013-2023 Inviwo Foundation
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met: 
-# 
+# modification, are permitted provided that the following conditions are met:
+#
 # 1. Redistributions of source code must retain the above copyright notice, this
-# list of conditions and the following disclaimer. 
+# list of conditions and the following disclaimer.
 # 2. Redistributions in binary form must reproduce the above copyright notice,
 # this list of conditions and the following disclaimer in the documentation
-# and/or other materials provided with the distribution. 
-# 
+# and/or other materials provided with the distribution.
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -24,32 +24,29 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 #################################################################################
 
 # Components
 # Application   All the executables and dll etc needed to run the app
-# Development   Lib files, pdb files, headers, 
-# Datasets      General datasets i.e. boron etc. Workspaces, scripts, transfer functions.    
+# Development   Lib files, pdb files, headers,
+# Datasets      General datasets i.e. boron etc. Workspaces, scripts, transfer functions.
 # Testing       Regression files and data sets
- 
+
 # install related paths
 if(APPLE)
-# See 
+# See
 # https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html#//apple_ref/doc/uid/10000123i-CH101-SW1
     # Only show this "advanced" setting when packaging
-    set(IVW_APP_INSTALL_NAME 
-        "Inviwo" CACHE STRING "Application bundle name. 
-         Override if you are packaging a custom application. 
-         Installed libraries and modules 
+    set(IVW_APP_INSTALL_NAME
+        "Inviwo" CACHE STRING "Application bundle name.
+         Override if you are packaging a custom application.
+         Installed libraries and modules
          will be placed inside bundle <name>.app")
     set(IVW_INSTALL_PREFIX              ${IVW_APP_INSTALL_NAME}.app/Contents/)
-    set(IVW_RUNTIME_INSTALL_DIR         ${IVW_INSTALL_PREFIX}MacOS)
-    set(IVW_RUNTIME_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/MacOS)
-    set(IVW_LIBRARY_INSTALL_DIR         ${IVW_INSTALL_PREFIX}lib)
-    set(IVW_LIBRARY_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/lib)
-    set(IVW_ARCHIVE_INSTALL_DIR         ${IVW_INSTALL_PREFIX}lib)
-    set(IVW_ARCHIVE_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/lib)
+    set(IVW_RUNTIME_INSTALL_DIR         ${IVW_INSTALL_PREFIX}$<$<CONFIG:Debug>:debug/>MacOS)
+    set(IVW_LIBRARY_INSTALL_DIR         ${IVW_INSTALL_PREFIX}$<$<CONFIG:Debug>:debug/>lib)
+    set(IVW_ARCHIVE_INSTALL_DIR         ${IVW_INSTALL_PREFIX}$<$<CONFIG:Debug>:debug/>lib)
     set(IVW_BUNDLE_INSTALL_DIR          .)
     set(IVW_FRAMEWORK_INSTALL_DIR       ${IVW_INSTALL_PREFIX}Frameworks)
     set(IVW_INCLUDE_INSTALL_DIR         ${IVW_INSTALL_PREFIX}include)
@@ -57,12 +54,9 @@ if(APPLE)
     set(IVW_RESOURCE_INSTALL_PREFIX     ${IVW_INSTALL_PREFIX}Resources/)
 elseif(WIN32)
     set(IVW_INSTALL_PREFIX              "")
-    set(IVW_RUNTIME_INSTALL_DIR         ${IVW_INSTALL_PREFIX}bin)
-    set(IVW_RUNTIME_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/bin)
-    set(IVW_LIBRARY_INSTALL_DIR         ${IVW_INSTALL_PREFIX}bin)
-    set(IVW_LIBRARY_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/bin)
-    set(IVW_ARCHIVE_INSTALL_DIR         ${IVW_INSTALL_PREFIX}lib)
-    set(IVW_ARCHIVE_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/lib)
+    set(IVW_RUNTIME_INSTALL_DIR         ${IVW_INSTALL_PREFIX}$<$<CONFIG:Debug>:debug/>bin)
+    set(IVW_LIBRARY_INSTALL_DIR         ${IVW_INSTALL_PREFIX}$<$<CONFIG:Debug>:debug/>bin)
+    set(IVW_ARCHIVE_INSTALL_DIR         ${IVW_INSTALL_PREFIX}$<$<CONFIG:Debug>:debug/>lib)
     set(IVW_BUNDLE_INSTALL_DIR          "not used!!!")
     set(IVW_FRAMEWORK_INSTALL_DIR       "not used!!!")
     set(IVW_INCLUDE_INSTALL_DIR         ${IVW_INSTALL_PREFIX}include)
@@ -70,12 +64,9 @@ elseif(WIN32)
     set(IVW_RESOURCE_INSTALL_PREFIX     ${IVW_INSTALL_PREFIX})
 else()
     set(IVW_INSTALL_PREFIX              "")
-    set(IVW_RUNTIME_INSTALL_DIR         ${IVW_INSTALL_PREFIX}bin)
-    set(IVW_RUNTIME_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/bin)
-    set(IVW_LIBRARY_INSTALL_DIR         ${IVW_INSTALL_PREFIX}lib)
-    set(IVW_LIBRARY_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/lib)
-    set(IVW_ARCHIVE_INSTALL_DIR         ${IVW_INSTALL_PREFIX}lib)
-    set(IVW_ARCHIVE_DEBUG_INSTALL_DIR   ${IVW_INSTALL_PREFIX}debug/lib)
+    set(IVW_RUNTIME_INSTALL_DIR         ${IVW_INSTALL_PREFIX}$<$<CONFIG:Debug>:debug/>bin)
+    set(IVW_LIBRARY_INSTALL_DIR         ${IVW_INSTALL_PREFIX}$<$<CONFIG:Debug>:debug/>lib)
+    set(IVW_ARCHIVE_INSTALL_DIR         ${IVW_INSTALL_PREFIX}$<$<CONFIG:Debug>:debug/>lib)
     set(IVW_BUNDLE_INSTALL_DIR          "not used!!!")
     set(IVW_FRAMEWORK_INSTALL_DIR       "not used!!!")
     set(IVW_INCLUDE_INSTALL_DIR         ${IVW_INSTALL_PREFIX}include)
@@ -113,7 +104,7 @@ function(ivw_append_install_list)
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    if(ARG_TARGET) 
+    if(ARG_TARGET)
         set(scope TARGET ${ARG_TARGET})
     elseif(ARG_DIRECTORY)
         set(scope DIRECTORY)
@@ -124,10 +115,10 @@ function(ivw_append_install_list)
     endif()
 
     get_property(install_list ${scope} PROPERTY INTERFACE_IVW_INSTALL_LIST)
-    if(NOT install_list) 
+    if(NOT install_list)
         set(install_list "")
     endif()
-    list(APPEND install_list 
+    list(APPEND install_list
         "${CMAKE_CURRENT_BINARY_DIR}|%|${CMAKE_PROJECT_NAME}|%|Application|%|/"
         "${CMAKE_CURRENT_BINARY_DIR}|%|${CMAKE_PROJECT_NAME}|%|Datasets|%|/"
         "${CMAKE_CURRENT_BINARY_DIR}|%|${CMAKE_PROJECT_NAME}|%|Testing|%|/"
@@ -205,10 +196,10 @@ function(ivw_register_package name)
     string(TOLOWER "${name}" lowercase_name)
     string(TOUPPER "${name}" uppercase_name)
     set(${name}_DIR "${CMAKE_BINARY_DIR}/pkg/${lowercase_name}" CACHE PATH "" FORCE)
-    
+
     string(REPLACE ";" " " incdirs "${incdirs}")
     string(REPLACE ";" " " libs "${ARGN}")
-    set(contents 
+    set(contents
         "set(${name}_FOUND ON)\n"
         "set(${name}_LIBRARIES ${libs})\n"
         "set(${name}_LIBRARY ${libs})\n"
@@ -228,7 +219,7 @@ function(ivw_register_package name)
     file(WRITE "${CMAKE_BINARY_DIR}/pkg/${lowercase_name}/${name}Config.cmake" ${contents})
  endfunction()
 
-# Make package for target(s) (with configure file etc) 
+# Make package for target(s) (with configure file etc)
 # usage: ivw_make_package(<name> <list of targets>)
 function(ivw_make_package package_name)
     if (${ARGC} LESS 2)
@@ -240,47 +231,17 @@ endfunction()
 # A helper funtion to install module targets
 function(ivw_default_install_targets)
     foreach(target IN LISTS ARGN)
-        install(TARGETS ${target} 
-            CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+        install(TARGETS ${target}
             EXPORT "${target}-targets"
             RUNTIME        # DLLs, Exes
-                COMPONENT Application 
+                COMPONENT Application
                 DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
             ARCHIVE        # Static libs, .libs
-                COMPONENT Development 
+                COMPONENT Development
                 DESTINATION ${IVW_ARCHIVE_INSTALL_DIR}
             LIBRARY        # Shared libs - DLLs
                 COMPONENT Application
                 DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
-            
-            BUNDLE         # Targets marked as BUNDLE
-                COMPONENT Application
-                DESTINATION ${IVW_BUNDLE_INSTALL_DIR}
-            FRAMEWORK      # Targets marked as FRAMEWORK
-                COMPONENT Application
-                DESTINATION ${IVW_FRAMEWORK_INSTALL_DIR}
-            
-            PUBLIC_HEADER  # Public headers
-                COMPONENT Development 
-                DESTINATION ${IVW_INCLUDE_INSTALL_DIR}
-            FILE_SET HEADERS
-                COMPONENT Development 
-                DESTINATION ${IVW_INCLUDE_INSTALL_DIR}
-            RESOURCE       # Resource files
-                COMPONENT Application
-                DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}
-        )
-        install(TARGETS ${target} 
-            CONFIGURATIONS Debug
-            RUNTIME        # DLLs, Exes
-                COMPONENT Application 
-                DESTINATION ${IVW_RUNTIME_DEBUG_INSTALL_DIR}
-            ARCHIVE        # Static libs, .libs
-                COMPONENT Development 
-                DESTINATION ${IVW_ARCHIVE_DEBUG_INSTALL_DIR}
-            LIBRARY        # Shared libs - DLLs
-                COMPONENT Application
-                DESTINATION ${IVW_LIBRARY_DEBUG_INSTALL_DIR}
 
             BUNDLE         # Targets marked as BUNDLE
                 COMPONENT Application
@@ -288,12 +249,12 @@ function(ivw_default_install_targets)
             FRAMEWORK      # Targets marked as FRAMEWORK
                 COMPONENT Application
                 DESTINATION ${IVW_FRAMEWORK_INSTALL_DIR}
-            
+
             PUBLIC_HEADER  # Public headers
-                COMPONENT Development 
+                COMPONENT Development
                 DESTINATION ${IVW_INCLUDE_INSTALL_DIR}
             FILE_SET HEADERS
-                COMPONENT Development 
+                COMPONENT Development
                 DESTINATION ${IVW_INCLUDE_INSTALL_DIR}
             RESOURCE       # Resource files
                 COMPONENT Application
@@ -303,7 +264,7 @@ function(ivw_default_install_targets)
     endforeach()
 endfunction()
 
-# Make package for target(s) (with configure file etc) 
+# Make package for target(s) (with configure file etc)
 # usage: ivw_make_package(<name> <list of targets>)
 function(ivw_install_module)
     set(options "")
@@ -364,7 +325,7 @@ function(ivw_install_module)
             NO_CHECK_REQUIRED_COMPONENTS_MACRO
             )
     endif()
- 
+
     # generate the version file for the config file
     get_target_property(version ${target} VERSION)
     write_basic_package_version_file(
@@ -398,23 +359,20 @@ function(ivw_install_helper)
         message(SEND_ERROR "Error missing DESTINATION")
     endif()
 
-    if(ARG_POSTCONFIG)
-    endif()
-
     include(CMakePackageConfigHelpers)
 
     ivw_default_install_targets(${ARG_TARGET})
-    
+
     install(EXPORT ${ARG_TARGET}-targets
         FILE ${ARG_TARGET}-targets.cmake
         NAMESPACE ${ARG_NAMESPACE}::
         DESTINATION ${IVW_SHARE_INSTALL_DIR}/${ARG_DESTINATION}
         COMPONENT Development
     )
-    
+
     set(NAME ${ARG_TARGET})
-    set(PACKAGES "")
-    set(POSTCONFIG "")
+    set(PACKAGES "")   # Used in template-config.cmake
+    set(POSTCONFIG "") # Used in template-config.cmake
     if(ARG_POSTCONFIG)
         set(POSTCONFIG ${ARG_POSTCONFIG})
     endif()

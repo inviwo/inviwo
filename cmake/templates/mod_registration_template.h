@@ -1,8 +1,8 @@
 // Automatically generated file do not change! (see filegeneration.cmake, ivw_private_generate_module_registration_file)
 
-@MODULE_HEADERS@
-
 #include <inviwo/sys/moduleregistration.h>
+
+@MODULE_HEADERS@
 
 namespace inviwo {
 

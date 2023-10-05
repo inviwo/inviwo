@@ -1,7 +1,7 @@
 #################################################################################
-#
+# 
 # Inviwo - Interactive Visualization Workshop
-#
+# 
 # Copyright (c) 2013-2023 Inviwo Foundation
 # All rights reserved.
 # 
@@ -26,22 +26,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 #################################################################################
- 
-set(IVW_MAJOR_VERSION 0)
-set(IVW_MINOR_VERSION 9)
-set(IVW_PATCH_VERSION 12)
-set(IVW_PRERELEASE_VERSION pre)
-set(IVW_CFG_BUILD_VERSION "" CACHE STRING "Additional build info to add to the inviwo version")
 
-set(IVW_VERSION "${IVW_MAJOR_VERSION}.${IVW_MINOR_VERSION}.${IVW_PATCH_VERSION}")
-if(NOT IVW_PRERELEASE_VERSION STREQUAL "")
-    string(APPEND IVW_VERSION "-${IVW_PRERELEASE_VERSION}")
-endif()
-if(NOT IVW_CFG_BUILD_VERSION STREQUAL "")
-    string(APPEND IVW_VERSION "+${IVW_CFG_BUILD_VERSION}")
-endif()
-
-#--------------------------------------------------------------------
 # Requirement checks
 include(CheckCXXCompilerFlag)
 if(MSVC) 
@@ -156,10 +141,16 @@ include(${CMAKE_CURRENT_LIST_DIR}/compileoptions.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/installutils.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/deprecated.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/filegeneration.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/inviwocoredata.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/inviwomoduledata.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/inviworegistermodules.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/globalmacros.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/inviwocreatemodule.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/licenses.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/vcpkghelpers.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/benchmark.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/doc.cmake)
+
 
 #Generate headers
 ivw_generate_module_paths_header()

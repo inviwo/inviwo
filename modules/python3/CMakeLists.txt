@@ -138,12 +138,6 @@ if(BUILD_SHARED_LIBS AND IVW_PACKAGE_EMBED_PYTHON)
         install(DIRECTORY "${py_dir}/python/" 
             DESTINATION ${IVW_RUNTIME_INSTALL_DIR} 
             COMPONENT Application
-            CONFIGURATIONS Release MinSizeRel RelWithDebInfo
-        )
-        install(DIRECTORY "${py_dir}/python/" 
-            DESTINATION ${IVW_RUNTIME_DEBUG_INSTALL_DIR}
-            COMPONENT Application
-            CONFIGURATIONS Debug
         )
     endif()
 endif()

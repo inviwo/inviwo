@@ -30,15 +30,30 @@
 cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
-set(CMAKE_DISABLE_SOURCE_CHANGES ON)
-set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+set(IVW_MAJOR_VERSION 0)
+set(IVW_MINOR_VERSION 9)
+set(IVW_PATCH_VERSION 12)
+set(IVW_PRERELEASE_VERSION pre)
+set(IVW_CFG_BUILD_VERSION "" CACHE STRING "Additional build info to add to the inviwo version")
+
+set(IVW_VERSION "${IVW_MAJOR_VERSION}.${IVW_MINOR_VERSION}.${IVW_PATCH_VERSION}")
+if(NOT IVW_PRERELEASE_VERSION STREQUAL "")
+    string(APPEND IVW_VERSION "-${IVW_PRERELEASE_VERSION}")
+endif()
+if(NOT IVW_CFG_BUILD_VERSION STREQUAL "")
+    string(APPEND IVW_VERSION "+${IVW_CFG_BUILD_VERSION}")
+endif()
 
 # option for setting the project/solution name of the Inviwo project
 set(IVW_CFG_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
 project(${IVW_CFG_PROJECT_NAME} 
     HOMEPAGE_URL https://github.com/inviwo/inviwo
     LANGUAGES CXX
+    VERSION ${IVW_MAJOR_VERSION}.${IVW_MINOR_VERSION}.${IVW_PATCH_VERSION}
 )
+
+set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 # verify that git submodules have been cloned
 include(cmake/verifysubmodules.cmake)

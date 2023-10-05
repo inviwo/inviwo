@@ -79,6 +79,10 @@ function(ivw_pad_right output str padchar length)
   set(${output} "${str}" PARENT_SCOPE)
 endfunction()
 
+# Creates VS folder structure
+function(ivw_folder target folder_name)
+    set_target_properties(${target} PROPERTIES FOLDER ${folder_name})
+endfunction()
 
 # encodeLineBreaks(output strings)
 # encodes the contents of the string given as last argument and saves the 
@@ -566,14 +570,20 @@ function(ivw_topological_sort node_list_var node_edge_var sorted_var)
 endfunction()
 
 # Get the module name from a CMakeLists.txt
-function(ivw_private_get_ivw_module_name path retval)
+function(ivw_private_get_ivw_module_name path name_var version_var)
     file(READ ${path} contents)
-    string(REGEX MATCH "ivw_module\\([ \t\r\n]*([A-Za-z0-9_-]+)[ \t\r\n]*\\)" found_item ${contents})
-    if(CMAKE_MATCH_1)
-        set(${retval} ${CMAKE_MATCH_1} PARENT_SCOPE)
+    string(REGEX MATCH "ivw_module\\([ \t\n\r]*([A-Za-z0-9_-]+)[ \t\n\r]*([ \t\n\r]+VERSION[ \t\n\r]+([0-9]+)\\.([0-9]+)\\.([0-9]+)[ \t\n\r]*)?\\)" found_item ${contents})
+    if(found_item AND CMAKE_MATCH_1)
+        set(${name_var} ${CMAKE_MATCH_1} PARENT_SCOPE)
+        if(CMAKE_MATCH_3 AND CMAKE_MATCH_4 AND CMAKE_MATCH_5)
+            set(${version_var} "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}" PARENT_SCOPE)
+        else()
+            set(${version_var} "1.0.0" PARENT_SCOPE)
+        endif()
         return()
     endif()
-     set(${retval} NOTFOUND PARENT_SCOPE)
+     set(${name_var} NOTFOUND PARENT_SCOPE)
+     set(${version_var} NOTFOUND PARENT_SCOPE)
 endfunction()
 
 # Get the module include path
@@ -604,58 +614,50 @@ function(ivw_private_get_ivw_module_include_path path includePrefix includePath 
     
 endfunction()
 
-# Get the module version from a CMakeLists.txt
-# Major.Minor.Path
-# Returns 1.0.0 if no version is found
-function(ivw_private_get_ivw_module_version path retval)
-    file(READ ${path} contents)
-    string(REPLACE "\n" ";" lines "${contents}")
-    foreach(line ${lines})
-        # This regex does not seem to be supported in cmake so use a two-step solution
-        #string(REGEX MATCHALL "IVW_.+_VERSION\\s([0-9]+)\\.([0-9]+)\\.([0-9]+)" found_item ${line})
-        string(REGEX MATCH "IVW_(.+)_VERSION" found_mod ${line})
-
-        if(CMAKE_MATCH_1)
-            # Extract version number
-            string(REGEX MATCH "\\s*\"*([0-9]+)\\.([0-9]+)\\.([0-9]+)" found_item ${line})
-            if(NOT "${CMAKE_MATCH_1}" STREQUAL "" AND NOT "${CMAKE_MATCH_2}" STREQUAL "" AND NOT "${CMAKE_MATCH_3}" STREQUAL "")
-                set(${retval} "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}" PARENT_SCOPE)
-                return()
-            endif()
-        endif()
-    endforeach()
-    set(${retval} "1.0.0" PARENT_SCOPE)
-endfunction()
-
 # Verify that a given path and dir name is in fact a inviwo module
 # This is done by chekcing that there exists a CMakeLists file
 # and that it declares a inviwo module with the same name as dir.
-function(ivw_private_is_valid_module_dir path dir retval)
-    if(IS_DIRECTORY ${path}/${dir})
-        string(TOLOWER ${dir} test)
+function(ivw_private_is_valid_module_dir)
+    set(options )
+    set(oneValueArgs PATH DIR VALID_VAR NAME_VAR VERSION_VAR)
+    set(multiValueArgs)
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    foreach(item IN LISTS oneValueArgs)
+        if(NOT ARG_${item})
+            message(FATAL_ERROR "ivw_private_is_valid_module_dir: ${item} not set")
+        endif()
+    endforeach()
+
+    if(IS_DIRECTORY ${ARG_PATH}/${ARG_DIR})
+        string(TOLOWER ${ARG_DIR} test)
         string(REPLACE " " "" ${test} test)
-        if(${dir} STREQUAL ${test})
-            if(EXISTS ${path}/${dir}/CMakeLists.txt)
-                ivw_private_get_ivw_module_name(${path}/${dir}/CMakeLists.txt name)
+        if(${ARG_DIR} STREQUAL ${test})
+            if(EXISTS ${ARG_PATH}/${ARG_DIR}/CMakeLists.txt)
+                ivw_private_get_ivw_module_name(${ARG_PATH}/${ARG_DIR}/CMakeLists.txt name version)
                 string(TOLOWER ${name} l_name)
-                if(${dir} STREQUAL ${l_name})
-                    set(${retval} TRUE PARENT_SCOPE)
+                if(${ARG_DIR} STREQUAL ${l_name})
+                    set(${ARG_VALID_VAR} TRUE PARENT_SCOPE)
+                    set(${ARG_NAME_VAR} ${name} PARENT_SCOPE)
+                    set(${ARG_VERSION_VAR} ${version} PARENT_SCOPE)
                     return()
                 else()
-                    message("Found invalid module \"${dir}\" at \"${path}\". "
-                        "ivw_module called with \"${name}\" which is different from the directory \"${dir}\""
+                    message("Found invalid module \"${ARG_DIR}\" at \"${ARG_PATH}\". "
+                        "ivw_module called with \"${name}\" which is different from the directory \"${ARG_DIR}\""
                         "They should be the same except for casing.")
                 endif()
             else()
-                message("Found invalid module \"${dir}\" at \"${path}\". "
+                message("Found invalid module \"${ARG_DIR}\" at \"${ARG_PATH}\". "
                     "CMakeLists.txt is missing")
             endif()
         else()
-            message("Found invalid module dir \"${dir}\" at \"${path}\". "
+            message("Found invalid module dir \"${ARG_DIR}\" at \"${ARG_PATH}\". "
                 "Dir names should be all lowercase and without spaces")
         endif()
     endif()
-    set(${retval} FALSE PARENT_SCOPE)
+    set(${ARG_VALID_VAR} FALSE PARENT_SCOPE)
+    set(${ARG_NAME_VAR} NOTFOUND PARENT_SCOPE)
+    set(${ARG_VERSION_VAR} NOTFOUND PARENT_SCOPE)
 endfunction()
 
 # Query if a lib is compiled with 32 or 64 bits, will return 0 if it 
