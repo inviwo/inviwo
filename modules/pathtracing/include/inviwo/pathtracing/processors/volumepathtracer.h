@@ -37,10 +37,11 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/timer.h>
 
-#include <inviwo/core/properties/raycastingproperty.h>       // for RaycastingProperty
-#include <inviwo/core/properties/cameraproperty.h>           // for CameraProperty
-#include <inviwo/core/properties/optionproperty.h>           // for OptionPropertyInt
-#include <inviwo/core/properties/volumeindicatorproperty.h>  // for VolumeIndicatorProperty
+#include <inviwo/core/properties/raycastingproperty.h>          // for RaycastingProperty
+#include <inviwo/core/properties/cameraproperty.h>              // for CameraProperty
+#include <inviwo/core/properties/optionproperty.h>              // for OptionPropertyInt
+#include <inviwo/core/properties/volumeindicatorproperty.h>     // for VolumeIndicatorProperty
+#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
 
 // outsider of include/inviwo
 #include <../modules/opengl/include/modules/opengl/volume/volumegl.h>
@@ -94,6 +95,7 @@ private:
     
     OptionPropertyInt channel_;
     RaycastingProperty raycasting_;
+    TransferFunctionProperty transferFunction_;
 
     CameraProperty camera_;
     VolumeIndicatorProperty positionIndicator_;
