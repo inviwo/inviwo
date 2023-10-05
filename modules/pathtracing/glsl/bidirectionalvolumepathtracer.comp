@@ -105,7 +105,10 @@ void main(){
         // Sample volume.
         vec4 voxel = getNormalizedVoxel(volume, volumeParameters, samplePosition);
         
-        //result += applyTF( voxel);
+        vec4 color = applyTF(transferFunction, voxel)/255.0;
+        //color.a = 0.0;
+        result += color;
+
 
         // add color*alpha to color
 
