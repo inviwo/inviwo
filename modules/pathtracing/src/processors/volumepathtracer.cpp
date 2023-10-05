@@ -74,6 +74,7 @@ VolumePathTracer::VolumePathTracer()
     //, lighting_("lighting", "Lighting", &camera_)
     , channel_("channel", "Render Channel", {{"Channel 1", "Channel 1", 0}}, 0)
     , raycasting_("raycaster", "Raycasting")
+    , transferFunction_("transferFunction", "Transfer Function", &volumePort_)
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , positionIndicator_("positionindicator", "Position Indicator")
     
@@ -100,6 +101,15 @@ VolumePathTracer::VolumePathTracer()
     */
     
     channel_.setSerializationMode(PropertySerializationMode::All);
+
+    auto updateTFHistSel = [this]() {
+        HistogramSelection selection{};
+        selection[channel_] = true;
+        transferFunction_.setHistogramSelection(selection);
+    };
+    updateTFHistSel();
+    channel_.onChange(updateTFHistSel);
+
     // from volumeraycasetr.cpp TODO: What does this mean exactly?
     volumePort_.onChange([this]() {
         if (volumePort_.hasData()) {
@@ -132,6 +142,7 @@ VolumePathTracer::VolumePathTracer()
     
     addProperty(channel_);
     addProperty(raycasting_);
+    addProperty(transferFunction_);
 
     addProperty(camera_);
     addProperty(positionIndicator_);
@@ -157,8 +168,8 @@ void VolumePathTracer::process() {
     shader_.activate();
 
     TextureUnitContainer units;
-    //utilgl::bindAndSetUniforms(shader_, units, volume, "volume");
-    //utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
+    utilgl::bindAndSetUniforms(shader_, units, *volumePort_.getData(), "volume");
+    utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
     /* utilgl::bindAndSetUniforms(shader_, units, outport_, ImageType::ColorDepthPicking); */{
         TextureUnit unit1, unit2, unit3;
         auto image = outport_.getEditableData();
@@ -185,7 +196,7 @@ void VolumePathTracer::process() {
 
     
     utilgl::setUniforms(shader_, camera_/*, lighting_*/, raycasting_, positionIndicator_,
-                        channel_/*, isotfComposite_*/);
+                        channel_/*, transferFunction_*/);
 
 
     glDispatchCompute(512/16, 512/16, 1);

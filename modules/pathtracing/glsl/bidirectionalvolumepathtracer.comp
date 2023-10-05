@@ -37,37 +37,87 @@ uniform ImageParameters outportParameters;
 uniform CameraParameters camera;
 uniform VolumeIndicatorParameters positionindicator;
 uniform RaycastingParameters raycaster;
+uniform sampler2D transferFunction; // cant get transferFunction up to a compute shader?
 
 uniform int channel;
 
 #define ERT_THRESHOLD 0.99  // threshold for early ray termination
 
-#define INCLUDE_DVR
+float calcStep(in float rayLength, in vec3 direction, in float samplingRate, in vec3 dimensions) {
+    float incr = min(rayLength, rayLength / (samplingRate * length(direction * dimensions)));
+    float samples = ceil(rayLength / incr);
+    return rayLength / samples;
+}
 
+vec3 calcCameraDir(in vec3 entryPoint, in vec3 exitPoint, in mat4 textureToWorld) {
+    return normalize(
+        (textureToWorld * vec4(entryPoint, 1.0) - textureToWorld * vec4(exitPoint, 1.0)).xyz);
+}
 
 layout (local_size_x = 16, local_size_y = 16) in;
 void main(){
+
+    vec4 result = vec4(0.0);   // The accumulated color along the ray;
+    vec4 picking = vec4(0.0);  // The picking color of the ray
+    float rayDepth = -1.0;     // The ray depth value [0, ray length], -1 means "no" depth.
+                               // Uses the same space as rayPosition. Usually used to track
+                               // the depth of the "first" hit in DVR.
+    float depth = 1.0;         // The image depth, from far to near [0, 1].
+                               // Will be overridden by rayDepth if != -1 and then
+                               // written to outportDepth
+
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
-
     vec2 texCoord = vec2(gl_GlobalInvocationID.xy) / outportParameters.dimensions;
-    vec3 texCoord_z0 = vec3(texCoord, 0);
 
-    vec4 color1 = texture(entryColor, texCoord);
-    vec4 color2 = texture(exitColor, texCoord);
+    vec4 outColor = vec4(0);
+    float outDepth = 0;
 
 
-    vec4 color = vec4(1);
-    //vec4 Voxel = getNormalizedVoxel(volume, volumeParameters, texCoord_z0);
-    color.r = (color1.r + color2.r)*0.5;
-    //color.r = 250;
-    color.g = (color1.g + color2.g)*0.5;
-    //color.g = 250;
-    color.b = (color1.b + color2.b)*0.5;
-    //color.b = 250;
+    vec3 entryPoint = texture(entryColor, texCoord).xyz;
+    vec3 exitPoint = texture(exitColor, texCoord).xyz;
 
-    //vec4 color_Voxel = color*0.5 + Voxel*0.5;
+    float entryPointDepth = texture(entryDepth, texCoord).x;
+    float exitPointDepth = texture(exitDepth, texCoord).x;
 
-    color.rgb = camera.position;
+    vec3 ray = exitPoint - entryPoint;
+    vec3 rayDir = normalize(ray);  
+    float rayLength = length(ray);  
+
+    if (entryPoint == exitPoint) {
+        imageStore(outportColor, storePos, result); 
+        imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
+        imageStore(outportPicking, storePos, picking);
+        return;
+    }
+
+    float rayStep = calcStep(rayLength, rayDir, raycaster.samplingRate, volumeParameters.dimensions);
+    vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volumeParameters.textureToWorld);
+
+    // Current position along the ray
+    float rayPosition = 0.5 * rayStep;
+    // Current sample position in texture spcase
+    vec3 samplePosition = entryPoint + rayPosition * rayDir;
+
+    // Early ray termination
+    for (rayPosition += rayStep; rayPosition < rayLength; rayPosition += rayStep) {
+        samplePosition = entryPoint + rayPosition * rayDir;
+
+        // Sample volume.
+        vec4 voxel = getNormalizedVoxel(volume, volumeParameters, samplePosition);
+        
+        //result += applyTF( voxel);
+
+        // add color*alpha to color
+
+        #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
+
+        if (result.a > 0.99) break;  // early ray termination
+    }
+
+    depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryPointDepth, exitPointDepth),
+                depth, rayDepth == -1.0);
     
-    imageStore(outportColor, storePos, color); 
+    imageStore(outportColor, storePos, result); 
+    imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
+    imageStore(outportPicking, storePos, picking);
 }
