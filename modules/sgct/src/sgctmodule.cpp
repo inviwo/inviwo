@@ -44,12 +44,12 @@ namespace inviwo {
 
 bool SGCTModule::startServer = true;
 
-class SgctWrapper {
+class SGCTWrapper {
 public:
-    SgctWrapper(ProcessorNetwork& net, std::string configFile)
-        : syncServer_{net}, terminate_{false}, runner_{&SgctWrapper::run, this, configFile} {}
+    SGCTWrapper(ProcessorNetwork& net, std::string configFile)
+        : syncServer_{net}, terminate_{false}, runner_{&SGCTWrapper::run, this, configFile} {}
 
-    ~SgctWrapper() {
+    ~SGCTWrapper() {
         terminate_ = true;
         runner_.join();
     }
@@ -98,15 +98,13 @@ private:
     std::thread runner_;
 };
 
-// "C:/Users/petst55.AD/Documents/Inviwo/inviwo-dome/apps/inviwodome/scripts/2_nodes.xml"
-
 SGCTModule::SGCTModule(InviwoApplication* app)
     : InviwoModule(app, "sgct")
-    , configFileArg_{"",   "config", "The sgct configuration file to use",
+    , configFileArg_{"",    "config", "Path to the sgct configuration file to use",
                      false, "path",   "sgct json config file"}
     , argHolder_{app, configFileArg_,
                  [this, app]() {
-                     sgctWrapper_ = std::make_unique<SgctWrapper>(*app->getProcessorNetwork(),
+                     sgctWrapper_ = std::make_unique<SGCTWrapper>(*app->getProcessorNetwork(),
                                                                   configFileArg_.getValue());
                  },
                  10} {

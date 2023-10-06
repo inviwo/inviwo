@@ -85,12 +85,22 @@ inline auto encode(const std::vector<SgctCommand>& commands) -> std::vector<std:
         std::visit(
             util::overloaded{
                 [](const command::Nop&) {},
-                [&](const command::AddProcessor& update) { sgct::serializeObject(bytes, update.data); },
-                [&](const command::RemoveProcessor& update) { sgct::serializeObject(bytes, update.data); },
-                [&](const command::AddConnection& update) { sgct::serializeObject(bytes, update.data); },
-                [&](const command::RemoveConnection& update) { sgct::serializeObject(bytes, update.data); },
+                [&](const command::AddProcessor& update) {
+                    sgct::serializeObject(bytes, update.data);
+                },
+                [&](const command::RemoveProcessor& update) {
+                    sgct::serializeObject(bytes, update.data);
+                },
+                [&](const command::AddConnection& update) {
+                    sgct::serializeObject(bytes, update.data);
+                },
+                [&](const command::RemoveConnection& update) {
+                    sgct::serializeObject(bytes, update.data);
+                },
                 [&](const command::AddLink& update) { sgct::serializeObject(bytes, update.data); },
-                [&](const command::RemoveLink& update) { sgct::serializeObject(bytes, update.data); },
+                [&](const command::RemoveLink& update) {
+                    sgct::serializeObject(bytes, update.data);
+                },
                 [&](const command::Update& update) { sgct::serializeObject(bytes, update.data); },
                 [&](const command::Stats& stats) { sgct::serializeObject(bytes, stats.show); }},
             command);
@@ -98,10 +108,9 @@ inline auto encode(const std::vector<SgctCommand>& commands) -> std::vector<std:
     return bytes;
 };
 
-inline auto decode(const std::vector<std::byte>& bytes)
-    -> std::vector<SgctCommand> {
+inline auto decode(const std::vector<std::byte>& bytes) -> std::vector<SgctCommand> {
     std::vector<SgctCommand> commands;
-        
+
     unsigned int pos = 0;
 
     while (pos < bytes.size()) {

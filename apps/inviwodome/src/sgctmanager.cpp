@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/dome/sgctmanager.h>
+#include <inviwo/dome/SGCTManager.h>
 
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/exception.h>
@@ -100,16 +100,16 @@ void main() {
 
 }  // namespace
 
-SgctManager::SgctManager(InviwoApplication& app) : app{app} {
+SGCTManager::SGCTManager(InviwoApplication& app) : app{app} {
     app.getProcessorNetwork()->addObserver(this);
 }
 
-SgctManager::~SgctManager() {
+SGCTManager::~SGCTManager() {
     app.getProcessorNetwork()->removeObserver(this);
     teardownInteraction();
 }
 
-void SgctManager::onProcessorNetworkDidAddProcessor(Processor* processor) {
+void SGCTManager::onProcessorNetworkDidAddProcessor(Processor* processor) {
     if (!processor) return;
 
     if (auto cp = dynamic_cast<CanvasProcessor*>(processor)) {
@@ -131,7 +131,7 @@ void SgctManager::onProcessorNetworkDidAddProcessor(Processor* processor) {
     }
 }
 
-void SgctManager::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
+void SGCTManager::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
     if (!processor) return;
 
     if (auto cp = dynamic_cast<CanvasProcessor*>(processor)) {
@@ -146,7 +146,7 @@ void SgctManager::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
     }
 }
 
-void SgctManager::setupUpInteraction(GLFWwindow* win) {
+void SGCTManager::setupInteraction(GLFWwindow* win) {
     userdata.push_back(std::make_unique<GLFWUserData>(win));
     interactionManagers.push_back(std::make_unique<GLFWWindowEventManager>(
         win,
@@ -171,11 +171,11 @@ void SgctManager::setupUpInteraction(GLFWwindow* win) {
         // Todo figure out proper depth.
         [this](dvec2 p) { return -1.0; }));
 }
-void SgctManager::teardownInteraction() {
+void SGCTManager::teardownInteraction() {
     interactionManagers.clear();
     userdata.clear();
 }
-void SgctManager::evaluate(const ::sgct::RenderData& renderData) {
+void SGCTManager::evaluate(const ::sgct::RenderData& renderData) {
     TRACY_ZONE_SCOPED_NC("Evaluate", 0xAA0000);
     TRACY_GPU_ZONE_C("Evaluate", 0xAA0000);
 
@@ -205,7 +205,7 @@ void SgctManager::evaluate(const ::sgct::RenderData& renderData) {
     }
 }
 
-void SgctManager::createShader() {
+void SGCTManager::createShader() {
     const auto vert = std::make_shared<StringShaderResource>("DomeCopy.vert", copyVertStr);
     const auto frag = std::make_shared<StringShaderResource>("DomeCopy.frag", copyFragStr);
 
@@ -213,7 +213,7 @@ void SgctManager::createShader() {
     copyShader = std::make_unique<Shader>(
         S{{ShaderType::Vertex, vert}, {ShaderType::Fragment, frag}}, Shader::Build::Yes);
 }
-void SgctManager::copy() {  // Copy inviwo output
+void SGCTManager::copy() {  // Copy inviwo output
     TRACY_ZONE_SCOPED_NC("Copy", 0xAA0000);
     TRACY_GPU_ZONE_C("Copy", 0xAA0000);
 

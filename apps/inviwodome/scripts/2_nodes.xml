@@ -16,7 +16,6 @@
     </Window>
   </Node>
   <Node address="127.0.0.2" port="20402">
-  <!--Node address="10.245.163.128" port="20402"-->
     <Window fullScreen="false">
       <Pos x="640" y="600" />
       <Size x="640" y="360" />

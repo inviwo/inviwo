@@ -29,7 +29,4 @@
 
 #include <inviwo/sgct/io/communication.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

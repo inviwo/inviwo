@@ -7,7 +7,7 @@
       "hidden" : true,
 
       "cacheVariables": {
-        // We use a static build
+        // We use a static build to make perf testing in tracy easier
         "VCPKG_TARGET_TRIPLET":          "x64-windows-static-md",
         "VCPKG_MANIFEST_FEATURES":       "dome",
         "BUILD_SHARED_LIBS":             { "type": "BOOL", "value": "OFF" },
@@ -53,7 +53,7 @@
         "IVW_MODULE_GLFW":            { "type": "BOOL", "value": "ON" },
         "IVW_MODULE_OPENCL_OpenGLSupplier": "InviwoGLFWModule",
 
-        // Disauble other target not needed for doem
+        // Disable targets not needed for the dome application.
         "IVW_APP_META_CLI":           { "type": "BOOL", "value": "OFF" },
         "IVW_APP_MINIMAL_GLFW":       { "type": "BOOL", "value": "OFF" },
         "IVW_TEST_UNIT_TESTS":        { "type": "BOOL", "value": "OFF" },

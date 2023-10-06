@@ -57,7 +57,7 @@ if(IVW_PACKAGE_SELECT_APP STREQUAL PROJECT_NAME)
     message(STATUS "Package inviwo dome")
 endif()
 
-
+# Create a helper sciript to start inviwo-dome with multiple instances
 file(GENERATE 
     OUTPUT ${CMAKE_BINARY_DIR}/run.$<CONFIG>.ps1
     CONTENT [=[
