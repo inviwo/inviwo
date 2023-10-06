@@ -101,7 +101,7 @@ VolumePathTracer::VolumePathTracer()
     */
     
     channel_.setSerializationMode(PropertySerializationMode::All);
-
+    /*
     auto updateTFHistSel = [this]() {
         HistogramSelection selection{};
         selection[channel_] = true;
@@ -109,7 +109,7 @@ VolumePathTracer::VolumePathTracer()
     };
     updateTFHistSel();
     channel_.onChange(updateTFHistSel);
-
+    */
     // from volumeraycasetr.cpp TODO: What does this mean exactly?
     volumePort_.onChange([this]() {
         if (volumePort_.hasData()) {
@@ -162,7 +162,8 @@ void VolumePathTracer::initializeResources() {
     shader_.build();
 }
 
-// TODO: Copy volumeraycaster and daniels bidirVolumePathTracer
+// TODO ongoing: Copy volumeraycaster and daniels bidirVolumePathTracer
+// TODO: Send in lightsources, treat the tf as albedo(?) and try and make a rudimentary pathtracer
 void VolumePathTracer::process() {
 
     shader_.activate();
@@ -199,7 +200,7 @@ void VolumePathTracer::process() {
                         channel_/*, transferFunction_*/);
 
 
-    glDispatchCompute(512/16, 512/16, 1);
+    glDispatchCompute(outport_.getDimensions().x/16, outport_.getDimensions().y/16, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     shader_.deactivate();
 }

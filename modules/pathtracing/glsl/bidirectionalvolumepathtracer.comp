@@ -11,6 +11,7 @@
 
 #include "utils/isosurface.glsl"
 
+#include "transmittancemethods.glsl"
 
 // volume
 uniform sampler3D volume;
@@ -103,13 +104,17 @@ void main(){
         samplePosition = entryPoint + rayPosition * rayDir;
 
         // Sample volume.
-        vec4 voxel = getNormalizedVoxel(volume, volumeParameters, samplePosition);
+        vec4 voxel = getVoxel(volume, volumeParameters, samplePosition);
         
         vec4 color = applyTF(transferFunction, voxel)/255.0;
-        //color.a = 0.0;
+        
+        color = HelloWorld(color);
+
+        color = color/raycaster.samplingRate;
+        //alpha channel?
+        color.a = color.a/raycaster.samplingRate;
+        
         result += color;
-
-
         // add color*alpha to color
 
         #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
@@ -119,7 +124,9 @@ void main(){
 
     depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryPointDepth, exitPointDepth),
                 depth, rayDepth == -1.0);
-    
+    // alpha channel?
+    result.w = 5000000*1000000000;
+
     imageStore(outportColor, storePos, result); 
     imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
     imageStore(outportPicking, storePos, picking);
