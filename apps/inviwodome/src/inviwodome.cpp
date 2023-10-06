@@ -72,6 +72,7 @@
 #include <inviwo/tracy/tracy.h>
 #include <inviwo/tracy/tracyopengl.h>
 
+// Uncomment to profile allocation in Tracy
 /*
 void* operator new(size_t count) {
     void* ptr = malloc(count);
@@ -79,7 +80,6 @@ void* operator new(size_t count) {
     TRACY_ALLOC(ptr, count);
     return ptr;
 }
-
 void operator delete(void* ptr) noexcept {
     // TracyFreeS(ptr, 10);
     TRACY_FREE(ptr);
@@ -89,7 +89,7 @@ void operator delete(void* ptr) noexcept {
 
 class Conf {
 public:
-    Conf(inviwo::SgctManager& state, inviwo::InviwoApplication& app)
+    Conf(inviwo::SGCTManager& state, inviwo::InviwoApplication& app)
         : app{app}, state{state}, drawBuffers{} {
 
         {
@@ -108,7 +108,7 @@ public:
     }
 
     inviwo::InviwoApplication& app;
-    inviwo::SgctManager& state;
+    inviwo::SGCTManager& state;
     std::vector<GLenum> drawBuffers;
 
     std::optional<inviwo::NetworkSyncServer> syncServer;
@@ -117,7 +117,7 @@ public:
     std::mutex commandsMutex;
     std::vector<inviwo::SgctCommand> commands;
 
-    void setCamerasToSgct(inviwo::ProcessorNetwork& net) {
+    void setCamerasToSGCT(inviwo::ProcessorNetwork& net) {
         inviwo::LambdaNetworkVisitor visitor{[](inviwo::Property& p) {
             if (auto camera = dynamic_cast<inviwo::CameraProperty*>(&p)) {
                 camera->setCamera("SGCTCamera");
@@ -134,13 +134,14 @@ public:
         // Initialize all modules
         app.registerModules(inviwo::getModuleList());
 
+        // Uncomment to debug frame timing issues.
         // app.getModuleByType<inviwo::GLFWModule>()->setWaitForOpenGL(false);
 
         state.createShader();
 
         if (sgct::Engine::instance().isMaster()) {
             for (auto& win : sgct::Engine::instance().windows()) {
-                state.setupUpInteraction(win->windowHandle());
+                state.setupInteraction(win->windowHandle());
             }
         }
         GLint maxDrawBuffers = 8;
@@ -186,7 +187,7 @@ public:
         TRACY_ZONE_SCOPED_NC("Draw", 0xAAAA00);
         TRACY_GPU_ZONE_C("Draw", 0xAAAA00);
 
-        // Save State
+        // Save State that SGCT needs
         inviwo::utilgl::Viewport view;
         GLint sgctFBO;
         {
@@ -329,12 +330,13 @@ int main(int argc, char** argv) {
             return -1;
         }
 
-        inviwo::SgctManager state(app);
+        inviwo::SGCTManager state(app);
         Conf conf(state, app);
 
         inviwo::util::OnScopeExit clearNetwork{[&app]() { app.getWorkspaceManager()->clear(); }};
 
-        // Keep the network looked all the time, only unlock in the draw call
+        // Keep the network looked to prevent evaluation all the time, only unlock it in the draw
+        // call
         app.getProcessorNetwork()->lock();
 
         sgct::Engine::Callbacks callbacks;

@@ -36,14 +36,14 @@
 
 namespace inviwo {
 
-class SgctWrapper;
+class SGCTWrapper;
 
 class IVW_MODULE_SGCT_API SGCTModule : public InviwoModule {
 public:
     SGCTModule(InviwoApplication* app);
     virtual ~SGCTModule();
-    
-    std::unique_ptr<SgctWrapper> sgctWrapper_;
+
+    std::unique_ptr<SGCTWrapper> sgctWrapper_;
 
     static bool startServer;
 

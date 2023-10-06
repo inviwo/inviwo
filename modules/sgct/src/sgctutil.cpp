@@ -29,6 +29,4 @@
 
 #include <inviwo/sgct/sgctutil.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo
