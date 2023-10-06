@@ -138,15 +138,10 @@ void Recorder::queueFrame(const LayerRAM& layer) {
                 auto* data = static_cast<const glm::tvec4<uint8_t>*>(layer.getData());
                 util::IndexMapper2D im{layer.getDimensions()};
 
-                if (pict->linesize[0] == 4 * width) {
-                    auto imgStart = glm::value_ptr(data[im(0, 0)]);
-                    std::copy(imgStart, imgStart + 4 * width * height, &pict->data[0][0]);
-                } else {
-                    for (int y = 0; y < height; y++) {
-                        auto rowStart = glm::value_ptr(data[im(0, y)]);
-                        std::copy(rowStart, rowStart + 4 * width,
-                                  &pict->data[0][y * pict->linesize[0]]);
-                    }
+                for (int y = 0; y < height; y++) {
+                    auto rowStart = glm::value_ptr(data[im(0, y)]);
+                    std::copy(rowStart, rowStart + 4 * width,
+                              &pict->data[0][(height - y - 1) * pict->linesize[0]]);
                 }
             } else {
                 layer.dispatch<void>([&](auto* rep) {
@@ -158,7 +153,7 @@ void Recorder::queueFrame(const LayerRAM& layer) {
                             auto pix =
                                 util::glm_convert_normalized<glm::tvec4<uint8_t>>(data[im(x, y)]);
                             std::copy(glm::value_ptr(pix), glm::value_ptr(pix) + 4,
-                                      &pict->data[0][y * pict->linesize[0] + x * 4]);
+                                      &pict->data[0][(height - y - 1) * pict->linesize[0] + x * 4]);
                         }
                     }
                 });
