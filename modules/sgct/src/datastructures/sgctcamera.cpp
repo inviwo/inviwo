@@ -60,9 +60,13 @@ void SGCTCamera::updateFrom(const Camera& source) {
     Camera::updateFrom(source);
 
     if (auto sc = dynamic_cast<const SGCTCamera*>(&source)) {
-        setFovy(sc->getFovy());
-
         bool modified = false;
+
+        if (fovy_ != sc->fovy_) {
+            fovy_ = sc->fovy_;
+            invalidateProjectionMatrix();
+            modified = true;
+        }
 
         if (extProj_ != sc->extProj_) {
             extProj_ = sc->extProj_;
@@ -137,7 +141,7 @@ void SGCTCamera::setExternal(const sgct::RenderData& renderData) {
     mat4 view = glm::make_mat4(renderData.viewMatrix.values);
     mat4 model = glm::make_mat4(renderData.modelMatrix.values);
 
-    bool modified = true;  // true here to force eval every frame, for testing
+    bool modified = false;
 
     if (!extProj_ || *extProj_ != proj) {
         extProj_ = proj;
@@ -154,9 +158,17 @@ void SGCTCamera::setExternal(const sgct::RenderData& renderData) {
         getInverseViewMatrix();
         modified = true;
     }
+    if (fovy_ != renderData.viewport.horizontalFieldOfViewDegrees()) {
+        fovy_ = renderData.viewport.horizontalFieldOfViewDegrees();
+        invalidateProjectionMatrix();
+        modified = true;
+    }
 
-    setFovy(renderData.viewport.horizontalFieldOfViewDegrees());
-    setAspectRatio(renderData.window.aspectRatio());
+    if (aspectRatio_ != renderData.window.aspectRatio()) {
+        aspectRatio_ = renderData.window.aspectRatio();
+        invalidateProjectionMatrix();
+        modified = true;
+    }
 
     if (camprop_ && modified) {
         camprop_->getProcessor()->invalidate(InvalidationLevel::InvalidOutput);

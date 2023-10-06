@@ -36,7 +36,6 @@
 
 namespace inviwo::util {
 
-
 inline auto sgctToInviwo(sgct::Log::Level level) -> inviwo::LogLevel {
     switch (level) {
         case sgct::Log::Level::Error:
@@ -52,4 +51,4 @@ inline auto sgctToInviwo(sgct::Log::Level level) -> inviwo::LogLevel {
     }
 }
 
-}  // namespace inviwo
+}  // namespace inviwo::util

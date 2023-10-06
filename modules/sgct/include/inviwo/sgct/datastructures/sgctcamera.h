@@ -36,7 +36,10 @@ struct RenderData;
 }
 
 namespace inviwo {
-
+/**
+ * A Perspective Camera with the possibility of injecting additional external model, view, and
+ * projection matrices.
+ */
 class IVW_MODULE_SGCT_API SGCTCamera final : public Camera {
 public:
     SGCTCamera(vec3 lookFrom = cameradefaults::lookFrom, vec3 lookTo = cameradefaults::lookTo,

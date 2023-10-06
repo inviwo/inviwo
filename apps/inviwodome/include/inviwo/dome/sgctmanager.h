@@ -51,14 +51,14 @@ class CanvasProcessor;
 class CameraProperty;
 class Shader;
 
-struct SgctManager : public ProcessorNetworkObserver {
-    SgctManager(InviwoApplication& app);
-    ~SgctManager();
+struct SGCTManager : public ProcessorNetworkObserver {
+    SGCTManager(InviwoApplication& app);
+    ~SGCTManager();
 
     CanvasProcessor* getCanvas() { return canvases.empty() ? nullptr : canvases.front(); }
     CameraProperty* getCamera() { return cameras.empty() ? nullptr : cameras.front(); }
 
-    void setupUpInteraction(GLFWwindow* win);
+    void setupInteraction(GLFWwindow* win);
     void teardownInteraction();
 
     void evaluate(const ::sgct::RenderData& renderData);
@@ -78,8 +78,6 @@ struct SgctManager : public ProcessorNetworkObserver {
     std::vector<std::unique_ptr<GLFWWindowEventManager>> interactionManagers;
     std::unique_ptr<Shader> copyShader;
     std::function<void(bool)> onStatChange;
-
-
 };
 
 }  // namespace inviwo
