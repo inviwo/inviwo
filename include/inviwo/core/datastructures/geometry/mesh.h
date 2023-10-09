@@ -76,6 +76,7 @@ public:
     Mesh() = default;
     Mesh(DrawType dt, ConnectivityType ct);
     Mesh(Mesh::MeshInfo meshInfo);
+    Mesh(const BufferVector& buffers, const IndexVector& indices);
     Mesh(const Mesh& rhs);
 
     Mesh(const Mesh& rhs, NoData);
@@ -102,6 +103,13 @@ public:
      * @param buffer   buffer data used during rendering
      */
     void addBuffer(BufferType type, std::shared_ptr<BufferBase> buffer);
+
+    /**
+     * Add multiple \p buffers with rendering data, such as positions/colors/normals.
+     *
+     * @param buffers   buffer data and their associated buffer infos
+     */
+    void addBuffers(const BufferVector& buffers);
 
     /**
      * Removes buffer at given position, all subsequent buffers will be moved.
@@ -162,6 +170,14 @@ public:
      * @param ind Index buffer, will be owned by mesh.
      */
     void addIndices(MeshInfo info, std::shared_ptr<IndexBuffer> ind);
+
+    /**
+     * Add multiple index buffers \p indices to the mesh.
+     *
+     * @see addIndices
+     * @param indices   index buffers and their associated mesh infos
+     */
+    void addIndices(const IndexVector& indices);
 
     // clang-format off
     [[deprecated("Mesh::addIndicies is deprecated, use addIndices (deprecated since 2019-12-04)")]]

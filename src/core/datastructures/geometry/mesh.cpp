@@ -43,6 +43,12 @@ Mesh::Mesh(Mesh::MeshInfo meshInfo)
     , MetaDataOwner{}
     , meshInfo_{meshInfo} {}
 
+Mesh::Mesh(const BufferVector& buffers, const IndexVector& indices)
+    : Mesh{{DrawType::NotSpecified, ConnectivityType::None}} {
+    addBuffers(buffers);
+    addIndices(indices);
+}
+
 Mesh::Mesh(const Mesh& rhs)
     : DataGroup<Mesh, MeshRepresentation>(rhs)
     , SpatialEntity<3>(rhs)
@@ -104,6 +110,12 @@ void Mesh::addBuffer(BufferInfo info, std::shared_ptr<BufferBase> buffer) {
 
 void Mesh::addBuffer(BufferType type, std::shared_ptr<BufferBase> buffer) {
     addBuffer(BufferInfo(type), buffer);
+}
+
+void Mesh::addBuffers(const BufferVector& buffers) {
+    for (auto&& [info, buffer] : buffers) {
+        addBuffer(info, buffer);
+    }
 }
 
 auto Mesh::removeBuffer(size_t idx) -> std::pair<BufferInfo, std::shared_ptr<BufferBase>> {
@@ -178,6 +190,12 @@ void Mesh::setBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> bu
 
 void Mesh::addIndices(MeshInfo info, std::shared_ptr<IndexBuffer> ind) {
     indices_.push_back(std::make_pair(info, ind));
+}
+
+void Mesh::addIndices(const IndexVector& indices) {
+    for (auto&& [info, buffer] : indices) {
+        addIndices(info, buffer);
+    }
 }
 
 std::shared_ptr<IndexBufferRAM> Mesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
