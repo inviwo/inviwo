@@ -858,6 +858,7 @@ find_package(roaring REQUIRED)
 find_package(llnl-units REQUIRED)
 find_package(utf8cpp CONFIG REQUIRED)
 find_package(warn CONFIG REQUIRED)
+find_package(md4c CONFIG REQUIRED)
 find_package(ticpp CONFIG REQUIRED)
 find_package(sml CONFIG REQUIRED)
 find_package(half CONFIG REQUIRED)
@@ -957,6 +958,7 @@ ivw_install_helper(TARGET inviwo-core
         utf8cpp
         warn
         ticpp
+        md4c
         sml
         half
         flags

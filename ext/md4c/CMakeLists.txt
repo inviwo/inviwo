@@ -15,7 +15,7 @@ add_library(inviwo::md4c ALIAS md4c)
 target_include_directories(md4c 
     INTERFACE 
         $<INSTALL_INTERFACE:include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>    
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     PRIVATE 
         include/md4c)
 
@@ -31,5 +31,9 @@ target_sources(md4c
 )
 
 ivw_suppress_compiler_warnings(md4c)
-ivw_default_install_targets(md4c)
 ivw_folder(md4c ext)
+
+ivw_make_package(md4c md4c)
+ivw_install_helper(TARGET md4c NAMESPACE inviwo DESTINATION inviwo)
+
+
