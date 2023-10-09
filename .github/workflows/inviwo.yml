@@ -187,6 +187,8 @@ jobs:
     - name: Install Python Modules 
       shell: bash
       run: pip3 install numpy Sphinx sphinx-rtd-theme recommonmark
+
+    - uses: ilammy/msvc-dev-cmd@v1
       
     - name: Update VCPKG
       shell: bash
@@ -229,7 +231,7 @@ jobs:
     - name: Configure CMake
       shell: bash
       run: >
-        cmake -S inviwo -B build --preset ${{ matrix.preset }}
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ${{ matrix.preset }}
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
