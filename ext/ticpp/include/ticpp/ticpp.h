@@ -117,38 +117,33 @@ class TICPP_API Visitor : public TiXmlVisitor {
 public:
     // Overload the TiXmlVisitor functions, wrap objects, call ticpp::Visitor functions
     /// @internal
-    virtual bool VisitEnter(const TiXmlDocument& doc);
+    virtual bool VisitEnter(const TiXmlDocument& doc) final;
     /// @internal
-    virtual bool VisitExit(const TiXmlDocument& doc);
+    virtual bool VisitExit(const TiXmlDocument& doc) final;
     /// @internal
-    virtual bool VisitEnter(const TiXmlElement& element, const TiXmlAttribute* firstAttribute);
+    virtual bool VisitEnter(const TiXmlElement& element,
+                            const TiXmlAttribute* firstAttribute) final;
     /// @internal
-    virtual bool VisitExit(const TiXmlElement& element);
+    virtual bool VisitExit(const TiXmlElement& element) final;
     /// @internal
-    virtual bool Visit(const TiXmlDeclaration& declaration);
+    virtual bool Visit(const TiXmlDeclaration& declaration) final;
     /// @internal
-    virtual bool Visit(const TiXmlStylesheetReference& stylesheet);
+    virtual bool Visit(const TiXmlStylesheetReference& stylesheet) final;
     /// @internal
-    virtual bool Visit(const TiXmlText& text);
+    virtual bool Visit(const TiXmlText& text) final;
     /// @internal
-    virtual bool Visit(const TiXmlComment& comment);
+    virtual bool Visit(const TiXmlComment& comment) final;
 
     /// Visit a document.
     virtual bool VisitEnter(const Document& /*doc*/) { return true; }
     /// Visit a document.
     virtual bool VisitExit(const Document& /*doc*/) { return true; }
-
     /// Visit an element.
     virtual bool VisitEnter(const Element& /*element*/, const Attribute* /*firstAttribute*/) {
         return true;
     }
     /// Visit an element.
     virtual bool VisitExit(const Element& /*element*/) { return true; }
-
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Woverloaded-virtual"
-#endif
     /// Visit a declaration
     virtual bool Visit(const Declaration& /*declaration*/) { return true; }
     /// Visit a stylesheet reference
@@ -157,9 +152,6 @@ public:
     virtual bool Visit(const Text& /*text*/) { return true; }
     /// Visit a comment node
     virtual bool Visit(const Comment& /*comment*/) { return true; }
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
 };
 
 /** Wrapper around TiXmlBase */
@@ -329,7 +321,7 @@ protected:
 /**
 Wrapper around TiXmlAttribute
 */
-class TICPP_API Attribute : public Base {
+class TICPP_API Attribute final : public Base {
 private:
     TiXmlAttribute* m_tiXmlPointer;
     TiXmlBase* GetBasePointer() const {
@@ -358,6 +350,24 @@ public:
     @param attribute The internal pointer
     */
     Attribute(TiXmlAttribute* attribute);
+
+    /**
+    @internal
+    Updates the reference count for the old and new pointers.
+    */
+    Attribute(const Attribute& copy);
+
+    /**
+    @internal
+    Updates the reference count for the old and new pointers.
+    */
+    Attribute& operator=(const Attribute& copy);
+
+    /*
+    Decrements reference count.
+    */
+    ~Attribute();
+
 
     /**
     Get the value of this attribute
@@ -424,23 +434,6 @@ public:
         ValidatePointer();
         m_tiXmlPointer->SetName(ToString(name));
     }
-
-    /**
-    @internal
-    Updates the reference count for the old and new pointers.
-    */
-    void operator=(const Attribute& copy);
-
-    /**
-    @internal
-    Updates the reference count for the old and new pointers.
-    */
-    Attribute(const Attribute& copy);
-
-    /*
-    Decrements reference count.
-    */
-    ~Attribute();
 
     /**
     Get the next sibling attribute in the DOM.
@@ -1251,15 +1244,17 @@ protected:
     Updates the reference count for the old and new pointers.
     In addition, the spawnedWrappers must be cleared out before a new TiXml object is loaded in.
     */
-    virtual void operator=(const NodeImp<T>& copy) {
-        // Dropping the reference to the old object
-        this->m_impRC->DecRef();
+    void operator=(const NodeImp<T>& that) {
+        if (this != &that) {
+            // Dropping the reference to the old object
+            m_impRC->DecRef();
 
-        // Pointing to the new Object
-        SetTiXmlPointer(copy.m_tiXmlPointer);
+            // Pointing to the new Object
+            SetTiXmlPointer(that.m_tiXmlPointer);
 
-        // The internal tixml pointer changed in the above line
-        this->m_impRC->IncRef();
+            // The internal tixml pointer changed in the above line
+            m_impRC->IncRef();
+        }
     }
 
     /**
@@ -1272,7 +1267,7 @@ protected:
         SetTiXmlPointer(copy.m_tiXmlPointer);
 
         // The internal tixml pointer changed in the above line
-        this->m_impRC->IncRef();
+        m_impRC->IncRef();
     }
 
 public:
@@ -1284,7 +1279,7 @@ public:
 };
 
 /** Wrapper around TiXmlComment */
-class TICPP_API Comment : public NodeImp<TiXmlComment> {
+class TICPP_API Comment final : public NodeImp<TiXmlComment> {
 public:
     /**
     Constructor.
@@ -1303,7 +1298,7 @@ public:
 };
 
 /** Wrapper around TiXmlText */
-class TICPP_API Text : public NodeImp<TiXmlText> {
+class TICPP_API Text final : public NodeImp<TiXmlText> {
 public:
     /**
     Constructor.
@@ -1338,7 +1333,7 @@ public:
 };
 
 /** Wrapper around TiXmlDocument */
-class TICPP_API Document : public NodeImp<TiXmlDocument> {
+class TICPP_API Document final : public NodeImp<TiXmlDocument> {
 public:
     /**
     Default	Constructor.
@@ -1417,7 +1412,7 @@ public:
 };
 
 /** Wrapper around TiXmlElement */
-class TICPP_API Element : public NodeImp<TiXmlElement> {
+class TICPP_API Element final : public NodeImp<TiXmlElement> {
 public:
     Element();
 
@@ -1767,7 +1762,7 @@ private:
 };
 
 /** Wrapper around TiXmlDeclaration */
-class TICPP_API Declaration : public NodeImp<TiXmlDeclaration> {
+class TICPP_API Declaration final : public NodeImp<TiXmlDeclaration> {
 public:
     Declaration();
     Declaration(TiXmlDeclaration* declaration);
@@ -1791,7 +1786,7 @@ public:
 };
 
 /** Wrapper around TiXmlStylesheetReference */
-class TICPP_API StylesheetReference : public NodeImp<TiXmlStylesheetReference> {
+class TICPP_API StylesheetReference final : public NodeImp<TiXmlStylesheetReference> {
 public:
     StylesheetReference();
     StylesheetReference(TiXmlStylesheetReference* stylesheetReference);

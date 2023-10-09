@@ -81,26 +81,29 @@ Attribute::Attribute(const std::string& name, const std::string& value) {
     m_impRC->InitRef();
 }
 
-void Attribute::operator=(const Attribute& copy) {
-    // Dropping the reference to the old object
-    this->m_impRC->DecRef();
+Attribute& Attribute::operator=(const Attribute& that) {
+    if (this != &that) {
+        // Dropping the reference to the old object
+        m_impRC->DecRef();
 
-    // Pointing to the new Object
-    SetTiXmlPointer(copy.m_tiXmlPointer);
+        // Pointing to the new Object
+        SetTiXmlPointer(that.m_tiXmlPointer);
 
-    // The internal tixml pointer changed in the above line
-    this->m_impRC->IncRef();
+        // The internal tixml pointer changed in the above line
+        m_impRC->IncRef();
+    }
+    return *this;
 }
 
 Attribute::Attribute(const Attribute& copy) : Base() {
     // Dropping the reference to the old object
-    this->m_impRC->DecRef();
+    m_impRC->DecRef();
 
     // Pointing to the new Object
     SetTiXmlPointer(copy.m_tiXmlPointer);
 
     // The internal tixml pointer changed in the above line
-    this->m_impRC->IncRef();
+    m_impRC->IncRef();
 }
 
 Attribute::~Attribute() { m_impRC->DecRef(); }
@@ -761,7 +764,6 @@ std::string Element::GetAttributeOrDefault(std::string_view name,
         return defaultValue;
     }
 }
-
 
 const std::string& Element::GetAttribute(const std::string& name) const {
     static const std::string empty;
