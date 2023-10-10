@@ -48,6 +48,8 @@
 #include <inviwo/core/properties/volumeindicatorproperty.h>             // for VolumeIndicatorPr...
 #include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyOption
 #include <inviwo/core/algorithm/boundingbox.h>                          // for boundingBox
+#include <inviwo/core/datastructures/light/baselightsource.h>           // for Lights
+#include <inviwo/core/ports/bufferport.h>                               // for Lights
 
 namespace inviwo {
 
@@ -71,12 +73,12 @@ VolumePathTracer::VolumePathTracer()
     //, minMaxOpacity_{"VolumeMinMaxOpacity"}
     , outport_("outport")
     , shader_({{ShaderType::Compute, "bidirectionalvolumepathtracer.comp"}}) 
-    //, lighting_("lighting", "Lighting", &camera_)
     , channel_("channel", "Render Channel", {{"Channel 1", "Channel 1", 0}}, 0)
     , raycasting_("raycaster", "Raycasting")
     , transferFunction_("transferFunction", "Transfer Function", &volumePort_)
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , positionIndicator_("positionindicator", "Position Indicator")
+    , lightSources_(sizeof(LightSource), DataUInt8::get(), BufferUsage::Static, BufferTarget::Data, nullptr)
     
     {
     addPort(volumePort_, "VolumePortGroup");
@@ -90,8 +92,9 @@ VolumePathTracer::VolumePathTracer()
     volumePort_.onChange([this]() { invalidateProgressiveRendering(); });
     entryPort_.onChange([this]() { invalidateProgressiveRendering(); });
     exitPort_.onChange([this]() { invalidateProgressiveRendering(); });
-    lights_.onChange([this]() { updateLightSources(); });
     */
+    lights_.onChange([this]() { updateLightSources(); });
+    
     /*
     minMaxOpacity_.onConnect([this]() { partitionedTransmittance_.setVisible(true); });
     minMaxOpacity_.onDisconnect([this]() {
@@ -101,7 +104,7 @@ VolumePathTracer::VolumePathTracer()
     */
     
     channel_.setSerializationMode(PropertySerializationMode::All);
-    /*
+    
     auto updateTFHistSel = [this]() {
         HistogramSelection selection{};
         selection[channel_] = true;
@@ -109,7 +112,7 @@ VolumePathTracer::VolumePathTracer()
     };
     updateTFHistSel();
     channel_.onChange(updateTFHistSel);
-    */
+    
     // from volumeraycasetr.cpp TODO: What does this mean exactly?
     volumePort_.onChange([this]() {
         if (volumePort_.hasData()) {
@@ -139,7 +142,12 @@ VolumePathTracer::VolumePathTracer()
             }
         }
     });
+
+                                
+    //lightSources_ = new BufferGL(sizeof(LightSource) /*/ sizeof(unsigned char)*/, // why divide by sizeof(unsigned char)
+    //                             DataUInt8::get(), BufferTarget::Data, BufferUsage::Static, nullptr);
     
+    nLightSources_ = 1; // not 0? Geuss we always need a default?
     addProperty(channel_);
     addProperty(raycasting_);
     addProperty(transferFunction_);
@@ -149,20 +157,18 @@ VolumePathTracer::VolumePathTracer()
     
     // What can we set up before process
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); } );
-
-    //exitPort_.setOptional(true);
-    lights_.setOptional(true);
-    volumePort_.setOptional(true);
 }
 
 void VolumePathTracer::initializeResources() {
+    // Even needed in our case?
+
     //utilgl::addDefines(shader_, raycasting_, /*isotfComposite_,*/camera_, /*lighting_,*/
     //                   positionIndicator_);
     //utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
-    shader_.build();
+    //shader_.build();
 }
 
-// TODO ongoing: Copy volumeraycaster and daniels bidirVolumePathTracer
+// TODO ongoing: Copy volumeraycaster and daniels bidirVolumePathTracer. Also check ligting raycaster
 // TODO: Send in lightsources, treat the tf as albedo(?) and try and make a rudimentary pathtracer
 void VolumePathTracer::process() {
 
@@ -171,6 +177,7 @@ void VolumePathTracer::process() {
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, *volumePort_.getData(), "volume");
     utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
+    //utilgl::bindAndSetUniforms(shader_, units, lights_);
     /* utilgl::bindAndSetUniforms(shader_, units, outport_, ImageType::ColorDepthPicking); */{
         TextureUnit unit1, unit2, unit3;
         auto image = outport_.getEditableData();
@@ -196,13 +203,38 @@ void VolumePathTracer::process() {
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
 
     
-    utilgl::setUniforms(shader_, camera_/*, lighting_*/, raycasting_, positionIndicator_,
+    utilgl::setUniforms(shader_, camera_, raycasting_, positionIndicator_,
                         channel_/*, transferFunction_*/);
 
 
     glDispatchCompute(outport_.getDimensions().x/16, outport_.getDimensions().y/16, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     shader_.deactivate();
+}
+
+void VolumePathTracer::updateLightSources() {
+    if(!lights_.isReady()) { 
+        return; 
+    }
+    /*
+    std::vector<std::shared_ptr<LightSource>> lightsToBuffer;
+    auto light = lights_.begin();
+    auto light_end = lights_.end();
+    for(; light != light_end; ++light) {
+        if(*light) {
+            lightsToBuffer.push_back(light);
+        }
+    }
+    //GET EDITABLE DATA
+    if(lightsToBuffer.size() != lightSources_.getSize() / sizeof(LightSource)) {
+        lightSources_.setSize(sizeof(LightSource)*lightsToBuffer.size());
+    }
+    if(lightsToBuffer.size() > 0) {
+        lightSources_.upload(&lightsToBuffer[0], sizeof(LightSource)*lightsToBuffer.size());
+    }
+    */
+    nLightSources_ = 1;
+    //lightSources_.upload();
 }
 
 void VolumePathTracer::dispatchPathTracerComputeShader(LayerGL* entryGL, LayerGL* exitGL, LayerGL* outportGL) {
