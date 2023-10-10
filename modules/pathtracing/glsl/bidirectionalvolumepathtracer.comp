@@ -58,7 +58,7 @@ vec3 calcCameraDir(in vec3 entryPoint, in vec3 exitPoint, in mat4 textureToWorld
 layout (local_size_x = 16, local_size_y = 16) in;
 void main(){
 
-    vec4 result = vec4(0.0);   // The accumulated color along the ray;
+    vec4 result = vec4(0.0, 0.0, 0.0, 0.0);   // The accumulated color along the ray;
     vec4 picking = vec4(0.0);  // The picking color of the ray
     float rayDepth = -1.0;     // The ray depth value [0, ray length], -1 means "no" depth.
                                // Uses the same space as rayPosition. Usually used to track
@@ -73,7 +73,6 @@ void main(){
     vec4 outColor = vec4(0);
     float outDepth = 0;
 
-
     vec3 entryPoint = texture(entryColor, texCoord).xyz;
     vec3 exitPoint = texture(exitColor, texCoord).xyz;
 
@@ -83,13 +82,17 @@ void main(){
     vec3 ray = exitPoint - entryPoint;
     vec3 rayDir = normalize(ray);  
     float rayLength = length(ray);  
+    
+    // alpha channel barely does anything...
+    vec4 bgColor = vec4(0.1f, 0.1f, 0.1f, 1.0f);
 
     if (entryPoint == exitPoint) {
-        imageStore(outportColor, storePos, result); 
+        imageStore(outportColor, storePos, bgColor); 
         imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
         imageStore(outportPicking, storePos, picking);
         return;
     }
+    vec3 pointLight = vec3(10f);
 
     float rayStep = calcStep(rayLength, rayDir, raycaster.samplingRate, volumeParameters.dimensions);
     vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volumeParameters.textureToWorld);
@@ -99,34 +102,35 @@ void main(){
     // Current sample position in texture spcase
     vec3 samplePosition = entryPoint + rayPosition * rayDir;
 
-    // Early ray termination
+    float T = 1f;
+
     for (rayPosition += rayStep; rayPosition < rayLength; rayPosition += rayStep) {
         samplePosition = entryPoint + rayPosition * rayDir;
 
         // Sample volume.
-        vec4 voxel = getVoxel(volume, volumeParameters, samplePosition);
+        vec4 voxel = getNormalizedVoxel(volume, volumeParameters, samplePosition);
         
         vec4 color = applyTF(transferFunction, voxel)/255.0;
         
         color = HelloWorld(color);
-
-        color = color/raycaster.samplingRate;
-        //alpha channel?
-        color.a = color.a/raycaster.samplingRate;
         
-        result += color;
-        // add color*alpha to color
-
+        // magic number to make color.a do anything? why?
+        result = result + T*color*color.a*1000/raycaster.samplingRate;
+        T = T*exp(-color.a*1000*rayStep);
+        
         #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
-
-        if (result.a > 0.99) break;  // early ray termination
+        
+        if (T < 0.01) break;  // early ray termination
     }
+
+    result = result + T*bgColor;
 
     depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryPointDepth, exitPointDepth),
                 depth, rayDepth == -1.0);
     // alpha channel?
-    result.w = 5000000*1000000000;
+    result.a -= -50;
 
+    // From what I see, transparency does nothing in our case.
     imageStore(outportColor, storePos, result); 
     imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
     imageStore(outportPicking, storePos, picking);
