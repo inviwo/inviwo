@@ -41,13 +41,16 @@
 #include <inviwo/core/properties/cameraproperty.h>              // for CameraProperty
 #include <inviwo/core/properties/optionproperty.h>              // for OptionPropertyInt
 #include <inviwo/core/properties/volumeindicatorproperty.h>     // for VolumeIndicatorProperty
-#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
+#include <inviwo/core/properties/transferfunctionproperty.h>    // for TransferFunctionProperty
+#include <inviwo/core/datastructures/light/baselightsource.h>   // for Lights
+#include <inviwo/core/ports/bufferport.h>                       // for Lights
 
 // outsider of include/inviwo
 #include <../modules/opengl/include/modules/opengl/volume/volumegl.h>
 #include <../modules/opengl/include/modules/opengl/volume/volumeutils.h>
 #include <../modules/opengl/include/modules/opengl/shader/shader.h>
 #include <../modules/opengl/include/modules/opengl/image/layergl.h>
+#include <../modules/opengl/include/modules/opengl/buffer/buffergl.h>
 
 namespace inviwo {
 
@@ -98,11 +101,12 @@ private:
     TransferFunctionProperty transferFunction_;
 
     CameraProperty camera_;
+
     VolumeIndicatorProperty positionIndicator_;
     
     // What internal data types would I need?
-    //light sources
-    
+    BufferGL lightSources_;
+    int nLightSources_ = 1; // Number of light sources
 };
 
 }  // namespace inviwo
