@@ -82,18 +82,20 @@ void main(){
     float rayLength = length(ray);  
     
     // alpha channel barely does anything...
-    vec4 bgColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+    vec4 bgColor = vec4(0.0f, 0.15f, 0.2f, 1.0f)*1f;
     vec4 redcolor = vec4(1.0f, 0.0f, 0.0f, 0.0f);
-    float tau_homo = 1.0f;   
+    float tau_homo = 1.5f;   
+
+    float magicnumber = 1/10f;
 
     if (entryPoint == exitPoint) {
-        imageStore(outportColor, storePos, result); 
+        imageStore(outportColor, storePos, bgColor); 
         imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
         imageStore(outportPicking, storePos, picking);
         return;
     }
-    vec3 pointLight = vec3(1.0f);
-    float pointLightStrength = 4f;
+    vec3 pointLight = vec3(2, 2, 2.0f);
+    float pointLightStrength = 1f;
 
     float rayStep = calcStep(rayLength, rayDir, raycaster.samplingRate, volumeParameters.dimensions);
     vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volumeParameters.textureToWorld);
@@ -115,13 +117,13 @@ void main(){
         vec4 color = applyTF(transferFunction, voxel)/255.0;
         
 
-        float lightDist = (pointLight - (volumeParameters.textureToWorld*vec4(samplePosition,1f)).xyz).length;
-        float lightStrength = pointLightStrength*(1.0f/pow(lightDist,5f));
+        vec3 sampleWorldPosition = (pointLight - (volumeParameters.textureToWorld*vec4(samplePosition,1f)).xyz);
         
-        
-        result = result + T*redcolor*tau_homo;
-        T = T*exp(tau_homo*rayStep);
-        
+        //result = RMVolumeRender_simple(T, rayStep, tau_homo, vec4(0.0f, 0.0f, 0.0f, 1.0f), result);
+
+        result = RMVolumeRender_simpleWithLight(T, rayStep, tau_homo, vec4(0.0f), result, 
+            sampleWorldPosition, pointLight, pointLightStrength);
+
         #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
         // A direction is found with this
         // result.rgb = (pointLight - (volumeParameters.textureToWorld*vec4(samplePosition,1f)).xyz);
@@ -144,11 +146,6 @@ void main(){
     // result.rgb = result.rgb/3;
     
     // renormalize 
-
-    result = result/1000;
-
-    
-
     imageStore(outportColor, storePos, result);     
     imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
     imageStore(outportPicking, storePos, picking);
