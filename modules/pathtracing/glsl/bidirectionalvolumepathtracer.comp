@@ -56,7 +56,7 @@ vec3 calcCameraDir(in vec3 entryPoint, in vec3 exitPoint, in mat4 textureToWorld
 layout (local_size_x = 16, local_size_y = 16) in;
 void main(){
 
-    vec4 result = vec4(0.0, 0.0, 0.0, 1.0);   // The accumulated color along the ray;
+    vec4 result = vec4(0.0);   // The accumulated color along the ray;
     vec4 picking = vec4(0.0);  // The picking color of the ray
     float rayDepth = -1.0;     // The ray depth value [0, ray length], -1 means "no" depth.
                                // Uses the same space as rayPosition. Usually used to track
@@ -84,10 +84,10 @@ void main(){
     // alpha channel barely does anything...
     vec4 bgColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
     vec4 redcolor = vec4(1.0f, 0.0f, 0.0f, 0.0f);
-    float tau_homo = 0.01f;   
+    float tau_homo = 1.0f;   
 
     if (entryPoint == exitPoint) {
-        imageStore(outportColor, storePos, bgColor); 
+        imageStore(outportColor, storePos, result); 
         imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
         imageStore(outportPicking, storePos, picking);
         return;
@@ -119,8 +119,8 @@ void main(){
         float lightStrength = pointLightStrength*(1.0f/pow(lightDist,5f));
         
         
-        result = result + T*(tau_homo/raycaster.samplingRate)*redcolor;
-        T = T*exp(-tau_homo*(rayStep/raycaster.samplingRate));
+        result = result + T*redcolor*tau_homo;
+        T = T*exp(tau_homo*rayStep);
         
         #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
         // A direction is found with this
@@ -142,7 +142,12 @@ void main(){
     
     float k = max(result.r, max(result.g, result.b));
     // result.rgb = result.rgb/3;
+    
+    // renormalize 
 
+    result = result/1000;
+
+    
 
     imageStore(outportColor, storePos, result);     
     imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
