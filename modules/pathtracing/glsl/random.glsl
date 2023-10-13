@@ -49,6 +49,22 @@ float random( vec4  v ) { return floatConstruct(hash(floatBitsToUint(v))); }
     These hashes are provided under Creative Commons CC BY-ND 3.0
     --- */
 
+// largest val representable by a 32bit uint
+float uintToFloatbyDiv(uint v) {
+    return v/4294967295.0f;
+}
+
+vec2 uintToFloatbyDiv(uvec2 v) {
+    return v/4294967295.0f;
+}
+
+vec3 uintToFloatbyDiv(uvec3 v) {
+    return v/4294967295.0f;
+}
+
+vec4 uintToFloatbyDiv(uvec4 v) {
+    return v/4294967295.0f;
+}
 
 uint pcg(uint v) {
     uint state = v * 747796405u + 2891336453u;
@@ -108,4 +124,18 @@ uvec4 pcg4d(uvec4 v) {
     return v;
 }
 
+vec3 random_1dto3d (uint v) {
+    uint hash = pcg(v);
+    uint hash2 = pcg(v + hash);
+    uint hash3 = pcg(v + hash2);
 
+    return uintToFloatbyDiv(uvec3(
+        hash,
+        hash2,
+        hash3
+    )); 
+}
+
+vec2 random_2dto2d (uvec2 v) {
+    return uintToFloatbyDiv(pcg2d(v));
+}

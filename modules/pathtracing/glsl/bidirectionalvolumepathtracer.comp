@@ -87,14 +87,23 @@ void main(){
     vec4 redcolor = vec4(1.0f, 0.0f, 0.0f, 0.0f);
     float tau_homo = 1.5f;   
 
-    float magicnumber = 1/10f;
+    float magicnumber = 1/10f; 
 
+    uint magic32bit = 5u;
+    
+    /* Testing RNG values */
+    // Linear combinations of gl_globalInvocationID to create an ID creates awful artifacts
+    uint globalDimX = gl_WorkGroupSize.x*gl_NumWorkGroups.x;
+    uint globalDimY = gl_WorkGroupSize.y*gl_NumWorkGroups.y;
+    uint gid = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y*globalDimX;
+    
     if (entryPoint == exitPoint) {
         imageStore(outportColor, storePos, bgColor); 
         imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
         imageStore(outportPicking, storePos, picking);
         return;
     }
+    
     vec3 pointLight = vec3(5, 5, 5);
     float pointLightStrength = 70f;
 
@@ -107,7 +116,6 @@ void main(){
     vec3 samplePosition = entryPoint + rayPosition * rayDir;
 
     float T = 1.0f;
-
     for (rayPosition += rayStep; rayPosition < rayLength; rayPosition += rayStep) {
         samplePosition = entryPoint + rayPosition * rayDir;
 
@@ -128,17 +136,7 @@ void main(){
         
         if (T < 0.01) break;  // early ray termination
     }
-
-    
-
     result = result + T*bgColor;
-
-    // lol
-    result.rgb = vec3(
-        floatConstruct(pcg(gl_GlobalInvocationID.x + gl_GlobalInvocationID.x*gl_GlobalInvocationID.y)),
-        floatConstruct(pcg(gl_GlobalInvocationID.x + gl_GlobalInvocationID.x*gl_GlobalInvocationID.y + 1u)),
-        floatConstruct(pcg(gl_GlobalInvocationID.x + gl_GlobalInvocationID.x*gl_GlobalInvocationID.y + 2u)));
-
 
     depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryPointDepth, exitPointDepth),
                 depth, rayDepth == -1.0);
