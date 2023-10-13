@@ -169,7 +169,8 @@ void VolumePathTracer::initializeResources() {
 }
 
 // TODO ongoing: Copy volumeraycaster and daniels bidirVolumePathTracer. Also check ligting raycaster
-// TODO: Send in lightsources, treat the tf as albedo(?) and try and make a rudimentary pathtracer
+// TODO: Send in lightsources (annoying as of now, see updateLightSources)
+// TODO: RNG to compute shader; init before dispatch then extract on gid?
 void VolumePathTracer::process() {
 
     shader_.activate();

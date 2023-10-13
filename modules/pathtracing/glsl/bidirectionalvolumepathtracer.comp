@@ -10,6 +10,7 @@
 #include "utils/raycastgeometry.glsl"
 
 #include "transmittancemethods.glsl"
+#include "random.glsl"
 
 // volume
 uniform sampler3D volume;
@@ -94,8 +95,8 @@ void main(){
         imageStore(outportPicking, storePos, picking);
         return;
     }
-    vec3 pointLight = vec3(2, 2, 2.0f);
-    float pointLightStrength = 1f;
+    vec3 pointLight = vec3(5, 5, 5);
+    float pointLightStrength = 70f;
 
     float rayStep = calcStep(rayLength, rayDir, raycaster.samplingRate, volumeParameters.dimensions);
     vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volumeParameters.textureToWorld);
@@ -113,39 +114,37 @@ void main(){
         
         // Sample volume.
         vec4 voxel = getNormalizedVoxel(volume, volumeParameters, samplePosition);
-
         vec4 color = applyTF(transferFunction, voxel)/255.0;
-        
-
-        vec3 sampleWorldPosition = (pointLight - (volumeParameters.textureToWorld*vec4(samplePosition,1f)).xyz);
+        vec3 sampleWorldPosition = (volumeParameters.textureToWorld*vec4(samplePosition,1f)).xyz;
         
         //result = RMVolumeRender_simple(T, rayStep, tau_homo, vec4(0.0f, 0.0f, 0.0f, 1.0f), result);
 
-        result = RMVolumeRender_simpleWithLight(T, rayStep, tau_homo, vec4(0.0f), result, 
+        result = RMVolumeRender_simpleWithLight(T, rayStep, color.a*700, color*700, result, 
             sampleWorldPosition, pointLight, pointLightStrength);
 
         #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
         // A direction is found with this
         // result.rgb = (pointLight - (volumeParameters.textureToWorld*vec4(samplePosition,1f)).xyz);
         
-        
         if (T < 0.01) break;  // early ray termination
     }
 
+    
+
     result = result + T*bgColor;
+
+    // lol
+    result.rgb = vec3(
+        floatConstruct(pcg(gl_GlobalInvocationID.x + gl_GlobalInvocationID.x*gl_GlobalInvocationID.y)),
+        floatConstruct(pcg(gl_GlobalInvocationID.x + gl_GlobalInvocationID.x*gl_GlobalInvocationID.y + 1u)),
+        floatConstruct(pcg(gl_GlobalInvocationID.x + gl_GlobalInvocationID.x*gl_GlobalInvocationID.y + 2u)));
+
 
     depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryPointDepth, exitPointDepth),
                 depth, rayDepth == -1.0);
-    // alpha channel?
-    // results are clamped
-    // From what I see, transparency does nothing in our case.
 
-    // Do something unrealistic with the colors.
-    
-    float k = max(result.r, max(result.g, result.b));
-    // result.rgb = result.rgb/3;
-    
-    // renormalize 
+    // If you wanna normalize, DONT do it based off of results. It needs to be a global factor
+
     imageStore(outportColor, storePos, result);     
     imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
     imageStore(outportPicking, storePos, picking);

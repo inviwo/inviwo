@@ -17,7 +17,8 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add shaders
 set(SHADER_FILES
-    glsl/transmittancemethods.glsl
+    glsl/random.glsl
+    glsl/transmittancemethods.glsl #should really be called renderingmethods, its not strictly for transmittance
     glsl/bidirectionalvolumepathtracer.comp
     glsl/simpleshift.comp
 )
