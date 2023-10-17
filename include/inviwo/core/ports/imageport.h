@@ -324,7 +324,7 @@ std::vector<std::shared_ptr<const Image>> BaseImageInport<N>::getVectorData() co
     for (auto outport : this->connectedOutports_) {
         auto imgport = static_cast<ImageOutport*>(outport);
         auto img = getImage(imgport);
-        if (img != nullptr) res.push_back(getImage(imgport));
+        if (img != nullptr) res.emplace_back(img);
     }
 
     return res;
@@ -338,7 +338,7 @@ BaseImageInport<N>::getSourceVectorData() const {
     for (auto outport : this->connectedOutports_) {
         auto imgport = static_cast<ImageOutport*>(outport);
         auto img = getImage(imgport);
-        if (img != nullptr) res.emplace_back(imgport, getImage(imgport));
+        if (img != nullptr) res.emplace_back(imgport, img);
     }
 
     return res;
