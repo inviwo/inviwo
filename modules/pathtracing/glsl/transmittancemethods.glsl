@@ -1,3 +1,4 @@
+#include "random.glsl"
 
 /* --- 
     My stuff now
@@ -39,3 +40,24 @@ vec4 RMVolumeRender_simpleWithLight(inout float T, float rayStep, float tau, vec
     return acc_radiance;
 }
 
+// Returns how far to step, supposedly.
+float WoodcockTracking(vec3 raystart, vec3 raydir, float raylength, float hashSeed, 
+    sampler3D volume, VolumeParameters volumeParameters, sampler2D transferFunction, float sigma_upperbound ) {
+
+    float meanfreepath = 0f; // tau
+
+    vec3 r = vec3(0);
+    while (meanfreepath < raylength) {
+        meanfreepath += -log(random_1dto1d(hashSeed))/sigma_upperbound;
+
+        r = raystart - meanfreepath*raydir;
+        vec4 voxel = getNormalizedVoxel(volume, volumeParameters, r);
+        float sigma = applyTF(transferFunction, voxel).a*700;
+
+        if(random_1dto1d(hashSeed) < sigma/sigma_upperbound) {
+            break;
+        }
+    }
+
+    return meanfreepath;
+}
