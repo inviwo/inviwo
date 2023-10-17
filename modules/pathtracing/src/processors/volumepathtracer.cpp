@@ -143,7 +143,8 @@ VolumePathTracer::VolumePathTracer()
         }
     });
 
-                                
+    time_start = std::chrono::high_resolution_clock::now();
+                           
     //lightSources_ = new BufferGL(sizeof(LightSource) /*/ sizeof(unsigned char)*/, // why divide by sizeof(unsigned char)
     //                             DataUInt8::get(), BufferTarget::Data, BufferUsage::Static, nullptr);
     
@@ -174,6 +175,15 @@ void VolumePathTracer::initializeResources() {
 void VolumePathTracer::process() {
 
     shader_.activate();
+    
+    time_now = std::chrono::high_resolution_clock::now();
+    using FpMilliseconds = 
+        std::chrono::duration<float, std::chrono::milliseconds::period>;
+    /*
+    static_assert(std::chrono::treat_as_floating_point<FpMilliseconds::rep>::value, 
+                  "Rep required to be floating point");
+    */
+    float t_ms = FpMilliseconds(time_now - time_start).count();
 
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, *volumePort_.getData(), "volume");
@@ -202,7 +212,7 @@ void VolumePathTracer::process() {
     }
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
-
+    shader_.setUniform("time_ms", t_ms);
     
     utilgl::setUniforms(shader_, camera_, raycasting_, positionIndicator_,
                         channel_/*, transferFunction_*/);
@@ -211,6 +221,11 @@ void VolumePathTracer::process() {
     glDispatchCompute(outport_.getDimensions().x/16, outport_.getDimensions().y/16, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     shader_.deactivate();
+
+    // I would love for this simple line to force a redraw 'every frame' but it doesnt sadly.
+    
+    this->invalidate(InvalidationLevel::InvalidOutput);
+
 }
 
 void VolumePathTracer::updateLightSources() {
