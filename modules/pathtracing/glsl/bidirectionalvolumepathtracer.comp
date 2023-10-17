@@ -41,6 +41,8 @@ uniform sampler2D transferFunction; // cant get transferFunction up to a compute
 
 uniform int channel;
 
+uniform float time_ms;
+
 #define ERT_THRESHOLD 0.99  // threshold for early ray termination
 
 float calcStep(in float rayLength, in vec3 direction, in float samplingRate, in vec3 dimensions) {
@@ -103,9 +105,10 @@ void main(){
         imageStore(outportPicking, storePos, picking);
         return;
     }
-    
-    vec3 pointLight = vec3(5, 5, 5);
-    float pointLightStrength = 70f;
+
+    float funny = mod(0.005*time_ms, 4f) - 2f;
+    vec3 pointLight = vec3(funny, funny, funny);
+    float pointLightStrength = 7f;
 
     float rayStep = calcStep(rayLength, rayDir, raycaster.samplingRate, volumeParameters.dimensions);
     vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volumeParameters.textureToWorld);
@@ -142,7 +145,6 @@ void main(){
                 depth, rayDepth == -1.0);
 
     // If you wanna normalize, DONT do it based off of results. It needs to be a global factor
-
     imageStore(outportColor, storePos, result);     
     imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
     imageStore(outportPicking, storePos, picking);

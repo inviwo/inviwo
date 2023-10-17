@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <chrono>
+
 #include <inviwo/pathtracing/pathtracingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
@@ -107,6 +109,11 @@ private:
     // What internal data types would I need?
     BufferGL lightSources_;
     int nLightSources_ = 1; // Number of light sources
+
+    std::chrono::time_point<std::chrono::high_resolution_clock> time_start;
+    std::chrono::time_point<std::chrono::high_resolution_clock> time_now;
+
+    Buffer<glm::uvec2> randomState_;
 };
 
 }  // namespace inviwo
