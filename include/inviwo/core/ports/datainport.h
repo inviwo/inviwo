@@ -78,7 +78,7 @@ public:
     virtual std::vector<std::shared_ptr<const T>> getVectorData() const;
     virtual std::vector<std::pair<Outport*, std::shared_ptr<const T>>> getSourceVectorData() const;
 
-    bool hasData() const;
+    virtual bool hasData() const;
 };
 
 template <typename T>

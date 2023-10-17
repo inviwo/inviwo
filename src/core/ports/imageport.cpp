@@ -177,7 +177,6 @@ void ImageOutport::disconnectFrom(Inport* inport) {
 
 void ImageOutport::connectTo(Inport* inport) {
     DataOutport<Image>::connectTo(inport);
-    requestedDimensions_[inport] = size2_t{0};
 }
 
 void ImageOutport::propagateEvent(Event* event, Inport* source) {

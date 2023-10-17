@@ -120,6 +120,8 @@ public:
 
     virtual Document getInfo() const override;
 
+    bool hasData() const override;
+
 private:
     std::shared_ptr<const Image> getImage(ImageOutport* port) const;
     OutportDeterminesSize outportDeterminesSize_;
@@ -307,7 +309,7 @@ std::string BaseImageInport<N>::getClassIdentifier() const {
 
 template <size_t N>
 std::shared_ptr<const Image> BaseImageInport<N>::getData() const {
-    if (this->hasData()) {
+    if (this->isConnected()) {
         auto imgport = static_cast<ImageOutport*>(this->getConnectedOutport());
         return getImage(imgport);
     } else {
@@ -321,7 +323,8 @@ std::vector<std::shared_ptr<const Image>> BaseImageInport<N>::getVectorData() co
 
     for (auto outport : this->connectedOutports_) {
         auto imgport = static_cast<ImageOutport*>(outport);
-        if (imgport->hasData()) res.push_back(getImage(imgport));
+        auto img = getImage(imgport);
+        if (img != nullptr) res.push_back(getImage(imgport));
     }
 
     return res;
@@ -334,7 +337,8 @@ BaseImageInport<N>::getSourceVectorData() const {
 
     for (auto outport : this->connectedOutports_) {
         auto imgport = static_cast<ImageOutport*>(outport);
-        if (imgport->hasData()) res.emplace_back(imgport, getImage(imgport));
+        auto img = getImage(imgport);
+        if (img != nullptr) res.emplace_back(imgport, getImage(imgport));
     }
 
     return res;
@@ -387,6 +391,20 @@ Document BaseImageInport<N>::getInfo() const {
     tb(H("Outport Determining Size"), outportDeterminesSize_);
 
     return doc;
+}
+
+template <size_t N>
+bool BaseImageInport<N>::hasData() const {
+    if constexpr (N == 0) {
+        return this->isConnected() && this->begin() != this->end();
+    } else {
+        // Note: Cannot use ImageOutport::hasData() as getData()
+        // depends on the ImageInport
+        return this->isConnected() &&
+               util::all_of(this->connectedOutports_, [this](Outport* p) {
+                   return getImage(static_cast<ImageOutport*>(p)) != nullptr;
+               });
+    }
 }
 
 }  // namespace inviwo
