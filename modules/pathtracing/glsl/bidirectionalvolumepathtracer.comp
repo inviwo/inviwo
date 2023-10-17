@@ -93,8 +93,6 @@ void main(){
 
     uint magic32bit = 5u;
     
-    /* Testing RNG values */
-    // Linear combinations of gl_globalInvocationID to create an ID creates awful artifacts
     uint globalDimX = gl_WorkGroupSize.x*gl_NumWorkGroups.x;
     uint globalDimY = gl_WorkGroupSize.y*gl_NumWorkGroups.y;
     uint gid = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y*globalDimX;
@@ -119,7 +117,7 @@ void main(){
     vec3 samplePosition = entryPoint + rayPosition * rayDir;
 
     float T = 1.0f;
-    for (rayPosition += rayStep; rayPosition < rayLength; rayPosition += rayStep) {
+    for (rayPosition += rayStep; rayPosition < rayLength;) {
         samplePosition = entryPoint + rayPosition * rayDir;
 
         
@@ -127,15 +125,22 @@ void main(){
         vec4 voxel = getNormalizedVoxel(volume, volumeParameters, samplePosition);
         vec4 color = applyTF(transferFunction, voxel)/255.0;
         vec3 sampleWorldPosition = (volumeParameters.textureToWorld*vec4(samplePosition,1f)).xyz;
+
+        //Sorta working... but not really...
+        float meanpath = WoodcockTracking(samplePosition, rayDir, rayLength, time_ms,
+            volume, volumeParameters, transferFunction, 100);
+        rayPosition += meanpath;
         
         //result = RMVolumeRender_simple(T, rayStep, tau_homo, vec4(0.0f, 0.0f, 0.0f, 1.0f), result);
 
-        result = RMVolumeRender_simpleWithLight(T, rayStep, color.a*700, color*700, result, 
+        result = RMVolumeRender_simpleWithLight(T, meanpath, color.a*700, color*700, result, 
             sampleWorldPosition, pointLight, pointLightStrength);
 
         #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
         // A direction is found with this
         // result.rgb = (pointLight - (volumeParameters.textureToWorld*vec4(samplePosition,1f)).xyz);
+        
+        
         
         if (T < 0.01) break;  // early ray termination
     }
