@@ -323,8 +323,7 @@ std::vector<std::shared_ptr<const Image>> BaseImageInport<N>::getVectorData() co
 
     for (auto outport : this->connectedOutports_) {
         auto imgport = static_cast<ImageOutport*>(outport);
-        auto img = getImage(imgport);
-        if (img != nullptr) res.emplace_back(img);
+        if (auto img = getImage(imgport)) res.emplace_back(img);
     }
 
     return res;
@@ -337,8 +336,7 @@ BaseImageInport<N>::getSourceVectorData() const {
 
     for (auto outport : this->connectedOutports_) {
         auto imgport = static_cast<ImageOutport*>(outport);
-        auto img = getImage(imgport);
-        if (img != nullptr) res.emplace_back(imgport, img);
+        if (auto img = getImage(imgport)) res.emplace_back(imgport, img);
     }
 
     return res;
@@ -396,7 +394,10 @@ Document BaseImageInport<N>::getInfo() const {
 template <size_t N>
 bool BaseImageInport<N>::hasData() const {
     if constexpr (N == 0) {
-        return this->isConnected() && this->begin() != this->end();
+        return this->isConnected() && 
+               util::any_of(this->connectedOutports_, [this](Outport* p) {
+                   return getImage(static_cast<ImageOutport*>(p)) != nullptr;
+               });
     } else {
         // Note: Cannot use ImageOutport::hasData() as getData()
         // depends on the ImageInport
