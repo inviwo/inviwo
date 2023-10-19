@@ -9,8 +9,9 @@
 #include "utils/shading.glsl"
 #include "utils/raycastgeometry.glsl"
 
-#include "transmittancemethods.glsl"
 #include "random.glsl"
+#include "transmittancemethods.glsl"
+#include "renderingmethods.glsl"
 
 // volume
 uniform sampler3D volume;
@@ -33,7 +34,6 @@ writeonly uniform image2D outportPicking;
 uniform ImageParameters outportParameters;
 
 //Lights
-
 uniform CameraParameters camera;
 uniform VolumeIndicatorParameters positionindicator;
 uniform RaycastingParameters raycaster;
@@ -44,6 +44,10 @@ uniform int channel;
 uniform float time_ms;
 
 #define ERT_THRESHOLD 0.99  // threshold for early ray termination
+
+#define PI 3.1415
+
+layout (local_size_x = 16, local_size_y = 16) in;
 
 float calcStep(in float rayLength, in vec3 direction, in float samplingRate, in vec3 dimensions) {
     float incr = min(rayLength, rayLength / (samplingRate * length(direction * dimensions)));
@@ -56,7 +60,124 @@ vec3 calcCameraDir(in vec3 entryPoint, in vec3 exitPoint, in mat4 textureToWorld
         (textureToWorld * vec4(entryPoint, 1.0) - textureToWorld * vec4(exitPoint, 1.0)).xyz);
 }
 
-layout (local_size_x = 16, local_size_y = 16) in;
+
+vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth,
+    inout float depth, RaycastingParameters rayCastParam, VolumeParameters volParam, vec4 bgColor) {
+
+    vec4 result = vec4(0.0);   // The accumulated color along the ray;
+    vec4 picking = vec4(0.0);  // The picking color of the ray
+    float rayDepth = -1.0;     // The ray depth value [0, ray length], -1 means "no" depth.
+                               // Uses the same space as rayPosition. Usually used to track
+                               // the depth of the "first" hit in DVR.
+    depth = 1.0;         // The image depth, from far to near [0, 1].
+                               // Will be overridden by rayDepth if != -1 and then
+                               // written to outportDepth
+
+    vec4 outColor = vec4(0);
+    float outDepth = 0;
+
+    vec3 ray = exitPoint - entryPoint;
+    vec3 rayDir = normalize(ray);  
+    float rayLength = length(ray);  
+
+    uint globalDimX = gl_WorkGroupSize.x*gl_NumWorkGroups.x;
+    uint globalDimY = gl_WorkGroupSize.y*gl_NumWorkGroups.y;
+    uint gid = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y*globalDimX;
+    
+    //float funny = mod(0.005*time_ms, 4f) - 2f;
+    vec3 pointLight = vec3(2, 2, 2);
+    float pointLightStrength = 7f;
+
+    float rayStep = calcStep(rayLength, rayDir, rayCastParam.samplingRate, volParam.dimensions);
+    vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volParam.textureToWorld);
+
+    float rayPosition = 0.5 * rayStep;
+    vec3 samplePosition = entryPoint + rayPosition * rayDir;
+    float T = 1.0f;
+    
+    int safety_count = 0;
+
+    for (rayPosition += rayStep; rayPosition < rayLength;) {
+        samplePosition = entryPoint + rayPosition * rayDir;
+
+        
+        // Sample volume.
+        vec4 voxel = getNormalizedVoxel(volume, volumeParameters, samplePosition);
+        vec4 color = applyTF(transferFunction, voxel)/255.0;
+        
+        // using gid aside to time_ms as hashseed is MUCH slower, 
+        // but we see a clear dependence between pixel points. Is it caching?
+
+        float meanpath = WoodcockTracking(samplePosition, rayDir, rayLength, gid,
+            volume, volumeParameters, transferFunction, 100);
+        rayPosition += meanpath;
+
+        vec3 sampleWorldPosition = (volumeParameters.textureToWorld*vec4(samplePosition,1f)).xyz;
+
+        result = RMVolumeRender_simpleWithLight(T, meanpath, color.a*700, color*700, result, 
+            sampleWorldPosition, pointLight, pointLightStrength);
+        T = SimpleTracking(T, meanpath, color.a*700);
+
+        #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
+        safety_count++;
+        if(safety_count > 100) break; // no infinite loops
+        
+        if (T < 0.01) break;  // early ray termination
+    }
+    result = result + T*bgColor;
+
+    depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryDepth, exitDepth),
+                depth, rayDepth == -1.0);
+
+    return result;
+}
+
+vec4 simplePathTracer(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth,
+    inout float depth, RaycastingParameters rayCastParam, VolumeParameters volParam, vec4 bgColor) {
+    
+    float T = 1f;
+
+    vec3 ray = exitPoint - entryPoint;
+    vec3 rayDir = normalize(ray);
+    float rayLength = length(ray);
+
+    uint globalDimX = gl_WorkGroupSize.x*gl_NumWorkGroups.x;
+    uint globalDimY = gl_WorkGroupSize.y*gl_NumWorkGroups.y;
+    uint gid = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y*globalDimX;
+    
+    vec3 pos = entryPoint;
+    float travel = 0f;    
+
+    //float theta = random_1dto1d(gid);
+    float theta = 0*(PI/180f);
+    //theta = 0;
+    //float phi = random_1dto1d(gid + 1);
+    float phi = 0*(PI/180f);
+
+    rayDir = rotateFrom(rayDir, theta, phi);
+
+    vec4 result = vec4(vec3(0f), 1f);
+    for(travel; travel < rayLength; travel += 0.025f) {
+        pos = entryPoint + rayDir*travel;
+        
+        // mult rayDir by a rotation matrix
+        rayDir = rotateFrom(rayDir, theta, phi);
+        theta = 0.01*(random_1dto1d(floatBitsToUint(theta))*2*PI);
+        //phi = 0.1*(random_1dto1d(floatBitsToUint(phi))*2*PI - PI);
+        
+        
+        //result.xyz += pos*travel;
+
+
+
+
+    }
+    result.xyz *= 0.1f;
+    result.xyz = pos;
+
+    return result;
+}
+
 void main(){
 
     vec4 result = vec4(0.0);   // The accumulated color along the ray;
@@ -71,32 +192,15 @@ void main(){
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
     vec2 texCoord = vec2(gl_GlobalInvocationID.xy) / outportParameters.dimensions;
 
-    vec4 outColor = vec4(0);
-    float outDepth = 0;
-
     vec3 entryPoint = texture(entryColor, texCoord).xyz;
     vec3 exitPoint = texture(exitColor, texCoord).xyz;
 
     float entryPointDepth = texture(entryDepth, texCoord).x;
     float exitPointDepth = texture(exitDepth, texCoord).x;
 
-    vec3 ray = exitPoint - entryPoint;
-    vec3 rayDir = normalize(ray);  
-    float rayLength = length(ray);  
-    
     // alpha channel barely does anything...
     vec4 bgColor = vec4(0.0f, 0.15f, 0.2f, 1.0f)*1f;
-    vec4 redcolor = vec4(1.0f, 0.0f, 0.0f, 0.0f);
-    float tau_homo = 1.5f;   
 
-    float magicnumber = 1/10f; 
-
-    uint magic32bit = 5u;
-    
-    uint globalDimX = gl_WorkGroupSize.x*gl_NumWorkGroups.x;
-    uint globalDimY = gl_WorkGroupSize.y*gl_NumWorkGroups.y;
-    uint gid = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y*globalDimX;
-    
     if (entryPoint == exitPoint) {
         imageStore(outportColor, storePos, bgColor); 
         imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
@@ -104,50 +208,8 @@ void main(){
         return;
     }
 
-    float funny = mod(0.005*time_ms, 4f) - 2f;
-    vec3 pointLight = vec3(funny, funny, funny);
-    float pointLightStrength = 7f;
-
-    float rayStep = calcStep(rayLength, rayDir, raycaster.samplingRate, volumeParameters.dimensions);
-    vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volumeParameters.textureToWorld);
-
-    // Current position along the ray
-    float rayPosition = 0.5 * rayStep;
-    // Current sample position in texture spcase
-    vec3 samplePosition = entryPoint + rayPosition * rayDir;
-
-    float T = 1.0f;
-    for (rayPosition += rayStep; rayPosition < rayLength;) {
-        samplePosition = entryPoint + rayPosition * rayDir;
-
-        
-        // Sample volume.
-        vec4 voxel = getNormalizedVoxel(volume, volumeParameters, samplePosition);
-        vec4 color = applyTF(transferFunction, voxel)/255.0;
-        vec3 sampleWorldPosition = (volumeParameters.textureToWorld*vec4(samplePosition,1f)).xyz;
-
-        //Sorta working... but not really...
-        float meanpath = WoodcockTracking(samplePosition, rayDir, rayLength, time_ms,
-            volume, volumeParameters, transferFunction, 100);
-        rayPosition += meanpath;
-        
-        //result = RMVolumeRender_simple(T, rayStep, tau_homo, vec4(0.0f, 0.0f, 0.0f, 1.0f), result);
-
-        result = RMVolumeRender_simpleWithLight(T, meanpath, color.a*700, color*700, result, 
-            sampleWorldPosition, pointLight, pointLightStrength);
-
-        #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
-        // A direction is found with this
-        // result.rgb = (pointLight - (volumeParameters.textureToWorld*vec4(samplePosition,1f)).xyz);
-        
-        
-        
-        if (T < 0.01) break;  // early ray termination
-    }
-    result = result + T*bgColor;
-
-    depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryPointDepth, exitPointDepth),
-                depth, rayDepth == -1.0);
+    result = simplePathTracer(outportParameters, entryPoint, exitPoint, entryPointDepth, exitPointDepth,
+        depth, raycaster, volumeParameters, bgColor);
 
     // If you wanna normalize, DONT do it based off of results. It needs to be a global factor
     imageStore(outportColor, storePos, result);     
