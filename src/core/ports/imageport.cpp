@@ -175,9 +175,7 @@ void ImageOutport::disconnectFrom(Inport* inport) {
     DataOutport<Image>::disconnectFrom(inport);
 }
 
-void ImageOutport::connectTo(Inport* inport) {
-    DataOutport<Image>::connectTo(inport);
-}
+void ImageOutport::connectTo(Inport* inport) { DataOutport<Image>::connectTo(inport); }
 
 void ImageOutport::propagateEvent(Event* event, Inport* source) {
     if (event->hash() != ResizeEvent::chash()) {

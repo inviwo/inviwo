@@ -394,15 +394,13 @@ Document BaseImageInport<N>::getInfo() const {
 template <size_t N>
 bool BaseImageInport<N>::hasData() const {
     if constexpr (N == 0) {
-        return this->isConnected() && 
-               util::any_of(this->connectedOutports_, [this](Outport* p) {
+        return this->isConnected() && util::any_of(this->connectedOutports_, [this](Outport* p) {
                    return getImage(static_cast<ImageOutport*>(p)) != nullptr;
                });
     } else {
         // Note: Cannot use ImageOutport::hasData() as getData()
         // depends on the ImageInport
-        return this->isConnected() &&
-               util::all_of(this->connectedOutports_, [this](Outport* p) {
+        return this->isConnected() && util::all_of(this->connectedOutports_, [this](Outport* p) {
                    return getImage(static_cast<ImageOutport*>(p)) != nullptr;
                });
     }
