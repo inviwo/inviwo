@@ -113,7 +113,7 @@ private:
     std::chrono::time_point<std::chrono::high_resolution_clock> time_start;
     std::chrono::time_point<std::chrono::high_resolution_clock> time_now;
 
-    Buffer<glm::uvec2> randomState_;
+    Buffer<glm::uvec2> randomState_; //arguably not needed
 };
 
 }  // namespace inviwo
