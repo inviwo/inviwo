@@ -148,32 +148,29 @@ vec4 simplePathTracer(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint,
     vec3 pos = entryPoint;
     float travel = 0f;    
 
-    //float theta = random_1dto1d(gid);
-    float theta = 0*(PI/180f);
-    //theta = 0;
-    //float phi = random_1dto1d(gid + 1);
-    float phi = 0*(PI/180f);
+    float theta = random_1dto1d(gid);
+    //float theta = 0*(PI/180f);
+
+    float phi = random_1dto1d(gid + 1);
+    //float phi = 0*(PI/180f);
 
     rayDir = rotateFrom(rayDir, theta, phi);
-
+    
     vec4 result = vec4(vec3(0f), 1f);
     for(travel; travel < rayLength; travel += 0.025f) {
         pos = entryPoint + rayDir*travel;
         
         // mult rayDir by a rotation matrix
+        // TEST THAT ROTATEFROM IS WORKING AS EXPECTED!
         rayDir = rotateFrom(rayDir, theta, phi);
         theta = 0.01*(random_1dto1d(floatBitsToUint(theta))*2*PI);
-        //phi = 0.1*(random_1dto1d(floatBitsToUint(phi))*2*PI - PI);
+        phi = 0.01*(random_1dto1d(floatBitsToUint(phi))*2*PI - PI);
         
         
-        //result.xyz += pos*travel;
-
-
-
-
+        result.xyz += 0.1f*pos*travel*T;
+        T = T*exp(-0.1*travel);
     }
-    result.xyz *= 0.1f;
-    result.xyz = pos;
+    
 
     return result;
 }
