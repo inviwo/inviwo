@@ -148,3 +148,7 @@ vec3 random_1dto3d (uint v) {
 vec2 random_2dto2d (uvec2 v) {
     return uintToFloatbyDiv(pcg2d(v));
 }
+
+float random_2dto1d (uvec2 v) {
+    return uintToFloatbyDiv(pcg(pcg(v.x) + v.y));
+}
