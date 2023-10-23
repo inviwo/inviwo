@@ -175,6 +175,12 @@ jobs:
     #  uses: mxschmitt/action-tmate@v3
     #  timeout-minutes: 60
     
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: 6.4.2
+        dir: ${{ github.workspace }}
+
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
@@ -203,12 +209,6 @@ jobs:
         -name "GitHub"
         -username "inviwo"
         -password "${{ secrets.GITHUB_TOKEN }}"
-
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: 6.4.2
-        dir: ${{ github.workspace }}
     
     - name: Clone Inviwo
       uses: actions/checkout@v4
