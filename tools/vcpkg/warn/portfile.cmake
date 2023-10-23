@@ -14,7 +14,7 @@ vcpkg_from_github(
     SHA512 67685b9473c6554e17d808b734b42a849c248d8826fdb5c82eca617ab99dd5d77bc1a6d032066a07c71e11f2f663f79414dcb8ccb7342afa4c54c4ac8027453a
     HEAD_REF master
 )
-file(COPY ${CW_SOURCE_PATH} DESTINATION ${SOURCE_PATH}/ext/barro)
+file(COPY ${CW_SOURCE_PATH}/ DESTINATION ${SOURCE_PATH}/ext/barro)
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
