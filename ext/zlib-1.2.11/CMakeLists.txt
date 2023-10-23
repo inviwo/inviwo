@@ -229,8 +229,9 @@ target_link_libraries(minizip PRIVATE ZLIB::ZLIB)
 target_compile_definitions(minizip PRIVATE -D_ZLIB_H)
 
 target_include_directories(minizip 
-    PUBLIC 
-        ${CMAKE_CURRENT_SOURCE_DIR}/${MINIZIP_PATH}/include
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${MINIZIP_PATH}/include>
+        $<INSTALL_INTERFACE:include>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/${MINIZIP_PATH}/include/minizip
         ${CMAKE_CURRENT_SOURCE_DIR}/${MINIZIP_PATH}
@@ -318,9 +319,9 @@ ivw_make_package(ZLIB zlib1) # Make package (for other projects to find)
 ivw_make_package(minizip minizip::minizip) # Make package (for other projects to find)
 
 # OpenEXR is dependent on zlib1 being exported  
-install(EXPORT ${PROJECT_NAME}
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-  FILE ${PROJECT_NAME}Config.cmake
-  NAMESPACE ${PROJECT_NAME}::
+install(EXPORT zlib1-targets
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/zlib1
+  FILE zlib1Config.cmake
+  NAMESPACE zlib1::
   EXPORT_LINK_INTERFACE_LIBRARIES
 )
