@@ -29,6 +29,7 @@
 
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/datastructures/unitsystem.h> 
 #include <inviwo/core/io/rawvolumereader.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
@@ -36,7 +37,7 @@
 #include <inviwo/core/io/rawvolumeramloader.h>
 #include <inviwo/core/metadata/metadataowner.h>
 
-#include <llnl-units/units.hpp>
+
 #include <fmt/format.h>
 
 namespace inviwo {

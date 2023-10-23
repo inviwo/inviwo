@@ -35,6 +35,7 @@
 #include <inviwo/core/datastructures/unitsystem.h>         // for Axis, Unit, defaultAxes
 #include <inviwo/core/datastructures/volume/volume.h>      // for Volume, DataReaderType
 #include <inviwo/core/datastructures/volume/volumedisk.h>  // for VolumeDisk
+#include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/io/datareader.h>                     // for DataReaderType
 #include <inviwo/core/io/datareaderexception.h>            // for DataReaderException
 #include <inviwo/core/io/rawvolumeramloader.h>             // for RawVolumeRAMLoader
@@ -70,7 +71,6 @@
 #include <glm/vec2.hpp>                // for vec<>::(anonymous)
 #include <glm/vec3.hpp>                // for vec<>::(anonymous), vec, opera...
 #include <glm/vec4.hpp>                // for vec
-#include <llnl-units/units.hpp>             // for unit_from_string
 
 #include <fmt/std.h>
 

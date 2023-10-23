@@ -50,7 +50,6 @@
 #include <fmt/format.h>     // for to_string
 #include <glm/common.hpp>   // for max, min
 #include <glm/vec2.hpp>     // for operator!=, operator==, vec<>:...
-#include <llnl-units/units.hpp>  // for unit_from_string
 
 namespace inviwo {
 

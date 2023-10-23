@@ -35,6 +35,7 @@
 #include <inviwo/core/datastructures/unitsystem.h>                      // for Axis
 #include <inviwo/core/datastructures/volume/volume.h>                   // for Volume, DataWrite...
 #include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
+#include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/io/datawriter.h>                                  // for DataWriterType
 #include <inviwo/core/io/datawriterexception.h>                         // for DataWriterException
 #include <inviwo/core/io/serialization/serializer.h>                    // for Serializer
@@ -51,7 +52,6 @@
 #include <unordered_set>  // for unordered_set
 
 #include <glm/gtx/component_wise.hpp>  // for compMul
-#include <llnl-units/units.hpp>        // for to_string
 
 #include <fmt/std.h>
 

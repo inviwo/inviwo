@@ -45,6 +45,7 @@
 #include <inviwo/core/util/indexmapper.h>                               // for IndexMapper3D
 #include <inviwo/core/util/templatesampler.h>                           // for TemplateVolumeSam...
 #include <inviwo/core/util/volumeramutils.h>                            // for forEachVoxelParallel
+#include <inviwo/core/datastructures/unitsystem.h>
 
 #include <algorithm>      // for max
 #include <array>          // for array
@@ -59,7 +60,6 @@
 #include <glm/mat4x4.hpp>                // for operator*, mat
 #include <glm/vec3.hpp>                  // for operator-, operator+
 #include <glm/vec4.hpp>                  // for operator*, operator+
-#include <llnl-units/units_decl.hpp>          // for precise_unit
 
 namespace inviwo {
 class Volume;

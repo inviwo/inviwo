@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/histogram.h>          // for HistogramContainer
 #include <inviwo/core/datastructures/unitsystem.h>         // for Axis, Unit
 #include <inviwo/core/datastructures/volume/volume.h>      // for Volume
+#include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
 #include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
 #include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
@@ -58,7 +59,6 @@
 #include <fmt/format.h>     // for to_string
 #include <glm/vec2.hpp>     // for operator!=, operator==, vec
 #include <glm/vec3.hpp>     // for vec, vec<>::(anonymous)
-#include <llnl-units/units.hpp>  // for unit_from_string
 
 namespace inviwo {
 
