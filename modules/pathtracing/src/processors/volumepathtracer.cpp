@@ -224,7 +224,7 @@ void VolumePathTracer::process() {
 
     // I would love for this simple line to force a redraw 'every frame' but it doesnt sadly.
     
-    this->invalidate(InvalidationLevel::InvalidOutput);
+    //this->invalidate(InvalidationLevel::InvalidOutput);
 
 }
 
