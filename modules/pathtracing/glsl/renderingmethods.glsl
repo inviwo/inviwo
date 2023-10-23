@@ -26,7 +26,8 @@ vec3 rotateFrom(vec3 v, float theta, float phi) {
     // så länge v är inte ungefär lika med e_z (med epsilon marginal) så 'är det intuitivt' att det existerar
     // en punkt på planet som bildas av v som normal där z = 0, denna punkt kommer var ortogonal med v
 
-
+    // is it this thats causing artifacts when looking at from z.
+    // makes sense, but sketch it out on paper to make sure
     vec3 w = vec3(-v.y, v.x, 0f);
     if(v.x == 0 && v.y == 0) {
         w = vec3(0,0,1);
