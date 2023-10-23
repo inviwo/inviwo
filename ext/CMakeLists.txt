@@ -236,7 +236,6 @@ if(NOT IVW_USE_EXTERNAL_FMT)
         TYPE "MIT license"
         FILES ${IVW_EXTENSIONS_DIR}/fmt/fmt/LICENSE.rst
     )
-    ivw_default_install_targets(fmt)
 else()
     find_package(fmt CONFIG REQUIRED)
     ivw_vcpkg_install(fmt MODULE Core EXT)
