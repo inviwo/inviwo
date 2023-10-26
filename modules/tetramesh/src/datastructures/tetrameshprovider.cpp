@@ -1,0 +1,60 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2023 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+#include <inviwo/tetramesh/datastructures/tetrameshprovider.h>
+
+namespace inviwo {
+
+TetraMeshBuffers::TetraMeshBuffers()
+    : nodesBuffer{0, GLFormats::getGLFormat(GL_FLOAT, 4), GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER}
+    , nodeIdsBuffer{0, GLFormats::getGLFormat(GL_INT, 4), GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER}
+    , opposingFaceIdsBuffer{0, GLFormats::getGLFormat(GL_INT, 4), GL_DYNAMIC_DRAW,
+                            GL_SHADER_STORAGE_BUFFER} {}
+
+void TetraMeshBuffers::bind() const {
+    nodesBuffer.bindBase(0);
+    nodeIdsBuffer.bindBase(1);
+    opposingFaceIdsBuffer.bindBase(2);
+}
+
+void TetraMeshBuffers::unbind() const { glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); }
+
+void TetraMeshBuffers::upload(const std::vector<vec4>& nodes, const std::vector<ivec4>& nodeIds,
+                              const std::vector<ivec4>& opposingFaces) {
+    nodesBuffer.upload(nodes, BufferObject::GrowPolicy::ResizeToFit);
+    nodeIdsBuffer.upload(nodeIds, BufferObject::GrowPolicy::ResizeToFit);
+    opposingFaceIdsBuffer.upload(opposingFaces, BufferObject::GrowPolicy::ResizeToFit);
+    unbind();
+}
+
+void TetraMeshProvider::bindBuffers() const { buffers_.bind(); }
+
+void TetraMeshProvider::unbindBuffers() const { buffers_.unbind(); }
+
+}  // namespace inviwo
