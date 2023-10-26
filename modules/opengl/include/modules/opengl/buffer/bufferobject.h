@@ -62,6 +62,16 @@ public:
                               //!< integral types
     };
 
+    /**
+     * Policy for managing the buffer size when uploading new data to the GPU.
+     *
+     * \see upload
+     */
+    enum class GrowPolicy {
+        GrowOnly,    //!< the buffer only grows and will never be resized to a smaller size
+        ResizeToFit  //!< the buffer size is adjusted to fit the data exactly
+    };
+
     BufferObject(size_t sizeInBytes, const DataFormatBase* format, BufferUsage usage,
                  BufferTarget target = BufferTarget::Data);
 
@@ -137,14 +147,29 @@ public:
     GLsizeiptr getSizeInBytes() const;
 
     /**
-     * Upload \p data into the buffer. This also binds the buffer. If \p sizeInBytes exceeds the
-     * current size of the buffer, the buffer gets re-initialized with \p sizeInBytes.
+     * Upload \p data into the buffer. This also binds the buffer. Depending on the grow policy \p policy,
+     * the buffer is re-initialized with \p sizeInBytes if it is different from the current size of the buffer.
      * @param data          data to be uploaded. The underlying data must match the current GL
      *                      format of the buffer.
      * @param sizeInBytes   size of the uploaded data
-     * @see getGLFormat,getSizeInBytes
+     * @param policy        resizing policy when \p sizeInBytes differs from the current size
+     * @see getGLFormat,getSizeInBytes,GrowPolicy
      */
-    void upload(const void* data, GLsizeiptr sizeInBytes);
+    void upload(const void* data, GLsizeiptr sizeInBytes, GrowPolicy policy = GrowPolicy::GrowOnly);
+
+    /**
+     * Upload data from a container \p cont into the buffer. This also binds the buffer.
+     * @param data          data to be uploaded. The underlying data must match the current GL
+     *                      format of the buffer.
+     * @param sizeInBytes   size of the uploaded data
+     * @param policy        resizing policy when \p sizeInBytes differs from the current size
+     * @see upload(const void*, GLsizeiptr, GrowPolicy)
+     */
+    template <typename T>
+    void upload(const std::vector<T>& cont, GrowPolicy policy = GrowPolicy::GrowOnly) {
+        auto sizeInBytes = static_cast<GLsizeiptr>(sizeof(T) * cont.size());
+        upload(cont.data(), sizeInBytes, policy);
+    }
 
     void download(void* data) const;
 

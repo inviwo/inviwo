@@ -220,7 +220,11 @@ void BufferObject::bindAndSetAttribPointer(GLuint location, BindingType bindingT
     }
 }
 
-void BufferObject::setSizeInBytes(GLsizeiptr sizeInBytes) { initialize(nullptr, sizeInBytes); }
+void BufferObject::setSizeInBytes(GLsizeiptr sizeInBytes) {
+    if (sizeInBytes_ != sizeInBytes) {
+        initialize(nullptr, sizeInBytes);
+    }
+}
 
 GLsizeiptr BufferObject::getSizeInBytes() const { return sizeInBytes_; }
 
@@ -245,8 +249,9 @@ void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
     forEachObserver([](BufferObjectObserver* o) { o->onAfterBufferInitialization(); });
 }
 
-void BufferObject::upload(const void* data, GLsizeiptr sizeInBytes) {
-    if (sizeInBytes <= getSizeInBytes()) {
+void BufferObject::upload(const void* data, GLsizeiptr sizeInBytes, GrowPolicy policy) {
+    if ((sizeInBytes == getSizeInBytes() && policy == GrowPolicy::ResizeToFit) ||
+        (sizeInBytes <= getSizeInBytes() && policy == GrowPolicy::GrowOnly)) {
         bind();
         glBufferSubData(target_, 0, sizeInBytes, data);
     } else {
