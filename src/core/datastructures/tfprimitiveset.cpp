@@ -591,7 +591,7 @@ void util::flipPositions(const std::vector<TFPrimitive*>& selection) {
 
     const auto [min, max] =
         std::minmax_element(selection.begin(), selection.end(),
-                            [](auto a, auto b) { return a->getAlpha() < b->getAlpha(); });
+                            [](auto a, auto b) { return a->getPosition() < b->getPosition(); });
     const auto minPosition = (*min)->getPosition();
     const auto maxPosition = (*max)->getPosition();
 
