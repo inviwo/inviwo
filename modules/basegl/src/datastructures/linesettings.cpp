@@ -42,7 +42,8 @@ LineSettings::LineSettings(const LineSettingsInterface* other)
     , roundCaps(other->getRoundCaps())
     , pseudoLighting(other->getPseudoLighting())
     , roundDepthProfile(other->getRoundDepthProfile())
-    , stippling(&other->getStippling()) {}
+    , stippling(&other->getStippling())
+    , defaultColor(other->getDefaultColor()) {}
 
 float LineSettings::getWidth() const { return lineWidth; }
 
@@ -57,5 +58,7 @@ bool LineSettings::getPseudoLighting() const { return pseudoLighting; }
 bool LineSettings::getRoundDepthProfile() const { return roundDepthProfile; }
 
 const StipplingSettingsInterface& LineSettings::getStippling() const { return stippling; }
+
+vec4 LineSettings::getDefaultColor() const { return defaultColor; }
 
 }  // namespace inviwo

@@ -65,7 +65,7 @@ LineRenderer::LineRenderer(const LineSettingsInterface* settings)
                     {ShaderType::Fragment, std::string{"linerenderer.frag"}}},
 
                    {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
-                    {BufferType::ColorAttrib, MeshShaderCache::Mandatory, "vec4"},
+                    {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
                     {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
                     {[](const Mesh&, Mesh::MeshInfo mi) -> int {
                          return mi.ct == ConnectivityType::Adjacency ||
@@ -125,6 +125,7 @@ void LineRenderer::setUniforms(Shader& lineShader, const Mesh& mesh, const Camer
     lineShader.setUniform("antialiasing", settings_.getAntialiasingWidth());
     lineShader.setUniform("miterLimit", settings_.getMiterLimit());
     lineShader.setUniform("roundCaps", settings_.getRoundCaps());
+    lineShader.setUniform("defaultColor", settings_.getDefaultColor());
     // Stippling settings
     lineShader.setUniform("stippling.length", settings_.getStippling().getLength());
     lineShader.setUniform("stippling.spacing", settings_.getStippling().getSpacing());
