@@ -78,6 +78,9 @@ uvec3 util::getDataFormatColor(NumericType t, size_t comp, size_t size) {
         case 4:
             color.b = 120;
             break;
+        case 8:
+            color.b = 150;
+            break;
         default:
             color.b = 0;
             break;
