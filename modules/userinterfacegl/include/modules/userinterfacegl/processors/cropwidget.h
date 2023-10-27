@@ -47,6 +47,9 @@
 #include <inviwo/core/util/glmmat.h>                           // for mat4, mat3
 #include <inviwo/core/util/glmvec.h>                           // for vec3, ivec2
 #include <modules/opengl/shader/shader.h>                      // for Shader
+#include <modules/basegl/properties/linesettingsproperty.h>    // for LineSettingsProperty
+#include <modules/basegl/rendering/linerenderer.h>             // for LineRenderer
+
 
 #include <array>    // for array
 #include <cstddef>  // for size_t
@@ -132,8 +135,7 @@ private:
     BoolProperty showWidget_;
     BoolProperty showCropPlane_;
     FloatVec4Property handleColor_;
-    FloatVec4Property cropLineColor_;
-    FloatProperty lineWidth_;
+    LineSettingsProperty cropLineSettings_;
 
     FloatProperty offset_;
     FloatProperty scale_;
@@ -148,7 +150,6 @@ private:
 
     PickingMapper picking_;
     Shader shader_;
-    Shader lineShader_;
 
     // number of available interaction elements.
     static const int numInteractionWidgets = 3;  //!< lower and upper bound arrows, middle handle
@@ -168,6 +169,7 @@ private:
 
     mat3 volumeBasis_;
     vec3 volumeOffset_;
+    algorithm::LineRenderer lineRenderer_;
 };
 
 }  // namespace inviwo
