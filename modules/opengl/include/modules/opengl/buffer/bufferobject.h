@@ -147,8 +147,9 @@ public:
     GLsizeiptr getSizeInBytes() const;
 
     /**
-     * Upload \p data into the buffer. This also binds the buffer. Depending on the grow policy \p policy,
-     * the buffer is re-initialized with \p sizeInBytes if it is different from the current size of the buffer.
+     * Upload \p data into the buffer. This also binds the buffer. Depending on the grow policy \p
+     * policy, the buffer is re-initialized with \p sizeInBytes if it is different from the current
+     * size of the buffer.
      * @param data          data to be uploaded. The underlying data must match the current GL
      *                      format of the buffer.
      * @param sizeInBytes   size of the uploaded data
