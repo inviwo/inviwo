@@ -50,7 +50,6 @@
 #include <modules/basegl/properties/linesettingsproperty.h>    // for LineSettingsProperty
 #include <modules/basegl/rendering/linerenderer.h>             // for LineRenderer
 
-
 #include <array>    // for array
 #include <cstddef>  // for size_t
 #include <memory>   // for shared_ptr
