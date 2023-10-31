@@ -46,6 +46,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>    // for TransferFunctionProperty
 #include <inviwo/core/datastructures/light/baselightsource.h>   // for Lights
 #include <inviwo/core/ports/bufferport.h>                       // for Lights
+#include <inviwo/core/properties/simplelightingproperty.h>      // for SimpleLightingProperty
 
 // outsider of include/inviwo
 #include <../modules/opengl/include/modules/opengl/volume/volumegl.h>
@@ -107,6 +108,7 @@ private:
     VolumeIndicatorProperty positionIndicator_;
     
     // What internal data types would I need?
+    SimpleLightingProperty light_;
     BufferGL lightSources_;
     int nLightSources_ = 1; // Number of light sources
 
