@@ -1,4 +1,5 @@
 #include "random.glsl"
+#include "utils/shading.glsl"
 
 /* --- 
     My stuff now
@@ -15,15 +16,28 @@ vec4 RMVolumeRender_simple(inout float T, float rayStep, float tau, vec4 tfSampl
     return acc_radiance;
 }
 
-vec4 RMVolumeRender_simpleWithLight(float T, float rayStep, float tau, vec4 tfSample, vec4 acc_radiance, 
-    vec3 samplePos, vec3 lightPos, float lightRadiance) {
+vec4 RMVolumeRender_simpleWithLight(float T, float rayStep, vec4 tfSample, vec4 acc_radiance, 
+    vec3 samplePos, vec3 cameraDir, LightParameters light) {
     
-    float lightCoeff = lightRadiance/pow(distance(lightPos, samplePos), 2f);
-    vec4 lightColor = vec4(1.0f, 0.8f, 0.8f, 1.0f)*lightCoeff;
+    float lightCoeff = 1f/pow(distance(light.position, samplePos), 2f);
+    
+    vec4 color;
+    
 
-    lightColor.w = 1f;
+    // Made up colors of the particle
+    vec3 sampleAmbient = tfSample.rgb;
+    vec3 sampleDiffuse = tfSample.rgb;
+    vec3 sampleSpecular = vec3(1f);
 
-    acc_radiance = acc_radiance + T*tau*(tfSample + lightColor)*rayStep;
+    vec3 toLight = normalize(light.position - samplePos);
+
+    // only the volume is moved when the canvas is shifted. keep that in mind
+
+    color.rgb = shadeSpecularPhongCalculation(light, tfSample.rgb, toLight, 
+        toLight, cameraDir);
+
+    color.w = 1f;
+    acc_radiance += acc_radiance + T*tfSample.a*(color);
 
     return acc_radiance;
 }
