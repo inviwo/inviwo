@@ -1,46 +1,11 @@
 #include "random.glsl"
 #include "utils/shading.glsl"
+#include "utils/intersection.glsl"
+#include "renderingmethods.glsl"
 
 /* --- 
     My stuff now
 */
-
-float SimpleTracking(float T, float rayStep, float tau) {
-    return T*exp(-tau*rayStep);
-}
-
-vec4 RMVolumeRender_simple(inout float T, float rayStep, float tau, vec4 tfSample, vec4 acc_radiance) {
-    acc_radiance = acc_radiance + T*tau*tfSample*rayStep;
-    
-
-    return acc_radiance;
-}
-
-vec4 RMVolumeRender_simpleWithLight(float T, float rayStep, vec4 tfSample, vec4 acc_radiance, 
-    vec3 samplePos, vec3 cameraDir, LightParameters light) {
-    
-    float lightCoeff = 1f/pow(distance(light.position, samplePos), 2f);
-    
-    vec4 color;
-    
-
-    // Made up colors of the particle
-    vec3 sampleAmbient = tfSample.rgb;
-    vec3 sampleDiffuse = tfSample.rgb;
-    vec3 sampleSpecular = vec3(1f);
-
-    vec3 toLight = normalize(light.position - samplePos);
-
-    // only the volume is moved when the canvas is shifted. keep that in mind
-
-    color.rgb = shadeSpecularPhongCalculation(light, tfSample.rgb, toLight, 
-        toLight, cameraDir);
-
-    color.w = 1f;
-    acc_radiance += acc_radiance + T*tfSample.a*(color);
-
-    return acc_radiance;
-}
 
 // Returns how far to step, supposedly.
 float WoodcockTracking(vec3 raystart, vec3 raydir, float raylength, float hashSeed, 
@@ -106,4 +71,64 @@ float RatioTrackingEstimator(inout vec3 raystart, vec3 raydir, float raylength, 
 
 
     return T;
+}
+
+float SimpleTracking(float T, float rayStep, float tau) {
+    return T*exp(-tau*rayStep);
+}
+
+vec4 RMVolumeRender_simple(inout float T, float rayStep, float tau, vec4 tfSample, vec4 acc_radiance) {
+    acc_radiance = acc_radiance + T*tau*tfSample*rayStep;
+    
+
+    return acc_radiance;
+}
+
+vec4 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, VolumeParameters volParam, sampler2D tf, vec4 acc_radiance, 
+    vec3 samplePos, vec3 cameraDir, LightParameters light, PlaneParameters[6] bb, float hashSeed) {
+    
+    //need worldpos
+    vec3 sampleWorldPos = (volParam.textureToWorld*vec4(samplePos,1f)).xyz;
+    
+    vec4 color;
+    
+    vec4 voxel = getNormalizedVoxel(volume, volParam, samplePos);
+    vec4 tfSample = applyTF(tf, voxel);
+
+    // Made up colors of the particle
+    vec3 sampleAmbient = tfSample.rgb;
+    vec3 sampleDiffuse = tfSample.rgb;
+    vec3 sampleSpecular = vec3(1f);
+
+    vec3 toLight = normalize(light.position - sampleWorldPos);
+
+    // only the volume is moved when the canvas is shifted. keep that in mind
+
+    color.rgb = shadeSpecularPhongCalculation(light, tfSample.rgb, toLight, 
+        toLight, cameraDir);
+
+    // Attenuate color from sampleWorldPos to lightPos
+    // send a ray from sampleWorldPos to lightPos.
+    // attenuate for the distance from samplePos to boundingbox intersection.
+    // There are many examples of ray-box, -plane intersection tests, it is fairly trivial.
+    // if our volume had a bounding box that would make this very simple, but Boron is sadly rectangular.
+
+    // Function candidates:
+    // bool rayPlaneIntersection (in PlaneParameters plane, in vec3 point, in vec3 rayDir, inout float t0, in float t1)
+    // planes have no bounds, so we can get 3 intersections, the one with smallest t0 needs to be chosen.
+    float t = 0f;
+    RayBBIntersection(bb, samplePos, toLight, t);
+
+    
+    //Need to reorganize in order to call WoodcockTracking in here.
+    float meanfreepath_l = WoodcockTracking(samplePos, toLight, t, hashSeed, 
+        volume, volParam, tf, 1f);
+    
+    float Tl = 1f;
+    Tl = SimpleTracking(Tl, meanfreepath_l, tfSample.a);
+
+    color.w = 1f;
+    acc_radiance += acc_radiance + T*tfSample.a*(color*Tl);
+
+    return acc_radiance;
 }
