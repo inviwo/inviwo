@@ -78,6 +78,7 @@ VolumePathTracer::VolumePathTracer()
     , transferFunction_("transferFunction", "Transfer Function", &volumePort_)
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , positionIndicator_("positionindicator", "Position Indicator")
+    , light_("light", "Light", &camera_)
     , lightSources_(sizeof(LightSource), DataUInt8::get(), BufferUsage::Static, BufferTarget::Data, nullptr)
     
     {
@@ -94,7 +95,7 @@ VolumePathTracer::VolumePathTracer()
     exitPort_.onChange([this]() { invalidateProgressiveRendering(); });
     */
     lights_.onChange([this]() { updateLightSources(); });
-    
+    lights_.isOptional();
     /*
     minMaxOpacity_.onConnect([this]() { partitionedTransmittance_.setVisible(true); });
     minMaxOpacity_.onDisconnect([this]() {
@@ -155,6 +156,8 @@ VolumePathTracer::VolumePathTracer()
 
     addProperty(camera_);
     addProperty(positionIndicator_);
+
+    addProperty(light_);
     
     // What can we set up before process
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); } );
@@ -163,8 +166,8 @@ VolumePathTracer::VolumePathTracer()
 void VolumePathTracer::initializeResources() {
     // Even needed in our case?
 
-    //utilgl::addDefines(shader_, raycasting_, /*isotfComposite_,*/camera_, /*lighting_,*/
-    //                   positionIndicator_);
+    utilgl::addDefines(shader_, raycasting_, camera_, light_,
+                       positionIndicator_);
     //utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
     //shader_.build();
 }
@@ -214,7 +217,7 @@ void VolumePathTracer::process() {
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
     shader_.setUniform("time_ms", t_ms);
     
-    utilgl::setUniforms(shader_, camera_, raycasting_, positionIndicator_,
+    utilgl::setUniforms(shader_, camera_, raycasting_, positionIndicator_, light_, 
                         channel_/*, transferFunction_*/);
 
 
