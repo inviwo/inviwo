@@ -33,10 +33,11 @@ writeonly uniform image2D outportDepth;
 writeonly uniform image2D outportPicking;
 uniform ImageParameters outportParameters;
 
-//Lights
+// Uniform properties
 uniform CameraParameters camera;
 uniform VolumeIndicatorParameters positionindicator;
 uniform RaycastingParameters raycaster;
+uniform LightParameters light; //lighting
 uniform sampler2D transferFunction; // cant get transferFunction up to a compute shader?
 
 uniform int channel;
@@ -83,10 +84,6 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
     uint globalDimX = gl_WorkGroupSize.x*gl_NumWorkGroups.x;
     uint globalDimY = gl_WorkGroupSize.y*gl_NumWorkGroups.y;
     uint gid = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y*globalDimX;
-    
-    //float funny = mod(0.005*time_ms, 4f) - 2f;
-    vec3 pointLight = vec3(2, 2, 2);
-    float pointLightStrength = 7f;
 
     float rayStep = calcStep(rayLength, rayDir, rayCastParam.samplingRate, volParam.dimensions);
     vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volParam.textureToWorld);
@@ -94,35 +91,26 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
     float rayPosition = 0.5 * rayStep;
     vec3 samplePosition = entryPoint + rayPosition * rayDir;
     float T = 1.0f;
-    
-    int safety_count = 0;
 
-    for (rayPosition += rayStep; rayPosition < rayLength;) {
+    float meanpath = WoodcockTracking(samplePosition, rayDir, rayLength, gid + time_ms,
+            volume, volumeParameters, transferFunction, 1);
+    rayPosition = meanpath; 
+    
+    if (rayPosition <= rayLength) {
         samplePosition = entryPoint + rayPosition * rayDir;
 
-        
         // Sample volume.
         vec4 voxel = getNormalizedVoxel(volume, volumeParameters, samplePosition);
-        vec4 color = applyTF(transferFunction, voxel)/255.0;
-        
-        // using gid aside to time_ms as hashseed is MUCH slower, 
-        // but we see a clear dependence between pixel points. Is it caching?
-
-        float meanpath = WoodcockTracking(samplePosition, rayDir, rayLength, gid,
-            volume, volumeParameters, transferFunction, 100);
-        rayPosition += meanpath;
+        vec4 color = applyTF(transferFunction, voxel);
 
         vec3 sampleWorldPosition = (volumeParameters.textureToWorld*vec4(samplePosition,1f)).xyz;
 
-        result = RMVolumeRender_simpleWithLight(T, meanpath, color.a*700, color*700, result, 
-            sampleWorldPosition, pointLight, pointLightStrength);
-        T = SimpleTracking(T, meanpath, color.a*700);
+        // Function is broken for testing at the moment.
+        result = RMVolumeRender_simpleWithLight(T, meanpath, color, result, 
+            sampleWorldPosition, cameraDir, light);
+        T = SimpleTracking(T, meanpath, color.a);
 
         #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
-        safety_count++;
-        if(safety_count > 100) break; // no infinite loops
-        
-        if (T < 0.01) break;  // early ray termination
     }
     result = result + T*bgColor;
 
@@ -175,6 +163,7 @@ vec4 simplePathTracer(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint,
 
     float T = 1f;
     for(travel += rayStep; travel < rayLength;) {
+
         pos = entryPoint + rayDir*travel;
         
         // TODO: Can we remove the artifacts when looking through the z direction?
@@ -197,8 +186,9 @@ vec4 simplePathTracer(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint,
 
         vec3 worldPos = (volumeParameters.textureToWorld*vec4(pos,1f)).xyz;
         
-        result = RMVolumeRender_simpleWithLight(T, meanpath, color.a*700.0, color*700.0, result, 
-            worldPos, pointLight, pointLightStrength);
+        //result = RMVolumeRender_simpleWithLight(T, meanpath, color.a*700.0, color*700.0, result, 
+        //    worldPos, pointLight, pointLightStrength);
+        
         T = SimpleTracking(T, meanpath, color.a*700.0);
 
         safety_count++;
@@ -245,14 +235,14 @@ void main(){
         imageStore(outportPicking, storePos, picking);
         return;
     }
-    int N = 3;
+    int N = 1;
     for(int n = 1; n <= N; n++) {
-        result += simplePathTracer(outportParameters, entryPoint, exitPoint, entryPointDepth, exitPointDepth,
+        result += simpleRender(outportParameters, entryPoint, exitPoint, entryPointDepth, exitPointDepth,
             depth, raycaster, volumeParameters, bgColor);
     }
     result = result/N;
     // If you wanna normalize, DONT do it based off of results. It needs to be a global factor
-    
+
     imageStore(outportColor, storePos, result);     
     imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
     imageStore(outportPicking, storePos, picking);
