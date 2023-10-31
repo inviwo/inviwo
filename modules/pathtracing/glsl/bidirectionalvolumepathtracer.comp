@@ -62,6 +62,7 @@ vec3 calcCameraDir(in vec3 entryPoint, in vec3 exitPoint, in mat4 textureToWorld
 }
 
 
+
 vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth,
     inout float depth, RaycastingParameters rayCastParam, VolumeParameters volParam, vec4 bgColor) {
 
@@ -98,16 +99,19 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
     
     if (rayPosition <= rayLength) {
         samplePosition = entryPoint + rayPosition * rayDir;
+        
 
         // Sample volume.
         vec4 voxel = getNormalizedVoxel(volume, volumeParameters, samplePosition);
         vec4 color = applyTF(transferFunction, voxel);
 
+        PlaneParameters[6] planes = constructBBPlanes(volumeParameters);
+
         vec3 sampleWorldPosition = (volumeParameters.textureToWorld*vec4(samplePosition,1f)).xyz;
 
         // Function is broken for testing at the moment.
-        result = RMVolumeRender_simpleWithLight(T, meanpath, color, result, 
-            sampleWorldPosition, cameraDir, light);
+        result = RMVolumeRender_SingleBounceLight(T, meanpath, volume, volumeParameters, transferFunction, result, 
+            samplePosition, cameraDir, light, planes, gid + time_ms + 1);
         T = SimpleTracking(T, meanpath, color.a);
 
         #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
@@ -227,7 +231,7 @@ void main(){
     float exitPointDepth = texture(exitDepth, texCoord).x;
 
     // alpha channel barely does anything...
-    vec4 bgColor = vec4(0.2f, 0.2f, 0.2f, 1.0f)*1f;
+    vec4 bgColor = vec4(0.0f, 0.0f, 0.0f, 1.0f)*1f;
 
     if (entryPoint == exitPoint) {
         imageStore(outportColor, storePos, bgColor); 
