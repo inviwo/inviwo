@@ -79,7 +79,8 @@ BufferObject::BufferObject(size_t sizeInBytes, GLFormat format, GLenum usage, GL
     , usageGL_(usage)
     , target_(target)
     , glFormat_(format)
-    , sizeInBytes_(0) {
+    , sizeInBytes_(0)
+    , capacityInBytes_(0) {
 
     glGenBuffers(1, &id_);
 
@@ -91,7 +92,8 @@ BufferObject::BufferObject(const BufferObject& rhs)
     , usageGL_(rhs.usageGL_)
     , target_(rhs.target_)
     , glFormat_(rhs.glFormat_)
-    , sizeInBytes_(0) {
+    , sizeInBytes_(0)
+    , capacityInBytes_(0) {
     glGenBuffers(1, &id_);
     *this = rhs;
 }
@@ -102,7 +104,8 @@ BufferObject::BufferObject(BufferObject&& rhs)
     , usageGL_(rhs.usageGL_)
     , target_(rhs.target_)
     , glFormat_(rhs.glFormat_)
-    , sizeInBytes_(rhs.sizeInBytes_) {
+    , sizeInBytes_(rhs.sizeInBytes_)
+    , capacityInBytes_(rhs.capacityInBytes_) {
     // Free resources from other
     rhs.id_ = 0;
 }
@@ -146,6 +149,7 @@ BufferObject& BufferObject::operator=(BufferObject&& rhs) {
         usageGL_ = rhs.usageGL_;
         glFormat_ = rhs.glFormat_;
         sizeInBytes_ = rhs.sizeInBytes_;
+        capacityInBytes_ = rhs.capacityInBytes_;
 
         // Release resources from source object
         rhs.id_ = 0;
@@ -220,13 +224,28 @@ void BufferObject::bindAndSetAttribPointer(GLuint location, BindingType bindingT
     }
 }
 
-void BufferObject::setSizeInBytes(GLsizeiptr sizeInBytes) { initialize(nullptr, sizeInBytes); }
+void BufferObject::setSizeInBytes(GLsizeiptr sizeInBytes, SizePolicy policy) {
+    if (sizeInBytes == getCapacityInBytes() && policy == SizePolicy::ResizeToFit) {
+        return;
+    }
+
+    if (sizeInBytes <= getCapacityInBytes() && policy == SizePolicy::GrowOnly) {
+        // the buffer is large enough for the requested size
+        sizeInBytes_ = sizeInBytes;
+    } else {
+        // re-initialize the buffer since its actual size/capacity needs to be adjusted
+        initialize(nullptr, sizeInBytes);
+    }
+}
 
 GLsizeiptr BufferObject::getSizeInBytes() const { return sizeInBytes_; }
+
+GLsizeiptr BufferObject::getCapacityInBytes() const { return capacityInBytes_; }
 
 void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
     LGL_ERROR_CLASS;
     sizeInBytes_ = sizeInBytes;
+    capacityInBytes_ = sizeInBytes;
 
     // Notify observers
     forEachObserver([](BufferObjectObserver* o) { o->onBeforeBufferInitialization(); });
@@ -245,10 +264,12 @@ void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
     forEachObserver([](BufferObjectObserver* o) { o->onAfterBufferInitialization(); });
 }
 
-void BufferObject::upload(const void* data, GLsizeiptr sizeInBytes) {
-    if (sizeInBytes <= getSizeInBytes()) {
+void BufferObject::upload(const void* data, GLsizeiptr sizeInBytes, SizePolicy policy) {
+    if ((sizeInBytes == getCapacityInBytes() && policy == SizePolicy::ResizeToFit) ||
+        (sizeInBytes <= getCapacityInBytes() && policy == SizePolicy::GrowOnly)) {
         bind();
         glBufferSubData(target_, 0, sizeInBytes, data);
+        sizeInBytes_ = sizeInBytes;
     } else {
         initialize(data, sizeInBytes);
     }

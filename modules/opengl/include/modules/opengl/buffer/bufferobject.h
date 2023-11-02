@@ -62,6 +62,16 @@ public:
                               //!< integral types
     };
 
+    /**
+     * Policy for managing the buffer size when uploading new data to the GPU.
+     *
+     * \see upload
+     */
+    enum class SizePolicy {
+        GrowOnly,    //!< the buffer only grows and will never be resized to a smaller size
+        ResizeToFit  //!< the buffer size is adjusted to fit the data exactly
+    };
+
     BufferObject(size_t sizeInBytes, const DataFormatBase* format, BufferUsage usage,
                  BufferTarget target = BufferTarget::Data);
 
@@ -128,23 +138,46 @@ public:
 
     /**
      * Set the size of the buffer in bytes.
-     * @param sizeInBytes
+     * @param sizeInBytes   new buffer size in bytes
+     * @param policy        resizing policy when \p sizeInBytes differs from the current size
      */
-    void setSizeInBytes(GLsizeiptr sizeInBytes);
+    void setSizeInBytes(GLsizeiptr sizeInBytes, SizePolicy policy = SizePolicy::GrowOnly);
     /**
      * Get the size of the buffer in bytes.
      */
     GLsizeiptr getSizeInBytes() const;
+    /**
+     * Get the capacity of the buffer in bytes, which might be larger than the size returned by
+     * getSizeInBytes()
+     * \see SizePolicy
+     */
+    GLsizeiptr getCapacityInBytes() const;
 
     /**
-     * Upload \p data into the buffer. This also binds the buffer. If \p sizeInBytes exceeds the
-     * current size of the buffer, the buffer gets re-initialized with \p sizeInBytes.
+     * Upload \p data into the buffer. This also binds the buffer. Depending on the grow policy \p
+     * policy, the buffer is re-initialized with \p sizeInBytes if it is different from the current
+     * size of the buffer.
      * @param data          data to be uploaded. The underlying data must match the current GL
      *                      format of the buffer.
      * @param sizeInBytes   size of the uploaded data
-     * @see getGLFormat,getSizeInBytes
+     * @param policy        resizing policy when \p sizeInBytes differs from the current size
+     * @see getGLFormat,getSizeInBytes,SizePolicy
      */
-    void upload(const void* data, GLsizeiptr sizeInBytes);
+    void upload(const void* data, GLsizeiptr sizeInBytes, SizePolicy policy = SizePolicy::GrowOnly);
+
+    /**
+     * Upload data from a container \p cont into the buffer. This also binds the buffer.
+     * @param data          data to be uploaded. The underlying data must match the current GL
+     *                      format of the buffer.
+     * @param sizeInBytes   size of the uploaded data
+     * @param policy        resizing policy when \p sizeInBytes differs from the current size
+     * @see upload(const void*, GLsizeiptr, SizePolicy)
+     */
+    template <typename T>
+    void upload(const std::vector<T>& cont, SizePolicy policy = SizePolicy::GrowOnly) {
+        auto sizeInBytes = static_cast<GLsizeiptr>(sizeof(T) * cont.size());
+        upload(cont.data(), sizeInBytes, policy);
+    }
 
     void download(void* data) const;
 
@@ -158,6 +191,7 @@ private:
     GLenum target_;
     GLFormat glFormat_;
     GLsizeiptr sizeInBytes_;
+    GLsizeiptr capacityInBytes_;
 };
 
 inline GLFormat BufferObject::getGLFormat() const { return glFormat_; }

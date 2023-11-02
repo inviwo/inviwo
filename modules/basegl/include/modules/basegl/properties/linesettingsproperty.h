@@ -59,31 +59,35 @@ public:
     virtual LineSettingsProperty* clone() const override;
 
     // Inherited from LineSettingsInterface
-    /*
+    /**
      * @copydoc LineSettingsInterface::getWidth
      */
     virtual float getWidth() const override;
-    /*
+    /**
      * @copydoc LineSettingsInterface::getAntialiasingWidth
      */
     virtual float getAntialiasingWidth() const override;
-    /*
+    /**
      * @copydoc LineSettingsInterface::getMiterLimit
      */
     virtual float getMiterLimit() const override;
-    /*
+    /**
      * @copydoc LineSettingsInterface::getRoundCaps
      */
     virtual bool getRoundCaps() const override;
-    /*
+    /**
      * @copydoc LineSettingsInterface::getPseudoLighting
      */
     virtual bool getPseudoLighting() const override;
-    /*
+    /**
      * @copydoc LineSettingsInterface::getRoundDepthProfile
      */
     virtual bool getRoundDepthProfile() const override;
-    /*
+    /**
+     * @copydoc LineSettingsInterface::getDefaultColor
+     */
+    virtual vec4 getDefaultColor() const override;
+    /**
      * @copydoc LineSettingsInterface::getStippling
      */
     virtual const StipplingSettingsInterface& getStippling() const override;
@@ -95,6 +99,8 @@ public:
 
     BoolProperty pseudoLighting_;
     BoolProperty roundDepthProfile_;
+
+    FloatVec4Property defaultColor_;
 
     StipplingProperty stippling_;
 };

@@ -125,11 +125,8 @@ CropWidget::CropWidget()
     , uiSettings_("uiSettings", "UI Settings")
     , showWidget_("showWidget", "Show Widget", true)
     , showCropPlane_("showClipPlane", "Crop Plane Visible", true)
-    , handleColor_("handleColor", "Handle Color", vec4(0.8f, 0.4f, 0.1f, 1.0f), vec4(0.0f),
-                   vec4(1.0f))
-    , cropLineColor_("cropLineColor", "Crop Line Color", vec4(vec3(0.8f), 1.0f), vec4(0.0f),
-                     vec4(1.0f))
-    , lineWidth_("lineWidth", "Line Width (pixel)", 2.5f, 0.0f, 50.0f, 0.1f)
+    , handleColor_("handleColor", "Handle Color", util::ordinalColor(vec4(0.8f, 0.4f, 0.1f, 1.0f)))
+    , cropLineSettings_("cropLineSettings", "Crop Line Settings")
     , offset_("offset", "Offset", 0.0f, -1.0f, 1.0f)
     , scale_("scale", "Scale", 0.15f, 0.001f, 2.0f, 0.05f)
 
@@ -159,11 +156,11 @@ CropWidget::CropWidget()
     , trackball_(&camera_)
     , picking_(this, 3 * numInteractionWidgets, [&](PickingEvent* p) { objectPicked(p); })
     , shader_("geometrycustompicking.vert", "geometryrendering.frag", Shader::Build::No)
-    , lineShader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", Shader::Build::No)
     , isMouseBeingPressedAndHold_(false)
     , lastState_(-1)
     , volumeBasis_(1.0f)
-    , volumeOffset_(-0.5f) {
+    , volumeOffset_(-0.5f)
+    , lineRenderer_(&cropLineSettings_) {
 
     addPort(volume_);
     addPort(inport_);
@@ -219,8 +216,10 @@ CropWidget::CropWidget()
     addProperty(outputProps_);
     addProperty(relativeRangeAdjustment_);
 
-    handleColor_.setSemantics(PropertySemantics::Color);
-    cropLineColor_.setSemantics(PropertySemantics::Color);
+    cropLineSettings_.lineWidth_.set(2.5f);
+    cropLineSettings_.lineWidth_.setCurrentStateAsDefault();
+    cropLineSettings_.defaultColor_.set(vec4{0.8f, 0.8f, 0.8f, 1.0f});
+    cropLineSettings_.defaultColor_.setCurrentStateAsDefault();
 
     // brighten up ambient color
     lightingProperty_.ambientColor_.set(vec3(0.6f));
@@ -233,8 +232,7 @@ CropWidget::CropWidget()
     uiSettings_.addProperty(offset_);
     uiSettings_.addProperty(scale_);
     uiSettings_.addProperty(showCropPlane_);
-    uiSettings_.addProperty(cropLineColor_);
-    uiSettings_.addProperty(lineWidth_);
+    uiSettings_.addProperty(cropLineSettings_);
     uiSettings_.addProperty(lightingProperty_);
     addProperty(uiSettings_);
 
@@ -247,7 +245,6 @@ CropWidget::CropWidget()
 
     volume_.onChange([this]() { updateAxisRanges(); });
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    lineShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     std::array<InteractionElement, 3> elem = {
         InteractionElement::LowerBound, InteractionElement::UpperBound, InteractionElement::Middle};
@@ -297,22 +294,6 @@ void CropWidget::initializeResources() {
     // shading defines
     utilgl::addShaderDefines(shader_, lightingProperty_);
     shader_.build();
-
-    lineShader_[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY", "1");
-    lineShader_[ShaderType::Fragment]->addShaderDefine("ENABLE_ROUND_DEPTH_PROFILE");
-
-    // See createLineStripMesh()
-    lineShader_[ShaderType::Vertex]->addInDeclaration("in_" + toString(BufferType::PositionAttrib),
-                                                      static_cast<int>(BufferType::PositionAttrib),
-                                                      "vec3");
-    lineShader_[ShaderType::Vertex]->addInDeclaration("in_" + toString(BufferType::ColorAttrib),
-                                                      static_cast<int>(BufferType::ColorAttrib),
-                                                      "vec4");
-    lineShader_.build();
-    lineShader_.activate();
-    lineShader_.setUniform("antialiasing", 1.0f);
-    lineShader_.setUniform("miterLimit", 1.0f);
-    lineShader_.deactivate();
 }
 
 void CropWidget::initMesh() {
@@ -357,10 +338,8 @@ void CropWidget::initMesh() {
 void CropWidget::createLineStripMesh() {
     auto linestrip = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::StripAdjacency);
     auto vertices = std::make_shared<Buffer<vec3>>();
-    auto colors = std::make_shared<Buffer<vec4>>();
 
     auto vBuffer = vertices->getEditableRAMRepresentation();
-    auto colorBuffer = colors->getEditableRAMRepresentation();
 
     vec3 p(0.0f);
     vec3 mask[5] = {{0.0f, 0.0f, 0.0f},
@@ -370,7 +349,6 @@ void CropWidget::createLineStripMesh() {
                     {0.0f, 0.0f, 0.0f}};
     for (int i = 0; i < 5; ++i) {
         vBuffer->add(p + mask[i]);
-        colorBuffer->add(cropLineColor_.get());
     }
 
     auto indices = std::make_shared<IndexBuffer>();
@@ -378,7 +356,6 @@ void CropWidget::createLineStripMesh() {
     indexBuffer->add({3, 0, 1, 2, 3, 4, 1});
 
     linestrip->addBuffer(BufferType::PositionAttrib, vertices);
-    linestrip->addBuffer(BufferType::ColorAttrib, colors);
     linestrip->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::StripAdjacency),
                           indices);
 
@@ -444,15 +421,11 @@ void CropWidget::renderAxis(const CropAxis& axis) {
         bool drawUpperPlane = (property.get().y != property.getRangeMax());
 
         if (drawLowerPlane || drawUpperPlane) {
-            if (cropLineColor_.isModified()) {
+            if (!linestrip_) {
                 createLineStripMesh();
             }
 
             utilgl::DepthFuncState depthFunc(GL_LEQUAL);
-
-            lineShader_.activate();
-            lineShader_.setUniform("screenDim", vec2(outport_.getDimensions()));
-            utilgl::setUniforms(lineShader_, camera_, lineWidth_);
 
             // rotate clip plane from [0, 0, -1] to match the currently selected clip axis
             mat4 scale(volumeBasis_);
@@ -464,16 +437,14 @@ void CropWidget::renderAxis(const CropAxis& axis) {
             }
             rotMatrix = scale * rotMatrix;
 
-            MeshDrawerGL::DrawObject drawStrip(linestrip_->getRepresentation<MeshGL>(),
-                                               linestrip_->getDefaultMeshInfo());
-
             auto draw = [&](float value) {
                 mat4 worldMatrix(glm::translate(volumeOffset_ + axis.info.axis * value) *
                                  rotMatrix);
+                linestrip_->setWorldMatrix(worldMatrix);
                 mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
-                lineShader_.setUniform("geometry.dataToWorld", worldMatrix);
-                lineShader_.setUniform("geometry.dataToWorldNormalMatrix", normalMatrix);
-                drawStrip.draw();
+
+                lineRenderer_.render(*linestrip_, camera_.get(), outport_.getDimensions(),
+                                     &cropLineSettings_);
             };
 
             if (drawLowerPlane) {

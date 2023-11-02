@@ -55,9 +55,11 @@ LineSettingsProperty::LineSettingsProperty(std::string_view identifier,
                       InvalidationLevel::InvalidResources)
     , roundDepthProfile_("roundDepthProfile", "Round Depth Profile", true,
                          InvalidationLevel::InvalidResources)
+    , defaultColor_("defaultColor", "Default Color",
+                    util::ordinalColor(vec4{1.0f, 0.7f, 0.2f, 1.0f}))
     , stippling_("stippling", "Stippling") {
     addProperties(lineWidth_, antialiasing_, miterLimit_, roundCaps_, pseudoLighting_,
-                  roundDepthProfile_, stippling_);
+                  roundDepthProfile_, defaultColor_, stippling_);
 }
 
 LineSettingsProperty::LineSettingsProperty(const LineSettingsProperty& rhs)
@@ -68,9 +70,10 @@ LineSettingsProperty::LineSettingsProperty(const LineSettingsProperty& rhs)
     , roundCaps_(rhs.roundCaps_)
     , pseudoLighting_(rhs.pseudoLighting_)
     , roundDepthProfile_(rhs.roundDepthProfile_)
+    , defaultColor_(rhs.defaultColor_)
     , stippling_(rhs.stippling_) {
     addProperties(lineWidth_, antialiasing_, miterLimit_, roundCaps_, pseudoLighting_,
-                  roundDepthProfile_, stippling_);
+                  roundDepthProfile_, defaultColor_, stippling_);
 }
 
 LineSettingsProperty* LineSettingsProperty::clone() const {
@@ -84,6 +87,8 @@ float LineSettingsProperty::getMiterLimit() const { return miterLimit_.get(); }
 bool LineSettingsProperty::getRoundCaps() const { return roundCaps_.get(); }
 bool LineSettingsProperty::getPseudoLighting() const { return pseudoLighting_.get(); }
 bool LineSettingsProperty::getRoundDepthProfile() const { return roundDepthProfile_.get(); }
+
+vec4 LineSettingsProperty::getDefaultColor() const { return defaultColor_.get(); }
 
 const StipplingSettingsInterface& LineSettingsProperty::getStippling() const { return stippling_; }
 }  // namespace inviwo

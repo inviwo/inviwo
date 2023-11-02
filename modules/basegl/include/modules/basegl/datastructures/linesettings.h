@@ -55,6 +55,7 @@ public:
     bool pseudoLighting = false;
     bool roundDepthProfile = false;
     StipplingSettings stippling;
+    vec4 defaultColor = vec4{1.0f, 0.7f, 0.2f, 1.0f};
     // Inherited from LineSettingsInterface
     /*
      * @copydoc LineSettingsInterface::getWidth
@@ -80,6 +81,10 @@ public:
      * @copydoc LineSettingsInterface::getRoundDepthProfile
      */
     virtual bool getRoundDepthProfile() const override;
+    /**
+     * @copydoc LineSettingsInterface::getDefaultColor
+     */
+    virtual vec4 getDefaultColor() const override;
     /*
      * @copydoc LineSettingsInterface::getStippling
      */

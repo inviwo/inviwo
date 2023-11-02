@@ -30,46 +30,52 @@
 
 #include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
+#include <inviwo/core/util/glmvec.h>
+
 namespace inviwo {
 class StipplingSettingsInterface;
 
-/*
+/**
  * \brief Settings for line rendering
  */
 class IVW_MODULE_BASEGL_API LineSettingsInterface {
 public:
     LineSettingsInterface() = default;
     virtual ~LineSettingsInterface() = default;
-    /*
+    /**
      * @return Line width (in pixels)
      */
     virtual float getWidth() const = 0;
-    /*
+    /**
      * @return Width of antialiasing (in pixels)
      */
     virtual float getAntialiasingWidth() const = 0;
-    /*
+    /**
      * Where to crop of sharp corners.
      * Occurs when two lines meeting at low angles.
      * @return distance (in pixels)
      */
     virtual float getMiterLimit() const = 0;
-    /*
-     * Shound line meeting points points be round?
+    /**
+     * Should line end points be round?
      */
     virtual bool getRoundCaps() const = 0;
-    /*
+    /**
      * Make lines appear cylinder shaped?
      */
     virtual bool getPseudoLighting() const = 0;
-    /*
+    /**
      * Depth values according to cylinder shape?
      */
     virtual bool getRoundDepthProfile() const = 0;
-    /*
+    /**
      * Dashed line settings, e.g., - - -
      */
     virtual const StipplingSettingsInterface& getStippling() const = 0;
+    /**
+     * Default color used when the mesh doesn't have a color attribute.
+     */
+    virtual vec4 getDefaultColor() const = 0;
 };
 
 IVW_MODULE_BASEGL_API bool operator==(const LineSettingsInterface& a,
