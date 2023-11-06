@@ -1,6 +1,6 @@
 # TetraMesh Module
 
-This module adds basic rendering support for unstructured grids using tetrahedra like the `TetraMeshVolumeRaycaster`. The `TetraMeshProvider` provides a common interface for arbitrary tetrahedral grids and uploads the necessary data to the GPU. See for example the `VTKTetraMeshProvider` in the topovis/ttk module.
+This module adds basic rendering support for unstructured grids using tetrahedra like the `TetraMeshVolumeRaycaster`. The `TetraMesh` provides a common interface for arbitrary tetrahedral grids. The data upload to the GPU with the necessary data required for rendering is managed by `TetraMeshBuffers`. See for example `VolumeTetraMesh` and `VTKTetraMesh` in the topovis/ttk module.
 
 Enable the topovis/ttk module for supporting and rendering VTK unstructured grids.
 

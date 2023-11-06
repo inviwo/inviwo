@@ -27,30 +27,31 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tetramesh/datastructures/tetrameshdata.h>
-#include <inviwo/tetramesh/datastructures/tetrameshprovider.h>
+#pragma once
+
+#include <inviwo/tetramesh/tetrameshmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+
+#include <inviwo/tetramesh/ports/tetrameshport.h>
 
 namespace inviwo {
 
-TetraMeshData::TetraMeshData(const std::shared_ptr<TetraMeshProvider>& meshprovider)
-    : meshProvider_{meshprovider} {}
+class IVW_MODULE_TETRAMESH_API VolumeToTetraMesh : public Processor {
+public:
+    VolumeToTetraMesh();
 
-TetraMeshData* TetraMeshData::clone() const { return new TetraMeshData(*this); }
+    virtual void process() override;
 
-int TetraMeshData::getNumberOfCells() const {
-    if (meshProvider_) {
-        return meshProvider_->getNumberOfCells();
-    } else {
-        return 0;
-    }
-}
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-int TetraMeshData::getNumberOfPoints() const {
-    if (meshProvider_) {
-        return meshProvider_->getNumberOfPoints();
-    } else {
-        return 0;
-    }
-}
+private:
+    VolumeInport inport_;
+    TetraMeshOutport outport_;
+
+    OptionPropertyInt channel_;
+};
 
 }  // namespace inviwo

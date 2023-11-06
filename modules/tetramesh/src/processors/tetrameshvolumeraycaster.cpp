@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/tetramesh/processors/tetrameshvolumeraycaster.h>
-#include <inviwo/tetramesh/datastructures/tetrameshprovider.h>
+#include <inviwo/tetramesh/datastructures/tetramesh.h>
 #include <inviwo/tetramesh/util/tetrameshutils.h>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -48,7 +48,7 @@ std::function<std::optional<mat4>()> boundingBox(const TetraMeshInport& tetra) {
     return [port = &tetra]() -> std::optional<mat4> {
         if (port->hasData()) {
             auto data = port->getData();
-            return utiltetra::boundingBox(**port->getData());
+            return utiltetra::boundingBox(*data);
         } else {
             return std::nullopt;
         }
@@ -104,9 +104,15 @@ void TetraMeshVolumeRaycaster::initializeResources() {
 }
 
 void TetraMeshVolumeRaycaster::process() {
-    TetraMeshProvider* meshProvider{*inport_.getData()};
-    if (!meshProvider) {
-        throw Exception(IVW_CONTEXT, "Tetra mesh does not have a valid data provider");
+    if (inport_.isChanged() || !mesh_) {
+        const auto& tetraMesh = *inport_.getData();
+
+        tetraMesh.get(tetraNodes_, tetraNodeIds_);
+        auto opposingFaces = utiltetra::getOpposingFaces(tetraNodeIds_);
+
+        buffers_.upload(tetraNodes_, tetraNodeIds_, opposingFaces);
+        mesh_ = utiltetra::createBoundaryMesh(tetraNodes_, tetraNodeIds_,
+                                              utiltetra::getBoundaryFaces(opposingFaces));
     }
 
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
@@ -114,18 +120,17 @@ void TetraMeshVolumeRaycaster::process() {
     TextureUnitContainer texContainer;
     shader_.activate();
 
-    meshProvider->bindBuffers();
-    const auto& mesh = meshProvider->getBoundaryMesh();
+    buffers_.bind();
 
     utilgl::setUniforms(shader_, camera_, lighting_, opacityScaling_, maxSteps_);
-    utilgl::setShaderUniforms(shader_, *mesh, "geometry");
+    utilgl::setShaderUniforms(shader_, *mesh_, "geometry");
     utilgl::bindAndSetUniforms(shader_, texContainer, tf_);
     if (imageInport_.hasData()) {
         utilgl::bindAndSetUniforms(shader_, texContainer, imageInport_, ImageType::ColorOnly);
     }
     shader_.setUniform("useBackground", imageInport_.hasData());
 
-    const dvec2 dataRange{meshProvider->getDataRange()};
+    const dvec2 dataRange{inport_.getData()->getDataRange()};
     const double scalingFactor = 1.0 / (dataRange.y - dataRange.x);
     const double offset = -dataRange.x;
     shader_.setUniform("tfScalarScaling", static_cast<float>(scalingFactor));
@@ -134,10 +139,13 @@ void TetraMeshVolumeRaycaster::process() {
     utilgl::CullFaceState cf(GL_BACK);
     utilgl::GlBoolState cull(GL_CULL_FACE, true);
 
-    auto drawer = MeshDrawerGL::getDrawObject(mesh.get());
-    drawer.draw();
+    {
 
-    meshProvider->unbindBuffers();
+        auto drawer = MeshDrawerGL::getDrawObject(mesh_.get());
+        drawer.draw();
+    }
+
+    buffers_.unbind();
 
     shader_.deactivate();
 

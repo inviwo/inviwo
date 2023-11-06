@@ -28,7 +28,8 @@
  *********************************************************************************/
 
 #include <inviwo/tetramesh/processors/tetrameshboundaryextractor.h>
-#include <inviwo/tetramesh/datastructures/tetrameshprovider.h>
+#include <inviwo/tetramesh/datastructures/tetramesh.h>
+#include <inviwo/tetramesh/util/tetrameshutils.h>
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
 
@@ -59,7 +60,7 @@ TetraMeshBoundaryExtractor::TetraMeshBoundaryExtractor()
 }
 
 void TetraMeshBoundaryExtractor::process() {
-    auto mesh = inport_.getData()->getProvider()->getBoundaryMesh();
+    auto mesh = utiltetra::createBoundaryMesh(*inport_.getData());
 
     if (mesh && !mesh->hasBuffer(BufferType::ColorAttrib)) {
         mesh = std::shared_ptr<Mesh>(mesh->clone());

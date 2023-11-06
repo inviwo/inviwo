@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/tetramesh/util/tetrameshutils.h>
-#include <inviwo/tetramesh/datastructures/tetrameshprovider.h>
+#include <inviwo/tetramesh/datastructures/tetramesh.h>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
@@ -148,6 +148,13 @@ std::shared_ptr<Mesh> createBoundaryMesh(const std::vector<vec4>& nodes,
     return mesh;
 }
 
+std::shared_ptr<Mesh> createBoundaryMesh(const TetraMesh& mesh) {
+    std::vector<vec4> nodes;
+    std::vector<ivec4> nodeIds;
+    mesh.get(nodes, nodeIds);
+    return createBoundaryMesh(nodes, nodeIds, getBoundaryFaces(getOpposingFaces(nodeIds)));
+}
+
 void fixFaceOrientation(const std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds) {
     for (auto& ids : nodeIds) {
         vec3 v0{nodes[ids[0]]};
@@ -163,8 +170,8 @@ void fixFaceOrientation(const std::vector<vec4>& nodes, std::vector<ivec4>& node
     }
 }
 
-mat4 boundingBox(const TetraMeshProvider& provider) {
-    auto&& [dataMin, dataMax] = provider.getBounds();
+mat4 boundingBox(const TetraMesh& mesh) {
+    auto&& [dataMin, dataMax] = mesh.getBounds();
     auto m = glm::scale(dataMax - dataMin);
     m[3] = vec4(dataMin, 1.0f);
     return m;

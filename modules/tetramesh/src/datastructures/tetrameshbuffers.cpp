@@ -27,7 +27,9 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tetramesh/datastructures/tetrameshprovider.h>
+#include <inviwo/tetramesh/datastructures/tetrameshbuffers.h>
+#include <inviwo/tetramesh/datastructures/tetramesh.h>
+#include <inviwo/tetramesh/util/tetrameshutils.h>
 
 namespace inviwo {
 
@@ -45,16 +47,19 @@ void TetraMeshBuffers::bind() const {
 
 void TetraMeshBuffers::unbind() const { glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); }
 
-void TetraMeshBuffers::upload(const std::vector<vec4>& nodes, const std::vector<ivec4>& nodeIds,
-                              const std::vector<ivec4>& opposingFaces) {
-    nodesBuffer.upload(nodes, BufferObject::GrowPolicy::ResizeToFit);
-    nodeIdsBuffer.upload(nodeIds, BufferObject::GrowPolicy::ResizeToFit);
-    opposingFaceIdsBuffer.upload(opposingFaces, BufferObject::GrowPolicy::ResizeToFit);
-    unbind();
+void TetraMeshBuffers::upload(const TetraMesh& mesh) {
+    std::vector<vec4> nodes;
+    std::vector<ivec4> nodeIds;
+    mesh.get(nodes, nodeIds);
+    upload(nodes, nodeIds, utiltetra::getOpposingFaces(nodeIds));
 }
 
-void TetraMeshProvider::bindBuffers() const { buffers_.bind(); }
-
-void TetraMeshProvider::unbindBuffers() const { buffers_.unbind(); }
+void TetraMeshBuffers::upload(const std::vector<vec4>& nodes, const std::vector<ivec4>& nodeIds,
+                              const std::vector<ivec4>& opposingFaces) {
+    nodesBuffer.upload(nodes, BufferObject::SizePolicy::ResizeToFit);
+    nodeIdsBuffer.upload(nodeIds, BufferObject::SizePolicy::ResizeToFit);
+    opposingFaceIdsBuffer.upload(opposingFaces, BufferObject::SizePolicy::ResizeToFit);
+    unbind();
+}
 
 }  // namespace inviwo

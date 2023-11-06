@@ -34,11 +34,10 @@
 #include <modules/opengl/buffer/bufferobject.h>
 
 #include <vector>
-#include <utility>
 
 namespace inviwo {
 
-class Mesh;
+class TetraMesh;
 
 /**
  * This is an OpenGL representation of the data required for rendering tetrahedral meshes on the GPU
@@ -79,6 +78,12 @@ struct IVW_MODULE_TETRAMESH_API TetraMeshBuffers {
     /**
      * Update the buffer contents of the Shader Storage Buffers on the GPU.
      */
+    void upload(const TetraMesh& mesh);
+
+    /**
+     * @copydoc upload(const TetraMesh&)
+     * @see upload(const TetraMesh&)
+     */
     void upload(const std::vector<vec4>& nodes, const std::vector<ivec4>& nodeIds,
                 const std::vector<ivec4>& opposingFaces);
 
@@ -98,66 +103,6 @@ struct IVW_MODULE_TETRAMESH_API TetraMeshBuffers {
      * A negative index indicates a boundary face with no opposing half face.
      */
     BufferObject opposingFaceIdsBuffer;
-};
-
-/**
- * \brief Data provider for the data required to render tetrahedral meshes
- *
- * Provides an interface for the data structures required for rendering a tetrahedral mesh with
- * OpenGL.
- *
- * Data structures for tetrahedra indexing and face enumeration based on
- *    M. Lage, T. Lewiner, H. Lopes, and L. Velho.
- *    CHF: A scalable topological data structure for tetrahedral meshes.
- *    In Brazilian Symposium on Computer Graphics and Image Processing
- *    (SIBGRAPI'05), pp. 349-356, 2005, doi: 10.1109/SIBGRAPI.2005.18
- */
-class IVW_MODULE_TETRAMESH_API TetraMeshProvider {
-public:
-    TetraMeshProvider() = default;
-    virtual ~TetraMeshProvider() = default;
-
-    virtual int getNumberOfCells() const = 0;
-    virtual int getNumberOfPoints() const = 0;
-
-    /**
-     * Bind the OpenGL Shader Storage Buffers and tie them to specific layout locations.
-     *
-     * \see TetraMeshBuffers::bind
-     */
-    void bindBuffers() const;
-    /**
-     * Unbind the Shader Storage Buffers.
-     *
-     * \see TetraMeshBuffers::unbind
-     */
-    void unbindBuffers() const;
-
-    /**
-     * Create a triangular mesh from a tetrahedral mesh that consists only of the boundary faces
-     * and no interior triangles. Note that holes in the tetra mesh also feature boundary faces.
-     *
-     * @return triangle mesh representing the boundary faces along with matching face IDs stored as
-     * BufferType::IndexAttrib.
-     */
-    virtual std::shared_ptr<Mesh> getBoundaryMesh() const = 0;
-
-    /**
-     * Determine the bouding box of all nodes in the tetrahedral mesh
-     *
-     * @return min and max positions of the tetrahedral mesh
-     */
-    virtual std::pair<vec3, vec3> getBounds() const = 0;
-
-    /**
-     * Return the data range of the scalar values
-     *
-     * @return scalar value range
-     */
-    virtual dvec2 getDataRange() const = 0;
-
-protected:
-    TetraMeshBuffers buffers_;
 };
 
 }  // namespace inviwo

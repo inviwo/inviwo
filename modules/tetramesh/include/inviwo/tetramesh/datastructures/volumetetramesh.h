@@ -30,29 +30,58 @@
 
 #include <inviwo/tetramesh/tetrameshmoduledefine.h>
 #include <inviwo/tetramesh/datastructures/tetramesh.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
 
 namespace inviwo {
 
-/**
- * \ingroup ports
- */
-using TetraMeshInport = DataInport<TetraMesh>;
+class Volume;
 
 /**
- * \ingroup ports
+ * \ingroup datastructures
+ * \brief Data required for rendering an Inviwo Volume as tetrahedral mesh
+ *
+ * Provides an interface between a Volume and the data structures required for rendering a
+ * tetrahedral mesh. Six tetrahedra are created in between each four voxels of the volume to convert
+ * the cell-centered data of the uniform grid of the Volume to node-centered values.
+ *
+ * The extent of the TetraMesh will be smaller than the extent of the Volume by half a voxel in each
+ * dimension.
  */
-using TetraMeshMultiInport = DataInport<TetraMesh, 0>;
+class IVW_MODULE_TETRAMESH_API VolumeTetraMesh : public TetraMesh {
+public:
+    VolumeTetraMesh(const std::shared_ptr<const Volume>& volume, int channel = 0);
+    VolumeTetraMesh* clone() const override;
+    virtual ~VolumeTetraMesh() = default;
 
-/**
- * \ingroup ports
- */
-using TetraMeshFlatMultiInport = DataInport<TetraMesh, 0, true>;
+    /**
+     * Use \p volume as source for the tetrahedralization into a TetraMesh.
+     *
+     * @param volume    input volume to be converted
+     * @param channel   volume channel used as scalar values
+     * @throws Exception if one of the \p volume dimensions is less than 2
+     */
+    void setData(const std::shared_ptr<const Volume>& volume, int channel = 0);
 
-/**
- * \ingroup ports
- */
-using TetraMeshOutport = DataOutport<TetraMesh>;
+    virtual int getNumberOfCells() const override;
+    virtual int getNumberOfPoints() const override;
+
+    /**
+     * @copydoc TetraMesh::get
+     */
+    virtual void get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds) const override;
+
+    /**
+     * @copydoc TetraMesh::getBounds
+     */
+    virtual std::pair<vec3, vec3> getBounds() const override;
+
+    /**
+     * @copydoc TetraMesh::getDataRange
+     */
+    virtual dvec2 getDataRange() const override;
+
+private:
+    std::shared_ptr<const Volume> volume_;
+    int channel_;
+};
 
 }  // namespace inviwo

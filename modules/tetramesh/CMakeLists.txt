@@ -1,11 +1,13 @@
 ivw_module(TetraMesh)
 
 set(HEADER_FILES
-    include/inviwo/tetramesh/datastructures/tetrameshdata.h
-    include/inviwo/tetramesh/datastructures/tetrameshprovider.h
+    include/inviwo/tetramesh/datastructures/tetramesh.h
+    include/inviwo/tetramesh/datastructures/tetrameshbuffers.h
+    include/inviwo/tetramesh/datastructures/volumetetramesh.h
     include/inviwo/tetramesh/ports/tetrameshport.h
     include/inviwo/tetramesh/processors/tetrameshboundaryextractor.h
     include/inviwo/tetramesh/processors/tetrameshvolumeraycaster.h
+    include/inviwo/tetramesh/processors/volumetotetramesh.h
     include/inviwo/tetramesh/tetrameshmodule.h
     include/inviwo/tetramesh/tetrameshmoduledefine.h
     include/inviwo/tetramesh/util/tetrameshutils.h
@@ -13,11 +15,13 @@ set(HEADER_FILES
 ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
-    src/datastructures/tetrameshdata.cpp
-    src/datastructures/tetrameshprovider.cpp
+    src/datastructures/tetramesh.cpp
+    src/datastructures/tetrameshbuffers.cpp
+    src/datastructures/volumetetramesh.cpp
     src/ports/tetrameshport.cpp
     src/processors/tetrameshboundaryextractor.cpp
     src/processors/tetrameshvolumeraycaster.cpp
+    src/processors/volumetotetramesh.cpp
     src/tetrameshmodule.cpp
     src/util/tetrameshutils.cpp
 )

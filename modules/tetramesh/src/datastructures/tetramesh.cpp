@@ -27,25 +27,6 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tetramesh/processors/tetrameshboundaryextractor.h>
-#include <inviwo/tetramesh/tetrameshmodule.h>
+#include <inviwo/tetramesh/datastructures/tetramesh.h>
 
-#include <inviwo/tetramesh/processors/tetrameshvolumeraycaster.h>
-#include <inviwo/tetramesh/ports/tetrameshport.h>
-#include <inviwo/tetramesh/processors/volumetotetramesh.h>
-#include <modules/opengl/shader/shadermanager.h>
-
-namespace inviwo {
-
-TetraMeshModule::TetraMeshModule(InviwoApplication* app) : InviwoModule(app, "TetraMesh") {
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-
-    registerProcessor<TetraMeshBoundaryExtractor>();
-    registerProcessor<TetraMeshVolumeRaycaster>();
-    registerProcessor<VolumeToTetraMesh>();
-
-    registerPort<TetraMeshOutport>();
-    registerPort<TetraMeshInport>();
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

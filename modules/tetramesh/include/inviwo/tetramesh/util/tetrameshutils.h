@@ -39,7 +39,7 @@
 namespace inviwo {
 
 class Mesh;
-class TetraMeshProvider;
+class TetraMesh;
 
 namespace utiltetra {
 
@@ -48,7 +48,7 @@ namespace utiltetra {
  * The four face IDs of a single tetrahedron are stored in an ivec4. The order matches the vertex
  * IDs in \p nodeIds so that the corresponding node is the apex of the face.
  *
- * @param provider    tetra mesh providing the vertex IDs of each tetrahedron
+ * @param nodeIds        contains four node IDs for each tetrahedron
  * @return opposing faces where a negative index indicates a boundary face, that is no neighboring
  *         tetrahedron
  */
@@ -78,6 +78,19 @@ IVW_MODULE_TETRAMESH_API std::shared_ptr<Mesh> createBoundaryMesh(
     const std::vector<int>& boundaryFaces);
 
 /**
+ * Create a triangular mesh from a TetraMesh \p mesh that consists only of the boundary faces and no
+ * interior triangles. Note that holes in the tetra mesh also feature boundary faces.
+ *
+ * @param mesh    tetrahedra mesh
+ * @return triangle mesh representing the boundary faces
+ *
+ * \see getOpposingFaces
+ * \see createBoundaryMesh(const std::vector<vec4>&, const std::vector<ivec4>&, const
+ * std::vector<int>&)
+ */
+IVW_MODULE_TETRAMESH_API std::shared_ptr<Mesh> createBoundaryMesh(const TetraMesh& mesh);
+
+/**
  * Check and fix the face orientations of the tetrahedral mesh. Afterward, the faces of each
  * tetrahedra are facing outward, that is the vertices of each triangle are ordered counter-clock
  * wise.
@@ -93,7 +106,7 @@ IVW_MODULE_TETRAMESH_API void fixFaceOrientation(const std::vector<vec4>& nodes,
  * represented using a mat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and z
  * are between 0 and 1.
  */
-IVW_MODULE_TETRAMESH_API mat4 boundingBox(const TetraMeshProvider& provider);
+IVW_MODULE_TETRAMESH_API mat4 boundingBox(const TetraMesh& mesh);
 
 }  // namespace utiltetra
 

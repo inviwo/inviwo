@@ -34,38 +34,64 @@
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/util/document.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
-class TetraMeshProvider;
-
 /**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ * \ingroup datastructures
+ * \brief Data required to render tetrahedral meshes
+ *
+ * Provides and interface for the data structures required for rendering a tetrahedral mesh with
+ * OpenGL.
+ *
+ * Data structures for tetrahedra indexing and face enumeration based on
+ *    M. Lage, T. Lewiner, H. Lopes, and L. Velho.
+ *    CHF: A scalable topological data structure for tetrahedral meshes.
+ *    In Brazilian Symposium on Computer Graphics and Image Processing
+ *    (SIBGRAPI'05), pp. 349-356, 2005, doi: 10.1109/SIBGRAPI.2005.18
+ *
+ * \see TetraMeshBuffers
  */
-class IVW_MODULE_TETRAMESH_API TetraMeshData {
+class IVW_MODULE_TETRAMESH_API TetraMesh {
 public:
-    TetraMeshData(const std::shared_ptr<TetraMeshProvider>& meshprovider);
-    virtual TetraMeshData* clone() const;
-    virtual ~TetraMeshData() = default;
+    TetraMesh() = default;
+    virtual TetraMesh* clone() const = 0;
+    virtual ~TetraMesh() = default;
 
-    int getNumberOfCells() const;
-    int getNumberOfPoints() const;
+    virtual int getNumberOfCells() const = 0;
+    virtual int getNumberOfPoints() const = 0;
 
-    operator TetraMeshProvider*() const { return &(*meshProvider_); }
+    /**
+     * Fill the \p nodes vector with the 3D coordinates of each node along with its scalar value
+     * (vec4). The scalar is stored in the w component. The \p nodeIds vector is filled with the
+     * node/vertex IDs for each tetrahedron (ivec4). The faces opposite of each node are implicitly
+     * encoded.
+     */
+    virtual void get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds) const = 0;
 
-    std::shared_ptr<TetraMeshProvider> getProvider() const { return meshProvider_; }
+    /**
+     * Determine the bounding box of all nodes in the tetrahedral mesh
+     *
+     * @return min and max positions of the tetrahedral mesh
+     */
+    virtual std::pair<vec3, vec3> getBounds() const = 0;
 
-private:
-    std::shared_ptr<TetraMeshProvider> meshProvider_;
+    /**
+     * Return the data range of the scalar values
+     *
+     * @return scalar value range
+     */
+    virtual dvec2 getDataRange() const = 0;
 };
 
 template <>
-struct DataTraits<TetraMeshData> {
-    static std::string classIdentifier() { return "org.inviwo.tetra.TetraMeshData"; }
-    static std::string dataName() { return "TetraMeshData"; }
-    static uvec3 colorCode() { return uvec3{/*65, 153, 211*/ 50, 161, 234}; }
+struct DataTraits<TetraMesh> {
+    static std::string classIdentifier() { return "org.inviwo.tetra.TetraMesh"; }
+    static std::string dataName() { return "TetraMesh"; }
+    static uvec3 colorCode() { return uvec3{50, 161, 234}; }
 
-    static Document info(const TetraMeshData& data) {
+    static Document info(const TetraMesh& data) {
         using P = Document::PathComponent;
         using H = utildoc::TableBuilder::Header;
         Document doc;
@@ -75,13 +101,9 @@ struct DataTraits<TetraMeshData> {
         tb(H("Tetras"), data.getNumberOfCells());
         tb(H("Points"), data.getNumberOfPoints());
 
-        // auto osr = data.getSharedPointer();
-        // int levels = osr->getLevelCount();
-        // tb(H("Level Count"), levels);
-        // for (int i = 0; i < levels; ++i) {
-        //     glm::i64vec2 dim = osr->getLevelDimensions(i);
-        //     tb(H("Level " + toString(i)), "(" + toString(dim.x) + "x" + toString(dim.y) + ")");
-        // }
+        tb(H("Scalar Value Range"), data.getDataRange());
+        auto&& [min, max] = data.getBounds();
+        tb(H("Bounding Box"), fmt::format("{} - {}", min, max));
 
         return doc;
     }
