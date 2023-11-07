@@ -32,6 +32,7 @@
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/util/filedialog.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
@@ -41,16 +42,25 @@ std::string MultiFileProperty::getClassIdentifier() const { return classIdentifi
 
 MultiFileProperty::MultiFileProperty(std::string_view identifier, std::string_view displayName,
                                      const std::vector<std::filesystem::path>& value,
+                                     AcceptMode acceptMode, FileMode fileMode,
                                      std::string_view contentType,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : TemplateProperty<std::vector<std::filesystem::path>>(identifier, displayName, value,
                                                            invalidationLevel, semantics)
-    , acceptMode_(AcceptMode::Open)
-    , fileMode_(FileMode::ExistingFiles)
+    , acceptMode_(acceptMode)
+    , fileMode_(fileMode)
     , contentType_(contentType) {
     addNameFilter(FileExtension::all());
 }
+
+MultiFileProperty::MultiFileProperty(std::string_view identifier, std::string_view displayName,
+                                     const std::vector<std::filesystem::path>& value,
+                                     std::string_view contentType,
+                                     InvalidationLevel invalidationLevel,
+                                     PropertySemantics semantics)
+    : MultiFileProperty(identifier, displayName, value, AcceptMode::Open, FileMode::ExistingFiles,
+                        contentType, invalidationLevel, semantics) {}
 
 MultiFileProperty::MultiFileProperty(const MultiFileProperty& rhs)
     : TemplateProperty<std::vector<std::filesystem::path>>(rhs)

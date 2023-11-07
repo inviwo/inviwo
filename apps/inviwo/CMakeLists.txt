@@ -4,7 +4,7 @@ project(inviwo)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 
 # Add MOC files
-set(MOC_FILES ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h)
+set(MOC_FILES inviwosplashscreen.h)
 
 # Add header files
 set(HEADER_FILES ${MOC_FILES})
@@ -12,8 +12,8 @@ ivw_group("Header Files" ${HEADER_FILES})
 
 # Add source files
 set(SOURCE_FILES
-    ${IVW_APPLICATION_DIR}/inviwo/inviwo.cpp
-    ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.cpp
+    inviwo.cpp
+    inviwosplashscreen.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -23,15 +23,15 @@ source_group("MOC Files" FILES ${MOCED_FILES})
 
 set(RES_FILES "")
 if(WIN32)
-    set(RES_FILES ${RES_FILES} 
+    list(APPEND RES_FILES
         "${IVW_RESOURCES_DIR}/inviwo.rc"
         # manifest file for using UTF-8 codepages on Windows
         # see https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page
         "${IVW_RESOURCES_DIR}/inviwo.manifest"
     )
 elseif(APPLE)
-    set_source_files_properties(${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-    set(RES_FILES ${RES_FILES} ${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns)
+    set_source_files_properties(${IVW_RESOURCES_DIR}/inviwo/inviwo_light.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    list(APPEND RES_FILES ${IVW_RESOURCES_DIR}/inviwo/inviwo_light.icns)
 endif()
 source_group("Resource Files" FILES ${RES_FILES})
 

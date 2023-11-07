@@ -58,6 +58,7 @@
 
 #include <vector>
 #include <memory>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -110,7 +111,7 @@ public:
      *       deployed and the module does not contain any resources.
      * @return std::string Path to module directory
      */
-    virtual std::filesystem::path getPath() const;
+    virtual const std::filesystem::path& getPath() const;
     std::filesystem::path getPath(ModulePath type) const;
 
     /**
@@ -325,7 +326,8 @@ private:
         registerOutport(std::make_unique<OutportFactoryObjectTemplate<T>>());
     }
 
-    const std::string identifier_;  ///< Module folder name
+    std::string identifier_;  ///< Module folder name
+    std::filesystem::path moduleRoot_;  ///< Path to module directory
 
     std::vector<std::unique_ptr<CameraFactoryObject>> cameras_;
     std::vector<std::unique_ptr<Capabilities>> capabilities_;

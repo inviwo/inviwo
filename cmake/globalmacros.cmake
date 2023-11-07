@@ -28,42 +28,6 @@
 #################################################################################
 include(CMakeParseArguments)
 
-function(ivw_private_filter_dependency_list retval module)
-    set(the_list "")
-    if(ARGN)
-        foreach(item ${ARGN})
-            string(REGEX MATCH "(^Inviwo.*.Module$)" found_item ${item})
-            if(found_item)
-                list(APPEND the_list ${item})
-            else()
-                string(TOLOWER ${module} l_module)
-                message(WARNING "Found dependency: \"${item}\", "
-                    "which is not an Inviwo module in depends.cmake for module: \"${module}\". "
-                    "Incorporate non Inviwo module dependencies using regular target_link_libraries. "
-                    "For example: target_link_libraries(inviwo-module-${l_module} PUBLIC ${item})")
-            endif()
-        endforeach()
-    endif()
-    set(${retval} ${the_list} PARENT_SCOPE)
-endfunction()
-
-function(ivw_private_check_dependency_list retval modules_var module)
-    set(the_list "")
-    if(ARGN)
-        foreach(item ${ARGN})
-            string(TOUPPER ${item} u_item)
-            list(FIND ${modules_var} ${u_item} found)
-            if(NOT ${found} EQUAL -1)
-                list(APPEND the_list ${item})
-            else()
-                message(WARNING "Found dependency: \"${item}\", in depends.cmake for"
-                    " module: \"${module}\". But no such Inviwo module was registered.")
-            endif()
-        endforeach()
-    endif()
-    set(${retval} ${the_list} PARENT_SCOPE)
-endfunction()
-
 # Set module to build by default if value is true
 # Example ivw_enable_modules_if(IVW_INTEGRATION_TESTS GLFW Base)
 # Needs to be called before ivw_register_modules
@@ -93,36 +57,6 @@ endfunction()
 function(ivw_enable_module the_module)
     ivw_dir_to_mod_dep(mod ${the_module})
     ivw_add_module_option_to_cache(${mod} ON)
-endfunction()
-
-# Creates source group structure recursively
-function(ivw_group group_name)
-    set(options "")
-    set(oneValueArgs "BASE")
-    set(multiValueArgs "")
-    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-    
-    ivw_dir_to_mod_dep(mod ${PROJECT_NAME})
-    
-    if(ARG_BASE AND IS_ABSOLUTE ${ARG_BASE})
-        set(base ${ARG_BASE})
-    elseif(ARG_BASE AND NOT IS_ABSOLUTE ${ARG_BASE})
-         set(base ${CMAKE_CURRENT_SOURCE_DIR}/${ARG_BASE})
-    elseif(group_name STREQUAL "Header Files" AND ${mod}_incPath)
-        set(base "${${mod}_incPath}")
-    elseif(group_name STREQUAL "Header Files" AND  EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
-        set(base "${CMAKE_CURRENT_SOURCE_DIR}/include")
-    elseif(group_name STREQUAL "Source Files" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src")
-        set(base "${CMAKE_CURRENT_SOURCE_DIR}/src")
-    elseif(group_name STREQUAL "Test Files" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests")
-        set(base "${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests")
-     elseif(group_name STREQUAL "Shader Files" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/glsl")
-        set(base "${CMAKE_CURRENT_SOURCE_DIR}/glsl")
-    else()
-        set(base "${CMAKE_CURRENT_SOURCE_DIR}")
-    endif()
-
-    source_group(TREE ${base} PREFIX ${group_name} FILES ${ARG_UNPARSED_ARGUMENTS})
 endfunction()
 
 # Add all external projects specified in cmake string IVW_EXTERNAL_PROJECTS

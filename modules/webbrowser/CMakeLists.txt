@@ -79,11 +79,11 @@ ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
 set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_TMP})
 
 # Determine the target output directory.
-# Inviwo: use EXECUTABLE_OUTPUT_PATH directory as output dir
+# Inviwo: use CMAKE_RUNTIME_OUTPUT_DIRECTORY directory as output dir
 if(IVW_GENERATOR_IS_MULTI_CONFIG) 
-    set(CEF_TARGET_OUT_DIR ${EXECUTABLE_OUTPUT_PATH}/$<CONFIG>)
+    set(CEF_TARGET_OUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>)
 else()
-    set(CEF_TARGET_OUT_DIR ${EXECUTABLE_OUTPUT_PATH})
+    set(CEF_TARGET_OUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
 
 # Display configuration settings.

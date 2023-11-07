@@ -32,6 +32,7 @@
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/modulemanager.h>
+
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/localetools.h>
@@ -43,6 +44,7 @@
 #include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/core/util/filelogger.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 #include "inviwosplashscreen.h"
 #include <inviwo/sys/moduleregistration.h>
 
@@ -101,13 +103,13 @@ int main(int argc, char** argv) {
     for (auto& item : staticModules) {
         inviwoModules.emplace_back(std::move(item));
     }
-    
-    std::array<std::filesystem::path, 1> searchPaths = {
-        {"/Users/peter/Documents/Inviwo/build/devmodule/Debug"}};
 
-    auto runtimeModules = inviwoApp.getModuleManager().findRuntimeModules(
-        searchPaths, inviwo::ModuleManager::getEnabledFilter(),
-        inviwoApp.getModuleManager().isRuntimeModuleReloadingEnabled());
+    auto searchPaths = inviwoApp.getSystemSettings().moduleSearchPaths_.get();
+    const auto clpSearchPaths = clp.getModuleSearchPaths();
+    searchPaths.insert(searchPaths.end(), std::make_move_iterator(clpSearchPaths.begin()),
+                       std::make_move_iterator(clpSearchPaths.end()));
+    auto runtimeModules = inviwoApp.getModuleManager().findRuntimeModules(searchPaths);
+
     inviwoModules.insert(inviwoModules.end(), std::make_move_iterator(runtimeModules.begin()),
                          std::make_move_iterator(runtimeModules.end()));
 

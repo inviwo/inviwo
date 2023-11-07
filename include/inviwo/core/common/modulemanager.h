@@ -34,77 +34,18 @@
 #include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/common/runtimemoduleregistration.h>
-#include <inviwo/core/util/vectoroperations.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/common/inviwomodulelibraryobserver.h>
+#include <inviwo/core/common/modulecontainer.h>
+
 #include <set>
 #include <vector>
 #include <memory>
 #include <span>
 #include <ranges>
+#include <functional>
 
 namespace inviwo {
 
 class InviwoModule;
-class ModuleCallbackAction;
-class FileObserver;
-class SharedLibrary;
-
-class IVW_CORE_API ModuleContainer {
-public:
-    ModuleContainer(std::unique_ptr<InviwoModuleFactoryObject> mfo);
-    ModuleContainer(const std::filesystem::path& libFile, bool runtimeReloading = true);
-
-    ModuleContainer(const ModuleContainer&) = delete;
-    ModuleContainer& operator=(const ModuleContainer&) = delete;
-    ModuleContainer(ModuleContainer&&);
-    ModuleContainer& operator=(ModuleContainer&&);
-
-    ~ModuleContainer();
-
-    const std::string& identifier() const;
-    const std::string& name() const;
-
-    void createModule(InviwoApplication* app);
-
-    InviwoModule* getModule() const;
-    void resetModule();
-
-    void load(bool runtimeReloading = true);
-    void unload();
-
-
-    InviwoModuleFactoryObject& factoryObject() const;
-
-    bool dependsOn(std::string_view identifier) const;
-
-    const std::vector<std::pair<std::string, Version>>& dependencies() const;
-
-    bool isProtectedModule() const { return protectedModule_; }
-    bool isProtectedLibrary() const { return protectedLibrary_; }
-
-    static void updateGraph(std::vector<ModuleContainer>& moduleContainers);
-
-private:
-    static bool isLoaded(const std::filesystem::path& file);
-    static std::filesystem::path getTmpDir();
-
-    std::filesystem::path libFile_;
-    std::filesystem::path tmpFile_;
-
-    bool protectedModule_;
-    bool protectedLibrary_;
-    
-    std::string identifier_;
-
-    std::unique_ptr<FileObserver> observer_;
-    std::unique_ptr<SharedLibrary> sharedLibrary_;
-    std::unique_ptr<InviwoModuleFactoryObject> factoryObject_;
-    std::unique_ptr<InviwoModule> module_;
-
-    std::vector<ModuleContainer*> transitiveDependencies;
-    std::vector<ModuleContainer*> transitiveDependents;
-};
 
 /**
  * Manages finding, loading, unloading, reloading of Inviwo modules
@@ -142,9 +83,14 @@ public:
     void registerModules(RuntimeModuleLoading, std::function<bool(std::string_view)> filter =
                                                    ModuleManager::getEnabledFilter());
 
+    std::vector<ModuleContainer> findRuntimeModules(std::span<std::filesystem::path> searchPaths);
+
+    std::vector<ModuleContainer> findRuntimeModules(std::span<std::filesystem::path> searchPaths,
+                                                    std::function<bool(std::string_view)> filter);
+
     std::vector<ModuleContainer> findRuntimeModules(std::span<std::filesystem::path> searchPaths,
                                                     std::function<bool(std::string_view)> filter,
-                                                    bool runtimeReloading = false);
+                                                    bool runtimeReloading);
 
     auto getInviwoModules() {
         static constexpr auto notNull = [](ModuleContainer& cont) -> bool {
@@ -200,6 +146,10 @@ public:
     static std::function<bool(std::string_view)> getEnabledFilter();
     void reloadModules();
 
+    // This is a hack avoid haing to add more arguments to the InviwoModule constructor
+    void setModuleLocator(std::function<std::filesystem::path(const InviwoModule&)> moduleLocator);
+    std::filesystem::path locateModule(const InviwoModule&) const;
+
 private:
     bool checkDependencies(const InviwoModuleFactoryObject& obj) const;
     std::vector<std::string> deregisterDependentModules(
@@ -211,6 +161,8 @@ private:
     Dispatcher<void()> onModulesWillUnregister_;  ///< Called before modules have been unregistered
 
     std::vector<ModuleContainer> inviwoModules_;
+
+    std::function<std::filesystem::path(const InviwoModule&)> moduleLocator_;
 };
 
 template <class T>

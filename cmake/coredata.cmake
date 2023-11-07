@@ -32,7 +32,7 @@ function(ivw_private_setup_core_data)
     ivw_dir_to_mod_dep(mod ${dir}) # core -> IVW_CORE_MODULE
     ivw_dir_to_mod_prefix(opt ${dir}) # core -> IVW_MODULE_CORE
 
-    set(module_path ${IVW_SOURCE_DIR})
+    set(module_path ${IVW_ROOT_DIR}/src)
     set(name "Core")
     set(class "InviwoCore")
     set(alias "inviwo::core")

@@ -30,7 +30,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/moduleaction.h>
-#include <inviwo/core/inviwocommondefines.h>
+#include <inviwo/core/common/inviwocommondefines.h>
 #include <inviwo/core/datastructures/camera/camerafactory.h>
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/io/datareaderfactory.h>
@@ -290,22 +290,15 @@ void InviwoApplication::printApplicationInfo() {
     LogInfoCustom("InviwoInfo", "Inviwo Version: " << build::version);
     if (auto buildInfo = util::getBuildInfo()) {
         LogInfoCustom("InviwoInfo", "Build Date: " << buildInfo->getDate());
+        for (auto [name, hash] : buildInfo->githashes) {
+            LogInfoCustom("InviwoInfo", "Git " << name << " hash: " << hash);
+        }
     }
     LogInfoCustom("InviwoInfo", "Base Path: " << getBasePath());
     LogInfoCustom("InviwoInfo", "ThreadPool Worker Threads: " << pool_.getSize());
 
-    std::string config = "";
-#ifdef CMAKE_GENERATOR
-    config += std::string(CMAKE_GENERATOR);
-#endif
-#if defined(CMAKE_BUILD_TYPE)
-    config += " [" + std::string(CMAKE_BUILD_TYPE) + "]";
-#elif defined(CMAKE_INTDIR)
-    config += " [" + std::string(CMAKE_INTDIR) + "]";
-#endif
-    if (!config.empty()) {
-        LogInfoCustom("InviwoInfo", "Config: " << config);
-    }
+    util::logInfo(IVW_CONTEXT_CUSTOM("InviwoInfo"), "Config: {} [{}] {} ({})", build::generator,
+                  build::configuration, build::compiler, build::compilerVersion);
 }
 
 void InviwoApplication::postProgress(std::string progress) {

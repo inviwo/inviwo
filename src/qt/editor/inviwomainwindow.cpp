@@ -31,7 +31,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/inviwocommondefines.h>
+#include <inviwo/core/common/inviwocommondefines.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>

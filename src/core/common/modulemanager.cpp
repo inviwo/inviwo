@@ -38,7 +38,7 @@
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/capabilities.h>
 #include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/inviwocommondefines.h>
+#include <inviwo/core/common/inviwocommondefines.h>
 
 #include <string>
 #include <functional>
@@ -89,183 +89,7 @@ void topologicalSort(std::vector<ModuleContainer>& containers) {
     });
 }
 
-std::vector<ModuleContainer*> findTransitiveDependencies(const ModuleContainer& container,
-                                                         std::vector<ModuleContainer>& containers) {
-
-    std::vector<ModuleContainer*> dependencies;
-
-    auto helper = [&](auto self, const ModuleContainer& cont) -> void {
-        for (const auto& dependencyVersion : cont.dependencies()) {
-            const auto& dependency = dependencyVersion.first;
-            if (auto it = std::ranges::find(containers, dependency, &ModuleContainer::identifier);
-                it != containers.end()) {
-
-                if (std::ranges::find(dependencies, &*it) == dependencies.end()) {
-                    dependencies.push_back(&*it);
-                    self(self, *it);
-                }
-            } else {
-                throw Exception(IVW_CONTEXT_CUSTOM("ModuleManager"), "Missing module dependency {}",
-                                dependency);
-            }
-        }
-    };
-
-    helper(helper, container);
-
-    return dependencies;
-}
-
 }  // namespace
-
-ModuleContainer::ModuleContainer(std::unique_ptr<InviwoModuleFactoryObject> mfo)
-    : libFile_{}
-    , tmpFile_{}
-    , protectedModule_{mfo->protectedModule == ProtectedModule::on}
-    , protectedLibrary_{true}
-    , identifier_{toLower(mfo->name)}
-    , observer_{nullptr}
-    , sharedLibrary_{nullptr}
-    , factoryObject_{std::move(mfo)}
-    , module_{nullptr} {}
-
-ModuleContainer::ModuleContainer(const std::filesystem::path& libFile, bool runtimeReloading)
-    : libFile_{libFile}
-    , tmpFile_{}
-    , protectedModule_{false}
-    , protectedLibrary_{false}
-    , identifier_{}
-    , observer_{nullptr}
-    , sharedLibrary_{nullptr}
-    , factoryObject_{nullptr}
-    , module_{} {
-
-    load(runtimeReloading);
-}
-
-std::filesystem::path ModuleContainer::getTmpDir() {
-    auto pid = filesystem::getCurrentProcessId();
-    const auto tmp = filesystem::getInviwoUserSettingsPath() / "temporary-module-libraries" /
-                     fmt::to_string(pid);
-    std::filesystem::create_directories(tmp);
-    return tmp;
-}
-
-bool ModuleContainer::isLoaded(const std::filesystem::path& path) {
-    auto loaded = filesystem::getLoadedLibraries();
-    return util::contains_if(loaded, [&](const auto& lib) {
-        std::error_code ec;
-        return std::filesystem::equivalent(path, lib, ec);
-    });
-};
-
-void ModuleContainer::unload() {
-    factoryObject_.reset();
-    sharedLibrary_.reset();
-    if (std::filesystem::is_regular_file(tmpFile_)) {
-        std::filesystem::remove(tmpFile_);
-    }
-}
-void ModuleContainer::load(bool runtimeReloading) {
-    if (runtimeReloading && !isLoaded(libFile_)) {
-        auto tmpFile = getTmpDir() / libFile_.filename();
-        // Load a copy of the file to make sure that we can overwrite the
-        // file.
-        std::error_code ec;
-        if (!std::filesystem::copy_file(libFile_, tmpFile,
-                                        std::filesystem::copy_options::update_existing, ec)) {
-            throw Exception(IVW_CONTEXT, "Unable to write temporary file {} since: {}", tmpFile,
-                            ec.message());
-        }
-        tmpFile_ = tmpFile;
-    }
-
-    filesystem::setWorkingDirectory(filesystem::getInviwoBinDir());
-    sharedLibrary_ = std::make_unique<SharedLibrary>(tmpFile_.empty() ? libFile_ : tmpFile_);
-
-    if (auto moduleFunc = sharedLibrary_->findSymbolTyped<f_getModule>("createModule")) {
-        factoryObject_.reset(moduleFunc());
-    } else {
-        throw Exception(
-            IVW_CONTEXT,
-            "Could not find 'createModule' function needed for creating the module in {}. "
-            "Make sure that you have compiled the library and exported the function.",
-            libFile_);
-    }
-
-    identifier_ = toLower(factoryObject_->name);
-    protectedModule_ = factoryObject_->protectedModule == ProtectedModule::on;
-    protectedLibrary_ = protectedModule_;
-
-    if (runtimeReloading) {
-        // create observer
-        // observer_->observe(libFile_);
-    }
-}
-
-ModuleContainer::ModuleContainer(ModuleContainer&&) = default;
-ModuleContainer& ModuleContainer::operator=(ModuleContainer&&) = default;
-
-ModuleContainer::~ModuleContainer() {
-    resetModule();
-    unload();
-}
-const std::string& ModuleContainer::identifier() const { return identifier_; }
-const std::string& ModuleContainer::name() const { return factoryObject_->name; }
-
-void ModuleContainer::createModule(InviwoApplication* app) {
-    if (!module_) {
-        module_ = factoryObject_->create(app);
-    }
-}
-InviwoModule* ModuleContainer::getModule() const { return module_.get(); }
-void ModuleContainer::resetModule() { module_.reset(); }
-
-InviwoModuleFactoryObject& ModuleContainer::factoryObject() const { return *factoryObject_; }
-
-bool ModuleContainer::dependsOn(std::string_view identifier) const {
-    const auto& deps = factoryObject_->dependencies;
-    return std::ranges::find(deps, identifier, [&](auto& dep) { return dep.first; }) != deps.end();
-}
-
-const std::vector<std::pair<std::string, Version>>& ModuleContainer::dependencies() const {
-    return factoryObject_->dependencies;
-}
-
-void ModuleContainer::updateGraph(std::vector<ModuleContainer>& moduleContainers) {
-    for (auto& cont : moduleContainers) {
-        cont.transitiveDependencies = findTransitiveDependencies(cont, moduleContainers);
-    }
-    for (auto& cont : moduleContainers) {
-        for (auto* dependency : cont.transitiveDependencies) {
-            if (std::ranges::find(dependency->transitiveDependents, &cont) ==
-                dependency->transitiveDependents.end()) {
-                dependency->transitiveDependents.push_back(&cont);
-            }
-        }
-    }
-    for (auto& cont : moduleContainers) {
-        if (cont.factoryObject_->protectedModule == ProtectedModule::on ||
-            std::ranges::any_of(cont.transitiveDependents, [](ModuleContainer* c) {
-                return c->factoryObject_->protectedModule == ProtectedModule::on;
-            })) {
-            cont.protectedModule_ = true;
-        } else {
-            cont.protectedModule_ = false;
-        }
-    }
-    for (auto& cont : moduleContainers) {
-        if (cont.libFile_.empty() || cont.factoryObject_->protectedModule == ProtectedModule::on ||
-            std::ranges::any_of(cont.transitiveDependents, [](ModuleContainer* c) {
-                return c->libFile_.empty() ||
-                       c->factoryObject_->protectedModule == ProtectedModule::on;
-            })) {
-            cont.protectedLibrary_ = true;
-        } else {
-            cont.protectedLibrary_ = false;
-        }
-    }
-}
 
 ModuleManager::ModuleManager(InviwoApplication* app)
     : app_{app}, onModulesDidRegister_{}, onModulesWillUnregister_{}, inviwoModules_{} {}
@@ -300,6 +124,7 @@ void ModuleManager::registerModules(std::vector<ModuleContainer> inviwoModules) 
 
         try {
             cont.createModule(app_);
+            cont.setReloadCallback(app_, [this](ModuleContainer&) { reloadModules(); });
             inviwoModules_.push_back(std::move(cont));
 
         } catch (const ModuleInitException& e) {
@@ -403,7 +228,7 @@ void ModuleManager::reloadModules() {
     }
     for (auto& cont : inviwoModules_) {
         if (!cont.isProtectedLibrary()) {
-            cont.load();
+            cont.load(true);
         }
     }
 
@@ -453,6 +278,17 @@ void ModuleManager::reloadModules() {
                   LogLevel::Error);
         return;
     }
+}
+
+std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
+    std::span<std::filesystem::path> searchPaths) {
+    return findRuntimeModules(searchPaths, getEnabledFilter(), isRuntimeModuleReloadingEnabled());
+}
+
+std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
+    std::span<std::filesystem::path> searchPaths, std::function<bool(std::string_view)> isEnabled) {
+
+    return findRuntimeModules(searchPaths, isEnabled, isRuntimeModuleReloadingEnabled());
 }
 
 std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
@@ -631,6 +467,19 @@ std::vector<std::string> ModuleManager::deregisterDependentModules(
     }
 
     return deregistered;
+}
+
+void ModuleManager::setModuleLocator(
+    std::function<std::filesystem::path(const InviwoModule&)> moduleLocator) {
+    moduleLocator_ = moduleLocator;
+}
+std::filesystem::path ModuleManager::locateModule(const InviwoModule& m) const {
+    if (moduleLocator_) {
+        return moduleLocator_(m);
+    } else {
+        auto path = filesystem::findBasePath() / "modules" / toLower(m.getIdentifier());
+        return path.lexically_normal();
+    }
 }
 
 }  // namespace inviwo

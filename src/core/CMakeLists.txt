@@ -21,6 +21,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodulefactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodulelibraryobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/moduleaction.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecontainer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecallback.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulepath.h
@@ -422,6 +423,7 @@ set(SOURCE_FILES
     common/inviwomodulefactoryobject.cpp
     common/inviwomodulelibraryobserver.cpp
     common/moduleaction.cpp
+    common/modulecontainer.cpp
     common/modulemanager.cpp
     common/modulepath.cpp
     common/version.cpp
@@ -748,7 +750,6 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
 # include implementation for build info - the build info will be
 # updated during every compilation
 
@@ -761,6 +762,13 @@ else()
     list(APPEND SOURCE_FILES util/buildinfoini.cpp)
     ivw_group("Source Files" util/buildinfoini.cpp)
 endif()
+
+configure_file(${IVW_CMAKE_TEMPLATES}/inviwocommondefines_template.h
+               ${CMAKE_CURRENT_BINARY_DIR}/include/inviwo/core/common/inviwocommondefines.h
+               @ONLY IMMEDIATE)
+list(APPEND HEADER_FILES "${CMAKE_CURRENT_BINARY_DIR}/include/inviwo/core/common/inviwocommondefines.h")
+ivw_group("Header Files" BASE "${CMAKE_CURRENT_BINARY_DIR}/include/inviwo/core/"
+    ${CMAKE_CURRENT_BINARY_DIR}/include/inviwo/core/common/inviwocommondefines.h)
 
 set(TEST_FILES
     tests/unittests/bitset-test.cpp
@@ -824,7 +832,9 @@ target_sources(inviwo-core
     PUBLIC 
     FILE_SET HEADERS
     TYPE HEADERS
-    BASE_DIRS ${IVW_INCLUDE_DIR}
+    BASE_DIRS 
+        ${IVW_INCLUDE_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}/include/
     FILES 
         ${HEADER_FILES}
     PRIVATE
@@ -836,13 +846,7 @@ ivw_define_standard_definitions(inviwo-core inviwo-core)
 ivw_define_standard_properties(inviwo-core)
 
 # Special Core Defines
-target_compile_definitions(inviwo-core 
-    PRIVATE
-        -DCMAKE_BUILD_TYPE=\"$<CONFIG>\"
-        -DCMAKE_GENERATOR=\"${CMAKE_GENERATOR}\"
-        -DCMAKE_CXX_COMPILER_ID=\"${CMAKE_CXX_COMPILER_ID}\"
-        -DCMAKE_CXX_COMPILER_VERSION=\"${CMAKE_CXX_COMPILER_VERSION}\"
-)
+target_compile_definitions(inviwo-core PUBLIC -DCMAKE_BUILD_TYPE=\"$<CONFIG>\")
 
 # Add core folders to includes, this will also be picked up by all the modules
 target_include_directories(inviwo-core PUBLIC
@@ -866,7 +870,11 @@ find_package(flags CONFIG REQUIRED)
 find_package(tracywrap CONFIG REQUIRED)
 
 if(APPLE)
-   find_library(CORESERVICES_LIBRARY CoreServices)
+    find_library(CORESERVICES_LIBRARY CoreServices)
+endif()
+
+if(WIN32)
+    find_package(stackwalker CONFIG REQUIRED)
 endif()
 
 target_compile_definitions(inviwo-core 
@@ -939,34 +947,103 @@ set(PCH_HEADERS_EXTERNAL
 
 ivw_compile_optimize_on_target(inviwo-core HEADERS ${PCH_HEADERS_EXTERNAL} ${PCH_HEADERS_CORE})
 
-# Make package (for other projects to find)
-ivw_install_helper(TARGET inviwo-core 
-    NAMESPACE inviwo 
+# Installer setup
+install(
+    FILES 
+        ${IVW_ROOT_DIR}/cmake/compileoptions.cmake
+        ${IVW_ROOT_DIR}/cmake/compileresources.cmake
+        ${IVW_ROOT_DIR}/cmake/coredata.cmake
+        ${IVW_ROOT_DIR}/cmake/createmodule.cmake
+        ${IVW_ROOT_DIR}/cmake/doc.cmake
+        ${IVW_ROOT_DIR}/cmake/filegeneration.cmake
+        ${IVW_ROOT_DIR}/cmake/globalutils.cmake
+        ${IVW_ROOT_DIR}/cmake/installutils.cmake
+        ${IVW_ROOT_DIR}/cmake/licenses.cmake
+        ${IVW_ROOT_DIR}/cmake/moduledata.cmake
+        ${IVW_ROOT_DIR}/cmake/precompileheaders.cmake
+        ${IVW_ROOT_DIR}/cmake/pybind11.cmake
+        ${IVW_ROOT_DIR}/cmake/registermodules.cmake
+        ${IVW_ROOT_DIR}/cmake/unittests.cmake
+        ${IVW_ROOT_DIR}/cmake/vcpkghelpers.cmake
+    DESTINATION ${IVW_INSTALL_PREFIX}cmake
+    COMPONENT Development
+)
+install(DIRECTORY ${IVW_ROOT_DIR}/cmake/templates
+    DESTINATION ${IVW_INSTALL_PREFIX}cmake/
+    COMPONENT Development
+)
+
+
+set(packages fmt glm tclap roaring llnl-units utf8cpp warn ticpp md4c sml half flags tracywrap)
+if(WIN32)
+    list(APPEND packages stackwalker)
+endif()
+
+set(preconfig [=[
+file(GLOB configs LIST_DIRECTORIES true ${IVW_SHARE_DIR}/*)
+list(APPEND CMAKE_PREFIX_PATH ${configs})
+]=]
+)
+
+string(CONFIGURE [=[
+option(IVW_CFG_CMAKE_DEBUG "Print CMake Debug Information" OFF)
+function(ivw_debug_message)
+    if(IVW_CFG_CMAKE_DEBUG)
+        message(${ARGV})
+    endif()
+endfunction()
+
+macro(ivw_setup)
+    set(IVW_VERSION         @IVW_VERSION@)
+    set(IVW_ROOT_DIR        ${IVW_PREFIX})
+    set(IVW_MODULE_DIR      ${IVW_PREFIX}/modules)
+    set(IVW_CMAKE_TEMPLATES ${IVW_PREFIX}/cmake/templates)
+    set(IVW_BINARY_DIR      ${CMAKE_CURRENT_BINARY_DIR})
+
+    include(${IVW_PREFIX}/cmake/globalutils.cmake)
+    include(${IVW_PREFIX}/cmake/coredata.cmake)
+    include(${IVW_PREFIX}/cmake/moduledata.cmake)
+    include(${IVW_PREFIX}/cmake/createmodule.cmake)
+    include(${IVW_PREFIX}/cmake/unittests.cmake)
+    include(${IVW_PREFIX}/cmake/compileoptions.cmake)
+    include(${IVW_PREFIX}/cmake/precompileheaders.cmake)
+    include(${IVW_PREFIX}/cmake/registermodules.cmake)
+    include(${IVW_PREFIX}/cmake/filegeneration.cmake)
+    include(${IVW_PREFIX}/cmake/doc.cmake)
+    include(${IVW_PREFIX}/cmake/licenses.cmake)
+    include(${IVW_PREFIX}/cmake/installutils.cmake)
+
+    set(INVIWOCOREMODULE_name @INVIWOCOREMODULE_name@)
+    set(INVIWOCOREMODULE_dir @INVIWOCOREMODULE_dir@)
+    set(INVIWOCOREMODULE_base @INVIWOCOREMODULE_base@)
+    set(INVIWOCOREMODULE_path @INVIWOCOREMODULE_path@)
+    set(INVIWOCOREMODULE_group @INVIWOCOREMODULE_group@)
+    set(INVIWOCOREMODULE_opt @INVIWOCOREMODULE_opt@)
+    set(INVIWOCOREMODULE_target @INVIWOCOREMODULE_target@)
+    set(INVIWOCOREMODULE_alias @INVIWOCOREMODULE_alias@)
+    set(INVIWOCOREMODULE_class @INVIWOCOREMODULE_class@)
+    set(INVIWOCOREMODULE_modName @INVIWOCOREMODULE_modName@)
+    set(INVIWOCOREMODULE_version @INVIWOCOREMODULE_version@)
+    set(INVIWOCOREMODULE_dependencies @INVIWOCOREMODULE_dependencies@)
+    set(INVIWOCOREMODULE_udependencies @INVIWOCOREMODULE_udependencies@)
+    set(INVIWOCOREMODULE_dependenciesversion @INVIWOCOREMODULE_dependenciesversion@)
+    set(INVIWOCOREMODULE_protected @INVIWOCOREMODULE_protected@)
+    set(INVIWOCOREMODULE_aliases @INVIWOCOREMODULE_aliases@)
+endmacro()
+]=]
+postconfig @ONLY)
+
+ivw_install_helper(
+    TARGET inviwo-core
+    NAMESPACE inviwo
     DESTINATION inviwo
-    POSTCONFIG 
-        "
-        if(NOT TARGET inviwo::core)
-            add_library(inviwo::core ALIAS inviwo::inviwo-core)
-        endif()
-        "
-    PACKAGES
-        fmt
-        glm
-        tclap
-        roaring
-        units
-        utf8cpp
-        warn
-        ticpp
-        md4c
-        sml
-        half
-        flags
-        tracywrap
+    ALIAS core
+    PACKAGES ${packages}
+    PRECONFIG ${preconfig}
+    POSTCONFIG ${postconfig}
 )
 
 ivw_make_unittest_target(core inviwo-core)
-
 
 get_property(core_install_list TARGET inviwo-core PROPERTY IVW_INSTALL_LIST)
 get_property(ext_install_list DIRECTORY ${IVW_ROOT_DIR}/ext PROPERTY IVW_INSTALL_LIST)
@@ -982,7 +1059,7 @@ ivw_register_license_file(NAME "Inviwo" MODULE Core
 )
 get_property(core_license_list TARGET inviwo-core PROPERTY IVW_LICENSE_LIST)
 get_property(ext_license_list DIRECTORY ${IVW_ROOT_DIR}/ext PROPERTY IVW_LICENSE_LIST)
-get_property(meta_license_list DIRECTORY ${IVW_TOOLS_DIR}/meta PROPERTY IVW_LICENSE_LIST)
+get_property(meta_license_list DIRECTORY ${IVW_ROOT_DIR}/tools/meta PROPERTY IVW_LICENSE_LIST)
 list(APPEND core_license_list ${ext_license_list} ${meta_license_list})
 set_property(TARGET inviwo-core PROPERTY IVW_LICENSE_LIST ${core_license_list})
 
@@ -1003,14 +1080,14 @@ set(build_info_script_list
     "    ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})"
 )
 string(REPLACE ";" "\n" build_info_script "${build_info_script_list}")
-file(WRITE "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake" ${build_info_script})
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/build_info.cmake" ${build_info_script})
 
 # Custom target for updating the build information (this target is always out-of-date)
 set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<$<BOOL:${IVW_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>/>)
 add_custom_target(inviwo-buildinfo-header ALL
     BYPRODUCTS  ${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp
     COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH=\"${buildinfo_output_dir}\"
-        -P "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake"
+        -P "${CMAKE_CURRENT_BINARY_DIR}/build_info.cmake"
     WORKING_DIRECTORY ${OUTPUT_DIR}
     COMMENT "Generating inviwo build info (buildinfo)"
     VERBATIM
@@ -1032,4 +1109,3 @@ endif()
 if(IVW_TEST_BENCHMARKS)
     add_subdirectory(tests/benchmarks)
 endif()
-

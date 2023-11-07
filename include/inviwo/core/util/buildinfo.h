@@ -34,9 +34,10 @@
 #include <vector>
 #include <utility>
 #include <string>
-#include <sstream>
-#include <iomanip>
+#include <string_view>
 #include <optional>
+
+#include <fmt/core.h>
 
 namespace inviwo {
 
@@ -56,37 +57,9 @@ struct IVW_CORE_API BuildInfo {
 
     std::vector<std::pair<std::string, std::string>> githashes;
 
-#ifdef CMAKE_BUILD_TYPE
-    std::string configuration = CMAKE_BUILD_TYPE;
-#else
-    std::string configuration = "Unknown";
-#endif
-
-#ifdef CMAKE_GENERATOR
-    std::string generator = CMAKE_GENERATOR;
-#else
-    std::string generator = "Unknown";
-#endif
-
-#ifdef CMAKE_CXX_COMPILER_ID
-    std::string compiler = CMAKE_CXX_COMPILER_ID;
-#else
-    std::string compiler = "Unknown";
-#endif
-
-#ifdef CMAKE_CXX_COMPILER_VERSION
-    std::string compilerVersion = CMAKE_CXX_COMPILER_VERSION;
-#else
-    std::string compilerVersion = "Unknown";
-#endif
-
     std::string getDate() const {
-        std::stringstream ss;
-        ss << year << "-" << std::setfill('0') << std::setw(2) << month << "-" << std::setfill('0')
-           << std::setw(2) << day << " " << std::setfill('0') << std::setw(2) << hour << ":"
-           << std::setfill('0') << std::setw(2) << minute << ":" << std::setfill('0')
-           << std::setw(2) << second;
-        return ss.str();
+        return fmt::format("{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}", year, month, day, hour,
+                           minute, second);
     }
 };
 

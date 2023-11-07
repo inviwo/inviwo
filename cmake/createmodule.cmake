@@ -126,7 +126,6 @@ function(ivw_create_module)
 
     # Add stuff to the installer
     ivw_install_module(MOD ${mod} PACKAGES ${ARG_PACKAGES})
-    ivw_private_install_module_dirs()
 
     ivw_make_unittest_target("${${mod}_dir}" "${${mod}_target}")
 

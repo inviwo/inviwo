@@ -150,11 +150,12 @@ void exposeInviwoModule(pybind11::module& m) {
 
     py::class_<InviwoModuleFactoryObject, InviwoModuleFactoryObjectTrampoline>(
         m, "InviwoModuleFactoryObject")
-        .def(py::init<std::string_view, Version, std::string_view, Version,
-                      std::vector<std::string>, std::vector<Version>, std::vector<std::string>,
-                      std::vector<LicenseInfo>, ProtectedModule>(),
+        .def(py::init<std::string_view, Version, std::string_view, const std::filesystem::path&,
+                      Version, std::vector<std::string>, std::vector<Version>,
+                      std::vector<std::string>, std::vector<LicenseInfo>, ProtectedModule>(),
              py::arg("name"), py::arg("version"), py::arg("description") = "",
-             py::arg("inviwoCoreVersion"), py::arg("dependencies") = std::vector<std::string>{},
+             py::arg("srcPath") = std::filesystem::path{}, py::arg("inviwoCoreVersion"),
+             py::arg("dependencies") = std::vector<std::string>{},
              py::arg("dependenciesVersion") = std::vector<Version>{},
              py::arg("aliases") = std::vector<std::string>{},
              py::arg("licenses") = std::vector<LicenseInfo>{},

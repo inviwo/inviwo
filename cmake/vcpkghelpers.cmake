@@ -34,11 +34,11 @@ endif()
 
 function(ivw_private_vcpkg_install_helper)
     set(options "")
-    set(oneValueArgs FILES_VAR PATTERN DESTINATION COMPONENT)
+    set(oneValueArgs FILES_VAR EXTENSION DIRNAME DESTINATION COMPONENT)
     set(multiValueArgs )
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    foreach(item IN LISTS oneValueArgs multiValueArgs)
+    foreach(item IN LISTS oneValueArgs)
         if(NOT ARG_${item})
             message(FATAL_ERROR "ivw_private_vcpkg_install_helper: ${item} not set")
         endif()
@@ -50,14 +50,58 @@ function(ivw_private_vcpkg_install_helper)
         message(FATAL_ERROR "ivw_private_vcpkg_install_helper: Unparsed arguments ${ARG_UNPARSED_ARGUMENTS}")
     endif()
 
+    if(ARG_CONFIGURATIONS)
+        set(configurations CONFIGURATIONS ${ARG_CONFIGURATIONS})
+    else()
+        set(configurations )
+    endif()
+
+
     set(files ${${ARG_FILES_VAR}})
-    list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/${ARG_PATTERN}")
+    list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/${ARG_DIRNAME}/[^/]+\\.${ARG_EXTENSION}")
     list(TRANSFORM files PREPEND ${VCPKG_INSTALLED_DIR}/)
     install(
         FILES ${files}
         DESTINATION ${ARG_DESTINATION}
         COMPONENT ${ARG_COMPONENT}
+        CONFIGURATIONS Release RelWithDebInfo MinSizeRel
     )
+
+    set(files ${${ARG_FILES_VAR}})
+    list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/${ARG_DIRNAME}/[^/]+/[^/]+\\.${ARG_EXTENSION}")
+    foreach(item IN LISTS files)
+        cmake_path(GET item PARENT_PATH parentpath)
+        cmake_path(GET parentpath FILENAME parentname)
+        install(
+            FILES ${VCPKG_INSTALLED_DIR}/${item}
+            DESTINATION ${ARG_DESTINATION}/${parentname}
+            COMPONENT ${ARG_COMPONENT}
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel
+        )
+    endforeach()
+
+    set(files ${${ARG_FILES_VAR}})
+    list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/debug/${ARG_DIRNAME}/[^/]+\\.${ARG_EXTENSION}")
+    list(TRANSFORM files PREPEND ${VCPKG_INSTALLED_DIR}/)
+    install(
+        FILES ${files}
+        DESTINATION ${ARG_DESTINATION}
+        COMPONENT ${ARG_COMPONENT}
+        CONFIGURATIONS Debug
+    )
+
+    set(files ${${ARG_FILES_VAR}})
+    list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/debug/${ARG_DIRNAME}/[^/]+/[^/]+\\.${ARG_EXTENSION}")
+    foreach(item IN LISTS files)
+        cmake_path(GET item PARENT_PATH parentpath)
+        cmake_path(GET parentpath FILENAME parentname)
+        install(
+            FILES ${VCPKG_INSTALLED_DIR}/${item}
+            DESTINATION ${ARG_DESTINATION}/${parentname}
+            COMPONENT ${ARG_COMPONENT}
+            CONFIGURATIONS Debug
+        )
+    endforeach()
 endfunction()
 
 
@@ -93,7 +137,7 @@ function(ivw_vcpkg_install name)
         NOT ivw_vcpkg_info_${lowercase_name}_sha STREQUAL ivw_vcpkg_sha)
         message(STATUS "Vcpkg fetching metadata for: ${name}")
         execute_process(
-            COMMAND "${Python3_EXECUTABLE}" "${IVW_TOOLS_DIR}/vcpkginfo.py"
+            COMMAND "${Python3_EXECUTABLE}" "${IVW_ROOT_DIR}/tools/vcpkginfo.py"
                 --vcpkg "${Z_VCPKG_EXECUTABLE}" 
                 --pkg ${lowercase_name}
                 --triplet ${VCPKG_TARGET_TRIPLET}
@@ -173,27 +217,31 @@ function(ivw_vcpkg_install name)
     if(WIN32)
         ivw_private_vcpkg_install_helper(
             FILES_VAR INFO_VCPKG_OWNED_FILES
-            PATTERN "bin/.*\\.(dll|pdb)"
+            DIRNAME "bin"
+            EXTENSION "(dll|pdb)"
             DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
             COMPONENT Application
         )
         ivw_private_vcpkg_install_helper(
             FILES_VAR INFO_VCPKG_OWNED_FILES
-            PATTERN "lib/.*\\.lib"
+            DIRNAME "lib"
+            EXTENSION "lib"
             DESTINATION ${IVW_ARCHIVE_INSTALL_DIR}
-            COMPONENT Application
+            COMPONENT Development
         )
     elseif(APPLE)
         ivw_private_vcpkg_install_helper(
             FILES_VAR INFO_VCPKG_OWNED_FILES
-            PATTERN "lib/.*\\.(dylib|a)"
+            DIRNAME "lib"
+            EXTENSION "(dylib|a)"
             DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
             COMPONENT Application
         )
     else()
         ivw_private_vcpkg_install_helper(
             FILES_VAR INFO_VCPKG_OWNED_FILES
-            PATTERN "lib/.*\\.(so|a)"
+            DIRNAME "lib"
+            EXTENSION "(so|a)"
             DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
             COMPONENT Application
         )

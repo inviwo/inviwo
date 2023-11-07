@@ -303,7 +303,7 @@ IVW_CORE_API std::optional<std::filesystem::path> getParentFolderWithChildren(
  *
  * @return Inviwo base path
  */
-IVW_CORE_API std::filesystem::path findBasePath();
+IVW_CORE_API const std::filesystem::path& findBasePath();
 
 /**
  * Get basePath +  pathType + suffix.

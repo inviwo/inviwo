@@ -33,42 +33,21 @@
 # where enabled_modules is a list of module names (i.e. InviwoBaseModule)
 function(ivw_create_enabled_modules_file executable_name)
     set(enabled_modules "")
-    foreach(mod ${ARGN})  
+    foreach(mod IN LISTS ARGN)
         ivw_mod_name_to_dir(mod_name ${mod})
         set(enabled_modules "${enabled_modules}${mod_name}\n") 
     endforeach()
     if(MSVC OR XCODE_VERSION)
         # Multi-configuration generators (VS, Xcode) append a per-configuration 
         # subdirectory to the specified directory
-        foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
+        foreach(OUTPUTCONFIG IN LISTS CMAKE_CONFIGURATION_TYPES)
             file(WRITE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${OUTPUTCONFIG}/${executable_name}-enabled-modules.txt" ${enabled_modules})
-        endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
+        endforeach()
     else()
         file(WRITE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${executable_name}-enabled-modules.txt" ${enabled_modules})
     endif()
 endfunction()
 
-#--------------------------------------------------------------------
-# Generate header for modules
-function(ivw_generate_module_paths_header)
-    set(dirs "")
-    foreach(dir ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})
-        if(IS_DIRECTORY ${dir})
-            list(APPEND dirs ${dir})
-        endif()
-    endforeach()
-
-    list_to_longstringvector(vec ${dirs})
-    list(LENGTH IVW_EXTERNAL_MODULES count)
-    math(EXPR count "${count}+1")
-    set(paths "inline const std::array<const std::filesystem::path, ${count}> inviwoModulePaths_ = {${vec}}")
-    set(IVW_MODULES_PATHS_ARRAY ${paths})
-
-    configure_file(${IVW_CMAKE_TEMPLATES}/inviwomodulespaths_template.h 
-                   ${CMAKE_BINARY_DIR}/modules/core/include/inviwo/core/inviwomodulespaths.h @ONLY)
-endfunction()
-
-#--------------------------------------------------------------------
 # generete python config file
 function(ivw_private_create_pyconfig modulepaths activemodules target)
     find_package(Git QUIET)
@@ -95,7 +74,6 @@ function(ivw_private_create_pyconfig modulepaths activemodules target)
 
     file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/pyconfig.ini CONTENT "${content}")
     file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/pyconfig-$<CONFIG>.ini CONTENT "[Inviwo]\nexecutable = $<TARGET_FILE:${target}>\n")
-
 endfunction()
 
 # Generate a module registration header file (with configure file etc)
@@ -111,20 +89,19 @@ function(ivw_private_generate_module_registration_file mod)
     endif()
 
     ivw_private_generate_license_header(MOD ${mod} RETVAL module_license_vector)
-    set(fuction_args
+    string(CONCAT fuction_args
         "        \"${${mod}_name}\", // Module name \n"
         "        \"${${mod}_version}\", // Module version\n"
-        "        \"${${mod}_description}\", // Description\n" 
-        "        \"${IVW_VERSION}\", // Inviwo core version when built \n" 
-        "        ${module_depends_vector}, // Dependencies\n" 
+        "        \"${${mod}_description}\", // Description\n"
+        "        \"${${mod}_path}\", // Module root dir\n"
+        "        \"${IVW_VERSION}\", // Inviwo core version when built \n"
+        "        ${module_depends_vector}, // Dependencies\n"
         "        ${module_depends_version_vector}, // Version number of dependencies\n"
         "        ${module_alias_vector}, // List of aliases\n"
         "        // List of license information\n"
         "        ${module_license_vector},\n"
         "        ${module_protected} // protected"
     )
-
-    ivw_join(";" "" fuction_args ${fuction_args})
     string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" fuction_args "${fuction_args}")
     string(REPLACE "__SEMICOLON__" ";" fuction_args "${fuction_args}")
 

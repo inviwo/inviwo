@@ -84,10 +84,9 @@ set(image_path_list
     "${IVW_ROOT_DIR}/docs/images"
 )
 set(all_input
-    "${IVW_INCLUDE_DIR}"
-    "${IVW_CORE_INCLUDE_DIR}"
-    "${IVW_QT_INCLUDE_DIR}"
-    "${IVW_APPLICATION_DIR}"
+    "${IVW_ROOT_DIR}/include/inviwo/core"
+    "${IVW_ROOT_DIR}/include/inviwo/sys"
+    "${IVW_ROOT_DIR}/include/inviwo/qt"
     "${IVW_ROOT_DIR}/docs"
 )
 set(incpaths "")

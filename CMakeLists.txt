@@ -63,7 +63,6 @@ option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/pkg)
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/modules)
 
 # Provide option to enable Python support in Inviwo
 option(IVW_ENABLE_PYTHON "Enable Python support in Inviwo" ON)

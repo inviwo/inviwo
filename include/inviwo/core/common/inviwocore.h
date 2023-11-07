@@ -49,7 +49,7 @@ class IVW_CORE_API InviwoCore : public InviwoModule {
 public:
     InviwoCore(InviwoApplication* app);
 
-    virtual std::filesystem::path getPath() const override;
+    virtual const std::filesystem::path& getPath() const override;
 
 private:
     class Observer : public FileObserver {

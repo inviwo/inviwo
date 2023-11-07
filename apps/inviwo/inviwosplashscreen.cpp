@@ -28,17 +28,15 @@
  *********************************************************************************/
 
 #include "inviwosplashscreen.h"
-#include <inviwo/core/inviwocommondefines.h>
+#include <inviwo/core/common/inviwocommondefines.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/stringconversion.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QApplication>
 #include <QPainter>
 #include <QSplashScreen>
-#include <QTextStream>
-#include <warn/pop>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -52,9 +50,8 @@ void InviwoSplashScreen::show() {
 }
 
 void InviwoSplashScreen::drawContents(QPainter* painter) {
-    QString versionLabel;
-    QTextStream labelStream(&versionLabel);
-    labelStream << "Version " << QString::fromStdString(toString(build::version));
+    const auto versionLabel = QString::fromStdString(
+        fmt::format("Version {} ({})", build::version, build::configuration));
     painter->setPen(Qt::black);
     painter->drawText(12, 326, versionLabel);
     auto font = painter->font();

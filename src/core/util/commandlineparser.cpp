@@ -30,7 +30,7 @@
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/inviwocommondefines.h>
+#include <inviwo/core/common/inviwocommondefines.h>
 
 namespace inviwo {
 
@@ -62,6 +62,8 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
     , workspace_("w", "workspace", "Specify workspace to open", false, "", "workspace file")
     , outputPath_("o", "output", "Specify output path", false, "", "output path")
     , logfile_("l", "logfile", "Write log messages to file.", false, "", "logfile")
+    , moduleSearchPaths_("m", "module-search-path", "Specify additional module search paths", false,
+                         "module search path")
     , logConsole_("c", "logconsole", "Write log messages to console (cout)", false)
     , noSplashScreen_("n", "nosplash", "Pass this flag if you do not want to show a splash screen.")
     , quitAfterStartup_("q", "quit", "Pass this flag if you want to close inviwo after startup.")
@@ -75,6 +77,7 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
     cmdQuiet_.add(quitAfterStartup_);
     cmdQuiet_.add(noSplashScreen_);
     cmdQuiet_.add(logfile_);
+    cmdQuiet_.add(moduleSearchPaths_);
     cmdQuiet_.add(logConsole_);
     cmdQuiet_.add(helpQuiet_);
     cmdQuiet_.add(versionQuiet_);
@@ -86,6 +89,7 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
     cmd_.add(quitAfterStartup_);
     cmd_.add(noSplashScreen_);
     cmd_.add(logfile_);
+    cmd_.add(moduleSearchPaths_);
     cmd_.add(logConsole_);
     cmd_.add(disableResourceManager_);
 
@@ -147,6 +151,18 @@ std::filesystem::path CommandLineParser::getLogToFileFileName() const {
         return (logfile_.getValue());
     else
         return {};
+}
+
+std::vector<std::filesystem::path> CommandLineParser::getModuleSearchPaths() const {
+    if (moduleSearchPaths_.isSet()) {
+        std::vector<std::filesystem::path> paths;
+        for (auto& path : moduleSearchPaths_.getValue()) {
+            paths.emplace_back(path);
+        }
+        return paths;
+    } else {
+        return {};
+    }
 }
 
 bool CommandLineParser::getQuitApplicationAfterStartup() const {

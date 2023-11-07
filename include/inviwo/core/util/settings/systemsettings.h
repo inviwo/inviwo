@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/multifileproperty.h>
 
 namespace inviwo {
 
@@ -56,6 +57,7 @@ public:
     BoolProperty enablePickingProperty_;
     BoolProperty enableSoundProperty_;
     BoolProperty logStackTraceProperty_;
+    MultiFileProperty moduleSearchPaths_;
     BoolProperty runtimeModuleReloading_;
     BoolProperty enableResourceManager_;
     OptionProperty<MessageBreakLevel> breakOnMessage_;

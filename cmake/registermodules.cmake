@@ -27,6 +27,42 @@
 # 
 #################################################################################
 
+function(ivw_private_filter_dependency_list retval module)
+    set(the_list "")
+    if(ARGN)
+        foreach(item IN LISTS ARGN)
+            string(REGEX MATCH "(^Inviwo.*.Module$)" found_item ${item})
+            if(found_item)
+                list(APPEND the_list ${item})
+            else()
+                string(TOLOWER ${module} l_module)
+                message(WARNING "Found dependency: \"${item}\", "
+                    "which is not an Inviwo module in depends.cmake for module: \"${module}\". "
+                    "Incorporate non Inviwo module dependencies using regular target_link_libraries. "
+                    "For example: target_link_libraries(inviwo-module-${l_module} PUBLIC ${item})")
+            endif()
+        endforeach()
+    endif()
+    set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()
+
+function(ivw_private_check_dependency_list retval modules_var module)
+    set(the_list "")
+    if(ARGN)
+        foreach(item IN LISTS ARGN)
+            string(TOUPPER ${item} u_item)
+            list(FIND ${modules_var} ${u_item} found)
+            if(NOT ${found} EQUAL -1)
+                list(APPEND the_list ${item})
+            else()
+                message(WARNING "Found dependency: \"${item}\", in depends.cmake for"
+                    " module: \"${module}\". But no such Inviwo module was registered.")
+            endif()
+        endforeach()
+    endif()
+    set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()
+
 # Register modules
 # Generate module options (which was not specified before) and,
 # Sort directories based on dependencies inside directories
@@ -37,7 +73,7 @@
 function(ivw_register_modules)
     set(options )
     set(oneValueArgs ALL_MODULES_OUT ENABLED_MODULES_OUT ENABLED_MODULE_TARGETS_OUT MODULE_REGISTRATION_FILE)
-    set(multiValueArgs )
+    set(multiValueArgs MODULE_DIRS)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     if(ARG_UNPARSED_ARGUMENTS)
@@ -55,7 +91,7 @@ function(ivw_register_modules)
     ivw_private_setup_core_data()
     set(${${mod}_opt} ON CACHE INTERNAL "Core module opt")
 
-    foreach(module_path ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})
+    foreach(module_path IN LISTS ARG_MODULE_DIRS)
         get_filename_component(group_name ${module_path} NAME)
         set(group_name "modules-${group_name}")
 
@@ -153,7 +189,17 @@ function(ivw_register_modules)
         endforeach()
         # Validate that there only are module dependencies
         ivw_private_filter_dependency_list(new_dependencies ${${mod}_name} ${new_dependencies})
-        ivw_private_check_dependency_list(new_dependencies modules ${${mod}_name} ${new_dependencies})
+        #ivw_private_check_dependency_list(new_dependencies modules ${${mod}_name} ${new_dependencies})
+        
+        foreach(dep IN LISTS new_dependencies)
+            string(TOUPPER ${dep} udep)
+            list(FIND modules ${udep} found)
+            if(${found} EQUAL -1)
+                ivw_mod_name_to_target_name(target ${dep})
+                find_package(${target} CONFIG REQUIRED)
+            endif()
+        endforeach()
+
         set("${mod}_dependencies" ${new_dependencies} CACHE INTERNAL "Module dependencies")
         ivw_mod_name_to_mod_dep(udependencies ${new_dependencies})
         set("${mod}_udependencies" ${udependencies} CACHE INTERNAL "Module uppercase dependencies")
@@ -164,16 +210,7 @@ function(ivw_register_modules)
         set(dependencies_version "")
         foreach(dependency IN LISTS ${mod}_dependencies)
             ivw_mod_name_to_mod_dep(dep ${dependency})
-            list(FIND modules ${dep} found)
-            if(NOT ${found} EQUAL -1)
-                list(GET modules ${found} module)
-                list(APPEND dependencies_version ${${module}_version})
-            else()
-                # Dependency was not found, not an inviwo module...
-                # We do not take responsibility for external library versions.
-                # Distribute the dependency along with the library!
-                message(WARNING "${${mod}_name}: ${dependency} dependency not found")
-            endif()
+            list(APPEND dependencies_version ${${dep}_version})
         endforeach()
         set("${mod}_dependenciesversion" ${dependencies_version} CACHE INTERNAL "Module dependency versions")
     endforeach()
@@ -221,6 +258,9 @@ function(ivw_register_modules)
     )
     ivw_format(STATUS FORMAT "{:=<90}" ARGUMENTS "=")
     foreach(mod IN LISTS sorted_modules)
+        if(TARGET ${${mod}_alias})
+            continue()
+        endif()
         ivw_remove_from_list(deps ${mod}_dependencies InviwoCoreModule)
         ivw_mod_name_to_name(deps ${deps})
         if(${${mod}_disabled})
@@ -248,14 +288,16 @@ function(ivw_register_modules)
     # Add enabled modules in sorted order
     set(ivw_module_names "")
     foreach(mod IN LISTS enabled_sorted_modules)
-        message(STATUS "create module: ${${mod}_name}")
-        list(APPEND CMAKE_MESSAGE_INDENT "    ")
+        if(NOT TARGET ${${mod}_alias})
+            message(STATUS "create module: ${${mod}_name}")
+            list(APPEND CMAKE_MESSAGE_INDENT "    ")
 
-        add_subdirectory(${${mod}_path} ${IVW_BINARY_DIR}/modules/${${mod}_dir})
-        list(APPEND ivw_module_names ${${mod}_modName})
-        ivw_private_generate_module_registration_file(${mod})
+            add_subdirectory(${${mod}_path} ${IVW_BINARY_DIR}/modules/${${mod}_dir})
+            list(APPEND ivw_module_names ${${mod}_modName})
+            ivw_private_generate_module_registration_file(${mod})
 
-        list(POP_BACK CMAKE_MESSAGE_INDENT)
+            list(POP_BACK CMAKE_MESSAGE_INDENT)
+        endif()
     endforeach()
 
 

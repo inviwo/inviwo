@@ -210,5 +210,5 @@ ivw_deploy_qt(inviwo-module-qtwidgets)
 
 ivw_register_license_file(NAME "Qt" VERSION ${QtWidgets_VERSION} MODULE QtWidgets TYPE "LGPLv3"
     URL https://www.qt.io/
-    FILES ${IVW_EXTENSIONS_DIR}/qt/LICENSE.txt
+    FILES ${IVW_ROOT_DIR}/ext/qt/LICENSE.txt
 )

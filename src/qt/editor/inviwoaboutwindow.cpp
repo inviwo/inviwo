@@ -28,20 +28,18 @@
  *********************************************************************************/
 
 #include <inviwo/qt/editor/inviwoaboutwindow.h>
-#include <inviwo/qt/editor/inviwomainwindow.h>
-#include <inviwo/core/inviwocommondefines.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/buildinfo.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwocommondefines.h>
+#include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/common/modulemanager.h>
+#include <inviwo/core/util/buildinfo.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/qt/editor/inviwomainwindow.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/inviwocommondefines.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/common/modulemanager.h>
 
 #include <chrono>
 
@@ -203,15 +201,17 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         auto bmbf = p.append("a", "", {{"href", "https://www.bmbf.de"}});
         bmbf.append("img", "", makeImg(":images/bmbf-white.svg", 60));
     }
-    if (auto bi = util::getBuildInfo()) {
-        auto h1 = body.append("p");
-        h1.append("h3", "Build Info: ");
-        utildoc::TableBuilder tb1(h1, P::end());
-        tb1(H("Date"), bi->getDate());
-        tb1(H("Configuration"), bi->configuration);
-        tb1(H("Generator"), bi->generator);
-        tb1(H("Compiler"), bi->compiler + " " + bi->compilerVersion);
 
+    auto h1 = body.append("p");
+    h1.append("h3", "Build Info: ");
+    utildoc::TableBuilder tb1(h1, P::end());
+    tb1(H("Configuration"), build::configuration);
+    tb1(H("Generator"), build::generator);
+    tb1(H("Compiler"), build::compiler);
+    tb1(H("Compiler Version"), build::compilerVersion);
+
+    if (auto bi = util::getBuildInfo()) {
+        tb1(H("Date"), bi->getDate());
         auto h2 = body.append("p");
         h2.append("h3", "Repos:");
         utildoc::TableBuilder tb2(h2, P::end());

@@ -32,7 +32,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/logcentral.h>
-#include <inviwo/core/inviwocommondefines.h>
+#include <inviwo/core/common/inviwocommondefines.h>
 #include <inviwo/core/util/safecstr.h>
 
 // For directory exists
@@ -528,76 +528,81 @@ std::optional<fs::path> getParentFolderWithChildren(const fs::path& path,
     return std::nullopt;
 }
 
-fs::path findBasePath() {
+const fs::path& findBasePath() {
+    static const fs::path basePath = []() {
+
 #if defined(__APPLE__)
-    // We might be in a bundle
-    // the executable will be in
-    //    Inviwo.app/Contents/MacOS/Inviwo
-    // and the our base should be
-    //    Inviwo.app/Contents/Resources
+        // We might be in a bundle
+        // the executable will be in
+        //    Inviwo.app/Contents/MacOS/Inviwo
+        // and the our base should be
+        //    Inviwo.app/Contents/Resources
 
-    CFURLRef appUrlRef =
-        CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("data"), NULL, NULL);
-    if (appUrlRef) {
-        CFStringRef filePathRef = CFURLCopyPath(appUrlRef);
-        const char* filePath = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
-        fs::path macPath(filePath);
-        // Release references
-        CFRelease(filePathRef);
-        CFRelease(appUrlRef);
+        CFURLRef appUrlRef =
+            CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("data"), NULL, NULL);
+        if (appUrlRef) {
+            CFStringRef filePathRef = CFURLCopyPath(appUrlRef);
+            const char* filePath = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
+            fs::path macPath(filePath);
+            // Release references
+            CFRelease(filePathRef);
+            CFRelease(appUrlRef);
 
-        if (fs::is_directory(macPath)) {
-            // remove "data"
-            return macPath.parent_path();
+            if (fs::is_directory(macPath)) {
+                // remove "data"
+                return macPath.parent_path();
+            }
         }
-    }
 #endif
-    // Search process:
-    // Modules folder might exist during development, so first try with
-    // both data/workspaces and modules folder.
-    // If they are not found we might be running through a debugger, so try source directory.
-    // If neither of above works then we probably have an application without a data/workspaces
-    // folder, so become less restrictive and only search for the modules folder. If nothing works
-    // then use the executable path, but warn that this might have negative effects.
+        // Search process:
+        // Modules folder might exist during development, so first try with
+        // both data/workspaces and modules folder.
+        // If they are not found we might be running through a debugger, so try source directory.
+        // If neither of above works then we probably have an application without a data/workspaces
+        // folder, so become less restrictive and only search for the modules folder. If nothing
+        // works then use the executable path, but warn that this might have negative effects.
 
-    // locate Inviwo base path matching the subfolders data/workspaces and modules
+        // locate Inviwo base path matching the subfolders data/workspaces and modules
 
-    std::array children = {fs::path{"modules"}, fs::path{"data/workspaces"}};
+        std::array children = {fs::path{"modules"}, fs::path{"data/workspaces"}};
 
-    if (auto path = getParentFolderWithChildren(getExecutablePath(), children)) {
-        return *path;
-    }
+        if (auto path = getParentFolderWithChildren(getExecutablePath(), children)) {
+            return *path;
+        }
 
 #ifdef INVIWO_ALL_DYN_LINK
-    // If we have linking dynamically use getInviwoBinDir() which looks for inviwo-core
-    if (auto path = getParentFolderWithChildren(getInviwoBinDir(), children)) {
-        return *path;
-    }
+        // If we have linking dynamically use getInviwoBinDir() which looks for inviwo-core
+        if (auto path = getParentFolderWithChildren(getInviwoBinDir(), children)) {
+            return *path;
+        }
 #endif
 
-    // could not locate base path relative to executable or bin dir, try CMake source path
-    if (fs::is_directory(fs::path{build::sourceDirectory} / "data" / "workspaces") &&
-        fs::is_directory(fs::path{build::sourceDirectory} / "modules")) {
-        return std::string{build::sourceDirectory};
-    }
+        // could not locate base path relative to executable or bin dir, try CMake source path
+        if (fs::is_directory(fs::path{build::sourceDirectory} / "data" / "workspaces") &&
+            fs::is_directory(fs::path{build::sourceDirectory} / "modules")) {
+            return fs::path{build::sourceDirectory};
+        }
 
-    // Relax the criterion, only require the modules folder
-    if (auto path =
-            getParentFolderWithChildren(getExecutablePath(), std::span(children.begin(), 1))) {
-        return *path;
-    }
+        // Relax the criterion, only require the modules folder
+        if (auto path =
+                getParentFolderWithChildren(getExecutablePath(), std::span(children.begin(), 1))) {
+            return *path;
+        }
 
 #ifdef INVIWO_ALL_DYN_LINK
-    if (auto path =
-            getParentFolderWithChildren(getInviwoBinDir(), std::span(children.begin(), 1))) {
-        return *path;
-    }
+        if (auto path =
+                getParentFolderWithChildren(getInviwoBinDir(), std::span(children.begin(), 1))) {
+            return *path;
+        }
 #endif
 
-    LogErrorCustom(
-        "filesystem::findBasePath",
-        "Could not locate Inviwo base path meaning that application data might not be found.");
-    return getExecutablePath();
+        LogErrorCustom(
+            "filesystem::findBasePath",
+            "Could not locate Inviwo base path meaning that application data might not be found.");
+        return getExecutablePath();
+    }();
+
+    return basePath;
 }
 
 fs::path getPath(PathType pathType, const std::string& suffix, const bool createFolder) {

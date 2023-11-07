@@ -36,6 +36,7 @@
 
 #include <vector>
 #include <string>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -48,7 +49,8 @@ enum class ProtectedModule : bool { on, off };
 class IVW_CORE_API InviwoModuleFactoryObject {
 public:
     InviwoModuleFactoryObject(std::string_view name, Version version, std::string_view description,
-                              Version inviwoCoreVersion, std::vector<std::string> dependencies,
+                              const std::filesystem::path& srcPath, Version inviwoCoreVersion,
+                              std::vector<std::string> dependencies,
                               std::vector<Version> dependenciesVersion,
                               std::vector<std::string> aliases, std::vector<LicenseInfo> licenses,
                               ProtectedModule protectedModule);
@@ -60,10 +62,11 @@ public:
 
     virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) = 0;
 
-    std::string name;           // Module name
-    Version version;            // Module version (Major.Minor.Patch)
-    std::string description;    // Module description
-    Version inviwoCoreVersion;  // Supported inviwo core version (Major.Minor.Patch)
+    std::string name;               // Module name
+    Version version;                // Module version (Major.Minor.Patch)
+    std::string description;        // Module description
+    std::filesystem::path srcPath;  // Path to the module root in the source tree
+    Version inviwoCoreVersion;      // Supported inviwo core version (Major.Minor.Patch)
     // Module dependencies Major.Minor.Patch version of each dependency
     std::vector<std::pair<std::string, Version>> dependencies;
     // A module can have one or more aliases. Several modules can have the same alias. Useful when
@@ -78,13 +81,12 @@ public:
 template <typename T>
 class InviwoModuleFactoryObjectTemplate : public InviwoModuleFactoryObject {
 public:
-    InviwoModuleFactoryObjectTemplate(std::string_view name, Version version,
-                                      std::string_view description, Version inviwoCoreVersion,
-                                      std::vector<std::string> dependencies,
-                                      std::vector<Version> dependenciesVersion,
-                                      std::vector<std::string> aliases,
-                                      std::vector<LicenseInfo> licenses,
-                                      ProtectedModule protectedModule);
+    InviwoModuleFactoryObjectTemplate(
+        std::string_view name, Version version, std::string_view description,
+        const std::filesystem::path& srcPath, Version inviwoCoreVersion,
+        std::vector<std::string> dependencies, std::vector<Version> dependenciesVersion,
+        std::vector<std::string> aliases, std::vector<LicenseInfo> licenses,
+        ProtectedModule protectedModule);
 
     virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) override {
         return std::make_unique<T>(app);
@@ -103,11 +105,12 @@ using f_getModule = InviwoModuleFactoryObject* (*)();
 
 template <typename T>
 InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
-    std::string_view name, Version version, std::string_view description, Version inviwoCoreVersion,
+    std::string_view name, Version version, std::string_view description,
+    const std::filesystem::path& srcPath, Version inviwoCoreVersion,
     std::vector<std::string> dependencies, std::vector<Version> dependenciesVersion,
     std::vector<std::string> aliases, std::vector<LicenseInfo> licenses,
     ProtectedModule protectedModule)
-    : InviwoModuleFactoryObject(name, version, description, inviwoCoreVersion,
+    : InviwoModuleFactoryObject(name, version, description, srcPath, inviwoCoreVersion,
                                 std::move(dependencies), std::move(dependenciesVersion),
                                 std::move(aliases), std::move(licenses), protectedModule) {}
 

@@ -4,12 +4,12 @@
 add_subdirectory(utfcpp)
 
 set(HEADER_FILES 
-	${IVW_EXTENSIONS_DIR}/utf/utfcpp/source/utf8.h
-    ${IVW_EXTENSIONS_DIR}/utf/utfcpp/source/utf8/checked.h
-    ${IVW_EXTENSIONS_DIR}/utf/utfcpp/source/utf8/core.h
-    ${IVW_EXTENSIONS_DIR}/utf/utfcpp/source/utf8/cpp11.h
-    ${IVW_EXTENSIONS_DIR}/utf/utfcpp/source/utf8/cpp17.h
-    ${IVW_EXTENSIONS_DIR}/utf/utfcpp/source/utf8/unchecked.h
+	${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/source/utf8.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/source/utf8/checked.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/source/utf8/core.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/source/utf8/cpp11.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/source/utf8/cpp17.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/source/utf8/unchecked.h
 )
 set(DOC_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/LICENSE 
