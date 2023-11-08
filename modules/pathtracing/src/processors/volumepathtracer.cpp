@@ -166,8 +166,8 @@ VolumePathTracer::VolumePathTracer()
 void VolumePathTracer::initializeResources() {
     // Even needed in our case?
 
-    utilgl::addDefines(shader_, raycasting_, camera_, light_,
-                       positionIndicator_);
+    //utilgl::addDefines(shader_, raycasting_, camera_, light_,
+    //                   positionIndicator_);
     //utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
     //shader_.build();
 }
