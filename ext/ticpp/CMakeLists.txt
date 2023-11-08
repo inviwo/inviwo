@@ -67,6 +67,3 @@ ivw_folder(ticpp ext)
 ivw_make_package(ticpp ticpp)
 
 ivw_install_helper(TARGET ticpp NAMESPACE ticpp DESTINATION inviwo)
-
-
-

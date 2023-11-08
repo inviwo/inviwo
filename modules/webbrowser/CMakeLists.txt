@@ -278,6 +278,3 @@ endif()
 
 # Setup CEF helper executable. Started from the web browser module as a sub-process.
 add_subdirectory(webhelper)
-
-
-

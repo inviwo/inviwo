@@ -75,5 +75,3 @@ target_link_libraries(inviwo-module-animationqt PUBLIC
     Qt6::Gui
     Qt6::Widgets
 )
-
-

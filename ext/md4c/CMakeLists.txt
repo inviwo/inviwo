@@ -35,5 +35,3 @@ ivw_folder(md4c ext)
 
 ivw_make_package(md4c md4c)
 ivw_install_helper(TARGET md4c NAMESPACE inviwo DESTINATION inviwo)
-
-

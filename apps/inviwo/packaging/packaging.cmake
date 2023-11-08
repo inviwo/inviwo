@@ -80,15 +80,15 @@ endif()
 # The icon to start the application.
 set(CPACK_NSIS_MUI_ICON "${IVW_ROOT_DIR}\\\\resources\\\\inviwo\\\\inviwo_light.ico")
 # Add a link to the application website in the startup menu.
-set(CPACK_NSIS_MENU_LINKS "http://www.inviwo.org" "Inviwo Homepage")
+set(CPACK_NSIS_MENU_LINKS "https://www.inviwo.org" "Inviwo Homepage")
 # Set the icon for the application in the Add/Remove programs section.
 set(CPACK_NSIS_INSTALLED_ICON_NAME bin\\\\inviwo.exe)
 # The mail address for the maintainer of the application in the Add/Remove programs section
 set(CPACK_NSIS_CONTACT info at inviwo.org)
 # The url of the application in the Add/Remove programs section
-set(CPACK_NSIS_URL_INFO_ABOUT "http://www.inviwo.org")
+set(CPACK_NSIS_URL_INFO_ABOUT "https://www.inviwo.org")
 # Help URL
-set(CPACK_NSIS_HELP_LINK "http://www.inviwo.org")
+set(CPACK_NSIS_HELP_LINK "https://www.inviwo.org")
 set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${IVW_VERSION}")
 set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "CreateShortCut '$INSTDIR\\\\inviwo.lnk' '$INSTDIR\\\\bin\\\\inviwo.exe'")
 set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)

@@ -106,7 +106,7 @@ endfunction()
 
 
 # A helper function to install vcpkg libraries. Will install dll/so, lib, pdb, etc. into the 
-# corresponding folders by globing the vcpkg package folders. 
+# corresponding folders by globbing the vcpkg package folders. 
 # It will also try and install any transitive dependencies automatically 
 # We also automatically register the license file using the metadata found in vcpkg
 # Parameters:

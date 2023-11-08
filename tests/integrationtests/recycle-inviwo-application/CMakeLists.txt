@@ -25,4 +25,3 @@ set_target_properties(${test_name} PROPERTIES FOLDER integrationtests)
 
 ivw_define_standard_definitions(${test_name} ${test_name})
 ivw_define_standard_properties(${test_name})
-

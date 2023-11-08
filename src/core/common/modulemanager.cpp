@@ -95,7 +95,7 @@ ModuleManager::ModuleManager(InviwoApplication* app)
     : app_{app}, onModulesDidRegister_{}, onModulesWillUnregister_{}, inviwoModules_{} {}
 
 ModuleManager::~ModuleManager() {
-    // Need to clear the modules in reverse order since the might depend on each other.
+    // Need to clear the modules in reverse order since they might depend on each other.
     // The destruction order of vector is undefined.
     for (auto& cont : inviwoModules_ | std::views::reverse) {
         cont.resetModule();
@@ -213,7 +213,7 @@ void ModuleManager::reloadModules() {
 
     onModulesWillUnregister_.invoke();
 
-    // Need to clear the modules in reverse order since the might depend on each other.
+    // Need to clear the modules in reverse order since they might depend on each other.
     // The destruction order of vector is undefined.
     for (auto& cont : inviwoModules_ | std::views::reverse) {
         if (!cont.isProtectedModule()) {

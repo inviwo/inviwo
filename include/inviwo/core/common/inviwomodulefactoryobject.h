@@ -119,7 +119,7 @@ InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
  *
  * https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
  *
- * @param start Start of range to sorttopological
+ * @param start Start of range to sort module factory objects topologically
  * @param end End of range to sort
  */
 IVW_CORE_API void topologicalModuleFactoryObjectSort(

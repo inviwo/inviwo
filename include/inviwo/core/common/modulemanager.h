@@ -146,7 +146,7 @@ public:
     static std::function<bool(std::string_view)> getEnabledFilter();
     void reloadModules();
 
-    // This is a hack avoid haing to add more arguments to the InviwoModule constructor
+    // This is a hack to avoid having to add more arguments to the InviwoModule constructor
     void setModuleLocator(std::function<std::filesystem::path(const InviwoModule&)> moduleLocator);
     std::filesystem::path locateModule(const InviwoModule&) const;
 

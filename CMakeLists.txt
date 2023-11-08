@@ -27,7 +27,7 @@
  #
  #################################################################################
 
-cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.23...3.27 FATAL_ERROR)
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
 set(IVW_MAJOR_VERSION 0)

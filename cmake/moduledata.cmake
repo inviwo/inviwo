@@ -48,7 +48,7 @@ function(ivw_private_setup_module_data)
     set(dir ${ARG_DIR})
     set(name ${ARG_NAME})
     set(module_path ${ARG_BASE})
-    ivw_dir_to_mod_dep(mod ${dir})
+    ivw_dir_to_mod_dep(mod ${dir})              # OpenGL -> IVWMODULEOPENGL
     ivw_dir_to_mod_prefix(opt ${dir})           # OpenGL -> IVW_MODULE_OPENGL
     ivw_dir_to_module_taget_name(target ${dir}) # OpenGL -> inviwo-module-opengl
 

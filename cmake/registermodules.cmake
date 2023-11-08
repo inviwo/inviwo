@@ -55,7 +55,7 @@ function(ivw_private_check_dependency_list retval modules_var module)
             if(NOT ${found} EQUAL -1)
                 list(APPEND the_list ${item})
             else()
-                message(WARNING "Found dependency: \"${item}\", in depends.cmake for"
+                message(WARNING "Found dependency: \"${item}\" in depends.cmake for"
                     " module: \"${module}\". But no such Inviwo module was registered.")
             endif()
         endforeach()

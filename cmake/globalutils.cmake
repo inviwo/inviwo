@@ -614,8 +614,8 @@ function(ivw_private_get_ivw_module_include_path path includePrefix includePath 
     
 endfunction()
 
-# Verify that a given path and dir name is in fact a inviwo module
-# This is done by chekcing that there exists a CMakeLists file
+# Verify that a given path and dir name is in fact an inviwo module
+# This is done by checking that there exists a CMakeLists file
 # and that it declares a inviwo module with the same name as dir.
 function(ivw_private_is_valid_module_dir)
     set(options )
