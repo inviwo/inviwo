@@ -9,7 +9,7 @@
 
 // Returns how far to step, supposedly.
 float WoodcockTracking(vec3 raystart, vec3 raydir, float raylength, float hashSeed, 
-    sampler3D volume, VolumeParameters volumeParameters, sampler2D transferFunction, float sigma_upperbound ) {
+    sampler3D volume, VolumeParameters volumeParameters, sampler2D transferFunction, float sigma_upperbound, out float sigma) {
 
     float meanfreepath = 0f; // tau
 
@@ -19,7 +19,7 @@ float WoodcockTracking(vec3 raystart, vec3 raydir, float raylength, float hashSe
 
         r = raystart - meanfreepath*raydir;
         //this is really slow since we are now doing 2 texture look ups multiple times, per ray.
-        float sigma = applyTF(transferFunction, getNormalizedVoxel(volume, volumeParameters, r)).a*700;
+        sigma = applyTF(transferFunction, getNormalizedVoxel(volume, volumeParameters, r)).a;
         //float sigma = 1.5;
         if(random_1dto1d(hashSeed + 1) < sigma/sigma_upperbound) {
             break;
@@ -117,12 +117,62 @@ vec4 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, 
     // bool rayPlaneIntersection (in PlaneParameters plane, in vec3 point, in vec3 rayDir, inout float t0, in float t1)
     // planes have no bounds, so we can get 3 intersections, the one with smallest t0 needs to be chosen.
     float t = 0f;
-    RayBBIntersection(bb, samplePos, toLight, t);
+    float t_smallest = 100f;
+    float t_test = 0f;
+    //RayBBIntersection(bb, samplePos, toLight, t);
 
+    // We get massive hickups at times and the rendering seems a lot more stuttery than before
+    // this way of doing things must be VERY innefficient
+    /**/
+    if(rayPlaneIntersection(bb[0], samplePos, toLight, t_test, 100f)) {
+        if(t_smallest > t_test) {
+            t_smallest = t_test;
+            t_test = 0f;
+        }
+    } 
+
+    if(rayPlaneIntersection(bb[1], samplePos, toLight, t_test, 100f)) {
+        if(t_smallest > t_test) {
+            t_smallest = t_test;
+            t_test = 0f;
+        }
+    } 
+
+    if(rayPlaneIntersection(bb[2], samplePos, toLight, t_test, 100f)) {
+        if(t_smallest > t_test) {
+            t_smallest = t_test;
+            t_test = 0f;
+        }
+    } 
+
+    if(rayPlaneIntersection(bb[3], samplePos, toLight, t_test, 100f)) {
+        if(t_smallest > t_test) {
+            t_smallest = t_test;
+            t_test = 0f;
+        }
+    } 
+
+    if(rayPlaneIntersection(bb[4], samplePos, toLight, t_test, 100f)) {
+        if(t_smallest > t_test) {
+            t_smallest = t_test;
+            t_test = 0f;
+        }
+    } 
+
+    if(rayPlaneIntersection(bb[5], samplePos, toLight, t_test, 100f)) {
+        if(t_smallest > t_test) {
+            t_smallest = t_test;
+            t_test = 0f;
+        }
+    } 
+
+    if(t_smallest < 100f) {
+        t = t_smallest;
+    }
     
-    //Need to reorganize in order to call WoodcockTracking in here.
-    float meanfreepath_l = WoodcockTracking(samplePos, toLight, t, hashSeed, 
-        volume, volParam, tf, 1f);
+    float tau = 1f;    
+    float meanfreepath_l = WoodcockTracking(samplePos, toLight, /*should be t*/ 0f, hashSeed, 
+        volume, volParam, tf, 1f, tau);
     
     float Tl = 1f;
     Tl = SimpleTracking(Tl, meanfreepath_l, tfSample.a);

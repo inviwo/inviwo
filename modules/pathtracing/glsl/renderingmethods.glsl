@@ -67,10 +67,10 @@ bool RayBBIntersection(PlaneParameters[6] planes, vec3 rayOrigin, vec3 rayDir, o
 
     int foo = -1;
     int i = 0;
-    float earliestIntersection = 3.402823466e+38; // FLT_MAX 3.402823466e+38
+    float earliestIntersection = 100; // FLT_MAX 3.402823466e+38
 
     float intersection = 0f;
-    for(; i < 6; i++) {
+    while(i < 6) {
         intersection = 0f;
         if(rayPlaneIntersection(planes[i], rayOrigin, rayDir, intersection, 100f)) {
             foo = i;
@@ -78,6 +78,7 @@ bool RayBBIntersection(PlaneParameters[6] planes, vec3 rayOrigin, vec3 rayDir, o
                 earliestIntersection = intersection;
             }
         }
+        i++;
     }
     t0 = earliestIntersection;
     if(foo > -1) {
