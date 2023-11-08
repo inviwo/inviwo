@@ -81,5 +81,4 @@ void InviwoModuleLibraryObserver::fileChanged(const std::filesystem::path& dir) 
     }
 }
 
-
 }  // namespace inviwo

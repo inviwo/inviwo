@@ -36,21 +36,21 @@
 #include <inviwo/core/datastructures/volume/volume.h>      // for Volume, DataReaderType
 #include <inviwo/core/datastructures/volume/volumedisk.h>  // for VolumeDisk
 #include <inviwo/core/datastructures/unitsystem.h>
-#include <inviwo/core/io/datareader.h>                     // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>            // for DataReaderException
-#include <inviwo/core/io/rawvolumeramloader.h>             // for RawVolumeRAMLoader
-#include <inviwo/core/metadata/metadata.h>                 // for StringMetaData
-#include <inviwo/core/util/fileextension.h>                // for FileExtension
-#include <inviwo/core/util/filesystem.h>                   // for getFileDirectory, isAbsolutePath
-#include <inviwo/core/util/formatconversion.h>             // for formatBytesToString
-#include <inviwo/core/util/formats.h>                      // for DataFormatBase, DataFormat
-#include <inviwo/core/util/glmmat.h>                       // for mat3
-#include <inviwo/core/util/glmvec.h>                       // for dvec2, vec3, size3_t
-#include <inviwo/core/util/logcentral.h>                   // for LogCentral, LogInfo, LogWarn
-#include <inviwo/core/util/sourcecontext.h>                // for IVW_CONTEXT
-#include <inviwo/core/util/stringconversion.h>             // for toLower, trim, splitByFirst
-#include <modules/base/algorithm/algorithmoptions.h>       // for IgnoreSpecialValues, IgnoreSpe...
-#include <modules/base/algorithm/dataminmax.h>             // for volumeMinMax
+#include <inviwo/core/io/datareader.h>                // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>       // for DataReaderException
+#include <inviwo/core/io/rawvolumeramloader.h>        // for RawVolumeRAMLoader
+#include <inviwo/core/metadata/metadata.h>            // for StringMetaData
+#include <inviwo/core/util/fileextension.h>           // for FileExtension
+#include <inviwo/core/util/filesystem.h>              // for getFileDirectory, isAbsolutePath
+#include <inviwo/core/util/formatconversion.h>        // for formatBytesToString
+#include <inviwo/core/util/formats.h>                 // for DataFormatBase, DataFormat
+#include <inviwo/core/util/glmmat.h>                  // for mat3
+#include <inviwo/core/util/glmvec.h>                  // for dvec2, vec3, size3_t
+#include <inviwo/core/util/logcentral.h>              // for LogCentral, LogInfo, LogWarn
+#include <inviwo/core/util/sourcecontext.h>           // for IVW_CONTEXT
+#include <inviwo/core/util/stringconversion.h>        // for toLower, trim, splitByFirst
+#include <modules/base/algorithm/algorithmoptions.h>  // for IgnoreSpecialValues, IgnoreSpe...
+#include <modules/base/algorithm/dataminmax.h>        // for volumeMinMax
 
 #include <algorithm>      // for copy
 #include <array>          // for array

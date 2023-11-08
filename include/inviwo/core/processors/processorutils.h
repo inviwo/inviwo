@@ -123,8 +123,7 @@ std::unique_ptr<T> makeProcessor(ivec2 pos, Args&&... args) {
  * @param app the InviwoApplication needed to get the modules
  * @return the InviwoModule that registered the processor or nullptr if not found
  */
-IVW_CORE_API InviwoModule* getProcessorModule(const Processor* processor,
-                                              InviwoApplication& app);
+IVW_CORE_API InviwoModule* getProcessorModule(const Processor* processor, InviwoApplication& app);
 
 /**
  * @brief Find which module that registered a processor

@@ -1120,9 +1120,9 @@ void InviwoMainWindow::addActions() {
 }
 
 void InviwoMainWindow::updateWindowTitle() {
-    setWindowTitle(utilqt::toQString(
-        fmt::format("Inviwo v{} - Interactive Visualization Workshop - {}{}", inviwo::build::version, currentWorkspaceFileName_,
-                    getNetworkEditor()->isModified() ? "*" : "")));
+    setWindowTitle(utilqt::toQString(fmt::format(
+        "Inviwo v{} - Interactive Visualization Workshop - {}{}", inviwo::build::version,
+        currentWorkspaceFileName_, getNetworkEditor()->isModified() ? "*" : "")));
 }
 
 void InviwoMainWindow::addToRecentWorkspaces(const std::filesystem::path& workspaceFileName) {

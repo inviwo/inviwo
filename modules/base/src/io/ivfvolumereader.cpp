@@ -29,13 +29,13 @@
 
 #include <modules/base/io/ivfvolumereader.h>
 
-#include <inviwo/core/common/factoryutil.h>                       // for getMetaDataFactory
-#include <inviwo/core/datastructures/camera/camera.h>             // for mat4
-#include <inviwo/core/datastructures/datamapper.h>                // for DataMapper
-#include <inviwo/core/datastructures/image/imagetypes.h>          // for InterpolationType, Inte...
-#include <inviwo/core/datastructures/unitsystem.h>                // for Axis, Unit
-#include <inviwo/core/datastructures/volume/volume.h>             // for Volume, DataReaderType
-#include <inviwo/core/datastructures/volume/volumedisk.h>         // for VolumeDisk
+#include <inviwo/core/common/factoryutil.h>                // for getMetaDataFactory
+#include <inviwo/core/datastructures/camera/camera.h>      // for mat4
+#include <inviwo/core/datastructures/datamapper.h>         // for DataMapper
+#include <inviwo/core/datastructures/image/imagetypes.h>   // for InterpolationType, Inte...
+#include <inviwo/core/datastructures/unitsystem.h>         // for Axis, Unit
+#include <inviwo/core/datastructures/volume/volume.h>      // for Volume, DataReaderType
+#include <inviwo/core/datastructures/volume/volumedisk.h>  // for VolumeDisk
 #include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/io/datareader.h>                            // for DataReaderType
 #include <inviwo/core/io/rawvolumeramloader.h>                    // for RawVolumeRAMLoader

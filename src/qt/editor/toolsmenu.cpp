@@ -77,7 +77,7 @@ void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
     auto factory = app->getProcessorFactory();
 
     std::vector<InviwoModule*> modules;
-    for(auto& m : app->getModuleManager().getInviwoModules()){
+    for (auto& m : app->getModuleManager().getInviwoModules()) {
         modules.push_back(&m);
     }
     auto order = util::ordering(modules, [](auto& a, auto& b) {
@@ -144,7 +144,7 @@ void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
 
 void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* menu) {
     std::vector<InviwoModule*> modules;
-    for(auto& m : app->getModuleManager().getInviwoModules()){
+    for (auto& m : app->getModuleManager().getInviwoModules()) {
         modules.push_back(&m);
     }
     auto order = util::ordering(modules, [](auto& a, auto& b) {

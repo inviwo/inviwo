@@ -65,8 +65,7 @@ public:
      * @param semantics Can be set to Editor
      */
     MultiFileProperty(std::string_view identifier, std::string_view displayName,
-                      const std::vector<std::filesystem::path>& value,
-                      std::string_view contentType,
+                      const std::vector<std::filesystem::path>& value, std::string_view contentType,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
 

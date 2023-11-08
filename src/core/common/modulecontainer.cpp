@@ -196,10 +196,10 @@ void ModuleContainer::setReloadCallback(InviwoApplication* app,
 
 void ModuleContainer::createModule(InviwoApplication* app) {
     if (!module_) {
-        // This is a huge hack since we can't pass this information into the InviwoModule constructor
-        // without updating all the module constructors, which we want to avoid.
-        // And we need the information in the constructor since we use it to register various paths
-        // in the constructor, like python script and glsl code.
+        // This is a huge hack since we can't pass this information into the InviwoModule
+        // constructor without updating all the module constructors, which we want to avoid. And we
+        // need the information in the constructor since we use it to register various paths in the
+        // constructor, like python script and glsl code.
         app->getModuleManager().setModuleLocator([this](const InviwoModule& m) {
             auto path = filesystem::findBasePath() / "modules" / toLower(m.getIdentifier());
             path = path.lexically_normal();

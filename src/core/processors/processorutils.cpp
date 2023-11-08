@@ -88,13 +88,12 @@ InviwoModule* getProcessorModule(const Processor* processor, InviwoApplication& 
 InviwoModule* getProcessorModule(std::string_view classIdentifier, InviwoApplication& app) {
 
     auto inviwoModules = app.getModuleManager().getInviwoModules();
-    const auto it = std::ranges::find_if(
-        inviwoModules, [&](const InviwoModule& inviwoModule) {
-            const auto processors = inviwoModule.getProcessors();
-            return std::ranges::find_if(processors, [&](const ProcessorFactoryObject* pfo) {
-                       return pfo->getClassIdentifier() == classIdentifier;
-                   }) != processors.end();
-        });
+    const auto it = std::ranges::find_if(inviwoModules, [&](const InviwoModule& inviwoModule) {
+        const auto processors = inviwoModule.getProcessors();
+        return std::ranges::find_if(processors, [&](const ProcessorFactoryObject* pfo) {
+                   return pfo->getClassIdentifier() == classIdentifier;
+               }) != processors.end();
+    });
     return it != inviwoModules.end() ? &(*it) : nullptr;
 }
 

@@ -326,7 +326,7 @@ private:
         registerOutport(std::make_unique<OutportFactoryObjectTemplate<T>>());
     }
 
-    std::string identifier_;  ///< Module folder name
+    std::string identifier_;            ///< Module folder name
     std::filesystem::path moduleRoot_;  ///< Path to module directory
 
     std::vector<std::unique_ptr<CameraFactoryObject>> cameras_;

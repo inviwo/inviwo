@@ -113,7 +113,8 @@ int main(int argc, char** argv) {
     inviwoModules.insert(inviwoModules.end(), std::make_move_iterator(runtimeModules.begin()),
                          std::make_move_iterator(runtimeModules.end()));
 
-    // Remove GLFW module from list of modules to register since we will use Qt for the OpenGL context
+    // Remove GLFW module from list of modules to register since we will use Qt for the OpenGL
+    // context
     std::erase_if(inviwoModules,
                   [](const inviwo::ModuleContainer& m) { return m.identifier() == "glfw"; });
 
