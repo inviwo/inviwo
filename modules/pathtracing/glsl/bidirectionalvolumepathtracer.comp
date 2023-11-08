@@ -61,8 +61,6 @@ vec3 calcCameraDir(in vec3 entryPoint, in vec3 exitPoint, in mat4 textureToWorld
         (textureToWorld * vec4(entryPoint, 1.0) - textureToWorld * vec4(exitPoint, 1.0)).xyz);
 }
 
-
-
 vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth,
     inout float depth, RaycastingParameters rayCastParam, VolumeParameters volParam, vec4 bgColor) {
 
@@ -92,11 +90,14 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
     float rayPosition = 0.5 * rayStep;
     vec3 samplePosition = entryPoint + rayPosition * rayDir;
     float T = 1.0f;
-
+    float tau = 1f;
     float meanpath = WoodcockTracking(samplePosition, rayDir, rayLength, gid + time_ms,
-            volume, volumeParameters, transferFunction, 1);
+            volume, volumeParameters, transferFunction, 1, tau);
     rayPosition = meanpath; 
     
+
+    int safety = 0;
+
     if (rayPosition <= rayLength) {
         samplePosition = entryPoint + rayPosition * rayDir;
         
@@ -112,7 +113,7 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
         // Function is broken for testing at the moment.
         result = RMVolumeRender_SingleBounceLight(T, meanpath, volume, volumeParameters, transferFunction, result, 
             samplePosition, cameraDir, light, planes, gid + time_ms + 1);
-        T = SimpleTracking(T, meanpath, color.a);
+        T = SimpleTracking(T, meanpath, tau);
 
         #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
     }
@@ -123,7 +124,7 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
 
     return result;
 }
-
+/*
 vec4 simplePathTracer(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth,
     inout float depth, RaycastingParameters rayCastParam, VolumeParameters volParam, vec4 bgColor) {
     
@@ -209,7 +210,7 @@ vec4 simplePathTracer(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint,
     
     return result;
 }
-
+*/
 void main(){
 
     vec4 result = vec4(0.0);   // The accumulated color along the ray;
