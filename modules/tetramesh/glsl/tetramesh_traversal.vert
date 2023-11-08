@@ -41,14 +41,14 @@ out Fragment {
     flat vec4 color;
     flat int tetraFaceId;
 
-    flat vec3 camPos;
+    flat vec3 camPosData;
 } out_vert;
 
 void main(void) {
     // gl_VertexID
     out_vert.color = vec4(pickingIndexToColor(in_tetraFaceId + 1), 1.0);
     out_vert.tetraFaceId = in_tetraFaceId;
-    out_vert.camPos = vec3(geometry.worldToData * vec4(camera.position, 1.0));
+    out_vert.camPosData = vec3(geometry.worldToData * vec4(camera.position, 1.0));
 
     out_vert.position = in_Vertex.xyz;
     out_vert.worldPosition = geometry.dataToWorld * vec4(in_Vertex.xyz, 1.0);

@@ -29,9 +29,6 @@
 
 #include "utils/structs.glsl"
 #include "utils/shading.glsl"
-#include "utils/pickingutils.glsl"
-#include "utils/compositing.glsl"
-#include "utils/classification.glsl"
 
 #if !defined(REF_SAMPLING_INTERVAL)
 #define REF_SAMPLING_INTERVAL 150.0
@@ -54,6 +51,7 @@ uniform LightParameters lighting;
 uniform sampler2D transferFunction;
 uniform int shaderOutput = 0;
 uniform int maxSteps = 20;
+uniform int maxTFSteps = 100;
 
 // scalar scaling and offset are used to map scalar values from [min,max] to [0,1]
 uniform float tfScalarScaling = 1.0;
@@ -63,7 +61,9 @@ uniform float opacityScaling = 1.0;
 
 uniform ImageParameters backgroundParameters;
 uniform sampler2D backgroundColor;
-uniform bool useBackground = false;
+uniform sampler2D backgroundDepth;
+
+uniform sampler2D tfGradients;
 
 struct VertexPosition {
     vec3 pos;
@@ -86,7 +86,7 @@ in Fragment {
     flat vec4 color;
     flat int tetraFaceId;
 
-    flat vec3 camPos;
+    flat vec3 camPosData;
 } in_frag;
 
 
@@ -189,8 +189,7 @@ vec3 getTetraGradient(in Tetra tetra) {
     return -normalize(tetra.fA * tetra.jacobyDetInv * tetra.s);
 }
 
-
-
+// Compute the absorption along distance \p tIncr according to the volume rendering equation
 float absorption(in float opacity, in float tIncr) {
     return 1.0 - pow(1.0 - opacity, tIncr * REF_SAMPLING_INTERVAL);
 }
@@ -203,9 +202,45 @@ vec4 sampleTF(float normalizedScalar) {
     return texture(transferFunction, vec2(normalizedScalar, 0.5));
 }
 
-void main() {
+// Convert normalized screen coordinates [0,1] to data coords of the tetramesh geometry
+float convertScreenPosToDataDepth(vec3 screenPos) {
+    vec4 posData = geometry.worldToData * camera.clipToWorld 
+        * vec4(screenPos * 2.0 - 1.0, 1.0);
+    posData /= posData.w;
+    return length(posData.xyz - in_frag.camPosData);
+}
 
-    vec3 rayDirection = normalize(in_frag.position - in_frag.camPos);
+// Compute the non-linear depth of a data-space position in normalized device coordinates
+float normalizedDeviceDepth(in vec3 posData, in mat4 dataToClip) {
+    mat4 mvpTranspose = transpose(dataToClip);
+
+    vec4 pos = vec4(posData, 1.0);
+    float depth = dot(mvpTranspose[2], pos);
+    float depthW = dot(mvpTranspose[3], pos);
+
+    return ((depth / depthW) + 1.0) * 0.5;
+}
+
+void main() {
+    const float invalidDepth = 1.0e8;
+
+    // all computations except illumination (World space) take place in Data space
+    const vec3 rayDirection = normalize(in_frag.position - in_frag.camPosData);
+    const vec3 rayDirWorld = normalize(in_frag.worldPosition.xyz - camera.position);
+    const float tEntry = length(in_frag.position - in_frag.camPosData);
+
+    float bgDepthScreen = invalidDepth;
+
+#if defined(BACKGROUND_AVAILABLE)
+    vec2 screenTexCoords = gl_FragCoord.xy * backgroundParameters.reciprocalDimensions;
+    vec4 background = texture(backgroundColor, screenTexCoords); 
+    // prepare background color for pre-multiplied alpha blending
+    background.rgb *= background.a;
+
+    bgDepthScreen = texture(backgroundDepth, screenTexCoords).r;
+    // background depth in Data space
+    const float tBackground = convertScreenPosToDataDepth(vec3(screenTexCoords, bgDepthScreen));
+#endif // BACKGROUND_AVAILABLE
 
     int tetraFaceId = in_frag.tetraFaceId;
     vec3 pos = in_frag.position;
@@ -219,6 +254,16 @@ void main() {
     float prevScalar = normalizeScalar(barycentricInterpolation(pos, tetra));
 
     vec4 dvrColor = vec4(0);
+#if defined(BACKGROUND_AVAILABLE)
+    // blend background if it lies in front of the start position of the ray
+    dvrColor = tBackground < tEntry ? background : dvrColor;
+
+    // suppress background blending tests if the background alpha is zero
+    bool bgBlended = tBackground < tEntry || background.a == 0.0;
+#endif // BACKGROUND_AVAILABLE
+
+    float tTotal = tEntry;
+    float tFirstHit = invalidDepth;
     int steps = 0;
     while (tetraFaceId > -1 && steps < maxSteps && dvrColor.a < ERT_THRESHOLD) {
         // find next tetra
@@ -240,13 +285,12 @@ void main() {
                        dot(tetra.v[3] - pos, faceNormal[2]),
                        dot(tetra.v[0] - pos, faceNormal[3])) / vdir;
 
-        const float invalidDist = 1.0e6;
         // only consider intersections on the inside of the current triangle faces, that is t > 0.
         // Also ignore intersections being parallel to a face
-        vt = mix(vt, vec4(invalidDist), lessThan(vdir, vec4(0.0)));
+        vt = mix(vt, vec4(invalidDepth), lessThan(vdir, vec4(0.0)));
 
         // ignore self-intersection with current face ID, set distance to max
-        vt[localFaceId] = invalidDist;
+        vt[localFaceId] = invalidDepth;
 
         // closest intersection
         // face ID of closest intersection
@@ -257,44 +301,74 @@ void main() {
 
         vec3 endPos = pos + rayDirection * tmin;
 
-        float scalar = normalizeScalar(barycentricInterpolation(endPos, tetra));
-        vec3 gradient = getTetraGradient(tetra);
+        const float scalar = normalizeScalar(barycentricInterpolation(endPos, tetra));
+        const vec3 gradient = getTetraGradient(tetra);
+        const vec3 gradientWorld = geometry.dataToWorldNormalMatrix * gradient;
         
         const int numSteps = 100;
         float tDelta = tmin / float(numSteps);
         for (int i = 1; i <= numSteps; ++i) {
             float s = mix(prevScalar, scalar, i / float(numSteps));
 
-            vec4 color = sampleTF(s);
-#if defined(SHADING_ENABLED)
-            color.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0),
-                                       pos + rayDirection * tDelta * i,
-                                       gradient, -rayDirection);
-#endif
+            float tCurrent = tTotal + tDelta * i;
+#if defined(BACKGROUND_AVAILABLE)
+            if (!bgBlended && tBackground > tCurrent - tDelta && tBackground <= tCurrent) {
+                dvrColor += (1.0 - dvrColor.a) * background;
+                bgBlended = true;
+            }
+#endif // BACKGROUND_AVAILABLE
 
-            // volume integration along current segment
-            color.a = absorption(color.a, tDelta * opacityScaling * 0.1);
-            // front-to-back blending
-            color.rgb *= color.a;
-            dvrColor += (1.0 - dvrColor.a) * color;
+            vec4 color = sampleTF(s);
+            if (color.a > 0) {
+                tFirstHit = tFirstHit == invalidDepth ? tCurrent : tFirstHit;
+
+#if defined(SHADING_ENABLED)
+                // perform illumination in world coordinates
+                vec3 worldPos = (geometry.dataToWorld * vec4(pos + rayDirection * tDelta * i, 1.0)).xyz;
+                color.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0),
+                                           worldPos, gradientWorld, -rayDirWorld);
+#endif // SHADING_ENABLED
+
+                // volume integration along current segment
+                color.a = absorption(color.a, tDelta * opacityScaling * 0.1);
+                // front-to-back blending
+                color.rgb *= color.a;
+                dvrColor += (1.0 - dvrColor.a) * color;
+            }
         }
+
+#if defined(BACKGROUND_AVAILABLE)
+        // need to check the entire interval again due to precision issues
+        if (!bgBlended && tBackground > tTotal && tBackground <= tTotal + tmin) {
+            dvrColor += (1.0 - dvrColor.a) * background;
+            bgBlended = true;
+        }
+#endif // BACKGROUND_AVAILABLE
 
         prevScalar = scalar;
 
         // update position
         pos = endPos;
+        tTotal += tmin;
 
         // determine the half face opposing the half face with the found intersection
         tetraFaceId = faceIds[tetraId][vface];
         ++steps;
     }
 
-    if (useBackground) {
-        // blend result with background
-        vec4 background = texture(backgroundColor, gl_FragCoord.xy * backgroundParameters.reciprocalDimensions); 
-        background.rgb *= background.a;
+#if defined(BACKGROUND_AVAILABLE)
+    // blend result with background
+    if (tBackground > tTotal) {
+        // tFirstHit = tFirstHit == invalidDepth ? tBackground : tFirstHit;
         dvrColor += (1.0 - dvrColor.a) * background;
     }
+#endif // BACKGROUND_AVAILABLE
+
+    float depth = tFirstHit == invalidDepth ? 1.0 : 
+        normalizedDeviceDepth(in_frag.camPosData + rayDirection * tFirstHit, 
+                              camera.worldToClip * geometry.dataToWorld);
+
+    gl_FragDepth = min(depth, bgDepthScreen);
 
     FragData0 = dvrColor;
 }

@@ -64,7 +64,9 @@ const ProcessorInfo TetraMeshVolumeRaycaster::processorInfo_{
     "Unstructured Grids",                   // Category
     CodeState::Stable,                      // Code state
     Tag::GL | Tag{"Unstructured"},          // Tags
-    R"(Creates an OpenGL representation of a tetrahedral grid and renders it using volume rendering.)"_unindentHelp};
+    R"(
+Creates an OpenGL representation of a tetrahedral grid and renders it using volume rendering. This 
+processor requires OpenGL 4.3 since it relies on Shader Storage Buffer Objects.)"_unindentHelp};
 
 const ProcessorInfo TetraMeshVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
@@ -89,6 +91,8 @@ TetraMeshVolumeRaycaster::TetraMeshVolumeRaycaster()
     addPorts(inport_, imageInport_, outport_);
 
     imageInport_.setOptional(true);
+    imageInport_.onConnect([&]() { invalidate(InvalidationLevel::InvalidResources); });
+    imageInport_.onDisconnect([&]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addProperties(tf_, opacityScaling_, maxSteps_, camera_, lighting_, trackball_);
 
@@ -96,10 +100,18 @@ TetraMeshVolumeRaycaster::TetraMeshVolumeRaycaster()
     lighting_.shadingMode_.setCurrentStateAsDefault();
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
+    if (OpenGLCapabilities::getOpenGLVersion() < 430 &&
+        !OpenGLCapabilities::isExtensionSupported("ARB_shader_storage_buffer_object")) {
+        LogWarn(
+            "OpenGL v4.3 or Shader Storage Buffer Objects (ARB_shader_storage_buffer_object) "
+            "required by this processor");
+    }
 }
 
 void TetraMeshVolumeRaycaster::initializeResources() {
     utilgl::addDefines(shader_, camera_, lighting_);
+    utilgl::addShaderDefinesBGPort(shader_, imageInport_);
     shader_.build();
 }
 
@@ -115,20 +127,28 @@ void TetraMeshVolumeRaycaster::process() {
                                               utiltetra::getBoundaryFaces(opposingFaces));
     }
 
-    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
+    {
+        // pre-multiply the background image while copying it to the current target since the
+        // raycasting also blends pre-multiplied background colors.
+        utilgl::BlendModeState blendmode{GL_SRC_ALPHA, GL_ONE, GL_ZERO, GL_ZERO};
+        utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_, ImageType::ColorDepth);
+    }
 
-    TextureUnitContainer texContainer;
+    if (imageInport_.hasData()) {
+        // clear depth buffer since copy-source always copies all layers otherwise the background
+        // depth might interfere with the raycasting
+        glClear(GL_DEPTH_BUFFER_BIT);
+    }
+
     shader_.activate();
-
     buffers_.bind();
 
     utilgl::setUniforms(shader_, camera_, lighting_, opacityScaling_, maxSteps_);
     utilgl::setShaderUniforms(shader_, *mesh_, "geometry");
     utilgl::bindAndSetUniforms(shader_, texContainer, tf_);
     if (imageInport_.hasData()) {
-        utilgl::bindAndSetUniforms(shader_, texContainer, imageInport_, ImageType::ColorOnly);
+        utilgl::bindAndSetUniforms(shader_, texContainer, imageInport_, ImageType::ColorDepth);
     }
-    shader_.setUniform("useBackground", imageInport_.hasData());
 
     const dvec2 dataRange{inport_.getData()->getDataRange()};
     const double scalingFactor = 1.0 / (dataRange.y - dataRange.x);
@@ -136,18 +156,38 @@ void TetraMeshVolumeRaycaster::process() {
     shader_.setUniform("tfScalarScaling", static_cast<float>(scalingFactor));
     shader_.setUniform("tfScalarOffset", static_cast<float>(offset));
 
-    utilgl::CullFaceState cf(GL_BACK);
-    utilgl::GlBoolState cull(GL_CULL_FACE, true);
-
     {
+        utilgl::CullFaceState cf(GL_BACK);
+        utilgl::GlBoolState cull(GL_CULL_FACE, true);
+        utilgl::GlBoolState blend(GL_BLEND, false);
 
         auto drawer = MeshDrawerGL::getDrawObject(mesh_.get());
         drawer.draw();
     }
 
     buffers_.unbind();
-
     shader_.deactivate();
+
+    if (imageInport_.hasData()) {
+        // update depth buffer with the depth of the background image
+        utilgl::DepthMaskState depthmask{true};
+        utilgl::GlBoolState depthtest{GL_DEPTH_TEST, true};
+        utilgl::DepthFuncState depthfunc{GL_LESS};
+        utilgl::ColorMaskState colormask{bvec4{false}};
+        TextureUnit depthUnit;
+        auto depthLayer = imageInport_.getData()->getDepthLayer()->getRepresentation<LayerGL>();
+
+        auto copyShader = SharedOpenGLResources::getPtr()->getImageCopyShader(1);
+        copyShader->activate();
+        depthLayer->bindTexture(depthUnit);
+        copyShader->setUniform("depth_", depthUnit);
+
+        auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
+        utilgl::Enable<MeshGL> enable(rect);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        copyShader->deactivate();
+    }
 
     utilgl::deactivateCurrentTarget();
 }
