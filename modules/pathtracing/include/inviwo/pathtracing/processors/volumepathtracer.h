@@ -47,6 +47,8 @@
 #include <inviwo/core/datastructures/light/baselightsource.h>   // for Lights
 #include <inviwo/core/ports/bufferport.h>                       // for Lights
 #include <inviwo/core/properties/simplelightingproperty.h>      // for SimpleLightingProperty
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/util/timer.h>
 
 // outsider of include/inviwo
 #include <../modules/opengl/include/modules/opengl/volume/volumegl.h>
@@ -62,7 +64,9 @@ public:
     VolumePathTracer();
     ~VolumePathTracer() = default;
 
-    virtual void initializeResources() override;
+    virtual void initializeResources() override {
+        invalidateProgressiveRendering();
+    }
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -72,7 +76,7 @@ protected:
 
     // What helper functions are used in CL version? Do we need equivalances?
     
-    void dispatchPathTracerComputeShader(LayerGL* entryGL, LayerGL* exitGL, LayerGL* outportGL); //Needed args; dimension of workgroups
+    //void dispatchPathTracerComputeShader(LayerGL* entryGL, LayerGL* exitGL, LayerGL* outportGL); //Needed args; dimension of workgroups
 
     void numSamplesChanged(); // Creates new samples if changed
     void updateLightSources(); // Updates light sources 
@@ -82,7 +86,7 @@ protected:
     //void phaseFunctionChanged(); // related to advanced material
     //void buildKernel(); // OCL shit
     //void kernelArgChanged(); // Calls invalidateRendering
-    //void onTimerEvent(); // Button to call invalidateRendering (I think)
+    void onTimerEvent(); // Button to call invalidateRendering (I think)
 
 private:
     // Ports
@@ -106,6 +110,8 @@ private:
     CameraProperty camera_;
 
     VolumeIndicatorProperty positionIndicator_;
+
+    
     
     // What internal data types would I need?
     SimpleLightingProperty light_;
@@ -116,6 +122,14 @@ private:
     std::chrono::time_point<std::chrono::high_resolution_clock> time_now;
 
     Buffer<glm::uvec2> randomState_; //arguably not needed
+
+    // progressiverefinement
+    ButtonProperty invalidateRendering_;
+    BoolProperty enableProgressiveRefinement_;
+
+    // Timer
+    Timer progressiveTimer_;
+    int iteration_ = 0;
 };
 
 }  // namespace inviwo
