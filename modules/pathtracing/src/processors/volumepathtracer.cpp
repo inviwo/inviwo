@@ -64,6 +64,7 @@ const ProcessorInfo VolumePathTracer::processorInfo_{
 
 const ProcessorInfo VolumePathTracer::getProcessorInfo() const { return processorInfo_; }
 
+
 VolumePathTracer::VolumePathTracer()
     : Processor()
     , volumePort_("Volume")
@@ -80,6 +81,10 @@ VolumePathTracer::VolumePathTracer()
     , positionIndicator_("positionindicator", "Position Indicator")
     , light_("light", "Light", &camera_)
     , lightSources_(sizeof(LightSource), DataUInt8::get(), BufferUsage::Static, BufferTarget::Data, nullptr)
+    , invalidateRendering_("iterate", "Invalidate rendering")
+    , enableProgressiveRefinement_("enableRefinement", "Enable progressive refinement", true)
+    , progressiveTimer_(Timer::Milliseconds(100),
+                        std::bind(&VolumePathTracer::onTimerEvent, this))
     
     {
     addPort(volumePort_, "VolumePortGroup");
@@ -158,18 +163,14 @@ VolumePathTracer::VolumePathTracer()
     addProperty(positionIndicator_);
 
     addProperty(light_);
+
+    addProperty(invalidateRendering_);
+    addProperty(enableProgressiveRefinement_);
+    enableProgressiveRefinement_.onChange([this]() { progressiveRefinementChanged(); });
     
     // What can we set up before process
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); } );
-}
-
-void VolumePathTracer::initializeResources() {
-    // Even needed in our case?
-
-    //utilgl::addDefines(shader_, raycasting_, camera_, light_,
-    //                   positionIndicator_);
-    //utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
-    //shader_.build();
+    progressiveRefinementChanged();
 }
 
 // TODO ongoing: Copy volumeraycaster and daniels bidirVolumePathTracer. Also check ligting raycaster
@@ -187,6 +188,13 @@ void VolumePathTracer::process() {
                   "Rep required to be floating point");
     */
     float t_ms = FpMilliseconds(time_now - time_start).count();
+
+    if (iteration_ == 0) {
+        // Copy depth and picking
+        Image* outImage = outport_.getEditableData().get();
+        ImageGL* outImageGL = outImage->getEditableRepresentation<ImageGL>();
+        entryPort_.getData()->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
+    }
 
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, *volumePort_.getData(), "volume");
@@ -228,7 +236,7 @@ void VolumePathTracer::process() {
     // I would love for this simple line to force a redraw 'every frame' but it doesnt sadly.
     
     //this->invalidate(InvalidationLevel::InvalidOutput);
-
+    ++iteration_;
 }
 
 void VolumePathTracer::updateLightSources() {
@@ -256,22 +264,22 @@ void VolumePathTracer::updateLightSources() {
     //lightSources_.upload();
 }
 
-void VolumePathTracer::dispatchPathTracerComputeShader(LayerGL* entryGL, LayerGL* exitGL, LayerGL* outportGL) {
-    shader_.activate();
+// Progressive refinement
+void VolumePathTracer::invalidateProgressiveRendering() { iteration_ = 0; }
 
-    
-    entryGL->getTexture()->bind();
-    shader_.setUniform("entry", 0);
-
-    exitGL->getTexture()->bind();
-    shader_.setUniform("exit", 1);
-
-    outportGL->getTexture()->bind();
-    shader_.setUniform("outImg", 2);
-
-    glDispatchCompute(512/16, 512/16, 1);
-
-    shader_.deactivate();
+void VolumePathTracer::evaluateProgressiveRefinement() {
+    invalidate(InvalidationLevel::InvalidOutput);
 }
+
+void VolumePathTracer::progressiveRefinementChanged() {
+    if (enableProgressiveRefinement_.get()) {
+        progressiveTimer_.start(Timer::Milliseconds(100));
+    } else {
+        progressiveTimer_.stop();
+    }
+}
+
+void VolumePathTracer::onTimerEvent() { invalidateRendering_.pressButton(); }
+
 
 }  // namespace inviwo
