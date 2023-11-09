@@ -87,6 +87,8 @@ VolumePathTracer::VolumePathTracer()
                         std::bind(&VolumePathTracer::onTimerEvent, this))
     
     {
+        //TODO: Do we need a radiance buffer? Why cant we read from output if weve written to it?
+        //  get iterative rendering to work
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -94,7 +96,7 @@ VolumePathTracer::VolumePathTracer()
     addPort(lights_, "LightPortGroup");
     //addPort(minMaxOpacity_);
     //minMaxOpacity_.setOptional(true);
-    
+
     volumePort_.onChange([this]() { invalidateProgressiveRendering(); });
     entryPort_.onChange([this]() { invalidateProgressiveRendering(); });
     exitPort_.onChange([this]() { invalidateProgressiveRendering(); });
@@ -157,18 +159,20 @@ VolumePathTracer::VolumePathTracer()
     addProperty(channel_);
     addProperty(raycasting_);
     addProperty(transferFunction_);
+    transferFunction_.onChange([this]() { invalidateProgressiveRendering(); });
 
     addProperty(camera_);
     addProperty(positionIndicator_);
 
     addProperty(light_);
+    light_.onChange([this]() { invalidateProgressiveRendering(); });
 
     addProperty(invalidateRendering_);
     addProperty(enableProgressiveRefinement_);
     enableProgressiveRefinement_.onChange([this]() { progressiveRefinementChanged(); });
     
     // What can we set up before process
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); } );
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); } invalidateProgressiveRendering(); );
     progressiveRefinementChanged();
 }
 
@@ -216,10 +220,12 @@ void VolumePathTracer::process() {
         units.push_back(std::move(unit2));
         units.push_back(std::move(unit3));
 
+        std::cout << "texunit1 is " << unit1.getUnitNumber() << " and iteration is " << iteration_ << std::endl;
+
         StrBuffer buff;
         utilgl::setShaderUniforms(shader_, *image, buff.replace("{}Parameters", outport_.getIdentifier()));
     }
-    std::cout << "texunit1 is " << units[0].getUnitNumber() << " and iteration is " << iteration_ << std::endl;
+    
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
     utilgl::bindAndSetUniforms(shader_, units, *volumePort_.getData(), "volume");
