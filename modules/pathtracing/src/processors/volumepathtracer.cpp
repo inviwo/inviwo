@@ -82,7 +82,7 @@ VolumePathTracer::VolumePathTracer()
     , light_("light", "Light", &camera_)
     , lightSources_(sizeof(LightSource), DataUInt8::get(), BufferUsage::Static, BufferTarget::Data, nullptr)
     , invalidateRendering_("iterate", "Invalidate rendering")
-    , enableProgressiveRefinement_("enableRefinement", "Enable progressive refinement", true)
+    , enableProgressiveRefinement_("enableRefinement", "Enable progressive refinement", false)
     , progressiveTimer_(Timer::Milliseconds(100),
                         std::bind(&VolumePathTracer::onTimerEvent, this))
     
@@ -94,11 +94,10 @@ VolumePathTracer::VolumePathTracer()
     addPort(lights_, "LightPortGroup");
     //addPort(minMaxOpacity_);
     //minMaxOpacity_.setOptional(true);
-    /*
+    
     volumePort_.onChange([this]() { invalidateProgressiveRendering(); });
     entryPort_.onChange([this]() { invalidateProgressiveRendering(); });
     exitPort_.onChange([this]() { invalidateProgressiveRendering(); });
-    */
     lights_.onChange([this]() { updateLightSources(); });
     lights_.isOptional();
     /*
@@ -188,23 +187,22 @@ void VolumePathTracer::process() {
                   "Rep required to be floating point");
     */
     float t_ms = FpMilliseconds(time_now - time_start).count();
-
+    
     if (iteration_ == 0) {
         // Copy depth and picking
         Image* outImage = outport_.getEditableData().get();
         ImageGL* outImageGL = outImage->getEditableRepresentation<ImageGL>();
         entryPort_.getData()->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
     }
+    
 
     TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(shader_, units, *volumePort_.getData(), "volume");
-    utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
     //utilgl::bindAndSetUniforms(shader_, units, lights_);
     /* utilgl::bindAndSetUniforms(shader_, units, outport_, ImageType::ColorDepthPicking); */{
         TextureUnit unit1, unit2, unit3;
         auto image = outport_.getEditableData();
         auto colorLayerGL = image->getColorLayer()->getEditableRepresentation<LayerGL>();
-        colorLayerGL->bindImageTexture(unit1, GL_WRITE_ONLY);
+        colorLayerGL->bindImageTexture(unit1, GL_READ_WRITE);
         auto depthLayerGL = image->getDepthLayer()->getEditableRepresentation<LayerGL>();
         depthLayerGL->bindImageTexture(unit2, GL_WRITE_ONLY);
         auto pickingLayerGL = image->getPickingLayer()->getEditableRepresentation<LayerGL>();
@@ -221,9 +219,13 @@ void VolumePathTracer::process() {
         StrBuffer buff;
         utilgl::setShaderUniforms(shader_, *image, buff.replace("{}Parameters", outport_.getIdentifier()));
     }
+    std::cout << "texunit1 is " << units[0].getUnitNumber() << " and iteration is " << iteration_ << std::endl;
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
+    utilgl::bindAndSetUniforms(shader_, units, *volumePort_.getData(), "volume");
+    utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
     shader_.setUniform("time_ms", t_ms);
+    shader_.setUniform("iteration", iteration_);
     
     utilgl::setUniforms(shader_, camera_, raycasting_, positionIndicator_, light_, 
                         channel_/*, transferFunction_*/);
