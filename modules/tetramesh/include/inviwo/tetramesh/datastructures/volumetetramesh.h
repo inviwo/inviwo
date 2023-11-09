@@ -70,9 +70,9 @@ public:
     virtual void get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds) const override;
 
     /**
-     * @copydoc TetraMesh::getBounds
+     * @copydoc TetraMesh::getBoundingBox
      */
-    virtual std::pair<vec3, vec3> getBounds() const override;
+    virtual mat4 getBoundingBox() const override;
 
     /**
      * @copydoc TetraMesh::getDataRange

@@ -34,11 +34,14 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/util/exception.h>
+#include <modules/opengl/image/layergl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
+#include <modules/opengl/openglcapabilities.h>
+#include <modules/opengl/sharedopenglresources.h>
 
 namespace inviwo {
 
@@ -48,7 +51,7 @@ std::function<std::optional<mat4>()> boundingBox(const TetraMeshInport& tetra) {
     return [port = &tetra]() -> std::optional<mat4> {
         if (port->hasData()) {
             auto data = port->getData();
-            return utiltetra::boundingBox(*data);
+            return data->getBoundingBox();
         } else {
             return std::nullopt;
         }
@@ -103,9 +106,11 @@ TetraMeshVolumeRaycaster::TetraMeshVolumeRaycaster()
 
     if (OpenGLCapabilities::getOpenGLVersion() < 430 &&
         !OpenGLCapabilities::isExtensionSupported("ARB_shader_storage_buffer_object")) {
-        LogWarn(
+        LogError(
             "OpenGL v4.3 or Shader Storage Buffer Objects (ARB_shader_storage_buffer_object) "
             "required by this processor");
+
+        isReady_.setUpdate([]() { return false; });
     }
 }
 
@@ -123,7 +128,7 @@ void TetraMeshVolumeRaycaster::process() {
         auto opposingFaces = utiltetra::getOpposingFaces(tetraNodeIds_);
 
         buffers_.upload(tetraNodes_, tetraNodeIds_, opposingFaces);
-        mesh_ = utiltetra::createBoundaryMesh(tetraNodes_, tetraNodeIds_,
+        mesh_ = utiltetra::createBoundaryMesh(tetraMesh, tetraNodes_, tetraNodeIds_,
                                               utiltetra::getBoundaryFaces(opposingFaces));
     }
 
@@ -143,6 +148,7 @@ void TetraMeshVolumeRaycaster::process() {
     shader_.activate();
     buffers_.bind();
 
+    TextureUnitContainer texContainer;
     utilgl::setUniforms(shader_, camera_, lighting_, opacityScaling_, maxSteps_);
     utilgl::setShaderUniforms(shader_, *mesh_, "geometry");
     utilgl::bindAndSetUniforms(shader_, texContainer, tf_);

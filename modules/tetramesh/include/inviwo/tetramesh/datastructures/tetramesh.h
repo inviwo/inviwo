@@ -32,6 +32,7 @@
 
 #include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/util/document.h>
 
 #include <fmt/format.h>
@@ -53,7 +54,7 @@ namespace inviwo {
  *
  * \see TetraMeshBuffers
  */
-class IVW_MODULE_TETRAMESH_API TetraMesh {
+class IVW_MODULE_TETRAMESH_API TetraMesh : public SpatialEntity<3> {
 public:
     TetraMesh() = default;
     virtual TetraMesh* clone() const = 0;
@@ -67,15 +68,17 @@ public:
      * (vec4). The scalar is stored in the w component. The \p nodeIds vector is filled with the
      * node/vertex IDs for each tetrahedron (ivec4). The faces opposite of each node are implicitly
      * encoded.
+     * The coordinates are given in Data space and can be transformed to Model space using the
+     * Model matrix or SpatialCoordinateTransformer::getDataToModelMatrix().
      */
     virtual void get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds) const = 0;
 
     /**
-     * Determine the bounding box of all nodes in the tetrahedral mesh
-     *
-     * @return min and max positions of the tetrahedral mesh
+     * Return the bounding box of all nodes of the tetrahedral mesh in world space. The bounding
+     * box is represented using a mat4, where all positions are between `bbox * (x,y,z,1)` where x,
+     * y, and z are between 0 and 1.
      */
-    virtual std::pair<vec3, vec3> getBounds() const = 0;
+    virtual mat4 getBoundingBox() const = 0;
 
     /**
      * Return the data range of the scalar values
@@ -102,8 +105,21 @@ struct DataTraits<TetraMesh> {
         tb(H("Points"), data.getNumberOfPoints());
 
         tb(H("Scalar Value Range"), data.getDataRange());
-        auto&& [min, max] = data.getBounds();
-        tb(H("Bounding Box"), fmt::format("{} - {}", min, max));
+
+        vec3 worldMin(std::numeric_limits<float>::max());
+        vec3 worldMax(std::numeric_limits<float>::lowest());
+
+        const mat4 bbox{data.getBoundingBox()};
+        const std::array<vec3, 8> corners = {vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{1, 1, 0},
+                                             vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
+                                             vec3{1, 1, 1}, vec3{0, 1, 1}};
+        for (const auto& corner : corners) {
+            const auto point = vec3(bbox * vec4(corner, 1.f));
+            worldMin = glm::min(worldMin, point);
+            worldMax = glm::max(worldMax, point);
+        }
+
+        tb(H("Bounding Box"), fmt::format("{} - {}", worldMin, worldMax));
 
         return doc;
     }

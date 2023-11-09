@@ -66,6 +66,7 @@ IVW_MODULE_TETRAMESH_API std::vector<int> getBoundaryFaces(const std::vector<ive
  * Create a triangular mesh from a tetrahedral mesh that consists only of the boundary faces and no
  * interior triangles. Note that holes in the tetra mesh also feature boundary faces.
  *
+ * @param mesh           tetrahedra mesh used only for transformations
  * @param nodes          vertex positions of the tetrahedra
  * @param nodeIds        contains four node IDs for each tetrahedron
  * @param boundaryFaces  list of face IDs belonging to the boundary
@@ -74,7 +75,7 @@ IVW_MODULE_TETRAMESH_API std::vector<int> getBoundaryFaces(const std::vector<ive
  * \see getOpposingFaces
  */
 IVW_MODULE_TETRAMESH_API std::shared_ptr<Mesh> createBoundaryMesh(
-    const std::vector<vec4>& nodes, const std::vector<ivec4>& nodeIds,
+    const TetraMesh& mesh, const std::vector<vec4>& nodes, const std::vector<ivec4>& nodeIds,
     const std::vector<int>& boundaryFaces);
 
 /**
@@ -85,8 +86,8 @@ IVW_MODULE_TETRAMESH_API std::shared_ptr<Mesh> createBoundaryMesh(
  * @return triangle mesh representing the boundary faces
  *
  * \see getOpposingFaces
- * \see createBoundaryMesh(const std::vector<vec4>&, const std::vector<ivec4>&, const
- * std::vector<int>&)
+ * \see createBoundaryMesh(const TetraMesh&, const std::vector<vec4>&, const std::vector<ivec4>&,
+ * const std::vector<int>&)
  */
 IVW_MODULE_TETRAMESH_API std::shared_ptr<Mesh> createBoundaryMesh(const TetraMesh& mesh);
 
@@ -100,13 +101,6 @@ IVW_MODULE_TETRAMESH_API std::shared_ptr<Mesh> createBoundaryMesh(const TetraMes
  */
 IVW_MODULE_TETRAMESH_API void fixFaceOrientation(const std::vector<vec4>& nodes,
                                                  std::vector<ivec4>& nodeIds);
-
-/**
- * Calculate a bounding box of all nodes of the tetrahedral mesh in world space. The bounding box is
- * represented using a mat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and z
- * are between 0 and 1.
- */
-IVW_MODULE_TETRAMESH_API mat4 boundingBox(const TetraMesh& mesh);
 
 }  // namespace utiltetra
 

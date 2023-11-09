@@ -42,41 +42,6 @@
 
 namespace inviwo {
 
-VolumeTetraMesh::VolumeTetraMesh(const std::shared_ptr<const Volume>& volume, int channel)
-    : channel_{0} {
-    setData(volume, channel);
-}
-
-VolumeTetraMesh* VolumeTetraMesh::clone() const { return new VolumeTetraMesh{*this}; }
-
-void VolumeTetraMesh::setData(const std::shared_ptr<const Volume>& volume, int channel) {
-    if (volume && glm::any(glm::lessThanEqual(volume->getDimensions(), size3_t{1}))) {
-        throw Exception(IVW_CONTEXT,
-                        "Volumes with one or more dimensions equal to 1 cannot be converted to a "
-                        "TetraMesh ({})",
-                        volume->getDimensions());
-    }
-
-    volume_ = volume;
-    channel_ = channel;
-}
-
-int VolumeTetraMesh::getNumberOfCells() const {
-    if (volume_) {
-        return static_cast<int>(glm::compMul(volume_.get()->getDimensions() - size3_t{1}) * 6);
-    } else {
-        return 0;
-    }
-}
-
-int VolumeTetraMesh::getNumberOfPoints() const {
-    if (volume_) {
-        return static_cast<int>(glm::compMul(volume_.get()->getDimensions()));
-    } else {
-        return 0;
-    }
-}
-
 namespace detail {
 
 mat4 tetraBoundingBox(const Volume& volume) {
@@ -99,6 +64,43 @@ mat4 tetraBoundingBox(const Volume& volume) {
 
 }  // namespace detail
 
+VolumeTetraMesh::VolumeTetraMesh(const std::shared_ptr<const Volume>& volume, int channel)
+    : channel_{0} {
+    setData(volume, channel);
+}
+
+VolumeTetraMesh* VolumeTetraMesh::clone() const { return new VolumeTetraMesh{*this}; }
+
+void VolumeTetraMesh::setData(const std::shared_ptr<const Volume>& volume, int channel) {
+    if (volume && glm::any(glm::lessThanEqual(volume->getDimensions(), size3_t{1}))) {
+        throw Exception(IVW_CONTEXT,
+                        "Volumes with one or more dimensions equal to 1 cannot be converted to a "
+                        "TetraMesh ({})",
+                        volume->getDimensions());
+    }
+
+    volume_ = volume;
+    channel_ = channel;
+    setModelMatrix(detail::tetraBoundingBox(*volume_));
+    setWorldMatrix(mat4(1.0f));
+}
+
+int VolumeTetraMesh::getNumberOfCells() const {
+    if (volume_) {
+        return static_cast<int>(glm::compMul(volume_.get()->getDimensions() - size3_t{1}) * 6);
+    } else {
+        return 0;
+    }
+}
+
+int VolumeTetraMesh::getNumberOfPoints() const {
+    if (volume_) {
+        return static_cast<int>(glm::compMul(volume_.get()->getDimensions()));
+    } else {
+        return 0;
+    }
+}
+
 void VolumeTetraMesh::get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds) const {
     nodes.clear();
     nodeIds.clear();
@@ -111,9 +113,9 @@ void VolumeTetraMesh::get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds)
     // node positions being voxel-centered
     const size3_t dims = volume_->getDimensions();
 
-    mat4 bbox = detail::tetraBoundingBox(*volume_.get());
-    mat4 indexMatrix{glm::scale(dims - size3_t{1})};
-    mat4 m = bbox * glm::inverse(indexMatrix);
+    // transform all coordinates to [0,1]
+    const mat4 indexMatrix{glm::scale(dims - size3_t{1})};
+    mat4 m = glm::inverse(indexMatrix);
 
     nodes.reserve(getNumberOfPoints());
     for (size_t z = 0; z < dims.z; ++z) {
@@ -157,26 +159,8 @@ void VolumeTetraMesh::get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds)
     }
 }
 
-std::pair<vec3, vec3> VolumeTetraMesh::getBounds() const {
-    if (volume_) {
-        // TODO: consider SpatialEntity?
-        mat4 bbox = detail::tetraBoundingBox(*volume_.get());
-
-        vec3 worldMin(std::numeric_limits<float>::max());
-        vec3 worldMax(std::numeric_limits<float>::lowest());
-
-        const std::array<vec3, 8> corners = {vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{1, 1, 0},
-                                             vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
-                                             vec3{1, 1, 1}, vec3{0, 1, 1}};
-        for (const auto& corner : corners) {
-            const auto point = vec3(bbox * vec4(corner, 1.f));
-            worldMin = glm::min(worldMin, point);
-            worldMax = glm::max(worldMax, point);
-        }
-        return {worldMin, worldMax};
-    } else {
-        return {vec3{0.0f}, vec3{0.0f}};
-    }
+mat4 VolumeTetraMesh::getBoundingBox() const {
+    return getCoordinateTransformer().getDataToWorldMatrix();
 }
 
 dvec2 VolumeTetraMesh::getDataRange() const {

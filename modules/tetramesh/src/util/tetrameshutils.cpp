@@ -117,7 +117,7 @@ std::vector<int> getBoundaryFaces(const std::vector<ivec4>& opposingFaces) {
     return boundaryFaces;
 }
 
-std::shared_ptr<Mesh> createBoundaryMesh(const std::vector<vec4>& nodes,
+std::shared_ptr<Mesh> createBoundaryMesh(const TetraMesh& tetraMesh, const std::vector<vec4>& nodes,
                                          const std::vector<ivec4>& nodeIds,
                                          const std::vector<int>& boundaryFaces) {
     std::vector<vec3> vertices;
@@ -144,7 +144,8 @@ std::shared_ptr<Mesh> createBoundaryMesh(const std::vector<vec4>& nodes,
     mesh->addBuffer(BufferType::IndexAttrib, util::makeBuffer(std::move(faceIds)));
     mesh->addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None),
                      util::makeIndexBuffer(std::move(indices)));
-
+    // copy all transformations to the boundary mesh
+    mesh->SpatialEntity<3>::operator=(tetraMesh);
     return mesh;
 }
 
@@ -152,7 +153,7 @@ std::shared_ptr<Mesh> createBoundaryMesh(const TetraMesh& mesh) {
     std::vector<vec4> nodes;
     std::vector<ivec4> nodeIds;
     mesh.get(nodes, nodeIds);
-    return createBoundaryMesh(nodes, nodeIds, getBoundaryFaces(getOpposingFaces(nodeIds)));
+    return createBoundaryMesh(mesh, nodes, nodeIds, getBoundaryFaces(getOpposingFaces(nodeIds)));
 }
 
 void fixFaceOrientation(const std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds) {
@@ -168,13 +169,6 @@ void fixFaceOrientation(const std::vector<vec4>& nodes, std::vector<ivec4>& node
             std::swap(ids[2], ids[3]);
         }
     }
-}
-
-mat4 boundingBox(const TetraMesh& mesh) {
-    auto&& [dataMin, dataMax] = mesh.getBounds();
-    auto m = glm::scale(dataMax - dataMin);
-    m[3] = vec4(dataMin, 1.0f);
-    return m;
 }
 
 }  // namespace utiltetra
