@@ -27,28 +27,29 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tetramesh/processors/tetrameshboundaryextractor.h>
-#include <inviwo/tetramesh/tetrameshmodule.h>
-#include <inviwo/tetramesh/processors/tetrameshboundingbox.h>
-#include <inviwo/tetramesh/processors/tetrameshvolumeraycaster.h>
+#pragma once
+
+#include <inviwo/tetramesh/tetrameshmoduledefine.h>
 #include <inviwo/tetramesh/ports/tetrameshport.h>
-#include <inviwo/tetramesh/processors/transformtetramesh.h>
-#include <inviwo/tetramesh/processors/volumetotetramesh.h>
-#include <modules/opengl/shader/shadermanager.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
-TetraMeshModule::TetraMeshModule(InviwoApplication* app) : InviwoModule(app, "TetraMesh") {
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+class IVW_MODULE_TETRAMESH_API TetraMeshBoundingBox : public Processor {
+public:
+    TetraMeshBoundingBox();
 
-    registerProcessor<TetraMeshBoundaryExtractor>();
-    registerProcessor<TetraMeshBoundingBox>();
-    registerProcessor<TetraMeshVolumeRaycaster>();
-    registerProcessor<TransformTetraMesh>();
-    registerProcessor<VolumeToTetraMesh>();
+    virtual void process() override;
 
-    registerPort<TetraMeshOutport>();
-    registerPort<TetraMeshInport>();
-}
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    TetraMeshInport tetraMesh_;
+    MeshOutport mesh_;
+    FloatVec4Property color_;
+};
 
 }  // namespace inviwo

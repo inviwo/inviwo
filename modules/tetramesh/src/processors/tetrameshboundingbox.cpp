@@ -27,28 +27,38 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tetramesh/processors/tetrameshboundaryextractor.h>
-#include <inviwo/tetramesh/tetrameshmodule.h>
 #include <inviwo/tetramesh/processors/tetrameshboundingbox.h>
-#include <inviwo/tetramesh/processors/tetrameshvolumeraycaster.h>
-#include <inviwo/tetramesh/ports/tetrameshport.h>
-#include <inviwo/tetramesh/processors/transformtetramesh.h>
-#include <inviwo/tetramesh/processors/volumetotetramesh.h>
-#include <modules/opengl/shader/shadermanager.h>
+#include <inviwo/tetramesh/datastructures/tetramesh.h>
+#include <modules/base/algorithm/meshutils.h>
 
 namespace inviwo {
 
-TetraMeshModule::TetraMeshModule(InviwoApplication* app) : InviwoModule(app, "TetraMesh") {
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo TetraMeshBoundingBox::processorInfo_{
+    "org.inviwo.TetraMeshBoundingBox",  // Class identifier
+    "TetraMesh Bounding Box",           // Display name
+    "Unstructured Grids",               // Category
+    CodeState::Stable,                  // Code state
+    Tag::CPU | Tag{"Unstructured"},     // Tags
+    R"(Creates a mesh containing the bounding box of the tetra mesh, that is lines with adjacency "
+    "information.)"_unindentHelp};
 
-    registerProcessor<TetraMeshBoundaryExtractor>();
-    registerProcessor<TetraMeshBoundingBox>();
-    registerProcessor<TetraMeshVolumeRaycaster>();
-    registerProcessor<TransformTetraMesh>();
-    registerProcessor<VolumeToTetraMesh>();
+const ProcessorInfo TetraMeshBoundingBox::getProcessorInfo() const { return processorInfo_; }
 
-    registerPort<TetraMeshOutport>();
-    registerPort<TetraMeshInport>();
+TetraMeshBoundingBox::TetraMeshBoundingBox()
+    : Processor{}
+    , tetraMesh_("tetramesh", "Tetra mesh data"_help)
+    , mesh_("mesh", "The bounding box mesh"_help)
+    , color_("color", "Color", util::ordinalColor(vec4{1.0f}).set("Line color of the mesh"_help)) {
+
+    addPorts(tetraMesh_, mesh_);
+    addProperty(color_);
+}
+
+void TetraMeshBoundingBox::process() {
+    auto mesh = meshutil::boundingBoxAdjacency(tetraMesh_.getData()->getModelMatrix(), color_);
+    mesh->setWorldMatrix(tetraMesh_.getData()->getWorldMatrix());
+    mesh_.setData(mesh);
 }
 
 }  // namespace inviwo

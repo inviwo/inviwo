@@ -27,28 +27,29 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tetramesh/processors/tetrameshboundaryextractor.h>
-#include <inviwo/tetramesh/tetrameshmodule.h>
-#include <inviwo/tetramesh/processors/tetrameshboundingbox.h>
-#include <inviwo/tetramesh/processors/tetrameshvolumeraycaster.h>
-#include <inviwo/tetramesh/ports/tetrameshport.h>
-#include <inviwo/tetramesh/processors/transformtetramesh.h>
-#include <inviwo/tetramesh/processors/volumetotetramesh.h>
-#include <modules/opengl/shader/shadermanager.h>
+#pragma once
+
+#include <inviwo/tetramesh/tetrameshmoduledefine.h>
+#include <inviwo/tetramesh/datastructures/tetramesh.h>
+#include <inviwo/core/processors/processor.h>
+#include <modules/base/processors/transform.h>
 
 namespace inviwo {
 
-TetraMeshModule::TetraMeshModule(InviwoApplication* app) : InviwoModule(app, "TetraMesh") {
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+class TetraMesh;
 
-    registerProcessor<TetraMeshBoundaryExtractor>();
-    registerProcessor<TetraMeshBoundingBox>();
-    registerProcessor<TetraMeshVolumeRaycaster>();
-    registerProcessor<TransformTetraMesh>();
-    registerProcessor<VolumeToTetraMesh>();
+template <>
+struct ProcessorTraits<Transform<TetraMesh>> {
+    static ProcessorInfo getProcessorInfo() {
+        return {"org.inviwo.TransformTetraMesh",         // Class identifier
+                "Transform TetraMesh",                   // Display name
+                "Coordinate Transforms",                 // Category
+                CodeState::Stable,                       // Code state
+                Tag{"Transform"} | Tag{"Unstructured"},  // Tags
+                "Apply a model or world transformation to a TetraMesh."_help};
+    }
+};
 
-    registerPort<TetraMeshOutport>();
-    registerPort<TetraMeshInport>();
-}
+using TransformTetraMesh = Transform<TetraMesh>;
 
 }  // namespace inviwo

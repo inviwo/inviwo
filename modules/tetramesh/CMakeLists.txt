@@ -6,7 +6,9 @@ set(HEADER_FILES
     include/inviwo/tetramesh/datastructures/volumetetramesh.h
     include/inviwo/tetramesh/ports/tetrameshport.h
     include/inviwo/tetramesh/processors/tetrameshboundaryextractor.h
+    include/inviwo/tetramesh/processors/tetrameshboundingbox.h
     include/inviwo/tetramesh/processors/tetrameshvolumeraycaster.h
+    include/inviwo/tetramesh/processors/transformtetramesh.h
     include/inviwo/tetramesh/processors/volumetotetramesh.h
     include/inviwo/tetramesh/tetrameshmodule.h
     include/inviwo/tetramesh/tetrameshmoduledefine.h
@@ -20,7 +22,9 @@ set(SOURCE_FILES
     src/datastructures/volumetetramesh.cpp
     src/ports/tetrameshport.cpp
     src/processors/tetrameshboundaryextractor.cpp
+    src/processors/tetrameshboundingbox.cpp
     src/processors/tetrameshvolumeraycaster.cpp
+    src/processors/transformtetramesh.cpp
     src/processors/volumetotetramesh.cpp
     src/tetrameshmodule.cpp
     src/util/tetrameshutils.cpp
