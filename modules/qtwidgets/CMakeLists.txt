@@ -187,7 +187,9 @@ qt_add_resources(QRC_FILE "${IVW_RESOURCES_DIR}/inviwo.qrc")
 source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/inviwo.qrc ${QRC_FILE})
 
 # Create module
-ivw_create_module(NO_PCH QT ${SOURCE_FILES} ${MOCED_FILES} ${QRC_FILE} ${HEADER_FILES}
+ivw_create_module(NO_PCH QT 
+    PACKAGES inviwo-qtapplicationbase
+    FILES ${SOURCE_FILES} ${MOCED_FILES} ${QRC_FILE} ${HEADER_FILES}
     $<$<BOOL:${WIN32}>:${IVW_ROOT_DIR}/tools/natvis/qt5.natvis>
 )
 target_link_libraries(inviwo-module-qtwidgets PUBLIC

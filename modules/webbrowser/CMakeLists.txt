@@ -154,7 +154,10 @@ set(TEST_FILES
 ivw_add_unittest(${TEST_FILES})
 
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES} ${JS_FILES})
+ivw_create_module(
+    PACKAGES libcef_dll_wrapper
+    FILES ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES} ${JS_FILES}
+)
 target_include_directories(inviwo-module-webbrowser
     PUBLIC
         $<BUILD_INTERFACE:${CEF_INCLUDE_PATH}>
