@@ -117,4 +117,55 @@ std::ostream& operator<<(std::ostream& ss, BufferType bt) { return ss << enumToS
 std::ostream& operator<<(std::ostream& ss, BufferUsage bu) { return ss << enumToStr(bu); }
 std::ostream& operator<<(std::ostream& ss, BufferTarget bt) { return ss << enumToStr(bt); }
 
+size_t util::numberOfVerticesForPrimitive(DrawType dt) {
+    switch(dt) {
+        case DrawType::Points:
+            return 1;
+        case DrawType::Lines:
+            return 2;
+        case DrawType::Triangles:
+            return 3;
+        default:
+            return 0;
+    }
+}
+size_t util::numberOfPrimitives(DrawType dt, ConnectivityType ct, size_t indices) {
+    switch (dt) {
+        case DrawType::Points:
+            return indices;
+        case DrawType::Lines:
+            switch (ct) {
+                case ConnectivityType::None:
+                    return indices / 2;
+                case ConnectivityType::Strip:
+                    return indices - 1;
+                case ConnectivityType::Loop:
+                    return indices;
+                case ConnectivityType::Adjacency:
+                    return indices / 4;
+                case ConnectivityType::StripAdjacency:
+                    return indices - 3;
+                default:
+                    return 0;
+            }
+        case DrawType::Triangles:
+            switch (ct) {
+                case ConnectivityType::None:
+                    return indices / 3;
+                case ConnectivityType::Strip:
+                    return indices - 2;
+                case ConnectivityType::Fan:
+                    return indices - 2;
+                case ConnectivityType::Adjacency:
+                    return indices / 6;
+                case ConnectivityType::StripAdjacency:
+                    return (indices - 4) / 2;
+                default:
+                    return 0;
+            }
+        default:
+            return 0;
+    }
+}
+
 }  // namespace inviwo

@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/simplelightingproperty.h>  // for SimpleLightingProperty
 #include <inviwo/core/properties/stringproperty.h>          // for StringProperty
 #include <modules/opengl/shader/shader.h>                   // for Shader
+#include <modules/opengl/buffer/bufferobject.h>                 // for BufferGL
 
 #include <array>       // for array
 #include <cstddef>     // for size_t
@@ -114,9 +115,11 @@ private:
     std::array<StringProperty, 5> transforms_;
     StringProperty setupVert_;
 
+    size_t numberOfvertices_;
+    BufferObject feedbackBuffer_;
+
     std::shared_ptr<StringShaderResource> vert_;
     std::shared_ptr<StringShaderResource> frag_;
-
     Shader shader_;
 };
 }  // namespace inviwo

@@ -54,6 +54,8 @@
 #include <inviwo/core/util/staticstring.h>                 // for operator+
 #include <inviwo/core/util/stringconversion.h>             // for trim, htmlEncode
 #include <inviwo/core/util/utilities.h>                    // for findUniqueIdentifier
+#include <inviwo/core/util/rendercontext.h>                // for RenderContext
+#include <inviwo/core/util/stdextensions.h>                // for overloaded
 #include <modules/opengl/geometry/meshgl.h>                // for MeshGL
 #include <modules/opengl/inviwoopengl.h>                   // for GL_DEPTH_TEST, GL_ONE_MINUS_SR...
 #include <modules/opengl/openglutils.h>                    // for BlendModeState, GlBoolState
@@ -65,6 +67,8 @@
 #include <modules/opengl/shader/shadertype.h>              // for ShaderType, ShaderType::Fragment
 #include <modules/opengl/shader/shaderutils.h>             // for addShaderDefines, setShaderUni...
 #include <modules/opengl/texture/textureutils.h>           // for activateTargetAndClearOrCopySo...
+
+#include <modules/opengl/buffer/buffergl.h>
 
 #include <algorithm>    // for for_each, min_element
 #include <string>       // for basic_string, operator==, string
@@ -276,7 +280,32 @@ InstanceRenderer::InstanceRenderer()
         types can be added.)"_unindentHelp,
              prefabs()}
     , vecPorts_{}
-    , camera_("camera", "Camera", util::boundingBox(inport_))
+    , camera_("camera", "Camera",
+              [this]() -> std::optional<mat4> {
+                  if (numberOfvertices_ > 0) {
+                      rendercontext::activateDefault();
+                      feedbackBuffer_.bindBase(0);
+
+                      if (auto feedback = static_cast<vec4*>(
+                              glMapBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, GL_READ_ONLY))) {
+                          auto minmax = std::pair<vec4, vec4>{DataFormat<vec4>::max(),
+                                                              DataFormat<vec4>::lowest()};
+                          minmax = std::accumulate(
+                              feedback, feedback + numberOfvertices_, minmax,
+                              [](const std::pair<vec4, vec4>& mm,
+                                 const vec4& v) -> std::pair<vec4, vec4> {
+                                  return {glm::min(mm.first, v), glm::max(mm.second, v)};
+                              });
+                          glUnmapBuffer(GL_TRANSFORM_FEEDBACK_BUFFER);
+
+                          auto m = glm::scale(vec3{minmax.second} - vec3{minmax.first});
+                          m[3] = vec4(vec3{minmax.first}, 1.0f);
+
+                          return m;
+                      }
+                  }
+                  return std::nullopt;
+              })
     , trackball_(&camera_)
     , lightingProperty_("lighting", "Lighting", &camera_)
     , transforms_{{{"color", "Color",
@@ -311,7 +340,9 @@ InstanceRenderer::InstanceRenderer()
                  "",
                  InvalidationLevel::InvalidResources,
                  PropertySemantics::Multiline}
-
+    , numberOfvertices_{0}
+    , feedbackBuffer_{1000 * sizeof(vec4), GLFormats::get(DataVec4Float32::id()), GL_STATIC_READ,
+                      GL_TRANSFORM_FEEDBACK_BUFFER}
     , vert_{std::make_shared<StringShaderResource>("InstanceRenderer.vert", vertexShader)}
     , frag_{std::make_shared<StringShaderResource>("InstanceRenderer.frag", fragmentShader)}
     , shader_{{{ShaderType::Vertex, vert_}, {ShaderType::Fragment, frag_}}, Shader::Build::No} {
@@ -419,13 +450,66 @@ void InstanceRenderer::initializeResources() {
         prio += 100;
     }
 
-    shader_.build();
+    for (auto& obj : shader_) {
+        obj.build();
+    }
+
+    const GLchar* feedbackVaryings[] = {"worldPosition"};
+    glTransformFeedbackVaryings(shader_.getID(), 1, feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
+
+    shader_.link();
 }
+
+namespace {
+
+size_t numberOfVertices(DrawType dt, ConnectivityType ct, size_t nIndices) {
+    return util::numberOfVerticesForPrimitive(dt) * util::numberOfPrimitives(dt, ct, nIndices);
+}
+
+size_t numberOfVertices(Mesh::MeshInfo mi, size_t nIndices) {
+    return util::numberOfVerticesForPrimitive(mi.dt) *
+           util::numberOfPrimitives(mi.dt, mi.ct, nIndices);
+}
+
+size_t numberOfVertices(const MeshGL& meshGL, size_t index) {
+    auto mi = meshGL.getMeshInfoForIndexBuffer(index);
+    auto nIndices = meshGL.getIndexBuffer(index)->getSize();
+    return numberOfVertices(mi, nIndices);
+}
+
+size_t numberOfVertices(const MeshGL& meshGL, Mesh::MeshInfo defaultMeshInfo) {
+    const std::size_t numIndexBuffers = meshGL.getIndexBufferCount();
+    size_t count = 0;
+    if (numIndexBuffers > 0) {
+        for (std::size_t ib = 0; ib < numIndexBuffers; ++ib) {
+            count += numberOfVertices(meshGL, ib);
+        }
+        return count;
+    } else {
+        auto nIndices = meshGL.getBufferGL(0)->getSize();
+        return numberOfVertices(defaultMeshInfo, nIndices);
+    }
+}
+
+}  // namespace
 
 void InstanceRenderer::process() {
     utilgl::activateTargetAndClearOrCopySource(outport_, background_);
 
     if (vecPorts_.empty()) return;
+
+    const auto primitiveMode = [](DrawType dt) {
+        switch (dt) {
+            case DrawType::Points:
+                return GL_POINTS;
+            case DrawType::Lines:
+                return GL_LINES;
+            case DrawType::Triangles:
+                return GL_TRIANGLES;
+            default:
+                return GL_TRIANGLES;
+        }
+    };
 
     shader_.activate();
 
@@ -435,7 +519,6 @@ void InstanceRenderer::process() {
     utilgl::setUniforms(shader_, camera_, lightingProperty_);
 
     const auto& mesh = *inport_.getData();
-    MeshDrawerGL::DrawObject drawer{mesh.getRepresentation<MeshGL>(), mesh.getDefaultMeshInfo()};
     utilgl::setShaderUniforms(shader_, mesh, "geometry");
 
     auto valid = vecPorts_ | std::views::filter(
@@ -443,12 +526,61 @@ void InstanceRenderer::process() {
 
     if (!valid.empty()) {
         const auto minIt = std::ranges::min_element(valid, std::less<>{},
-                                              [](const auto& port) { return *port.size(); });
+                                                    [](const auto& port) { return *port.size(); });
         const auto min = *minIt->size();
+
+        auto& meshGL = *mesh.getRepresentation<MeshGL>();
+        numberOfvertices_ = min * numberOfVertices(meshGL, mesh.getDefaultMeshInfo());
+        feedbackBuffer_.setSizeInBytes(numberOfvertices_ * sizeof(vec4),
+                                       BufferObject::SizePolicy::GrowOnly);
+
+        utilgl::Enable<MeshGL> enable{&meshGL};
+
+        const std::size_t numIndexBuffers = meshGL.getIndexBufferCount();
+        size_t byteOffset = 0;
         for (size_t i = 0; i < min; ++i) {
             std::for_each(vecPorts_.begin(), vecPorts_.end(),
                           [&](auto& port) { port.set(shader_, i); });
-            drawer.draw();
+
+            if (numIndexBuffers > 0) {
+                // draw mesh using the index buffers
+                for (std::size_t ib = 0; ib < numIndexBuffers; ++ib) {
+                    const auto& indexBuffer = *meshGL.getIndexBuffer(ib);
+                    const auto numIndices = indexBuffer.getSize();
+                    if (numIndices > 0) {
+                        indexBuffer.bind();
+                        const auto mi = meshGL.getMeshInfoForIndexBuffer(ib);
+                        const auto drawModeGL = MeshDrawerGL::getGLDrawMode(mi);
+                        const auto bufferByteSize =
+                            sizeof(vec4) * numberOfVertices(mi, indexBuffer.getSize());
+
+                        feedbackBuffer_.bindRange(0, byteOffset, bufferByteSize);
+                        glBeginTransformFeedback(primitiveMode(mi.dt));
+
+                        glDrawElements(drawModeGL, static_cast<GLsizei>(numIndices),
+                                       indexBuffer.getFormatType(), nullptr);
+
+                        glEndTransformFeedback();
+
+                        byteOffset += bufferByteSize;
+                    }
+                }
+            } else if (!meshGL.empty()) {
+                const auto mi = mesh.getDefaultMeshInfo();
+                const auto bufferByteSize =
+                    sizeof(vec4) * numberOfVertices(mi, meshGL.getBufferGL(0)->getSize());
+
+                feedbackBuffer_.bindRange(0, byteOffset, bufferByteSize);
+                glBeginTransformFeedback(primitiveMode(mi.dt));
+
+                // the mesh does not contain index buffers,
+                // render all vertices
+                auto drawModeGL = MeshDrawerGL::getGLDrawMode(mi);
+                glDrawArrays(drawModeGL, 0, static_cast<GLsizei>(meshGL.getBufferGL(0)->getSize()));
+                glEndTransformFeedback();
+
+                byteOffset += bufferByteSize;
+            }
         }
     }
     shader_.deactivate();
