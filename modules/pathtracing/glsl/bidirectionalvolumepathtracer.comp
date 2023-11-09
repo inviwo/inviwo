@@ -28,7 +28,7 @@ uniform sampler2D exitDepth;
 uniform ImageParameters exitParameters;
 
 // output
-uniform layout(binding=1, rgba32f) image2D outportColor;
+uniform layout(binding=0, rgba8) image2D outportColor;
 writeonly uniform image2D outportDepth;
 writeonly uniform image2D outportPicking;
 uniform ImageParameters outportParameters;
@@ -93,7 +93,7 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
     float T = 1.0f;
     float tau = 1f;
     float meanpath = WoodcockTracking(samplePosition, rayDir, rayLength, gid + time_ms,
-            volume, volumeParameters, transferFunction, 1, tau);
+            volume, volumeParameters, transferFunction, 1f, tau);
     rayPosition = meanpath; 
     
 
