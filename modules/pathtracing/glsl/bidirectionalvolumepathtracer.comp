@@ -28,7 +28,7 @@ uniform sampler2D exitDepth;
 uniform ImageParameters exitParameters;
 
 // output
-writeonly uniform image2D outportColor;
+uniform layout(binding=1, rgba32f) image2D outportColor;
 writeonly uniform image2D outportDepth;
 writeonly uniform image2D outportPicking;
 uniform ImageParameters outportParameters;
@@ -43,6 +43,7 @@ uniform sampler2D transferFunction; // cant get transferFunction up to a compute
 uniform int channel;
 
 uniform float time_ms;
+uniform int iteration;
 
 #define ERT_THRESHOLD 0.99  // threshold for early ray termination
 
@@ -225,6 +226,8 @@ void main(){
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
     vec2 texCoord = vec2(gl_GlobalInvocationID.xy) / outportParameters.dimensions;
 
+    
+
     vec3 entryPoint = texture(entryColor, texCoord).xyz;
     vec3 exitPoint = texture(exitColor, texCoord).xyz;
 
@@ -240,15 +243,21 @@ void main(){
         imageStore(outportPicking, storePos, picking);
         return;
     }
-    int N = 1;
-    for(int n = 1; n <= N; n++) {
-        result += simpleRender(outportParameters, entryPoint, exitPoint, entryPointDepth, exitPointDepth,
+
+
+    result += simpleRender(outportParameters, entryPoint, exitPoint, entryPointDepth, exitPointDepth,
             depth, raycaster, volumeParameters, bgColor);
-    }
-    result = result/N;
     // If you wanna normalize, DONT do it based off of results. It needs to be a global factor
 
-    imageStore(outportColor, storePos, result);     
+    vec4 resPrev = imageLoad(outportColor, storePos);
+
+    // mix between outputColor and now and new one
+    // TODO: need uniform iteration
+    float w = 1.0f - 1.0f/float(iteration + 1);
+    //w = 1.0f;
+    vec4 finalresult = mix(result, resPrev, w);
+
+    imageStore(outportColor, storePos, finalresult);     
     imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
     imageStore(outportPicking, storePos, picking);
 }
