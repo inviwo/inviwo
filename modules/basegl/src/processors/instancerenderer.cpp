@@ -70,6 +70,7 @@
 #include <string>       // for basic_string, operator==, string
 #include <string_view>  // for string_view, operator==
 #include <utility>      // for move, pair, swap
+#include <ranges>
 
 #include <fmt/core.h>      // for format, basic_string_view, for...
 #include <fmt/format.h>    // for formatbuf<>::int_type, formatb...
@@ -198,7 +199,7 @@ void main() {
 namespace detail {
 
 DynPortManager::DynPortManager(InstanceRenderer* theRenderer, std::unique_ptr<Inport> aPort,
-                               std::function<size_t()> aSize,
+                               std::function<std::optional<size_t>()> aSize,
                                std::function<void(Shader&, size_t)> aSet,
                                std::function<void(ShaderObject&)> aAddUniform)
     : renderer{theRenderer}
@@ -240,7 +241,13 @@ DynPortManager createDynPortManager(InstanceRenderer* theRenderer, std::string_v
 
     auto port = std::make_unique<DataInport<std::vector<T>>>(identifier);
     port->setOptional(true);
-    auto size = [p = port.get()]() { return p->hasData() ? p->getData()->size() : size_t(-1); };
+    auto size = [p = port.get()]() -> std::optional<size_t> {
+        if (p->hasData()) {
+            return p->getData()->size();
+        } else {
+            return std::nullopt;
+        }
+    };
     auto set = [p = port.get(), u = uniform](Shader& shader, size_t index) {
         if (p->hasData()) {
             shader.setUniform(u->get(), (*p->getData())[index]);
@@ -431,17 +438,19 @@ void InstanceRenderer::process() {
     MeshDrawerGL::DrawObject drawer{mesh.getRepresentation<MeshGL>(), mesh.getDefaultMeshInfo()};
     utilgl::setShaderUniforms(shader_, mesh, "geometry");
 
-    auto minIt = std::min_element(vecPorts_.begin(), vecPorts_.end(),
-                                  [](const auto& a, const auto& b) { return a.size() < b.size(); });
-    const size_t min = minIt->size();
+    auto valid = vecPorts_ | std::views::filter(
+                                 [](const auto& port) -> bool { return port.size().has_value(); });
 
-    for (size_t i = 0; i < min; ++i) {
-        std::for_each(vecPorts_.begin(), vecPorts_.end(),
-                      [&](auto& port) { port.set(shader_, i); });
-
-        drawer.draw();
+    if (!valid.empty()) {
+        const auto minIt = std::ranges::min_element(valid, std::less<>{},
+                                              [](const auto& port) { return *port.size(); });
+        const auto min = *minIt->size();
+        for (size_t i = 0; i < min; ++i) {
+            std::for_each(vecPorts_.begin(), vecPorts_.end(),
+                          [&](auto& port) { port.set(shader_, i); });
+            drawer.draw();
+        }
     }
-
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }

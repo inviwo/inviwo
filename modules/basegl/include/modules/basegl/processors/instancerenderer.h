@@ -47,6 +47,7 @@
 #include <functional>  // for function
 #include <memory>      // for unique_ptr, shared_ptr
 #include <vector>      // for vector
+#include <optional>
 
 namespace inviwo {
 
@@ -63,7 +64,8 @@ namespace detail {
  */
 struct IVW_MODULE_BASEGL_API DynPortManager {
     DynPortManager(InstanceRenderer* theRenderer, std::unique_ptr<Inport> aPort,
-                   std::function<size_t()> aSize, std::function<void(Shader&, size_t)> aSet,
+                   std::function<std::optional<size_t>()> aSize,
+                   std::function<void(Shader&, size_t)> aSet,
                    std::function<void(ShaderObject&)> aAddUniform);
 
     DynPortManager(const DynPortManager&) = delete;
@@ -74,7 +76,7 @@ struct IVW_MODULE_BASEGL_API DynPortManager {
 
     InstanceRenderer* renderer;
     std::unique_ptr<Inport> port;
-    std::function<size_t()> size;
+    std::function<std::optional<size_t>()> size;
     std::function<void(Shader&, size_t)> set;
     std::function<void(ShaderObject&)> addUniform;
 };
