@@ -175,10 +175,10 @@ vec4 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, 
         volume, volParam, tf, 1f, tau);
     
     float Tl = 1f;
-    Tl = SimpleTracking(Tl, meanfreepath_l, tfSample.a);
+    Tl = SimpleTracking(Tl, meanfreepath_l, tau);
 
     color.w = 1f;
-    acc_radiance += acc_radiance + T*tfSample.a*(color*Tl);
+    acc_radiance += acc_radiance + T*tau*(color*Tl);
 
     return acc_radiance;
 }
