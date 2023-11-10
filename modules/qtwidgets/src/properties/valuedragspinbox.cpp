@@ -104,8 +104,6 @@ void ValueDragSpinBox::setRange(int minimum, int maximum) { spinBox_->setRange(m
 
 void ValueDragSpinBox::setSingleStep(int val) {
     spinBox_->setSingleStep(val);
-    spinBox_->setButtonSymbols(val == 0 ? QAbstractSpinBox::NoButtons
-                                        : QAbstractSpinBox::UpDownArrows);
 }
 
 void ValueDragSpinBox::setSuffix(const QString& suffix) { spinBox_->setSuffix(suffix); }
