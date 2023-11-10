@@ -40,12 +40,12 @@
 #include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>  // for SequenceEditorWidget
 #include <modules/qtwidgets/editablelabelqt.h>                        // for EditableLabelQt
 #include <modules/qtwidgets/properties/propertywidgetqt.h>            // for PropertyWidgetQt
+#include <modules/qtwidgets/properties/doublevaluedragspinbox.h>
 
 #include <functional>  // for __base
 
-#include <QComboBox>       // for QComboBox
-#include <QDoubleSpinBox>  // for QDoubleSpinBox
-#include <QHBoxLayout>     // for QHBoxLayout
+#include <QComboBox>    // for QComboBox
+#include <QHBoxLayout>  // for QHBoxLayout
 
 namespace inviwo {
 
@@ -59,15 +59,19 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWid
 
     layout_ = new QHBoxLayout();
 
-    timeSpinner_ = new QDoubleSpinBox();
+    timeSpinner_ = new DoubleValueDragSpinBox();
     timeSpinner_->setValue(keyframe.getTime().count());
-    timeSpinner_->setSuffix("s");
     timeSpinner_->setSingleStep(0.1);
     timeSpinner_->setDecimals(3);
+    timeSpinner_->setMaximum(10000.0);
+    timeSpinner_->setToolTip("Time [s]");
 
     connect(timeSpinner_,
-            static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
-            [this](double t) { keyframe_.setTime(Seconds(t)); });
+            static_cast<void (DoubleValueDragSpinBox::*)(double)>(
+                &DoubleValueDragSpinBox::valueChanged),
+            this, [this](double t) { keyframe_.setTime(Seconds(t)); });
+    connect(timeSpinner_, &DoubleValueDragSpinBox::editingFinished, this,
+            [this]() { keyframe_.setTime(Seconds(timeSpinner_->value())); });
 
     layout_->addWidget(timeSpinner_);
 
@@ -94,11 +98,12 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWid
         actionWidget_->addItems({"Pause", "Jump To"});
         actionWidget_->setCurrentIndex(static_cast<int>(ctrlKey->getAction()));
 
-        jumpToWidget_ = new QDoubleSpinBox();
+        jumpToWidget_ = new DoubleValueDragSpinBox();
         jumpToWidget_->setValue(ctrlKey->getJumpTime().count());
-        jumpToWidget_->setSuffix("s");
         jumpToWidget_->setSingleStep(0.1);
         jumpToWidget_->setDecimals(3);
+        jumpToWidget_->setMaximum(10000.0);
+        jumpToWidget_->setToolTip("Time [s]");
         jumpToWidget_->setVisible(ctrlKey->getAction() == ControlAction::Jump);
 
         connect(actionWidget_, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated), this,
@@ -107,9 +112,12 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWid
                     jumpToWidget_->setVisible(ctrlKey->getAction() == ControlAction::Jump);
                 });
 
-        connect(timeSpinner_,
-                static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
-                [ctrlKey](double t) { ctrlKey->setJumpTime(Seconds{t}); });
+        connect(jumpToWidget_,
+                static_cast<void (DoubleValueDragSpinBox::*)(double)>(
+                    &DoubleValueDragSpinBox::valueChanged),
+                this, [ctrlKey](double t) { ctrlKey->setJumpTime(Seconds{t}); });
+        connect(jumpToWidget_, &DoubleValueDragSpinBox::editingFinished, this,
+                [&]() { ctrlKey->setJumpTime(Seconds{jumpToWidget_->value()}); });
 
         layout_->addWidget(actionWidget_);
         layout_->addWidget(jumpToWidget_);
