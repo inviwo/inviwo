@@ -428,14 +428,10 @@ void InstanceRenderer::initializeResources() {
         prio += 100;
     }
 
-    for (auto& obj : shader_) {
-        obj.build();
-    }
-
-    const GLchar* feedbackVaryings[] = {"worldPosition"};
-    glTransformFeedbackVaryings(shader_.getID(), 1, feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
-
-    shader_.link();
+    std::array<const GLchar*, 1> feedbackVaryings = {"worldPosition"};
+    shader_.setTransformFeedbackVaryings(feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
+    
+    shader_.build();
 }
 
 namespace {
