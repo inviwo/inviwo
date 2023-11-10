@@ -29,16 +29,15 @@
 
 #include <modules/base/processors/volumeboundingbox.h>
 
-#include <inviwo/core/ports/meshport.h>                // for MeshOutport
-#include <inviwo/core/ports/volumeport.h>              // for VolumeInport
-#include <inviwo/core/processors/processor.h>          // for Processor
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::None
-#include <inviwo/core/properties/ordinalproperty.h>    // for FloatVec4Property
-#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
-#include <inviwo/core/util/glmvec.h>                   // for vec4
-#include <modules/base/algorithm/meshutils.h>          // for boundingBoxAdjacency
+#include <inviwo/core/ports/meshport.h>              // for MeshOutport
+#include <inviwo/core/ports/volumeport.h>            // for VolumeInport
+#include <inviwo/core/processors/processor.h>        // for Processor
+#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>   // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>    // for Tags, Tags::None
+#include <inviwo/core/properties/ordinalproperty.h>  // for FloatVec4Property
+#include <inviwo/core/util/glmvec.h>                 // for vec4
+#include <modules/base/algorithm/meshutils.h>        // for boundingBoxAdjacency
 
 #include <memory>       // for shared_ptr, shared_ptr<>::element_...
 #include <string>       // for string
@@ -53,20 +52,18 @@ const ProcessorInfo VolumeBoundingBox::processorInfo_{
     "Volume Bounding Box",           // Display name
     "Volume Operation",              // Category
     CodeState::Stable,               // Code state
-    Tags::None,                      // Tags
-};
+    Tag::CPU,                        // Tags
+    "Creates a mesh containing the bounding box of the volume, that is lines with adjacency "
+    "information."_help};
 const ProcessorInfo VolumeBoundingBox::getProcessorInfo() const { return processorInfo_; }
 
 VolumeBoundingBox::VolumeBoundingBox()
     : Processor()
-    , volume_("volume")
-    , mesh_("mesh")
-    , color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f)) {
+    , volume_("volume", "Input volume"_help)
+    , mesh_("mesh", "The bounding box mesh"_help)
+    , color_("color", "Color", util::ordinalColor(vec4{1.0f}).set("Line color of the mesh"_help)) {
 
-    addPort(volume_);
-    addPort(mesh_);
-
-    color_.setSemantics(PropertySemantics::Color);
+    addPorts(volume_, mesh_);
     addProperty(color_);
 }
 

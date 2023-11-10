@@ -39,23 +39,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeBoundingBox, Volume Bounding Box}
- * ![](org.inviwo.VolumeBoundingBox.png?classIdentifier=org.inviwo.VolumeBoundingBox)
- *
- * Creates a mesh containing the bounding box of the volumes (Lines with Adjacency Information).
- *
- *
- * ### Inports
- *   * __volume__ The volume.
- *
- * ### Outports
- *   * __mesh__ The bounding mesh.
- *
- * ### Properties
- *   * __Color__ The color of the lines in the mesh.
- *
- */
-
 class IVW_MODULE_BASE_API VolumeBoundingBox : public Processor {
 public:
     VolumeBoundingBox();
