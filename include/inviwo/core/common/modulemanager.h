@@ -83,14 +83,16 @@ public:
     void registerModules(RuntimeModuleLoading, std::function<bool(std::string_view)> filter =
                                                    ModuleManager::getEnabledFilter());
 
-    std::vector<ModuleContainer> findRuntimeModules(std::span<std::filesystem::path> searchPaths);
+    std::vector<ModuleContainer> findRuntimeModules(
+        std::span<const std::filesystem::path> searchPaths);
 
-    std::vector<ModuleContainer> findRuntimeModules(std::span<std::filesystem::path> searchPaths,
-                                                    std::function<bool(std::string_view)> filter);
+    std::vector<ModuleContainer> findRuntimeModules(
+        std::span<const std::filesystem::path> searchPaths,
+        std::function<bool(std::string_view)> filter);
 
-    std::vector<ModuleContainer> findRuntimeModules(std::span<std::filesystem::path> searchPaths,
-                                                    std::function<bool(std::string_view)> filter,
-                                                    bool runtimeReloading);
+    std::vector<ModuleContainer> findRuntimeModules(
+        std::span<const std::filesystem::path> searchPaths,
+        std::function<bool(std::string_view)> filter, bool runtimeReloading);
 
     auto getInviwoModules() {
         static constexpr auto notNull = [](ModuleContainer& cont) -> bool {

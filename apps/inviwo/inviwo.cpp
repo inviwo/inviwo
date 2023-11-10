@@ -46,7 +46,7 @@
 #include <inviwo/core/util/filelogger.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include "inviwosplashscreen.h"
-#include <inviwo/sys/moduleregistration.h>
+#include <inviwo/sys/moduleloading.h>
 
 #include <sstream>
 #include <algorithm>
@@ -97,28 +97,11 @@ int main(int argc, char** argv) {
     // Initialize application and register modules
     splashScreen.showMessage("Initializing modules...");
 
-    std::vector<inviwo::ModuleContainer> inviwoModules;
-
-    auto staticModules = inviwo::getModuleList();
-    for (auto& item : staticModules) {
-        inviwoModules.emplace_back(std::move(item));
-    }
-
-    auto searchPaths = inviwoApp.getSystemSettings().moduleSearchPaths_.get();
-    const auto clpSearchPaths = clp.getModuleSearchPaths();
-    searchPaths.insert(searchPaths.end(), std::make_move_iterator(clpSearchPaths.begin()),
-                       std::make_move_iterator(clpSearchPaths.end()));
-    auto runtimeModules = inviwoApp.getModuleManager().findRuntimeModules(searchPaths);
-
-    inviwoModules.insert(inviwoModules.end(), std::make_move_iterator(runtimeModules.begin()),
-                         std::make_move_iterator(runtimeModules.end()));
-
-    // Remove GLFW module from list of modules to register since we will use Qt for the OpenGL
-    // context
-    std::erase_if(inviwoModules,
-                  [](const inviwo::ModuleContainer& m) { return m.identifier() == "glfw"; });
-
-    inviwoApp.getModuleManager().registerModules(std::move(inviwoModules));
+    // Remove GLFW module register since we will use Qt for the OpenGL context
+    auto filter = [](const inviwo::ModuleContainer& m) { return m.identifier() == "glfw"; };
+    inviwo::util::registerModulesFiltered(inviwoApp.getModuleManager(), filter,
+                                          inviwoApp.getSystemSettings().moduleSearchPaths_.get(),
+                                          clp.getModuleSearchPaths());
 
     qtApp.processEvents();
 

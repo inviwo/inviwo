@@ -281,19 +281,20 @@ void ModuleManager::reloadModules() {
 }
 
 std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
-    std::span<std::filesystem::path> searchPaths) {
+    std::span<const std::filesystem::path> searchPaths) {
     return findRuntimeModules(searchPaths, getEnabledFilter(), isRuntimeModuleReloadingEnabled());
 }
 
 std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
-    std::span<std::filesystem::path> searchPaths, std::function<bool(std::string_view)> isEnabled) {
+    std::span<const std::filesystem::path> searchPaths,
+    std::function<bool(std::string_view)> isEnabled) {
 
     return findRuntimeModules(searchPaths, isEnabled, isRuntimeModuleReloadingEnabled());
 }
 
 std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
-    std::span<std::filesystem::path> searchPaths, std::function<bool(std::string_view)> isEnabled,
-    bool runtimeReloading) {
+    std::span<const std::filesystem::path> searchPaths,
+    std::function<bool(std::string_view)> isEnabled, bool runtimeReloading) {
 
     const auto libraryTypes = SharedLibrary::libraryFileExtensions();
     // Remove unsupported files and files belonging to already loaded modules.

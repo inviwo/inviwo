@@ -53,7 +53,7 @@
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/networkdebugobserver.h>
 
-#include <inviwo/sys/moduleregistration.h>
+#include <inviwo/sys/moduleloading.h>
 
 #include <fmt/std.h>
 
@@ -80,10 +80,13 @@ int main(int argc, char** argv) {
 
     inviwoApp.setFileSystemObserver(std::make_unique<inviwo::FileWatcher>(&inviwoApp));
 
-    // Initialize all modules
-    inviwoApp.registerModules(inviwo::getModuleList());
-
     auto& cmdparser = inviwoApp.getCommandLineParser();
+    
+    // Initialize all modules
+    inviwo::util::registerModules(inviwoApp.getModuleManager(),
+                                  inviwoApp.getSystemSettings().moduleSearchPaths_.get(),
+                                  cmdparser.getModuleSearchPaths());
+
     TCLAP::ValueArg<std::string> snapshotArg(
         "s", "snapshot",
         "Specify default name of each snapshot, or empty string for processor name.", false, "",

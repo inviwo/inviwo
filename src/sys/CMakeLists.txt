@@ -17,7 +17,9 @@ target_sources(inviwo-module-system
     FILES 
         ${IVW_INCLUDE_DIR}/inviwo/sys/inviwosysdefine.h
         ${IVW_INCLUDE_DIR}/inviwo/sys/moduleregistration.h
+        ${IVW_INCLUDE_DIR}/inviwo/sys/moduleloading.h
     PRIVATE
+        moduleloading.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/moduleregistration.cpp
 )
 
