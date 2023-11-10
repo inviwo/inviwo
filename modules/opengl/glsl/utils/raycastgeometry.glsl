@@ -36,10 +36,11 @@ vec4 drawPlanes(in vec4 oldres, in vec3 pos, in vec3 dir, in float inc, PlanePar
 
     float e = dot(pos - plane.position, plane.normal);
     float step = abs(dot(plane.normal, inc * dir));
-    if (e <= 0.0 && e > -step) {
+    if (e <= 0.0 && e > -step && plane.color.a > 0.0) {
         if (tDepth == -1.0) tDepth = t;
-        result.rgb = result.rgb + (1.0 - result.a) * plane.color.a * plane.color.rgb;
-        result.a = result.a + (1.0 - result.a) * plane.color.a;
+        vec4 color = plane.color;
+        color.rgb *= color.a;
+        result += (1.0 - result.a) * color;
     }
     return result;
 }
@@ -65,12 +66,11 @@ vec4 drawBackground(in vec4 oldres, in float depth, in float inc, in vec4 color,
                     inout float tDepth) {
     vec4 result = oldres;
 
-    if ((depth - inc) <= bgDepth && (depth) >= bgDepth) {
-        if (tDepth == -1.0 && color.a > 0.0) tDepth = depth;
-        result.rgb = result.rgb + (1.0 - result.a) * color.a * color.rgb;
-        result.a = result.a + (1.0 - result.a) * color.a;
+    if ((depth - inc) < bgDepth && depth >= bgDepth && color.a > 0.0) {
+        if (tDepth == -1.0) tDepth = depth;
+        color.rgb *= color.a;
+        result += (1.0 - result.a) * color;
     }
-
     return result;
 }
 

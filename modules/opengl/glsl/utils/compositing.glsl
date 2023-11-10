@@ -41,8 +41,9 @@ vec4 compositeDVR(in vec4 curResult, in vec4 color, in float t, inout float tDep
     if (tDepth == -1.0 && color.a > 0.0) tDepth = t;
 
     color.a = 1.0 - pow(1.0 - color.a, tIncr * REF_SAMPLING_INTERVAL);
-    result.rgb = result.rgb + (1.0 - result.a) * color.a * color.rgb;
-    result.a = result.a + (1.0 - result.a) * color.a;
+    // front-to-back blending
+    color.rgb *= color.a;
+    result += (1.0 - result.a) * color;
     return result;
 }
 
@@ -119,8 +120,9 @@ vec4 compositeISO(in vec4 curResult, in vec4 color, in float intensity, in float
     if (intensity >= isoValue - 0.01 && intensity <= isoValue + 0.01) {
         if (tDepth == -1.0) tDepth = t;
         color.a = 1.0 - pow(1.0 - color.a, tIncr * REF_SAMPLING_INTERVAL);
-        result.rgb = result.rgb + (1.0 - result.a) * color.a * color.rgb;
-        result.a = result.a + (1.0 - result.a) * color.a;
+        // front-to-back blending
+        color.rgb *= color.a;
+        result += (1.0 - result.a) * color;
     }
     return result;
 }
