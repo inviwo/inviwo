@@ -55,7 +55,8 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget* parent)
     : QWidget(parent)
     , parent_(dynamic_cast<QDockWidget*>(parent))
     , allowedDockAreas_(parent_->allowedAreas())
-    , internalStickyFlagUpdate_(false) {
+    , internalStickyFlagUpdate_(false)
+    , windowTitle_(parent->windowTitle()) {
     label_ = new QLabel(parent->windowTitle());
     label_->setObjectName("InviwoDockWidgetTitleBarLabel");
     label_->setMinimumWidth(utilqt::emToPx(fontMetrics(), 10));
@@ -140,7 +141,7 @@ void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {
 }
 
 void InviwoDockWidgetTitleBar::updateTitle() {
-    QString windowTitle = utilqt::windowTitleHelper(parent_->windowTitle(), parent_);
+    QString windowTitle = utilqt::windowTitleHelper(windowTitle_, parent_);
     // elide window title in case it is too long to fit the label
     QFontMetrics fontMetrics(label_->font());
     label_->setText(fontMetrics.elidedText(windowTitle, Qt::ElideMiddle, label_->width() - 4));
@@ -157,6 +158,13 @@ void InviwoDockWidgetTitleBar::showEvent(QShowEvent*) {
 }
 
 bool InviwoDockWidgetTitleBar::eventFilter(QObject* obj, QEvent* event) {
+    if (event->type() == QEvent::WindowTitleChange) {
+        if (auto window = qobject_cast<QWidget*>(obj); window) {
+            // need to cache the window title, the parent widget might set its title to an empty
+            // string due to the custom  title bar (observed in Qt 6.5.x and Qt 6.6.0)
+            windowTitle_ = window->windowTitle();
+        }
+    }
     if ((event->type() == QEvent::ModifiedChange) || (event->type() == QEvent::WindowTitleChange)) {
         updateTitle();
     }
