@@ -71,7 +71,6 @@ void registerModulesFiltered(ModuleManager& moduleManager, Filter&& filter, Args
     auto inviwoModules = getModuleContainers(moduleManager, searchPaths...);
     std::erase_if(inviwoModules, filter);
     moduleManager.registerModules(std::move(inviwoModules));
-
 }
 
 template <typename... Args>
