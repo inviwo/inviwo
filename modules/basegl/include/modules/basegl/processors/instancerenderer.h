@@ -94,6 +94,8 @@ public:
 
     virtual void initializeResources() override;
     virtual void process() override;
+    
+    std::optional<mat4> process(bool enableBoundingBoxCalc);
 
 private:
     void onDidAddProperty(Property* property, size_t index) override;
@@ -114,9 +116,6 @@ private:
 
     std::array<StringProperty, 5> transforms_;
     StringProperty setupVert_;
-
-    size_t numberOfvertices_;
-    BufferObject feedbackBuffer_;
 
     std::shared_ptr<StringShaderResource> vert_;
     std::shared_ptr<StringShaderResource> frag_;

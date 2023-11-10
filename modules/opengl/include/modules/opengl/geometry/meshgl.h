@@ -61,6 +61,7 @@ public:
     const BufferGL* getBufferGL(size_t idx = 0) const;
 
     const Mesh::MeshInfo& getMeshInfoForIndexBuffer(size_t idx = 0) const;
+    const Mesh::MeshInfo& getDefaultMeshInfo() const;
     const BufferGL* getIndexBuffer(size_t idx = 0) const;
 
     size_t getIndexBufferCount() const;
@@ -74,6 +75,7 @@ private:
     BufferObjectArray bufferArray_;
 
     std::vector<std::pair<Mesh::MeshInfo, const BufferGL*>> indexBuffers_;
+    Mesh::MeshInfo defaultMeshInfo_;
 };
 
 }  // namespace inviwo
