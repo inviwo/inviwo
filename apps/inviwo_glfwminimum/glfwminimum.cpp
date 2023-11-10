@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     inviwoApp.setFileSystemObserver(std::make_unique<inviwo::FileWatcher>(&inviwoApp));
 
     auto& cmdparser = inviwoApp.getCommandLineParser();
-    
+
     // Initialize all modules
     inviwo::util::registerModules(inviwoApp.getModuleManager(),
                                   inviwoApp.getSystemSettings().moduleSearchPaths_.get(),
