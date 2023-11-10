@@ -301,7 +301,7 @@ void InviwoApplication::printApplicationInfo() {
                   build::configuration, build::compiler, build::compilerVersion);
 }
 
-void InviwoApplication::postProgress(std::string progress) {
+void InviwoApplication::postProgress(std::string_view progress) const {
     if (progressCallback_) progressCallback_(progress);
 }
 
@@ -428,7 +428,8 @@ size_t InviwoApplication::processFront() {
     return queue_.tasks.size();
 }
 
-void InviwoApplication::setProgressCallback(std::function<void(std::string)> progressCallback) {
+void InviwoApplication::setProgressCallback(
+    std::function<void(std::string_view)> progressCallback) {
     progressCallback_ = progressCallback;
 }
 

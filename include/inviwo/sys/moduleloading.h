@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/util/foreacharg.h>
 #include <inviwo/core/common/modulecontainer.h>
+#include <inviwo/core/common/modulemanager.h>
 
 #include <vector>
 #include <span>
@@ -41,8 +42,6 @@
 #include <ranges>
 
 namespace inviwo {
-
-class ModuleManager;
 
 namespace util {
 
@@ -67,20 +66,18 @@ std::vector<inviwo::ModuleContainer> getModuleContainers(ModuleManager& moduleMa
     return getModuleContainersImpl(moduleManager, paths);
 }
 
-IVW_SYS_API void registerModulesImpl(ModuleManager& moduleManager,
-                                     std::vector<ModuleContainer> moduleFactories);
-
 template <typename Filter, typename... Args>
 void registerModulesFiltered(ModuleManager& moduleManager, Filter&& filter, Args&&... searchPaths) {
     auto inviwoModules = getModuleContainers(moduleManager, searchPaths...);
     std::erase_if(inviwoModules, filter);
-    registerModulesImpl(moduleManager, std::move(inviwoModules));
+    moduleManager.registerModules(std::move(inviwoModules));
+
 }
 
 template <typename... Args>
 void registerModules(ModuleManager& moduleManager, Args&&... searchPaths) {
     auto inviwoModules = getModuleContainers(moduleManager, searchPaths...);
-    registerModulesImpl(moduleManager, std::move(inviwoModules));
+    moduleManager.registerModules(std::move(inviwoModules));
 }
 
 }  // namespace util

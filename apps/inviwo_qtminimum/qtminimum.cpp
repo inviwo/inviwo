@@ -46,6 +46,7 @@
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/networkdebugobserver.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 #include <modules/qtwidgets/propertylistwidget.h>  // for PropertyListWidget
 

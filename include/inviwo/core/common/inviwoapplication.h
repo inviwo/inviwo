@@ -253,7 +253,7 @@ public:
 
     void waitForPool();
     void setPostEnqueueFront(std::function<void()> func);
-    void setProgressCallback(std::function<void(std::string)> progressCallback);
+    void setProgressCallback(std::function<void(std::string_view)> progressCallback);
 
     ThreadPool& getThreadPool();
 
@@ -423,7 +423,7 @@ public:
     TimerThread& getTimerThread();
     const std::string& getDisplayName() const;
     virtual void printApplicationInfo();
-    void postProgress(std::string progress);
+    void postProgress(std::string_view progress) const;
 
     /**
      * Get the current LayerRamResizer
@@ -455,7 +455,7 @@ protected:
     std::unique_ptr<CommandLineParser> commandLineParser_;
     std::shared_ptr<ConsoleLogger> consoleLogger_;
     std::shared_ptr<FileLogger> filelogger_;
-    std::function<void(std::string)> progressCallback_;
+    std::function<void(std::string_view)> progressCallback_;
     std::unique_ptr<FileSystemObserver> fileSystemObserver_;
 
     std::locale uiLocale_{};

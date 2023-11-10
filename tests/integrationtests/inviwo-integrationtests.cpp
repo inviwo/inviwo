@@ -79,9 +79,8 @@ int main(int argc, char** argv) {
         InviwoApplication inviwoApp(argc, argv, "Inviwo-IntegrationTests");
         inviwoApp.getSystemSettings().stackTraceInException_.set(true);
         inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });
-        inviwoApp.setProgressCallback([](std::string m) {
-            LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "",
-                                      "", 0, m);
+        inviwoApp.setProgressCallback([&](std::string_view m) {
+            logCentral.log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0, m);
         });
 
         // Initialize all modules

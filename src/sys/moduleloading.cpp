@@ -31,8 +31,6 @@
 
 #include <inviwo/sys/moduleregistration.h>
 
-#include <inviwo/core/common/modulemanager.h>
-
 namespace inviwo {
 
 std::vector<inviwo::ModuleContainer> util::getModuleContainersImpl(
@@ -49,11 +47,6 @@ std::vector<inviwo::ModuleContainer> util::getModuleContainersImpl(
                          std::make_move_iterator(runtimeModules.end()));
 
     return inviwoModules;
-}
-
-void util::registerModulesImpl(ModuleManager& moduleManager,
-                               std::vector<ModuleContainer> moduleFactories) {
-    moduleManager.registerModules(std::move(moduleFactories));
 }
 
 }  // namespace inviwo

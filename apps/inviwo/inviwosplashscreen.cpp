@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwocommondefines.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/qt/applicationbase/qtapptools.h>
 
 #include <QApplication>
 #include <QPainter>
@@ -50,8 +51,8 @@ void InviwoSplashScreen::show() {
 }
 
 void InviwoSplashScreen::drawContents(QPainter* painter) {
-    const auto versionLabel = QString::fromStdString(
-        fmt::format("Version {} ({})", build::version, build::configuration));
+    const auto versionLabel =
+        utilqt::str(fmt::format("Version {} ({})", build::version, build::configuration));
     painter->setPen(Qt::black);
     painter->drawText(12, 326, versionLabel);
     auto font = painter->font();
@@ -60,8 +61,8 @@ void InviwoSplashScreen::drawContents(QPainter* painter) {
     painter->drawText(12, 346, message());
 }
 
-void InviwoSplashScreen::showMessage(std::string message) {
-    if (showSplashScreen_) QSplashScreen::showMessage(QString::fromStdString(message));
+void InviwoSplashScreen::showMessage(std::string_view message) {
+    if (showSplashScreen_) QSplashScreen::showMessage(utilqt::str(message));
 }
 
 void InviwoSplashScreen::finish(QWidget* waitFor) {

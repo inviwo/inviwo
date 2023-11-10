@@ -93,6 +93,9 @@ IVW_QTAPPLICATIONBASE_API void setStyleSheetFile(const std::filesystem::path& fi
  */
 IVW_QTAPPLICATIONBASE_API void configurePalette();
 
+inline QString str(std::string_view str) { return QString::fromUtf8(str.data(), str.size()); }
+
+
 namespace detail {
 class IVW_QTAPPLICATIONBASE_API QtProcessFrontHelper : public QObject {
     Q_OBJECT

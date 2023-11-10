@@ -52,6 +52,7 @@
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/networkdebugobserver.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 #include <inviwo/sys/moduleloading.h>
 
@@ -73,29 +74,29 @@ int main(int argc, char** argv) {
     InviwoApplication inviwoApp(argc, argv, "Inviwo-GLFW");
     inviwoApp.printApplicationInfo();
     inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });
-    inviwoApp.setProgressCallback([](std::string m) {
-        LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0,
+    inviwoApp.setProgressCallback([&](std::string_view m) {
+        logger.log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0,
                                   m);
     });
 
     inviwoApp.setFileSystemObserver(std::make_unique<inviwo::FileWatcher>(&inviwoApp));
 
-    auto& cmdparser = inviwoApp.getCommandLineParser();
-
+    auto& cmdParser = inviwoApp.getCommandLineParser();
+    
     // Initialize all modules
     inviwo::util::registerModules(inviwoApp.getModuleManager(),
                                   inviwoApp.getSystemSettings().moduleSearchPaths_.get(),
-                                  cmdparser.getModuleSearchPaths());
+                                  cmdParser.getModuleSearchPaths());
 
     TCLAP::ValueArg<std::string> snapshotArg(
         "s", "snapshot",
         "Specify default name of each snapshot, or empty string for processor name.", false, "",
         "Snapshot default name: UPN=Use Processor name.");
 
-    cmdparser.add(
+    cmdParser.add(
         &snapshotArg,
         [&]() {
-            auto path = cmdparser.getOutputPath();
+            auto path = cmdParser.getOutputPath();
             if (path.empty()) path = inviwoApp.getPath(PathType::Images);
             util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, snapshotArg.getValue());
         },
@@ -105,7 +106,7 @@ int main(int argc, char** argv) {
                                   "Add debug logging for processor evaluation to the log");
 
     NetworkDebugObserver obs;
-    cmdparser.add(
+    cmdParser.add(
         &debugProcess,
         [&]() {
             inviwoApp.getProcessorNetwork()->addObserver(&obs);
@@ -117,7 +118,7 @@ int main(int argc, char** argv) {
 
     TCLAP::SwitchArg fullscreenArg("f", "fullscreen", "Specify fullscreen if only one canvas");
 
-    cmdparser.add(&fullscreenArg, [&]() {
+    cmdParser.add(&fullscreenArg, [&]() {
         auto network = inviwoApp.getProcessorNetwork();
 
         std::vector<ProcessorWidget*> widgets;
@@ -137,12 +138,12 @@ int main(int argc, char** argv) {
     });
 
     // Do this after registerModules if some arguments were added
-    cmdparser.parse(inviwo::CommandLineParser::Mode::Normal);
+    cmdParser.parse(inviwo::CommandLineParser::Mode::Normal);
 
     // Load simple scene
     inviwoApp.getProcessorNetwork()->lock();
-    const auto workspace = cmdparser.getLoadWorkspaceFromArg()
-                               ? cmdparser.getWorkspacePath()
+    const auto workspace = cmdParser.getLoadWorkspaceFromArg()
+                               ? cmdParser.getWorkspacePath()
                                : (inviwoApp.getPath(PathType::Workspaces) / "boron.inv");
 
     try {
@@ -168,9 +169,9 @@ int main(int argc, char** argv) {
 
     inviwoApp.getProcessorNetwork()->unlock();
 
-    cmdparser.processCallbacks();  // run any command line callbacks from modules.
+    cmdParser.processCallbacks();  // run any command line callbacks from modules.
 
-    if (cmdparser.getQuitApplicationAfterStartup()) {
+    if (cmdParser.getQuitApplicationAfterStartup()) {
         glfwTerminate();
         return 0;
     }

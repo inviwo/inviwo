@@ -44,9 +44,9 @@ public:
     ~InviwoSplashScreen();
 
     virtual void show();
-    virtual void drawContents(QPainter* painter);
-    virtual void showMessage(std::string message);
-    virtual void finish(QWidget* waitfor);
+    virtual void drawContents(QPainter* painter) override;
+    void showMessage(std::string_view message);
+    virtual void finish(QWidget* waitFor);
 
 private:
     bool showSplashScreen_;
