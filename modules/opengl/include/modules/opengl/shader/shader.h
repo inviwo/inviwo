@@ -215,7 +215,7 @@ public:
     const BaseCallBack* onReload(std::function<void()> callback);
     std::shared_ptr<std::function<void()>> onReloadScoped(std::function<void()> callback);
     void removeOnReload(const BaseCallBack* callback);
-    
+
     void setTransformFeedbackVaryings(std::span<const char*> varyings, GLenum bufferMode);
 
 private:

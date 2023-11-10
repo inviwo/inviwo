@@ -41,7 +41,7 @@
 #include <inviwo/core/properties/simplelightingproperty.h>  // for SimpleLightingProperty
 #include <inviwo/core/properties/stringproperty.h>          // for StringProperty
 #include <modules/opengl/shader/shader.h>                   // for Shader
-#include <modules/opengl/buffer/bufferobject.h>                 // for BufferGL
+#include <modules/opengl/buffer/bufferobject.h>             // for BufferGL
 
 #include <array>       // for array
 #include <cstddef>     // for size_t
@@ -94,7 +94,7 @@ public:
 
     virtual void initializeResources() override;
     virtual void process() override;
-    
+
     std::optional<mat4> process(bool enableBoundingBoxCalc);
 
 private:

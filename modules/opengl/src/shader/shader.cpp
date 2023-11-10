@@ -720,5 +720,4 @@ void Shader::setTransformFeedbackVaryings(std::span<const GLchar*> varyings, GLe
     ready_ = false;
 }
 
-
 }  // namespace inviwo

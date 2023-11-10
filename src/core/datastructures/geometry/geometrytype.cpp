@@ -118,7 +118,7 @@ std::ostream& operator<<(std::ostream& ss, BufferUsage bu) { return ss << enumTo
 std::ostream& operator<<(std::ostream& ss, BufferTarget bt) { return ss << enumToStr(bt); }
 
 size_t util::numberOfVerticesForPrimitive(DrawType dt) {
-    switch(dt) {
+    switch (dt) {
         case DrawType::Points:
             return 1;
         case DrawType::Lines:

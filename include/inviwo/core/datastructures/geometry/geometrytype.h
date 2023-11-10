@@ -86,9 +86,7 @@ namespace util {
 IVW_CORE_API size_t numberOfPrimitives(DrawType dt, ConnectivityType ct, size_t indices);
 IVW_CORE_API size_t numberOfVerticesForPrimitive(DrawType dt);
 
-}
-
-
+}  // namespace util
 
 }  // namespace inviwo
 

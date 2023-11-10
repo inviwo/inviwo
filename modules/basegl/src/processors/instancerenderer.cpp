@@ -430,7 +430,7 @@ void InstanceRenderer::initializeResources() {
 
     std::array<const GLchar*, 1> feedbackVaryings = {"worldPosition"};
     shader_.setTransformFeedbackVaryings(feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
-    
+
     shader_.build();
 }
 
