@@ -34,6 +34,10 @@
 #   if defined(GLSL_VERSION_450) || defined(GLSL_VERSION_440) || defined(GLSL_VERSION_430) || defined(GLSL_VERSION_420)
         layout (depth_less) out float gl_FragDepth;
 #   endif
+
+#if !defined M_PI
+#define M_PI 3.14159265358979323846
+#endif
 #endif
 
 uniform vec2 screenDim = vec2(512, 512);
@@ -115,7 +119,7 @@ void main() {
     float maxDist = (linewidthHalf + antialiasing);
     // assume circular profile of line
     gl_FragDepth = convertDepthViewToScreen(camera, 
-        depth - cos(distance/maxDist) * maxDist / screenDim.x*0.5);
+        depth - cos(distance/maxDist * M_PI) * maxDist / screenDim.x*0.5);
 #endif // ENABLE_ROUND_DEPTH_PROFILE
 
     PickingData = pickColor_;
