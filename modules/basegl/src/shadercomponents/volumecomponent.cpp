@@ -63,12 +63,12 @@ uniform VolumeParameters {0}Parameters;
 uniform sampler3D {0};
 )");
 
-// Initialize the VoxelPrev value to 0 in the data range. Might not be the same as 0 in the
-// normalized [0,1] range. For example if the data range is [-10, 10] then the normalized 0
-// would be 0.5. This value it important mainly for the iso rendering.
+// Initialize the VoxelPrev value to the same as the first voxel value. This value is important
+// mainly for the isosurface rendering. Setting it to the same voxel value prevents isosurfaces
+// being rendered at the volume boundaries.
 constexpr std::string_view voxelFirst = util::trim(R"(
-vec4 {0}VoxelPrev = vec4({0}Parameters.formatOffset * (1.0 - {0}Parameters.formatScaling));
 vec4 {0}Voxel = getNormalizedVoxel({0}, {0}Parameters, samplePosition);
+vec4 {0}VoxelPrev = {0}Voxel;
 )");
 
 constexpr std::string_view voxel = util::trim(R"(
