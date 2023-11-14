@@ -172,7 +172,10 @@ VolumePathTracer::VolumePathTracer()
     enableProgressiveRefinement_.onChange([this]() { progressiveRefinementChanged(); });
     
     // What can we set up before process
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); } invalidateProgressiveRendering(); );
+    shader_.onReload([this]() { 
+                        invalidate(InvalidationLevel::InvalidOutput); 
+                        invalidateProgressiveRendering(); 
+    });
     progressiveRefinementChanged();
 }
 
