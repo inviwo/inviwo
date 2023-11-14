@@ -223,7 +223,7 @@ void VolumePathTracer::process() {
         units.push_back(std::move(unit2));
         units.push_back(std::move(unit3));
 
-        std::cout << "texunit1 is " << unit1.getUnitNumber() << " and iteration is " << iteration_ << std::endl;
+        //std::cout << "texunit1 is " << unit1.getUnitNumber() << " and iteration is " << iteration_ << std::endl;
 
         StrBuffer buff;
         utilgl::setShaderUniforms(shader_, *image, buff.replace("{}Parameters", outport_.getIdentifier()));

@@ -18,7 +18,6 @@ float WoodcockTracking(vec3 raystart, vec3 raydir, float raylength, float hashSe
         meanfreepath += -log(random_1dto1d(hashSeed))/sigma_upperbound;
 
         r = raystart - meanfreepath*raydir;
-        //this is really slow since we are now doing 2 texture look ups multiple times, per ray.
         sigma = applyTF(transferFunction, getNormalizedVoxel(volume, volumeParameters, r)).a;
         //float sigma = 1.5;
         if(random_1dto1d(hashSeed + 1) < sigma/sigma_upperbound) {
@@ -102,42 +101,34 @@ vec4 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, 
 
     vec3 toLight = normalize(light.position - sampleWorldPos);
 
-    // only the volume is moved when the canvas is shifted. keep that in mind
-
     color.rgb = shadeSpecularPhongCalculation(light, tfSample.rgb, toLight, 
         toLight, cameraDir);
 
-    // Attenuate color from sampleWorldPos to lightPos
-    // send a ray from sampleWorldPos to lightPos.
-    // attenuate for the distance from samplePos to boundingbox intersection.
-    // There are many examples of ray-box, -plane intersection tests, it is fairly trivial.
-    // if our volume had a bounding box that would make this very simple, but Boron is sadly rectangular.
-
-    // Function candidates:
-    // bool rayPlaneIntersection (in PlaneParameters plane, in vec3 point, in vec3 rayDir, inout float t0, in float t1)
-    // planes have no bounds, so we can get 3 intersections, the one with smallest t0 needs to be chosen.
+    // 
     float t = 0f;
-    float t_smallest = 100f;
-    float t_test = 0f;
-
-    // TODO: why tf doesnt this work?
-    RayBBIntersection(bb, sampleWorldPos, toLight, t);
-
-    // We get massive hickups at times and the rendering seems a lot more stuttery than before
-    // this way of doing things must be VERY innefficient
-    
-    
-    float tau = 1f;    
-    // toLight is in world coords, samplePos is in texture coords, toLight needs to be transformed to texture.
-    vec3 toLightTexture = (volParam.worldToTexture*vec4(toLight,1f)).xyz;
-    float meanfreepath_l = WoodcockTracking(samplePos, toLightTexture, /*should be t*/ 0f, hashSeed, 
-        volume, volParam, tf, 1f, tau);
-    
+    float tau = 1f;   
+    float meanfreepath_l = 0f; 
     float Tl = 1f;
-    Tl = SimpleTracking(Tl, meanfreepath_l, tau);
+
+
+    /*
+        Light Attenuation source to sample:
+        Attenuate color from sampleWorldPos to lightPos
+        send a ray from sampleWorldPos to lightPos.
+        attenuate for the distance from samplePos to boundingbox intersection.
+        There are many examples of ray-box, -plane intersection tests, it is fairly trivial.
+        if our volume had a bounding box that would make this very simple, but Boron is sadly rectangular.
+
+    */
+    vec3 toLightTexture = (volParam.worldToTexture*vec4(toLight,1f)).xyz;
+
+    //RayBBIntersection(bb, sampleWorldPos, toLight, t);
+    //meanfreepath_l = WoodcockTracking(samplePos, toLightTexture, /*should be t*/ t, hashSeed, 
+    //    volume, volParam, tf, 1f, tau);
+    //Tl = SimpleTracking(Tl, meanfreepath_l, tau);
 
     // pseudo gamma
-    float g = 2f;
+    float g = 1f;
 
     color.w = 1f;
     acc_radiance += acc_radiance + g*T*tau*(color*Tl);
