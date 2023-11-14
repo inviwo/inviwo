@@ -1,6 +1,12 @@
 #include "random.glsl"
 #include "transmittancemethods.glsl"
 
+
+struct plane {
+    vec3 position;
+    vec3 normal;
+};
+
 mat3 rotMatrixAroundAxel(vec3 v, float theta) {
     float costheta = cos(theta); float sintheta = sin(theta);
     mat3 thetaRot = mat3(                                                
@@ -50,12 +56,12 @@ PlaneParameters[6] constructBBPlanes(VolumeParameters volParam) {
     float dimz = volParam.dimensions.z;
 
     //normals in or out? in, according to rayPlaneIntersection
-    planes[0] = PlaneParameters(vec3(dimx/2f, 0f, 0f), vec3(1f, 0f, 0f), /*irrelevant*/ vec4(0f));
-    planes[1] = PlaneParameters(vec3(-dimx/2f, 0f, 0f), vec3(-1f, 0f, 0f), /*irrelevant*/ vec4(0f));
-    planes[2] = PlaneParameters(vec3(0f, dimy/2f, 0f), vec3(0f, 1f, 0f), /*irrelevant*/ vec4(0f));
-    planes[3] = PlaneParameters(vec3(0f, -dimy/2f, 0f), vec3(0f, -1f, 0f), /*irrelevant*/ vec4(0f));
-    planes[4] = PlaneParameters(vec3(0f, 0f, dimz/2f), vec3(0f, 0f, 1f), /*irrelevant*/ vec4(0f));
-    planes[5] = PlaneParameters(vec3(0f, 0f, -dimz/2f), vec3(0f, 0f, -1f), /*irrelevant*/ vec4(0f));
+    planes[0] = PlaneParameters(vec3(dimx/2f, 0f, 0f), vec3(-1f, 0f, 0f), /*irrelevant*/ vec4(0f));
+    planes[1] = PlaneParameters(vec3(-dimx/2f, 0f, 0f), vec3(1f, 0f, 0f), /*irrelevant*/ vec4(0f));
+    planes[2] = PlaneParameters(vec3(0f, dimy/2f, 0f), vec3(0f, -1f, 0f), /*irrelevant*/ vec4(0f));
+    planes[3] = PlaneParameters(vec3(0f, -dimy/2f, 0f), vec3(0f, 1f, 0f), /*irrelevant*/ vec4(0f));
+    planes[4] = PlaneParameters(vec3(0f, 0f, dimz/2f), vec3(0f, 0f, -1f), /*irrelevant*/ vec4(0f));
+    planes[5] = PlaneParameters(vec3(0f, 0f, -dimz/2f), vec3(0f, 0f, 1f), /*irrelevant*/ vec4(0f));
 
     return planes;
 }
