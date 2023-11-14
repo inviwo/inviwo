@@ -95,7 +95,11 @@ public:
     virtual void initializeResources() override;
     virtual void process() override;
 
-    std::optional<mat4> process(bool enableBoundingBoxCalc);
+    /** Render all meshes.
+     * @return The axis-aligned bounding box of all vertices if enableBoundingBoxCalc, otherwise
+     * nullopt.
+     */
+    std::optional<mat4> render(bool enableBoundingBoxCalc);
 
 private:
     void onDidAddProperty(Property* property, size_t index) override;

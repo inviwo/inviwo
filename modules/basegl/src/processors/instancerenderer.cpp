@@ -136,9 +136,9 @@ mat4 rotate(vec3 axis, float angle) {
   float oc = 1.0 - c;
 
   return mat4(
-    oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
-    oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
-    oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
+    oc * axis.x * axis.x + c,           oc * axis.y * axis.x + axis.z * s,  oc * axis.z * axis.x - axis.y * s,  0.0,
+    oc * axis.x * axis.y - axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.z * axis.y + axis.x * s,  0.0,
+    oc * axis.x * axis.z + axis.y * s,  oc * axis.y * axis.z - axis.x * s,  oc * axis.z * axis.z + c,           0.0,
     0.0,                                0.0,                                0.0,                                1.0
   );
 }
@@ -525,9 +525,9 @@ mat4 calculateBoundingBox(std::span<const vec4> data) {
 
 }  // namespace
 
-void InstanceRenderer::process() { process(false); }
+void InstanceRenderer::process() { render(false); }
 
-std::optional<mat4> InstanceRenderer::process(bool enableBoundingBoxCalc) {
+std::optional<mat4> InstanceRenderer::render(bool enableBoundingBoxCalc) {
     utilgl::activateTargetAndClearOrCopySource(outport_, background_);
     util::OnScopeExit deactivate(utilgl::deactivateCurrentTarget);
 
@@ -550,14 +550,14 @@ std::optional<mat4> InstanceRenderer::process(bool enableBoundingBoxCalc) {
                                     GL_STATIC_READ, GL_TRANSFORM_FEEDBACK_BUFFER};
         size_t byteOffset = 0;
         forEach(meshGL, shader_, vecPorts_, nInstances,
-                [&](size_t size, Mesh::MeshInfo mi, const auto& draw) {
-                    const auto bufferByteSize = sizeof(vec4) * numberOfVertices(mi, size);
-                    feedbackBuffer.bindRange(0, byteOffset, bufferByteSize);
-                    glBeginTransformFeedback(primitiveMode(mi.dt));
-                    draw();
-                    glEndTransformFeedback();
-                    byteOffset += bufferByteSize;
-                });
+                 [&](size_t size, Mesh::MeshInfo mi, const auto& draw) {
+                     const auto bufferByteSize = sizeof(vec4) * numberOfVertices(mi, size);
+                     feedbackBuffer.bindRange(0, byteOffset, bufferByteSize);
+                     glBeginTransformFeedback(primitiveMode(mi.dt));
+                     draw();
+                     glEndTransformFeedback();
+                     byteOffset += bufferByteSize;
+                 });
 
         feedbackBuffer.bindBase(0);
         if (auto buffer = glMapBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, GL_READ_ONLY)) {
@@ -568,7 +568,7 @@ std::optional<mat4> InstanceRenderer::process(bool enableBoundingBoxCalc) {
         }
     } else {
         forEach(meshGL, shader_, vecPorts_, nInstances,
-                [&](size_t, Mesh::MeshInfo, const auto& draw) { draw(); });
+                 [&](size_t, Mesh::MeshInfo, const auto& draw) { draw(); });
     }
 
     return std::nullopt;

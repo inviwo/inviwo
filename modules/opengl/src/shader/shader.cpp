@@ -716,7 +716,8 @@ void Shader::setUniform(std::string_view name, const TextureUnit& texUnit) const
 }
 
 void Shader::setTransformFeedbackVaryings(std::span<const GLchar*> varyings, GLenum bufferMode) {
-    glTransformFeedbackVaryings(program_.id, varyings.size(), varyings.data(), bufferMode);
+    glTransformFeedbackVaryings(program_.id, static_cast<GLsizei>(varyings.size()), varyings.data(),
+                                bufferMode);
     ready_ = false;
 }
 
