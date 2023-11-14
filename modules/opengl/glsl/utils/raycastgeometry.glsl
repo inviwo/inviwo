@@ -62,12 +62,12 @@ vec4 drawPlanes(in vec4 oldres, in vec3 pos, in vec3 dir, in float inc, PlanePar
     return result;
 }
 
-vec4 drawBackground(in vec4 oldres, in float depth, in float inc, in vec4 color, in float bgDepth,
+vec4 drawBackground(in vec4 oldres, in float rayDepth, in float inc, in vec4 color, in float bgDepth,
                     inout float tDepth) {
     vec4 result = oldres;
 
-    if ((depth - inc) < bgDepth && depth >= bgDepth && color.a > 0.0) {
-        if (tDepth == -1.0) tDepth = depth;
+    if ((rayDepth >= bgDepth) && (rayDepth < bgDepth + inc) && color.a > 0.0) {
+        if (tDepth == -1.0) tDepth = rayDepth;
         color.rgb *= color.a;
         result += (1.0 - result.a) * color;
     }
