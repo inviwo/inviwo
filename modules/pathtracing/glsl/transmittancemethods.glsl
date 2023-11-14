@@ -98,7 +98,7 @@ vec4 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, 
     // Made up colors of the particle
     vec3 sampleAmbient = tfSample.rgb;
     vec3 sampleDiffuse = tfSample.rgb;
-    vec3 sampleSpecular = vec3(1f);
+    vec3 sampleSpecular = tfSample.rgb;
 
     vec3 toLight = normalize(light.position - sampleWorldPos);
 
@@ -119,66 +119,28 @@ vec4 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, 
     float t = 0f;
     float t_smallest = 100f;
     float t_test = 0f;
-    //RayBBIntersection(bb, samplePos, toLight, t);
+
+    // TODO: why tf doesnt this work?
+    RayBBIntersection(bb, sampleWorldPos, toLight, t);
 
     // We get massive hickups at times and the rendering seems a lot more stuttery than before
     // this way of doing things must be VERY innefficient
-    /**/
-    if(rayPlaneIntersection(bb[0], samplePos, toLight, t_test, 100f)) {
-        if(t_smallest > t_test) {
-            t_smallest = t_test;
-            t_test = 0f;
-        }
-    } 
-
-    if(rayPlaneIntersection(bb[1], samplePos, toLight, t_test, 100f)) {
-        if(t_smallest > t_test) {
-            t_smallest = t_test;
-            t_test = 0f;
-        }
-    } 
-
-    if(rayPlaneIntersection(bb[2], samplePos, toLight, t_test, 100f)) {
-        if(t_smallest > t_test) {
-            t_smallest = t_test;
-            t_test = 0f;
-        }
-    } 
-
-    if(rayPlaneIntersection(bb[3], samplePos, toLight, t_test, 100f)) {
-        if(t_smallest > t_test) {
-            t_smallest = t_test;
-            t_test = 0f;
-        }
-    } 
-
-    if(rayPlaneIntersection(bb[4], samplePos, toLight, t_test, 100f)) {
-        if(t_smallest > t_test) {
-            t_smallest = t_test;
-            t_test = 0f;
-        }
-    } 
-
-    if(rayPlaneIntersection(bb[5], samplePos, toLight, t_test, 100f)) {
-        if(t_smallest > t_test) {
-            t_smallest = t_test;
-            t_test = 0f;
-        }
-    } 
-
-    if(t_smallest < 100f) {
-        t = t_smallest;
-    }
+    
     
     float tau = 1f;    
-    float meanfreepath_l = WoodcockTracking(samplePos, toLight, /*should be t*/ 0f, hashSeed, 
+    // toLight is in world coords, samplePos is in texture coords, toLight needs to be transformed to texture.
+    vec3 toLightTexture = (volParam.worldToTexture*vec4(toLight,1f)).xyz;
+    float meanfreepath_l = WoodcockTracking(samplePos, toLightTexture, /*should be t*/ 0f, hashSeed, 
         volume, volParam, tf, 1f, tau);
     
     float Tl = 1f;
     Tl = SimpleTracking(Tl, meanfreepath_l, tau);
 
+    // pseudo gamma
+    float g = 2f;
+
     color.w = 1f;
-    acc_radiance += acc_radiance + T*tau*(color*Tl);
+    acc_radiance += acc_radiance + g*T*tau*(color*Tl);
 
     return acc_radiance;
 }
