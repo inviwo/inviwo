@@ -36,8 +36,8 @@ for size in [1024, 512, 256]:
                 frametime = (end - start) / steps
                 fps = 1.0 / frametime
 
-                print(f"FPS {size}x{size} instances {np**3} mesh resolution {m} {fps}")
+                print(f"FPS {size:4}x{size:4} instances {np**3:4} mesh resolution {m:2} {fps}")
         
-                measurement.addFrequency(f"FPS size {size}x{size} instances {np**3} mesh resolution {m}", fps)
+                measurement.addFrequency(f"FPS-size-{size}-insts-{np**3}-res-{m}", fps)
 
 measurement.save()
