@@ -59,6 +59,37 @@ void exposePropertyOwner(pybind11::module& m) {
                 }
             },
             py::return_value_policy::reference)
+        .def(
+            "__setattr__",
+            [](py::object po, py::object key, py::object value) {
+                const auto skey = py::str(key).cast<std::string>();
+                auto owner = po.cast<PropertyOwner*>();
+                if (owner->getPropertyByIdentifier(skey)) {
+                    std::string path;
+                    const auto traverse = [&](auto& self, PropertyOwner* owner) -> void {
+                        if (owner) {
+                            self(self, owner->getOwner());
+                            path.append(owner->getIdentifier());
+                            path.push_back('.');
+                        }
+                    };
+                    traverse(traverse, owner->getOwner());
+                    path.append(owner->getIdentifier());
+
+                    throw py::attribute_error{fmt::format(
+                        "The key '{0}' is a registered property of '{1}'.\nTo rebind the member "
+                        "unregister (remove) the property from '{1}' first.\n"
+                        "If you were trying the set the 'value' of the '{0}' Property, you should "
+                        "usually assign to '{0}.value' instead.\n"
+                        "See help({0}) for more details",
+                        skey, path)};
+                }
+
+                auto builtins = py::module::import("builtins");
+                auto object = builtins.attr("object");
+                object.attr("__setattr__")(po, key, value);
+            },
+            py::return_value_policy::reference)
         .def_property_readonly("properties",
                                [](PropertyOwner& po) {
                                    return PropertyVecWrapper(po.getProperties().begin(),
