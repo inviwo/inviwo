@@ -81,6 +81,13 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, BufferType bt);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, BufferUsage bu);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, BufferTarget bt);
 
+namespace util {
+
+IVW_CORE_API size_t numberOfPrimitives(DrawType dt, ConnectivityType ct, size_t indices);
+IVW_CORE_API size_t numberOfVerticesForPrimitive(DrawType dt);
+
+}  // namespace util
+
 }  // namespace inviwo
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

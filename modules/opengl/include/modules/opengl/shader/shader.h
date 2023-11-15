@@ -216,6 +216,14 @@ public:
     std::shared_ptr<std::function<void()>> onReloadScoped(std::function<void()> callback);
     void removeOnReload(const BaseCallBack* callback);
 
+    /**
+     * Specify values to record in transform feedback buffers.
+     * @param varyings Array of names of the varying variables to use for transform feedback.
+     * @param bufferMode The mode used to capture the varying variables when transform feedback is
+     * active. Must be GL_INTERLEAVED_ATTRIBS or GL_SEPARATE_ATTRIBS.
+     */
+    void setTransformFeedbackVaryings(std::span<const char*> varyings, GLenum bufferMode);
+
 private:
     void bindAttributes();
 

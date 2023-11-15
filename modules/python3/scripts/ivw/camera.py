@@ -80,16 +80,10 @@ class Camera:
         self.restore()
 
     def set(self):
-        self.cam.lookFrom = self.lookfrom
-        self.cam.lookTo = self.lookto
-        self.cam.lookUp = self.lookup
-        self.cam.invalidate()
+        self.cam.setLook(self.lookfrom, self.lookto, self.lookup)
 
     def restore(self):
-        self.cam.lookFrom = self.oldlookfrom
-        self.cam.lookTo = self.oldlookto
-        self.cam.lookUp = self.oldlookup
-        self.cam.invalidate()
+        self.cam.setLook(self.oldlookfrom, self.oldlookto, self.oldlookup)
 
     def rotate(self, delta=math.pi / 30, steps=60, axis=None):
         if axis is None:

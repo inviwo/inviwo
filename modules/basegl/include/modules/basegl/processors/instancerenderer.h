@@ -41,12 +41,14 @@
 #include <inviwo/core/properties/simplelightingproperty.h>  // for SimpleLightingProperty
 #include <inviwo/core/properties/stringproperty.h>          // for StringProperty
 #include <modules/opengl/shader/shader.h>                   // for Shader
+#include <modules/opengl/buffer/bufferobject.h>             // for BufferGL
 
 #include <array>       // for array
 #include <cstddef>     // for size_t
 #include <functional>  // for function
 #include <memory>      // for unique_ptr, shared_ptr
 #include <vector>      // for vector
+#include <optional>
 
 namespace inviwo {
 
@@ -63,7 +65,8 @@ namespace detail {
  */
 struct IVW_MODULE_BASEGL_API DynPortManager {
     DynPortManager(InstanceRenderer* theRenderer, std::unique_ptr<Inport> aPort,
-                   std::function<size_t()> aSize, std::function<void(Shader&, size_t)> aSet,
+                   std::function<std::optional<size_t>()> aSize,
+                   std::function<void(Shader&, size_t)> aSet,
                    std::function<void(ShaderObject&)> aAddUniform);
 
     DynPortManager(const DynPortManager&) = delete;
@@ -74,7 +77,7 @@ struct IVW_MODULE_BASEGL_API DynPortManager {
 
     InstanceRenderer* renderer;
     std::unique_ptr<Inport> port;
-    std::function<size_t()> size;
+    std::function<std::optional<size_t>()> size;
     std::function<void(Shader&, size_t)> set;
     std::function<void(ShaderObject&)> addUniform;
 };
@@ -91,6 +94,12 @@ public:
 
     virtual void initializeResources() override;
     virtual void process() override;
+
+    /** Render all meshes.
+     * @return The axis-aligned bounding box of all vertices if enableBoundingBoxCalc, otherwise
+     * nullopt.
+     */
+    std::optional<mat4> render(bool enableBoundingBoxCalc);
 
 private:
     void onDidAddProperty(Property* property, size_t index) override;
@@ -114,7 +123,6 @@ private:
 
     std::shared_ptr<StringShaderResource> vert_;
     std::shared_ptr<StringShaderResource> frag_;
-
     Shader shader_;
 };
 }  // namespace inviwo

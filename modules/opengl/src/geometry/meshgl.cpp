@@ -81,6 +81,7 @@ const Mesh::MeshInfo& MeshGL::getMeshInfoForIndexBuffer(size_t idx) const {
               "MeshGL::getMeshInfoForIndexBuffer(): index out of bounds");
     return indexBuffers_[idx].first;
 }
+const Mesh::MeshInfo& MeshGL::getDefaultMeshInfo() const { return defaultMeshInfo_; }
 
 const BufferGL* MeshGL::getIndexBuffer(size_t idx) const {
     ivwAssert(idx < indexBuffers_.size(), "MeshGL::getIndexBuffer(): index out of bounds");
@@ -110,6 +111,7 @@ void MeshGL::update(bool editable) {
                                          : buf.second->getRepresentation<BufferGL>();
         indexBuffers_.push_back({buf.first, bufGL});
     }
+    defaultMeshInfo_ = owner->getDefaultMeshInfo();
 }
 
 std::type_index MeshGL::getTypeIndex() const { return std::type_index(typeid(MeshGL)); }

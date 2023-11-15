@@ -54,6 +54,9 @@
 #include <inviwo/core/util/staticstring.h>                 // for operator+
 #include <inviwo/core/util/stringconversion.h>             // for trim, htmlEncode
 #include <inviwo/core/util/utilities.h>                    // for findUniqueIdentifier
+#include <inviwo/core/util/raiiutils.h>                    // for OnScopeExit
+#include <inviwo/core/util/rendercontext.h>                // for RenderContext
+#include <inviwo/core/util/stdextensions.h>                // for overloaded
 #include <modules/opengl/geometry/meshgl.h>                // for MeshGL
 #include <modules/opengl/inviwoopengl.h>                   // for GL_DEPTH_TEST, GL_ONE_MINUS_SR...
 #include <modules/opengl/openglutils.h>                    // for BlendModeState, GlBoolState
@@ -66,10 +69,14 @@
 #include <modules/opengl/shader/shaderutils.h>             // for addShaderDefines, setShaderUni...
 #include <modules/opengl/texture/textureutils.h>           // for activateTargetAndClearOrCopySo...
 
+#include <modules/opengl/buffer/buffergl.h>
+
 #include <algorithm>    // for for_each, min_element
 #include <string>       // for basic_string, operator==, string
 #include <string_view>  // for string_view, operator==
 #include <utility>      // for move, pair, swap
+#include <ranges>
+#include <numeric>
 
 #include <fmt/core.h>      // for format, basic_string_view, for...
 #include <fmt/format.h>    // for formatbuf<>::int_type, formatb...
@@ -129,9 +136,9 @@ mat4 rotate(vec3 axis, float angle) {
   float oc = 1.0 - c;
 
   return mat4(
-    oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
-    oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
-    oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
+    oc * axis.x * axis.x + c,           oc * axis.y * axis.x + axis.z * s,  oc * axis.z * axis.x - axis.y * s,  0.0,
+    oc * axis.x * axis.y - axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.z * axis.y + axis.x * s,  0.0,
+    oc * axis.x * axis.z + axis.y * s,  oc * axis.y * axis.z - axis.x * s,  oc * axis.z * axis.z + c,           0.0,
     0.0,                                0.0,                                0.0,                                1.0
   );
 }
@@ -198,7 +205,7 @@ void main() {
 namespace detail {
 
 DynPortManager::DynPortManager(InstanceRenderer* theRenderer, std::unique_ptr<Inport> aPort,
-                               std::function<size_t()> aSize,
+                               std::function<std::optional<size_t>()> aSize,
                                std::function<void(Shader&, size_t)> aSet,
                                std::function<void(ShaderObject&)> aAddUniform)
     : renderer{theRenderer}
@@ -240,7 +247,13 @@ DynPortManager createDynPortManager(InstanceRenderer* theRenderer, std::string_v
 
     auto port = std::make_unique<DataInport<std::vector<T>>>(identifier);
     port->setOptional(true);
-    auto size = [p = port.get()]() { return p->hasData() ? p->getData()->size() : size_t(-1); };
+    auto size = [p = port.get()]() -> std::optional<size_t> {
+        if (p->hasData()) {
+            return p->getData()->size();
+        } else {
+            return std::nullopt;
+        }
+    };
     auto set = [p = port.get(), u = uniform](Shader& shader, size_t index) {
         if (p->hasData()) {
             shader.setUniform(u->get(), (*p->getData())[index]);
@@ -269,7 +282,11 @@ InstanceRenderer::InstanceRenderer()
         types can be added.)"_unindentHelp,
              prefabs()}
     , vecPorts_{}
-    , camera_("camera", "Camera", util::boundingBox(inport_))
+    , camera_("camera", "Camera",
+              [this]() -> std::optional<mat4> {
+                  rendercontext::activateDefault();
+                  return render(true);
+              })
     , trackball_(&camera_)
     , lightingProperty_("lighting", "Lighting", &camera_)
     , transforms_{{{"color", "Color",
@@ -304,7 +321,6 @@ InstanceRenderer::InstanceRenderer()
                  "",
                  InvalidationLevel::InvalidResources,
                  PropertySemantics::Multiline}
-
     , vert_{std::make_shared<StringShaderResource>("InstanceRenderer.vert", vertexShader)}
     , frag_{std::make_shared<StringShaderResource>("InstanceRenderer.frag", fragmentShader)}
     , shader_{{{ShaderType::Vertex, vert_}, {ShaderType::Fragment, frag_}}, Shader::Build::No} {
@@ -412,38 +428,150 @@ void InstanceRenderer::initializeResources() {
         prio += 100;
     }
 
+    std::array<const GLchar*, 1> feedbackVaryings = {"worldPosition"};
+    shader_.setTransformFeedbackVaryings(feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
+
     shader_.build();
 }
 
-void InstanceRenderer::process() {
+namespace {
+
+size_t numberOfVertices(DrawType dt, ConnectivityType ct, size_t nIndices) {
+    return util::numberOfVerticesForPrimitive(dt) * util::numberOfPrimitives(dt, ct, nIndices);
+}
+size_t numberOfVertices(Mesh::MeshInfo mi, size_t nIndices) {
+    return numberOfVertices(mi.dt, mi.ct, nIndices);
+}
+size_t numberOfVertices(const MeshGL& meshGL, size_t index) {
+    auto mi = meshGL.getMeshInfoForIndexBuffer(index);
+    auto nIndices = meshGL.getIndexBuffer(index)->getSize();
+    return numberOfVertices(mi, nIndices);
+}
+size_t numberOfVertices(const MeshGL& meshGL) {
+    const std::size_t numIndexBuffers = meshGL.getIndexBufferCount();
+    if (numIndexBuffers > 0) {
+        auto indices = std::ranges::iota_view{size_t{0}, numIndexBuffers};
+        return std::transform_reduce(indices.begin(), indices.end(), size_t{0}, std::plus<>{},
+                                     [&](size_t ib) { return numberOfVertices(meshGL, ib); });
+    } else {
+        auto nIndices = meshGL.getBufferGL(0)->getSize();
+        return numberOfVertices(meshGL.getDefaultMeshInfo(), nIndices);
+    }
+}
+
+auto primitiveMode(DrawType dt) {
+    switch (dt) {
+        case DrawType::Points:
+            return GL_POINTS;
+        case DrawType::Lines:
+            return GL_LINES;
+        case DrawType::Triangles:
+            return GL_TRIANGLES;
+        default:
+            return GL_TRIANGLES;
+    }
+}
+
+size_t commonNumberOfElements(auto& ports) {
+    auto valid = ports | std::views::filter(
+                             [](const auto& port) -> bool { return port.size().has_value(); });
+    if (valid.empty()) return 0;
+
+    const auto minIt = std::ranges::min_element(valid, std::less<>{},
+                                                [](const auto& port) { return *port.size(); });
+    return *minIt->size();
+}
+
+void forEach(const MeshGL& meshGL, Shader& shader, auto& ports, size_t nInstances,
+             auto&& callback) {
+    if (meshGL.empty()) return;
+
+    const std::size_t numIndexBuffers = meshGL.getIndexBufferCount();
+
+    for (size_t i = 0; i < nInstances; ++i) {
+        std::for_each(ports.begin(), ports.end(), [&](auto& port) { port.set(shader, i); });
+        for (std::size_t ib = 0; ib < numIndexBuffers; ++ib) {
+            const auto& indexBuffer = *meshGL.getIndexBuffer(ib);
+            if (indexBuffer.getSize() == 0) continue;
+            const auto meshInfo = meshGL.getMeshInfoForIndexBuffer(ib);
+            indexBuffer.bind();
+            callback(indexBuffer.getSize(), meshInfo, [&]() {
+                glDrawElements(MeshDrawerGL::getGLDrawMode(meshInfo),
+                               static_cast<GLsizei>(indexBuffer.getSize()),
+                               indexBuffer.getFormatType(), nullptr);
+            });
+        }
+        if (numIndexBuffers == 0) {
+            auto size = meshGL.getBufferGL(0)->getSize();
+            const auto meshInfo = meshGL.getDefaultMeshInfo();
+            callback(size, meshInfo, [&]() {
+                glDrawArrays(MeshDrawerGL::getGLDrawMode(meshInfo), 0, static_cast<GLsizei>(size));
+            });
+        }
+    }
+}
+
+mat4 calculateBoundingBox(std::span<const vec4> data) {
+    using Pair = std::pair<vec4, vec4>;
+    const auto minMax = std::accumulate(data.begin(), data.end(),
+                                        Pair{DataFormat<vec4>::max(), DataFormat<vec4>::lowest()},
+                                        [](const Pair& mm, const vec4& v) -> Pair {
+                                            return {glm::min(mm.first, v), glm::max(mm.second, v)};
+                                        });
+    auto boundingBox = glm::scale(vec3{minMax.second} - vec3{minMax.first});
+    boundingBox[3] = vec4(vec3{minMax.first}, 1.0f);
+    return boundingBox;
+}
+
+}  // namespace
+
+void InstanceRenderer::process() { render(false); }
+
+std::optional<mat4> InstanceRenderer::render(bool enableBoundingBoxCalc) {
     utilgl::activateTargetAndClearOrCopySource(outport_, background_);
+    util::OnScopeExit deactivate(utilgl::deactivateCurrentTarget);
 
-    if (vecPorts_.empty()) return;
-
-    shader_.activate();
-
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    utilgl::setUniforms(shader_, camera_, lightingProperty_);
+    const auto nInstances = commonNumberOfElements(vecPorts_);
+    if (nInstances == 0) return std::nullopt;
 
     const auto& mesh = *inport_.getData();
-    MeshDrawerGL::DrawObject drawer{mesh.getRepresentation<MeshGL>(), mesh.getDefaultMeshInfo()};
+    const auto& meshGL = *mesh.getRepresentation<MeshGL>();
+
+    utilgl::Activate activate{&shader_};
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    utilgl::setUniforms(shader_, camera_, lightingProperty_);
     utilgl::setShaderUniforms(shader_, mesh, "geometry");
+    utilgl::Enable<MeshGL> enable{&meshGL};
 
-    auto minIt = std::min_element(vecPorts_.begin(), vecPorts_.end(),
-                                  [](const auto& a, const auto& b) { return a.size() < b.size(); });
-    const size_t min = minIt->size();
+    if (enableBoundingBoxCalc) {
+        const auto nVertices = nInstances * numberOfVertices(meshGL);
+        BufferObject feedbackBuffer{nVertices * sizeof(vec4), GLFormats::get(DataVec4Float32::id()),
+                                    GL_STATIC_READ, GL_TRANSFORM_FEEDBACK_BUFFER};
+        size_t byteOffset = 0;
+        forEach(meshGL, shader_, vecPorts_, nInstances,
+                [&](size_t size, Mesh::MeshInfo mi, const auto& draw) {
+                    const auto bufferByteSize = sizeof(vec4) * numberOfVertices(mi, size);
+                    feedbackBuffer.bindRange(0, byteOffset, bufferByteSize);
+                    glBeginTransformFeedback(primitiveMode(mi.dt));
+                    draw();
+                    glEndTransformFeedback();
+                    byteOffset += bufferByteSize;
+                });
 
-    for (size_t i = 0; i < min; ++i) {
-        std::for_each(vecPorts_.begin(), vecPorts_.end(),
-                      [&](auto& port) { port.set(shader_, i); });
-
-        drawer.draw();
+        feedbackBuffer.bindBase(0);
+        if (auto buffer = glMapBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, GL_READ_ONLY)) {
+            auto boundingBox =
+                calculateBoundingBox(std::span{static_cast<const vec4*>(buffer), nVertices});
+            glUnmapBuffer(GL_TRANSFORM_FEEDBACK_BUFFER);
+            return boundingBox;
+        }
+    } else {
+        forEach(meshGL, shader_, vecPorts_, nInstances,
+                [&](size_t, Mesh::MeshInfo, const auto& draw) { draw(); });
     }
 
-    shader_.deactivate();
-    utilgl::deactivateCurrentTarget();
+    return std::nullopt;
 }
 
 }  // namespace inviwo
