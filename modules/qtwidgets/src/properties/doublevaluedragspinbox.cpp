@@ -124,11 +124,7 @@ void DoubleValueDragSpinBox::setRange(double minimum, double maximum) {
     spinBox_->setRange(minimum, maximum);
 }
 
-void DoubleValueDragSpinBox::setSingleStep(double val) {
-    spinBox_->setSingleStep(val);
-    spinBox_->setButtonSymbols(val == 0.0 ? QAbstractSpinBox::NoButtons
-                                          : QAbstractSpinBox::UpDownArrows);
-}
+void DoubleValueDragSpinBox::setSingleStep(double val) { spinBox_->setSingleStep(val); }
 
 void DoubleValueDragSpinBox::setSuffix(const QString& suffix) { spinBox_->setSuffix(suffix); }
 

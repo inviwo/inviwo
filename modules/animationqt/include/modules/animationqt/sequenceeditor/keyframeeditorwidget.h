@@ -39,12 +39,12 @@
 #include <QWidget>  // for QWidget
 
 class QComboBox;
-class QDoubleSpinBox;
 class QHBoxLayout;
 
 namespace inviwo {
 
 class PropertyWidgetQt;
+class DoubleValueDragSpinBox;
 
 namespace animation {
 
@@ -69,9 +69,9 @@ private:
     std::unique_ptr<Property> property_{nullptr};
     PropertyWidgetQt* propertyWidget_{nullptr};
     QComboBox* actionWidget_{nullptr};
-    QDoubleSpinBox* jumpToWidget_{nullptr};
+    DoubleValueDragSpinBox* jumpToWidget_{nullptr};
     QHBoxLayout* layout_{nullptr};
-    QDoubleSpinBox* timeSpinner_{nullptr};
+    DoubleValueDragSpinBox* timeSpinner_{nullptr};
 };
 
 }  // namespace animation

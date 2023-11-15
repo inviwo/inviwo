@@ -76,7 +76,7 @@ public:
     static void initializeGLEW();
     static int getOpenGLVersion();
 
-    // Minimal support is OpenGL 3.2 at the moment
+    // Minimal support is OpenGL 3.3 at the moment
     static bool hasSupportedOpenGLVersion();
 
     static bool hasOpenGLVersion();
@@ -91,7 +91,8 @@ public:
     bool isShadersSupported() const;
     bool isShadersSupportedARB() const;
     bool isGeometryShadersSupported() const;
-    bool isComputeShadersSupported() const;
+    static bool isComputeShadersSupported();
+    static bool isShaderStorageBuffersSupported();
 
     GLSLShaderVersion getCurrentShaderVersion();
     size_t getCurrentShaderIndex() const;

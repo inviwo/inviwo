@@ -51,6 +51,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>                           // for toQString, refSpacePx
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>  // for CollapsibleGroupBo...
 #include <modules/qtwidgets/properties/propertywidgetqt.h>             // for PropertyWidgetQt
+#include <modules/qtwidgets/properties/doublevaluedragspinbox.h>
 
 #include <algorithm>         // for none_of
 #include <cstddef>           // for size_t
@@ -60,7 +61,6 @@
 #include <vector>            // for vector
 
 #include <QComboBox>       // for QComboBox
-#include <QDoubleSpinBox>  // for QDoubleSpinBox
 #include <QFont>           // for QFont
 #include <QGridLayout>     // for QGridLayout
 #include <QHBoxLayout>     // for QHBoxLayout
@@ -69,8 +69,6 @@
 #include <QVBoxLayout>     // for QVBoxLayout
 #include <QVariant>        // for QVariant
 #include <QWidget>         // for QWidget
-
-class QDoubleSpinBox;
 
 namespace inviwo {
 
@@ -93,15 +91,19 @@ public:
         layout->setContentsMargins(0, 0, 0, 0);
         layout->setSpacing(utilqt::refSpacePx(this));
 
-        timeSpinner_ = new QDoubleSpinBox();
+        timeSpinner_ = new DoubleValueDragSpinBox();
         timeSpinner_->setValue(keyframe.getTime().count());
-        timeSpinner_->setSuffix("s");
         timeSpinner_->setSingleStep(0.1);
         timeSpinner_->setDecimals(3);
+        timeSpinner_->setMaximum(10000.0);
+        timeSpinner_->setToolTip("Time [s]");
 
         connect(timeSpinner_,
-                static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
-                [this](double t) { keyframe_.setTime(Seconds(t)); });
+                static_cast<void (DoubleValueDragSpinBox::*)(double)>(
+                    &DoubleValueDragSpinBox::valueChanged),
+                this, [this](double t) { keyframe_.setTime(Seconds(t)); });
+        connect(timeSpinner_, &DoubleValueDragSpinBox::editingFinished, this,
+                [this]() { keyframe_.setTime(Seconds(timeSpinner_->value())); });
 
         layout->addWidget(timeSpinner_);
 
@@ -167,7 +169,7 @@ private:
 
     std::unique_ptr<Property> property_{nullptr};
     PropertyWidgetQt* propertyWidget_{nullptr};
-    QDoubleSpinBox* timeSpinner_{nullptr};
+    DoubleValueDragSpinBox* timeSpinner_{nullptr};
 };
 
 }  // namespace

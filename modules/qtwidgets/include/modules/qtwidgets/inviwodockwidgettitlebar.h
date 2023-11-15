@@ -98,6 +98,7 @@ private:
 
     bool internalStickyFlagUpdate_;
     double iconSize_ = 1.2;
+    QString windowTitle_;
 };
 
 }  // namespace inviwo

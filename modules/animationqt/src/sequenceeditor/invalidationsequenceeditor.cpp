@@ -37,19 +37,17 @@
 #include <modules/animation/datastructures/track.h>                   // for Track
 #include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>  // for SequenceEditorWidget
 #include <modules/qtwidgets/inviwoqtutils.h>                          // for toQString
+#include <modules/qtwidgets/properties/doublevaluedragspinbox.h>
 
 #include <cstddef>  // for size_t
 
-#include <QComboBox>       // for QComboBox
-#include <QDoubleSpinBox>  // for QDoubleSpinBox
-#include <QFont>           // for QFont
-#include <QHBoxLayout>     // for QHBoxLayout
-#include <QLabel>          // for QLabel
-#include <QVBoxLayout>     // for QVBoxLayout
-#include <QWidget>         // for QWidget
-#include <QLineEdit>       // for QLineEdit
-
-class QDoubleSpinBox;
+#include <QComboBox>    // for QComboBox
+#include <QFont>        // for QFont
+#include <QHBoxLayout>  // for QHBoxLayout
+#include <QLabel>       // for QLabel
+#include <QVBoxLayout>  // for QVBoxLayout
+#include <QWidget>      // for QWidget
+#include <QLineEdit>    // for QLineEdit
 
 namespace inviwo {
 
@@ -70,15 +68,19 @@ public:
         layout->setContentsMargins(0, 0, 0, 0);
         layout->setSpacing(7);
 
-        timeSpinner_ = new QDoubleSpinBox();
+        timeSpinner_ = new DoubleValueDragSpinBox();
         timeSpinner_->setValue(keyframe.getTime().count());
-        timeSpinner_->setSuffix("s");
         timeSpinner_->setSingleStep(0.1);
         timeSpinner_->setDecimals(3);
+        timeSpinner_->setMaximum(10000.0);
+        timeSpinner_->setToolTip("Time [s]");
 
         connect(timeSpinner_,
-                static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
-                [this](double t) { keyframe_.setTime(Seconds(t)); });
+                static_cast<void (DoubleValueDragSpinBox::*)(double)>(
+                    &DoubleValueDragSpinBox::valueChanged),
+                this, [this](double t) { keyframe_.setTime(Seconds(t)); });
+        connect(timeSpinner_, &DoubleValueDragSpinBox::editingFinished, this,
+                [this]() { keyframe_.setTime(Seconds(timeSpinner_->value())); });
 
         layout->addWidget(timeSpinner_);
 
@@ -102,7 +104,7 @@ private:
     Keyframe& keyframe_;
     SequenceEditorWidget* sequenceEditorWidget_{nullptr};
 
-    QDoubleSpinBox* timeSpinner_{nullptr};
+    DoubleValueDragSpinBox* timeSpinner_{nullptr};
 };
 
 }  // namespace

@@ -105,7 +105,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
     bgTDepth = tEnd * calculateTValueFromDepthValue(
         camera, backgroundDepth, texture(entryDepth, texCoords).x, texture(exitDepth, texCoords).x);        
 
-    if (bgTDepth < 0) {
+    if (bgTDepth < t) {
         result = backgroundColor;
     }
 #endif // BACKGROUND_AVAILABLE

@@ -255,8 +255,12 @@ bool OpenGLCapabilities::isFboSupported() const { return fboSupported_; }
 bool OpenGLCapabilities::isShadersSupported() const { return shadersAreSupported_; }
 bool OpenGLCapabilities::isShadersSupportedARB() const { return shadersAreSupportedARB_; }
 bool OpenGLCapabilities::isGeometryShadersSupported() const { return geometryShadersAreSupported_; }
-bool OpenGLCapabilities::isComputeShadersSupported() const {
+bool OpenGLCapabilities::isComputeShadersSupported() {
     return isExtensionSupported("GL_ARB_compute_shader");
+}
+bool OpenGLCapabilities::isShaderStorageBuffersSupported() {
+    return OpenGLCapabilities::getOpenGLVersion() >= 430 ||
+           isExtensionSupported("ARB_shader_storage_buffer_object");
 }
 
 int OpenGLCapabilities::getMaxProgramLoopCount() const { return maxProgramLoopCount_; }
