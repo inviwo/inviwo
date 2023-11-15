@@ -48,6 +48,8 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     , enablePickingProperty_("enablePicking", "Enable picking", true)
     , enableSoundProperty_("enableSound", "Enable sound", true)
     , logStackTraceProperty_("logStackTraceProperty", "Error stack trace log", false)
+    , moduleSearchPaths_("moduleSearchPaths", "Module Search Paths", {}, AcceptMode::Open,
+                         FileMode::Directory)
     , runtimeModuleReloading_("runtimeModuleReloding", "Runtime Module Reloading", false)
     , enableResourceManager_("enableResourceManager", "Enable Resource Manager", false)
     , breakOnMessage_{"breakOnMessage",
@@ -62,9 +64,9 @@ SystemSettings::SystemSettings(InviwoApplication* app)
 
     addProperties(poolSize_, enablePortInspectors_, portInspectorSize_, enableTouchProperty_,
                   enableGesturesProperty_, enablePickingProperty_, enableSoundProperty_,
-                  logStackTraceProperty_, runtimeModuleReloading_, enableResourceManager_,
-                  breakOnMessage_, breakOnException_, stackTraceInException_, redirectCout_,
-                  redirectCerr_);
+                  logStackTraceProperty_, moduleSearchPaths_, runtimeModuleReloading_,
+                  enableResourceManager_, breakOnMessage_, breakOnException_,
+                  stackTraceInException_, redirectCout_, redirectCerr_);
 
     logStackTraceProperty_.onChange(
         [this]() { LogCentral::getPtr()->setLogStacktrace(logStackTraceProperty_.get()); });

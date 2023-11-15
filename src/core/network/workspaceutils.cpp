@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/processornetwork.h>
@@ -128,14 +129,14 @@ size_t updateWorkspaces(InviwoApplication* app, const std::filesystem::path& pat
 void updateExampleWorkspaces(InviwoApplication* app, DryRun dryRun,
                              std::function<void()> updateGui) {
     size_t total = 0;
-    for (const auto& m : app->getModules()) {
-        forEachWorkspaceInDirRecursive(m->getPath(ModulePath::Workspaces),
+    for (const auto& m : app->getModuleManager().getInviwoModules()) {
+        forEachWorkspaceInDirRecursive(m.getPath(ModulePath::Workspaces),
                                        [&](const std::filesystem::path&) { ++total; });
     }
 
     size_t current = 0;
-    for (const auto& m : app->getModules()) {
-        current = updateWorkspaces(app, m->getPath(ModulePath::Workspaces), dryRun, updateGui,
+    for (const auto& m : app->getModuleManager().getInviwoModules()) {
+        current = updateWorkspaces(app, m.getPath(ModulePath::Workspaces), dryRun, updateGui,
                                    current, total);
     }
 }
@@ -143,14 +144,14 @@ void updateExampleWorkspaces(InviwoApplication* app, DryRun dryRun,
 void updateRegressionWorkspaces(InviwoApplication* app, DryRun dryRun,
                                 std::function<void()> updateGui) {
     size_t total = 0;
-    for (const auto& m : app->getModules()) {
-        forEachWorkspaceInDirRecursive(m->getPath(ModulePath::RegressionTests),
+    for (const auto& m : app->getModuleManager().getInviwoModules()) {
+        forEachWorkspaceInDirRecursive(m.getPath(ModulePath::RegressionTests),
                                        [&](const std::filesystem::path&) { ++total; });
     }
 
     size_t current = 0;
-    for (const auto& m : app->getModules()) {
-        current = updateWorkspaces(app, m->getPath(ModulePath::RegressionTests), dryRun, updateGui,
+    for (const auto& m : app->getModuleManager().getInviwoModules()) {
+        current = updateWorkspaces(app, m.getPath(ModulePath::RegressionTests), dryRun, updateGui,
                                    current, total);
     }
 }

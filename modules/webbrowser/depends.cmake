@@ -6,3 +6,5 @@ set(dependencies
     InviwoJSONModule
     InviwoDataFrameModule
 )
+
+set(protected ON)

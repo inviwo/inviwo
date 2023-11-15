@@ -29,11 +29,12 @@
 
 #include <modules/base/properties/volumeinformationproperty.h>
 
-#include <inviwo/core/algorithm/markdown.h>                // for operator""_help
-#include <inviwo/core/datastructures/datamapper.h>         // for DataMapper
-#include <inviwo/core/datastructures/histogram.h>          // for HistogramContainer
-#include <inviwo/core/datastructures/unitsystem.h>         // for Axis, Unit
-#include <inviwo/core/datastructures/volume/volume.h>      // for Volume
+#include <inviwo/core/algorithm/markdown.h>            // for operator""_help
+#include <inviwo/core/datastructures/datamapper.h>     // for DataMapper
+#include <inviwo/core/datastructures/histogram.h>      // for HistogramContainer
+#include <inviwo/core/datastructures/unitsystem.h>     // for Axis, Unit
+#include <inviwo/core/datastructures/volume/volume.h>  // for Volume
+#include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
 #include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
 #include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
@@ -54,11 +55,10 @@
 #include <functional>  // for __base
 #include <tuple>       // for tuple, tie
 
-#include <fmt/core.h>       // for basic_string_view
-#include <fmt/format.h>     // for to_string
-#include <glm/vec2.hpp>     // for operator!=, operator==, vec
-#include <glm/vec3.hpp>     // for vec, vec<>::(anonymous)
-#include <units/units.hpp>  // for unit_from_string
+#include <fmt/core.h>    // for basic_string_view
+#include <fmt/format.h>  // for to_string
+#include <glm/vec2.hpp>  // for operator!=, operator==, vec
+#include <glm/vec3.hpp>  // for vec, vec<>::(anonymous)
 
 namespace inviwo {
 

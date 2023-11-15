@@ -59,6 +59,7 @@
 #include <QToolBar>          // for QToolBar
 #include <QUrl>              // for QUrl, QUrl::TolerantMode
 #include <Qt>                // for WA_DeleteOnClose
+#include <QMenuBar>          // for QMenuBar
 #include <fmt/core.h>        // for basic_string_view, arg
 #include <fmt/ostream.h>     // for print
 #include <fmt/std.h>
@@ -97,19 +98,20 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
         toolbar_->setObjectName("PythonToolBar");
         toolbar_->setMovable(false);
         toolbar_->setFloatable(false);
-        win->connect(toolbar_.get(), &QToolBar::destroyed,
-                     [this](QObject*) { toolbar_.release(); });
+        QObject::connect(toolbar_.get(), &QToolBar::destroyed,
+                         [this](QObject*) { toolbar_.release(); });
         auto newEditorOpen =
             toolbar_->addAction(QIcon(":/svgicons/python-mono.svg"), "Python Editor");
-        win->connect(newEditorOpen, &QAction::triggered, newEditor);
+        QObject::connect(newEditorOpen, &QAction::triggered, newEditor);
 
         menu_.reset(utilqt::addMenu("&Python"));
-        win->connect(menu_.get(), &QMenu::destroyed, [this](QObject*) { menu_.release(); });
+        QObject::connect(menu_.get(), &QMenu::destroyed, [this](QObject*) { menu_.release(); });
+
         auto pythonEditorOpen = menu_->addAction(QIcon(":/svgicons/python.svg"), "&Python Editor");
-        win->connect(pythonEditorOpen, &QAction::triggered, newEditor);
+        QObject::connect(pythonEditorOpen, &QAction::triggered, newEditor);
 
         auto pyProperties = menu_->addAction("&List unexposed properties");
-        win->connect(pyProperties, &QAction::triggered, [app]() {
+        QObject::connect(pyProperties, &QAction::triggered, [app]() {
             auto mod = app->getModuleByType<Python3Module>();
             PythonScriptDisk(mod->getPath() / "scripts" / "list_not_exposed_properties.py").run();
         });
@@ -118,7 +120,7 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
             menu_->addAction(QIcon(":/svgicons/processor-new.svg"), "&New Python Processor");
         toolbar_->addAction(newPythonProcessor);
 
-        win->connect(newPythonProcessor, &QAction::triggered, [pymodule, app]() {
+        QObject::connect(newPythonProcessor, &QAction::triggered, [pymodule, app]() {
             InviwoFileDialog saveFileDialog(nullptr, "Create Python Processor", "PythonProcessor");
             saveFileDialog.setFileMode(FileMode::AnyFile);
             saveFileDialog.setAcceptMode(AcceptMode::Save);
@@ -150,6 +152,15 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
     }
 }
 
-PythonMenu::~PythonMenu() = default;
+PythonMenu::~PythonMenu() {
+    if (auto win = utilqt::getApplicationMainWindow()) {
+        if (menu_) {
+            win->menuBar()->removeAction(menu_->menuAction());
+        }
+        if (toolbar_) {
+            win->removeToolBar(toolbar_.get());
+        }
+    }
+}
 
 }  // namespace inviwo

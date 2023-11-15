@@ -41,6 +41,4 @@ ivw_define_standard_definitions(ivw-qtapplicationbase inviwo-qtapplicationbase)
 ivw_define_standard_properties(inviwo-qtapplicationbase)
 
 # Make package (for other projects to find)
-ivw_default_install_targets(inviwo-qtapplicationbase)
-ivw_make_package(InviwoQtApplicationBase inviwo-qtapplicationbase)
-
+ivw_install_helper(TARGET inviwo-qtapplicationbase NAMESPACE inviwo DESTINATION inviwo)

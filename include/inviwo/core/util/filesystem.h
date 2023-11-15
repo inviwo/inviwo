@@ -166,6 +166,8 @@ IVW_CORE_API std::filesystem::path getInviwoBinDir();
 
 IVW_CORE_API std::vector<std::filesystem::path> getLoadedLibraries();
 
+IVW_CORE_API int getCurrentProcessId();
+
 /**
  * Get path to the user settings / data folder for Inviwo,
  * i.e. a folder where we have write-access.
@@ -300,7 +302,7 @@ IVW_CORE_API std::optional<std::filesystem::path> getParentFolderWithChildren(
  *
  * @return Inviwo base path
  */
-IVW_CORE_API std::filesystem::path findBasePath();
+IVW_CORE_API const std::filesystem::path& findBasePath();
 
 /**
  * Get basePath +  pathType + suffix.

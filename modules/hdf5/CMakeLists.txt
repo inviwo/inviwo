@@ -130,7 +130,3 @@ else()
     ivw_vcpkg_install(hdf5 MODULE HDF5)
     set(version ${HDF5_VERSION_STRING})
 endif()
-
-
-
-ivw_make_package(InviwoHDF5Module inviwo-module-hdf5)

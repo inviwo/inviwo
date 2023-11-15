@@ -51,5 +51,3 @@ else()
     target_link_libraries(inviwo-module-eigenutils PUBLIC Eigen3::Eigen)
     ivw_vcpkg_install(eigen3 MODULE EigenUtils)
 endif()
-
-ivw_make_package(InviwoEigenUtilsModule inviwo-module-eigenutils)

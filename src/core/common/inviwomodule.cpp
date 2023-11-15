@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/moduleaction.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/datastructures/camera/camerafactory.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderfactory.h>
@@ -58,14 +59,14 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 
-#include <inviwo/core/inviwomodulespaths.h>
-
 #include <algorithm>
 
 namespace inviwo {
 
-InviwoModule::InviwoModule(InviwoApplication* app, const std::string& identifier)
-    : app_(app), identifier_(identifier) {}
+InviwoModule::InviwoModule(InviwoApplication* app, std::string_view identifier)
+    : app_(app)
+    , identifier_(identifier)
+    , moduleRoot_{app->getModuleManager().locateModule(*this)} {}
 
 InviwoModule::~InviwoModule() {
     // unregister everything...
@@ -134,49 +135,29 @@ InviwoModule::~InviwoModule() {
 
 std::string InviwoModule::getIdentifier() const { return identifier_; }
 
-std::filesystem::path InviwoModule::getPath() const {
-    std::string moduleNameLowerCase = toLower(getIdentifier());
-
-    const auto defaultPath = filesystem::findBasePath() / "modules" / moduleNameLowerCase;
-
-    // By default always use this one. i.e. the module folder in the deployed app
-    if (std::filesystem::is_directory(defaultPath)) {
-        return defaultPath.lexically_normal();
-    } else {
-        // try to use the module folder from the source location
-        for (auto& elem : inviwoModulePaths_) {
-            const auto path = elem / moduleNameLowerCase;
-            if (std::filesystem::is_directory(path)) {
-                return path.lexically_normal();
-            }
-        }
-    }
-    // In the case that there was no module folder, just return the default path
-    // This can happen in a deployed app without any installed resources in the module.
-    return defaultPath.lexically_normal();
-}
+const std::filesystem::path& InviwoModule::getPath() const { return moduleRoot_; }
 
 std::filesystem::path InviwoModule::getPath(ModulePath type) const {
-    std::filesystem::path path = getPath();
+    const auto& basePath = getPath();
     // clang-format off
-    path = [&](){
+    auto path = [&](){
         switch (type) {
-            case ModulePath::Data:               return path / "data";
-            case ModulePath::Images:             return path / "data/images";
-            case ModulePath::PortInspectors:     return path / "data/portinspectors";
-            case ModulePath::Scripts:            return path / "data/scripts";
-            case ModulePath::TransferFunctions:  return path / "data/transferfunctions";
-            case ModulePath::Volumes:            return path / "data/volumes";
-            case ModulePath::Workspaces:         return path / "data/workspaces";
-            case ModulePath::Docs:               return path / "docs";
-            case ModulePath::Tests:              return path / "tests";
-            case ModulePath::TestImages:         return path / "tests/images";
-            case ModulePath::TestVolumes:        return path / "tests/volumes";
-            case ModulePath::UnitTests:          return path / "tests/unittests";
-            case ModulePath::RegressionTests:    return path / "tests/regression";
-            case ModulePath::GLSL:               return path / "glsl";
-            case ModulePath::CL:                 return path / "cl";
-            default:                             return path;
+            case ModulePath::Data:               return basePath / "data";
+            case ModulePath::Images:             return basePath / "data/images";
+            case ModulePath::PortInspectors:     return basePath / "data/portinspectors";
+            case ModulePath::Scripts:            return basePath / "data/scripts";
+            case ModulePath::TransferFunctions:  return basePath / "data/transferfunctions";
+            case ModulePath::Volumes:            return basePath / "data/volumes";
+            case ModulePath::Workspaces:         return basePath / "data/workspaces";
+            case ModulePath::Docs:               return basePath / "docs";
+            case ModulePath::Tests:              return basePath / "tests";
+            case ModulePath::TestImages:         return basePath / "tests/images";
+            case ModulePath::TestVolumes:        return basePath / "tests/volumes";
+            case ModulePath::UnitTests:          return basePath / "tests/unittests";
+            case ModulePath::RegressionTests:    return basePath / "tests/regression";
+            case ModulePath::GLSL:               return basePath / "glsl";
+            case ModulePath::CL:                 return basePath / "cl";
+            default:                             return basePath;
         }
     }();
     // clang-format on
@@ -247,10 +228,8 @@ const std::vector<MeshDrawer*> InviwoModule::getDrawers() const { return uniqueT
 const std::vector<Settings*>& InviwoModule::getSettings() const { return settings_; }
 
 std::string InviwoModule::getDescription() const {
-    for (auto& item : app_->getModuleManager().getModuleFactoryObjects()) {
-        if (item->name == identifier_) {
-            return item->description;
-        }
+    if (auto* item = app_->getModuleManager().getFactoryObject(identifier_)) {
+        return item->description;
     }
     return "No description available";
 }

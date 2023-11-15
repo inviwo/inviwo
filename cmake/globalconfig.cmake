@@ -1,7 +1,7 @@
 #################################################################################
-#
+# 
 # Inviwo - Interactive Visualization Workshop
-#
+# 
 # Copyright (c) 2013-2023 Inviwo Foundation
 # All rights reserved.
 # 
@@ -26,19 +26,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 #################################################################################
- 
-set(IVW_MAJOR_VERSION 0)
-set(IVW_MINOR_VERSION 9)
-set(IVW_PATCH_VERSION 11)
-set(IVW_BUILD_VERSION 1) # set to zero when doing a release, bump to 1 directly after the release. 
 
-if(${IVW_BUILD_VERSION})
-    set(IVW_VERSION ${IVW_MAJOR_VERSION}.${IVW_MINOR_VERSION}.${IVW_PATCH_VERSION}.${IVW_BUILD_VERSION})
-else() # if IVW_BUILD_VERSION is not set or set to zero 
-    set(IVW_VERSION ${IVW_MAJOR_VERSION}.${IVW_MINOR_VERSION}.${IVW_PATCH_VERSION})
-endif()
-
-#--------------------------------------------------------------------
 # Requirement checks
 include(CheckCXXCompilerFlag)
 if(MSVC) 
@@ -70,7 +58,6 @@ endif()
 set_property(GLOBAL PROPERTY USE_FOLDERS On)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER cmake)
 
-#--------------------------------------------------------------------
 # CMake debugging
 option(IVW_CFG_CMAKE_DEBUG "Print CMake Debug Information" OFF)
 
@@ -112,14 +99,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE PATH
    "Single Directory for all Executables.")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE PATH
    "Single Directory for all Libraries")
-if(NOT EXECUTABLE_OUTPUT_PATH)
-    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE PATH 
-        "Single output directory for building all executables.")
-endif()
-if(NOT LIBRARY_OUTPUT_PATH)
-    set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE PATH
-        "Single output directory for building all libraries.")
-endif()
 
 # Sets IVW_GENERATOR_IS_MULTI_CONFIG to true if the generator is multi config, 
 # e.g. when building Debug or Release mode is selected in the IDE (like in Visual Studio) 
@@ -129,21 +108,9 @@ get_property(IVW_GENERATOR_IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CO
 # Set Common Variables
 get_filename_component(IVW_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR} PATH)
 set(IVW_INCLUDE_DIR             ${IVW_ROOT_DIR}/include)
-set(IVW_SOURCE_DIR              ${IVW_ROOT_DIR}/src)
-set(IVW_CORE_INCLUDE_DIR        ${IVW_ROOT_DIR}/include/inviwo/core)
-set(IVW_CORE_SOURCE_DIR         ${IVW_ROOT_DIR}/src/core)
-set(IVW_QT_INCLUDE_DIR          ${IVW_ROOT_DIR}/include/inviwo/qt)
-set(IVW_QT_SOURCE_DIR           ${IVW_ROOT_DIR}/src/qt)
-set(IVW_APPLICATION_DIR         ${IVW_ROOT_DIR}/apps)
 set(IVW_MODULE_DIR              ${IVW_ROOT_DIR}/modules)
 set(IVW_RESOURCES_DIR           ${IVW_ROOT_DIR}/resources)
-set(IVW_EXTENSIONS_DIR          ${IVW_ROOT_DIR}/ext)
-set(IVW_TOOLS_DIR               ${IVW_ROOT_DIR}/tools)
 set(IVW_BINARY_DIR              ${CMAKE_BINARY_DIR})
-set(IVW_LIBRARY_DIR             ${LIBRARY_OUTPUT_PATH})
-set(IVW_EXECUTABLE_DIR          ${EXECUTABLE_OUTPUT_PATH})
-set(IVW_CMAKE_SOURCE_MODULE_DIR ${CMAKE_CURRENT_LIST_DIR}/modules)
-set(IVW_CMAKE_BINARY_MODULE_DIR ${CMAKE_BINARY_DIR}/cmake)
 set(IVW_CMAKE_TEMPLATES         ${IVW_ROOT_DIR}/cmake/templates)
 
 # Add globalmacros
@@ -153,16 +120,15 @@ include(${CMAKE_CURRENT_LIST_DIR}/compileoptions.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/installutils.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/deprecated.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/filegeneration.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/coredata.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/moduledata.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/registermodules.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/globalmacros.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/createmodule.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/licenses.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/vcpkghelpers.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/benchmark.cmake)
-
-#Generate headers
-ivw_generate_module_paths_header()
-configure_file(${IVW_CMAKE_TEMPLATES}/inviwocommondefines_template.h 
-               ${CMAKE_BINARY_DIR}/modules/core/include/inviwo/core/inviwocommondefines.h 
-               @ONLY IMMEDIATE)
+include(${CMAKE_CURRENT_LIST_DIR}/doc.cmake)
 
 # Use and generate resources when available
 include(${CMAKE_CURRENT_LIST_DIR}/compileresources.cmake)

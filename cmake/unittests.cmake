@@ -58,18 +58,19 @@ function(ivw_make_unittest_target name target)
     # Create application
     add_executable(${test_name} ${SOURCE_FILES})
 
+    find_package(inviwo-testutil CONFIG REQUIRED)
     find_package(GTest CONFIG REQUIRED)
-    target_link_libraries(${test_name} 
+    target_link_libraries(${test_name}
         PUBLIC 
-        GTest::gtest
-        GTest::gmock
-        inviwo::testutil
-        ${target}
+            GTest::gtest
+            GTest::gmock
+            inviwo::testutil
+            ${target}
     )
     set_target_properties(${test_name} PROPERTIES FOLDER unittests)
 
     if(WIN32 AND MSVC)
-        target_link_libraries(${test_name} PRIVATE -DEBUG:FULL)
+        target_link_options(${test_name} PRIVATE /DEBUG:FULL)
     endif()
 
     # Define defintions and properties

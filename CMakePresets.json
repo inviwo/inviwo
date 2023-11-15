@@ -3,7 +3,25 @@
   "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
   "configurePresets": [
     {
-      "name": "develop",
+      "name": "user",
+      "hidden": true,
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS":                { "type": "BOOL", "value": "ON"},
+        "IVW_CFG_CMAKE_DEBUG":              { "type": "BOOL", "value": "OFF"},
+        "IVW_CFG_PROFILING":                { "type": "BOOL", "value": "OFF"},
+        "IVW_CFG_PRECOMPILED_HEADERS":      { "type": "BOOL", "value": "OFF"},
+        "IVW_CFG_FORCE_ASSERTIONS":         { "type": "BOOL", "value": "OFF"},
+        "IVW_CFG_BUILD_CHANGELOG":          { "type": "BOOL", "value": "OFF"},
+        "IVW_APP_MINIMAL_GLFW":             { "type": "BOOL", "value": "OFF"},
+        "IVW_APP_MINIMAL_QT":               { "type": "BOOL", "value": "OFF"},
+        "IVW_TEST_BENCHMARKS":              { "type": "BOOL", "value": "OFF"},
+        "IVW_TEST_INTEGRATION_TESTS":       { "type": "BOOL", "value": "OFF"},
+        "IVW_PACKAGE_INSTALLER":            { "type": "BOOL", "value": "OFF"}
+      }
+    },
+
+    {
+      "name": "developer",
       "hidden": true,
       "cacheVariables": {
         "BUILD_SHARED_LIBS":                { "type": "BOOL", "value": "ON"},
@@ -12,16 +30,12 @@
         "IVW_CFG_PRECOMPILED_HEADERS":      { "type": "BOOL", "value": "OFF"},
         "IVW_CFG_FORCE_ASSERTIONS":         { "type": "BOOL", "value": "ON"},
         "IVW_CFG_BUILD_CHANGELOG":          { "type": "BOOL", "value": "ON"},
-        "IVW_ENABLE_OPENMP":                { "type": "BOOL", "value": "OFF"},
-        "IVW_ENABLE_OPENEXR":               { "type": "BOOL", "value": "ON"},
-
         "IVW_APP_MINIMAL_GLFW":             { "type": "BOOL", "value": "ON"},
         "IVW_APP_MINIMAL_QT":               { "type": "BOOL", "value": "ON"},
-
         "IVW_TEST_BENCHMARKS":              { "type": "BOOL", "value": "ON"},
         "IVW_TEST_INTEGRATION_TESTS":       { "type": "BOOL", "value": "ON"},
-
-        "IVW_PACKAGE_INSTALLER":            { "type": "BOOL", "value": "ON"}
+        "IVW_PACKAGE_INSTALLER":            { "type": "BOOL", "value": "ON"},
+        "IVW_ENABLE_OPENEXR":               { "type": "BOOL", "value": "ON"}
       }
     },
     {
@@ -49,7 +63,42 @@
         "IVW_USE_EXTERNAL_PEGTL":     { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_PYBIND11":  { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_ROARING":   { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_SGCT":      { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_TCLAP":     { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_TIFF":      { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_UTFCPP":    { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_UNITS":     { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_WARN":      { "type": "BOOL", "value": "ON"}
+      }
+    },
+  
+    {
+      "name": "apt",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "IVW_USE_EXTERNAL_ASSIMP":    { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_BENCHMARK": { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_CIMG":      { "type": "BOOL", "value": "OFF"},
+        "IVW_USE_EXTERNAL_EIGEN":     { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_FMT":       { "type": "BOOL", "value": "OFF"},
+        "IVW_USE_EXTERNAL_FREETYPE":  { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_GLEW":      { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_GLFW":      { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_GLM":       { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_GTEST":     { "type": "BOOL", "value": "OFF"},
+        "IVW_USE_EXTERNAL_HDF5":      { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_IMG":       { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_INJA":      { "type": "BOOL", "value": "OFF"},
+        "IVW_USE_EXTERNAL_JSON":      { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_NIFTI":     { "type": "BOOL", "value": "OFF"},
+        "IVW_USE_EXTERNAL_OPENEXR":   { "type": "BOOL", "value": "OFF"},
+        "IVW_USE_EXTERNAL_PEGTL":     { "type": "BOOL", "value": "OFF"},
+        "IVW_USE_EXTERNAL_PYBIND11":  { "type": "BOOL", "value": "OFF"},
+        "IVW_USE_EXTERNAL_ROARING":   { "type": "BOOL", "value": "OFF"},
         "IVW_USE_EXTERNAL_TCLAP":     { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_TIFF":      { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_UTFCPP":    { "type": "BOOL", "value": "ON"}
@@ -64,26 +113,85 @@
       }
     },
 
+    {   
+      "name" : "build",
+      "hidden" : true,
+      "binaryDir" : "${sourceParentDir}/builds/${presetName}"
+    },
+
     {
-      "name": "msvc-dev",
-      "displayName": "MSVC 2022",
-      "description": "MSVC 2022 Development configuration",
+      "name": "msvc",
+      "hidden": true,
       "generator": "Visual Studio 17 2022",
-      "architecture" : "x64",
-      "inherits" : ["develop"]
+      "architecture" : "x64"
     },
     {
-      "name": "msvc-dev-vcpkg",
-      "displayName": "MSVC 2022 Using vcpkg",
-      "description": "MSVC 2022 Development using vcpkg configuration",
-      "inherits" : ["vcpkg", "msvc-dev"]
+      "name": "xcode",
+      "hidden": true,
+      "generator": "Xcode"
     },
     {
-      "name": "ninja-dev-vcpkg",
-      "displayName": "Ninja using vcpkg",
-      "description": "Ninja development using vcpkg configuration",
+      "name": "ninja",
+      "hidden": true,
       "generator": "Ninja",
-      "inherits" : ["vcpkg", "develop"]
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE" : "RelWithDebInfo"
+      }
+    },
+
+    {
+      "name": "msvc-developer",
+      "displayName": "MSVC Developer configuration",
+      "inherits" : ["msvc", "developer", "vcpkg", "build"],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET" : "x64-windows"
+      }
+    },
+    {
+      "name": "msvc-user",
+      "displayName": "MSVC User configuration",
+      "inherits" : ["msvc", "user", "vcpkg", "build"],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET" : "x64-windows"
+      }
+    },
+
+    {
+      "name": "xcode-developer",
+      "displayName": "Xcode Developer configuration",
+      "inherits" : ["xcode", "developer", "vcpkg", "build"],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET" : "arm64-osx-dynamic"
+      }
+    },
+    {
+      "name": "xcode-user",
+      "displayName": "Xcode User configuration",
+      "inherits" : ["xcode", "user", "vcpkg", "build"],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET" : "arm64-osx-dynamic"
+      }
+    },
+
+    {
+      "name": "ninja-developer",
+      "displayName": "Ninja Developer configuration",
+      "inherits" : ["ninja", "developer", "vcpkg", "build"]
+    },
+    {
+      "name": "ninja-user",
+      "displayName": "Ninja User configuration",
+      "inherits" : ["ninja", "user", "vcpkg", "build"]
+    },
+    {
+      "name": "ninja-developer-apt",
+      "displayName": "Ninja Developer configuration using apt",
+      "inherits" : ["ninja", "developer", "apt", "build"]
+    },
+    {
+      "name": "ninja-user-apt",
+      "displayName": "Ninja User configuration using apt",
+      "inherits" : ["ninja", "user",  "apt", "build"]
     }
   ]
 }

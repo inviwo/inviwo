@@ -31,6 +31,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwocommondefines.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>
@@ -725,10 +726,11 @@ void InviwoMainWindow::addActions() {
         menuEventFilter_->add(exampleMenu_);
 
         exampleMenu_->clear();
-        for (const auto& module : app_->getModules()) {
-            const auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
+        for (const auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
+            const auto moduleWorkspacePath = inviwoModule.getPath(ModulePath::Workspaces);
             if (!std::filesystem::is_directory(moduleWorkspacePath)) continue;
-            auto menu = std::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
+            auto menu =
+                std::make_unique<QMenu>(QString::fromStdString(inviwoModule.getIdentifier()));
             for (auto file : filesystem::getDirectoryContents(moduleWorkspacePath)) {
                 // only accept inviwo workspace files
                 if (file.extension() != ".inv") continue;
@@ -771,10 +773,11 @@ void InviwoMainWindow::addActions() {
         menuEventFilter_->add(testMenu_);
 
         testMenu_->clear();
-        for (const auto& module : app_->getModules()) {
-            auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
+        for (const auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
+            auto moduleTestPath = inviwoModule.getPath(ModulePath::RegressionTests);
             if (!std::filesystem::is_directory(moduleTestPath)) continue;
-            auto menu = std::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
+            auto menu =
+                std::make_unique<QMenu>(QString::fromStdString(inviwoModule.getIdentifier()));
             for (auto test : filesystem::getDirectoryContents(moduleTestPath,
                                                               filesystem::ListMode::Directories)) {
                 const auto testDir = moduleTestPath / test;
@@ -1117,9 +1120,9 @@ void InviwoMainWindow::addActions() {
 }
 
 void InviwoMainWindow::updateWindowTitle() {
-    setWindowTitle(utilqt::toQString(
-        fmt::format("Inviwo - Interactive Visualization Workshop - {}{}", currentWorkspaceFileName_,
-                    getNetworkEditor()->isModified() ? "*" : "")));
+    setWindowTitle(utilqt::toQString(fmt::format(
+        "Inviwo v{} - Interactive Visualization Workshop - {}{}", inviwo::build::version,
+        currentWorkspaceFileName_, getNetworkEditor()->isModified() ? "*" : "")));
 }
 
 void InviwoMainWindow::addToRecentWorkspaces(const std::filesystem::path& workspaceFileName) {

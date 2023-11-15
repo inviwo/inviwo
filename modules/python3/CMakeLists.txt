@@ -135,11 +135,13 @@ if(BUILD_SHARED_LIBS AND IVW_PACKAGE_EMBED_PYTHON)
                 WORKING_DIRECTORY "${py_dir}/python")
         endif()
 
-        install(DIRECTORY "${py_dir}/python/" DESTINATION bin COMPONENT Application)
+        install(DIRECTORY "${py_dir}/python/" 
+            DESTINATION ${IVW_RUNTIME_INSTALL_DIR} 
+            COMPONENT Application
+        )
     endif()
 endif()
 
 # Add scripts directory to pack
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/scripts)
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/processors)
-ivw_make_package(InviwoPython3Module inviwo-module-python3)

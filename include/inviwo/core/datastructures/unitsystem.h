@@ -34,7 +34,12 @@
 
 #include <flags/flags.h>
 #include <fmt/format.h>
+
+#if __has_include(<llnl-units/units.hpp>)
+#include <llnl-units/units.hpp>
+#else
 #include <units/units.hpp>
+#endif
 
 #include <string_view>
 #include <tuple>

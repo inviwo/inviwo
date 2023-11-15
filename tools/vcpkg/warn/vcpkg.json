@@ -1,0 +1,16 @@
+{
+  "name": "warn",
+  "version": "1.0.0",
+  "homepage": "https://github.com/petersteneteg/warn",
+  "description": "warn.py is a small python3 untility to generate include files for warning pragmas",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ]
+}

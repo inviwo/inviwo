@@ -31,9 +31,8 @@
 
 namespace inviwo {
 
-LicenseInfo::LicenseInfo(const std::string& aId, const std::string& aName,
-                         const std::string& aVersion, const std::string& aUrl,
-                         const std::string& aModule, const std::string& aType,
+LicenseInfo::LicenseInfo(std::string_view aId, std::string_view aName, std::string_view aVersion,
+                         std::string_view aUrl, std::string_view aModule, std::string_view aType,
                          const std::vector<std::string>& someFiles)
     : id{aId}
     , name{aName}

@@ -41,7 +41,7 @@ endfunction()
 
 function(lowercase retval)
     set(the_list "")
-    foreach(item ${ARGN})
+    foreach(item IN LISTS ARGN)
         string(TOLOWER ${item} lowercase)
         list(APPEND the_list ${lowercase})
     endforeach()
@@ -79,6 +79,10 @@ function(ivw_pad_right output str padchar length)
   set(${output} "${str}" PARENT_SCOPE)
 endfunction()
 
+# Creates VS folder structure
+function(ivw_folder target folder_name)
+    set_target_properties(${target} PROPERTIES FOLDER ${folder_name})
+endfunction()
 
 # encodeLineBreaks(output strings)
 # encodes the contents of the string given as last argument and saves the 
@@ -249,7 +253,8 @@ endfunction()
 # Name conversion functions:
 # ivw_to_macro_name            OpenGL-test        -> OPENGL_TEST
 # ivw_dir_to_mod_dep           opengl             -> INVIWOOPENGLMODULE
-# ivw_mod_dep_to_dir           INVIWOOPENGLMODULE -> opengl 
+# ivw_mod_dep_to_dir           INVIWOOPENGLMODULE -> opengl
+# ivw_mod_dep_to_mod_name      INVIWOOPENGLMODULE -> InviwoOpenGLModule
 # ivw_dir_to_mod_prefix        opengl             -> IVW_MODULE_OPENGL
 # ivw_mod_prefix_to_dir        IVW_MODULE_OPENGL  -> opengl
 # ivw_mod_name_to_dir          InviwoOpenGLModule -> opengl
@@ -267,7 +272,7 @@ endfunction()
 # Convert a name to a macro name, i.e. OpenGL-test -> OPENGL_TEST
 function(ivw_to_macro_name retval)
     set(the_list "")
-    foreach(item ${ARGN})
+    foreach(item IN LISTS ARGN)
         string(TOUPPER ${item} u_item)
         string(REGEX REPLACE "-" "_" new_item ${u_item})
         list(APPEND the_list "${new_item}")
@@ -279,7 +284,7 @@ endfunction()
 # Convert directory name tp module dep, i.e. opengl -> INVIWOOPENGLMODULE
 function(ivw_dir_to_mod_dep retval)
     set(the_list "")
-    foreach(item ${ARGN})
+    foreach(item IN LISTS ARGN)
         string(TOUPPER ${item} u_item)
         list(APPEND the_list "INVIWO${u_item}MODULE")
     endforeach()
@@ -290,7 +295,7 @@ endfunction()
 # Convert dir name to  module prefix, i.e. opengl -> IVW_MODULE_OPENGL
 function(ivw_dir_to_mod_prefix retval)
     set(the_list "")
-    foreach(item ${ARGN})
+    foreach(item IN LISTS ARGN)
         string(TOUPPER ${item} u_item)
         list(APPEND the_list IVW_MODULE_${u_item})
     endforeach()
@@ -301,7 +306,7 @@ endfunction()
 # Convert module dep to directory name, i.e. INVIWOOPENGLMODULE -> opengl
 function(ivw_mod_dep_to_dir retval)
     set(the_list "")
-    foreach(item ${ARGN})
+    foreach(item IN LISTS ARGN)
         string(REGEX MATCH "^INVIWO(.*)MODULE$" found_item ${item})
         if(CMAKE_MATCH_1)
             string(TOLOWER ${CMAKE_MATCH_1} l_new_item)
@@ -315,7 +320,7 @@ endfunction()
 # Convert module prefix to directory name, i.e. IVW_MODULE_OPENGL -> opengl
 function(ivw_mod_prefix_to_dir retval)
     set(the_list "")
-    foreach(item ${ARGN})
+    foreach(item IN LISTS ARGN)
         string(REGEX MATCH "(^IVW_MODULE_$)" found_item ${item})
         if(found_item)
             string(REGEX REPLACE "(^IVW_MODULE_$)" "" new_item ${item})
@@ -330,7 +335,7 @@ endfunction()
 # Convert module name to directory name, i.e. InviwoOpenGLModule -> opengl
 function(ivw_mod_name_to_dir retval)
     set(the_list "")
-    foreach(item ${ARGN})
+    foreach(item IN LISTS ARGN)
         string(REGEX MATCH "(^Inviwo.*.Module$)" found_item ${item})
         if(found_item)
             string(REGEX REPLACE "(^Inviwo)|(Module$)" "" new_item ${item})
@@ -347,7 +352,7 @@ endfunction()
 # Convert module name to directory name, i.e. InviwoOpenGLModule -> OpenGL
 function(ivw_mod_name_to_class retval)
     set(the_list "")
-    foreach(item ${ARGN})
+    foreach(item IN LISTS ARGN)
         string(REGEX MATCH "(^Inviwo.*.Module$)" found_item ${item})
         if(found_item)
             string(REGEX REPLACE "(^Inviwo)|(Module$)" "" new_item ${item})
@@ -364,7 +369,7 @@ endfunction()
 # Will return any input as is if it does not match
 function(ivw_mod_name_to_name retval)
     set(the_list "")
-    foreach(item ${ARGN})
+    foreach(item IN LISTS ARGN)
         string(REGEX MATCH "(^Inviwo.*.Module$)" found_item ${item})
         if(found_item)
             string(REGEX REPLACE "(^Inviwo)|(Module$)" "" new_item ${item})
@@ -381,9 +386,20 @@ endfunction()
 # using module data
 function(ivw_mod_name_to_alias retval)
     set(the_list "")
-    foreach(item ${ARGN})
+    foreach(item IN LISTS ARGN)
         ivw_mod_name_to_mod_dep(mod ${item})
         list(APPEND the_list ${${mod}_alias})
+    endforeach()
+    set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()
+
+# ivw_mod_dep_to_mod_name(retval item1 item2 ...)
+# Convert module name to alias name, i.e. INVIWOOPENGLMODULE -> InviwoOpenGLModule
+# using module data
+function(ivw_mod_dep_to_mod_name retval)
+    set(the_list "")
+    foreach(mod in LISTS ARGN)
+        list(APPEND the_list ${${mod}_modName})
     endforeach()
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
@@ -402,7 +418,7 @@ endfunction()
 # Convert module name to directory name, i.e. OpenGL -> InviwoOpenGLModule
 function(ivw_to_mod_name retval)
     set(the_list "")
-    foreach(item ${ARGN})
+    foreach(item IN LISTS ARGN)
         list(APPEND the_list Inviwo${item}Module)
     endforeach()
     set(${retval} ${the_list} PARENT_SCOPE)
@@ -412,7 +428,7 @@ endfunction()
 # Convert module name to directory name, i.e. opengl -> inviwo-module-opengl
 function(ivw_dir_to_module_taget_name retval)
     set(the_list "")
-    foreach(item ${ARGN})
+    foreach(item IN LISTS ARGN)
         list(APPEND the_list inviwo-module-${item})
     endforeach()
     set(${retval} ${the_list} PARENT_SCOPE)
@@ -422,7 +438,7 @@ endfunction()
 # Convert module name to module dep, i.e. InviwoOpenGLModule -> INVIWOOPENGLMODULE
 function(ivw_mod_name_to_mod_dep retval)
     set(the_list "")
-    foreach(item ${ARGN})
+    foreach(item IN LISTS ARGN)
         string(TOUPPER ${item} uitem)
         list(APPEND the_list ${uitem})
     endforeach()
@@ -433,7 +449,7 @@ endfunction()
 # Convert module name to module dep, i.e. InviwoOpenGLModule -> REG_INVIWOOPENGLMODULE
 function(ivw_mod_name_to_reg retval)
     set(the_list "")
-    foreach(item ${ARGN})
+    foreach(item IN LISTS ARGN)
         string(TOUPPER ${item} uitem)
         list(APPEND the_list REG_${uitem})
     endforeach()
@@ -554,14 +570,20 @@ function(ivw_topological_sort node_list_var node_edge_var sorted_var)
 endfunction()
 
 # Get the module name from a CMakeLists.txt
-function(ivw_private_get_ivw_module_name path retval)
+function(ivw_private_get_ivw_module_name path name_var version_var)
     file(READ ${path} contents)
-    string(REGEX MATCH "ivw_module\\([ \t\r\n]*([A-Za-z0-9_-]+)[ \t\r\n]*\\)" found_item ${contents})
-    if(CMAKE_MATCH_1)
-        set(${retval} ${CMAKE_MATCH_1} PARENT_SCOPE)
+    string(REGEX MATCH "ivw_module\\([ \t\n\r]*([A-Za-z0-9_-]+)[ \t\n\r]*([ \t\n\r]+VERSION[ \t\n\r]+([0-9]+)\\.([0-9]+)\\.([0-9]+)[ \t\n\r]*)?\\)" found_item ${contents})
+    if(found_item AND CMAKE_MATCH_1)
+        set(${name_var} ${CMAKE_MATCH_1} PARENT_SCOPE)
+        if(CMAKE_MATCH_3 AND CMAKE_MATCH_4 AND CMAKE_MATCH_5)
+            set(${version_var} "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}" PARENT_SCOPE)
+        else()
+            set(${version_var} "1.0.0" PARENT_SCOPE)
+        endif()
         return()
     endif()
-     set(${retval} NOTFOUND PARENT_SCOPE)
+     set(${name_var} NOTFOUND PARENT_SCOPE)
+     set(${version_var} NOTFOUND PARENT_SCOPE)
 endfunction()
 
 # Get the module include path
@@ -592,58 +614,50 @@ function(ivw_private_get_ivw_module_include_path path includePrefix includePath 
     
 endfunction()
 
-# Get the module version from a CMakeLists.txt
-# Major.Minor.Path
-# Returns 1.0.0 if no version is found
-function(ivw_private_get_ivw_module_version path retval)
-    file(READ ${path} contents)
-    string(REPLACE "\n" ";" lines "${contents}")
-    foreach(line ${lines})
-        # This regex does not seem to be supported in cmake so use a two-step solution
-        #string(REGEX MATCHALL "IVW_.+_VERSION\\s([0-9]+)\\.([0-9]+)\\.([0-9]+)" found_item ${line})
-        string(REGEX MATCH "IVW_(.+)_VERSION" found_mod ${line})
+# Verify that a given path and dir name is in fact an inviwo module
+# This is done by checking that there exists a CMakeLists file
+# and that it declares a inviwo module with the same name as dir.
+function(ivw_private_is_valid_module_dir)
+    set(options )
+    set(oneValueArgs PATH DIR VALID_VAR NAME_VAR VERSION_VAR)
+    set(multiValueArgs)
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-        if(CMAKE_MATCH_1)
-            # Extract version number
-            string(REGEX MATCH "\\s*\"*([0-9]+)\\.([0-9]+)\\.([0-9]+)" found_item ${line})
-            if(NOT "${CMAKE_MATCH_1}" STREQUAL "" AND NOT "${CMAKE_MATCH_2}" STREQUAL "" AND NOT "${CMAKE_MATCH_3}" STREQUAL "")
-                set(${retval} "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}" PARENT_SCOPE)
-                return()
-            endif()
+    foreach(item IN LISTS oneValueArgs)
+        if(NOT ARG_${item})
+            message(FATAL_ERROR "ivw_private_is_valid_module_dir: ${item} not set")
         endif()
     endforeach()
-    set(${retval} "1.0.0" PARENT_SCOPE)
-endfunction()
 
-# Verify that a given path and dir name is in fact a inviwo module
-# This is done by chekcing that there exists a CMakeLists file
-# and that it declares a inviwo module with the same name as dir.
-function(ivw_private_is_valid_module_dir path dir retval)
-    if(IS_DIRECTORY ${path}/${dir})
-        string(TOLOWER ${dir} test)
+    if(IS_DIRECTORY ${ARG_PATH}/${ARG_DIR})
+        string(TOLOWER ${ARG_DIR} test)
         string(REPLACE " " "" ${test} test)
-        if(${dir} STREQUAL ${test})
-            if(EXISTS ${path}/${dir}/CMakeLists.txt)
-                ivw_private_get_ivw_module_name(${path}/${dir}/CMakeLists.txt name)
+        if(${ARG_DIR} STREQUAL ${test})
+            if(EXISTS ${ARG_PATH}/${ARG_DIR}/CMakeLists.txt)
+                ivw_private_get_ivw_module_name(${ARG_PATH}/${ARG_DIR}/CMakeLists.txt name version)
                 string(TOLOWER ${name} l_name)
-                if(${dir} STREQUAL ${l_name})
-                    set(${retval} TRUE PARENT_SCOPE)
+                if(${ARG_DIR} STREQUAL ${l_name})
+                    set(${ARG_VALID_VAR} TRUE PARENT_SCOPE)
+                    set(${ARG_NAME_VAR} ${name} PARENT_SCOPE)
+                    set(${ARG_VERSION_VAR} ${version} PARENT_SCOPE)
                     return()
                 else()
-                    message("Found invalid module \"${dir}\" at \"${path}\". "
-                        "ivw_module called with \"${name}\" which is different from the directory \"${dir}\""
+                    message("Found invalid module \"${ARG_DIR}\" at \"${ARG_PATH}\". "
+                        "ivw_module called with \"${name}\" which is different from the directory \"${ARG_DIR}\""
                         "They should be the same except for casing.")
                 endif()
             else()
-                message("Found invalid module \"${dir}\" at \"${path}\". "
+                message("Found invalid module \"${ARG_DIR}\" at \"${ARG_PATH}\". "
                     "CMakeLists.txt is missing")
             endif()
         else()
-            message("Found invalid module dir \"${dir}\" at \"${path}\". "
+            message("Found invalid module dir \"${ARG_DIR}\" at \"${ARG_PATH}\". "
                 "Dir names should be all lowercase and without spaces")
         endif()
     endif()
-    set(${retval} FALSE PARENT_SCOPE)
+    set(${ARG_VALID_VAR} FALSE PARENT_SCOPE)
+    set(${ARG_NAME_VAR} NOTFOUND PARENT_SCOPE)
+    set(${ARG_VERSION_VAR} NOTFOUND PARENT_SCOPE)
 endfunction()
 
 # Query if a lib is compiled with 32 or 64 bits, will return 0 if it 
@@ -1185,4 +1199,34 @@ function(ivw_format)
     if(message_type_length EQUAL 1)
         message(${message_type} ${result})
     endif()
+endfunction()
+
+# Creates source group structure recursively
+function(ivw_group group_name)
+    set(options "")
+    set(oneValueArgs "BASE")
+    set(multiValueArgs "")
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    
+    ivw_dir_to_mod_dep(mod ${PROJECT_NAME})
+    
+    if(ARG_BASE AND IS_ABSOLUTE ${ARG_BASE})
+        set(base ${ARG_BASE})
+    elseif(ARG_BASE AND NOT IS_ABSOLUTE ${ARG_BASE})
+         set(base ${CMAKE_CURRENT_SOURCE_DIR}/${ARG_BASE})
+    elseif(group_name STREQUAL "Header Files" AND ${mod}_incPath)
+        set(base "${${mod}_incPath}")
+    elseif(group_name STREQUAL "Header Files" AND  EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
+        set(base "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    elseif(group_name STREQUAL "Source Files" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src")
+        set(base "${CMAKE_CURRENT_SOURCE_DIR}/src")
+    elseif(group_name STREQUAL "Test Files" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests")
+        set(base "${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests")
+     elseif(group_name STREQUAL "Shader Files" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/glsl")
+        set(base "${CMAKE_CURRENT_SOURCE_DIR}/glsl")
+    else()
+        set(base "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
+
+    source_group(TREE ${base} PREFIX ${group_name} FILES ${ARG_UNPARSED_ARGUMENTS})
 endfunction()

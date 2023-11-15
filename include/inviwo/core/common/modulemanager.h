@@ -34,32 +34,24 @@
 #include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/common/runtimemoduleregistration.h>
-#include <inviwo/core/util/vectoroperations.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/common/inviwomodulelibraryobserver.h>
+#include <inviwo/core/common/modulecontainer.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <set>
 #include <vector>
 #include <memory>
-#include <warn/pop>
+#include <span>
+#include <ranges>
+#include <functional>
 
 namespace inviwo {
 
 class InviwoModule;
-class ModuleCallbackAction;
-class FileObserver;
-
-class SharedLibrary;
 
 /**
  * Manages finding, loading, unloading, reloading of Inviwo modules
  */
 class IVW_CORE_API ModuleManager {
 public:
-    using IdSet = std::set<std::string, CaseInsensitiveCompare>;
-
     ModuleManager(InviwoApplication* app);
     ModuleManager(const ModuleManager& rhs) = delete;
     ModuleManager& operator=(const ModuleManager& that) = delete;
@@ -76,6 +68,9 @@ public:
      * Module is registered if dependencies exist and they have correct version.
      */
     void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories);
+
+    void registerModules(std::vector<ModuleContainer> moduleFactories);
+
     /**
      * \brief Load modules from dynamic library files in the specified search paths.
      *
@@ -88,24 +83,53 @@ public:
     void registerModules(RuntimeModuleLoading, std::function<bool(std::string_view)> filter =
                                                    ModuleManager::getEnabledFilter());
 
-    /**
-     * \brief Removes all modules not marked as protected by the application.
-     *
-     * Use this function with care since all modules will be destroyed.
-     * 1. Network will be cleared.
-     * 2. Non-protected modules will be removed.
-     * 3. Loaded dynamic module libraries will be unloaded (unless marked as protected).
-     *
-     * @see InviwoApplication::getProtectedModuleIdentifiers
-     * @see InviwoModuleLibraryObserver
-     */
-    void unregisterModules();
+    std::vector<ModuleContainer> findRuntimeModules(
+        std::span<const std::filesystem::path> searchPaths);
 
-    const std::vector<std::unique_ptr<InviwoModule>>& getModules() const;
-    const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& getModuleFactoryObjects() const;
+    std::vector<ModuleContainer> findRuntimeModules(
+        std::span<const std::filesystem::path> searchPaths,
+        std::function<bool(std::string_view)> filter);
+
+    std::vector<ModuleContainer> findRuntimeModules(
+        std::span<const std::filesystem::path> searchPaths,
+        std::function<bool(std::string_view)> filter, bool runtimeReloading);
+
+    auto getInviwoModules() {
+        static constexpr auto notNull = [](ModuleContainer& cont) -> bool {
+            return cont.getModule() != nullptr;
+        };
+        static constexpr auto moduleRef = [](ModuleContainer& cont) -> InviwoModule& {
+            return *cont.getModule();
+        };
+
+        return inviwoModules_ | std::views::filter(notNull) | std::views::transform(moduleRef);
+    }
+
+    auto getInviwoModules() const {
+        static constexpr auto notNull = [](const ModuleContainer& cont) -> bool {
+            return cont.getModule() != nullptr;
+        };
+        static constexpr auto moduleRef = [](const ModuleContainer& cont) -> const InviwoModule& {
+            return *cont.getModule();
+        };
+
+        return inviwoModules_ | std::views::filter(notNull) | std::views::transform(moduleRef);
+    }
+
+    auto getFactoryObjects() {
+        static constexpr auto factoryObjRef =
+            [](const ModuleContainer& cont) -> const InviwoModuleFactoryObject& {
+            return cont.factoryObject();
+        };
+        return inviwoModules_ | std::views::transform(factoryObjRef);
+    }
+
+    size_t size() const { return inviwoModules_.size(); }
+
     template <class T>
     T* getModuleByType() const;
     InviwoModule* getModuleByIdentifier(std::string_view identifier) const;
+    InviwoModule* getModuleByIndex(size_t index) const { return inviwoModules_[index].getModule(); }
     std::vector<InviwoModule*> getModulesByAlias(std::string_view alias) const;
     InviwoModuleFactoryObject* getFactoryObject(std::string_view identifier) const;
     std::vector<std::string> findDependentModules(std::string_view module) const;
@@ -121,47 +145,36 @@ public:
      */
     std::shared_ptr<std::function<void()>> onModulesWillUnregister(std::function<void()> callback);
 
-    /**
-     * \brief List of modules to keep during runtime library reloading.
-     *
-     * Some modules such as Core can cause errors if unloaded.
-     * Append them to this list in your application to prevent them from being unloaded.
-     * @return Module identifiers of modules
-     */
-    const IdSet& getProtectedModuleIdentifiers() const;
-    bool isProtected(std::string_view module) const;
-    void addProtectedIdentifier(std::string_view id);
-
     static std::function<bool(std::string_view)> getEnabledFilter();
     void reloadModules();
 
+    // This is a hack to avoid having to add more arguments to the InviwoModule constructor
+    void setModuleLocator(std::function<std::filesystem::path(const InviwoModule&)> moduleLocator);
+    std::filesystem::path locateModule(const InviwoModule&) const;
+
 private:
-    void registerModule(std::unique_ptr<InviwoModule> module);
     bool checkDependencies(const InviwoModuleFactoryObject& obj) const;
-    std::vector<std::string> deregisterDependetModules(
+    std::vector<std::string> deregisterDependentModules(
         const std::vector<std::string>& toDeregister);
-    static auto getProtectedDependencies(
-        const IdSet& ptotectedIds,
-        const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& modules) -> IdSet;
 
     InviwoApplication* app_;
-    IdSet protected_;
 
     Dispatcher<void()> onModulesDidRegister_;     ///< Called after modules have been registered
     Dispatcher<void()> onModulesWillUnregister_;  ///< Called before modules have been unregistered
 
-    // Observes shared libraries and reload modules when file changes.
-    InviwoModuleLibraryObserver libraryObserver_;
-    std::vector<std::unique_ptr<SharedLibrary>> sharedLibraries_;
-    util::OnScopeExit clearLibs_;
-    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> factoryObjects_;
-    std::vector<std::unique_ptr<InviwoModule>> modules_;
-    util::OnScopeExit clearModules_;
+    std::vector<ModuleContainer> inviwoModules_;
+
+    std::function<std::filesystem::path(const InviwoModule&)> moduleLocator_;
 };
 
 template <class T>
 T* ModuleManager::getModuleByType() const {
-    return getTypeFromVector<T>(modules_);
+    for (auto& cont : inviwoModules_) {
+        if (auto* m = dynamic_cast<T*>(cont.getModule())) {
+            return m;
+        }
+    }
+    return nullptr;
 }
 
 }  // namespace inviwo

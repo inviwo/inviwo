@@ -6,7 +6,7 @@
   "vcpkg-configuration": {
     "default-registry": {
       "kind": "builtin",
-      "baseline": "78b61582c9e093fda56a01ebb654be15a0033897"
+      "baseline": "08cc145ed5858faa83160986b3f27f37c499d6ad"
     },
     "overlay-ports": [
       "./tools/vcpkg"
@@ -42,10 +42,60 @@
     "tiff",
     "tinydir",
     "tinyxml2",
+    "llnl-units",
     "utfcpp",
     "zlib",
     "pegtl",
     "inja",
-    "ffmpeg"
-  ]
+    "ffmpeg",
+    "warn",
+    "zlib"
+  ],
+  "features": {
+    "qt":  {
+      "description": "Get Qt from vcpkg",
+      "dependencies": [    
+        { 
+          "name": "qtbase",
+          "features": [
+            "gui",
+            "jpeg",
+            "png",
+            "widgets",
+            "zstd"
+          ]
+        },
+        "qtsvg"
+      ]
+    },
+    "ttk": { 
+      "description": "Support topology-tool-kit modules", 
+      "dependencies": ["topology-tool-kit"]
+    },
+    "vtk": {
+      "description": "Support VTK modules", 
+      "dependencies": [    
+        { 
+          "name": "vtk",
+          "features": [
+            "opengl",
+            "utf8"
+          ]
+        }
+      ]
+    },
+    "dome" : {
+      "description": "Inviwo Dome dependencies",
+      "dependencies": [    
+        {
+            "name": "tracy",
+            "features" : ["gui-tools"]
+        },
+        {
+            "name": "sgct",
+            "features" : ["tracy", "freetype"]
+        }
+      ]
+    }
+  }
 }

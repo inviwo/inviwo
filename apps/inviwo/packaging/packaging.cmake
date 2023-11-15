@@ -29,6 +29,7 @@
 set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
 set(CMAKE_INSTALL_OPENMP_LIBRARIES TRUE)
 set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT Application)
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ${IVW_LIBRARY_INSTALL_DIR})
 include (InstallRequiredSystemLibraries)
 
 set(CPACK_PACKAGE_NAME                "Inviwo")
@@ -39,13 +40,20 @@ set(CPACK_PACKAGE_VERSION_MAJOR       "${IVW_MAJOR_VERSION}")
 set(CPACK_PACKAGE_VERSION_MINOR       "${IVW_MINOR_VERSION}")
 set(CPACK_PACKAGE_VERSION_PATCH       "${IVW_PATCH_VERSION}")
 set(CPACK_PACKAGE_DESCRIPTION_FILE    "${IVW_ROOT_DIR}/README.md")
-set(CPACK_RESOURCE_FILE_LICENSE       "${IVW_ROOT_DIR}/LICENSE")
 set(CPACK_PACKAGE_FILE_NAME           "${CPACK_PACKAGE_NAME}-v${IVW_VERSION}")
+set(CPACK_RESOURCE_FILE_LICENSE       "${IVW_ROOT_DIR}/LICENSE")
+set(CPACK_PACKAGE_EXECUTABLES         "inviwo" "inviwo")
+set(CPACK_CREATE_DESKTOP_LINKS        "inviwo")
 
 set(CPACK_MONOLITHIC_INSTALL OFF)
-set(CPACK_NSIS_MANIFEST_DPI_AWARE ON)
-ivw_get_target_property_recursive(install_list inviwo INTERFACE_IVW_INSTALL_LIST OFF)
-ivw_filter_install_list(LIST install_list REMOVE_COMPONENTS Development Testing)
+ivw_get_target_property_recursive(install_list inviwo INTERFACE_IVW_INSTALL_LIST ON)
+get_property(install_list_global GLOBAL PROPERTY INTERFACE_IVW_INSTALL_LIST)
+list(APPEND install_list ${install_list_global})
+if(IVW_PACKAGE_HEADERS)
+    ivw_filter_install_list(LIST install_list REMOVE_COMPONENTS Testing)
+else()
+    ivw_filter_install_list(LIST install_list REMOVE_COMPONENTS Development Testing)
+endif()
 list(TRANSFORM install_list REPLACE "\\|%\\|" ";")
 set(CPACK_INSTALL_CMAKE_PROJECTS ${install_list})
 
@@ -58,72 +66,77 @@ else()
     set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}/${IVW_VERSION}")
 endif()
 
-set(CPACK_PACKAGE_EXECUTABLES "inviwo" "inviwo")
-set(CPACK_CREATE_DESKTOP_LINKS "inviwo")
-option(IVW_PACKAGE_INSTALLER "Use NSIS to create installer" OFF)
+# NSIS Settings
+# The icon to start the application.
+set(CPACK_NSIS_MUI_ICON "${IVW_ROOT_DIR}\\\\resources\\\\inviwo\\\\inviwo_light.ico")
+# Add a link to the application website in the startup menu.
+set(CPACK_NSIS_MENU_LINKS "https://www.inviwo.org" "Inviwo Homepage")
+# Set the icon for the application in the Add/Remove programs section.
+set(CPACK_NSIS_INSTALLED_ICON_NAME bin\\\\inviwo.exe)
+# The mail address for the maintainer of the application in the Add/Remove programs section
+set(CPACK_NSIS_CONTACT info at inviwo.org)
+# The url of the application in the Add/Remove programs section
+set(CPACK_NSIS_URL_INFO_ABOUT "https://www.inviwo.org")
+# Help URL
+set(CPACK_NSIS_HELP_LINK "https://www.inviwo.org")
+set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${IVW_VERSION}")
+set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "CreateShortCut '$INSTDIR\\\\inviwo.lnk' '$INSTDIR\\\\bin\\\\inviwo.exe'")
+set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
+set(CPACK_NSIS_MUI_FINISHPAGE_RUN "${CPACK_PACKAGE_NAME}")
+set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "Delete '$INSTDIR\\\\inviwo.lnk'")
+set(CPACK_NSIS_MANIFEST_DPI_AWARE ON)
 
+# DMG settings
+set(CPACK_DMG_DS_STORE        "${IVW_ROOT_DIR}/resources/DS_mapp")
+set(CPACK_DMG_VOLUME_NAME     "${CPACK_PACKAGE_FILE_NAME}")
+
+# Debian settings
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.inviwo.org")
+
+# In summary, mac/win deloyqt will find and copy all used qt libraries and qt plugins
+# to the staging install directory. Then, it will change the RPATH of all 
+# libraries such that they point to the copied files. More details here:
+# https://doc.qt.io/qt-6/macos-deployment.html#macdeploy
+# This must be done after copying all binaries to the staging package folder,
+# but before those files are packaged into an installer (CPACK_PRE_BUILD_SCRIPTS).
 if(WIN32)
-    if(IVW_PACKAGE_INSTALLER)
-        set(CPACK_GENERATOR "NSIS")
-        # The icon to start the application.
-        set(CPACK_NSIS_MUI_ICON "${IVW_ROOT_DIR}\\\\resources\\\\inviwo\\\\inviwo_light.ico")
-        # Add a link to the application website in the startup menu.
-        set(CPACK_NSIS_MENU_LINKS "http://www.inviwo.org" "Inviwo Homepage")
-        # Set the icon for the application in the Add/Remove programs section.
-        set(CPACK_NSIS_INSTALLED_ICON_NAME bin\\\\inviwo.exe)
-        # The mail address for the maintainer of the application in the Add/Remove programs section
-        set(CPACK_NSIS_CONTACT info at inviwo.org)
-        # The url of the application in the Add/Remove programs section
-        set(CPACK_NSIS_URL_INFO_ABOUT "http://www.inviwo.org")
-        # Help URL
-        set(CPACK_NSIS_HELP_LINK "http://www.inviwo.org")
-        set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${IVW_VERSION}")
-        set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "CreateShortCut '$INSTDIR\\\\inviwo.lnk' '$INSTDIR\\\\bin\\\\inviwo.exe'")
-        set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
-        set(CPACK_NSIS_MUI_FINISHPAGE_RUN "${CPACK_PACKAGE_NAME}")
-        set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "Delete '$INSTDIR\\\\inviwo.lnk'")
-    else()
-        set(CPACK_GENERATOR "ZIP")
-    endif()
-    get_target_property(qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
+    get_target_property(qmake_executable Qt::qmake IMPORTED_LOCATION)
     get_filename_component(qt_bin_dir "${qmake_executable}" DIRECTORY)
     find_program(WINDEPLOYQT windeployqt HINTS "${qt_bin_dir}")
-    
-    # Copies necessary Qt libraries to the staging install directory
     configure_file("${IVW_ROOT_DIR}/cmake/deploy-windows.cmake.in" "${PROJECT_BINARY_DIR}/deploy-windows.cmake" @ONLY)
     set(CPACK_PRE_BUILD_SCRIPTS "${PROJECT_BINARY_DIR}/deploy-windows.cmake")
 elseif(APPLE)
-    if(IVW_PACKAGE_INSTALLER)
-        set(CPACK_GENERATOR           "DragNDrop")
-        set(CPACK_DMG_DS_STORE        "${IVW_ROOT_DIR}/Resources/DS_mapp")
-        set(CPACK_DMG_VOLUME_NAME     "${CPACK_PACKAGE_FILE_NAME}")
-    else()
-        set(CPACK_GENERATOR "TGZ")
-    endif()
-    
-    get_target_property(qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
+    get_target_property(qmake_executable Qt::qmake IMPORTED_LOCATION)
     get_filename_component(qt_bin_dir "${qmake_executable}" DIRECTORY)
     find_program(MACDEPLOYQT macdeployqt HINTS "${qt_bin_dir}")
-    
-    # In summary, macdeloyqt will find and copy all used qt libraries and qt plugins
-    # to the Contents/Frameworks directory. Then, it will change the RPATH of all 
-    # libraries such that they point to the copied files. More details here:
-    # https://doc.qt.io/qt-6/macos-deployment.html#macdeploy
-    #
-    # This must be done after copying all binaries to the staging package folder,
-    # but before those files are packaged into an installer (CPACK_PRE_BUILD_SCRIPTS).
     configure_file("${IVW_ROOT_DIR}/cmake/deploy-osx.cmake.in" "${PROJECT_BINARY_DIR}/deploy-osx.cmake" @ONLY)
     set(CPACK_PRE_BUILD_SCRIPTS "${PROJECT_BINARY_DIR}/deploy-osx.cmake")
-else()
-    if(IVW_PACKAGE_INSTALLER)
-        set(CPACK_GENERATOR "DEB")
-        set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.inviwo.org")
-    else()
-        set(CPACK_GENERATOR "TGZ")
-    endif()
 endif()
 
 install(DIRECTORY ${IVW_ROOT_DIR}/data/  DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}data  COMPONENT Datasets)
 install(DIRECTORY ${IVW_ROOT_DIR}/tests/ DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}tests COMPONENT Testing)
+
+option(IVW_PACKAGE_INSTALLER "Create installer instead of a package NSIS/DMG/DEB" OFF)
+if(NOT CPACK_GENERATOR)
+    if(WIN32)
+        if(IVW_PACKAGE_INSTALLER)
+            set(CPACK_GENERATOR "NSIS")
+        else()
+            set(CPACK_GENERATOR "ZIP")
+        endif()
+    elseif(APPLE)
+        if(IVW_PACKAGE_INSTALLER)
+            set(CPACK_GENERATOR "DragNDrop")
+        else()
+            set(CPACK_GENERATOR "TGZ")
+        endif()
+    else()
+        if(IVW_PACKAGE_INSTALLER)
+            set(CPACK_GENERATOR "DEB")
+        else()
+            set(CPACK_GENERATOR "TGZ")
+        endif()
+    endif()
+endif()
 
 include(CPack)

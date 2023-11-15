@@ -28,19 +28,18 @@
  *********************************************************************************/
 
 #include <inviwo/qt/editor/inviwoaboutwindow.h>
-#include <inviwo/qt/editor/inviwomainwindow.h>
-#include <inviwo/core/inviwocommondefines.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/buildinfo.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwocommondefines.h>
+#include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/common/modulemanager.h>
+#include <inviwo/core/util/buildinfo.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/qt/editor/inviwomainwindow.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/inviwocommondefines.h>
-#include <inviwo/core/common/inviwoapplication.h>
 
 #include <chrono>
 
@@ -202,15 +201,17 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         auto bmbf = p.append("a", "", {{"href", "https://www.bmbf.de"}});
         bmbf.append("img", "", makeImg(":images/bmbf-white.svg", 60));
     }
-    if (auto bi = util::getBuildInfo()) {
-        auto h1 = body.append("p");
-        h1.append("h3", "Build Info: ");
-        utildoc::TableBuilder tb1(h1, P::end());
-        tb1(H("Date"), bi->getDate());
-        tb1(H("Configuration"), bi->configuration);
-        tb1(H("Generator"), bi->generator);
-        tb1(H("Compiler"), bi->compiler + " " + bi->compilerVersion);
 
+    auto h1 = body.append("p");
+    h1.append("h3", "Build Info: ");
+    utildoc::TableBuilder tb1(h1, P::end());
+    tb1(H("Configuration"), build::configuration);
+    tb1(H("Generator"), build::generator);
+    tb1(H("Compiler"), build::compiler);
+    tb1(H("Compiler Version"), build::compilerVersion);
+
+    if (auto bi = util::getBuildInfo()) {
+        tb1(H("Date"), bi->getDate());
         auto h2 = body.append("p");
         h2.append("h3", "Repos:");
         utildoc::TableBuilder tb2(h2, P::end());
@@ -222,10 +223,14 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         auto h = body.append("p");
         h.append("h3", "Modules: ");
         h.append("br");
-        const auto& mfos = app->getModuleManager().getModuleFactoryObjects();
-        auto names = util::transform(
-            mfos, [](const std::unique_ptr<InviwoModuleFactoryObject>& mfo) { return mfo->name; });
-        std::sort(names.begin(), names.end());
+        std::vector<std::string> names;
+        std::ranges::copy(
+            app->getModuleManager().getFactoryObjects() |
+                std::views::transform([](const InviwoModuleFactoryObject& m) { return m.name; }),
+            std::back_inserter(names));
+
+        std::ranges::sort(names);
+
         h.append("span", joinString(names, ", "));
     }
     {
@@ -237,10 +242,9 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         auto h = body.append("p");
         h.append("h3", "Libraries: ");
         auto dl = h.append("dl");
-        const auto& mfos = app->getModuleManager().getModuleFactoryObjects();
         std::map<std::string, LicenseInfo> licenses;
-        for (auto& mfo : mfos) {
-            for (auto& license : mfo->licenses) {
+        for (const auto& mfo : app->getModuleManager().getFactoryObjects()) {
+            for (auto& license : mfo.licenses) {
                 licenses.try_emplace(license.id, license);
             }
         }
@@ -277,11 +281,10 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
             auto moduleName = utilqt::fromQString(query.queryItemValue("module"));
             auto licenseId = utilqt::fromQString(query.queryItemValue("id"));
 
-            const auto& mfos = app->getModuleManager().getModuleFactoryObjects();
-            auto mit = util::find_if(mfos, [&](auto& m) { return m->name == moduleName; });
-            if (mit == mfos.end()) return;
+            auto mfo = app->getModuleManager().getFactoryObject(moduleName);
+            if (!mfo) return;
 
-            auto& licenses = (*mit)->licenses;
+            auto& licenses = mfo->licenses;
 
             auto lit = util::find_if(licenses, [&](auto& l) { return l.id == licenseId; });
             if (lit == licenses.end()) return;

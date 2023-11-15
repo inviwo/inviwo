@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo {
@@ -51,9 +52,9 @@ InviwoSetupInfo::InviwoSetupInfo(const InviwoApplication& app, ProcessorNetwork&
     network.forEachProcessor(
         [&](const Processor* p) { usedProcessorClassIdentifiers.insert(p->getClassIdentifier()); });
 
-    for (auto& module : app.getModules()) {
-        ModuleSetupInfo info{module->getIdentifier(), module->getVersion(), {}};
-        for (const auto& processor : module->getProcessors()) {
+    for (const auto& inviwoModule : app.getModuleManager().getInviwoModules()) {
+        ModuleSetupInfo info{inviwoModule.getIdentifier(), inviwoModule.getVersion(), {}};
+        for (const auto& processor : inviwoModule.getProcessors()) {
             const auto& id = processor->getClassIdentifier();
             if (usedProcessorClassIdentifiers.count(id) > 0) {
                 info.processors.push_back(id);

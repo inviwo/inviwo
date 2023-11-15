@@ -35,6 +35,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/commandlineparser.h>
@@ -45,6 +46,91 @@
 #include <pybind11/stl/filesystem.h>
 
 namespace inviwo {
+
+class ModuleIdentifierWrapper {
+    static constexpr auto id = [](const auto& elem) -> decltype(auto) {
+        return elem.getIdentifier();
+    };
+
+public:
+    ModuleIdentifierWrapper(InviwoApplication* app) : app_{app} {}
+
+    decltype(auto) getFromIdentifier(std::string_view identifier) const {
+        auto range = app_->getModuleManager().getInviwoModules();
+        auto it =
+            std::ranges::find_if(range, [&](const auto& elem) { return id(elem) == identifier; });
+        if (it != range.end()) {
+            return *it;
+        } else {
+            throw pybind11::key_error();
+        }
+    }
+
+    decltype(auto) getFromIndex(ptrdiff_t pos) const {
+        auto range = app_->getModuleManager().getInviwoModules();
+        if (pos >= 0) {
+            if (pos < size()) {
+                return *(std::next(range.begin(), pos));
+            } else {
+                throw pybind11::index_error();
+            }
+        } else {
+            const auto ind = size() + pos;
+            if (ind >= 0) {
+                return *(std::next(range.begin(), ind));
+            } else {
+                throw pybind11::index_error();
+            }
+        }
+    }
+
+    ptrdiff_t size() const {
+        auto range = app_->getModuleManager().getInviwoModules();
+        return static_cast<ptrdiff_t>(std::distance(range.begin(), range.end()));
+    }
+
+    bool contains(std::string_view identifier) const {
+        auto range = app_->getModuleManager().getInviwoModules();
+        return std::ranges::find_if(
+                   range, [&](const auto& elem) { return id(elem) == identifier; }) != range.end();
+    }
+
+    std::vector<std::string> identifiers() const {
+        std::vector<std::string> res;
+        auto range = app_->getModuleManager().getInviwoModules();
+        std::ranges::transform(range, std::back_inserter(res), id);
+        return res;
+    }
+
+    std::string repr() const {
+        std::stringstream ss;
+        ss << "[";
+        auto joiner = util::make_ostream_joiner(ss, ", ");
+        auto range = app_->getModuleManager().getInviwoModules();
+        std::ranges::transform(range, joiner, id);
+        ss << "]";
+        return ss.str();
+    }
+
+private:
+    InviwoApplication* app_;
+};
+
+void exposeModuleIdentifierWrapper(pybind11::module& m, const std::string& name) {
+    namespace py = pybind11;
+
+    py::class_<ModuleIdentifierWrapper>(m, name.c_str())
+        .def("__getattr__", &ModuleIdentifierWrapper::getFromIdentifier,
+             py::return_value_policy::reference)
+        .def("__getitem__", &ModuleIdentifierWrapper::getFromIdentifier,
+             py::return_value_policy::reference)
+        .def("__getitem__", &ModuleIdentifierWrapper::getFromIndex,
+             py::return_value_policy::reference)
+        .def("__len__", &ModuleIdentifierWrapper::size)
+        .def("__contains__", &ModuleIdentifierWrapper::contains)
+        .def("__repr__", &ModuleIdentifierWrapper::repr)
+        .def("__dir__", &ModuleIdentifierWrapper::identifiers);
+}
 
 void exposeInviwoApplication(pybind11::module& m) {
     namespace py = pybind11;
@@ -63,11 +149,7 @@ void exposeInviwoApplication(pybind11::module& m) {
         .value("Help", PathType::Help)
         .value("Tests", PathType::Tests);
 
-    using ModuleVecWrapper = VectorIdentifierWrapper<
-        typename std::vector<std::unique_ptr<InviwoModule>>::const_iterator>;
-    exposeVectorIdentifierWrapper<
-        typename std::vector<std::unique_ptr<InviwoModule>>::const_iterator>(m,
-                                                                             "ModuleVectorWrapper");
+    exposeModuleIdentifierWrapper(m, "ModuleIdentifierWrapper");
 
     py::class_<InviwoApplication>(m, "InviwoApplication", py::multiple_inheritance{})
         .def(py::init<>())
@@ -79,10 +161,7 @@ void exposeInviwoApplication(pybind11::module& m) {
         .def_property_readonly("displayName", &InviwoApplication::getDisplayName)
 
         .def_property_readonly("modules",
-                               [](InviwoApplication* app) {
-                                   return ModuleVecWrapper(app->getModules().begin(),
-                                                           app->getModules().end());
-                               })
+                               [](InviwoApplication* app) { return ModuleIdentifierWrapper(app); })
         .def("getModuleByIdentifier", &InviwoApplication::getModuleByIdentifier,
              py::return_value_policy::reference)
         .def("getModuleSettings", &InviwoApplication::getModuleSettings,

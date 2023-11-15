@@ -1,5 +1,19 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2023-11-10 Inviwo module system
+A new target `inviwo-module-system` that sits in between the applications (Inviwo, glfwminimim, etc) and the Inviwo modules has been added. The new target takes care of linking/loading modules, and each application can just link to this target instead. Refer to`apps/inviwo_glfwminimum/CMakeLists.txt` and `apps/inviwo_glfwminimum/glfwminimum.cpp` for an example.
+
+## 2023-11-10 Packaging
+It is now possible to install Inviwo into a package that includes all the headers and dependencies etc., to make it possible to build new modules against the installed version of Inviwo. To package all the headers etc., the new CMake flag `IVW_PACKAGE_HEADERS` has to be `ON`.
+
+## 2023-11-10 New CMake presets
+A more comprehensive set of CMake presets has been added. There are now a set of building blocks:`user` for cases where you only want to build and use Inviwo and `developer` in case where you also want to develop new modules and processors. Further there are new generator presets for `msvc`, `xcode`, and `ninja` as well as "package" presets  for `vcpkg` and `apt`. Finally, there are some defaults that combine these in convenient ways like `msvc-developer`, `xcode-user`, etc. One can easily combine the building blocks to create new presets as needed.
+
+## 2023-11-10 inviwo::Version
+The Inviwo `Version` class can now handle full [Semantic Versioning](https://semver.org/) including pre-release annotations and build tags. 
+A new CMake flag `IVW_CFG_BUILD_VERSION` was added to control the build tags of the current Inviwo version.
+The tags will be added to the installer filename etc., and can be used to differentiate between different builds of the same version.
+
 ## 2023-09-15 CMake option `IVW_ENABLE_QT`
 A CMake option `IVW_ENABLE_QT` was added to allow for enabling/disabling Inviwo's Qt support globally. Qt support is enabled by default. If Qt support is disabled all modules that depend on Qt will automatically be disabled. 
 

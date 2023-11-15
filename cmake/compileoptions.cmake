@@ -27,10 +27,6 @@
 # 
 #################################################################################
 
-#--------------------------------------------------------------------
-# Specify standard compile options
-# ivw_define_standard_properties(target1 [target2 ...])
-
 option(IVW_CFG_TREAT_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 option(IVW_CFG_FORCE_ASSERTIONS "Force use of assertions when not in debug mode" OFF)
 if(CMAKE_GENERATOR STREQUAL "Xcode")
@@ -110,9 +106,8 @@ set(IVW_XCODE_WARNINGS
     GCC_WARN_PEDANTIC
 )
 
-
-
-
+# Specify standard compile options
+# ivw_define_standard_properties(target1 [target2 ...])
 function(ivw_define_standard_properties)
     set(options "QT")
     set(oneValueArgs "")
@@ -185,7 +180,6 @@ function(ivw_define_standard_properties)
 endfunction()
 
 
-#--------------------------------------------------------------------
 # Define standard defintions
 macro(ivw_define_standard_definitions project_name target)
     # Set the compiler flags
@@ -216,7 +210,6 @@ macro(ivw_define_standard_definitions project_name target)
 endmacro()
 
 
-#--------------------------------------------------------------------
 # Suppres all compiler warnings
 # ivw_suppress_compiler_warnings(target1 [target2 ...])
 function(ivw_suppress_compiler_warnings)

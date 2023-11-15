@@ -146,7 +146,9 @@ set(TEST_FILES
 ivw_add_unittest(${TEST_FILES})
 
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
+ivw_create_module(
+    PACKAGES GLEW OpenGL
+    FILES ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
 option(IVW_USE_EXTERNAL_GLEW "GLEW is provided externaly" OFF)
 # Set CMake to prefere Vendor gl libraries rather than legacy, fixes warning on some unix systems

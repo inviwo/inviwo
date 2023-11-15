@@ -36,7 +36,7 @@
 #include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/safecstr.h>
-#include <sstream>
+#include <ostream>
 
 #include <fmt/format.h>
 
@@ -80,27 +80,20 @@ Exception::~Exception() noexcept = default;
 std::string Exception::getMessage() const { return what(); }
 
 std::string Exception::getFullMessage() const {
-    std::stringstream ss;
-    getFullMessage(ss);
-    return ss.str();
-}
-
-void Exception::getFullMessage(std::ostream& ss, int maxFrames) const {
-    ss << what() << "\n";
-    ss << context_ << "\n";
-    if (!stack_.empty()) {
-        ss << "\nStack Trace:\n";
-        getStack(ss, maxFrames);
+    if (stack_.empty()) {
+        return what();
+    } else {
+        return fmt::format("{}\nStack Trace:\n{}", what(), fmt::join(stack_, "\n"));
     }
 }
 
-void Exception::getStack(std::ostream& os, int maxFrames) const {
-    auto j = inviwo::util::make_ostream_joiner(os, "\n");
-    if (maxFrames > 0 && static_cast<int>(stack_.size()) > maxFrames) {
-        std::copy(stack_.begin(), stack_.begin() + maxFrames, j);
-        os << "\n...";
+std::string Exception::getFullMessage(size_t maxFrames) const {
+    if (stack_.empty()) {
+        return what();
     } else {
-        std::copy(stack_.begin(), stack_.end(), j);
+        return fmt::format(
+            "{}\nStack Trace:\n{}", what(),
+            fmt::join(stack_.begin(), stack_.begin() + std::min(maxFrames, stack_.size()), "\n"));
     }
 }
 
@@ -123,14 +116,14 @@ void StandardExceptionHandler::operator()(ExceptionContext context) {
     } catch (Exception& e) {
         util::log(e.getContext(), e.getMessage(), LogLevel::Error);
     } catch (std::exception& e) {
-        util::log(context, std::string(e.what()), LogLevel::Error);
+        util::log(context, e.what(), LogLevel::Error);
     } catch (...) {
         util::log(context, "Unknown error", LogLevel::Error);
     }
 }
 
 std::ostream& operator<<(std::ostream& ss, const Exception& e) {
-    e.getFullMessage(ss);
+    ss << e.getFullMessage();
     return ss;
 }
 

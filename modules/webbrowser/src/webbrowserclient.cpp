@@ -96,9 +96,10 @@ void setupResourceManager(CefRefPtr<CefResourceManager> resource_manager) {
         appOrigin, InviwoApplication::getPtr()->getBasePath().string(), 99, std::string());
 
     auto moduleOrigin = origin;
-    for (const auto& m : InviwoApplication::getPtr()->getModules()) {
-        auto mOrigin = moduleOrigin + toLower(m->getIdentifier());
-        auto moduleDir = m->getPath();
+
+    for (const auto& m : InviwoApplication::getPtr()->getModuleManager().getInviwoModules()) {
+        auto mOrigin = moduleOrigin + toLower(m.getIdentifier());
+        auto moduleDir = m.getPath();
         resource_manager->AddDirectoryProvider(mOrigin, moduleDir.string(), 100, std::string());
     }
 }

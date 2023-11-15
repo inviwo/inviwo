@@ -33,13 +33,14 @@
 
 #include <string>
 #include <vector>
+#include <span>
 
 namespace inviwo {
 
 class IVW_CORE_API LicenseInfo {
 public:
-    LicenseInfo(const std::string& id, const std::string& name, const std::string& version,
-                const std::string& url, const std::string& module, const std::string& type,
+    LicenseInfo(std::string_view id, std::string_view name, std::string_view version,
+                std::string_view url, std::string_view module, std::string_view type,
                 const std::vector<std::string>& files);
 
     const std::string id;

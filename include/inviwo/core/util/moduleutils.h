@@ -51,11 +51,15 @@ namespace util {
 IVW_CORE_API ModuleManager& getModuleManager();
 IVW_CORE_API ModuleManager& getModuleManager(InviwoApplication* app);
 
-IVW_CORE_API const std::vector<std::unique_ptr<InviwoModule>>& getModules();
-IVW_CORE_API const std::vector<std::unique_ptr<InviwoModule>>& getModules(InviwoApplication* app);
 IVW_CORE_API InviwoModule* getModuleByIdentifier(std::string_view identifier);
 IVW_CORE_API InviwoModule* getModuleByIdentifier(InviwoApplication* app,
                                                  std::string_view identifier);
+
+IVW_CORE_API size_t getNumberOfModules();
+IVW_CORE_API size_t getNumberOfModules(InviwoApplication* app);
+
+IVW_CORE_API InviwoModule* getModuleByIndex(size_t index);
+IVW_CORE_API InviwoModule* getModuleByIndex(InviwoApplication* app, size_t index);
 
 IVW_CORE_API std::filesystem::path getModulePath(InviwoModule* module);
 IVW_CORE_API std::filesystem::path getModulePath(InviwoModule* module, ModulePath pathType);
@@ -76,12 +80,24 @@ IVW_CORE_API std::filesystem::path getModulePath(InviwoApplication* app,
 
 template <class T>
 T* getModuleByType(InviwoApplication* app) {
-    return getTypeFromVector<T>(getModules(app));
+    const auto size = getNumberOfModules(app);
+    for (size_t i = 0; i < size; ++i) {
+        if (auto m = dynamic_cast<T*>(getModuleByIndex(app, i))) {
+            return m;
+        }
+    }
+    return nullptr;
 }
 
 template <class T>
 T* getModuleByType() {
-    return getTypeFromVector<T>(getModules());
+    const auto size = getNumberOfModules();
+    for (size_t i = 0; i < size; ++i) {
+        if (auto m = dynamic_cast<T*>(getModuleByIndex(i))) {
+            return m;
+        }
+    }
+    return nullptr;
 }
 
 /**

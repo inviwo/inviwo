@@ -4,7 +4,7 @@ project(inviwo)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 
 # Add MOC files
-set(MOC_FILES ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h)
+set(MOC_FILES inviwosplashscreen.h)
 
 # Add header files
 set(HEADER_FILES ${MOC_FILES})
@@ -12,8 +12,8 @@ ivw_group("Header Files" ${HEADER_FILES})
 
 # Add source files
 set(SOURCE_FILES
-    ${IVW_APPLICATION_DIR}/inviwo/inviwo.cpp
-    ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.cpp
+    inviwo.cpp
+    inviwosplashscreen.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -21,23 +21,17 @@ ivw_group("Source Files" ${SOURCE_FILES})
 qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOCED_FILES})
 
-# Define libraries that should be linked
-ivw_retrieve_all_modules(enabled_modules)
-
-# Only include one OpenGL context creation module
-list(REMOVE_ITEM enabled_modules InviwoGLFWModule)
-
 set(RES_FILES "")
 if(WIN32)
-    set(RES_FILES ${RES_FILES} 
+    list(APPEND RES_FILES
         "${IVW_RESOURCES_DIR}/inviwo.rc"
         # manifest file for using UTF-8 codepages on Windows
         # see https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page
         "${IVW_RESOURCES_DIR}/inviwo.manifest"
     )
 elseif(APPLE)
-    set_source_files_properties(${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-    set(RES_FILES ${RES_FILES} ${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns)
+    set_source_files_properties(${IVW_RESOURCES_DIR}/inviwo/inviwo_light.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    list(APPEND RES_FILES ${IVW_RESOURCES_DIR}/inviwo/inviwo_light.icns)
 endif()
 source_group("Resource Files" FILES ${RES_FILES})
 
@@ -49,17 +43,13 @@ add_executable(inviwo MACOSX_BUNDLE WIN32
     ${RES_FILES})
 target_link_libraries(inviwo PUBLIC 
     inviwo::core
+    inviwo::module-system
     inviwo::qtapplicationbase
     inviwo::qteditor
     Qt6::Core
     Qt6::Widgets
 )
 
-set_target_properties(inviwo PROPERTIES OUTPUT_NAME "Inviwo")
-
-# Register the use of modules
-# Determine dendendencies and set runtime module loading defines
-ivw_configure_application_module_dependencies(inviwo ${enabled_modules})
 ivw_define_standard_definitions(inviwo inviwo)
 ivw_define_standard_properties(QT inviwo)
 
@@ -110,14 +100,14 @@ if(WIN32)
         ${RES_FILES}
     )
     target_link_libraries(inviwo-cli PUBLIC
-        inviwo::core 
+        inviwo::core
+        inviwo::module-system
         inviwo::qtapplicationbase
         inviwo::qteditor
         Qt6::Core 
         Qt6::Widgets
     )
-    set_target_properties(inviwo-cli PROPERTIES OUTPUT_NAME "Inviwo-cli")
-    ivw_configure_application_module_dependencies(inviwo-cli ${enabled_modules})
+
     ivw_define_standard_definitions(inviwo-cli inviwo-cli)
     ivw_define_standard_properties(inviwo-cli)
 
@@ -134,9 +124,6 @@ if(WIN32)
     ivw_default_install_targets(inviwo-cli)
 endif()
 
-# Save information for python tools.
-ivw_mod_name_to_class(ivw_module_classes ${enabled_modules})
-ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_module_classes}" inviwo)
 ivw_deploy_qt(inviwo)
 
 if(IVW_PACKAGE_SELECT_APP STREQUAL "inviwo")

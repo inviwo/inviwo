@@ -187,7 +187,9 @@ qt_add_resources(QRC_FILE "${IVW_RESOURCES_DIR}/inviwo.qrc")
 source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/inviwo.qrc ${QRC_FILE})
 
 # Create module
-ivw_create_module(NO_PCH QT ${SOURCE_FILES} ${MOCED_FILES} ${QRC_FILE} ${HEADER_FILES}
+ivw_create_module(NO_PCH QT 
+    PACKAGES inviwo-qtapplicationbase
+    FILES ${SOURCE_FILES} ${MOCED_FILES} ${QRC_FILE} ${HEADER_FILES}
     $<$<BOOL:${WIN32}>:${IVW_ROOT_DIR}/tools/natvis/qt5.natvis>
 )
 target_link_libraries(inviwo-module-qtwidgets PUBLIC
@@ -206,12 +208,9 @@ set(PCH_HEADERS_QT
 )
 ivw_compile_optimize_on_target(inviwo-module-qtwidgets HEADERS ${PCH_HEADERS_QT})
 
-ivw_make_package(InviwoQtWidgetsModule inviwo-module-qtwidgets)
-ivw_default_install_targets(inviwo-module-qtwidgets)
-
 ivw_deploy_qt(inviwo-module-qtwidgets)
 
 ivw_register_license_file(NAME "Qt" VERSION ${QtWidgets_VERSION} MODULE QtWidgets TYPE "LGPLv3"
     URL https://www.qt.io/
-    FILES ${IVW_EXTENSIONS_DIR}/qt/LICENSE.txt
+    FILES ${IVW_ROOT_DIR}/ext/qt/LICENSE.txt
 )

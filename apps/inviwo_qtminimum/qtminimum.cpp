@@ -43,12 +43,14 @@
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/util/localetools.h>
-#include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/networkdebugobserver.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 #include <modules/qtwidgets/propertylistwidget.h>  // for PropertyListWidget
+
+#include <inviwo/sys/moduleloading.h>
 
 #include <QApplication>
 #include <QMainWindow>
@@ -92,24 +94,27 @@ int main(int argc, char** argv) {
                    0, m);
     });
 
+    auto& cmdParser = inviwoApp.getCommandLineParser();
+
     // Initialize all modules
-    inviwoApp.registerModules(inviwo::getModuleList());
+    inviwo::util::registerModules(inviwoApp.getModuleManager(),
+                                  inviwoApp.getSystemSettings().moduleSearchPaths_.get(),
+                                  cmdParser.getModuleSearchPaths());
 
     auto plw = new inviwo::PropertyListWidget(&mainWindow, &inviwoApp);
     mainWindow.addDockWidget(Qt::RightDockWidgetArea, plw);
     plw->setFloating(false);
     plw->hide();
 
-    auto& cmdparser = inviwoApp.getCommandLineParser();
     TCLAP::ValueArg<std::string> snapshotArg(
         "s", "snapshot",
         "Specify default name of each snapshot, or empty string for processor name.", false, "",
         "Snapshot default name: UPN=Use Processor name.");
 
-    cmdparser.add(
+    cmdParser.add(
         &snapshotArg,
         [&]() {
-            auto path = cmdparser.getOutputPath();
+            auto path = cmdParser.getOutputPath();
             if (path.empty()) path = inviwoApp.getPath(inviwo::PathType::Images);
             inviwo::util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path,
                                           snapshotArg.getValue());
@@ -120,7 +125,7 @@ int main(int argc, char** argv) {
                                   "Add debug logging for processor evaluation to the log");
 
     inviwo::NetworkDebugObserver obs;
-    cmdparser.add(
+    cmdParser.add(
         &debugProcess,
         [&]() {
             inviwoApp.getProcessorNetwork()->addObserver(&obs);
@@ -132,7 +137,7 @@ int main(int argc, char** argv) {
 
     TCLAP::SwitchArg fullscreenArg("f", "fullscreen", "Specify fullscreen if only one canvas");
 
-    cmdparser.add(&fullscreenArg, [&]() {
+    cmdParser.add(&fullscreenArg, [&]() {
         auto network = inviwoApp.getProcessorNetwork();
 
         std::vector<inviwo::ProcessorWidget*> widgets;
@@ -156,7 +161,7 @@ int main(int argc, char** argv) {
         "Specify the identifier of the processor to use for the central widget.", false, "Canvas",
         "Processor Identifier");
 
-    cmdparser.add(&centralWidget, [&]() {
+    cmdParser.add(&centralWidget, [&]() {
         auto network = inviwoApp.getProcessorNetwork();
         if (auto processor = network->getProcessorByIdentifier(centralWidget.getValue())) {
             if (auto widget = dynamic_cast<QWidget*>(processor->getProcessorWidget())) {
@@ -171,7 +176,7 @@ int main(int argc, char** argv) {
         "", "property", "Specify a list of property paths to display in the property list widget",
         false, "Property path");
 
-    cmdparser.add(&exposeProperties, [&]() {
+    cmdParser.add(&exposeProperties, [&]() {
         auto network = inviwoApp.getProcessorNetwork();
         for (auto& path : exposeProperties.getValue()) {
             auto [processorId, propertyPath] = inviwo::util::splitByFirst(path, '.');
@@ -189,7 +194,7 @@ int main(int argc, char** argv) {
     });
 
     // Do this after registerModules if some arguments were added
-    cmdparser.parse(inviwo::CommandLineParser::Mode::Normal);
+    cmdParser.parse(inviwo::CommandLineParser::Mode::Normal);
 
     // Need to clear the network and (will delete processors and processorwidgets)
     // before QMainWindoes is deleted, otherwise it will delete all processorWidgets
@@ -199,8 +204,8 @@ int main(int argc, char** argv) {
     // Load workspace
     inviwoApp.getProcessorNetwork()->lock();
 
-    const auto workspace = cmdparser.getLoadWorkspaceFromArg()
-                               ? cmdparser.getWorkspacePath()
+    const auto workspace = cmdParser.getLoadWorkspaceFromArg()
+                               ? cmdParser.getWorkspacePath()
                                : inviwoApp.getPath(inviwo::PathType::Workspaces, "/boron.inv");
 
     try {
@@ -228,9 +233,9 @@ int main(int argc, char** argv) {
     inviwoApp.processFront();
     inviwoApp.getProcessorNetwork()->unlock();
 
-    cmdparser.processCallbacks();  // run any command line callbacks from modules.
+    cmdParser.processCallbacks();  // run any command line callbacks from modules.
 
-    if (cmdparser.getQuitApplicationAfterStartup()) {
+    if (cmdParser.getQuitApplicationAfterStartup()) {
         return 0;
     } else {
         return qtApp.exec();

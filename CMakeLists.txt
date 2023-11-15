@@ -27,18 +27,33 @@
  #
  #################################################################################
 
-cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.23...3.27 FATAL_ERROR)
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
-set(CMAKE_DISABLE_SOURCE_CHANGES ON)
-set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+set(IVW_MAJOR_VERSION 0)
+set(IVW_MINOR_VERSION 9)
+set(IVW_PATCH_VERSION 12)
+set(IVW_PRERELEASE_VERSION pre)
+set(IVW_CFG_BUILD_VERSION "" CACHE STRING "Additional build info to add to the inviwo version")
+
+set(IVW_VERSION "${IVW_MAJOR_VERSION}.${IVW_MINOR_VERSION}.${IVW_PATCH_VERSION}")
+if(NOT IVW_PRERELEASE_VERSION STREQUAL "")
+    string(APPEND IVW_VERSION "-${IVW_PRERELEASE_VERSION}")
+endif()
+if(NOT IVW_CFG_BUILD_VERSION STREQUAL "")
+    string(APPEND IVW_VERSION "+${IVW_CFG_BUILD_VERSION}")
+endif()
 
 # option for setting the project/solution name of the Inviwo project
 set(IVW_CFG_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
 project(${IVW_CFG_PROJECT_NAME} 
     HOMEPAGE_URL https://github.com/inviwo/inviwo
     LANGUAGES CXX
+    VERSION ${IVW_MAJOR_VERSION}.${IVW_MINOR_VERSION}.${IVW_PATCH_VERSION}
 )
+
+set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 # verify that git submodules have been cloned
 include(cmake/verifysubmodules.cmake)
@@ -48,7 +63,6 @@ option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/pkg)
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/modules)
 
 # Provide option to enable Python support in Inviwo
 option(IVW_ENABLE_PYTHON "Enable Python support in Inviwo" ON)
@@ -113,7 +127,7 @@ if(IVW_TEST_INTEGRATION_TESTS OR IVW_TEST_UNIT_TESTS)
     add_subdirectory(tests/testutil)         # Add test utils, used in the module unit tests
 endif()
 
-ivw_register_modules(all_modules)            # Add inviwo modules
+add_subdirectory(src/sys)                    # Add inviwo module system
 
 # Add all the applications, uses the modules.
 if(IVW_ENABLE_QT)

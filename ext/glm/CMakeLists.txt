@@ -15,3 +15,8 @@ if(TARGET glm_shared)
     ivw_folder(glm_shared ext)
 endif()
 ivw_register_package(glm glm)
+
+ivw_install_helper(TARGET glm
+    NAMESPACE glm
+    DESTINATION inviwo
+)

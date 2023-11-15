@@ -44,10 +44,11 @@ if(NOT IVW_USE_EXTERNAL_GTEST AND (IVW_TEST_UNIT_TESTS OR IVW_TEST_INTEGRATION_T
     ivw_register_license_file(NAME "Google C++ Testing Framework" TARGET gtest MODULE Core EXT
         URL "https://github.com/google/googletest"
         TYPE "BSD-3-Clause"
-        FILES ${IVW_EXTENSIONS_DIR}/gtest/gtest/LICENSE
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/gtest/gtest/LICENSE
     )
 elseif(IVW_TEST_UNIT_TESTS OR IVW_TEST_INTEGRATION_TESTS)
     find_package(GTest CONFIG REQUIRED)
+    ivw_vcpkg_install(GTest          MODULE Core EXT)
 endif()
 
 # Img formats
@@ -62,15 +63,15 @@ if (NOT IVW_USE_EXTERNAL_IMG)
 
     ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core EXT
         URL "http://zlib.net/" TYPE "The zlib/libpng License"
-        FILES ${IVW_EXTENSIONS_DIR}/zlib-1.2.11/LICENSE
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/zlib-1.2.11/LICENSE
     )
     ivw_register_license_file(NAME libjpeg-turbo TARGET JPEG::JPEG MODULE Core EXT
         TYPE "BSD-style, acknowledgement: This software is based in part on the work of the Independent JPEG Group"
-        URL www.ijg.org FILES ${IVW_EXTENSIONS_DIR}/libjpeg/README
+        URL www.ijg.org FILES ${CMAKE_CURRENT_SOURCE_DIR}/libjpeg/README
     )
     ivw_register_license_file(NAME libpng TARGET png MODULE Core EXT 
         TYPE "libpng (BSD-style)" URL http://www.libpng.org/pub/png/libpng.html
-        FILES ${IVW_EXTENSIONS_DIR}/libpng/LICENSE.txt
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/libpng/LICENSE.txt
     )
 else()
     find_package(ZLIB REQUIRED)
@@ -88,7 +89,7 @@ if (NOT IVW_USE_EXTERNAL_TIFF)
     add_subdirectory(tiff)        # Defines target TIFF::TIFF
     ivw_register_license_file(NAME tiff TARGET TIFF::TIFF MODULE Core EXT
         TYPE "The MIT License" URL http://www.libtiff.org/
-        FILES ${IVW_EXTENSIONS_DIR}/tiff/COPYRIGHT
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/tiff/COPYRIGHT
     )
 else()
     find_package(TIFF REQUIRED)
@@ -101,7 +102,7 @@ add_subdirectory(flags) # We have local modifications
 ivw_register_license_file(NAME "Flags" MODULE Core EXT
     URL "http://grisumbras.github.io/enum-flags/"
     TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/flags/LICENSE
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/flags/LICENSE
 )
 
 # GLM
@@ -111,7 +112,7 @@ if(NOT IVW_USE_EXTERNAL_GLM)
     add_subdirectory(glm)
     ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" 
         VERSION 0.9.9.3 MODULE Core EXT URL "https://glm.g-truc.net"
-        TYPE "The MIT License" FILES ${IVW_EXTENSIONS_DIR}/glm/LICENSE
+        TYPE "The MIT License" FILES ${CMAKE_CURRENT_SOURCE_DIR}/glm/LICENSE
     )
 else()  
     find_package(glm CONFIG REQUIRED)
@@ -123,7 +124,7 @@ add_subdirectory(ticpp)
 ivw_register_license_file(NAME "TiCPP" TARGET ticpp MODULE Core EXT
     URL https://github.com/wxFormBuilder/ticpp
     TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/ticpp/LICENSE
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ticpp/LICENSE
 )
 
 # benchmark
@@ -139,23 +140,30 @@ if(IVW_TEST_BENCHMARKS)
     endif()
 endif()
 
-message(STATUS "add subdirectory: warn")
-add_subdirectory(warn)     # No package available
-ivw_register_license_file(NAME "warn" MODULE Core EXT
-    URL "https://github.com/petersteneteg/warn"
-    TYPE "BSD 2-clause"
-    FILES ${IVW_TOOLS_DIR}/codegen/warn/warn/LICENSE
-)
+# Warn
+option(IVW_USE_EXTERNAL_WARN "Warn is provided externaly" OFF)
+if(NOT IVW_USE_EXTERNAL_WARN)
+    message(STATUS "add subdirectory: warn")
+    add_subdirectory(warn)     # No package available
+    ivw_register_license_file(NAME "warn" MODULE Core EXT
+        URL "https://github.com/petersteneteg/warn"
+        TYPE "BSD 2-clause"
+        FILES ${IVW_ROOT_DIR}/tools/codegen/warn/warn/LICENSE
+    )
+else()
+    find_package(warn CONFIG REQUIRED)
+    ivw_vcpkg_install(warn MODULE Core EXT)
+endif()
 
 # tclap
 option(IVW_USE_EXTERNAL_TCLAP "TCLAP is provided externaly" OFF)
-    if(NOT IVW_USE_EXTERNAL_TCLAP)
+if(NOT IVW_USE_EXTERNAL_TCLAP)
     message(STATUS "add subdirectory: tclap")
     add_subdirectory(tclap)
     ivw_register_license_file(NAME "tclap" TARGET tclap_dummy MODULE Core EXT
         URL http://tclap.sourceforge.net/
         TYPE "The MIT License"
-        FILES ${IVW_EXTENSIONS_DIR}/tclap/COPYING
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/tclap/COPYING
     )
 else()
     # tclap 1.2.5 in vcpkg as of 20230303 does not use CMake
@@ -166,7 +174,18 @@ else()
     add_library(tclap INTERFACE)
     ivw_register_package(tclap tclap)
     add_library(inviwo::tclap ALIAS tclap)
-    target_include_directories(tclap INTERFACE ${TCLAP_INCLUDE_DIRS})
+
+    target_sources(tclap
+        PUBLIC
+        FILE_SET HEADERS
+        TYPE HEADERS
+        BASE_DIRS ${TCLAP_INCLUDE_DIRS}
+        FILES
+            ${TCLAP_INCLUDE_DIRS}/tclap/Arg.h
+    )
+
+    ivw_install_helper(TARGET tclap NAMESPACE inviwo DESTINATION inviwo)
+
 endif()
 
 # Half
@@ -175,7 +194,7 @@ add_subdirectory(half)
 ivw_register_license_file(NAME "half" VERSION 1.12.0 MODULE Core EXT
     URL "http://half.sourceforge.net"
     TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE.txt
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/half/LICENSE.txt
 )
 
 # utfcpp
@@ -186,7 +205,7 @@ if(NOT IVW_USE_EXTERNAL_UTFCPP)
     ivw_register_license_file(NAME "UTF8-CPP" VERSION ${utf8cpp_VERSION} MODULE Core EXT
         URL "https://github.com/nemtrif/utfcpp"
         TYPE "Boost Software License"
-        FILES ${IVW_EXTENSIONS_DIR}/utf/LICENSE
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/utf/LICENSE
     )
 else()  
     find_package(utf8cpp CONFIG REQUIRED)
@@ -201,7 +220,7 @@ if(NOT IVW_USE_EXTERNAL_JSON)
     ivw_register_license_file(NAME "JSON for Modern C++" target nlohmann_json MODULE Core EXT
         URL "https://github.com/nlohmann/json"
         TYPE "The MIT License"
-        FILES  ${IVW_EXTENSIONS_DIR}/json/LICENSE.MIT
+        FILES  ${CMAKE_CURRENT_SOURCE_DIR}/json/LICENSE.MIT
     )
 else()
     find_package(nlohmann_json CONFIG REQUIRED)
@@ -216,9 +235,8 @@ if(NOT IVW_USE_EXTERNAL_FMT)
     ivw_register_license_file(NAME "{fmt}" TARGET fmt::fmt MODULE Core EXT
         URL "https://github.com/fmtlib/fmt"
         TYPE "MIT license"
-        FILES ${IVW_EXTENSIONS_DIR}/fmt/fmt/LICENSE.rst
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/fmt/fmt/LICENSE.rst
     )
-    ivw_default_install_targets(fmt)
 else()
     find_package(fmt CONFIG REQUIRED)
     ivw_vcpkg_install(fmt MODULE Core EXT)
@@ -230,7 +248,7 @@ add_subdirectory(sml)
 ivw_register_license_file(NAME "[Boost].SML" VERSION 1.1.0 target inviwo::sml MODULE Core EXT
     URL "https://github.com/boost-experimental/sml"
     TYPE " Boost Software License"
-    FILES ${IVW_EXTENSIONS_DIR}/sml/LICENSE_1_0.txt
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/sml/LICENSE_1_0.txt
 )
 
 # CRoaring
@@ -241,7 +259,7 @@ if(NOT IVW_USE_EXTERNAL_ROARING)
     ivw_register_license_file(NAME "CRoaring" VERSION 0.3.4 TARGET roaring MODULE Core EXT
         URL "https://github.com/RoaringBitmap/CRoaring"
         TYPE "Apache License 2.0"
-        FILES ${IVW_EXTENSIONS_DIR}/CRoaring/CRoaring/LICENSE
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/CRoaring/CRoaring/LICENSE
     )
     ivw_default_install_targets(roaring)
 else()
@@ -254,14 +272,14 @@ option(IVW_USE_EXTERNAL_UNITS "Units is provided externaly (https://github.com/L
 if(NOT IVW_USE_EXTERNAL_UNITS)
     message(STATUS "add subdirectory: units")
     add_subdirectory(units)
-    ivw_register_license_file(NAME "Units" VERSION 0.5.0 TARGET units::units MODULE Core EXT
+    ivw_register_license_file(NAME "Units" VERSION 0.5.0 TARGET llnl-units::units MODULE Core EXT
         URL "https://github.com/LLNL/units"
         TYPE "BSD 3-Clause"
-        FILES ${IVW_EXTENSIONS_DIR}/units/units/LICENSE
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/units/units/LICENSE
     )
 else()
-    find_package(units CONFIG REQUIRED)
-    ivw_vcpkg_install(units MODULE Core EXT)
+    find_package(llnl-units CONFIG REQUIRED)
+    ivw_vcpkg_install(llnl-units MODULE Core EXT)
 endif()
 
 # Markdown
@@ -270,7 +288,7 @@ add_subdirectory(md4c)
 ivw_register_license_file(NAME "MD4C" VERSION 0.4.8 TARGET inviwo::md4c MODULE Core EXT
     URL "http://github.com/mity/md4c"
     TYPE "MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/md4c/LICENSE.md
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/md4c/LICENSE.md
 )
 
 if(WIN32) # Stackwalker for windows for stack traces in the log
@@ -279,7 +297,7 @@ if(WIN32) # Stackwalker for windows for stack traces in the log
     ivw_register_license_file(NAME "stackwalker" TARGET inviwo::stackwalker MODULE Core EXT
         URL http://stackwalker.codeplex.com/
         TYPE "BSD-License"
-        FILES ${IVW_EXTENSIONS_DIR}/stackwalker/LICENSE.txt
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/stackwalker/LICENSE.txt
     )
 endif()
 
@@ -291,7 +309,7 @@ if(IVW_ENABLE_PYTHON)
         ivw_register_license_file(NAME "PyBind11" VERSION 2.6.1 MODULE Core EXT
             URL "https://github.com/pybind/pybind11"
             TYPE "BSD-style"
-            FILES ${IVW_EXTENSIONS_DIR}/pybind11/LICENSE
+            FILES ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/LICENSE
         )
         ivw_register_package(pybind11 pybind11::embed)
     else()

@@ -46,11 +46,10 @@
 #include <memory>       // for shared_ptr
 #include <type_traits>  // for remove_extent_t
 
-#include <fmt/core.h>       // for basic_string_view
-#include <fmt/format.h>     // for to_string
-#include <glm/common.hpp>   // for max, min
-#include <glm/vec2.hpp>     // for operator!=, operator==, vec<>:...
-#include <units/units.hpp>  // for unit_from_string
+#include <fmt/core.h>      // for basic_string_view
+#include <fmt/format.h>    // for to_string
+#include <glm/common.hpp>  // for max, min
+#include <glm/vec2.hpp>    // for operator!=, operator==, vec<>:...
 
 namespace inviwo {
 

@@ -56,15 +56,8 @@ void StandardEvaluationErrorHandler::operator()(Processor* processor, Evaluation
     try {
         throw;
     } catch (Exception& e) {
-        util::log(e.getContext(), fmt::format("{} Error in {} : {}", id, func, e.getMessage()),
+        util::log(e.getContext(), fmt::format("{} Error in {} : {}", id, func, e.getFullMessage()),
                   LogLevel::Error);
-
-        if (!e.getStack().empty()) {
-            std::stringstream ss;
-            ss << "Stack Trace:\n";
-            e.getStack(ss);
-            util::log(e.getContext(), ss.str(), LogLevel::Info);
-        }
     } catch (fmt::format_error& e) {
         util::log(context,
                   fmt::format("{} Error in {} using fmt formatting: {}\n{}", id, func, e.what(),

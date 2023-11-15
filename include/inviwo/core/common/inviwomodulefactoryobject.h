@@ -36,6 +36,7 @@
 
 #include <vector>
 #include <string>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -47,41 +48,45 @@ enum class ProtectedModule : bool { on, off };
 
 class IVW_CORE_API InviwoModuleFactoryObject {
 public:
-    InviwoModuleFactoryObject(const std::string& name, Version version,
-                              const std::string& description, Version inviwoCoreVersion,
+    InviwoModuleFactoryObject(std::string_view name, Version version, std::string_view description,
+                              const std::filesystem::path& srcPath, Version inviwoCoreVersion,
                               std::vector<std::string> dependencies,
                               std::vector<Version> dependenciesVersion,
                               std::vector<std::string> aliases, std::vector<LicenseInfo> licenses,
                               ProtectedModule protectedModule);
     virtual ~InviwoModuleFactoryObject() = default;
+    InviwoModuleFactoryObject(const InviwoModuleFactoryObject&) = delete;
+    InviwoModuleFactoryObject& operator=(const InviwoModuleFactoryObject&) = delete;
+    InviwoModuleFactoryObject(InviwoModuleFactoryObject&&) = delete;
+    InviwoModuleFactoryObject& operator=(InviwoModuleFactoryObject&&) = delete;
 
     virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) = 0;
 
-    const std::string name;           // Module name
-    const Version version;            // Module version (Major.Minor.Patch)
-    const std::string description;    // Module description
-    const Version inviwoCoreVersion;  // Supported inviwo core version (Major.Minor.Patch)
+    std::string name;               // Module name
+    Version version;                // Module version (Major.Minor.Patch)
+    std::string description;        // Module description
+    std::filesystem::path srcPath;  // Path to the module root in the source tree
+    Version inviwoCoreVersion;      // Supported inviwo core version (Major.Minor.Patch)
     // Module dependencies Major.Minor.Patch version of each dependency
-    const std::vector<std::pair<std::string, Version>> dependencies;
+    std::vector<std::pair<std::string, Version>> dependencies;
     // A module can have one or more aliases. Several modules can have the same alias. Useful when
     // several modules implement the same functionality
-    const std::vector<std::string> aliases;
+    std::vector<std::string> aliases;
     // License information related to the module
-    const std::vector<LicenseInfo> licenses;
+    std::vector<LicenseInfo> licenses;
     // A protected module does not participate in runtime reloading
-    const ProtectedModule protectedModule;
+    ProtectedModule protectedModule;
 };
 
 template <typename T>
 class InviwoModuleFactoryObjectTemplate : public InviwoModuleFactoryObject {
 public:
-    InviwoModuleFactoryObjectTemplate(const std::string& name, Version version,
-                                      const std::string& description, Version inviwoCoreVersion,
-                                      std::vector<std::string> dependencies,
-                                      std::vector<Version> dependenciesVersion,
-                                      std::vector<std::string> aliases,
-                                      std::vector<LicenseInfo> licenses,
-                                      ProtectedModule protectedModule);
+    InviwoModuleFactoryObjectTemplate(
+        std::string_view name, Version version, std::string_view description,
+        const std::filesystem::path& srcPath, Version inviwoCoreVersion,
+        std::vector<std::string> dependencies, std::vector<Version> dependenciesVersion,
+        std::vector<std::string> aliases, std::vector<LicenseInfo> licenses,
+        ProtectedModule protectedModule);
 
     virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) override {
         return std::make_unique<T>(app);
@@ -100,19 +105,21 @@ using f_getModule = InviwoModuleFactoryObject* (*)();
 
 template <typename T>
 InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
-    const std::string& name, Version version, const std::string& description,
-    Version inviwoCoreVersion, std::vector<std::string> dependencies,
-    std::vector<Version> dependenciesVersion, std::vector<std::string> aliases,
-    std::vector<LicenseInfo> licenses, ProtectedModule protectedModule)
-    : InviwoModuleFactoryObject(name, version, description, inviwoCoreVersion, dependencies,
-                                dependenciesVersion, aliases, licenses, protectedModule) {}
+    std::string_view name, Version version, std::string_view description,
+    const std::filesystem::path& srcPath, Version inviwoCoreVersion,
+    std::vector<std::string> dependencies, std::vector<Version> dependenciesVersion,
+    std::vector<std::string> aliases, std::vector<LicenseInfo> licenses,
+    ProtectedModule protectedModule)
+    : InviwoModuleFactoryObject(name, version, description, srcPath, inviwoCoreVersion,
+                                std::move(dependencies), std::move(dependenciesVersion),
+                                std::move(aliases), std::move(licenses), protectedModule) {}
 
 /**
  * \brief Topological sort to make sure that we load modules in correct order
  *
  * https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
  *
- * @param start Start of range to sort
+ * @param start Start of range to sort module factory objects topologically
  * @param end End of range to sort
  */
 IVW_CORE_API void topologicalModuleFactoryObjectSort(

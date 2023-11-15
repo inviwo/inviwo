@@ -38,6 +38,7 @@ namespace inviwo::util {
 // disable conversion warning
 #include <warn/push>
 #include <warn/ignore/conversion>
+#include <warn/ignore/conversion-loss>
 
 // Standard conversion simple casts
 // Just using standard casts. When targets has more dimensions then the source

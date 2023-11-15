@@ -59,6 +59,3 @@ target_link_libraries(inviwo-module-openglqt PUBLIC
 )
 
 ivw_deploy_qt(inviwo-module-openglqt)
-
-ivw_make_package(InviwoOpenGLQtModule inviwo-module-openglqt)
-ivw_default_install_targets(inviwo-module-openglqt)

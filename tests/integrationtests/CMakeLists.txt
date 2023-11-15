@@ -14,21 +14,13 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-ivw_retrieve_all_modules(enabled_modules)
-# Remove Qt stuff from list
-foreach(module ${enabled_modules})
-    string(TOUPPER ${module} u_module)
-    if(u_module MATCHES "QT+")
-        list(REMOVE_ITEM enabled_modules ${module})
-    endif()
-endforeach()
-
 # Create application
 add_executable(inviwo-integrationtests ${SOURCE_FILES})
 
 find_package(GTest CONFIG REQUIRED)
 target_link_libraries(inviwo-integrationtests PRIVATE 
     inviwo::core
+    inviwo::module-system
     inviwo::module::opengl
     inviwo::module::glfw
     inviwo::module::base
@@ -37,7 +29,6 @@ target_link_libraries(inviwo-integrationtests PRIVATE
 )
 set_target_properties(inviwo-integrationtests PROPERTIES FOLDER integrationtests)
 
-ivw_configure_application_module_dependencies(inviwo-integrationtests ${enabled_modules})
 ivw_define_standard_definitions(inviwo-integrationtests inviwo-integrationtests)
 ivw_define_standard_properties(inviwo-integrationtests)
 

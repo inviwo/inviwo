@@ -95,6 +95,7 @@ public:
     std::filesystem::path getOutputPath() const;
     std::filesystem::path getWorkspacePath() const;
     std::filesystem::path getLogToFileFileName() const;
+    std::vector<std::filesystem::path> getModuleSearchPaths() const;
     bool getQuitApplicationAfterStartup() const;
     bool getLoadWorkspaceFromArg() const;
     bool getShowSplashScreen() const;
@@ -120,6 +121,7 @@ private:
     TCLAP::ValueArg<std::string> workspace_;
     TCLAP::ValueArg<std::string> outputPath_;
     TCLAP::ValueArg<std::string> logfile_;
+    TCLAP::MultiArg<std::string> moduleSearchPaths_;
     TCLAP::SwitchArg logConsole_;
     TCLAP::SwitchArg noSplashScreen_;
     TCLAP::SwitchArg quitAfterStartup_;

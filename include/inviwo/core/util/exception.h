@@ -57,10 +57,9 @@ public:
     virtual ~Exception() noexcept;
     virtual std::string getMessage() const;
     std::string getFullMessage() const;
-    virtual void getFullMessage(std::ostream& os, int maxFrames = -1) const;
+    std::string getFullMessage(size_t maxFrames) const;
     virtual const ExceptionContext& getContext() const;
     const std::vector<std::string>& getStack() const;
-    void getStack(std::ostream& os, int maxFrames = -1) const;
 
     IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, const Exception& e);
 

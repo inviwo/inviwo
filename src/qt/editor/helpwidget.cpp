@@ -342,10 +342,10 @@ Document makePropertyHelp(const help::HelpProperty& property, std::string_view p
 }
 
 InviwoModule& findModule(InviwoApplication& app, std::string_view processorClassIdentifier) {
-    for (auto& module : app.getModules()) {
-        for (auto& pfo : module->getProcessors()) {
+    for (auto& inviwoModule : app.getModuleManager().getInviwoModules()) {
+        for (auto& pfo : inviwoModule.getProcessors()) {
             if (pfo->getClassIdentifier() == processorClassIdentifier) {
-                return *module;
+                return inviwoModule;
             }
         }
     }

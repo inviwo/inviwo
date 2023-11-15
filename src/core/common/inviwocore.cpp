@@ -457,7 +457,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerSettings(std::make_unique<UnitSettings>());
 }
 
-std::filesystem::path InviwoCore::getPath() const { return filesystem::findBasePath(); }
+const std::filesystem::path& InviwoCore::getPath() const { return filesystem::findBasePath(); }
 
 void InviwoCore::scanDirForComposites(const std::filesystem::path& dir) {
     if (!std::filesystem::is_directory(dir)) {

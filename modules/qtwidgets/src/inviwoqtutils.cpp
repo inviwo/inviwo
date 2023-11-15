@@ -393,11 +393,11 @@ QPoint offsetWidget() {
     return QPoint(pos.x, pos.y);
 }
 
-QMenu* addMenu(std::string menuName, std::string before) {
+QMenu* addMenu(std::string_view menuName, std::string before) {
     return addMenu(menuName, getMenu(before));
 }
 
-QMenu* addMenu(std::string menuName, QMenu* before) {
+QMenu* addMenu(std::string_view menuName, QMenu* before) {
     if (auto mainwin = utilqt::getApplicationMainWindow()) {
         if (!before) {
             before = getMenu("&Help", false);
@@ -406,26 +406,26 @@ QMenu* addMenu(std::string menuName, QMenu* before) {
         auto menuBar = mainwin->menuBar();
 
         if (before) {
-            auto menu = new QMenu(menuName.c_str(), menuBar);
+            auto menu = new QMenu(utilqt::toQString(menuName), menuBar);
             menuBar->insertMenu(before->menuAction(), menu);
             return menu;
         } else {  // No menu specified or couldn't find a help menu
-            return menuBar->addMenu(menuName.c_str());
+            return menuBar->addMenu(utilqt::toQString(menuName));
         }
     }
     throw Exception("No Qt main window found", IVW_CONTEXT_CUSTOM("utilqt::addMenu"));
 }
 
-QMenu* getMenu(std::string menuName, bool createIfNotFound) {
+QMenu* getMenu(std::string_view menuName, bool createIfNotFound) {
     if (auto mainwin = utilqt::getApplicationMainWindow()) {
         auto menuBar = mainwin->menuBar();
         auto menus = menuBar->findChildren<QMenu*>();
 
-        auto menuNoAnd = menuName;
+        std::string menuNoAnd{menuName};
         replaceInString(menuNoAnd, "&", "");
 
         auto menuItem = std::find_if(menus.begin(), menus.end(), [&](auto& m) {
-            std::string title = m->title().toLocal8Bit().constData();
+            std::string title = utilqt::fromQString(m->title());
             replaceInString(title, "&", "");
             return menuNoAnd == title;
         });

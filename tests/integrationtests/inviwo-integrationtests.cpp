@@ -46,7 +46,6 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/logerrorcounter.h>
 #include <inviwo/core/util/settings/systemsettings.h>
-#include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/rendercontext.h>
 
@@ -54,6 +53,8 @@
 
 #include <modules/opengl/openglmodule.h>
 #include <modules/opengl/openglsettings.h>
+
+#include <inviwo/sys/moduleregistration.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -78,9 +79,8 @@ int main(int argc, char** argv) {
         InviwoApplication inviwoApp(argc, argv, "Inviwo-IntegrationTests");
         inviwoApp.getSystemSettings().stackTraceInException_.set(true);
         inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });
-        inviwoApp.setProgressCallback([](std::string m) {
-            LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "",
-                                      "", 0, m);
+        inviwoApp.setProgressCallback([&](std::string_view m) {
+            logCentral.log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0, m);
         });
 
         // Initialize all modules

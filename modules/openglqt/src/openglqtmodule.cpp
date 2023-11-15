@@ -100,9 +100,9 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     registerCapabilities(std::make_unique<OpenGLQtCapabilities>());
 
     if (auto mainWindow = utilqt::getApplicationMainWindow()) {
-        auto menu = std::make_unique<OpenGLQtMenu>(mainWindow);
+        openglMenu_ = std::make_unique<OpenGLQtMenu>(nullptr);
         auto menuBar = mainWindow->menuBar();
-        menuBar->insertMenu(utilqt::getMenu("&Help")->menuAction(), menu.release());
+        menuBar->insertMenu(utilqt::getMenu("&Help")->menuAction(), openglMenu_.get());
     }
 
     app->getProcessorNetworkEvaluator()->addObserver(this);
@@ -120,6 +120,13 @@ OpenGLQtModule::~OpenGLQtModule() {
     SharedOpenGLResources::getPtr()->reset();
     if (holder_ == RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
+    }
+
+    if (openglMenu_) {
+        if (auto mainWindow = utilqt::getApplicationMainWindow()) {
+            auto menuBar = mainWindow->menuBar();
+            menuBar->removeAction(openglMenu_->menuAction());
+        }
     }
 }
 
