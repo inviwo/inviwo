@@ -31,16 +31,10 @@
 <h2>2023-11-10 Packaging</h2>
 <p>It is now possible to install Inviwo into a package that includes all the headers and dependencies etc., to make it possible to build new modules against the installed version of Inviwo. To package all the headers etc., the new CMake flag <code class="notranslate">IVW_PACKAGE_HEADERS</code> has to be <code class="notranslate">ON</code>.</p>
 <h2>2023-11-10 New CMake presets</h2>
-<p>A more comprehensive set of CMake presets has been added. There are now a set of building blocks:<br>
-<code class="notranslate">user</code> for cases where you only want to build and use Inviwo and <code class="notranslate">developer</code> in case where you also<br>
-want to develop new modules and processors.<br>
-Further there are new generator presets for <code class="notranslate">msvc</code>, <code class="notranslate">xcode</code>, and <code class="notranslate">ninja</code> as well as "package" presets<br>
-for <code class="notranslate">vcpkg</code> and <code class="notranslate">apt</code>.<br>
-Finally, there are some defaults that combine these in convenient ways like<br>
-<code class="notranslate">msvc-developer</code>, <code class="notranslate">xcode-user</code>, etc. One can easily combine the building blocks to create new presets as needed.</p>
+<p>A more comprehensive set of CMake presets has been added. There are now a set of building blocks:<code class="notranslate">user</code> for cases where you only want to build and use Inviwo and <code class="notranslate">developer</code> in case where you also want to develop new modules and processors. Further there are new generator presets for <code class="notranslate">msvc</code>, <code class="notranslate">xcode</code>, and <code class="notranslate">ninja</code> as well as "package" presets  for <code class="notranslate">vcpkg</code> and <code class="notranslate">apt</code>. Finally, there are some defaults that combine these in convenient ways like <code class="notranslate">msvc-developer</code>, <code class="notranslate">xcode-user</code>, etc. One can easily combine the building blocks to create new presets as needed.</p>
 <h2>2023-11-10 inviwo::Version</h2>
 <p>The Inviwo <code class="notranslate">Version</code> class can now handle full <a href="https://semver.org/" rel="nofollow">Semantic Versioning</a> including pre-release annotations and build tags.<br>
-An new CMake flag <code class="notranslate">IVW_CFG_BUILD_VERSION</code> was added to control the build tags of the current Inviwo version.<br>
+A new CMake flag <code class="notranslate">IVW_CFG_BUILD_VERSION</code> was added to control the build tags of the current Inviwo version.<br>
 The tags will be added to the installer filename etc., and can be used to differentiate between different builds of the same version.</p>
 <h2>2023-09-15 CMake option <code class="notranslate">IVW_ENABLE_QT</code></h2>
 <p>A CMake option <code class="notranslate">IVW_ENABLE_QT</code> was added to allow for enabling/disabling Inviwo's Qt support globally. Qt support is enabled by default. If Qt support is disabled all modules that depend on Qt will automatically be disabled.</p>
