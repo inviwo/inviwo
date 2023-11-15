@@ -218,7 +218,7 @@ public:
 
     /**
      * Specify values to record in transform feedback buffers.
-     * @param names Array of names of the varying variables to use for transform feedback.
+     * @param varyings Array of names of the varying variables to use for transform feedback.
      * @param bufferMode The mode used to capture the varying variables when transform feedback is
      * active. Must be GL_INTERLEAVED_ATTRIBS or GL_SEPARATE_ATTRIBS.
      */
