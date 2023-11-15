@@ -285,7 +285,7 @@ InstanceRenderer::InstanceRenderer()
     , camera_("camera", "Camera",
               [this]() -> std::optional<mat4> {
                   rendercontext::activateDefault();
-                  return process(true);
+                  return render(true);
               })
     , trackball_(&camera_)
     , lightingProperty_("lighting", "Lighting", &camera_)
