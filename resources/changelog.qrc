@@ -10,5 +10,6 @@
         <file alias="compositeproperty-collapse.jpg">changelog/compositeproperty-collapse.jpg</file>
         <file alias="configure-properties.jpg">changelog/configure-properties.jpg</file>
         <file alias="colorscalelegend.jpg">changelog/colorscalelegend.jpg</file>
+        <file alias="tetramesh-raycasting.jpg">changelog/tetramesh-raycasting.jpg</file>
     </qresource>
 </RCC>

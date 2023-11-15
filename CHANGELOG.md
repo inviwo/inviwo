@@ -1,5 +1,13 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2023-11-15 TetraMesh - Rendering of tetrahedral meshes
+The new module `TetraMesh` adds basic support for rendering unstructured, tetrahedral meshes like the `TetraMeshVolumeRaycaster` processor. The current implementation relies on [Shader Storage Buffers Objects](https://www.khronos.org/opengl/wiki/Shader_Storage_Buffer_Object) (OpenGL 4.3). 
+The class `TetraMesh` provides a common interface for arbitrary tetrahedral grids. The data upload to the GPU with the necessary data required for rendering is managed by `TetraMeshBuffers`. See for example `VolumeTetraMesh` and, alternatively, `VTKTetraMesh` in the topovis/ttk module. Example workspaces are included in both the TetraMesh module ([tetramesh/tetrameshraycasting.inv](file:modules/tetramesh/data/workspaces/tetrameshraycasting.inv)) and the topovis/ttk module ([ttk/vtk-tetrahedral-mesh.inv](file:misc/ttk/data/workspaces/vtk-tetrahedral-mesh.inv)). 
+
+Enable the topovis/ttk module from the [Inviwo modules repo](https://github.com/inviwo/modules/) for supporting and rendering VTK unstructured grids.
+
+![TetraMesh volume raycasting of a VTK unstructured grid](resources/changelog/tetramesh-raycasting.jpg)
+
 ## 2023-11-10 Inviwo module system
 A new target `inviwo-module-system` that sits in between the applications (Inviwo, glfwminimim, etc) and the Inviwo modules has been added. The new target takes care of linking/loading modules, and each application can just link to this target instead. Refer to`apps/inviwo_glfwminimum/CMakeLists.txt` and `apps/inviwo_glfwminimum/glfwminimum.cpp` for an example.
 
