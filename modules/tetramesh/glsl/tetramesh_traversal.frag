@@ -58,6 +58,10 @@ uniform int numTetraSamples = 100;
 uniform float tfValueScaling = 1.0;
 uniform float tfValueOffset = 0.0;
 
+// The opacity scaling factor affects the extinction parameter used in the integration along the 
+// ray. It can be used to obtain the same visual impression for differently scaled datasets since 
+// the ray traversal is performed in data coordinates and not restricted to [0,1] as in Inviwo's
+// regular volume raycasting.
 uniform float opacityScaling = 1.0;
 
 uniform ImageParameters backgroundParameters;
@@ -235,9 +239,10 @@ vec3 getTetraGradient(in Tetra tetra) {
     return -normalize(tetra.fA * tetra.jacobyDetInv * tetra.s);
 }
 
-// Compute the absorption along distance \p tIncr according to the volume rendering equation
+// Compute the absorption along distance \p tIncr according to the volume rendering equation. The 
+// \p opacityScaling factor is used to scale the extinction to account for differently sized datasets.
 float absorption(in float opacity, in float tIncr) {
-    return 1.0 - pow(1.0 - opacity, tIncr * REF_SAMPLING_INTERVAL);
+    return 1.0 - pow(1.0 - opacity, tIncr * REF_SAMPLING_INTERVAL * opacityScaling);
 }
 
 float normalizeScalar(float scalar) {
@@ -347,7 +352,7 @@ void main() {
 #endif // SHADING_ENABLED
 
                 // volume integration along current segment
-                color.a = absorption(color.a, tDelta * opacityScaling);
+                color.a = absorption(color.a, tDelta);
                 // front-to-back blending
                 color.rgb *= color.a;
                 dvrColor += (1.0 - dvrColor.a) * color;
