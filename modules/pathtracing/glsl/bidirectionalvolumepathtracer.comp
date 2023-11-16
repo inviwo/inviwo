@@ -90,9 +90,11 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
 
     float rayPosition = 0.5 * rayStep;
     vec3 samplePosition = entryPoint + rayPosition * rayDir;
-    float T = 1.0f;
+    uint hashSeed = floatBitsToUint(time_ms) + gid;
+
+    float T = 0.0f;
     float tau = 1f;
-    float meanpath = WoodcockTracking(samplePosition, rayDir, rayLength, gid + time_ms,
+    float meanpath = WoodcockTracking(samplePosition, rayDir, 0f, rayPosition, hashSeed,
             volume, volumeParameters, transferFunction, 1.0f, tau);
     rayPosition = meanpath; 
     
@@ -114,8 +116,7 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
         // Function is broken for testing at the moment.
         
         result = RMVolumeRender_SingleBounceLight(T, meanpath, volume, volumeParameters, transferFunction, result, 
-            samplePosition, cameraDir, light, planes, gid + time_ms + 1);
-        //T = SimpleTracking(T, meanpath, tau);
+            samplePosition, cameraDir, light, planes, hashSeed);
 
         #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
     }
