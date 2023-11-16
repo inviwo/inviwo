@@ -93,7 +93,7 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
     float T = 1.0f;
     float tau = 1f;
     float meanpath = WoodcockTracking(samplePosition, rayDir, rayLength, gid + time_ms,
-            volume, volumeParameters, transferFunction, 1f, tau);
+            volume, volumeParameters, transferFunction, 1.0f, tau);
     rayPosition = meanpath; 
     
 
@@ -107,14 +107,15 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
         vec4 voxel = getNormalizedVoxel(volume, volumeParameters, samplePosition);
         vec4 color = applyTF(transferFunction, voxel);
 
-        PlaneParameters[6] planes = constructBBPlanes(volumeParameters);
+        PlaneParameters[6] planes; //= constructBBPlanes(volumeParameters);
 
         vec3 sampleWorldPosition = (volumeParameters.textureToWorld*vec4(samplePosition,1f)).xyz;
 
         // Function is broken for testing at the moment.
+        
         result = RMVolumeRender_SingleBounceLight(T, meanpath, volume, volumeParameters, transferFunction, result, 
             samplePosition, cameraDir, light, planes, gid + time_ms + 1);
-        T = SimpleTracking(T, meanpath, tau);
+        //T = SimpleTracking(T, meanpath, tau);
 
         #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
     }
@@ -224,7 +225,7 @@ void main(){
                                // written to outportDepth
 
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
-    vec2 texCoord = vec2(gl_GlobalInvocationID.xy) / outportParameters.dimensions;
+    vec2 texCoord = vec2(0.5 + gl_GlobalInvocationID.xy) / outportParameters.dimensions;
 
     
 
