@@ -29,6 +29,7 @@
 
 #include "utils/structs.glsl"
 #include "utils/shading.glsl"
+#include "utils/classification.glsl"
 
 #if !defined(REF_SAMPLING_INTERVAL)
 #define REF_SAMPLING_INTERVAL 150.0
@@ -50,12 +51,12 @@ uniform LightParameters lighting;
 
 uniform sampler2D transferFunction;
 uniform int shaderOutput = 0;
-uniform int maxSteps = 20;
-uniform int maxTFSteps = 100;
+uniform int maxSteps = 1000;
+uniform int numTetraSamples = 100;
 
-// scalar scaling and offset are used to map scalar values from [min,max] to [0,1]
-uniform float tfScalarScaling = 1.0;
-uniform float tfScalarOffset = 0.0;
+// Use (scalar + tfValueOffset) * tfValueScaling to map scalar values from [min,max] to [0,1]
+uniform float tfValueScaling = 1.0;
+uniform float tfValueOffset = 0.0;
 
 uniform float opacityScaling = 1.0;
 
@@ -64,6 +65,8 @@ uniform sampler2D backgroundColor;
 uniform sampler2D backgroundDepth;
 
 uniform sampler2D tfGradients;
+
+const float invalidDepth = 1.0e8;
 
 struct VertexPosition {
     vec3 pos;
@@ -150,6 +153,49 @@ mat4x3 getFaceNormals(in Tetra t) {
     return mat4x3(-normalize(t.fA[0]), -normalize(t.fA[1]), -normalize(t.fA[2]), -normalize(t.fA[3]));
 }
 
+struct ExitFace {
+    int faceId;
+    float segmentLength;
+};
+
+// Determine the closest exit face within the tetrahedron \p tetra given a ray at \p startPosition 
+// and direction \p rayDirection.
+//
+// @param tetra          current tetrahedron
+// @param entryFaceId    local face ID of the face [0,3] through which the ray entered the tetrahedron
+// @param startPosition  start position of the ray
+// @param rayDirection   direction of the ray
+// @return the closest face where the ray exits the tetrahedron
+ExitFace findTetraExitFace(in Tetra tetra, in int entryFaceId, 
+                           in vec3 startPosition, in vec3 rayDirection) {
+    const mat4x3 faceNormal = getFaceNormals(tetra);
+    // intersect ray at current position with all tetra faces
+    const vec4 vdir = vec4(dot(faceNormal[0], rayDirection),
+                           dot(faceNormal[1], rayDirection),
+                           dot(faceNormal[2], rayDirection),
+                           dot(faceNormal[3], rayDirection));
+    vec4 vt = vec4(dot(tetra.v[1] - startPosition, faceNormal[0]),
+                   dot(tetra.v[2] - startPosition, faceNormal[1]),
+                   dot(tetra.v[3] - startPosition, faceNormal[2]),
+                   dot(tetra.v[0] - startPosition, faceNormal[3])) / vdir;
+
+    // only consider intersections on the inside of the current triangle faces, that is t > 0.
+    // Also ignore intersections being parallel to a face
+    vt = mix(vt, vec4(invalidDepth), lessThan(vdir, vec4(0.0)));
+
+    // ignore self-intersection with current face ID, set distance to max
+    vt[entryFaceId] = invalidDepth;
+
+    // closest intersection
+    // face ID of closest intersection
+    const int face1 = vt.x < vt.y ? 0 : 1;
+    const int face2 = vt.z < vt.w ? 2 : 3;
+    const int face = vt[face1] < vt[face2] ? face1 : face2;        
+    const float tmin = vt[face];
+
+    return ExitFace(face, tmin);
+}
+
 // Interpolate scalars of tetrahedron \p tetra using barycentric coordinates for position \p p within
 //
 // @param p      position of the barycentric coords
@@ -195,11 +241,7 @@ float absorption(in float opacity, in float tIncr) {
 }
 
 float normalizeScalar(float scalar) {
-    return (scalar + tfScalarOffset) * tfScalarScaling;
-}
-
-vec4 sampleTF(float normalizedScalar) {
-    return texture(transferFunction, vec2(normalizedScalar, 0.5));
+    return (scalar + tfValueOffset) * tfValueScaling;
 }
 
 // Convert normalized screen coordinates [0,1] to data coords of the tetramesh geometry
@@ -222,12 +264,12 @@ float normalizedDeviceDepth(in vec3 posData, in mat4 dataToClip) {
 }
 
 void main() {
-    const float invalidDepth = 1.0e8;
-
     // all computations except illumination (World space) take place in Data space
     const vec3 rayDirection = normalize(in_frag.position - in_frag.camPosData);
     const vec3 rayDirWorld = normalize(in_frag.worldPosition.xyz - camera.position);
     const float tEntry = length(in_frag.position - in_frag.camPosData);
+
+    const float tetraSamplingDelta = 1.0 / float(numTetraSamples);
 
     float bgDepthScreen = invalidDepth;
 
@@ -273,42 +315,17 @@ void main() {
 
         // query data of current tetrahedron
         tetra = getTetra(tetraId);
-        mat4x3 faceNormal = getFaceNormals(tetra);
+        ExitFace exitFace = findTetraExitFace(tetra, localFaceId, pos, rayDirection);
 
-        // intersect ray at current position with all tetra faces
-        vec4 vdir = vec4(dot(faceNormal[0], rayDirection),
-                         dot(faceNormal[1], rayDirection),
-                         dot(faceNormal[2], rayDirection),
-                         dot(faceNormal[3], rayDirection));
-        vec4 vt = vec4(dot(tetra.v[1] - pos, faceNormal[0]),
-                       dot(tetra.v[2] - pos, faceNormal[1]),
-                       dot(tetra.v[3] - pos, faceNormal[2]),
-                       dot(tetra.v[0] - pos, faceNormal[3])) / vdir;
-
-        // only consider intersections on the inside of the current triangle faces, that is t > 0.
-        // Also ignore intersections being parallel to a face
-        vt = mix(vt, vec4(invalidDepth), lessThan(vdir, vec4(0.0)));
-
-        // ignore self-intersection with current face ID, set distance to max
-        vt[localFaceId] = invalidDepth;
-
-        // closest intersection
-        // face ID of closest intersection
-        const int vface1 = vt.x < vt.y ? 0 : 1;
-        const int vface2 = vt.z < vt.w ? 2 : 3;
-        const int vface = vt[vface1] < vt[vface2] ? vface1 : vface2;        
-        const float tmin = vt[vface];
-
-        vec3 endPos = pos + rayDirection * tmin;
+        vec3 endPos = pos + rayDirection * exitFace.segmentLength;
 
         const float scalar = normalizeScalar(barycentricInterpolation(endPos, tetra));
         const vec3 gradient = getTetraGradient(tetra);
         const vec3 gradientWorld = geometry.dataToWorldNormalMatrix * gradient;
         
-        const int numSteps = 100;
-        float tDelta = tmin / float(numSteps);
-        for (int i = 1; i <= numSteps; ++i) {
-            float s = mix(prevScalar, scalar, i / float(numSteps));
+        float tDelta = exitFace.segmentLength * tetraSamplingDelta;
+        for (int i = 1; i <= numTetraSamples; ++i) {
+            float s = mix(prevScalar, scalar, i * tetraSamplingDelta);
 
             float tCurrent = tTotal + tDelta * i;
 #if defined(BACKGROUND_AVAILABLE)
@@ -318,7 +335,7 @@ void main() {
             }
 #endif // BACKGROUND_AVAILABLE
 
-            vec4 color = sampleTF(s);
+            vec4 color = applyTF(transferFunction, s);
             if (color.a > 0) {
                 tFirstHit = tFirstHit == invalidDepth ? tCurrent : tFirstHit;
 
@@ -330,7 +347,7 @@ void main() {
 #endif // SHADING_ENABLED
 
                 // volume integration along current segment
-                color.a = absorption(color.a, tDelta * opacityScaling * 0.1);
+                color.a = absorption(color.a, tDelta * opacityScaling);
                 // front-to-back blending
                 color.rgb *= color.a;
                 dvrColor += (1.0 - dvrColor.a) * color;
@@ -339,7 +356,7 @@ void main() {
 
 #if defined(BACKGROUND_AVAILABLE)
         // need to check the entire interval again due to precision issues
-        if (!bgBlended && tBackground > tTotal && tBackground <= tTotal + tmin) {
+        if (!bgBlended && tBackground > tTotal && tBackground <= tTotal + exitFace.segmentLength) {
             dvrColor += (1.0 - dvrColor.a) * background;
             bgBlended = true;
         }
@@ -349,10 +366,10 @@ void main() {
 
         // update position
         pos = endPos;
-        tTotal += tmin;
+        tTotal += exitFace.segmentLength;
 
         // determine the half face opposing the half face with the found intersection
-        tetraFaceId = faceIds[tetraId][vface];
+        tetraFaceId = faceIds[tetraId][exitFace.faceId];
         ++steps;
     }
 

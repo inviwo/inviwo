@@ -159,8 +159,8 @@ void TetraMeshVolumeRaycaster::process() {
     const dvec2 dataRange{inport_.getData()->getDataRange()};
     const double scalingFactor = 1.0 / (dataRange.y - dataRange.x);
     const double offset = -dataRange.x;
-    shader_.setUniform("tfScalarScaling", static_cast<float>(scalingFactor));
-    shader_.setUniform("tfScalarOffset", static_cast<float>(offset));
+    shader_.setUniform("tfValueScaling", static_cast<float>(scalingFactor));
+    shader_.setUniform("tfValueOffset", static_cast<float>(offset));
 
     {
         utilgl::CullFaceState cf(GL_BACK);
