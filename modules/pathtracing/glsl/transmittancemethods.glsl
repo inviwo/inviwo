@@ -8,6 +8,7 @@
 */
 
 // Returns how far to step, supposedly.
+// raystart, raydir and raylength ought to be in data coordinate
 float WoodcockTracking(vec3 raystart, vec3 raydir, float raylength, float hashSeed, 
     sampler3D volume, VolumeParameters volumeParameters, sampler2D transferFunction, float sigma_upperbound, out float sigma) {
 
@@ -15,11 +16,10 @@ float WoodcockTracking(vec3 raystart, vec3 raydir, float raylength, float hashSe
 
     vec3 r = vec3(0);
     while (meanfreepath < raylength) {
-        meanfreepath += -log(random_1dto1d(hashSeed))/sigma_upperbound;
+        meanfreepath = meanfreepath - log(1f - random_1dto1d(hashSeed))/sigma_upperbound;
 
         r = raystart - meanfreepath*raydir;
         sigma = applyTF(transferFunction, getNormalizedVoxel(volume, volumeParameters, r)).a;
-        //float sigma = 1.5;
         if(random_1dto1d(hashSeed + 1) < sigma/sigma_upperbound) {
             break;
         }
@@ -98,12 +98,12 @@ vec4 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, 
     vec3 sampleAmbient = tfSample.rgb;
     vec3 sampleDiffuse = tfSample.rgb;
     vec3 sampleSpecular = tfSample.rgb;
-
+    
     vec3 toLight = normalize(light.position - sampleWorldPos);
 
     color.rgb = shadeSpecularPhongCalculation(light, tfSample.rgb, toLight, 
         toLight, cameraDir);
-
+    
     // 
     float t = 0f;
     float tau = 1f;   
@@ -128,10 +128,10 @@ vec4 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, 
     //Tl = SimpleTracking(Tl, meanfreepath_l, tau);
 
     // pseudo gamma
-    float g = 1f;
+    float g = 2.5f;
 
     color.w = 1f;
-    acc_radiance += acc_radiance + g*T*tau*(color*Tl);
+    acc_radiance = g*T*tau*(tfSample*Tl);
 
     return acc_radiance;
 }
