@@ -22,18 +22,18 @@ float WoodcockTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd, ino
     float sigmaSample;
     vec3 r = vec3(0);
     do {    
-        hashSeed = pcg(hashSeed);
-        t += -log(random_1dto1d(hashSeed))*invExtinction;
-        hashSeed = pcg(hashSeed);
+        t += -log(random_1dto1d(pcg_rehash(hashSeed)))*invExtinction;
         r = raystart + t*raydir;
         vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, r);
         sigmaSample = applyTF(transferFunction, volumeSample).a;
 
-    } while (random_1dto1d(hashSeed) >= sigmaSample*invSigmaUpperbound && t <= tEnd);
+    } while (random_1dto1d(pcg_rehash(hashSeed)) >= sigmaSample*invSigmaUpperbound && t <= tEnd);
 
     return t;
 }
 
+// Not done, dont use
+// Assumes T = 1 is no attenuation and 0 is max attenuation
 float WoodcockTracking_InvT(vec3 raystart, vec3 raydir, float tStart, float tEnd, inout uint hashSeed, 
     sampler3D volume, VolumeParameters volumeParameters, sampler2D transferFunction, float sigma_upperbound, out float sigma) {
     
@@ -138,9 +138,18 @@ vec4 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, 
         look for estimateDirectFromOneLightSource
         estimateLight {
             estimateDirectFromOneLightSource {
-                sampleLightSource
-                rayBoxIntersection
-                transmittanceTracking
+                sampleLightSource {
+                    *decrease the light power by square of distance
+
+                }
+                rayBoxIntersection {
+                    Its identical to the cl version but assuming bb is from 000 to 111
+                }
+                transmittanceTracking {
+                    if(transmittance_type == WOODCOCK) {
+                        return WOODCOCK_TRACKING();
+                    }
+                }
                 applyShading {
                     if(shading_type == BLINN_PHONG) {
                         return BLINN_PHONG_SHADING()
@@ -150,41 +159,38 @@ vec4 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, 
         }
 
     */
+    float t0 = 0.0f;
+    float t1;
+    float tau = 1f;   
+    float meanfreepath_l = 0f; 
+    float Tl = 1f;
+    
+    vec3 toLightTexture = (volParam.worldToTexture*vec4(toLight,1f)).xyz;
+
+    RayBBIntersection_TextureSpace(samplePos, toLightTexture, t0, t1);
+    meanfreepath_l = WoodcockTracking(samplePos, toLightTexture, 0f, t1, hashSeed, 
+        volume, volParam, tf, 1.0f, tau);
+
+    // TODO: this looks to always result in true, without some dumb coefficient
+    Tl = meanfreepath_l >= t1 ? 1.0f : 0.0f; 
 
     
     //color.rgb = shadeSpecularPhongCalculation(light, tfSample.rgb, /*what is the normal of a particle*/ -cameraDir, 
     //    toLight, cameraDir);
     
     color.rgb = shadeBlinnPhong(light, tfSample.rgb, tfSample.rgb, tfSample.rgb,
-        /*what is the normal of a particle*/ sampleWorldPos, -cameraDir, cameraDir);
+        sampleWorldPos, /*what is the normal of a particle*/ cameraDir, cameraDir);
     
-    float t0 = 0.0f;
-    float t1;
-    float tau = 1f;   
-    float meanfreepath_l = 0f; 
-    float Tl = 1f;
-
-
-    
-    vec3 toLightTexture = (volParam.worldToTexture*vec4(toLight,1f)).xyz;
-
-    RayBBIntersection_TextureSpace(samplePos, toLightTexture, t0, t1);
-    meanfreepath_l = WoodcockTracking(samplePos, toLightTexture, /*should be t*/ 0f, t1, hashSeed, 
-        volume, volParam, tf, 1f, tau);
-    Tl = meanfreepath_l >= t1 ? 1.0f : 0.0f;
-
     // pseudo gamma
     float g = 1.0f;
 
-    color.a = tfSample.a;
+    // Q: Does the alpha channel not do anything?
+    color.a = 1f;
     
-    if(t1 > meanfreepath_l) {
-        
-    }
-    else {  
-        
-    }
-    acc_radiance = g*color*Tl;
+    float faux_radiance = light.specularExponent / distance(sampleWorldPos, toLight);
+    faux_radiance = 1f;
+
+    acc_radiance = g*color*Tl*faux_radiance;
 
     return acc_radiance;
 }

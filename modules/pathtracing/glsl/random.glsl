@@ -74,6 +74,14 @@ uint pcg(uint v) {
     return (word >> 22u) ^ word;
 }
 
+uint pcg_rehash(inout uint v) {
+    uint state = v * 747796405u + 2891336453u;
+    uint word = ((state >> ((state >> 28u) + 4u)) ^ state)
+        * 277803737u;
+    v = (word >> 22u) ^ word;
+    return v;
+}
+
 uvec2 pcg2d(uvec2 v) {
     v = v * 1664525u + 1013904223u;
 
