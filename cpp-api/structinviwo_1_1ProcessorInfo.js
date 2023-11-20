@@ -1,8 +1,9 @@
 var structinviwo_1_1ProcessorInfo =
 [
-    [ "category", "structinviwo_1_1ProcessorInfo.html#a19e6faf670938b88306d0bc4678beab4", null ],
-    [ "classIdentifier", "structinviwo_1_1ProcessorInfo.html#a953a8d2a0b3cab5f7498847ed03f8f88", null ],
-    [ "displayName", "structinviwo_1_1ProcessorInfo.html#a3f6bcf20dd1a2e65c127c7336a68d197", null ],
-    [ "tags", "structinviwo_1_1ProcessorInfo.html#a6f3590edf2b83d898ad14f89f39b2620", null ],
-    [ "visible", "structinviwo_1_1ProcessorInfo.html#a54109ebb587ddb8b62d81debd3270459", null ]
+    [ "category", "structinviwo_1_1ProcessorInfo.html#a1fee0fcaebb0a3736dbe52939b207a23", null ],
+    [ "classIdentifier", "structinviwo_1_1ProcessorInfo.html#a73ee300447fec6bf02343fe794da5b20", null ],
+    [ "displayName", "structinviwo_1_1ProcessorInfo.html#aa3c739ee0ed28ed7c3660b733b05c055", null ],
+    [ "help", "structinviwo_1_1ProcessorInfo.html#a883e93e6920c6efb56e63f8c75901300", null ],
+    [ "tags", "structinviwo_1_1ProcessorInfo.html#a01daa6933aa0ccd5fc3688eebc917354", null ],
+    [ "visible", "structinviwo_1_1ProcessorInfo.html#a3dfc6e6eead4089b0b87e4d91800a56c", null ]
 ];

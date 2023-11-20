@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['name_0',['name',['../structinviwo_1_1ShaderSegment.html#ace9708c2df32e8e1d8e77581e425c654',1,'inviwo::ShaderSegment']]],
-  ['nearplanedist_5f_1',['nearPlaneDist_',['../classinviwo_1_1Camera.html#a08c6dcd7d5cf3941c9c1c3dde828c683',1,'inviwo::Camera']]],
-  ['noiseshader_5f_2',['noiseShader_',['../classinviwo_1_1CanvasGL.html#a43b258bd6442a6d35fa83b4475bcd1e2',1,'inviwo::CanvasGL']]]
+  ['offset_5f_0',['offset_',['../classinviwo_1_1plot_1_1PlotTextProperty.html#a5d8e127b354da94a3bad4b1d36da0ed5',1,'inviwo::plot::PlotTextProperty']]],
+  ['onmodulesdidregister_5f_1',['onmodulesdidregister_',['../classinviwo_1_1AnnotationsWidget.html#a24a50301b8640691ad164a5b5206da87',1,'inviwo::AnnotationsWidget::onModulesDidRegister_'],['../classinviwo_1_1SettingsWidget.html#a750760255f3cd91ae1e05ee098f2d20d',1,'inviwo::SettingsWidget::onModulesDidRegister_']]]
 ];

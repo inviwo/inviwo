@@ -8,6 +8,8 @@ var classinviwo_1_1Property =
     [ "clone", "classinviwo_1_1Property.html#a19eaea363ee6030a64fa200e41632667", null ],
     [ "deregisterWidget", "classinviwo_1_1Property.html#a741aed79f5978f000d84b4c5db77f63b", null ],
     [ "getClassIdentifierForWidget", "classinviwo_1_1Property.html#a48396c3fa583ffdd46157289b10a6d66", null ],
+    [ "getDescription", "classinviwo_1_1Property.html#a4ddd2029973417d4cdb3dc9406792415", null ],
+    [ "getHelp", "classinviwo_1_1Property.html#ac9e9e83e7e33736d73f2401af5ba7c8c", null ],
     [ "getPath", "classinviwo_1_1Property.html#af741958083ecc700a11a3b63c399d5b9", null ],
     [ "getWidgets", "classinviwo_1_1Property.html#a4c32384579f41ce9952a79f4bde205ee", null ],
     [ "hasWidgets", "classinviwo_1_1Property.html#a0964c2c0e7dda3dbb4c893333a009986", null ],

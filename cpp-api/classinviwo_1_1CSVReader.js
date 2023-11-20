@@ -6,11 +6,12 @@ var classinviwo_1_1CSVReader =
       [ "NanOrZero", "classinviwo_1_1CSVReader.html#a64f39e3ad1f7c7af5e91e99a6a28a4f7ad6844b8b4bd544627fa650e3951efa9e", null ]
     ] ],
     [ "getOption", "classinviwo_1_1CSVReader.html#a766ea7c11177576fb49c3920c89d8d1c", null ],
+    [ "readData", "classinviwo_1_1CSVReader.html#a28c47f99163e50482a67172c1c88d662", null ],
     [ "readData", "classinviwo_1_1CSVReader.html#a6dce0d617ed4f031326211d927034b11", null ],
-    [ "readData", "classinviwo_1_1CSVReader.html#a6f503ebef4cc2ccf89958dcb51e17774", null ],
     [ "setDelimiters", "classinviwo_1_1CSVReader.html#a161c7609ee62590f3ded4bcf2bf63ba0", null ],
     [ "setEnableDoublePrecision", "classinviwo_1_1CSVReader.html#a5c235e3e45f47bb149b91e6cbcbdc611", null ],
     [ "setFilters", "classinviwo_1_1CSVReader.html#a673226aaba1185b626488a27d5615cef", null ],
+    [ "setFirstColIndices", "classinviwo_1_1CSVReader.html#ac70a552ae6dc91701396fcff5807f8f2", null ],
     [ "setFirstRowHeader", "classinviwo_1_1CSVReader.html#a7493f2a7f2d74523ed2805fa8fa18c29", null ],
     [ "setHandleEmptyFields", "classinviwo_1_1CSVReader.html#ad8e16060dca686b74f35c5b72bc4a2d4", null ],
     [ "setLocale", "classinviwo_1_1CSVReader.html#ae2fd26930ac7af73f0d87e9504023093", null ],

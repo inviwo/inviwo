@@ -1,8 +1,13 @@
 var searchData=
 [
-  ['r2_0',['r2',['../structinviwo_1_1statsutil_1_1RegresionResult.html#a607fa956c5d2416235f2202020e0ed39',1,'inviwo::statsutil::RegresionResult']]],
-  ['radius_1',['radius',['../classinviwo_1_1Trackball.html#a67757c732fd1a9faeac9534d0d2e5585',1,'inviwo::Trackball']]],
-  ['range_5f_2',['range_',['../classinviwo_1_1NoiseProcessor.html#a68376173b75052f765afb7cf6c8ce26c',1,'inviwo::NoiseProcessor']]],
-  ['renderstate_5f_3',['renderState_',['../classinviwo_1_1animation_1_1AnimationController.html#a7c1221392b191d28781c73eb41a073a4',1,'inviwo::animation::AnimationController']]],
-  ['rotation_5f_4',['rotation_',['../classinviwo_1_1plot_1_1PlotTextProperty.html#a8372f8feaf6ac9e2d7c39fa259402be6',1,'inviwo::plot::PlotTextProperty']]]
+  ['scrollarea_5f_0',['scrollarea_',['../classinviwo_1_1AnnotationsWidget.html#a529245cdc9244373490b2cc4dea2b2fe',1,'inviwo::AnnotationsWidget::scrollArea_'],['../classinviwo_1_1SettingsWidget.html#a822a1423700f54362fc97fc123c5b6f0',1,'inviwo::SettingsWidget::scrollArea_']]],
+  ['seed_5f_1',['seed_',['../classinviwo_1_1NoiseProcessor.html#a507231143a78e9e693c6755340cce91e',1,'inviwo::NoiseProcessor']]],
+  ['sensitivity_5f_2',['sensitivity_',['../classinviwo_1_1Trackball.html#a3988c2bdb93d018d1ef19ef04a5d46ba',1,'inviwo::Trackball']]],
+  ['settings_5f_3',['settings_',['../classinviwo_1_1algorithm_1_1LineRenderer.html#a187dbd9571116cf3ee4389723fd9e14b',1,'inviwo::algorithm::LineRenderer']]],
+  ['shader_5f_4',['shader_',['../classinviwo_1_1CefImageConverter.html#a9733c4cf8220d25dc1e856a94e42fc95',1,'inviwo::CefImageConverter']]],
+  ['shadingfactor_5',['shadingFactor',['../classinviwo_1_1GlyphClipping.html#a9b226752ebf4a0159fceb92bf7d7fe9f',1,'inviwo::GlyphClipping']]],
+  ['size_5f_6',['size_',['../classinviwo_1_1NoiseProcessor.html#a4e8cb5b5b3d71600c0262106fe12c4a4',1,'inviwo::NoiseProcessor']]],
+  ['snippet_7',['snippet',['../structinviwo_1_1ShaderSegment.html#a82147fea140d5ac41e14e396093b60c6',1,'inviwo::ShaderSegment::snippet'],['../structinviwo_1_1ShaderComponent_1_1Segment.html#ac3189a604789226d2a842af5840ff149',1,'inviwo::ShaderComponent::Segment::snippet']]],
+  ['squaregl_5f_8',['squareGL_',['../classinviwo_1_1CanvasGL.html#a437a2f4ff36685129ccfcaac704fb277',1,'inviwo::CanvasGL']]],
+  ['state_5f_9',['state_',['../classinviwo_1_1animation_1_1AnimationController.html#a75346c1ad06be1cf2912efeb43ab635d',1,'inviwo::animation::AnimationController']]]
 ];

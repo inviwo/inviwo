@@ -9,7 +9,8 @@ var group__properties =
       [ "getClassIdentifierForWidget", "classinviwo_1_1BoolCompositeProperty.html#a8dac0d2e1adb02a86b92ec7c5ab881ed", null ]
     ] ],
     [ "inviwo::BoolProperty", "classinviwo_1_1BoolProperty.html", [
-      [ "clone", "classinviwo_1_1BoolProperty.html#a7df201a9a22ad1739c8de24fc17d817c", null ]
+      [ "clone", "classinviwo_1_1BoolProperty.html#a7df201a9a22ad1739c8de24fc17d817c", null ],
+      [ "getDescription", "classinviwo_1_1BoolProperty.html#a93429c56a14b1cbd88c3d0f108edf372", null ]
     ] ],
     [ "inviwo::ButtonGroupProperty", "classinviwo_1_1ButtonGroupProperty.html", [
       [ "Button", "structinviwo_1_1ButtonGroupProperty_1_1Button.html", null ],
@@ -58,6 +59,7 @@ var group__properties =
       [ "getClassIdentifierForWidget", "classinviwo_1_1DirectoryProperty.html#a0910a54c4d3a6ab65a397d7ca2f885fc", null ]
     ] ],
     [ "inviwo::EventProperty", "classinviwo_1_1EventProperty.html", [
+      [ "EventProperty", "classinviwo_1_1EventProperty.html#a5c9c44064e07055da5a117738d366893", null ],
       [ "EventProperty", "classinviwo_1_1EventProperty.html#a440ef7e374ff6177c145f67f3489bdd4", null ],
       [ "clone", "classinviwo_1_1EventProperty.html#ac5e344a9c88f1a1a65178d3d396028d8", null ],
       [ "isDefaultState", "classinviwo_1_1EventProperty.html#a209489b58dedd730affe943906045636", null ],
@@ -65,12 +67,18 @@ var group__properties =
       [ "setCurrentStateAsDefault", "classinviwo_1_1EventProperty.html#a66d4edee854917f94c5afa15e433f687", null ]
     ] ],
     [ "inviwo::FileProperty", "classinviwo_1_1FileProperty.html", [
-      [ "FileProperty", "classinviwo_1_1FileProperty.html#ac8701c876797844a3670d1d6275519b6", null ],
+      [ "FileProperty", "classinviwo_1_1FileProperty.html#a6af1e2f848af364560abee0879faae56", null ],
+      [ "FileProperty", "classinviwo_1_1FileProperty.html#a39b157c35845380dfc8eaa8f92189326", null ],
+      [ "FileProperty", "classinviwo_1_1FileProperty.html#ad24106562b0ef3572749f9d1e425e88d", null ],
       [ "clone", "classinviwo_1_1FileProperty.html#a002b21bcad400c15f01be2abc2a491f1", null ],
+      [ "getDescription", "classinviwo_1_1FileProperty.html#ada34e2526d10a87768061f0e1e7e823f", null ],
+      [ "isDefaultState", "classinviwo_1_1FileProperty.html#aecd4243a8e2c7302da0ede1d646ae208", null ],
       [ "requestFile", "classinviwo_1_1FileProperty.html#aa957b261561a5faa940b9f62a0675195", null ],
+      [ "resetToDefaultState", "classinviwo_1_1FileProperty.html#abef3e116144758278e4949f2a0f9ac8b", null ],
       [ "set", "classinviwo_1_1FileProperty.html#a6b5925cfb2ccd06331696973e7e09387", null ],
-      [ "set", "classinviwo_1_1FileProperty.html#ab45f34c35c7e990e213b2a3ff8de2f91", null ],
-      [ "set", "classinviwo_1_1FileProperty.html#a4ae7f9ccaf70da86a2c8cc14a304ccf8", null ]
+      [ "set", "classinviwo_1_1FileProperty.html#a9eceb011d537a00382406ae824ac9da9", null ],
+      [ "set", "classinviwo_1_1FileProperty.html#a6ad60806ae3c1a5d87ce3efa00be1052", null ],
+      [ "setCurrentStateAsDefault", "classinviwo_1_1FileProperty.html#a73edb4c13c2380619188178e41233ac9", null ]
     ] ],
     [ "inviwo::ImageEditorProperty", "classinviwo_1_1ImageEditorProperty.html", [
       [ "clone", "classinviwo_1_1ImageEditorProperty.html#ae7d25c4b0d7b2ffcf6a0a70d8977f3b1", null ]
@@ -78,6 +86,7 @@ var group__properties =
     [ "inviwo::MinMaxProperty< T >", "classinviwo_1_1MinMaxProperty.html", [
       [ "clamp", "classinviwo_1_1MinMaxProperty.html#ac85c324e213f12ec51adbaab241d1ab6", null ],
       [ "clone", "classinviwo_1_1MinMaxProperty.html#a70f9e8f339a39957629d0b98fe7be7e5", null ],
+      [ "getDescription", "classinviwo_1_1MinMaxProperty.html#a53c0183756381225422269a77927839e", null ],
       [ "isDefaultState", "classinviwo_1_1MinMaxProperty.html#ae3d3a088385da27c3519935f2d7431e6", null ],
       [ "resetToDefaultState", "classinviwo_1_1MinMaxProperty.html#ac534494c33b04bbcd61486117bd8b215", null ],
       [ "set", "classinviwo_1_1MinMaxProperty.html#a8f74e8aea95dd93cdbb5789f3a70e932", null ],
@@ -85,8 +94,9 @@ var group__properties =
       [ "setCurrentStateAsDefault", "classinviwo_1_1MinMaxProperty.html#a4fc769fb6894236c252b5ca060d8ee8e", null ]
     ] ],
     [ "inviwo::MultiFileProperty", "classinviwo_1_1MultiFileProperty.html", [
-      [ "MultiFileProperty", "classinviwo_1_1MultiFileProperty.html#ae41e6b59b9ca5cd434c6863539bdcdca", null ],
+      [ "MultiFileProperty", "classinviwo_1_1MultiFileProperty.html#ab2029228e7fa66f13d322885e11e0d94", null ],
       [ "clone", "classinviwo_1_1MultiFileProperty.html#ab558ea7191b55b946a66f638ccc5edcb", null ],
+      [ "getDescription", "classinviwo_1_1MultiFileProperty.html#a22acfeb1dda181fbb28aaecd29029271", null ],
       [ "requestFile", "classinviwo_1_1MultiFileProperty.html#ad4472838a718bac00c44cd9f0a2d878f", null ],
       [ "set", "classinviwo_1_1MultiFileProperty.html#a896812047e005b66bb8c7c01459ce265", null ]
     ] ],
@@ -96,6 +106,7 @@ var group__properties =
       [ "get", "classinviwo_1_1OrdinalProperty.html#a2632b3b30d3c1ef50eed57390bb70833", null ],
       [ "get", "classinviwo_1_1OrdinalProperty.html#aaa2610e7106daa6acf550b55ad4a7f9c", null ],
       [ "get", "classinviwo_1_1OrdinalProperty.html#a2a40b356ff7ef8ffcc0292be67d0690b", null ],
+      [ "getDescription", "classinviwo_1_1OrdinalProperty.html#a51041d4776b60abe577bb0975db51cfc", null ],
       [ "isDefaultState", "classinviwo_1_1OrdinalProperty.html#a25136ba846aa02ddd9ca0f8645b7c4ef", null ],
       [ "resetToDefaultState", "classinviwo_1_1OrdinalProperty.html#adb5fbd024756f2dc0027adff778309a6", null ],
       [ "set", "classinviwo_1_1OrdinalProperty.html#a87a608f6695e33446c0367f8843eaa60", null ],
@@ -111,6 +122,7 @@ var group__properties =
       [ "get", "classinviwo_1_1OrdinalRefProperty.html#a3c85b7ae839796bc2604a0c36535d0de", null ],
       [ "get", "classinviwo_1_1OrdinalRefProperty.html#a3ddfa8f40118447e964b2b5d71520885", null ],
       [ "get", "classinviwo_1_1OrdinalRefProperty.html#aa80190dd4394049ee4beb62ff30161e9", null ],
+      [ "getDescription", "classinviwo_1_1OrdinalRefProperty.html#a80c6e2a76e17cf93b2f2884535e903f2", null ],
       [ "isDefaultState", "classinviwo_1_1OrdinalRefProperty.html#ada0749f43b849a6ddc518cbdd45db495", null ],
       [ "resetToDefaultState", "classinviwo_1_1OrdinalRefProperty.html#a0626535fd4d786911a8f7f0bf56e9a24", null ],
       [ "set", "classinviwo_1_1OrdinalRefProperty.html#a83732020186db17fadff1c744881bb7b", null ],
@@ -138,6 +150,8 @@ var group__properties =
       [ "clone", "classinviwo_1_1Property.html#a19eaea363ee6030a64fa200e41632667", null ],
       [ "deregisterWidget", "classinviwo_1_1Property.html#a741aed79f5978f000d84b4c5db77f63b", null ],
       [ "getClassIdentifierForWidget", "classinviwo_1_1Property.html#a48396c3fa583ffdd46157289b10a6d66", null ],
+      [ "getDescription", "classinviwo_1_1Property.html#a4ddd2029973417d4cdb3dc9406792415", null ],
+      [ "getHelp", "classinviwo_1_1Property.html#ac9e9e83e7e33736d73f2401af5ba7c8c", null ],
       [ "getPath", "classinviwo_1_1Property.html#af741958083ecc700a11a3b63c399d5b9", null ],
       [ "getWidgets", "classinviwo_1_1Property.html#a4c32384579f41ce9952a79f4bde205ee", null ],
       [ "hasWidgets", "classinviwo_1_1Property.html#a0964c2c0e7dda3dbb4c893333a009986", null ],
@@ -157,6 +171,10 @@ var group__properties =
       [ "setReadOnly", "classinviwo_1_1Property.html#ac12a9e03b48fd44531a8e862c43a8d8f", null ],
       [ "updateWidgets", "classinviwo_1_1Property.html#a131cc525cef66f46ea838f4093fecc4f", null ]
     ] ],
+    [ "inviwo::SelectionColorProperty", "classinviwo_1_1SelectionColorProperty.html", [
+      [ "clone", "classinviwo_1_1SelectionColorProperty.html#a092344b063b26fdf81be656674e25bcc", null ],
+      [ "getMixIntensity", "classinviwo_1_1SelectionColorProperty.html#a0e285f9c3561bb4d2487b67fc4119026", null ]
+    ] ],
     [ "inviwo::SimpleLightingProperty", "classinviwo_1_1SimpleLightingProperty.html", [
       [ "clone", "classinviwo_1_1SimpleLightingProperty.html#aeec535cfa831240681968c44158d03ab", null ]
     ] ],
@@ -164,8 +182,10 @@ var group__properties =
       [ "clone", "classinviwo_1_1SimpleRaycastingProperty.html#add87a8dc848c3298b4ca2bf859e6cdd8", null ]
     ] ],
     [ "inviwo::StringProperty", "classinviwo_1_1StringProperty.html", [
+      [ "StringProperty", "classinviwo_1_1StringProperty.html#a888fcba5c711383de9ab1865609afa90", null ],
       [ "StringProperty", "classinviwo_1_1StringProperty.html#a2dde6dbc8bdcb57db63f17d46413f153", null ],
-      [ "clone", "classinviwo_1_1StringProperty.html#ac3a66b6bed22293b994495a71d03a98f", null ]
+      [ "clone", "classinviwo_1_1StringProperty.html#ac3a66b6bed22293b994495a71d03a98f", null ],
+      [ "getDescription", "classinviwo_1_1StringProperty.html#a00f65bd658b92494805eb402ca86e9c2", null ]
     ] ],
     [ "inviwo::TemplateProperty< T >", "classinviwo_1_1TemplateProperty.html", [
       [ "clone", "classinviwo_1_1TemplateProperty.html#ace10729d3b355ddb605c9ff232afc535", null ],
@@ -218,6 +238,12 @@ var group__properties =
     ] ],
     [ "inviwo::VolumeInformationProperty", "classinviwo_1_1VolumeInformationProperty.html", [
       [ "clone", "classinviwo_1_1VolumeInformationProperty.html#adf965a40daa1fd309d74624e7f717703", null ]
+    ] ],
+    [ "inviwo::FontFaceOptionProperty", "classinviwo_1_1FontFaceOptionProperty.html", [
+      [ "clone", "classinviwo_1_1FontFaceOptionProperty.html#aa200414f61972f6d95f5be638e9a7d00", null ]
+    ] ],
+    [ "inviwo::FontProperty", "classinviwo_1_1FontProperty.html", [
+      [ "clone", "classinviwo_1_1FontProperty.html#a9039e6e644dac4a5a781640da2b457fd", null ]
     ] ],
     [ "inviwo::SplitterProperty", "classinviwo_1_1SplitterProperty.html", [
       [ "clone", "classinviwo_1_1SplitterProperty.html#a82441a3819e8497587a45a2e9f0dddcf", null ]

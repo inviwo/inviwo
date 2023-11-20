@@ -1,7 +1,7 @@
 var classinviwo_1_1MeshVisualizer =
 [
-    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1MeshVisualizer.html#afefeb99e0d94f4745664918efb34bdcf", null ],
-    [ "addSourceProcessor", "classinviwo_1_1MeshVisualizer.html#a21a946f8567c27f4e3f0cd9c5579ff31", null ],
+    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1MeshVisualizer.html#a07ad554d847196a8a8aa457a4f024663", null ],
+    [ "addSourceProcessor", "classinviwo_1_1MeshVisualizer.html#aa62f730f11883e3464fa6c922ee3f49c", null ],
     [ "addVisualizerNetwork", "classinviwo_1_1MeshVisualizer.html#abe8564585657b6d4c86a646313239b4c", null ],
     [ "getDescription", "classinviwo_1_1MeshVisualizer.html#ae8fd7b44aa0c1be93250a007dfb0e40d", null ],
     [ "getName", "classinviwo_1_1MeshVisualizer.html#a98d6a95b22f279e7d16b3e719de6f4e1", null ],

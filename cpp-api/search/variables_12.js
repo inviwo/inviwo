@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['worldup_5f_0',['worldUp_',['../classinviwo_1_1Trackball.html#abc755f7c17fb640427ed4702e80bc674',1,'inviwo::Trackball']]]
+  ['xaxis_5f_0',['xAxis_',['../classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#ac3bef1a79c2ddc439373362cf52d23a7',1,'inviwo::plot::BoxSelectionInteractionHandler']]]
 ];

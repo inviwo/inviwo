@@ -1,6 +1,5 @@
 var group__processors =
 [
-    [ "inviwo::plot", "namespaceinviwo_1_1plot.html", null ],
     [ "inviwo::Processor", "classinviwo_1_1Processor.html", [
       [ "Processor", "classinviwo_1_1Processor.html#a1d4bc7897d472833b1a7680153f683d6", null ],
       [ "accept", "classinviwo_1_1Processor.html#a06088cebce8b3d454b56abf70458b62e", null ],
@@ -28,37 +27,6 @@ var group__processors =
       [ "setIdentifier", "classinviwo_1_1Processor.html#a84911c1af44e34f3aa57fababe2b545f", null ],
       [ "setValid", "classinviwo_1_1Processor.html#a3b59c6bac28be62250911b9e1e006f1a", null ]
     ] ],
-    [ "inviwo::CameraFrustum", "classinviwo_1_1CameraFrustum.html", [
-      [ "process", "classinviwo_1_1CameraFrustum.html#a5302ea0ff80d6abc885c1e5babbd7e99", null ]
-    ] ],
-    [ "inviwo::CubeProxyGeometry", "classinviwo_1_1CubeProxyGeometry.html", [
-      [ "process", "classinviwo_1_1CubeProxyGeometry.html#a09db12bab77ed8e2173a40e73d05f39c", null ]
-    ] ],
-    [ "inviwo::DiffuseLightSourceProcessor", "classinviwo_1_1DiffuseLightSourceProcessor.html", [
-      [ "process", "classinviwo_1_1DiffuseLightSourceProcessor.html#afe46f865403a0f8b6f9d022374afb88f", null ],
-      [ "updateLightSource", "classinviwo_1_1DiffuseLightSourceProcessor.html#a32a680b7862412016e57c77259d4ba66", null ]
-    ] ],
-    [ "inviwo::DirectionalLightSourceProcessor", "classinviwo_1_1DirectionalLightSourceProcessor.html", [
-      [ "process", "classinviwo_1_1DirectionalLightSourceProcessor.html#ac6b73a411e9a5092ee0888ed0c27f2ac", null ],
-      [ "updateDirectionalLightSource", "classinviwo_1_1DirectionalLightSourceProcessor.html#a9905e2a74b30a6de7f14ae7d948d5b1e", null ]
-    ] ],
-    [ "inviwo::DistanceTransformRAM", "classinviwo_1_1DistanceTransformRAM.html", [
-      [ "process", "classinviwo_1_1DistanceTransformRAM.html#a8eb5db1bcf15a9feaa6f2c77cdf1454b", null ]
-    ] ],
-    [ "inviwo::GridPlanes", "classinviwo_1_1GridPlanes.html", [
-      [ "process", "classinviwo_1_1GridPlanes.html#aeb3fe571ba692252c1cbbfb578ca018c", null ]
-    ] ],
-    [ "inviwo::HeightFieldMapper", "classinviwo_1_1HeightFieldMapper.html", [
-      [ "process", "classinviwo_1_1HeightFieldMapper.html#a8aaa976839557bbf932ed8b9c3aeb3e6", null ]
-    ] ],
-    [ "inviwo::ImageContourProcessor", "classinviwo_1_1ImageContourProcessor.html", [
-      [ "process", "classinviwo_1_1ImageContourProcessor.html#a8a113921ab0a6ec065b34d575135226d", null ]
-    ] ],
-    [ "inviwo::ImageExport", "classinviwo_1_1ImageExport.html", null ],
-    [ "inviwo::ImageSequenceElementSelectorProcessor", "classinviwo_1_1ImageSequenceElementSelectorProcessor.html", null ],
-    [ "inviwo::ImageSnapshot", "classinviwo_1_1ImageSnapshot.html", [
-      [ "process", "classinviwo_1_1ImageSnapshot.html#a362fc8431640f6b8a8e6d9f9d1337af5", null ]
-    ] ],
     [ "inviwo::ImageSource", "classinviwo_1_1ImageSource.html", [
       [ "process", "classinviwo_1_1ImageSource.html#a0d4efa45e4cb268519b66afbda240520", null ]
     ] ],
@@ -78,9 +46,6 @@ var group__processors =
     [ "inviwo::LayerDistanceTransformRAM", "classinviwo_1_1LayerDistanceTransformRAM.html", [
       [ "process", "classinviwo_1_1LayerDistanceTransformRAM.html#a3f238e00954df28bc9a642c86969e0a8", null ]
     ] ],
-    [ "inviwo::MeshClipping", "classinviwo_1_1MeshClipping.html", [
-      [ "process", "classinviwo_1_1MeshClipping.html#a4d61456b8cb937f6098c3d85af9a0419", null ]
-    ] ],
     [ "inviwo::MeshColorFromNormals", "classinviwo_1_1MeshColorFromNormals.html", [
       [ "process", "classinviwo_1_1MeshColorFromNormals.html#ad1f7bf45f14f651ed1d522411f9aa023", null ]
     ] ],
@@ -97,9 +62,6 @@ var group__processors =
     [ "inviwo::MeshSequenceElementSelectorProcessor", "classinviwo_1_1MeshSequenceElementSelectorProcessor.html", null ],
     [ "inviwo::MeshSource", "classinviwo_1_1MeshSource.html", null ],
     [ "inviwo::OrdinalPropertyAnimator", "classinviwo_1_1OrdinalPropertyAnimator.html", null ],
-    [ "inviwo::OrientationIndicator", "classinviwo_1_1OrientationIndicator.html", [
-      [ "process", "classinviwo_1_1OrientationIndicator.html#ab9b7581696081695d87c993e20d8fcec", null ]
-    ] ],
     [ "inviwo::PixelToBufferProcessor", "classinviwo_1_1PixelToBufferProcessor.html", [
       [ "process", "classinviwo_1_1PixelToBufferProcessor.html#a2a17ec68830948c3ffc6ef1e9e124bc9", null ]
     ] ],
@@ -129,9 +91,6 @@ var group__processors =
     [ "inviwo::VolumeBoundaryPlanes", "classinviwo_1_1VolumeBoundaryPlanes.html", [
       [ "process", "classinviwo_1_1VolumeBoundaryPlanes.html#a4a055413a92fa801ca8b254cc123036d", null ]
     ] ],
-    [ "inviwo::VolumeBoundingBox", "classinviwo_1_1VolumeBoundingBox.html", [
-      [ "process", "classinviwo_1_1VolumeBoundingBox.html#a56941f376d3b368f1118df522382e673", null ]
-    ] ],
     [ "inviwo::VolumeConverter", "classinviwo_1_1VolumeConverter.html", [
       [ "process", "classinviwo_1_1VolumeConverter.html#a730ca5e6c5576ab60706cae9d805c6bd", null ]
     ] ],
@@ -158,12 +117,6 @@ var group__processors =
     [ "inviwo::VolumeShifter", "classinviwo_1_1VolumeShifter.html", [
       [ "process", "classinviwo_1_1VolumeShifter.html#acdc22cfa3828f5b75f2817429e378631", null ]
     ] ],
-    [ "inviwo::VolumeSlice", "classinviwo_1_1VolumeSlice.html", [
-      [ "process", "classinviwo_1_1VolumeSlice.html#ae749a9d523d46be2c7cfe7bb740fc6bd", null ]
-    ] ],
-    [ "inviwo::VolumeSource", "classinviwo_1_1VolumeSource.html", [
-      [ "process", "classinviwo_1_1VolumeSource.html#a4313417c1a1b54fa9f3d70fff8a25fb9", null ]
-    ] ],
     [ "inviwo::VolumeSubsample", "classinviwo_1_1VolumeSubsample.html", [
       [ "process", "classinviwo_1_1VolumeSubsample.html#a1bd6244b7f7ab69fd7324ca1dca71703", null ]
     ] ],
@@ -179,12 +132,16 @@ var group__processors =
     [ "inviwo::TransformListProperty", "classinviwo_1_1TransformListProperty.html", [
       [ "clone", "classinviwo_1_1TransformListProperty.html#a07b7f14cca76dc37a9be32c8b6d4963b", null ]
     ] ],
+    [ "inviwo::CanvasWithPropertiesProcessor", "classinviwo_1_1CanvasWithPropertiesProcessor.html", [
+      [ "doIfNotReady", "classinviwo_1_1CanvasWithPropertiesProcessor.html#a2129f183a2d3044f1241c172906bb053", null ],
+      [ "exportFile", "classinviwo_1_1CanvasWithPropertiesProcessor.html#a10b92e838106b3584c3b282ba0c39fa2", null ],
+      [ "process", "classinviwo_1_1CanvasWithPropertiesProcessor.html#ac30a4e101da6acda7881075d454d7754", null ]
+    ] ],
     [ "inviwo::BrushingAndLinkingProcessor", "classinviwo_1_1BrushingAndLinkingProcessor.html", [
       [ "process", "classinviwo_1_1BrushingAndLinkingProcessor.html#a962c8c54edc148502ef3faf95bde5e70", null ]
     ] ],
-    [ "inviwo::Background", "classinviwo_1_1Background.html", [
-      [ "initializeResources", "classinviwo_1_1Background.html#a21e959fd467aca8dd91be3bb8d23e822", null ],
-      [ "process", "classinviwo_1_1Background.html#af5e56e62ba8a4f6a7661ea36aaf8b385", null ]
+    [ "inviwo::TextOverlayGL", "classinviwo_1_1TextOverlayGL.html", [
+      [ "process", "classinviwo_1_1TextOverlayGL.html#acfb36fb35fcf8c986eb72ca473a75806", null ]
     ] ],
     [ "inviwo::DrawLines", "classinviwo_1_1DrawLines.html", [
       [ "process", "classinviwo_1_1DrawLines.html#a9f34fc7fe17bb334013ebf9857ad8197", null ]
@@ -196,18 +153,11 @@ var group__processors =
       [ "initializeResources", "classinviwo_1_1EmbeddedVolumeSlice.html#ae9e8d70adb22739af22c60b1dee3695a", null ],
       [ "process", "classinviwo_1_1EmbeddedVolumeSlice.html#a23d5f71964164015e23ea6392a06853e", null ]
     ] ],
-    [ "inviwo::EntryExitPoints", "classinviwo_1_1EntryExitPoints.html", [
-      [ "process", "classinviwo_1_1EntryExitPoints.html#aec3782801db2e04c86cb33fbb9fdc43f", null ]
-    ] ],
     [ "inviwo::FirstIvwProcessor", "classinviwo_1_1FirstIvwProcessor.html", [
       [ "process", "classinviwo_1_1FirstIvwProcessor.html#ac4da41679ba17f73477a83e706ad3337", null ]
     ] ],
     [ "inviwo::GeometryEntryExitPoints", "classinviwo_1_1GeometryEntryExitPoints.html", [
       [ "process", "classinviwo_1_1GeometryEntryExitPoints.html#a6e376e5b4f3a0e823737bf1ddf46357e", null ]
-    ] ],
-    [ "inviwo::HeightFieldProcessor", "classinviwo_1_1HeightFieldProcessor.html", [
-      [ "initializeResources", "classinviwo_1_1HeightFieldProcessor.html#a428b5a769a65019e870e2e88b106b4c3", null ],
-      [ "process", "classinviwo_1_1HeightFieldProcessor.html#a9b1014e5a9e34820b9bca482c58f9482", null ]
     ] ],
     [ "inviwo::ColumnLayout", "classinviwo_1_1ColumnLayout.html", null ],
     [ "inviwo::RowLayout", "classinviwo_1_1RowLayout.html", null ],
@@ -228,10 +178,6 @@ var group__processors =
       [ "isConnectionActive", "classinviwo_1_1ImageLayoutGL.html#aafc196718198091c7853eb41219ba61e", null ],
       [ "process", "classinviwo_1_1ImageLayoutGL.html#ae42039a3d67ced931a062d97de7820c5", null ]
     ] ],
-    [ "inviwo::ImageNormalizationProcessor", "classinviwo_1_1ImageNormalizationProcessor.html", [
-      [ "postProcess", "classinviwo_1_1ImageNormalizationProcessor.html#afe5d330f0660439647f12c31383d974e", null ],
-      [ "preProcess", "classinviwo_1_1ImageNormalizationProcessor.html#acf69646eb26f945433a4c9ce15e257ec", null ]
-    ] ],
     [ "inviwo::ImageSubsetGL", "classinviwo_1_1ImageSubsetGL.html", [
       [ "process", "classinviwo_1_1ImageSubsetGL.html#aafd3f1562fc369172d42a93fe1b6e565", null ]
     ] ],
@@ -249,10 +195,6 @@ var group__processors =
     ] ],
     [ "inviwo::MeshPicking", "classinviwo_1_1MeshPicking.html", [
       [ "process", "classinviwo_1_1MeshPicking.html#a74c25d3af97b7cebddc73605048b821e", null ]
-    ] ],
-    [ "inviwo::MeshRenderProcessorGL", "classinviwo_1_1MeshRenderProcessorGL.html", [
-      [ "initializeResources", "classinviwo_1_1MeshRenderProcessorGL.html#abb82f07b159cd3d65db2eff3abdb046b", null ],
-      [ "process", "classinviwo_1_1MeshRenderProcessorGL.html#a1df79a1271ad608ef3191bc745168b74", null ]
     ] ],
     [ "inviwo::MultichannelRaycaster", "classinviwo_1_1MultichannelRaycaster.html", [
       [ "initializeResources", "classinviwo_1_1MultichannelRaycaster.html#a5873f7f65536554d87b28bf9ef970f70", null ],
@@ -287,11 +229,6 @@ var group__processors =
     [ "inviwo::VolumeSliceGL", "classinviwo_1_1VolumeSliceGL.html", [
       [ "initializeResources", "classinviwo_1_1VolumeSliceGL.html#a6b8966dd9977c1d1810313aeb50efd40", null ],
       [ "process", "classinviwo_1_1VolumeSliceGL.html#ac51e8b05ced9d110b1737cd8ef447bfe", null ]
-    ] ],
-    [ "inviwo::CanvasWithPropertiesProcessor", "classinviwo_1_1CanvasWithPropertiesProcessor.html", [
-      [ "doIfNotReady", "classinviwo_1_1CanvasWithPropertiesProcessor.html#a2129f183a2d3044f1241c172906bb053", null ],
-      [ "exportFile", "classinviwo_1_1CanvasWithPropertiesProcessor.html#a18f79ab06a267c356ee8d2dff4f056bb", null ],
-      [ "process", "classinviwo_1_1CanvasWithPropertiesProcessor.html#ac30a4e101da6acda7881075d454d7754", null ]
     ] ],
     [ "inviwo::CSVSource", "classinviwo_1_1CSVSource.html", [
       [ "process", "classinviwo_1_1CSVSource.html#aff145a6aa2d0de5bc024ef95499c437b", null ]
@@ -331,24 +268,12 @@ var group__processors =
     [ "inviwo::VolumeToDataFrame", "classinviwo_1_1VolumeToDataFrame.html", [
       [ "process", "classinviwo_1_1VolumeToDataFrame.html#a18bd0622e886a193405398b584488464", null ]
     ] ],
-    [ "inviwo::NumpyMandelbrot", "classinviwo_1_1NumpyMandelbrot.html", [
-      [ "process", "classinviwo_1_1NumpyMandelbrot.html#ab2693476d185c020ce56e831eb574a23", null ]
-    ] ],
-    [ "inviwo::NumPyMeshCreateTest", "classinviwo_1_1NumPyMeshCreateTest.html", [
-      [ "process", "classinviwo_1_1NumPyMeshCreateTest.html#a6bd7bcd40b5c578aa08f8309321cb07e", null ]
-    ] ],
-    [ "inviwo::NumPyVolume", "classinviwo_1_1NumPyVolume.html", [
-      [ "process", "classinviwo_1_1NumPyVolume.html#a268d88b739691b19ab311ceee1584a8f", null ]
-    ] ],
     [ "inviwo::DataFrameTable", "classinviwo_1_1DataFrameTable.html", [
-      [ "exportFile", "classinviwo_1_1DataFrameTable.html#ac8ad6f5845fef788c8b393c05b9ee689", null ],
+      [ "exportFile", "classinviwo_1_1DataFrameTable.html#a1f4310fa4fd8de8360b3baaf1cd54b47", null ],
       [ "process", "classinviwo_1_1DataFrameTable.html#a316cb8eb6be4d6a2308b2b200498dc9f", null ]
     ] ],
     [ "inviwo::TestMatrix", "classinviwo_1_1TestMatrix.html", [
       [ "process", "classinviwo_1_1TestMatrix.html#aac016495376e2c83afa9d983018c3f7b", null ]
-    ] ],
-    [ "inviwo::TextOverlayGL", "classinviwo_1_1TextOverlayGL.html", [
-      [ "process", "classinviwo_1_1TextOverlayGL.html#acfb36fb35fcf8c986eb72ca473a75806", null ]
     ] ],
     [ "inviwo::hdf5::PathSelection", "classinviwo_1_1hdf5_1_1PathSelection.html", [
       [ "process", "classinviwo_1_1hdf5_1_1PathSelection.html#a41ee56101fa40c82162fd369a61484d6", null ]
@@ -362,10 +287,6 @@ var group__processors =
     [ "inviwo::CalcNormalsProcessor", "classinviwo_1_1CalcNormalsProcessor.html", [
       [ "process", "classinviwo_1_1CalcNormalsProcessor.html#ae0013aab986ed2e2f9e78049371701b5", null ]
     ] ],
-    [ "inviwo::SphereRasterizer", "classinviwo_1_1SphereRasterizer.html", [
-      [ "initializeResources", "classinviwo_1_1SphereRasterizer.html#a69a2dda1faaf0e296941cb6aa0140e50", null ],
-      [ "process", "classinviwo_1_1SphereRasterizer.html#ae33f4b5bcf2dec5948d4b5bd33abce41", null ]
-    ] ],
     [ "inviwo::plot::DataFrameColumnToColorVector", "classinviwo_1_1plot_1_1DataFrameColumnToColorVector.html", [
       [ "process", "classinviwo_1_1plot_1_1DataFrameColumnToColorVector.html#aaa0b951d9299c271a4da5a4b0b638d10", null ]
     ] ],
@@ -374,11 +295,8 @@ var group__processors =
       [ "process", "classinviwo_1_1CropWidget.html#acf21cd0bb8358d847fb0cb346529f184", null ]
     ] ],
     [ "inviwo::glui::GLUIProcessor", "classinviwo_1_1glui_1_1GLUIProcessor.html", [
-      [ "onWillAddProperty", "classinviwo_1_1glui_1_1GLUIProcessor.html#a296fdc63e85cc2d9bbd96ef4bdc02fdb", null ],
+      [ "onWillAddProperty", "classinviwo_1_1glui_1_1GLUIProcessor.html#a10a5d025635e1e05954b06587898d4c3", null ],
       [ "process", "classinviwo_1_1glui_1_1GLUIProcessor.html#ac4825a452a6e617fd920e31b37b0cc21", null ]
-    ] ],
-    [ "inviwo::plot::ImagePlotProcessor", "classinviwo_1_1plot_1_1ImagePlotProcessor.html", [
-      [ "process", "classinviwo_1_1plot_1_1ImagePlotProcessor.html#a7f24d080515f260200ada98cb345a310", null ]
     ] ],
     [ "inviwo::plot::ScatterPlotMatrixProcessor", "classinviwo_1_1plot_1_1ScatterPlotMatrixProcessor.html", [
       [ "process", "classinviwo_1_1plot_1_1ScatterPlotMatrixProcessor.html#aa4a4149666c9a683e018cd3a3d3e0a43", null ]
@@ -393,50 +311,25 @@ var group__processors =
       [ "initializeResources", "classinviwo_1_1StreamParticles.html#a4053d616f8075e2553cc9d0d57740a37", null ],
       [ "process", "classinviwo_1_1StreamParticles.html#a7b3fdee047a8fa86a8171094568400ce", null ]
     ] ],
+    [ "inviwo::VolumeRegionMapper", "classinviwo_1_1VolumeRegionMapper.html", [
+      [ "process", "classinviwo_1_1VolumeRegionMapper.html#aa913cf2bed3a44b617930b3e907e70bd", null ]
+    ] ],
     [ "inviwo::VolumeRegionStatistics", "classinviwo_1_1VolumeRegionStatistics.html", [
       [ "process", "classinviwo_1_1VolumeRegionStatistics.html#a0fe0c128ba62cddddbdb91b23de3133d", null ]
     ] ],
-    [ "inviwo::VolumeVoronoiSegmentation", "classinviwo_1_1VolumeVoronoiSegmentation.html", [
-      [ "process", "classinviwo_1_1VolumeVoronoiSegmentation.html#abe0311962da76a897944686f377e3ce2", null ]
-    ] ],
-    [ "inviwo::CanvasProcessorGL", "classinviwo_1_1CanvasProcessorGL.html", [
-      [ "process", "classinviwo_1_1CanvasProcessorGL.html#a738116c4ad5c398bab17ebcc8673dc20", null ]
-    ] ],
-    [ "inviwo::BufferToMeshProcessor", "classinviwo_1_1BufferToMeshProcessor.html", [
-      [ "process", "classinviwo_1_1BufferToMeshProcessor.html#aedcdefa37dde6f8b5b33ccc79cd63875", null ]
-    ] ],
-    [ "inviwo::ConvexHull2DProcessor", "classinviwo_1_1ConvexHull2DProcessor.html", [
-      [ "process", "classinviwo_1_1ConvexHull2DProcessor.html#a01c073c5d21c21b34b6177db8d36cc46", null ]
-    ] ],
-    [ "inviwo::ImageInformation", "classinviwo_1_1ImageInformation.html", [
-      [ "process", "classinviwo_1_1ImageInformation.html#a065d1d3d0f66ce4c60ff1530acb3e465", null ]
-    ] ],
-    [ "inviwo::MeshInformation", "classinviwo_1_1MeshInformation.html", [
-      [ "process", "classinviwo_1_1MeshInformation.html#a67f7055e660368149ca247a9016ee148", null ]
+    [ "inviwo::WebBrowserProcessor", "classinviwo_1_1WebBrowserProcessor.html", [
+      [ "process", "classinviwo_1_1WebBrowserProcessor.html#a5e35b2e6683ba0d959273b4c03d9738e", null ],
+      [ "reload_", "classinviwo_1_1WebBrowserProcessor.html#aff6dada17dee97f347d750c2ac9c2605", null ],
+      [ "url_", "classinviwo_1_1WebBrowserProcessor.html#ad85667748eed3e826db2f2066d23f938", null ]
     ] ],
     [ "inviwo::MeshMapping", "classinviwo_1_1MeshMapping.html", [
       [ "process", "classinviwo_1_1MeshMapping.html#a57c1b30d307db1bbb1bc477fe443b6eb", null ]
-    ] ],
-    [ "inviwo::NoiseProcessor", "classinviwo_1_1NoiseProcessor.html", [
-      [ "process", "classinviwo_1_1NoiseProcessor.html#aad08e8127e7d71c6d4751ab83ef851ac", null ],
-      [ "levels_", "classinviwo_1_1NoiseProcessor.html#ac7ca921e3796d78659c3b07f99853d02", null ],
-      [ "persistence_", "classinviwo_1_1NoiseProcessor.html#a5772ed3e75be968c6c638f23213900ac", null ],
-      [ "poissonDotsAlongX_", "classinviwo_1_1NoiseProcessor.html#ae8c97b6b3e24bfb983c2c257ef42b0aa", null ],
-      [ "poissonMaxPoints_", "classinviwo_1_1NoiseProcessor.html#a795aff861df669f1a96b2770acdf697e", null ],
-      [ "range_", "classinviwo_1_1NoiseProcessor.html#a68376173b75052f765afb7cf6c8ce26c", null ],
-      [ "seed_", "classinviwo_1_1NoiseProcessor.html#a507231143a78e9e693c6755340cce91e", null ],
-      [ "size_", "classinviwo_1_1NoiseProcessor.html#a4e8cb5b5b3d71600c0262106fe12c4a4", null ],
-      [ "type_", "classinviwo_1_1NoiseProcessor.html#ae1bc96fa789bd0817ff1dd4dec73e705", null ],
-      [ "useSameSeed_", "classinviwo_1_1NoiseProcessor.html#a04dd837096f7c56128c67e165d0aa46f", null ]
     ] ],
     [ "inviwo::StereoCameraSyncer", "classinviwo_1_1StereoCameraSyncer.html", [
       [ "process", "classinviwo_1_1StereoCameraSyncer.html#a983519e9eae01ca8cbaf6b81fd26bccc", null ]
     ] ],
     [ "inviwo::TFSelector", "classinviwo_1_1TFSelector.html", [
       [ "process", "classinviwo_1_1TFSelector.html#afce75521ab1516f6272308486f700054", null ]
-    ] ],
-    [ "inviwo::VolumeInformation", "classinviwo_1_1VolumeInformation.html", [
-      [ "process", "classinviwo_1_1VolumeInformation.html#afdcc69fbc39522eeb57af43def286751", null ]
     ] ],
     [ "inviwo::VolumeSequenceSource", "classinviwo_1_1VolumeSequenceSource.html", [
       [ "process", "classinviwo_1_1VolumeSequenceSource.html#a2529445757039d0916231f3e213f55f0", null ]
@@ -447,9 +340,6 @@ var group__processors =
     ] ],
     [ "inviwo::ImageBinary", "classinviwo_1_1ImageBinary.html", [
       [ "preProcess", "classinviwo_1_1ImageBinary.html#aa9754fee96c513ee98f102495a96d739", null ]
-    ] ],
-    [ "inviwo::ImageGamma", "classinviwo_1_1ImageGamma.html", [
-      [ "preProcess", "classinviwo_1_1ImageGamma.html#a18b05b9dd972b5e0f22644d67a189d80", null ]
     ] ],
     [ "inviwo::ImageGradient", "classinviwo_1_1ImageGradient.html", [
       [ "preProcess", "classinviwo_1_1ImageGradient.html#acfc8d372244d19e2873d901d3b02506b", null ]
@@ -466,10 +356,6 @@ var group__processors =
     ] ],
     [ "inviwo::ImageLowPass", "classinviwo_1_1ImageLowPass.html", [
       [ "process", "classinviwo_1_1ImageLowPass.html#a89ffe1e1590df555b973b5d923ec210d", null ]
-    ] ],
-    [ "inviwo::ImageMapping", "classinviwo_1_1ImageMapping.html", [
-      [ "afterInportChanged", "classinviwo_1_1ImageMapping.html#a14b7cc2271e771f48fc5064074fadd3f", null ],
-      [ "preProcess", "classinviwo_1_1ImageMapping.html#a3e72197b76b72256400446b00c199b83", null ]
     ] ],
     [ "inviwo::ImageMixer", "classinviwo_1_1ImageMixer.html", [
       [ "initializeResources", "classinviwo_1_1ImageMixer.html#a201c76a1504d65e23975b5da3d12c37d", null ],
@@ -494,10 +380,6 @@ var group__processors =
     ] ],
     [ "inviwo::PointRenderer", "classinviwo_1_1PointRenderer.html", [
       [ "process", "classinviwo_1_1PointRenderer.html#aaec9784f5309f0976dea8797f7e5a55b", null ]
-    ] ],
-    [ "inviwo::SphereRenderer", "classinviwo_1_1SphereRenderer.html", [
-      [ "initializeResources", "classinviwo_1_1SphereRenderer.html#a331866829f3faca94f412a6d97c74794", null ],
-      [ "process", "classinviwo_1_1SphereRenderer.html#a676e097f8738024295307203ef4a08a7", null ]
     ] ],
     [ "inviwo::SplitImage", "classinviwo_1_1SplitImage.html", [
       [ "process", "classinviwo_1_1SplitImage.html#a801faced2965802c6cc9546babf958fc", null ]
@@ -528,10 +410,6 @@ var group__processors =
     ] ],
     [ "inviwo::VolumeNormalizationProcessor", "classinviwo_1_1VolumeNormalizationProcessor.html", [
       [ "process", "classinviwo_1_1VolumeNormalizationProcessor.html#a613fcd6aea49ba69f0d5902303b219cf", null ]
-    ] ],
-    [ "inviwo::PythonScriptProcessor", "classinviwo_1_1PythonScriptProcessor.html", [
-      [ "initializeResources", "classinviwo_1_1PythonScriptProcessor.html#a1c7dccb225eae6487dc8cc8b2e25793b", null ],
-      [ "process", "classinviwo_1_1PythonScriptProcessor.html#afa47e3d1d708b457916fbd422136004e", null ]
     ] ],
     [ "inviwo::EigenMix", "classinviwo_1_1EigenMix.html", [
       [ "process", "classinviwo_1_1EigenMix.html#a588c580167f850cf33c02085c581f0f9", null ]
@@ -573,14 +451,8 @@ var group__processors =
     [ "inviwo::plot::AxisRenderProcessor", "classinviwo_1_1plot_1_1AxisRenderProcessor.html", [
       [ "process", "classinviwo_1_1plot_1_1AxisRenderProcessor.html#acd6617b0ddbd2520aa27dd16b2fb7e5a", null ]
     ] ],
-    [ "inviwo::plot::ColorScaleLegend", "classinviwo_1_1plot_1_1ColorScaleLegend.html", [
-      [ "process", "classinviwo_1_1plot_1_1ColorScaleLegend.html#affa758eea9f75dd7c2d792e59fbdeb94", null ]
-    ] ],
     [ "inviwo::plot::PersistenceDiagramPlotProcessor", "classinviwo_1_1plot_1_1PersistenceDiagramPlotProcessor.html", [
       [ "process", "classinviwo_1_1plot_1_1PersistenceDiagramPlotProcessor.html#aeb1bb65ffc20eda5588765072fa1d5f4", null ]
-    ] ],
-    [ "inviwo::plot::VolumeAxis", "classinviwo_1_1plot_1_1VolumeAxis.html", [
-      [ "process", "classinviwo_1_1plot_1_1VolumeAxis.html#adcfd6f37498b7cec87e3811ae1552ce7", null ]
     ] ],
     [ "inviwo::Fog", "classinviwo_1_1Fog.html", [
       [ "process", "classinviwo_1_1Fog.html#a0ebb38c7b7a68620ebf8b21e350c8f18", null ]

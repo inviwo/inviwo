@@ -1,7 +1,7 @@
 var classinviwo_1_1ImageBackgroundVisualizer =
 [
-    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1ImageBackgroundVisualizer.html#a90f089aea6f004d6eacad2c9f2e418b5", null ],
-    [ "addSourceProcessor", "classinviwo_1_1ImageBackgroundVisualizer.html#ab3c8632f0f1ba44e1231cafcc333561d", null ],
+    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1ImageBackgroundVisualizer.html#aaeb83317e34873cc22bf0ec607e112ba", null ],
+    [ "addSourceProcessor", "classinviwo_1_1ImageBackgroundVisualizer.html#af37013d80771c0bd44a9bece37205381", null ],
     [ "addVisualizerNetwork", "classinviwo_1_1ImageBackgroundVisualizer.html#aaab85977afc8f059604f1a2079da69e2", null ],
     [ "getDescription", "classinviwo_1_1ImageBackgroundVisualizer.html#a20ba27659976d119c7f37c31e6be57a3", null ],
     [ "getName", "classinviwo_1_1ImageBackgroundVisualizer.html#a4e8b47b698b8187bc557801767b9fd33", null ],

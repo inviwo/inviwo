@@ -1,7 +1,7 @@
 var classinviwo_1_1VolumeRaycastVisualizer =
 [
-    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1VolumeRaycastVisualizer.html#a7850c9b71adfff06ce4b7afa870ce59e", null ],
-    [ "addSourceProcessor", "classinviwo_1_1VolumeRaycastVisualizer.html#a4d418b40f81edff5ed5c54bd0ee14f99", null ],
+    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1VolumeRaycastVisualizer.html#a4d27aae23574f22eaf191f7b819bbb25", null ],
+    [ "addSourceProcessor", "classinviwo_1_1VolumeRaycastVisualizer.html#addc69251bddce67ca2cc1bc67c89f162", null ],
     [ "addVisualizerNetwork", "classinviwo_1_1VolumeRaycastVisualizer.html#a5626ec2e8d1dc1af5b8b119cf22d784d", null ],
     [ "getDescription", "classinviwo_1_1VolumeRaycastVisualizer.html#ad76260c0f703fda9990ea7603084b12f", null ],
     [ "getName", "classinviwo_1_1VolumeRaycastVisualizer.html#a350cf351577bbd1e3bc4bc5b61d4feec", null ],

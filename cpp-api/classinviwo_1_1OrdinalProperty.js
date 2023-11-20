@@ -5,6 +5,7 @@ var classinviwo_1_1OrdinalProperty =
     [ "get", "classinviwo_1_1OrdinalProperty.html#a2632b3b30d3c1ef50eed57390bb70833", null ],
     [ "get", "classinviwo_1_1OrdinalProperty.html#aaa2610e7106daa6acf550b55ad4a7f9c", null ],
     [ "get", "classinviwo_1_1OrdinalProperty.html#a2a40b356ff7ef8ffcc0292be67d0690b", null ],
+    [ "getDescription", "classinviwo_1_1OrdinalProperty.html#a51041d4776b60abe577bb0975db51cfc", null ],
     [ "isDefaultState", "classinviwo_1_1OrdinalProperty.html#a25136ba846aa02ddd9ca0f8645b7c4ef", null ],
     [ "resetToDefaultState", "classinviwo_1_1OrdinalProperty.html#adb5fbd024756f2dc0027adff778309a6", null ],
     [ "set", "classinviwo_1_1OrdinalProperty.html#a87a608f6695e33446c0367f8843eaa60", null ],

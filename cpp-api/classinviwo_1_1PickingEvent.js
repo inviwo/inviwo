@@ -9,6 +9,7 @@ var classinviwo_1_1PickingEvent =
     [ "getDeltaPressedPosition", "classinviwo_1_1PickingEvent.html#a1581a23f28a1b0b0fbb39b0bf79b4679", null ],
     [ "getDepth", "classinviwo_1_1PickingEvent.html#a1161a7de7c3ba4bf6b6c3518f8c0bd0f", null ],
     [ "getGlobalPickingId", "classinviwo_1_1PickingEvent.html#a6b06316c92357c1949ef4d00548ca2ff", null ],
+    [ "getMovedSincePressed", "classinviwo_1_1PickingEvent.html#a08eb834e18bac176bad6deef9672b5a3", null ],
     [ "getNDC", "classinviwo_1_1PickingEvent.html#a5c5f51c6b9c273e1842e98312b995f98", null ],
     [ "getPickedId", "classinviwo_1_1PickingEvent.html#adb12540c20a813efb45ddef05de6a747", null ],
     [ "getPosition", "classinviwo_1_1PickingEvent.html#a707cac40611c154c7a3f0f7e6b8317ee", null ],

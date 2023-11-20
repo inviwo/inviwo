@@ -1,5 +1,5 @@
 var classinviwo_1_1DataWriterFactory =
 [
-    [ "getWriterForTypeAndExtension", "classinviwo_1_1DataWriterFactory.html#a10ff5af170c049a34e9aabc6ae882dbe", null ],
-    [ "getWriterForTypeAndExtension", "classinviwo_1_1DataWriterFactory.html#a0b7f4cf68c1bf62fa75fb588fd9c5b37", null ]
+    [ "getWriterForTypeAndExtension", "classinviwo_1_1DataWriterFactory.html#a27e3fd3607af5ed3c3975027d0866be4", null ],
+    [ "getWriterForTypeAndExtension", "classinviwo_1_1DataWriterFactory.html#a1ef3213874ad0beed936ab3d03275c97", null ]
 ];

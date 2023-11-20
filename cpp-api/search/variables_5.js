@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['farplanedist_5f_0',['farPlaneDist_',['../classinviwo_1_1Camera.html#a4823d919759dcfcbd2b6566dd295675e',1,'inviwo::Camera']]],
-  ['filter_1',['filter',['../structinviwo_1_1filters_1_1ItemFilter.html#a4204578d94a092c3daa1f01740ad1223',1,'inviwo::filters::ItemFilter::filter()'],['../structinviwo_1_1csvfilters_1_1RowFilter.html#a14e04eb99c43e94fad542647c506b3c4',1,'inviwo::csvfilters::RowFilter::filter()']]]
+  ['glyphpenoffset_0',['glyphPenOffset',['../structinviwo_1_1TextBoundingBox.html#a8b56a360f991ac7467aa3c98190ef4f3',1,'inviwo::TextBoundingBox']]],
+  ['glyphsextent_1',['glyphsExtent',['../structinviwo_1_1TextBoundingBox.html#a936cf6237f1297cd67c6c585561140e2',1,'inviwo::TextBoundingBox']]],
+  ['glyphsorigin_2',['glyphsOrigin',['../structinviwo_1_1TextBoundingBox.html#abeb7c48f750ee9347fdf47b4b0f8ddf9',1,'inviwo::TextBoundingBox']]]
 ];

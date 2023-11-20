@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['option_0',['Option',['../namespaceinviwo_1_1pool.html#a0800098fbdf7e02da630f3fce3e74d39',1,'inviwo::pool']]]
+  ['mode_0',['Mode',['../classinviwo_1_1GlyphClipping.html#a5e117a11a9864a7770f47cd93076d524',1,'inviwo::GlyphClipping']]]
 ];

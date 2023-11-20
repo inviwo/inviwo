@@ -1,5 +1,5 @@
 var classinviwo_1_1FileDialog =
 [
-    [ "setCurrentDirectory", "classinviwo_1_1FileDialog.html#a3c9ca67135c3437eaac3e3f9403870fc", null ],
-    [ "setCurrentFile", "classinviwo_1_1FileDialog.html#a7272326a8f6f813057b64d7863be9fd9", null ]
+    [ "setCurrentDirectory", "classinviwo_1_1FileDialog.html#a5683051e27a2cc9f5356623747d9328d", null ],
+    [ "setCurrentFile", "classinviwo_1_1FileDialog.html#a1e6d8460fcb220bc298507f997adcdb9", null ]
 ];

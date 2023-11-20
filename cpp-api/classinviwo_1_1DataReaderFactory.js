@@ -1,5 +1,5 @@
 var classinviwo_1_1DataReaderFactory =
 [
-    [ "getReaderForTypeAndExtension", "classinviwo_1_1DataReaderFactory.html#a580e83b9a146f407be885fc6f41e5acb", null ],
-    [ "getReaderForTypeAndExtension", "classinviwo_1_1DataReaderFactory.html#a0dddea5a69a4002e10c8469b0869fcd6", null ]
+    [ "getReaderForTypeAndExtension", "classinviwo_1_1DataReaderFactory.html#a753bdf91797dc2c4d62d04ec317354d9", null ],
+    [ "getReaderForTypeAndExtension", "classinviwo_1_1DataReaderFactory.html#a5eaac382e009abf684e5c1da85641558", null ]
 ];

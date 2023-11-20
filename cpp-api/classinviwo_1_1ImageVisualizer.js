@@ -1,7 +1,7 @@
 var classinviwo_1_1ImageVisualizer =
 [
-    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1ImageVisualizer.html#a4251b51692e73674074bb74eae5c889e", null ],
-    [ "addSourceProcessor", "classinviwo_1_1ImageVisualizer.html#a873a4a00e526b12068567e47cc0dcab8", null ],
+    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1ImageVisualizer.html#a2458a65d2cdbef47fc2d5ba563fa1e55", null ],
+    [ "addSourceProcessor", "classinviwo_1_1ImageVisualizer.html#a7b176834589cbe2430a5d568d5a65b2a", null ],
     [ "addVisualizerNetwork", "classinviwo_1_1ImageVisualizer.html#a99a2c8161ddca9022d5e94b550ffb5db", null ],
     [ "getDescription", "classinviwo_1_1ImageVisualizer.html#a6c034e7c0f35160b2ba3369955d9ca34", null ],
     [ "getName", "classinviwo_1_1ImageVisualizer.html#ad6be42d13a7a5ca67888aece54aab6ea", null ],

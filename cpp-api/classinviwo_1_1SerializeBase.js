@@ -1,7 +1,7 @@
 var classinviwo_1_1SerializeBase =
 [
     [ "SerializeBase", "classinviwo_1_1SerializeBase.html#a932757e45dfb34fe04c64bcb8cdb0a0d", null ],
-    [ "SerializeBase", "classinviwo_1_1SerializeBase.html#a4d607872a7bf35c1e79e397243624fc3", null ],
-    [ "SerializeBase", "classinviwo_1_1SerializeBase.html#a2f6598089ff4fd9c009876df38029df6", null ],
-    [ "getFileName", "classinviwo_1_1SerializeBase.html#ac34238ba463e70eea5eef78d0b257890", null ]
+    [ "SerializeBase", "classinviwo_1_1SerializeBase.html#acb3a5015f575ab19ed159d3a9ef669e8", null ],
+    [ "SerializeBase", "classinviwo_1_1SerializeBase.html#af01faaa0d03ae48c3990feeb23bce00f", null ],
+    [ "getFileName", "classinviwo_1_1SerializeBase.html#a676775db4b1e8c0f0f22e98e9eff0a78", null ]
 ];

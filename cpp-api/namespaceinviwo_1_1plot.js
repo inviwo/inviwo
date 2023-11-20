@@ -1,19 +1,9 @@
 var namespaceinviwo_1_1plot =
 [
-    [ "detail", null, [
-      [ "AxisCaption", "structinviwo_1_1plot_1_1detail_1_1AxisCaption.html", null ],
-      [ "AxisLabels", "structinviwo_1_1plot_1_1detail_1_1AxisLabels.html", null ],
-      [ "AxisMeshes", "structinviwo_1_1plot_1_1detail_1_1AxisMeshes.html", null ],
-      [ "Guard", "structinviwo_1_1plot_1_1detail_1_1Guard.html", null ],
-      [ "GuardHelper", "structinviwo_1_1plot_1_1detail_1_1GuardHelper.html", null ],
-      [ "GuardHelper< Cls, MP >", "structinviwo_1_1plot_1_1detail_1_1GuardHelper_3_01Cls_00_01MP_01_4.html", null ],
-      [ "MemPtr", "structinviwo_1_1plot_1_1detail_1_1MemPtr.html", null ],
-      [ "Resetter", "structinviwo_1_1plot_1_1detail_1_1Resetter.html", null ]
-    ] ],
     [ "AxisData", "classinviwo_1_1plot_1_1AxisData.html", null ],
     [ "AxisProperty", "classinviwo_1_1plot_1_1AxisProperty.html", "classinviwo_1_1plot_1_1AxisProperty" ],
     [ "AxisRenderer", "classinviwo_1_1plot_1_1AxisRenderer.html", "classinviwo_1_1plot_1_1AxisRenderer" ],
-    [ "AxisRenderer3D", "classinviwo_1_1plot_1_1AxisRenderer3D.html", null ],
+    [ "AxisRenderer3D", "classinviwo_1_1plot_1_1AxisRenderer3D.html", "classinviwo_1_1plot_1_1AxisRenderer3D" ],
     [ "AxisRendererBase", "classinviwo_1_1plot_1_1AxisRendererBase.html", null ],
     [ "AxisRenderProcessor", "classinviwo_1_1plot_1_1AxisRenderProcessor.html", "classinviwo_1_1plot_1_1AxisRenderProcessor" ],
     [ "AxisSettings", "classinviwo_1_1plot_1_1AxisSettings.html", null ],
@@ -47,8 +37,9 @@ var namespaceinviwo_1_1plot =
     [ "ScatterPlotGL", "classinviwo_1_1plot_1_1ScatterPlotGL.html", "classinviwo_1_1plot_1_1ScatterPlotGL" ],
     [ "ScatterPlotMatrixProcessor", "classinviwo_1_1plot_1_1ScatterPlotMatrixProcessor.html", "classinviwo_1_1plot_1_1ScatterPlotMatrixProcessor" ],
     [ "ScatterPlotProcessor", "classinviwo_1_1plot_1_1ScatterPlotProcessor.html", "classinviwo_1_1plot_1_1ScatterPlotProcessor" ],
-    [ "TickProperty", "classinviwo_1_1plot_1_1TickProperty.html", "classinviwo_1_1plot_1_1TickProperty" ],
     [ "VolumeAxis", "classinviwo_1_1plot_1_1VolumeAxis.html", "classinviwo_1_1plot_1_1VolumeAxis" ],
+    [ "flip", "namespaceinviwo_1_1plot.html#a14faa95221250b79c028b6849690b3ae", null ],
+    [ "flip", "namespaceinviwo_1_1plot.html#ae3d30381f68f9c2ef6774acbbc76c8e1", null ],
     [ "generateAxisMesh", "namespaceinviwo_1_1plot.html#aa2db7b59d543792f826c7c286906d75e", null ],
     [ "generateAxisMesh3D", "namespaceinviwo_1_1plot.html#a7460727ccb573b25ca2c6307a0122e8d", null ],
     [ "generateMajorTicksMesh", "namespaceinviwo_1_1plot.html#a217193c9f0c289742e72fd263dcc8281", null ],
