@@ -171,12 +171,12 @@ vec4 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, 
     RayBBIntersection_TextureSpace(samplePos, toLightTexture, t0, t1);
     meanfreepath_l = WoodcockTracking(samplePos, toLightTexture, /*should be t*/ 0f, t1, hashSeed, 
         volume, volParam, tf, 1f, tau);
-    Tl = SimpleTracking(Tl, meanfreepath_l, tau);
+    Tl = meanfreepath_l >= t1 ? 1.0f : 0.0f;
 
     // pseudo gamma
     float g = 1.0f;
 
-    color.a = tfSample.a*Tl;
+    color.a = tfSample.a;
     
     if(t1 > meanfreepath_l) {
         
@@ -184,7 +184,7 @@ vec4 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, 
     else {  
         
     }
-    acc_radiance = g*color;
+    acc_radiance = g*color*Tl;
 
     return acc_radiance;
 }
