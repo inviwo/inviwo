@@ -16,19 +16,41 @@ float tfToExtinction(float s_max, float toExtMod) {
 float WoodcockTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd, inout uint hashSeed, 
     sampler3D volume, VolumeParameters volumeParameters, sampler2D transferFunction, float sigma_upperbound, out float sigma) {
     
+    float invExtinction = 1.f/tfToExtinction(sigma_upperbound, 1.0f);
+    float invSigmaUpperbound = 1.f/sigma_upperbound;
+    float t = tStart; 
+    float sigmaSample;
+    vec3 r = vec3(0);
+    do {    
+        hashSeed = pcg(hashSeed);
+        t += -log(random_1dto1d(hashSeed))*invExtinction;
+        hashSeed = pcg(hashSeed);
+        r = raystart + t*raydir;
+        vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, r);
+        sigmaSample = applyTF(transferFunction, volumeSample).a;
+
+    } while (random_1dto1d(hashSeed) >= sigmaSample*invSigmaUpperbound && t <= tEnd);
+
+    return t;
+}
+
+float WoodcockTracking_InvT(vec3 raystart, vec3 raydir, float tStart, float tEnd, inout uint hashSeed, 
+    sampler3D volume, VolumeParameters volumeParameters, sampler2D transferFunction, float sigma_upperbound, out float sigma) {
+    
     float invExtinction = 1.f/tfToExtinction(sigma_upperbound, 150f);
     float invSigmaUpperbound = 1.f/sigma_upperbound;
     float t = tStart; 
     float sigmaSample;
     vec3 r = vec3(0);
-    do {
+    while (t < tEnd) {
+        t = t - log(1f - random_1dto1d(hashSeed))*invSigmaUpperbound;   
 
-        t += -log(random_1dto1d(hashSeed++))*invExtinction;
-        r = raystart + t*raydir;
-        vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, r);
-        sigmaSample = applyTF(transferFunction, volumeSample).a;
-
-    } while (random_1dto1d(hashSeed++) >= sigmaSample*invSigmaUpperbound && t <= tEnd);
+        r = raystart - t*raydir;
+        sigma = applyTF(transferFunction, getNormalizedVoxel(volume, volumeParameters, r)).a;
+        if(random_1dto1d(hashSeed + 1) < sigma*sigma_upperbound) {
+            break;
+        }
+    }
     return t;
 }
 
@@ -136,7 +158,7 @@ vec4 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, 
     color.rgb = shadeBlinnPhong(light, tfSample.rgb, tfSample.rgb, tfSample.rgb,
         /*what is the normal of a particle*/ sampleWorldPos, -cameraDir, cameraDir);
     
-    float t0;
+    float t0 = 0.0f;
     float t1;
     float tau = 1f;   
     float meanfreepath_l = 0f; 
@@ -149,12 +171,12 @@ vec4 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, 
     RayBBIntersection_TextureSpace(samplePos, toLightTexture, t0, t1);
     meanfreepath_l = WoodcockTracking(samplePos, toLightTexture, /*should be t*/ 0f, t1, hashSeed, 
         volume, volParam, tf, 1f, tau);
-    //Tl = SimpleTracking(Tl, meanfreepath_l, tau);
+    Tl = SimpleTracking(Tl, meanfreepath_l, tau);
 
     // pseudo gamma
     float g = 1.0f;
 
-    color.a = tfSample.a;
+    color.a = tfSample.a*Tl;
     
     if(t1 > meanfreepath_l) {
         
