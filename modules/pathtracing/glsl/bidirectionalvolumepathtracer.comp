@@ -90,9 +90,9 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
 
     float rayPosition = 0.5 * rayStep;
     vec3 samplePosition = entryPoint;
-    uint hashSeed = floatBitsToUint(time_ms) + gid;
+    uint hashSeed = gid + floatBitsToUint(time_ms);
 
-    float T = 0.0f;
+    float T = 1.0f;
     float tau = 1f;
     float meanpath = WoodcockTracking(samplePosition, rayDir, 0f, rayPosition, hashSeed,
             volume, volumeParameters, transferFunction, 1.0f, tau);
@@ -102,6 +102,7 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
     int safety = 0;
 
     if (rayPosition <= rayLength) {
+        T = 0.0f;
         samplePosition = entryPoint + rayPosition * rayDir;
         
 
@@ -237,7 +238,7 @@ void main(){
     float exitPointDepth = texture(exitDepth, texCoord).x;
 
     // alpha channel barely does anything...
-    vec4 bgColor = vec4(0.0f, 0.0f, 0.0f, 1.0f)*1f;
+    vec4 bgColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
     if (entryPoint == exitPoint) {
         imageStore(outportColor, storePos, bgColor); 
