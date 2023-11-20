@@ -49,8 +49,8 @@ class QWidget;
 
 namespace inviwo {
 
-InviwoFileDialog::InviwoFileDialog(QWidget* parent, const std::string& title,
-                                   const std::string& pathType, const std::filesystem::path& path)
+InviwoFileDialog::InviwoFileDialog(QWidget* parent, std::string_view title,
+                                   std::string_view pathType, const std::filesystem::path& path)
     : QFileDialog(parent, utilqt::toQString(title))
     , pathType_(utilqt::toQString(pathType))
     , currentPath_() {
@@ -101,7 +101,7 @@ int InviwoFileDialog::exec() {
     return ret;
 }
 
-void InviwoFileDialog::setTitle(const std::string& title) {
+void InviwoFileDialog::setTitle(std::string_view title) {
     this->setWindowTitle(utilqt::toQString(title));
 }
 
@@ -165,7 +165,7 @@ FileMode InviwoFileDialog::getFileMode() const {
             return inviwo::FileMode::AnyFile;
     }
 }
-void InviwoFileDialog::setContentType(const std::string& contentType) {
+void InviwoFileDialog::setContentType(std::string_view contentType) {
     pathType_ = utilqt::toQString(contentType);
 }
 
@@ -229,12 +229,12 @@ void InviwoFileDialog::addExtension(const FileExtension& fileExt) {
     }
 }
 
-void InviwoFileDialog::addExtension(const std::string& ext, const std::string& description) {
+void InviwoFileDialog::addExtension(std::string_view ext, std::string_view description) {
     FileExtension fileExt{ext, description};
     addExtension(fileExt);
 }
 
-void InviwoFileDialog::addExtension(const std::string& extString) {
+void InviwoFileDialog::addExtension(std::string_view extString) {
     FileExtension fileExt{FileExtension::createFileExtensionFromString(extString)};
     addExtension(fileExt);
 }

@@ -69,7 +69,7 @@ MainAnimation::MainAnimation(InviwoApplication* app, Animation& animation,
     }
 
     animationControllerClearHandle_ =
-        app->getWorkspaceManager()->onClear([&]() { getController().resetAllPoperties(); });
+        app->getWorkspaceManager()->onClear([&]() { getController().resetAllProperties(); });
     animationControllerSerializationHandle_ = app->getWorkspaceManager()->onSave(
         [&](Serializer& s) { s.serialize("AnimationController", getController()); });
     animationControllerDeserializationHandle_ = app->getWorkspaceManager()->onLoad(

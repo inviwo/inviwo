@@ -27,13 +27,13 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/multifileproperty.h>
+
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/util/filedialog.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
@@ -46,12 +46,11 @@ MultiFileProperty::MultiFileProperty(std::string_view identifier, std::string_vi
                                      std::string_view contentType,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : TemplateProperty<std::vector<std::filesystem::path>>(identifier, displayName, value,
-                                                           invalidationLevel, semantics)
-    , acceptMode_(acceptMode)
-    , fileMode_(fileMode)
-    , contentType_(contentType) {
-    addNameFilter(FileExtension::all());
+    : Property(identifier, displayName, invalidationLevel, semantics)
+    , FileBase([this]() { propertyModified(); }, acceptMode, fileMode, contentType)
+    , files_{"value"} {
+    // Explicitly set the file name here. This ensures that the set file name is always serialized.
+    set(value);
 }
 
 MultiFileProperty::MultiFileProperty(std::string_view identifier, std::string_view displayName,
@@ -62,51 +61,74 @@ MultiFileProperty::MultiFileProperty(std::string_view identifier, std::string_vi
     : MultiFileProperty(identifier, displayName, value, AcceptMode::Open, FileMode::ExistingFiles,
                         contentType, invalidationLevel, semantics) {}
 
-MultiFileProperty::MultiFileProperty(const MultiFileProperty& rhs)
-    : TemplateProperty<std::vector<std::filesystem::path>>(rhs)
-    , nameFilters_(rhs.nameFilters_)
-    , acceptMode_(rhs.acceptMode_)
-    , fileMode_(rhs.fileMode_) {}
-
 MultiFileProperty& MultiFileProperty::operator=(const std::vector<std::filesystem::path>& value) {
-    TemplateProperty<std::vector<std::filesystem::path>>::operator=(value);
+    set(value);
     return *this;
 }
 
 MultiFileProperty* MultiFileProperty::clone() const { return new MultiFileProperty(*this); }
 
 void MultiFileProperty::set(const std::filesystem::path& value) {
-    TemplateProperty<std::vector<std::filesystem::path>>::set({value});
+    set(std::vector<std::filesystem::path>{value});
 }
 
 void MultiFileProperty::set(const std::vector<std::filesystem::path>& values) {
-    TemplateProperty<std::vector<std::filesystem::path>>::set(values);
+    bool modified = files_.update(values);
 
     // figure out best matching extension based on first filename
-    const auto& files = get();
-    if (files.empty()) {
-        setSelectedExtension(FileExtension());
+    if (auto* file = front()) {
+        modified |= updateExtension(*file);
     } else {
-        FileExtension ext;
-        FileExtension matchAll;
-        for (const auto& filter : getNameFilters()) {
-            if (filter.matchesAll()) {
-                matchAll = filter;
-            } else if (filter.matches(files.front())) {
-                ext = filter;
-                break;
-            }
-        }
-        if (ext.empty() && !matchAll.empty()) {
-            setSelectedExtension(matchAll);
-        } else {
-            setSelectedExtension(ext);
-        }
+        modified |= selectedExtension_.update(FileExtension{});
+    }
+
+    if (modified) propertyModified();
+}
+
+void MultiFileProperty::set(const std::vector<std::filesystem::path>& files,
+                            const FileExtension& selectedExtension) {
+    if (files_.update(files) || selectedExtension_.update(selectedExtension)) {
+        propertyModified();
+    }
+}
+
+void MultiFileProperty::set(const MultiFileProperty* property) {
+    if (!property) return;
+
+    if (files_.update(property->files_) || setFileBase(*property)) {
+        propertyModified();
+    }
+}
+
+void MultiFileProperty::set(const FileProperty* property) {
+    if (!property) return;
+
+    if (files_.update(std::vector{property->get()}) || setFileBase(*property)) {
+        propertyModified();
     }
 }
 
 void MultiFileProperty::set(const Property* property) {
-    TemplateProperty<std::vector<std::filesystem::path>>::set(property);
+    if (auto mfp = dynamic_cast<const MultiFileProperty*>(property)) {
+        set(mfp);
+    } else if (auto fp = dynamic_cast<const FileProperty*>(property)) {
+        set(fp);
+    }
+}
+
+const std::filesystem::path* MultiFileProperty::front() const {
+    if (!files_->empty()) {
+        return &files_->front();
+    } else {
+        return nullptr;
+    }
+}
+const std::filesystem::path* MultiFileProperty::back() const {
+    if (!files_->empty()) {
+        return &files_->back();
+    } else {
+        return nullptr;
+    }
 }
 
 void MultiFileProperty::serialize(Serializer& s) const {
@@ -118,26 +140,24 @@ void MultiFileProperty::serialize(Serializer& s) const {
      1) Absolute (equivalent to this->get())
      2) Relative workspace
      3) Relative filesystem::getPath(PathType::Data)
-
     */
     Property::serialize(s);
 
     if (this->serializationMode_ == PropertySerializationMode::None) return;
 
-    value_.serialize(s, this->serializationMode_);
+    files_.serialize(s, serializationMode_);
 
     const auto workspacePath = s.getFileName().parent_path();
-    const auto ivwdataPath = filesystem::getPath(PathType::Data);
+    const auto dataPath = filesystem::getPath(PathType::Data);
 
     // save absolute and relative paths for each file pattern
-    std::vector<std::filesystem::path>
-        workspaceRelativePaths;  // paths relative to workspace directory
-    std::vector<std::filesystem::path> ivwdataRelativePaths;  // paths relative to Inviwo data
-    for (const auto& item : this->get()) {
+    std::vector<std::filesystem::path> workspaceRelativePaths;  // relative to workspace directory
+    std::vector<std::filesystem::path> dataRelativePaths;       // relative to Inviwo data
+    for (const auto& item : files_.value) {
         const auto basePath = item.parent_path();
 
         std::filesystem::path workspaceRelative;
-        std::filesystem::path ivwdataRelative;
+        std::filesystem::path dataRelative;
         if (!basePath.empty()) {
             if (!workspacePath.empty() && workspacePath.root_name() == basePath.root_name()) {
                 workspaceRelative = std::filesystem::relative(basePath, workspacePath);
@@ -145,168 +165,119 @@ void MultiFileProperty::serialize(Serializer& s) const {
                     workspaceRelative = ".";
                 }
             }
-            if (!ivwdataPath.empty() && ivwdataPath.root_name() == basePath.root_name()) {
-                ivwdataRelative = std::filesystem::relative(basePath, ivwdataPath);
-                if (ivwdataRelative.empty()) {
-                    ivwdataRelative = ".";
+            if (!dataPath.empty() && dataPath.root_name() == basePath.root_name()) {
+                dataRelative = std::filesystem::relative(basePath, dataPath);
+                if (dataRelative.empty()) {
+                    dataRelative = ".";
                 }
             }
         }
         workspaceRelativePaths.push_back(workspaceRelative);
-        ivwdataRelativePaths.push_back(ivwdataRelative);
+        dataRelativePaths.push_back(dataRelative);
     }
 
     s.serialize("workspaceRelativePath", workspaceRelativePaths, "files");
-    s.serialize("ivwdataRelativePath", ivwdataRelativePaths, "files");
+    s.serialize("ivwdataRelativePath", dataRelativePaths, "files");
 
-    s.serialize("nameFilter", nameFilters_, "filter");
-    s.serialize("acceptMode", acceptMode_);
-    s.serialize("fileMode", fileMode_);
+    FileBase::serialize(s, serializationMode_);
 }
 
 void MultiFileProperty::deserialize(Deserializer& d) {
     namespace fs = std::filesystem;
 
     Property::deserialize(d);
-    bool modified = value_.deserialize(d, this->serializationMode_);
+    bool modified = files_.deserialize(d, serializationMode_);
 
-    std::vector<fs::path> absolutePaths = this->get();
+    std::vector<fs::path> absolutePaths = files_.value;
     std::vector<fs::path> workspaceRelativePaths;  // relative to workspace directory
-    std::vector<fs::path> ivwDataRelativePaths;    // relative to Inviwo data
+    std::vector<fs::path> dataRelativePaths;       // relative to Inviwo data
 
     d.deserialize("workspaceRelativePath", workspaceRelativePaths, "files");
-    d.deserialize("ivwdataRelativePath", ivwDataRelativePaths, "files");
+    d.deserialize("ivwdataRelativePath", dataRelativePaths, "files");
 
     // check whether all path lists have the same number of entries
     if ((absolutePaths.size() == workspaceRelativePaths.size()) &&
-        (absolutePaths.size() == ivwDataRelativePaths.size())) {
+        (absolutePaths.size() == dataRelativePaths.size())) {
 
         const auto workspacePath = d.getFileName().parent_path();
-        const auto ivwdataPath = filesystem::getPath(PathType::Data);
+        const auto dataPath = filesystem::getPath(PathType::Data);
 
-        bool modifiedPath = false;
         for (std::size_t i = 0; i < absolutePaths.size(); ++i) {
             const auto basePath = absolutePaths[i].parent_path();
             const auto pattern = absolutePaths[i].filename();
 
             const auto workspaceBasedPath =
                 fs::weakly_canonical(workspacePath / workspaceRelativePaths[i]);
-            const auto ivwdataBasedPath =
-                fs::weakly_canonical(ivwdataPath / ivwDataRelativePaths[i]);
+            const auto dataBasedPath = fs::weakly_canonical(dataPath / dataRelativePaths[i]);
 
             if (!basePath.empty() && fs::is_directory(basePath)) {
                 continue;
-            } else if (!ivwDataRelativePaths[i].empty() && fs::is_directory(ivwdataBasedPath)) {
-                absolutePaths[i] = ivwdataBasedPath / pattern;
-                modifiedPath = true;
+            } else if (!dataRelativePaths[i].empty() && fs::is_directory(dataBasedPath)) {
+                absolutePaths[i] = dataBasedPath / pattern;
             } else if (!workspaceRelativePaths[i].empty() &&
                        std::filesystem::is_directory(workspaceBasedPath)) {
                 absolutePaths[i] = workspaceBasedPath / pattern;
-                modifiedPath = true;
             }
         }
-
-        if (modifiedPath) {
-            // propagate changes back to property
-            this->set(absolutePaths);
-            modified = true;
-        }
+        modified |= files_.update(absolutePaths);
     }
 
-    try {
-        nameFilters_.clear();
-        d.deserialize("nameFilter", nameFilters_, "filter");
-        int acceptMode = static_cast<int>(acceptMode_);
-        d.deserialize("acceptMode", acceptMode);
-        acceptMode_ = static_cast<AcceptMode>(acceptMode);
-        int fileMode = static_cast<int>(fileMode_);
-        d.deserialize("fileMode", fileMode);
-        fileMode_ = static_cast<FileMode>(fileMode);
-    } catch (SerializationException& e) {
-        LogInfo("Problem deserializing file Property: " << e.getMessage());
-    }
-    if (modified) {
-        this->propertyModified();
-    }
+    modified |= FileBase::deserialize(d, serializationMode_);
+
+    if (modified) propertyModified();
 }
-
-void MultiFileProperty::addNameFilter(std::string_view filter) {
-    nameFilters_.push_back(FileExtension::createFileExtensionFromString(filter));
-}
-
-void MultiFileProperty::addNameFilter(FileExtension filter) { nameFilters_.push_back(filter); }
-
-void MultiFileProperty::addNameFilters(const std::vector<FileExtension>& filters) {
-    util::append(nameFilters_, filters);
-}
-
-void MultiFileProperty::clearNameFilters() { nameFilters_.clear(); }
-
-std::vector<FileExtension> MultiFileProperty::getNameFilters() { return nameFilters_; }
-
-void MultiFileProperty::setAcceptMode(AcceptMode mode) { acceptMode_ = mode; }
-
-AcceptMode MultiFileProperty::getAcceptMode() const { return acceptMode_; }
-
-void MultiFileProperty::setFileMode(FileMode mode) { fileMode_ = mode; }
-
-FileMode MultiFileProperty::getFileMode() const { return fileMode_; }
-
-void MultiFileProperty::setContentType(std::string_view contentType) { contentType_ = contentType; }
-
-std::string MultiFileProperty::getContentType() const { return contentType_; }
 
 void MultiFileProperty::requestFile() {
     for (auto widget : getWidgets()) {
-        if (auto filerequestable = dynamic_cast<FileRequestable*>(widget)) {
-            if (filerequestable->requestFile()) return;
+        if (auto fileRequester = dynamic_cast<FileRequestable*>(widget)) {
+            fileRequester->requestFile();
+            return;
         }
     }
-    if (getWidgets().empty()) {
-        // Currently, the only difference between using the widget (Qt) and the FileDialog directly
-        // is that the Qt widget remembers the previously used directory
-        auto fileDialog = util::dynamic_unique_ptr_cast<FileDialog>(
-            InviwoApplication::getPtr()->getDialogFactory()->create("FileDialog"));
-        if (!fileDialog) {
-            throw Exception(
-                "Failed to create a FileDialog. Add one to the InviwoApplication::DialogFactory",
-                IVW_CONTEXT);
-        }
-
-        // Setup Extensions
-        std::vector<FileExtension> filters = this->getNameFilters();
-        fileDialog->addExtensions(filters);
-
-        fileDialog->setCurrentFile(get().empty() ? "" : get().front());
-        fileDialog->setTitle(getDisplayName());
-        fileDialog->setAcceptMode(getAcceptMode());
-        fileDialog->setFileMode(getFileMode());
-
-        auto ext = getSelectedExtension();
-        if (!ext.empty()) fileDialog->setSelectedExtension(ext);
-
-        if (fileDialog->show()) {
-            setSelectedExtension(fileDialog->getSelectedFileExtension());
-            set(fileDialog->getSelectedFiles());
-        }
+    // No FileRequestable widget found, use the factory.
+    // Currently, the only difference between using the widget (Qt) and the FileDialog
+    // directly is that the Qt widget remembers the previously used directory
+    auto fileDialog =
+        createFileDialog(getDisplayName(), front() ? *front() : std::filesystem::path{});
+    if (fileDialog->show()) {
+        set(fileDialog->getSelectedFiles(), fileDialog->getSelectedFileExtension());
     }
 }
 
-const FileExtension& MultiFileProperty::getSelectedExtension() const { return selectedExtension_; }
-void MultiFileProperty::setSelectedExtension(const FileExtension& ext) { selectedExtension_ = ext; }
+MultiFileProperty& MultiFileProperty::setCurrentStateAsDefault() {
+    Property::setCurrentStateAsDefault();
+    FileBase::setAsDefault();
+    files_.setAsDefault();
+    return *this;
+}
+MultiFileProperty& MultiFileProperty::setDefault(const std::vector<std::filesystem::path>& value) {
+    files_.defaultValue = value;
+    return *this;
+}
+MultiFileProperty& MultiFileProperty::resetToDefaultState() {
+    if (files_.reset() || FileBase::reset()) {
+        propertyModified();
+    }
+    return *this;
+}
+
+bool MultiFileProperty::isDefaultState() const {
+    // the multi file property does not have a default state.
+    return false;
+}
 
 Document MultiFileProperty::getDescription() const {
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
 
-    Document doc = TemplateProperty<std::vector<std::filesystem::path>>::getDescription();
+    Document doc = Property::getDescription();
     auto table = doc.get({P("table", {{"class", "propertyInfo"}})});
 
     std::filesystem::path currentPath;
     // compile compact list of selected files, binning all files of the same directory
 
     StrBuffer buff;
-    for (const auto& elem : value_.value) {
+    for (const auto& elem : files_.value) {
         auto dir = elem.parent_path();
         auto filename = elem.filename();
         if (dir != currentPath) {
@@ -330,6 +301,7 @@ Document MultiFileProperty::getDescription() const {
         }
     }
 
+    tb(H("Selected Extension"), selectedExtension_.value);
     tb(H("Accept Mode"), acceptMode_);
     tb(H("File Mode"), fileMode_);
     tb(H("Content Type"), contentType_);

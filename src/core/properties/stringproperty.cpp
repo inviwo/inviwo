@@ -55,8 +55,7 @@ StringProperty& StringProperty::operator=(const std::string& value) {
 StringProperty* StringProperty::clone() const { return new StringProperty(*this); }
 
 StringProperty& StringProperty::set(std::string_view value) {
-    if (value_.value != value) {
-        value_.value = value;
+    if (value_.update(value)) {
         propertyModified();
     }
     return *this;

@@ -109,7 +109,7 @@ void exposePropertyOwner(pybind11::module& m) {
             py::return_value_policy::reference)
         .def("setAllPropertiesCurrentStateAsDefault",
              &PropertyOwner::setAllPropertiesCurrentStateAsDefault)
-        .def("resetAllPoperties", &PropertyOwner::resetAllPoperties);
+        .def("resetAllPoperties", &PropertyOwner::resetAllProperties);
 }
 
 }  // namespace inviwo

@@ -60,6 +60,7 @@ OptionPropertyWidgetQt::OptionPropertyWidgetQt(BaseOptionProperty* property)
     , comboBox_{new IvwComboBox(this)}
     , label_{new EditableLabelQt(this, property_)} {
 
+    comboBox_->setFocusPolicy(Qt::TabFocus);
     setFocusPolicy(comboBox_->focusPolicy());
     setFocusProxy(comboBox_);
 

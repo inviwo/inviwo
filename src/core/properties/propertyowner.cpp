@@ -342,7 +342,7 @@ void PropertyOwner::setAllPropertiesCurrentStateAsDefault() {
     for (auto& elem : properties_) (elem)->setCurrentStateAsDefault();
 }
 
-void PropertyOwner::resetAllPoperties() {
+void PropertyOwner::resetAllProperties() {
     for (auto& elem : properties_) elem->resetToDefaultState();
 }
 

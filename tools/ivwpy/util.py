@@ -183,7 +183,7 @@ def writeTemplateFile(newfilename, templatefilename, comment, name, define, api,
         for line in f:
             line = line.replace("<name>", name)
             line = line.replace("<dname>", re.sub(
-                "([a-z])([A-Z])", "\g<1> \g<2>", name.replace("Kx", "")))
+                r"([a-z])([A-Z])", r"\g<1> \g<2>", name.replace("Kx", "")))
             line = line.replace("<lname>", name.lower())
             line = line.replace("<uname>", name.upper())
             line = line.replace("<api>", api)

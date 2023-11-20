@@ -160,7 +160,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
     virtual void setAllPropertiesCurrentStateAsDefault();
-    virtual void resetAllPoperties();
+    virtual void resetAllProperties();
 
     virtual void invokeEvent(Event* event) override;
 

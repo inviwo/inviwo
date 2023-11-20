@@ -63,161 +63,120 @@ class QHBoxLayout;
 namespace inviwo {
 
 MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property)
-    : PropertyWidgetQt(property)
-    , property_(property)
-    , lineEdit_{new FilePathLineEditQt(this)}
-    , label_{new EditableLabelQt(this, property_)} {
+    : PropertyWidgetQt(property), property_(property), lineEdit_{new FilePathLineEditQt(this)} {
 
     setFocusPolicy(lineEdit_->focusPolicy());
     setFocusProxy(lineEdit_);
+    setAcceptDrops(true);
 
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);
-    setAcceptDrops(true);
-
-    hLayout->addWidget(label_);
-
+    hLayout->addWidget(new EditableLabelQt(this, property_));
     QHBoxLayout* hWidgetLayout = new QHBoxLayout();
-    hWidgetLayout->setContentsMargins(0, 0, 0, 0);
-    QWidget* widget = new QWidget();
-    widget->setLayout(hWidgetLayout);
 
-    connect(lineEdit_, &FilePathLineEditQt::editingFinished, this, [this]() {
-        // editing is done, sync property with contents
-        if (lineEdit_->isModified()) {
-            property_->set(lineEdit_->getPath());
-        }
-    });
-#if defined(IVW_DEBUG)
-    QObject::connect(lineEdit_, &LineEditQt::editingCanceled, this, [this]() {
-        // undo textual changes by resetting the contents of the line edit
-        IVW_ASSERT(
-            lineEdit_->getPath() == (!property_->get().empty() ? property_->get().front() : ""),
-            "MultiFilePropertyWidgetQt: paths not equal after canceling edit");
-    });
-#endif  // IVW_DEBUG
+    {
+        hWidgetLayout->setContentsMargins(0, 0, 0, 0);
+        QWidget* widget = new QWidget();
+        widget->setLayout(hWidgetLayout);
+        auto sp = widget->sizePolicy();
+        sp.setHorizontalStretch(3);
+        widget->setSizePolicy(sp);
+        hLayout->addWidget(widget);
+    }
 
-    QSizePolicy sp = lineEdit_->sizePolicy();
-    sp.setHorizontalStretch(3);
-    lineEdit_->setSizePolicy(sp);
-    hWidgetLayout->addWidget(lineEdit_);
+    {
+        connect(lineEdit_, &FilePathLineEditQt::pathChanged, this,
+                [this](const std::filesystem::path& path) { property_->set(path); });
+        QSizePolicy sp = lineEdit_->sizePolicy();
+        sp.setHorizontalStretch(3);
+        lineEdit_->setSizePolicy(sp);
+        hWidgetLayout->addWidget(lineEdit_);
+    }
 
-    auto revealButton = new QToolButton(this);
-    revealButton->setIcon(QIcon(":/svgicons/about-enabled.svg"));
-    hWidgetLayout->addWidget(revealButton);
-    connect(revealButton, &QToolButton::pressed, this, [&]() {
-        const auto fileName = (!property_->get().empty() ? property_->get().front() : "");
-        const auto dir =
-            std::filesystem::is_directory(fileName) ? fileName : fileName.parent_path();
+    {
+        auto revealButton = new QToolButton(this);
+        revealButton->setIcon(QIcon(":/svgicons/about-enabled.svg"));
+        hWidgetLayout->addWidget(revealButton);
+        connect(revealButton, &QToolButton::pressed, this, [&]() {
+            const auto fileName = (!property_->get().empty() ? property_->get().front() : "");
+            const auto dir =
+                std::filesystem::is_directory(fileName) ? fileName : fileName.parent_path();
 
-        QDesktopServices::openUrl(
-            QUrl(QString::fromStdString("file:///" + dir.string()), QUrl::TolerantMode));
-    });
-
-    auto openButton = new QToolButton(this);
-    openButton->setIcon(QIcon(":/svgicons/open.svg"));
-    hWidgetLayout->addWidget(openButton);
-    connect(openButton, &QToolButton::pressed, this, &MultiFilePropertyWidgetQt::setPropertyValue);
-
-    sp = widget->sizePolicy();
-    sp.setHorizontalStretch(3);
-    widget->setSizePolicy(sp);
-    hLayout->addWidget(widget);
+            QDesktopServices::openUrl(
+                QUrl(QString::fromStdString("file:///" + dir.string()), QUrl::TolerantMode));
+        });
+    }
+    {
+        auto openButton = new QToolButton(this);
+        openButton->setIcon(QIcon(":/svgicons/open.svg"));
+        hWidgetLayout->addWidget(openButton);
+        connect(openButton, &QToolButton::pressed, this,
+                &MultiFilePropertyWidgetQt::setPropertyValue);
+    }
 
     updateFromProperty();
 }
 
 void MultiFilePropertyWidgetQt::setPropertyValue() {
-    auto fileName = (!property_->get().empty() ? property_->get().front() : "");
+    const auto fileName = property_->front() ? *property_->front() : std::filesystem::path{};
 
-    // Setup Extensions
-    std::vector<FileExtension> filters = property_->getNameFilters();
-    InviwoFileDialog importFileDialog(this, property_->getDisplayName(),
-                                      property_->getContentType(), fileName);
+    InviwoFileDialog fileDialog(this, property_->getDisplayName(), property_->getContentType(),
+                                fileName);
 
-    for (const auto& filter : filters) importFileDialog.addExtension(filter);
+    fileDialog.setAcceptMode(property_->getAcceptMode());
+    fileDialog.setFileMode(property_->getFileMode());
+    fileDialog.addExtensions(property_->getNameFilters());
+    fileDialog.setSelectedExtension(property_->getSelectedExtension());
 
-    importFileDialog.setAcceptMode(property_->getAcceptMode());
-    importFileDialog.setFileMode(property_->getFileMode());
-
-    auto ext = property_->getSelectedExtension();
-    if (!ext.empty()) importFileDialog.setSelectedExtension(ext);
-
-    if (importFileDialog.exec()) {
-        std::vector<std::filesystem::path> filenames;
-        for (auto item : importFileDialog.selectedFiles()) {
-            filenames.emplace_back(utilqt::toPath(item));
-        }
-        property_->set(filenames);
-        property_->setSelectedExtension(importFileDialog.getSelectedFileExtension());
+    if (fileDialog.exec()) {
+        property_->set(fileDialog.getSelectedFiles(), fileDialog.getSelectedFileExtension());
     }
-
-    updateFromProperty();
 }
 
 void MultiFilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
-    auto mineData = drop->mimeData();
-    if (mineData->hasUrls()) {
-        if (mineData->urls().size() > 0) {
-            auto url = mineData->urls().first();
-            property_->set(url.toLocalFile().toStdString());
-
-            drop->accept();
+    auto mimeData = drop->mimeData();
+    if (!mimeData->urls().empty()) {
+        std::vector<std::filesystem::path> paths;
+        for (auto&& url : mimeData->urls()) {
+            paths.push_back(utilqt::toPath(url.toLocalFile()));
         }
+        property_->set(paths);
+        drop->accept();
+    } else {
+        drop->ignore();
     }
 }
 
 void MultiFilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
-    switch (property_->getAcceptMode()) {
-        case AcceptMode::Save: {
-            event->ignore();
-            return;
-        }
-        case AcceptMode::Open: {
-            if (event->mimeData()->hasUrls()) {
-                auto mimeData = event->mimeData();
-                if (mimeData->hasUrls()) {
-                    if (mimeData->urls().size() > 0) {
-                        auto url = mimeData->urls().first();
-                        auto file = url.toLocalFile().toStdString();
+    auto mimeData = event->mimeData();
+    bool matches = !mimeData->urls().empty();
+    for (auto&& url : mimeData->urls()) {
+        const auto file = utilqt::toPath(url.toLocalFile());
 
-                        switch (property_->getFileMode()) {
-                            case FileMode::AnyFile:
-                            case FileMode::ExistingFile:
-                            case FileMode::ExistingFiles: {
-                                for (const auto& filter : property_->getNameFilters()) {
-                                    if (filter.matches(file)) {
-                                        event->accept();
-                                        return;
-                                    }
-                                }
-                                break;
-                            }
-
-                            case FileMode::Directory: {
-                                if (std::filesystem::is_directory(file)) {
-                                    event->accept();
-                                    return;
-                                }
-                                break;
-                            }
-                        }
-                    }
+        switch (property_->getFileMode()) {
+            case FileMode::AnyFile:
+            case FileMode::ExistingFile:
+            case FileMode::ExistingFiles: {
+                if (!property_->matchesAnyNameFilter(file)) {
+                    matches = false;
                 }
+                break;
             }
-            event->ignore();
-            return;
+            case FileMode::Directory: {
+                if (!std::filesystem::is_directory(file)) {
+                    matches = false;
+                }
+                break;
+            }
         }
     }
+
+    event->setAccepted(matches);
 }
 
 void MultiFilePropertyWidgetQt::dragMoveEvent(QDragMoveEvent* event) {
-    if (event->mimeData()->hasUrls()) {
-        event->accept();
-    } else {
-        event->ignore();
-    }
+    event->setAccepted(event->mimeData()->hasUrls());
 }
 
 bool MultiFilePropertyWidgetQt::requestFile() {
@@ -226,12 +185,9 @@ bool MultiFilePropertyWidgetQt::requestFile() {
 }
 
 void MultiFilePropertyWidgetQt::updateFromProperty() {
-    if (!property_->get().empty()) {
-        lineEdit_->setPath(property_->get().front());
-    } else {
-        lineEdit_->setPath("");
-    }
-    lineEdit_->setModified(false);
+    lineEdit_->setPath(property_->front() ? *property_->front() : std::filesystem::path{});
+    lineEdit_->setAcceptMode(property_->getAcceptMode());
+    lineEdit_->setFileMode(property_->getFileMode());
 }
 
 }  // namespace inviwo

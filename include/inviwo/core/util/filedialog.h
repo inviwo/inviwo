@@ -45,7 +45,7 @@ public:
 
     virtual bool show() = 0;
 
-    virtual void setTitle(const std::string& title) = 0;
+    virtual void setTitle(std::string_view title) = 0;
 
     virtual void setAcceptMode(AcceptMode mode) = 0;
     virtual AcceptMode getAcceptMode() const = 0;
@@ -53,7 +53,7 @@ public:
     virtual void setFileMode(FileMode mode) = 0;
     virtual FileMode getFileMode() const = 0;
 
-    virtual void setContentType(const std::string& contentType) = 0;
+    virtual void setContentType(std::string_view contentType) = 0;
     virtual std::string getContentType() const = 0;
 
     /**
@@ -78,8 +78,8 @@ public:
     virtual FileExtension getSelectedFileExtension() const = 0;
 
     virtual void addExtension(const FileExtension& fileExt) = 0;
-    virtual void addExtension(const std::string& ext, const std::string& description) = 0;
-    virtual void addExtension(const std::string& extString) = 0;
+    virtual void addExtension(std::string_view ext, std::string_view description) = 0;
+    virtual void addExtension(std::string_view extString) = 0;
     virtual void addExtensions(const std::vector<FileExtension>& extensions) = 0;
 };
 

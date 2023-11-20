@@ -449,7 +449,7 @@ QListView {
     /*using border here breaks the QCombobox */
 }
 
-QListVie#Completer {
+#FileCompleterDropdown {
     background: #3a3a3d;
 }
 
@@ -902,6 +902,15 @@ QWidget#CompositeWidget QToolButton#moveListItemUpButton:hover,
 QWidget#CompositeWidget QToolButton#moveListItemDownButton:hover {
     border: 0.0625em solid #268bd2;
 }
+
+QWidget#CompositeWidget QToolButton#collapseButton:focus,
+QWidget#CompositeWidget QToolButton#addListItemButton:focus,
+QWidget#CompositeWidget QToolButton#removeListItemButton:focus,
+QWidget#CompositeWidget QToolButton#moveListItemUpButton:focus,
+QWidget#CompositeWidget QToolButton#moveListItemDownButton:focus {
+    border: 0.0625em solid #268bd2;
+}
+
 QWidget#CompositeWidget QToolButton#collapseButton:open {
     image: url(:/svgicons/arrow-right-enabled.svg);
 }

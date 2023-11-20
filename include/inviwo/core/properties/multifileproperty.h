@@ -30,7 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/properties/templateproperty.h>
+#include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/filedialogstate.h>
@@ -41,21 +41,18 @@ namespace inviwo {
 
 /**
  * \ingroup properties
- *  A class for file representations.
- *  Holds the value of the path to multiple files as strings.
- *
- * @see TemplateProperty, FileProperty
+ *  A class for a list of file/directory paths
+ * @see FileProperty
  */
-class IVW_CORE_API MultiFileProperty : public TemplateProperty<std::vector<std::filesystem::path>> {
+class IVW_CORE_API MultiFileProperty : public Property, public FileBase {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
+    static constexpr std::string_view defaultContentType = "default";
+    using value_type = std::vector<std::filesystem::path>;
 
     /**
      * \brief Constructor for the MultiFileProperty
-     *
-     * The PropertySemantics can be set to TextEditor. Then a TextEditorWidget will be used instead
-     * of a FilePropertyWidget
      *
      * @param identifier identifier for the property
      * @param displayName displayName for the property
@@ -77,35 +74,29 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
 
-    MultiFileProperty(const MultiFileProperty& rhs);
+    MultiFileProperty(const MultiFileProperty& rhs) = default;
     MultiFileProperty& operator=(const std::vector<std::filesystem::path>& value);
     virtual MultiFileProperty* clone() const override;
     virtual ~MultiFileProperty() = default;
 
     void set(const std::filesystem::path& value);
-    virtual void set(const std::vector<std::filesystem::path>& values) override;
+    void set(const std::vector<std::filesystem::path>& values);
+    void set(const std::vector<std::filesystem::path>& files,
+             const FileExtension& selectedExtension);
+    void set(const MultiFileProperty* property);
+    void set(const FileProperty* property);
     virtual void set(const Property* property) override;
+
+    operator const std::vector<std::filesystem::path>&() const { return files_; }
+    const std::vector<std::filesystem::path>& get() const { return files_; }
+    const std::vector<std::filesystem::path>& operator*() const { return files_; };
+    const std::vector<std::filesystem::path>* operator->() const { return &files_.value; }
+
+    const std::filesystem::path* front() const;
+    const std::filesystem::path* back() const;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
-
-    virtual void addNameFilter(std::string_view filter);
-    virtual void addNameFilter(FileExtension ext);
-    virtual void addNameFilters(const std::vector<FileExtension>& filters);
-    virtual void clearNameFilters();
-    virtual std::vector<FileExtension> getNameFilters();
-
-    virtual void setAcceptMode(AcceptMode mode);
-    AcceptMode getAcceptMode() const;
-
-    virtual void setFileMode(FileMode mode);
-    FileMode getFileMode() const;
-
-    void setContentType(std::string_view contentType);
-    std::string getContentType() const;
-
-    const FileExtension& getSelectedExtension() const;
-    void setSelectedExtension(const FileExtension& ext);
 
     /**
      *	Request a file from the user through the use of a widget or a FileDialog.
@@ -114,12 +105,13 @@ public:
 
     virtual Document getDescription() const override;
 
+    virtual MultiFileProperty& setCurrentStateAsDefault() override;
+    MultiFileProperty& setDefault(const std::vector<std::filesystem::path>& value);
+    virtual MultiFileProperty& resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
+
 private:
-    std::vector<FileExtension> nameFilters_;
-    FileExtension selectedExtension_;
-    AcceptMode acceptMode_;
-    FileMode fileMode_;
-    std::string contentType_;
+    ValueWrapper<std::vector<std::filesystem::path>> files_;
 };
 
 }  // namespace inviwo

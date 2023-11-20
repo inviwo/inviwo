@@ -42,7 +42,6 @@ namespace inviwo {
 
 class MultiFileProperty;
 class FilePathLineEditQt;
-class EditableLabelQt;
 
 /**
  * \class MultiFilePropertyWidgetQt
@@ -67,7 +66,6 @@ private:
 
     MultiFileProperty* property_;
     FilePathLineEditQt* lineEdit_;
-    EditableLabelQt* label_;
 };
 
 }  // namespace inviwo

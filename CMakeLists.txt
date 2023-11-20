@@ -92,6 +92,7 @@ endif()
 
 option(IVW_ENABLE_QT "Enable Qt support in Inviwo" ON)
 if(IVW_ENABLE_QT)
+    set(CMAKE_MODULE_PATH_TMP ${CMAKE_MODULE_PATH})
     find_package(Qt6 COMPONENTS Core)
     if(NOT Qt6Core_FOUND) 
         message(FATAL_ERROR
@@ -99,6 +100,7 @@ if(IVW_ENABLE_QT)
             "Consider adding Qt to the CMAKE_PREFIX_PATH,\n" 
             "i.e. start cmake with the option -DCMAKE_PREFIX_PATH=\"/path/to/qt\"")
     endif()
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH_TMP})
 endif()
 
 include(cmake/globalconfig.cmake)
