@@ -89,7 +89,7 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
     vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volParam.textureToWorld);
 
     float rayPosition = 0.5 * rayStep;
-    vec3 samplePosition = entryPoint + rayPosition * rayDir;
+    vec3 samplePosition = entryPoint;
     uint hashSeed = floatBitsToUint(time_ms) + gid;
 
     float T = 0.0f;
@@ -258,7 +258,6 @@ void main(){
     float w = 1.0f - 1.0f/float(iteration + 1);
     //w = 1.0f;
     vec4 finalresult = mix(result, resPrev, w);
-
     imageStore(outportColor, storePos, finalresult);     
     imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
     imageStore(outportPicking, storePos, picking);
