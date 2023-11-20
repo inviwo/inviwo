@@ -371,13 +371,17 @@ jobs:
           path: inviwo/cpp-api
 
       - run: |
-          cd inviwo
+          cd inviwo          
+          git config --global user.email "team@inviwo.org"
+          git config --global user.name "Inviwo Team"
           git add python-api
           git commit -m "Update Python API Docs"
           git push
 
       - run: |
           cd inviwo
+          git config --global user.email "team@inviwo.org"
+          git config --global user.name "Inviwo Team"
           git add cpp-api
           git commit -m "Update C++ API Docs"
           git push
