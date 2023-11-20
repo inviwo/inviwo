@@ -19,7 +19,8 @@ inviwopy.data
    
       Axis
       BasicMesh
-      BasicMeshVertex
+      BitSet
+      BitSetIterator
       Buffer
       BufferFLOAT16
       BufferFLOAT32
@@ -74,6 +75,7 @@ inviwopy.data
       BufferVec4UINT64
       BufferVec4UINT8
       Camera
+      ColoredMesh
       ConnectivityType
       DataMapper
       DrawType
@@ -129,6 +131,8 @@ inviwopy.data
       InterpolationType
       IsoValueCollection
       Layer
+      LayerPy
+      LayerRepresentation
       LayerType
       Mesh
       MeshFlatMultiInport
@@ -136,9 +140,16 @@ inviwopy.data
       MeshInport
       MeshMultiInport
       MeshOutport
+      MeshSequence
+      MeshSequenceFlatMultiInport
+      MeshSequenceInport
+      MeshSequenceMultiInport
+      MeshSequenceOutport
       OrthographicCamera
       PerspectiveCamera
+      PosTexColorMesh
       SkewedPerspectiveCamera
+      SphereMesh
       SwizzleMask
       TFPrimitive
       TFPrimitiveData
@@ -151,6 +162,8 @@ inviwopy.data
       VolumeInport
       VolumeMultiInport
       VolumeOutport
+      VolumePy
+      VolumeRepresentation
       VolumeSequence
       VolumeSequenceFlatMultiInport
       VolumeSequenceInport

@@ -1,24 +1,25 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>inviwopy.camerautil &mdash; Inviwo Python API 0.9.11.1 documentation</title>
+  <title>inviwopy.camerautil &mdash; Inviwo Python API 0.9.12-pre documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=28b1853b"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="ivwdataframe" href="ivwdataframe.html" />
+    <link rel="next" title="inviwopy.doc" href="inviwopy.doc.html" />
     <link rel="prev" title="inviwopy.properties" href="inviwopy.properties.html" /> 
 </head>
 
@@ -27,11 +28,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> Inviwo Python API
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Inviwo Python API
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -39,16 +44,259 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="ivwbase.html">ivwbase</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ivwbnl.html">ivwbnl</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="inviwopy.html">inviwopy</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.data.html">inviwopy.data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.data.formats.html">inviwopy.data.formats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.glm.html">inviwopy.glm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.properties.html">inviwopy.properties</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">inviwopy.camerautil</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">inviwopy.camerautil</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#inviwopy.camerautil.Side"><code class="docutils literal notranslate"><span class="pre">Side</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.__eq__"><code class="docutils literal notranslate"><span class="pre">Side.__eq__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.__hash__"><code class="docutils literal notranslate"><span class="pre">Side.__hash__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.__index__"><code class="docutils literal notranslate"><span class="pre">Side.__index__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.__init__"><code class="docutils literal notranslate"><span class="pre">Side.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.__int__"><code class="docutils literal notranslate"><span class="pre">Side.__int__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.__ne__"><code class="docutils literal notranslate"><span class="pre">Side.__ne__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.__repr__"><code class="docutils literal notranslate"><span class="pre">Side.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.__str__"><code class="docutils literal notranslate"><span class="pre">Side.__str__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.XNegative"><code class="docutils literal notranslate"><span class="pre">Side.XNegative</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.XPositive"><code class="docutils literal notranslate"><span class="pre">Side.XPositive</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.YNegative"><code class="docutils literal notranslate"><span class="pre">Side.YNegative</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.YPositive"><code class="docutils literal notranslate"><span class="pre">Side.YPositive</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.ZNegative"><code class="docutils literal notranslate"><span class="pre">Side.ZNegative</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.ZPositive"><code class="docutils literal notranslate"><span class="pre">Side.ZPositive</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.name"><code class="docutils literal notranslate"><span class="pre">Side.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.Side.value"><code class="docutils literal notranslate"><span class="pre">Side.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges"><code class="docutils literal notranslate"><span class="pre">UpdateLookRanges</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges.__eq__"><code class="docutils literal notranslate"><span class="pre">UpdateLookRanges.__eq__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges.__hash__"><code class="docutils literal notranslate"><span class="pre">UpdateLookRanges.__hash__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges.__index__"><code class="docutils literal notranslate"><span class="pre">UpdateLookRanges.__index__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges.__init__"><code class="docutils literal notranslate"><span class="pre">UpdateLookRanges.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges.__int__"><code class="docutils literal notranslate"><span class="pre">UpdateLookRanges.__int__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges.__ne__"><code class="docutils literal notranslate"><span class="pre">UpdateLookRanges.__ne__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges.__repr__"><code class="docutils literal notranslate"><span class="pre">UpdateLookRanges.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges.__str__"><code class="docutils literal notranslate"><span class="pre">UpdateLookRanges.__str__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges.No"><code class="docutils literal notranslate"><span class="pre">UpdateLookRanges.No</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges.Yes"><code class="docutils literal notranslate"><span class="pre">UpdateLookRanges.Yes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges.name"><code class="docutils literal notranslate"><span class="pre">UpdateLookRanges.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges.value"><code class="docutils literal notranslate"><span class="pre">UpdateLookRanges.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar"><code class="docutils literal notranslate"><span class="pre">UpdateNearFar</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar.__eq__"><code class="docutils literal notranslate"><span class="pre">UpdateNearFar.__eq__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar.__hash__"><code class="docutils literal notranslate"><span class="pre">UpdateNearFar.__hash__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar.__index__"><code class="docutils literal notranslate"><span class="pre">UpdateNearFar.__index__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar.__init__"><code class="docutils literal notranslate"><span class="pre">UpdateNearFar.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar.__int__"><code class="docutils literal notranslate"><span class="pre">UpdateNearFar.__int__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar.__ne__"><code class="docutils literal notranslate"><span class="pre">UpdateNearFar.__ne__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar.__repr__"><code class="docutils literal notranslate"><span class="pre">UpdateNearFar.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar.__str__"><code class="docutils literal notranslate"><span class="pre">UpdateNearFar.__str__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar.No"><code class="docutils literal notranslate"><span class="pre">UpdateNearFar.No</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar.Yes"><code class="docutils literal notranslate"><span class="pre">UpdateNearFar.Yes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar.name"><code class="docutils literal notranslate"><span class="pre">UpdateNearFar.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar.value"><code class="docutils literal notranslate"><span class="pre">UpdateNearFar.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#inviwopy.camerautil.computeCameraNearFar"><code class="docutils literal notranslate"><span class="pre">computeCameraNearFar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inviwopy.camerautil.setCameraLookRanges"><code class="docutils literal notranslate"><span class="pre">setCameraLookRanges()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inviwopy.camerautil.setCameraNearFar"><code class="docutils literal notranslate"><span class="pre">setCameraNearFar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inviwopy.camerautil.setCameraView"><code class="docutils literal notranslate"><span class="pre">setCameraView()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.doc.html">inviwopy.doc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.CanvasProcessor"><code class="docutils literal notranslate"><span class="pre">CanvasProcessor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.CodeState"><code class="docutils literal notranslate"><span class="pre">CodeState</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ConsoleLogger"><code class="docutils literal notranslate"><span class="pre">ConsoleLogger</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.DataReader"><code class="docutils literal notranslate"><span class="pre">DataReader</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.DataReaderFactory"><code class="docutils literal notranslate"><span class="pre">DataReaderFactory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.DataWriter"><code class="docutils literal notranslate"><span class="pre">DataWriter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.DataWriterFactory"><code class="docutils literal notranslate"><span class="pre">DataWriterFactory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.Event"><code class="docutils literal notranslate"><span class="pre">Event</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.FileLogger"><code class="docutils literal notranslate"><span class="pre">FileLogger</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ImageDataReader"><code class="docutils literal notranslate"><span class="pre">ImageDataReader</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ImageDataWriter"><code class="docutils literal notranslate"><span class="pre">ImageDataWriter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.Inport"><code class="docutils literal notranslate"><span class="pre">Inport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.InportVectorWrapper"><code class="docutils literal notranslate"><span class="pre">InportVectorWrapper</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.InteractionEvent"><code class="docutils literal notranslate"><span class="pre">InteractionEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.InviwoApplication"><code class="docutils literal notranslate"><span class="pre">InviwoApplication</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.InviwoModule"><code class="docutils literal notranslate"><span class="pre">InviwoModule</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.InviwoModuleFactoryObject"><code class="docutils literal notranslate"><span class="pre">InviwoModuleFactoryObject</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.IsoValueCollectionDataReader"><code class="docutils literal notranslate"><span class="pre">IsoValueCollectionDataReader</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.IsoValueCollectionDataWriter"><code class="docutils literal notranslate"><span class="pre">IsoValueCollectionDataWriter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.IvwKey"><code class="docutils literal notranslate"><span class="pre">IvwKey</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.KeyModifier"><code class="docutils literal notranslate"><span class="pre">KeyModifier</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.KeyModifiers"><code class="docutils literal notranslate"><span class="pre">KeyModifiers</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.KeyModifiersIterator"><code class="docutils literal notranslate"><span class="pre">KeyModifiersIterator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.KeyState"><code class="docutils literal notranslate"><span class="pre">KeyState</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.KeyStates"><code class="docutils literal notranslate"><span class="pre">KeyStates</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.KeyStatesIterator"><code class="docutils literal notranslate"><span class="pre">KeyStatesIterator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.KeyboardEvent"><code class="docutils literal notranslate"><span class="pre">KeyboardEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.LicenseInfo"><code class="docutils literal notranslate"><span class="pre">LicenseInfo</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.LogAudience"><code class="docutils literal notranslate"><span class="pre">LogAudience</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.LogCentral"><code class="docutils literal notranslate"><span class="pre">LogCentral</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.LogLevel"><code class="docutils literal notranslate"><span class="pre">LogLevel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.LogVerbosity"><code class="docutils literal notranslate"><span class="pre">LogVerbosity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.Logger"><code class="docutils literal notranslate"><span class="pre">Logger</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.MeshDataReader"><code class="docutils literal notranslate"><span class="pre">MeshDataReader</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.MeshDataWriter"><code class="docutils literal notranslate"><span class="pre">MeshDataWriter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.MessageBreakLevel"><code class="docutils literal notranslate"><span class="pre">MessageBreakLevel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ModuleIdentifierWrapper"><code class="docutils literal notranslate"><span class="pre">ModuleIdentifierWrapper</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ModulePath"><code class="docutils literal notranslate"><span class="pre">ModulePath</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.MouseButton"><code class="docutils literal notranslate"><span class="pre">MouseButton</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.MouseButtons"><code class="docutils literal notranslate"><span class="pre">MouseButtons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.MouseButtonsIterator"><code class="docutils literal notranslate"><span class="pre">MouseButtonsIterator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.MouseEvent"><code class="docutils literal notranslate"><span class="pre">MouseEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.MouseInteractionEvent"><code class="docutils literal notranslate"><span class="pre">MouseInteractionEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.MouseState"><code class="docutils literal notranslate"><span class="pre">MouseState</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.MouseStates"><code class="docutils literal notranslate"><span class="pre">MouseStates</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.MouseStatesIterator"><code class="docutils literal notranslate"><span class="pre">MouseStatesIterator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.Outport"><code class="docutils literal notranslate"><span class="pre">Outport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.OutportVectorWrapper"><code class="docutils literal notranslate"><span class="pre">OutportVectorWrapper</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PathType"><code class="docutils literal notranslate"><span class="pre">PathType</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PickingEvent"><code class="docutils literal notranslate"><span class="pre">PickingEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PickingHoverState"><code class="docutils literal notranslate"><span class="pre">PickingHoverState</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PickingHoverStates"><code class="docutils literal notranslate"><span class="pre">PickingHoverStates</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PickingHoverStatesIterator"><code class="docutils literal notranslate"><span class="pre">PickingHoverStatesIterator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PickingMapper"><code class="docutils literal notranslate"><span class="pre">PickingMapper</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PickingPressItem"><code class="docutils literal notranslate"><span class="pre">PickingPressItem</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PickingPressItems"><code class="docutils literal notranslate"><span class="pre">PickingPressItems</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PickingPressItemsIterator"><code class="docutils literal notranslate"><span class="pre">PickingPressItemsIterator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PickingPressState"><code class="docutils literal notranslate"><span class="pre">PickingPressState</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PickingPressStates"><code class="docutils literal notranslate"><span class="pre">PickingPressStates</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PickingPressStatesIterator"><code class="docutils literal notranslate"><span class="pre">PickingPressStatesIterator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PickingState"><code class="docutils literal notranslate"><span class="pre">PickingState</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PickingStates"><code class="docutils literal notranslate"><span class="pre">PickingStates</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PickingStatesIterator"><code class="docutils literal notranslate"><span class="pre">PickingStatesIterator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.Port"><code class="docutils literal notranslate"><span class="pre">Port</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PortConnection"><code class="docutils literal notranslate"><span class="pre">PortConnection</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.Processor"><code class="docutils literal notranslate"><span class="pre">Processor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ProcessorFactory"><code class="docutils literal notranslate"><span class="pre">ProcessorFactory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ProcessorFactoryObject"><code class="docutils literal notranslate"><span class="pre">ProcessorFactoryObject</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ProcessorInfo"><code class="docutils literal notranslate"><span class="pre">ProcessorInfo</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ProcessorMetaData"><code class="docutils literal notranslate"><span class="pre">ProcessorMetaData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ProcessorNetwork"><code class="docutils literal notranslate"><span class="pre">ProcessorNetwork</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ProcessorVecWrapper"><code class="docutils literal notranslate"><span class="pre">ProcessorVecWrapper</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ProcessorWidget"><code class="docutils literal notranslate"><span class="pre">ProcessorWidget</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ProcessorWidgetFactory"><code class="docutils literal notranslate"><span class="pre">ProcessorWidgetFactory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ProcessorWidgetFactoryObject"><code class="docutils literal notranslate"><span class="pre">ProcessorWidgetFactoryObject</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PropertyLink"><code class="docutils literal notranslate"><span class="pre">PropertyLink</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ProtectedModule"><code class="docutils literal notranslate"><span class="pre">ProtectedModule</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PythonInport"><code class="docutils literal notranslate"><span class="pre">PythonInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.PythonOutport"><code class="docutils literal notranslate"><span class="pre">PythonOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ResizeEvent"><code class="docutils literal notranslate"><span class="pre">ResizeEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.Settings"><code class="docutils literal notranslate"><span class="pre">Settings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.Tag"><code class="docutils literal notranslate"><span class="pre">Tag</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.Tags"><code class="docutils literal notranslate"><span class="pre">Tags</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.TouchDevice"><code class="docutils literal notranslate"><span class="pre">TouchDevice</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.TouchDeviceType"><code class="docutils literal notranslate"><span class="pre">TouchDeviceType</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.TouchEvent"><code class="docutils literal notranslate"><span class="pre">TouchEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.TouchPoint"><code class="docutils literal notranslate"><span class="pre">TouchPoint</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.TouchState"><code class="docutils literal notranslate"><span class="pre">TouchState</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.TouchStates"><code class="docutils literal notranslate"><span class="pre">TouchStates</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.TouchStatesIterator"><code class="docutils literal notranslate"><span class="pre">TouchStatesIterator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.TransferFunctionDataReader"><code class="docutils literal notranslate"><span class="pre">TransferFunctionDataReader</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.TransferFunctionDataWriter"><code class="docutils literal notranslate"><span class="pre">TransferFunctionDataWriter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.Version"><code class="docutils literal notranslate"><span class="pre">Version</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ViewEvent"><code class="docutils literal notranslate"><span class="pre">ViewEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ViewEventFitData"><code class="docutils literal notranslate"><span class="pre">ViewEventFitData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ViewEventFlipUp"><code class="docutils literal notranslate"><span class="pre">ViewEventFlipUp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.VolumeDataReader"><code class="docutils literal notranslate"><span class="pre">VolumeDataReader</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.VolumeDataWriter"><code class="docutils literal notranslate"><span class="pre">VolumeDataWriter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.WheelEvent"><code class="docutils literal notranslate"><span class="pre">WheelEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.doubleVector"><code class="docutils literal notranslate"><span class="pre">doubleVector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.doubleVectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">doubleVectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.doubleVectorInport"><code class="docutils literal notranslate"><span class="pre">doubleVectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.doubleVectorMultiInport"><code class="docutils literal notranslate"><span class="pre">doubleVectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.doubleVectorOutport"><code class="docutils literal notranslate"><span class="pre">doubleVectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dvec2Vector"><code class="docutils literal notranslate"><span class="pre">dvec2Vector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dvec2VectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">dvec2VectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dvec2VectorInport"><code class="docutils literal notranslate"><span class="pre">dvec2VectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dvec2VectorMultiInport"><code class="docutils literal notranslate"><span class="pre">dvec2VectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dvec2VectorOutport"><code class="docutils literal notranslate"><span class="pre">dvec2VectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dvec3Vector"><code class="docutils literal notranslate"><span class="pre">dvec3Vector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dvec3VectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">dvec3VectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dvec3VectorInport"><code class="docutils literal notranslate"><span class="pre">dvec3VectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dvec3VectorMultiInport"><code class="docutils literal notranslate"><span class="pre">dvec3VectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dvec3VectorOutport"><code class="docutils literal notranslate"><span class="pre">dvec3VectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dvec4Vector"><code class="docutils literal notranslate"><span class="pre">dvec4Vector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dvec4VectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">dvec4VectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dvec4VectorInport"><code class="docutils literal notranslate"><span class="pre">dvec4VectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dvec4VectorMultiInport"><code class="docutils literal notranslate"><span class="pre">dvec4VectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dvec4VectorOutport"><code class="docutils literal notranslate"><span class="pre">dvec4VectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.floatVector"><code class="docutils literal notranslate"><span class="pre">floatVector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.floatVectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">floatVectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.floatVectorInport"><code class="docutils literal notranslate"><span class="pre">floatVectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.floatVectorMultiInport"><code class="docutils literal notranslate"><span class="pre">floatVectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.floatVectorOutport"><code class="docutils literal notranslate"><span class="pre">floatVectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.intVector"><code class="docutils literal notranslate"><span class="pre">intVector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.intVectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">intVectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.intVectorInport"><code class="docutils literal notranslate"><span class="pre">intVectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.intVectorMultiInport"><code class="docutils literal notranslate"><span class="pre">intVectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.intVectorOutport"><code class="docutils literal notranslate"><span class="pre">intVectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ivec2Vector"><code class="docutils literal notranslate"><span class="pre">ivec2Vector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ivec2VectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">ivec2VectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ivec2VectorInport"><code class="docutils literal notranslate"><span class="pre">ivec2VectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ivec2VectorMultiInport"><code class="docutils literal notranslate"><span class="pre">ivec2VectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ivec2VectorOutport"><code class="docutils literal notranslate"><span class="pre">ivec2VectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ivec3Vector"><code class="docutils literal notranslate"><span class="pre">ivec3Vector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ivec3VectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">ivec3VectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ivec3VectorInport"><code class="docutils literal notranslate"><span class="pre">ivec3VectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ivec3VectorMultiInport"><code class="docutils literal notranslate"><span class="pre">ivec3VectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ivec3VectorOutport"><code class="docutils literal notranslate"><span class="pre">ivec3VectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ivec4Vector"><code class="docutils literal notranslate"><span class="pre">ivec4Vector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ivec4VectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">ivec4VectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ivec4VectorInport"><code class="docutils literal notranslate"><span class="pre">ivec4VectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ivec4VectorMultiInport"><code class="docutils literal notranslate"><span class="pre">ivec4VectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ivec4VectorOutport"><code class="docutils literal notranslate"><span class="pre">ivec4VectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uintVector"><code class="docutils literal notranslate"><span class="pre">uintVector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uintVectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">uintVectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uintVectorInport"><code class="docutils literal notranslate"><span class="pre">uintVectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uintVectorMultiInport"><code class="docutils literal notranslate"><span class="pre">uintVectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uintVectorOutport"><code class="docutils literal notranslate"><span class="pre">uintVectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uvec2Vector"><code class="docutils literal notranslate"><span class="pre">uvec2Vector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uvec2VectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">uvec2VectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uvec2VectorInport"><code class="docutils literal notranslate"><span class="pre">uvec2VectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uvec2VectorMultiInport"><code class="docutils literal notranslate"><span class="pre">uvec2VectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uvec2VectorOutport"><code class="docutils literal notranslate"><span class="pre">uvec2VectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uvec3Vector"><code class="docutils literal notranslate"><span class="pre">uvec3Vector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uvec3VectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">uvec3VectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uvec3VectorInport"><code class="docutils literal notranslate"><span class="pre">uvec3VectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uvec3VectorMultiInport"><code class="docutils literal notranslate"><span class="pre">uvec3VectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uvec3VectorOutport"><code class="docutils literal notranslate"><span class="pre">uvec3VectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uvec4Vector"><code class="docutils literal notranslate"><span class="pre">uvec4Vector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uvec4VectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">uvec4VectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uvec4VectorInport"><code class="docutils literal notranslate"><span class="pre">uvec4VectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uvec4VectorMultiInport"><code class="docutils literal notranslate"><span class="pre">uvec4VectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.uvec4VectorOutport"><code class="docutils literal notranslate"><span class="pre">uvec4VectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec2Vector"><code class="docutils literal notranslate"><span class="pre">vec2Vector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec2VectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">vec2VectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec2VectorInport"><code class="docutils literal notranslate"><span class="pre">vec2VectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec2VectorMultiInport"><code class="docutils literal notranslate"><span class="pre">vec2VectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec2VectorOutport"><code class="docutils literal notranslate"><span class="pre">vec2VectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec3Vector"><code class="docutils literal notranslate"><span class="pre">vec3Vector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec3VectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">vec3VectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec3VectorInport"><code class="docutils literal notranslate"><span class="pre">vec3VectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec3VectorMultiInport"><code class="docutils literal notranslate"><span class="pre">vec3VectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec3VectorOutport"><code class="docutils literal notranslate"><span class="pre">vec3VectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec4Vector"><code class="docutils literal notranslate"><span class="pre">vec4Vector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec4VectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">vec4VectorFlatMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec4VectorInport"><code class="docutils literal notranslate"><span class="pre">vec4VectorInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec4VectorMultiInport"><code class="docutils literal notranslate"><span class="pre">vec4VectorMultiInport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec4VectorOutport"><code class="docutils literal notranslate"><span class="pre">vec4VectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.debugBreak"><code class="docutils literal notranslate"><span class="pre">debugBreak()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.getApp"><code class="docutils literal notranslate"><span class="pre">getApp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.handlePythonOutput"><code class="docutils literal notranslate"><span class="pre">handlePythonOutput()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.log"><code class="docutils literal notranslate"><span class="pre">log()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.logError"><code class="docutils literal notranslate"><span class="pre">logError()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.logInfo"><code class="docutils literal notranslate"><span class="pre">logInfo()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.logWarn"><code class="docutils literal notranslate"><span class="pre">logWarn()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.md2doc"><code class="docutils literal notranslate"><span class="pre">md2doc()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ivwdataframe.html">ivwdataframe</a></li>
-<li class="toctree-l1"><a class="reference internal" href="inviwopyapp.html">inviwopyapp</a></li>
 </ul>
 
         </div>
@@ -64,9 +312,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="inviwopy.html">inviwopy</a> &raquo;</li>
-      <li>inviwopy.camerautil</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="inviwopy.html">inviwopy</a></li>
+      <li class="breadcrumb-item active">inviwopy.camerautil</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -76,14 +324,10 @@
            <div itemprop="articleBody">
              
   <section id="module-inviwopy.camerautil">
-<span id="inviwopy-camerautil"></span><h1>inviwopy.camerautil<a class="headerlink" href="#module-inviwopy.camerautil" title="Permalink to this headline"></a></h1>
+<span id="inviwopy-camerautil"></span><h1>inviwopy.camerautil<a class="headerlink" href="#module-inviwopy.camerautil" title="Link to this heading"></a></h1>
 <p>Camera utilities</p>
 <p class="rubric">Functions</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#inviwopy.camerautil.computeCameraNearFar" title="inviwopy.camerautil.computeCameraNearFar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">computeCameraNearFar</span></code></a>(arg0, arg1, arg2)</p></td>
 <td><p></p></td>
@@ -100,11 +344,7 @@
 </tbody>
 </table>
 <p class="rubric">Classes</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#inviwopy.camerautil.Side" title="inviwopy.camerautil.Side"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Side</span></code></a></p></td>
 <td><p>Members:</p></td>
@@ -119,8 +359,8 @@
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inviwopy.camerautil.</span></span><span class="sig-name descname"><span class="pre">Side</span></span><a class="headerlink" href="#inviwopy.camerautil.Side" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inviwopy.camerautil.</span></span><span class="sig-name descname"><span class="pre">Side</span></span><a class="headerlink" href="#inviwopy.camerautil.Side" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Members:</p>
 <p>XNegative</p>
 <p>XPositive</p>
@@ -130,245 +370,245 @@
 <p>ZPositive</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.__eq__">
-<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.Side.__eq__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.Side.__eq__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.__hash__">
-<span class="sig-name descname"><span class="pre">__hash__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.Side.__hash__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__hash__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.Side.__hash__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.__index__">
-<span class="sig-name descname"><span class="pre">__index__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.Side" title="inviwopy.camerautil.Side"><span class="pre">inviwopy.camerautil.Side</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.Side.__index__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__index__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.Side" title="inviwopy.camerautil.Side"><span class="pre">inviwopy.camerautil.Side</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.Side.__index__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.Side" title="inviwopy.camerautil.Side"><span class="pre">inviwopy.camerautil.Side</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.Side.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.Side" title="inviwopy.camerautil.Side"><span class="pre">inviwopy.camerautil.Side</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.Side.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.__int__">
-<span class="sig-name descname"><span class="pre">__int__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.Side" title="inviwopy.camerautil.Side"><span class="pre">inviwopy.camerautil.Side</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.Side.__int__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__int__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.Side" title="inviwopy.camerautil.Side"><span class="pre">inviwopy.camerautil.Side</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.Side.__int__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.__ne__">
-<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.Side.__ne__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.Side.__ne__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.__repr__">
-<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.Side.__repr__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.Side.__repr__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.__str__">
-<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#inviwopy.camerautil.Side.__str__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#inviwopy.camerautil.Side.__str__" title="Link to this definition"></a></dt>
 <dd><p>name(self: handle) -&gt; str</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.XNegative">
-<span class="sig-name descname"><span class="pre">XNegative</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Side.XNegative:</span> <span class="pre">0&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.Side.XNegative" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">XNegative</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Side.XNegative:</span> <span class="pre">0&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.Side.XNegative" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.XPositive">
-<span class="sig-name descname"><span class="pre">XPositive</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Side.XPositive:</span> <span class="pre">1&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.Side.XPositive" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">XPositive</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Side.XPositive:</span> <span class="pre">1&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.Side.XPositive" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.YNegative">
-<span class="sig-name descname"><span class="pre">YNegative</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Side.YNegative:</span> <span class="pre">2&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.Side.YNegative" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">YNegative</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Side.YNegative:</span> <span class="pre">2&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.Side.YNegative" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.YPositive">
-<span class="sig-name descname"><span class="pre">YPositive</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Side.YPositive:</span> <span class="pre">3&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.Side.YPositive" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">YPositive</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Side.YPositive:</span> <span class="pre">3&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.Side.YPositive" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.ZNegative">
-<span class="sig-name descname"><span class="pre">ZNegative</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Side.ZNegative:</span> <span class="pre">4&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.Side.ZNegative" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ZNegative</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Side.ZNegative:</span> <span class="pre">4&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.Side.ZNegative" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.ZPositive">
-<span class="sig-name descname"><span class="pre">ZPositive</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Side.ZPositive:</span> <span class="pre">5&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.Side.ZPositive" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ZPositive</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Side.ZPositive:</span> <span class="pre">5&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.Side.ZPositive" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#inviwopy.camerautil.Side.name" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#inviwopy.camerautil.Side.name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="inviwopy.camerautil.Side.value">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#inviwopy.camerautil.Side.value" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#inviwopy.camerautil.Side.value" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateLookRanges">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inviwopy.camerautil.</span></span><span class="sig-name descname"><span class="pre">UpdateLookRanges</span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inviwopy.camerautil.</span></span><span class="sig-name descname"><span class="pre">UpdateLookRanges</span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Members:</p>
 <p>Yes</p>
 <p>No</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateLookRanges.__eq__">
-<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__eq__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__eq__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateLookRanges.__hash__">
-<span class="sig-name descname"><span class="pre">__hash__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__hash__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__hash__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__hash__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateLookRanges.__index__">
-<span class="sig-name descname"><span class="pre">__index__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges" title="inviwopy.camerautil.UpdateLookRanges"><span class="pre">inviwopy.camerautil.UpdateLookRanges</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__index__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__index__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges" title="inviwopy.camerautil.UpdateLookRanges"><span class="pre">inviwopy.camerautil.UpdateLookRanges</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__index__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateLookRanges.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges" title="inviwopy.camerautil.UpdateLookRanges"><span class="pre">inviwopy.camerautil.UpdateLookRanges</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges" title="inviwopy.camerautil.UpdateLookRanges"><span class="pre">inviwopy.camerautil.UpdateLookRanges</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateLookRanges.__int__">
-<span class="sig-name descname"><span class="pre">__int__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges" title="inviwopy.camerautil.UpdateLookRanges"><span class="pre">inviwopy.camerautil.UpdateLookRanges</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__int__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__int__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.UpdateLookRanges" title="inviwopy.camerautil.UpdateLookRanges"><span class="pre">inviwopy.camerautil.UpdateLookRanges</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__int__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateLookRanges.__ne__">
-<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__ne__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__ne__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateLookRanges.__repr__">
-<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__repr__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__repr__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateLookRanges.__str__">
-<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__str__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.__str__" title="Link to this definition"></a></dt>
 <dd><p>name(self: handle) -&gt; str</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateLookRanges.No">
-<span class="sig-name descname"><span class="pre">No</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UpdateLookRanges.No:</span> <span class="pre">1&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.No" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">No</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UpdateLookRanges.No:</span> <span class="pre">1&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.No" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateLookRanges.Yes">
-<span class="sig-name descname"><span class="pre">Yes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UpdateLookRanges.Yes:</span> <span class="pre">0&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.Yes" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">Yes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UpdateLookRanges.Yes:</span> <span class="pre">0&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.Yes" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateLookRanges.name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.name" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateLookRanges.value">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.value" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateLookRanges.value" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateNearFar">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inviwopy.camerautil.</span></span><span class="sig-name descname"><span class="pre">UpdateNearFar</span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inviwopy.camerautil.</span></span><span class="sig-name descname"><span class="pre">UpdateNearFar</span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Members:</p>
 <p>Yes</p>
 <p>No</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateNearFar.__eq__">
-<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__eq__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__eq__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateNearFar.__hash__">
-<span class="sig-name descname"><span class="pre">__hash__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__hash__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__hash__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__hash__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateNearFar.__index__">
-<span class="sig-name descname"><span class="pre">__index__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar" title="inviwopy.camerautil.UpdateNearFar"><span class="pre">inviwopy.camerautil.UpdateNearFar</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__index__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__index__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar" title="inviwopy.camerautil.UpdateNearFar"><span class="pre">inviwopy.camerautil.UpdateNearFar</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__index__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateNearFar.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar" title="inviwopy.camerautil.UpdateNearFar"><span class="pre">inviwopy.camerautil.UpdateNearFar</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar" title="inviwopy.camerautil.UpdateNearFar"><span class="pre">inviwopy.camerautil.UpdateNearFar</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateNearFar.__int__">
-<span class="sig-name descname"><span class="pre">__int__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar" title="inviwopy.camerautil.UpdateNearFar"><span class="pre">inviwopy.camerautil.UpdateNearFar</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__int__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__int__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inviwopy.camerautil.UpdateNearFar" title="inviwopy.camerautil.UpdateNearFar"><span class="pre">inviwopy.camerautil.UpdateNearFar</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__int__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateNearFar.__ne__">
-<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__ne__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__ne__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateNearFar.__repr__">
-<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__repr__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__repr__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateNearFar.__str__">
-<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__str__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.__str__" title="Link to this definition"></a></dt>
 <dd><p>name(self: handle) -&gt; str</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateNearFar.No">
-<span class="sig-name descname"><span class="pre">No</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UpdateNearFar.No:</span> <span class="pre">1&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.No" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">No</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UpdateNearFar.No:</span> <span class="pre">1&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.No" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateNearFar.Yes">
-<span class="sig-name descname"><span class="pre">Yes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UpdateNearFar.Yes:</span> <span class="pre">0&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.Yes" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">Yes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UpdateNearFar.Yes:</span> <span class="pre">0&gt;</span></em><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.Yes" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateNearFar.name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.name" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="inviwopy.camerautil.UpdateNearFar.value">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.value" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#inviwopy.camerautil.UpdateNearFar.value" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="inviwopy.camerautil.computeCameraNearFar">
-<span class="sig-prename descclassname"><span class="pre">inviwopy.camerautil.</span></span><span class="sig-name descname"><span class="pre">computeCameraNearFar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="inviwopy.glm.html#inviwopy.glm.mat4" title="inviwopy.glm.mat4"><span class="pre">inviwopy.glm.mat4</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#float" title="(in Python v3.10)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#float" title="(in Python v3.10)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#float" title="(in Python v3.10)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#float" title="(in Python v3.10)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#inviwopy.camerautil.computeCameraNearFar" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">inviwopy.camerautil.</span></span><span class="sig-name descname"><span class="pre">computeCameraNearFar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="inviwopy.glm.html#inviwopy.glm.mat4" title="inviwopy.glm.mat4"><span class="pre">inviwopy.glm.mat4</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#float" title="(in Python v3.10)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#float" title="(in Python v3.10)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#float" title="(in Python v3.10)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#float" title="(in Python v3.10)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#inviwopy.camerautil.computeCameraNearFar" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="inviwopy.camerautil.setCameraLookRanges">
-<span class="sig-prename descclassname"><span class="pre">inviwopy.camerautil.</span></span><span class="sig-name descname"><span class="pre">setCameraLookRanges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg0:</span> <span class="pre">inviwo::CameraProperty</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1:</span> <span class="pre">inviwopy.glm.mat4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg2:</span> <span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.setCameraLookRanges" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">inviwopy.camerautil.</span></span><span class="sig-name descname"><span class="pre">setCameraLookRanges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg0:</span> <span class="pre">inviwo::CameraProperty</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1:</span> <span class="pre">inviwopy.glm.mat4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg2:</span> <span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.setCameraLookRanges" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="inviwopy.camerautil.setCameraNearFar">
-<span class="sig-prename descclassname"><span class="pre">inviwopy.camerautil.</span></span><span class="sig-name descname"><span class="pre">setCameraNearFar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg0:</span> <span class="pre">inviwo::CameraProperty</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1:</span> <span class="pre">inviwopy.glm.mat4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg2:</span> <span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg3:</span> <span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.setCameraNearFar" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">inviwopy.camerautil.</span></span><span class="sig-name descname"><span class="pre">setCameraNearFar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg0:</span> <span class="pre">inviwo::CameraProperty</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1:</span> <span class="pre">inviwopy.glm.mat4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg2:</span> <span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg3:</span> <span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#inviwopy.camerautil.setCameraNearFar" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="inviwopy.camerautil.setCameraView">
-<span class="sig-prename descclassname"><span class="pre">inviwopy.camerautil.</span></span><span class="sig-name descname"><span class="pre">setCameraView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inviwopy.camerautil.setCameraView" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">inviwopy.camerautil.</span></span><span class="sig-name descname"><span class="pre">setCameraView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inviwopy.camerautil.setCameraView" title="Link to this definition"></a></dt>
 <dd><p>Overloaded function.</p>
 <ol class="arabic simple">
 <li><p>setCameraView(cameraProperty: inviwo::CameraProperty, boundingBox: inviwopy.glm.mat4, fitRatio: float = 1.0499999523162842, updateNearFar: inviwopy.camerautil.UpdateNearFar = &lt;UpdateNearFar.No: 1&gt;, updateLookRanges: inviwopy.camerautil.UpdateLookRanges = &lt;UpdateLookRanges.No: 1&gt;) -&gt; None</p></li>
@@ -384,13 +624,13 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="inviwopy.properties.html" class="btn btn-neutral float-left" title="inviwopy.properties" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="ivwdataframe.html" class="btn btn-neutral float-right" title="ivwdataframe" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="inviwopy.doc.html" class="btn btn-neutral float-right" title="inviwopy.doc" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Inviwo Foundation.</p>
+    <p>&#169; Copyright 2023, Inviwo Foundation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

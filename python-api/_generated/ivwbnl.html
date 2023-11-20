@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ivwbnl &mdash; Inviwo Python API 0.9.12-pre documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=28b1853b"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="inviwopy" href="inviwopy.html" />
+    <link rel="prev" title="ivwbase.algorithm" href="ivwbase.algorithm.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Inviwo Python API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="ivwbase.html">ivwbase</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ivwbnl</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ivwbnl.BrushingAction"><code class="docutils literal notranslate"><span class="pre">BrushingAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAction.__eq__"><code class="docutils literal notranslate"><span class="pre">BrushingAction.__eq__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAction.__hash__"><code class="docutils literal notranslate"><span class="pre">BrushingAction.__hash__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAction.__index__"><code class="docutils literal notranslate"><span class="pre">BrushingAction.__index__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAction.__init__"><code class="docutils literal notranslate"><span class="pre">BrushingAction.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAction.__int__"><code class="docutils literal notranslate"><span class="pre">BrushingAction.__int__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAction.__ne__"><code class="docutils literal notranslate"><span class="pre">BrushingAction.__ne__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAction.__repr__"><code class="docutils literal notranslate"><span class="pre">BrushingAction.__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAction.__str__"><code class="docutils literal notranslate"><span class="pre">BrushingAction.__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAction.Filter"><code class="docutils literal notranslate"><span class="pre">BrushingAction.Filter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAction.Highlight"><code class="docutils literal notranslate"><span class="pre">BrushingAction.Highlight</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAction.Select"><code class="docutils literal notranslate"><span class="pre">BrushingAction.Select</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAction.name"><code class="docutils literal notranslate"><span class="pre">BrushingAction.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAction.value"><code class="docutils literal notranslate"><span class="pre">BrushingAction.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.__init__"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.brush"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.brush()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.filter"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.filter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.getFilteredIndices"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.getFilteredIndices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.getHighlightedIndices"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.getHighlightedIndices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.getIndices"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.getIndices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.getInvalidationLevels"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.getInvalidationLevels()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.getManager"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.getManager()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.getModifiedActions"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.getModifiedActions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.getSelectedIndices"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.getSelectedIndices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.highlight"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.highlight()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.isFiltered"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.isFiltered()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.isFilteringModified"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.isFilteringModified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.isHighlightModified"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.isHighlightModified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.isHighlighted"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.isHighlighted()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.isSelected"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.isSelected()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.isSelectionModified"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.isSelectionModified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.select"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.select()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport.setInvalidationLevels"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingInport.setInvalidationLevels()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.__init__"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.brush"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.brush()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.clearHighlighted"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.clearHighlighted()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.clearIndices"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.clearIndices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.clearModifications"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.clearModifications()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.clearSelected"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.clearSelected()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.contains"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.contains()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.filter"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.filter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.getFilteredIndices"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.getFilteredIndices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.getHighlightedIndices"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.getHighlightedIndices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.getIndices"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.getIndices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.getInvalidationLevel"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.getInvalidationLevel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.getInvalidationLevels"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.getInvalidationLevels()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.getModifiedActions"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.getModifiedActions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.getModifiedTargets"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.getModifiedTargets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.getNumber"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.getNumber()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.getNumberOfFiltered"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.getNumberOfFiltered()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.getNumberOfHighlighted"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.getNumberOfHighlighted()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.getNumberOfSelected"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.getNumberOfSelected()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.getSelectedIndices"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.getSelectedIndices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.getTargets"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.getTargets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.hasIndices"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.hasIndices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.highlight"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.highlight()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.isFiltered"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.isFiltered()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.isFilteringModified"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.isFilteringModified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.isHighlightModified"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.isHighlightModified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.isHighlighted"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.isHighlighted()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.isModified"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.isModified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.isSelected"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.isSelected()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.isSelectionModified"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.isSelectionModified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.isTargetModified"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.isTargetModified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.onBrush"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.onBrush()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.propagateModifications"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.propagateModifications()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.select"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.select()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.setInvalidationLevels"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.setInvalidationLevels()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager.setParent"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingManager.setParent()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingOutport"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingOutport</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingOutport.__init__"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingOutport.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingOutport.getInvalidationLevels"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingOutport.getInvalidationLevels()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingOutport.getManager"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingOutport.getManager()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingOutport.setInvalidationLevels"><code class="docutils literal notranslate"><span class="pre">BrushingAndLinkingOutport.setInvalidationLevels()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwbnl.BrushingModification"><code class="docutils literal notranslate"><span class="pre">BrushingModification</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.__and__"><code class="docutils literal notranslate"><span class="pre">BrushingModification.__and__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.__eq__"><code class="docutils literal notranslate"><span class="pre">BrushingModification.__eq__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.__hash__"><code class="docutils literal notranslate"><span class="pre">BrushingModification.__hash__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.__index__"><code class="docutils literal notranslate"><span class="pre">BrushingModification.__index__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.__init__"><code class="docutils literal notranslate"><span class="pre">BrushingModification.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.__int__"><code class="docutils literal notranslate"><span class="pre">BrushingModification.__int__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.__ne__"><code class="docutils literal notranslate"><span class="pre">BrushingModification.__ne__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.__or__"><code class="docutils literal notranslate"><span class="pre">BrushingModification.__or__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.__repr__"><code class="docutils literal notranslate"><span class="pre">BrushingModification.__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.__str__"><code class="docutils literal notranslate"><span class="pre">BrushingModification.__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.__xor__"><code class="docutils literal notranslate"><span class="pre">BrushingModification.__xor__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.fromAction"><code class="docutils literal notranslate"><span class="pre">BrushingModification.fromAction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.Filtered"><code class="docutils literal notranslate"><span class="pre">BrushingModification.Filtered</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.Highlighted"><code class="docutils literal notranslate"><span class="pre">BrushingModification.Highlighted</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.Selected"><code class="docutils literal notranslate"><span class="pre">BrushingModification.Selected</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.name"><code class="docutils literal notranslate"><span class="pre">BrushingModification.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModification.value"><code class="docutils literal notranslate"><span class="pre">BrushingModification.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwbnl.BrushingModifications"><code class="docutils literal notranslate"><span class="pre">BrushingModifications</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.__and__"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.__and__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.__eq__"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.__eq__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.__iand__"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.__iand__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.__init__"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.__invert__"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.__invert__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.__ior__"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.__ior__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.__iter__"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.__iter__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.__ixor__"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.__ixor__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.__ne__"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.__ne__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.__or__"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.__or__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.__repr__"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.__str__"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.__xor__"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.__xor__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.clear"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.clear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.contains"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.contains()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.count"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.count()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.empty"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.empty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.erase"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.erase()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.find"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.find()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.insert"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.insert()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.max_size"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.max_size()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.size"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.size()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModifications.__hash__"><code class="docutils literal notranslate"><span class="pre">BrushingModifications.__hash__</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwbnl.BrushingModificationsIterator"><code class="docutils literal notranslate"><span class="pre">BrushingModificationsIterator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModificationsIterator.__init__"><code class="docutils literal notranslate"><span class="pre">BrushingModificationsIterator.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModificationsIterator.__iter__"><code class="docutils literal notranslate"><span class="pre">BrushingModificationsIterator.__iter__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingModificationsIterator.__next__"><code class="docutils literal notranslate"><span class="pre">BrushingModificationsIterator.__next__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwbnl.BrushingTarget"><code class="docutils literal notranslate"><span class="pre">BrushingTarget</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTarget.__eq__"><code class="docutils literal notranslate"><span class="pre">BrushingTarget.__eq__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTarget.__ge__"><code class="docutils literal notranslate"><span class="pre">BrushingTarget.__ge__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTarget.__gt__"><code class="docutils literal notranslate"><span class="pre">BrushingTarget.__gt__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTarget.__init__"><code class="docutils literal notranslate"><span class="pre">BrushingTarget.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTarget.__le__"><code class="docutils literal notranslate"><span class="pre">BrushingTarget.__le__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTarget.__lt__"><code class="docutils literal notranslate"><span class="pre">BrushingTarget.__lt__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTarget.__ne__"><code class="docutils literal notranslate"><span class="pre">BrushingTarget.__ne__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTarget.__str__"><code class="docutils literal notranslate"><span class="pre">BrushingTarget.__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTarget.Column"><code class="docutils literal notranslate"><span class="pre">BrushingTarget.Column</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTarget.Row"><code class="docutils literal notranslate"><span class="pre">BrushingTarget.Row</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTarget.__hash__"><code class="docutils literal notranslate"><span class="pre">BrushingTarget.__hash__</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwbnl.BrushingTargetsInvalidationLevel"><code class="docutils literal notranslate"><span class="pre">BrushingTargetsInvalidationLevel</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTargetsInvalidationLevel.__init__"><code class="docutils literal notranslate"><span class="pre">BrushingTargetsInvalidationLevel.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTargetsInvalidationLevel.contains"><code class="docutils literal notranslate"><span class="pre">BrushingTargetsInvalidationLevel.contains()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTargetsInvalidationLevel.invalidationLevel"><code class="docutils literal notranslate"><span class="pre">BrushingTargetsInvalidationLevel.invalidationLevel</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTargetsInvalidationLevel.modifications"><code class="docutils literal notranslate"><span class="pre">BrushingTargetsInvalidationLevel.modifications</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.BrushingTargetsInvalidationLevel.targets"><code class="docutils literal notranslate"><span class="pre">BrushingTargetsInvalidationLevel.targets</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwbnl.IndexList"><code class="docutils literal notranslate"><span class="pre">IndexList</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.IndexList.__init__"><code class="docutils literal notranslate"><span class="pre">IndexList.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.IndexList.clear"><code class="docutils literal notranslate"><span class="pre">IndexList.clear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.IndexList.contains"><code class="docutils literal notranslate"><span class="pre">IndexList.contains()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.IndexList.empty"><code class="docutils literal notranslate"><span class="pre">IndexList.empty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.IndexList.getIndices"><code class="docutils literal notranslate"><span class="pre">IndexList.getIndices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.IndexList.removeSource"><code class="docutils literal notranslate"><span class="pre">IndexList.removeSource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.IndexList.set"><code class="docutils literal notranslate"><span class="pre">IndexList.set()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbnl.IndexList.size"><code class="docutils literal notranslate"><span class="pre">IndexList.size()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="inviwopy.html">inviwopy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ivwdataframe.html">ivwdataframe</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Inviwo Python API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ivwbnl</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ivwbnl">
+<span id="ivwbnl"></span><h1>ivwbnl<a class="headerlink" href="#module-ivwbnl" title="Link to this heading"></a></h1>
+<p>BrushingAndLinking Module API</p>
+<p class="rubric">Modules</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ivwbnl.BrushingAction" title="ivwbnl.BrushingAction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BrushingAction</span></code></a></p></td>
+<td><p>Members:</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport" title="ivwbnl.BrushingAndLinkingInport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BrushingAndLinkingInport</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager" title="ivwbnl.BrushingAndLinkingManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BrushingAndLinkingManager</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ivwbnl.BrushingAndLinkingOutport" title="ivwbnl.BrushingAndLinkingOutport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BrushingAndLinkingOutport</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BrushingModification</span></code></a></p></td>
+<td><p>Members:</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BrushingModifications</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ivwbnl.BrushingModificationsIterator" title="ivwbnl.BrushingModificationsIterator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BrushingModificationsIterator</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BrushingTarget</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ivwbnl.BrushingTargetsInvalidationLevel" title="ivwbnl.BrushingTargetsInvalidationLevel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BrushingTargetsInvalidationLevel</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ivwbnl.IndexList" title="ivwbnl.IndexList"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IndexList</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ivwbnl.</span></span><span class="sig-name descname"><span class="pre">BrushingAction</span></span><a class="headerlink" href="#ivwbnl.BrushingAction" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Members:</p>
+<p>Filter</p>
+<p>Select</p>
+<p>Highlight</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAction.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAction.__eq__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAction.__hash__">
+<span class="sig-name descname"><span class="pre">__hash__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAction.__hash__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAction.__index__">
+<span class="sig-name descname"><span class="pre">__index__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAction" title="ivwbnl.BrushingAction"><span class="pre">ivwbnl.BrushingAction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAction.__index__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAction.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAction" title="ivwbnl.BrushingAction"><span class="pre">ivwbnl.BrushingAction</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAction.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAction.__int__">
+<span class="sig-name descname"><span class="pre">__int__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAction" title="ivwbnl.BrushingAction"><span class="pre">ivwbnl.BrushingAction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAction.__int__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAction.__ne__">
+<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAction.__ne__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAction.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAction.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAction.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ivwbnl.BrushingAction.__str__" title="Link to this definition"></a></dt>
+<dd><p>name(self: handle) -&gt; str</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAction.Filter">
+<span class="sig-name descname"><span class="pre">Filter</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;BrushingAction.Filter:</span> <span class="pre">0&gt;</span></em><a class="headerlink" href="#ivwbnl.BrushingAction.Filter" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAction.Highlight">
+<span class="sig-name descname"><span class="pre">Highlight</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;BrushingAction.Highlight:</span> <span class="pre">2&gt;</span></em><a class="headerlink" href="#ivwbnl.BrushingAction.Highlight" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAction.Select">
+<span class="sig-name descname"><span class="pre">Select</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;BrushingAction.Select:</span> <span class="pre">1&gt;</span></em><a class="headerlink" href="#ivwbnl.BrushingAction.Select" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAction.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#ivwbnl.BrushingAction.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAction.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#ivwbnl.BrushingAction.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ivwbnl.</span></span><span class="sig-name descname"><span class="pre">BrushingAndLinkingInport</span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="inviwopy.html#inviwopy.Inport" title="inviwopy.Inport"><code class="xref py py-class docutils literal notranslate"><span class="pre">Inport</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.__init__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>__init__(self: ivwbnl.BrushingAndLinkingInport, identifier: str) -&gt; None</p></li>
+<li><p>__init__(self: ivwbnl.BrushingAndLinkingInport, identifier: str, invalidationLevels: List[ivwbnl.BrushingTargetsInvalidationLevel]) -&gt; None</p></li>
+<li><p>__init__(self: ivwbnl.BrushingAndLinkingInport, identifier: str, help: inviwopy.doc.Document) -&gt; None</p></li>
+<li><p>__init__(self: ivwbnl.BrushingAndLinkingInport, identifier: str, help: inviwopy.doc.Document, invalidationLevels: List[ivwbnl.BrushingTargetsInvalidationLevel]) -&gt; None</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.brush">
+<span class="sig-name descname"><span class="pre">brush</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport" title="ivwbnl.BrushingAndLinkingInport"><span class="pre">ivwbnl.BrushingAndLinkingInport</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAction" title="ivwbnl.BrushingAction"><span class="pre">ivwbnl.BrushingAction</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="inviwopy.data.html#inviwopy.data.BitSet" title="inviwopy.data.BitSet"><span class="pre">inviwopy.data.BitSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.brush" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.filter">
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices:</span> <span class="pre">inviwopy.data.BitSet</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D97A18F0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.filter" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.getFilteredIndices">
+<span class="sig-name descname"><span class="pre">getFilteredIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D947A0B0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="inviwopy.data.html#inviwopy.data.BitSet" title="inviwopy.data.BitSet"><span class="pre">inviwopy.data.BitSet</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.getFilteredIndices" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.getHighlightedIndices">
+<span class="sig-name descname"><span class="pre">getHighlightedIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D94AB030&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="inviwopy.data.html#inviwopy.data.BitSet" title="inviwopy.data.BitSet"><span class="pre">inviwopy.data.BitSet</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.getHighlightedIndices" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.getIndices">
+<span class="sig-name descname"><span class="pre">getIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action:</span> <span class="pre">ivwbnl.BrushingAction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D93BDAF0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="inviwopy.data.html#inviwopy.data.BitSet" title="inviwopy.data.BitSet"><span class="pre">inviwopy.data.BitSet</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.getIndices" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.getInvalidationLevels">
+<span class="sig-name descname"><span class="pre">getInvalidationLevels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport" title="ivwbnl.BrushingAndLinkingInport"><span class="pre">ivwbnl.BrushingAndLinkingInport</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ivwbnl.BrushingTargetsInvalidationLevel" title="ivwbnl.BrushingTargetsInvalidationLevel"><span class="pre">ivwbnl.BrushingTargetsInvalidationLevel</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.getInvalidationLevels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.getManager">
+<span class="sig-name descname"><span class="pre">getManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport" title="ivwbnl.BrushingAndLinkingInport"><span class="pre">ivwbnl.BrushingAndLinkingInport</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">inviwo::BrushingAndLinkingManager</span></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.getManager" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.getModifiedActions">
+<span class="sig-name descname"><span class="pre">getModifiedActions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport" title="ivwbnl.BrushingAndLinkingInport"><span class="pre">ivwbnl.BrushingAndLinkingInport</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.getModifiedActions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.getSelectedIndices">
+<span class="sig-name descname"><span class="pre">getSelectedIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D97A22B0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="inviwopy.data.html#inviwopy.data.BitSet" title="inviwopy.data.BitSet"><span class="pre">inviwopy.data.BitSet</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.getSelectedIndices" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.highlight">
+<span class="sig-name descname"><span class="pre">highlight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices:</span> <span class="pre">inviwopy.data.BitSet</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D97A1B30&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.highlight" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.isFiltered">
+<span class="sig-name descname"><span class="pre">isFiltered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D3062AF0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.isFiltered" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.isFilteringModified">
+<span class="sig-name descname"><span class="pre">isFilteringModified</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport" title="ivwbnl.BrushingAndLinkingInport"><span class="pre">ivwbnl.BrushingAndLinkingInport</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.isFilteringModified" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.isHighlightModified">
+<span class="sig-name descname"><span class="pre">isHighlightModified</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport" title="ivwbnl.BrushingAndLinkingInport"><span class="pre">ivwbnl.BrushingAndLinkingInport</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.isHighlightModified" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.isHighlighted">
+<span class="sig-name descname"><span class="pre">isHighlighted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D94A95F0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.isHighlighted" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.isSelected">
+<span class="sig-name descname"><span class="pre">isSelected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D93E9C70&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.isSelected" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.isSelectionModified">
+<span class="sig-name descname"><span class="pre">isSelectionModified</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport" title="ivwbnl.BrushingAndLinkingInport"><span class="pre">ivwbnl.BrushingAndLinkingInport</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.isSelectionModified" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices:</span> <span class="pre">inviwopy.data.BitSet</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D96FD270&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.select" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingInport.setInvalidationLevels">
+<span class="sig-name descname"><span class="pre">setInvalidationLevels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingInport" title="ivwbnl.BrushingAndLinkingInport"><span class="pre">ivwbnl.BrushingAndLinkingInport</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ivwbnl.BrushingTargetsInvalidationLevel" title="ivwbnl.BrushingTargetsInvalidationLevel"><span class="pre">ivwbnl.BrushingTargetsInvalidationLevel</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingInport.setInvalidationLevels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ivwbnl.</span></span><span class="sig-name descname"><span class="pre">BrushingAndLinkingManager</span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.__init__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>__init__(self: ivwbnl.BrushingAndLinkingManager, inport: ivwbnl.BrushingAndLinkingInport) -&gt; None</p></li>
+<li><p>__init__(self: ivwbnl.BrushingAndLinkingManager, inport: ivwbnl.BrushingAndLinkingInport, invalidationLevels: List[ivwbnl.BrushingTargetsInvalidationLevel]) -&gt; None</p></li>
+<li><p>__init__(self: ivwbnl.BrushingAndLinkingManager, outport: ivwbnl.BrushingAndLinkingOutport) -&gt; None</p></li>
+<li><p>__init__(self: ivwbnl.BrushingAndLinkingManager, outport: ivwbnl.BrushingAndLinkingOutport, invalidationLevels: List[ivwbnl.BrushingTargetsInvalidationLevel]) -&gt; None</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.brush">
+<span class="sig-name descname"><span class="pre">brush</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager" title="ivwbnl.BrushingAndLinkingManager"><span class="pre">ivwbnl.BrushingAndLinkingManager</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAction" title="ivwbnl.BrushingAction"><span class="pre">ivwbnl.BrushingAction</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="inviwopy.data.html#inviwopy.data.BitSet" title="inviwopy.data.BitSet"><span class="pre">inviwopy.data.BitSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.brush" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.clearHighlighted">
+<span class="sig-name descname"><span class="pre">clearHighlighted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D946FE70&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.clearHighlighted" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.clearIndices">
+<span class="sig-name descname"><span class="pre">clearIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager" title="ivwbnl.BrushingAndLinkingManager"><span class="pre">ivwbnl.BrushingAndLinkingManager</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAction" title="ivwbnl.BrushingAction"><span class="pre">ivwbnl.BrushingAction</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.clearIndices" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.clearModifications">
+<span class="sig-name descname"><span class="pre">clearModifications</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager" title="ivwbnl.BrushingAndLinkingManager"><span class="pre">ivwbnl.BrushingAndLinkingManager</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.clearModifications" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.clearSelected">
+<span class="sig-name descname"><span class="pre">clearSelected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D9713530&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.clearSelected" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action:</span> <span class="pre">ivwbnl.BrushingAction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D9710730&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.contains" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.filter">
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source:</span> <span class="pre">inviwopy.data.BitSet</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices:</span> <span class="pre">ivwbnl.BrushingTarget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D97A34B0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.filter" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.getFilteredIndices">
+<span class="sig-name descname"><span class="pre">getFilteredIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D9724530&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="inviwopy.data.html#inviwopy.data.BitSet" title="inviwopy.data.BitSet"><span class="pre">inviwopy.data.BitSet</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.getFilteredIndices" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.getHighlightedIndices">
+<span class="sig-name descname"><span class="pre">getHighlightedIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D9502BF0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="inviwopy.data.html#inviwopy.data.BitSet" title="inviwopy.data.BitSet"><span class="pre">inviwopy.data.BitSet</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.getHighlightedIndices" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.getIndices">
+<span class="sig-name descname"><span class="pre">getIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action:</span> <span class="pre">ivwbnl.BrushingAction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D9777170&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="inviwopy.data.html#inviwopy.data.BitSet" title="inviwopy.data.BitSet"><span class="pre">inviwopy.data.BitSet</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.getIndices" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.getInvalidationLevel">
+<span class="sig-name descname"><span class="pre">getInvalidationLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager" title="ivwbnl.BrushingAndLinkingManager"><span class="pre">ivwbnl.BrushingAndLinkingManager</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="inviwopy.properties.html#inviwopy.properties.InvalidationLevel" title="inviwopy.properties.InvalidationLevel"><span class="pre">inviwopy.properties.InvalidationLevel</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.getInvalidationLevel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.getInvalidationLevels">
+<span class="sig-name descname"><span class="pre">getInvalidationLevels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager" title="ivwbnl.BrushingAndLinkingManager"><span class="pre">ivwbnl.BrushingAndLinkingManager</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ivwbnl.BrushingTargetsInvalidationLevel" title="ivwbnl.BrushingTargetsInvalidationLevel"><span class="pre">ivwbnl.BrushingTargetsInvalidationLevel</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.getInvalidationLevels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.getModifiedActions">
+<span class="sig-name descname"><span class="pre">getModifiedActions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager" title="ivwbnl.BrushingAndLinkingManager"><span class="pre">ivwbnl.BrushingAndLinkingManager</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.getModifiedActions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.getModifiedTargets">
+<span class="sig-name descname"><span class="pre">getModifiedTargets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager" title="ivwbnl.BrushingAndLinkingManager"><span class="pre">ivwbnl.BrushingAndLinkingManager</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.getModifiedTargets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.getNumber">
+<span class="sig-name descname"><span class="pre">getNumber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action:</span> <span class="pre">ivwbnl.BrushingAction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D93BC330&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.getNumber" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.getNumberOfFiltered">
+<span class="sig-name descname"><span class="pre">getNumberOfFiltered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D945DCB0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.getNumberOfFiltered" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.getNumberOfHighlighted">
+<span class="sig-name descname"><span class="pre">getNumberOfHighlighted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D945F2B0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.getNumberOfHighlighted" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.getNumberOfSelected">
+<span class="sig-name descname"><span class="pre">getNumberOfSelected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D96FFA70&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.getNumberOfSelected" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.getSelectedIndices">
+<span class="sig-name descname"><span class="pre">getSelectedIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D943F530&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="inviwopy.data.html#inviwopy.data.BitSet" title="inviwopy.data.BitSet"><span class="pre">inviwopy.data.BitSet</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.getSelectedIndices" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.getTargets">
+<span class="sig-name descname"><span class="pre">getTargets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.getTargets" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>getTargets(self: ivwbnl.BrushingAndLinkingManager) -&gt; List[Tuple[ivwbnl.BrushingAction, List[ivwbnl.BrushingTarget]]]</p></li>
+<li><p>getTargets(self: ivwbnl.BrushingAndLinkingManager, action: ivwbnl.BrushingAction) -&gt; List[ivwbnl.BrushingTarget]</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.hasIndices">
+<span class="sig-name descname"><span class="pre">hasIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action:</span> <span class="pre">ivwbnl.BrushingAction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D93D1570&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.hasIndices" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.highlight">
+<span class="sig-name descname"><span class="pre">highlight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices:</span> <span class="pre">inviwopy.data.BitSet</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D93EB6B0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.highlight" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.isFiltered">
+<span class="sig-name descname"><span class="pre">isFiltered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D31D1C30&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.isFiltered" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.isFilteringModified">
+<span class="sig-name descname"><span class="pre">isFilteringModified</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D97A3830&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.isFilteringModified" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.isHighlightModified">
+<span class="sig-name descname"><span class="pre">isHighlightModified</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D9775DF0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.isHighlightModified" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.isHighlighted">
+<span class="sig-name descname"><span class="pre">isHighlighted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D96FD4B0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.isHighlighted" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.isModified">
+<span class="sig-name descname"><span class="pre">isModified</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager" title="ivwbnl.BrushingAndLinkingManager"><span class="pre">ivwbnl.BrushingAndLinkingManager</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.isModified" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.isSelected">
+<span class="sig-name descname"><span class="pre">isSelected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D94C7170&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.isSelected" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.isSelectionModified">
+<span class="sig-name descname"><span class="pre">isSelectionModified</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D9500D70&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.isSelectionModified" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.isTargetModified">
+<span class="sig-name descname"><span class="pre">isTargetModified</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.isTargetModified" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>isTargetModified(self: ivwbnl.BrushingAndLinkingManager, target: ivwbnl.BrushingTarget, modifications: ivwbnl.BrushingModifications) -&gt; bool</p></li>
+<li><p>isTargetModified(self: ivwbnl.BrushingAndLinkingManager, target: ivwbnl.BrushingTarget, action: ivwbnl.BrushingAction) -&gt; bool</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.onBrush">
+<span class="sig-name descname"><span class="pre">onBrush</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback:</span> <span class="pre">std::function&lt;void</span> <span class="pre">__cdecl(inviwo::BrushingAction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inviwo::BrushingTarget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inviwo::BitSet</span> <span class="pre">const</span> <span class="pre">&amp;</span> <span class="pre">__ptr64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std::basic_string_view&lt;char</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std::char_traits&lt;char&gt;</span> <span class="pre">&gt;)&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.onBrush" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.propagateModifications">
+<span class="sig-name descname"><span class="pre">propagateModifications</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager" title="ivwbnl.BrushingAndLinkingManager"><span class="pre">ivwbnl.BrushingAndLinkingManager</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.propagateModifications" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwbnl.BrushingAndLinkingManager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices:</span> <span class="pre">inviwopy.data.BitSet</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target:</span> <span class="pre">ivwbnl.BrushingTarget</span> <span class="pre">=</span> <span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x00000220D97A3470&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.select" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.setInvalidationLevels">
+<span class="sig-name descname"><span class="pre">setInvalidationLevels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager" title="ivwbnl.BrushingAndLinkingManager"><span class="pre">ivwbnl.BrushingAndLinkingManager</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ivwbnl.BrushingTargetsInvalidationLevel" title="ivwbnl.BrushingTargetsInvalidationLevel"><span class="pre">ivwbnl.BrushingTargetsInvalidationLevel</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.setInvalidationLevels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingManager.setParent">
+<span class="sig-name descname"><span class="pre">setParent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager" title="ivwbnl.BrushingAndLinkingManager"><span class="pre">ivwbnl.BrushingAndLinkingManager</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingManager" title="ivwbnl.BrushingAndLinkingManager"><span class="pre">ivwbnl.BrushingAndLinkingManager</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingManager.setParent" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingOutport">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ivwbnl.</span></span><span class="sig-name descname"><span class="pre">BrushingAndLinkingOutport</span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingOutport" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="inviwopy.html#inviwopy.Outport" title="inviwopy.Outport"><code class="xref py py-class docutils literal notranslate"><span class="pre">Outport</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingOutport.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingOutport" title="ivwbnl.BrushingAndLinkingOutport"><span class="pre">ivwbnl.BrushingAndLinkingOutport</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="inviwopy.doc.html#inviwopy.doc.Document" title="inviwopy.doc.Document"><span class="pre">inviwopy.doc.Document</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingOutport.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingOutport.getInvalidationLevels">
+<span class="sig-name descname"><span class="pre">getInvalidationLevels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingOutport" title="ivwbnl.BrushingAndLinkingOutport"><span class="pre">ivwbnl.BrushingAndLinkingOutport</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ivwbnl.BrushingTargetsInvalidationLevel" title="ivwbnl.BrushingTargetsInvalidationLevel"><span class="pre">ivwbnl.BrushingTargetsInvalidationLevel</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingOutport.getInvalidationLevels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingOutport.getManager">
+<span class="sig-name descname"><span class="pre">getManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingOutport" title="ivwbnl.BrushingAndLinkingOutport"><span class="pre">ivwbnl.BrushingAndLinkingOutport</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">inviwo::BrushingAndLinkingManager</span></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingOutport.getManager" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingAndLinkingOutport.setInvalidationLevels">
+<span class="sig-name descname"><span class="pre">setInvalidationLevels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAndLinkingOutport" title="ivwbnl.BrushingAndLinkingOutport"><span class="pre">ivwbnl.BrushingAndLinkingOutport</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ivwbnl.BrushingTargetsInvalidationLevel" title="ivwbnl.BrushingTargetsInvalidationLevel"><span class="pre">ivwbnl.BrushingTargetsInvalidationLevel</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingAndLinkingOutport.setInvalidationLevels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ivwbnl.</span></span><span class="sig-name descname"><span class="pre">BrushingModification</span></span><a class="headerlink" href="#ivwbnl.BrushingModification" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Members:</p>
+<p>Filtered</p>
+<p>Selected</p>
+<p>Highlighted</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.__and__">
+<span class="sig-name descname"><span class="pre">__and__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModification.__and__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModification.__eq__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.__hash__">
+<span class="sig-name descname"><span class="pre">__hash__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModification.__hash__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.__index__">
+<span class="sig-name descname"><span class="pre">__index__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModification.__index__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModification.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.__int__">
+<span class="sig-name descname"><span class="pre">__int__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModification.__int__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.__ne__">
+<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModification.__ne__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.__or__">
+<span class="sig-name descname"><span class="pre">__or__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModification.__or__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#object" title="(in Python v3.10)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModification.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ivwbnl.BrushingModification.__str__" title="Link to this definition"></a></dt>
+<dd><p>name(self: handle) -&gt; str</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.__xor__">
+<span class="sig-name descname"><span class="pre">__xor__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModification.__xor__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.fromAction">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fromAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingAction" title="ivwbnl.BrushingAction"><span class="pre">ivwbnl.BrushingAction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModification.fromAction" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.Filtered">
+<span class="sig-name descname"><span class="pre">Filtered</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;BrushingModification.Filtered:</span> <span class="pre">1&gt;</span></em><a class="headerlink" href="#ivwbnl.BrushingModification.Filtered" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.Highlighted">
+<span class="sig-name descname"><span class="pre">Highlighted</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;BrushingModification.Highlighted:</span> <span class="pre">4&gt;</span></em><a class="headerlink" href="#ivwbnl.BrushingModification.Highlighted" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.Selected">
+<span class="sig-name descname"><span class="pre">Selected</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;BrushingModification.Selected:</span> <span class="pre">2&gt;</span></em><a class="headerlink" href="#ivwbnl.BrushingModification.Selected" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#ivwbnl.BrushingModification.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModification.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#ivwbnl.BrushingModification.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ivwbnl.</span></span><span class="sig-name descname"><span class="pre">BrushingModifications</span></span><a class="headerlink" href="#ivwbnl.BrushingModifications" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.__and__">
+<span class="sig-name descname"><span class="pre">__and__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.__and__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.__eq__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.__iand__">
+<span class="sig-name descname"><span class="pre">__iand__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwbnl.BrushingModifications.__iand__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>__iand__(self: ivwbnl.BrushingModifications, arg0: ivwbnl.BrushingModifications) -&gt; ivwbnl.BrushingModifications</p></li>
+<li><p>__iand__(self: ivwbnl.BrushingModifications, arg0: ivwbnl.BrushingModification) -&gt; ivwbnl.BrushingModifications</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwbnl.BrushingModifications.__init__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>__init__(self: ivwbnl.BrushingModifications) -&gt; None</p></li>
+<li><p>__init__(self: ivwbnl.BrushingModifications, arg0: ivwbnl.BrushingModification) -&gt; None</p></li>
+<li><p>__init__(self: ivwbnl.BrushingModifications, arg0: ivwbnl.BrushingModifications) -&gt; None</p></li>
+<li><p>__init__(self: ivwbnl.BrushingModifications, <a href="#id1"><span class="problematic" id="id2">*</span></a>args) -&gt; None</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.__invert__">
+<span class="sig-name descname"><span class="pre">__invert__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.__invert__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.__ior__">
+<span class="sig-name descname"><span class="pre">__ior__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwbnl.BrushingModifications.__ior__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>__ior__(self: ivwbnl.BrushingModifications, arg0: ivwbnl.BrushingModifications) -&gt; ivwbnl.BrushingModifications</p></li>
+<li><p>__ior__(self: ivwbnl.BrushingModifications, arg0: ivwbnl.BrushingModification) -&gt; ivwbnl.BrushingModifications</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.__iter__">
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwbnl.BrushingModificationsIterator" title="ivwbnl.BrushingModificationsIterator"><span class="pre">ivwbnl.BrushingModificationsIterator</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.__iter__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.__ixor__">
+<span class="sig-name descname"><span class="pre">__ixor__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwbnl.BrushingModifications.__ixor__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>__ixor__(self: ivwbnl.BrushingModifications, arg0: ivwbnl.BrushingModifications) -&gt; ivwbnl.BrushingModifications</p></li>
+<li><p>__ixor__(self: ivwbnl.BrushingModifications, arg0: ivwbnl.BrushingModification) -&gt; ivwbnl.BrushingModifications</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.__ne__">
+<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.__ne__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.__or__">
+<span class="sig-name descname"><span class="pre">__or__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.__or__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.__str__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.__xor__">
+<span class="sig-name descname"><span class="pre">__xor__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.__xor__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.clear" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.contains" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.count" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.empty">
+<span class="sig-name descname"><span class="pre">empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwbnl.BrushingModifications.empty" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>empty(self: ivwbnl.BrushingModifications) -&gt; bool</p></li>
+<li><p>empty(self: ivwbnl.BrushingModifications) -&gt; bool</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.erase">
+<span class="sig-name descname"><span class="pre">erase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.erase" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.find">
+<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwbnl.BrushingModificationsIterator" title="ivwbnl.BrushingModificationsIterator"><span class="pre">ivwbnl.BrushingModificationsIterator</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.find" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ivwbnl.BrushingModificationsIterator" title="ivwbnl.BrushingModificationsIterator"><span class="pre">ivwbnl.BrushingModificationsIterator</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.insert" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.max_size">
+<span class="sig-name descname"><span class="pre">max_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.max_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModifications" title="ivwbnl.BrushingModifications"><span class="pre">ivwbnl.BrushingModifications</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModifications.size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModifications.__hash__">
+<span class="sig-name descname"><span class="pre">__hash__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#ivwbnl.BrushingModifications.__hash__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModificationsIterator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ivwbnl.</span></span><span class="sig-name descname"><span class="pre">BrushingModificationsIterator</span></span><a class="headerlink" href="#ivwbnl.BrushingModificationsIterator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModificationsIterator.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModificationsIterator" title="ivwbnl.BrushingModificationsIterator"><span class="pre">ivwbnl.BrushingModificationsIterator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModificationsIterator" title="ivwbnl.BrushingModificationsIterator"><span class="pre">ivwbnl.BrushingModificationsIterator</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModificationsIterator.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModificationsIterator.__iter__">
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModificationsIterator" title="ivwbnl.BrushingModificationsIterator"><span class="pre">ivwbnl.BrushingModificationsIterator</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwbnl.BrushingModificationsIterator" title="ivwbnl.BrushingModificationsIterator"><span class="pre">ivwbnl.BrushingModificationsIterator</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModificationsIterator.__iter__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingModificationsIterator.__next__">
+<span class="sig-name descname"><span class="pre">__next__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingModificationsIterator" title="ivwbnl.BrushingModificationsIterator"><span class="pre">ivwbnl.BrushingModificationsIterator</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwbnl.BrushingModification" title="ivwbnl.BrushingModification"><span class="pre">ivwbnl.BrushingModification</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingModificationsIterator.__next__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTarget">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ivwbnl.</span></span><span class="sig-name descname"><span class="pre">BrushingTarget</span></span><a class="headerlink" href="#ivwbnl.BrushingTarget" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTarget.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingTarget.__eq__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTarget.__ge__">
+<span class="sig-name descname"><span class="pre">__ge__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingTarget.__ge__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTarget.__gt__">
+<span class="sig-name descname"><span class="pre">__gt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingTarget.__gt__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTarget.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwbnl.BrushingTarget.__init__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>__init__(self: ivwbnl.BrushingTarget) -&gt; None</p></li>
+<li><p>__init__(self: ivwbnl.BrushingTarget, arg0: str) -&gt; None</p></li>
+<li><p>__init__(self: ivwbnl.BrushingTarget, arg0: ivwbnl.BrushingTarget) -&gt; None</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTarget.__le__">
+<span class="sig-name descname"><span class="pre">__le__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingTarget.__le__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTarget.__lt__">
+<span class="sig-name descname"><span class="pre">__lt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingTarget.__lt__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTarget.__ne__">
+<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingTarget.__ne__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTarget.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.BrushingTarget" title="ivwbnl.BrushingTarget"><span class="pre">ivwbnl.BrushingTarget</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#ivwbnl.BrushingTarget.__str__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTarget.Column">
+<span class="sig-name descname"><span class="pre">Column</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#ivwbnl.BrushingTarget.Column" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTarget.Row">
+<span class="sig-name descname"><span class="pre">Row</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;ivwbnl.BrushingTarget</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#ivwbnl.BrushingTarget.Row" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTarget.__hash__">
+<span class="sig-name descname"><span class="pre">__hash__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#ivwbnl.BrushingTarget.__hash__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTargetsInvalidationLevel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ivwbnl.</span></span><span class="sig-name descname"><span class="pre">BrushingTargetsInvalidationLevel</span></span><a class="headerlink" href="#ivwbnl.BrushingTargetsInvalidationLevel" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTargetsInvalidationLevel.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwbnl.BrushingTargetsInvalidationLevel.__init__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>__init__(self: ivwbnl.BrushingTargetsInvalidationLevel, mods: ivwbnl.BrushingModifications, invalidationLevel: inviwopy.properties.InvalidationLevel) -&gt; None</p></li>
+<li><p>__init__(self: ivwbnl.BrushingTargetsInvalidationLevel, targers: List[ivwbnl.BrushingTarget], mods: ivwbnl.BrushingModifications, invalidationLevel: inviwopy.properties.InvalidationLevel) -&gt; None</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTargetsInvalidationLevel.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwbnl.BrushingTargetsInvalidationLevel.contains" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>contains(self: ivwbnl.BrushingTargetsInvalidationLevel, arg0: ivwbnl.BrushingTarget) -&gt; bool</p></li>
+<li><p>contains(self: ivwbnl.BrushingTargetsInvalidationLevel, arg0: ivwbnl.BrushingTarget, arg1: ivwbnl.BrushingModifications) -&gt; bool</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTargetsInvalidationLevel.invalidationLevel">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">invalidationLevel</span></span><a class="headerlink" href="#ivwbnl.BrushingTargetsInvalidationLevel.invalidationLevel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTargetsInvalidationLevel.modifications">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">modifications</span></span><a class="headerlink" href="#ivwbnl.BrushingTargetsInvalidationLevel.modifications" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ivwbnl.BrushingTargetsInvalidationLevel.targets">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">targets</span></span><a class="headerlink" href="#ivwbnl.BrushingTargetsInvalidationLevel.targets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ivwbnl.IndexList">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ivwbnl.</span></span><span class="sig-name descname"><span class="pre">IndexList</span></span><a class="headerlink" href="#ivwbnl.IndexList" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.IndexList.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.IndexList" title="ivwbnl.IndexList"><span class="pre">ivwbnl.IndexList</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.IndexList.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.IndexList.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.IndexList" title="ivwbnl.IndexList"><span class="pre">ivwbnl.IndexList</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbnl.IndexList.clear" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.IndexList.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.IndexList" title="ivwbnl.IndexList"><span class="pre">ivwbnl.IndexList</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.IndexList.contains" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.IndexList.empty">
+<span class="sig-name descname"><span class="pre">empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.IndexList" title="ivwbnl.IndexList"><span class="pre">ivwbnl.IndexList</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.IndexList.empty" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.IndexList.getIndices">
+<span class="sig-name descname"><span class="pre">getIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.IndexList" title="ivwbnl.IndexList"><span class="pre">ivwbnl.IndexList</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="inviwopy.data.html#inviwopy.data.BitSet" title="inviwopy.data.BitSet"><span class="pre">inviwopy.data.BitSet</span></a></span></span><a class="headerlink" href="#ivwbnl.IndexList.getIndices" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.IndexList.removeSource">
+<span class="sig-name descname"><span class="pre">removeSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.IndexList" title="ivwbnl.IndexList"><span class="pre">ivwbnl.IndexList</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.IndexList.removeSource" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.IndexList.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.IndexList" title="ivwbnl.IndexList"><span class="pre">ivwbnl.IndexList</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.10/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="inviwopy.data.html#inviwopy.data.BitSet" title="inviwopy.data.BitSet"><span class="pre">inviwopy.data.BitSet</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwbnl.IndexList.set" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwbnl.IndexList.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwbnl.IndexList" title="ivwbnl.IndexList"><span class="pre">ivwbnl.IndexList</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.10/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#ivwbnl.IndexList.size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ivwbase.algorithm.html" class="btn btn-neutral float-left" title="ivwbase.algorithm" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="inviwopy.html" class="btn btn-neutral float-right" title="inviwopy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Inviwo Foundation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

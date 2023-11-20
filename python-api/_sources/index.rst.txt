@@ -7,9 +7,9 @@ Python API Reference
     :toctree: _generated
 
     ivwbase
+    ivwbnl
     inviwopy
     ivwdataframe
-    inviwopyapp
 
 
 Indices and tables

@@ -52,11 +52,8 @@ inviwopy.glm
    .. autosummary::
    
       bvec2
-      bvec2Vector
       bvec3
-      bvec3Vector
       bvec4
-      bvec4Vector
       dmat2
       dmat2Vector
       dmat2x3
@@ -76,11 +73,8 @@ inviwopy.glm
       dmat4x3
       dmat4x3Vector
       dvec2
-      dvec2Vector
       dvec3
-      dvec3Vector
       dvec4
-      dvec4Vector
       imat2
       imat2Vector
       imat2x3
@@ -100,11 +94,8 @@ inviwopy.glm
       imat4x3
       imat4x3Vector
       ivec2
-      ivec2Vector
       ivec3
-      ivec3Vector
       ivec4
-      ivec4Vector
       mat2
       mat2Vector
       mat2x3
@@ -124,11 +115,8 @@ inviwopy.glm
       mat4x3
       mat4x3Vector
       size2_t
-      size2_tVector
       size3_t
-      size3_tVector
       size4_t
-      size4_tVector
       umat2
       umat2Vector
       umat2x3
@@ -148,17 +136,11 @@ inviwopy.glm
       umat4x3
       umat4x3Vector
       uvec2
-      uvec2Vector
       uvec3
-      uvec3Vector
       uvec4
-      uvec4Vector
       vec2
-      vec2Vector
       vec3
-      vec3Vector
       vec4
-      vec4Vector
    
    
 

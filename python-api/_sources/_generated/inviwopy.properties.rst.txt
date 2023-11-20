@@ -37,9 +37,7 @@ inviwopy.properties
       DoubleMinMaxProperty
       DoubleOption
       DoubleProperty
-      DoublePropertyIterator
       DoubleRefProperty
-      DoubleRefPropertyIterator
       DoubleVec2Property
       DoubleVec2RefProperty
       DoubleVec3Property
@@ -59,9 +57,7 @@ inviwopy.properties
       FloatMinMaxProperty
       FloatOption
       FloatProperty
-      FloatPropertyIterator
       FloatRefProperty
-      FloatRefPropertyIterator
       FloatVec2Property
       FloatVec2RefProperty
       FloatVec3Property
@@ -70,15 +66,11 @@ inviwopy.properties
       FloatVec4RefProperty
       Int64MinMaxProperty
       Int64Property
-      Int64PropertyIterator
       Int64RefProperty
-      Int64RefPropertyIterator
       IntMinMaxProperty
       IntOption
       IntProperty
-      IntPropertyIterator
       IntRefProperty
-      IntRefPropertyIterator
       IntSize2Property
       IntSize2RefProperty
       IntSize3Property
@@ -111,9 +103,7 @@ inviwopy.properties
       PropertyWidget
       Size_tMinMaxProperty
       Size_tProperty
-      Size_tPropertyIterator
       Size_tRefProperty
-      Size_tRefPropertyIterator
       StringOption
       StringProperty
       TransferFunctionProperty

@@ -1,0 +1,33 @@
+inviwopy.doc
+============
+
+.. automodule:: inviwopy.doc
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Document
+      DocumentHandle
+      Element
+      ElementType
+      PathComponent
+   
+   
+
+   
+   
+   
+
+
+
