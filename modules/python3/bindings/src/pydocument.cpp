@@ -126,6 +126,7 @@ void exposeDocument(pybind11::module& m) {
                  -> void { d.visit(before, after); });
 
     m.def("md2doc", &util::md2doc);
+    m.def("unindentMd2doc", &util::unindentMd2doc);
 }
 
 }  // namespace inviwo
