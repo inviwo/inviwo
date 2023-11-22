@@ -170,13 +170,13 @@ struct DataTraits<glm::mat<C, R, T, Q>> {
             color.r = 240;
         }
 
-        if constexpr (C==1) {
+        if constexpr (C == 1) {
             color.g = 60;
-        } else if constexpr (C==2) {
+        } else if constexpr (C == 2) {
             color.g = 90;
-        } else if constexpr (C==3) {
+        } else if constexpr (C == 3) {
             color.g = 120;
-        } else if constexpr (C==4) {
+        } else if constexpr (C == 4) {
             color.g = 150;
         }
 

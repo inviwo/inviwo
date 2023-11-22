@@ -33,10 +33,10 @@
 
 #include <inviwo/core/datastructures/image/imagetypes.h>  // for Wrapping, InterpolationType
 #include <inviwo/core/util/glmvec.h>                      // for vec4, bvec4, ivec4, bvec2, bvec3
-#include <inviwo/core/util/glmmat.h>  
-#include <inviwo/core/util/moveonlyvalue.h>               // for MoveOnlyValue
-#include <inviwo/core/util/stdextensions.h>               // for make_array, index_of
-#include <modules/opengl/inviwoopengl.h>                  // for GLint, GLenum, GLboolean, GLAPI...
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/moveonlyvalue.h>  // for MoveOnlyValue
+#include <inviwo/core/util/stdextensions.h>  // for make_array, index_of
+#include <modules/opengl/inviwoopengl.h>     // for GLint, GLenum, GLboolean, GLAPI...
 
 #include <array>        // for array, operator==
 #include <cstddef>      // for size_t
