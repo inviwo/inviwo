@@ -17,6 +17,7 @@ set(HEADER_FILES
     include/inviwopy/pydocument.h
     include/inviwopy/pyevent.h
     include/inviwopy/pyflags.h
+    include/inviwopy/pyglmmatports.h
     include/inviwopy/pyglmmattypes.h
     include/inviwopy/pyglmmattypesdouble.h
     include/inviwopy/pyglmmattypesfloat.h
@@ -66,6 +67,7 @@ set(SOURCE_FILES
     src/pydocument.cpp
     src/pyevent.cpp
     src/pyflags.cpp
+    src/pyglmmatports.cpp
     src/pyglmmattypes.cpp
     src/pyglmmattypesdouble.cpp
     src/pyglmmattypesfloat.cpp

@@ -101,6 +101,7 @@ void matxx(pybind11::module& m, const std::string& prefix, const std::string& na
     addInit<T, Mat, Cols * Rows>(pym);
     addInit<ColumnVector, Mat, Cols>(pym);
     pym.def(pybind11::init<T>())
+        .def(pybind11::init<Mat>())
         .def(pybind11::init<>())
         .def(pybind11::init([](pybind11::array_t<T> arr) {
             if (arr.ndim() != 2) throw std::invalid_argument{"Invalid dimensions"};
@@ -109,6 +110,24 @@ void matxx(pybind11::module& m, const std::string& prefix, const std::string& na
 
             Mat res;
             std::copy(arr.data(0), arr.data(0) + Cols * Rows, glm::value_ptr(res));
+            return res;
+        }))
+        .def(pybind11::init([](pybind11::list list) {
+            if (list.size() != Cols) {
+                throw std::invalid_argument{
+                    fmt::format("Invalid number of cols: got {}, expected {}", list.size(), Cols)};
+            }
+            Mat res;
+            for (int i = 0; i < Cols; ++i) {
+                auto col = list[i].cast<pybind11::list>();
+                if (col.size() != Rows) {
+                    throw std::invalid_argument{fmt::format(
+                        "Invalid number of rows: got {}, expected {}", col.size(), Rows)};
+                }
+                for (int j = 0; j < Rows; ++j) {
+                    res[i][j] = col[j].cast<T>();
+                }
+            }
             return res;
         }))
         .def(pybind11::self + pybind11::self)
@@ -177,6 +196,9 @@ void matxx(pybind11::module& m, const std::string& prefix, const std::string& na
         });
 
     pybind11::bind_vector<std::vector<Mat>>(m, classname + "Vector", "Vectors of glm matrices");
+
+    pybind11::implicitly_convertible<pybind11::list, Mat>();
+    pybind11::implicitly_convertible<pybind11::array_t<T>, Mat>();
 }
 
 template <typename T, int Cols>
@@ -207,10 +229,11 @@ constexpr bool alwaysFalse() {
 struct ExposePortsFunctor {
     template <typename T>
     void operator()(pybind11::module& m) {
-        using V = typename util::value_type<T>::type;
-        constexpr auto N = util::extent<T>::value;
+        using V = util::value_type_t<T>;
 
-        if constexpr (N == 1) {
+        constexpr auto rank = util::rank_v<T>;
+
+        if constexpr (rank == 0) {
             constexpr auto name = []() {
                 if constexpr (std::is_same_v<T, float>) {
                     return "float";
@@ -228,11 +251,21 @@ struct ExposePortsFunctor {
             pybind11::bind_vector<std::vector<T>>(m, vectorName);
             exposeStandardDataPorts<std::vector<T>>(m, vectorName);
 
-        } else {
+        } else if constexpr (rank == 1 && util::extent_v<T> <= 4) {
+            constexpr auto N = util::extent_v<T>;
             const auto prefix = glm::detail::prefix<V>::value();
             const auto vectorName = fmt::format("{}vec{}Vector", prefix, N);
             pybind11::bind_vector<std::vector<T>>(m, vectorName, pybind11::buffer_protocol{});
             exposeStandardDataPorts<std::vector<T>>(m, vectorName);
+
+        } else if constexpr (rank == 2 && util::extent_v<T, 0> <= 4 &&
+                             util::extent_v<T, 0> == util::extent_v<T, 1>) {
+            constexpr auto N = util::extent_v<T, 0>;
+            const auto prefix = glm::detail::prefix<V>::value();
+            const auto vectorName = fmt::format("{}mat{}Vector", prefix, N);
+            exposeStandardDataPorts<std::vector<T>>(m, vectorName);
+        } else {
+            static_assert(alwaysFalse<T>(), "T not supported");
         }
     }
 };

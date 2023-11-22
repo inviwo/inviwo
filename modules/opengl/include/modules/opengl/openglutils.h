@@ -33,6 +33,7 @@
 
 #include <inviwo/core/datastructures/image/imagetypes.h>  // for Wrapping, InterpolationType
 #include <inviwo/core/util/glmvec.h>                      // for vec4, bvec4, ivec4, bvec2, bvec3
+#include <inviwo/core/util/glmmat.h>  
 #include <inviwo/core/util/moveonlyvalue.h>               // for MoveOnlyValue
 #include <inviwo/core/util/stdextensions.h>               // for make_array, index_of
 #include <modules/opengl/inviwoopengl.h>                  // for GLint, GLenum, GLboolean, GLAPI...
@@ -609,12 +610,13 @@ private:
 
 template <typename T>
 inline constexpr std::string_view glslTypeName() {
-    using types =
-        std::tuple<float, double, bool, uint32_t, int32_t, vec2, dvec2, bvec2, ivec2, uvec2, vec3,
-                   dvec3, bvec3, ivec3, uvec3, vec4, dvec4, bvec4, ivec4, uvec4>;
-    constexpr std::array<std::string_view, 20> names = {
-        "float", "double", "bool",  "uint",  "int",   "vec2", "dvec2", "bvec2", "ivec2", "uvec2",
-        "vec3",  "dvec3",  "bvec3", "ivec3", "uvec3", "vec4", "dvec4", "bvec4", "ivec4", "uvec4"};
+    using types = std::tuple<float, double, bool, uint32_t, int32_t, vec2, dvec2, bvec2, ivec2,
+                             uvec2, vec3, dvec3, bvec3, ivec3, uvec3, vec4, dvec4, bvec4, ivec4,
+                             uvec4, mat2, dmat2, mat3, dmat3, mat4, dmat4>;
+    constexpr std::array<std::string_view, 26> names = {
+        "float", "double", "bool",  "uint",  "int",   "vec2",  "dvec2", "bvec2", "ivec2",
+        "uvec2", "vec3",   "dvec3", "bvec3", "ivec3", "uvec3", "vec4",  "dvec4", "bvec4",
+        "ivec4", "uvec4",  "mat2",  "dmat2", "mat3",  "dmat3", "mat4",  "dmat4"};
 
     return names[util::index_of<T, types>()];
 }

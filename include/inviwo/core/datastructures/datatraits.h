@@ -36,6 +36,7 @@
 #include <inviwo/core/util/glmfmt.h>
 #include <inviwo/core/util/introspection.h>
 #include <inviwo/core/util/colorconversion.h>
+#include <inviwo/core/util/defaultvalues.h>
 
 #include <type_traits>
 
@@ -135,6 +136,62 @@ struct DataTraits<T,
                                         DataFormat<T>::compsize);
     }
     static Document info(const T& data) {
+        Document doc;
+        doc.append("p", dataName());
+        doc.append("p", fmt::to_string(data));
+        return doc;
+    }
+};
+
+// Specializations for glm mat types
+template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+struct DataTraits<glm::mat<C, R, T, Q>> {
+    static const std::string& classIdentifier() {
+        static const std::string classId{"org.inviwo." +
+                                         Defaultvalues<glm::mat<C, R, T, Q>>::getName()};
+        return classId;
+    }
+    static std::string_view dataName() {
+        static const std::string name{Defaultvalues<glm::mat<C, R, T, Q>>::getName()};
+        return name;
+    }
+    static uvec3 colorCode() {
+        uvec3 color{};
+
+        if constexpr (std::is_same_v<T, float>) {
+            color.r = 30;
+        } else if constexpr (std::is_same_v<T, double>) {
+            color.r = 60;
+        } else if constexpr (std::is_same_v<T, int>) {
+            color.r = 90;
+        } else if constexpr (std::is_same_v<T, unsigned int>) {
+            color.r = 120;
+        } else {
+            color.r = 240;
+        }
+
+        if constexpr (C==1) {
+            color.g = 60;
+        } else if constexpr (C==2) {
+            color.g = 90;
+        } else if constexpr (C==3) {
+            color.g = 120;
+        } else if constexpr (C==4) {
+            color.g = 150;
+        }
+
+        if constexpr (R == 1) {
+            color.b = 60;
+        } else if constexpr (R == 2) {
+            color.b = 90;
+        } else if constexpr (R == 3) {
+            color.b = 120;
+        } else if constexpr (R == 4) {
+            color.b = 150;
+        }
+        return color;
+    }
+    static Document info(const glm::mat<C, R, T, Q>& data) {
         Document doc;
         doc.append("p", dataName());
         doc.append("p", fmt::to_string(data));
