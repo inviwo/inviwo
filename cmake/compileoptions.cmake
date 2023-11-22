@@ -30,7 +30,7 @@
 option(IVW_CFG_TREAT_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 option(IVW_CFG_FORCE_ASSERTIONS "Force use of assertions when not in debug mode" OFF)
 if(CMAKE_GENERATOR STREQUAL "Xcode")
-    option(IVW_CFG_XCODE_ADDRESS_SANITIZER "Enable XCode Addess Sanatizer" OFF)
+    option(IVW_CFG_XCODE_ADDRESS_SANITIZER "Enable XCode Address Sanitizer" OFF)
     set(CMAKE_XCODE_SCHEME_ADDRESS_SANITIZER ${IVW_CFG_XCODE_ADDRESS_SANITIZER})
     set(CMAKE_XCODE_SCHEME_ADDRESS_SANITIZER_USE_AFTER_RETURN ${IVW_CFG_XCODE_ADDRESS_SANITIZER})
     set(CMAKE_XCODE_SCHEME_MAIN_THREAD_CHECKER_STOP ${IVW_CFG_XCODE_ADDRESS_SANITIZER})
@@ -154,6 +154,11 @@ function(ivw_define_standard_properties)
             target_link_options(${target} PRIVATE 
                 $<$<CONFIG:Debug,RelWithDebInfo>:/debug:fastlink>
             )
+
+            option(IVW_CFG_MSVC_ADDRESS_SANITIZER "Enable Visual Studio Address Sanitizer" OFF)
+            if(IVW_CFG_MSVC_ADDRESS_SANITIZER)
+                list(APPEND comp_opts "/fsanitize=address")
+            endif()
         endif()
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
