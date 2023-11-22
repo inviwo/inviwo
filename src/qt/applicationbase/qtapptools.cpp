@@ -58,6 +58,17 @@ namespace inviwo {
 
 namespace {
 
+std::filesystem::path toPath(const QString& str) {
+    auto buffer = str.toUtf8();
+    std::u8string_view u8str{reinterpret_cast<const char8_t*>(buffer.constData()),
+                             static_cast<size_t>(buffer.size())};
+    return std::filesystem::path{u8str};
+}
+QString toQString(const std::filesystem::path& path) {
+    auto str = path.generic_u8string();
+    return QString::fromUtf8(reinterpret_cast<char*>(str.data()), str.size());
+}
+
 class FileSystemObserverQt : public QObject, public FileSystemObserver {
 public:
     FileSystemObserverQt() : fileWatcher_{new QFileSystemWatcher(this)} {
@@ -93,10 +104,8 @@ void FileSystemObserverQt::unRegisterFileObserver(FileObserver* fileObserver) {
 }
 
 void FileSystemObserverQt::startFileObservation(const std::filesystem::path& fileName) {
-    auto str = fileName.generic_string();
-    QString qFileName = QString::fromUtf8(str.data(), str.size());
     // Will add the path if file exists and is not already being watched.
-    fileWatcher_->addPath(qFileName);
+    fileWatcher_->addPath(toQString(fileName));
 }
 
 void FileSystemObserverQt::stopFileObservation(const std::filesystem::path& fileName) {
@@ -105,9 +114,7 @@ void FileSystemObserverQt::stopFileObservation(const std::filesystem::path& file
                      [fileName](const auto observer) { return observer->isObserved(fileName); });
     // Make sure that no observer is observing the file
     if (it == std::end(fileObservers_)) {
-        auto str = fileName.generic_string();
-        QString qFileName = QString::fromUtf8(str.data(), str.size());
-        fileWatcher_->removePath(qFileName);
+        fileWatcher_->removePath(toQString(fileName));
     }
 }
 
@@ -115,7 +122,8 @@ void FileSystemObserverQt::fileChanged(QString fileName) {
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
     if (QFile::exists(fileName)) {
-        std::string fileNameStd = fileName.toLocal8Bit().constData();
+
+        const auto fileNameStd = toPath(fileName);
 
         // don't use iterators here, they might be invalidated.
         size_t size = fileObservers_.size();
