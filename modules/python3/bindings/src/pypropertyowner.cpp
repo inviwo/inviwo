@@ -79,8 +79,8 @@ void exposePropertyOwner(pybind11::module& m) {
                     throw py::attribute_error{fmt::format(
                         "The key '{0}' is a registered property of '{1}'.\nTo rebind the member "
                         "unregister (remove) the property from '{1}' first.\n"
-                        "If you were trying the set the 'value' of the '{0}' Property, you should "
-                        "usually assign to '{0}.value' instead.\n"
+                        "If you were trying to set the 'value' of the '{0}' property, you should "
+                        "assign to '{0}.value' instead.\n"
                         "See help({0}) for more details",
                         skey, path)};
                 }
