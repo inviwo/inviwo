@@ -49,7 +49,28 @@ function(ivw_create_enabled_modules_file executable_name)
 endfunction()
 
 # generete python config file
-function(ivw_private_create_pyconfig modulepaths activemodules target)
+function(ivw_private_create_pyconfig)
+    set(options )
+    set(oneValueArgs TARGET)
+    set(multiValueArgs MODULE_DIRS ENABLED_MODULES)
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if(ARG_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR "ivw_private_create_pyconfig: Unparsed arguments ${ARG_UNPARSED_ARGUMENTS}")
+    endif()
+    if(ARG_KEYWORDS_MISSING_VALUES) 
+        message(FATAL_ERROR "ivw_private_create_pyconfig: Missing values for keywords ${ARG_KEYWORDS_MISSING_VALUES}")
+    endif()
+    if(NOT ARG_MODULE_DIRS)
+        message(FATAL_ERROR "ivw_private_create_pyconfig: MODULE_DIRS not specified")
+    endif()
+    if(NOT ARG_ENABLED_MODULES)
+        message(FATAL_ERROR "ivw_private_create_pyconfig: ENABLED_MODULES not specified")
+    endif()
+    if(NOT ARG_TARGET)
+        message(FATAL_ERROR "ivw_private_create_pyconfig: TARGET not specified")
+    endif()
+
     find_package(Git QUIET)
     if(GIT_FOUND)
         ivw_debug_message(STATUS "git found: ${GIT_EXECUTABLE}")
@@ -59,9 +80,9 @@ function(ivw_private_create_pyconfig modulepaths activemodules target)
 
     string(CONCAT content
         "[Inviwo]\n"
-        "modulepaths   = ${modulepaths}\n"
-        "activemodules = ${activemodules}\n"
-        "binpath       = ${EXECUTABLE_OUTPUT_PATH}\n"
+        "modulepaths   = ${ARG_MODULE_DIRS}\n"
+        "activemodules = ${ARG_ENABLED_MODULES}\n"
+        "binpath       = ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\n"
         "builds        = ${CMAKE_CONFIGURATION_TYPES}\n"
         "\n"
         "[CMake]\n"
@@ -73,7 +94,7 @@ function(ivw_private_create_pyconfig modulepaths activemodules target)
         "path          = ${GIT_EXECUTABLE}\n")
 
     file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/pyconfig.ini CONTENT "${content}")
-    file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/pyconfig-$<CONFIG>.ini CONTENT "[Inviwo]\nexecutable = $<TARGET_FILE:${target}>\n")
+    file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/pyconfig-$<CONFIG>.ini CONTENT "[Inviwo]\nexecutable = $<TARGET_FILE:${ARG_TARGET}>\n")
 endfunction()
 
 # Generate a module registration header file (with configure file etc)

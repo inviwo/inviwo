@@ -6,6 +6,7 @@ add_library(inviwo::module-system ALIAS inviwo-module-system)
 ivw_register_modules(
     MODULE_DIRS ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES}
     ENABLED_MODULE_TARGETS_OUT enabled_modules_targets
+    ENABLED_MODULES_OUT enabled_modules
     MODULE_REGISTRATION_FILE ${CMAKE_CURRENT_BINARY_DIR}/moduleregistration.cpp
 )
 
@@ -46,7 +47,11 @@ ivw_install_helper(TARGET inviwo-module-system
     ALIAS module-system
 )
 
-# Save information for python tools.
+# Save information for python tools. used for regression
 ivw_mod_dep_to_mod_name(ivw_module_mod_names ${enabled_modules})
 ivw_mod_name_to_class(ivw_module_classes ${ivw_module_mod_names})
-ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_module_classes}" inviwo)
+ivw_private_create_pyconfig(
+    MODULE_DIRS ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES}
+    ENABLED_MODULES ${ivw_module_classes}
+    TARGET inviwo
+)
