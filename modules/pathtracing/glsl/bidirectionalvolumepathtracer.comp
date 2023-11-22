@@ -63,7 +63,7 @@ vec3 calcCameraDir(in vec3 entryPoint, in vec3 exitPoint, in mat4 textureToWorld
 }
 
 vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth,
-    inout float depth, RaycastingParameters rayCastParam, VolumeParameters volParam, vec4 bgColor) {
+    inout float depth, RaycastingParameters rayCastParam, VolumeParameters volParam, vec4 bgColor, float extinctionUpper) {
 
     vec4 result = vec4(0.0);   // The accumulated color along the ray;
     vec4 picking = vec4(0.0);  // The picking color of the ray
@@ -95,7 +95,7 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
     float T = 1.0f;
     float tau = 1f;
     float meanpath = WoodcockTracking(samplePosition, rayDir, 0f, rayPosition, hashSeed,
-            volume, volumeParameters, transferFunction, 1.0f, tau);
+            volume, volumeParameters, transferFunction, extinctionUpper, tau);
     rayPosition = meanpath; 
     
 
@@ -116,8 +116,8 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
 
         // Function is broken for testing at the moment.
         
-        result = RMVolumeRender_SingleBounceLight(T, meanpath, volume, volumeParameters, transferFunction, result, 
-            samplePosition, cameraDir, light, planes, hashSeed);
+        result = RMVolumeRender_SingleBounceLight(T, meanpath, volume, volumeParameters, transferFunction, 
+            samplePosition, cameraDir, light, planes, hashSeed, channel, extinctionUpper);
 
         #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
     }
@@ -247,9 +247,9 @@ void main(){
         return;
     }
 
-
+    float extinctionUpper = 1.0f;
     result += simpleRender(outportParameters, entryPoint, exitPoint, entryPointDepth, exitPointDepth,
-            depth, raycaster, volumeParameters, bgColor);
+            depth, raycaster, volumeParameters, bgColor, extinctionUpper);
     // If you wanna normalize, DONT do it based off of results. It needs to be a global factor
 
     vec4 resPrev = imageLoad(outportColor, storePos);

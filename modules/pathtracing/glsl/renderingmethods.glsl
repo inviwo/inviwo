@@ -93,15 +93,14 @@ bool RayBBIntersection(PlaneParameters[6] planes, vec3 rayOrigin, vec3 rayDir, o
     return false;
 }
 
-// TODO: RayBBInstersection in texture space. Transform toLight into texture space and do simple if t > 1 or < 0
-//      Look at RayBoxIntersection, OpenCL code.
-
-bool RayBBIntersection_TextureSpace(vec3 rayOrigin, vec3 rayDir, out float t0, out float t1) {
+// Assumes sample space to be from 000 to 111
+bool RayBBIntersection_TextureSpace(vec3 origin, vec3 dir, out float t0, out float t1) {
     float FLT_MAX = 3.402823466e+38;
     
-    vec3 invDir = 1.f/rayDir;
-    vec3 tNearV = (vec3(0f)- rayOrigin)*invDir;
-    vec3 tFarV = (vec3(1f) - rayOrigin)*invDir;
+    vec3 invDir = 1.f/dir;
+    // completely breaks if the bounding box points arent as close as 000 and 111 as a floating point can represent
+    vec3 tNearV = (vec3(0f, 0f, 0f)- origin)*invDir;
+    vec3 tFarV = (vec3(1f, 1f, 1f) - origin)*invDir;
     vec3 tNear = min(tNearV, tFarV);
     vec3 tFar = max(tNearV, tFarV);
 
