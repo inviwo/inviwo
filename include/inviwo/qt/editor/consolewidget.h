@@ -48,7 +48,6 @@
 #include <filesystem>
 #include <mutex>
 
-
 class QLabel;
 class QKeyEvent;
 class QAction;
