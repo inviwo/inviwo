@@ -29,23 +29,24 @@
 
 #include <modules/basegl/processors/instancerenderer.h>
 
-#include <inviwo/core/algorithm/boundingbox.h>             // for boundingBox
-#include <inviwo/core/algorithm/markdown.h>                // for operator""_help, operator""_un...
-#include <inviwo/core/datastructures/geometry/mesh.h>      // for Mesh
-#include <inviwo/core/ports/imageport.h>                   // for BaseImageInport, ImageInport
-#include <inviwo/core/ports/inport.h>                      // for Inport
-#include <inviwo/core/ports/meshport.h>                    // for MeshInport
-#include <inviwo/core/ports/outportiterable.h>             // for OutportIterable
-#include <inviwo/core/processors/processor.h>              // for Processor
-#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>         // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>          // for Tags, Tags::GL
-#include <inviwo/core/properties/cameraproperty.h>         // for CameraProperty
-#include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
-#include <inviwo/core/properties/listproperty.h>           // for ListProperty
-#include <inviwo/core/properties/ordinalproperty.h>        // for IntProperty, OrdinalProperty
-#include <inviwo/core/properties/property.h>               // for Property
+#include <inviwo/core/algorithm/boundingbox.h>         // for boundingBox
+#include <inviwo/core/algorithm/markdown.h>            // for operator""_help, operator""_un...
+#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
+#include <inviwo/core/ports/imageport.h>               // for BaseImageInport, ImageInport
+#include <inviwo/core/ports/inport.h>                  // for Inport
+#include <inviwo/core/ports/meshport.h>                // for MeshInport
+#include <inviwo/core/ports/outportiterable.h>         // for OutportIterable
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::GL
+#include <inviwo/core/properties/cameraproperty.h>     // for CameraProperty
+#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, Invalidatio...
+#include <inviwo/core/properties/listproperty.h>       // for ListProperty
+#include <inviwo/core/properties/ordinalproperty.h>    // for IntProperty, OrdinalProperty
+#include <inviwo/core/properties/property.h>           // for Property
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/propertyownerobserver.h>  // for PropertyOwnerObservable
 #include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
 #include <inviwo/core/properties/stringproperty.h>         // for StringProperty
@@ -57,6 +58,7 @@
 #include <inviwo/core/util/raiiutils.h>                    // for OnScopeExit
 #include <inviwo/core/util/rendercontext.h>                // for RenderContext
 #include <inviwo/core/util/stdextensions.h>                // for overloaded
+#include <inviwo/core/util/foreacharg.h>                   // for forEachArg
 #include <modules/opengl/geometry/meshgl.h>                // for MeshGL
 #include <modules/opengl/inviwoopengl.h>                   // for GL_DEPTH_TEST, GL_ONE_MINUS_SR...
 #include <modules/opengl/openglutils.h>                    // for BlendModeState, GlBoolState
@@ -68,7 +70,6 @@
 #include <modules/opengl/shader/shadertype.h>              // for ShaderType, ShaderType::Fragment
 #include <modules/opengl/shader/shaderutils.h>             // for addShaderDefines, setShaderUni...
 #include <modules/opengl/texture/textureutils.h>           // for activateTargetAndClearOrCopySo...
-
 #include <modules/opengl/buffer/buffergl.h>
 
 #include <algorithm>    // for for_each, min_element
@@ -77,6 +78,7 @@
 #include <utility>      // for move, pair, swap
 #include <ranges>
 #include <numeric>
+#include <tuple>
 
 #include <fmt/core.h>      // for format, basic_string_view, for...
 #include <fmt/format.h>    // for formatbuf<>::int_type, formatb...
@@ -119,6 +121,8 @@ constexpr ShaderSegment::Placeholder uniform{"#pragma IVW_SHADER_SEGMENT_PLACEHO
                                              "uniform"};
 constexpr ShaderSegment::Placeholder transforms{"#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_TRANSFORMS",
                                                 "transforms"};
+constexpr ShaderSegment::Placeholder commonCode{"#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_COMMONCODE",
+                                                "commoncode"};
 constexpr ShaderSegment::Placeholder setupVert{"#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP",
                                                "setup"};
 }  // namespace irplaceholder
@@ -168,6 +172,8 @@ flat out vec4 picking;
 #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP
  
 void main() {
+#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_COMMONCODE
+
 #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_TRANSFORMS
 
     gl_Position = camera.worldToClip * worldPosition;
@@ -204,10 +210,10 @@ void main() {
 
 namespace detail {
 
-DynPortManager::DynPortManager(InstanceRenderer* theRenderer, std::unique_ptr<Inport> aPort,
-                               std::function<std::optional<size_t>()> aSize,
-                               std::function<void(Shader&, size_t)> aSet,
-                               std::function<void(ShaderObject&)> aAddUniform)
+DynPort::DynPort(InstanceRenderer* theRenderer, std::unique_ptr<Inport> aPort,
+                 std::function<std::optional<size_t>()> aSize,
+                 std::function<void(Shader&, size_t)> aSet,
+                 std::function<void(ShaderObject&)> aAddUniform)
     : renderer{theRenderer}
     , port{std::move(aPort)}
     , size{aSize}
@@ -217,7 +223,7 @@ DynPortManager::DynPortManager(InstanceRenderer* theRenderer, std::unique_ptr<In
     renderer->addPort(*port);
 }
 
-DynPortManager::DynPortManager(DynPortManager&& rhs)
+DynPort::DynPort(DynPort&& rhs)
     : renderer{nullptr}
     , port{nullptr}
     , size{std::move(rhs.size)}
@@ -227,7 +233,7 @@ DynPortManager::DynPortManager(DynPortManager&& rhs)
     std::swap(rhs.port, port);
 }
 
-DynPortManager& DynPortManager::operator=(DynPortManager&& that) {
+DynPort& DynPort::operator=(DynPort&& that) {
     if (this != &that) {
         std::swap(that.renderer, renderer);
         std::swap(that.port, port);
@@ -237,13 +243,13 @@ DynPortManager& DynPortManager::operator=(DynPortManager&& that) {
     }
     return *this;
 }
-DynPortManager::~DynPortManager() {
+DynPort::~DynPort() {
     if (port) renderer->removePort(port.get());
 }
 
 template <typename T>
-DynPortManager createDynPortManager(InstanceRenderer* theRenderer, std::string_view identifier,
-                                    StringProperty* uniform) {
+DynPort createDynPortManager(InstanceRenderer* theRenderer, std::string_view identifier,
+                             StringProperty* uniform) {
 
     auto port = std::make_unique<DataInport<std::vector<T>>>(identifier);
     port->setOptional(true);
@@ -265,8 +271,25 @@ DynPortManager createDynPortManager(InstanceRenderer* theRenderer, std::string_v
             fmt::format("uniform {0} {1} = {0}(0);", utilgl::glslTypeName<T>(), u->get())});
     };
 
-    return DynPortManager{theRenderer, std::move(port), std::move(size), std::move(set),
-                          std::move(addUniform)};
+    return DynPort{theRenderer, std::move(port), std::move(size), std::move(set),
+                   std::move(addUniform)};
+}
+
+DynUniform::DynUniform(std::function<void(Shader&, TextureUnitContainer&)> aSetAndBind,
+                       std::function<void(ShaderObject&)> aAddUniform)
+    : setAndBind{aSetAndBind}, addUniform{aAddUniform} {}
+
+DynUniform::DynUniform(DynUniform&& rhs)
+    : setAndBind{std::move(rhs.setAndBind)}, addUniform{std::move(rhs.addUniform)} {}
+
+DynUniform::~DynUniform() = default;
+
+DynUniform& DynUniform::operator=(DynUniform&& that) {
+    if (this != &that) {
+        std::swap(that.setAndBind, setAndBind);
+        std::swap(that.addUniform, addUniform);
+    }
+    return *this;
 }
 
 }  // namespace detail
@@ -276,11 +299,23 @@ InstanceRenderer::InstanceRenderer()
     , inport_("mesh", "Mesh to be drawn multiple times"_help)
     , background_("background", "Background image (optional)"_help)
     , outport_("image", "The rendered image"_help)
+    , uniforms_{"uniforms",
+                "Uniforms",
+                R"(
+        Add and remove uniforms for the instance rendering. Uniforms of different
+        types can be added. The property displayname will be used as uniform name.
+        The display name can be changed from the context menu or by doubleclicking
+        the label.)"_unindentHelp,
+                uniformPrefabs(),
+                0,
+                ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove,
+                InvalidationLevel::InvalidResources}
+    , dynUniforms_{}
     , ports_{"ports", "Ports", R"(
         Add and remove vector ports for the instance rendering. The rendering will render as many
         instances as there are elements in the port with the least elements. Ports of different
         types can be added.)"_unindentHelp,
-             prefabs()}
+             portPrefabs()}
     , vecPorts_{}
     , camera_("camera", "Camera",
               [this]() -> std::optional<mat4> {
@@ -289,6 +324,20 @@ InstanceRenderer::InstanceRenderer()
               })
     , trackball_(&camera_)
     , lightingProperty_("lighting", "Lighting", &camera_)
+
+    , setupVert_{"setupVert",
+                 "Setup Vertex Shader",
+                 "Extra vertex shader code can be added here, for example to include other "
+                 "files, or to add short functions."_help,
+                 "",
+                 InvalidationLevel::InvalidResources,
+                 PropertySemantics::Multiline}
+    , commonCode_{"commonCode",
+                  "Common code",
+                  "Extra vertex shader code can be added here."_help,
+                  "",
+                  InvalidationLevel::InvalidResources,
+                  PropertySemantics::Multiline}
     , transforms_{{{"color", "Color",
                     "Equation for the vertex color, defaults to the mesh color i.e. "
                     "'in_Color'. Expects a vec4.)"_help,
@@ -314,13 +363,6 @@ InstanceRenderer::InstanceRenderer()
                     "vec4(pickingIndexToColor(in_PickId), 1.0). Expects a vec4."_help,
                     "vec4(pickingIndexToColor(in_PickId), 1.0)",
                     InvalidationLevel::InvalidResources, PropertySemantics::Multiline}}}
-    , setupVert_{"setupVert",
-                 "Setup Vertex Shader",
-                 "Extra vertex shader code can be added here, for example to include other "
-                 "files, or to add short functions."_help,
-                 "",
-                 InvalidationLevel::InvalidResources,
-                 PropertySemantics::Multiline}
     , vert_{std::make_shared<StringShaderResource>("InstanceRenderer.vert", vertexShader)}
     , frag_{std::make_shared<StringShaderResource>("InstanceRenderer.frag", fragmentShader)}
     , shader_{{{ShaderType::Vertex, vert_}, {ShaderType::Fragment, frag_}}, Shader::Build::No} {
@@ -329,16 +371,40 @@ InstanceRenderer::InstanceRenderer()
     addPort(background_).setOptional(true);
     addPort(outport_);
 
-    addProperties(ports_);
+    addProperties(uniforms_, ports_, setupVert_, commonCode_);
     for (auto& transform : transforms_) {
         addProperty(transform);
     }
-    addProperties(setupVert_, camera_, lightingProperty_, trackball_);
+    addProperties(camera_, lightingProperty_, trackball_);
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
+    uniforms_.PropertyOwnerObservable::addObserver(this);
     ports_.PropertyOwnerObservable::addObserver(this);
 }
 
-std::vector<std::unique_ptr<Property>> InstanceRenderer::prefabs() {
+std::vector<std::unique_ptr<Property>> InstanceRenderer::uniformPrefabs() {
+    std::vector<std::unique_ptr<Property>> res;
+
+    res.push_back(std::make_unique<IntProperty>("int", "intValue"));
+    res.push_back(std::make_unique<IntVec2Property>("ivec2", "ivec2Value"));
+    res.push_back(std::make_unique<IntVec3Property>("ivec3", "ivec3Value"));
+    res.push_back(std::make_unique<IntVec4Property>("ivec4", "ivec4Value"));
+
+    res.push_back(std::make_unique<FloatProperty>("float", "floatValue"));
+    res.push_back(std::make_unique<FloatVec2Property>("vec2", "vec2Value"));
+    res.push_back(std::make_unique<FloatVec3Property>("vec3", "vec3Value"));
+    res.push_back(std::make_unique<FloatVec4Property>("vec4", "vec4Value"));
+
+    res.push_back(std::make_unique<FloatMat2Property>("mat2", "mat2Value"));
+    res.push_back(std::make_unique<FloatMat3Property>("mat3", "mat3Value"));
+    res.push_back(std::make_unique<FloatMat4Property>("mat4", "mat4Value"));
+
+    res.push_back(std::make_unique<TransferFunctionProperty>("tf", "tf"));
+
+    return res;
+}
+
+std::vector<std::unique_ptr<Property>> InstanceRenderer::portPrefabs() {
     std::vector<std::unique_ptr<Property>> res;
 
     for (int i = 1; i <= 4; ++i) {
@@ -355,16 +421,82 @@ std::vector<std::unique_ptr<Property>> InstanceRenderer::prefabs() {
         res.push_back(std::move(comp));
     }
 
+    for (int i = 2; i <= 4; ++i) {
+        auto comp = std::make_unique<CompositeProperty>(fmt::format("floatMat{}Port", i),
+                                                        fmt::format("Float Mat{} Port", i));
+        comp->addProperty(
+                std::make_unique<IntVec2Property>("components", "Components", ivec2{i, i}))
+            ->setReadOnly(true)
+            .setSemantics(PropertySemantics::Text);
+        comp->addProperty(std::make_unique<StringProperty>("format", "Format", "Float"))
+            ->setReadOnly(true);
+        comp->addProperty(std::make_unique<StringProperty>("uniform", "Uniform", "value",
+                                                           InvalidationLevel::InvalidResources));
+
+        res.push_back(std::move(comp));
+    }
+
     return res;
 }
 
 InstanceRenderer::~InstanceRenderer() { ports_.PropertyOwnerObservable::removeObserver(this); }
 
+void InstanceRenderer::onSetDisplayName(Property*, const std::string&) {
+    invalidate(InvalidationLevel::InvalidResources);
+}
+
 void InstanceRenderer::onDidAddProperty(Property* property, size_t) {
+    if (property->getOwner() == &ports_) {
+        onDidAddPort(property);
+    } else if (property->getOwner() == &uniforms_) {
+        onDidAddUniform(property);
+    }
+}
+
+void InstanceRenderer::onDidAddUniform(Property* property) {
+    using types = std::tuple<IntProperty, IntVec2Property, IntVec3Property, IntVec4Property,
+                             FloatProperty, FloatVec2Property, FloatVec3Property, FloatVec4Property,
+                             FloatMat2Property, FloatMat3Property, FloatMat4Property>;
+    util::for_each_type<types>{}([&]<typename T>() {
+        if (auto prop = dynamic_cast<T*>(property)) {
+            dynUniforms_.emplace_back(
+                [prop](Shader& shader, TextureUnitContainer&) {
+                    auto name = util::stripIdentifier(prop->getDisplayName());
+                    shader.setUniform(name, prop->get());
+                },
+                [prop](ShaderObject& so) {
+                    const auto type = utilgl::glslTypeName<typename T::value_type>();
+                    auto name = util::stripIdentifier(prop->getDisplayName());
+                    so.addSegment(ShaderSegment{irplaceholder::uniform, name,
+                                                fmt::format("uniform {} {};", type, name)});
+                });
+        }
+    });
+
+    if (auto tfProp = dynamic_cast<TransferFunctionProperty*>(property)) {
+        dynUniforms_.emplace_back(
+            [tfProp](Shader& shader, TextureUnitContainer& units) {
+                auto name = util::stripIdentifier(tfProp->getDisplayName());
+                auto& unit = units.emplace_back();
+                utilgl::bindTexture(*tfProp, unit);
+                shader.setUniform(name, unit);
+            },
+            [tfProp](ShaderObject& so) {
+                auto name = util::stripIdentifier(tfProp->getDisplayName());
+                so.addSegment(ShaderSegment{irplaceholder::uniform, name,
+                                            fmt::format("uniform sampler2D {};", name)});
+            });
+    }
+
+    property->addObserver(this);
+
+    invalidate(InvalidationLevel::InvalidResources);
+}
+
+void InstanceRenderer::onDidAddPort(Property* property) {
     auto comp = dynamic_cast<CompositeProperty*>(property);
     IVW_ASSERT(comp, "should always exist");
-    auto components = dynamic_cast<IntProperty*>(comp->getPropertyByIdentifier("components"));
-    IVW_ASSERT(components, "should always exist");
+
     auto uniform = dynamic_cast<StringProperty*>(comp->getPropertyByIdentifier("uniform"));
     IVW_ASSERT(uniform, "should always exist");
 
@@ -384,29 +516,63 @@ void InstanceRenderer::onDidAddProperty(Property* property, size_t) {
         "");
     uniform->set(uniqueID);
 
+    auto components1D = dynamic_cast<IntProperty*>(comp->getPropertyByIdentifier("components"));
+    auto components2D = dynamic_cast<IntVec2Property*>(comp->getPropertyByIdentifier("components"));
+    IVW_ASSERT(components1D || components2D, "should always exist");
+
     const auto& id = property->getIdentifier();
-    switch (components->get()) {
-        case 1:
-            vecPorts_.push_back(detail::createDynPortManager<float>(this, id, uniform));
-            break;
-        case 2:
-            vecPorts_.push_back(detail::createDynPortManager<vec2>(this, id, uniform));
-            break;
-        case 3:
-            vecPorts_.push_back(detail::createDynPortManager<vec3>(this, id, uniform));
-            break;
-        case 4:
-            vecPorts_.push_back(detail::createDynPortManager<vec4>(this, id, uniform));
-            break;
+    if (components1D) {
+        switch (components1D->get()) {
+            case 1:
+                vecPorts_.push_back(detail::createDynPortManager<float>(this, id, uniform));
+                break;
+            case 2:
+                vecPorts_.push_back(detail::createDynPortManager<vec2>(this, id, uniform));
+                break;
+            case 3:
+                vecPorts_.push_back(detail::createDynPortManager<vec3>(this, id, uniform));
+                break;
+            case 4:
+                vecPorts_.push_back(detail::createDynPortManager<vec4>(this, id, uniform));
+                break;
+        }
+    } else if (components2D) {
+        switch (components2D->get().x) {
+            case 2:
+                vecPorts_.push_back(detail::createDynPortManager<mat2>(this, id, uniform));
+                break;
+            case 3:
+                vecPorts_.push_back(detail::createDynPortManager<mat3>(this, id, uniform));
+                break;
+            case 4:
+                vecPorts_.push_back(detail::createDynPortManager<mat4>(this, id, uniform));
+                break;
+        }
     }
 
     invalidate(InvalidationLevel::InvalidResources);
 }
 
-void InstanceRenderer::onWillRemoveProperty(Property*, size_t index) {
-    vecPorts_.erase(vecPorts_.begin() + index);
+void InstanceRenderer::onWillRemoveProperty(Property* property, size_t index) {
+    if (property->getOwner() == &ports_) {
+        onDidRemovePort(property, index);
+    } else if (property->getOwner() == &uniforms_) {
+        onDidRemoveUniform(property, index);
+    }
+}
 
-    invalidate(InvalidationLevel::InvalidResources);
+void InstanceRenderer::onDidRemoveUniform(Property* /*property*/, size_t index) {
+    if (index < dynUniforms_.size()) {
+        dynUniforms_.erase(dynUniforms_.begin() + index);
+        invalidate(InvalidationLevel::InvalidResources);
+    }
+}
+
+void InstanceRenderer::onDidRemovePort(Property* /*property*/, size_t index) {
+    if (index < vecPorts_.size()) {
+        vecPorts_.erase(vecPorts_.begin() + index);
+        invalidate(InvalidationLevel::InvalidResources);
+    }
 }
 
 void InstanceRenderer::initializeResources() {
@@ -418,7 +584,13 @@ void InstanceRenderer::initializeResources() {
     vso->addSegment(
         ShaderSegment{irplaceholder::setupVert, setupVert_.getIdentifier(), setupVert_.get()});
 
+    vso->addSegment(
+        ShaderSegment{irplaceholder::commonCode, commonCode_.getIdentifier(), commonCode_.get()});
+
     std::for_each(vecPorts_.begin(), vecPorts_.end(), [&](auto& port) { port.addUniform(*vso); });
+
+    std::for_each(dynUniforms_.begin(), dynUniforms_.end(),
+                  [&](auto& uniform) { uniform.addUniform(*vso); });
 
     size_t prio = 100;
     for (auto& transform : transforms_) {
@@ -543,6 +715,11 @@ std::optional<mat4> InstanceRenderer::render(bool enableBoundingBoxCalc) {
     utilgl::setUniforms(shader_, camera_, lightingProperty_);
     utilgl::setShaderUniforms(shader_, mesh, "geometry");
     utilgl::Enable<MeshGL> enable{&meshGL};
+
+    TextureUnitContainer units;
+    for (auto& uniform : dynUniforms_) {
+        uniform.setAndBind(shader_, units);
+    }
 
     if (enableBoundingBoxCalc) {
         const auto nVertices = nInstances * numberOfVertices(meshGL);

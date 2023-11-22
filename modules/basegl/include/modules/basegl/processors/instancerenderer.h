@@ -42,6 +42,7 @@
 #include <inviwo/core/properties/stringproperty.h>          // for StringProperty
 #include <modules/opengl/shader/shader.h>                   // for Shader
 #include <modules/opengl/buffer/bufferobject.h>             // for BufferGL
+#include <modules/opengl/texture/textureunit.h>            // for TextureUnit, TextureUnitContai...
 
 #include <array>       // for array
 #include <cstddef>     // for size_t
@@ -63,17 +64,16 @@ namespace detail {
  * Helper class for the InstanceRenderer to manage construction, destruction, binding, and setting
  * of uniforms for dynamically created ports.
  */
-struct IVW_MODULE_BASEGL_API DynPortManager {
-    DynPortManager(InstanceRenderer* theRenderer, std::unique_ptr<Inport> aPort,
-                   std::function<std::optional<size_t>()> aSize,
-                   std::function<void(Shader&, size_t)> aSet,
-                   std::function<void(ShaderObject&)> aAddUniform);
+struct IVW_MODULE_BASEGL_API DynPort {
+    DynPort(InstanceRenderer* theRenderer, std::unique_ptr<Inport> aPort,
+            std::function<std::optional<size_t>()> aSize, std::function<void(Shader&, size_t)> aSet,
+            std::function<void(ShaderObject&)> aAddUniform);
 
-    DynPortManager(const DynPortManager&) = delete;
-    DynPortManager& operator=(const DynPortManager&) = delete;
-    DynPortManager(DynPortManager&&);
-    DynPortManager& operator=(DynPortManager&&);
-    ~DynPortManager();
+    DynPort(const DynPort&) = delete;
+    DynPort& operator=(const DynPort&) = delete;
+    DynPort(DynPort&&);
+    DynPort& operator=(DynPort&&);
+    ~DynPort();
 
     InstanceRenderer* renderer;
     std::unique_ptr<Inport> port;
@@ -82,9 +82,23 @@ struct IVW_MODULE_BASEGL_API DynPortManager {
     std::function<void(ShaderObject&)> addUniform;
 };
 
+struct IVW_MODULE_BASEGL_API DynUniform {
+    DynUniform(std::function<void(Shader&, TextureUnitContainer&)> setAndBind,
+               std::function<void(ShaderObject&)> addUniform);
+
+    DynUniform(const DynUniform&) = delete;
+    DynUniform& operator=(const DynUniform&) = delete;
+    DynUniform(DynUniform&&);
+    DynUniform& operator=(DynUniform&&);
+    ~DynUniform();
+
+    std::function<void(Shader&, TextureUnitContainer&)> setAndBind;
+    std::function<void(ShaderObject&)> addUniform;
+};
+
 };  // namespace detail
 
-class IVW_MODULE_BASEGL_API InstanceRenderer : public Processor, public PropertyOwnerObserver {
+class IVW_MODULE_BASEGL_API InstanceRenderer : public Processor, public PropertyOwnerObserver, public PropertyObserver {
 public:
     InstanceRenderer();
     virtual ~InstanceRenderer();
@@ -105,21 +119,34 @@ private:
     void onDidAddProperty(Property* property, size_t index) override;
     void onWillRemoveProperty(Property* property, size_t index) override;
 
-    static std::vector<std::unique_ptr<Property>> prefabs();
+    virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
+
+    void onDidAddPort(Property* property);
+    void onDidAddUniform(Property* property);
+
+    void onDidRemovePort(Property* property, size_t index);
+    void onDidRemoveUniform(Property* property, size_t index);
+
+    static std::vector<std::unique_ptr<Property>> portPrefabs();
+    static std::vector<std::unique_ptr<Property>> uniformPrefabs();
 
     MeshInport inport_;
     ImageInport background_;
     ImageOutport outport_;
 
+    ListProperty uniforms_;
+    std::vector<detail::DynUniform> dynUniforms_;
     ListProperty ports_;
-    std::vector<detail::DynPortManager> vecPorts_;
+    std::vector<detail::DynPort> vecPorts_;
 
     CameraProperty camera_;
     CameraTrackball trackball_;
     SimpleLightingProperty lightingProperty_;
 
-    std::array<StringProperty, 5> transforms_;
     StringProperty setupVert_;
+    StringProperty commonCode_;
+    std::array<StringProperty, 5> transforms_;
+    
 
     std::shared_ptr<StringShaderResource> vert_;
     std::shared_ptr<StringShaderResource> frag_;
