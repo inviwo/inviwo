@@ -398,7 +398,7 @@ endfunction()
 # using module data
 function(ivw_mod_dep_to_mod_name retval)
     set(the_list "")
-    foreach(mod in LISTS ARGN)
+    foreach(mod IN LISTS ARGN)
         list(APPEND the_list ${${mod}_modName})
     endforeach()
     set(${retval} ${the_list} PARENT_SCOPE)
