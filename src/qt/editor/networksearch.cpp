@@ -31,7 +31,9 @@
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
+#include <modules/qtwidgets/propertylistwidget.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/network/processornetwork.h>
@@ -42,14 +44,12 @@
 
 #include <algorithm>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QLineEdit>
 #include <QHBoxLayout>
 #include <QEvent>
 #include <QKeyEvent>
 #include <QString>
-#include <warn/pop>
+#include <QCoreApplication>
 
 namespace inviwo {
 
@@ -209,18 +209,40 @@ bool NetworkSearch::eventFilter(QObject* watched, QEvent* event) {
                 edit_->text().clear();
                 auto app = win_->getInviwoApplication();
                 auto editor = win_->getNetworkEditor();
+                auto props = win_->getPropertyListWidget();
                 auto network = app->getProcessorNetwork();
+
+                Property* selectedProperty = nullptr;
                 network->forEachProcessor([&](Processor* p) {
                     auto pgi = editor->getProcessorGraphicsItem(p);
                     if (pgi->isSelected()) {
                         pgi->setSelected(false);
                         pgi->setHighlight(false);
                         pgi->setSelected(true);
+
+                        if (!selectedProperty) {
+                            if (auto str = dsl_.currentStr("property")) {
+                                for (const auto& pr : p->getPropertiesRecursive()) {
+                                    if (find(pr->getIdentifier(), *str)) {
+                                        selectedProperty = pr;
+                                    }
+                                }
+                            }
+                        }
                     } else {
                         pgi->setHighlight(false);
                         pgi->setSelected(false);
                     }
                 });
+
+                if (selectedProperty) {
+                    QCoreApplication::postEvent(
+                        props,
+                        new PropertyListEvent(PropertyListEvent::Action::FocusProperty,
+                                              selectedProperty->getPath()),
+                        Qt::LowEventPriority);
+                }
+
                 setVisible(false);
                 return true;
             }

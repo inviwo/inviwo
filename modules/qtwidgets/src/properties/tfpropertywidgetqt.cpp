@@ -60,6 +60,7 @@ TFPropertyWidgetQt::TFPropertyWidgetQt(TransferFunctionProperty* property)
     , label_{new EditableLabelQt(this, property)}
     , btnOpenTF_{new TFPushButton(property, this)} {
 
+    btnOpenTF_->setFocusPolicy(Qt::StrongFocus);
     setFocusPolicy(btnOpenTF_->focusPolicy());
     setFocusProxy(btnOpenTF_);
 

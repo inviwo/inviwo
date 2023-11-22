@@ -59,6 +59,7 @@ ButtonGroupPropertyWidgetQt::ButtonGroupPropertyWidgetQt(ButtonGroupProperty* pr
         const auto& button = property->getButton(i);
 
         auto buttonWidget = new QPushButton(this);
+        buttonWidget->setFocusPolicy(Qt::StrongFocus);
         if (button.icon) {
             buttonWidget->setIcon(QIcon(utilqt::toQString(*button.icon)));
         }

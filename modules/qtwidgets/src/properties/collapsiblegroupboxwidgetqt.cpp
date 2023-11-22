@@ -130,7 +130,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
         button->setChecked(false);
         button->setObjectName("collapseButton");
         connect(button, &QToolButton::toggled, this, &CollapsibleGroupBoxWidgetQt::setCollapsed);
-        button->setFocusPolicy(Qt::TabFocus);
+        button->setFocusPolicy(Qt::StrongFocus);
         return button;
     }()}
     , label_{[this]() {
@@ -173,7 +173,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
         QObject::connect(checkBox, &QCheckBox::clicked, this,
                          [this, checkBox]() { setChecked(checkBox->isChecked()); });
         checkBox->setLayoutDirection(Qt::RightToLeft);
-        checkBox->setFocusPolicy(Qt::TabFocus);
+        checkBox->setFocusPolicy(Qt::StrongFocus);
         return checkBox;
     }()} {
 
@@ -363,7 +363,27 @@ void CollapsibleGroupBoxWidgetQt::setDisplayName(const std::string& displayName)
     }
 }
 
-const std::vector<Property*>& CollapsibleGroupBoxWidgetQt::getProperties() { return properties_; }
+const std::vector<Property*>& CollapsibleGroupBoxWidgetQt::getProperties() const {
+    return properties_;
+}
+const std::vector<PropertyWidgetQt*>& CollapsibleGroupBoxWidgetQt::getPropertyWidgets() const {
+    return propertyWidgets_;
+}
+
+PropertyWidgetQt* CollapsibleGroupBoxWidgetQt::widgetForProperty(Property* property) const {
+    if (auto it = std::find(properties_.begin(), properties_.end(), property);
+        it != properties_.end()) {
+        return *(propertyWidgets_.begin() + std::distance(properties_.begin(), it));
+    }
+    return nullptr;
+}
+Property* CollapsibleGroupBoxWidgetQt::propertyForWidget(PropertyWidgetQt* widget) const {
+    if (auto it = std::find(propertyWidgets_.begin(), propertyWidgets_.end(), widget);
+        it != propertyWidgets_.end()) {
+        return *(properties_.begin() + std::distance(propertyWidgets_.begin(), it));
+    }
+    return nullptr;
+}
 
 void CollapsibleGroupBoxWidgetQt::toggleCollapsed() { setCollapsed(!isCollapsed()); }
 
@@ -560,10 +580,6 @@ void CollapsibleGroupBoxWidgetQt::setPropertyOwner(PropertyOwner* propertyOwner)
 }
 
 PropertyOwner* CollapsibleGroupBoxWidgetQt::getPropertyOwner() const { return propertyOwner_; }
-
-const std::vector<PropertyWidgetQt*>& CollapsibleGroupBoxWidgetQt::getPropertyWidgets() {
-    return propertyWidgets_;
-}
 
 void CollapsibleGroupBoxWidgetQt::setShowIfEmpty(bool val) { showIfEmpty_ = val; }
 

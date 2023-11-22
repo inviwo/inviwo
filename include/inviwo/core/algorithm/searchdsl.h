@@ -36,6 +36,7 @@
 #include <vector>
 #include <unordered_map>
 #include <functional>
+#include <optional>
 
 #include <fmt/format.h>
 
@@ -115,6 +116,29 @@ public:
             if (!item->match(str, things...)) return false;
         }
         return true;
+    }
+
+    const std::vector<std::pair<const Item*, std::string_view>>& currentItems() const {
+        return current_;
+    }
+
+    std::optional<std::pair<const Item&, std::string_view>> current(std::string_view name) {
+        for (const auto& [item, str] : current_) {
+            if (item->name == name) return {item, str};
+        }
+        return std::nullopt;
+    }
+    std::optional<std::string_view> currentStr(std::string_view name) {
+        for (const auto& [item, str] : current_) {
+            if (item->name == name) return str;
+        }
+        return std::nullopt;
+    }
+    const Item* currentItem(std::string_view name) {
+        for (const auto& [item, str] : current_) {
+            if (item->name == name) return item;
+        }
+        return nullptr;
     }
 
 private:

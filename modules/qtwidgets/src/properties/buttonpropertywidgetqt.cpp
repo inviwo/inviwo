@@ -64,6 +64,7 @@ ButtonPropertyWidgetQt::ButtonPropertyWidgetQt(ButtonProperty* property)
             }
         }
     });
+    button_->setFocusPolicy(Qt::StrongFocus);
     setFocusPolicy(button_->focusPolicy());
     setFocusProxy(button_);
 
