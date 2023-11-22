@@ -71,7 +71,7 @@ bool FileObserver::startFileObservation(const std::filesystem::path& fileName) {
     if (!fileSystemObserver_) return false;
     auto it = observedFiles_.find(fileName);
     if (it == observedFiles_.end()) {
-        if (std::filesystem::is_regular_file(fileName)) {
+        if (std::filesystem::is_regular_file(fileName) || std::filesystem::is_directory(fileName)) {
             observedFiles_.insert(fileName);
             fileSystemObserver_->startFileObservation(fileName);
             return true;
