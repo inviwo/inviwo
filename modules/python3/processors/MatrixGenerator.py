@@ -1,6 +1,7 @@
 # Name: MatrixGenerator
 
 import inviwopy as ivw
+from inviwopy.properties import ConstraintBehavior as cb
 import numpy as np
 
 
