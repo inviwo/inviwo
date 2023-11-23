@@ -35,7 +35,6 @@
 #include <string>
 #include <string_view>
 
-
 namespace inviwo {
 
 class Camera;

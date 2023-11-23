@@ -76,7 +76,7 @@ public:
     void addProperty(Property* tmpProperty);
     const std::vector<Property*>& getProperties() const;
     const std::vector<PropertyWidgetQt*>& getPropertyWidgets() const;
-    
+
     PropertyWidgetQt* widgetForProperty(Property*) const;
     Property* propertyForWidget(PropertyWidgetQt*) const;
 

@@ -74,7 +74,7 @@ public:
     void remove(Property* property);
 
     void clear();
-    
+
     QWidget* findWidgetFor(Property* property);
 
 private:
@@ -126,7 +126,7 @@ public:
     // ProcessorNetworkEvaluationObserver
     virtual void onProcessorNetworkEvaluationBegin() override;
     virtual void onProcessorNetworkEvaluationEnd() override;
-    
+
     void focusProperty(Property* property);
 
 private:
