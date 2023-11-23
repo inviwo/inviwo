@@ -55,15 +55,14 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API InviwoFileDialog : public QFileDialog, public FileDialog {
     Q_OBJECT
 public:
-    InviwoFileDialog(QWidget* parent = nullptr, const std::string& title = "",
-                     const std::string& pathType = "default",
-                     const std::filesystem::path& path = {});
+    InviwoFileDialog(QWidget* parent = nullptr, std::string_view title = "",
+                     std::string_view pathType = "default", const std::filesystem::path& path = {});
 
     virtual bool show() override;
 
     virtual int exec() override;
 
-    virtual void setTitle(const std::string& title) override;
+    virtual void setTitle(std::string_view title) override;
 
     virtual void setAcceptMode(inviwo::AcceptMode mode) override;
     virtual inviwo::AcceptMode getAcceptMode() const override;
@@ -71,7 +70,7 @@ public:
     virtual void setFileMode(inviwo::FileMode mode) override;
     virtual inviwo::FileMode getFileMode() const override;
 
-    virtual void setContentType(const std::string& contentType) override;
+    virtual void setContentType(std::string_view contentType) override;
     virtual std::string getContentType() const override;
 
     /**
@@ -96,8 +95,8 @@ public:
     virtual void setSelectedExtension(const FileExtension& ext) override;
 
     virtual void addExtension(const FileExtension& fileExt) override;
-    virtual void addExtension(const std::string& ext, const std::string& description) override;
-    virtual void addExtension(const std::string& extString) override;
+    virtual void addExtension(std::string_view ext, std::string_view description) override;
+    virtual void addExtension(std::string_view extString) override;
     virtual void addExtensions(const std::vector<FileExtension>& extensions) override;
 
     void addSidebarPath(const PathType& path);

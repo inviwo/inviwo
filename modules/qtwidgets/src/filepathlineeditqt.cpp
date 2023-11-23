@@ -59,10 +59,7 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
     , warningLabel_{new QLabel(this)}
     , path_{}
     , acceptMode_{AcceptMode::Open}
-    , fileMode_{FileMode::AnyFile}
-    , editingEnabled_{false}
-    , cursorPos_{0}
-    , cursorPosDirty_{false} {
+    , fileMode_{FileMode::AnyFile} {
 
     int width = this->sizeHint().height();
     QSize labelSize(width, width);
@@ -82,77 +79,56 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
     completer->setCompletionMode(QCompleter::PopupCompletion);
     completer->setCaseSensitivity(Qt::CaseInsensitive);
     setCompleter(completer);
-    completer->popup()->setObjectName("Completer");
+    completer->popup()->setObjectName("FileCompleterDropdown");
 
-    auto trimFilename = [this]() {
-        auto str = text().trimmed();
-        if (str != text()) {
-            blockSignals(true);
-            setText(str);
-            setModified(str != utilqt::toQString(path_));
-            blockSignals(false);
-        }
-    };
+    connect(this, &QLineEdit::textEdited, this,
+            [this](const QString& str) { updateIcon(utilqt::toPath(str)); });
 
-    connect(this, &QLineEdit::returnPressed, [this, trimFilename]() {
-        if (editingEnabled_) {
-            trimFilename();
-            path_ = utilqt::toPath(text().trimmed());
-            setEditing(false);
-        }
-    });
-    connect(this, &QLineEdit::editingFinished, [this, trimFilename]() {
-        if (editingEnabled_) {
-            trimFilename();
-            path_ = utilqt::toPath(text());
-            setEditing(false);
+    connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted), this,
+            [this](const QString& str) { updateIcon(utilqt::toPath(str)); });
+
+    connect(this, &QLineEdit::editingFinished, [this]() {
+        setCursorToEnd();
+        const auto path = utilqt::toPath(text().trimmed());
+        updateIcon(path);
+        if (path != path_) {
+            path_ = path;
+            emit pathChanged(path_);
         }
     });
 
     connect(this, &LineEditQt::editingCanceled, [this]() {
-        // revert changes
-        if (editingEnabled_) {
-            setModified(false);
-            updateContents();
-            setEditing(false);
-        }
+        setText(utilqt::toQString(path_));
+        setCursorToEnd();
+        updateIcon(path_);
     });
 }
 
 void FilePathLineEditQt::setAcceptMode(AcceptMode acceptMode) {
     if (acceptMode_ != acceptMode) {
         acceptMode_ = acceptMode;
-        updateIcon();
+        updateIcon(path_);
     }
 }
 void FilePathLineEditQt::setFileMode(FileMode fileMode) {
     if (fileMode_ != fileMode) {
         fileMode_ = fileMode;
-        updateIcon();
+        updateIcon(path_);
     }
 }
 
 void FilePathLineEditQt::setPath(const std::filesystem::path& path) {
-    if (path_ != path) {
+    if (path != path_) {
         path_ = path;
-        setModified(false);
-        updateContents();
-    } else {
-        // update icon as file may now exist or was removed
-        updateIcon();
+        setText(utilqt::toQString(path_));
+        setCursorToEnd();
+        updateIcon(path_);
     }
 }
 
 const std::filesystem::path& FilePathLineEditQt::getPath() const { return path_; }
 
-void FilePathLineEditQt::setEditing(bool editing) {
-    if (editing != editingEnabled_) {
-        editingEnabled_ = editing;
-        updateContents();
-    }
-}
-
-bool FilePathLineEditQt::isEditingEnabled() const { return editingEnabled_; }
+void FilePathLineEditQt::setCursorToEnd() { setCursorPosition(static_cast<int>(text().length())); }
 
 void FilePathLineEditQt::resizeEvent(QResizeEvent*) {
     // adjust position of warning label to be on the right side
@@ -160,69 +136,19 @@ void FilePathLineEditQt::resizeEvent(QResizeEvent*) {
     warningLabel_->move(width() - warningLabel_->width() - frameWidth, 0);
 }
 
-void FilePathLineEditQt::focusInEvent(QFocusEvent* event) {
-    cursorPosDirty_ = false;
-    if (event->reason() == Qt::MouseFocusReason) {
-        // user has used the mouse to click into this widget
-        auto cursor = QCursor::pos();
-        // get current cursor position in line edit
-        cursorPos_ = this->cursorPositionAt(this->mapFromGlobal(cursor));
-        // the cursor position has to be set again after the mouse click has been processed in
-        // mousePressEvent()
-        cursorPosDirty_ = true;
-    }
-    setEditing(true);
-
-    QLineEdit::focusInEvent(event);
-}
-
-void FilePathLineEditQt::mousePressEvent(QMouseEvent* event) {
-    LineEditQt::mousePressEvent(event);
-
-    if (cursorPosDirty_) {
-
-        const auto length = static_cast<int>(path_.string().size());
-        const auto lenFilename = static_cast<int>(path_.filename().string().size());
-        const auto lenDir = static_cast<int>(path_.parent_path().string().size());
-
-        if (cursorPos_ >= lenFilename) {
-            this->setSelection(lenDir, lenFilename);
-            this->setCursorPosition(length);
-        } else {
-            this->setCursorPosition(lenDir + cursorPos_);
-        }
-
-        cursorPosDirty_ = false;
-    }
-}
-
-void FilePathLineEditQt::updateContents() {
-
-    const bool modified = isModified();
-    if (editingEnabled_) {
-        // show entire path
-        this->setText(utilqt::toQString(path_));
-    } else {
-        // abbreviate file path and show only the file name
-        this->setText(utilqt::toQString(path_.filename()));
-    }
-    setModified(modified);
-    updateIcon();
-}
-
-void FilePathLineEditQt::updateIcon() {
+void FilePathLineEditQt::updateIcon(const std::filesystem::path& path) {
     // update visibility of warning icon
 
     bool visible = false;
     QString tooltip;
 
-    bool hasWildcard = (path_.string().find_first_of("*?#", 0) != std::string::npos);
+    bool hasWildcard = (path.string().find_first_of("*?#", 0) != std::string::npos);
 
-    auto status = std::filesystem::status(path_);
+    auto status = std::filesystem::status(path);
     const bool isFile = std::filesystem::is_regular_file(status);
     const bool isDir = std::filesystem::is_directory(status);
 
-    const bool parentDir = std::filesystem::is_directory(path_.parent_path());
+    const bool parentDir = std::filesystem::is_directory(path.parent_path());
 
     switch (acceptMode_) {
         case AcceptMode::Open: {

@@ -237,6 +237,7 @@ bool CameraProperty::changeCamera(const std::string& name) {
         NetworkLock lock(this);
         auto newCamera = factory_->create(name);
         newCamera->updateFrom(*camera_);
+        camera_->configureProperties(*this, false);
         hideConfiguredProperties();
         newCamera->configureProperties(*this, true);
         camera_ = std::move(newCamera);
@@ -259,6 +260,7 @@ CameraProperty& CameraProperty::setCamera(const std::string& cameraIdentifier) {
 CameraProperty& CameraProperty::setCamera(std::unique_ptr<Camera> newCamera) {
     if (newCamera) {
         NetworkLock lock(this);
+        camera_->configureProperties(*this, false);
         hideConfiguredProperties();
         newCamera->configureProperties(*this, true);
         camera_ = std::move(newCamera);

@@ -419,7 +419,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     });
 
     annotationClearHandle_ = app_->getWorkspaceManager()->onClear([&]() {
-        annotationsWidget_->getAnnotations().resetAllPoperties();
+        annotationsWidget_->getAnnotations().resetAllProperties();
         annotationsWidget_->getAnnotations().setAuthor(
             app_->getSettingsByType<EditorSettings>()->workspaceAuthor);
     });

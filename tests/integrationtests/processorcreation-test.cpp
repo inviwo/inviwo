@@ -92,7 +92,7 @@ TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
     LGL_ERROR;
 
     ASSERT_TRUE(s.get() != nullptr) << "Could not create processor " << GetParam();
-    s->resetAllPoperties();
+    s->resetAllProperties();
 
     LGL_ERROR;
 

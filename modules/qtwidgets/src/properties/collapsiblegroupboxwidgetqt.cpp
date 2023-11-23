@@ -130,7 +130,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
         button->setChecked(false);
         button->setObjectName("collapseButton");
         connect(button, &QToolButton::toggled, this, &CollapsibleGroupBoxWidgetQt::setCollapsed);
-        button->setFocusPolicy(Qt::NoFocus);
+        button->setFocusPolicy(Qt::TabFocus);
         return button;
     }()}
     , label_{[this]() {
@@ -154,7 +154,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
             if (property_) {
                 property_->resetToDefaultState();
             } else if (propertyOwner_) {
-                propertyOwner_->resetAllPoperties();
+                propertyOwner_->resetAllProperties();
             }
         });
         button->setFocusPolicy(Qt::NoFocus);
@@ -173,6 +173,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
         QObject::connect(checkBox, &QCheckBox::clicked, this,
                          [this, checkBox]() { setChecked(checkBox->isChecked()); });
         checkBox->setLayoutDirection(Qt::RightToLeft);
+        checkBox->setFocusPolicy(Qt::TabFocus);
         return checkBox;
     }()} {
 
@@ -293,7 +294,7 @@ std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
         auto resetAction = menu->addAction(tr("&Reset to default"));
         resetAction->setToolTip(tr("&Reset the group of properties to its default state"));
         connect(resetAction, &QAction::triggered, this,
-                [&]() { propertyOwner_->resetAllPoperties(); });
+                [&]() { propertyOwner_->resetAllProperties(); });
     }
     return menu;
 }
@@ -776,12 +777,8 @@ void CollapsibleGroupBoxWidgetQt::insertPropertyWidget(PropertyWidgetQt* propert
 }
 
 void CollapsibleGroupBoxWidgetQt::updateFocusPolicy() {
-    if (checkable_) {
-        setFocusPolicy(checkBox_->focusPolicy());
-        setFocusProxy(checkBox_);
-    } else {
-        setFocusPolicy(Qt::NoFocus);
-    }
+    setFocusPolicy(btnCollapse_->focusPolicy());
+    setFocusProxy(btnCollapse_);
 }
 
 }  // namespace inviwo

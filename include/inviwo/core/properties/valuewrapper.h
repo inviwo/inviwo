@@ -33,14 +33,20 @@
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/io/serialization/deserializer.h>
 
+#include <concepts>
+
 namespace inviwo {
 
 enum class PropertySerializationMode { Default = 0, All, None };
 
 template <typename T>
 struct ValueWrapper {
-    ValueWrapper(std::string_view name, T val)
-        : value(std::move(val)), defaultValue(value), name(name) {}
+
+    template <typename... U>
+    ValueWrapper(std::string_view name, U&&... vals)
+        requires std::constructible_from<T, U&&...>
+        : value(std::forward<U>(vals)...), defaultValue(value), name(name) {}
+
     ValueWrapper(const ValueWrapper<T>& rhs) = default;
     ValueWrapper<T>& operator=(const ValueWrapper<T>& that) = default;
 
@@ -50,6 +56,9 @@ struct ValueWrapper {
     }
 
     operator const T&() const { return value; }
+
+    const T& operator*() const { return value; }
+    const T* operator->() const { return &value; }
 
     bool isDefault() const { return value == defaultValue; }
 
@@ -105,6 +114,7 @@ struct ValueWrapper {
             return false;
         }
     }
+
     /**
      * Update the value of this to that of src.
      * @returns if value was modified
@@ -117,20 +127,28 @@ struct ValueWrapper {
             return false;
         }
     }
-    friend bool operator==(const ValueWrapper<T>& lhs, const ValueWrapper<T>& rhs) {
-        return lhs.value == rhs.value;
+
+    /**
+     * Update the value of this to that of src.
+     * @returns if value was modified
+     */
+    template <typename U>
+    bool update(const U& src)
+        requires std::assignable_from<T&, U> &&
+                 (!std::is_same_v<T, U>) && std::equality_comparable_with<const U&, const T&>
+    {
+        if (value != src) {
+            value = src;
+            return true;
+        } else {
+            return false;
+        }
     }
-    friend bool operator!=(const ValueWrapper<T>& lhs, const ValueWrapper<T>& rhs) {
-        return !operator==(lhs, rhs);
-    }
-    friend bool operator==(const ValueWrapper<T>& lhs, const T& rhs) { return lhs.value == rhs; }
-    friend bool operator!=(const ValueWrapper<T>& lhs, const T& rhs) {
-        return !operator==(lhs, rhs);
-    }
-    friend bool operator==(const T& lhs, const ValueWrapper<T>& rhs) { return rhs == lhs; }
-    friend bool operator!=(const T& lhs, const ValueWrapper<T>& rhs) {
-        return !operator==(rhs, lhs);
-    }
+
+    auto operator<=>(const ValueWrapper<T>& rhs) const { return value <=> rhs.value; }
+    bool operator==(const ValueWrapper<T>& rhs) const { return value == rhs.value; }
+    auto operator<=>(const T& rhs) const { return value <=> rhs; }
+    bool operator==(const T& rhs) const { return value == rhs; }
 
     T value;
     T defaultValue;

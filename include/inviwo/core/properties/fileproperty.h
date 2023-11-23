@@ -38,6 +38,9 @@
 
 namespace inviwo {
 
+class MultiFileProperty;
+class FileDialog;
+
 class IVW_CORE_API FileRequestable {
 public:
     virtual ~FileRequestable() = default;
@@ -47,32 +50,86 @@ public:
     virtual bool requestFile() = 0;
 };
 
+class IVW_CORE_API FileBase {
+public:
+    static constexpr std::string_view defaultContentType = "default";
+
+    FileBase(std::function<void()> onModified, AcceptMode acceptMode, FileMode fileMode,
+             std::string_view contentType);
+
+    void addNameFilter(std::string_view filter);
+    void addNameFilter(FileExtension ext);
+    void addNameFilters(const std::vector<FileExtension>& filters);
+    void clearNameFilters();
+    const std::vector<FileExtension>& getNameFilters() const;
+    bool matchesAnyNameFilter(const std::filesystem::path& file) const;
+
+    void setAcceptMode(AcceptMode mode);
+    AcceptMode getAcceptMode() const;
+
+    void setFileMode(FileMode mode);
+    FileMode getFileMode() const;
+
+    void setContentType(std::string_view contentType);
+    const std::string& getContentType() const;
+
+    const FileExtension& getSelectedExtension() const;
+    void setSelectedExtension(const FileExtension& ext);
+
+protected:
+    bool setFileBase(const FileBase& base);
+    bool updateExtension(const std::filesystem::path& file);
+
+    void setAsDefault();
+    bool reset();
+
+    void serialize(Serializer& s, PropertySerializationMode mode) const;
+    bool deserialize(Deserializer& d, PropertySerializationMode mode);
+
+    std::unique_ptr<FileDialog> createFileDialog(std::string_view title,
+                                                 const std::filesystem::path& file) const;
+
+    /**
+     * A variadic any_of. This will evaluate all the arguments.
+     * But the order is arbitrary.
+     */
+    template <typename Arg, typename... Args>
+    [[nodiscard]] static constexpr bool any_of(Arg&& arg, Args&&... args) {
+        return (arg || ... || args);
+    }
+
+    std::vector<FileExtension> nameFilters_;
+    ValueWrapper<FileExtension> selectedExtension_;
+    ValueWrapper<AcceptMode> acceptMode_;
+    ValueWrapper<FileMode> fileMode_;
+    ValueWrapper<std::string> contentType_;
+
+private:
+    std::function<void()> onModified_;
+};
+
 /**
  * \ingroup properties
- *  A class for file representations.
- *  Holds the value of the path to a file as a string.
- *
- * @see TemplateProperty
+ *  A class for a file/directory path
  */
-class IVW_CORE_API FileProperty : public Property {
+class IVW_CORE_API FileProperty : public Property, public FileBase {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
-    static constexpr std::string_view defaultContentType = "default";
     using value_type = std::filesystem::path;
 
     /**
      * \brief Constructor for the FileProperty
      *
-     * The PropertySemantics can be set to TextEditor. Then a TextEditorWidget will be used instead
-     * of a FilePropertyWidget
+     * The PropertySemantics can be set to TextEditor. Then a TextEditorWidget will be used
+     * instead of a FilePropertyWidget
      *
      * @param identifier identifier for the property
      * @param displayName displayName for the property
      * @param help descriptive text
      * @param value the path to the file
-     * @param acceptMode
-     * @param fileMode
+     * @param acceptMode @see AcceptMode
+     * @param fileMode @see FileMode
      * @param contentType
      * @param invalidationLevel
      * @param semantics Can be set to Editor
@@ -87,8 +144,8 @@ public:
     /**
      * \brief Constructor for the FileProperty
      *
-     * The PropertySemantics can be set to TextEditor. Then a TextEditorWidget will be used instead
-     * of a FilePropertyWidget
+     * The PropertySemantics can be set to TextEditor. Then a TextEditorWidget will be used
+     * instead of a FilePropertyWidget
      *
      * @param identifier identifier for the property
      * @param displayName displayName for the property
@@ -106,8 +163,8 @@ public:
     /**
      * \brief Constructor for the FileProperty
      *
-     * The PropertySemantics can be set to TextEditor. Then a TextEditorWidget will be used instead
-     * of a FilePropertyWidget
+     * The PropertySemantics can be set to TextEditor. Then a TextEditorWidget will be used
+     * instead of a FilePropertyWidget
      *
      * @param identifier identifier for the property
      * @param displayName displayName for the property
@@ -131,14 +188,19 @@ public:
     /**
      * Set the file name and also update the selected extension to the first one matching file.
      */
-    virtual void set(const std::filesystem::path& file);
+    void set(const std::filesystem::path& file);
     /**
      * Set the file name and the selected extension.
      */
-    virtual void set(const std::filesystem::path& file, const FileExtension& selectedExtension);
+    void set(const std::filesystem::path& file, const FileExtension& selectedExtension);
 
+    void set(const FileProperty* property);
+    /*
+     * Assigns the first path of the MultiFileProperty to this.
+     * If the MultiFileProperty is empty, this path will be empty.
+     */
+    void set(const MultiFileProperty* property);
     virtual void set(const Property* property) override;
-    virtual void set(const FileProperty* property);
 
     operator const std::filesystem::path&() const { return file_; }
     const std::filesystem::path& get() const { return file_; }
@@ -147,24 +209,6 @@ public:
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
-
-    virtual void addNameFilter(std::string_view);
-    virtual void addNameFilter(FileExtension);
-    virtual void addNameFilters(const std::vector<FileExtension>& filters);
-    virtual void clearNameFilters();
-    virtual const std::vector<FileExtension>& getNameFilters() const;
-
-    virtual void setAcceptMode(AcceptMode acceptMode);
-    AcceptMode getAcceptMode() const;
-
-    virtual void setFileMode(FileMode fileMode);
-    FileMode getFileMode() const;
-
-    void setContentType(std::string_view contentType);
-    const std::string& getContentType() const;
-
-    const FileExtension& getSelectedExtension() const;
-    void setSelectedExtension(const FileExtension& ext);
 
     /**
      *	Request a file from the user through the use of a widget or a FileDialog.
@@ -184,11 +228,6 @@ public:
 
 private:
     ValueWrapper<std::filesystem::path> file_;
-    std::vector<FileExtension> nameFilters_;
-    FileExtension selectedExtension_;
-    AcceptMode acceptMode_;
-    FileMode fileMode_;
-    std::string contentType_;
 };
 
 }  // namespace inviwo

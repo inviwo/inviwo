@@ -86,7 +86,8 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& 
     : Processor()
     , app_(app)
     , outport_("data", "The loaded volume"_help)
-    , file_("filename", "Volume file", "File to load"_help, filePath, "volume")
+    , file_("filename", "Volume file", "File to load"_help, filePath, AcceptMode::Open,
+            FileMode::ExistingFile, "volume")
     , reader_("reader", "Data Reader", "The selected reader used for loading the Volume"_help)
     , reload_("reload", "Reload data",
               "Reload the date from disk, will not use the resource manager"_help)
