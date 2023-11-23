@@ -70,5 +70,5 @@ target_link_libraries(inviwo-module-fontrendering
     PUBLIC 
         freetype
     PRIVATE
-        utf8cpp
+        utf8cpp::utf8cpp
 )

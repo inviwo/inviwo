@@ -3,13 +3,17 @@
 
 add_subdirectory(utfcpp)
 
+if(NOT TARGET utf8cpp::utf8cpp)
+    add_library(utf8cpp::utf8cpp ALIAS utf8cpp)
+endif()
+
 set(HEADER_FILES 
-	${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/source/utf8.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/source/utf8/checked.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/source/utf8/core.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/source/utf8/cpp11.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/source/utf8/cpp17.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/source/utf8/unchecked.h
+	${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/utf8cpp/utf8.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/utf8cpp/utf8/checked.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/utf8cpp/utf8/core.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/utf8cpp/utf8/cpp11.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/utf8cpp/utf8/cpp17.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/utf8cpp/utf8/unchecked.h
 )
 set(DOC_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/LICENSE 
