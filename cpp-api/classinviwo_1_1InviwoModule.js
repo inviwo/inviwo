@@ -3,7 +3,7 @@ var classinviwo_1_1InviwoModule =
     [ "InviwoModule", "classinviwo_1_1InviwoModule.html#a1a9b9a22869c659e629c1ead49901e1d", null ],
     [ "getConverter", "classinviwo_1_1InviwoModule.html#aaffbbaea3b60eb4d4c1bb20df0f69e17", null ],
     [ "getDescription", "classinviwo_1_1InviwoModule.html#aac5fec25f7c52d4b35cb4c51a1800b85", null ],
-    [ "getIdentifier", "classinviwo_1_1InviwoModule.html#af3232e145b73f7b4cb92f24f949ddac2", null ],
+    [ "getIdentifier", "classinviwo_1_1InviwoModule.html#aff6681a946543700db5656b7b95ab666", null ],
     [ "getPath", "classinviwo_1_1InviwoModule.html#ac892983fed296c0fcc1e4a9fab7bee95", null ],
     [ "getVersion", "classinviwo_1_1InviwoModule.html#a5cc6dc6c19f98d1f56c6715f1ca1ce97", null ],
     [ "registerCompositeProcessor", "classinviwo_1_1InviwoModule.html#ac36e8ea348a7ec2de7b155d51d6557d0", null ],

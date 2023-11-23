@@ -2124,6 +2124,7 @@ var hierarchy =
           [ "inviwo::IsoValuePropertyWidgetQt", "classinviwo_1_1IsoValuePropertyWidgetQt.html", null ],
           [ "inviwo::LightPropertyWidgetQt", "classinviwo_1_1LightPropertyWidgetQt.html", null ],
           [ "inviwo::MultiFilePropertyWidgetQt", "classinviwo_1_1MultiFilePropertyWidgetQt.html", null ],
+          [ "inviwo::MultiFileStringPropertyWidgetQt", "classinviwo_1_1MultiFileStringPropertyWidgetQt.html", null ],
           [ "inviwo::OptionPropertyWidgetQt", "classinviwo_1_1OptionPropertyWidgetQt.html", null ],
           [ "inviwo::OrdinalLikePropertyWidgetQt< Prop, Sem >", "classinviwo_1_1OrdinalLikePropertyWidgetQt.html", null ],
           [ "inviwo::OrdinalMinMaxPropertyWidgetQt< T >", "classinviwo_1_1OrdinalMinMaxPropertyWidgetQt.html", null ],

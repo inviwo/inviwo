@@ -1092,6 +1092,7 @@ var annotated_dup =
       [ "MultiChannelVolumeRaycaster", "classinviwo_1_1MultiChannelVolumeRaycaster.html", null ],
       [ "MultiFileProperty", "classinviwo_1_1MultiFileProperty.html", "classinviwo_1_1MultiFileProperty" ],
       [ "MultiFilePropertyWidgetQt", "classinviwo_1_1MultiFilePropertyWidgetQt.html", "classinviwo_1_1MultiFilePropertyWidgetQt" ],
+      [ "MultiFileStringPropertyWidgetQt", "classinviwo_1_1MultiFileStringPropertyWidgetQt.html", "classinviwo_1_1MultiFileStringPropertyWidgetQt" ],
       [ "MultilineTextEdit", "classinviwo_1_1MultilineTextEdit.html", null ],
       [ "MultiRaycastingComponent", "classinviwo_1_1MultiRaycastingComponent.html", "classinviwo_1_1MultiRaycastingComponent" ],
       [ "NetworkDebugObserver", "structinviwo_1_1NetworkDebugObserver.html", "structinviwo_1_1NetworkDebugObserver" ],

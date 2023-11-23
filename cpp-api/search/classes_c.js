@@ -82,6 +82,7 @@ var searchData=
   ['multichannelvolumeraycaster_79',['MultiChannelVolumeRaycaster',['../classinviwo_1_1MultiChannelVolumeRaycaster.html',1,'inviwo']]],
   ['multifileproperty_80',['MultiFileProperty',['../classinviwo_1_1MultiFileProperty.html',1,'inviwo']]],
   ['multifilepropertywidgetqt_81',['MultiFilePropertyWidgetQt',['../classinviwo_1_1MultiFilePropertyWidgetQt.html',1,'inviwo']]],
-  ['multilinetextedit_82',['MultilineTextEdit',['../classinviwo_1_1MultilineTextEdit.html',1,'inviwo']]],
-  ['multiraycastingcomponent_83',['MultiRaycastingComponent',['../classinviwo_1_1MultiRaycastingComponent.html',1,'inviwo']]]
+  ['multifilestringpropertywidgetqt_82',['MultiFileStringPropertyWidgetQt',['../classinviwo_1_1MultiFileStringPropertyWidgetQt.html',1,'inviwo']]],
+  ['multilinetextedit_83',['MultilineTextEdit',['../classinviwo_1_1MultilineTextEdit.html',1,'inviwo']]],
+  ['multiraycastingcomponent_84',['MultiRaycastingComponent',['../classinviwo_1_1MultiRaycastingComponent.html',1,'inviwo']]]
 ];
