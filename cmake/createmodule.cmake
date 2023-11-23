@@ -92,13 +92,18 @@ function(ivw_create_module)
     add_library(${${mod}_target})
     add_library(${${mod}_alias} ALIAS ${${mod}_target})
 
+    set(includesuffix "/include")
+    if(LEGACY)
+        set(includesuffix "")
+    endif()
+
     target_sources(${${mod}_target} 
         PUBLIC 
         FILE_SET HEADERS
         TYPE HEADERS
         BASE_DIRS 
             ${CMAKE_CURRENT_BINARY_DIR}/include
-            ${CMAKE_CURRENT_SOURCE_DIR}/include
+            ${CMAKE_CURRENT_SOURCE_DIR}${includesuffix}
         FILES 
             ${mod_header_files}
         PRIVATE
