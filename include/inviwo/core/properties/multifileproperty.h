@@ -48,29 +48,41 @@ class IVW_CORE_API MultiFileProperty : public Property, public FileBase {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
-    static constexpr std::string_view defaultContentType = "default";
     using value_type = std::vector<std::filesystem::path>;
 
     /**
-     * \brief Constructor for the MultiFileProperty
+     * @brief Constructor for the MultiFileProperty
      *
      * @param identifier identifier for the property
      * @param displayName displayName for the property
-     * @param value the path to the file
-     * @param contentType
+     * @param value paths to a list of files/directories
+     * @param contentType key use to remember the last file dialog location for this type
      * @param invalidationLevel
-     * @param semantics Can be set to Editor
+     * @param semantics
      */
     MultiFileProperty(std::string_view identifier, std::string_view displayName,
                       const std::vector<std::filesystem::path>& value, std::string_view contentType,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
 
-    MultiFileProperty(std::string_view identifier, std::string_view displayName,
+    /**
+     * @brief Constructor for the MultiFileProperty
+     *
+     * @param identifier identifier for the property
+     * @param displayName displayName for the property
+     * @param help descriptive text
+     * @param value paths to a list of files/directories
+     * @param acceptMode @see AcceptMode
+     * @param fileMode @see FileMode
+     * @param contentType key use to remember the last file dialog location for this type
+     * @param invalidationLevel
+     * @param semantics
+     */
+    MultiFileProperty(std::string_view identifier, std::string_view displayName, Document help = {},
                       const std::vector<std::filesystem::path>& value = {},
                       AcceptMode acceptMode = AcceptMode::Open,
                       FileMode fileMode = FileMode::AnyFile,
-                      std::string_view contentType = "default",
+                      std::string_view contentType = defaultContentType,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
 
@@ -84,6 +96,10 @@ public:
     void set(const std::vector<std::filesystem::path>& files,
              const FileExtension& selectedExtension);
     void set(const MultiFileProperty* property);
+    
+    /**
+     * Replace the current list of paths with the one from the FileProperty.
+     */
     void set(const FileProperty* property);
     virtual void set(const Property* property) override;
 
@@ -92,7 +108,19 @@ public:
     const std::vector<std::filesystem::path>& operator*() const { return files_; };
     const std::vector<std::filesystem::path>* operator->() const { return &files_.value; }
 
+    /**
+     * @returns True if the property holds no paths false otherwise
+     */
+    bool empty() const;
+
+    /**
+     * @returns The pointer to the first path or nullptr if empty
+     */
     const std::filesystem::path* front() const;
+
+    /**
+     * @returns The pointer to the last path or nullptr if empty
+     */
     const std::filesystem::path* back() const;
 
     virtual void serialize(Serializer& s) const override;

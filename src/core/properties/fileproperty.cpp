@@ -167,8 +167,8 @@ std::unique_ptr<FileDialog> FileBase::createFileDialog(std::string_view title,
 }
 
 void FileBase::serialize(Serializer& s, PropertySerializationMode mode) const {
-    // We don't serialize the filename Filter since they are usually a runtime thing depending
-    // on which readers/writers that a available
+    // We don't serialize the filename filter since these are typically depending on readers/writers
+    // available at runtime
     selectedExtension_.serialize(s, mode);
     acceptMode_.serialize(s, mode);
     fileMode_.serialize(s, mode);
@@ -221,13 +221,13 @@ FileProperty& FileProperty::operator=(const std::filesystem::path& file) {
 FileProperty* FileProperty::clone() const { return new FileProperty(*this); }
 
 void FileProperty::set(const std::filesystem::path& file) {
-    if (file_.update(file) || updateExtension(file_.value)) {
+    if (any_of(file_.update(file), updateExtension(file_.value))) {
         propertyModified();
     }
 }
 
 void FileProperty::set(const std::filesystem::path& file, const FileExtension& selectedExtension) {
-    if (file_.update(file) || selectedExtension_.update(selectedExtension)) {
+    if (any_of(file_.update(file), selectedExtension_.update(selectedExtension))) {
         propertyModified();
     }
 }
@@ -235,7 +235,7 @@ void FileProperty::set(const std::filesystem::path& file, const FileExtension& s
 void FileProperty::set(const FileProperty* property) {
     if (!property) return;
 
-    if (file_.update(property->file_) || setFileBase(*property)) {
+    if (any_of(file_.update(property->file_), setFileBase(*property))) {
         propertyModified();
     }
 }
@@ -243,8 +243,8 @@ void FileProperty::set(const FileProperty* property) {
 void FileProperty::set(const MultiFileProperty* property) {
     if (!property) return;
 
-    if (file_.update(property->front() ? *property->front() : std::filesystem::path{}) ||
-        setFileBase(*property)) {
+    if (any_of(file_.update(property->front() ? *property->front() : std::filesystem::path{}),
+               setFileBase(*property))) {
         propertyModified();
     }
 }
@@ -370,7 +370,7 @@ FileProperty& FileProperty::setDefault(const std::filesystem::path& value) {
     return *this;
 }
 FileProperty& FileProperty::resetToDefaultState() {
-    if (file_.reset() || FileBase::reset()) {
+    if (any_of(file_.reset(), FileBase::reset())) {
         propertyModified();
     }
     return *this;

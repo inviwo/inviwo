@@ -41,12 +41,12 @@ const std::string MultiFileProperty::classIdentifier = "org.inviwo.MultiFileProp
 std::string MultiFileProperty::getClassIdentifier() const { return classIdentifier; }
 
 MultiFileProperty::MultiFileProperty(std::string_view identifier, std::string_view displayName,
-                                     const std::vector<std::filesystem::path>& value,
+                                     Document help, const std::vector<std::filesystem::path>& value,
                                      AcceptMode acceptMode, FileMode fileMode,
                                      std::string_view contentType,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : Property(identifier, displayName, invalidationLevel, semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , FileBase([this]() { propertyModified(); }, acceptMode, fileMode, contentType)
     , files_{"value"} {
     // Explicitly set the file name here. This ensures that the set file name is always serialized.
@@ -58,8 +58,8 @@ MultiFileProperty::MultiFileProperty(std::string_view identifier, std::string_vi
                                      std::string_view contentType,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : MultiFileProperty(identifier, displayName, value, AcceptMode::Open, FileMode::ExistingFiles,
-                        contentType, invalidationLevel, semantics) {}
+    : MultiFileProperty(identifier, displayName, {}, value, AcceptMode::Open,
+                        FileMode::ExistingFiles, contentType, invalidationLevel, semantics) {}
 
 MultiFileProperty& MultiFileProperty::operator=(const std::vector<std::filesystem::path>& value) {
     set(value);
@@ -87,7 +87,7 @@ void MultiFileProperty::set(const std::vector<std::filesystem::path>& values) {
 
 void MultiFileProperty::set(const std::vector<std::filesystem::path>& files,
                             const FileExtension& selectedExtension) {
-    if (files_.update(files) || selectedExtension_.update(selectedExtension)) {
+    if (any_of(files_.update(files), selectedExtension_.update(selectedExtension))) {
         propertyModified();
     }
 }
@@ -95,7 +95,7 @@ void MultiFileProperty::set(const std::vector<std::filesystem::path>& files,
 void MultiFileProperty::set(const MultiFileProperty* property) {
     if (!property) return;
 
-    if (files_.update(property->files_) || setFileBase(*property)) {
+    if (any_of(files_.update(property->files_), setFileBase(*property))) {
         propertyModified();
     }
 }
@@ -103,7 +103,7 @@ void MultiFileProperty::set(const MultiFileProperty* property) {
 void MultiFileProperty::set(const FileProperty* property) {
     if (!property) return;
 
-    if (files_.update(std::vector{property->get()}) || setFileBase(*property)) {
+    if (any_of(files_.update(std::vector{property->get()}), setFileBase(*property))) {
         propertyModified();
     }
 }
@@ -115,6 +115,8 @@ void MultiFileProperty::set(const Property* property) {
         set(fp);
     }
 }
+
+bool MultiFileProperty::empty() const { return files_->empty(); }
 
 const std::filesystem::path* MultiFileProperty::front() const {
     if (!files_->empty()) {
@@ -255,7 +257,7 @@ MultiFileProperty& MultiFileProperty::setDefault(const std::vector<std::filesyst
     return *this;
 }
 MultiFileProperty& MultiFileProperty::resetToDefaultState() {
-    if (files_.reset() || FileBase::reset()) {
+    if (any_of(files_.reset(), FileBase::reset())) {
         propertyModified();
     }
     return *this;

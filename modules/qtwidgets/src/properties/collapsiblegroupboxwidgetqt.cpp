@@ -779,11 +779,6 @@ void CollapsibleGroupBoxWidgetQt::insertPropertyWidget(PropertyWidgetQt* propert
 void CollapsibleGroupBoxWidgetQt::updateFocusPolicy() {
     setFocusPolicy(btnCollapse_->focusPolicy());
     setFocusProxy(btnCollapse_);
-
-//    if (checkable_) {
-//        setFocusPolicy(checkBox_->focusPolicy());
-//        setFocusProxy(checkBox_);
-//    }
 }
 
 }  // namespace inviwo

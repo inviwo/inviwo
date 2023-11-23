@@ -92,6 +92,7 @@ endif()
 
 option(IVW_ENABLE_QT "Enable Qt support in Inviwo" ON)
 if(IVW_ENABLE_QT)
+    # Find Qt will add paths to CMAKE_MODULE_PATH which we don't want.
     set(CMAKE_MODULE_PATH_TMP ${CMAKE_MODULE_PATH})
     find_package(Qt6 COMPONENTS Core)
     if(NOT Qt6Core_FOUND) 

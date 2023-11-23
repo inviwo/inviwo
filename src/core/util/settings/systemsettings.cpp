@@ -48,8 +48,11 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     , enablePickingProperty_("enablePicking", "Enable picking", true)
     , enableSoundProperty_("enableSound", "Enable sound", true)
     , logStackTraceProperty_("logStackTraceProperty", "Error stack trace log", false)
-    , moduleSearchPaths_("moduleSearchPaths", "Module Search Paths", {}, AcceptMode::Open,
-                         FileMode::Directory)
+    , moduleSearchPaths_(
+          "moduleSearchPaths", "Module Search Paths",
+          "The system will look for inviwo module lib in these path to load at start up. "
+          "Make sure that the build type matches."_help,
+          {}, AcceptMode::Open, FileMode::Directory)
     , runtimeModuleReloading_("runtimeModuleReloding", "Runtime Module Reloading", false)
     , enableResourceManager_("enableResourceManager", "Enable Resource Manager", false)
     , breakOnMessage_{"breakOnMessage",

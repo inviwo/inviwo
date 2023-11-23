@@ -89,6 +89,15 @@ protected:
     std::unique_ptr<FileDialog> createFileDialog(std::string_view title,
                                                  const std::filesystem::path& file) const;
 
+    /**
+     * A variadic any_of. This will evaluate all the arguments.
+     * But the order is arbitrary.
+     */
+    template <typename Arg, typename... Args>
+    [[nodiscard]] static constexpr bool any_of(Arg&& arg, Args&&... args) {
+        return (arg || ... || args);
+    }
+
     std::vector<FileExtension> nameFilters_;
     ValueWrapper<FileExtension> selectedExtension_;
     ValueWrapper<AcceptMode> acceptMode_;
@@ -119,8 +128,8 @@ public:
      * @param displayName displayName for the property
      * @param help descriptive text
      * @param value the path to the file
-     * @param acceptMode
-     * @param fileMode
+     * @param acceptMode @see AcceptMode
+     * @param fileMode @see FileMode
      * @param contentType
      * @param invalidationLevel
      * @param semantics Can be set to Editor
@@ -186,6 +195,10 @@ public:
     void set(const std::filesystem::path& file, const FileExtension& selectedExtension);
 
     void set(const FileProperty* property);
+    /*
+     * Assigns the first path of the MultiFileProperty to this.
+     * If the MultiFileProperty is empty, this path will be empty.
+     */
     void set(const MultiFileProperty* property);
     virtual void set(const Property* property) override;
 
