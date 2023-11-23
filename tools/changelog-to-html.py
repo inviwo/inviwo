@@ -33,6 +33,8 @@ import urllib.request
 import urllib.error
 import json
 import pathlib
+import certifi
+import ssl
 
 import ivwpy.util
 from ivwpy.colorprint import *
@@ -122,7 +124,8 @@ def main(args):
     data = json.dumps({'text': text, 'mode': 'gfm'}).encode("utf-8")
     req = urllib.request.Request(url, data, headers)
     try:
-        with urllib.request.urlopen(req) as f:
+        certifi_context = ssl.create_default_context(cafile=certifi.where())
+        with urllib.request.urlopen(req, context=certifi_context) as f:
             body = f.read().decode('utf-8')
         html = htmlHeader + body + htmlBody
 
