@@ -140,7 +140,8 @@ var annotated_dup =
       ] ],
       [ "detail", null, [
         [ "Build", "classinviwo_1_1detail_1_1Build.html", null ],
-        [ "DynPortManager", "structinviwo_1_1detail_1_1DynPortManager.html", null ],
+        [ "DynPort", "structinviwo_1_1detail_1_1DynPort.html", null ],
+        [ "DynUniform", "structinviwo_1_1detail_1_1DynUniform.html", null ],
         [ "hasProcessorInfo", "classinviwo_1_1detail_1_1hasProcessorInfo.html", null ],
         [ "static_size_t", "structinviwo_1_1detail_1_1static__size__t.html", null ],
         [ "static_size_t< char[N]>", "structinviwo_1_1detail_1_1static__size__t_3_01char_0fN_0e_4.html", null ],
@@ -768,6 +769,7 @@ var annotated_dup =
       [ "FFmpegRecorderFactory", "classinviwo_1_1FFmpegRecorderFactory.html", null ],
       [ "FileAssociationCommand", "structinviwo_1_1FileAssociationCommand.html", "structinviwo_1_1FileAssociationCommand" ],
       [ "FileAssociations", "classinviwo_1_1FileAssociations.html", "classinviwo_1_1FileAssociations" ],
+      [ "FileBase", "classinviwo_1_1FileBase.html", null ],
       [ "FileDialog", "classinviwo_1_1FileDialog.html", "classinviwo_1_1FileDialog" ],
       [ "FileException", "classinviwo_1_1FileException.html", null ],
       [ "FileExtension", "classinviwo_1_1FileExtension.html", "classinviwo_1_1FileExtension" ],

@@ -9,7 +9,7 @@ var classinviwo_1_1FileProperty =
     [ "requestFile", "classinviwo_1_1FileProperty.html#aa957b261561a5faa940b9f62a0675195", null ],
     [ "resetToDefaultState", "classinviwo_1_1FileProperty.html#abef3e116144758278e4949f2a0f9ac8b", null ],
     [ "set", "classinviwo_1_1FileProperty.html#a6b5925cfb2ccd06331696973e7e09387", null ],
-    [ "set", "classinviwo_1_1FileProperty.html#a9eceb011d537a00382406ae824ac9da9", null ],
-    [ "set", "classinviwo_1_1FileProperty.html#a6ad60806ae3c1a5d87ce3efa00be1052", null ],
+    [ "set", "classinviwo_1_1FileProperty.html#abaa53ebffd44b11b42fd564e079fb95c", null ],
+    [ "set", "classinviwo_1_1FileProperty.html#acd55b021cfe30742fb686f0033b55d45", null ],
     [ "setCurrentStateAsDefault", "classinviwo_1_1FileProperty.html#a73edb4c13c2380619188178e41233ac9", null ]
 ];

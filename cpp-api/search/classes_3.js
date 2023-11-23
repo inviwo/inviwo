@@ -211,5 +211,6 @@ var searchData=
   ['drawlines_208',['DrawLines',['../classinviwo_1_1DrawLines.html',1,'inviwo']]],
   ['drawobject_209',['DrawObject',['../classinviwo_1_1MeshDrawerGL_1_1DrawObject.html',1,'inviwo::MeshDrawerGL']]],
   ['drawpoints_210',['DrawPoints',['../classinviwo_1_1DrawPoints.html',1,'inviwo']]],
-  ['dynportmanager_211',['DynPortManager',['../structinviwo_1_1detail_1_1DynPortManager.html',1,'inviwo::detail']]]
+  ['dynport_211',['DynPort',['../structinviwo_1_1detail_1_1DynPort.html',1,'inviwo::detail']]],
+  ['dynuniform_212',['DynUniform',['../structinviwo_1_1detail_1_1DynUniform.html',1,'inviwo::detail']]]
 ];

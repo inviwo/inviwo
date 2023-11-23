@@ -482,7 +482,8 @@ var hierarchy =
     [ "inviwo::Document", "classinviwo_1_1Document.html", null ],
     [ "inviwo::Document::DocumentHandle", "classinviwo_1_1Document_1_1DocumentHandle.html", null ],
     [ "inviwo::MeshDrawerGL::DrawObject", "classinviwo_1_1MeshDrawerGL_1_1DrawObject.html", null ],
-    [ "inviwo::detail::DynPortManager", "structinviwo_1_1detail_1_1DynPortManager.html", null ],
+    [ "inviwo::detail::DynPort", "structinviwo_1_1detail_1_1DynPort.html", null ],
+    [ "inviwo::detail::DynUniform", "structinviwo_1_1detail_1_1DynUniform.html", null ],
     [ "inviwo::Edge< T >", "classinviwo_1_1Edge.html", null ],
     [ "inviwo::HalfEdges::EdgeIter", "classinviwo_1_1HalfEdges_1_1EdgeIter.html", null ],
     [ "inviwo::Document::Element", "classinviwo_1_1Document_1_1Element.html", null ],
@@ -1095,6 +1096,13 @@ var hierarchy =
       [ "inviwo::util::is_dereferenceable< class, class >", "structinviwo_1_1util_1_1is__dereferenceable.html", null ]
     ] ],
     [ "inviwo::FileAssociationCommand", "structinviwo_1_1FileAssociationCommand.html", null ],
+    [ "inviwo::FileBase", "classinviwo_1_1FileBase.html", [
+      [ "inviwo::FileProperty", "classinviwo_1_1FileProperty.html", [
+        [ "inviwo::DirectoryProperty", "classinviwo_1_1DirectoryProperty.html", null ],
+        [ "inviwo::ImageEditorProperty", "classinviwo_1_1ImageEditorProperty.html", null ]
+      ] ],
+      [ "inviwo::MultiFileProperty", "classinviwo_1_1MultiFileProperty.html", null ]
+    ] ],
     [ "inviwo::FileExtension", "classinviwo_1_1FileExtension.html", null ],
     [ "inviwo::FileObserver", "classinviwo_1_1FileObserver.html", [
       [ "inviwo::FileShaderResource", "classinviwo_1_1FileShaderResource.html", null ],
@@ -1557,9 +1565,6 @@ var hierarchy =
         [ "inviwo::TemplateProperty< bool >", "classinviwo_1_1TemplateProperty.html", [
           [ "inviwo::BoolProperty", "classinviwo_1_1BoolProperty.html", null ]
         ] ],
-        [ "inviwo::TemplateProperty< std::vector< std::filesystem::path > >", "classinviwo_1_1TemplateProperty.html", [
-          [ "inviwo::MultiFileProperty", "classinviwo_1_1MultiFileProperty.html", null ]
-        ] ],
         [ "inviwo::TemplateProperty< std::string >", "classinviwo_1_1TemplateProperty.html", [
           [ "inviwo::StringProperty", "classinviwo_1_1StringProperty.html", null ]
         ] ],
@@ -1664,12 +1669,10 @@ var hierarchy =
         [ "inviwo::ButtonProperty", "classinviwo_1_1ButtonProperty.html", null ],
         [ "inviwo::CompositeProperty", "classinviwo_1_1CompositeProperty.html", null ],
         [ "inviwo::EventProperty", "classinviwo_1_1EventProperty.html", null ],
-        [ "inviwo::FileProperty", "classinviwo_1_1FileProperty.html", [
-          [ "inviwo::DirectoryProperty", "classinviwo_1_1DirectoryProperty.html", null ],
-          [ "inviwo::ImageEditorProperty", "classinviwo_1_1ImageEditorProperty.html", null ]
-        ] ],
+        [ "inviwo::FileProperty", "classinviwo_1_1FileProperty.html", null ],
         [ "inviwo::IsoValueProperty", "classinviwo_1_1IsoValueProperty.html", null ],
         [ "inviwo::MinMaxProperty< T >", "classinviwo_1_1MinMaxProperty.html", null ],
+        [ "inviwo::MultiFileProperty", "classinviwo_1_1MultiFileProperty.html", null ],
         [ "inviwo::OrdinalProperty< T >", "classinviwo_1_1OrdinalProperty.html", null ],
         [ "inviwo::OrdinalRefProperty< T >", "classinviwo_1_1OrdinalRefProperty.html", null ],
         [ "inviwo::TemplateProperty< T >", "classinviwo_1_1TemplateProperty.html", null ],
@@ -2090,6 +2093,7 @@ var hierarchy =
       [ "inviwo::PropertyObserver", "classinviwo_1_1PropertyObserver.html", [
         [ "inviwo::CompositeProcessor", "classinviwo_1_1CompositeProcessor.html", null ],
         [ "inviwo::EditableLabelQt", "classinviwo_1_1EditableLabelQt.html", null ],
+        [ "inviwo::InstanceRenderer", "classinviwo_1_1InstanceRenderer.html", null ],
         [ "inviwo::IsoTFProperty", "classinviwo_1_1IsoTFProperty.html", null ],
         [ "inviwo::PropertyEditorWidgetQt", "classinviwo_1_1PropertyEditorWidgetQt.html", [
           [ "inviwo::TFPropertyDialog", "classinviwo_1_1TFPropertyDialog.html", null ],
@@ -3272,18 +3276,21 @@ var hierarchy =
     [ "inviwo::util::detail::upscale< To, From >", "structinviwo_1_1util_1_1detail_1_1upscale.html", null ],
     [ "inviwo::util::value_type< T >", "structinviwo_1_1util_1_1value__type.html", null ],
     [ "inviwo::ValueWrapper< T >", "structinviwo_1_1ValueWrapper.html", null ],
+    [ "inviwo::ValueWrapper< AcceptMode >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< bool >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< ConstraintBehavior >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< double >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< dvec2 >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< dvec3 >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< dvec4 >", "structinviwo_1_1ValueWrapper.html", null ],
+    [ "inviwo::ValueWrapper< FileMode >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< float >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< GestureStates >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< GestureTypes >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< HistogramMode >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< HistogramSelection >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< int >", "structinviwo_1_1ValueWrapper.html", null ],
+    [ "inviwo::ValueWrapper< inviwo::FileExtension >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< inviwo::IsoValueCollection >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< inviwo::PropertySemantics >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< inviwo::TransferFunction >", "structinviwo_1_1ValueWrapper.html", null ],

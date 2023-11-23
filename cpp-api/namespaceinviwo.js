@@ -393,6 +393,7 @@ var namespaceinviwo =
     [ "FFmpegRecorderFactory", "classinviwo_1_1FFmpegRecorderFactory.html", null ],
     [ "FileAssociationCommand", "structinviwo_1_1FileAssociationCommand.html", "structinviwo_1_1FileAssociationCommand" ],
     [ "FileAssociations", "classinviwo_1_1FileAssociations.html", "classinviwo_1_1FileAssociations" ],
+    [ "FileBase", "classinviwo_1_1FileBase.html", null ],
     [ "FileDialog", "classinviwo_1_1FileDialog.html", "classinviwo_1_1FileDialog" ],
     [ "FileException", "classinviwo_1_1FileException.html", null ],
     [ "FileExtension", "classinviwo_1_1FileExtension.html", "classinviwo_1_1FileExtension" ],

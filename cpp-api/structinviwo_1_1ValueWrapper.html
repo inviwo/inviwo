@@ -94,7 +94,6 @@ $(document).ready(function(){initNavTree('structinviwo_1_1ValueWrapper.html','')
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="#friends">Friends</a> &#124;
 <a href="structinviwo_1_1ValueWrapper-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::ValueWrapper&lt; T &gt; Struct Template Reference</div></div>
 </div><!--header-->
@@ -102,9 +101,11 @@ $(document).ready(function(){initNavTree('structinviwo_1_1ValueWrapper.html','')
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a82a8f593c546e6019b5bd7dab4262259" id="r_a82a8f593c546e6019b5bd7dab4262259"><td class="memItemLeft" align="right" valign="top"><a id="a82a8f593c546e6019b5bd7dab4262259" name="a82a8f593c546e6019b5bd7dab4262259"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ValueWrapper</b> (std::string_view name, T val)</td></tr>
-<tr class="separator:a82a8f593c546e6019b5bd7dab4262259"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19b2dbd5936a1d2f5247b7a3482f525e" id="r_a19b2dbd5936a1d2f5247b7a3482f525e"><td class="memTemplParams" colspan="2"><a id="a19b2dbd5936a1d2f5247b7a3482f525e" name="a19b2dbd5936a1d2f5247b7a3482f525e"></a>
+template&lt;typename... U&gt; <br />
+requires std::constructible_from&lt;T, U&amp;&amp;...&gt;</td></tr>
+<tr class="memitem:a19b2dbd5936a1d2f5247b7a3482f525e"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ValueWrapper</b> (std::string_view name, U &amp;&amp;... <a class="el" href="classinviwo_1_1TypedMesh.html">vals</a>)</td></tr>
+<tr class="separator:a19b2dbd5936a1d2f5247b7a3482f525e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a633285db7cf9e739658944567e2f3624" id="r_a633285db7cf9e739658944567e2f3624"><td class="memItemLeft" align="right" valign="top"><a id="a633285db7cf9e739658944567e2f3624" name="a633285db7cf9e739658944567e2f3624"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ValueWrapper</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1ValueWrapper.html">ValueWrapper</a>&lt; T &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
 <tr class="separator:a633285db7cf9e739658944567e2f3624"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -117,6 +118,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3e9f6b2d4ed73e0c27c0f83f0cba73d2" id="r_a3e9f6b2d4ed73e0c27c0f83f0cba73d2"><td class="memItemLeft" align="right" valign="top"><a id="a3e9f6b2d4ed73e0c27c0f83f0cba73d2" name="a3e9f6b2d4ed73e0c27c0f83f0cba73d2"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>operator const T &amp;</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="separator:a3e9f6b2d4ed73e0c27c0f83f0cba73d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d0c163fa34d756092944b053c662a26" id="r_a2d0c163fa34d756092944b053c662a26"><td class="memItemLeft" align="right" valign="top"><a id="a2d0c163fa34d756092944b053c662a26" name="a2d0c163fa34d756092944b053c662a26"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a2d0c163fa34d756092944b053c662a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b66ad9f26d114ee750ec3fb0c818931" id="r_a0b66ad9f26d114ee750ec3fb0c818931"><td class="memItemLeft" align="right" valign="top"><a id="a0b66ad9f26d114ee750ec3fb0c818931" name="a0b66ad9f26d114ee750ec3fb0c818931"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T *&#160;</td><td class="memItemRight" valign="bottom"><b>operator-&gt;</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a0b66ad9f26d114ee750ec3fb0c818931"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4658b7f9f1ef8db65c5ed87487466b27" id="r_a4658b7f9f1ef8db65c5ed87487466b27"><td class="memItemLeft" align="right" valign="top"><a id="a4658b7f9f1ef8db65c5ed87487466b27" name="a4658b7f9f1ef8db65c5ed87487466b27"></a>
 <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>isDefault</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="separator:a4658b7f9f1ef8db65c5ed87487466b27"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -136,6 +143,22 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:afa321e5e679f9c86c04f32d93a92cdf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb9b3cc44e55b4b7ad5293a964c93009" id="r_adb9b3cc44e55b4b7ad5293a964c93009"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1ValueWrapper.html#adb9b3cc44e55b4b7ad5293a964c93009">update</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T &amp;src)</td></tr>
 <tr class="separator:adb9b3cc44e55b4b7ad5293a964c93009"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50961ad3f4c97dc0cbbfe471ef7d7e4c" id="r_a50961ad3f4c97dc0cbbfe471ef7d7e4c"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">typename</a> U &gt; <br />
+requires std::assignable_from&lt;T&amp;, U&gt; &amp;&amp; (!std::is_same_v&lt;T, U&gt;) &amp;&amp; std::equality_comparable_with&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> U&amp;, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T&amp;&gt;</td></tr>
+<tr class="memitem:a50961ad3f4c97dc0cbbfe471ef7d7e4c"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structinviwo_1_1ValueWrapper.html#a50961ad3f4c97dc0cbbfe471ef7d7e4c">update</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> U &amp;src)</td></tr>
+<tr class="separator:a50961ad3f4c97dc0cbbfe471ef7d7e4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4322016af9c9956bb7ddd667eb2c9658" id="r_a4322016af9c9956bb7ddd667eb2c9658"><td class="memItemLeft" align="right" valign="top"><a id="a4322016af9c9956bb7ddd667eb2c9658" name="a4322016af9c9956bb7ddd667eb2c9658"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">auto</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;=&gt;</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1ValueWrapper.html">ValueWrapper</a>&lt; T &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a4322016af9c9956bb7ddd667eb2c9658"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c176896841e9f806e428b6bd621f3d5" id="r_a7c176896841e9f806e428b6bd621f3d5"><td class="memItemLeft" align="right" valign="top"><a id="a7c176896841e9f806e428b6bd621f3d5" name="a7c176896841e9f806e428b6bd621f3d5"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1ValueWrapper.html">ValueWrapper</a>&lt; T &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a7c176896841e9f806e428b6bd621f3d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a110d39366a79e253d007b8a45023daf4" id="r_a110d39366a79e253d007b8a45023daf4"><td class="memItemLeft" align="right" valign="top"><a id="a110d39366a79e253d007b8a45023daf4" name="a110d39366a79e253d007b8a45023daf4"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">auto</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;=&gt;</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a110d39366a79e253d007b8a45023daf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c14d20ae0d83ff3fcfd5504a2acffc0" id="r_a8c14d20ae0d83ff3fcfd5504a2acffc0"><td class="memItemLeft" align="right" valign="top"><a id="a8c14d20ae0d83ff3fcfd5504a2acffc0" name="a8c14d20ae0d83ff3fcfd5504a2acffc0"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a8c14d20ae0d83ff3fcfd5504a2acffc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -148,31 +171,10 @@ T&#160;</td><td class="memItemRight" valign="bottom"><b>defaultValue</b></td></t
 <tr class="memitem:ace01dc529f8ba103187791397a4e1cca" id="r_ace01dc529f8ba103187791397a4e1cca"><td class="memItemLeft" align="right" valign="top"><a id="ace01dc529f8ba103187791397a4e1cca" name="ace01dc529f8ba103187791397a4e1cca"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>name</b></td></tr>
 <tr class="separator:ace01dc529f8ba103187791397a4e1cca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:a82afdcb245bb2f8d9ea4202162029b6c" id="r_a82afdcb245bb2f8d9ea4202162029b6c"><td class="memItemLeft" align="right" valign="top"><a id="a82afdcb245bb2f8d9ea4202162029b6c" name="a82afdcb245bb2f8d9ea4202162029b6c"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1ValueWrapper.html">ValueWrapper</a>&lt; T &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">lhs</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1ValueWrapper.html">ValueWrapper</a>&lt; T &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)</td></tr>
-<tr class="separator:a82afdcb245bb2f8d9ea4202162029b6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c3cc00c36d073213830cba2a6a16949" id="r_a0c3cc00c36d073213830cba2a6a16949"><td class="memItemLeft" align="right" valign="top"><a id="a0c3cc00c36d073213830cba2a6a16949" name="a0c3cc00c36d073213830cba2a6a16949"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1ValueWrapper.html">ValueWrapper</a>&lt; T &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">lhs</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1ValueWrapper.html">ValueWrapper</a>&lt; T &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)</td></tr>
-<tr class="separator:a0c3cc00c36d073213830cba2a6a16949"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2d420a546c9b1b4f1020692ed4c18fe" id="r_ab2d420a546c9b1b4f1020692ed4c18fe"><td class="memItemLeft" align="right" valign="top"><a id="ab2d420a546c9b1b4f1020692ed4c18fe" name="ab2d420a546c9b1b4f1020692ed4c18fe"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1ValueWrapper.html">ValueWrapper</a>&lt; T &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">lhs</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)</td></tr>
-<tr class="separator:ab2d420a546c9b1b4f1020692ed4c18fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a914d571896ec26bad456e0f91beb9295" id="r_a914d571896ec26bad456e0f91beb9295"><td class="memItemLeft" align="right" valign="top"><a id="a914d571896ec26bad456e0f91beb9295" name="a914d571896ec26bad456e0f91beb9295"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1ValueWrapper.html">ValueWrapper</a>&lt; T &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">lhs</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)</td></tr>
-<tr class="separator:a914d571896ec26bad456e0f91beb9295"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7bd63546364d8f8da77aae6020b2a569" id="r_a7bd63546364d8f8da77aae6020b2a569"><td class="memItemLeft" align="right" valign="top"><a id="a7bd63546364d8f8da77aae6020b2a569" name="a7bd63546364d8f8da77aae6020b2a569"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">lhs</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1ValueWrapper.html">ValueWrapper</a>&lt; T &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)</td></tr>
-<tr class="separator:a7bd63546364d8f8da77aae6020b2a569"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a668a567526219ea0ef98507dd49d2859" id="r_a668a567526219ea0ef98507dd49d2859"><td class="memItemLeft" align="right" valign="top"><a id="a668a567526219ea0ef98507dd49d2859" name="a668a567526219ea0ef98507dd49d2859"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">lhs</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1ValueWrapper.html">ValueWrapper</a>&lt; T &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)</td></tr>
-<tr class="separator:a668a567526219ea0ef98507dd49d2859"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="adb9b3cc44e55b4b7ad5293a964c93009" name="adb9b3cc44e55b4b7ad5293a964c93009"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adb9b3cc44e55b4b7ad5293a964c93009">&#9670;&#160;</a></span>update() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#adb9b3cc44e55b4b7ad5293a964c93009">&#9670;&#160;</a></span>update() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -200,8 +202,40 @@ template&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">typename</a> T &g
 
 </div>
 </div>
+<a id="a50961ad3f4c97dc0cbbfe471ef7d7e4c" name="a50961ad3f4c97dc0cbbfe471ef7d7e4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50961ad3f4c97dc0cbbfe471ef7d7e4c">&#9670;&#160;</a></span>update() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">typename</a> T &gt; </div>
+<div class="memtemplate">
+template&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">typename</a> U &gt; <br />
+requires std::assignable_from&lt;T&amp;, U&gt; &amp;&amp; (!std::is_same_v&lt;T, U&gt;) &amp;&amp; std::equality_comparable_with&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> U&amp;, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T&amp;&gt;</div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">bool</a> <a class="el" href="structinviwo_1_1ValueWrapper.html">inviwo::ValueWrapper</a>&lt; T &gt;::update </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> U &amp;&#160;</td>
+          <td class="paramname"><em>src</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Update the value of this to that of src. </p><dl class="section return"><dt>Returns</dt><dd>if value was modified </dd></dl>
+
+</div>
+</div>
 <a id="afa321e5e679f9c86c04f32d93a92cdf4" name="afa321e5e679f9c86c04f32d93a92cdf4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afa321e5e679f9c86c04f32d93a92cdf4">&#9670;&#160;</a></span>update() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#afa321e5e679f9c86c04f32d93a92cdf4">&#9670;&#160;</a></span>update() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

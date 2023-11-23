@@ -2,7 +2,7 @@ var searchData=
 [
   ['elidelines_0',['elideLines',['../namespaceinviwo_1_1util.html#aa0b234248fa0f75afa5d053118ec319a',1,'inviwo::util']]],
   ['emplaceprocessor_1',['emplaceProcessor',['../classinviwo_1_1ProcessorNetwork.html#abf707216855132255ec5547eecfabcdc',1,'inviwo::ProcessorNetwork']]],
-  ['empty_2',['empty',['../structinviwo_1_1StrBuffer.html#a9f2e6501018649c2903785b84c7cfb44',1,'inviwo::StrBuffer']]],
+  ['empty_2',['empty',['../classinviwo_1_1MultiFileProperty.html#a7683a8053bd97de51ac07cebfb336672',1,'inviwo::MultiFileProperty::empty()'],['../structinviwo_1_1StrBuffer.html#a9f2e6501018649c2903785b84c7cfb44',1,'inviwo::StrBuffer::empty()']]],
   ['emptylines_3',['emptyLines',['../namespaceinviwo_1_1csvfilters.html#a397cfebd45c0f6bdd1907df59eed9ed1',1,'inviwo::csvfilters']]],
   ['end_4',['end',['../classinviwo_1_1CategoricalColumn.html#ad1021b52656d93e8344717d7bf327503',1,'inviwo::CategoricalColumn']]],
   ['enqueue_5',['enqueue',['../classinviwo_1_1ThreadPool.html#aa46b9e2268cd5e8d225ed09b3190d8e2',1,'inviwo::ThreadPool']]],
