@@ -33,6 +33,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 namespace inviwo {
 
@@ -40,7 +41,7 @@ class Dialog;
 
 class IVW_CORE_API DialogFactoryObject {
 public:
-    DialogFactoryObject(const std::string& className);
+    DialogFactoryObject(std::string_view className);
     virtual ~DialogFactoryObject() {}
 
     virtual std::unique_ptr<Dialog> create() = 0;
@@ -54,7 +55,7 @@ private:
 template <typename T>
 class DialogFactoryObjectTemplate : public DialogFactoryObject {
 public:
-    DialogFactoryObjectTemplate(const std::string& className) : DialogFactoryObject(className) {}
+    DialogFactoryObjectTemplate(std::string_view className) : DialogFactoryObject(className) {}
 
     virtual ~DialogFactoryObjectTemplate() {}
 

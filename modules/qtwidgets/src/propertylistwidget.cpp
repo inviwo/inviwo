@@ -29,11 +29,12 @@
 
 #include <modules/qtwidgets/propertylistwidget.h>
 
-#include <inviwo/core/common/inviwoapplication.h>                      // for InviwoApplication
-#include <inviwo/core/network/processornetwork.h>                      // for ProcessorNetwork
-#include <inviwo/core/network/processornetworkevaluator.h>             // for ProcessorNetworkEv...
-#include <inviwo/core/processors/processor.h>                          // for Processor
-#include <inviwo/core/properties/property.h>                           // for Property
+#include <inviwo/core/common/inviwoapplication.h>           // for InviwoApplication
+#include <inviwo/core/network/processornetwork.h>           // for ProcessorNetwork
+#include <inviwo/core/network/processornetworkevaluator.h>  // for ProcessorNetworkEv...
+#include <inviwo/core/processors/processor.h>               // for Processor
+#include <inviwo/core/properties/property.h>                // for Property
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/propertyowner.h>                      // for PropertyOwner
 #include <inviwo/core/properties/propertywidgetfactory.h>              // for PropertyWidgetFactory
 #include <inviwo/core/util/raiiutils.h>                                // for OnScopeExit, OnSco...
@@ -226,6 +227,54 @@ void PropertyListFrame::onProcessorNetworkWillRemoveProcessor(Processor* process
 }
 void PropertyListFrame::onWillRemoveProperty(Property* property, size_t) { remove(property); }
 
+QWidget* PropertyListFrame::findWidgetFor(Property* property) {
+    if (auto it = propertyMap_.find(property); it != propertyMap_.end()) {
+        return it->second;
+    }
+
+    std::vector<PropertyOwner*> stack{};
+    QWidget* widget = nullptr;
+    auto owner = property->getOwner();
+    while (owner) {
+        if (auto* processor = dynamic_cast<Processor*>(owner)) {
+            if (auto it = processorMap_.find(processor); it != processorMap_.end()) {
+                widget = it->second;
+                break;
+            }
+        } else if (auto* cp = dynamic_cast<CompositeProperty*>(owner)) {
+            if (auto it = propertyMap_.find(cp); it != propertyMap_.end()) {
+                widget = it->second;
+                break;
+            }
+        }
+        stack.push_back(owner);
+        owner = owner->getOwner();
+    }
+
+    if (!widget) return nullptr;
+
+    while (!stack.empty()) {
+        owner = stack.back();
+        stack.pop_back();
+        if (auto* cp = dynamic_cast<CompositeProperty*>(owner)) {
+            if (auto* cw = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(widget)) {
+                if (auto pw = cw->widgetForProperty(cp)) {
+                    widget = pw;
+                    continue;
+                }
+            }
+        }
+        return nullptr;
+    }
+
+    if (auto* cw = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(widget)) {
+        if (auto pw = cw->widgetForProperty(property)) {
+            return pw;
+        }
+    }
+    return nullptr;
+}
+
 PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
     : InviwoDockWidget(tr("Properties"), parent, "PropertyListWidget"), app_{app} {
 
@@ -289,17 +338,25 @@ bool PropertyListWidget::event(QEvent* e) {
         PropertyListEvent* ple = static_cast<PropertyListEvent*>(e);
         ple->accept();
 
-        auto nw = app_->getProcessorNetwork();
-        Processor* p(nw->getProcessorByIdentifier(ple->processorId_));
-        if (!p) return true;
+        auto network = app_->getProcessorNetwork();
 
-        switch (ple->action_) {
+        switch (ple->action) {
             case PropertyListEvent::Action::Add: {
-                addProcessorProperties(p);
+                if (auto processor = network->getProcessorByIdentifier(ple->identifier)) {
+                    addProcessorProperties(processor);
+                }
                 break;
             }
             case PropertyListEvent::Action::Remove: {
-                removeProcessorProperties(p);
+                if (auto processor = network->getProcessorByIdentifier(ple->identifier)) {
+                    removeProcessorProperties(processor);
+                }
+                break;
+            }
+            case PropertyListEvent::Action::FocusProperty: {
+                if (auto property = network->getProperty(ple->identifier)) {
+                    focusProperty(property);
+                }
                 break;
             }
         }
@@ -314,14 +371,20 @@ void PropertyListWidget::onProcessorNetworkEvaluationBegin() { setUpdatesEnabled
 
 void PropertyListWidget::onProcessorNetworkEvaluationEnd() { setUpdatesEnabled(true); }
 
-PropertyListEvent::PropertyListEvent(Action action, std::string processorId)
-    : QEvent(PropertyListEvent::type()), action_(action), processorId_(processorId) {}
+PropertyListEvent::PropertyListEvent(Action aAction, std::string aIdentifier)
+    : QEvent(PropertyListEvent::type()), action(aAction), identifier(aIdentifier) {}
 
 QEvent::Type PropertyListEvent::type() {
     if (PropertyListEventType == QEvent::None) {
         PropertyListEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
     }
     return PropertyListEventType;
+}
+
+void PropertyListWidget::focusProperty(Property* property) {
+    if (auto widget = frame_->findWidgetFor(property)) {
+        widget->setFocus();
+    }
 }
 
 QEvent::Type PropertyListEvent::PropertyListEventType = QEvent::None;

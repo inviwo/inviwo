@@ -47,6 +47,7 @@
 #include <inviwo/core/processors/processorwidgetfactoryobject.h>
 #include <inviwo/core/processors/compositesink.h>
 #include <inviwo/core/processors/compositesource.h>
+#include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/propertyfactoryobject.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/properties/propertywidgetfactoryobject.h>
@@ -95,7 +96,7 @@ public:
     /**
      * \brief Get module identifier, i.e the module folder name.
      */
-    std::string getIdentifier() const;
+    const std::string& getIdentifier() const;
 
     /**
      * Override to provide a description of the module
@@ -158,13 +159,13 @@ public:
 
     void registerCamera(std::unique_ptr<CameraFactoryObject> camera);
     template <typename T>
-    void registerCamera(const std::string& classIdentifier);
+    void registerCamera(std::string_view classIdentifier);
     void registerDataReader(std::unique_ptr<DataReader> reader);
     void registerDataWriter(std::unique_ptr<DataWriter> writer);
 
     void registerDialog(std::unique_ptr<DialogFactoryObject> dialog);
     template <typename T>
-    void registerDialog(std::string classIdentifier);
+    void registerDialog(std::string_view classIdentifier);
     void registerDrawer(std::unique_ptr<MeshDrawer> drawer);
     void registerMetaData(std::unique_ptr<MetaData> meta);
 
@@ -182,7 +183,7 @@ public:
     template <typename T, typename P>
     void registerProcessorWidget();
 
-    void registerPortInspector(std::string portClassIdentifier,
+    void registerPortInspector(std::string_view portClassIdentifier,
                                const std::filesystem::path& inspectorPath);
 
     void registerDataVisualizer(std::unique_ptr<DataVisualizer> visualizer);
@@ -230,7 +231,7 @@ public:
     template <typename T, typename P>
     void registerPropertyWidget(PropertySemantics semantics);
     template <typename T, typename P>
-    void registerPropertyWidget(std::string semantics);
+    void registerPropertyWidget(std::string_view semantics);
 
     void registerPropertyConverter(std::unique_ptr<PropertyConverter> propertyConverter);
 
@@ -361,12 +362,12 @@ private:
 };
 
 template <typename T>
-void InviwoModule::registerCamera(const std::string& classIdentifier) {
+void InviwoModule::registerCamera(std::string_view classIdentifier) {
     registerCamera(std::make_unique<CameraFactoryObjectTemplate<T>>(classIdentifier));
 }
 
 template <typename T>
-void InviwoModule::registerDialog(std::string classIdentifier) {
+void InviwoModule::registerDialog(std::string_view classIdentifier) {
     registerDialog(std::make_unique<DialogFactoryObjectTemplate<T>>(classIdentifier));
 }
 
@@ -412,10 +413,11 @@ void InviwoModule::registerProperty() {
 }
 template <typename T, typename P>
 void InviwoModule::registerPropertyWidget(PropertySemantics semantics) {
-    registerPropertyWidget(std::make_unique<PropertyWidgetFactoryObjectTemplate<T, P>>(semantics));
+    registerPropertyWidget(
+        std::make_unique<PropertyWidgetFactoryObjectTemplate<T, P>>(std::move(semantics)));
 }
 template <typename T, typename P>
-void InviwoModule::registerPropertyWidget(std::string semantics) {
+void InviwoModule::registerPropertyWidget(std::string_view semantics) {
     registerPropertyWidget<T, P>(PropertySemantics(semantics));
 }
 

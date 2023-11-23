@@ -49,6 +49,7 @@ class StringProperty;
 namespace inviwo {
 
 class MultilineTextEdit;
+class MultiFileProperty;
 
 /*! \class StringMultilinePropertyWidgetQt
     \brief Property widget for string properties which shows the contents spread over
@@ -65,6 +66,19 @@ public:
 
 private:
     StringProperty* property_;
+    MultilineTextEdit* textEdit_;
+    EditableLabelQt* label_;
+};
+
+class IVW_MODULE_QTWIDGETS_API MultiFileStringPropertyWidgetQt : public PropertyWidgetQt {
+public:
+    MultiFileStringPropertyWidgetQt(MultiFileProperty* property);
+
+    void updateFromProperty();
+    void setPropertyValue();
+
+private:
+    MultiFileProperty* property_;
     MultilineTextEdit* textEdit_;
     EditableLabelQt* label_;
 };

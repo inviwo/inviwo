@@ -75,6 +75,8 @@ public:
 
     void clear();
 
+    QWidget* findWidgetFor(Property* property);
+
 private:
     virtual void onProcessorNetworkWillRemoveProcessor(Processor*) override;
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
@@ -92,16 +94,13 @@ private:
 };
 
 class IVW_MODULE_QTWIDGETS_API PropertyListEvent : public QEvent {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_GADGET
-#include <warn/pop>
 public:
-    enum class Action { Add = 0, Remove = 1 };
-    PropertyListEvent(Action action, std::string processorId);
+    enum class Action { Add = 0, Remove = 1, FocusProperty = 2 };
+    PropertyListEvent(Action action, std::string identifier);
     static QEvent::Type type();
-    Action action_;
-    std::string processorId_;
+    Action action;
+    std::string identifier;
 
 private:
     static QEvent::Type PropertyListEventType;
@@ -127,6 +126,8 @@ public:
     // ProcessorNetworkEvaluationObserver
     virtual void onProcessorNetworkEvaluationBegin() override;
     virtual void onProcessorNetworkEvaluationEnd() override;
+
+    void focusProperty(Property* property);
 
 private:
     InviwoApplication* app_;

@@ -84,7 +84,7 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
         hLayout->addWidget(lineEdit_);
     } else {
         checkBox_ = new QCheckBox();
-        checkBox_->setFocusPolicy(Qt::TabFocus);
+        checkBox_->setFocusPolicy(Qt::StrongFocus);
         checkBox_->setFixedSize(QSize(15, 15));
 
         setFocusPolicy(checkBox_->focusPolicy());

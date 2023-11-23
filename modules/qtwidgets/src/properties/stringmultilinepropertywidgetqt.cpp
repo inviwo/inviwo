@@ -29,7 +29,8 @@
 
 #include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>
 
-#include <inviwo/core/properties/stringproperty.h>          // for StringProperty
+#include <inviwo/core/properties/stringproperty.h>  // for StringProperty
+#include <inviwo/core/properties/multifileproperty.h>
 #include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
 #include <modules/qtwidgets/inviwoqtutils.h>                // for fromQString, toQString
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
@@ -96,6 +97,59 @@ void StringMultilinePropertyWidgetQt::setPropertyValue() {
 void StringMultilinePropertyWidgetQt::updateFromProperty() {
     QString text(textEdit_->toPlainText());
     QString newContents(utilqt::toQString(property_->get()));
+    if (text != newContents) {
+        textEdit_->setPlainText(newContents);
+        textEdit_->moveCursor(QTextCursor::Start);
+
+        textEdit_->adjustHeight();
+    }
+}
+
+MultiFileStringPropertyWidgetQt::MultiFileStringPropertyWidgetQt(MultiFileProperty* property)
+    : PropertyWidgetQt(property), property_(property) {
+
+    QHBoxLayout* hLayout = new QHBoxLayout;
+    setSpacingAndMargins(hLayout);
+
+    label_ = new EditableLabelQt(this, property_);
+    hLayout->addWidget(label_);
+
+    textEdit_ = new MultilineTextEdit;
+    setFocusPolicy(textEdit_->focusPolicy());
+    setFocusProxy(textEdit_);
+
+    QSizePolicy sp = textEdit_->sizePolicy();
+    sp.setHorizontalStretch(3);
+    sp.setVerticalPolicy(QSizePolicy::Preferred);
+    textEdit_->setSizePolicy(sp);
+
+    hLayout->addWidget(textEdit_);
+
+    setLayout(hLayout);
+    connect(textEdit_, &MultilineTextEdit::editingFinished, this,
+            &MultiFileStringPropertyWidgetQt::setPropertyValue);
+
+    updateFromProperty();
+}
+
+void MultiFileStringPropertyWidgetQt::setPropertyValue() {
+    std::string valueStr = utilqt::fromQString(textEdit_->toPlainText());
+    std::vector<std::filesystem::path> paths;
+    util::forEachStringPart(valueStr, "\n", [&](std::string_view str) { paths.emplace_back(str); });
+
+    property_->setInitiatingWidget(this);
+    property_->set(paths);
+    property_->clearInitiatingWidget();
+}
+
+void MultiFileStringPropertyWidgetQt::updateFromProperty() {
+    QString text(textEdit_->toPlainText());
+    QString newContents{};
+
+    for (const auto& path : property_->get()) {
+        newContents.append(utilqt::toQString(path));
+        newContents.append('\n');
+    }
     if (text != newContents) {
         textEdit_->setPlainText(newContents);
         textEdit_->moveCursor(QTextCursor::Start);

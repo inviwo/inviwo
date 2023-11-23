@@ -50,9 +50,10 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     , logStackTraceProperty_("logStackTraceProperty", "Error stack trace log", false)
     , moduleSearchPaths_(
           "moduleSearchPaths", "Module Search Paths",
-          "The system will look for inviwo module lib in these path to load at start up. "
+          "The system will look for Inviwo module libs in these paths to load at start up. "
           "Make sure that the build type matches."_help,
-          {}, AcceptMode::Open, FileMode::Directory)
+          {}, AcceptMode::Open, FileMode::Directory, "modules", InvalidationLevel::InvalidOutput,
+          PropertySemantics::Text)
     , runtimeModuleReloading_("runtimeModuleReloding", "Runtime Module Reloading", false)
     , enableResourceManager_("enableResourceManager", "Enable Resource Manager", false)
     , breakOnMessage_{"breakOnMessage",

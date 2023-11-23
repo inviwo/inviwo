@@ -54,6 +54,7 @@ IsoValuePropertyWidgetQt::IsoValuePropertyWidgetQt(IsoValueProperty* property)
     , label_{new EditableLabelQt(this, property_)}
     , btnOpenTF_{new TFPushButton(property, this)} {
 
+    btnOpenTF_->setFocusPolicy(Qt::StrongFocus);
     setFocusPolicy(btnOpenTF_->focusPolicy());
     setFocusProxy(btnOpenTF_);
 

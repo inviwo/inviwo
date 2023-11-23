@@ -62,6 +62,7 @@ FontSizePropertyWidgetQt::FontSizePropertyWidgetQt(IntProperty* property)
     , comboBox_{new IvwComboBox(this)}
     , label_{new EditableLabelQt(this, property_)} {
 
+    comboBox_->setFocusPolicy(Qt::StrongFocus);
     setFocusPolicy(comboBox_->focusPolicy());
     setFocusProxy(comboBox_);
 
