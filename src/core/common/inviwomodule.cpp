@@ -133,7 +133,7 @@ InviwoModule::~InviwoModule() {
     std::erase_if(callbackActions, [&](const auto& a) { return a->getModule() == this; });
 }
 
-std::string InviwoModule::getIdentifier() const { return identifier_; }
+const std::string& InviwoModule::getIdentifier() const { return identifier_; }
 
 const std::filesystem::path& InviwoModule::getPath() const { return moduleRoot_; }
 
@@ -328,7 +328,7 @@ void InviwoModule::registerProcessorWidget(std::unique_ptr<ProcessorWidgetFactor
     }
 }
 
-void InviwoModule::registerPortInspector(std::string portClassIdentifier,
+void InviwoModule::registerPortInspector(std::string_view portClassIdentifier,
                                          const std::filesystem::path& inspectorPath) {
     auto portInspector =
         std::make_unique<PortInspectorFactoryObject>(portClassIdentifier, inspectorPath);

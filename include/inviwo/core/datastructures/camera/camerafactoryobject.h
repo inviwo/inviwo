@@ -33,6 +33,8 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
+
 
 namespace inviwo {
 
@@ -40,7 +42,7 @@ class Camera;
 
 class IVW_CORE_API CameraFactoryObject {
 public:
-    CameraFactoryObject(const std::string& classIdentifier);
+    CameraFactoryObject(std::string_view classIdentifier);
     virtual ~CameraFactoryObject() = default;
 
     virtual std::unique_ptr<Camera> create() = 0;
@@ -52,7 +54,7 @@ private:
 template <typename T>
 class CameraFactoryObjectTemplate : public CameraFactoryObject {
 public:
-    CameraFactoryObjectTemplate(const std::string& classIdentifier)
+    CameraFactoryObjectTemplate(std::string_view classIdentifier)
         : CameraFactoryObject(classIdentifier) {}
 
     virtual std::unique_ptr<Camera> create() override { return std::make_unique<T>(); }

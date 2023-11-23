@@ -97,9 +97,9 @@ T euclidean(T val) {
 
 }  // namespace util
 
-enum class OrdinalPropertyWidgetQtSematics { Default, Spherical, SpinBox, SphericalSpinBox, Text };
+enum class OrdinalPropertyWidgetQtSemantics { Default, Spherical, SpinBox, SphericalSpinBox, Text };
 
-template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>
+template <typename Prop, OrdinalPropertyWidgetQtSemantics Sem>
 class OrdinalLikePropertyWidgetQt final : public PropertyWidgetQt {
 public:
     using T = typename Prop::value_type;
@@ -122,13 +122,13 @@ private:
     std::vector<OrdinalBaseWidget<BT>*> editors_;
 };
 
-template <typename T, OrdinalPropertyWidgetQtSematics Sem>
+template <typename T, OrdinalPropertyWidgetQtSemantics Sem>
 using OrdinalPropertyWidgetQt = OrdinalLikePropertyWidgetQt<OrdinalProperty<T>, Sem>;
 
-template <typename T, OrdinalPropertyWidgetQtSematics Sem>
+template <typename T, OrdinalPropertyWidgetQtSemantics Sem>
 using OrdinalRefPropertyWidgetQt = OrdinalLikePropertyWidgetQt<OrdinalRefProperty<T>, Sem>;
 
-template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>
+template <typename Prop, OrdinalPropertyWidgetQtSemantics Sem>
 OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* property)
     : PropertyWidgetQt(property)
     , ordinal_(property)
@@ -152,15 +152,15 @@ OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* proper
 
     auto factory = [this](size_t row, size_t col) {
         auto editor = [&]() {
-            if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SpinBox) {
+            if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::SpinBox) {
                 return new OrdinalSpinBoxWidget<BT>();
-            } else if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SphericalSpinBox) {
+            } else if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::SphericalSpinBox) {
                 auto w = new OrdinalSpinBoxWidget<BT>();
                 if (col > 0) w->setWrapping(true);
                 return w;
-            } else if constexpr (Sem == OrdinalPropertyWidgetQtSematics::Text) {
+            } else if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::Text) {
                 return new OrdinalEditorWidget<BT>();
-            } else if constexpr (Sem == OrdinalPropertyWidgetQtSematics::Spherical) {
+            } else if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::Spherical) {
                 auto w = new SliderWidgetQt<BT>();
                 if (col > 0) w->setWrapping(true);
                 return w;
@@ -180,8 +180,8 @@ OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* proper
         sp.setHorizontalPolicy(QSizePolicy::Expanding);
         editor->setSizePolicy(sp);
 
-        if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SphericalSpinBox ||
-                      Sem == OrdinalPropertyWidgetQtSematics::Spherical) {
+        if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::SphericalSpinBox ||
+                      Sem == OrdinalPropertyWidgetQtSemantics::Spherical) {
             constexpr std::array<const char*, 3> sphericalLabels{"r", "<html>&theta;</html>",
                                                                  "<html>&phi;</html>"};
             auto widget = new QWidget(this);
@@ -209,10 +209,10 @@ OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* proper
 
             // vectors should be drawn in row major while matrices are column major
             if constexpr (util::extent<T, 1>::value > 1 &&
-                          Sem != OrdinalPropertyWidgetQtSematics::Default) {
+                          Sem != OrdinalPropertyWidgetQtSemantics::Default) {
                 std::swap(layoutCol, layoutRow);
-            } else if constexpr (Sem == OrdinalPropertyWidgetQtSematics::Default ||
-                                 Sem == OrdinalPropertyWidgetQtSematics::Spherical) {
+            } else if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::Default ||
+                                 Sem == OrdinalPropertyWidgetQtSemantics::Spherical) {
                 layoutCol = 1;
                 layoutRow = col + util::extent<T, 1>::value * row;
             }
@@ -242,7 +242,7 @@ OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* proper
     updateFromProperty();
 }
 
-template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>
+template <typename Prop, OrdinalPropertyWidgetQtSemantics Sem>
 void OrdinalLikePropertyWidgetQt<Prop, Sem>::updateFromProperty() {
     T min = ordinal_->getMinValue();
     T max = ordinal_->getMaxValue();
@@ -255,8 +255,8 @@ void OrdinalLikePropertyWidgetQt<Prop, Sem>::updateFromProperty() {
     auto maxcb =
         util::make_array<nelem>([&](auto) { return ordinal_->getMaxConstraintBehaviour(); });
 
-    if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SphericalSpinBox ||
-                  Sem == OrdinalPropertyWidgetQtSematics::Spherical) {
+    if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::SphericalSpinBox ||
+                  Sem == OrdinalPropertyWidgetQtSemantics::Spherical) {
         val = util::spherical(val);
         min = T{std::numeric_limits<BT>::epsilon(), 0, -std::numbers::pi};
         max = T{3 * glm::length(max), std::numbers::pi, std::numbers::pi};
@@ -276,19 +276,19 @@ void OrdinalLikePropertyWidgetQt<Prop, Sem>::updateFromProperty() {
     }
 }
 
-template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>
+template <typename Prop, OrdinalPropertyWidgetQtSemantics Sem>
 void OrdinalLikePropertyWidgetQt<Prop, Sem>::setPropertyValue(size_t editorId) {
     T val = ordinal_->get();
 
-    if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SphericalSpinBox ||
-                  Sem == OrdinalPropertyWidgetQtSematics::Spherical) {
+    if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::SphericalSpinBox ||
+                  Sem == OrdinalPropertyWidgetQtSemantics::Spherical) {
         val = util::spherical(val);
     }
 
     util::glmcomp(val, editorId) = editors_[editorId]->getValue();
 
-    if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SphericalSpinBox ||
-                  Sem == OrdinalPropertyWidgetQtSematics::Spherical) {
+    if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::SphericalSpinBox ||
+                  Sem == OrdinalPropertyWidgetQtSemantics::Spherical) {
         val = util::euclidean(val);
     }
 
@@ -297,7 +297,7 @@ void OrdinalLikePropertyWidgetQt<Prop, Sem>::setPropertyValue(size_t editorId) {
     ordinal_->clearInitiatingWidget();
 }
 
-template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>
+template <typename Prop, OrdinalPropertyWidgetQtSemantics Sem>
 void OrdinalLikePropertyWidgetQt<Prop, Sem>::showSettings() {
     if (!settings_) {
         settings_ = new OrdinalLikePropertySettingsWidgetQt<Prop>(ordinal_, this);
@@ -305,7 +305,7 @@ void OrdinalLikePropertyWidgetQt<Prop, Sem>::showSettings() {
     settings_->showWidget();
 }
 
-template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>
+template <typename Prop, OrdinalPropertyWidgetQtSemantics Sem>
 std::unique_ptr<QMenu> OrdinalLikePropertyWidgetQt<Prop, Sem>::getContextMenu() {
     auto menu = PropertyWidgetQt::getContextMenu();
 

@@ -39,7 +39,7 @@ namespace inviwo {
 class IVW_CORE_API PropertySemantics {
 public:
     PropertySemantics();
-    explicit PropertySemantics(std::string semantic);
+    explicit PropertySemantics(std::string_view semantic);
     PropertySemantics(const PropertySemantics& rhs) = default;
     PropertySemantics(PropertySemantics&& rhs) noexcept = default;
     PropertySemantics& operator=(const PropertySemantics& that) = default;

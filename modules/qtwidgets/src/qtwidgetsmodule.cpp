@@ -127,7 +127,7 @@ namespace {
 
 struct ColorWidgetReghelper {
     template <typename T>
-    auto operator()(QtWidgetsModule& qm, const std::string& semantics) {
+    auto operator()(QtWidgetsModule& qm, const PropertySemantics& semantics) {
         using PropertyType = OrdinalProperty<T>;
         using PropertyWidget = ColorPropertyWidgetQt<T>;
 
@@ -135,10 +135,10 @@ struct ColorWidgetReghelper {
     }
 };
 
-template <OrdinalPropertyWidgetQtSematics Sem>
+template <OrdinalPropertyWidgetQtSemantics Sem>
 struct OrdinalWidgetReghelper {
     template <typename T>
-    auto operator()(QtWidgetsModule& qm, const std::string& semantics) {
+    auto operator()(QtWidgetsModule& qm, const PropertySemantics& semantics) {
         using PropertyType = OrdinalProperty<T>;
         using PropertyWidget = OrdinalPropertyWidgetQt<T, Sem>;
         qm.registerPropertyWidget<PropertyWidget, PropertyType>(semantics);
@@ -151,7 +151,7 @@ struct OrdinalWidgetReghelper {
 
 struct MinMaxWidgetReghelper {
     template <typename T>
-    auto operator()(QtWidgetsModule& qm, const std::string& semantics) {
+    auto operator()(QtWidgetsModule& qm, const PropertySemantics& semantics) {
         using PropertyType = MinMaxProperty<T>;
         using PropertyWidget = OrdinalMinMaxPropertyWidgetQt<T>;
         qm.registerPropertyWidget<PropertyWidget, PropertyType>(semantics);
@@ -159,7 +159,7 @@ struct MinMaxWidgetReghelper {
 };
 struct MinMaxTextWidgetReghelper {
     template <typename T>
-    auto operator()(QtWidgetsModule& qm, const std::string& semantics) {
+    auto operator()(QtWidgetsModule& qm, const PropertySemantics& semantics) {
         using PropertyType = MinMaxProperty<T>;
         using DataType = std::conditional_t<std::is_integral<T>::value, int, double>;
         using PropertyWidget = OrdinalMinMaxTextPropertyWidgetQt<DataType, T>;
@@ -179,23 +179,28 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     }
 
     // Register bool property widgets
-    registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Default");
-    registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Text");
+    registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>(PropertySemantics::Default);
+    registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>(PropertySemantics::Text);
 
     // Register composite/list property widgets
-    registerPropertyWidget<CompositePropertyWidgetQt, CompositeProperty>("Default");
-    registerPropertyWidget<BoolCompositePropertyWidgetQt, BoolCompositeProperty>("Default");
-    registerPropertyWidget<ListPropertyWidgetQt, ListProperty>("Default");
+    registerPropertyWidget<CompositePropertyWidgetQt, CompositeProperty>(
+        PropertySemantics::Default);
+    registerPropertyWidget<BoolCompositePropertyWidgetQt, BoolCompositeProperty>(
+        PropertySemantics::Default);
+    registerPropertyWidget<ListPropertyWidgetQt, ListProperty>(PropertySemantics::Default);
 
     // Register file property widgets
-    registerPropertyWidget<FilePropertyWidgetQt, FileProperty>("Default");
+    registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::Default);
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::TextEditor);
 
-    registerPropertyWidget<MultiFilePropertyWidgetQt, MultiFileProperty>("Default");
+    registerPropertyWidget<MultiFilePropertyWidgetQt, MultiFileProperty>(
+        PropertySemantics::Default);
+    registerPropertyWidget<MultiFileStringPropertyWidgetQt, MultiFileProperty>(
+        PropertySemantics::Text);
 
     // Register color property widgets
     using ColorTypes = std::tuple<ivec3, ivec4, vec3, vec4, dvec3, dvec4>;
-    util::for_each_type<ColorTypes>{}(ColorWidgetReghelper{}, *this, "Color");
+    util::for_each_type<ColorTypes>{}(ColorWidgetReghelper{}, *this, PropertySemantics::Color);
 
     // Register ordinal property widgets
     using OrdinalTypes =
@@ -203,75 +208,87 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
                    dmat3, dmat4, int, ivec2, ivec3, ivec4, glm::i64, unsigned int, uvec2, uvec3,
                    uvec4, size_t, size2_t, size3_t, size4_t, glm::fquat, glm::dquat>;
     util::for_each_type<OrdinalTypes>{}(
-        OrdinalWidgetReghelper<OrdinalPropertyWidgetQtSematics::Default>{}, *this, "Default");
+        OrdinalWidgetReghelper<OrdinalPropertyWidgetQtSemantics::Default>{}, *this,
+        PropertySemantics::Default);
     util::for_each_type<OrdinalTypes>{}(
-        OrdinalWidgetReghelper<OrdinalPropertyWidgetQtSematics::Text>{}, *this, "Text");
+        OrdinalWidgetReghelper<OrdinalPropertyWidgetQtSemantics::Text>{}, *this,
+        PropertySemantics::Text);
     util::for_each_type<OrdinalTypes>{}(
-        OrdinalWidgetReghelper<OrdinalPropertyWidgetQtSematics::SpinBox>{}, *this, "SpinBox");
+        OrdinalWidgetReghelper<OrdinalPropertyWidgetQtSemantics::SpinBox>{}, *this,
+        PropertySemantics::SpinBox);
 
     // Register MinMaxProperty widgets
     using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;
-    util::for_each_type<ScalarTypes>{}(MinMaxWidgetReghelper{}, *this, "Default");
-    util::for_each_type<ScalarTypes>{}(MinMaxTextWidgetReghelper{}, *this, "Text");
+    util::for_each_type<ScalarTypes>{}(MinMaxWidgetReghelper{}, *this, PropertySemantics::Default);
+    util::for_each_type<ScalarTypes>{}(MinMaxTextWidgetReghelper{}, *this, PropertySemantics::Text);
 
     // Register option property widgets
-    registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyString>("Default");
+    registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyString>(
+        PropertySemantics::Default);
 
     // Register string property widgets
-    registerPropertyWidget<StringPropertyWidgetQt, StringProperty>("Default");
+    registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::Default);
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>("Password");
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::TextEditor);
 
-    registerPropertyWidget<StringsPropertyWidgetQt<1>, StringsProperty<1>>("Default");
-    registerPropertyWidget<StringsPropertyWidgetQt<2>, StringsProperty<2>>("Default");
-    registerPropertyWidget<StringsPropertyWidgetQt<3>, StringsProperty<3>>("Default");
-    registerPropertyWidget<StringsPropertyWidgetQt<4>, StringsProperty<4>>("Default");
+    registerPropertyWidget<StringsPropertyWidgetQt<1>, StringsProperty<1>>(
+        PropertySemantics::Default);
+    registerPropertyWidget<StringsPropertyWidgetQt<2>, StringsProperty<2>>(
+        PropertySemantics::Default);
+    registerPropertyWidget<StringsPropertyWidgetQt<3>, StringsProperty<3>>(
+        PropertySemantics::Default);
+    registerPropertyWidget<StringsPropertyWidgetQt<4>, StringsProperty<4>>(
+        PropertySemantics::Default);
 
-    registerPropertyWidget<StringMultilinePropertyWidgetQt, StringProperty>("Multiline");
+    registerPropertyWidget<StringMultilinePropertyWidgetQt, StringProperty>(
+        PropertySemantics::Multiline);
 
     // Register TF property widgets
-    registerPropertyWidget<IsoValuePropertyWidgetQt, IsoValueProperty>("Default");
-    registerPropertyWidget<TFPrimitiveSetWidgetQt, IsoValueProperty>("Text");
+    registerPropertyWidget<IsoValuePropertyWidgetQt, IsoValueProperty>(PropertySemantics::Default);
+    registerPropertyWidget<TFPrimitiveSetWidgetQt, IsoValueProperty>(PropertySemantics::Text);
     registerPropertyWidget<TFPrimitiveSetWidgetQt, IsoValueProperty>("Text (Normalized)");
-    registerPropertyWidget<TFPropertyWidgetQt, TransferFunctionProperty>("Default");
-    registerPropertyWidget<TFPrimitiveSetWidgetQt, TransferFunctionProperty>("Text");
+    registerPropertyWidget<TFPropertyWidgetQt, TransferFunctionProperty>(
+        PropertySemantics::Default);
+    registerPropertyWidget<TFPrimitiveSetWidgetQt, TransferFunctionProperty>(
+        PropertySemantics::Text);
     registerPropertyWidget<TFPrimitiveSetWidgetQt, TransferFunctionProperty>("Text (Normalized)");
-    registerPropertyWidget<IsoTFPropertyWidgetQt, IsoTFProperty>("Default");
+    registerPropertyWidget<IsoTFPropertyWidgetQt, IsoTFProperty>(PropertySemantics::Default);
     registerPropertyWidget<CompositePropertyWidgetQt, IsoTFProperty>("Composite");
 
     // Register misc property widgets
-    registerPropertyWidget<EventPropertyWidgetQt, EventProperty>("Default");
+    registerPropertyWidget<EventPropertyWidgetQt, EventProperty>(PropertySemantics::Default);
     registerPropertyWidget<FontSizePropertyWidgetQt, IntProperty>("Fontsize");
-    registerPropertyWidget<ButtonGroupPropertyWidgetQt, ButtonGroupProperty>("Default");
-    registerPropertyWidget<ButtonPropertyWidgetQt, ButtonProperty>("Default");
+    registerPropertyWidget<ButtonGroupPropertyWidgetQt, ButtonGroupProperty>(
+        PropertySemantics::Default);
+    registerPropertyWidget<ButtonPropertyWidgetQt, ButtonProperty>(PropertySemantics::Default);
 
     registerPropertyWidget<FloatAnglePropertyWidgetQt, FloatProperty>("Angle");
     registerPropertyWidget<DoubleAnglePropertyWidgetQt, DoubleProperty>("Angle");
 
     registerPropertyWidget<
-        OrdinalPropertyWidgetQt<vec3, OrdinalPropertyWidgetQtSematics::Spherical>,
+        OrdinalPropertyWidgetQt<vec3, OrdinalPropertyWidgetQtSemantics::Spherical>,
         FloatVec3Property>("Spherical");
     registerPropertyWidget<
-        OrdinalPropertyWidgetQt<dvec3, OrdinalPropertyWidgetQtSematics::Spherical>,
+        OrdinalPropertyWidgetQt<dvec3, OrdinalPropertyWidgetQtSemantics::Spherical>,
         DoubleVec3Property>("Spherical");
     registerPropertyWidget<
-        OrdinalPropertyWidgetQt<vec3, OrdinalPropertyWidgetQtSematics::SphericalSpinBox>,
+        OrdinalPropertyWidgetQt<vec3, OrdinalPropertyWidgetQtSemantics::SphericalSpinBox>,
         FloatVec3Property>("SphericalSpinBox");
     registerPropertyWidget<
-        OrdinalPropertyWidgetQt<dvec3, OrdinalPropertyWidgetQtSematics::SphericalSpinBox>,
+        OrdinalPropertyWidgetQt<dvec3, OrdinalPropertyWidgetQtSemantics::SphericalSpinBox>,
         DoubleVec3Property>("SphericalSpinBox");
 
     registerPropertyWidget<
-        OrdinalRefPropertyWidgetQt<vec3, OrdinalPropertyWidgetQtSematics::Spherical>,
+        OrdinalRefPropertyWidgetQt<vec3, OrdinalPropertyWidgetQtSemantics::Spherical>,
         FloatVec3RefProperty>("Spherical");
     registerPropertyWidget<
-        OrdinalRefPropertyWidgetQt<dvec3, OrdinalPropertyWidgetQtSematics::Spherical>,
+        OrdinalRefPropertyWidgetQt<dvec3, OrdinalPropertyWidgetQtSemantics::Spherical>,
         DoubleVec3RefProperty>("Spherical");
     registerPropertyWidget<
-        OrdinalRefPropertyWidgetQt<vec3, OrdinalPropertyWidgetQtSematics::SphericalSpinBox>,
+        OrdinalRefPropertyWidgetQt<vec3, OrdinalPropertyWidgetQtSemantics::SphericalSpinBox>,
         FloatVec3RefProperty>("SphericalSpinBox");
     registerPropertyWidget<
-        OrdinalRefPropertyWidgetQt<dvec3, OrdinalPropertyWidgetQtSematics::SphericalSpinBox>,
+        OrdinalRefPropertyWidgetQt<dvec3, OrdinalPropertyWidgetQtSemantics::SphericalSpinBox>,
         DoubleVec3RefProperty>("SphericalSpinBox");
 
     registerPropertyWidget<LightPropertyWidgetQt, FloatVec3Property>("LightPosition");

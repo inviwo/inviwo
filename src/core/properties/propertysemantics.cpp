@@ -35,7 +35,7 @@
 namespace inviwo {
 
 PropertySemantics::PropertySemantics() : semantic_("Default") {}
-PropertySemantics::PropertySemantics(std::string semantic) : semantic_(std::move(semantic)) {}
+PropertySemantics::PropertySemantics(std::string_view semantic) : semantic_(semantic) {}
 
 const std::string& PropertySemantics::getString() const { return semantic_; }
 
