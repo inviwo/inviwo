@@ -56,8 +56,7 @@ class IVW_MODULE_QTWIDGETS_API InviwoFileDialog : public QFileDialog, public Fil
     Q_OBJECT
 public:
     InviwoFileDialog(QWidget* parent = nullptr, std::string_view title = "",
-                     std::string_view pathType = "default",
-                     const std::filesystem::path& path = {});
+                     std::string_view pathType = "default", const std::filesystem::path& path = {});
 
     virtual bool show() override;
 

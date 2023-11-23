@@ -96,7 +96,7 @@ public:
     void set(const std::vector<std::filesystem::path>& files,
              const FileExtension& selectedExtension);
     void set(const MultiFileProperty* property);
-    
+
     /**
      * Replace the current list of paths with the one from the FileProperty.
      */

@@ -63,7 +63,7 @@ public:
 
     void setAcceptMode(AcceptMode mode);
     void setFileMode(FileMode mode);
-    
+
     void setCursorToEnd();
 
 signals:
