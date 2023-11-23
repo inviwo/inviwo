@@ -81,7 +81,7 @@ for i, (name, id) in enumerate(zip(fontNames, fontIdentifiers)):
     network.addConnection(prev.outports[0], p.inports[0])
     prev = p
 
-canvas.position = glm.ivec2(0, processorSpacing * len(fontNames) + 25)
+canvas.position.value = glm.ivec2(0, processorSpacing * len(fontNames) + 25)
 
 # connect last processor to canvas
 network.addConnection(prev.outports[0], canvas.inports[0])

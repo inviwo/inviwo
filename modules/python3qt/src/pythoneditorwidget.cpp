@@ -123,7 +123,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         pythonOutput_ = new CodeEdit{this};
         outputCallbacks_ =
             utilqt::setPythonOutputSyntaxHighlight(pythonOutput_->syntaxHighlighter(), *settings);
-        pythonOutput_->setReadOnly(true);
+        // pythonOutput_->setReadOnly(true); this breaks Ctrl-C for unknown reasons.
         pythonOutput_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     }
 

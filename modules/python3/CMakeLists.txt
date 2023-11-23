@@ -54,6 +54,19 @@ set(SCRIPT_FILES
 )
 ivw_group("Script Files" ${SCRIPT_FILES})
 
+# Add script files
+set(PYTHON_PROCESSORS_FILES
+    processors/MandelbrotNumpy.py
+    processors/MeshCreationTest.py
+    processors/PythonExample.py
+    processors/PythonImageExample.py
+    processors/PythonMeshExample.py
+    processors/PythonPickingExample.py
+    processors/PythonVolumeExample.py
+    processors/VolumeCreationTest.py
+)
+ivw_group("Python Processor Files" BASE processors ${PYTHON_PROCESSORS_FILES})
+
 # Add Unittests
 set(TEST_FILES
     tests/unittests/python3-unittest-main.cpp
@@ -69,7 +82,7 @@ set(TEST_FILES
 ivw_add_unittest(${TEST_FILES})
 
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
+ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES} ${PYTHON_PROCESSORS_FILES})
 
 find_package(pybind11 CONFIG REQUIRED)
 target_link_libraries(inviwo-module-python3 PUBLIC

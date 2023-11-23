@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <inviwopy/pyglmports.h>
+
+#include <inviwopy/pyglmmatports.h>
 #include <inviwopy/pyglmportsdouble.h>
 #include <inviwopy/pyglmportsfloat.h>
 #include <inviwopy/pyglmportsint.h>
@@ -40,6 +42,8 @@ void exposeGLMPorts(pybind11::module& m) {
     exposeGLMPortsFloat(m);
     exposeGLMPortsInt(m);
     exposeGLMPortsUint(m);
+
+    exposeGLMMatPorts(m);
 }
 
 }  // namespace inviwo
