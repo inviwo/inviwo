@@ -81,11 +81,11 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
     setCompleter(completer);
     completer->popup()->setObjectName("FileCompleterDropdown");
 
-    connect(this, &QLineEdit::textEdited,
+    connect(this, &QLineEdit::textEdited, this,
             [this](const QString& str) { updateIcon(utilqt::toPath(str)); });
 
-    connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted),
-            [=](const QString& str) { updateIcon(utilqt::toPath(str)); });
+    connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted), this,
+            [this](const QString& str) { updateIcon(utilqt::toPath(str)); });
 
     connect(this, &QLineEdit::editingFinished, [this]() {
         setCursorToEnd();
