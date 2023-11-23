@@ -42,7 +42,7 @@
 #include <inviwo/core/properties/stringproperty.h>          // for StringProperty
 #include <modules/opengl/shader/shader.h>                   // for Shader
 #include <modules/opengl/buffer/bufferobject.h>             // for BufferGL
-#include <modules/opengl/texture/textureunit.h>            // for TextureUnit, TextureUnitContai...
+#include <modules/opengl/texture/textureunit.h>             // for TextureUnit, TextureUnitContai...
 
 #include <array>       // for array
 #include <cstddef>     // for size_t
@@ -98,7 +98,9 @@ struct IVW_MODULE_BASEGL_API DynUniform {
 
 };  // namespace detail
 
-class IVW_MODULE_BASEGL_API InstanceRenderer : public Processor, public PropertyOwnerObserver, public PropertyObserver {
+class IVW_MODULE_BASEGL_API InstanceRenderer : public Processor,
+                                               public PropertyOwnerObserver,
+                                               public PropertyObserver {
 public:
     InstanceRenderer();
     virtual ~InstanceRenderer();
@@ -146,7 +148,6 @@ private:
     StringProperty setupVert_;
     StringProperty commonCode_;
     std::array<StringProperty, 5> transforms_;
-    
 
     std::shared_ptr<StringShaderResource> vert_;
     std::shared_ptr<StringShaderResource> frag_;
