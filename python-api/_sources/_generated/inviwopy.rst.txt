@@ -21,6 +21,7 @@
       logInfo
       logWarn
       md2doc
+      unindentMd2doc
    
    
 
@@ -129,6 +130,18 @@
       VolumeDataReader
       VolumeDataWriter
       WheelEvent
+      dmat2VectorFlatMultiInport
+      dmat2VectorInport
+      dmat2VectorMultiInport
+      dmat2VectorOutport
+      dmat3VectorFlatMultiInport
+      dmat3VectorInport
+      dmat3VectorMultiInport
+      dmat3VectorOutport
+      dmat4VectorFlatMultiInport
+      dmat4VectorInport
+      dmat4VectorMultiInport
+      dmat4VectorOutport
       doubleVector
       doubleVectorFlatMultiInport
       doubleVectorInport
@@ -174,6 +187,18 @@
       ivec4VectorInport
       ivec4VectorMultiInport
       ivec4VectorOutport
+      mat2VectorFlatMultiInport
+      mat2VectorInport
+      mat2VectorMultiInport
+      mat2VectorOutport
+      mat3VectorFlatMultiInport
+      mat3VectorInport
+      mat3VectorMultiInport
+      mat3VectorOutport
+      mat4VectorFlatMultiInport
+      mat4VectorInport
+      mat4VectorMultiInport
+      mat4VectorOutport
       uintVector
       uintVectorFlatMultiInport
       uintVectorInport
