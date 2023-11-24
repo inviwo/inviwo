@@ -46,52 +46,8 @@ vec3 rotateFrom(vec3 v, float theta, float phi) {
     return axis;
 }
 
-//TODO: Use a struct{vec3 position, vec3 normal instead}
-
-PlaneParameters[6] constructBBPlanes(VolumeParameters volParam) {
-    PlaneParameters[6] planes;
-    
-    float dimx = volParam.dimensions.x;
-    float dimy = volParam.dimensions.y;
-    float dimz = volParam.dimensions.z;
-
-    //normals in or out? in, according to rayPlaneIntersection
-    planes[0] = PlaneParameters(vec3(dimx/2f, 0f, 0f), vec3(-1f, 0f, 0f), /*irrelevant*/ vec4(0f));
-    planes[1] = PlaneParameters(vec3(-dimx/2f, 0f, 0f), vec3(1f, 0f, 0f), /*irrelevant*/ vec4(0f));
-    planes[2] = PlaneParameters(vec3(0f, dimy/2f, 0f), vec3(0f, -1f, 0f), /*irrelevant*/ vec4(0f));
-    planes[3] = PlaneParameters(vec3(0f, -dimy/2f, 0f), vec3(0f, 1f, 0f), /*irrelevant*/ vec4(0f));
-    planes[4] = PlaneParameters(vec3(0f, 0f, dimz/2f), vec3(0f, 0f, -1f), /*irrelevant*/ vec4(0f));
-    planes[5] = PlaneParameters(vec3(0f, 0f, -dimz/2f), vec3(0f, 0f, 1f), /*irrelevant*/ vec4(0f));
-
-    return planes;
-}
 
 // We can actually just check bounds based on volume dimensions. Box intersection should still work the same.
-
-// Overengineered? Prolly.
-bool RayBBIntersection(PlaneParameters[6] planes, vec3 rayOrigin, vec3 rayDir, out float t0) {
-
-    int foo = -1;
-    int i = 0;
-    float earliestIntersection = 100; // FLT_MAX 3.402823466e+38
-
-    float intersection = 0f;
-    while(i < 6) {
-        intersection = 0f;
-        if(rayPlaneIntersection(planes[i], rayOrigin, rayDir, intersection, 100f)) {
-            foo = i;
-            if(earliestIntersection > intersection) {
-                earliestIntersection = intersection;
-            }
-        }
-        i++;
-    }
-    t0 = earliestIntersection;
-    if(foo > -1) {
-        return true;
-    }
-    return false;
-}
 
 // Assumes sample space to be from 000 to 111
 bool RayBBIntersection_TextureSpace(vec3 origin, vec3 dir, out float t0, out float t1) {

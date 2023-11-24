@@ -84,41 +84,27 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
 
     float T = 0.0f;
     float tau = 1f;
-    float meanpath = WoodcockTracking(samplePosition, rayDir, 0f, rayLength, hashSeed,
+    float meanfreepath = WoodcockTracking(samplePosition, rayDir, 0f, rayLength, hashSeed,
             volume, volumeParameters, transferFunction, extinctionUpper, tau);
-    rayPosition = meanpath; 
-    
 
-    int safety = 0;
-
-    if (rayPosition <= rayLength) {
-        T = 1.0f;
-        samplePosition = entryPoint + rayPosition * rayDir;
+    if (meanfreepath <= rayLength) {
+        samplePosition = entryPoint + meanfreepath * rayDir;
         
-
-        // Sample volume.
-        vec4 voxel = getNormalizedVoxel(volume, volumeParameters, samplePosition);
-        vec4 color = applyTF(transferFunction, voxel);
-
-        PlaneParameters[6] planes; //= constructBBPlanes(volumeParameters);
-
-        vec3 sampleWorldPosition = (volumeParameters.textureToWorld*vec4(samplePosition,1f)).xyz;
-
         // Function is broken for testing at the moment.
         
-        result.rgb = RMVolumeRender_SingleBounceLight(T, meanpath, volume, volumeParameters, transferFunction, 
-            samplePosition, cameraDir, light, planes, hashSeed, channel, extinctionUpper);
+        result.rgb = RMVolumeRender_SingleBounceLight(T, meanfreepath, volume, volumeParameters, transferFunction, 
+            samplePosition, cameraDir, light, hashSeed, channel, extinctionUpper);
 
         result.a = 1f - T;
 
         #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
     }
-    result.xyz = result.rgb + T*bgColor.xyz;
+    //result.rgb = result.rgb + T*bgColor.xyz;
     
-    /*
-    depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryDepth, exitDepth),
-                depth, rayDepth == -1.0);
-    */
+    // Replace -1 with raydepth
+    depth = mix(calculateDepthValue(camera, -1 / rayLength, entryDepth, exitDepth),
+                depth, -1 == -1.0);
+    
     return result;
 }
 /*
@@ -212,7 +198,7 @@ void main(){
 
     vec4 result = vec4(0.0);   // The accumulated color along the ray;
     vec4 picking = vec4(0.0);  // The picking color of the ray
-    float rayDepth = -1.0;     // The ray depth value [0, ray length], -1 means "no" depth.
+                               // The ray depth value [0, ray length], -1 means "no" depth.
                                // Uses the same space as rayPosition. Usually used to track
                                // the depth of the "first" hit in DVR.
     float depth = 1.0;         // The image depth, from far to near [0, 1].
@@ -220,9 +206,7 @@ void main(){
                                // written to outportDepth
 
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
-    vec2 texCoord = vec2(0.5 + gl_GlobalInvocationID.xy) / outportParameters.dimensions;
-
-    
+    vec2 texCoord = vec2(0.5 + gl_GlobalInvocationID.xy) / outportParameters.dimensions;    
 
     vec3 entryPoint = texture(entryColor, texCoord).xyz;
     vec3 exitPoint = texture(exitColor, texCoord).xyz;
@@ -243,15 +227,12 @@ void main(){
     float extinctionUpper = 1.0f;
     result = simpleRender(outportParameters, entryPoint, exitPoint, entryPointDepth, exitPointDepth,
             depth, raycaster, volumeParameters, bgColor, extinctionUpper);
-    // If you wanna normalize, DONT do it based off of results. It needs to be a global factor
 
-    vec4 resPrev = imageLoad(outportColor, storePos);
+    vec4 resultPrev = imageLoad(outportColor, storePos);
 
-    // mix between outputColor and now and new one
-    // TODO: need uniform iteration
     float w = 1.0f - 1.0f/float(iteration + 1);
-    //w = 1.0f;
-    vec4 finalresult = mix(result, resPrev, w);
+
+    vec4 finalresult = mix(result, resultPrev, w);
     imageStore(outportColor, storePos, finalresult);     
     imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
     imageStore(outportPicking, storePos, picking);
