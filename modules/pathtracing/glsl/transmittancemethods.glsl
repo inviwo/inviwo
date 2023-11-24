@@ -124,9 +124,9 @@ vec3 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, 
     */
     vec3 result = vec3(0f);
     vec3 sampleWorldPos = (volParam.textureToWorld*vec4(samplePos,1f)).xyz;
+    vec4 voxel = getNormalizedVoxel(volume, volParam, samplePos);
     
-    
-    vec4 tfSample = applyTF(tf, getNormalizedVoxel(volume, volParam, samplePos));
+    vec4 tfSample = applyTF(tf, voxel);
 
     // Made up colors of the particle
     vec3 sampleAmbient = tfSample.rgb;
@@ -149,7 +149,7 @@ vec3 RMVolumeRender_SingleBounceLight(float T, float rayStep, sampler3D volume, 
 
     vec3 gradient = gradientCentralDiff(vec4(0f), volume, volParam, samplePos, 0);
     gradient = normalize(gradient);
-
+    gradient *= sign(voxel[0] / (1.0 - volParam.formatScaling) - volParam.formatOffset);
 
 
 
