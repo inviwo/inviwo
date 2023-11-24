@@ -32,6 +32,7 @@
 #include <inviwo/core/util/assertion.h>      // for ivwAssert
 #include <inviwo/core/util/sourcecontext.h>  // for IVW_CONTEXT
 #include <modules/opengl/openglexception.h>  // for OpenGLException
+#include <modules/opengl/texture/samplerobject.h>
 
 #include <algorithm>    // for max
 #include <string_view>  // for string_view
