@@ -45,8 +45,8 @@
 #include <GLFW/glfw3.h>   // for glfwGetWindowSize, GLFWwindow
 #include <flags/flags.h>  // for none
 #include <glm/vec2.hpp>   // for vec<>::(anonymous), operator/
-#include <utf8/core.h>
-#include <utf8/checked.h>
+#include <utf8cpp/utf8/core.h>
+#include <utf8cpp/utf8/checked.h>
 
 namespace inviwo {
 
