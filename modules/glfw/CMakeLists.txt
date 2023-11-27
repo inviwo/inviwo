@@ -29,7 +29,7 @@ ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
 find_package(utf8cpp CONFIG REQUIRED)
 target_link_libraries(inviwo-module-glfw PRIVATE
-    utf8cpp
+    utf8cpp::utf8cpp
 )
 
 option(IVW_USE_EXTERNAL_GLFW "GLFW is provided externaly" OFF)

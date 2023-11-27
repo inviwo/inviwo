@@ -9,7 +9,7 @@
     url = https://github.com/petersteneteg/warn.git
 [submodule "ext/utf/utfcpp"]
     path = ext/utf/utfcpp
-    url = https://github.com/nemtrif/utfcpp
+    url = https://github.com/inviwo/utfcpp
 [submodule "ext/benchmark/benchmark"]
     path = ext/benchmark/benchmark
     url = https://github.com/google/benchmark.git

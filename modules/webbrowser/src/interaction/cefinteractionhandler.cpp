@@ -61,8 +61,8 @@
 #include <type_traits>  // for enable_if<>::type
 #include <utility>      // for pair
 #include <vector>       // for vector
-#include <utf8/core.h>
-#include <utf8/checked.h>
+#include <utf8cpp/utf8/core.h>
+#include <utf8cpp/utf8/checked.h>
 
 namespace inviwo {
 

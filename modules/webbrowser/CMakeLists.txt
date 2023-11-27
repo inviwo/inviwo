@@ -182,7 +182,7 @@ ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/data/js)
 
 find_package(utf8cpp CONFIG REQUIRED)
 target_link_libraries(inviwo-module-webbrowser PRIVATE
-    utf8cpp
+    utf8cpp::utf8cpp
 )
 
 ivw_register_license_file(NAME "Chromium Embedded Framework" VERSION ${CEF_VERSION} MODULE WebBrowser

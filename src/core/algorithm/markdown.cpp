@@ -37,7 +37,7 @@
 #include <md4c/md4c.h>
 #include <warn/pop>
 
-#include <utf8/checked.h>
+#include <utf8cpp/utf8/checked.h>
 
 namespace inviwo {
 

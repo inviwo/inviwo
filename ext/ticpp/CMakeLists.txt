@@ -60,6 +60,10 @@ target_sources(ticpp
         src/visitor.cpp
 )
 
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC" AND IVW_CFG_MSVC_ADDRESS_SANITIZER)
+    target_compile_options(ticpp PRIVATE "/fsanitize=address")
+endif()
+
 # Creates VS folder structure
 ivw_folder(ticpp ext)
 

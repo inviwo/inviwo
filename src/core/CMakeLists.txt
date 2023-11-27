@@ -904,7 +904,7 @@ target_link_libraries(inviwo-core
     PRIVATE
         roaring::roaring
         inviwo::md4c
-        utf8cpp
+        utf8cpp::utf8cpp
 )
 
 # Core header files used in PCH file
