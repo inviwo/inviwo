@@ -69,8 +69,8 @@
 #include <glm/mat4x4.hpp>                // for operator*, mat
 #include <glm/vec3.hpp>                  // for vec<>::(anonymous)
 #include <glm/vec4.hpp>                  // for operator*, operator+
-#include <utf8cpp/utf8/checked.h>                // for iterator
-#include <utf8cpp/utf8/core.h>                   // for find_invalid
+#include <utf8cpp/utf8/checked.h>        // for iterator
+#include <utf8cpp/utf8/core.h>           // for find_invalid
 
 #include <fmt/std.h>
 
