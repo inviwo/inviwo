@@ -62,11 +62,15 @@ void exposePropertyOwner(pybind11::module& m) {
         .def(
             "__setattr__",
             [](py::object po, py::object key, py::object value) {
-                const auto skey = py::str(key).cast<std::string>();
-                auto owner = po.cast<PropertyOwner*>();
-                if (owner->getPropertyByIdentifier(skey)) {
+                const auto isProperty = [&]() {
+                    auto pyProperty =
+                        py::module_::import("inviwopy").attr("properties").attr("Property");
+                    return py::isinstance(po.attr(key), pyProperty);
+                };
+
+                const auto path = [](const PropertyOwner* owner) {
                     std::string path;
-                    const auto traverse = [&](auto& self, PropertyOwner* owner) -> void {
+                    const auto traverse = [&](auto& self, const PropertyOwner* owner) -> void {
                         if (owner) {
                             self(self, owner->getOwner());
                             path.append(owner->getIdentifier());
@@ -75,17 +79,28 @@ void exposePropertyOwner(pybind11::module& m) {
                     };
                     traverse(traverse, owner->getOwner());
                     path.append(owner->getIdentifier());
+                    return path;
+                };
 
-                    throw py::attribute_error{fmt::format(
-                        "The key '{0}' is a registered property of '{1}'.\nTo rebind the member "
-                        "unregister (remove) the property from '{1}' first.\n"
-                        "If you were trying to set the 'value' of the '{0}' property, you should "
-                        "assign to '{0}.value' instead.\n"
-                        "See help({0}) for more details",
-                        skey, path)};
+                auto builtins = py::module_::import("builtins");
+                auto type = builtins.attr("type");
+
+                const auto skey = py::str(key).cast<std::string>();
+                const auto owner = po.cast<PropertyOwner*>();
+                if (auto prop = owner->getPropertyByIdentifier(skey)) {
+                    if (isProperty()) {
+                        throw py::attribute_error{fmt::format(
+                            "The member '{0}' is a registered Property of type '{3}',\n"
+                            "in PropertyOwner '{1}' of type '{2}'.\n"
+                            "To rebind the member unregister (remove) the property from "
+                            "'{1}' first.\nIf you were trying to set the 'value' of the '{0}' "
+                            "property, you should assign to '{0}.value' instead.\nSee help({0}) "
+                            "for more details",
+                            skey, path(owner), type(po).attr("__name__").cast<std::string>(),
+                            prop->getClassIdentifier())};
+                    }
                 }
 
-                auto builtins = py::module::import("builtins");
                 auto object = builtins.attr("object");
                 object.attr("__setattr__")(po, key, value);
             },

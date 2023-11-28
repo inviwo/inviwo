@@ -39,9 +39,9 @@ def ensureDirectory(dir):
 def update():
     try:
         from inviwopy import qt
-        qt.update()
-    except:
-        pass
+    except Exception:
+        return
+    qt.update()
 
 
 def getCanvases():
