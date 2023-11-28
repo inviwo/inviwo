@@ -65,24 +65,30 @@ void exposePropertyOwner(pybind11::module& m) {
                 const auto skey = py::str(key).cast<std::string>();
                 auto owner = po.cast<PropertyOwner*>();
                 if (owner->getPropertyByIdentifier(skey)) {
-                    std::string path;
-                    const auto traverse = [&](auto& self, PropertyOwner* owner) -> void {
-                        if (owner) {
-                            self(self, owner->getOwner());
-                            path.append(owner->getIdentifier());
-                            path.push_back('.');
-                        }
-                    };
-                    traverse(traverse, owner->getOwner());
-                    path.append(owner->getIdentifier());
+                    auto pyProperty =
+                        py::module_::import("inviwopy").attr("properties").attr("Property");
+                    if (py::isinstance(po.attr(key), pyProperty)) {
+                        std::string path;
+                        const auto traverse = [&](auto& self, PropertyOwner* owner) -> void {
+                            if (owner) {
+                                self(self, owner->getOwner());
+                                path.append(owner->getIdentifier());
+                                path.push_back('.');
+                            }
+                        };
+                        traverse(traverse, owner->getOwner());
+                        path.append(owner->getIdentifier());
 
-                    throw py::attribute_error{fmt::format(
-                        "The key '{0}' is a registered property of '{1}'.\nTo rebind the member "
-                        "unregister (remove) the property from '{1}' first.\n"
-                        "If you were trying to set the 'value' of the '{0}' property, you should "
-                        "assign to '{0}.value' instead.\n"
-                        "See help({0}) for more details",
-                        skey, path)};
+                        throw py::attribute_error{
+                            fmt::format("The key '{0}' is a registered property of '{1}'.\nTo "
+                                        "rebind the member "
+                                        "unregister (remove) the property from '{1}' first.\n"
+                                        "If you were trying to set the 'value' of the '{0}' "
+                                        "property, you should "
+                                        "assign to '{0}.value' instead.\n"
+                                        "See help({0}) for more details",
+                                        skey, path)};
+                    }
                 }
 
                 auto builtins = py::module::import("builtins");
