@@ -59,16 +59,15 @@ if(NOT IVW_USE_EXTERNAL_FREETYPE)
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/freetype/freetype/docs/FTL.TXT
     )
     ivw_default_install_targets(freetype)
-    ivw_make_package(freetype freetype)
 else()
-    find_package(freetype CONFIG REQUIRED)
+    find_package(Freetype REQUIRED)
     ivw_vcpkg_install(freetype MODULE FontRendering)
 endif()
 
 find_package(utf8cpp CONFIG REQUIRED)
 target_link_libraries(inviwo-module-fontrendering 
     PUBLIC 
-        freetype
+        Freetype::Freetype
     PRIVATE
         utf8cpp::utf8cpp
 )
