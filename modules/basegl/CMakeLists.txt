@@ -62,6 +62,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/meshrenderprocessorgl.h
     include/modules/basegl/processors/multichannelraycaster.h
     include/modules/basegl/processors/pointrenderer.h
+    include/modules/basegl/processors/raycasting/atlasboundaryraycaster.h
     include/modules/basegl/processors/raycasting/atlasvolumeraycaster.h
     include/modules/basegl/processors/raycasting/multichannelvolumeraycaster.h
     include/modules/basegl/processors/raycasting/sphericalvolumeraycaster.h
@@ -180,6 +181,7 @@ set(SOURCE_FILES
     src/processors/meshrenderprocessorgl.cpp
     src/processors/multichannelraycaster.cpp
     src/processors/pointrenderer.cpp
+    src/processors/raycasting/atlasboundaryraycaster.cpp
     src/processors/raycasting/atlasvolumeraycaster.cpp
     src/processors/raycasting/multichannelvolumeraycaster.cpp
     src/processors/raycasting/sphericalvolumeraycaster.cpp

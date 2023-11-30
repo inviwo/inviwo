@@ -42,17 +42,24 @@
 
 namespace inviwo {
 
+class BrushingAndLinkingInport;
+class Volume;
+
 /**
  * Takes an atlas volume from the atlascomponent in range [0, 3] of intergral type.
  * Uses brushing and linking to show filtered, selected and highlighted segments.
  */
 class IVW_MODULE_BASEGL_API SegmentSurfaceComponent : public ShaderComponent {
 public:
+    enum class BrushingIndex { None = 0, Selected, Filtered, Highlighted };
+
     SegmentSurfaceComponent(VolumeInport& atlas);
     virtual std::string_view getName() const override;
     virtual void process(Shader& shader, TextureUnitContainer&) override;
     virtual std::vector<Property*> getProperties() override;
     virtual std::vector<Segment> getSegments() override;
+
+    void updateBrushingVolume(const BrushingAndLinkingInport& brushing);
 
 private:
     std::string name_;
@@ -64,6 +71,7 @@ private:
     SamplerObject linearSampler_;
     FloatProperty textureSpaceGradientSpacingScale_;
     VolumeInport& atlas_;
+    std::shared_ptr<Volume> brushingVolume_;
 };
 
 }  // namespace inviwo

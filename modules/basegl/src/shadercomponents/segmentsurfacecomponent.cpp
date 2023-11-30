@@ -31,6 +31,9 @@
 
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureunit.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/volume/algorithm/volumemap.h>
 
 namespace inviwo {
 
@@ -97,7 +100,6 @@ constexpr std::string_view first = util::trim(R"(
 uint boundaryValue = 0;
 uint prevBoundaryValue = 0;
 )");
-
 constexpr std::string_view loop = util::trim(R"(
 prevBoundaryValue = boundaryValue;
 boundaryValue = uint(atlasSegment*3.0f + 0.5f);
@@ -142,4 +144,54 @@ auto SegmentSurfaceComponent::getSegments() -> std::vector<Segment> {
             {std::string(first), placeholder::first, 900},
             {std::string(loop), placeholder::loop, 900}};
 }
+
+void SegmentSurfaceComponent::updateBrushingVolume(const BrushingAndLinkingInport& brushing) {
+    if (!atlas_.hasData()) {
+        brushingVolume_ = nullptr;
+        return;
+    }
+
+    if (!brushingVolume_ || atlas_.isChanged()) {
+        brushingVolume_ = std::make_shared<Volume>(*atlas_.getData(), noData);
+
+        brushingVolume_->setSwizzleMask(swizzlemasks::luminance);
+        brushingVolume_->dataMap_.dataRange = dvec2{0.0, 3.0};
+        brushingVolume_->dataMap_.valueRange = brushingVolume_->dataMap_.dataRange;
+    }
+
+    if (brushing.getFilteredIndices().cardinality() > 0 ||
+        brushing.getHighlightedIndices().cardinality() > 0 ||
+        brushing.getSelectedIndices().cardinality() > 0) {
+
+        BitSet filtered{brushing.getFilteredIndices()};
+        BitSet highlighted{brushing.getHighlightedIndices() - filtered};
+        BitSet selected{brushing.getSelectedIndices() -
+                        (filtered | brushing.getHighlightedIndices())};
+
+        std::vector<int> sourceIndices{selected.begin(), selected.end()};
+        sourceIndices.insert(sourceIndices.end(), filtered.begin(), filtered.end());
+        sourceIndices.insert(sourceIndices.end(), highlighted.begin(), highlighted.end());
+
+        std::vector<int> destIndices(selected.cardinality(),
+                                     static_cast<int>(BrushingIndex::Selected));
+        destIndices.insert(destIndices.end(), filtered.cardinality(),
+                           static_cast<int>(BrushingIndex::Filtered));
+        destIndices.insert(destIndices.end(), highlighted.cardinality(),
+                           static_cast<int>(BrushingIndex::Highlighted));
+
+        util::remap(*brushingVolume_, sourceIndices, destIndices,
+                    static_cast<int>(BrushingIndex::None), true);
+    } else {
+        // no brushing, fill volume with 0s
+        auto volRep = brushingVolume_->getEditableRepresentation<VolumeRAM>();
+        volRep->dispatch<void, dispatching::filter::Scalars>([&](auto volram) {
+            using ValueType = util::PrecisionValueType<decltype(volram)>;
+            ValueType* dataPtr = volram->getDataTyped();
+            const auto& dim = volram->getDimensions();
+            std::fill(dataPtr, dataPtr + glm::compMul(dim),
+                      static_cast<ValueType>(static_cast<int>(BrushingIndex::None)));
+        });
+    }
+}
+
 }  // namespace inviwo
