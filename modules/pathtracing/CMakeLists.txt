@@ -21,6 +21,7 @@ set(SHADER_FILES
     glsl/transmittancemethods.glsl #should really be called renderingmethods, its not strictly for transmittance
     glsl/renderingmethods.glsl
     glsl/bidirectionalvolumepathtracer.comp
+    glsl/util.glsl
     glsl/simpleshift.comp
 )
 ivw_group("Shader Files" ${SHADER_FILES})

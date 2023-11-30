@@ -132,7 +132,6 @@ uvec4 pcg4d(uvec4 v) {
     return v;
 }
 
-// use floatBitsToUint to preseve float bit
 float random_1dto1d(uint v) {
     return uintToFloatbyDiv(pcg(v));
 }
@@ -140,7 +139,6 @@ float random_1dto1d(uint v) {
 float random_1dto1d_f(float v) {
     return uintToFloatbyDiv(pcg(floatBitsToUint(v)));
 }
-
 
 vec3 random_1dto3d (uint v) {
     uint hash = pcg(v);
