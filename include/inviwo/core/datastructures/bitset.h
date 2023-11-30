@@ -288,7 +288,7 @@ public:
      */
     size_t andNotCardinality(const BitSet& b) const;
     /**
-     * Compute the cardinality of the symmetric differencebetween this bitset and \p b
+     * Compute the cardinality of the symmetric difference between this bitset and \p b
      */
     size_t xorCardinality(const BitSet& b) const;
 
