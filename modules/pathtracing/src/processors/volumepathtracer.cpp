@@ -70,8 +70,7 @@ VolumePathTracer::VolumePathTracer()
     , volumePort_("Volume")
     , entryPort_("entry")
     , exitPort_("exit")
-    , lights_("LightSources")
-    //, minMaxOpacity_{"VolumeMinMaxOpacity"}
+    //, lights_("LightSources")
     , outport_("outport")
     , shader_({{ShaderType::Compute, "bidirectionalvolumepathtracer.comp"}}) 
     , channel_("channel", "Render Channel", {{"Channel 1", "Channel 1", 0}}, 0)
@@ -80,35 +79,26 @@ VolumePathTracer::VolumePathTracer()
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , positionIndicator_("positionindicator", "Position Indicator")
     , light_("light", "Light", &camera_)
-    , lightSources_(sizeof(LightSource), DataUInt8::get(), BufferUsage::Static, BufferTarget::Data, nullptr)
+    //, lightSources_(sizeof(LightSource), DataUInt8::get(), BufferUsage::Static, BufferTarget::Data, nullptr)
     , invalidateRendering_("iterate", "Invalidate rendering")
     , enableProgressiveRefinement_("enableRefinement", "Enable progressive refinement", false)
     , progressiveTimer_(Timer::Milliseconds(100),
                         std::bind(&VolumePathTracer::onTimerEvent, this))
     
     {
-        //TODO: Do we need a radiance buffer? Why cant we read from output if weve written to it?
-        //  get iterative rendering to work
+
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
-    addPort(lights_, "LightPortGroup");
-    //addPort(minMaxOpacity_);
-    //minMaxOpacity_.setOptional(true);
+    
+    //addPort(lights_, "LightPortGroup");
 
     volumePort_.onChange([this]() { invalidateProgressiveRendering(); });
     entryPort_.onChange([this]() { invalidateProgressiveRendering(); });
     exitPort_.onChange([this]() { invalidateProgressiveRendering(); });
-    lights_.onChange([this]() { updateLightSources(); });
-    lights_.isOptional();
-    /*
-    minMaxOpacity_.onConnect([this]() { partitionedTransmittance_.setVisible(true); });
-    minMaxOpacity_.onDisconnect([this]() {
-        partitionedTransmittance_.set(false);
-        partitionedTransmittance_.setVisible(false);
-    }
-    */
+    //lights_.onChange([this]() { updateLightSources(); });
+    //lights_.isOptional();
     
     channel_.setSerializationMode(PropertySerializationMode::All);
     
@@ -120,7 +110,6 @@ VolumePathTracer::VolumePathTracer()
     updateTFHistSel();
     channel_.onChange(updateTFHistSel);
     
-    // from volumeraycasetr.cpp TODO: What does this mean exactly?
     volumePort_.onChange([this]() {
         if (volumePort_.hasData()) {
             size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
@@ -137,7 +126,7 @@ VolumePathTracer::VolumePathTracer()
         }
     });
 
-    // from volumeraycasetr.cpp TODO: What does this mean exactly?
+
     raycasting_.gradientComputation_.onChange([this]() {
         if (channel_.size() == 4) {
             if (raycasting_.gradientComputation_.get() ==
@@ -152,10 +141,10 @@ VolumePathTracer::VolumePathTracer()
 
     time_start = std::chrono::high_resolution_clock::now();
                            
-    //lightSources_ = new BufferGL(sizeof(LightSource) /*/ sizeof(unsigned char)*/, // why divide by sizeof(unsigned char)
+    //lightSources_ = new BufferGL(sizeof(LightSource), sizeof(unsigned char),
     //                             DataUInt8::get(), BufferTarget::Data, BufferUsage::Static, nullptr);
     
-    nLightSources_ = 1; // not 0? Geuss we always need a default?
+    //nLightSources_ = 1;
     addProperty(channel_);
     addProperty(raycasting_);
     addProperty(transferFunction_);
@@ -171,7 +160,6 @@ VolumePathTracer::VolumePathTracer()
     addProperty(enableProgressiveRefinement_);
     enableProgressiveRefinement_.onChange([this]() { progressiveRefinementChanged(); });
     
-    // What can we set up before process
     shader_.onReload([this]() { 
                         invalidate(InvalidationLevel::InvalidOutput); 
                         invalidateProgressiveRendering(); 
@@ -179,9 +167,6 @@ VolumePathTracer::VolumePathTracer()
     progressiveRefinementChanged();
 }
 
-// TODO ongoing: Copy volumeraycaster and daniels bidirVolumePathTracer. Also check ligting raycaster
-// TODO: Send in lightsources (annoying as of now, see updateLightSources)
-// TODO: RNG to compute shader; init before dispatch then extract on gid?
 void VolumePathTracer::process() {
 
     shader_.activate();
@@ -189,10 +174,7 @@ void VolumePathTracer::process() {
     time_now = std::chrono::high_resolution_clock::now();
     using FpMilliseconds = 
         std::chrono::duration<float, std::chrono::milliseconds::period>;
-    /*
-    static_assert(std::chrono::treat_as_floating_point<FpMilliseconds::rep>::value, 
-                  "Rep required to be floating point");
-    */
+
     float t_ms = FpMilliseconds(time_now - time_start).count();
     
     if (iteration_ == 0) {
@@ -204,7 +186,6 @@ void VolumePathTracer::process() {
     
 
     TextureUnitContainer units;
-    //utilgl::bindAndSetUniforms(shader_, units, lights_);
     /* utilgl::bindAndSetUniforms(shader_, units, outport_, ImageType::ColorDepthPicking); */{
         TextureUnit unit1, unit2, unit3;
         auto image = outport_.getEditableData();
@@ -223,8 +204,6 @@ void VolumePathTracer::process() {
         units.push_back(std::move(unit2));
         units.push_back(std::move(unit3));
 
-        //std::cout << "texunit1 is " << unit1.getUnitNumber() << " and iteration is " << iteration_ << std::endl;
-
         StrBuffer buff;
         utilgl::setShaderUniforms(shader_, *image, buff.replace("{}Parameters", outport_.getIdentifier()));
     }
@@ -237,30 +216,23 @@ void VolumePathTracer::process() {
     shader_.setUniform("iteration", iteration_);
     
     utilgl::setUniforms(shader_, camera_, raycasting_, positionIndicator_, light_, 
-                        channel_/*, transferFunction_*/);
+                        channel_);
 
 
     glDispatchCompute(outport_.getDimensions().x/16, outport_.getDimensions().y/16, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     shader_.deactivate();
 
-    // I would love for this simple line to force a redraw 'every frame' but it doesnt sadly.
-    
-    //this->invalidate(InvalidationLevel::InvalidOutput);
-    /*
-    if(iteration_ > 100) {
-        enableProgressiveRefinement_.set(false);
-    }
-    */
-    ++iteration_;
-    
+    ++iteration_;    
 }
 
 void VolumePathTracer::updateLightSources() {
+    /*
+    
     if(!lights_.isReady()) { 
         return; 
     }
-    /*
+    
     std::vector<std::shared_ptr<LightSource>> lightsToBuffer;
     auto light = lights_.begin();
     auto light_end = lights_.end();
@@ -276,9 +248,11 @@ void VolumePathTracer::updateLightSources() {
     if(lightsToBuffer.size() > 0) {
         lightSources_.upload(&lightsToBuffer[0], sizeof(LightSource)*lightsToBuffer.size());
     }
-    */
+    
     nLightSources_ = 1;
     //lightSources_.upload();
+
+    */
 }
 
 // Progressive refinement
@@ -297,6 +271,5 @@ void VolumePathTracer::progressiveRefinementChanged() {
 }
 
 void VolumePathTracer::onTimerEvent() { invalidateRendering_.pressButton(); }
-
 
 }  // namespace inviwo
