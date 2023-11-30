@@ -191,17 +191,30 @@ std::string BrushingAndLinkingInport::getClassIdentifier() const {
 Document BrushingAndLinkingInport::getInfo() const {
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
+
     Document doc;
-    doc.append("b", "Brushing & Linking Inport", {{"style", "color:white;"}});
+    doc.append("b", "Brushing & Linking Inport", {{"class", "name"}});
 
     if (!help_.empty()) {
-        doc.append(help_);
+        doc.append("div", "", {{"class", "help"}}).append(help_);
     }
 
     utildoc::TableBuilder tb(doc.handle(), P::end());
+    tb(H("Identifier"), getIdentifier());
+    tb(H("Class"), getClassIdentifier());
+    tb(H("Ready"), isReady());
+    tb(H("Connected"), isConnected());
+
+    tb(H("Connections"),
+       fmt::format("{} ({})", getNumberOfConnections(), getMaxNumberOfConnections()));
+    tb(H("Optional"), isOptional());
+
+    doc.append("p").append("b", "Brushing & Linking", {{"style", "color:white;"}});
+    utildoc::TableBuilder tb2(doc.handle(), P::end());
+
     for (auto& [action, targets] : manager_.getTargets()) {
         for (auto& target : targets) {
-            tb(H(action), target, manager_.getIndices(action, target).cardinality());
+            tb2(H(action), target, manager_.getIndices(action, target).cardinality());
         }
     }
     return doc;
@@ -267,17 +280,27 @@ void BrushingAndLinkingOutport::setValid() {
 Document BrushingAndLinkingOutport::getInfo() const {
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
+
     Document doc;
-    doc.append("b", "Brushing & Linking Outport", {{"style", "color:white;"}});
+    doc.append("b", "Brushing & Linking Outport", {{"class", "name"}});
 
     if (!help_.empty()) {
-        doc.append(help_);
+        doc.append("div", "", {{"class", "help"}}).append(help_);
     }
 
     utildoc::TableBuilder tb(doc.handle(), P::end());
+    tb(H("Identifier"), getIdentifier());
+    tb(H("Class"), getClassIdentifier());
+    tb(H("Ready"), isReady());
+    tb(H("Connected"), isConnected());
+    tb(H("Connections"), connectedInports_.size());
+
+    doc.append("p").append("b", "Brushing & Linking", {{"style", "color:white;"}});
+    utildoc::TableBuilder tb2(doc.handle(), P::end());
+
     for (auto& [action, targets] : manager_.getTargets()) {
         for (auto& target : targets) {
-            tb(H(action), target, manager_.getIndices(action, target).cardinality());
+            tb2(H(action), target, manager_.getIndices(action, target).cardinality());
         }
     }
     return doc;
