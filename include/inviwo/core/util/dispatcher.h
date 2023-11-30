@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <inviwo/core/util/raiiutils.h>
+
 #include <vector>
 #include <memory>
 #include <functional>
@@ -52,6 +54,8 @@ public:
 
     template <typename T>
     std::shared_ptr<std::function<C>> add(T&& callback) {
+        removeExpiredCallbacks();
+
         auto shared = std::make_shared<std::function<C>>(std::forward<T>(callback));
         callbacks.push_back(shared);
         return shared;
@@ -59,30 +63,32 @@ public:
 
     template <typename... A>
     void invoke(A&&... args) {
-        concurrent_dispatcher_count++;
+        ++concurrent_dispatcher_count;
+        util::OnScopeExit decreaseCount{[this]() {
+            --concurrent_dispatcher_count;
+            removeExpiredCallbacks();
+        }};
 
         // Go over all callbacks and dispatch on those that are still available.
         // don't use iterators here, they might be invalidated.
-        size_t size = callbacks.size();
+        const size_t size = callbacks.size();
         for (size_t i = 0; i < size; ++i) {
             if (auto callback = callbacks[i].lock()) {
                 (*callback)(std::forward<A>(args)...);
             }
         }
-
-        concurrent_dispatcher_count--;
-
-        // Remove all callbacks that are gone, only if we are not dispatching.
-        if (0 == concurrent_dispatcher_count) {
-            callbacks.erase(std::remove_if(callbacks.begin(), callbacks.end(),
-                                           [](std::weak_ptr<std::function<C>> callback) {
-                                               return callback.expired();
-                                           }),
-                            callbacks.end());
-        }
     }
 
 private:
+    void removeExpiredCallbacks() {
+        // Remove all callbacks that are gone, only if we are not dispatching.
+        if (concurrent_dispatcher_count == 0) {
+            std::erase_if(callbacks, [](const std::weak_ptr<std::function<C>>& callback) {
+                return callback.expired();
+            });
+        }
+    }
+
     std::vector<std::weak_ptr<std::function<C>>> callbacks;
     int32_t concurrent_dispatcher_count = 0;
 };
