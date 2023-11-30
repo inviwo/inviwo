@@ -50,7 +50,7 @@ class TextureUnitContainer;
  */
 class IVW_MODULE_BASEGL_API BackgroundComponent : public ShaderComponent {
 public:
-    BackgroundComponent(Processor& processor);
+    BackgroundComponent(Processor& processor, Document help = {});
 
     virtual std::string_view getName() const override;
 

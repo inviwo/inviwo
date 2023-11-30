@@ -52,8 +52,8 @@ namespace inviwo {
 class Inport;
 class TextureUnitContainer;
 
-EntryExitComponent::EntryExitComponent()
-    : ShaderComponent(), entryPort_("entry"), exitPort_("exit") {}
+EntryExitComponent::EntryExitComponent(Document entryHelp, Document exitHelp)
+    : ShaderComponent(), entryPort_("entry", entryHelp), exitPort_("exit", exitHelp) {}
 
 std::string_view EntryExitComponent::getName() const { return "entryexit"; }
 

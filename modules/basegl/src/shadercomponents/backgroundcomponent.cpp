@@ -48,8 +48,8 @@ class Inport;
 class Shader;
 class TextureUnitContainer;
 
-BackgroundComponent::BackgroundComponent(Processor& processor)
-    : ShaderComponent(), background_("bg") {
+BackgroundComponent::BackgroundComponent(Processor& processor, Document help)
+    : ShaderComponent(), background_("bg", help) {
     background_.setOptional(true);
 
     background_.onConnect([&]() { processor.invalidate(InvalidationLevel::InvalidResources); });

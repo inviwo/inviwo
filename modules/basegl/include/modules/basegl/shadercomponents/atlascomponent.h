@@ -79,6 +79,7 @@ public:
     void onPickingEvent(PickingEvent* e);
 
     VolumeInport& getAtlasInport() { return atlas_; }
+    BrushingAndLinkingInport& getBrushingInport() { return brushing_; }
 
 private:
     enum class ColoringGroup { All, Selected, Unselected, Filtered, Unfiltered, Zero };

@@ -53,7 +53,7 @@ class TextureUnitContainer;
  */
 class IVW_MODULE_BASEGL_API EntryExitComponent : public ShaderComponent {
 public:
-    EntryExitComponent();
+    EntryExitComponent(Document entryHelp = {}, Document exitHelp = {});
 
     virtual std::string_view getName() const override;
 
