@@ -47,10 +47,10 @@
 #include <inviwo/core/datastructures/light/baselightsource.h>   // for Lights
 #include <inviwo/core/ports/bufferport.h>                       // for Lights
 #include <inviwo/core/properties/simplelightingproperty.h>      // for SimpleLightingProperty
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/util/timer.h>
+#include <inviwo/core/properties/buttonproperty.h>              // for IterativeRendering
+#include <inviwo/core/util/timer.h>                             // for IterativeRendering
 
-// outsider of include/inviwo
+// outside of include/inviwo
 #include <../modules/opengl/include/modules/opengl/volume/volumegl.h>
 #include <../modules/opengl/include/modules/opengl/volume/volumeutils.h>
 #include <../modules/opengl/include/modules/opengl/shader/shader.h>
@@ -73,36 +73,25 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-
-    // What helper functions are used in CL version? Do we need equivalances?
-    
-    //void dispatchPathTracerComputeShader(LayerGL* entryGL, LayerGL* exitGL, LayerGL* outportGL); //Needed args; dimension of workgroups
-
-    void numSamplesChanged(); // Creates new samples if changed
-    void updateLightSources(); // Updates light sources 
-    void invalidateProgressiveRendering(); // Restarts progressive render
-    void evaluateProgressiveRefinement(); // Invalidates processor, and you know what that means, its a message.
-    void progressiveRefinementChanged(); // does something with the progressivetimer.
-    //void phaseFunctionChanged(); // related to advanced material
-    //void buildKernel(); // OCL shit
-    //void kernelArgChanged(); // Calls invalidateRendering
-    void onTimerEvent(); // Button to call invalidateRendering (I think)
+    void numSamplesChanged(); 
+    void updateLightSources();  
+    void invalidateProgressiveRendering(); 
+    void evaluateProgressiveRefinement(); 
+    void progressiveRefinementChanged(); 
+    //void phaseFunctionChanged(); 
+    void onTimerEvent(); 
 
 private:
     // Ports
     VolumeInport volumePort_;
-    ImageInport entryPort_; // Entry and Exit determine the direction of each sample.
-    ImageInport exitPort_; // Imagine worldcoords - screenspace in world coords 
+    ImageInport entryPort_;
+    ImageInport exitPort_; 
     
-    MultiDataInport<LightSource> lights_;
-
-    //OpacityMinMaxUniformGrid3DInport minMaxOpacity_; // Cant find module. Is it even relevant?
+    //MultiDataInport<LightSource> lights_;
 
     ImageOutport outport_;
     Shader shader_;
 
-    // Properties
-    
     OptionPropertyInt channel_;
     RaycastingProperty raycasting_;
     TransferFunctionProperty transferFunction_;
@@ -111,17 +100,14 @@ private:
 
     VolumeIndicatorProperty positionIndicator_;
 
-    
-    
-    // What internal data types would I need?
     SimpleLightingProperty light_;
-    BufferGL lightSources_;
-    int nLightSources_ = 1; // Number of light sources
+    //BufferGL lightSources_;
+    //int nLightSources_ = 1; // Number of light sources
 
     std::chrono::time_point<std::chrono::high_resolution_clock> time_start;
     std::chrono::time_point<std::chrono::high_resolution_clock> time_now;
 
-    Buffer<glm::uvec2> randomState_; //arguably not needed
+    
 
     // progressiverefinement
     ButtonProperty invalidateRendering_;
