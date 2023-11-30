@@ -38,7 +38,7 @@ uniform CameraParameters camera;
 uniform VolumeIndicatorParameters positionindicator;
 uniform RaycastingParameters raycaster;
 uniform LightParameters light; //lighting
-uniform sampler2D transferFunction; // cant get transferFunction up to a compute shader?
+uniform sampler2D transferFunction; 
 
 uniform int channel;
 
@@ -62,7 +62,7 @@ vec3 calcCameraDir(in vec3 entryPoint, in vec3 exitPoint, in mat4 textureToWorld
         (textureToWorld * vec4(entryPoint, 1.0) - textureToWorld * vec4(exitPoint, 1.0)).xyz);
 }
 
-vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth,
+vec4 Render(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth, float rayDepth,
     inout float depth, RaycastingParameters rayCastParam, VolumeParameters volParam, vec4 bgColor, float extinctionUpper) {
 
     vec4 result = vec4(0.0);
@@ -90,20 +90,14 @@ vec4 simpleRender(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, flo
     if (meanfreepath <= rayLength) {
         samplePosition = entryPoint + meanfreepath * rayDir;
         
-        // Function is broken for testing at the moment.
-        
-        result.rgb = RMVolumeRender_SingleBounceLight(T, meanfreepath, volume, volumeParameters, transferFunction, 
+        result.rgb = RMVolumeRender_SingleScatter_SingleLight(meanfreepath, volume, volumeParameters, transferFunction, 
             samplePosition, cameraDir, light, hashSeed, channel, extinctionUpper);
 
         result.a = 1f - T;
-
         #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
     }
-    //result.rgb = result.rgb + T*bgColor.xyz;
-    
-    // Replace -1 with raydepth
-    depth = mix(calculateDepthValue(camera, -1 / rayLength, entryDepth, exitDepth),
-                depth, -1 == -1.0);
+    depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryDepth, exitDepth),
+                depth, rayDepth == -1.0);
     
     return result;
 }
@@ -199,7 +193,7 @@ void main(){
     vec4 result = vec4(0.0);   // The accumulated color along the ray;
     vec4 picking = vec4(0.0);  // The picking color of the ray
                                // The ray depth value [0, ray length], -1 means "no" depth.
-                               // Uses the same space as rayPosition. Usually used to track
+    float rayDepth = -1.0;     // Uses the same space as rayPosition. Usually used to track
                                // the depth of the "first" hit in DVR.
     float depth = 1.0;         // The image depth, from far to near [0, 1].
                                // Will be overridden by rayDepth if != -1 and then
@@ -225,14 +219,14 @@ void main(){
     }
 
     float extinctionUpper = 1.0f;
-    result = simpleRender(outportParameters, entryPoint, exitPoint, entryPointDepth, exitPointDepth,
+    result = Render(outportParameters, entryPoint, exitPoint, entryPointDepth, exitPointDepth, rayDepth,
             depth, raycaster, volumeParameters, bgColor, extinctionUpper);
 
     vec4 resultPrev = imageLoad(outportColor, storePos);
 
     float w = 1.0f - 1.0f/float(iteration + 1);
-
     vec4 finalresult = mix(result, resultPrev, w);
+
     imageStore(outportColor, storePos, finalresult);     
     imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
     imageStore(outportPicking, storePos, picking);
