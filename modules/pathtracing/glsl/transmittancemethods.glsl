@@ -10,7 +10,7 @@ float tfToExtinction(float s_max) {
 
 // raystart, raydir and raylength ought to be in data coordinate
 float WoodcockTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd, inout uint hashSeed, 
-    sampler3D volume, VolumeParameters volumeParameters, sampler2D transferFunction, float sigma_upperbound, out float sigma) {
+    sampler3D volume, VolumeParameters volumeParameters, sampler2D transferFunction, float sigma_upperbound) {
     
     float invExtinction = 1.f/tfToExtinction(sigma_upperbound);
     float invSigmaUpperbound = 1.f/sigma_upperbound;

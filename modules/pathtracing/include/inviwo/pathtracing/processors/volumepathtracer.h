@@ -87,11 +87,10 @@ private:
     ImageInport entryPort_;
     ImageInport exitPort_; 
     
-    //MultiDataInport<LightSource> lights_;
-
     ImageOutport outport_;
-    Shader shader_;
 
+    // Properties and Internals
+    Shader shader_;
     OptionPropertyInt channel_;
     RaycastingProperty raycasting_;
     TransferFunctionProperty transferFunction_;
@@ -101,15 +100,10 @@ private:
     VolumeIndicatorProperty positionIndicator_;
 
     SimpleLightingProperty light_;
-    //BufferGL lightSources_;
-    //int nLightSources_ = 1; // Number of light sources
-
     std::chrono::time_point<std::chrono::high_resolution_clock> time_start;
     std::chrono::time_point<std::chrono::high_resolution_clock> time_now;
 
-    
-
-    // progressiverefinement
+    // Progressive Refinement
     ButtonProperty invalidateRendering_;
     BoolProperty enableProgressiveRefinement_;
 
