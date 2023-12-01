@@ -132,6 +132,7 @@ VolumePathTracer::VolumePathTracer()
         }
     });
 
+    // Used for determining uniform float t_ms
     time_start = std::chrono::high_resolution_clock::now();
     
     addProperty(channel_);
@@ -160,10 +161,10 @@ void VolumePathTracer::process() {
 
     shader_.activate();
     
+    // Partial seeding for random values
     time_now = std::chrono::high_resolution_clock::now();
     using FpMilliseconds = 
         std::chrono::duration<float, std::chrono::milliseconds::period>;
-
     float t_ms = FpMilliseconds(time_now - time_start).count();
     
     if (iteration_ == 0) {
@@ -175,7 +176,10 @@ void VolumePathTracer::process() {
     
 
     TextureUnitContainer units;
-    /* utilgl::bindAndSetUniforms(shader_, units, outport_, ImageType::ColorDepthPicking); */{
+    /* 
+    Stand in for: 
+    utilgl::bindAndSetUniforms(shader_, units, outport_, ImageType::ColorDepthPicking);
+    */{
         TextureUnit unit1, unit2, unit3;
         auto image = outport_.getEditableData();
         auto colorLayerGL = image->getColorLayer()->getEditableRepresentation<LayerGL>();
@@ -207,7 +211,7 @@ void VolumePathTracer::process() {
     utilgl::setUniforms(shader_, camera_, raycasting_, positionIndicator_, light_, 
                         channel_);
 
-
+    // Start render
     glDispatchCompute(outport_.getDimensions().x/16, outport_.getDimensions().y/16, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     shader_.deactivate();
