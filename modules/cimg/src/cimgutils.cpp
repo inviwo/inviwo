@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#pragma GCC diagnostic push
 #if not defined(__clang__) and defined(__GNUC__)
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation"
 #endif
 
@@ -63,7 +63,10 @@
 #include <utility>        // for move
 
 #include <fmt/std.h>
+#if not defined(__clang__) and defined(__GNUC__)
 #pragma GCC diagnostic pop
+#endif
+
 
 #include <warn/push>
 #include <warn/ignore/all>
