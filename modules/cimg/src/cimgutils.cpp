@@ -67,7 +67,6 @@
 #pragma GCC diagnostic pop
 #endif
 
-
 #include <warn/push>
 #include <warn/ignore/all>
 #if defined(__clang__)
