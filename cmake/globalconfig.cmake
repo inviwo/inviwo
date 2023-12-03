@@ -207,17 +207,24 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif()
 
+# Runtime module loading
+option(IVW_CFG_RUNTIME_MODULE_LOADING 
+       "Load modules from dynamic libraries (dll/so) at application startup" OFF)
+
 if(UNIX AND NOT APPLE)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON) # Will add -fPIC under linux.
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed") # Only link to libs as needed.
 endif()
 
-# Runtime module loading
-option(IVW_CFG_RUNTIME_MODULE_LOADING 
-       "Load modules from dynamic libraries (dll/so) at application startup" OFF)
+if(APPLE AND NOT OpenMP_CXX_INCLUDE_DIR)
+    # give the sepecific openmp include path to avoid adding the global homebrew include path
+    # since this might contain other libraries that we do not want to use
+    # for example pybind11 
+    set(OpenMP_CXX_INCLUDE_DIR /opt/homebrew/opt/libomp/include)
+endif()
 
 # Check if OpenMP is available and set it to use, and include the dll in packs, except for MSVC
-find_package(OpenMP QUIET)
+find_package(OpenMP QUIET COMPONENTS CXX) 
 if(MSVC)
     option(IVW_ENABLE_OPENMP "Use OpenMP" OFF)
 else()

@@ -1,8 +1,14 @@
-name: Build Inviwo
+name: "Build Inviwo"
 
 on: 
   push:
   workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
 
 permissions:
   contents: write  # Enable vcpkg to write to the dependency graph
@@ -13,8 +19,12 @@ env:
   VCPKG_FEATURE_FLAGS: dependencygraph
   # QT_DEBUG_PLUGINS: 1                           # print qt plugin debug info
 
+# Information about the github runners can be found here
+# https://github.com/actions/runner-images
+
 jobs:
   build:
+    name: "Build"
     strategy:
       matrix:
         system: [windows, macos, linux]
@@ -130,16 +140,17 @@ jobs:
     timeout-minutes: 360
     
     steps:
-    - name: Chocolatey Install 
+    - name: "Chocolatey Install" 
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
         # Choco-Install is GH Actions wrappers around choco, which does retries
-        Choco-Install -PackageName doxygen.install 
-        Choco-Install -PackageName nsis
-        Choco-Install -PackageName tinytex
+        # https://github.com/actions/runner-images/blob/main/images/windows/scripts/helpers/ChocoHelpers.ps1
+        Install-ChocoPackage -PackageName doxygen.install 
+        Install-ChocoPackage -PackageName nsis
+        Install-ChocoPackage -PackageName tinytex
 
-    - name: Chocolatey Install paths
+    - name: "Chocolatey update paths"
       if: runner.os == 'Windows'
       shell: bash
       run: |
@@ -148,7 +159,7 @@ jobs:
         echo "/c/Program Files (x86)/NSIS" >> $GP
         echo "/c/tools/TinyTeX/bin/win32" >> $GP
 
-    - name: Brew Install
+    - name: "Brew Install"
       shell: bash
       if: runner.os == 'macOS'
       # xcode 14.3 is currently default.
@@ -156,7 +167,7 @@ jobs:
         brew install ninja pkg-config nasm
         sudo xcode-select --switch /Applications/Xcode_15.0.app/Contents/Developer
 
-    - name: Apt Install, switch to gcc-13
+    - name: "Apt Install, switch to gcc-13"
       shell: bash
       if: runner.os == 'Linux'
       run: |
@@ -167,30 +178,28 @@ jobs:
                                  --slave /usr/bin/g++ g++ /usr/bin/g++-13 \
                                  --slave /usr/bin/gcov gcov /usr/bin/gcov-12
         sudo update-alternatives --set gcc /usr/bin/gcc-13
-        
-    #- name: Setup tmate session
-    #  uses: mxschmitt/action-tmate@v3
-    #  timeout-minutes: 60
     
-    - name: Install Qt
+    - name: "Install Qt"
       uses: jurplel/install-qt-action@v3
       with:
-        version: 6.4.2
+        version: 6.6.0
         dir: ${{ github.workspace }}
 
-    - name: Setup Python
+    - name: "Setup Python"
       uses: actions/setup-python@v4
       with:
         python-version: '>=3.10'
         architecture: 'x64'
     
-    - name: Install Python Modules 
+    - name: "Install Python Modules" 
       shell: bash
       run: pip3 install numpy Sphinx sphinx-rtd-theme recommonmark
 
-    - uses: ilammy/msvc-dev-cmd@v1
+    - name: "Setup MSVC"
+      if: runner.os == 'Windows'
+      uses: ilammy/msvc-dev-cmd@v1
       
-    - name: Update VCPKG
+    - name: "VCPKG Update"
       shell: bash
       run: |
         echo $VCPKG_INSTALLATION_ROOT
@@ -198,22 +207,22 @@ jobs:
         git reset --hard
         git pull
     
-    # Cache built dependencies for faster subsequent builds
-    # https://learn.microsoft.com/en-us/vcpkg/users/binarycaching#gha
-    - uses: actions/github-script@v7
+    - name: "VCPKG Cache config"
+      # Cache built dependencies for faster subsequent builds
+      # https://learn.microsoft.com/en-us/vcpkg/users/binarycaching#gha
+      uses: actions/github-script@v7
       with:
         script: |
           core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
           core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
-
-    - name: Clone Inviwo
+    - name: "Clone Inviwo"
       uses: actions/checkout@v4
       with: 
         path: inviwo
         submodules: recursive
 
-    - name: "Build Changelog"
+    - name: "Generate Changelog"
       id: build_changelog
       uses: mikepenz/release-changelog-builder-action@v4
       with:
@@ -221,14 +230,14 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: changelog
+    - name: "Log Changelog"
       shell: bash
       run: |
         echo "-- Changes --"
         echo "${{ steps.build_changelog.outputs.changelog }}"
         echo "-- End --"
 
-    - name: Configure CMake
+    - name: "Configure CMake"
       shell: bash
       run: >
         VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ${{ matrix.preset }}
@@ -240,48 +249,127 @@ jobs:
         -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
         ${{ matrix.cmake }}
         
-    - name: Setup C++ Log matchers
+    - name: "Setup C++ Log matchers"
       uses: Trass3r/setup-cpp@master
 
-    - name: Build
+    - name: "Build"
       timeout-minutes: 360
       shell: bash
       run: >
         cmake --build build --config ${{ matrix.configuration }} 
         --parallel --target ${{ matrix.targets }}
 
-    - name: Upload installer
+    - name: "Upload installer"
       if: matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.installer }}
         path: ${{ matrix.artifact }}
 
-    - name: Upload doxygen
+    - name: "Upload doxygen"
       if: matrix.system == 'windows' &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
       uses: actions/upload-artifact@v3
       with:
         name: inviwo-cpp-api
         path: build/docs/inviwo/html/*
 
-    - name: Upload shpinx
+    - name: "Upload shpinx"
       if: matrix.system == 'windows' &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
       uses: actions/upload-artifact@v3
       with:
         name: inviwo-python-api
         path: build/docs/python-api/*
     
-    - name: Upload logs
-      uses: actions/upload-artifact@v3
-      if: failure()
+    - name: "Setup tmate session (on failure and debug_enabled)"
+      if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      uses: mxschmitt/action-tmate@v3
       with:
-        name: logs-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
-        path: |
-          **/*.log
-          **/*.txt
-          **/*.cmake
+        timeout-minutes: 15
+        limit-access-to-actor: true
+
+
+  build-linux-apt:
+    name: "Build on Linux using Apt"
+    runs-on: ubuntu-22.04
+    timeout-minutes: 720
+    
+    steps:
+    - name: "Apt Install"
+      shell: bash
+      # https://packages.ubuntu.com has lists of all available packages
+      # 30/11/23 
+      # * libnifti-dev: does not work
+      #   > CMake Error at /usr/share/cmake/NIFTI/NIFTITargets.cmake:124 (message):
+      #   >    The imported target "NIFTI::znz" references the file
+      #   >        "/usr/lib/libznz.so.3.0.0"
+      #   >    but this file does not exist. 
+      #   Should find /usr/lib/x86_64-linux-gnu/libznz.so
+      #   libznz path wrong, sets it to /usr/lib instead of /usr/lib/x86_64-linux-gnu/
+      # * nlohmann-json: has problems with inja. inja wants to install nlohmann-json somehow
+      # * openexr, libopenexr-dev: does not work, submodule and vcpkg uses OpenEXR::OpenEXT 
+      #   which does not exist in apts package
+      # * fmt: better stick the a newer version
+      # * pybind11: does not have the smart holder branch
+      # * cimg: there is no standard cmake cimg finder, and not cmake file provided in dist package.
+      # * inja: there is no dist package
+      # * tinydir: there is no dist package
+      run: |
+        sudo apt-get update
+        sudo apt install --fix-missing \
+          build-essential git cmake extra-cmake-modules ninja-build g++-13 gcc-13 \
+          freeglut3-dev cimg-dev googletest libassimp-dev libeigen3-dev libfmt-dev \
+          libfreetype-dev libglew-dev libglm-dev libgtest-dev libhdf5-dev libjpeg-dev \
+          libpng-dev libqt6svg6-dev libtclap-dev libtiff-dev libtirpc-dev \
+          libutfcpp-dev libxcursor-dev libxinerama-dev libxrandr-dev libznz-dev \
+          nlohmann-json3-dev zlib1g zlib1g-dev python3 python3-numpy python3-pip \
+          qt6-base-dev qt6-tools-dev
+
+    - name: "Clone Inviwo"
+      uses: actions/checkout@v4
+      with: 
+        path: inviwo
+        submodules: recursive
+
+    - name: "Configure"
+      shell: bash
+      run: >
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ninja-user-apt
+        -DVCPKG_TARGET_TRIPLET=x64-linux-dynamic
+        -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
+        -DBUILD_SHARED_LIBS=ON
+        -DCMAKE_BUILD_TYPE=Release
+        -DIVW_MODULE_EIGENUTILS=ON
+        -DIVW_MODULE_HDF5=ON
+        -DIVW_MODULE_FFMPEG=OFF
+        -DIVW_MODULE_WEBBROWSER=ON
+        -DIVW_TEST_BENCHMARKS=OFF
+        
+    - name: "Setup C++ Log matchers"
+      uses: Trass3r/setup-cpp@master
+
+    - name: "Build"
+      timeout-minutes: 720
+      shell: bash
+      run: >
+        cmake --build build --config Release --parallel --target all
+
+    # Libcef.so is in the bin not lib dir.
+    #- name: "Run"
+    #  shell: bash
+    #  run: |
+    #    cd build/bin
+    #    ./inviwo --logconsole --quit
+
+    - name: "Setup tmate session (on failure and debug_enabled)"
+      if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      uses: mxschmitt/action-tmate@v3
+      with:
+        timeout-minutes: 15
+        limit-access-to-actor: true
+
 
   test-installer:
+    name: "Test Installer"
     needs: build
     strategy:
       fail-fast: false
@@ -295,13 +383,13 @@ jobs:
         
     runs-on: ${{ matrix.os }}
     steps:
-    - name: Download artifact
+    - name: "Download artifact"
       uses: actions/download-artifact@v3
       with:
         name: ${{ matrix.installer }}
 
     # Windows
-    - name: Run Windows Installer
+    - name: "Run Windows Installer"
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
@@ -315,7 +403,7 @@ jobs:
           Wait-Process -Id $proc.id
         }
         
-    - name: Run Inviwo
+    - name: "Run Inviwo"
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
@@ -327,7 +415,7 @@ jobs:
         }
     
     # Macos
-    - name: Run MacOS Installer
+    - name: "Run MacOS Installer"
       if: runner.os == 'macOS'
       shell: bash
       run: |
@@ -339,46 +427,57 @@ jobs:
         cp -r /Volumes/${DMG%%.dmg}/Inviwo.app /Applications/
         hdiutil detach /Volumes/${DMG%%.dmg}/
 
-    - name: Run Inviwo
+    - name: "Run Inviwo"
       if: runner.os == 'macOS'
       shell: bash
       run: |
         cd /Applications/Inviwo.app/Contents/MacOS/
         ./inviwo --logconsole --quit
 
+    - name: "Setup tmate session (on failure and debug_enabled)"
+      if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      uses: mxschmitt/action-tmate@v3
+      with:
+        timeout-minutes: 15
+        limit-access-to-actor: true
+
+
   update-api-docs:
+    name: "Publish updated API Docs"
     if: github.ref == 'refs/heads/master'
     needs: [build, test-installer]
     runs-on: windows-latest
     steps:
-      - name: Clone Inviwo
+      - name: "Clone Inviwo"
         uses: actions/checkout@v4
         with: 
           ref: gh-pages
           path: inviwo
           submodules: false
 
-      - name: Download artifact
+      - name: "Download python-api"
         uses: actions/download-artifact@v3
         with:
           name: inviwo-python-api
           path: inviwo/python-api
 
-      - name: Download artifact
+      - name: "Download cpp-api"
         uses: actions/download-artifact@v3
         with:
           name: inviwo-cpp-api
           path: inviwo/cpp-api
 
-      - run: |
-          cd inviwo          
+      - name: "Publish python-api"
+        run: |
+          cd inviwo
           git config --global user.email "team@inviwo.org"
           git config --global user.name "Inviwo Team"
           git add python-api
           git commit -m "Update Python API Docs"
           git push
 
-      - run: |
+      - name: "Publish cpp-api"
+        run: |
           cd inviwo
           git config --global user.email "team@inviwo.org"
           git config --global user.name "Inviwo Team"
@@ -387,6 +486,7 @@ jobs:
           git push
 
   update-latest-release:
+    name: "Update latest release"
     if: github.ref == 'refs/heads/master'
     needs: [build, test-installer]
     strategy:
@@ -400,12 +500,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     
     steps:
-    - name: Download installer
+    - name: "Download installer"
       uses: actions/download-artifact@v3
       with:
         name: ${{ matrix.installer }}
 
-    - name: Upload binaries to release
+    - name: "Upload binaries to release"
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}

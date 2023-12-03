@@ -27,6 +27,11 @@
  *
  *********************************************************************************/
 
+#if not defined(__clang__) and defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+#endif
+
 #include <modules/cimg/cimgutils.h>
 
 #include <inviwo/core/datastructures/image/imagetypes.h>                // for SwizzleMask, lumi...
@@ -58,6 +63,9 @@
 #include <utility>        // for move
 
 #include <fmt/std.h>
+#if not defined(__clang__) and defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 #include <warn/push>
 #include <warn/ignore/all>

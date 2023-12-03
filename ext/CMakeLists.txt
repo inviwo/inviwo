@@ -189,7 +189,7 @@ else()
 endif()
 
 # Half
-message(STATUS "add subdirectory: help")
+message(STATUS "add subdirectory: half")
 add_subdirectory(half)
 ivw_register_license_file(NAME "half" VERSION 1.12.0 MODULE Core EXT
     URL "http://half.sourceforge.net"
@@ -207,7 +207,7 @@ if(NOT IVW_USE_EXTERNAL_UTFCPP)
         TYPE "Boost Software License"
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/utf/LICENSE
     )
-else()  
+else()
     find_package(utf8cpp CONFIG REQUIRED)
     ivw_vcpkg_install(utfcpp MODULE Core EXT)
 endif()

@@ -109,24 +109,17 @@ if (NOT IVW_USE_EXTERNAL_HDF5)
     ivw_default_install_targets(${h5-targets})
 
 else()
-    find_package(hdf5 REQUIRED)
-    if(BUILD_SHARED_LIBS)
-        target_link_libraries(inviwo-module-hdf5 
-            PUBLIC 
-                hdf5::hdf5-shared 
-                hdf5::hdf5_hl-shared 
-                hdf5::hdf5_cpp-shared 
-                hdf5::hdf5_hl_cpp-shared
-        )
-    else()
-        target_link_libraries(inviwo-module-hdf5 
-            PUBLIC 
-                hdf5::hdf5-static 
-                hdf5::hdf5_hl-static 
-                hdf5::hdf5_cpp-static 
-                hdf5::hdf5_hl_cpp-static
-        )
+    if(NOT BUILD_SHARED_LIBS)
+        set(HDF5_USE_STATIC_LIBRARIES ON)
     endif()
+    set(HDF5_FIND_DEBUG ON)
+    find_package(HDF5 REQUIRED COMPONENTS C CXX HL)
+    target_link_libraries(inviwo-module-hdf5
+        PUBLIC
+            hdf5::hdf5$<IF:$<BOOL:${BUILD_SHARED_LIBS}>,,-static>
+            hdf5::hdf5_hl$<IF:$<BOOL:${BUILD_SHARED_LIBS}>,,-static>
+            hdf5::hdf5_cpp$<IF:$<BOOL:${BUILD_SHARED_LIBS}>,,-static>
+            hdf5::hdf5_hl_cpp$<IF:$<BOOL:${BUILD_SHARED_LIBS}>,,-static>
+    )
     ivw_vcpkg_install(hdf5 MODULE HDF5)
-    set(version ${HDF5_VERSION_STRING})
 endif()
