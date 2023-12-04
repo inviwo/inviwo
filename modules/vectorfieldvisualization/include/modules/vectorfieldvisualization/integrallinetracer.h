@@ -81,10 +81,15 @@ public:
     const DataHomogenouSpatialMatrixrix& getSeedTransformationMatrix() const;
 
 private:
+    struct StepResult {
+        SpatialVector position;
+        DataVector data;
+        bool outOfBounds;
+    };
+
     inline SpatialVector seedTransform(const SpatialVector& seed) const;
 
-    std::pair<SpatialVector, DataVector> step(const SpatialVector& oldPos,
-                                              const double stepSize) const;
+    StepResult step(const SpatialVector& oldPos, const double stepSize) const;
 
     bool addPoint(IntegralLine& line, const SpatialVector& pos) const;
     bool addPoint(IntegralLine& line, const SpatialVector& pos,
@@ -197,10 +202,9 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::seedTransform(const SpatialVe
 }
 
 template <typename SpatialSampler, bool TimeDependent>
-std::pair<typename IntegralLineTracer<SpatialSampler, TimeDependent>::SpatialVector,
-          typename IntegralLineTracer<SpatialSampler, TimeDependent>::DataVector>
-IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector& oldPos,
-                                                        const double stepSize) const {
+auto IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector& oldPos,
+                                                             const double stepSize) const
+    -> StepResult {
     auto normalize = [](const auto v) {
         auto l = glm::length(v);
         if (l == 0) return v;
@@ -223,21 +227,36 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector& old
 
     switch (integrationScheme_) {
         case inviwo::IntegralLineProperties::IntegrationScheme::Euler:
-            return {move(oldPos, k1, stepSize), k1};
+            return {move(oldPos, k1, stepSize), k1, false};
         default:
             [[fallthrough]];
         case inviwo::IntegralLineProperties::IntegrationScheme::RK4: {
-            const auto k2 = sampler_->sample(move(oldPos, k1, stepSize / 2));
-            const auto k3 = sampler_->sample(move(oldPos, k2, stepSize / 2));
-            const auto k4 = sampler_->sample(move(oldPos, k3, stepSize));
+            auto pos = move(oldPos, k1, stepSize / 2);
+            if (!sampler_->withinBounds(pos)) {
+                return {oldPos, k1, true};
+            }
+            const auto k2 = sampler_->sample(pos);
+
+            pos = move(oldPos, k2, stepSize / 2);
+            if (!sampler_->withinBounds(pos)) {
+                return {oldPos, k1, true};
+            }
+            const auto k3 = sampler_->sample(pos);
+
+            pos = move(oldPos, k3, stepSize);
+            if (!sampler_->withinBounds(pos)) {
+                return {oldPos, k1, true};
+            }
+            const auto k4 = sampler_->sample(pos);
+
             const auto&& K = [n = normalizeSamples_, normalize, &k1, &k2, &k3, &k4]() {
                 if (n) {
                     return normalize(k1 + k2 + k2 + k3 + k3 + k4);
                 } else {
-                    return (k1 + k2 + k2 + k3 + k3 + k4) * (1.0 / 6.0);
+                    return (k1 + k2 + k2 + k3 + k3 + k4) / 6.0;
                 }
             };
-            return {move(oldPos, K(), stepSize), k1};
+            return {move(oldPos, K(), stepSize), k1, false};
         }
     }
 }
@@ -278,10 +297,13 @@ IntegralLine::TerminationReason IntegralLineTracer<SpatialSampler, TimeDependent
         if (!sampler_->withinBounds(pos)) {
             return IntegralLine::TerminationReason::OutOfBounds;
         }
-        auto res = step(pos, stepSize_ * (fwd ? 1.0 : -1.0));
-        pos = res.first;
+        StepResult result = step(pos, stepSize_ * (fwd ? 1.0 : -1.0));
+        if (result.outOfBounds) {
+            return IntegralLine::TerminationReason::OutOfBounds;
+        }
+        pos = result.position;
 
-        if (!addPoint(line, pos, res.second)) {
+        if (!addPoint(line, result.position, result.data)) {
             return IntegralLine::TerminationReason::ZeroVelocity;
         }
     }
