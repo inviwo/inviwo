@@ -51,4 +51,5 @@ void main() {
     float b = texture(inport2Color, texCoords)[blueChannel];
     float a = mix(alpha,texture(inport3Color, texCoords)[alphaChannel], use_alpha_texture);
     FragData0 = vec4(r, g, b, a);
+    PickingData = vec4(0);
 }

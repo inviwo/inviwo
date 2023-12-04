@@ -110,7 +110,7 @@ void ImageChannelCombine::process() {
 
     if (isSame(img0->getDimensions(), img1->getDimensions(), img2->getDimensions()) &&
         (inport3_.isConnected() && img3 && img3->getDimensions() != img0->getDimensions())) {
-        throw Exception("The image dimensions of all inports needs to be the same", IVW_CONTEXT);
+        throw Exception("Image dimensions of all inports need to be identical", IVW_CONTEXT);
     }
 
     if (inport0_.isChanged() || inport1_.isChanged() || inport2_.isChanged()) {
@@ -134,13 +134,13 @@ void ImageChannelCombine::process() {
         auto p0 = inport0_.getData()->getDataFormat()->getPrecision();
         auto p1 = inport1_.getData()->getDataFormat()->getPrecision();
         auto p2 = inport2_.getData()->getDataFormat()->getPrecision();
-        DataFormatBase::get(type, 4, std::max({p0, p1, p2}));
 
-        auto img = std::make_shared<Image>(dimensions, DataVec4UInt8::get());
+        auto img = std::make_shared<Image>(dimensions,
+                                           DataFormatBase::get(type, 4, std::max({p0, p1, p2})));
         outport_.setData(img);
     }
 
-    utilgl::activateAndClearTarget(outport_);
+    utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     shader_.activate();
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, inport0_, ImageType::ColorOnly);
