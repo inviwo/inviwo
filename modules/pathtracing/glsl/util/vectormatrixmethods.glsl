@@ -1,5 +1,5 @@
-#include "random.glsl"
-#include "transmittancemethods.glsl"
+#include "../random.glsl"
+
 
 mat3 rotMatrixAroundAxel(vec3 v, float theta) {
     float costheta = cos(theta); float sintheta = sin(theta);

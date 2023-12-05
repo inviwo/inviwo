@@ -1,8 +1,8 @@
-#include "random.glsl"
+#include "../random.glsl"
 #include "utils/shading.glsl"
 #include "utils/intersection.glsl"
 #include "utils/gradients.glsl"
-#include "util.glsl"
+#include "../util/vectormatrixmethods.glsl"
 
 float tfToExtinction(float s_max) {
     return s_max*150f;
@@ -50,3 +50,5 @@ float RatioTrackingEstimator(inout vec3 raystart, vec3 raydir, float raylength, 
 
     return T;
 }
+
+

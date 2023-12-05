@@ -14,10 +14,10 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 set(SHADER_FILES
-    glsl/util/random.glsl
     glsl/util/vectormatrixmethods.glsl
-    glsl/transmittancemethods.glsl
-    glsl/renderingmethods.glsl
+    glsl/random.glsl
+    glsl/transmittance/transmittancemethods.glsl
+    glsl/lightestimation.glsl
     glsl/bidirectionalvolumepathtracer.comp
     
     glsl/simpleshift.comp

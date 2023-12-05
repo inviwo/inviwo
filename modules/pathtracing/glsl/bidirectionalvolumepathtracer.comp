@@ -8,10 +8,11 @@
 #include "utils/gradients.glsl"
 #include "utils/shading.glsl"
 #include "utils/raycastgeometry.glsl"
+#include "utils/raycasting.glsl"
 
 #include "random.glsl"
-#include "transmittancemethods.glsl"
-#include "renderingmethods.glsl"
+#include "transmittance/transmittancemethods.glsl"
+#include "lightestimation.glsl"
 
 // volume
 uniform sampler3D volume;
@@ -49,10 +50,20 @@ uniform int iteration;
 
 layout (local_size_x = 16, local_size_y = 16) in;
 
+// TODO: Delete
 vec3 calcCameraDir(in vec3 entryPoint, in vec3 exitPoint, in mat4 textureToWorld) {
     return normalize(
         (textureToWorld * vec4(entryPoint, 1.0) - textureToWorld * vec4(exitPoint, 1.0)).xyz);
 }
+
+uint getHashSeed() {
+    uint globalDimX = gl_WorkGroupSize.x*gl_NumWorkGroups.x;
+    uint globalDimY = gl_WorkGroupSize.y*gl_NumWorkGroups.y;
+
+    uint gid = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y*globalDimX;
+    uint hashSeed = gid + floatBitsToUint(timeBits);
+    return hashSeed;
+} 
 
 vec4 pathtrace(
     ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth, 
@@ -65,14 +76,12 @@ vec4 pathtrace(
     vec3 rayDir = normalize(ray);  
     float rayLength = length(ray);  
 
-    uint globalDimX = gl_WorkGroupSize.x*gl_NumWorkGroups.x;
-    uint globalDimY = gl_WorkGroupSize.y*gl_NumWorkGroups.y;
-    uint gid = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y*globalDimX;
+    float hashSeed = getHashSeed();
 
     vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volParam.textureToWorld);
 
     vec3 samplePosition = entryPoint;
-    uint hashSeed = gid + floatBitsToUint(time_ms);
+    
 
     float T = 0.0f;
     float meanfreepath = WoodcockTracking(samplePosition, rayDir, rayPosition, rayLength, hashSeed,

@@ -133,6 +133,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/isosurface.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/pickingutils.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/raycastgeometry.glsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/raycasting.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/sampler2d.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/sampler3d.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/selectioncolor.glsl
