@@ -2,7 +2,7 @@
 #include "transmittancemethods.glsl"
 #include "util.glsl"
 
-vec3 RMVolumeRender_SingleScatter_SingleLight(
+vec3 estimateDirectLight(
     float rayStep, sampler3D volume, VolumeParameters volParam, sampler2D tf, vec3 samplePos, 
     vec3 cameraDir, LightParameters light, uint hashSeed, int rcChannel, float extinctionUpper) {
     
@@ -19,7 +19,7 @@ vec3 RMVolumeRender_SingleScatter_SingleLight(
     vec3 toLightTextureVector = (volParam.worldToTexture*vec4(light.position, 1f)).xyz - samplePos;
     vec3 toLightTextureDir = normalize(toLightTextureVector);
     float t0 = 0.0f;
-    float t1 = length(toLightTextureVector); 
+    float t1 = 1.f; 
 
     RayBBIntersection_TextureSpace(samplePos, toLightTextureDir, t0, t1);
 
