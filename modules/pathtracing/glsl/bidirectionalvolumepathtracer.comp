@@ -54,7 +54,7 @@ vec3 calcCameraDir(in vec3 entryPoint, in vec3 exitPoint, in mat4 textureToWorld
         (textureToWorld * vec4(entryPoint, 1.0) - textureToWorld * vec4(exitPoint, 1.0)).xyz);
 }
 
-vec4 Render(
+vec4 pathtrace(
     ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth, 
     float rayDepth, inout float depth, RaycastingParameters rayCastParam, 
     VolumeParameters volParam, vec4 bgColor, float extinctionUpper) {
@@ -75,17 +75,20 @@ vec4 Render(
     uint hashSeed = gid + floatBitsToUint(time_ms);
 
     float T = 0.0f;
-    float meanfreepath = WoodcockTracking(samplePosition, rayDir, 0f, rayLength, hashSeed,
+    float meanfreepath = WoodcockTracking(samplePosition, rayDir, rayPosition, rayLength, hashSeed,
             volume, volumeParameters, transferFunction, extinctionUpper);
 
     if (meanfreepath <= rayLength) {
         samplePosition = entryPoint + meanfreepath * rayDir;
+        rayDepth = meanfreepath;
         
         result.rgb = RMVolumeRender_SingleScatter_SingleLight(meanfreepath, volume, volumeParameters, 
             transferFunction, samplePosition, cameraDir, light, hashSeed, channel, extinctionUpper);
 
         result.a = 1f - T;
         #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
+    } else {
+         result = bgColor;
     }
     depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryDepth, exitDepth),
                 depth, rayDepth == -1.0);
@@ -124,7 +127,7 @@ void main(){
     }
 
     float extinctionUpper = 1.0f;
-    vec4 result = Render(outportParameters, entryPoint, exitPoint, entryPointDepth, exitPointDepth, 
+    vec4 color = pathtrace(outportParameters, entryPoint, exitPoint, entryPointDepth, exitPointDepth, 
         rayDepth, depth, raycaster, volumeParameters, bgColor, extinctionUpper);
 
     vec4 resultPrev = imageLoad(outportColor, storePos);
