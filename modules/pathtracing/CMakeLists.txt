@@ -13,13 +13,13 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-# Add shaders
 set(SHADER_FILES
-    glsl/random.glsl
-    glsl/transmittancemethods.glsl #should really be called renderingmethods, its not strictly for transmittance
+    glsl/util/random.glsl
+    glsl/util/vectormatrixmethods.glsl
+    glsl/transmittancemethods.glsl
     glsl/renderingmethods.glsl
     glsl/bidirectionalvolumepathtracer.comp
-    glsl/util.glsl
+    
     glsl/simpleshift.comp
 )
 ivw_group("Shader Files" ${SHADER_FILES})
