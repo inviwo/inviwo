@@ -68,6 +68,15 @@ vec4 uintToFloatbyDiv(uvec4 v) {
     return v/4294967295.0f;
 }
 
+uint getHashSeed(uint x, uint y, uint timeBits) {
+    uint globalDimX = gl_WorkGroupSize.x*gl_NumWorkGroups.x;
+    uint globalDimY = gl_WorkGroupSize.y*gl_NumWorkGroups.y;
+    uint gid = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y*globalDimX;
+
+    uint hashSeed = gid + floatBitsToUint(timeBits);
+    return hashSeed;
+} 
+
 uint pcg(uint v) {
     uint state = v * 747796405u + 2891336453u;
     uint word = ((state >> ((state >> 28u) + 4u)) ^ state)
