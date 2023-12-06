@@ -60,215 +60,562 @@ THE SOFTWARE.
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/safecstr.h>
+#include <inviwo/core/util/glm.h>
+
+#include <charconv>
 
 #include <cstdlib>
 #include <stdexcept>
-#include <math.h>
+#include <cmath>
+#include <tuple>
 
 namespace inviwo {
+
 namespace shuntingyard {
 
-TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> opPrecedence) {
-    TokenQueue rpnQueue;
-    std::stack<std::string> operatorStack;
-    bool lastTokenWasOp = true;
+namespace {
 
-    std::stringstream expr(expression);
-    char c;
+std::tuple<int, double> tryParseNumber(std::string_view str) {
+#if defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L
+    double result{};
+    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
+    if (ec == std::errc{}) {
+        return {std::distance(str.data(), ptr), result};
+    }
+    return {0, 0.0};
+#else
+    SafeCStr buff{str};
+    char* end;
+    double result = strtod(buff.c_str(), &end);
+
+    if (end == buff.c_str()) {
+        return {0, 0.0};
+    }
+    return {std::distance(buff.c_str(), static_cast<const char*>(end)), result};
+#endif
+}
+
+constexpr bool identifierFirst(unsigned char c) { return (c == '_' || std::isalpha(c)); };
+
+constexpr bool identifierRest(unsigned char c) { return (c == '_' || std::isalnum(c)); };
+
+constexpr std::tuple<int, std::string_view> tryParseIdentifier(std::string_view expression) {
+    if (identifierFirst(expression.front())) {
+        auto it = std::find_if(expression.begin() + 1, expression.end(),
+                               [](char c) { return !identifierRest(c); });
+        const auto size = std::distance(expression.begin(), it);
+        const auto str = expression.substr(0, size);
+        return {size, str};
+    } else {
+        return {0, std::string_view{}};
+    }
+}
+
+constexpr bool nextIs(std::string_view str, char c, size_t pos = 0) {
+    return str.size() > pos && str[pos] == c;
+};
+
+template <typename T>
+constexpr bool nextIs(const std::vector<Token>& stack, size_t pos = 0) {
+    if (stack.size() > pos && std::holds_alternative<T>(stack[stack.size() - pos - 1])) {
+        return true;
+    }
+    return false;
+}
+
+template <typename T>
+constexpr bool nextIsNot(const std::vector<Token>& stack) {
+    if (!stack.empty() && !std::holds_alternative<T>(stack.back())) {
+        return true;
+    }
+    return false;
+}
+
+constexpr void expectOpenParen(const std::vector<Token>& stack) {
+    if (nextIs<OpenParen>(stack)) {
+        return;
+    }
+    throw Exception("Invalid expression");
+}
+constexpr Function& getOpenParenAndFunc(std::vector<Token>& stack) {
+    if (nextIs<OpenParen>(stack) && nextIs<Function>(stack, 1)) {
+        return std::get<Function>(stack[stack.size() - 2]);
+    }
+    throw Exception("Invalid expression");
+}
+
+enum class Associative { Left, Right };
+
+constexpr bool needsOperatorPop(Operator op1, const std::vector<Token>& stack) {
+    // https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.html#operators
+    constexpr auto precedence = [](Operator op) {
+        if (op.unary) return 3;
+        switch (op.name) {
+            case '+':
+                return 5;
+            case '-':
+                return 5;
+            case '*':
+                return 4;
+            case '/':
+                return 4;
+            default:
+                return 100;
+        }
+    };
+
+    constexpr auto associativity = [](Operator op) {
+        return op.unary ? Associative::Right : Associative::Left;
+    };
+
+    if (nextIs<Operator>(stack)) {
+        const auto op2 = std::get<Operator>(stack.back());
+        if (precedence(op2) < precedence(op1) ||
+            (associativity(op1) == Associative::Left && precedence(op2) == precedence(op1))) {
+            return true;
+        }
+    }
+    return false;
+}
+
+struct EvalOp {
+
+    char op;
+    std::vector<Value>& stack;
+
+    template <typename T1, typename T2>
+    constexpr void impl(T1 l, T2 r) const {
+        switch (op) {
+            case '+':
+                stack.push_back(l + r);
+                return;
+            case '-':
+                stack.push_back(l - r);
+                return;
+            case '*':
+                stack.push_back(l * r);
+                return;
+            case '/':
+                stack.push_back(l / r);
+                return;
+        }
+        throw Exception("Invalid equation");
+    }
+
+    constexpr void operator()(double s1, double s2) const { return impl(s1, s2); }
+
+    template <size_t N>
+    constexpr void operator()(double s, glm::vec<N, double, glm::defaultp> v) const {
+        return impl(s, v);
+    }
+
+    template <size_t N>
+    constexpr void operator()(glm::vec<N, double, glm::defaultp> v, double s) const {
+        return impl(v, s);
+    }
+
+    template <size_t N>
+    constexpr void operator()(glm::vec<N, double, glm::defaultp> v1,
+                              glm::vec<N, double, glm::defaultp> v2) const {
+        return impl(v1, v2);
+    }
+
+    template <typename T1, typename T2>
+    constexpr void operator()(T1 l, T2 r) const {
+        throw Exception("Invalid equation");
+    }
+};
+
+template <typename T>
+bool has(std::vector<Value>& stack, size_t ind) {
+    if (ind <= stack.size()) {
+        return std::holds_alternative<T>(stack[stack.size() - ind]);
+    } else {
+        throw Exception("Invalid expression");
+    }
+}
+template <typename T>
+decltype(auto) get(std::vector<Value>& stack, size_t ind) {
+    if (ind <= stack.size()) {
+        return std::get<T>(stack[stack.size() - ind]);
+    } else {
+        throw Exception("Invalid expression");
+    }
+}
+
+template <typename T1, typename F>
+bool functionWrap1(const F& func, std::vector<Value>& stack) {
+    if (has<T1>(stack, 1)) {
+        auto val = func(get<T1>(stack, 1));
+        stack.pop_back();
+        stack.push_back(val);
+        return true;
+    }
+    return false;
+}
+template <typename T1, typename T2, typename F>
+bool functionWrap2(const F& func, std::vector<Value>& stack) {
+    if (has<T1>(stack, 2) && has<T2>(stack, 1)) {
+        auto val = func(get<T1>(stack, 2), get<T2>(stack, 1));
+        stack.erase(stack.end() - 2, stack.end());
+        stack.push_back(val);
+        return true;
+    }
+    return false;
+}
+
+void handleFunction(Function f, std::vector<Value>& stack) {
+    static constexpr auto abs = [](auto&& a) -> decltype(auto) { return glm::abs(a); };
+    static constexpr auto min = [](auto&& a, auto&& b) -> decltype(auto) { return glm::min(a, b); };
+    static constexpr auto max = [](auto&& a, auto&& b) -> decltype(auto) { return glm::max(a, b); };
+
+    static std::unordered_map<std::string, std::function<void(size_t, std::vector<Value>&)>,
+                              StringHash, std::equal_to<>>
+
+        functions = {
+            {"abs",
+             [](size_t nArgs, std::vector<Value>& stack) {
+                 if (nArgs == 1) {
+                     if (functionWrap1<double>(abs, stack)) {
+                         return;
+                     } else if (functionWrap1<dvec2>(abs, stack)) {
+                         return;
+                     } else if (functionWrap1<dvec3>(abs, stack)) {
+                         return;
+                     } else if (functionWrap1<dvec4>(abs, stack)) {
+                         return;
+                     }
+                 }
+                 throw Exception("Invalid function");
+             }},
+            {"min",
+             [](size_t nArgs, std::vector<Value>& stack) {
+                 if (nArgs == 2) {
+                     if (functionWrap2<double, double>(min, stack)) {
+                         return;
+                     }
+                 }
+                 throw Exception("Invalid function");
+             }},
+            {"max",
+             [](size_t nArgs, std::vector<Value>& stack) {
+                 if (nArgs == 2) {
+                     if (functionWrap2<double, double>(max, stack)) {
+                         return;
+                     }
+                 }
+                 throw Exception("Invalid function");
+             }},
+            {"vec3",
+             [](size_t nArgs, std::vector<Value>& stack) {
+                 if (nArgs == 1) {
+                     auto a1 = stack.back();
+                     stack.pop_back();
+                     if (std::holds_alternative<double>(a1)) {
+                         stack.push_back(dvec3(std::get<double>(a1)));
+                         return;
+                     } else if (std::holds_alternative<dvec3>(a1)) {
+                         stack.push_back(dvec3(std::get<dvec3>(a1)));
+                         return;
+                     } else if (std::holds_alternative<dvec4>(a1)) {
+                         stack.push_back(dvec3(std::get<dvec4>(a1)));
+                         return;
+                     }
+                 }
+                 if (nArgs == 3) {
+                     auto a3 = stack.back();
+                     stack.pop_back();
+                     auto a2 = stack.back();
+                     stack.pop_back();
+                     auto a1 = stack.back();
+                     stack.pop_back();
+                     if (std::holds_alternative<double>(a1) && std::holds_alternative<double>(a2) &&
+                         std::holds_alternative<double>(a3)) {
+                         stack.push_back(dvec3(std::get<double>(a1), std::get<double>(a2),
+                                               std::get<double>(a3)));
+                         return;
+                     }
+                 }
+                 throw Exception("Invalid function");
+             }}
+
+        };
+
+    if (auto it = functions.find(f.name); it != functions.end()) {
+        it->second(f.nArgs, stack);
+    } else {
+        throw Exception("Invalid function");
+    }
+}
+
+void handleMember(Member mem, std::vector<Value>& stack) {
+
+    auto a = stack.back();
+    stack.pop_back();
+    if (mem.name == "x") {
+        if (std::holds_alternative<dvec2>(a)) {
+            stack.push_back(std::get<dvec2>(a).x);
+            return;
+        } else if (std::holds_alternative<dvec3>(a)) {
+            stack.push_back(std::get<dvec3>(a).x);
+            return;
+        } else if (std::holds_alternative<dvec4>(a)) {
+            stack.push_back(std::get<dvec4>(a).x);
+            return;
+        }
+    } else if (mem.name == "y") {
+        if (std::holds_alternative<dvec2>(a)) {
+            stack.push_back(std::get<dvec2>(a).y);
+            return;
+        } else if (std::holds_alternative<dvec3>(a)) {
+            stack.push_back(std::get<dvec3>(a).y);
+            return;
+        } else if (std::holds_alternative<dvec4>(a)) {
+            stack.push_back(std::get<dvec4>(a).y);
+            return;
+        }
+    } else if (mem.name == "z") {
+        if (std::holds_alternative<dvec3>(a)) {
+            stack.push_back(std::get<dvec3>(a).z);
+            return;
+        } else if (std::holds_alternative<dvec4>(a)) {
+            stack.push_back(std::get<dvec4>(a).z);
+            return;
+        }
+    } else if (mem.name == "w") {
+        if (std::holds_alternative<dvec4>(a)) {
+            stack.push_back(std::get<dvec4>(a).w);
+            return;
+        }
+    }
+    throw Exception("Invalid member");
+}
+
+}  // namespace
+
+std::vector<Token> Calculator::toRPN(std::string_view expression) {
+    std::vector<Token> rpn;
+    std::vector<Token> stack;
 
     // In one pass, ignore whitespace and parse the expression into RPN
     // using Dijkstra's Shunting-yard algorithm.
-    while (!expr.eof() && isspace(expr.peek())) expr.get(c);
-    while (!expr.eof()) {
-        if (isdigit(expr.peek())) {
-            // If the token is a number, add it to the output queue.
-            double digit;
-            expr >> digit;
-            rpnQueue.push(std::make_unique<Token<double>>(digit));
-            lastTokenWasOp = false;
 
-        } else if (isvariablechar(static_cast<char>(expr.peek()))) {
-            rpnQueue.push(std::make_unique<Token<std::string>>(getVariable(expr)));
-            lastTokenWasOp = false;
+    bool first = true;
 
-        } else {
-            // Otherwise, the variable is an operator or parenthesis.
-            expr.get(c);
-            switch (c) {
-                case '(':
-                    operatorStack.push("(");
-                    break;
-                case ')':
-                    while (operatorStack.top().compare("(")) {
-                        rpnQueue.push(std::make_unique<Token<std::string>>(operatorStack.top()));
-                        operatorStack.pop();
-                    }
-                    operatorStack.pop();
-                    break;
-                default: {
-                    // The token is an operator.
-                    //
-                    // Let p(o) denote the precedence of an operator o.
-                    //
-                    // If the token is an operator, o1, then
-                    //   While there is an operator token, o2, at the top
-                    //       and p(o1) <= p(o2), then
-                    //     pop o2 off the stack onto the output queue.
-                    //   Push o1 on the stack.
-                    std::stringstream ss;
-                    ss << c;
-                    while (!expr.eof() && !isspace(expr.peek()) && !isdigit(expr.peek()) &&
-                           !isvariablechar(static_cast<char>(expr.peek())) && expr.peek() != '(' &&
-                           expr.peek() != ')') {
-                        expr.get(c);
-                        ss << c;
-                    }
-                    ss.clear();
-                    std::string str;
-                    ss >> str;
+    while (!expression.empty()) {
+        switch (expression.front()) {
+            case ' ':
+                expression.remove_prefix(1);
+                break;
+            case '\t':
+                expression.remove_prefix(1);
+                break;
+            case '(':
+                stack.push_back(OpenParen{});
+                expression.remove_prefix(1);
+                first = true;
+                break;
+            case ')': {
+                while (nextIsNot<OpenParen>(stack)) {
+                    rpn.emplace_back(stack.back());
+                    stack.pop_back();
+                }
+                expectOpenParen(stack);
+                stack.pop_back();
+                expression.remove_prefix(1);
+                if (nextIs<Function>(stack)) {
+                    rpn.emplace_back(stack.back());
+                    stack.pop_back();
+                }
+                break;
+            }
+            case ',':
+                while (nextIsNot<OpenParen>(stack)) {
+                    rpn.emplace_back(stack.back());
+                    stack.pop_back();
+                }
+                ++(getOpenParenAndFunc(stack).nArgs);
 
-                    if (lastTokenWasOp) {
-                        // Convert unary operators to binary in the RPN.
-                        if (!str.compare("-") || !str.compare("+")) {
-                            rpnQueue.push(std::make_unique<Token<double>>(0));
+                expression.remove_prefix(1);
+                first = true;
+                break;
+
+            case '+':
+                [[fallthrough]];
+            case '-':
+                [[fallthrough]];
+            case '*':
+                [[fallthrough]];
+            case '/':
+                [[fallthrough]];
+            case '^': {
+                const auto op = Operator{expression[0], first};
+                while (!first && needsOperatorPop(op, stack)) {
+                    rpn.emplace_back(stack.back());
+                    stack.pop_back();
+                }
+                stack.push_back(op);
+                expression.remove_prefix(1);
+                first = true;
+                break;
+            }
+            case '.': {
+                expression.remove_prefix(1);
+                if (auto [size, str] = tryParseIdentifier(expression); size > 0) {
+                    rpn.emplace_back(Member{str});
+                    expression.remove_prefix(size);
+                } else {
+                    throw Exception("Invalid expression");
+                }
+                break;
+            }
+            default: {
+                if (auto [n, val] = tryParseNumber(expression); n > 0) {
+                    rpn.emplace_back(Number{val});
+                    expression.remove_prefix(n);
+                    first = false;
+                } else if (auto [size, str] = tryParseIdentifier(expression); size > 0) {
+                    expression.remove_prefix(size);
+                    if (nextIs(expression, '(')) {
+                        if (nextIs(expression, ')', 1)) {
+                            stack.push_back(Function{str, 0});
+                            expression.remove_prefix(2);
                         } else {
-                            throw Exception("Unrecognized unary operator: '" + str + "'",
-                                            IVW_CONTEXT_CUSTOM("shuntingyard::Calculator::toRPN"));
+                            stack.push_back(Function{str});
                         }
+                    } else {
+                        rpn.emplace_back(Identifier{str});
+                        first = false;
                     }
-
-                    while (!operatorStack.empty() &&
-                           opPrecedence[str] <= opPrecedence[operatorStack.top()]) {
-                        rpnQueue.push(std::make_unique<Token<std::string>>(operatorStack.top()));
-                        operatorStack.pop();
-                    }
-                    operatorStack.push(str);
-                    lastTokenWasOp = true;
-                }
-            }
-        }
-        while (!expr.eof() && isspace(expr.peek())) expr.get(c);
-    }
-    while (!operatorStack.empty()) {
-        rpnQueue.push(std::make_unique<Token<std::string>>(operatorStack.top()));
-        operatorStack.pop();
-    }
-    return rpnQueue;
-}
-
-double Calculator::calculate(std::string expression, std::map<std::string, double>& vars) {
-    // 1. Create the operator precedence map.
-    auto opPrecedence = getOpeatorPrecedence();
-
-    // 2. Convert to RPN with Dijkstra's Shunting-yard algorithm.
-    TokenQueue rpn = toRPN(expression, opPrecedence);
-
-    // 3. Evaluate the expression in RPN form.
-    std::stack<double> evaluation;
-    while (!rpn.empty()) {
-        std::unique_ptr<TokenBase> base{std::move(rpn.front())};
-        rpn.pop();
-
-        Token<std::string>* strTok = dynamic_cast<Token<std::string>*>(base.get());
-        Token<double>* doubleTok = dynamic_cast<Token<double>*>(base.get());
-        if (strTok) {
-            std::string str = strTok->val;
-            auto it = vars.find(str);
-            if (it != vars.end()) {
-                evaluation.push(it->second);
-            } else if (evaluation.size() < 2) {
-                throw Exception("Invalid equation",
-                                IVW_CONTEXT_CUSTOM("shuntingyard::Calculator::calculate"));
-            } else {
-                double right = evaluation.top();
-                evaluation.pop();
-                double left = evaluation.top();
-                evaluation.pop();
-                if (!str.compare("+")) {
-                    evaluation.push(left + right);
-                } else if (!str.compare("*")) {
-                    evaluation.push(left * right);
-                } else if (!str.compare("-")) {
-                    evaluation.push(left - right);
-                } else if (!str.compare("/")) {
-                    evaluation.push(left / right);
-                } else if (!str.compare("^")) {
-                    evaluation.push(pow(left, right));
-
                 } else {
-                    throw Exception("Unknown operator: '" + str + "'",
-                                    IVW_CONTEXT_CUSTOM("shuntingyard::Calculator::calculate"));
+                    throw Exception("Invalid expression");
                 }
+                break;
             }
-        } else if (doubleTok) {
-            evaluation.push(doubleTok->val);
-        } else {
-            throw Exception("Invalid token",
-                            IVW_CONTEXT_CUSTOM("shuntingyard::Calculator::calculate"));
         }
     }
-
-    return evaluation.top();
-}
-
-std::string Calculator::shaderCode(std::string expression, std::map<std::string, double>& vars,
-                                   std::map<std::string, std::string>& symbols) {
-    // 1. Create the operator precedence map.
-    auto opPrecedence = getOpeatorPrecedence();
-
-    // 2. Convert to RPN with Dijkstra's Shunting-yard algorithm.
-    TokenQueue rpn = toRPN(expression, opPrecedence);
-
-    // 3. Evaluate the expression in RPN form.
-    std::stack<std::string> evaluation;
-    while (!rpn.empty()) {
-        std::unique_ptr<TokenBase> base{std::move(rpn.front())};
-        rpn.pop();
-
-        Token<std::string>* strTok = dynamic_cast<Token<std::string>*>(base.get());
-        Token<double>* doubleTok = dynamic_cast<Token<double>*>(base.get());
-        if (strTok) {
-            std::string str = strTok->val;
-            auto it1 = vars.find(str);
-            auto it2 = symbols.find(str);
-            if (it1 != vars.end()) {
-                evaluation.push(toString(it1->second));
-            } else if (it2 != symbols.end()) {
-                evaluation.push(it2->second);
-            } else if (evaluation.size() < 2) {
-                throw Exception("Invalid equation",
-                                IVW_CONTEXT_CUSTOM("shuntingyard::Calculator::shaderCode"));
-            } else {
-                std::string right = evaluation.top();
-                evaluation.pop();
-                std::string left = evaluation.top();
-                evaluation.pop();
-                if (!str.compare("+")) {
-                    evaluation.push("(" + left + " + " + right + ")");
-                } else if (!str.compare("*")) {
-                    evaluation.push("(" + left + " * " + right + ")");
-                } else if (!str.compare("-")) {
-                    evaluation.push("(" + left + " - " + right + ")");
-                } else if (!str.compare("/")) {
-                    evaluation.push("(" + left + " / " + right + ")");
-                } else if (!str.compare("^")) {
-                    evaluation.push("pow(" + left + ", " + right + ")");
-                } else {
-                    throw Exception("Unknown operator: '" + str + "'",
-                                    IVW_CONTEXT_CUSTOM("shuntingyard::Calculator::shaderCode"));
-                }
-            }
-        } else if (doubleTok) {
-            evaluation.push("vec4(" + toString(doubleTok->val) + ")");
-        } else {
-            throw Exception("Invalid token",
-                            IVW_CONTEXT_CUSTOM("shuntingyard::Calculator::shaderCode"));
-        }
+    while (!stack.empty()) {
+        rpn.emplace_back(stack.back());
+        stack.pop_back();
     }
 
-    return evaluation.top();
+    return rpn;
 }
 
+Value Calculator::calculate(std::string_view expression, const VariableMap& vars) {
+    return calculate(toRPN(expression), vars);
+}
+
+Value Calculator::calculate(const std::vector<Token> rpn, const VariableMap& vars) {
+    std::vector<Token> pn{rpn.rbegin(), rpn.rend()};
+
+    // Evaluate the expression in RPN form.
+    std::vector<Value> stack;
+    while (!pn.empty()) {
+        std::visit(util::overloaded{[&](Number n) { stack.emplace_back(n.value); },
+                                    [&](Identifier n) {
+                                        if (auto it = vars.find(n.name); it != vars.end()) {
+                                            stack.emplace_back(it->second);
+                                        } else {
+                                            throw Exception("Invalid equation");
+                                        }
+                                    },
+                                    [&](Operator n) {
+                                        if (n.unary) {
+                                            switch (n.name) {
+                                                case '+':
+                                                    break;
+                                                case '-':
+                                                    std::visit([](auto& value) { value *= -1.0; },
+                                                               stack.back());
+                                                    break;
+                                            }
+                                        } else {
+                                            auto right = stack.back();
+                                            stack.pop_back();
+                                            auto left = stack.back();
+                                            stack.pop_back();
+
+                                            std::visit(EvalOp{n.name, stack}, left, right);
+                                        }
+                                    },
+                                    [&](Function fun) { handleFunction(fun, stack); },
+                                    [&](Member mem) { handleMember(mem, stack); },
+                                    [&](auto other) { throw Exception("Invalid equation"); }},
+                   pn.back());
+        pn.pop_back();
+    }
+
+    return stack.back();
+}
+
+std::string Calculator::shaderCode(std::string_view expression, const VariableMap& vars,
+                                   const SymbolMap& symbols) {
+    return shaderCode(toRPN(expression), vars, symbols);
+}
+
+std::string Calculator::shaderCode(const std::vector<Token> rpn, const VariableMap& vars,
+                                   const SymbolMap& syms) {
+
+    std::vector<Token> pn{rpn.rbegin(), rpn.rend()};
+
+    // Evaluate the expression in RPN form.
+    std::vector<std::string> stack;
+    while (!pn.empty()) {
+        std::visit(
+            util::overloaded{[&](Number n) { stack.push_back(fmt::to_string(n.value)); },
+                             [&](Identifier n) {
+                                 if (auto it1 = vars.find(n.name); it1 != vars.end()) {
+                                     stack.push_back(fmt::to_string(it1->second));
+                                 } else if (auto it2 = syms.find(n.name); it2 != syms.end()) {
+                                     stack.push_back(it2->second);
+                                 } else {
+                                     throw Exception("Invalid equation");
+                                 }
+                             },
+                             [&](Operator n) {
+                                 if (n.unary) {
+                                     switch (n.name) {
+                                         case '+':
+                                             break;
+                                         case '-':
+                                             stack.back() = fmt::format("-{}", stack.back());
+                                             break;
+                                     }
+                                 } else {
+                                     auto str = fmt::format("({} {} {})", stack[stack.size() - 2],
+                                                            n.name, stack[stack.size() - 1]);
+                                     stack.pop_back();
+                                     stack.pop_back();
+                                     stack.push_back(std::move(str));
+                                 }
+                             },
+                             [&](Function fun) {
+                                 fmt::memory_buffer b;
+                                 auto out = std::back_inserter(b);
+                                 fmt::format_to(out, "{}(", fun.name);
+                                 for (size_t i = fun.nArgs; i > 0; --i) {
+                                     if (i != fun.nArgs) fmt::format_to(out, ", ");
+                                     fmt::format_to(out, "{}", stack[stack.size() - i]);
+                                 }
+                                 fmt::format_to(out, ")");
+
+                                 stack.erase(stack.end() - fun.nArgs, stack.end());
+                                 stack.emplace_back(std::string_view{b.data(), b.size()});
+                             },
+                             [&](Member mem) {
+                                 auto str = fmt::format("{}.{}", stack.back(), mem.name);
+                                 stack.pop_back();
+                                 stack.push_back(std::move(str));
+                             },
+                             [&](auto other) { throw Exception("Invalid equation"); }},
+            pn.back());
+        pn.pop_back();
+    }
+
+    return stack.back();
+}
 }  // namespace shuntingyard
 
 }  // namespace inviwo
