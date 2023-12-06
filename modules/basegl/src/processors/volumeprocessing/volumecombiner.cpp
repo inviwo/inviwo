@@ -218,8 +218,8 @@ VolumeCombiner::VolumeCombiner()
 }
 
 std::string VolumeCombiner::buildEquation() const {
-    std::map<std::string, double> vars = {};
-    std::map<std::string, std::string> symbols;
+    shuntingyard::VariableMap vars = {};
+    shuntingyard::SymbolMap symbols;
 
     for (auto&& i : util::enumerate(inport_)) {
         symbols["s" + toString(i.first() + 1)] = "scale" + toString(i.first());
