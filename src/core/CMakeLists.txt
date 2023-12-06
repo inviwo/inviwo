@@ -900,6 +900,7 @@ set(TEST_FILES
     tests/unittests/stringconversion-test.cpp
     tests/unittests/tfprimitiveset-test.cpp
     tests/unittests/typedmesh-test.cpp
+    tests/unittests/shyntingyard-test.cpp
     tests/unittests/unitsystem-test.cpp
     tests/unittests/union-test.cpp
     tests/unittests/utfutils-test.cpp
