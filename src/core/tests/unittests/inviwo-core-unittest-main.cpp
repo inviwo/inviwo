@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
     int ret = -1;
     {
         ::testing::InitGoogleTest(&argc, argv);
-        ConfigurableGTestEventListener::setup();
+        //ConfigurableGTestEventListener::setup();
         ret = RUN_ALL_TESTS();
     }
 
