@@ -856,6 +856,7 @@ set(TEST_FILES
     tests/unittests/stringconversion-test.cpp
     tests/unittests/tfprimitiveset-test.cpp
     tests/unittests/typedmesh-test.cpp
+    tests/unittests/shyntingyard-test.cpp
     tests/unittests/unitsystem-test.cpp
     tests/unittests/utilities-test.cpp
     tests/unittests/volumesequenceutils-tests.cpp
