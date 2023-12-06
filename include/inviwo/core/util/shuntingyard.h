@@ -59,66 +59,72 @@ THE SOFTWARE.
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <map>
+#include <unordered_map>
 #include <stack>
 #include <string>
 #include <iostream>
-#include <sstream>
+#include <string_view>
 #include <queue>
 #include <memory>
+#include <variant>
 
 namespace inviwo {
 namespace shuntingyard {
 
-struct IVW_CORE_API TokenBase {
-    virtual ~TokenBase() {}
+struct Number {
+    double value;
 };
 
-template <class T>
-class Token : public TokenBase {
-public:
-    Token(T t) : val(t) {}
-    T val;
+struct Identifier {
+    std::string_view name;
 };
 
-using TokenQueue = std::queue<std::unique_ptr<TokenBase>>;
+struct Operator {
+    char name;
+    bool unary = false;
+};
+
+struct Function {
+    std::string_view name;
+    size_t nArgs = 1;
+};
+
+struct Member {
+    std::string_view name;
+};
+
+struct OpenParen {};
+struct CloseParen {};
+
+using Token = std::variant<OpenParen, CloseParen, Number, Identifier, Operator, Function, Member>;
+using Value = std::variant<double, dvec2, dvec3, dvec4>;
+
+struct StringHash {
+    using hash_type = std::hash<std::string_view>;
+    using is_transparent = void;
+
+    std::size_t operator()(const char* str) const { return hash_type{}(str); }
+    std::size_t operator()(std::string_view str) const { return hash_type{}(str); }
+    std::size_t operator()(std::string const& str) const { return hash_type{}(str); }
+};
+
+using VariableMap = std::unordered_map<std::string, double, StringHash, std::equal_to<>>;
+using SymbolMap = std::unordered_map<std::string, std::string, StringHash, std::equal_to<>>;
 
 class IVW_CORE_API Calculator {
 public:
-    static double calculate(std::string expression, std::map<std::string, double>& vars);
-    static std::string shaderCode(std::string expression, std::map<std::string, double>& vars,
-                                  std::map<std::string, std::string>& symbols);
+    static std::vector<Token> toRPN(std::string_view expression);
 
-private:
-    inline static bool isvariablechar(char c) { return isalpha(c) || c == '_'; }
+    static Value calculate(std::string_view expression, const VariableMap& vars);
 
-    inline static std::string getVariable(std::stringstream& expr) {
-        std::stringstream ss;
-        char c;
-        expr.get(c);
-        ss << c;
-        while (isvariablechar(static_cast<char>(expr.peek())) || isdigit(expr.peek())) {
-            expr.get(c);
-            ss << c;
-        }
-        std::string key = ss.str();
-        return key;
-    }
+    static Value calculate(const std::vector<Token> rpn, const VariableMap& vars);
 
-    static TokenQueue toRPN(std::string expression, std::map<std::string, int> opPrecedence);
-
-    static std::map<std::string, int> getOpeatorPrecedence() {
-        std::map<std::string, int> opPrecedence;
-        opPrecedence["("] = -1;
-        opPrecedence["+"] = 2;
-        opPrecedence["-"] = 2;
-        opPrecedence["*"] = 3;
-        opPrecedence["/"] = 3;
-        opPrecedence["^"] = 4;
-
-        return opPrecedence;
-    }
+    static std::string shaderCode(std::string_view expression, const VariableMap& vars,
+                                  const SymbolMap& symbols);
+    static std::string shaderCode(const std::vector<Token> rpn, const VariableMap& vars,
+                                  const SymbolMap& symbols);
 };
 
 }  // namespace shuntingyard
