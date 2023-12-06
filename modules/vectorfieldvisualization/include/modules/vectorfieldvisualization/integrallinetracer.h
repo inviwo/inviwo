@@ -310,7 +310,7 @@ IntegralLine::TerminationReason IntegralLineTracer<SpatialSampler, TimeDependent
     return IntegralLine::TerminationReason::Steps;
 }
 
-using StreamLine2DTracer = IntegralLineTracer<SpatialSampler<2, 2, double>>;
+using StreamLine2DTracer = IntegralLineTracer<SpatialSampler<3, 2, double>>;
 using StreamLine3DTracer = IntegralLineTracer<SpatialSampler<3, 3, double>>;
 using PathLine3DTracer = IntegralLineTracer<Spatial4DSampler<3, double>>;
 

@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -54,15 +54,17 @@ class LayerRAM;
  * pixel. Output values are bi-linear interpolated between the 4 nearest neighbors.
  */
 template <unsigned int DataDims, typename T = double>
-class ImageSpatialSampler : public SpatialSampler<2, DataDims, T> {
+class ImageSpatialSampler : public SpatialSampler<3, DataDims, T> {
 public:
+    using Space = SpatialSampler<3, DataDims, T>::Space;
+
     /**
      * Creates a ImageSpatialSampler for the given LayerRAM, does not take ownership of ram.
      * Use ImageSpatialSampler(std::shared_ptr<const Image>) to ensure that the LayerRAM is
      * available for the lifetime of the ImageSpatialSampler
      */
     ImageSpatialSampler(const LayerRAM* ram)
-        : SpatialSampler<2, DataDims, T>(*ram->getOwner())
+        : SpatialSampler<3, DataDims, T>(*ram->getOwner())
         , layer_(ram)
         , dims_(layer_->getDimensions())
         , sharedImage_(nullptr) {}
@@ -99,7 +101,35 @@ public:
 
     virtual ~ImageSpatialSampler() {}
 
-    using SpatialSampler<2, DataDims, T>::sample;
+    using SpatialSampler<3, DataDims, T>::sample;
+
+    Vector<DataDims, T> sample(const dvec2& pos) const {
+        return SpatialSampler<3, DataDims, T>::sample(dvec3(pos, 0.0));
+    }
+    Vector<DataDims, T> sample(const vec2& pos) const {
+        return SpatialSampler<3, DataDims, T>::sample(dvec3(pos, 0.0));
+    }
+
+    Vector<DataDims, T> sample(const dvec2& pos, Space space) const {
+        return SpatialSampler<3, DataDims, T>::sample(dvec3(pos, 0.0), space);
+    }
+    Vector<DataDims, T> sample(const vec2& pos, Space space) const {
+        return SpatialSampler<3, DataDims, T>::sample(dvec3(pos, 0.0), space);
+    }
+
+    bool withinBounds(const dvec2& pos) const {
+        return SpatialSampler<3, DataDims, T>::withinBounds(pos);
+    }
+    bool withinBounds(const vec2& pos) const {
+        return SpatialSampler<3, DataDims, T>::withinBounds(pos);
+    }
+
+    bool withinBounds(const dvec2& pos, Space space) const {
+        return SpatialSampler<3, DataDims, T>::withinBounds(dvec3(pos, 0.0), space);
+    }
+    bool withinBounds(const vec2& pos, Space space) const {
+        return SpatialSampler<3, DataDims, T>::withinBounds(dvec3(pos, 0.0), space);
+    }
 
     /**
      * Samples the image at the given position using bi-linear interpolation.
@@ -108,7 +138,7 @@ public:
      * @param space in what CoordinateSpace x and y is defined in
      */
     Vector<DataDims, T> sample(double x, double y, CoordinateSpace space) const {
-        return SpatialSampler<2, DataDims, T>::sample(dvec2(x, y), space);
+        return SpatialSampler<3, DataDims, T>::sample(dvec3(x, y, 0.0), space);
     }
 
     /**
@@ -117,12 +147,12 @@ public:
      * @param y Y coordinate of the position to sample at
      */
     Vector<DataDims, T> sample(double x, double y) const {
-        return SpatialSampler<2, DataDims, T>::sample(dvec2(x, y));
+        return SpatialSampler<3, DataDims, T>::sample(dvec3(x, y, 0.0));
     }
 
 protected:
-    virtual Vector<DataDims, T> sampleDataSpace(const dvec2& pos) const {
-        dvec2 samplePos = pos * dvec2(dims_ - size2_t(1));
+    virtual Vector<DataDims, T> sampleDataSpace(const dvec3& pos) const override {
+        dvec2 samplePos = dvec2{pos} * dvec2(dims_ - size2_t(1));
         size2_t indexPos = size2_t(samplePos);
         dvec2 interpolants = samplePos - dvec2(indexPos);
 
@@ -135,9 +165,9 @@ protected:
         return Interpolation<dvec4>::bilinear(samples, interpolants);
     }
 
-    virtual bool withinBoundsDataSpace(const dvec2& pos) const {
-        return !(glm::any(glm::lessThan(pos, dvec2(0.0))) ||
-                 glm::any(glm::greaterThan(pos, dvec2(1.0))));
+    virtual bool withinBoundsDataSpace(const dvec3& pos) const override {
+        return !(glm::any(glm::lessThan(dvec2{pos}, dvec2(0.0))) ||
+                 glm::any(glm::greaterThan(dvec2{pos}, dvec2(1.0))));
     }
 
 private:
