@@ -74,7 +74,7 @@ jobs:
             targets: 'all'
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.deb'
-            run: './inviwo --logconsole --quit'
+            run: 'QT_QPA_PLATFORM="offscreen" && ./inviwo --logconsole --quit'
           
           # linkage
           - linkage: 'dynamic'
