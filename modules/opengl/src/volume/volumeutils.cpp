@@ -61,7 +61,7 @@ namespace utilgl {
 namespace {}  // namespace
 
 void setShaderUniforms(Shader& shader, const Volume& volume, std::string_view samplerID) {
-    const StructuredCoordinateTransformer<3>& ct = volume.getCoordinateTransformer();
+    const auto& ct = volume.getCoordinateTransformer();
 
     StrBuffer buff;
 

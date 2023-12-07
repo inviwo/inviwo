@@ -110,11 +110,7 @@ public:
 
     void setWrapping(const Wrapping3D& wrapping);
     Wrapping3D getWrapping() const;
-
-    virtual const StructuredCameraCoordinateTransformer<3>& getCoordinateTransformer(
-        const Camera& camera) const override;
-    using StructuredGridEntity<3>::getCoordinateTransformer;
-
+    
     /**
      * \brief Computes the spacing to be used for gradient computation. Also works for volume with
      * non-orthogonal basis.

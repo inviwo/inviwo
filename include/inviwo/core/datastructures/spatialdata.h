@@ -93,63 +93,57 @@ namespace inviwo {
  *  ![](coordinate-spaces.png)
  */
 
-template <unsigned int N>
-class SpatialEntity {
+class IVW_CORE_API SpatialEntity {
 public:
     SpatialEntity();
-    SpatialEntity(const SpatialEntity<N>& rhs);
-    SpatialEntity(const Matrix<N + 1, float>& modelMatrix);
-    SpatialEntity(const Matrix<N + 1, float>& modelMatrix, const Matrix<N + 1, float>& worldMatrix);
+    SpatialEntity(const SpatialEntity& rhs);
+    SpatialEntity(const glm::mat4& modelMatrix);
+    SpatialEntity(const glm::mat4& modelMatrix, const glm::mat4& worldMatrix);
 
-    SpatialEntity<N>& operator=(const SpatialEntity<N>& that);
-    virtual SpatialEntity<N>* clone() const = 0;
+    SpatialEntity& operator=(const SpatialEntity& that);
+    virtual SpatialEntity* clone() const = 0;
     virtual ~SpatialEntity();
 
-    Vector<N, float> getOffset() const;
-    void setOffset(const Vector<N, float>& offset);
+    glm::vec3 getOffset() const;
+    void setOffset(const glm::vec3& offset);
 
     // Using row vectors in basis
-    Matrix<N, float> getBasis() const;
-    void setBasis(const Matrix<N, float>& basis);
+    glm::mat3 getBasis() const;
+    void setBasis(const glm::mat3& basis);
 
-    Matrix<N + 1, float> getModelMatrix() const;
-    void setModelMatrix(const Matrix<N + 1, float>& modelMatrix);
+    glm::mat4 getModelMatrix() const;
+    void setModelMatrix(const glm::mat4& modelMatrix);
 
-    Matrix<N + 1, float> getWorldMatrix() const;
-    void setWorldMatrix(const Matrix<N + 1, float>& worldMatrix);
+    glm::mat4 getWorldMatrix() const;
+    void setWorldMatrix(const glm::mat4& worldMatrix);
 
-    virtual Matrix<N + 1, float> getIndexMatrix() const { return Matrix<N + 1, float>{1.0f}; }
-
-    virtual const SpatialCoordinateTransformer<N>& getCoordinateTransformer() const;
-    virtual const SpatialCameraCoordinateTransformer<N>& getCoordinateTransformer(
-        const CameraND<N>& camera) const;
+    virtual const SpatialCoordinateTransformer& getCoordinateTransformer() const;
+    virtual const SpatialCameraCoordinateTransformer& getCoordinateTransformer(
+        const Camera& camera) const;
 
 protected:
-    mutable SpatialCoordinateTransformer<N>* transformer_;
-    mutable SpatialCameraCoordinateTransformer<N>* cameraTransformer_;
+    mutable SpatialCoordinateTransformer* transformer_;
+    mutable SpatialCameraCoordinateTransformer* cameraTransformer_;
 
-    Matrix<N + 1, float> modelMatrix_;
-    Matrix<N + 1, float> worldMatrix_;
+    glm::mat4 modelMatrix_;
+    glm::mat4 worldMatrix_;
 };
 
-extern template class IVW_CORE_TMPL_EXP SpatialEntity<2>;
-extern template class IVW_CORE_TMPL_EXP SpatialEntity<3>;
-
 template <unsigned int N>
-class StructuredGridEntity : public SpatialEntity<3> {
+class StructuredGridEntity : public SpatialEntity {
 public:
     StructuredGridEntity() = default;
     StructuredGridEntity(const StructuredGridEntity<N>& rhs) = default;
-    StructuredGridEntity(const Vector<N, size_t>& dimensions, const Vector<N, float>& spacing);
+    StructuredGridEntity(const glm::vec<N, size_t>& dimensions, const glm::vec<N, float>& spacing);
     StructuredGridEntity(const mat4& modelMatrix);
     StructuredGridEntity(const mat4& modelMatrix, const mat4& worldMatrix);
 
     StructuredGridEntity<N>& operator=(const StructuredGridEntity<N>& that) = default;
-    virtual StructuredGridEntity<N>* clone() const = 0;
+    virtual StructuredGridEntity<N>* clone() const override = 0;
 
     virtual ~StructuredGridEntity() = default;
 
-    virtual Vector<N, size_t> getDimensions() const = 0;
+    virtual glm::vec<N, size_t> getDimensions() const = 0;
 
     /**
      * Returns the matrix transformation mapping from texture coordinates
@@ -159,150 +153,27 @@ public:
      * or for instance http://bpeers.com/articles/glpixel/
      * @see CoordinateTransformer::getTextureToIndexMatrix
      */
-    virtual mat4 getIndexMatrix() const override;
+    glm::mat4 getIndexMatrix() const;
 
-    virtual const StructuredCoordinateTransformer<3>& getCoordinateTransformer() const override;
-    virtual const StructuredCameraCoordinateTransformer<3>& getCoordinateTransformer(
-        const CameraND<3>& camera) const override;
+    virtual const StructuredCoordinateTransformer& getCoordinateTransformer() const override;
+    virtual const StructuredCameraCoordinateTransformer& getCoordinateTransformer(
+        const Camera& camera) const override;
 };
 
-extern template class IVW_CORE_TMPL_EXP StructuredGridEntity<2>;
-extern template class IVW_CORE_TMPL_EXP StructuredGridEntity<3>;
-
-/*---------------------------------------------------------------*
- *  Implementations                                              *
- *  SpatialEntity                                                *
- *---------------------------------------------------------------*/
-
+/*
+ *  Implementations StructuredGridEntity
+ */
 template <unsigned int N>
-SpatialEntity<N>::SpatialEntity()
-    : transformer_(nullptr), cameraTransformer_(nullptr), modelMatrix_(1.0f), worldMatrix_(1.0f) {}
-
-template <unsigned int N>
-SpatialEntity<N>::SpatialEntity(const SpatialEntity<N>& rhs)
-    : transformer_(nullptr)
-    , cameraTransformer_(nullptr)
-    , modelMatrix_(rhs.modelMatrix_)
-    , worldMatrix_(rhs.worldMatrix_) {}
-
-template <unsigned int N>
-SpatialEntity<N>::SpatialEntity(const Matrix<N + 1, float>& modelMatrix)
-    : transformer_(nullptr)
-    , cameraTransformer_(nullptr)
-    , modelMatrix_(modelMatrix)
-    , worldMatrix_(1.0f) {}
-
-template <unsigned int N>
-SpatialEntity<N>::SpatialEntity(const Matrix<N + 1, float>& modelMatrix,
-                                const Matrix<N + 1, float>& worldMatrix)
-    : transformer_(nullptr)
-    , cameraTransformer_(nullptr)
-    , modelMatrix_(modelMatrix)
-    , worldMatrix_(worldMatrix) {}
-
-template <unsigned int N>
-SpatialEntity<N>& SpatialEntity<N>::operator=(const SpatialEntity<N>& that) {
-    if (this != &that) {
-        modelMatrix_ = that.modelMatrix_;
-        worldMatrix_ = that.worldMatrix_;
-    }
-    return *this;
-}
-
-template <unsigned int N>
-SpatialEntity<N>::~SpatialEntity() {
-    delete transformer_;
-    delete cameraTransformer_;
-}
-
-template <unsigned int N>
-Vector<N, float> SpatialEntity<N>::getOffset() const {
-    Vector<N, float> offset(0.0f);
-
-    for (unsigned int i = 0; i < N; i++) {
-        offset[i] = modelMatrix_[N][i];
-    }
-
-    return offset;
-}
-template <unsigned int N>
-void SpatialEntity<N>::setOffset(const Vector<N, float>& offset) {
-    for (unsigned int i = 0; i < N; i++) {
-        modelMatrix_[N][i] = offset[i];
-    }
-}
-
-template <unsigned int N>
-Matrix<N, float> SpatialEntity<N>::getBasis() const {
-    Matrix<N, float> basis(1.0f);
-
-    for (unsigned int i = 0; i < N; i++) {
-        for (unsigned int j = 0; j < N; j++) {
-            basis[i][j] = modelMatrix_[i][j];
-        }
-    }
-    return basis;
-}
-
-template <unsigned int N>
-void SpatialEntity<N>::setBasis(const Matrix<N, float>& basis) {
-    for (unsigned int i = 0; i < N; i++) {
-        for (unsigned int j = 0; j < N; j++) {
-            modelMatrix_[i][j] = basis[i][j];
-        }
-    }
-}
-
-template <unsigned int N>
-Matrix<N + 1, float> SpatialEntity<N>::getModelMatrix() const {
-    return modelMatrix_;
-}
-
-template <unsigned int N>
-void SpatialEntity<N>::setModelMatrix(const Matrix<N + 1, float>& modelMatrix) {
-    modelMatrix_ = modelMatrix;
-}
-
-template <unsigned int N>
-Matrix<N + 1, float> SpatialEntity<N>::getWorldMatrix() const {
-    return worldMatrix_;
-}
-template <unsigned int N>
-void SpatialEntity<N>::setWorldMatrix(const Matrix<N + 1, float>& worldMatrix) {
-    worldMatrix_ = worldMatrix;
-}
-
-template <unsigned int N>
-const SpatialCoordinateTransformer<N>& SpatialEntity<N>::getCoordinateTransformer() const {
-    if (!transformer_) transformer_ = new SpatialCoordinateTransformerImpl<N>(*this);
-    return *transformer_;
-}
-
-template <unsigned int N>
-const SpatialCameraCoordinateTransformer<N>& inviwo::SpatialEntity<N>::getCoordinateTransformer(
-    const CameraND<N>& camera) const {
-    if (!cameraTransformer_)
-        cameraTransformer_ = new SpatialCameraCoordinateTransformerImpl<N>(*this, camera);
-    static_cast<SpatialCameraCoordinateTransformerImpl<N>*>(cameraTransformer_)->setCamera(camera);
-    return *cameraTransformer_;
-}
-
-/*---------------------------------------------------------------*
- *  Implementations                                              *
- *  StructuredGridEntity                                         *
- *---------------------------------------------------------------*/
-
-template <unsigned int N>
-StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, size_t>& dimensions,
-                                              const Vector<N, float>& spacing)
-    : SpatialEntity<3>() {
-    mat3 basis(0.0f);
+StructuredGridEntity<N>::StructuredGridEntity(const glm::vec<N, size_t>& dimensions,
+                                              const glm::vec<N, float>& spacing)
+    : SpatialEntity() {
+    glm::mat3 basis(0.0f);
     for (unsigned int i = 0; i < N; ++i) {
         basis[i][i] = dimensions[i] * spacing[i];
     }
     setBasis(basis);
 
-    vec3 offset(0.0f);
+    glm::vec3 offset(0.0f);
     for (unsigned int i = 0; i < N; ++i) {
         offset += basis[i];
     }
@@ -311,16 +182,16 @@ StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, size_t>& dimension
 
 template <unsigned int N>
 StructuredGridEntity<N>::StructuredGridEntity(const mat4& modelMatrix)
-    : SpatialEntity<3>(modelMatrix) {}
+    : SpatialEntity(modelMatrix) {}
 
 template <unsigned int N>
 StructuredGridEntity<N>::StructuredGridEntity(const mat4& modelMatrix, const mat4& worldMatrix)
-    : SpatialEntity<3>(modelMatrix, worldMatrix) {}
+    : SpatialEntity(modelMatrix, worldMatrix) {}
 
 template <unsigned int N>
-mat4 StructuredGridEntity<N>::getIndexMatrix() const {
+glm::mat4 StructuredGridEntity<N>::getIndexMatrix() const {
     const auto dimensions = getDimensions();
-    mat4 indexMatrix(0.0f);
+    glm::mat4 indexMatrix(0.0f);
     for (unsigned int i = 0; i < N; ++i) {
         indexMatrix[i][i] = static_cast<float>(dimensions[i]);
     }
@@ -334,23 +205,25 @@ mat4 StructuredGridEntity<N>::getIndexMatrix() const {
 }
 
 template <unsigned int N>
-const StructuredCoordinateTransformer<3>& StructuredGridEntity<N>::getCoordinateTransformer()
-    const {
+const StructuredCoordinateTransformer& StructuredGridEntity<N>::getCoordinateTransformer() const {
     if (!transformer_) {
-        transformer_ = new StructuredCoordinateTransformerImpl<3>(*this);
+        transformer_ = new StructuredCoordinateTransformerImpl<N>(*this);
     }
-    return *static_cast<StructuredCoordinateTransformer<3>*>(transformer_);
+    return *static_cast<StructuredCoordinateTransformer*>(transformer_);
 }
 
 template <unsigned int N>
-const StructuredCameraCoordinateTransformer<3>&
-inviwo::StructuredGridEntity<N>::getCoordinateTransformer(const CameraND<3>& camera) const {
+const StructuredCameraCoordinateTransformer& StructuredGridEntity<N>::getCoordinateTransformer(
+    const Camera& camera) const {
     if (!cameraTransformer_) {
-        cameraTransformer_ = new StructuredCameraCoordinateTransformerImpl<3>(*this, camera);
+        cameraTransformer_ = new StructuredCameraCoordinateTransformerImpl<N>(*this, camera);
     }
-    static_cast<StructuredCameraCoordinateTransformerImpl<3>*>(cameraTransformer_)
+    static_cast<StructuredCameraCoordinateTransformerImpl<N>*>(cameraTransformer_)
         ->setCamera(camera);
-    return *static_cast<StructuredCameraCoordinateTransformer<3>*>(cameraTransformer_);
+    return *static_cast<StructuredCameraCoordinateTransformer*>(cameraTransformer_);
 }
+
+extern template class IVW_CORE_TMPL_EXP StructuredGridEntity<2>;
+extern template class IVW_CORE_TMPL_EXP StructuredGridEntity<3>;
 
 }  // namespace inviwo

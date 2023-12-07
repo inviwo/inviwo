@@ -322,8 +322,8 @@ void setShaderUniforms(Shader& shader, const RaycastingProperty& property, std::
     shader.setUniform(buff.replace("{}.samplingRate", name), property.samplingRate_.get());
 }
 
-void setShaderUniforms(Shader& shader, const SpatialEntity<3>& object, std::string_view name) {
-    const SpatialCoordinateTransformer<3>& ct = object.getCoordinateTransformer();
+void setShaderUniforms(Shader& shader, const SpatialEntity& object, std::string_view name) {
+    const SpatialCoordinateTransformer& ct = object.getCoordinateTransformer();
 
     mat4 dataToWorldMatrix = ct.getDataToWorldMatrix();
     mat4 modelToWorldMatrix = ct.getModelToWorldMatrix();

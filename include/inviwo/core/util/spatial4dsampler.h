@@ -50,7 +50,7 @@ public:
     using Space = CoordinateSpace;
     using ReturnType = Vector<DataDims, T>;
 
-    Spatial4DSampler(std::shared_ptr<const SpatialEntity<3>> spatialEntity);
+    Spatial4DSampler(std::shared_ptr<const SpatialEntity> spatialEntity);
     virtual ~Spatial4DSampler() = default;
 
     virtual Vector<DataDims, T> sample(const dvec4& pos, Space space = Space::Data) const;
@@ -59,7 +59,7 @@ public:
     virtual bool withinBounds(const dvec4& pos, Space space = Space::Data) const;
     virtual bool withinBounds(const vec4& pos, Space space = Space::Data) const;
 
-    const SpatialCoordinateTransformer<3>& getCoordinateTransformer() const;
+    const SpatialCoordinateTransformer& getCoordinateTransformer() const;
     mat4 getModelMatrix() const;
     mat4 getWorldMatrix() const;
 
@@ -67,7 +67,7 @@ protected:
     virtual Vector<DataDims, T> sampleDataSpace(const dvec4& pos) const = 0;
     virtual bool withinBoundsDataSpace(const dvec4& pos) const = 0;
 
-    std::shared_ptr<const SpatialEntity<3>> spatialEntity_;
+    std::shared_ptr<const SpatialEntity> spatialEntity_;
 };
 
 extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<1, double>;
@@ -98,7 +98,7 @@ struct DataTraits<Spatial4DSampler<DataDims, T>> {
 
 template <unsigned DataDims, typename T>
 Spatial4DSampler<DataDims, T>::Spatial4DSampler(
-    std::shared_ptr<const SpatialEntity<3>> spatialEntity)
+    std::shared_ptr<const SpatialEntity> spatialEntity)
     : spatialEntity_(spatialEntity) {}
 
 template <unsigned DataDims, typename T>
@@ -136,7 +136,7 @@ bool Spatial4DSampler<DataDims, T>::withinBounds(const vec4& pos, Space space) c
 }
 
 template <unsigned DataDims, typename T>
-const SpatialCoordinateTransformer<3>& Spatial4DSampler<DataDims, T>::getCoordinateTransformer()
+const SpatialCoordinateTransformer& Spatial4DSampler<DataDims, T>::getCoordinateTransformer()
     const {
     return spatialEntity_->getCoordinateTransformer();
 }

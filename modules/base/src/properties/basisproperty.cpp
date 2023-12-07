@@ -143,12 +143,12 @@ void BasisProperty::updateForNewEntity(const StructuredGridEntity<3>& volume, bo
     update(volume, deserialize);
 }
 
-void BasisProperty::updateForNewEntity(const SpatialEntity<3>& entity, bool deserialize) {
+void BasisProperty::updateForNewEntity(const SpatialEntity& entity, bool deserialize) {
     dimensions_ = vec3(1.0f);
     update(entity, deserialize);
 }
 
-void BasisProperty::update(const SpatialEntity<3>& entity, bool deserialize) {
+void BasisProperty::update(const SpatialEntity& entity, bool deserialize) {
     // Set basis properties to the values from the new volume
     model_ = entity.getModelMatrix();
 
@@ -299,7 +299,7 @@ BasisProperty& BasisProperty::resetToDefaultState() {
     return *this;
 }
 
-void BasisProperty::updateEntity(SpatialEntity<3>& volume) {
+void BasisProperty::updateEntity(SpatialEntity& volume) {
     volume.setModelMatrix(getBasisAndOffset());
 }
 

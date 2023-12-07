@@ -369,8 +369,7 @@ void unbindTextures(const ImageOutport& outport) {
 }
 
 void setShaderUniforms(Shader& shader, const Image& image, std::string_view samplerID) {
-    const StructuredCoordinateTransformer<3>& ct =
-        image.getColorLayer()->getCoordinateTransformer();
+    const auto& ct = image.getColorLayer()->getCoordinateTransformer();
 
     StrBuffer buff;
     shader.setUniform(buff.replace("{}.dataToModel", samplerID), ct.getDataToModelMatrix());

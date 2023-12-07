@@ -50,7 +50,7 @@ namespace inviwo {
  * \ingroup datastructures
  */
 class IVW_CORE_API Mesh : public DataGroup<Mesh, MeshRepresentation>,
-                          public SpatialEntity<3>,
+                          public SpatialEntity,
                           public MetaDataOwner {
 public:
     struct IVW_CORE_API MeshInfo {
@@ -271,10 +271,6 @@ public:
      * @param mesh The mesh to copy values from
      */
     void append(const Mesh& mesh);
-
-    virtual const SpatialCameraCoordinateTransformer<3>& getCoordinateTransformer(
-        const Camera& camera) const;
-    using SpatialEntity<3>::getCoordinateTransformer;
 
     static uvec3 colorCode;
     static const std::string classIdentifier;

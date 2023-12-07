@@ -115,7 +115,7 @@ IVW_MODULE_OPENGL_API void setShaderDefines(
     bool voxelClassification = false);
 
 // SpatialEntity
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const SpatialEntity<3>& object,
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const SpatialEntity& object,
                                              std::string_view name);
 
 // SimpleRaycastingProperty

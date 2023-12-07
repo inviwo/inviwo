@@ -28,10 +28,99 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/spatialdata.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>
 
 namespace inviwo {
-template class IVW_CORE_TMPL_INST SpatialEntity<2>;
-template class IVW_CORE_TMPL_INST SpatialEntity<3>;
+
+SpatialEntity::SpatialEntity()
+    : transformer_(nullptr), cameraTransformer_(nullptr), modelMatrix_(1.0f), worldMatrix_(1.0f) {}
+
+SpatialEntity::SpatialEntity(const SpatialEntity& rhs)
+    : transformer_(nullptr)
+    , cameraTransformer_(nullptr)
+    , modelMatrix_(rhs.modelMatrix_)
+    , worldMatrix_(rhs.worldMatrix_) {}
+
+SpatialEntity::SpatialEntity(const glm::mat4& modelMatrix)
+    : transformer_(nullptr)
+    , cameraTransformer_(nullptr)
+    , modelMatrix_(modelMatrix)
+    , worldMatrix_(1.0f) {}
+
+SpatialEntity::SpatialEntity(const glm::mat4& modelMatrix, const glm::mat4& worldMatrix)
+    : transformer_(nullptr)
+    , cameraTransformer_(nullptr)
+    , modelMatrix_(modelMatrix)
+    , worldMatrix_(worldMatrix) {}
+
+SpatialEntity& SpatialEntity::operator=(const SpatialEntity& that) {
+    if (this != &that) {
+        modelMatrix_ = that.modelMatrix_;
+        worldMatrix_ = that.worldMatrix_;
+    }
+    return *this;
+}
+
+SpatialEntity::~SpatialEntity() {
+    delete transformer_;
+    delete cameraTransformer_;
+}
+
+glm::vec3 SpatialEntity::getOffset() const {
+    glm::vec3 offset(0.0f);
+
+    for (unsigned int i = 0; i < 3; i++) {
+        offset[i] = modelMatrix_[3][i];
+    }
+
+    return offset;
+}
+void SpatialEntity::setOffset(const glm::vec3& offset) {
+    for (unsigned int i = 0; i < 3; i++) {
+        modelMatrix_[3][i] = offset[i];
+    }
+}
+
+glm::mat3 SpatialEntity::getBasis() const {
+    glm::mat3 basis(1.0f);
+
+    for (unsigned int i = 0; i < 3; i++) {
+        for (unsigned int j = 0; j < 3; j++) {
+            basis[i][j] = modelMatrix_[i][j];
+        }
+    }
+    return basis;
+}
+
+void SpatialEntity::setBasis(const glm::mat3& basis) {
+    for (unsigned int i = 0; i < 3; i++) {
+        for (unsigned int j = 0; j < 3; j++) {
+            modelMatrix_[i][j] = basis[i][j];
+        }
+    }
+}
+
+glm::mat4 SpatialEntity::getModelMatrix() const { return modelMatrix_; }
+
+void SpatialEntity::setModelMatrix(const glm::mat4& modelMatrix) { modelMatrix_ = modelMatrix; }
+
+glm::mat4 SpatialEntity::getWorldMatrix() const { return worldMatrix_; }
+void SpatialEntity::setWorldMatrix(const glm::mat4& worldMatrix) { worldMatrix_ = worldMatrix; }
+
+const SpatialCoordinateTransformer& SpatialEntity::getCoordinateTransformer() const {
+    if (!transformer_) transformer_ = new SpatialCoordinateTransformerImpl(*this);
+    return *transformer_;
+}
+
+const SpatialCameraCoordinateTransformer& inviwo::SpatialEntity::getCoordinateTransformer(
+    const Camera& camera) const {
+    if (!cameraTransformer_)
+        cameraTransformer_ = new SpatialCameraCoordinateTransformerImpl(*this, camera);
+    static_cast<SpatialCameraCoordinateTransformerImpl*>(cameraTransformer_)->setCamera(camera);
+    return *cameraTransformer_;
+}
+
 template class IVW_CORE_TMPL_INST StructuredGridEntity<2>;
 template class IVW_CORE_TMPL_INST StructuredGridEntity<3>;
+
 }  // namespace inviwo

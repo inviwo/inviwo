@@ -38,7 +38,7 @@ class Document;
 
 enum class LightSourceType { area = 0, cone, point, directional };
 
-class IVW_CORE_API LightSource : public SpatialEntity<3> {
+class IVW_CORE_API LightSource : public SpatialEntity {
 public:
     LightSource();
     virtual ~LightSource() = default;

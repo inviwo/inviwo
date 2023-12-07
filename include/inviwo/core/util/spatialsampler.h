@@ -45,7 +45,7 @@ public:
     using Space = CoordinateSpace;
     using ReturnType = Vector<DataDims, T>;
 
-    SpatialSampler(const SpatialEntity<SpatialDims>& spatialEntity, Space space = Space::Data);
+    SpatialSampler(const SpatialEntity& spatialEntity, Space space = Space::Data);
     virtual ~SpatialSampler() = default;
 
     virtual Vector<DataDims, T> sample(const Vector<SpatialDims, double>& pos) const;
@@ -64,14 +64,14 @@ public:
     Matrix<SpatialDims + 1, float> getModelMatrix() const;
     Matrix<SpatialDims + 1, float> getWorldMatrix() const;
 
-    const SpatialCoordinateTransformer<SpatialDims>& getCoordinateTransformer() const;
+    const SpatialCoordinateTransformer& getCoordinateTransformer() const;
 
 protected:
     virtual Vector<DataDims, T> sampleDataSpace(const Vector<SpatialDims, double>& pos) const = 0;
     virtual bool withinBoundsDataSpace(const Vector<SpatialDims, double>& pos) const = 0;
 
     Space space_;
-    const SpatialEntity<SpatialDims>& spatialEntity_;
+    const SpatialEntity& spatialEntity_;
     Matrix<SpatialDims + 1, double> transform_;
 };
 
@@ -94,8 +94,8 @@ struct DataTraits<SpatialSampler<SpatialDims, DataDims, T>> {
 };
 
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
-SpatialSampler<SpatialDims, DataDims, T>::SpatialSampler(
-    const SpatialEntity<SpatialDims>& spatialEntity, Space space)
+SpatialSampler<SpatialDims, DataDims, T>::SpatialSampler(const SpatialEntity& spatialEntity,
+                                                         Space space)
     : space_(space)
     , spatialEntity_(spatialEntity)
     , transform_{spatialEntity_.getCoordinateTransformer().getMatrix(space, Space::Data)} {}
@@ -172,7 +172,7 @@ bool SpatialSampler<SpatialDims, DataDims, T>::withinBounds(const Vector<Spatial
 }
 
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
-const SpatialCoordinateTransformer<SpatialDims>&
+const SpatialCoordinateTransformer&
 SpatialSampler<SpatialDims, DataDims, T>::getCoordinateTransformer() const {
     return spatialEntity_.getCoordinateTransformer();
 }
