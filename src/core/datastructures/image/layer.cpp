@@ -42,6 +42,8 @@ Layer::Layer(size2_t defaultDimensions, const DataFormatBase* defaultFormat, Lay
              const Wrapping2D& wrapping)
     : Data<Layer, LayerRepresentation>{}
     , StructuredGridEntity<2>{}
+    , dataMap{defaultFormat}
+    , axes{util::defaultAxes<2>()}
     , defaultLayerType_{type}
     , defaultDimensions_{defaultDimensions}
     , defaultDataFormat_{defaultFormat}
@@ -52,6 +54,8 @@ Layer::Layer(size2_t defaultDimensions, const DataFormatBase* defaultFormat, Lay
 Layer::Layer(std::shared_ptr<LayerRepresentation> in)
     : Data<Layer, LayerRepresentation>{}
     , StructuredGridEntity<2>{}
+    , dataMap{in->getDataFormat()}
+    , axes{util::defaultAxes<2>()}
     , defaultLayerType_{in->getLayerType()}
     , defaultDimensions_{in->getDimensions()}
     , defaultDataFormat_{in->getDataFormat()}
@@ -65,6 +69,8 @@ Layer::Layer(std::shared_ptr<LayerRepresentation> in)
 Layer::Layer(const Layer& rhs, NoData, const DataFormatBase* defaultFormat)
     : Data<Layer, LayerRepresentation>{}
     , StructuredGridEntity<2>{rhs}
+    , dataMap{defaultFormat ? defaultFormat : rhs.getDataFormat()}
+    , axes{rhs.axes}
     , defaultLayerType_{rhs.getLayerType()}
     , defaultDimensions_{rhs.getDimensions()}
     , defaultDataFormat_{defaultFormat ? defaultFormat : rhs.getDataFormat()}

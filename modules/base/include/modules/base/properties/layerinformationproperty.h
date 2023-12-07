@@ -29,17 +29,16 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
-#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
-#include <inviwo/core/properties/ordinalproperty.h>    // for IntSizeTProperty
-#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
-#include <inviwo/core/properties/stringproperty.h>     // for StringProperty
-
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/stringsproperty.h>
 
 namespace inviwo {
 
@@ -65,11 +64,19 @@ public:
     void updateFromLayer(const Layer& layer);
 
     StringProperty layerType_;
+    IntSize2Property dimensions_;
     StringProperty format_;
     IntSizeTProperty channels_;
     StringProperty swizzleMask_;
     StringProperty interpolation_;
     StringProperty wrapping_;
+
+    DoubleMinMaxProperty dataRange_;
+    DoubleMinMaxProperty valueRange_;
+    StringProperty valueName_;
+    StringProperty valueUnit_;
+    StringsProperty<2> axesNames_;
+    StringsProperty<2> axesUnits_;
 
     CompositeProperty transformations_;
     FloatMat2Property basis_;

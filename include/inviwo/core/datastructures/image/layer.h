@@ -34,6 +34,8 @@
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/unitsystem.h>
 
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
@@ -113,6 +115,9 @@ public:
      */
     std::unique_ptr<std::vector<unsigned char>> getAsCodedBuffer(
         const std::string& fileExtension) const;
+
+    DataMapper dataMap;
+    std::array<Axis, 2> axes;
 
 private:
     friend class LayerRepresentation;
