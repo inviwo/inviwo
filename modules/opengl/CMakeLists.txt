@@ -112,6 +112,8 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_texturequad.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_texturequad.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/isoraycasting.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/layerrendering.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/layerrendering.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/minimal.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/picking.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/raycasting.frag

@@ -54,6 +54,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/imageprocessing/jacobian2d.h
     include/modules/basegl/processors/instancerenderer.h
     include/modules/basegl/processors/isoraycaster.h
+    include/modules/basegl/processors/layerrenderer.h
     include/modules/basegl/processors/lightingraycaster.h
     include/modules/basegl/processors/lightvolumegl.h
     include/modules/basegl/processors/linerendererprocessor.h
@@ -171,6 +172,7 @@ set(SOURCE_FILES
     src/processors/imageprocessing/jacobian2d.cpp
     src/processors/instancerenderer.cpp
     src/processors/isoraycaster.cpp
+    src/processors/layerrenderer.cpp
     src/processors/lightingraycaster.cpp
     src/processors/lightvolumegl.cpp
     src/processors/linerendererprocessor.cpp
