@@ -51,6 +51,7 @@ namespace inviwo {
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointGenerator2D : public Processor {
 public:
     enum class Generator { Random, HaltonSequence };
+    enum class SamplingDomain { FullDomain, Line, Rectangle, Disk };
 
     SeedPointGenerator2D();
     virtual ~SeedPointGenerator2D() = default;
@@ -62,6 +63,13 @@ public:
 
 private:
     SeedPoints2DOutport seeds_;
+
+    CompositeProperty samplingDomain_;
+    OptionProperty<SamplingDomain> domain_;
+    FloatVec2Property position_;
+    FloatVec2Property extent_;
+    FloatVec2Property endpoint_;
+    FloatProperty radius_;
 
     OptionProperty<Generator> generator_;
 
