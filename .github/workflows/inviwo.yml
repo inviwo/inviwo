@@ -45,7 +45,6 @@ jobs:
             targets: 'ALL_BUILD'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
-            run: './${{ matrix.configuration }}/inviwo-cli.exe --logconsole --quit'
           
           - system: macos
             os: 'macos-13' # for now macos-latest == macos-12 since macos-13 is still "beta"
@@ -127,6 +126,13 @@ jobs:
               -DIVW_MODULE_FFMPEG=ON
               -DIVW_MODULE_WEBBROWSER=ON
               -DIVW_CFG_MSVC_FORCE_SHARED_CRT=ON
+              
+          - system: windows
+            configuration: Debug
+            run: './Debug/inviwo-cli.exe --logconsole --quit'
+          - system: windows
+            configuration: Release
+            run: './Release/inviwo-cli.exe --logconsole --quit'
 
         exclude:
           # Windows debug build are to big, they run out of diskspace
