@@ -69,9 +69,14 @@ set(HEADER_FILES
     include/modules/base/processors/imagesource.h
     include/modules/base/processors/imagesourceseries.h
     include/modules/base/processors/imagestackvolumesource.h
+    include/modules/base/processors/imagetolayer.h
     include/modules/base/processors/imagetospatialsampler.h
     include/modules/base/processors/inputselector.h
+    include/modules/base/processors/layerboundingbox.h
     include/modules/base/processors/layerdistancetransformram.h
+    include/modules/base/processors/layerinformation.h
+    include/modules/base/processors/layersource.h
+    include/modules/base/processors/layertospatialsampler.h
     include/modules/base/processors/meshclipping.h
     include/modules/base/processors/meshcolorfromnormals.h
     include/modules/base/processors/meshconverterprocessor.h
@@ -199,9 +204,14 @@ set(SOURCE_FILES
     src/processors/imagesource.cpp
     src/processors/imagesourceseries.cpp
     src/processors/imagestackvolumesource.cpp
+    src/processors/imagetolayer.cpp
     src/processors/imagetospatialsampler.cpp
     src/processors/inputselector.cpp
+    src/processors/layerboundingbox.cpp
     src/processors/layerdistancetransformram.cpp
+    src/processors/layerinformation.cpp
+    src/processors/layersource.cpp
+    src/processors/layertospatialsampler.cpp
     src/processors/meshclipping.cpp
     src/processors/meshcolorfromnormals.cpp
     src/processors/meshconverterprocessor.cpp

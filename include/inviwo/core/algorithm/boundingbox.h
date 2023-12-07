@@ -35,6 +35,7 @@
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/layerport.h>
 
 #include <inviwo/core/util/glm.h>
 
@@ -45,6 +46,8 @@ namespace inviwo {
 
 class Inport;
 
+class Image;
+class Layer;
 class Mesh;
 class Volume;
 
@@ -52,6 +55,19 @@ namespace util {
 
 IVW_CORE_API std::optional<mat4> boundingBoxUnion(const std::optional<mat4>& a,
                                                   const std::optional<mat4>& b);
+/**
+ * Calculate a bounding box of the layers in world space. The bounding box is
+ * represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are
+ * between 0 and 1.
+ */
+IVW_CORE_API mat4 boundingBox(const Layer& layer);
+
+/**
+ * Calculate a bounding box of all layers in world space. The bounding box is
+ * represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are
+ * between 0 and 1.
+ */
+IVW_CORE_API mat4 boundingBox(const std::vector<std::shared_ptr<Layer>>& layers);
 
 /**
  * Calculate a bounding box of the position buffer of the mesh in world space. The bounding box is
@@ -86,6 +102,12 @@ IVW_CORE_API mat4 boundingBox(const std::vector<std::shared_ptr<Volume>>& volume
  * the function should return std::nullopt;
  */
 /**@{*/
+IVW_CORE_API std::function<std::optional<mat4>()> boundingBox(const DataInport<Layer>& layer);
+IVW_CORE_API std::function<std::optional<mat4>()> boundingBox(const DataInport<Layer, 0>& layers);
+IVW_CORE_API std::function<std::optional<mat4>()> boundingBox(
+    const DataInport<Layer, 0, true>& layers);
+IVW_CORE_API std::function<std::optional<mat4>()> boundingBox(const DataOutport<Layer>& layer);
+
 IVW_CORE_API std::function<std::optional<mat4>()> boundingBox(const DataInport<Mesh>& mesh);
 IVW_CORE_API std::function<std::optional<mat4>()> boundingBox(const DataInport<Mesh, 0>& meshes);
 IVW_CORE_API std::function<std::optional<mat4>()> boundingBox(

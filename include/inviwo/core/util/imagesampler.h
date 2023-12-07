@@ -68,12 +68,17 @@ public:
         , sharedImage_(nullptr) {}
 
     /**
-     * Creates a ImageSpatialSampler for the given Layer, does not take ownership of ram.
-     * Use ImageSpatialSampler(std::shared_ptr<const Image>) to ensure that the Layer is available
+     * Creates a ImageSpatialSampler for the given Layer, does not take ownership of \p layer.
+     * Use ImageSpatialSampler(std::shared_ptr<const Layer>) to ensure that the Layer is available
      * for the lifetime of the ImageSpatialSampler
      */
     ImageSpatialSampler(const Layer* layer)
         : ImageSpatialSampler(layer->getRepresentation<LayerRAM>()) {}
+
+    ImageSpatialSampler(std::shared_ptr<const Layer> layer)
+        : ImageSpatialSampler(layer->getRepresentation<LayerRAM>()) {
+        sharedLayer_ = layer;
+    }
 
     /**
      * Creates a ImageSpatialSampler for the given Image, does not take ownership of ram.
@@ -144,6 +149,7 @@ private:
     size2_t dims_;
 
     std::shared_ptr<const Image> sharedImage_;
+    std::shared_ptr<const Layer> sharedLayer_;
 };
 
 using ImageSampler = ImageSpatialSampler<4, double>;  // For backwards compatibility

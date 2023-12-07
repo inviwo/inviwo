@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,47 +29,28 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>             // for ImageOutport
-#include <inviwo/core/processors/processor.h>        // for Processor
-#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
-#include <inviwo/core/properties/buttonproperty.h>   // for ButtonProperty
-#include <inviwo/core/properties/fileproperty.h>     // for FileProperty
-#include <inviwo/core/properties/optionproperty.h>   // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>  // for IntSize2Property
-#include <inviwo/core/util/fileextension.h>          // for FileExtension, operator==, operator<<
-
-#include <functional>   // for __base
-#include <string>       // for operator==, string
-#include <string_view>  // for operator==
-#include <vector>       // for operator!=, vector, operator==
+#include <inviwo/core/ports/layerport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <modules/base/properties/layerinformationproperty.h>
 
 namespace inviwo {
 
-class DataReaderFactory;
-class Deserializer;
-class InviwoApplication;
-
-class IVW_MODULE_BASE_API ImageSource : public Processor {
+class IVW_MODULE_BASE_API LayerInformation : public Processor {
 public:
-    ImageSource(InviwoApplication* app, const std::filesystem::path& filePath = "");
-    virtual ~ImageSource() = default;
+    LayerInformation();
+
+    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void process() override;
-    virtual void deserialize(Deserializer& d) override;
-
 private:
-    DataReaderFactory* rf_;
-    ImageOutport outport_;
-    FileProperty file_;
-    OptionProperty<FileExtension> reader_;
-    ButtonProperty reload_;
-    IntSize2Property imageDimension_;
-    bool loadingFailed_ = false;
+    LayerInport layer_;
+
+    LayerInformationProperty layerInfo_;
 };
 
 }  // namespace inviwo
