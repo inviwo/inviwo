@@ -103,42 +103,48 @@ void ImageChannelCombine::process() {
         if (a != c) return false;
         return true;
     };
-    auto img0 = inport0_.getData();
-    auto img1 = inport1_.getData();
-    auto img2 = inport2_.getData();
-    auto img3 = inport3_.getData();
+    auto sourceImage0 = inport0_.getData();
+    auto sourceImage1 = inport1_.getData();
+    auto sourceImage2 = inport2_.getData();
+    auto sourceImage3 = inport3_.getData();
 
-    if (isSame(img0->getDimensions(), img1->getDimensions(), img2->getDimensions()) &&
-        (inport3_.isConnected() && img3 && img3->getDimensions() != img0->getDimensions())) {
+    if (isSame(sourceImage0->getDimensions(), sourceImage1->getDimensions(),
+               sourceImage2->getDimensions()) &&
+        (inport3_.isConnected() && inport3_.hasData() &&
+         sourceImage3->getDimensions() != sourceImage0->getDimensions())) {
         throw Exception("Image dimensions of all inports need to be identical", IVW_CONTEXT);
     }
 
-    if (inport0_.isChanged() || inport1_.isChanged() || inport2_.isChanged()) {
-        const auto dimensions = inport0_.getData()->getDimensions();
-        auto t1 = inport0_.getData()->getDataFormat()->getNumericType();
-        auto t2 = inport1_.getData()->getDataFormat()->getNumericType();
-        auto t3 = inport2_.getData()->getDataFormat()->getNumericType();
+    const auto dimensions = inport0_.getData()->getDimensions();
+
+    auto&& [type, precision] = [&]() {
+        NumericType type0 = inport0_.getData()->getDataFormat()->getNumericType();
+        NumericType type1 = inport1_.getData()->getDataFormat()->getNumericType();
+        NumericType type2 = inport2_.getData()->getDataFormat()->getNumericType();
         NumericType type;
-        if (t1 == t2 && t1 == t3) {
-            // All have the same numType
-            type = t1;
-        } else if (t1 == NumericType::Float || t2 == NumericType::Float ||
-                   t2 == NumericType::Float) {
-            // At least one is a float type
+        if (type0 == type1 && type0 == type2) {
+            type = type0;
+        } else if (type0 == NumericType::Float || type1 == NumericType::Float ||
+                   type2 == NumericType::Float) {
             type = NumericType::Float;
+        } else if (type0 == NumericType::SignedInteger || type1 == NumericType::SignedInteger ||
+                   type2 == NumericType::SignedInteger) {
+            type = NumericType::SignedInteger;
         } else {
-            // At least one are signed, and at least one are unsigned
-            type = NumericType::Float;
+            type = NumericType::UnsignedInteger;
         }
 
-        auto p0 = inport0_.getData()->getDataFormat()->getPrecision();
-        auto p1 = inport1_.getData()->getDataFormat()->getPrecision();
-        auto p2 = inport2_.getData()->getDataFormat()->getPrecision();
+        size_t prec0 = inport0_.getData()->getDataFormat()->getPrecision();
+        size_t prec1 = inport1_.getData()->getDataFormat()->getPrecision();
+        size_t prec2 = inport2_.getData()->getDataFormat()->getPrecision();
+        size_t precision = std::max({prec0, prec1, prec2});
 
-        auto img = std::make_shared<Image>(dimensions,
-                                           DataFormatBase::get(type, 4, std::max({p0, p1, p2})));
-        outport_.setData(img);
-    }
+        return std::make_pair(type, precision);
+    }();
+
+    auto image =
+        std::make_shared<Image>(*sourceImage0, noData, DataFormatBase::get(type, 4, precision));
+    outport_.setData(image);
 
     utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     shader_.activate();
@@ -152,7 +158,6 @@ void ImageChannelCombine::process() {
     utilgl::setUniforms(shader_, outport_, rChannelSrc_, gChannelSrc_, bChannelSrc_, aChannelSrc_,
                         alpha_);
     shader_.setUniform("use_alpha_texture", inport3_.hasData());
-    utilgl::setUniforms(shader_, outport_);
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
