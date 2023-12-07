@@ -62,7 +62,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    SeedPoints2DOutport seeds_;
+    SeedPoints3DOutport seeds_;
 
     CompositeProperty samplingDomain_;
     OptionProperty<SamplingDomain> domain_;

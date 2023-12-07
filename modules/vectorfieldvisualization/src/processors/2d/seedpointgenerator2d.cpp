@@ -122,7 +122,7 @@ SeedPointGenerator2D::SeedPointGenerator2D()
 }
 
 void SeedPointGenerator2D::process() {
-    auto seeds = std::make_shared<std::vector<vec2>>();
+    auto seeds = std::make_shared<std::vector<vec3>>();
     seeds->reserve(numPoints_.get());
 
     auto createSpatialSeeds = [&]() {
@@ -130,14 +130,14 @@ void SeedPointGenerator2D::process() {
             case Generator::Random: {
                 std::uniform_real_distribution<float> dis(0, 1);
                 seeds->resize(numPoints_.get());
-                std::ranges::generate(*seeds, [&]() { return vec2{dis(mt_), dis(mt_)}; });
+                std::ranges::generate(*seeds, [&]() { return vec3{dis(mt_), dis(mt_), 0.0f}; });
                 break;
             }
             case Generator::HaltonSequence: {
                 auto x = util::haltonSequence<float>(haltonXBase_.get(), numPoints_);
                 auto y = util::haltonSequence<float>(haltonYBase_.get(), numPoints_);
                 for (auto&& it : util::zip(x, y)) {
-                    seeds->emplace_back(get<0>(it), get<1>(it));
+                    seeds->emplace_back(get<0>(it), get<1>(it), 0.0f);
                 }
                 break;
             }
@@ -151,12 +151,12 @@ void SeedPointGenerator2D::process() {
             case Generator::Random: {
                 std::uniform_real_distribution<float> dis(0, 1);
                 seeds->resize(numPoints_.get());
-                std::ranges::generate(*seeds, [&]() { return vec2{dis(mt_), 0.0f}; });
+                std::ranges::generate(*seeds, [&]() { return vec3{dis(mt_), 0.0f, 0.0f}; });
                 break;
             }
             case Generator::HaltonSequence: {
                 for (auto x : util::haltonSequence<float>(haltonXBase_.get(), numPoints_)) {
-                    seeds->emplace_back(x, 0.0f);
+                    seeds->emplace_back(x, 0.0f, 0.0f);
                 }
                 break;
             }
@@ -176,7 +176,7 @@ void SeedPointGenerator2D::process() {
 
             createSpatialSeeds();
             for (auto& pos : *seeds) {
-                pos = m * pos + lowerLeft;
+                pos = vec3{m * vec2{pos} + lowerLeft, 0.0f};
             }
             break;
         }
@@ -187,20 +187,20 @@ void SeedPointGenerator2D::process() {
 
             createLinearSeeds();
             for (auto& pos : *seeds) {
-                pos = vec2{glm::mix(start, end, pos.x)};
+                pos = vec3{glm::mix(start, end, pos.x), 0.0f};
             }
             break;
         }
         case SamplingDomain::Disk: {
             // transform seed positions from [0,1] to uniformly sampled disk
             // see https://mathworld.wolfram.com/DiskPointPicking.html
-            const vec2 center{position_};
+            const vec3 center{position_.get(), 0.0f};
             const float radiusSqrt = std::sqrt(radius_.get());
 
             createSpatialSeeds();
             for (auto& pos : *seeds) {
-                pos = vec2{std::cos(pos.x + glm::two_pi<float>()),
-                           std::sin(pos.y + glm::two_pi<float>())} *
+                pos = vec3{std::cos(pos.x + glm::two_pi<float>()),
+                           std::sin(pos.y + glm::two_pi<float>()), 0.0f} *
                           radiusSqrt +
                       center;
             }
