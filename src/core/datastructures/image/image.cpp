@@ -212,6 +212,27 @@ Layer* Image::getLayer(LayerType type, size_t idx) {
     return nullptr;
 }
 
+auto Image::begin() -> ColorLayerIterator {
+    return util::makeIndirectIterator(colorLayers_.begin());
+}
+auto Image::end() -> ColorLayerIterator {
+    return util::makeIndirectIterator(colorLayers_.end());
+}
+
+auto Image::begin() const -> const_ColorLayerIterator {
+    return util::makeIndirectIterator(colorLayers_.begin());
+}
+auto Image::end() const -> const_ColorLayerIterator {
+    return util::makeIndirectIterator(colorLayers_.end());
+}
+
+auto Image::cbegin() const -> const_ColorLayerIterator {
+    return util::makeIndirectIterator(colorLayers_.begin());
+}
+auto Image::cend() const -> const_ColorLayerIterator {
+    return util::makeIndirectIterator(colorLayers_.end());
+}
+
 const Layer* Image::getColorLayer(size_t idx) const {
     if (idx < colorLayers_.size()) {
         return colorLayers_[idx].get();

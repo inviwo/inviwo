@@ -38,6 +38,7 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/util/indirectiterator.h>
 
 namespace inviwo {
 
@@ -46,6 +47,11 @@ namespace inviwo {
  */
 class IVW_CORE_API Image : public DataGroup<Image, ImageRepresentation>, public MetaDataOwner {
 public:
+    using ColorLayerIterator =
+        util::IndirectIterator<std::vector<std::shared_ptr<Layer>>::iterator>;
+    using const_ColorLayerIterator =
+        util::IndirectIterator<std::vector<std::shared_ptr<Layer>>::const_iterator>;
+
     using DataBuffer = std::unique_ptr<std::vector<unsigned char>>;
 
     /**
@@ -91,6 +97,15 @@ public:
 
     const Layer* getLayer(LayerType, size_t idx = 0) const;
     Layer* getLayer(LayerType, size_t idx = 0);
+
+    ColorLayerIterator begin();
+    ColorLayerIterator end();
+
+    const_ColorLayerIterator begin() const;
+    const_ColorLayerIterator end() const;
+
+    const_ColorLayerIterator cbegin() const;
+    const_ColorLayerIterator cend() const;
 
     const Layer* getColorLayer(size_t idx = 0) const;
     Layer* getColorLayer(size_t idx = 0);
