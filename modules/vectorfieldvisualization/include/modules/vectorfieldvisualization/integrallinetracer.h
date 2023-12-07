@@ -135,14 +135,14 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::traceFrom(const SpatialVector
     const auto [stepsBWD, stepsFWD] = [dir = dir_, steps = steps_,
                                        &line]() -> std::pair<size_t, size_t> {
         switch (dir) {
-            case inviwo::IntegralLineProperties::Direction::FWD:
+            case inviwo::IntegralLineProperties::Direction::Forward:
                 line.setBackwardTerminationReason(IntegralLine::TerminationReason::StartPoint);
                 return {1, steps + 1};
-            case inviwo::IntegralLineProperties::Direction::BWD:
+            case inviwo::IntegralLineProperties::Direction::Backward:
                 line.setForwardTerminationReason(IntegralLine::TerminationReason::StartPoint);
                 return {steps + 1, 1};
             default:
-            case inviwo::IntegralLineProperties::Direction::BOTH: {
+            case inviwo::IntegralLineProperties::Direction::Bidirectional: {
                 return {steps / 2 + 1, steps - (steps / 2) + 1};
             }
         }
