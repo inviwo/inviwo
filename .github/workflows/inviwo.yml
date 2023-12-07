@@ -259,6 +259,17 @@ jobs:
         cmake --build build --config ${{ matrix.configuration }} 
         --parallel --target ${{ matrix.targets }}
 
+    - name: "Run (Win)"
+      if: runner.os == 'Windows'
+      shell: bash
+      working-directory: "build/bin/${{ matrix.configuration }}"
+      run: ./inviwo-cli.exe --logconsole --quit
+    - name: "Run (Posix)"
+      if: runner.os != 'Windows'
+      shell: bash
+      working-directory: "build/bin"
+      run: ./inviwo --logconsole --quit
+
     - name: "Upload installer"
       if: matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
       uses: actions/upload-artifact@v3
@@ -281,7 +292,7 @@ jobs:
         path: build/docs/python-api/*
     
     - name: "Setup tmate session (on failure and debug_enabled)"
-      if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      if: ${{ failure() || (github.event_name == 'workflow_dispatch' && inputs.debug_enabled) }}
       uses: mxschmitt/action-tmate@v3
       with:
         timeout-minutes: 15
@@ -353,15 +364,13 @@ jobs:
       run: >
         cmake --build build --config Release --parallel --target all
 
-    # Libcef.so is in the bin not lib dir.
-    #- name: "Run"
-    #  shell: bash
-    #  run: |
-    #    cd build/bin
-    #    ./inviwo --logconsole --quit
+    - name: "Run"
+      shell: bash
+      working-directory: "build/bin"
+      run: ./inviwo --logconsole --quit
 
     - name: "Setup tmate session (on failure and debug_enabled)"
-      if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      if: ${{ failure() || (github.event_name == 'workflow_dispatch' && inputs.debug_enabled) }}
       uses: mxschmitt/action-tmate@v3
       with:
         timeout-minutes: 15
@@ -435,7 +444,7 @@ jobs:
         ./inviwo --logconsole --quit
 
     - name: "Setup tmate session (on failure and debug_enabled)"
-      if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      if: ${{ failure() || (github.event_name == 'workflow_dispatch' && inputs.debug_enabled) }}
       uses: mxschmitt/action-tmate@v3
       with:
         timeout-minutes: 15
