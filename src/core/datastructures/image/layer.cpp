@@ -62,6 +62,16 @@ Layer::Layer(std::shared_ptr<LayerRepresentation> in)
     addRepresentation(in);
 }
 
+Layer::Layer(const Layer& rhs, NoData, const DataFormatBase* defaultFormat)
+    : Data<Layer, LayerRepresentation>{}
+    , StructuredGridEntity<2>{rhs}
+    , defaultLayerType_{rhs.getLayerType()}
+    , defaultDimensions_{rhs.getDimensions()}
+    , defaultDataFormat_{defaultFormat ? defaultFormat : rhs.getDataFormat()}
+    , defaultSwizzleMask_{rhs.getSwizzleMask()}
+    , defaultInterpolation_{rhs.getInterpolation()}
+    , defaultWrapping_{rhs.getWrapping()} {}
+
 Layer* Layer::clone() const { return new Layer(*this); }
 
 LayerType Layer::getLayerType() const {

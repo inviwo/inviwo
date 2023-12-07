@@ -75,7 +75,15 @@ public:
     Image(std::shared_ptr<Layer> layer);
 
     Image(const Image& rhs);
-    Image(const Image& rhs, NoData);
+    /**
+     * Create an image based on \p rhs without copying any data. If \p colorLayerFormat is a
+     * nullptr, the format of color layers matches the ones in \p rhs.
+     * @param rhs             source image providing the necessary information for all layers like
+     *                        dimensions, spatial transformations, etc.
+     * @param colorLayerFormat   data format for color layers. If equal to nullptr, the formats of
+     *                        the color layers in \p rhs are used instead.
+     */
+    Image(const Image& rhs, NoData, const DataFormatBase* colorLayerFormat = nullptr);
     Image& operator=(const Image& that);
     virtual Image* clone() const;
     virtual ~Image() = default;
@@ -152,6 +160,8 @@ public:
 protected:
     static std::shared_ptr<Layer> createColorLayer(
         size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get());
+    static std::vector<std::shared_ptr<Layer>> createColorLayers(
+        const Image& srcImage, const DataFormatBase* format = nullptr);
     static std::shared_ptr<Layer> createDepthLayer(size2_t dimensions = size2_t(8, 8));
     static std::shared_ptr<Layer> createPickingLayer(size2_t dimensions = size2_t(8, 8));
 
