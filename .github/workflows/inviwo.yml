@@ -264,8 +264,13 @@ jobs:
       shell: bash
       working-directory: "build/bin/${{ matrix.configuration }}"
       run: ./inviwo-cli.exe --logconsole --quit
-    - name: "Run (Posix)"
-      if: runner.os != 'Windows'
+    - name: "Run (macOS)"
+      if: runner.os != 'macOS'
+      shell: bash
+      working-directory: "build/bin"
+      run: ./inviwo.app/Contents/MacOS/inviwo --logconsole --quit
+    - name: "Run (Linux)"
+      if: runner.os != 'Linux'
       shell: bash
       working-directory: "build/bin"
       run: ./inviwo --logconsole --quit
@@ -294,8 +299,8 @@ jobs:
     - name: "Setup tmate session (on failure and debug_enabled)"
       if: ${{ failure() || (github.event_name == 'workflow_dispatch' && inputs.debug_enabled) }}
       uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 10
       with:
-        timeout-minutes: 15
         limit-access-to-actor: true
 
 
@@ -372,8 +377,8 @@ jobs:
     - name: "Setup tmate session (on failure and debug_enabled)"
       if: ${{ failure() || (github.event_name == 'workflow_dispatch' && inputs.debug_enabled) }}
       uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 10
       with:
-        timeout-minutes: 15
         limit-access-to-actor: true
 
 
@@ -446,8 +451,8 @@ jobs:
     - name: "Setup tmate session (on failure and debug_enabled)"
       if: ${{ failure() || (github.event_name == 'workflow_dispatch' && inputs.debug_enabled) }}
       uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 10
       with:
-        timeout-minutes: 15
         limit-access-to-actor: true
 
 
