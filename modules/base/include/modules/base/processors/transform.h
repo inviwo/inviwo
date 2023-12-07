@@ -72,41 +72,45 @@ const ProcessorInfo Transform<T>::getProcessorInfo() const {
     return ProcessorTraits<Transform<T>>::getProcessorInfo();
 }
 
-/** \docpage{org.inviwo.TransformMesh, Transform Mesh}
- * ![](org.inviwo.TransformMesh.png?classIdentifier=org.inviwo.TransformMesh)
- * Apply a model or world transformation to a mesh.
- */
+class Layer;
+
+template <>
+struct ProcessorTraits<Transform<Layer>> {
+    static ProcessorInfo getProcessorInfo() {
+        return {"org.inviwo.TransformLayer",                  // Class identifier
+                "Transform Layer",                            // Display name
+                "Coordinate Transforms",                      // Category
+                CodeState::Stable,                            // Code state
+                Tags::CPU | Tag{"Transform"} | Tag{"Layer"},  // Tags
+                "Apply a model or world transformation to a layer."_help};
+    }
+};
+
 class Mesh;
 
 template <>
 struct ProcessorTraits<Transform<Mesh>> {
     static ProcessorInfo getProcessorInfo() {
-        return {
-            "org.inviwo.TransformMesh",  // Class identifier
-            "Transform Mesh",            // Display name
-            "Coordinate Transforms",     // Category
-            CodeState::Stable,           // Code state
-            "Mesh, Transform"            // Tags
-        };
+        return {"org.inviwo.TransformMesh",                  // Class identifier
+                "Transform Mesh",                            // Display name
+                "Coordinate Transforms",                     // Category
+                CodeState::Stable,                           // Code state
+                Tags::CPU | Tag{"Transform"} | Tag{"Mesh"},  // Tags
+                "Apply a model or world transformation to a mesh."_help};
     }
 };
 
-/** \docpage{org.inviwo.TransformVolume, Transform Volume}
- * ![](org.inviwo.TransformVolume.png?classIdentifier=org.inviwo.TransformVolume)
- * Apply a model or world transformation to a volume.
- */
 class Volume;
 
 template <>
 struct ProcessorTraits<Transform<Volume>> {
     static ProcessorInfo getProcessorInfo() {
-        return {
-            "org.inviwo.TransformVolume",  // Class identifier
-            "Transform Volume",            // Display name
-            "Coordinate Transforms",       // Category
-            CodeState::Stable,             // Code state
-            "Volume, Transform"            // Tags
-        };
+        return {"org.inviwo.TransformVolume",                  // Class identifier
+                "Transform Volume",                            // Display name
+                "Coordinate Transforms",                       // Category
+                CodeState::Stable,                             // Code state
+                Tags::CPU | Tag{"Transform"} | Tag{"Volume"},  // Tags
+                "Apply a model or world transformation to a volume."_help};
     }
 };
 
@@ -120,7 +124,7 @@ Transform<T>::Transform()
           {{"model", "Model", CoordinateSpace::Model}, {"world", "World", CoordinateSpace::World}},
           1)
     , replace_("replace", "Replace Input Transformation", false)
-    , transforms_("transformations", "Transformation stack") {
+    , transforms_("transformations", "Transformation Stack") {
 
     addPort(inport_);
     addPort(outport_);

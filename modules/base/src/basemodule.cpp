@@ -29,10 +29,11 @@
 
 #include <modules/base/basemodule.h>
 
-#include <inviwo/core/common/inviwomodule.h>                            // for InviwoModule
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPre...
-#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh
+#include <inviwo/core/common/inviwomodule.h>              // for InviwoModule
+#include <inviwo/core/datastructures/buffer/buffer.h>     // for Buffer
+#include <inviwo/core/datastructures/buffer/bufferram.h>  // for BufferRAMPre...
+#include <inviwo/core/datastructures/geometry/mesh.h>     // for Mesh
+#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/representationconverter.h>         // for Representati...
 #include <inviwo/core/datastructures/representationconverterfactory.h>  // for Representati...
 #include <inviwo/core/datastructures/volume/volume.h>                   // for Volume, Data...
@@ -178,6 +179,7 @@ class InviwoApplication;
 using BasisTransformMesh = BasisTransform<Mesh>;
 using BasisTransformVolume = BasisTransform<Volume>;
 
+using TransformLayer = Transform<Layer>;
 using TransformMesh = Transform<Mesh>;
 using TransformVolume = Transform<Volume>;
 
@@ -224,6 +226,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<BasisTransformMesh>();
     registerProcessor<BasisTransformVolume>();
     registerProcessor<TrianglesToWireframe>();
+    registerProcessor<TransformLayer>();
     registerProcessor<TransformMesh>();
     registerProcessor<TransformVolume>();
     registerProcessor<VectorToBuffer<unsigned int>>();
