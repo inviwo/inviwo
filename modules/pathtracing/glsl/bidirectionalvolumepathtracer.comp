@@ -29,7 +29,8 @@ uniform sampler2D exitDepth;
 uniform ImageParameters exitParameters;
 
 // output
-uniform layout(binding=0, rgba8) image2D outportColor;
+uniform layout(binding = 0, rgba8)
+image2D outportColor;
 writeonly uniform image2D outportDepth;
 writeonly uniform image2D outportPicking;
 uniform ImageParameters outportParameters;
@@ -38,8 +39,8 @@ uniform ImageParameters outportParameters;
 uniform CameraParameters camera;
 uniform VolumeIndicatorParameters positionindicator;
 uniform RaycastingParameters raycaster;
-uniform LightParameters light; //lighting
-uniform sampler2D transferFunction; 
+uniform LightParameters light;  // lighting
+uniform sampler2D transferFunction;
 
 uniform int channel;
 
@@ -48,66 +49,60 @@ uniform int iteration;
 
 #define PI 3.1415
 
-layout (local_size_x = 16, local_size_y = 16) in;
-
-// TODO: Delete
-vec3 calcCameraDir(in vec3 entryPoint, in vec3 exitPoint, in mat4 textureToWorld) {
-    return normalize(
-        (textureToWorld * vec4(entryPoint, 1.0) - textureToWorld * vec4(exitPoint, 1.0)).xyz);
-}
+layout(local_size_x = 16, local_size_y = 16) in;
 
 uint getHashSeed() {
-    uint globalDimX = gl_WorkGroupSize.x*gl_NumWorkGroups.x;
-    uint globalDimY = gl_WorkGroupSize.y*gl_NumWorkGroups.y;
+    uint globalDimX = gl_WorkGroupSize.x * gl_NumWorkGroups.x;
+    uint globalDimY = gl_WorkGroupSize.y * gl_NumWorkGroups.y;
 
-    uint gid = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y*globalDimX;
-    uint hashSeed = gid + floatBitsToUint(timeBits);
+    uint gid = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * globalDimX;
+    uint hashSeed = gid + floatBitsToUint(time_ms);
     return hashSeed;
-} 
+}
 
-vec4 pathtrace(
-    ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth, 
-    float rayDepth, inout float depth, RaycastingParameters rayCastParam, 
-    VolumeParameters volParam, vec4 bgColor, float extinctionUpper) {
+vec4 pathtrace(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float entryDepth,
+               float exitDepth, float rayDepth, inout float depth,
+               RaycastingParameters rayCastParam, VolumeParameters volParam, vec4 bgColor) {
 
     vec4 result = vec4(0.0);
 
     vec3 ray = exitPoint - entryPoint;
-    vec3 rayDir = normalize(ray);  
-    float rayLength = length(ray);  
+    vec3 rayDir = normalize(ray);
+    float rayLength = length(ray);
 
-    float hashSeed = getHashSeed();
+    uint hashSeed = getHashSeed();
 
     vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volParam.textureToWorld);
 
     vec3 samplePosition = entryPoint;
-    
 
     float T = 0.0f;
-    float meanfreepath = WoodcockTracking(samplePosition, rayDir, rayPosition, rayLength, hashSeed,
-            volume, volumeParameters, transferFunction, extinctionUpper);
+    float extinctionUpper = 1.0f;
+    float meanfreepath = WoodcockTracking(samplePosition, rayDir, 0f, rayLength, hashSeed, volume,
+                                          volumeParameters, transferFunction, extinctionUpper);
 
     if (meanfreepath <= rayLength) {
         samplePosition = entryPoint + meanfreepath * rayDir;
         rayDepth = meanfreepath;
-        
-        result.rgb = RMVolumeRender_SingleScatter_SingleLight(meanfreepath, volume, volumeParameters, 
-            transferFunction, samplePosition, cameraDir, light, hashSeed, channel, extinctionUpper);
+
+        result.rgb = estimateDirectLight(meanfreepath, volume, volumeParameters, transferFunction,
+                                         samplePosition, cameraDir, light, hashSeed, channel,
+                                         extinctionUpper);
 
         result.a = 1f - T;
-        #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
+#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
     } else {
-         result = bgColor;
+        result = bgColor;
     }
-    depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryDepth, exitDepth),
-                depth, rayDepth == -1.0);
-    
+    depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryDepth, exitDepth), depth,
+                rayDepth == -1.0);
+
     return result;
 }
 
-void main(){
+void main() {
 
-                               // The accumulated color along the ray;
+    // The accumulated color along the ray;
     vec4 picking = vec4(0.0);  // The picking color of the ray
                                // The ray depth value [0, ray length], -1 means "no" depth.
     float rayDepth = -1.0;     // Uses the same space as rayPosition. Usually used to track
@@ -117,7 +112,7 @@ void main(){
                                // written to outportDepth
 
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
-    vec2 texCoord = vec2(0.5 + gl_GlobalInvocationID.xy) / outportParameters.dimensions;    
+    vec2 texCoord = vec2(0.5 + gl_GlobalInvocationID.xy) / outportParameters.dimensions;
 
     vec3 entryPoint = texture(entryColor, texCoord).xyz;
     vec3 exitPoint = texture(exitColor, texCoord).xyz;
@@ -129,22 +124,21 @@ void main(){
     vec4 bgColor = vec4(0.0f);
 
     if (entryPoint == exitPoint) {
-        imageStore(outportColor, storePos, bgColor); 
-        imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
+        imageStore(outportColor, storePos, bgColor);
+        imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255));
         imageStore(outportPicking, storePos, picking);
         return;
     }
 
-    float extinctionUpper = 1.0f;
-    vec4 color = pathtrace(outportParameters, entryPoint, exitPoint, entryPointDepth, exitPointDepth, 
-        rayDepth, depth, raycaster, volumeParameters, bgColor, extinctionUpper);
+    vec4 color = pathtrace(outportParameters, entryPoint, exitPoint, entryPointDepth,
+                           exitPointDepth, rayDepth, depth, raycaster, volumeParameters, bgColor);
 
-    vec4 resultPrev = imageLoad(outportColor, storePos);
+    vec4 colorPrev = imageLoad(outportColor, storePos);
 
-    float w = 1.0f - 1.0f/float(iteration + 1);
-    vec4 resultFinal = mix(result, resultPrev, w);
+    float w = 1.0f - 1.0f / float(iteration + 1);
+    vec4 colorFinal = mix(color, colorPrev, w);
 
-    imageStore(outportColor, storePos, resultFinal);     
-    imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255)); 
+    imageStore(outportColor, storePos, colorFinal);
+    imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255));
     imageStore(outportPicking, storePos, picking);
 }
