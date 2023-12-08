@@ -98,8 +98,8 @@ void LayerRenderer::process() {
     shader_.setUniform("colorTex", unit);
 
     for (const auto& layer : inport_) {
-        shader_.setUniform("geometry.dataToWorld", mat4(1.0f));
-                           //layer->getCoordinateTransformer().getDataToWorldMatrix());
+        shader_.setUniform("geometry.dataToWorld",
+                           layer->getCoordinateTransformer().getDataToWorldMatrix());
         layer->getRepresentation<LayerGL>()->bindTexture(unit);
         drawer.draw();
     }
