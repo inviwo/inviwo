@@ -87,6 +87,7 @@
 #include <modules/base/processors/imagetospatialsampler.h>  // for ImageToSpati...
 #include <modules/base/processors/inputselector.h>          // for InputSelector
 #include <modules/base/processors/layerboundingbox.h>
+#include <modules/base/processors/layercombiner.h>
 #include <modules/base/processors/layerdistancetransformram.h>  // for LayerDistanc...
 #include <modules/base/processors/layerinformation.h>
 #include <modules/base/processors/layersource.h>
@@ -203,6 +204,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<ImageStackVolumeSource>();
     registerProcessor<ImageToLayer>();
     registerProcessor<LayerBoundingBox>();
+    registerProcessor<LayerCombiner>();
     registerProcessor<LayerDistanceTransformRAM>();
     registerProcessor<LayerInformation>();
     registerProcessor<LayerSource>();

@@ -73,6 +73,7 @@ set(HEADER_FILES
     include/modules/base/processors/imagetospatialsampler.h
     include/modules/base/processors/inputselector.h
     include/modules/base/processors/layerboundingbox.h
+    include/modules/base/processors/layercombiner.h
     include/modules/base/processors/layerdistancetransformram.h
     include/modules/base/processors/layerinformation.h
     include/modules/base/processors/layersource.h
@@ -208,6 +209,7 @@ set(SOURCE_FILES
     src/processors/imagetospatialsampler.cpp
     src/processors/inputselector.cpp
     src/processors/layerboundingbox.cpp
+    src/processors/layercombiner.cpp
     src/processors/layerdistancetransformram.cpp
     src/processors/layerinformation.cpp
     src/processors/layersource.cpp
