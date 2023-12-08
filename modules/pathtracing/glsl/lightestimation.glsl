@@ -6,17 +6,16 @@ vec3 estimateDirectLight(float rayStep, sampler3D volume, VolumeParameters volPa
                          vec3 samplePos, vec3 cameraDir, LightParameters light, uint hashSeed,
                          int rcChannel, float extinctionUpper) {
 
-    vec3 toLightTextureVector =
-        (volParam.worldToTexture * vec4(light.position, 1f)).xyz - samplePos;
-    vec3 toLightTextureDir = normalize(toLightTextureVector);
+    vec3 toLightPath = (volParam.worldToTexture * vec4(light.position, 1f)).xyz - samplePos;
+    vec3 toLightDir = normalize(toLightPath);
     float t0 = 0.0f;
     float t1 = 1.f;
 
-    RayBBIntersection_TextureSpace(samplePos, toLightTextureDir, t0, t1);
+    rayBoxIntersection_TextureSpace(samplePos, toLightDir, t0, t1);
 
-    float meanfreepath_l = WoodcockTracking(samplePos, toLightTextureDir, t0, t1, hashSeed, volume,
+    float meanFreePath_l = woodcockTracking(samplePos, toLightDir, t0, t1, hashSeed, volume,
                                             volParam, tf, extinctionUpper);
-    float Tl = meanfreepath_l >= t1 ? 1.0f : 0.0f;
+    float Tl = meanFreePath_l >= t1 ? 1.0f : 0.0f;
 
     if (Tl == 0.0f) {
         return vec3(0f);

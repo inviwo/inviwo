@@ -30,7 +30,7 @@ vec3 rotateFrom(vec3 v, float theta, float phi) {
 }
 
 // Assumes sample space to be from 000 to 111
-bool RayBBIntersection_TextureSpace(vec3 origin, vec3 dir, out float t0, out float t1) {
+bool rayBoxIntersection_TextureSpace(vec3 origin, vec3 dir, out float t0, out float t1) {
     float FLT_MAX = 3.402823466e+38;
 
     vec3 invDir = 1.f / dir;
