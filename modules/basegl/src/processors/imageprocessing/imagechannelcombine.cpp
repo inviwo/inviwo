@@ -62,17 +62,20 @@ const ProcessorInfo ImageChannelCombine::processorInfo_{
     "org.inviwo.ImageChannelCombine",  // Class identifier
     "Image Channel Combine",           // Display name
     "Image Operation",                 // Category
-    CodeState::Experimental,           // Code state
+    CodeState::Stable,                 // Code state
     Tags::GL,                          // Tags
-};
+    "Creates a 4 channel image with the connected inputs, from each of them the channel specified "
+    "in its property is used. If the optional alpha channel is not provided, the alpha property "
+    "is used to set the alpha value of the entire image."_help};
 const ProcessorInfo ImageChannelCombine::getProcessorInfo() const { return processorInfo_; }
 
 ImageChannelCombine::ImageChannelCombine()
     : Processor()
-    , inport0_("inport0", true)
-    , inport1_("inport1", true)
-    , inport2_("inport2", true)
-    , inport3_("inport3", true)
+    , inport0_("inport0", "Input for first channel (red)"_help, OutportDeterminesSize::Yes)
+    , inport1_("inport1", "Input for the second channel (green)"_help, OutportDeterminesSize::Yes)
+    , inport2_("inport2", "Input for the third channel (blue)"_help, OutportDeterminesSize::Yes)
+    , inport3_("inport3", "Input for the fourth channel (alpha, optional)"_help,
+               OutportDeterminesSize::Yes)
     , outport_("outport", false)
     , rChannelSrc_("redChannel", "Red Channel",
                    {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Alpha", 3}})
@@ -82,19 +85,18 @@ ImageChannelCombine::ImageChannelCombine()
                    {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Alpha", 3}})
     , aChannelSrc_("alphaChannel", "Alpha Channel",
                    {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Alpha", 3}})
-    , alpha_("alpha", "Alpha", 1.0f, 0.0f, 1.0f, 0.001f)
+    , alpha_("alpha", "Alpha",
+             util::ordinalLength(1.0f, 1.0f)
+                 .set("Alpha value used if there is no input for the fourth channel"_help))
     , shader_("img_channel_combine.frag") {
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    addPort(inport0_);
-    addPort(inport1_);
-    addPort(inport2_);
+    outport_.setHelp("Output image with combined channels"_help);
     inport3_.setOptional(true);
-    addPort(inport3_);
-
-    addPort(outport_);
+    addPorts(inport0_, inport1_, inport2_, inport3_, outport_);
 
     addProperties(rChannelSrc_, gChannelSrc_, bChannelSrc_, aChannelSrc_, alpha_);
+
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 void ImageChannelCombine::process() {
@@ -108,8 +110,8 @@ void ImageChannelCombine::process() {
     auto sourceImage2 = inport2_.getData();
     auto sourceImage3 = inport3_.getData();
 
-    if (isSame(sourceImage0->getDimensions(), sourceImage1->getDimensions(),
-               sourceImage2->getDimensions()) &&
+    if (!isSame(sourceImage0->getDimensions(), sourceImage1->getDimensions(),
+                sourceImage2->getDimensions()) ||
         (inport3_.isConnected() && inport3_.hasData() &&
          sourceImage3->getDimensions() != sourceImage0->getDimensions())) {
         throw Exception("Image dimensions of all inports need to be identical", IVW_CONTEXT);

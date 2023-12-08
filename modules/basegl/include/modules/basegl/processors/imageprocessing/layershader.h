@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,41 +29,56 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
-
-#include <inviwo/core/ports/imageport.h>             // for ImageInport, ImageOutport
-#include <inviwo/core/processors/processor.h>        // for Processor
-#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
-#include <inviwo/core/properties/optionproperty.h>   // for OptionPropertyInt
-#include <inviwo/core/properties/ordinalproperty.h>  // for FloatProperty
-#include <modules/opengl/shader/shader.h>            // for Shader
+#include <modules/basegl/baseglmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/layerport.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <modules/base/properties/datarangeproperty.h>
+#include <inviwo/core/util/formats.h>
+#include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API ImageChannelCombine : public Processor {
+class StringShaderResource;
+
+class IVW_MODULE_BASEGL_API LayerShader : public Processor {
 public:
-    ImageChannelCombine();
+    LayerShader();
+
+    virtual void initializeResources() override;
+    virtual void process() override;
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void process() override;
-
 private:
-    ImageInport inport0_;
-    ImageInport inport1_;
-    ImageInport inport2_;
-    ImageInport inport3_;
+    LayerShader(std::shared_ptr<StringShaderResource> fragmentShader);
+    std::shared_ptr<StringShaderResource> fragmentShader_;
 
-    ImageOutport outport_;
+    LayerInport inport_;
+    LayerOutport outport_;
 
-    OptionPropertyInt rChannelSrc_;
-    OptionPropertyInt gChannelSrc_;
-    OptionPropertyInt bChannelSrc_;
-    OptionPropertyInt aChannelSrc_;
+    StringProperty inputFormat_;
+    OptionProperty<DataFormatId> format_;
+    OptionPropertyInt channels_;
 
-    FloatProperty alpha_;
+    BoolProperty applyDataMapping_;
+    DataRangeProperty dataRange_;
+    DoubleMinMaxProperty outputDataRange_;
+
+    StringProperty fragmentShaderSource_;
 
     Shader shader_;
+    FrameBufferObject fbo_;
+
+    std::shared_ptr<Layer> layer_;
+
+    bool internalInvalid_;
 };
 
 }  // namespace inviwo
