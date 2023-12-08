@@ -64,7 +64,7 @@ vec4 pathtrace(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float 
                float exitDepth, float rayDepth, inout float depth,
                RaycastingParameters rayCastParam, VolumeParameters volParam, vec4 bgColor) {
 
-    vec4 result = vec4(0.0);
+    
 
     vec3 ray = exitPoint - entryPoint;
     vec3 rayDir = normalize(ray);
@@ -78,16 +78,16 @@ vec4 pathtrace(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float 
 
     float T = 0.0f;
     float extinctionUpper = 1.0f;
-    float meanfreepath = woodcockTracking(samplePosition, rayDir, 0f, rayLength, hashSeed, volume,
+    float meanFreePath = woodcockTracking(samplePosition, rayDir, 0f, rayLength, hashSeed, volume,
                                           volumeParameters, transferFunction, extinctionUpper);
 
-    if (meanfreepath <= rayLength) {
-        samplePosition = entryPoint + meanfreepath * rayDir;
-        rayDepth = meanfreepath;
+    vec4 result = vec4(0.0);
+    if (meanFreePath <= rayLength) {
+        samplePosition = entryPoint + meanFreePath * rayDir;
+        rayDepth = meanFreePath;
 
-        result.rgb = estimateDirectLight(meanfreepath, volume, volumeParameters, transferFunction,
-                                         samplePosition, cameraDir, light, hashSeed, channel,
-                                         extinctionUpper);
+        result.rgb = estimateDirectLight(meanFreePath, volume, volumeParameters, transferFunction,
+                                         samplePosition, cameraDir, light, hashSeed, channel);
 
         result.a = 1f - T;
 #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
@@ -120,7 +120,6 @@ void main() {
     float entryPointDepth = texture(entryDepth, texCoord).x;
     float exitPointDepth = texture(exitDepth, texCoord).x;
 
-    // alpha channel barely does anything...
     vec4 bgColor = vec4(0.0f);
 
     if (entryPoint == exitPoint) {
