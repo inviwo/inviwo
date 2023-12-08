@@ -127,6 +127,21 @@ DataRangeProperty::DataRangeProperty(std::string_view identifier, std::string_vi
     });
 }
 
+DataRangeProperty::DataRangeProperty(std::string_view identifier, std::string_view displayName,
+                                     LayerInport& port, bool customRanges,
+                                     InvalidationLevel invalidationLevel,
+                                     PropertySemantics semantics)
+    : DataRangeProperty{identifier, displayName, customRanges, invalidationLevel, semantics} {
+
+    port.onChange([&]() {
+        if (port.hasData()) {
+            const auto data = port.getData();
+            dataRange_.set(data->dataMap.dataRange);
+            valueRange_.set(data->dataMap.valueRange);
+        }
+    });
+}
+
 DataRangeProperty::DataRangeProperty(const DataRangeProperty& rhs)
     : CompositeProperty{rhs}
     , customRanges_{rhs.customRanges_}
@@ -147,6 +162,12 @@ void DataRangeProperty::updateFromVolume(std::shared_ptr<Volume> volume) {
     if (!volume) return;
     dataRange_.set(volume->dataMap_.dataRange);
     valueRange_.set(volume->dataMap_.valueRange);
+}
+
+void DataRangeProperty::updateFromLayer(std::shared_ptr<Layer> layer) {
+    if (!layer) return;
+    dataRange_.set(layer->dataMap.dataRange);
+    valueRange_.set(layer->dataMap.valueRange);
 }
 
 void DataRangeProperty::setDataRange(const dvec2& range) { dataRange_.set(range); }

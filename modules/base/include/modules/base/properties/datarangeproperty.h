@@ -31,6 +31,7 @@
 #include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
 #include <inviwo/core/ports/volumeport.h>                  // for VolumeInport
+#include <inviwo/core/ports/layerport.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
 #include <inviwo/core/properties/buttonproperty.h>         // for ButtonProperty
 #include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
@@ -44,6 +45,8 @@
 #include <string_view>  // for string_view
 
 namespace inviwo {
+
+class Layer;
 class Volume;
 
 /**
@@ -62,6 +65,10 @@ public:
                       bool customRanges = true,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
+    DataRangeProperty(std::string_view identifier, std::string_view displayName, LayerInport& port,
+                      bool customRanges = true,
+                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                      PropertySemantics semantics = PropertySemantics::Default);
     DataRangeProperty(const DataRangeProperty& rhs);
     virtual DataRangeProperty* clone() const override;
     virtual ~DataRangeProperty() = default;
@@ -70,6 +77,10 @@ public:
      * \brief update both value and data ranges using \p volume
      */
     void updateFromVolume(std::shared_ptr<Volume> volume);
+    /**
+     * \brief update both value and data ranges using \p layer
+     */
+    void updateFromLayer(std::shared_ptr<Layer> layer);
     /**
      * \brief update the data range
      */

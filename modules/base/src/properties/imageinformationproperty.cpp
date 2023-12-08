@@ -135,6 +135,7 @@ void ImageInformationProperty::updateForNewImage(const Image& image) {
         auto p = std::make_unique<LayerInformationProperty>(
             "layer" + std::to_string(layers_.size()), "");
         p->setReadOnly(true);
+        p->setSerializationMode(PropertySerializationMode::None);
         layers_.addProperty(p.release());
     }
     // remove additional layers
@@ -145,7 +146,7 @@ void ImageInformationProperty::updateForNewImage(const Image& image) {
     auto updateProperty = [](auto* prop, const Layer& layer, const std::string& name) {
         auto p = static_cast<LayerInformationProperty*>(prop);
         p->setDisplayName(name);
-        p->updateFromLayer(layer);
+        p->updateForNewLayer(layer, util::OverwriteState::Yes);
     };
 
     // update layer information

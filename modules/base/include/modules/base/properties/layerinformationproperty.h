@@ -33,12 +33,14 @@
 
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/invalidationlevel.h>
-#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/stringsproperty.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 
 namespace inviwo {
 
@@ -48,7 +50,7 @@ class Layer;
  * \ingroup properties
  * \brief A CompositeProperty holding properties to show a information about an image layer
  */
-class IVW_MODULE_BASE_API LayerInformationProperty : public CompositeProperty {
+class IVW_MODULE_BASE_API LayerInformationProperty : public BoolCompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -61,26 +63,23 @@ public:
     virtual LayerInformationProperty* clone() const override;
     virtual ~LayerInformationProperty() = default;
 
-    void updateFromLayer(const Layer& layer);
+    void updateForNewLayer(const Layer& layer, util::OverwriteState overwrite);
+    void updateLayer(Layer& layer);
 
-    StringProperty layerType_;
-    IntSize2Property dimensions_;
-    StringProperty format_;
-    IntSizeTProperty channels_;
-    StringProperty swizzleMask_;
-    StringProperty interpolation_;
-    StringProperty wrapping_;
+    StringProperty layerType;
+    IntSize2Property dimensions;
+    StringProperty format;
+    IntSizeTProperty channels;
+    StringProperty swizzleMask;
+    OptionProperty<InterpolationType> interpolation;
+    std::array<OptionProperty<Wrapping>, 2> wrapping;
 
-    DoubleMinMaxProperty dataRange_;
-    DoubleMinMaxProperty valueRange_;
-    StringProperty valueName_;
-    StringProperty valueUnit_;
-    StringsProperty<2> axesNames_;
-    StringsProperty<2> axesUnits_;
-
-    CompositeProperty transformations_;
-    FloatMat2Property basis_;
-    FloatVec2Property offset_;
+    DoubleMinMaxProperty dataRange;
+    DoubleMinMaxProperty valueRange;
+    StringProperty valueName;
+    StringProperty valueUnit;
+    StringsProperty<2> axesNames;
+    StringsProperty<2> axesUnits;
 };
 
 }  // namespace inviwo

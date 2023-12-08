@@ -52,6 +52,7 @@ LayerInformation::LayerInformation()
     addPort(layer_);
     addProperties(layerInfo_);
 
+    layerInfo_.setReadOnly(true);
     layerInfo_.setSerializationMode(PropertySerializationMode::None);
 
     setAllPropertiesCurrentStateAsDefault();
@@ -60,7 +61,7 @@ LayerInformation::LayerInformation()
 void LayerInformation::process() {
     auto layer = layer_.getData();
 
-    layerInfo_.updateFromLayer(*layer);
+    layerInfo_.updateForNewLayer(*layer, util::OverwriteState::Yes);
 }
 
 }  // namespace inviwo
