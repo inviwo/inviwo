@@ -19,8 +19,6 @@ set(SHADER_FILES
     glsl/transmittance/transmittancemethods.glsl
     glsl/lightestimation.glsl
     glsl/bidirectionalvolumepathtracer.comp
-    
-    glsl/simpleshift.comp
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
