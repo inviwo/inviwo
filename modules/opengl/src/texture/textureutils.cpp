@@ -56,10 +56,11 @@
 #include <modules/opengl/inviwoopengl.h>                                // for GLenum, glActiveT...
 #include <modules/opengl/openglutils.h>                                 // for DepthFuncState
 #include <modules/opengl/shader/shader.h>                               // for Shader
-#include <modules/opengl/sharedopenglresources.h>                       // for SharedOpenGLResou...
-#include <modules/opengl/texture/texture.h>                             // for Texture
-#include <modules/opengl/texture/textureunit.h>                         // for TextureUnit, Text...
-#include <modules/opengl/volume/volumegl.h>                             // for VolumeGL
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/sharedopenglresources.h>  // for SharedOpenGLResou...
+#include <modules/opengl/texture/texture.h>        // for Texture
+#include <modules/opengl/texture/textureunit.h>    // for TextureUnit, Text...
+#include <modules/opengl/volume/volumegl.h>        // for VolumeGL
 
 #include <sstream>        // for operator<<, basic...
 #include <string>         // for char_traits, string
@@ -174,6 +175,17 @@ void updateAndActivateTarget(ImageOutport& targetOutport, ImageInport& sourceInp
     outImageGL->activateBuffer();
 }
 
+void bindTexture(const Layer& layer, GLenum texUnit) {
+    layer.getRepresentation<LayerGL>()->bindTexture(texUnit);
+}
+void bindTexture(const LayerInport& inport, GLenum texUnit) {
+    bindTexture(*inport.getData(), texUnit);
+}
+
+void bindTexture(const LayerOutport& outport, GLenum texUnit) {
+    bindTexture(*outport.getData(), texUnit);
+}
+
 void bindTextures(const Image& image, bool color, bool depth, bool picking, GLenum colorTexUnit,
                   GLenum depthTexUnit, GLenum pickingTexUnit) {
     if (color) {
@@ -251,6 +263,16 @@ void bindTextures(const ImageOutport& outport, GLenum colorTexUnit, GLenum depth
     bindTextures(*outport.getData(), true, true, true, colorTexUnit, depthTexUnit, pickingTexUnit);
 }
 
+void bindTexture(const Layer& layer, const TextureUnit& texUnit) {
+    bindTexture(layer, texUnit.getEnum());
+}
+void bindTexture(const LayerInport& inport, const TextureUnit& texUnit) {
+    bindTexture(*inport.getData(), texUnit.getEnum());
+}
+void bindTexture(const LayerOutport& outport, const TextureUnit& texUnit) {
+    bindTexture(*outport.getData(), texUnit.getEnum());
+}
+
 void bindColorTexture(const Image& image, const TextureUnit& texUnit) {
     bindTextures(image, true, false, false, texUnit.getEnum(), 0, 0);
 }
@@ -316,6 +338,10 @@ void bindTextures(const ImageOutport& outport, const TextureUnit& colorTexUnit,
                  depthTexUnit.getEnum(), pickingTexUnit.getEnum());
 }
 
+void unbindTexture(const Layer& layer) { layer.getRepresentation<LayerGL>()->unbindTexture(); }
+void unbindTexture(const LayerInport& inport) { unbindTexture(*inport.getData()); }
+void unbindTexture(const LayerOutport& outport) { unbindTexture(*outport.getData()); }
+
 void unbindTextures(const Image& image, bool color, bool depth, bool picking) {
     if (color) {
         if (auto layer = image.getColorLayer()) {
@@ -368,8 +394,8 @@ void unbindTextures(const ImageOutport& outport) {
     unbindTextures(*outport.getData(), true, true, true);
 }
 
-void setShaderUniforms(Shader& shader, const Image& image, std::string_view samplerID) {
-    const auto& ct = image.getColorLayer()->getCoordinateTransformer();
+void setShaderUniforms(Shader& shader, const Layer& layer, std::string_view samplerID) {
+    const auto& ct = layer.getCoordinateTransformer();
 
     StrBuffer buff;
     shader.setUniform(buff.replace("{}.dataToModel", samplerID), ct.getDataToModelMatrix());
@@ -387,9 +413,34 @@ void setShaderUniforms(Shader& shader, const Image& image, std::string_view samp
     shader.setUniform(buff.replace("{}.textureToIndex", samplerID), ct.getTextureToIndexMatrix());
     shader.setUniform(buff.replace("{}.indexToTexture", samplerID), ct.getIndexToTextureMatrix());
 
-    vec2 dimensions = vec2(image.getDimensions());
+    const vec2 dimensions = vec2(layer.getDimensions());
     shader.setUniform(buff.replace("{}.dimensions", samplerID), dimensions);
     shader.setUniform(buff.replace("{}.reciprocalDimensions", samplerID), vec2(1.0f) / dimensions);
+
+    setShaderUniforms(shader, layer.dataMap, layer.getDataFormat(), samplerID);
+}
+
+void setShaderUniforms(Shader& shader, const LayerInport& inport, std::string_view samplerID) {
+    if (samplerID.empty()) {
+        setShaderUniforms(shader, *inport.getData(),
+                          StrBuffer{"{}Parameters", inport.getIdentifier()});
+    } else {
+
+        setShaderUniforms(shader, *inport.getData(), samplerID);
+    }
+}
+
+void setShaderUniforms(Shader& shader, const LayerOutport& outport, std::string_view samplerID) {
+    if (samplerID.empty()) {
+        setShaderUniforms(shader, *outport.getData(),
+                          StrBuffer{"{}Parameters", outport.getIdentifier()});
+    } else {
+        setShaderUniforms(shader, *outport.getData(), samplerID);
+    }
+}
+
+void setShaderUniforms(Shader& shader, const Image& image, std::string_view samplerID) {
+    setShaderUniforms(shader, *image.getColorLayer(), samplerID);
 }
 
 void setShaderUniforms(Shader& shader, const ImageInport& inport, std::string_view samplerID) {
@@ -501,6 +552,25 @@ void bindTexture(const VolumeInport& inport, const TextureUnit& texUnit) {
     bindTexture(*inport.getData(), texUnit);
 }
 
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Layer& layer,
+                        std::string_view id) {
+    StrBuffer buff;
+
+    TextureUnit unit;
+    bindTexture(layer, unit);
+    utilgl::setShaderUniforms(shader, layer, buff.replace("{}Parameters", id));
+    shader.setUniform(id, unit);
+    cont.push_back(std::move(unit));
+}
+
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const LayerInport& inport) {
+    bindAndSetUniforms(shader, cont, *inport.getData(), inport.getIdentifier());
+}
+
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const LayerOutport& outport) {
+    bindAndSetUniforms(shader, cont, *outport.getData(), outport.getIdentifier());
+}
+
 void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image& image,
                         std::string_view id, ImageType type) {
 
@@ -560,6 +630,7 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const ImageO
                         ImageType type) {
     bindAndSetUniforms(shader, cont, *port.getData(), port.getIdentifier(), type);
 }
+
 }  // namespace utilgl
 
 }  // namespace inviwo
