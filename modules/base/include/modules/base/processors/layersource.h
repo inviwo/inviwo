@@ -36,6 +36,7 @@
 #include <inviwo/core/ports/layerport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/base/processors/datasource.h>
+#include <modules/base/properties/basisproperty.h>
 
 #include <filesystem>
 
@@ -56,6 +57,7 @@ public:
 
 private:
     IntVec2Property dimensions_;
+    BasisProperty basis_;
 };
 
 }  // namespace inviwo

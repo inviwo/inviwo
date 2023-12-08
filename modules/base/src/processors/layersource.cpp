@@ -32,35 +32,39 @@
 #include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/datastructures/image/layer.h>
 
-
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo LayerSource::processorInfo_{
-    "org.inviwo.LayerSource",  // Class identifier
-    "Layer Source",        // Display name
-    "Data Input",                   // Category
-    CodeState::Stable,       // Code state
-    Tags::CPU | Tag{"Layer"} | Tag{"Source"},                    // Tags
+    "org.inviwo.LayerSource",                  // Class identifier
+    "Layer Source",                            // Display name
+    "Data Input",                              // Category
+    CodeState::Stable,                         // Code state
+    Tags::CPU | Tag{"Layer"} | Tag{"Source"},  // Tags
     R"(Loads a Layer from an image file on disk.)"_unindentHelp};
 
 const ProcessorInfo LayerSource::getProcessorInfo() const { return processorInfo_; }
 
 LayerSource::LayerSource(InviwoApplication* app, const std::filesystem::path& filePath)
-    : DataSource<Layer, LayerOutport>(util::getDataReaderFactory(app), filePath,
-                                              "image")
-    , dimensions_("dimensions", "Layer Dimensions", util::ordinalCount(ivec2{0}, ivec2{4096}).set("Dimensions of the image file"_help)
-                          .set(InvalidationLevel::Valid)
-                          .set(PropertySemantics::Text)) {
+    : DataSource<Layer, LayerOutport>(util::getDataReaderFactory(app), filePath, "image")
+    , dimensions_("dimensions", "Layer Dimensions",
+                  util::ordinalCount(ivec2{0}, ivec2{4096})
+                      .set("Dimensions of the image file"_help)
+                      .set(InvalidationLevel::Valid)
+                      .set(PropertySemantics::Text))
+    , basis_("Basis", "Basis and offset") {
 
-    DataSource<Layer, LayerOutport>::filePath.setDisplayName("Spreadsheet file");
+    DataSource<Layer, LayerOutport>::filePath.setDisplayName("Image File");
+    addProperties(dimensions_, basis_);
 }
 
 void LayerSource::dataLoaded(std::shared_ptr<Layer> data) {
     dimensions_.set(data->getDimensions());
+    basis_.updateForNewEntity(*data, false);
 }
 void LayerSource::dataDeserialized(std::shared_ptr<Layer> data) {
     dimensions_.set(data->getDimensions());
+    basis_.updateForNewEntity(*data, true);
 }
 
 }  // namespace inviwo
