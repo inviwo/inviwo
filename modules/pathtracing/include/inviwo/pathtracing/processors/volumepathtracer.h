@@ -39,23 +39,23 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/timer.h>
 
-#include <inviwo/core/properties/raycastingproperty.h>          // for RaycastingProperty
-#include <inviwo/core/properties/cameraproperty.h>              // for CameraProperty
-#include <inviwo/core/properties/optionproperty.h>              // for OptionPropertyInt
-#include <inviwo/core/properties/volumeindicatorproperty.h>     // for VolumeIndicatorProperty
-#include <inviwo/core/properties/transferfunctionproperty.h>    // for TransferFunctionProperty
-#include <inviwo/core/datastructures/light/baselightsource.h>   // for Lights
-#include <inviwo/core/ports/bufferport.h>                       // for Lights
-#include <inviwo/core/properties/simplelightingproperty.h>      // for SimpleLightingProperty
-#include <inviwo/core/properties/buttonproperty.h>              // for IterativeRendering
-#include <inviwo/core/util/timer.h>                             // for IterativeRendering
+#include <inviwo/core/properties/raycastingproperty.h>         // for RaycastingProperty
+#include <inviwo/core/properties/cameraproperty.h>             // for CameraProperty
+#include <inviwo/core/properties/optionproperty.h>             // for OptionPropertyInt
+#include <inviwo/core/properties/volumeindicatorproperty.h>    // for VolumeIndicatorProperty
+#include <inviwo/core/properties/transferfunctionproperty.h>   // for TransferFunctionProperty
+#include <inviwo/core/datastructures/light/baselightsource.h>  // for Lights
+#include <inviwo/core/ports/bufferport.h>                      // for Lights
+#include <inviwo/core/properties/simplelightingproperty.h>     // for SimpleLightingProperty
+#include <inviwo/core/properties/buttonproperty.h>             // for IterativeRendering
+#include <inviwo/core/util/timer.h>                            // for IterativeRendering
 
 // outside of include/inviwo
-#include <../modules/opengl/include/modules/opengl/volume/volumegl.h>
-#include <../modules/opengl/include/modules/opengl/volume/volumeutils.h>
-#include <../modules/opengl/include/modules/opengl/shader/shader.h>
-#include <../modules/opengl/include/modules/opengl/image/layergl.h>
-#include <../modules/opengl/include/modules/opengl/buffer/buffergl.h>
+#include <modules/opengl/volume/volumegl.h>
+#include <modules/opengl/volume/volumeutils.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/image/layergl.h>
+#include <modules/opengl/buffer/buffergl.h>
 
 namespace inviwo {
 
@@ -64,29 +64,27 @@ public:
     VolumePathTracer();
     ~VolumePathTracer() = default;
 
-    virtual void initializeResources() override {
-        invalidateProgressiveRendering();
-    }
+    virtual void initializeResources() override { invalidateProgressiveRendering(); }
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 protected:
-    void numSamplesChanged(); 
-    void updateLightSources();  
-    void invalidateProgressiveRendering(); 
-    void evaluateProgressiveRefinement(); 
-    void progressiveRefinementChanged(); 
-    //void phaseFunctionChanged(); 
-    void onTimerEvent(); 
+    void numSamplesChanged();
+    void updateLightSources();
+    void invalidateProgressiveRendering();
+    void evaluateProgressiveRefinement();
+    void progressiveRefinementChanged();
+    // void phaseFunctionChanged();
+    void onTimerEvent();
 
 private:
     // Ports
     VolumeInport volumePort_;
     ImageInport entryPort_;
-    ImageInport exitPort_; 
-    
+    ImageInport exitPort_;
+
     ImageOutport outport_;
 
     // Properties and Internals
