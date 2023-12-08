@@ -69,8 +69,8 @@ pathtracingModule::pathtracingModule(InviwoApplication* app) : InviwoModule(app,
     // registerSettings(std::make_unique<pathtracingSettings>());
     // registerMetaData(std::make_unique<pathtracingMetaData>());
     // registerPortInspector("pathtracingOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(std::make_unique_ptr<pathtracingDrawer>());
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
+    // processorWidget); registerDrawer(std::make_unique_ptr<pathtracingDrawer>());
 }
 
 }  // namespace inviwo
