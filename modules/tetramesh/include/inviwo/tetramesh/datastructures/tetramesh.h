@@ -54,7 +54,7 @@ namespace inviwo {
  *
  * \see TetraMeshBuffers
  */
-class IVW_MODULE_TETRAMESH_API TetraMesh : public SpatialEntity<3> {
+class IVW_MODULE_TETRAMESH_API TetraMesh : public SpatialEntity {
 public:
     TetraMesh() = default;
     virtual TetraMesh* clone() const = 0;
