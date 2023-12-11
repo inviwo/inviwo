@@ -207,7 +207,8 @@ void SeedPointGenerator2D::process() {
             break;
         }
         case SamplingDomain::FullDomain:
-            [[fallthrough]];
+            createSpatialSeeds();
+            break;
         default:
             break;
     }
