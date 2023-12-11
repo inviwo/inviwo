@@ -91,6 +91,7 @@
 #include <modules/base/processors/layerdistancetransformram.h>  // for LayerDistanc...
 #include <modules/base/processors/layerinformation.h>
 #include <modules/base/processors/layersource.h>
+#include <modules/base/processors/layertoimage.h>
 #include <modules/base/processors/layertospatialsampler.h>
 #include <modules/base/processors/meshclipping.h>                            // for MeshClipping
 #include <modules/base/processors/meshcolorfromnormals.h>                    // for MeshColorFro...
@@ -208,6 +209,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<LayerDistanceTransformRAM>();
     registerProcessor<LayerInformation>();
     registerProcessor<LayerSource>();
+    registerProcessor<LayerToImage>();
     registerProcessor<LayerToSpatialSampler>();
     registerProcessor<MeshClipping>();
     registerProcessor<MeshColorFromNormals>();

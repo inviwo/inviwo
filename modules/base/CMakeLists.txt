@@ -77,6 +77,7 @@ set(HEADER_FILES
     include/modules/base/processors/layerdistancetransformram.h
     include/modules/base/processors/layerinformation.h
     include/modules/base/processors/layersource.h
+    include/modules/base/processors/layertoimage.h
     include/modules/base/processors/layertospatialsampler.h
     include/modules/base/processors/meshclipping.h
     include/modules/base/processors/meshcolorfromnormals.h
@@ -213,6 +214,7 @@ set(SOURCE_FILES
     src/processors/layerdistancetransformram.cpp
     src/processors/layerinformation.cpp
     src/processors/layersource.cpp
+    src/processors/layertoimage.cpp
     src/processors/layertospatialsampler.cpp
     src/processors/meshclipping.cpp
     src/processors/meshcolorfromnormals.cpp

@@ -27,64 +27,34 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/imagetolayer.h>
+#include <modules/base/processors/layertoimage.h>
 
-#include <inviwo/core/util/zip.h>
-
-#include <fmt/format.h>
+#include <inviwo/core/datastructures/image/image.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ImageToLayer::processorInfo_{
-    "org.inviwo.ImageToLayer",                // Class identifier
-    "Image To Layer",                         // Display name
+const ProcessorInfo LayerToImage::processorInfo_{
+    "org.inviwo.LayerToImage",                // Class identifier
+    "Layer To Image",                         // Display name
     "Image Operation",                        // Category
     CodeState::Experimental,                  // Code state
     Tags::CPU | Tag{"Image"} | Tag{"Layer"},  // Tags
-    R"(Extracts one layer from an image.)"_unindentHelp};
+    R"(Create a color Image from a single Layer)"_unindentHelp};
 
-const ProcessorInfo ImageToLayer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo LayerToImage::getProcessorInfo() const { return processorInfo_; }
 
-ImageToLayer::ImageToLayer()
+LayerToImage::LayerToImage()
     : Processor{}
-    , inport_{"inport", "Input image"_help, OutportDeterminesSize::Yes}
-    , outport_{"outport", "Selected layer "_help}
-    , outputLayer_{"outputLayer", "Output Layer"} {
+    , inport_{"inport", "Input layer"_help}
+    , outport_{"outport", "Output image with the input as color layer"_help} {
 
     addPorts(inport_, outport_);
-    addProperties(outputLayer_);
-
-    auto populateOptionProperty = [this]() {
-        std::vector<OptionPropertyIntOption> options;
-        if (inport_.hasData()) {
-            for (auto&& [i, layer] : util::enumerate<int>(*inport_.getData())) {
-                options.emplace_back(fmt::format("color{}", i),
-                                     fmt::format("Color Layer {}", i + 1), i);
-            }
-            options.emplace_back("depth", "Depth Layer", static_cast<int>(LayerEnum::Depth));
-            options.emplace_back("picking", "Picking Layer", static_cast<int>(LayerEnum::Picking));
-        }
-        outputLayer_.replaceOptions(options);
-    };
-
-    inport_.onChange(populateOptionProperty);
+    outport_.setHandleResizeEvents(false);
 }
 
-void ImageToLayer::process() {
-    auto data = inport_.getData();
-    auto layer = [&]() {
-        switch (outputLayer_.get()) {
-            case static_cast<int>(LayerEnum::Depth):
-                return data->getDepthLayer()->clone();
-            case static_cast<int>(LayerEnum::Picking):
-                return data->getPickingLayer()->clone();
-            default:
-                return data->getColorLayer(outputLayer_.get())->clone();
-        }
-    }();
-
-    outport_.setData(layer);
+void LayerToImage::process() {
+    outport_.setData(std::make_shared<Image>(std::shared_ptr<Layer>(inport_.getData()->clone())));
 }
 
 }  // namespace inviwo
