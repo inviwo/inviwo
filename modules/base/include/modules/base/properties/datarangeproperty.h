@@ -30,7 +30,7 @@
 
 #include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/ports/volumeport.h>                  // for VolumeInport
+#include <inviwo/core/ports/volumeport.h>  // for VolumeInport
 #include <inviwo/core/ports/layerport.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
 #include <inviwo/core/properties/buttonproperty.h>         // for ButtonProperty

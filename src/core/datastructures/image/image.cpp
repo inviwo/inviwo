@@ -215,9 +215,7 @@ Layer* Image::getLayer(LayerType type, size_t idx) {
 auto Image::begin() -> ColorLayerIterator {
     return util::makeIndirectIterator(colorLayers_.begin());
 }
-auto Image::end() -> ColorLayerIterator {
-    return util::makeIndirectIterator(colorLayers_.end());
-}
+auto Image::end() -> ColorLayerIterator { return util::makeIndirectIterator(colorLayers_.end()); }
 
 auto Image::begin() const -> const_ColorLayerIterator {
     return util::makeIndirectIterator(colorLayers_.begin());

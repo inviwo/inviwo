@@ -203,8 +203,7 @@ inline auto IntegralLineTracer<SpatialSampler, TimeDependent>::seedTransform(
 
 template <typename SpatialSampler, bool TimeDependent>
 auto IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector& oldPos,
-                                                             double stepSize) const
-    -> StepResult {
+                                                             double stepSize) const -> StepResult {
     auto normalize = [](const auto v) {
         auto l = glm::length(v);
         if (l == 0) return v;

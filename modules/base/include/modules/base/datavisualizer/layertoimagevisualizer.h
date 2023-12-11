@@ -60,9 +60,6 @@ public:
                                                          ProcessorNetwork* network) const override;
     virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
         const std::filesystem::path& filename, ProcessorNetwork* network) const override;
-
-private:
-    InviwoApplication* app_;
 };
 
 }  // namespace inviwo

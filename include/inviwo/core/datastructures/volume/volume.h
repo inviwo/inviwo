@@ -110,7 +110,7 @@ public:
 
     void setWrapping(const Wrapping3D& wrapping);
     Wrapping3D getWrapping() const;
-    
+
     /**
      * \brief Computes the spacing to be used for gradient computation. Also works for volume with
      * non-orthogonal basis.

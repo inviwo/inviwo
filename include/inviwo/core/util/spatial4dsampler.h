@@ -97,8 +97,7 @@ struct DataTraits<Spatial4DSampler<DataDims, T>> {
 };
 
 template <unsigned DataDims, typename T>
-Spatial4DSampler<DataDims, T>::Spatial4DSampler(
-    std::shared_ptr<const SpatialEntity> spatialEntity)
+Spatial4DSampler<DataDims, T>::Spatial4DSampler(std::shared_ptr<const SpatialEntity> spatialEntity)
     : spatialEntity_(spatialEntity) {}
 
 template <unsigned DataDims, typename T>

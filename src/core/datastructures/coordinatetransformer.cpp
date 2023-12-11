@@ -472,9 +472,7 @@ void SpatialCameraCoordinateTransformerImpl::setEntity(const SpatialEntity& enti
     entity_ = &entity;
 }
 
-void SpatialCameraCoordinateTransformerImpl::setCamera(const Camera& camera) {
-    camera_ = &camera;
-}
+void SpatialCameraCoordinateTransformerImpl::setCamera(const Camera& camera) { camera_ = &camera; }
 
 glm::mat4 SpatialCameraCoordinateTransformerImpl::getClipToDataMatrix() const {
     return glm::inverse(getProjectionMatrix() * getViewMatrix() * getWorldMatrix() *

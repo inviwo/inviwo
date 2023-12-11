@@ -40,8 +40,8 @@
 #include <modules/opengl/glformats.h>                          // for Normalization, GLFormat
 #include <modules/opengl/shader/shader.h>                      // for Shader
 #include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureunit.h>                // for TextureUnit, TextureUnitCo...
-#include <modules/opengl/texture/textureutils.h>               // for VolumeInport, bindTexture
+#include <modules/opengl/texture/textureunit.h>   // for TextureUnit, TextureUnitCo...
+#include <modules/opengl/texture/textureutils.h>  // for VolumeInport, bindTexture
 
 #include <memory>   // for shared_ptr
 #include <string>   // for string

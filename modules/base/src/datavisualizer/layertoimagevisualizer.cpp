@@ -44,8 +44,7 @@ namespace inviwo {
 
 using GP = util::GridPos;
 
-LayerToImageVisualizer::LayerToImageVisualizer(InviwoApplication* app)
-    : DataVisualizer{}, app_(app) {}
+LayerToImageVisualizer::LayerToImageVisualizer(InviwoApplication*) : DataVisualizer{} {}
 
 std::string LayerToImageVisualizer::getName() const { return "Layer To Image"; }
 
