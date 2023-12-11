@@ -188,6 +188,16 @@ void exposeDataFrame(pybind11::module& m) {
 
         .def("updateIndex", [](DataFrame& d) { d.updateIndexBuffer(); })
 
+        .def("dropColumn", py::overload_cast<std::string_view>(&DataFrame::dropColumn),
+             py::arg("name"))
+        .def("dropColumn", py::overload_cast<size_t>(&DataFrame::dropColumn), py::arg("index"))
+
+        .def("getColumn", py::overload_cast<std::string_view>(&DataFrame::getColumn),
+             py::arg("name"))
+        .def("getColumn", py::overload_cast<size_t>(&DataFrame::getColumn), py::arg("index"))
+
+        .def("getIndexColumn", py::overload_cast<>(&DataFrame::getIndexColumn))
+
         // interface for operator[]
         .def(
             "__getitem__",
