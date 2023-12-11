@@ -16,6 +16,7 @@ set(HEADER_FILES
     include/modules/basegl/datastructures/stipplingsettingsinterface.h
     include/modules/basegl/datavisualizer/imagebackgroundvisualizer.h
     include/modules/basegl/datavisualizer/imagevisualizer.h
+    include/modules/basegl/datavisualizer/layervisualizer.h
     include/modules/basegl/datavisualizer/meshvisualizer.h
     include/modules/basegl/datavisualizer/volumeraycastvisualizer.h
     include/modules/basegl/datavisualizer/volumeslicevisualizer.h
@@ -135,6 +136,7 @@ set(SOURCE_FILES
     src/datastructures/stipplingsettingsinterface.cpp
     src/datavisualizer/imagebackgroundvisualizer.cpp
     src/datavisualizer/imagevisualizer.cpp
+    src/datavisualizer/layervisualizer.cpp
     src/datavisualizer/meshvisualizer.cpp
     src/datavisualizer/volumeraycastvisualizer.cpp
     src/datavisualizer/volumeslicevisualizer.cpp

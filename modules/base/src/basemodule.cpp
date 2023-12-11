@@ -56,6 +56,9 @@
 #include <modules/base/datavisualizer/imageinformationvisualizer.h>     // for ImageInforma...
 #include <modules/base/datavisualizer/meshinformationvisualizer.h>      // for MeshInformat...
 #include <modules/base/datavisualizer/volumeinformationvisualizer.h>    // for VolumeInform...
+#include <modules/base/datavisualizer/layerinformationvisualizer.h>
+#include <modules/base/datavisualizer/layertoimagevisualizer.h>
+#include <modules/base/datavisualizer/imagetolayervisualizer.h>
 // Io
 #include <modules/base/io/binarystlwriter.h>          // for BinarySTLWriter
 #include <modules/base/io/datvolumesequencereader.h>  // for DatVolumeSeq...
@@ -316,6 +319,9 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerDataVisualizer(std::make_unique<ImageInformationVisualizer>(app));
     registerDataVisualizer(std::make_unique<MeshInformationVisualizer>(app));
     registerDataVisualizer(std::make_unique<VolumeInformationVisualizer>(app));
+    registerDataVisualizer(std::make_unique<LayerInformationVisualizer>(app));
+    registerDataVisualizer(std::make_unique<LayerToImageVisualizer>(app));
+    registerDataVisualizer(std::make_unique<ImageToLayerVisualizer>(app));
 
     util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }

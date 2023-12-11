@@ -39,6 +39,9 @@ set(HEADER_FILES
     include/modules/base/datastructures/imagereusecache.h
     include/modules/base/datastructures/kdtree.h
     include/modules/base/datavisualizer/imageinformationvisualizer.h
+    include/modules/base/datavisualizer/imagetolayervisualizer.h
+    include/modules/base/datavisualizer/layerinformationvisualizer.h
+    include/modules/base/datavisualizer/layertoimagevisualizer.h
     include/modules/base/datavisualizer/meshinformationvisualizer.h
     include/modules/base/datavisualizer/volumeinformationvisualizer.h
     include/modules/base/io/binarystlwriter.h
@@ -177,6 +180,9 @@ set(SOURCE_FILES
     src/datastructures/disjointsets.cpp
     src/datastructures/imagereusecache.cpp
     src/datavisualizer/imageinformationvisualizer.cpp
+    src/datavisualizer/imagetolayervisualizer.cpp
+    src/datavisualizer/layerinformationvisualizer.cpp
+    src/datavisualizer/layertoimagevisualizer.cpp
     src/datavisualizer/meshinformationvisualizer.cpp
     src/datavisualizer/volumeinformationvisualizer.cpp
     src/io/binarystlwriter.cpp

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/base/datavisualizer/imageinformationvisualizer.h>
+#include <modules/base/datavisualizer/layerinformationvisualizer.h>
 
 #include <inviwo/core/common/factoryutil.h>            // for getDataReaderFactory
 #include <inviwo/core/io/datareaderfactory.h>          // for DataReaderFactory
@@ -39,60 +39,56 @@
 #include <inviwo/core/rendering/datavisualizer.h>      // for DataVisualizer
 #include <inviwo/core/util/document.h>                 // for Document, Document::DocumentHandle
 #include <inviwo/core/util/fileextension.h>            // for FileExtension
-#include <modules/base/processors/imageinformation.h>  // for ImageInformation
-#include <modules/base/processors/imagesource.h>       // for ImageSource
-
-#include <map>  // for map
+#include <modules/base/processors/layerinformation.h>  // for LayerInformation
+#include <modules/base/processors/layersource.h>       // for LayerSource
 
 namespace inviwo {
-class Inport;
-class Layer;
 
 using GP = util::GridPos;
 
-ImageInformationVisualizer::ImageInformationVisualizer(InviwoApplication* app)
+LayerInformationVisualizer::LayerInformationVisualizer(InviwoApplication* app)
     : DataVisualizer{}, app_(app) {}
 
-std::string ImageInformationVisualizer::getName() const { return "Image Information"; }
+std::string LayerInformationVisualizer::getName() const { return "Layer Information"; }
 
-Document ImageInformationVisualizer::getDescription() const {
+Document LayerInformationVisualizer::getDescription() const {
     Document doc;
     auto b = doc.append("html").append("body");
-    b.append("", "Construct an image information processor");
+    b.append("", "Construct a layer information processor");
     return doc;
 }
 
-std::vector<FileExtension> ImageInformationVisualizer::getSupportedFileExtensions() const {
+std::vector<FileExtension> LayerInformationVisualizer::getSupportedFileExtensions() const {
     auto rf = util::getDataReaderFactory(app_);
     auto exts = rf->getExtensionsForType<Layer>();
     return exts;
 }
 
-bool ImageInformationVisualizer::isOutportSupported(const Outport* port) const {
-    return dynamic_cast<const ImageOutport*>(port) != nullptr;
+bool LayerInformationVisualizer::isOutportSupported(const Outport* port) const {
+    return dynamic_cast<const LayerOutport*>(port) != nullptr;
 }
 
-bool ImageInformationVisualizer::hasSourceProcessor() const { return true; }
-bool ImageInformationVisualizer::hasVisualizerNetwork() const { return true; }
+bool LayerInformationVisualizer::hasSourceProcessor() const { return true; }
+bool LayerInformationVisualizer::hasVisualizerNetwork() const { return true; }
 
-std::pair<Processor*, Outport*> ImageInformationVisualizer::addSourceProcessor(
+std::pair<Processor*, Outport*> LayerInformationVisualizer::addSourceProcessor(
     const std::filesystem::path& filename, ProcessorNetwork* net) const {
 
-    auto source = net->addProcessor(util::makeProcessor<ImageSource>(GP{0, 0}, app_, filename));
+    auto source = net->addProcessor(util::makeProcessor<LayerSource>(GP{0, 0}, app_, filename));
     auto outport = source->getOutports().front();
     return {source, outport};
 }
 
-std::vector<Processor*> ImageInformationVisualizer::addVisualizerNetwork(
+std::vector<Processor*> LayerInformationVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* net) const {
 
-    auto info = net->addProcessor(util::makeProcessor<ImageInformation>(GP{0, 3}));
+    auto info = net->addProcessor(util::makeProcessor<LayerInformation>(GP{0, 3}));
     net->addConnection(outport, info->getInports()[0]);
 
     return {info};
 }
 
-std::vector<Processor*> ImageInformationVisualizer::addSourceAndVisualizerNetwork(
+std::vector<Processor*> LayerInformationVisualizer::addSourceAndVisualizerNetwork(
     const std::filesystem::path& filename, ProcessorNetwork* net) const {
 
     auto sourceAndOutport = addSourceProcessor(filename, net);
