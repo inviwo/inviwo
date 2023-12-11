@@ -57,7 +57,7 @@ using componentType =
 
 template <typename DataType, typename P, typename T = detail::componentType<DataType>,
           unsigned int DataDims = detail::components<DataType>()>
-class TemplateVolumeSampler : public SpatialSampler<3, DataDims, T> {
+class TemplateVolumeSampler : public SpatialSampler<DataDims, T> {
 public:
     static_assert(DataDims > 0, "zero extent");
 
@@ -90,7 +90,7 @@ TemplateVolumeSampler<DataType, P, T, DataDims>::TemplateVolumeSampler(
 template <typename DataType, typename P, typename T, unsigned int DataDims>
 TemplateVolumeSampler<DataType, P, T, DataDims>::TemplateVolumeSampler(const Volume& volume,
                                                                        CoordinateSpace space)
-    : SpatialSampler<3, DataDims, T>(volume, space)
+    : SpatialSampler<DataDims, T>(volume, space)
     , data_(static_cast<const DataType*>(volume.getRepresentation<VolumeRAM>()->getData()))
     , dims_(volume.getRepresentation<VolumeRAM>()->getDimensions())
     , ic_(dims_) {}

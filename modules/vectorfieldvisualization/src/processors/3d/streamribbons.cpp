@@ -155,7 +155,7 @@ StreamRibbonsDeprecated::StreamRibbonsDeprecated()
 }
 
 void StreamRibbonsDeprecated::process() {
-    auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<3, 3, double>> {
+    auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<3, double>> {
         if (sampler_.isConnected())
             return sampler_.getData();
         else

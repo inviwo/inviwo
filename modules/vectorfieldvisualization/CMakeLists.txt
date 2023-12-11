@@ -48,6 +48,7 @@ set(SOURCE_FILES
     src/processors/datageneration/seedpointgenerator.cpp
     src/processors/datageneration/seedpointsfrommask.cpp
     src/processors/discardshortlines.cpp
+    src/processors/integrallinetracerprocessor.cpp
     src/processors/integrallinevectortomesh.cpp
     src/processors/seed3dto4d.cpp
     src/processors/seedsfrommasksequence.cpp

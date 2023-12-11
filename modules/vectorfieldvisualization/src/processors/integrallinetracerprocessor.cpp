@@ -27,28 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/vectorfieldvisualization/processors/integrallinetracerprocessor.h>
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/layerport.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/util/spatialsampler.h>
-
-namespace inviwo {
-
-class IVW_MODULE_BASE_API LayerToSpatialSampler : public Processor {
-public:
-    LayerToSpatialSampler();
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    LayerInport layer_;
-    DataOutport<SpatialSampler<2, double>> sampler_;
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

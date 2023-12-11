@@ -54,9 +54,9 @@ class LayerRAM;
  * pixel. Output values are bi-linear interpolated between the 4 nearest neighbors.
  */
 template <unsigned int DataDims, typename T = double>
-class ImageSpatialSampler : public SpatialSampler<3, DataDims, T> {
+class ImageSpatialSampler : public SpatialSampler<DataDims, T> {
 public:
-    using Space = SpatialSampler<3, DataDims, T>::Space;
+    using Space = SpatialSampler<DataDims, T>::Space;
 
     /**
      * Creates a ImageSpatialSampler for the given LayerRAM, does not take ownership of ram.
@@ -64,7 +64,7 @@ public:
      * available for the lifetime of the ImageSpatialSampler
      */
     ImageSpatialSampler(const LayerRAM* ram)
-        : SpatialSampler<3, DataDims, T>(*ram->getOwner())
+        : SpatialSampler<DataDims, T>(*ram->getOwner())
         , layer_(ram)
         , dims_(layer_->getDimensions())
         , sharedImage_(nullptr) {}
@@ -99,37 +99,9 @@ public:
         sharedImage_ = sharedImage;
     }
 
-    virtual ~ImageSpatialSampler() {}
+    virtual ~ImageSpatialSampler() = default;
 
-    using SpatialSampler<3, DataDims, T>::sample;
-
-    Vector<DataDims, T> sample(const dvec2& pos) const {
-        return SpatialSampler<3, DataDims, T>::sample(dvec3(pos, 0.0));
-    }
-    Vector<DataDims, T> sample(const vec2& pos) const {
-        return SpatialSampler<3, DataDims, T>::sample(dvec3(pos, 0.0));
-    }
-
-    Vector<DataDims, T> sample(const dvec2& pos, Space space) const {
-        return SpatialSampler<3, DataDims, T>::sample(dvec3(pos, 0.0), space);
-    }
-    Vector<DataDims, T> sample(const vec2& pos, Space space) const {
-        return SpatialSampler<3, DataDims, T>::sample(dvec3(pos, 0.0), space);
-    }
-
-    bool withinBounds(const dvec2& pos) const {
-        return SpatialSampler<3, DataDims, T>::withinBounds(pos);
-    }
-    bool withinBounds(const vec2& pos) const {
-        return SpatialSampler<3, DataDims, T>::withinBounds(pos);
-    }
-
-    bool withinBounds(const dvec2& pos, Space space) const {
-        return SpatialSampler<3, DataDims, T>::withinBounds(dvec3(pos, 0.0), space);
-    }
-    bool withinBounds(const vec2& pos, Space space) const {
-        return SpatialSampler<3, DataDims, T>::withinBounds(dvec3(pos, 0.0), space);
-    }
+    using SpatialSampler<DataDims, T>::sample;
 
     /**
      * Samples the image at the given position using bi-linear interpolation.
@@ -138,7 +110,7 @@ public:
      * @param space in what CoordinateSpace x and y is defined in
      */
     Vector<DataDims, T> sample(double x, double y, CoordinateSpace space) const {
-        return SpatialSampler<3, DataDims, T>::sample(dvec3(x, y, 0.0), space);
+        return SpatialSampler<DataDims, T>::sample(dvec3(x, y, 0.0), space);
     }
 
     /**
@@ -147,7 +119,7 @@ public:
      * @param y Y coordinate of the position to sample at
      */
     Vector<DataDims, T> sample(double x, double y) const {
-        return SpatialSampler<3, DataDims, T>::sample(dvec3(x, y, 0.0));
+        return SpatialSampler<DataDims, T>::sample(dvec3(x, y, 0.0));
     }
 
 protected:
@@ -210,7 +182,7 @@ public:
      * Samples the image at the given position using bi-linear interpolation.
      * @param pos Position to sample at, expects range [0 1]
      */
-    T sample(const Vector<2, P>& pos);
+    T sample2D(const Vector<2, P>& pos);
 
     /**
      * @see sample()
@@ -259,7 +231,7 @@ TemplateImageSampler<T, P>::TemplateImageSampler(std::shared_ptr<const Image> sh
 
 template <typename T, typename P>
 T TemplateImageSampler<T, P>::sample(P x, P y) {
-    return sample(Vector<2, P>(x, y));
+    return sample2D(Vector<2, P>{x, y});
 }
 
 template <typename T, typename P>
@@ -269,7 +241,7 @@ T TemplateImageSampler<T, P>::getPixel(const size2_t& pos) {
 }
 
 template <typename T, typename P>
-T TemplateImageSampler<T, P>::sample(const Vector<2, P>& pos) {
+T TemplateImageSampler<T, P>::sample2D(const Vector<2, P>& pos) {
     Vector<2, P> samplePos = pos * Vector<2, P>(dims_ - size2_t(1));
     size2_t indexPos = size2_t(samplePos);
     Vector<2, P> interpolants = samplePos - Vector<2, P>(indexPos);

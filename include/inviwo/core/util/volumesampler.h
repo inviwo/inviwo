@@ -44,7 +44,7 @@ namespace inviwo {
  * \class VolumeDoubleSampler
  */
 template <unsigned int DataDims>
-class VolumeDoubleSampler : public SpatialSampler<3, DataDims, double> {
+class VolumeDoubleSampler : public SpatialSampler<DataDims, double> {
 public:
     VolumeDoubleSampler(std::shared_ptr<const Volume> vol,
                         CoordinateSpace space = CoordinateSpace::Data);
@@ -75,7 +75,7 @@ VolumeDoubleSampler<DataDims>::VolumeDoubleSampler(std::shared_ptr<const Volume>
 
 template <unsigned int DataDims>
 VolumeDoubleSampler<DataDims>::VolumeDoubleSampler(const Volume& vol, CoordinateSpace space)
-    : SpatialSampler<3, DataDims, double>(vol, space)
+    : SpatialSampler<DataDims, double>(vol, space)
     , ram_(vol.getRepresentation<VolumeRAM>())
     , dims_(vol.getDimensions()) {}
 
