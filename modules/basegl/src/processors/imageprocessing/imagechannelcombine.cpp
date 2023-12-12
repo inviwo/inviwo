@@ -117,8 +117,6 @@ void ImageChannelCombine::process() {
         throw Exception("Image dimensions of all inports need to be identical", IVW_CONTEXT);
     }
 
-    const auto dimensions = inport0_.getData()->getDimensions();
-
     auto&& [type, precision] = [&]() {
         NumericType type0 = inport0_.getData()->getDataFormat()->getNumericType();
         NumericType type1 = inport1_.getData()->getDataFormat()->getNumericType();

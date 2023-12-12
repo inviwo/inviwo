@@ -140,7 +140,6 @@ void LayerCombiner::process() {
 #include <warn/ignore/conversion-loss>
 
     layerRam->dispatch<void>([&](auto layerram) {
-        using LayerType = util::PrecisionType<decltype(layerram)>;
         using PrecisionType = util::PrecisionValueType<decltype(layerram)>;
         using ValueType = util::value_type_t<PrecisionType>;
 
