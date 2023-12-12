@@ -54,11 +54,12 @@ const ProcessorInfo DataFrameSource::processorInfo_{
     "Data Input",                                                // Category
     CodeState::Stable,                                           // Code state
     "CPU, Plotting, Source, CSV, JSON, DataFrame, Spreadsheet",  // Tags
-};
+    "Loads a DataFrame from file."_help};
 const ProcessorInfo DataFrameSource::getProcessorInfo() const { return processorInfo_; }
 
-DataFrameSource::DataFrameSource(InviwoApplication* app, std::string_view file)
-    : DataSource<DataFrame, DataFrameOutport>(util::getDataReaderFactory(app), file, "spreadsheet")
+DataFrameSource::DataFrameSource(InviwoApplication* app, const std::filesystem::path& filePath)
+    : DataSource<DataFrame, DataFrameOutport>(util::getDataReaderFactory(app), filePath,
+                                              "spreadsheet")
     , columns_("columns", "Column MetaData") {
 
     DataSource<DataFrame, DataFrameOutport>::filePath.setDisplayName("Spreadsheet file");

@@ -45,19 +45,9 @@
 namespace inviwo {
 class InviwoApplication;
 
-/** \docpage{org.inviwo.DataFrameSource, Data Frame Source}
- * ![](org.inviwo.DataFrameSource.png?classIdentifier=org.inviwo.DataFrameSource)
- * Loads a DataFrame from file.
- *
- * ### Outports
- *   * __Outport__ The loaded DataFrame
- *
- * ### Properties
- *   * __File name__ File to load.
- */
 class IVW_MODULE_DATAFRAME_API DataFrameSource : public DataSource<DataFrame, DataFrameOutport> {
 public:
-    DataFrameSource(InviwoApplication* app, std::string_view file = "");
+    DataFrameSource(InviwoApplication* app, const std::filesystem::path& filePath = "");
     virtual ~DataFrameSource() = default;
 
     virtual void dataLoaded(std::shared_ptr<DataFrame> data) override;

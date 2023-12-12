@@ -45,6 +45,7 @@
 
 #include <memory>       // for shared_ptr, make_shared
 #include <type_traits>  // for remove_extent_t
+#include <algorithm>
 
 namespace inviwo {
 
@@ -62,63 +63,152 @@ SeedPointGenerator2D::SeedPointGenerator2D()
     : Processor()
     , seeds_("seeds")
 
-    , generator_("generator", "Generator",
+    , samplingDomain_{"samplingDomain", "Sampling Domain"}
+    , domain_{"domain",
+              "Domain",
+              {{"fullDomain", "Entire Domain", SamplingDomain::FullDomain},
+               {"line", "Line", SamplingDomain::Line},
+               {"rectangle", "Rectangle", SamplingDomain::Rectangle},
+               {"disk", "Disk", SamplingDomain::Disk}}}
+    , position_{"position",
+                "Position",
+                {vec2{0.0f, 0.0f}, vec2{0.0f}, ConstraintBehavior::Ignore, vec2{1.0f},
+                 ConstraintBehavior::Ignore, vec2{0.01f}, InvalidationLevel::InvalidOutput,
+                 PropertySemantics::SpinBox}}
+    , extent_{"extent", "Extent", util::ordinalLength(vec2{0.5f}, vec2{1.0f})}
+    , endpoint_{"endpoint",
+                "End Point",
+                {vec2{0.0f, 0.0f}, vec2{0.0f}, ConstraintBehavior::Ignore, vec2{1.0f},
+                 ConstraintBehavior::Ignore, vec2{0.01f}, InvalidationLevel::InvalidOutput,
+                 PropertySemantics::SpinBox}}
+    , radius_{"radius", "Radius", util::ordinalLength(0.5f)}
+
+    , generator_{"generator",
+                 "Generator",
                  {{"random", "Random", Generator::Random},
-                  {"haltonSequence", "Halton Sequence", Generator::HaltonSequence}})
+                  {"haltonSequence", "Halton Sequence", Generator::HaltonSequence}}}
 
-    , numPoints_("numPoints", "Number of points", 100, 1, 1000)
-    , haltonXBase_("haltonXBase", "Base for x values", 2, 2, 32)
-    , haltonYBase_("haltonYBase", "Base for y values", 3, 2, 32)
+    , numPoints_{"numPoints", "Number of points", util::ordinalCount<size_t>(100u, 1000u)}
+    , haltonXBase_{"haltonXBase", "Base for x values", 2, 2, 32}
+    , haltonYBase_{"haltonYBase", "Base for y values", 3, 2, 32}
 
-    , randomness_("randomness", "Randomness")
-    , useSameSeed_("useSameSeed", "Use same seed", true)
-    , seed_("seed", "Seed", 1, 0, 1000)
+    , randomness_{"randomness", "Randomness"}
+    , useSameSeed_{"useSameSeed", "Use same seed", true}
+    , seed_{"seed", "Seed", util::ordinalCount(1, 1000)}
+
     , rd_()
-    , mt_(rd_())
-
-{
+    , mt_(rd_()) {
     addPort(seeds_);
 
-    addProperty(generator_);
-    addProperty(numPoints_);
-    addProperty(haltonXBase_);
-    addProperty(haltonYBase_);
-    addProperty(randomness_);
-    randomness_.addProperty(useSameSeed_);
-    randomness_.addProperty(seed_);
-    useSameSeed_.onChange([&]() { seed_.setVisible(useSameSeed_.get()); });
+    addProperties(samplingDomain_, generator_, numPoints_, haltonXBase_, haltonYBase_, randomness_);
+    samplingDomain_.addProperties(domain_, position_, extent_, endpoint_, radius_);
+    randomness_.addProperties(useSameSeed_, seed_);
 
-    auto typeOnChange = [&]() {
-        haltonXBase_.setVisible(generator_.getSelectedValue() == Generator::HaltonSequence);
-        haltonYBase_.setVisible(generator_.getSelectedValue() == Generator::HaltonSequence);
+    extent_.readonlyDependsOn(
+        domain_, [](auto& p) { return p.getSelectedValue() != SamplingDomain::Rectangle; });
+    endpoint_.readonlyDependsOn(
+        domain_, [](auto& p) { return p.getSelectedValue() != SamplingDomain::Line; });
+    radius_.readonlyDependsOn(domain_,
+                              [](auto& p) { return p.getSelectedValue() != SamplingDomain::Disk; });
 
-        randomness_.setVisible(generator_.getSelectedValue() == Generator::Random);
-    };
-
-    generator_.onChange(typeOnChange);
+    haltonXBase_.visibilityDependsOn(generator_, [](const auto& p) {
+        return p.getSelectedValue() == Generator::HaltonSequence;
+    });
+    haltonYBase_.visibilityDependsOn(generator_, [](const auto& p) {
+        return p.getSelectedValue() == Generator::HaltonSequence;
+    });
+    randomness_.visibilityDependsOn(
+        generator_, [](const auto& p) { return p.getSelectedValue() == Generator::Random; });
 }
 
 void SeedPointGenerator2D::process() {
     auto seeds = std::make_shared<std::vector<vec2>>();
     seeds->reserve(numPoints_.get());
 
-    switch (generator_.get()) {
-        case Generator::Random: {
-            std::uniform_real_distribution<float> dis(0, 1);
-            seeds->resize(numPoints_.get());
-            util::randomSequence<float>(reinterpret_cast<float*>(seeds->data()),
-                                        numPoints_.get() * 2, mt_, dis);
-            break;
+    auto createSpatialSeeds = [&]() {
+        switch (generator_.get()) {
+            case Generator::Random: {
+                std::uniform_real_distribution<float> dis(0, 1);
+                seeds->resize(numPoints_.get());
+                std::ranges::generate(*seeds, [&]() { return vec2{dis(mt_), dis(mt_)}; });
+                break;
+            }
+            case Generator::HaltonSequence: {
+                auto x = util::haltonSequence<float>(haltonXBase_.get(), numPoints_);
+                auto y = util::haltonSequence<float>(haltonYBase_.get(), numPoints_);
+                for (auto&& it : util::zip(x, y)) {
+                    seeds->emplace_back(get<0>(it), get<1>(it));
+                }
+                break;
+            }
+
+            default:
+                break;
         }
-        case Generator::HaltonSequence: {
-            auto x = util::haltonSequence<float>(haltonXBase_.get(), numPoints_);
-            auto y = util::haltonSequence<float>(haltonYBase_.get(), numPoints_);
-            for (auto&& it : util::zip(x, y)) {
-                seeds->emplace_back(get<0>(it), get<1>(it));
+    };
+    auto createLinearSeeds = [&]() {
+        switch (generator_.get()) {
+            case Generator::Random: {
+                std::uniform_real_distribution<float> dis(0, 1);
+                seeds->resize(numPoints_.get());
+                std::ranges::generate(*seeds, [&]() { return vec2{dis(mt_), 0.0f}; });
+                break;
+            }
+            case Generator::HaltonSequence: {
+                for (auto x : util::haltonSequence<float>(haltonXBase_.get(), numPoints_)) {
+                    seeds->emplace_back(x, 0.0f);
+                }
+                break;
+            }
+
+            default:
+                break;
+        }
+    };
+
+    switch (domain_.get()) {
+        case SamplingDomain::Rectangle: {
+            const vec2 lowerLeft{position_};
+            const vec2 upperRight{glm::clamp(lowerLeft + extent_.get(), vec2{0.0f}, vec2{1.0f})};
+            const vec2 extent{upperRight - lowerLeft};
+
+            const mat2 m{vec2{extent.x, 0.0f}, vec2{0.0f, extent.y}};
+
+            createSpatialSeeds();
+            for (auto& pos : *seeds) {
+                pos = m * pos + lowerLeft;
             }
             break;
         }
+        case SamplingDomain::Line: {
+            // project points onto a line
+            const vec2 start{position_};
+            const vec2 end{endpoint_};
 
+            createLinearSeeds();
+            for (auto& pos : *seeds) {
+                pos = vec2{glm::mix(start, end, pos.x)};
+            }
+            break;
+        }
+        case SamplingDomain::Disk: {
+            // transform seed positions from [0,1] to uniformly sampled disk
+            // see https://mathworld.wolfram.com/DiskPointPicking.html
+            const vec2 center{position_};
+            const float radiusSqrt = std::sqrt(radius_.get());
+
+            createSpatialSeeds();
+            for (auto& pos : *seeds) {
+                pos = vec2{std::cos(pos.x + glm::two_pi<float>()),
+                           std::sin(pos.y + glm::two_pi<float>())} *
+                          radiusSqrt +
+                      center;
+            }
+            break;
+        }
+        case SamplingDomain::FullDomain:
+            createSpatialSeeds();
+            break;
         default:
             break;
     }

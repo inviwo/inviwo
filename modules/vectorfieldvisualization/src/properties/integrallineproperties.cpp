@@ -41,8 +41,8 @@ namespace inviwo {
 IntegralLineProperties::IntegralLineProperties(std::string_view identifier,
                                                std::string_view displayName)
     : CompositeProperty(identifier, displayName)
-    , numberOfSteps_("steps", "Number of Steps", 100, 1, 1000)
-    , stepSize_("stepSize", "Step size", 0.001f, 0.001f, 1.0f, 0.001f)
+    , numberOfSteps_("steps", "Number of Steps", util::ordinalCount(100, 1000))
+    , stepSize_("stepSize", "Step size", util::ordinalScale(0.001f, 1.0f))
     , normalizeSamples_("normalizeSamples", "Normalize Samples", true)
     , stepDirection_("stepDirection", "Step Direction")
     , integrationScheme_("integrationScheme", "Integration Scheme")
@@ -86,9 +86,10 @@ CoordinateSpace IntegralLineProperties::getSeedPointsSpace() const {
 bool IntegralLineProperties::getNormalizeSamples() const { return normalizeSamples_; }
 
 void IntegralLineProperties::setUpProperties() {
-    stepDirection_.addOption("fwd", "Forward", IntegralLineProperties::Direction::FWD);
-    stepDirection_.addOption("bwd", "Backwards", IntegralLineProperties::Direction::BWD);
-    stepDirection_.addOption("bi", "Bi Directional", IntegralLineProperties::Direction::BOTH);
+    stepDirection_.addOption("fwd", "Forward", IntegralLineProperties::Direction::Forward);
+    stepDirection_.addOption("bwd", "Backwards", IntegralLineProperties::Direction::Backward);
+    stepDirection_.addOption("bi", "Bi Directional",
+                             IntegralLineProperties::Direction::Bidirectional);
 
     integrationScheme_.addOption("euler", "Euler",
                                  IntegralLineProperties::IntegrationScheme::Euler);

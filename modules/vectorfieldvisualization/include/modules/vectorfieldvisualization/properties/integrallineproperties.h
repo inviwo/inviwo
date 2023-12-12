@@ -50,7 +50,7 @@ class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineProperties : public Co
 public:
     enum class IntegrationScheme { Euler, RK4 };
 
-    enum class Direction { FWD = 1, BWD = 2, BOTH = 3 };
+    enum class Direction { Forward = 1, Backward = 2, Bidirectional = 3 };
 
     IntegralLineProperties(std::string_view identifier, std::string_view displayName);
     IntegralLineProperties(const IntegralLineProperties& rhs);
