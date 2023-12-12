@@ -254,7 +254,6 @@ var group__processors =
     [ "inviwo::DataFrameMetaData", "classinviwo_1_1DataFrameMetaData.html", [
       [ "process", "classinviwo_1_1DataFrameMetaData.html#a39b413199a38bf08d1817603c7bb3980", null ]
     ] ],
-    [ "inviwo::DataFrameSource", "classinviwo_1_1DataFrameSource.html", null ],
     [ "inviwo::ImageToDataFrame", "classinviwo_1_1ImageToDataFrame.html", [
       [ "process", "classinviwo_1_1ImageToDataFrame.html#a3378042d809d4522db9f2b0c8639519b", null ]
     ] ],
