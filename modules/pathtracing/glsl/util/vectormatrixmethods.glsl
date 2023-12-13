@@ -14,13 +14,13 @@
  * @param t1   End point along ray
  * @return true if an intersection is found, false otherwise.
  */
-bool rayBoxIntersection(vec3 bbMin, vec3 bbMax vec3 rayOrigin, vec3 rayDir,
-                                     out float t0, out float t1) {
+bool rayBoxIntersection(vec3 bbMin, vec3 bbMax, vec3 rayOrigin, vec3 rayDir, out float t0,
+                        out float t1) {
     float FLT_MAX = 3.402823466e+38;
 
-    vec3 invDir = 1.f / dir;
-    vec3 tNearV = (bbMin - origin) * invDir;
-    vec3 tFarV = (bbMax - origin) * invDir;
+    vec3 invDir = 1.f / rayDir;
+    vec3 tNearV = (bbMin - rayOrigin) * invDir;
+    vec3 tFarV = (bbMax - rayOrigin) * invDir;
     vec3 tNear = min(tNearV, tFarV);
     vec3 tFar = max(tNearV, tFarV);
 
