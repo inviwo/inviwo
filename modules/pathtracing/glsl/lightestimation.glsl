@@ -11,7 +11,7 @@ vec3 estimateDirectLight(float rayStep, sampler3D volume, VolumeParameters volPa
     float t0 = 0.0f;
     float t1 = 1.f;
 
-    rayBoxIntersection_TextureSpace(samplePos, toLightDir, t0, t1);
+    rayBoxIntersection(vec3(0f), vec3(1f), samplePos, toLightDir, t0, t1);
 
     float Tl =
         transmittance(WOODCOCK, samplePos, toLightDir, t0, t1, hashSeed, volume, volParam, tf);
