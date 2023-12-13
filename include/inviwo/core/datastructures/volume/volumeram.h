@@ -37,6 +37,9 @@
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#include <glm/gtx/component_wise.hpp>
+#include <span>
+
 namespace inviwo {
 
 class HistogramCalculationState;
@@ -47,8 +50,6 @@ class HistogramCalculationState;
 class IVW_CORE_API VolumeRAM : public VolumeRepresentation {
 public:
     VolumeRAM(const DataFormatBase* format);
-    VolumeRAM(const VolumeRAM& rhs) = default;
-    VolumeRAM& operator=(const VolumeRAM& that) = default;
     virtual VolumeRAM* clone() const override = 0;
     virtual ~VolumeRAM() = default;
 
@@ -152,6 +153,13 @@ public:
     template <typename Result, template <class> class Predicate = dispatching::filter::All,
               typename Callable, typename... Args>
     auto dispatch(Callable&& callable, Args&&... args) const -> Result;
+
+protected:
+    VolumeRAM(const VolumeRAM& rhs) = default;
+    VolumeRAM(VolumeRAM& rhs) = default;
+    VolumeRAM& operator=(const VolumeRAM& that) = default;
+    VolumeRAM& operator=(VolumeRAM&& that) = default;
+    VolumeRAM(NoData, const VolumeRepresentation& rhs) : VolumeRepresentation{rhs} {};
 };
 
 class Volume;
@@ -178,12 +186,18 @@ public:
                        InterpolationType interpolation = InterpolationType::Linear,
                        const Wrapping3D& wrapping = wrapping3d::clampAll);
     VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs);
+
+    VolumeRAMPrecision(NoData, const VolumeRepresentation& rhs);
+
     VolumeRAMPrecision<T>& operator=(const VolumeRAMPrecision<T>& that);
     virtual VolumeRAMPrecision<T>* clone() const override;
     virtual ~VolumeRAMPrecision();
 
     T* getDataTyped();
     const T* getDataTyped() const;
+
+    std::span<T> getView();
+    std::span<const T> getView() const;
 
     virtual void* getData() override;
     virtual const void* getData() const override;
@@ -278,11 +292,11 @@ template <typename T>
 VolumeRAMPrecision<T>::VolumeRAMPrecision(size3_t dimensions, const SwizzleMask& swizzleMask,
                                           InterpolationType interpolation,
                                           const Wrapping3D& wrapping)
-    : VolumeRAM(DataFormat<T>::get())
-    , dimensions_(dimensions)
-    , ownsDataPtr_(true)
-    , data_(new T[dimensions_.x * dimensions_.y * dimensions_.z]())
-    , swizzleMask_(swizzleMask)
+    : VolumeRAM{DataFormat<T>::get()}
+    , dimensions_{dimensions}
+    , ownsDataPtr_{true}
+    , data_{std::make_unique<T[]>(glm::compMul(dimensions_))}
+    , swizzleMask_{swizzleMask}
     , interpolation_{interpolation}
     , wrapping_{wrapping} {}
 
@@ -291,26 +305,40 @@ VolumeRAMPrecision<T>::VolumeRAMPrecision(T* data, size3_t dimensions,
                                           const SwizzleMask& swizzleMask,
                                           InterpolationType interpolation,
                                           const Wrapping3D& wrapping)
-    : VolumeRAM(DataFormat<T>::get())
-    , dimensions_(dimensions)
-    , ownsDataPtr_(true)
-    , data_(data ? data : new T[dimensions_.x * dimensions_.y * dimensions_.z]())
-    , swizzleMask_(swizzleMask)
+    : VolumeRAM{DataFormat<T>::get()}
+    , dimensions_{dimensions}
+    , ownsDataPtr_{true}
+    , data_{data}
+    , swizzleMask_{swizzleMask}
     , interpolation_{interpolation}
-    , wrapping_{wrapping} {}
+    , wrapping_{wrapping} {
+    if (!data_) {
+        data_ = std::make_unique<T[]>(glm::compMul(dimensions_));
+    }
+}
 
 template <typename T>
 VolumeRAMPrecision<T>::VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs)
-    : VolumeRAM(rhs)
-    , dimensions_(rhs.dimensions_)
-    , ownsDataPtr_(true)
-    , data_(new T[dimensions_.x * dimensions_.y * dimensions_.z])
-    , swizzleMask_(rhs.swizzleMask_)
+    : VolumeRAM{rhs}
+    , dimensions_{rhs.dimensions_}
+    , ownsDataPtr_{true}
+    , data_{std::make_unique<T[]>(glm::compMul(dimensions_))}
+    , swizzleMask_{rhs.swizzleMask_}
     , interpolation_{rhs.interpolation_}
     , wrapping_{rhs.wrapping_} {
-    std::memcpy(data_.get(), rhs.data_.get(),
-                dimensions_.x * dimensions_.y * dimensions_.z * sizeof(T));
+    
+    std::copy(rhs.getView().begin(), rhs.getView().end(), data_.get());
 }
+
+template <typename T>
+VolumeRAMPrecision<T>::VolumeRAMPrecision(NoData, const VolumeRepresentation& rhs)
+    : VolumeRAM{noData, rhs}
+    , dimensions_{rhs.getDimensions()}
+    , ownsDataPtr_{true}
+    , data_{std::make_unique<T[]>(glm::compMul(dimensions_))}
+    , swizzleMask_{rhs.getSwizzleMask()}
+    , interpolation_{rhs.getInterpolation()}
+    , wrapping_{rhs.getWrapping()} {}
 
 template <typename T>
 VolumeRAMPrecision<T>& VolumeRAMPrecision<T>::operator=(const VolumeRAMPrecision<T>& that) {
@@ -318,7 +346,7 @@ VolumeRAMPrecision<T>& VolumeRAMPrecision<T>::operator=(const VolumeRAMPrecision
         VolumeRAM::operator=(that);
         auto dim = that.dimensions_;
         auto data = std::make_unique<T[]>(dim.x * dim.y * dim.z);
-        std::memcpy(data.get(), that.data_.get(), dim.x * dim.y * dim.z * sizeof(T));
+        std::copy(that.getView().begin(), that.getView().end(), data.get());
         data_.swap(data);
         std::swap(dim, dimensions_);
         ownsDataPtr_ = true;
@@ -340,13 +368,23 @@ VolumeRAMPrecision<T>* VolumeRAMPrecision<T>::clone() const {
 }
 
 template <typename T>
-const T* inviwo::VolumeRAMPrecision<T>::getDataTyped() const {
+const T* VolumeRAMPrecision<T>::getDataTyped() const {
     return data_.get();
 }
 
 template <typename T>
-T* inviwo::VolumeRAMPrecision<T>::getDataTyped() {
+T* VolumeRAMPrecision<T>::getDataTyped() {
     return data_.get();
+}
+
+template <typename T>
+std::span<T> VolumeRAMPrecision<T>::getView() {
+    return std::span<T>{data_.get(), glm::compMul(dimensions_)};
+}
+
+template <typename T>
+std::span<const T> VolumeRAMPrecision<T>::getView() const {
+    return std::span<T>{data_.get(), glm::compMul(dimensions_)};
 }
 
 template <typename T>
