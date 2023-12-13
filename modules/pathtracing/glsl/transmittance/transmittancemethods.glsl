@@ -9,25 +9,26 @@ const uint WOODCOCK = 101;
 const uint RATIO = 102;
 const uint RESIDUALRATIO = 103;
 
-float tfToExtinction(float s_max) { return s_max * 150f; }
+const float REFSAMPLINGINTERVAL = 150.0;
 
-// raystart, raydir and raylength ought to be in data coordinate
+float opacityToExtinction(float s_max) { return s_max * REFSAMPLINGINTERVAL; }
+
 float woodcockTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd, inout uint hashSeed,
                        sampler3D volume, VolumeParameters volumeParameters,
                        sampler2D transferFunction, float sigma_upperbound) {
 
-    float invMaxExtinction = 1.f / tfToExtinction(sigma_upperbound);
+    float invMaxExtinction = 1.f / opacityToExtinction(sigma_upperbound);
     float invSigmaUpperbound = 1.f / sigma_upperbound;
     float t = tStart;
     float sigmaSample;
     vec3 r = vec3(0);
     do {
-        t += -log(random_1dto1d(pcgRehash(hashSeed))) * invMaxExtinction;
+        t += -log(randomize(hashSeed)) * invMaxExtinction;
         r = raystart + t * raydir;
         vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, r);
         sigmaSample = applyTF(transferFunction, volumeSample).a;
 
-    } while (random_1dto1d(pcgRehash(hashSeed)) >= sigmaSample * invSigmaUpperbound && t <= tEnd);
+    } while (randomize(hashSeed) >= sigmaSample * invSigmaUpperbound && t <= tEnd);
 
     return t;
 }
@@ -37,14 +38,14 @@ float ratioTrackingEstimator(vec3 raystart, vec3 raydir, float tStart, float tEn
                              VolumeParameters volumeParameters, sampler2D transferFunction,
                              float sigma_upperbound) {
 
-    float invMaxExtinction = 1.f / tfToExtinction(sigma_upperbound);
+    float invMaxExtinction = 1.f / opacityToExtinction(sigma_upperbound);
     float invSigmaUpperbound = 1.f / sigma_upperbound;
     float t = tStart;
     float sigmaSample;
     vec3 r = vec3(0);
     float T = 1.f;  // transmittance
     do {
-        t += -log(random_1dto1d(pcgRehash(hashSeed))) * invMaxExtinction;
+        t += -log(randomize(hashSeed)) * invMaxExtinction;
         if (t >= tEnd) {
             break;
         }
@@ -66,16 +67,16 @@ float residualRatioTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd
     if (sigma_upperbound < 2e-6) {
         return 1.f;
     }
-    float invMaxExtinction = 1.f / tfToExtinction(sigma_upperbound);
+    float invMaxExtinction = 1.f / opacityToExtinction(sigma_upperbound);
     float invSigmaUpperbound = 1.f / sigma_upperbound;
     float t = tStart;
     float sigmaSample;
     vec3 r = vec3(0);
-    float Tc = exp(-tfToExtinction(sigma_control) * (tEnd - tStart));
+    float Tc = exp(-opacityToExtinction(sigma_control) * (tEnd - tStart));
     float Tr = 1.f;  // transmittance
 
     do {
-        t += -log(random_1dto1d(pcgRehash(hashSeed))) * invMaxExtinction;
+        t += -log(randomize(hashSeed)) * invMaxExtinction;
         if (t >= tEnd) {
             break;
         }
