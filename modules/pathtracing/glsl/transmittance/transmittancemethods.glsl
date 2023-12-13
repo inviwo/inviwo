@@ -49,7 +49,7 @@ float ratioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float
             break;
         }
         samplePos = samplePos + t * raydir;
-        vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, r);
+        vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
         opacity = applyTF(transferFunction, volumeSample).a;
         T *= (1 - opacity * invOpacitUpperbound);
 
@@ -58,10 +58,11 @@ float ratioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float
     return T;
 }
 
-float residualRatioTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
-                                 inout uint hashSeed, sampler3D volume,
-                                 VolumeParameters volumeParameters, sampler2D transferFunction,
-                                 float opacityUpperbound, float opacityControl) {
+float residualRatioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
+                                         inout uint hashSeed, sampler3D volume,
+                                         VolumeParameters volumeParameters,
+                                         sampler2D transferFunction, float opacityUpperbound,
+                                         float opacityControl) {
 
     if (opacityUpperbound < 2e-6) {
         return 1.f;
@@ -80,7 +81,7 @@ float residualRatioTransmittance(vec3 raystart, vec3 raydir, float tStart, float
             break;
         }
         samplePos = samplePos + t * raydir;
-        vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, r);
+        vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
         opacity = applyTF(transferFunction, volumeSample).a;
         Tr *= (1 - (opacity - opacityControl) * invOpacitUpperbound);
 
