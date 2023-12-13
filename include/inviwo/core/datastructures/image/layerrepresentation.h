@@ -46,7 +46,7 @@ public:
     virtual ~LayerRepresentation() = default;
 
     LayerType getLayerType() const;
-    
+
     virtual const DataFormatBase* getDataFormat() const = 0;
     std::string getDataFormatString() const { return getDataFormat()->getString(); }
     DataFormatId getDataFormatId() const { return getDataFormat()->getId(); }

@@ -189,7 +189,7 @@ public:
     VolumeRAMPrecision<T>& operator=(const VolumeRAMPrecision<T>& that);
     virtual VolumeRAMPrecision<T>* clone() const override;
     virtual ~VolumeRAMPrecision();
-    
+
     virtual const DataFormatBase* getDataFormat() const override;
 
     T* getDataTyped();
@@ -325,7 +325,7 @@ VolumeRAMPrecision<T>::VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs)
     , swizzleMask_{rhs.swizzleMask_}
     , interpolation_{rhs.interpolation_}
     , wrapping_{rhs.wrapping_} {
-    
+
     std::copy(rhs.getView().begin(), rhs.getView().end(), data_.get());
 }
 

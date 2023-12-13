@@ -97,9 +97,7 @@ void LayerPy::setDimensions(size2_t dimensions) {
     }
 }
 
-const DataFormatBase* LayerPy::getDataFormat() const {
-    return format(data_);
-}
+const DataFormatBase* LayerPy::getDataFormat() const { return format(data_); }
 
 const size2_t& LayerPy::getDimensions() const { return dims_; }
 

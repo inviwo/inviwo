@@ -39,4 +39,4 @@ namespace inviwo {
 struct IVW_CORE_API NoData {};
 constexpr NoData noData{};
 
-}
+}  // namespace inviwo
