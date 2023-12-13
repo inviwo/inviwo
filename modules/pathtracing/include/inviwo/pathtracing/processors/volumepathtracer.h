@@ -64,7 +64,7 @@ public:
     VolumePathTracer();
     ~VolumePathTracer() = default;
 
-    virtual void initializeResources() override { invalidateProgressiveRendering(); }
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -98,8 +98,8 @@ private:
     VolumeIndicatorProperty positionIndicator_;
 
     SimpleLightingProperty light_;
-    std::chrono::time_point<std::chrono::high_resolution_clock> time_start;
-    std::chrono::time_point<std::chrono::high_resolution_clock> time_now;
+    std::chrono::time_point<std::chrono::high_resolution_clock> timeStart_;
+    std::chrono::time_point<std::chrono::high_resolution_clock> timeNow_;
 
     // Progressive Refinement
     ButtonProperty invalidateRendering_;

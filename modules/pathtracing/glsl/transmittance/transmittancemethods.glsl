@@ -2,7 +2,6 @@
 #include "utils/shading.glsl"
 #include "utils/intersection.glsl"
 #include "utils/gradients.glsl"
-#include "util/vectormatrixmethods.glsl"
 
 // pseudo enums
 const uint WOODCOCK = 101;
@@ -34,9 +33,9 @@ float woodcockTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd, ino
 }
 
 float ratioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
-                             inout uint hashSeed, sampler3D volume,
-                             VolumeParameters volumeParameters, sampler2D transferFunction,
-                             float opacityUpperbound) {
+                                 inout uint hashSeed, sampler3D volume,
+                                 VolumeParameters volumeParameters, sampler2D transferFunction,
+                                 float opacityUpperbound) {
 
     float invMaxExtinction = 1.f / opacityToExtinction(opacityUpperbound);
     float invOpacitUpperbound = 1.f / opacityUpperbound;
@@ -60,9 +59,9 @@ float ratioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float
 }
 
 float residualRatioTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
-                            inout uint hashSeed, sampler3D volume,
-                            VolumeParameters volumeParameters, sampler2D transferFunction,
-                            float opacityUpperbound, float opacityControl) {
+                                 inout uint hashSeed, sampler3D volume,
+                                 VolumeParameters volumeParameters, sampler2D transferFunction,
+                                 float opacityUpperbound, float opacityControl) {
 
     if (opacityUpperbound < 2e-6) {
         return 1.f;
@@ -105,11 +104,12 @@ float transmittance(uint METHOD, vec3 raystart, vec3 raydir, float tStart, float
             return meanFreePath >= tEnd ? 1f : 0f;
         case RATIO:
             return ratioTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed, volume,
-                                          volumeParameters, transferFunction, opacityUpperbound);
+                                              volumeParameters, transferFunction,
+                                              opacityUpperbound);
         case RESIDUALRATIO:
-            return residualRatioTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed, volume,
-                                         volumeParameters, transferFunction, opacityUpperbound,
-                                         opacityControl);
+            return residualRatioTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed,
+                                                      volume, volumeParameters, transferFunction,
+                                                      opacityUpperbound, opacityControl);
     }
 
     return 0f;
