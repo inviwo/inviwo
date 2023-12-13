@@ -13,6 +13,11 @@ for page in 1 2 3 4
 do
     for package in `gh api -H "X-GitHub-Api-Version: 2022-11-28" -H "Accept: application/vnd.github+json" "/orgs/inviwo/packages?package_type=nuget&per_page=100&page=$page" | jq -r '.[].name'`
     do
+        ## This will delete all packages
+        echo "Delete $package"
+        gh api --method DELETE -H "X-GitHub-Api-Version: 2022-11-28" -H "Accept: application/vnd.github+json" "/orgs/inviwo/packages/nuget/$package"
+        continue
+
         vers=`gh api -H "X-GitHub-Api-Version: 2022-11-28" -H "Accept: application/vnd.github+json" "/orgs/inviwo/packages/nuget/$package/versions?per_page=100"`
 
         len=`echo $vers | jq '. | length'`
