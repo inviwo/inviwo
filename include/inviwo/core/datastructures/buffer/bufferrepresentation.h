@@ -44,6 +44,11 @@ class IVW_CORE_API BufferRepresentation : public DataRepresentation<BufferBase> 
 public:
     virtual BufferRepresentation* clone() const override = 0;
     virtual ~BufferRepresentation() = default;
+
+    virtual const DataFormatBase* getDataFormat() const = 0;
+    std::string getDataFormatString() const { return getDataFormat()->getString(); }
+    DataFormatId getDataFormatId() const { return getDataFormat()->getId(); }
+
     virtual void setSize(size_t size) = 0;
 
     /**
@@ -58,7 +63,7 @@ public:
     BufferTarget getBufferTarget() const;
 
 protected:
-    BufferRepresentation(const DataFormatBase* format, BufferUsage usage = BufferUsage::Static,
+    BufferRepresentation(BufferUsage usage = BufferUsage::Static,
                          BufferTarget target = BufferTarget::Data);
     BufferRepresentation(const BufferRepresentation& rhs) = default;
     BufferRepresentation& operator=(const BufferRepresentation& that) = default;

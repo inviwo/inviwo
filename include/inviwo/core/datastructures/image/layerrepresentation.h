@@ -45,6 +45,12 @@ public:
     virtual LayerRepresentation* clone() const = 0;
     virtual ~LayerRepresentation() = default;
 
+    LayerType getLayerType() const;
+    
+    virtual const DataFormatBase* getDataFormat() const = 0;
+    std::string getDataFormatString() const { return getDataFormat()->getString(); }
+    DataFormatId getDataFormatId() const { return getDataFormat()->getId(); }
+
     /**
      * Resize the representation to dimension. This is destructive, the data will not be
      * preserved. Use copyRepresentationsTo to update the data.
@@ -85,11 +91,8 @@ public:
      */
     virtual bool copyRepresentationsTo(LayerRepresentation*) const = 0;
 
-    LayerType getLayerType() const;
-
 protected:
-    LayerRepresentation(LayerType type = LayerType::Color,
-                        const DataFormatBase* format = DataVec4UInt8::get());
+    LayerRepresentation(LayerType type = LayerType::Color);
     LayerRepresentation(const LayerRepresentation& rhs) = default;
     LayerRepresentation& operator=(const LayerRepresentation& that) = default;
 

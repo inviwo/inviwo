@@ -34,26 +34,30 @@ namespace inviwo {
 VolumeDisk::VolumeDisk(size3_t dimensions, const DataFormatBase* format,
                        const SwizzleMask& swizzleMask, InterpolationType interpolation,
                        const Wrapping3D& wrapping)
-    : VolumeRepresentation(format)
-    , DiskRepresentation<VolumeRepresentation, VolumeDisk>()
-    , dimensions_(dimensions)
-    , swizzleMask_(swizzleMask)
+    : VolumeRepresentation{}
+    , DiskRepresentation<VolumeRepresentation, VolumeDisk>{}
+    , dataFormatBase_{format}
+    , dimensions_{dimensions}
+    , swizzleMask_{swizzleMask}
     , interpolation_{interpolation}
     , wrapping_{wrapping} {}
 
 VolumeDisk::VolumeDisk(const std::filesystem::path& srcFile, size3_t dimensions,
                        const DataFormatBase* format, const SwizzleMask& swizzleMask,
                        InterpolationType interpolation, const Wrapping3D& wrapping)
-    : VolumeRepresentation(format)
-    , DiskRepresentation<VolumeRepresentation, VolumeDisk>(srcFile)
-    , dimensions_(dimensions)
-    , swizzleMask_(swizzleMask)
+    : VolumeRepresentation{}
+    , DiskRepresentation<VolumeRepresentation, VolumeDisk>{srcFile}
+    , dataFormatBase_{format}
+    , dimensions_{dimensions}
+    , swizzleMask_{swizzleMask}
     , interpolation_{interpolation}
     , wrapping_{wrapping} {}
 
 VolumeDisk* VolumeDisk::clone() const { return new VolumeDisk(*this); }
 
 std::type_index VolumeDisk::getTypeIndex() const { return std::type_index(typeid(VolumeDisk)); }
+
+const DataFormatBase* VolumeDisk::getDataFormat() const { return dataFormatBase_; }
 
 void VolumeDisk::setDimensions(size3_t) {
     throw Exception("Can not set dimension of a Volume Disk", IVW_CONTEXT);

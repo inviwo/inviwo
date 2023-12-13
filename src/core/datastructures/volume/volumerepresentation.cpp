@@ -32,7 +32,4 @@
 
 namespace inviwo {
 
-VolumeRepresentation::VolumeRepresentation(const DataFormatBase* format)
-    : DataRepresentation(format) {}
-
 }  // namespace inviwo

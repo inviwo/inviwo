@@ -66,7 +66,7 @@ const DataFormatBase* format(pybind11::array data) {
 
 VolumePy::VolumePy(pybind11::array data, const SwizzleMask& swizzleMask,
                    InterpolationType interpolation, const Wrapping3D& wrapping)
-    : VolumeRepresentation(format(data))
+    : VolumeRepresentation()
     , swizzleMask_{swizzleMask}
     , interpolation_{interpolation}
     , wrapping_{wrapping}
@@ -75,7 +75,7 @@ VolumePy::VolumePy(pybind11::array data, const SwizzleMask& swizzleMask,
 
 VolumePy::VolumePy(size3_t dimensions, const DataFormatBase* format, const SwizzleMask& swizzleMask,
                    InterpolationType interpolation, const Wrapping3D& wrapping)
-    : VolumeRepresentation(format)
+    : VolumeRepresentation()
     , swizzleMask_{swizzleMask}
     , interpolation_{interpolation}
     , wrapping_{wrapping}
@@ -88,6 +88,8 @@ VolumePy::VolumePy(size3_t dimensions, const DataFormatBase* format, const Swizz
 VolumePy* VolumePy::clone() const { return new VolumePy(*this); }
 
 std::type_index VolumePy::getTypeIndex() const { return std::type_index(typeid(VolumePy)); }
+
+const DataFormatBase* VolumePy::getDataFormat() const { return format(data_); }
 
 void VolumePy::setDimensions(size3_t dimensions) {
     if (dimensions != dims_) {

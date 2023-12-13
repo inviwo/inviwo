@@ -56,6 +56,8 @@ public:
     virtual LayerDisk* clone() const override;
     virtual ~LayerDisk();
 
+    virtual const DataFormatBase* getDataFormat() const override;
+
     virtual const size2_t& getDimensions() const override;
 
     /**
@@ -93,6 +95,7 @@ private:
     virtual void setDimensions(size2_t dimensions) override;
     // clang-format on
 
+    const DataFormatBase* dataFormatBase_;
     size2_t dimensions_;
     SwizzleMask swizzleMask_;
     InterpolationType interpolation_;

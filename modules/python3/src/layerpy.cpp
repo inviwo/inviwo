@@ -63,7 +63,7 @@ const DataFormatBase* format(pybind11::array data) {
 
 LayerPy::LayerPy(pybind11::array data, LayerType type, const SwizzleMask& swizzleMask,
                  InterpolationType interpolation, const Wrapping2D& wrapping)
-    : LayerRepresentation(type, format(data))
+    : LayerRepresentation(type)
     , swizzleMask_{swizzleMask}
     , interpolation_{interpolation}
     , wrapping_{wrapping}
@@ -73,7 +73,7 @@ LayerPy::LayerPy(pybind11::array data, LayerType type, const SwizzleMask& swizzl
 LayerPy::LayerPy(size2_t dimensions, LayerType type, const DataFormatBase* format,
                  const SwizzleMask& swizzleMask, InterpolationType interpolation,
                  const Wrapping2D& wrapping)
-    : LayerRepresentation(type, format)
+    : LayerRepresentation(type)
     , swizzleMask_{swizzleMask}
     , interpolation_{interpolation}
     , wrapping_{wrapping}
@@ -95,6 +95,10 @@ void LayerPy::setDimensions(size2_t dimensions) {
                                                                 getDataFormat()->getComponents()});
         dims_ = dimensions;
     }
+}
+
+const DataFormatBase* LayerPy::getDataFormat() const {
+    return format(data_);
 }
 
 const size2_t& LayerPy::getDimensions() const { return dims_; }

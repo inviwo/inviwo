@@ -32,8 +32,6 @@
 
 namespace inviwo {
 
-VolumeRAM::VolumeRAM(const DataFormatBase* format) : VolumeRepresentation(format) {}
-
 std::type_index VolumeRAM::getTypeIndex() const { return std::type_index(typeid(VolumeRAM)); }
 
 struct VolumeRamCreationDispatcher {

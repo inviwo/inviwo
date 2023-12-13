@@ -64,6 +64,8 @@ public:
     virtual ~BufferGL();
     virtual BufferGL* clone() const override;
 
+    virtual const DataFormatBase* getDataFormat() const override;
+
     /**
      * \brief set the size of the buffer
      * Note that the internal BufferObject is only growing in size and never shrinking to avoid
