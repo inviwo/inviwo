@@ -1,4 +1,4 @@
-/*  
+/*
     Hashes copied from Mark Jarzynski's and Marc Olano's 2020 paper
     Hash Functions for GPU Rendering
 
@@ -102,3 +102,5 @@ vec3 random_1dto3d(uint v) {
 vec2 random_2dto2d(uvec2 v) { return uintToFloatbyDiv(pcg2d(v)); }
 
 float random_2dto1d(uvec2 v) { return uintToFloatbyDiv(pcg(pcg(v.x) + v.y)); }
+
+float randomize(uint v) { return random_1dto1d(pcgRehash(v)); }

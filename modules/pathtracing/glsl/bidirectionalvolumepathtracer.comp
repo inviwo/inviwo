@@ -64,8 +64,6 @@ vec4 pathtrace(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float 
                float exitDepth, float rayDepth, inout float depth,
                RaycastingParameters rayCastParam, VolumeParameters volParam, vec4 bgColor) {
 
-    
-
     vec3 ray = exitPoint - entryPoint;
     vec3 rayDir = normalize(ray);
     float rayLength = length(ray);

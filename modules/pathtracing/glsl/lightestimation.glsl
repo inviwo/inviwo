@@ -12,24 +12,20 @@ vec3 estimateDirectLight(float rayStep, sampler3D volume, VolumeParameters volPa
     float t1 = 1.f;
 
     rayBoxIntersection_TextureSpace(samplePos, toLightDir, t0, t1);
-    
-    float Tl = transmittance(RESIDUALRATIO, samplePos, toLightDir, t0, t1, hashSeed, volume,
-                                            volParam, tf);
-    
-    /*
-    float meanFreePath = woodcockTracking(samplePos, toLightDir, t0, t1, hashSeed, volume,
-                                            volParam, tf, 1.0f);
-    float Tl = meanFreePath >= t1 ? 1.f : 0.f; 
-    */
+
+    float Tl =
+        transmittance(WOODCOCK, samplePos, toLightDir, t0, t1, hashSeed, volume, volParam, tf);
+
     if (Tl == 0.0f) {
         return vec3(0f);
     }
 
-    vec3 gradient = gradientCentralDiff(vec4(0f), volume, volParam, samplePos, 0);
+    vec4 voxel = getNormalizedVoxel(volume, volParam, samplePos);
+    // vec3 gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volParam, samplePos, rcChannel);
+    vec3 gradient = gradientCentralDiff(vec4(0f), volume, volParam, samplePos, rcChannel);
     gradient = normalize(gradient);
 
-    vec4 voxel = getNormalizedVoxel(volume, volParam, samplePos);
-    gradient *= sign(voxel[0] / (1.0 - volParam.formatScaling) - volParam.formatOffset);
+    gradient *= sign(voxel[rcChannel] / (1.0 - volParam.formatScaling) - volParam.formatOffset);
 
     vec4 tfSample = applyTF(tf, voxel);
 
@@ -38,8 +34,10 @@ vec3 estimateDirectLight(float rayStep, sampler3D volume, VolumeParameters volPa
     vec3 sampleSpecular = tfSample.rgb;
 
     vec3 sampleWorldPos = (volParam.textureToWorld * vec4(samplePos, 1f)).xyz;
+    // vec3 color = APPLY_LIGHTING(light, sampleAmbient, sampleDiffuse, sampleSpecular,
+    //                            sampleWorldPos, -gradient, cameraDir)
     vec3 color = shadeBlinnPhong(light, sampleAmbient, sampleDiffuse, sampleSpecular,
-                                 sampleWorldPos, gradient, cameraDir);
+                                 sampleWorldPos, -gradient, cameraDir);
 
     return color * Tl;
 }
