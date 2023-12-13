@@ -50,7 +50,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    std::array<LayerInport, 4> source_;    
+    std::array<LayerInport, 4> source_;
     LayerOutport outport_;
 
     std::array<OptionPropertyInt, 4> channel_;
