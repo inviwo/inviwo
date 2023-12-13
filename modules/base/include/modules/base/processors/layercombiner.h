@@ -36,6 +36,8 @@
 #include <inviwo/core/ports/layerport.h>
 #include <modules/base/properties/datarangeproperty.h>
 
+#include <array>
+
 namespace inviwo {
 
 class IVW_MODULE_BASE_API LayerCombiner : public Processor {
@@ -48,17 +50,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    LayerInport source1_;
-    LayerInport source2_;
-    LayerInport source3_;
-    LayerInport source4_;
-
+    std::array<LayerInport, 4> source_;    
     LayerOutport outport_;
 
-    OptionPropertyInt channel1Source_;
-    OptionPropertyInt channel2Source_;
-    OptionPropertyInt channel3Source_;
-    OptionPropertyInt channel4Source_;
+    std::array<OptionPropertyInt, 4> channel_;
 
     DataRangeProperty dataRange_;
 };

@@ -49,7 +49,7 @@ class IVW_CORE_API Image : public DataGroup<Image, ImageRepresentation>, public 
 public:
     using ColorLayerIterator =
         util::IndirectIterator<std::vector<std::shared_ptr<Layer>>::iterator>;
-    using const_ColorLayerIterator =
+    using ConstColorLayerIterator =
         util::IndirectIterator<std::vector<std::shared_ptr<Layer>>::const_iterator>;
 
     using DataBuffer = std::unique_ptr<std::vector<unsigned char>>;
@@ -101,11 +101,11 @@ public:
     ColorLayerIterator begin();
     ColorLayerIterator end();
 
-    const_ColorLayerIterator begin() const;
-    const_ColorLayerIterator end() const;
+    ConstColorLayerIterator begin() const;
+    ConstColorLayerIterator end() const;
 
-    const_ColorLayerIterator cbegin() const;
-    const_ColorLayerIterator cend() const;
+    ConstColorLayerIterator cbegin() const;
+    ConstColorLayerIterator cend() const;
 
     const Layer* getColorLayer(size_t idx = 0) const;
     Layer* getColorLayer(size_t idx = 0);

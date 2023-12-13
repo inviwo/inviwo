@@ -58,7 +58,8 @@ IVW_CORE_API std::optional<mat4> boundingBoxUnion(const std::optional<mat4>& a,
 /**
  * Calculate a bounding box of the layers in world space. The bounding box is
  * represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are
- * between 0 and 1.
+ * between 0 and 1. The bounding box will have zero depth in most cases since the layer basis is
+ * two-dimensional.
  */
 IVW_CORE_API mat4 boundingBox(const Layer& layer);
 

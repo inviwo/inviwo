@@ -106,6 +106,9 @@ constexpr SwizzleMask luminanceAlpha = {
 constexpr SwizzleMask redGreen = {
     {ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::Zero}};
 constexpr SwizzleMask depth = luminance;
+
+IVW_CORE_API SwizzleMask defaultColor(size_t numComponents);
+IVW_CORE_API SwizzleMask defaultData(size_t numComponents);
 }  // namespace swizzlemasks
 
 namespace wrapping2d {

@@ -51,7 +51,7 @@ std::string ImageToLayerVisualizer::getName() const { return "Image To Layer"; }
 Document ImageToLayerVisualizer::getDescription() const {
     Document doc;
     auto b = doc.append("html").append("body");
-    b.append("", "Construct a image to layer processor");
+    b.append("", "Construct an image to layer processor");
     return doc;
 }
 

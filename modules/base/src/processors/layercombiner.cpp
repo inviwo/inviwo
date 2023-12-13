@@ -37,6 +37,7 @@
 #include <inviwo/core/util/glmutils.h>
 
 #include <algorithm>
+#include <span>
 
 namespace inviwo {
 
@@ -54,57 +55,54 @@ and precision of the inputs.
 
 const ProcessorInfo LayerCombiner::getProcessorInfo() const { return processorInfo_; }
 
+namespace {
 const std::vector<OptionPropertyIntOption> channelsList = {{"channel1", "Channel 1", 0},
                                                            {"channel2", "Channel 2", 1},
                                                            {"channel3", "Channel 3", 2},
                                                            {"channel4", "Channel 4", 3}};
+}
 
 LayerCombiner::LayerCombiner()
     : Processor{}
-    , source1_{"source1", "Input for the first channel (red)"_help}
-    , source2_{"source2", "Input for the second channel (green, optional)"_help}
-    , source3_{"source3", "Input for the third channel (blue, optional)"_help}
-    , source4_{"source4", "Input for the fourth channel (alpha, optional)"_help}
+    , source_{LayerInport{"source1", "Input for the first channel (red)"_help},
+              LayerInport{"source2", "Input for the second channel (green, optional)"_help},
+              LayerInport{"source3", "Input for the third channel (blue, optional)"_help},
+              LayerInport{"source4", "Input for the fourth channel (alpha, optional)"_help}}
     , outport_{"outport", "Resulting Layer with combined channels"_help}
 
-    , channel1Source_{"dest1", "Channel 1 Out", "Selected channel of the first input"_help,
-                      channelsList}
-    , channel2Source_{"dest2", "Channel 2 Out", "Selected channel of the second input"_help,
-                      channelsList}
-    , channel3Source_{"dest3", "Channel 3 Out", "Selected channel of the third input"_help,
-                      channelsList}
-    , channel4Source_{"dest4", "Channel 4 Out", "Selected channel of the fourth input"_help,
-                      channelsList}
-    , dataRange_{"dataRange", "Data Range", source1_, true} {
+    , channel_{OptionPropertyInt{"dest1", "Channel 1 Out",
+                                 "Selected channel of the first input"_help, channelsList},
+               OptionPropertyInt{"dest2", "Channel 2 Out",
+                                 "Selected channel of the second input"_help, channelsList},
+               OptionPropertyInt{"dest3", "Channel 3 Out",
+                                 "Selected channel of the third input"_help, channelsList},
+               OptionPropertyInt{"dest4", "Channel 4 Out",
+                                 "Selected channel of the fourth input"_help, channelsList}}
+    , dataRange_{"dataRange", "Data Range", source_[0], true} {
 
-    addPorts(source1_, source2_, source3_, source4_, outport_);
-    source2_.setOptional(true);
-    source3_.setOptional(true);
-    source4_.setOptional(true);
+    addPorts(source_[0], source_[1], source_[2], source_[3], outport_);
+    for (auto& port : std::span(source_.begin() + 1, 3)) {
+        port.setOptional(true);
+    }
 
-    addProperties(channel1Source_, channel2Source_, channel3Source_, channel4Source_, dataRange_);
+    for (auto& prop : channel_) {
+        addProperty(prop);
+    }
+    addProperty(dataRange_);
 }
 
 void LayerCombiner::process() {
-    // auto activePorts =
-    //     util::copy_if(std::array<LayerInport*, 4>{&source1_, &source2_, &source3_, &source4_},
-    //                   [](LayerInport* p) { return p->hasData(); });
-
     std::vector<std::pair<LayerInport*, int>> activePorts;
-    for (auto&& [port, channel] :
-         util::zip(std::array<LayerInport*, 4>{&source1_, &source2_, &source3_, &source4_},
-                   std::array<int, 4>{channel1Source_.get(), channel2Source_.get(),
-                                      channel3Source_.get(), channel4Source_.get()})) {
-        if (port->hasData()) {
-            activePorts.push_back({port, channel});
+    for (auto&& [port, channel] : util::zip(source_, channel_)) {
+        if (port.hasData()) {
+            activePorts.push_back({&port, channel.get()});
         }
     }
 
     const size2_t dims{activePorts.front().first->getData()->getDimensions()};
-    for (auto p : activePorts) {
-        if (p.first->getData()->getDimensions() != dims) {
-            throw Exception("Image dimensions of all inports need to be identical", IVW_CONTEXT);
-        }
+    if (std::ranges::any_of(
+            activePorts, [dims](auto& p) { return p.first->getData()->getDimensions() != dims; })) {
+        throw Exception("Image dimensions of all inports need to be identical", IVW_CONTEXT);
     }
 
     auto&& [type, precision] = [&]() {
@@ -112,22 +110,8 @@ void LayerCombiner::process() {
         for (auto p : activePorts) {
             formats.push_back(p.first->getData()->getDataFormat());
         }
-
-        NumericType type = formats.front()->getNumericType();
-        for (auto f : formats) {
-            if (type == NumericType::Float || f->getNumericType() == NumericType::Float) {
-                type = NumericType::Float;
-            } else if (type == NumericType::SignedInteger ||
-                       f->getNumericType() == NumericType::SignedInteger) {
-                type = NumericType::SignedInteger;
-            } else if (f->getNumericType() == NumericType::UnsignedInteger) {
-                type = NumericType::UnsignedInteger;
-            }
-        }
-        size_t precision = (*std::ranges::max_element(formats, [](auto format1, auto format2) {
-                               return format1->getPrecision() < format2->getPrecision();
-                           }))->getPrecision();
-        return std::make_pair(type, precision);
+        return std::make_pair(util::commonNumericType(formats),
+                              util::commonFormatPrecision(formats));
     }();
 
     auto layer = std::make_shared<Layer>(*activePorts.front().first->getData(), noData,
@@ -163,21 +147,7 @@ void LayerCombiner::process() {
 
 #include <warn/pop>
 
-    auto swizzleMask = [](size_t numComponents) {
-        switch (numComponents) {
-            case 1:
-                return swizzlemasks::luminance;
-            case 2:
-                return SwizzleMask{ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero,
-                                   ImageChannel::One};
-            case 3:
-                return swizzlemasks::rgb;
-            case 4:
-            default:
-                return swizzlemasks::rgba;
-        }
-    };
-    layer->setSwizzleMask(swizzleMask(activePorts.size()));
+    layer->setSwizzleMask(swizzlemasks::defaultData(activePorts.size()));
     layer->dataMap.dataRange = dataRange_.getDataRange();
     layer->dataMap.valueRange = dataRange_.getValueRange();
 

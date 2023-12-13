@@ -217,17 +217,17 @@ auto Image::begin() -> ColorLayerIterator {
 }
 auto Image::end() -> ColorLayerIterator { return util::makeIndirectIterator(colorLayers_.end()); }
 
-auto Image::begin() const -> const_ColorLayerIterator {
+auto Image::begin() const -> ConstColorLayerIterator {
     return util::makeIndirectIterator(colorLayers_.begin());
 }
-auto Image::end() const -> const_ColorLayerIterator {
+auto Image::end() const -> ConstColorLayerIterator {
     return util::makeIndirectIterator(colorLayers_.end());
 }
 
-auto Image::cbegin() const -> const_ColorLayerIterator {
+auto Image::cbegin() const -> ConstColorLayerIterator {
     return util::makeIndirectIterator(colorLayers_.begin());
 }
-auto Image::cend() const -> const_ColorLayerIterator {
+auto Image::cend() const -> ConstColorLayerIterator {
     return util::makeIndirectIterator(colorLayers_.end());
 }
 

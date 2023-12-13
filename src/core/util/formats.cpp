@@ -32,8 +32,40 @@
 #include <inviwo/core/util/foreacharg.h>
 
 #include <unordered_map>
+#include <algorithm>
 
 namespace inviwo {
+
+namespace util {
+
+NumericType commonNumericType(std::span<const DataFormatBase*> formats) {
+    if (formats.empty()) return NumericType::NotSpecialized;
+
+    NumericType type = formats.front()->getNumericType();
+    for (auto f : formats) {
+        if (type == NumericType::Float || f->getNumericType() == NumericType::Float) {
+            type = NumericType::Float;
+        } else if (type == NumericType::SignedInteger ||
+                   f->getNumericType() == NumericType::SignedInteger) {
+            type = NumericType::SignedInteger;
+        } else if (f->getNumericType() == NumericType::UnsignedInteger) {
+            type = NumericType::UnsignedInteger;
+        }
+    }
+    return type;
+}
+
+size_t commonFormatPrecision(std::span<const DataFormatBase*> formats) {
+    if (formats.empty()) return 0;
+
+    return (*std::ranges::max_element(formats,
+                                      [](auto format1, auto format2) {
+                                          return format1->getPrecision() < format2->getPrecision();
+                                      }))
+        ->getPrecision();
+}
+
+}  // namespace util
 
 namespace {
 struct AddInstance {

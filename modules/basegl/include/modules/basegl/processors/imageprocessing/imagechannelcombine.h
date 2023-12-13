@@ -38,6 +38,8 @@
 #include <inviwo/core/properties/ordinalproperty.h>  // for FloatProperty
 #include <modules/opengl/shader/shader.h>            // for Shader
 
+#include <array>
+
 namespace inviwo {
 
 class IVW_MODULE_BASEGL_API ImageChannelCombine : public Processor {
@@ -49,18 +51,10 @@ public:
     virtual void process() override;
 
 private:
-    ImageInport inport0_;
-    ImageInport inport1_;
-    ImageInport inport2_;
-    ImageInport inport3_;
-
+    std::array<ImageInport, 4> inport_;
     ImageOutport outport_;
 
-    OptionPropertyInt rChannelSrc_;
-    OptionPropertyInt gChannelSrc_;
-    OptionPropertyInt bChannelSrc_;
-    OptionPropertyInt aChannelSrc_;
-
+    std::array<OptionPropertyInt, 4> channel_;
     FloatProperty alpha_;
 
     Shader shader_;

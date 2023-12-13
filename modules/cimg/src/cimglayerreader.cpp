@@ -65,22 +65,8 @@ struct Dispatch {
     std::shared_ptr<LayerRAM> operator()(void* data, const uvec2& dims) const {
         using F = typename T::type;
 
-        auto swizzleMask = [](std::size_t numComponents) {
-            switch (numComponents) {
-                case 1:
-                    return swizzlemasks::luminance;
-                case 2:
-                    return swizzlemasks::luminanceAlpha;
-                case 3:
-                    return swizzlemasks::rgb;
-                case 4:
-                default:
-                    return swizzlemasks::rgba;
-            }
-        };
-
         return std::make_shared<LayerRAMPrecision<F>>(static_cast<F*>(data), dims, LayerType::Color,
-                                                      swizzleMask(T::comp));
+                                                      swizzlemasks::defaultColor(T::comp));
     }
 };
 

@@ -84,13 +84,6 @@ void main() {
 }
 )";
 
-struct Helper {
-    template <typename Format>
-    void operator()(std::vector<OptionPropertyOption<DataFormatId>>& formats) {
-        formats.emplace_back(Format::str(), Format::str(), Format::id());
-    }
-};
-
 const std::vector<OptionPropertyIntOption> channelsList = {{"channel1", "1 Channel", 1},
                                                            {"channel2", "2 Channels", 2},
                                                            {"channel3", "3 Channels", 3},
@@ -145,7 +138,9 @@ LayerShader::LayerShader(std::shared_ptr<StringShaderResource> fragmentShader)
                   util::for_each_type<std::tuple<DataFloat16, DataFloat32, DataFloat64, DataInt8,
                                                  DataInt16, DataInt32, DataInt64, DataUInt8,
                                                  DataUInt16, DataUInt32, DataUInt64>>{}(
-                      detail::Helper(), formats);
+                      [&]<typename Format>() {
+                          formats.emplace_back(Format::str(), Format::str(), Format::id());
+                      });
                   return formats;
               }(),
               0}
