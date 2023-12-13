@@ -42,27 +42,20 @@ BufferRAM::BufferRAM(BufferUsage usage, BufferTarget target)
 std::type_index BufferRAM::getTypeIndex() const { return std::type_index(typeid(BufferRAM)); }
 
 //! [Format Dispatching Example]
-struct BufferRamCreationDispatcher {
-
-    template <typename Result, typename T>
-    Result operator()(size_t size, BufferUsage usage, BufferTarget target) {
-        using F = typename T::type;
-        switch (target) {
-            case BufferTarget::Index:
-                return std::make_shared<BufferRAMPrecision<F, BufferTarget::Index>>(size, usage);
-            case BufferTarget::Data:
-            default:
-                return std::make_shared<BufferRAMPrecision<F, BufferTarget::Data>>(size, usage);
-        }
-    }
-};
-
 std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataFormatBase* format,
                                            BufferUsage usage, BufferTarget target) {
 
-    BufferRamCreationDispatcher disp;
-    return dispatching::dispatch<std::shared_ptr<BufferRAM>, dispatching::filter::All>(
-        format->getId(), disp, size, usage, target);
+    return dispatching::singleDispatch<std::shared_ptr<BufferRAM>, dispatching::filter::All>(
+        format->getId(), [&]<typename T>() -> std::shared_ptr<BufferRAM> {
+            switch (target) {
+                case BufferTarget::Index:
+                    return std::make_shared<BufferRAMPrecision<T, BufferTarget::Index>>(size,
+                                                                                        usage);
+                case BufferTarget::Data:
+                default:
+                    return std::make_shared<BufferRAMPrecision<T, BufferTarget::Data>>(size, usage);
+            }
+        });
 }
 //! [Format Dispatching Example]
 

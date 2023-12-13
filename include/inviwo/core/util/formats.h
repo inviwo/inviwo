@@ -50,7 +50,7 @@ class DataFormatBase;
 
 // Do not set enums specifically, as NumberOfFormats is used to count the number of enums
 enum class DataFormatId : char {
-    NotSpecialized,
+    NotSpecialized = 0,
     Float16,
     Float32,
     Float64,

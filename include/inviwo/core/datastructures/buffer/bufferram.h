@@ -399,59 +399,38 @@ void BufferRAMPrecision<T, Target>::clear() {
     data_.clear();
 }
 
-namespace detail {
-struct BufferRamDispatcher {
-    template <typename Result, typename Format, typename Callable, typename... Args>
-    Result operator()(Callable&& obj, BufferRAM* bufferram, Args... args) {
-        switch (bufferram->getBufferTarget()) {
-            case BufferTarget::Index:
-                return obj(
-                    static_cast<BufferRAMPrecision<typename Format::type, BufferTarget::Index>*>(
-                        bufferram),
-                    std::forward<Args>(args)...);
-            case BufferTarget::Data:
-            default:
-                return obj(
-                    static_cast<BufferRAMPrecision<typename Format::type, BufferTarget::Data>*>(
-                        bufferram),
-                    std::forward<Args>(args)...);
-        }
-    }
-};
-
-struct BufferRamConstDispatcher {
-    template <typename Result, typename Format, typename Callable, typename... Args>
-    Result operator()(Callable&& obj, const BufferRAM* bufferram, Args... args) {
-        switch (bufferram->getBufferTarget()) {
-            case BufferTarget::Index:
-                return obj(static_cast<const BufferRAMPrecision<typename Format::type,
-                                                                BufferTarget::Index>*>(bufferram),
-                           std::forward<Args>(args)...);
-
-            case BufferTarget::Data:
-            default:
-                return obj(static_cast<const BufferRAMPrecision<typename Format::type,
-                                                                BufferTarget::Data>*>(bufferram),
-                           std::forward<Args>(args)...);
-        }
-    }
-};
-}  // namespace detail
-
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto BufferRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
-    detail::BufferRamDispatcher dispatcher;
-    return dispatching::dispatch<Result, Predicate>(getDataFormatId(), dispatcher,
-                                                    std::forward<Callable>(callable), this,
-                                                    std::forward<Args>(args)...);
+    return dispatching::singleDispatch<Result, Predicate>(
+        getDataFormatId(), [&]<typename T>() -> Result {
+            switch (getBufferTarget()) {
+                case BufferTarget::Index:
+                    return callable(static_cast<BufferRAMPrecision<T, BufferTarget::Index>*>(this),
+                                    std::forward<Args>(args)...);
+                case BufferTarget::Data:
+                default:
+                    return callable(static_cast<BufferRAMPrecision<T, BufferTarget::Data>*>(this),
+                                    std::forward<Args>(args)...);
+            }
+        });
 }
 
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto BufferRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
-    detail::BufferRamConstDispatcher dispatcher;
-    return dispatching::dispatch<Result, Predicate>(getDataFormatId(), dispatcher,
-                                                    std::forward<Callable>(callable), this,
-                                                    std::forward<Args>(args)...);
+    return dispatching::singleDispatch<Result, Predicate>(
+        getDataFormatId(), [&]<typename T>() -> Result {
+            switch (getBufferTarget()) {
+                case BufferTarget::Index:
+                    return callable(
+                        static_cast<const BufferRAMPrecision<T, BufferTarget::Index>*>(this),
+                        std::forward<Args>(args)...);
+                case BufferTarget::Data:
+                default:
+                    return callable(
+                        static_cast<const BufferRAMPrecision<T, BufferTarget::Data>*>(this),
+                        std::forward<Args>(args)...);
+            }
+        });
 }
 
 /**

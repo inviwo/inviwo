@@ -34,26 +34,15 @@ namespace inviwo {
 
 std::type_index VolumeRAM::getTypeIndex() const { return std::type_index(typeid(VolumeRAM)); }
 
-struct VolumeRamCreationDispatcher {
-    using type = std::shared_ptr<VolumeRAM>;
-    template <typename Result, typename T>
-    std::shared_ptr<VolumeRAM> operator()(void* dataPtr, const size3_t& dimensions,
-                                          const SwizzleMask& swizzleMask,
-                                          InterpolationType interpolation,
-                                          const Wrapping3D& wrapping) {
-        using F = typename T::type;
-        return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(dataPtr), dimensions,
-                                                       swizzleMask, interpolation, wrapping);
-    }
-};
-
 std::shared_ptr<VolumeRAM> createVolumeRAM(const size3_t& dimensions, const DataFormatBase* format,
                                            void* dataPtr, const SwizzleMask& swizzleMask,
                                            InterpolationType interpolation,
                                            const Wrapping3D& wrapping) {
-    VolumeRamCreationDispatcher disp;
-    return dispatching::dispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::All>(
-        format->getId(), disp, dataPtr, dimensions, swizzleMask, interpolation, wrapping);
+    return dispatching::singleDispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::All>(
+        format->getId(), [&]<typename T>() {
+            return std::make_shared<VolumeRAMPrecision<T>>(static_cast<T*>(dataPtr), dimensions,
+                                                           swizzleMask, interpolation, wrapping);
+        });
 }
 
 }  // namespace inviwo

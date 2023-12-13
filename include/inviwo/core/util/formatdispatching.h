@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/indexmapper.h>
 
 #include <tuple>
 #include <type_traits>
@@ -45,9 +46,7 @@ namespace dispatching {
  */
 class IVW_CORE_API DispatchException : public Exception {
 public:
-    DispatchException(const std::string& message = "",
-                      ExceptionContext context = ExceptionContext());
-    virtual ~DispatchException() throw() = default;
+    using Exception::Exception;
 };
 
 namespace detail {
@@ -87,41 +86,16 @@ struct Filter<Predicate, std::tuple<Args...>> {
     using type = typename Filter<Predicate, Args...>::type;
 };
 
-/**
- * Helper class to find the matching DataFormatId among a sorted list of types.
- * Does a binary search in the type list.
- */
-template <typename Result, int B, int E, typename... Args>
-struct DispatchHelper {};
+template <typename Index, typename Functor, Index... Is>
+constexpr auto build_array_impl(Functor&& func, std::integer_sequence<Index, Is...>) noexcept {
+    return std::array{func(std::integral_constant<Index, Is>{})...};
+}
 
-#include <warn/push>
-#include <warn/ignore/constant-conditional>
-
-template <typename Result, int B, int E, typename... Formats>
-struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
-    static const int M = (B + E) / 2;
-    using Format = typename std::tuple_element<M, std::tuple<Formats...>>::type;
-
-    template <typename Callable, typename... Args>
-    static Result dispatch(DataFormatId id, Callable&& obj, Args&&... args) {
-        if (B > E)
-            throw DispatchException(
-                "Format " + std::string(DataFormatBase::get(id)->getString()) + " not supported",
-                IVW_CONTEXT_CUSTOM("Dispatching"));
-
-        if (id == Format::id()) {
-            return (obj.template operator()<Result, Format>(std::forward<Args>(args)...));
-        } else if (static_cast<int>(id) < static_cast<int>(Format::id())) {
-            return DispatchHelper<Result, B, M - 1, std::tuple<Formats...>>::dispatch(
-                id, std::forward<Callable>(obj), std::forward<Args>(args)...);
-        } else {
-            return DispatchHelper<Result, M + 1, E, std::tuple<Formats...>>::dispatch(
-                id, std::forward<Callable>(obj), std::forward<Args>(args)...);
-        }
-    }
-};
-
-#include <warn/pop>
+template <std::size_t N, typename Index = size_t, typename Functor>
+constexpr auto build_array(Functor&& func) noexcept {
+    return build_array_impl<Index>(std::forward<Functor>(func),
+                                   std::make_integer_sequence<Index, N>());
+}
 
 }  // namespace detail
 
@@ -149,22 +123,153 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
  */
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto dispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Result {
-    // Has to be in order of increasing id
-
     using Formats = DefaultDataFormats;
+    constexpr auto nFormats = std::tuple_size<Formats>::value;
+    using Functor = Result (*)(Callable&&, Args && ...);
+    static constexpr auto table =
+        detail::build_array<nFormats>([](auto formatIndex) constexpr -> Functor {
+            constexpr size_t index = decltype(formatIndex)::value;
+            using Format = std::tuple_element_t<index, Formats>;
+            if constexpr (Predicate<Format>::value) {
+                return [](Callable&& innerObj, Args&&... innerArgs) -> Result {
+                    return innerObj.template operator()<Result, Format>(
+                        std::forward<Args>(innerArgs)...);
+                };
+            } else {
+                return nullptr;
+            }
+        });
+    if (format == DataFormatId::NotSpecialized) {
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format not specialized");
+    } else if (auto fun = table[static_cast<int>(format) - 1]) {
+        return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
+    } else {
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format {} not supported",
+                                DataFormatBase::get(format)->getString());
+    }
+}
 
-    using FilteredFormats = typename detail::Filter<Predicate, Formats>::type;
+template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
+auto singleDispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Result {
+    using Formats = DefaultDataFormats;
+    constexpr auto nFormats = std::tuple_size<Formats>::value;
+    using Functor = Result (*)(Callable&&, Args && ...);
+    static constexpr auto table =
+        detail::build_array<nFormats>([](auto formatIndex) constexpr -> Functor {
+            constexpr size_t index = decltype(formatIndex)::value;
+            using Format = std::tuple_element_t<index, Formats>;
+            if constexpr (Predicate<Format>::value) {
+                return [](Callable&& innerObj, Args&&... innerArgs) -> Result {
+                    using T = typename Format::type;
+                    return innerObj.template operator()<T>(std::forward<Args>(innerArgs)...);
+                };
+            } else {
+                return nullptr;
+            }
+        });
 
-    return detail::DispatchHelper<Result, 0, std::tuple_size<FilteredFormats>::value - 1,
-                                  FilteredFormats>::dispatch(format, std::forward<Callable>(obj),
-                                                             std::forward<Args>(args)...);
+    if (format == DataFormatId::NotSpecialized) {
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format not specialized");
+    } else if (auto fun = table[static_cast<int>(format) - 1]) {
+        return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
+    } else {
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format {} not supported",
+                                DataFormatBase::get(format)->getString());
+    }
+}
+
+template <typename Result, template <class> class Predicate1, template <class> class Predicate2,
+          typename Callable, typename... Args>
+auto doubleDispatch(DataFormatId format1, DataFormatId format2, Callable&& obj, Args&&... args)
+    -> Result {
+    using Formats = DefaultDataFormats;
+    constexpr auto nFormats = std::tuple_size<Formats>::value;
+    using Functor = Result (*)(Callable&&, Args && ...);
+
+    static constexpr auto table =
+        detail::build_array<nFormats * nFormats>([](auto formatIndex) constexpr -> Functor {
+            constexpr util::IndexMapper2D im(size2_t{nFormats, nFormats});
+            constexpr size2_t index = im(decltype(formatIndex)::value);
+            using Format1 = std::tuple_element_t<index[0], Formats>;
+            using Format2 = std::tuple_element_t<index[1], Formats>;
+            if constexpr (Predicate1<Format1>::value && Predicate2<Format2>::value) {
+                return [](Callable&& innerObj, Args&&... innerArgs) -> Result {
+                    using T1 = typename Format1::type;
+                    using T2 = typename Format2::type;
+                    return innerObj.template operator()<T1, T2>(std::forward<Args>(innerArgs)...);
+                };
+            } else {
+                return nullptr;
+            }
+        });
+
+    using enum DataFormatId;
+    if (format1 == NotSpecialized || format2 == NotSpecialized) {
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format not specialized");
+    }
+    constexpr util::IndexMapper2D im(size2_t{nFormats, nFormats});
+    const size2_t index{static_cast<size_t>(format1) - 1, static_cast<size_t>(format2) - 1};
+    if (auto fun = table[im(index)]) {
+        return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
+    } else {
+        throw DispatchException(
+            IVW_CONTEXT_CUSTOM("Dispatching"), "Format combination {}, {}, not supported",
+            DataFormatBase::get(format1)->getString(), DataFormatBase::get(format2)->getString());
+    }
+}
+
+template <typename Result, template <class> class Predicate1, template <class> class Predicate2,
+          template <class> class Predicate3, typename Callable, typename... Args>
+auto tripleDispatch(DataFormatId format1, DataFormatId format2, DataFormatId format3,
+                    Callable&& obj, Args&&... args) -> Result {
+    using Formats = DefaultDataFormats;
+    constexpr auto nFormats = std::tuple_size<Formats>::value;
+    using Functor = Result (*)(Callable&&, Args && ...);
+
+    static constexpr auto table = detail::build_array<nFormats * nFormats * nFormats>(
+        [](auto formatIndex) constexpr -> Functor {
+            constexpr util::IndexMapper3D im(size3_t{nFormats, nFormats, nFormats});
+            constexpr size3_t index = im(decltype(formatIndex)::value);
+            using Format1 = std::tuple_element_t<index[0], Formats>;
+            using Format2 = std::tuple_element_t<index[1], Formats>;
+            using Format3 = std::tuple_element_t<index[2], Formats>;
+            if constexpr (Predicate1<Format1>::value && Predicate2<Format2>::value &&
+                          Predicate3<Format3>::value) {
+                return [](Callable&& innerObj, Args&&... innerArgs) -> Result {
+                    using T1 = typename Format1::type;
+                    using T2 = typename Format2::type;
+                    using T3 = typename Format3::type;
+                    return innerObj.template operator()<T1, T2, T3>(
+                        std::forward<Args>(innerArgs)...);
+                };
+            } else {
+                return nullptr;
+            }
+        });
+
+    using enum DataFormatId;
+    if (format1 == NotSpecialized || format2 == NotSpecialized || format3 == NotSpecialized) {
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format not specialized");
+    }
+
+    constexpr util::IndexMapper3D im(size3_t{nFormats, nFormats, nFormats});
+    const size3_t index{static_cast<size_t>(format1) - 1, static_cast<size_t>(format2) - 1,
+                        static_cast<size_t>(format3) - 1};
+
+    if (auto fun = table[im(index)]) {
+        return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
+    } else {
+        throw DispatchException(
+            IVW_CONTEXT_CUSTOM("Dispatching"), "Format combination {}, {}, {} not supported",
+            DataFormatBase::get(format1)->getString(), DataFormatBase::get(format2)->getString(),
+            DataFormatBase::get(format3)->getString());
+    }
 }
 
 /**
  *	Namespace with standard DataFormat type filters.
  */
 namespace filter {
-
 /**
  *	Default filters matches all types.
  */

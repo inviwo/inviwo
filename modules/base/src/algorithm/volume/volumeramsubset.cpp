@@ -47,23 +47,12 @@
 
 namespace inviwo {
 
-namespace detail {
+namespace {
 
-struct VolumeRAMSubSetDispatcher {
-    using type = std::shared_ptr<VolumeRAM>;
-    template <typename Result, typename T>
-    std::shared_ptr<VolumeRAM> operator()(const VolumeRepresentation* in, size3_t dim,
-                                          size3_t offset, const VolumeBorders& border,
-                                          bool clampBorderOutsideVolume);
-};
-
-template <typename Result, typename DataType>
-std::shared_ptr<VolumeRAM> VolumeRAMSubSetDispatcher::operator()(const VolumeRepresentation* in,
-                                                                 size3_t dim, size3_t offset,
-                                                                 const VolumeBorders& border,
-                                                                 bool clampBorderOutsideVolume) {
-    using T = typename DataType::type;
-
+constexpr auto dispatcher = []<typename T>(
+                                const VolumeRepresentation* in, size3_t dim, size3_t offset,
+                                const VolumeBorders& border,
+                                bool clampBorderOutsideVolume) -> std::shared_ptr<VolumeRAM> {
     const VolumeRAMPrecision<T>* volume = dynamic_cast<const VolumeRAMPrecision<T>*>(in);
     if (!volume) return nullptr;
 
@@ -136,17 +125,17 @@ std::shared_ptr<VolumeRAM> VolumeRAMSubSetDispatcher::operator()(const VolumeRep
     }
 
     return newVolume;
-}
+};
 
-}  // namespace detail
+}  // namespace
 
 std::shared_ptr<VolumeRAM> VolumeRAMSubSet::apply(const VolumeRepresentation* in, size3_t dim,
                                                   size3_t offset,
                                                   const VolumeBorders& border /*= VolumeBorders()*/,
                                                   bool clampBorderOutsideVolume /*= true*/) {
-    detail::VolumeRAMSubSetDispatcher disp;
-    return dispatching::dispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::All>(
-        in->getDataFormat()->getId(), disp, in, dim, offset, border, clampBorderOutsideVolume);
+    return dispatching::singleDispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::All>(
+        in->getDataFormat()->getId(), dispatcher, in, dim, offset, border,
+        clampBorderOutsideVolume);
 }
 
 }  // namespace inviwo

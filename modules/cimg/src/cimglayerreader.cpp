@@ -37,7 +37,8 @@
 #include <inviwo/core/util/formatdispatching.h>           // for dispatch, All
 #include <inviwo/core/util/formats.h>                     // for DataFormatId, DataFormatId::Not...
 #include <inviwo/core/util/glmvec.h>                      // for uvec2
-#include <modules/cimg/cimgutils.h>                       // for loadLayerData
+#include <inviwo/core/util/glmutils.h>
+#include <modules/cimg/cimgutils.h>  // for loadLayerData
 
 #include <cstddef>  // for size_t
 
@@ -58,20 +59,6 @@ CImgLayerReader::CImgLayerReader() : DataReaderType<Layer>() {
 
 CImgLayerReader* CImgLayerReader::clone() const { return new CImgLayerReader(*this); }
 
-namespace {
-
-struct Dispatch {
-    template <typename Result, typename T>
-    std::shared_ptr<LayerRAM> operator()(void* data, const uvec2& dims) const {
-        using F = typename T::type;
-
-        return std::make_shared<LayerRAMPrecision<F>>(static_cast<F*>(data), dims, LayerType::Color,
-                                                      swizzlemasks::defaultColor(T::comp));
-    }
-};
-
-}  // namespace
-
 std::shared_ptr<Layer> CImgLayerReader::readData(const std::filesystem::path& fileName) {
     checkExists(fileName);
 
@@ -80,8 +67,12 @@ std::shared_ptr<Layer> CImgLayerReader::readData(const std::filesystem::path& fi
     void* data = cimgutil::loadLayerData(nullptr, fileName, dimensions, formatId, false);
 
     auto layerRAM =
-        dispatching::dispatch<std::shared_ptr<LayerRepresentation>, dispatching::filter::All>(
-            formatId, Dispatch{}, data, dimensions);
+        dispatching::singleDispatch<std::shared_ptr<LayerRepresentation>, dispatching::filter::All>(
+            formatId, [&]<typename F>() {
+                constexpr auto swizzleMask = swizzlemasks::defaultColor(util::extent_v<F>);
+                return std::make_shared<LayerRAMPrecision<F>>(static_cast<F*>(data), dimensions,
+                                                              LayerType::Color, swizzleMask);
+            });
 
     return std::make_shared<Layer>(layerRAM);
 }

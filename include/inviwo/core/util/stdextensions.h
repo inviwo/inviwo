@@ -86,6 +86,7 @@ constexpr auto make_array(Functor&& func, std::integer_sequence<Index, Is...>) n
     -> std::array<decltype(func(std::declval<Index>())), sizeof...(Is)> {
     return {{func(Is)...}};
 }
+
 }  // namespace detail
 
 template <std::size_t N, typename Index = size_t, typename Functor>

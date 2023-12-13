@@ -51,14 +51,6 @@ public:
     virtual ~TIFFLayerReader() = default;
 
     virtual std::shared_ptr<Layer> readData(const std::filesystem::path& fileName) override;
-
-    template <typename Result, typename T>
-    std::shared_ptr<Layer> operator()(void* data, size2_t dims, SwizzleMask swizzleMask) const {
-        using F = typename T::type;
-        auto layerRAM = std::make_shared<LayerRAMPrecision<F>>(static_cast<F*>(data), dims,
-                                                               LayerType::Color, swizzleMask);
-        return std::make_shared<Layer>(layerRAM);
-    }
 };
 
 }  // namespace inviwo

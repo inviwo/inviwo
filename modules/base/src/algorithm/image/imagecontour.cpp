@@ -58,17 +58,9 @@ namespace inviwo {
 class Mesh;
 
 namespace {
-struct ImageContourDispatcher {
-    using type = std::shared_ptr<Mesh>;
-    template <typename Result, typename T>
-    std::shared_ptr<Mesh> operator()(const LayerRepresentation* in, size_t channel, double isoValue,
-                                     vec4 color);
-};
 
-template <typename Result, class DataType>
-std::shared_ptr<Mesh> ImageContourDispatcher::operator()(const LayerRepresentation* in,
-                                                         size_t channel, double isoValue,
-                                                         vec4 color) {
+constexpr auto dispatcher = []<typename T>(const LayerRepresentation* in, size_t channel,
+                                           double isoValue, vec4 color) -> std::shared_ptr<Mesh> {
     static const std::vector<std::vector<int>> caseTable = {
         std::vector<int>(),                          // case 0
         std::vector<int>({0, 1, 0, 3}),              // case 1
@@ -83,8 +75,7 @@ std::shared_ptr<Mesh> ImageContourDispatcher::operator()(const LayerRepresentati
     auto mesh = std::make_shared<BasicMesh>();
     auto indices = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
 
-    using T = typename DataType::type;
-    channel = std::min(channel, util::extent<typename DataType::type>::value - 1);
+    channel = std::min(channel, util::extent<T>::value - 1);
 
     const LayerRAMPrecision<T>* ram = dynamic_cast<const LayerRAMPrecision<T>*>(in);
     if (!ram) return nullptr;
@@ -144,18 +135,18 @@ std::shared_ptr<Mesh> ImageContourDispatcher::operator()(const LayerRepresentati
     }
 
     return mesh;
-}
+};
+
 }  // namespace
 
 std::shared_ptr<Mesh> ImageContour::apply(const LayerRepresentation* in, size_t channel,
                                           double isoValue, vec4 color) {
-    ImageContourDispatcher disp;
     auto df = in->getDataFormat();
     if (df->getNumericType() != NumericType::Float) {
         isoValue = df->getMin() + isoValue * (df->getMax() - df->getMin());
     }
-    return dispatching::dispatch<std::shared_ptr<Mesh>, dispatching::filter::All>(
-        df->getId(), disp, in, channel, isoValue, color);
+    return dispatching::singleDispatch<std::shared_ptr<Mesh>, dispatching::filter::All>(
+        df->getId(), dispatcher, in, channel, isoValue, color);
 }
 
 }  // namespace inviwo

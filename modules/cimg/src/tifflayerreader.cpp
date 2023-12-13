@@ -55,8 +55,13 @@ std::shared_ptr<inviwo::Layer> TIFFLayerReader::readData(const std::filesystem::
     auto header = cimgutil::getTIFFHeader(fileName);
     auto data = cimgutil::loadTIFFLayerData(nullptr, fileName, header, false);
 
-    auto layer = dispatching::dispatch<std::shared_ptr<Layer>, dispatching::filter::All>(
-        header.format->getId(), *this, data, size2_t{header.dimensions}, header.swizzleMask);
+    auto layer = dispatching::singleDispatch<std::shared_ptr<Layer>, dispatching::filter::All>(
+        header.format->getId(), [&]<typename T>() -> std::shared_ptr<Layer> {
+            auto layerRAM = std::make_shared<LayerRAMPrecision<T>>(
+                static_cast<T*>(data), size2_t{header.dimensions}, LayerType::Color,
+                header.swizzleMask);
+            return std::make_shared<Layer>(layerRAM);
+        });
 
     return layer;
 }
