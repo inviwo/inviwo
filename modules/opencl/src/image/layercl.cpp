@@ -38,7 +38,8 @@ LayerCL::LayerCL(size2_t dimensions, LayerType type, const DataFormatBase* forma
                  const SwizzleMask& swizzleMask, InterpolationType interpolation,
                  const Wrapping2D& wrapping, const void* data)
     : LayerCLBase()
-    , LayerRepresentation(type, format)
+    , LayerRepresentation(type)
+    , dataFormatBase_{format}
     , dimensions_(dimensions)
     , layerFormat_(dataFormatToCLImageFormat(format->getId()))
     , swizzleMask_(swizzleMask)
@@ -50,6 +51,7 @@ LayerCL::LayerCL(size2_t dimensions, LayerType type, const DataFormatBase* forma
 LayerCL::LayerCL(const LayerCL& rhs)
     : LayerCLBase(rhs)
     , LayerRepresentation(rhs)
+    , dataFormatBase_{rhs.dataFormatBase_}
     , dimensions_(rhs.dimensions_)
     , layerFormat_(rhs.layerFormat_)
     , swizzleMask_(rhs.swizzleMask_)

@@ -48,6 +48,8 @@ public:
 
     virtual LayerCL* clone() const override;
 
+    virtual const DataFormatBase* getDataFormat() const override { return dataFormatBase_; }
+
     void initialize(const void* texels);
     void upload(const void* data);
     /**
@@ -91,6 +93,7 @@ public:
     virtual Wrapping2D getWrapping() const override;
 
 protected:
+    const DataFormatBase* dataFormatBase_;
     size2_t dimensions_;
     cl::ImageFormat layerFormat_;
     std::unique_ptr<cl::Image2D> clImage_;
