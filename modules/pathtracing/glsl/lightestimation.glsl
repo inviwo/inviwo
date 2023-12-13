@@ -35,7 +35,8 @@ vec3 estimateDirectLight(float rayStep, sampler3D volume, VolumeParameters volPa
 
     vec3 sampleWorldPos = (volParam.textureToWorld * vec4(samplePos, 1f)).xyz;
     // vec3 color = APPLY_LIGHTING(light, sampleAmbient, sampleDiffuse, sampleSpecular,
-    //                            sampleWorldPos, -gradient, cameraDir)
+    // sampleWorldPos, -gradient, cameraDir);
+
     vec3 color = shadeBlinnPhong(light, sampleAmbient, sampleDiffuse, sampleSpecular,
                                  sampleWorldPos, -gradient, cameraDir);
 
