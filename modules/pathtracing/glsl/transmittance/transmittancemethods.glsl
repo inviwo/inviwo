@@ -15,64 +15,64 @@ float opacityToExtinction(float s_max) { return s_max * REFSAMPLINGINTERVAL; }
 
 float woodcockTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd, inout uint hashSeed,
                        sampler3D volume, VolumeParameters volumeParameters,
-                       sampler2D transferFunction, float sigma_upperbound) {
+                       sampler2D transferFunction, float opacityUpperbound) {
 
-    float invMaxExtinction = 1.f / opacityToExtinction(sigma_upperbound);
-    float invSigmaUpperbound = 1.f / sigma_upperbound;
+    float invMaxExtinction = 1.f / opacityToExtinction(opacityUpperbound);
+    float invOpacitUpperbound = 1.f / opacityUpperbound;
     float t = tStart;
-    float sigmaSample;
-    vec3 r = vec3(0);
+    float opacity;
+    vec3 samplePos = vec3(0);
     do {
         t += -log(randomize(hashSeed)) * invMaxExtinction;
-        r = raystart + t * raydir;
-        vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, r);
-        sigmaSample = applyTF(transferFunction, volumeSample).a;
+        samplePos = raystart + t * raydir;
+        vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
+        opacity = applyTF(transferFunction, volumeSample).a;
 
-    } while (randomize(hashSeed) >= sigmaSample * invSigmaUpperbound && t <= tEnd);
+    } while (randomize(hashSeed) >= opacity * invOpacitUpperbound && t <= tEnd);
 
     return t;
 }
 
-float ratioTrackingEstimator(vec3 raystart, vec3 raydir, float tStart, float tEnd,
+float ratioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
                              inout uint hashSeed, sampler3D volume,
                              VolumeParameters volumeParameters, sampler2D transferFunction,
-                             float sigma_upperbound) {
+                             float opacityUpperbound) {
 
-    float invMaxExtinction = 1.f / opacityToExtinction(sigma_upperbound);
-    float invSigmaUpperbound = 1.f / sigma_upperbound;
+    float invMaxExtinction = 1.f / opacityToExtinction(opacityUpperbound);
+    float invOpacitUpperbound = 1.f / opacityUpperbound;
     float t = tStart;
-    float sigmaSample;
-    vec3 r = vec3(0);
+    float opacity;
+    vec3 samplePos = vec3(0);
     float T = 1.f;  // transmittance
     do {
         t += -log(randomize(hashSeed)) * invMaxExtinction;
         if (t >= tEnd) {
             break;
         }
-        r = r + t * raydir;
+        samplePos = samplePos + t * raydir;
         vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, r);
-        sigmaSample = applyTF(transferFunction, volumeSample).a;
-        T *= (1 - sigmaSample * invSigmaUpperbound);
+        opacity = applyTF(transferFunction, volumeSample).a;
+        T *= (1 - opacity * invOpacitUpperbound);
 
     } while (true);
 
     return T;
 }
 
-float residualRatioTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd,
+float residualRatioTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
                             inout uint hashSeed, sampler3D volume,
                             VolumeParameters volumeParameters, sampler2D transferFunction,
-                            float sigma_upperbound, float sigma_control) {
+                            float opacityUpperbound, float opacityControl) {
 
-    if (sigma_upperbound < 2e-6) {
+    if (opacityUpperbound < 2e-6) {
         return 1.f;
     }
-    float invMaxExtinction = 1.f / opacityToExtinction(sigma_upperbound);
-    float invSigmaUpperbound = 1.f / sigma_upperbound;
+    float invMaxExtinction = 1.f / opacityToExtinction(opacityUpperbound);
+    float invOpacitUpperbound = 1.f / opacityUpperbound;
     float t = tStart;
-    float sigmaSample;
-    vec3 r = vec3(0);
-    float Tc = exp(-opacityToExtinction(sigma_control) * (tEnd - tStart));
+    float opacity;
+    vec3 samplePos = vec3(0);
+    float Tc = exp(-opacityToExtinction(opacityControl) * (tEnd - tStart));
     float Tr = 1.f;  // transmittance
 
     do {
@@ -80,10 +80,10 @@ float residualRatioTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd
         if (t >= tEnd) {
             break;
         }
-        r = r + t * raydir;
+        samplePos = samplePos + t * raydir;
         vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, r);
-        sigmaSample = applyTF(transferFunction, volumeSample).a;
-        Tr *= (1 - (sigmaSample - sigma_control) * invSigmaUpperbound);
+        opacity = applyTF(transferFunction, volumeSample).a;
+        Tr *= (1 - (opacity - opacityControl) * invOpacitUpperbound);
 
     } while (true);
 
@@ -94,22 +94,22 @@ float transmittance(uint METHOD, vec3 raystart, vec3 raydir, float tStart, float
                     inout uint hashSeed, sampler3D volume, VolumeParameters volumeParameters,
                     sampler2D transferFunction) {
 
-    float sigma_upperbound = 1.0f;
-    float sigma_control = 0.5f;
+    float opacityUpperbound = 1.0f;
+    float opacityControl = 0.5f;
 
     switch (METHOD) {
         case WOODCOCK:
             float meanFreePath =
                 woodcockTracking(raystart, raydir, tStart, tEnd, hashSeed, volume, volumeParameters,
-                                 transferFunction, sigma_upperbound);
+                                 transferFunction, opacityUpperbound);
             return meanFreePath >= tEnd ? 1f : 0f;
         case RATIO:
-            return ratioTrackingEstimator(raystart, raydir, tStart, tEnd, hashSeed, volume,
-                                          volumeParameters, transferFunction, sigma_upperbound);
+            return ratioTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed, volume,
+                                          volumeParameters, transferFunction, opacityUpperbound);
         case RESIDUALRATIO:
-            return residualRatioTracking(raystart, raydir, tStart, tEnd, hashSeed, volume,
-                                         volumeParameters, transferFunction, sigma_upperbound,
-                                         sigma_control);
+            return residualRatioTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed, volume,
+                                         volumeParameters, transferFunction, opacityUpperbound,
+                                         opacityControl);
     }
 
     return 0f;
