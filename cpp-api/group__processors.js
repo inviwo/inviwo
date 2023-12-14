@@ -27,9 +27,6 @@ var group__processors =
       [ "setIdentifier", "classinviwo_1_1Processor.html#a84911c1af44e34f3aa57fababe2b545f", null ],
       [ "setValid", "classinviwo_1_1Processor.html#a3b59c6bac28be62250911b9e1e006f1a", null ]
     ] ],
-    [ "inviwo::ImageSource", "classinviwo_1_1ImageSource.html", [
-      [ "process", "classinviwo_1_1ImageSource.html#a0d4efa45e4cb268519b66afbda240520", null ]
-    ] ],
     [ "inviwo::ImageSourceSeries", "classinviwo_1_1ImageSourceSeries.html", [
       [ "process", "classinviwo_1_1ImageSourceSeries.html#a5d958521b15c198f5bf3647abae4384b", null ]
     ] ],
@@ -163,9 +160,6 @@ var group__processors =
     [ "inviwo::RowLayout", "classinviwo_1_1RowLayout.html", null ],
     [ "inviwo::FindEdges", "classinviwo_1_1FindEdges.html", [
       [ "preProcess", "classinviwo_1_1FindEdges.html#aaa4bb85abcfcafda13091b91d56af265", null ]
-    ] ],
-    [ "inviwo::ImageChannelCombine", "classinviwo_1_1ImageChannelCombine.html", [
-      [ "process", "classinviwo_1_1ImageChannelCombine.html#af35999f11ac57c485dab852a8bd98ec3", null ]
     ] ],
     [ "inviwo::ImageChannelSelect", "classinviwo_1_1ImageChannelSelect.html", [
       [ "postProcess", "classinviwo_1_1ImageChannelSelect.html#aa84afa3c7de88c727e68eccb62f7338b", null ],

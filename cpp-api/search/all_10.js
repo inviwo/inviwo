@@ -32,7 +32,7 @@ var searchData=
   ['maxcolorattachments_29',['maxColorAttachments',['../classinviwo_1_1FrameBufferObject.html#a4d94d74a61d68b441d753e673d16ee2f',1,'inviwo::FrameBufferObject']]],
   ['maxsize_30',['maxSize',['../classinviwo_1_1BufferObjectArray.html#a466c3f07385df96bf731373832b6bc92',1,'inviwo::BufferObjectArray']]],
   ['md2doc_31',['md2doc',['../namespaceinviwo_1_1util.html#ae84a9ec3e9841aca2ea06fa34aaaed50',1,'inviwo::util']]],
-  ['member_32',['From Space   To Space   Transform          Entity                           Member',['../classinviwo_1_1SpatialEntity.html#autotoc_md10',1,'']]],
+  ['member_32',['From Space   To Space   Transform          Entity                           Member',['../namespaceinviwo.html#autotoc_md10',1,'']]],
   ['memoryfilehandle_33',['MemoryFileHandle',['../classinviwo_1_1util_1_1MemoryFileHandle.html',1,'inviwo::util']]],
   ['memptr_34',['MemPtr',['../structinviwo_1_1plot_1_1detail_1_1MemPtr.html',1,'inviwo::plot::detail']]],
   ['menuitem_35',['MenuItem',['../classinviwo_1_1MenuItem.html',1,'inviwo']]],

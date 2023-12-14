@@ -27,5 +27,6 @@ var namespaceinviwo_1_1utilgl =
     [ "imgIdentityVert", "namespaceinviwo_1_1utilgl.html#a1f97a21b07263e03ee154fb747a58ccb", null ],
     [ "imgQuadFrag", "namespaceinviwo_1_1utilgl.html#a751670fdd22c933312fb8a1c28d78a6f", null ],
     [ "imgQuadVert", "namespaceinviwo_1_1utilgl.html#addb288c7189078cbbe76d05a6a5c3782", null ],
-    [ "planeRect", "namespaceinviwo_1_1utilgl.html#a01ba6d71bea79602047826daf38988ae", null ]
+    [ "planeRect", "namespaceinviwo_1_1utilgl.html#a01ba6d71bea79602047826daf38988ae", null ],
+    [ "setShaderUniforms", "namespaceinviwo_1_1utilgl.html#ad0989204ab71fccc9fc50b3dce9a975a", null ]
 ];

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Inviwo: inviwo::SpatialSampler&lt; SpatialDims, DataDims, T &gt; Class Template Reference</title>
+<title>Inviwo: inviwo::SpatialSampler&lt; DataDims, T &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -98,17 +98,17 @@ $(document).ready(function(){initNavTree('classinviwo_1_1SpatialSampler.html',''
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classinviwo_1_1SpatialSampler-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">inviwo::SpatialSampler&lt; SpatialDims, DataDims, T &gt; Class Template Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+  <div class="headertitle"><div class="title">inviwo::SpatialSampler&lt; DataDims, T &gt; Class Template Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
 <div class="contents">
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for inviwo::SpatialSampler&lt; SpatialDims, DataDims, T &gt;:</div>
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for inviwo::SpatialSampler&lt; DataDims, T &gt;:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
  <div class="center">
-  <img src="classinviwo_1_1SpatialSampler.png" usemap="#inviwo::SpatialSampler_3C_20SpatialDims_2C_20DataDims_2C_20T_20_3E_map" alt=""/>
-  <map id="inviwo::SpatialSampler_3C_20SpatialDims_2C_20DataDims_2C_20T_20_3E_map" name="inviwo::SpatialSampler_3C_20SpatialDims_2C_20DataDims_2C_20T_20_3E_map">
+  <img src="classinviwo_1_1SpatialSampler.png" usemap="#inviwo::SpatialSampler_3C_20DataDims_2C_20T_20_3E_map" alt=""/>
+  <map id="inviwo::SpatialSampler_3C_20DataDims_2C_20T_20_3E_map" name="inviwo::SpatialSampler_3C_20DataDims_2C_20T_20_3E_map">
 <area href="classinviwo_1_1ImageSpatialSampler.html" title="ImageSpatialSampler aids sampling of images using Bi-Linear Interpolation." alt="inviwo::ImageSpatialSampler&lt; DataDims, T &gt;" shape="rect" coords="0,56,365,80"/>
 <area href="classinviwo_1_1TemplateVolumeSampler.html" alt="inviwo::TemplateVolumeSampler&lt; DataType, P, T, DataDims &gt;" shape="rect" coords="375,56,740,80"/>
   </map>
@@ -116,84 +116,108 @@ $(document).ready(function(){initNavTree('classinviwo_1_1SpatialSampler.html',''
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a490c9974273724aba55cfb4104cc002c" id="r_a490c9974273724aba55cfb4104cc002c"><td class="memItemLeft" align="right" valign="top"><a id="a490c9974273724aba55cfb4104cc002c" name="a490c9974273724aba55cfb4104cc002c"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Space</b> = CoordinateSpace</td></tr>
-<tr class="separator:a490c9974273724aba55cfb4104cc002c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af1c3402eb7bb9b76059a04b6090a88d6" id="r_af1c3402eb7bb9b76059a04b6090a88d6"><td class="memItemLeft" align="right" valign="top"><a id="af1c3402eb7bb9b76059a04b6090a88d6" name="af1c3402eb7bb9b76059a04b6090a88d6"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ReturnType</b> = Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;</td></tr>
-<tr class="separator:af1c3402eb7bb9b76059a04b6090a88d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f6782b39b6e801eb4c051f53dda851a" id="r_a2f6782b39b6e801eb4c051f53dda851a"><td class="memItemLeft" align="right" valign="top"><a id="a2f6782b39b6e801eb4c051f53dda851a" name="a2f6782b39b6e801eb4c051f53dda851a"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Space</b> = <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a></td></tr>
+<tr class="separator:a2f6782b39b6e801eb4c051f53dda851a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90f39221d85eb137bc68182761ee92cd" id="r_a90f39221d85eb137bc68182761ee92cd"><td class="memItemLeft" align="right" valign="top"><a id="a90f39221d85eb137bc68182761ee92cd" name="a90f39221d85eb137bc68182761ee92cd"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ReturnType</b> = glm::vec&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;</td></tr>
+<tr class="separator:a90f39221d85eb137bc68182761ee92cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9a3af1799278abb8dc06fe05f41e5612" id="r_a9a3af1799278abb8dc06fe05f41e5612"><td class="memItemLeft" align="right" valign="top"><a id="a9a3af1799278abb8dc06fe05f41e5612" name="a9a3af1799278abb8dc06fe05f41e5612"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SpatialSampler</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a>&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a> &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">spatialEntity</a>, Space <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>=Space::Data)</td></tr>
-<tr class="separator:a9a3af1799278abb8dc06fe05f41e5612"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8481787817d336c1f5827aadc130924a" id="r_a8481787817d336c1f5827aadc130924a"><td class="memItemLeft" align="right" valign="top"><a id="a8481787817d336c1f5827aadc130924a" name="a8481787817d336c1f5827aadc130924a"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">double</a> &gt; &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:a8481787817d336c1f5827aadc130924a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45984069b594ad336b5b809540e619a3" id="r_a45984069b594ad336b5b809540e619a3"><td class="memItemLeft" align="right" valign="top"><a id="a45984069b594ad336b5b809540e619a3" name="a45984069b594ad336b5b809540e619a3"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">float</a> &gt; &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:a45984069b594ad336b5b809540e619a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61f17b71936d6322543fe9c89ce73b76" id="r_a61f17b71936d6322543fe9c89ce73b76"><td class="memItemLeft" align="right" valign="top"><a id="a61f17b71936d6322543fe9c89ce73b76" name="a61f17b71936d6322543fe9c89ce73b76"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">double</a> &gt; &amp;pos, Space <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:a61f17b71936d6322543fe9c89ce73b76"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af25ad7266fd23955904e233280fb9d2d" id="r_af25ad7266fd23955904e233280fb9d2d"><td class="memItemLeft" align="right" valign="top"><a id="af25ad7266fd23955904e233280fb9d2d" name="af25ad7266fd23955904e233280fb9d2d"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">float</a> &gt; &amp;pos, Space <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:af25ad7266fd23955904e233280fb9d2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a248da32cd3722b48337c6de9d3bb25db" id="r_a248da32cd3722b48337c6de9d3bb25db"><td class="memItemLeft" align="right" valign="top"><a id="a248da32cd3722b48337c6de9d3bb25db" name="a248da32cd3722b48337c6de9d3bb25db"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">double</a> &gt; &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:a248da32cd3722b48337c6de9d3bb25db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a337e6a5bd70f05f22f528e742a844a92" id="r_a337e6a5bd70f05f22f528e742a844a92"><td class="memItemLeft" align="right" valign="top"><a id="a337e6a5bd70f05f22f528e742a844a92" name="a337e6a5bd70f05f22f528e742a844a92"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">float</a> &gt; &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:a337e6a5bd70f05f22f528e742a844a92"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42f69dc261636ca229ac5f69d4b1f5cc" id="r_a42f69dc261636ca229ac5f69d4b1f5cc"><td class="memItemLeft" align="right" valign="top"><a id="a42f69dc261636ca229ac5f69d4b1f5cc" name="a42f69dc261636ca229ac5f69d4b1f5cc"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">double</a> &gt; &amp;pos, Space <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:a42f69dc261636ca229ac5f69d4b1f5cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a256a4ddf4a9eb9d26225e9f3c4d6d2b7" id="r_a256a4ddf4a9eb9d26225e9f3c4d6d2b7"><td class="memItemLeft" align="right" valign="top"><a id="a256a4ddf4a9eb9d26225e9f3c4d6d2b7" name="a256a4ddf4a9eb9d26225e9f3c4d6d2b7"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">float</a> &gt; &amp;pos, Space <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:a256a4ddf4a9eb9d26225e9f3c4d6d2b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a93903e58220597dc5010c7094140cbfa" id="r_a93903e58220597dc5010c7094140cbfa"><td class="memItemLeft" align="right" valign="top"><a id="a93903e58220597dc5010c7094140cbfa" name="a93903e58220597dc5010c7094140cbfa"></a>
-Matrix&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">float</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getBasis</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:a93903e58220597dc5010c7094140cbfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae664c999f73671889b77c7643bae3ab" id="r_aae664c999f73671889b77c7643bae3ab"><td class="memItemLeft" align="right" valign="top"><a id="aae664c999f73671889b77c7643bae3ab" name="aae664c999f73671889b77c7643bae3ab"></a>
-Matrix&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a>+1, <a class="el" href="classinviwo_1_1TypedMesh.html">float</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getModelMatrix</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:aae664c999f73671889b77c7643bae3ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1bbb22cee124368c6608f2bf0a23a17" id="r_ac1bbb22cee124368c6608f2bf0a23a17"><td class="memItemLeft" align="right" valign="top"><a id="ac1bbb22cee124368c6608f2bf0a23a17" name="ac1bbb22cee124368c6608f2bf0a23a17"></a>
-Matrix&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a>+1, <a class="el" href="classinviwo_1_1TypedMesh.html">float</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getWorldMatrix</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:ac1bbb22cee124368c6608f2bf0a23a17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a827c71c8415d8b57f2c421410d5259" id="r_a0a827c71c8415d8b57f2c421410d5259"><td class="memItemLeft" align="right" valign="top"><a id="a0a827c71c8415d8b57f2c421410d5259" name="a0a827c71c8415d8b57f2c421410d5259"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html">SpatialCoordinateTransformer</a>&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getCoordinateTransformer</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:a0a827c71c8415d8b57f2c421410d5259"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaee77de7d675b617129fa60b9e20be57" id="r_aaee77de7d675b617129fa60b9e20be57"><td class="memItemLeft" align="right" valign="top"><a id="aaee77de7d675b617129fa60b9e20be57" name="aaee77de7d675b617129fa60b9e20be57"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>SpatialSampler</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">spatialEntity</a>, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">Space</a> <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>=Space::Data)</td></tr>
+<tr class="separator:aaee77de7d675b617129fa60b9e20be57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a757481b25861921f2f645b4f5ba285" id="r_a6a757481b25861921f2f645b4f5ba285"><td class="memItemLeft" align="right" valign="top"><a id="a6a757481b25861921f2f645b4f5ba285" name="a6a757481b25861921f2f645b4f5ba285"></a>
+Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> dvec3 &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a6a757481b25861921f2f645b4f5ba285"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6562d3b5aac3bb8439cc183dcae33bc5" id="r_a6562d3b5aac3bb8439cc183dcae33bc5"><td class="memItemLeft" align="right" valign="top"><a id="a6562d3b5aac3bb8439cc183dcae33bc5" name="a6562d3b5aac3bb8439cc183dcae33bc5"></a>
+Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a6562d3b5aac3bb8439cc183dcae33bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af972644cf0edd92100ac88fcafaeedce" id="r_af972644cf0edd92100ac88fcafaeedce"><td class="memItemLeft" align="right" valign="top"><a id="af972644cf0edd92100ac88fcafaeedce" name="af972644cf0edd92100ac88fcafaeedce"></a>
+Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> dvec2 &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:af972644cf0edd92100ac88fcafaeedce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72a9b5265e3fd809fd544a7efbc0c99a" id="r_a72a9b5265e3fd809fd544a7efbc0c99a"><td class="memItemLeft" align="right" valign="top"><a id="a72a9b5265e3fd809fd544a7efbc0c99a" name="a72a9b5265e3fd809fd544a7efbc0c99a"></a>
+Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec2 &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a72a9b5265e3fd809fd544a7efbc0c99a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66d6c3882de8fa759dc3c705ec2180a8" id="r_a66d6c3882de8fa759dc3c705ec2180a8"><td class="memItemLeft" align="right" valign="top"><a id="a66d6c3882de8fa759dc3c705ec2180a8" name="a66d6c3882de8fa759dc3c705ec2180a8"></a>
+Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> dvec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">Space</a> <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a66d6c3882de8fa759dc3c705ec2180a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ae83b14a6c0cdafac7c6a76b41b19f3" id="r_a0ae83b14a6c0cdafac7c6a76b41b19f3"><td class="memItemLeft" align="right" valign="top"><a id="a0ae83b14a6c0cdafac7c6a76b41b19f3" name="a0ae83b14a6c0cdafac7c6a76b41b19f3"></a>
+Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">Space</a> <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a0ae83b14a6c0cdafac7c6a76b41b19f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b3b03232d864a0f540ca9c629a9581a" id="r_a0b3b03232d864a0f540ca9c629a9581a"><td class="memItemLeft" align="right" valign="top"><a id="a0b3b03232d864a0f540ca9c629a9581a" name="a0b3b03232d864a0f540ca9c629a9581a"></a>
+Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> dvec2 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">Space</a> <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a0b3b03232d864a0f540ca9c629a9581a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a285fce7439e118a1a6e9f8d739c8d9d8" id="r_a285fce7439e118a1a6e9f8d739c8d9d8"><td class="memItemLeft" align="right" valign="top"><a id="a285fce7439e118a1a6e9f8d739c8d9d8" name="a285fce7439e118a1a6e9f8d739c8d9d8"></a>
+Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec2 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">Space</a> <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a285fce7439e118a1a6e9f8d739c8d9d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af43267a519a5787181596e2aa8a2de3a" id="r_af43267a519a5787181596e2aa8a2de3a"><td class="memItemLeft" align="right" valign="top"><a id="af43267a519a5787181596e2aa8a2de3a" name="af43267a519a5787181596e2aa8a2de3a"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> dvec3 &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:af43267a519a5787181596e2aa8a2de3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3169deeafe5867f999be3479d2a638e7" id="r_a3169deeafe5867f999be3479d2a638e7"><td class="memItemLeft" align="right" valign="top"><a id="a3169deeafe5867f999be3479d2a638e7" name="a3169deeafe5867f999be3479d2a638e7"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a3169deeafe5867f999be3479d2a638e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf41ac918c098b47dd6afbfc75c4165e" id="r_abf41ac918c098b47dd6afbfc75c4165e"><td class="memItemLeft" align="right" valign="top"><a id="abf41ac918c098b47dd6afbfc75c4165e" name="abf41ac918c098b47dd6afbfc75c4165e"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> dvec2 &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:abf41ac918c098b47dd6afbfc75c4165e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa476f492f27738f55400a02eaa5d079a" id="r_aa476f492f27738f55400a02eaa5d079a"><td class="memItemLeft" align="right" valign="top"><a id="aa476f492f27738f55400a02eaa5d079a" name="aa476f492f27738f55400a02eaa5d079a"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec2 &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:aa476f492f27738f55400a02eaa5d079a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a75194cb6a6fdeb631ad9168cd89049" id="r_a4a75194cb6a6fdeb631ad9168cd89049"><td class="memItemLeft" align="right" valign="top"><a id="a4a75194cb6a6fdeb631ad9168cd89049" name="a4a75194cb6a6fdeb631ad9168cd89049"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> dvec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">Space</a> <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a4a75194cb6a6fdeb631ad9168cd89049"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c50d74b932f12dac0487f9430e0d9ed" id="r_a1c50d74b932f12dac0487f9430e0d9ed"><td class="memItemLeft" align="right" valign="top"><a id="a1c50d74b932f12dac0487f9430e0d9ed" name="a1c50d74b932f12dac0487f9430e0d9ed"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">Space</a> <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a1c50d74b932f12dac0487f9430e0d9ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a652871fb5fa7abaa7d0b990e5b95a8" id="r_a3a652871fb5fa7abaa7d0b990e5b95a8"><td class="memItemLeft" align="right" valign="top"><a id="a3a652871fb5fa7abaa7d0b990e5b95a8" name="a3a652871fb5fa7abaa7d0b990e5b95a8"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> dvec2 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">Space</a> <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a3a652871fb5fa7abaa7d0b990e5b95a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afee72dafcb6f3d05ee8650521551f1d5" id="r_afee72dafcb6f3d05ee8650521551f1d5"><td class="memItemLeft" align="right" valign="top"><a id="afee72dafcb6f3d05ee8650521551f1d5" name="afee72dafcb6f3d05ee8650521551f1d5"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec2 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">Space</a> <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:afee72dafcb6f3d05ee8650521551f1d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c565e15ab4a536636f9bab4b8a4eaea" id="r_a3c565e15ab4a536636f9bab4b8a4eaea"><td class="memItemLeft" align="right" valign="top"><a id="a3c565e15ab4a536636f9bab4b8a4eaea" name="a3c565e15ab4a536636f9bab4b8a4eaea"></a>
+mat3&#160;</td><td class="memItemRight" valign="bottom"><b>getBasis</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a3c565e15ab4a536636f9bab4b8a4eaea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5aa129247a01b9de7fec18aaae8c275" id="r_ab5aa129247a01b9de7fec18aaae8c275"><td class="memItemLeft" align="right" valign="top"><a id="ab5aa129247a01b9de7fec18aaae8c275" name="ab5aa129247a01b9de7fec18aaae8c275"></a>
+mat4&#160;</td><td class="memItemRight" valign="bottom"><b>getModelMatrix</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:ab5aa129247a01b9de7fec18aaae8c275"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e3b67baa052c8c200e8a4b2ce671812" id="r_a1e3b67baa052c8c200e8a4b2ce671812"><td class="memItemLeft" align="right" valign="top"><a id="a1e3b67baa052c8c200e8a4b2ce671812" name="a1e3b67baa052c8c200e8a4b2ce671812"></a>
+mat4&#160;</td><td class="memItemRight" valign="bottom"><b>getWorldMatrix</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a1e3b67baa052c8c200e8a4b2ce671812"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7cde78c50ea8f90d322d2e4498295a5" id="r_aa7cde78c50ea8f90d322d2e4498295a5"><td class="memItemLeft" align="right" valign="top"><a id="aa7cde78c50ea8f90d322d2e4498295a5" name="aa7cde78c50ea8f90d322d2e4498295a5"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html">SpatialCoordinateTransformer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getCoordinateTransformer</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:aa7cde78c50ea8f90d322d2e4498295a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:aff0defbbcf12b9bfb11ed558be43e483" id="r_aff0defbbcf12b9bfb11ed558be43e483"><td class="memItemLeft" align="right" valign="top"><a id="aff0defbbcf12b9bfb11ed558be43e483" name="aff0defbbcf12b9bfb11ed558be43e483"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">static</a> <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">unsigned</a>&#160;</td><td class="memItemRight" valign="bottom"><b>SpatialDimensions</b> = <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a></td></tr>
-<tr class="separator:aff0defbbcf12b9bfb11ed558be43e483"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3309273e88f6fa053a986297e49919a1" id="r_a3309273e88f6fa053a986297e49919a1"><td class="memItemLeft" align="right" valign="top"><a id="a3309273e88f6fa053a986297e49919a1" name="a3309273e88f6fa053a986297e49919a1"></a>
+<tr class="memitem:af8618aaaf21a106972be760d1f02a71c" id="r_af8618aaaf21a106972be760d1f02a71c"><td class="memItemLeft" align="right" valign="top"><a id="af8618aaaf21a106972be760d1f02a71c" name="af8618aaaf21a106972be760d1f02a71c"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">static</a> <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">unsigned</a>&#160;</td><td class="memItemRight" valign="bottom"><b>SpatialDimensions</b> = 3</td></tr>
+<tr class="separator:af8618aaaf21a106972be760d1f02a71c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a3b07ab39f9c8c9a067e11d133db5cd" id="r_a0a3b07ab39f9c8c9a067e11d133db5cd"><td class="memItemLeft" align="right" valign="top"><a id="a0a3b07ab39f9c8c9a067e11d133db5cd" name="a0a3b07ab39f9c8c9a067e11d133db5cd"></a>
 <a class="el" href="classinviwo_1_1TypedMesh.html">static</a> <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">unsigned</a>&#160;</td><td class="memItemRight" valign="bottom"><b>DataDimensions</b> = <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a></td></tr>
-<tr class="separator:a3309273e88f6fa053a986297e49919a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a0a3b07ab39f9c8c9a067e11d133db5cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a13cebd88eea1dc6f43064379283c7c7a" id="r_a13cebd88eea1dc6f43064379283c7c7a"><td class="memItemLeft" align="right" valign="top"><a id="a13cebd88eea1dc6f43064379283c7c7a" name="a13cebd88eea1dc6f43064379283c7c7a"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sampleDataSpace</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">double</a> &gt; &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> =0</td></tr>
-<tr class="separator:a13cebd88eea1dc6f43064379283c7c7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8eef4c0d472eb8af97322cdc825ec5b" id="r_aa8eef4c0d472eb8af97322cdc825ec5b"><td class="memItemLeft" align="right" valign="top"><a id="aa8eef4c0d472eb8af97322cdc825ec5b" name="aa8eef4c0d472eb8af97322cdc825ec5b"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>withinBoundsDataSpace</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">double</a> &gt; &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> =0</td></tr>
-<tr class="separator:aa8eef4c0d472eb8af97322cdc825ec5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0935ae91794e4d5fcb68986a628037a4" id="r_a0935ae91794e4d5fcb68986a628037a4"><td class="memItemLeft" align="right" valign="top"><a id="a0935ae91794e4d5fcb68986a628037a4" name="a0935ae91794e4d5fcb68986a628037a4"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> Vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataDims</a>, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sampleDataSpace</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> dvec3 &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> =0</td></tr>
+<tr class="separator:a0935ae91794e4d5fcb68986a628037a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ad7b46b920a49a289a33189d9f92a7e" id="r_a5ad7b46b920a49a289a33189d9f92a7e"><td class="memItemLeft" align="right" valign="top"><a id="a5ad7b46b920a49a289a33189d9f92a7e" name="a5ad7b46b920a49a289a33189d9f92a7e"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>withinBoundsDataSpace</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> dvec3 &amp;pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> =0</td></tr>
+<tr class="separator:a5ad7b46b920a49a289a33189d9f92a7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:ad07c8ddbc9a44b7b69bf52937f7b12b1" id="r_ad07c8ddbc9a44b7b69bf52937f7b12b1"><td class="memItemLeft" align="right" valign="top"><a id="ad07c8ddbc9a44b7b69bf52937f7b12b1" name="ad07c8ddbc9a44b7b69bf52937f7b12b1"></a>
-Space&#160;</td><td class="memItemRight" valign="bottom"><b>space_</b></td></tr>
-<tr class="separator:ad07c8ddbc9a44b7b69bf52937f7b12b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee24ad6a65cbbd7a42e18538ca3fe75c" id="r_aee24ad6a65cbbd7a42e18538ca3fe75c"><td class="memItemLeft" align="right" valign="top"><a id="aee24ad6a65cbbd7a42e18538ca3fe75c" name="aee24ad6a65cbbd7a42e18538ca3fe75c"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a>&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>spatialEntity_</b></td></tr>
-<tr class="separator:aee24ad6a65cbbd7a42e18538ca3fe75c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20a610155414443a84e2621903247b51" id="r_a20a610155414443a84e2621903247b51"><td class="memItemLeft" align="right" valign="top"><a id="a20a610155414443a84e2621903247b51" name="a20a610155414443a84e2621903247b51"></a>
-Matrix&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">SpatialDims</a>+1, <a class="el" href="classinviwo_1_1TypedMesh.html">double</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>transform_</b></td></tr>
-<tr class="separator:a20a610155414443a84e2621903247b51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8935c8077a03477a091fea237f48ca79" id="r_a8935c8077a03477a091fea237f48ca79"><td class="memItemLeft" align="right" valign="top"><a id="a8935c8077a03477a091fea237f48ca79" name="a8935c8077a03477a091fea237f48ca79"></a>
+<a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">Space</a>&#160;</td><td class="memItemRight" valign="bottom"><b>space_</b></td></tr>
+<tr class="separator:a8935c8077a03477a091fea237f48ca79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a087643a61483e59a89c41eb54fec44b1" id="r_a087643a61483e59a89c41eb54fec44b1"><td class="memItemLeft" align="right" valign="top"><a id="a087643a61483e59a89c41eb54fec44b1" name="a087643a61483e59a89c41eb54fec44b1"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>spatialEntity_</b></td></tr>
+<tr class="separator:a087643a61483e59a89c41eb54fec44b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad791182f2e9c82ee983e57d1b5226b2a" id="r_ad791182f2e9c82ee983e57d1b5226b2a"><td class="memItemLeft" align="right" valign="top"><a id="ad791182f2e9c82ee983e57d1b5226b2a" name="ad791182f2e9c82ee983e57d1b5226b2a"></a>
+dmat4&#160;</td><td class="memItemRight" valign="bottom"><b>transform_</b></td></tr>
+<tr class="separator:ad791182f2e9c82ee983e57d1b5226b2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li><b>spatialsampler.h</b></li>

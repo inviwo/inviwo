@@ -12,7 +12,7 @@ var searchData=
   ['randomspheregenerator_9',['RandomSphereGenerator',['../classinviwo_1_1RandomSphereGenerator.html',1,'inviwo']]],
   ['randomsphericalpointgeneration_10',['RandomSphericalPointGeneration',['../structinviwo_1_1util_1_1RandomSphericalPointGeneration.html',1,'inviwo::util']]],
   ['randomvolume_11',['randomVolume',['../namespaceinviwo_1_1util.html#a27779344a8c3a59f6cb41222bea0b8e2',1,'inviwo::util']]],
-  ['range_12',['Space   Description               Range',['../classinviwo_1_1SpatialEntity.html#autotoc_md9',1,'']]],
+  ['range_12',['Space   Description               Range',['../namespaceinviwo.html#autotoc_md9',1,'']]],
   ['range_5f_13',['range_',['../classinviwo_1_1NoiseProcessor.html#a68376173b75052f765afb7cf6c8ce26c',1,'inviwo::NoiseProcessor']]],
   ['rangeexception_14',['RangeException',['../classinviwo_1_1RangeException.html',1,'inviwo']]],
   ['rangeratio_15',['rangeRatio',['../structinviwo_1_1util_1_1detail_1_1rangeRatio.html',1,'inviwo::util::detail']]],

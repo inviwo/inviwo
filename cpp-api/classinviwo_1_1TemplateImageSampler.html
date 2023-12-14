@@ -117,8 +117,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ade0761f0c57bd9307c0243d95f3b09ab" id="r_ade0761f0c57bd9307c0243d95f3b09ab"><td class="memItemLeft" align="right" valign="top"><a id="ade0761f0c57bd9307c0243d95f3b09ab" name="ade0761f0c57bd9307c0243d95f3b09ab"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>TemplateImageSampler</b> (std::shared_ptr&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt; <a class="el" href="classinviwo_1_1TypedMesh.html">sharedImage</a>)</td></tr>
 <tr class="separator:ade0761f0c57bd9307c0243d95f3b09ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add86fe5bc7b4e13f5000aaa2f443fa19" id="r_add86fe5bc7b4e13f5000aaa2f443fa19"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateImageSampler.html#add86fe5bc7b4e13f5000aaa2f443fa19">sample</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> Vector&lt; 2, P &gt; &amp;pos)</td></tr>
-<tr class="separator:add86fe5bc7b4e13f5000aaa2f443fa19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65dfeca94ab5af7e4c84e4673c601e97" id="r_a65dfeca94ab5af7e4c84e4673c601e97"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateImageSampler.html#a65dfeca94ab5af7e4c84e4673c601e97">sample2D</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> Vector&lt; 2, P &gt; &amp;pos)</td></tr>
+<tr class="separator:a65dfeca94ab5af7e4c84e4673c601e97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae26b42878b67401507d44d894b76a8ff" id="r_ae26b42878b67401507d44d894b76a8ff"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1TemplateImageSampler.html#ae26b42878b67401507d44d894b76a8ff">sample</a> (P x, P y)</td></tr>
 <tr class="separator:ae26b42878b67401507d44d894b76a8ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -128,34 +128,8 @@ class inviwo::TemplateImageSampler&lt; T, P &gt;</div><p>TemplateImageSampler&lt
 <p>A helper class to aid sampling of images of a given type (T). Expects the input to be on the range [0 1]. Eg., input of (0,0) will return the color of the bottom left pixel and (1,1) will return then top right pixel. Output values are bi-linear interpolated between the 4 nearest neighbors.</p>
 <p>The template parameter P should be either double or float. When T is either float our double P should be the same. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="add86fe5bc7b4e13f5000aaa2f443fa19" name="add86fe5bc7b4e13f5000aaa2f443fa19"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#add86fe5bc7b4e13f5000aaa2f443fa19">&#9670;&#160;</a></span>sample() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">typename</a> T , <a class="el" href="classinviwo_1_1TypedMesh.html">typename</a> P &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">T <a class="el" href="classinviwo_1_1TemplateImageSampler.html">inviwo::TemplateImageSampler</a>&lt; T, P &gt;::sample </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> Vector&lt; 2, P &gt; &amp;&#160;</td>
-          <td class="paramname"><em>pos</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Samples the image at the given position using bi-linear interpolation. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">pos</td><td>Position to sample at, expects range [0 1] </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="ae26b42878b67401507d44d894b76a8ff" name="ae26b42878b67401507d44d894b76a8ff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae26b42878b67401507d44d894b76a8ff">&#9670;&#160;</a></span>sample() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae26b42878b67401507d44d894b76a8ff">&#9670;&#160;</a></span>sample()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -181,11 +155,37 @@ template&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">typename</a> T , 
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1TemplateImageSampler.html#add86fe5bc7b4e13f5000aaa2f443fa19">sample()</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1TemplateImageSampler.html#ae26b42878b67401507d44d894b76a8ff">sample()</a> </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">x</td><td>X coordinate of the position to sample at, expects range [0 1] </td></tr>
     <tr><td class="paramname">y</td><td>Y coordinate of the position to sample at, expects range [0 1] </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a65dfeca94ab5af7e4c84e4673c601e97" name="a65dfeca94ab5af7e4c84e4673c601e97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65dfeca94ab5af7e4c84e4673c601e97">&#9670;&#160;</a></span>sample2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">typename</a> T , <a class="el" href="classinviwo_1_1TypedMesh.html">typename</a> P &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T <a class="el" href="classinviwo_1_1TemplateImageSampler.html">inviwo::TemplateImageSampler</a>&lt; T, P &gt;::sample2D </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> Vector&lt; 2, P &gt; &amp;&#160;</td>
+          <td class="paramname"><em>pos</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Samples the image at the given position using bi-linear interpolation. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pos</td><td>Position to sample at, expects range [0 1] </td></tr>
   </table>
   </dd>
 </dl>

@@ -1,5 +1,6 @@
 var classinviwo_1_1Layer =
 [
+    [ "Layer", "classinviwo_1_1Layer.html#af6413c74e34e16bf3c62744ef42b30dd", null ],
     [ "getAsCodedBuffer", "classinviwo_1_1Layer.html#a64ab7ab95627b197b0f0acbc69992c65", null ],
     [ "setDataFormat", "classinviwo_1_1Layer.html#a22cec9c5eda608715ab9f3247e33ecdc", null ],
     [ "setDimensions", "classinviwo_1_1Layer.html#a5a391bf0198feabcfc3303d7a6ec6ce9", null ],
