@@ -253,8 +253,8 @@ std::shared_ptr<Image> extractSliceInternal(const VolumeRAMPrecision<T>* vrpreci
     auto layerdata = layerrep->getDataTyped();
     layerrep->setSwizzleMask(state.tf ? swizzlemasks::rgba : vrprecision->getSwizzleMask());
     layerrep->setWrapping(getWrapping(vrprecision, state.axis));
-    sliceImage->getColorLayer()->setBasis(getBasis(vrprecision, state.axis));
-    sliceImage->getColorLayer()->setOffset(getOffset(vrprecision, state.axis));
+    sliceImage->getColorLayer()->setBasis(mat3(getBasis(vrprecision, state.axis)));
+    sliceImage->getColorLayer()->setOffset(vec3(getOffset(vrprecision, state.axis), 0.0f));
 
     switch (state.axis) {
         case CartesianCoordinateAxis::X: {

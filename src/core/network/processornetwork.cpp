@@ -236,6 +236,13 @@ void ProcessorNetwork::addLink(const PropertyLink& link) {
     addLink(link.getSource(), link.getDestination());
 }
 void ProcessorNetwork::addLink(Property* src, Property* dst) {
+    if (!src) {
+        throw Exception("Source property is a nullptr", IVW_CONTEXT);
+    }
+    if (!dst) {
+        throw Exception("Destination property is a nullptr", IVW_CONTEXT);
+    }
+
     if (!isPropertyInNetwork(src))
         throw Exception("Source property not found in network", IVW_CONTEXT);
     if (!isPropertyInNetwork(dst))

@@ -57,9 +57,9 @@ public:
     virtual IntegralLineProperties* clone() const override;
     virtual ~IntegralLineProperties();
 
-    template <unsigned int N>
-    Matrix<N + 1, float> getSeedPointTransformationMatrix(
-        const SpatialCoordinateTransformer<N>& T) const;
+    glm::mat4 getSeedPointTransformationMatrix(const SpatialCoordinateTransformer& ct) const {
+        return ct.getMatrix(seedPointsSpace_.get(), CoordinateSpace::Data);
+    }
 
     int getNumberOfSteps() const;
     float getStepSize() const;
@@ -81,11 +81,5 @@ public:
     OptionProperty<IntegralLineProperties::IntegrationScheme> integrationScheme_;
     OptionProperty<CoordinateSpace> seedPointsSpace_;
 };
-
-template <unsigned int N>
-Matrix<N + 1, float> IntegralLineProperties::getSeedPointTransformationMatrix(
-    const SpatialCoordinateTransformer<N>& T) const {
-    return T.getMatrix(seedPointsSpace_.get(), CoordinateSpace::Data);
-}
 
 }  // namespace inviwo

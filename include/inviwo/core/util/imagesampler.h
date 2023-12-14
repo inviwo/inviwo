@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -54,26 +54,33 @@ class LayerRAM;
  * pixel. Output values are bi-linear interpolated between the 4 nearest neighbors.
  */
 template <unsigned int DataDims, typename T = double>
-class ImageSpatialSampler : public SpatialSampler<2, DataDims, T> {
+class ImageSpatialSampler : public SpatialSampler<DataDims, T> {
 public:
+    using Space = SpatialSampler<DataDims, T>::Space;
+
     /**
      * Creates a ImageSpatialSampler for the given LayerRAM, does not take ownership of ram.
      * Use ImageSpatialSampler(std::shared_ptr<const Image>) to ensure that the LayerRAM is
      * available for the lifetime of the ImageSpatialSampler
      */
     ImageSpatialSampler(const LayerRAM* ram)
-        : SpatialSampler<2, DataDims, T>(*ram->getOwner())
+        : SpatialSampler<DataDims, T>(*ram->getOwner())
         , layer_(ram)
         , dims_(layer_->getDimensions())
         , sharedImage_(nullptr) {}
 
     /**
-     * Creates a ImageSpatialSampler for the given Layer, does not take ownership of ram.
-     * Use ImageSpatialSampler(std::shared_ptr<const Image>) to ensure that the Layer is available
+     * Creates a ImageSpatialSampler for the given Layer, does not take ownership of \p layer.
+     * Use ImageSpatialSampler(std::shared_ptr<const Layer>) to ensure that the Layer is available
      * for the lifetime of the ImageSpatialSampler
      */
     ImageSpatialSampler(const Layer* layer)
         : ImageSpatialSampler(layer->getRepresentation<LayerRAM>()) {}
+
+    ImageSpatialSampler(std::shared_ptr<const Layer> layer)
+        : ImageSpatialSampler(layer->getRepresentation<LayerRAM>()) {
+        sharedLayer_ = layer;
+    }
 
     /**
      * Creates a ImageSpatialSampler for the given Image, does not take ownership of ram.
@@ -92,9 +99,9 @@ public:
         sharedImage_ = sharedImage;
     }
 
-    virtual ~ImageSpatialSampler() {}
+    virtual ~ImageSpatialSampler() = default;
 
-    using SpatialSampler<2, DataDims, T>::sample;
+    using SpatialSampler<DataDims, T>::sample;
 
     /**
      * Samples the image at the given position using bi-linear interpolation.
@@ -103,7 +110,7 @@ public:
      * @param space in what CoordinateSpace x and y is defined in
      */
     Vector<DataDims, T> sample(double x, double y, CoordinateSpace space) const {
-        return SpatialSampler<2, DataDims, T>::sample(dvec2(x, y), space);
+        return SpatialSampler<DataDims, T>::sample(dvec3(x, y, 0.0), space);
     }
 
     /**
@@ -112,12 +119,12 @@ public:
      * @param y Y coordinate of the position to sample at
      */
     Vector<DataDims, T> sample(double x, double y) const {
-        return SpatialSampler<2, DataDims, T>::sample(dvec2(x, y));
+        return SpatialSampler<DataDims, T>::sample(dvec3(x, y, 0.0));
     }
 
 protected:
-    virtual Vector<DataDims, T> sampleDataSpace(const dvec2& pos) const {
-        dvec2 samplePos = pos * dvec2(dims_ - size2_t(1));
+    virtual Vector<DataDims, T> sampleDataSpace(const dvec3& pos) const override {
+        dvec2 samplePos = dvec2{pos} * dvec2(dims_ - size2_t(1));
         size2_t indexPos = size2_t(samplePos);
         dvec2 interpolants = samplePos - dvec2(indexPos);
 
@@ -130,9 +137,9 @@ protected:
         return Interpolation<dvec4>::bilinear(samples, interpolants);
     }
 
-    virtual bool withinBoundsDataSpace(const dvec2& pos) const {
-        return !(glm::any(glm::lessThan(pos, dvec2(0.0))) ||
-                 glm::any(glm::greaterThan(pos, dvec2(1.0))));
+    virtual bool withinBoundsDataSpace(const dvec3& pos) const override {
+        return !(glm::any(glm::lessThan(dvec2{pos}, dvec2(0.0))) ||
+                 glm::any(glm::greaterThan(dvec2{pos}, dvec2(1.0))));
     }
 
 private:
@@ -144,6 +151,7 @@ private:
     size2_t dims_;
 
     std::shared_ptr<const Image> sharedImage_;
+    std::shared_ptr<const Layer> sharedLayer_;
 };
 
 using ImageSampler = ImageSpatialSampler<4, double>;  // For backwards compatibility
@@ -174,7 +182,7 @@ public:
      * Samples the image at the given position using bi-linear interpolation.
      * @param pos Position to sample at, expects range [0 1]
      */
-    T sample(const Vector<2, P>& pos);
+    T sample2D(const Vector<2, P>& pos);
 
     /**
      * @see sample()
@@ -223,7 +231,7 @@ TemplateImageSampler<T, P>::TemplateImageSampler(std::shared_ptr<const Image> sh
 
 template <typename T, typename P>
 T TemplateImageSampler<T, P>::sample(P x, P y) {
-    return sample(Vector<2, P>(x, y));
+    return sample2D(Vector<2, P>{x, y});
 }
 
 template <typename T, typename P>
@@ -233,7 +241,7 @@ T TemplateImageSampler<T, P>::getPixel(const size2_t& pos) {
 }
 
 template <typename T, typename P>
-T TemplateImageSampler<T, P>::sample(const Vector<2, P>& pos) {
+T TemplateImageSampler<T, P>::sample2D(const Vector<2, P>& pos) {
     Vector<2, P> samplePos = pos * Vector<2, P>(dims_ - size2_t(1));
     size2_t indexPos = size2_t(samplePos);
     Vector<2, P> interpolants = samplePos - Vector<2, P>(indexPos);

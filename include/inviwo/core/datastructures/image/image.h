@@ -38,6 +38,7 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/util/indirectiterator.h>
 
 namespace inviwo {
 
@@ -46,6 +47,11 @@ namespace inviwo {
  */
 class IVW_CORE_API Image : public DataGroup<Image, ImageRepresentation>, public MetaDataOwner {
 public:
+    using ColorLayerIterator =
+        util::IndirectIterator<std::vector<std::shared_ptr<Layer>>::iterator>;
+    using ConstColorLayerIterator =
+        util::IndirectIterator<std::vector<std::shared_ptr<Layer>>::const_iterator>;
+
     using DataBuffer = std::unique_ptr<std::vector<unsigned char>>;
 
     /**
@@ -75,7 +81,15 @@ public:
     Image(std::shared_ptr<Layer> layer);
 
     Image(const Image& rhs);
-    Image(const Image& rhs, NoData);
+    /**
+     * Create an image based on \p rhs without copying any data. If \p colorLayerFormat is a
+     * nullptr, the format of color layers matches the ones in \p rhs.
+     * @param rhs             source image providing the necessary information for all layers like
+     *                        dimensions, spatial transformations, etc.
+     * @param colorLayerFormat   data format for color layers. If equal to nullptr, the formats of
+     *                        the color layers in \p rhs are used instead.
+     */
+    Image(const Image& rhs, NoData, const DataFormatBase* colorLayerFormat = nullptr);
     Image& operator=(const Image& that);
     virtual Image* clone() const;
     virtual ~Image() = default;
@@ -83,6 +97,15 @@ public:
 
     const Layer* getLayer(LayerType, size_t idx = 0) const;
     Layer* getLayer(LayerType, size_t idx = 0);
+
+    ColorLayerIterator begin();
+    ColorLayerIterator end();
+
+    ConstColorLayerIterator begin() const;
+    ConstColorLayerIterator end() const;
+
+    ConstColorLayerIterator cbegin() const;
+    ConstColorLayerIterator cend() const;
 
     const Layer* getColorLayer(size_t idx = 0) const;
     Layer* getColorLayer(size_t idx = 0);
@@ -152,6 +175,8 @@ public:
 protected:
     static std::shared_ptr<Layer> createColorLayer(
         size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get());
+    static std::vector<std::shared_ptr<Layer>> createColorLayers(
+        const Image& srcImage, const DataFormatBase* format = nullptr);
     static std::shared_ptr<Layer> createDepthLayer(size2_t dimensions = size2_t(8, 8));
     static std::shared_ptr<Layer> createPickingLayer(size2_t dimensions = size2_t(8, 8));
 

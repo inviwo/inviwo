@@ -29,12 +29,13 @@
 
 #pragma once
 
-#include <inviwo/core/util/glmconvert.h>                                   // for glm_convert
-#include <inviwo/core/util/glmutils.h>                                     // for Matrix
-#include <inviwo/core/util/glmvec.h>                                       // for dvec3
-#include <inviwo/core/util/spatialsampler.h>                               // IWUY pragma: keep
-#include <inviwo/core/util/spatial4dsampler.h>                             // IWUY pragma: keep
-#include <modules/vectorfieldvisualization/datastructures/integralline.h>  // for Integral...
+#include <inviwo/core/util/glmconvert.h>        // for glm_convert
+#include <inviwo/core/util/glmutils.h>          // for Matrix
+#include <inviwo/core/util/glmvec.h>            // for dvec3
+#include <inviwo/core/util/spatialsampler.h>    // IWUY pragma: keep
+#include <inviwo/core/util/spatial4dsampler.h>  // IWUY pragma: keep
+#include <inviwo/core/util/typetraits.h>
+#include <modules/vectorfieldvisualization/datastructures/integralline.h>        // for Integral...
 #include <modules/vectorfieldvisualization/properties/integrallineproperties.h>  // for Integral...
 
 #include <cstddef>        // for size_t
@@ -47,8 +48,7 @@
 
 namespace inviwo {
 
-template <typename SpatialSampler,
-          bool TimeDependent = SpatialSampler::SpatialDimensions != SpatialSampler::DataDimensions>
+template <typename SpatialSampler, bool TimeDependent>
 class IntegralLineTracer {
 public:
     using Sampler = SpatialSampler;
@@ -67,9 +67,8 @@ public:
     using SpatialVector = Vector<SpatialSampler::SpatialDimensions, double>;
     using DataVector = Vector<SpatialSampler::DataDimensions, double>;
     using DataHomogenousVector = Vector<SpatialSampler::DataDimensions + 1, double>;
-    using SpatialMatrix = Matrix<SpatialSampler::SpatialDimensions, double>;
     using DataMatrix = Matrix<SpatialSampler::DataDimensions, double>;
-    using DataHomogenouSpatialMatrixrix = Matrix<SpatialSampler::DataDimensions + 1, double>;
+    using DataHomogeneousSpatialMatrix = Matrix<SpatialSampler::DataDimensions + 1, double>;
 
     IntegralLineTracer(std::shared_ptr<const Sampler> sampler,
                        const IntegralLineProperties& properties);
@@ -78,7 +77,7 @@ public:
 
     void addMetaDataSampler(const std::string& name, std::shared_ptr<const Sampler> sampler);
 
-    const DataHomogenouSpatialMatrixrix& getSeedTransformationMatrix() const;
+    const DataHomogeneousSpatialMatrix& getSeedTransformationMatrix() const;
 
 private:
     struct StepResult {
@@ -89,7 +88,7 @@ private:
 
     inline SpatialVector seedTransform(const SpatialVector& seed) const;
 
-    StepResult step(const SpatialVector& oldPos, const double stepSize) const;
+    StepResult step(const SpatialVector& oldPos, double stepSize) const;
 
     bool addPoint(IntegralLine& line, const SpatialVector& pos) const;
     bool addPoint(IntegralLine& line, const SpatialVector& pos,
@@ -109,7 +108,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<const Sampler>> metaSamplers_;
 
     DataMatrix invBasis_;
-    DataHomogenouSpatialMatrixrix seedTransformation_;
+    DataHomogeneousSpatialMatrix seedTransformation_;
 };
 
 template <typename SpatialSampler, bool TimeDependent>
@@ -181,45 +180,50 @@ void IntegralLineTracer<SpatialSampler, TimeDependent>::addMetaDataSampler(
 }
 
 template <typename SpatialSampler, bool TimeDependent>
-const typename IntegralLineTracer<SpatialSampler, TimeDependent>::DataHomogenouSpatialMatrixrix&
-IntegralLineTracer<SpatialSampler, TimeDependent>::getSeedTransformationMatrix() const {
+auto IntegralLineTracer<SpatialSampler, TimeDependent>::getSeedTransformationMatrix() const
+    -> const DataHomogeneousSpatialMatrix& {
     return seedTransformation_;
 }
 
 template <typename SpatialSampler, bool TimeDependent>
-inline typename IntegralLineTracer<SpatialSampler, TimeDependent>::SpatialVector
-IntegralLineTracer<SpatialSampler, TimeDependent>::seedTransform(const SpatialVector& seed) const {
+inline auto IntegralLineTracer<SpatialSampler, TimeDependent>::seedTransform(
+    const SpatialVector& seed) const -> SpatialVector {
     if constexpr (IsTimeDependent) {
         using V = DataVector;
         auto p = seedTransformation_ * SpatialVector(V(seed), 1.0f);
         return SpatialVector(V(p) / p[SpatialSampler::DataDimensions],
                              seed[SpatialSampler::DataDimensions]);
     } else {
+        using V = DataVector;
         using H = DataHomogenousVector;
-        auto p = seedTransformation_ * H(seed, 1.0f);
+        auto p = seedTransformation_ * H(V(seed), 1.0f);
         return SpatialVector(p) / p[SpatialSampler::DataDimensions];
     }
 }
 
 template <typename SpatialSampler, bool TimeDependent>
 auto IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector& oldPos,
-                                                             const double stepSize) const
-    -> StepResult {
+                                                             double stepSize) const -> StepResult {
     auto normalize = [](const auto v) {
         auto l = glm::length(v);
         if (l == 0) return v;
         return v / l;
     };
 
-    auto move = [&](const auto& pos, auto v, const auto stepsize) {
+    auto move = [&](const SpatialVector& pos, DataVector v, double stepsize) -> SpatialVector {
         if (normalizeSamples_) {
             v = normalize(v);
         }
-        auto offset = (invBasis_ * (v * stepsize));
+        DataVector offset = (invBasis_ * (v * stepsize));
         if constexpr (TimeDependent) {
             return pos + SpatialVector(offset, stepsize);
-        } else {
+        } else if constexpr (SpatialSampler::DataDimensions == 3) {
             return pos + offset;
+        } else if constexpr (SpatialSampler::DataDimensions == 2) {
+            return SpatialVector{DataVector{pos} + offset, 0.0};
+        } else {
+            static_assert(util::alwaysFalse<SpatialSampler>(),
+                          "Unsupported number of DataDimensions");
         }
     };
 
@@ -231,23 +235,23 @@ auto IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector
         default:
             [[fallthrough]];
         case inviwo::IntegralLineProperties::IntegrationScheme::RK4: {
-            auto pos = move(oldPos, k1, stepSize / 2);
+            SpatialVector pos = move(oldPos, k1, stepSize / 2);
             if (!sampler_->withinBounds(pos)) {
                 return {oldPos, k1, true};
             }
-            const auto k2 = sampler_->sample(pos);
+            const DataVector k2 = sampler_->sample(pos);
 
             pos = move(oldPos, k2, stepSize / 2);
             if (!sampler_->withinBounds(pos)) {
                 return {oldPos, k1, true};
             }
-            const auto k3 = sampler_->sample(pos);
+            const DataVector k3 = sampler_->sample(pos);
 
             pos = move(oldPos, k3, stepSize);
             if (!sampler_->withinBounds(pos)) {
                 return {oldPos, k1, true};
             }
-            const auto k4 = sampler_->sample(pos);
+            const DataVector k4 = sampler_->sample(pos);
 
             const auto&& K = [n = normalizeSamples_, normalize, &k1, &k2, &k3, &k4]() {
                 if (n) {
@@ -310,8 +314,8 @@ IntegralLine::TerminationReason IntegralLineTracer<SpatialSampler, TimeDependent
     return IntegralLine::TerminationReason::Steps;
 }
 
-using StreamLine2DTracer = IntegralLineTracer<SpatialSampler<2, 2, double>>;
-using StreamLine3DTracer = IntegralLineTracer<SpatialSampler<3, 3, double>>;
-using PathLine3DTracer = IntegralLineTracer<Spatial4DSampler<3, double>>;
+using StreamLine2DTracer = IntegralLineTracer<SpatialSampler<2, double>, false>;
+using StreamLine3DTracer = IntegralLineTracer<SpatialSampler<3, double>, false>;
+using PathLine3DTracer = IntegralLineTracer<Spatial4DSampler<3, double>, true>;
 
 }  // namespace inviwo

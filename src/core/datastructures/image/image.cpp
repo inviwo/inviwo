@@ -133,10 +133,10 @@ Image::Image(const Image& rhs) : DataGroup<Image, ImageRepresentation>(rhs), Met
         pickingLayer_ = std::shared_ptr<Layer>(picking->clone());
 }
 
-Image::Image(const Image& rhs, NoData)
+Image::Image(const Image& rhs, NoData, const DataFormatBase* colorLayerFormat)
     : DataGroup<Image, ImageRepresentation>{}
     , MetaDataOwner(rhs)
-    , colorLayers_{{createColorLayer(rhs.getDimensions(), rhs.getDataFormat())}}
+    , colorLayers_{createColorLayers(rhs, colorLayerFormat)}
     , depthLayer_{createDepthLayer(rhs.getDimensions())}
     , pickingLayer_{createPickingLayer(rhs.getDimensions())} {}
 
@@ -170,6 +170,16 @@ Image* Image::clone() const { return new Image(*this); }
 std::shared_ptr<Layer> Image::createColorLayer(size2_t dimensions, const DataFormatBase* format) {
     return std::make_shared<Layer>(dimensions, format, LayerType::Color);
 }
+
+std::vector<std::shared_ptr<Layer>> Image::createColorLayers(const Image& image,
+                                                             const DataFormatBase* format) {
+    std::vector<std::shared_ptr<Layer>> layers;
+
+    for (size_t i = 0; i < image.getNumberOfColorLayers(); ++i) {
+        layers.push_back(std::make_shared<Layer>(*image.getColorLayer(i), noData, format));
+    }
+    return layers;
+}
 std::shared_ptr<Layer> Image::createDepthLayer(size2_t dimensions) {
     return std::make_shared<Layer>(dimensions, DataFloat32::get(), LayerType::Depth,
                                    swizzlemasks::depth);
@@ -200,6 +210,25 @@ Layer* Image::getLayer(LayerType type, size_t idx) {
             return getPickingLayer();
     }
     return nullptr;
+}
+
+auto Image::begin() -> ColorLayerIterator {
+    return util::makeIndirectIterator(colorLayers_.begin());
+}
+auto Image::end() -> ColorLayerIterator { return util::makeIndirectIterator(colorLayers_.end()); }
+
+auto Image::begin() const -> ConstColorLayerIterator {
+    return util::makeIndirectIterator(colorLayers_.begin());
+}
+auto Image::end() const -> ConstColorLayerIterator {
+    return util::makeIndirectIterator(colorLayers_.end());
+}
+
+auto Image::cbegin() const -> ConstColorLayerIterator {
+    return util::makeIndirectIterator(colorLayers_.begin());
+}
+auto Image::cend() const -> ConstColorLayerIterator {
+    return util::makeIndirectIterator(colorLayers_.end());
 }
 
 const Layer* Image::getColorLayer(size_t idx) const {

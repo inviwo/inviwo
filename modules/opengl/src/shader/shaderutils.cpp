@@ -34,28 +34,30 @@
 #include <inviwo/core/datastructures/isovaluecollection.h>     // for IsoValueCollection
 #include <inviwo/core/datastructures/light/lightingstate.h>    // for ShadingMode, LightingState
 #include <inviwo/core/datastructures/spatialdata.h>            // for SpatialEntity
-#include <inviwo/core/ports/imageport.h>                       // for ImageInport
-#include <inviwo/core/properties/cameraproperty.h>             // for CameraProperty
-#include <inviwo/core/properties/isotfproperty.h>              // for IsoTFProperty
-#include <inviwo/core/properties/isovalueproperty.h>           // for IsoValueProperty
-#include <inviwo/core/properties/optionproperty.h>             // for OptionPropertyString, Opti...
-#include <inviwo/core/properties/ordinalproperty.h>            // for FloatProperty, FloatVec3Pr...
-#include <inviwo/core/properties/planeproperty.h>              // for PlaneProperty
-#include <inviwo/core/properties/raycastingproperty.h>         // for RaycastingProperty, Raycas...
-#include <inviwo/core/properties/selectioncolorproperty.h>     // for SelectionColorProperty
-#include <inviwo/core/properties/simplelightingproperty.h>     // for SimpleLightingProperty
-#include <inviwo/core/properties/simpleraycastingproperty.h>   // for SimpleRaycastingProperty
-#include <inviwo/core/properties/volumeindicatorproperty.h>    // for VolumeIndicatorProperty
-#include <inviwo/core/util/formats.h>                          // for DataFormatBase, NumericType
-#include <inviwo/core/util/glmvec.h>                           // for vec4
-#include <inviwo/core/util/sourcecontext.h>                    // for IVW_CONTEXT_CUSTOM
-#include <inviwo/core/util/stringconversion.h>                 // for StrBuffer, splitStringView
-#include <modules/opengl/inviwoopengl.h>                       // for LGL_ERROR
-#include <modules/opengl/openglexception.h>                    // for OpenGLException
-#include <modules/opengl/shader/shader.h>                      // for Shader
-#include <modules/opengl/shader/shadermanager.h>               // for ShaderManager
-#include <modules/opengl/shader/shaderobject.h>                // for ShaderObject
-#include <modules/opengl/shader/shadertype.h>                  // for ShaderType
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/ports/imageport.h>                      // for ImageInport
+#include <inviwo/core/properties/cameraproperty.h>            // for CameraProperty
+#include <inviwo/core/properties/isotfproperty.h>             // for IsoTFProperty
+#include <inviwo/core/properties/isovalueproperty.h>          // for IsoValueProperty
+#include <inviwo/core/properties/optionproperty.h>            // for OptionPropertyString, Opti...
+#include <inviwo/core/properties/ordinalproperty.h>           // for FloatProperty, FloatVec3Pr...
+#include <inviwo/core/properties/planeproperty.h>             // for PlaneProperty
+#include <inviwo/core/properties/raycastingproperty.h>        // for RaycastingProperty, Raycas...
+#include <inviwo/core/properties/selectioncolorproperty.h>    // for SelectionColorProperty
+#include <inviwo/core/properties/simplelightingproperty.h>    // for SimpleLightingProperty
+#include <inviwo/core/properties/simpleraycastingproperty.h>  // for SimpleRaycastingProperty
+#include <inviwo/core/properties/volumeindicatorproperty.h>   // for VolumeIndicatorProperty
+#include <inviwo/core/util/formats.h>                         // for DataFormatBase, NumericType
+#include <inviwo/core/util/glmvec.h>                          // for vec4
+#include <inviwo/core/util/sourcecontext.h>                   // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/stringconversion.h>                // for StrBuffer, splitStringView
+#include <modules/opengl/inviwoopengl.h>                      // for LGL_ERROR
+#include <modules/opengl/glformats.h>
+#include <modules/opengl/openglexception.h>       // for OpenGLException
+#include <modules/opengl/shader/shader.h>         // for Shader
+#include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
+#include <modules/opengl/shader/shaderobject.h>   // for ShaderObject
+#include <modules/opengl/shader/shadertype.h>     // for ShaderType
 
 #include <algorithm>  // for max
 #include <istream>    // for basic_istream, stringstream
@@ -70,6 +72,54 @@ namespace inviwo {
 class ShaderResource;
 
 namespace utilgl {
+
+void setShaderUniforms(Shader& shader, const DataMapper& dataMapper, const DataFormatBase* format,
+                       std::string_view name) {
+    const dvec2 dataRange = dataMapper.dataRange;
+    const DataMapper defaultRange(format);
+
+    const double invRange = 1.0 / (dataRange.y - dataRange.x);
+    const double defaultToDataRange =
+        (defaultRange.dataRange.y - defaultRange.dataRange.x) * invRange;
+    const double defaultToDataOffset = (dataRange.x - defaultRange.dataRange.x) /
+                                       (defaultRange.dataRange.y - defaultRange.dataRange.x);
+
+    double scalingFactor = 1.0;
+    double signedScalingFactor = 1.0;
+    double offset = 0.0;
+    double signedOffset = 0.0;
+
+    switch (GLFormats::get(format->getId()).normalization) {
+        case utilgl::Normalization::None:
+            scalingFactor = invRange;
+            offset = -dataRange.x;
+            signedScalingFactor = scalingFactor;
+            signedOffset = offset;
+            break;
+        case utilgl::Normalization::Normalized:
+            scalingFactor = defaultToDataRange;
+            offset = -defaultToDataOffset;
+            signedScalingFactor = scalingFactor;
+            signedOffset = offset;
+            break;
+        case utilgl::Normalization::SignNormalized:
+            scalingFactor = 0.5 * defaultToDataRange;
+            offset = 1.0 - 2 * defaultToDataOffset;
+            signedScalingFactor = defaultToDataRange;
+            signedOffset = -defaultToDataOffset;
+            break;
+    }
+    // offset scaling because of reversed scaling in the shader, i.e. (1 - formatScaling_)
+    StrBuffer buff;
+    shader.setUniform(buff.replace("{}.formatScaling", name),
+                      static_cast<float>(1.0 - scalingFactor));
+    shader.setUniform(buff.replace("{}.formatOffset", name), static_cast<float>(offset));
+
+    shader.setUniform(buff.replace("{}.signedFormatScaling", name),
+                      static_cast<float>(1.0 - signedScalingFactor));
+    shader.setUniform(buff.replace("{}.signedFormatOffset", name),
+                      static_cast<float>(signedOffset));
+}
 
 void addShaderDefines(Shader& shader, const SimpleLightingProperty& property) {
     addShaderDefines(shader, property.shadingMode_.get());
@@ -322,8 +372,8 @@ void setShaderUniforms(Shader& shader, const RaycastingProperty& property, std::
     shader.setUniform(buff.replace("{}.samplingRate", name), property.samplingRate_.get());
 }
 
-void setShaderUniforms(Shader& shader, const SpatialEntity<3>& object, std::string_view name) {
-    const SpatialCoordinateTransformer<3>& ct = object.getCoordinateTransformer();
+void setShaderUniforms(Shader& shader, const SpatialEntity& object, std::string_view name) {
+    const SpatialCoordinateTransformer& ct = object.getCoordinateTransformer();
 
     mat4 dataToWorldMatrix = ct.getDataToWorldMatrix();
     mat4 modelToWorldMatrix = ct.getModelToWorldMatrix();

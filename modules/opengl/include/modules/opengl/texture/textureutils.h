@@ -33,10 +33,12 @@
 
 #include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::AllLayers
 #include <inviwo/core/datastructures/image/image.h>       // IWYU pragma: kepp
+#include <inviwo/core/datastructures/image/layer.h>       // IWYU pragma: kepp
 #include <inviwo/core/datastructures/volume/volume.h>     // IWYU pragma: kepp
 
 #include <inviwo/core/ports/datainport.h>  // IWYU pragma: kepp
 #include <inviwo/core/ports/imageport.h>   // IWYU pragma: kepp
+#include <inviwo/core/ports/layerport.h>   // IWYU pragma: kepp
 #include <inviwo/core/ports/volumeport.h>  // IWYU pragma: kepp
 
 #include <modules/opengl/inviwoopengl.h>  // for GLenum
@@ -93,6 +95,10 @@ IVW_MODULE_OPENGL_API void updateAndActivateTarget(ImageOutport& targetOutport,
                                                    ImageInport& sourceInport);
 
 // Bind textures with glenum
+IVW_MODULE_OPENGL_API void bindTexture(const Layer& layer, GLenum texUnit);
+IVW_MODULE_OPENGL_API void bindTexture(const LayerInport& inport, GLenum texUnit);
+IVW_MODULE_OPENGL_API void bindTexture(const LayerOutport& outport, GLenum texUnit);
+
 IVW_MODULE_OPENGL_API void bindTextures(const Image& image, bool color, bool depth, bool picking,
                                         GLenum colorTexUnit, GLenum depthTexUnit,
                                         GLenum pickingTexUnit);
@@ -124,6 +130,10 @@ IVW_MODULE_OPENGL_API void bindTextures(const ImageOutport& outport, GLenum colo
                                         GLenum depthTexUnit, GLenum pickingTexUnit);
 
 // Bind textures with TextureUnit
+IVW_MODULE_OPENGL_API void bindTexture(const Layer& layer, const TextureUnit& texUnit);
+IVW_MODULE_OPENGL_API void bindTexture(const LayerInport& inport, const TextureUnit& texUnit);
+IVW_MODULE_OPENGL_API void bindTexture(const LayerOutport& outport, const TextureUnit& texUnit);
+
 IVW_MODULE_OPENGL_API void bindColorTexture(const Image& image, const TextureUnit& texUnit);
 IVW_MODULE_OPENGL_API void bindColorTexture(const ImageInport& inport, const TextureUnit& texUnit);
 IVW_MODULE_OPENGL_API void bindColorTexture(const ImageOutport& outport,
@@ -158,6 +168,10 @@ IVW_MODULE_OPENGL_API void bindTextures(const ImageOutport& outport,
                                         const TextureUnit& pickingTexUnit);
 
 // Unbind textures
+IVW_MODULE_OPENGL_API void unbindTexture(const Layer& layer);
+IVW_MODULE_OPENGL_API void unbindTexture(const LayerInport& inport);
+IVW_MODULE_OPENGL_API void unbindTexture(const LayerOutport& outport);
+
 IVW_MODULE_OPENGL_API void unbindTextures(const Image& image, bool color, bool depth, bool picking);
 
 IVW_MODULE_OPENGL_API void unbindColorTexture(const ImageInport& inport);
@@ -195,6 +209,13 @@ IVW_MODULE_OPENGL_API void bindTexture(const Volume& volume, const TextureUnit& 
 IVW_MODULE_OPENGL_API void bindTexture(const VolumeInport& inport, const TextureUnit& texUnit);
 
 // Shader defines.
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const Layer& layer,
+                                             std::string_view samplerID);
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const LayerInport& inport,
+                                             std::string_view samplerID = "");
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const LayerOutport& outport,
+                                             std::string_view samplerID = "");
+
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const Image& image,
                                              std::string_view samplerID);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const ImageInport& inport,
@@ -218,6 +239,13 @@ IVW_MODULE_OPENGL_API void singleDrawImagePlaneRect();
 IVW_MODULE_OPENGL_API void multiDrawImagePlaneRect(int instances);
 
 // convenience Image port binding and setting uniforms
+IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
+                                              const Layer& layer, std::string_view id);
+IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
+                                              const LayerInport& inport);
+IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
+                                              const LayerOutport& outport);
+
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
                                               const Image& image, std::string_view id,
                                               ImageType type);

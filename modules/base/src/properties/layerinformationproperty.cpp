@@ -46,6 +46,7 @@
 #include <inviwo/core/util/glm.h>                         // for filled
 #include <inviwo/core/util/glmmat.h>                      // for mat2
 #include <inviwo/core/util/glmvec.h>                      // for vec2
+#include <inviwo/core/util/zip.h>
 
 #include <cstddef>  // for size_t
 #include <limits>   // for numeric_limits<>::type, numeric...
@@ -56,86 +57,147 @@ namespace inviwo {
 const std::string LayerInformationProperty::classIdentifier = "org.inviwo.LayerInformationProperty";
 std::string LayerInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
+namespace {
+
+auto props(LayerInformationProperty& prop) {
+    return std::tie(prop.layerType, prop.dimensions, prop.format, prop.channels, prop.swizzleMask);
+}
+
+auto meta(LayerInformationProperty& prop) {
+    return std::tie(prop.dataRange, prop.valueRange, prop.valueName, prop.valueUnit,
+                    prop.interpolation, prop.axesNames, prop.axesUnits, prop.wrapping[0],
+                    prop.wrapping[1]);
+}
+
+}  // namespace
+
 LayerInformationProperty::LayerInformationProperty(std::string_view identifier,
                                                    std::string_view displayName,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
-    : CompositeProperty(
+    : BoolCompositeProperty(
           identifier, displayName,
           "A CompositeProperty holding properties to show a information about an image layer"_help,
-          invalidationLevel, semantics)
-    , layerType_("layerType", "Layer Type", "Type of the layer (Color, Depth, or Picking)"_help)
-    , format_("format", "Format", "Underlying data format of the layer"_help, "")
-    , channels_("channels", "Channels", "Number of different channels in the layer"_help, 0,
-                {0, ConstraintBehavior::Immutable},
-                {std::numeric_limits<size_t>::max(), ConstraintBehavior::Immutable}, 1,
-                InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
-    , swizzleMask_(
+          false, invalidationLevel, semantics)
+    , layerType("layerType", "Layer Type", "Type of the layer (Color, Depth, or Picking)"_help)
+    , dimensions("dimensions", "Dimensions",
+                 util::ordinalCount(size2_t{0})
+                     .set(InvalidationLevel::Valid)
+                     .set(PropertySemantics::Text)
+                     .set("Layer dimensions (pixel)"_help))
+    , format("format", "Format", "Underlying data format of the layer"_help, "")
+    , channels("channels", "Channels", "Number of different channels in the layer"_help, 0,
+               {0, ConstraintBehavior::Immutable},
+               {std::numeric_limits<size_t>::max(), ConstraintBehavior::Immutable}, 1,
+               InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
+    , swizzleMask(
           "swizzleMask", "Swizzle Mask",
           "The swizzle mask is used when sampling the layer for example in OpenGL shaders"_help)
-    , interpolation_(
-          "interpolation", "Interpolation",
-          "Type of interpolation which is used when sampling the layer for example in OpenGL shaders"_help)
-    , wrapping_("wrapping", "Wrapping",
-                "Defines the wrapping of texture coordinates (Clamp, Repeat, or Mirror)"_help)
-    , transformations_("transformations", "Transformations")
-    , basis_("basis", "Basis", mat2(1.0f), util::filled<mat2>(std::numeric_limits<float>::lowest()),
-             util::filled<mat2>(std::numeric_limits<float>::max()), util::filled<mat2>(0.001f),
-             InvalidationLevel::Valid)
-    , offset_("offset", "Offset", vec2(0.0f), vec2(std::numeric_limits<float>::lowest()),
-              vec2(std::numeric_limits<float>::max()), vec2(0.001f), InvalidationLevel::Valid,
-              PropertySemantics::Text) {
+    , interpolation{"interpolation",
+                    "Interpolation",
+                    "Type of interpolation which is used when sampling the layer for example in OpenGL shaders"_help,
+                    {InterpolationType::Linear, InterpolationType::Nearest},
+                    0}
+    , wrapping{{{"xWrappingX",
+                 "X Wrapping",
+                 {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror},
+                 0},
+                {"yWrappingX",
+                 "Y Wrapping",
+                 {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror},
+                 0}}}
+    , dataRange("dataRange", "Data Range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(), 0.0,
+                0.0, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , valueRange("valueRange", "Value Range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(),
+                 0.0, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , valueName{"valueName", "Value name", ""}
+    , valueUnit{"valueUnit", "Value unit", ""}
+    , axesNames{"axesNames", "Axes Names"}
+    , axesUnits{"axesUnits", "Axes Units"} {
 
-    util::for_each_argument(
+    getBoolProperty()
+        ->setDisplayName("Keep Changes")
+        .setInvalidationLevel(InvalidationLevel::Valid)
+        .visibilityDependsOn(*this, [](const auto& p) { return !p.getReadOnly(); })
+        .setCurrentStateAsDefault();
+
+    util::for_each_in_tuple(
         [&](auto& e) {
             e.setReadOnly(true);
             e.setSerializationMode(PropertySerializationMode::None);
+            e.setCurrentStateAsDefault();
             addProperty(e);
         },
-        layerType_, format_, channels_, swizzleMask_, interpolation_, wrapping_);
-    addProperty(transformations_);
-    transformations_.setCollapsed(true);
+        props(*this));
 
-    util::for_each_argument(
-        [&](auto& e) {
-            e.setReadOnly(true);
-            transformations_.addProperty(e);
-        },
-        basis_, offset_);
-
-    setAllPropertiesCurrentStateAsDefault();
+    util::for_each_in_tuple([&](auto& p) { addProperty(p); }, meta(*this));
 }
 
 LayerInformationProperty::LayerInformationProperty(const LayerInformationProperty& rhs)
-    : CompositeProperty(rhs)
-    , layerType_(rhs.layerType_)
-    , format_(rhs.format_)
-    , channels_(rhs.channels_)
-    , swizzleMask_(rhs.swizzleMask_)
-    , interpolation_(rhs.interpolation_)
-    , wrapping_(rhs.wrapping_)
-    , transformations_(rhs.transformations_)
-    , basis_(rhs.basis_)
-    , offset_(rhs.offset_) {
+    : BoolCompositeProperty(rhs)
+    , layerType(rhs.layerType)
+    , dimensions(rhs.dimensions)
+    , format(rhs.format)
+    , channels(rhs.channels)
+    , swizzleMask(rhs.swizzleMask)
+    , interpolation(rhs.interpolation)
+    , wrapping(rhs.wrapping)
+    , dataRange(rhs.dataRange)
+    , valueRange(rhs.valueRange)
+    , valueName(rhs.valueName)
+    , valueUnit(rhs.valueUnit)
+    , axesNames(rhs.axesNames)
+    , axesUnits(rhs.axesUnits) {
 
-    addProperties(layerType_, format_, channels_, swizzleMask_, interpolation_, wrapping_,
-                  transformations_);
-    transformations_.addProperties(basis_, offset_);
+    util::for_each_in_tuple([&](auto& e) { addProperty(e); }, props(*this));
+    util::for_each_in_tuple([&](auto& e) { addProperty(e); }, meta(*this));
 }
 
 LayerInformationProperty* LayerInformationProperty::clone() const {
     return new LayerInformationProperty(*this);
 }
 
-void LayerInformationProperty::updateFromLayer(const Layer& layer) {
-    layerType_.set(toString(layer.getLayerType()));
-    format_.set(layer.getDataFormat()->getString());
-    channels_.set(layer.getDataFormat()->getComponents());
-    swizzleMask_.set(toString(layer.getSwizzleMask()));
-    interpolation_.set(toString(layer.getInterpolation()));
-    wrapping_.set(toString(layer.getWrapping()));
-    basis_.set(layer.getBasis());
-    offset_.set(layer.getOffset());
+void LayerInformationProperty::updateForNewLayer(const Layer& layer,
+                                                 util::OverwriteState overwrite) {
+    layerType.set(toString(layer.getLayerType()));
+    dimensions.set(layer.getDimensions());
+    format.set(layer.getDataFormat()->getString());
+    channels.set(layer.getDataFormat()->getComponents());
+    swizzleMask.set(toString(layer.getSwizzleMask()));
+    util::for_each_in_tuple([&](auto& e) { e.setCurrentStateAsDefault(); }, props(*this));
+
+    overwrite = (overwrite == util::OverwriteState::Yes && !isChecked()) ? util::OverwriteState::Yes
+                                                                         : util::OverwriteState::No;
+
+    util::updateDefaultState(dataRange, layer.dataMap.dataRange, overwrite);
+    util::updateDefaultState(valueRange, layer.dataMap.valueRange, overwrite);
+    util::updateDefaultState(valueName, layer.dataMap.valueAxis.name, overwrite);
+    util::updateDefaultState(valueUnit, fmt::to_string(layer.dataMap.valueAxis.unit), overwrite);
+    util::updateDefaultState(interpolation, layer.getInterpolation(), overwrite);
+    for (auto&& [prop, axis] : util::zip(axesNames.strings, layer.axes)) {
+        util::updateDefaultState(prop, axis.name, overwrite);
+    }
+    for (auto&& [prop, axis] : util::zip(axesUnits.strings, layer.axes)) {
+        util::updateDefaultState(prop, fmt::to_string(axis.unit), overwrite);
+    }
+    for (auto&& [prop, wrap] : util::zip(wrapping, layer.getWrapping())) {
+        util::updateDefaultState(prop, wrap, overwrite);
+    }
+}
+
+void LayerInformationProperty::updateLayer(Layer& layer) {
+    layer.dataMap.dataRange = dataRange.get();
+    layer.dataMap.valueRange = valueRange.get();
+    layer.dataMap.valueAxis.name = valueName.get();
+    layer.dataMap.valueAxis.unit = units::unit_from_string(valueUnit.get());
+    layer.setInterpolation(interpolation.getSelectedValue());
+    for (auto&& [prop, axis] : util::zip(axesNames.strings, layer.axes)) {
+        axis.name = prop.get();
+    }
+    for (auto&& [prop, axis] : util::zip(axesUnits.strings, layer.axes)) {
+        axis.unit = units::unit_from_string(prop.get());
+    }
+    layer.setWrapping({wrapping[0].getSelectedValue(), wrapping[1].getSelectedValue()});
 }
 
 }  // namespace inviwo

@@ -34,6 +34,8 @@
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/unitsystem.h>
 
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
@@ -55,6 +57,15 @@ public:
                    const Wrapping2D& wrapping = wrapping2d::clampAll);
     explicit Layer(std::shared_ptr<LayerRepresentation>);
     Layer(const Layer&) = default;
+    /**
+     * Create a layer based on \p rhs without copying any data. If \p defaultFormat is a nullptr,
+     * the format of \p rhs is used.
+     * @param rhs             source layer providing the necessary information like dimensions,
+     *                        swizzle masks, interpolation, spatial transformations, etc.
+     * @param defaultFormat   data format of the new layer. If equal to nullptr, the format of \p
+     *                        rhs is used instead.
+     */
+    Layer(const Layer& rhs, NoData, const DataFormatBase* defaultFormat = nullptr);
     Layer& operator=(const Layer& that) = default;
     virtual Layer* clone() const override;
     virtual ~Layer() = default;
@@ -104,6 +115,9 @@ public:
      */
     std::unique_ptr<std::vector<unsigned char>> getAsCodedBuffer(
         const std::string& fileExtension) const;
+
+    DataMapper dataMap;
+    std::array<Axis, 2> axes;
 
 private:
     friend class LayerRepresentation;

@@ -42,8 +42,11 @@
 #include <string>
 #include <array>
 #include <memory>
+#include <span>
 
 namespace inviwo {
+
+class DataFormatBase;
 
 // Do not set enums specifically, as NumberOfFormats is used to count the number of enums
 enum class DataFormatId : char {
@@ -106,6 +109,20 @@ constexpr NumericType getNumericType() {
                 : (std::is_signed<T>::value ? NumericType::SignedInteger
                                             : NumericType::UnsignedInteger));
 }
+
+/**
+ * Determines the common numeric type of the given \p formats. Returns NumericType::Float if any of
+ * the formats is a floating point format. Otherwise, NumericType::SignedInteger is returned if at
+ * least one format is signed, and NumericType::UnsignedInteger if that is not the case.
+ * @return NumericType based on \p formats. NumericType::NotSpecialized if the span is empty.
+ */
+IVW_CORE_API NumericType commonNumericType(std::span<const DataFormatBase*> formats);
+
+/**
+ * Determines the format precision of the given \p formats, that is the highest one.
+ * @return maximum precision of all \p formats
+ */
+IVW_CORE_API size_t commonFormatPrecision(std::span<const DataFormatBase*> formats);
 
 }  // namespace util
 

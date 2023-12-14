@@ -81,9 +81,9 @@ const ProcessorInfo MeshRenderProcessorGL::getProcessorInfo() const { return pro
 MeshRenderProcessorGL::MeshRenderProcessorGL()
     : Processor()
     , inport_("geometry", "Input meshes"_help)
-    , imageInport_("imageInport", "background image (optional)"_help)
+    , imageInport_("imageInport", "Background image (optional)"_help)
     , outport_("image",
-               "output image containing the rendered mesh and the optional input image"_help)
+               "Output image containing the rendered mesh and the optional input image"_help)
     , camera_("camera", "Camera", util::boundingBox(inport_))
     , meshProperties_("geometry", "Geometry Rendering Properties")
     , cullFace_("cullFace", "Cull Face",

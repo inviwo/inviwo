@@ -39,7 +39,7 @@ Mesh::Mesh(DrawType dt, ConnectivityType ct) : Mesh{MeshInfo{dt, ct}} {}
 
 Mesh::Mesh(Mesh::MeshInfo meshInfo)
     : DataGroup<Mesh, MeshRepresentation>()
-    , SpatialEntity<3>{}
+    , SpatialEntity{}
     , MetaDataOwner{}
     , meshInfo_{meshInfo} {}
 
@@ -51,7 +51,7 @@ Mesh::Mesh(const BufferVector& buffers, const IndexVector& indices)
 
 Mesh::Mesh(const Mesh& rhs)
     : DataGroup<Mesh, MeshRepresentation>(rhs)
-    , SpatialEntity<3>(rhs)
+    , SpatialEntity(rhs)
     , MetaDataOwner(rhs)
     , meshInfo_(rhs.meshInfo_) {
     for (const auto& elem : rhs.buffers_) {
@@ -64,14 +64,14 @@ Mesh::Mesh(const Mesh& rhs)
 
 Mesh::Mesh(const Mesh& rhs, NoData)
     : DataGroup<Mesh, MeshRepresentation>(rhs)
-    , SpatialEntity<3>(rhs)
+    , SpatialEntity(rhs)
     , MetaDataOwner(rhs)
     , meshInfo_(rhs.meshInfo_) {}
 
 Mesh& Mesh::operator=(const Mesh& that) {
     if (this != &that) {
         DataGroup<Mesh, MeshRepresentation>::operator=(that);
-        SpatialEntity<3>::operator=(that);
+        SpatialEntity::operator=(that);
         MetaDataOwner::operator=(that);
 
         BufferVector buffers;
@@ -363,11 +363,6 @@ void Mesh::append(const Mesh& mesh) {
                        [&](auto& i) { return i + static_cast<uint32_t>(size); });
         addIndices(indbuffer.first, util::makeIndexBuffer(std::move(newInds)));
     }
-}
-
-const SpatialCameraCoordinateTransformer<3>& Mesh::getCoordinateTransformer(
-    const Camera& camera) const {
-    return SpatialEntity<3>::getCoordinateTransformer(camera);
 }
 
 uvec3 Mesh::colorCode = uvec3(188, 188, 101);

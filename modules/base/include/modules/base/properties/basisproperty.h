@@ -82,10 +82,10 @@ public:
     virtual BasisProperty* clone() const override;
     virtual ~BasisProperty() = default;
 
-    void updateForNewEntity(const SpatialEntity<3>& volume, bool deserialize);
+    void updateForNewEntity(const SpatialEntity& volume, bool deserialize);
     void updateForNewEntity(const StructuredGridEntity<3>& volume, bool deserialize);
 
-    void updateEntity(SpatialEntity<3>& volume);
+    void updateEntity(SpatialEntity& volume);
 
     mat4 getBasisAndOffset() const;
 
@@ -119,7 +119,7 @@ private:
                         autoCenter_, offset_, resetOverride_);
     }
 
-    void update(const SpatialEntity<3>& volume, bool deserialize);
+    void update(const SpatialEntity& volume, bool deserialize);
     void load();
     void save();
     void onModeChange();

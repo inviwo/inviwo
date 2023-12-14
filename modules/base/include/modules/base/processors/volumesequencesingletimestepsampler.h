@@ -55,7 +55,7 @@
 
 namespace inviwo {
 
-class VolumeSequenceSingleTimestepSampler : public SpatialSampler<3, 3, double> {
+class VolumeSequenceSingleTimestepSampler : public SpatialSampler<3, double> {
 public:
     VolumeSequenceSingleTimestepSampler(double t, std::shared_ptr<const Volume> v0,
                                         std::shared_ptr<const Volume> v1,
@@ -111,7 +111,7 @@ public:
 
 private:
     VolumeSequenceInport volumeSequence_;
-    DataOutport<SpatialSampler<3, 3, double>> sampler_;
+    DataOutport<SpatialSampler<3, double>> sampler_;
 
     DoubleProperty timestamp_;
 };

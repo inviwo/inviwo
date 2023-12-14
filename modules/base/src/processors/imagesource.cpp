@@ -63,24 +63,27 @@ namespace inviwo {
 class Deserializer;
 class Layer;
 
-const ProcessorInfo ImageSource::processorInfo_{
-    "org.inviwo.ImageSource",  // Class identifier
-    "Image Source",            // Display name
-    "Data Input",              // Category
-    CodeState::Stable,         // Code state
-    Tags::CPU,                 // Tags
-};
+const ProcessorInfo ImageSource::processorInfo_{"org.inviwo.ImageSource",  // Class identifier
+                                                "Image Source",            // Display name
+                                                "Data Input",              // Category
+                                                CodeState::Stable,         // Code state
+                                                Tags::CPU,                 // Tags
+                                                "Loads an image from disk."_help};
 const ProcessorInfo ImageSource::getProcessorInfo() const { return processorInfo_; }
 
 ImageSource::ImageSource(InviwoApplication* app, const std::filesystem::path& filePath)
     : Processor()
     , rf_(util::getDataReaderFactory(app))
-    , outport_("image", DataVec4UInt8::get(), false)
-    , file_("imageFileName", "File name", filePath, "image")
+    , outport_("image", "The loaded image"_help, DataVec4UInt8::get(), HandleResizeEvents::No)
+    , file_("imageFileName", "File name", "The name of the image file to load"_help, filePath,
+            "image")
     , reader_("reader", "Data Reader")
     , reload_("reload", "Reload data")
-    , imageDimension_("imageDimension_", "Dimension", size2_t(0), size2_t(0), size2_t(10000),
-                      size2_t(1), InvalidationLevel::Valid, PropertySemantics("Text")) {
+    , imageDimension_("imageDimension_", "Dimension",
+                      util::ordinalCount(size2_t{0}, size2_t{4096})
+                          .set("Dimensions of the image file"_help)
+                          .set(InvalidationLevel::Valid)
+                          .set(PropertySemantics::Text)) {
 
     addPort(outport_);
     addProperties(file_, reader_, reload_, imageDimension_);

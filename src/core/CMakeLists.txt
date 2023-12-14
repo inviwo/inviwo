@@ -21,8 +21,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodulefactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodulelibraryobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/moduleaction.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecontainer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecallback.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecontainer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulepath.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/runtimemoduleregistration.h
@@ -196,6 +196,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/imageport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/inport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/inportiterable.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/ports/layerport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/meshport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/outport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/outportiterable.h
@@ -572,6 +573,7 @@ set(SOURCE_FILES
     network/workspaceutils.cpp
     ports/imageport.cpp
     ports/inport.cpp
+    ports/layerport.cpp
     ports/outport.cpp
     ports/port.cpp
     ports/portfactory.cpp

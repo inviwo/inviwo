@@ -73,8 +73,8 @@ protected:
     virtual void process() override;
 
 private:
-    DataInport<SpatialSampler<3, 3, double>> sampler_;
-    DataInport<SpatialSampler<3, 3, double>> vorticitySampler_;
+    DataInport<SpatialSampler<3, double>> sampler_;
+    DataInport<SpatialSampler<3, double>> vorticitySampler_;
     SeedPoints3DInport seedPoints_;
     DataInport<std::vector<vec4>> colors_;
 

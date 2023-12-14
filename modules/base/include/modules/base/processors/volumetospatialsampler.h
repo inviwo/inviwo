@@ -72,7 +72,7 @@ public:
 
 private:
     VolumeInport volume_;
-    DataOutport<SpatialSampler<3, 3, double>> sampler_;
+    DataOutport<SpatialSampler<3, double>> sampler_;
 };
 
 }  // namespace inviwo

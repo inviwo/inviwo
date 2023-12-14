@@ -1631,35 +1631,41 @@ void InviwoMainWindow::dragMoveEvent(QDragMoveEvent* event) {
 void InviwoMainWindow::dropEvent(QDropEvent* event) {
     const QMimeData* mimeData = event->mimeData();
     if (mimeData->hasUrls()) {
-        // use dispatch front here to avoid blocking the drag&drop source, e.g. Windows
-        // Explorer, while the drop operation is performed
-        auto action = [this, keyModifiers = event->modifiers(), urlList = mimeData->urls()]() {
-            RenderContext::getPtr()->activateDefaultRenderContext();
+        try {
+            // use dispatch front here to avoid blocking the drag&drop source, e.g. Windows
+            // Explorer, while the drop operation is performed
+            auto action = [this, keyModifiers = event->modifiers(), urlList = mimeData->urls()]() {
+                RenderContext::getPtr()->activateDefaultRenderContext();
 
-            hideWelcomeScreen();
+                hideWelcomeScreen();
 
-            bool first = true;
-            for (auto& file : urlList) {
-                std::filesystem::path filename = utilqt::toPath(file.toLocalFile());
+                bool first = true;
+                for (auto& file : urlList) {
+                    std::filesystem::path filename = utilqt::toPath(file.toLocalFile());
 
-                if (toLower(filename.extension().string()) == ".inv") {
-                    if (!first || keyModifiers & Qt::ControlModifier) {
-                        appendWorkspace(filename);
+                    if (toLower(filename.extension().string()) == ".inv") {
+                        if (!first || keyModifiers & Qt::ControlModifier) {
+                            appendWorkspace(filename);
+                        } else {
+                            openWorkspaceAskToSave(filename);
+                        }
                     } else {
-                        openWorkspaceAskToSave(filename);
+                        util::insertNetworkForData(
+                            filename, app_->getProcessorNetwork(),
+                            static_cast<bool>(keyModifiers & Qt::ControlModifier),
+                            static_cast<bool>(keyModifiers & Qt::AltModifier), this);
                     }
-                } else {
-                    util::insertNetworkForData(
-                        filename, app_->getProcessorNetwork(),
-                        static_cast<bool>(keyModifiers & Qt::ControlModifier),
-                        static_cast<bool>(keyModifiers & Qt::AltModifier), this);
+                    first = false;
                 }
-                first = false;
-            }
-            saveWindowState();
-            undoManager_.pushStateIfDirty();
-        };
-        app_->dispatchFrontAndForget(action);
+                saveWindowState();
+                undoManager_.pushStateIfDirty();
+            };
+            app_->dispatchFrontAndForget(action);
+        } catch (Exception& e) {
+            util::logError(e.getContext(), "Exception during Drag & Drop: {}", e.getMessage());
+        } catch (std::exception& e) {
+            util::logError(IVW_CONTEXT, "Exception during Drag & Drop: {}", e.what());
+        }
 
         event->accept();
     } else {

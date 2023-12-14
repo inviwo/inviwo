@@ -62,97 +62,89 @@ const ProcessorInfo ImageChannelCombine::processorInfo_{
     "org.inviwo.ImageChannelCombine",  // Class identifier
     "Image Channel Combine",           // Display name
     "Image Operation",                 // Category
-    CodeState::Experimental,           // Code state
+    CodeState::Stable,                 // Code state
     Tags::GL,                          // Tags
-};
+    "Creates a 4 channel image with the connected inputs, from each of them the channel specified "
+    "in its property is used. If the optional alpha channel is not provided, the alpha property "
+    "is used to set the alpha value of the entire image."_help};
 const ProcessorInfo ImageChannelCombine::getProcessorInfo() const { return processorInfo_; }
 
+namespace {
+const std::vector<OptionPropertyIntOption> channelsList = {
+    {"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Alpha", 3}};
+}
 ImageChannelCombine::ImageChannelCombine()
     : Processor()
-    , inport0_("inport0", true)
-    , inport1_("inport1", true)
-    , inport2_("inport2", true)
-    , inport3_("inport3", true)
+    , inport_{ImageInport{"inport0", "Input for first channel (red)"_help,
+                          OutportDeterminesSize::Yes},
+              ImageInport{"inport1", "Input for the second channel (green)"_help,
+                          OutportDeterminesSize::Yes},
+              ImageInport{"inport2", "Input for the third channel (blue)"_help,
+                          OutportDeterminesSize::Yes},
+              ImageInport{"inport3", "Input for the fourth channel (alpha, optional)"_help,
+                          OutportDeterminesSize::Yes}}
     , outport_("outport", false)
-    , rChannelSrc_("redChannel", "Red Channel",
-                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Alpha", 3}})
-    , gChannelSrc_("greenChannel", "Green Channel",
-                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Alpha", 3}})
-    , bChannelSrc_("blueChannel", "Blue Channel",
-                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Alpha", 3}})
-    , aChannelSrc_("alphaChannel", "Alpha Channel",
-                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Alpha", 3}})
-    , alpha_("alpha", "Alpha", 1.0f, 0.0f, 1.0f, 0.001f)
+    , channel_{OptionPropertyInt{"redChannel", "Red Channel", channelsList},
+               OptionPropertyInt{"greenChannel", "Green Channel", channelsList},
+               OptionPropertyInt{"blueChannel", "Blue Channel", channelsList},
+               OptionPropertyInt{"alphaChannel", "Alpha Channel", channelsList}}
+    , alpha_("alpha", "Alpha",
+             util::ordinalLength(1.0f, 1.0f)
+                 .set("Alpha value used if there is no input for the fourth channel"_help))
     , shader_("img_channel_combine.frag") {
+
+    outport_.setHelp("Output image with combined channels"_help);
+    inport_[3].setOptional(true);
+    addPorts(inport_[0], inport_[1], inport_[2], inport_[3], outport_);
+
+    for (auto& prop : channel_) {
+        addProperty(prop);
+    }
+    addProperty(alpha_);
+
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-
-    addPort(inport0_);
-    addPort(inport1_);
-    addPort(inport2_);
-    inport3_.setOptional(true);
-    addPort(inport3_);
-
-    addPort(outport_);
-
-    addProperties(rChannelSrc_, gChannelSrc_, bChannelSrc_, aChannelSrc_, alpha_);
 }
 
 void ImageChannelCombine::process() {
-    auto isSame = [](auto a, auto b, auto c) {
-        if (a != b) return false;
-        if (a != c) return false;
-        return true;
-    };
-    auto img0 = inport0_.getData();
-    auto img1 = inport1_.getData();
-    auto img2 = inport2_.getData();
-    auto img3 = inport3_.getData();
-
-    if (isSame(img0->getDimensions(), img1->getDimensions(), img2->getDimensions()) &&
-        (inport3_.isConnected() && img3 && img3->getDimensions() != img0->getDimensions())) {
-        throw Exception("The image dimensions of all inports needs to be the same", IVW_CONTEXT);
+    const size2_t dims{inport_.front().getData()->getDimensions()};
+    if (std::ranges::any_of(inport_, [dims](auto& p) {
+            if (!p.hasData()) {
+                return false;
+            }
+            return p.getData()->getDimensions() != dims;
+        })) {
+        throw Exception("Image dimensions of all inports need to be identical", IVW_CONTEXT);
     }
 
-    if (inport0_.isChanged() || inport1_.isChanged() || inport2_.isChanged()) {
-        const auto dimensions = inport0_.getData()->getDimensions();
-        auto t1 = inport0_.getData()->getDataFormat()->getNumericType();
-        auto t2 = inport1_.getData()->getDataFormat()->getNumericType();
-        auto t3 = inport2_.getData()->getDataFormat()->getNumericType();
-        NumericType type;
-        if (t1 == t2 && t1 == t3) {
-            // All have the same numType
-            type = t1;
-        } else if (t1 == NumericType::Float || t2 == NumericType::Float ||
-                   t2 == NumericType::Float) {
-            // At least one is a float type
-            type = NumericType::Float;
-        } else {
-            // At least one are signed, and at least one are unsigned
-            type = NumericType::Float;
+    auto&& [type, precision] = [&]() {
+        std::vector<const DataFormatBase*> formats;
+        for (auto& port : inport_) {
+            if (port.hasData()) {
+                formats.push_back(port.getData()->getDataFormat());
+            }
         }
 
-        auto p0 = inport0_.getData()->getDataFormat()->getPrecision();
-        auto p1 = inport1_.getData()->getDataFormat()->getPrecision();
-        auto p2 = inport2_.getData()->getDataFormat()->getPrecision();
-        DataFormatBase::get(type, 4, std::max({p0, p1, p2}));
+        return std::make_pair(util::commonNumericType(formats),
+                              util::commonFormatPrecision(formats));
+    }();
 
-        auto img = std::make_shared<Image>(dimensions, DataVec4UInt8::get());
-        outport_.setData(img);
-    }
+    auto image = std::make_shared<Image>(*inport_.front().getData(), noData,
+                                         DataFormatBase::get(type, 4, precision));
+    outport_.setData(image);
 
-    utilgl::activateAndClearTarget(outport_);
+    utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     shader_.activate();
     TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(shader_, units, inport0_, ImageType::ColorOnly);
-    utilgl::bindAndSetUniforms(shader_, units, inport1_, ImageType::ColorOnly);
-    utilgl::bindAndSetUniforms(shader_, units, inport2_, ImageType::ColorOnly);
-    if (inport3_.hasData()) {
-        utilgl::bindAndSetUniforms(shader_, units, inport3_, ImageType::ColorOnly);
+    for (auto& port : inport_) {
+        if (port.hasData()) {
+            utilgl::bindAndSetUniforms(shader_, units, port, ImageType::ColorOnly);
+        }
     }
-    utilgl::setUniforms(shader_, outport_, rChannelSrc_, gChannelSrc_, bChannelSrc_, aChannelSrc_,
-                        alpha_);
-    shader_.setUniform("use_alpha_texture", inport3_.hasData());
-    utilgl::setUniforms(shader_, outport_);
+    for (auto& prop : channel_) {
+        utilgl::setUniforms(shader_, prop);
+    }
+    utilgl::setUniforms(shader_, outport_, alpha_);
+    shader_.setUniform("use_alpha_texture", inport_.back().hasData());
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();

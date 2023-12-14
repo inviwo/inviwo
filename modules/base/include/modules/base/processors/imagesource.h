@@ -51,18 +51,6 @@ class DataReaderFactory;
 class Deserializer;
 class InviwoApplication;
 
-/** \docpage{org.inviwo.ImageSource, Image Source}
- * ![](org.inviwo.ImageSource.png?classIdentifier=org.inviwo.ImageSource)
- *
- * Loads a image
- *
- * ### Outports
- *   * __Outport__ The loaded image
- *
- * ### Properties
- *   * __File name__ The name of the file to load
- *   * __Dimensions__ Readonly, the dimensions of the loaded image.
- */
 class IVW_MODULE_BASE_API ImageSource : public Processor {
 public:
     ImageSource(InviwoApplication* app, const std::filesystem::path& filePath = "");

@@ -49,6 +49,7 @@
 
 namespace inviwo {
 
+class DataMapper;
 class Camera;
 class CameraProperty;
 class DataFormatBase;
@@ -77,6 +78,14 @@ class TemplateProperty;
 using ImageInport = BaseImageInport<1>;
 
 namespace utilgl {
+
+/**
+ * Set the shader uniforms of \p shader related to format scaling based on \p dataMapper and the
+ * corresponding data format \p format  using \p name as a base name, that is `<name>.formatScaling`
+ * etc. These uniforms are used in connection with sampler2d.glsl and sampler3d.glsl.
+ */
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const DataMapper& dataMapper,
+                                             const DataFormatBase* format, std::string_view name);
 
 // TemplateProperty
 template <typename T>
@@ -115,7 +124,7 @@ IVW_MODULE_OPENGL_API void setShaderDefines(
     bool voxelClassification = false);
 
 // SpatialEntity
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const SpatialEntity<3>& object,
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const SpatialEntity& object,
                                              std::string_view name);
 
 // SimpleRaycastingProperty

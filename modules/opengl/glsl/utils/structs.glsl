@@ -89,22 +89,27 @@ struct VolumeParameters {
     float formatScaling;                   // This scaling and offset parameters is used to
     float formatOffset;                    // map value from data range [min,max] to [0,1]
     float signedFormatScaling;             // or to [-1,1] for signed data. It is used by
-    float signedFormatOffset;              // sampler3d.glsl, and is calculated in volumeutils.cpp
+    float signedFormatOffset;              // sampler3d.glsl, and is calculated in shaderutils.cpp
 };
 
 struct ImageParameters {
-    mat3 dataToModel;
-    mat3 modelToData;
-    mat3 dataToWorld;
-    mat3 worldToData;
-    mat3 modelToWorld;
-    mat3 worldToModel;
-    mat3 worldToTexture;
-    mat3 textureToWorld;
-    mat3 textureToIndex;  // Transform from [0 1] to [-0.5 dim-0.5]
-    mat3 indexToTexture; // Transform from [-0.5 dim-0.5] to [0 1]
+    mat4 dataToModel;
+    mat4 modelToData;
+    mat4 dataToWorld;
+    mat4 worldToData;
+    mat4 modelToWorld;
+    mat4 worldToModel;
+    mat4 worldToTexture;
+    mat4 textureToWorld;
+    mat4 textureToIndex;  // Transform from [0 1] to [-0.5 dim-0.5]
+    mat4 indexToTexture;  // Transform from [-0.5 dim-0.5] to [0 1]
     vec2 dimensions;
     vec2 reciprocalDimensions;
+
+    float formatScaling;                   // This scaling and offset parameters is used to
+    float formatOffset;                    // map value from data range [min,max] to [0,1]
+    float signedFormatScaling;             // or to [-1,1] for signed data. It is used by
+    float signedFormatOffset;              // sampler2d.glsl, and is calculated in shaderutils.cpp
 };
 
 struct LightParameters {

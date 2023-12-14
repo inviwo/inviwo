@@ -29,6 +29,8 @@
 
 #include <inviwo/core/algorithm/boundingbox.h>
 
+#include <inviwo/core/datastructures/image/layer.h>
+
 #include <numeric>
 #include <utility>
 
@@ -50,6 +52,32 @@ std::optional<mat4> boundingBoxUnion(const std::optional<mat4>& a, const std::op
     for (const auto& bb : {a, b}) {
         for (const auto& corner : corners) {
             const auto point = vec3(*bb * vec4(corner, 1.f));
+            worldMin = glm::min(worldMin, point);
+            worldMax = glm::max(worldMax, point);
+        }
+    }
+    auto m = glm::scale(worldMax - worldMin);
+    m[3] = vec4(worldMin, 1.0f);
+    return m;
+}
+
+mat4 boundingBox(const Layer& layer) {
+    return layer.getCoordinateTransformer().getDataToWorldMatrix();
+}
+
+mat4 boundingBox(const std::vector<std::shared_ptr<Layer>>& layers) {
+    if (layers.empty()) return mat4(0.f);
+
+    vec3 worldMin(std::numeric_limits<float>::max());
+    vec3 worldMax(std::numeric_limits<float>::lowest());
+
+    const std::array<vec3, 8> corners = {vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{1, 1, 0},
+                                         vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
+                                         vec3{1, 1, 1}, vec3{0, 1, 1}};
+    for (const auto& layer : layers) {
+        auto bb = boundingBox(*layer);
+        for (const auto& corner : corners) {
+            const auto point = vec3(bb * vec4(corner, 1.f));
             worldMin = glm::min(worldMin, point);
             worldMax = glm::max(worldMax, point);
         }
@@ -142,6 +170,43 @@ mat4 boundingBox(const std::vector<std::shared_ptr<Volume>>& volumes) {
     auto m = glm::scale(worldMax - worldMin);
     m[3] = vec4(worldMin, 1.0f);
     return m;
+}
+
+std::function<std::optional<mat4>()> boundingBox(const DataInport<Layer>& layer) {
+    return [port = &layer]() -> std::optional<mat4> {
+        if (port->hasData()) {
+            return boundingBox(*port->getData());
+        } else {
+            return std::nullopt;
+        }
+    };
+}
+std::function<std::optional<mat4>()> boundingBox(const DataInport<Layer, 0>& layers) {
+    return [port = &layers]() -> std::optional<mat4> {
+        if (port->hasData()) {
+            return boundingBox(*port->getData());
+        } else {
+            return std::nullopt;
+        }
+    };
+}
+std::function<std::optional<mat4>()> boundingBox(const DataInport<Layer, 0, true>& layers) {
+    return [port = &layers]() -> std::optional<mat4> {
+        if (port->hasData()) {
+            return boundingBox(*port->getData());
+        } else {
+            return std::nullopt;
+        }
+    };
+}
+std::function<std::optional<mat4>()> boundingBox(const DataOutport<Layer>& layer) {
+    return [port = &layer]() -> std::optional<mat4> {
+        if (port->hasData()) {
+            return boundingBox(*port->getData());
+        } else {
+            return std::nullopt;
+        }
+    };
 }
 
 std::function<std::optional<mat4>()> boundingBox(const DataInport<Mesh>& mesh) {

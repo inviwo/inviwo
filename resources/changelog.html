@@ -26,6 +26,24 @@
 </style>
 </head>
 <body>
+<h2>2023-12-11 <code class="notranslate">Layer</code> ports and processors</h2>
+<p>Added Layer inports and outports to handle 2D data as individual layers without any depth or picking information being attached. Similar to <code class="notranslate">Mesh</code>, a <code class="notranslate">Layer</code> is a spatial entity with its own basis and offset. Layers can be extracted from an <code class="notranslate">Image</code> with the <code class="notranslate">Image To Layer</code> processor or converted back with <code class="notranslate">Layer To Image</code>. Alternatively, the layer can be rendered directly in 3D with the <code class="notranslate">Layer Renderer</code>. Additional utility processors exist as well:</p>
+<ul>
+<li><code class="notranslate">Layer Source</code> for loading an image directly as <code class="notranslate">Layer</code></li>
+<li><code class="notranslate">Layer Combiner</code> combining up to four layer channels inta a single layer</li>
+<li><code class="notranslate">Layer Shader</code> runs a custom fragment shader to process a layer</li>
+<li><code class="notranslate">Layer Bounding Box</code> creates a line mesh representing the boundaries of the layer based on its basis and offset</li>
+<li><code class="notranslate">Layer Information</code> shows basic layer information similar to <code class="notranslate">Image Information</code> and <code class="notranslate">Mesh Information</code></li>
+<li><code class="notranslate">Transform Layer</code> applies a 3D transformation to a layer</li>
+</ul>
+<p>Data visualizers for Layer ports are available, too.</p>
+<h2>2023-12-11 SpatialEntity and CoordinateTransformer changes</h2>
+<p>The <code class="notranslate">SpatialEntity</code> class is now limited to 3D coordinates and 4x4 transformation matrics. It no longer has a template parameter for its dimensionality, formerly <code class="notranslate">SpatialEntity&lt;N&gt;</code>. Thus, all spatial objects in Inviwo are using 3D coordinates like <code class="notranslate">Mesh</code>, <code class="notranslate">Volume</code>, and now also image <code class="notranslate">Layers</code>. This affects the coordinate transformers, structured grid entities, and spatial samplers. The SpatialSampler supports sampling with both 3D and 2D sampling positions where the third component is either discarded or set to 0, respectively.</p>
+<h3>Migration guide</h3>
+<ul>
+<li><code class="notranslate">SpatialEntity&lt;2&gt;</code> and <code class="notranslate">SpatialEntity&lt;3&gt;</code> need to be replaced with <code class="notranslate">SpatialEntity</code></li>
+<li>The template class <code class="notranslate">SpatialSamper&lt;&gt;</code> lost its first template parameter and the time-dependent flag is now explicit. For example, <code class="notranslate">IntegralLineTracer&lt;SpatialSampler&lt;2, 2, double&gt;&gt;</code> becomes now <code class="notranslate">IntegralLineTracer&lt;SpatialSampler&lt;2, double&gt;, false&gt;</code>.</li>
+</ul>
 <h2>2023-11-15 TetraMesh - Rendering of tetrahedral meshes</h2>
 <p>The new module <code class="notranslate">TetraMesh</code> adds basic support for rendering unstructured, tetrahedral meshes like the <code class="notranslate">TetraMeshVolumeRaycaster</code> processor. The current implementation relies on <a href="https://www.khronos.org/opengl/wiki/Shader_Storage_Buffer_Object" rel="nofollow">Shader Storage Buffers Objects</a> (OpenGL 4.3).<br>
 The class <code class="notranslate">TetraMesh</code> provides a common interface for arbitrary tetrahedral grids. The data upload to the GPU with the necessary data required for rendering is managed by <code class="notranslate">TetraMeshBuffers</code>. See for example <code class="notranslate">VolumeTetraMesh</code> and, alternatively, <code class="notranslate">VTKTetraMesh</code> in the topovis/ttk module. Example workspaces are included in both the TetraMesh module (tetramesh/tetrameshraycasting.inv) and the topovis/ttk module (ttk/vtk-tetrahedral-mesh.inv).</p>

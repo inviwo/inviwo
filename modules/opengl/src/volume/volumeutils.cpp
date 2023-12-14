@@ -39,8 +39,9 @@
 #include <inviwo/core/util/stringconversion.h>                 // for StrBuffer
 #include <modules/opengl/glformats.h>                          // for Normalization, GLFormat
 #include <modules/opengl/shader/shader.h>                      // for Shader
-#include <modules/opengl/texture/textureunit.h>                // for TextureUnit, TextureUnitCo...
-#include <modules/opengl/texture/textureutils.h>               // for VolumeInport, bindTexture
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureunit.h>   // for TextureUnit, TextureUnitCo...
+#include <modules/opengl/texture/textureutils.h>  // for VolumeInport, bindTexture
 
 #include <memory>   // for shared_ptr
 #include <string>   // for string
@@ -58,10 +59,8 @@ namespace inviwo {
 
 namespace utilgl {
 
-namespace {}  // namespace
-
 void setShaderUniforms(Shader& shader, const Volume& volume, std::string_view samplerID) {
-    const StructuredCoordinateTransformer<3>& ct = volume.getCoordinateTransformer();
+    const auto& ct = volume.getCoordinateTransformer();
 
     StrBuffer buff;
 
@@ -101,49 +100,7 @@ void setShaderUniforms(Shader& shader, const Volume& volume, std::string_view sa
 
     shader.setUniform(buff.replace("{}.worldSpaceGradientSpacing", samplerID), gradientSpacing);
 
-    const dvec2 dataRange = volume.dataMap_.dataRange;
-    const DataMapper defaultRange(volume.getDataFormat());
-
-    const double invRange = 1.0 / (dataRange.y - dataRange.x);
-    const double defaultToDataRange =
-        (defaultRange.dataRange.y - defaultRange.dataRange.x) * invRange;
-    const double defaultToDataOffset = (dataRange.x - defaultRange.dataRange.x) /
-                                       (defaultRange.dataRange.y - defaultRange.dataRange.x);
-
-    double scalingFactor = 1.0;
-    double signedScalingFactor = 1.0;
-    double offset = 0.0;
-    double signedOffset = 0.0;
-
-    switch (GLFormats::get(volume.getDataFormat()->getId()).normalization) {
-        case utilgl::Normalization::None:
-            scalingFactor = invRange;
-            offset = -dataRange.x;
-            signedScalingFactor = scalingFactor;
-            signedOffset = offset;
-            break;
-        case utilgl::Normalization::Normalized:
-            scalingFactor = defaultToDataRange;
-            offset = -defaultToDataOffset;
-            signedScalingFactor = scalingFactor;
-            signedOffset = offset;
-            break;
-        case utilgl::Normalization::SignNormalized:
-            scalingFactor = 0.5 * defaultToDataRange;
-            offset = 1.0 - 2 * defaultToDataOffset;
-            signedScalingFactor = defaultToDataRange;
-            signedOffset = -defaultToDataOffset;
-            break;
-    }
-    // offset scaling because of reversed scaling in the shader, i.e. (1 - formatScaling_)
-    shader.setUniform(buff.replace("{}.formatScaling", samplerID),
-                      static_cast<float>(1.0 - scalingFactor));
-    shader.setUniform(buff.replace("{}.formatOffset", samplerID), static_cast<float>(offset));
-
-    shader.setUniform(buff.replace("{}.signedFormatScaling", samplerID),
-                      static_cast<float>(1.0 - signedScalingFactor));
-    shader.setUniform(buff.replace("{}.signedFormatOffset", samplerID),
-                      static_cast<float>(signedOffset));
+    setShaderUniforms(shader, volume.dataMap_, volume.getDataFormat(), samplerID);
 }
 
 void setShaderUniforms(Shader& shader, const VolumeInport& port, std::string_view samplerID) {

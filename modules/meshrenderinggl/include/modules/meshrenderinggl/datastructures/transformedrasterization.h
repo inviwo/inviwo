@@ -73,15 +73,15 @@ protected:
 };
 
 /**
- * \brief A very simple SpatialEntity<3> to handle a world and model transform
+ * \brief A very simple SpatialEntity to handle a world and model transform
  * Used by rasterizations for adding transforms before rendering, without copying the mesh data.
  */
-struct IVW_MODULE_MESHRENDERINGGL_API CompositeTransform : public SpatialEntity<3> {
+struct IVW_MODULE_MESHRENDERINGGL_API CompositeTransform : public SpatialEntity {
     CompositeTransform() = default;
-    CompositeTransform(const SpatialEntity<3>& rhs) : SpatialEntity(rhs) {}
+    CompositeTransform(const SpatialEntity& rhs) : SpatialEntity(rhs) {}
     CompositeTransform(const mat4& modelMatrix, const mat4& worldMatrix)
         : SpatialEntity(modelMatrix, worldMatrix) {}
-    virtual SpatialEntity<3>* clone() const override { return new CompositeTransform(*this); }
+    virtual SpatialEntity* clone() const override { return new CompositeTransform(*this); }
 };
 
 }  // namespace inviwo

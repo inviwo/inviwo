@@ -1,5 +1,23 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2023-12-11 `Layer` ports and processors
+Added Layer inports and outports to handle 2D data as individual layers without any depth or picking information being attached. Similar to `Mesh`, a `Layer` is a spatial entity with its own basis and offset. Layers can be extracted from an `Image` with the `Image To Layer` processor or converted back with `Layer To Image`. Alternatively, the layer can be rendered directly in 3D with the `Layer Renderer`. Additional utility processors exist as well: 
+- `Layer Source` for loading an image directly as `Layer`
+- `Layer Combiner` combining up to four layer channels inta a single layer
+- `Layer Shader` runs a custom fragment shader to process a layer
+- `Layer Bounding Box` creates a line mesh representing the boundaries of the layer based on its basis and offset
+- `Layer Information` shows basic layer information similar to `Image Information` and `Mesh Information`
+- `Transform Layer` applies a 3D transformation to a layer
+
+Data visualizers for Layer ports are available, too.
+
+## 2023-12-11 SpatialEntity and CoordinateTransformer changes
+The `SpatialEntity` class is now limited to 3D coordinates and 4x4 transformation matrics. It no longer has a template parameter for its dimensionality, formerly `SpatialEntity<N>`. Thus, all spatial objects in Inviwo are using 3D coordinates like `Mesh`, `Volume`, and now also image `Layers`. This affects the coordinate transformers, structured grid entities, and spatial samplers. The SpatialSampler supports sampling with both 3D and 2D sampling positions where the third component is either discarded or set to 0, respectively.
+
+### Migration guide
+- `SpatialEntity<2>` and `SpatialEntity<3>` need to be replaced with `SpatialEntity`
+- The template class `SpatialSamper<>` lost its first template parameter and the time-dependent flag is now explicit. For example, `IntegralLineTracer<SpatialSampler<2, 2, double>>` becomes now `IntegralLineTracer<SpatialSampler<2, double>, false>`.
+
 ## 2023-11-15 TetraMesh - Rendering of tetrahedral meshes
 The new module `TetraMesh` adds basic support for rendering unstructured, tetrahedral meshes like the `TetraMeshVolumeRaycaster` processor. The current implementation relies on [Shader Storage Buffers Objects](https://www.khronos.org/opengl/wiki/Shader_Storage_Buffer_Object) (OpenGL 4.3). 
 The class `TetraMesh` provides a common interface for arbitrary tetrahedral grids. The data upload to the GPU with the necessary data required for rendering is managed by `TetraMeshBuffers`. See for example `VolumeTetraMesh` and, alternatively, `VTKTetraMesh` in the topovis/ttk module. Example workspaces are included in both the TetraMesh module ([tetramesh/tetrameshraycasting.inv](file:modules/tetramesh/data/workspaces/tetrameshraycasting.inv)) and the topovis/ttk module ([ttk/vtk-tetrahedral-mesh.inv](file:misc/ttk/data/workspaces/vtk-tetrahedral-mesh.inv)). 

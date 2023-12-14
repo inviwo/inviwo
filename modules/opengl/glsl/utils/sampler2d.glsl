@@ -40,4 +40,68 @@ vec4 textureLookup2Dscreen(sampler2D tex, ImageParameters textureParams, vec2 sa
     return texture(tex, samplePos*textureParams.reciprocalDimensions);
 }
 
+// Return a the raw texture
+vec4 getTexel(sampler2D image, ImageParameters imageParams, vec2 samplePos) {
+    return texture(image, samplePos);
+}
+// Return a value mapped from data range [min,max] to [0,1]
+// The data range [min, max] here is the range specified by the dataMap_.dataRange of image
+// and does not always match the range of the specified data type.
+// We have to apply some scaling here to compensate for the fact that the data range of the data is
+// not the same as the min/max of the data type. And at the same time take into account that OpenGL
+// also does its own normalization, which if different for floating point and integer types
+// see: https://www.opengl.org/wiki/Normalized_Integer
+// the actual calculation of the scaling parameters is done in imageutils.cpp
+vec4 getNormalizedTexel(sampler2D image, ImageParameters imageParams, vec2 samplePos) {
+    return (texture(image, samplePos) + imageParams.formatOffset)
+        * (1.0 - imageParams.formatScaling);
+}
+
+float getNormalizedTexelChannel(sampler2D image, ImageParameters imageParams, vec2 samplePos,int channel) {
+    vec4 v = getNormalizedTexel(image,imageParams,samplePos);
+    return v[channel];
+}
+
+
+// Return a value mapped from data range [min,max] to [-1,1]
+// Same as getNormalizedTexel but for signed types. 
+vec4 getSignNormalizedTexel(sampler2D image, ImageParameters imageParams, vec2 samplePos) {
+    return (texture(image, samplePos) + imageParams.signedFormatOffset)
+        * (1.0 - imageParams.signedFormatScaling);
+}
+
+
+//
+// Fetch texture data using texture indices [0,N]
+//
+
+// Return a the raw texture
+vec4 getTexel(sampler2D image, ImageParameters imageParams, ivec2 samplePos) {
+#ifdef GLSL_VERSION_140
+    return texelFetch(image, samplePos, 0);
+#else
+    return texture(image, samplePos);
+#endif
+}
+// Return a value mapped from data range [min,max] to [0,1]
+vec4 getNormalizedTexel(sampler2D image, ImageParameters imageParams, ivec2 samplePos) {
+#ifdef GLSL_VERSION_140
+    return (texelFetch(image, samplePos, 0) + imageParams.formatOffset)
+        * (1.0 - imageParams.formatScaling);
+#else
+    return (texture(image, samplePos) + imageParams.formatOffset)
+        * (1.0 - imageParams.formatScaling);
+#endif
+}
+// Return a value mapped from data range [min,max] to [-1,1]
+vec4 getSignNormalizedTexel(sampler2D image, ImageParameters imageParams, ivec2 samplePos) {
+#ifdef GLSL_VERSION_140
+    return (texelFetch(image, samplePos, 0) + imageParams.signedFormatOffset)
+        * (1.0 - imageParams.signedFormatScaling);
+#else
+    return (texture(image, samplePos) + imageParams.signedFormatOffset)
+        * (1.0 - imageParams.signedFormatScaling);
+#endif
+}
+
 #endif  // IVW_SAMPLER2D_GLSL

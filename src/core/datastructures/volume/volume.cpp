@@ -206,11 +206,6 @@ uvec3 Volume::colorCode = uvec3(188, 101, 101);
 const std::string Volume::classIdentifier = "org.inviwo.Volume";
 const std::string Volume::dataName = "Volume";
 
-const StructuredCameraCoordinateTransformer<3>& Volume::getCoordinateTransformer(
-    const Camera& camera) const {
-    return StructuredGridEntity<3>::getCoordinateTransformer(camera);
-}
-
 std::shared_ptr<HistogramCalculationState> Volume::calculateHistograms(size_t bins) const {
     return HistogramSupplier::startCalculation(getRepresentationShared<VolumeRAM>(),
                                                dataMap_.dataRange, bins);
