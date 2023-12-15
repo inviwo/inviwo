@@ -103,13 +103,13 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
         try {
             py::exec(R"(
 import sys
-import distutils.sysconfig
+import sysconfig
 
 import traceback
 
 def formatError(e):
     pathlist = '\n'.join(f'{i:>2}: {p}' for i, p in enumerate(sys.path))
-    config = '\n'.join(f"{k:15}{v}" for k,v in distutils.sysconfig.get_config_vars().items())
+    config = '\n'.join(f"{k:15}{v}" for k,v in sysconfig.get_config_vars().items())
     tb = ''.join(traceback.format_exception(e))
     helpmsg = 'Note: Inviwo will not access user site-package folders. Make sure to install the packages site-wide or add\n' \
            'your user site-package folder to the environment variable `PYTHONPATH`,\n' \
