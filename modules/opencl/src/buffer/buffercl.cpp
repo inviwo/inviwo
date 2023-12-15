@@ -34,10 +34,11 @@ namespace inviwo {
 
 BufferCL::BufferCL(size_t size, const DataFormatBase* format, BufferUsage usage, const void* data,
                    cl_mem_flags readWriteFlag)
-    : BufferCLBase()
-    , BufferRepresentation(format, usage)
-    , readWriteFlag_(readWriteFlag)
-    , size_(size) {
+    : BufferCLBase{}
+    , BufferRepresentation{usage}
+    , dataFormatBase_{format}
+    , readWriteFlag_{readWriteFlag}
+    , size_{size} {
     // Generate a new buffer
     if (data != nullptr) {
         // CL_MEM_COPY_HOST_PTR can be used with CL_MEM_ALLOC_HOST_PTR to initialize the contents of
@@ -56,6 +57,7 @@ BufferCL::BufferCL(size_t size, const DataFormatBase* format, BufferUsage usage,
 BufferCL::BufferCL(const BufferCL& rhs)
     : BufferCLBase(rhs)
     , BufferRepresentation(rhs)
+    , dataFormatBase_{rhs.dataFormatBase_}
     , readWriteFlag_(rhs.readWriteFlag_)
     , size_(rhs.size_) {
     clBuffer_ =

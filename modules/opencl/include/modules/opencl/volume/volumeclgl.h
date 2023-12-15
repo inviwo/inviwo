@@ -62,6 +62,8 @@ public:
     virtual VolumeCLGL* clone() const override;
     virtual ~VolumeCLGL();
 
+    virtual const DataFormatBase* getDataFormat() const override;
+
     virtual const size3_t& getDimensions() const override;
     virtual void setDimensions(size3_t dimensions) override;
 

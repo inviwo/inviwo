@@ -41,18 +41,15 @@ LayerCLGL::LayerCLGL(std::shared_ptr<Texture2D> data, LayerType type)
 
     IVW_ASSERT(texture_, "Texture should never be nullptr");
 
-    if (texture_) {
-        initialize(texture_.get());
-        CLTextureSharingMap::iterator it = LayerCLGL::clImageSharingMap_.find(texture_);
+    initialize(texture_.get());
+    CLTextureSharingMap::iterator it = LayerCLGL::clImageSharingMap_.find(texture_);
 
-        if (it == LayerCLGL::clImageSharingMap_.end()) {
-            clImage_ =
-                std::make_shared<cl::Image2DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                                                GL_TEXTURE_2D, 0, texture_->getID());
-            LayerCLGL::clImageSharingMap_.insert(TextureCLImageSharingPair(texture_, clImage_));
-        } else {
-            clImage_ = it->second;
-        }
+    if (it == LayerCLGL::clImageSharingMap_.end()) {
+        clImage_ = std::make_shared<cl::Image2DGL>(
+            OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture_->getID());
+        LayerCLGL::clImageSharingMap_.insert(TextureCLImageSharingPair(texture_, clImage_));
+    } else {
+        clImage_ = it->second;
     }
 }
 

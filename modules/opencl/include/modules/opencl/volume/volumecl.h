@@ -47,6 +47,8 @@ public:
 
     virtual VolumeCL* clone() const override;
 
+    virtual const DataFormatBase* getDataFormat() const override { return dataFormatBase_; }
+
     virtual const size3_t& getDimensions() const override;
     virtual void setDimensions(size3_t dimensions) override;
 
@@ -81,6 +83,7 @@ public:
 
 protected:
     void initialize(const void* voxels);
+    const DataFormatBase* dataFormatBase_;
     size3_t dimensions_;
     cl::ImageFormat imageFormat_;
     std::unique_ptr<cl::Image3D> clImage_;

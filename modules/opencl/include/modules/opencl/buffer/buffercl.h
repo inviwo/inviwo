@@ -56,6 +56,9 @@ public:
     virtual ~BufferCL();
 
     virtual BufferCL* clone() const override;
+
+    virtual const DataFormatBase* getDataFormat() const override { return dataFormatBase_; }
+
     virtual size_t getSize() const override;
     virtual void setSize(size_t size) override;
 
@@ -80,6 +83,7 @@ public:
     void download(void* data) const;
 
 protected:
+    const DataFormatBase* dataFormatBase_;
     cl_mem_flags readWriteFlag_;
     size_t size_;
     std::unique_ptr<cl::Buffer> clBuffer_;

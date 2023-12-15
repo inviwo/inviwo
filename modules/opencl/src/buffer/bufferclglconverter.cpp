@@ -70,8 +70,7 @@ void BufferCLGL2GLConverter::update(std::shared_ptr<const BufferCLGL> source,
 
 std::shared_ptr<BufferCLGL> BufferGL2CLGLConverter::createFrom(
     std::shared_ptr<const BufferGL> src) const {
-    return std::make_shared<BufferCLGL>(src->getSize(), src->getDataFormat(), src->getBufferUsage(),
-                                        src->getBufferObject());
+    return std::make_shared<BufferCLGL>(src->getBufferObject(), src->getBufferUsage());
 }
 
 void BufferGL2CLGLConverter::update(std::shared_ptr<const BufferGL> src,
