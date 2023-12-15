@@ -63,7 +63,7 @@ IVW_MODULE_OPENGL_API void parseShaderSource(
 
 /**
  * A wrapper for an OpenGL shader object.
- * Handles loading sources from shader resources, either files or stings.
+ * Handles loading sources from shader resources, either files or strings.
  * Pre-processes the sources resolving all include with help of the shader manager.
  * Keeps a lookup table of from which include each line originates.
  * Handles a list of defines, that can be added or removed @see addShaderDefine
