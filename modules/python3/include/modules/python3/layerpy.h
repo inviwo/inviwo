@@ -65,6 +65,8 @@ public:
     LayerPy* clone() const override;
     std::type_index getTypeIndex() const override final;
 
+    virtual const DataFormatBase* getDataFormat() const override;
+
     virtual void setDimensions(size2_t dimensions) override;
     virtual const size2_t& getDimensions() const override;
 

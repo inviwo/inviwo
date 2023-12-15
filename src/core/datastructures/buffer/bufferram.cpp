@@ -36,8 +36,8 @@
 
 namespace inviwo {
 
-BufferRAM::BufferRAM(const DataFormatBase* format, BufferUsage usage, BufferTarget target)
-    : BufferRepresentation(format, usage, target) {}
+BufferRAM::BufferRAM(BufferUsage usage, BufferTarget target)
+    : BufferRepresentation(usage, target) {}
 
 std::type_index BufferRAM::getTypeIndex() const { return std::type_index(typeid(BufferRAM)); }
 

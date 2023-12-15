@@ -39,6 +39,7 @@
 #include <algorithm>
 
 #include <glm/gtx/component_wise.hpp>
+#include <span>
 
 namespace inviwo {
 
@@ -47,10 +48,6 @@ namespace inviwo {
  */
 class IVW_CORE_API LayerRAM : public LayerRepresentation {
 public:
-    LayerRAM(LayerType type = LayerType::Color,
-             const DataFormatBase* format = DataVec4UInt8::get());
-    LayerRAM(const LayerRAM& rhs) = default;
-    LayerRAM& operator=(const LayerRAM& that) = default;
     LayerRAM* clone() const override = 0;
     virtual ~LayerRAM() = default;
 
@@ -144,6 +141,11 @@ public:
     template <typename Result, template <class> class Predicate = dispatching::filter::All,
               typename Callable, typename... Args>
     auto dispatch(Callable&& callable, Args&&... args) const -> Result;
+
+protected:
+    LayerRAM(LayerType type = LayerType::Color);
+    LayerRAM(const LayerRAM& rhs) = default;
+    LayerRAM& operator=(const LayerRAM& that) = default;
 };
 
 /**
@@ -164,12 +166,18 @@ public:
                       InterpolationType interpolation = InterpolationType::Linear,
                       const Wrapping2D& wrap = wrapping2d::clampAll);
     LayerRAMPrecision(const LayerRAMPrecision<T>& rhs);
+    LayerRAMPrecision(NoData, const LayerRepresentation& rhs);
     LayerRAMPrecision<T>& operator=(const LayerRAMPrecision<T>& that);
     virtual LayerRAMPrecision<T>* clone() const override;
     virtual ~LayerRAMPrecision() = default;
 
+    virtual const DataFormatBase* getDataFormat() const override;
+
     T* getDataTyped();
     const T* getDataTyped() const;
+
+    std::span<T> getView();
+    std::span<const T> getView() const;
 
     virtual void* getData() override;
     virtual const void* getData() const override;
@@ -241,9 +249,9 @@ template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(size2_t dimensions, LayerType type,
                                         const SwizzleMask& swizzleMask,
                                         InterpolationType interpolation, const Wrapping2D& wrapping)
-    : LayerRAM(type, DataFormat<T>::get())
+    : LayerRAM(type)
     , dimensions_(dimensions)
-    , data_(new T[dimensions_.x * dimensions_.y]())
+    , data_(std::make_unique<T[]>(glm::compMul(dimensions_)))
     , swizzleMask_(swizzleMask)
     , interpolation_{interpolation}
     , wrapping_{wrapping} {
@@ -255,13 +263,14 @@ template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(T* data, size2_t dimensions, LayerType type,
                                         const SwizzleMask& swizzleMask,
                                         InterpolationType interpolation, const Wrapping2D& wrapping)
-    : LayerRAM(type, DataFormat<T>::get())
+    : LayerRAM(type)
     , dimensions_(dimensions)
-    , data_(data ? data : new T[dimensions_.x * dimensions_.y]())
+    , data_(data)
     , swizzleMask_(swizzleMask)
     , interpolation_{interpolation}
     , wrapping_{wrapping} {
     if (!data) {
+        data_ = std::make_unique<T[]>(glm::compMul(dimensions_));
         std::fill(data_.get(), data_.get() + glm::compMul(dimensions_),
                   (type == LayerType::Depth) ? T{1} : T{0});
     }
@@ -271,11 +280,24 @@ template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(const LayerRAMPrecision<T>& rhs)
     : LayerRAM(rhs)
     , dimensions_(rhs.dimensions_)
-    , data_(new T[dimensions_.x * dimensions_.y])
+    , data_(std::make_unique<T[]>(glm::compMul(dimensions_)))
     , swizzleMask_(rhs.swizzleMask_)
     , interpolation_{rhs.interpolation_}
     , wrapping_{rhs.wrapping_} {
-    std::memcpy(data_.get(), rhs.data_.get(), dimensions_.x * dimensions_.y * sizeof(T));
+    std::copy(rhs.getView().begin(), rhs.getView().end(), data_.get());
+}
+
+template <typename T>
+LayerRAMPrecision<T>::LayerRAMPrecision(NoData, const LayerRepresentation& rhs)
+    : LayerRAM(rhs.getLayerType())
+    , dimensions_(rhs.getDimensions())
+    , data_(std::make_unique<T[]>(glm::compMul(dimensions_)))
+    , swizzleMask_(rhs.getSwizzleMask())
+    , interpolation_{rhs.getInterpolation()}
+    , wrapping_{rhs.getWrapping()} {
+
+    std::fill(data_.get(), data_.get() + glm::compMul(dimensions_),
+              (layerType_ == LayerType::Depth) ? T{1} : T{0});
 }
 
 template <typename T>
@@ -284,8 +306,8 @@ LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(const LayerRAMPrecision<T>
         LayerRAM::operator=(that);
 
         const auto dim = that.dimensions_;
-        auto data = std::make_unique<T[]>(dim.x * dim.y);
-        std::memcpy(data.get(), that.data_.get(), dim.x * dim.y * sizeof(T));
+        auto data = std::make_unique<T[]>(glm::compMul(dimensions_));
+        std::copy(that.getView().begin(), that.getView().end(), data.get());
         data_.swap(data);
 
         dimensions_ = that.dimensions_;
@@ -302,13 +324,28 @@ LayerRAMPrecision<T>* LayerRAMPrecision<T>::clone() const {
 }
 
 template <typename T>
-T* inviwo::LayerRAMPrecision<T>::getDataTyped() {
+const DataFormatBase* LayerRAMPrecision<T>::getDataFormat() const {
+    return DataFormat<T>::get();
+}
+
+template <typename T>
+T* LayerRAMPrecision<T>::getDataTyped() {
     return data_.get();
 }
 
 template <typename T>
-const T* inviwo::LayerRAMPrecision<T>::getDataTyped() const {
+const T* LayerRAMPrecision<T>::getDataTyped() const {
     return data_.get();
+}
+
+template <typename T>
+std::span<T> LayerRAMPrecision<T>::getView() {
+    return std::span<T>{data_.get(), glm::compMul(dimensions_)};
+}
+
+template <typename T>
+std::span<const T> LayerRAMPrecision<T>::getView() const {
+    return std::span<const T>{data_.get(), glm::compMul(dimensions_)};
 }
 
 template <typename T>
@@ -321,7 +358,7 @@ const void* LayerRAMPrecision<T>::getData() const {
 }
 
 template <typename T>
-void inviwo::LayerRAMPrecision<T>::setData(void* d, size2_t dimensions) {
+void LayerRAMPrecision<T>::setData(void* d, size2_t dimensions) {
     std::unique_ptr<T[]> data(static_cast<T*>(d));
     data_.swap(data);
     std::swap(dimensions_, dimensions);

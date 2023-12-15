@@ -64,6 +64,8 @@ public:
     VolumePy* clone() const override;
     std::type_index getTypeIndex() const override;
 
+    virtual const DataFormatBase* getDataFormat() const override;
+
     virtual void setDimensions(size3_t dimensions) override;
     virtual const size3_t& getDimensions() const override;
 

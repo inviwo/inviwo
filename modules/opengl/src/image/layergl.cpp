@@ -45,16 +45,16 @@ namespace inviwo {
 class DataFormatBase;
 
 LayerGL::LayerGL(std::shared_ptr<Texture2D> tex, LayerType type)
-    : LayerRepresentation{type, tex->getDataFormat()}, texture_{tex} {
+    : LayerRepresentation{type}, texture_{tex} {
     IVW_ASSERT(texture_, "Texture should never be nullptr");
 }
 
 LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
                  const SwizzleMask& swizzleMask, InterpolationType interpolation,
                  const Wrapping2D& wrap)
-    : LayerRepresentation{type, format}, texture_(nullptr) {
+    : LayerRepresentation{type}, texture_(nullptr) {
 
-    const auto& glFormat = GLFormats::get(getDataFormatId());
+    const auto& glFormat = GLFormats::get(format->getId());
     if (getLayerType() == LayerType::Depth) {
         texture_ = std::make_shared<Texture2D>(dimensions, GL_DEPTH_COMPONENT,
                                                GL_DEPTH_COMPONENT32F, glFormat.type, GL_NEAREST,
@@ -74,13 +74,14 @@ LayerGL& LayerGL::operator=(const LayerGL& rhs) {
         LayerRepresentation::operator=(rhs);
         texture_ = std::shared_ptr<Texture2D>(rhs.texture_->clone());
     }
-
     return *this;
 }
 
 LayerGL::~LayerGL() = default;
 
 LayerGL* LayerGL::clone() const { return new LayerGL(*this); }
+
+const DataFormatBase* LayerGL::getDataFormat() const { return texture_->getDataFormat(); }
 
 void LayerGL::bindTexture(GLenum texUnit) const {
     texUnit_ = texUnit;

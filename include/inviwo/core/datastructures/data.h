@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/representationfactory.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationfactorymanager.h>
+#include <inviwo/core/datastructures/nodata.h>
 
 #include <inviwo/core/util/demangle.h>
 
@@ -211,13 +212,6 @@ private:
     // A pointer to the the most recently updated representation. Makes updates and creation faster.
     mutable std::shared_ptr<Repr> lastValidRepresentation_;
 };
-
-/*
- * Tag type for constructors indicating that you want a copy of only "meta" data not the actual
- * data.
- */
-struct NoData {};
-constexpr NoData noData{};
 
 template <typename Self, typename Repr>
 Data<Self, Repr>::Data(const Data<Self, Repr>& rhs) : lastValidRepresentation_{nullptr} {

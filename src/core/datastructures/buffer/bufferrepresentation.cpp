@@ -31,9 +31,8 @@
 
 namespace inviwo {
 
-BufferRepresentation::BufferRepresentation(const DataFormatBase* format, BufferUsage usage,
-                                           BufferTarget target)
-    : DataRepresentation(format), usage_(usage), target_(target) {}
+BufferRepresentation::BufferRepresentation(BufferUsage usage, BufferTarget target)
+    : DataRepresentation{}, usage_(usage), target_(target) {}
 
 size_t BufferRepresentation::getSizeOfElement() const { return getDataFormat()->getSize(); }
 

@@ -34,8 +34,9 @@ namespace inviwo {
 LayerDisk::LayerDisk(size2_t dimensions, const DataFormatBase* format, LayerType type,
                      const SwizzleMask& swizzleMask, InterpolationType interpolation,
                      const Wrapping2D& wrapping)
-    : LayerRepresentation(type, format)
+    : LayerRepresentation(type)
     , DiskRepresentation<LayerRepresentation, LayerDisk>()
+    , dataFormatBase_{format}
     , dimensions_(dimensions)
     , swizzleMask_(swizzleMask)
     , interpolation_{interpolation}
@@ -44,8 +45,9 @@ LayerDisk::LayerDisk(size2_t dimensions, const DataFormatBase* format, LayerType
 LayerDisk::LayerDisk(std::string url, size2_t dimensions, const DataFormatBase* format,
                      LayerType type, const SwizzleMask& swizzleMask,
                      InterpolationType interpolation, const Wrapping2D& wrapping)
-    : LayerRepresentation(type, format)
+    : LayerRepresentation(type)
     , DiskRepresentation<LayerRepresentation, LayerDisk>(url)
+    , dataFormatBase_{format}
     , dimensions_(dimensions)
     , swizzleMask_(swizzleMask)
     , interpolation_{interpolation}
@@ -55,13 +57,15 @@ LayerDisk::~LayerDisk() = default;
 
 LayerDisk* LayerDisk::clone() const { return new LayerDisk(*this); }
 
+const DataFormatBase* LayerDisk::getDataFormat() const { return dataFormatBase_; }
+
 void LayerDisk::setDimensions(size2_t dimensions) { dimensions_ = dimensions; }
 
 const size2_t& LayerDisk::getDimensions() const { return dimensions_; }
 
 bool LayerDisk::copyRepresentationsTo(LayerRepresentation*) const { return false; }
 
-void LayerDisk::updateDataFormat(const DataFormatBase* format) { setDataFormat(format); }
+void LayerDisk::updateDataFormat(const DataFormatBase* format) { dataFormatBase_ = format; }
 
 std::type_index LayerDisk::getTypeIndex() const { return std::type_index(typeid(LayerDisk)); }
 

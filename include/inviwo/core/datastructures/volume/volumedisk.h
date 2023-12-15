@@ -61,6 +61,8 @@ public:
 
     virtual std::type_index getTypeIndex() const override final;
 
+    virtual const DataFormatBase* getDataFormat() const override;
+
     virtual void setDimensions(size3_t dimensions) override;
     virtual const size3_t& getDimensions() const override;
 
@@ -79,6 +81,7 @@ public:
     virtual Wrapping3D getWrapping() const override;
 
 private:
+    const DataFormatBase* dataFormatBase_;
     size3_t dimensions_;
     SwizzleMask swizzleMask_;
     InterpolationType interpolation_;

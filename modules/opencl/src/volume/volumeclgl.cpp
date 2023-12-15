@@ -34,8 +34,7 @@
 namespace inviwo {
 CLTexture3DSharingMap VolumeCLGL::clVolumeSharingMap_;
 
-VolumeCLGL::VolumeCLGL(Texture3D* data)
-    : VolumeCLBase(), VolumeRepresentation(data->getDataFormat()), texture_(data) {
+VolumeCLGL::VolumeCLGL(Texture3D* data) : VolumeCLBase(), VolumeRepresentation(), texture_(data) {
 
     IVW_ASSERT(texture_, "The texture should never be nullptr.");
 
@@ -43,7 +42,7 @@ VolumeCLGL::VolumeCLGL(Texture3D* data)
 }
 
 VolumeCLGL::VolumeCLGL(std::shared_ptr<Texture3D> data)
-    : VolumeCLBase(), VolumeRepresentation(data->getDataFormat()), texture_(data) {
+    : VolumeCLBase(), VolumeRepresentation(), texture_(data) {
 
     IVW_ASSERT(texture_, "The texture should never be nullptr.");
 
@@ -56,6 +55,8 @@ VolumeCLGL::VolumeCLGL(const VolumeCLGL& rhs)
 }
 
 VolumeCLGL::~VolumeCLGL() { deinitialize(); }
+
+const DataFormatBase* VolumeCLGL::getDataFormat() const { return texture_->getDataFormat(); }
 
 void VolumeCLGL::initialize() {
     if (texture_) {

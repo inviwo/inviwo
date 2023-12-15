@@ -30,9 +30,4 @@
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 #include <inviwo/core/datastructures/datarepresentation.h>
 
-namespace inviwo {
-
-VolumeRepresentation::VolumeRepresentation(const DataFormatBase* format)
-    : DataRepresentation(format) {}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

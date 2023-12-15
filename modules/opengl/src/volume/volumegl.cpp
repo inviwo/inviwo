@@ -45,7 +45,7 @@ namespace inviwo {
 VolumeGL::VolumeGL(size3_t dimensions, const DataFormatBase* format, const SwizzleMask& swizzleMask,
                    InterpolationType interpolation, const Wrapping3D& wrapping,
                    bool initializeTexture)
-    : VolumeRepresentation{format}
+    : VolumeRepresentation{}
     , texture_{std::make_shared<Texture3D>(dimensions, GLFormats::get(format->getId()),
                                            utilgl::convertInterpolationToGL(interpolation),
                                            swizzleMask, utilgl::convertWrappingToGL(wrapping))} {
@@ -54,9 +54,7 @@ VolumeGL::VolumeGL(size3_t dimensions, const DataFormatBase* format, const Swizz
     }
 }
 
-VolumeGL::VolumeGL(std::shared_ptr<Texture3D> tex)
-    : VolumeRepresentation(tex->getDataFormat()), texture_(tex) {
-
+VolumeGL::VolumeGL(std::shared_ptr<Texture3D> tex) : VolumeRepresentation{}, texture_(tex) {
     IVW_ASSERT(texture_, "The texture should never be nullptr.");
 }
 
@@ -74,6 +72,8 @@ VolumeGL& VolumeGL::operator=(const VolumeGL& rhs) {
 VolumeGL::~VolumeGL() = default;
 
 VolumeGL* VolumeGL::clone() const { return new VolumeGL(*this); }
+
+const DataFormatBase* VolumeGL::getDataFormat() const { return texture_->getDataFormat(); }
 
 void VolumeGL::bindTexture(GLenum texUnit) const {
     glActiveTexture(texUnit);

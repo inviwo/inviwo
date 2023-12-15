@@ -63,6 +63,8 @@ public:
     LayerCLGL(const LayerCLGL& rhs);
     virtual LayerCLGL* clone() const override;
 
+    virtual const DataFormatBase* getDataFormat() const override;
+
     void initialize(Texture2D* texture);
     void deinitialize();
 

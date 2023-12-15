@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,34 +26,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 
 namespace inviwo {
 
-std::type_index VolumeRAM::getTypeIndex() const { return std::type_index(typeid(VolumeRAM)); }
-
-struct VolumeRamCreationDispatcher {
-    using type = std::shared_ptr<VolumeRAM>;
-    template <typename Result, typename T>
-    std::shared_ptr<VolumeRAM> operator()(void* dataPtr, const size3_t& dimensions,
-                                          const SwizzleMask& swizzleMask,
-                                          InterpolationType interpolation,
-                                          const Wrapping3D& wrapping) {
-        using F = typename T::type;
-        return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(dataPtr), dimensions,
-                                                       swizzleMask, interpolation, wrapping);
-    }
-};
-
-std::shared_ptr<VolumeRAM> createVolumeRAM(const size3_t& dimensions, const DataFormatBase* format,
-                                           void* dataPtr, const SwizzleMask& swizzleMask,
-                                           InterpolationType interpolation,
-                                           const Wrapping3D& wrapping) {
-    VolumeRamCreationDispatcher disp;
-    return dispatching::dispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::All>(
-        format->getId(), disp, dataPtr, dimensions, swizzleMask, interpolation, wrapping);
-}
+/*
+ * Tag type for constructors indicating that you want a copy of only "meta" data not the actual
+ * data.
+ */
+struct IVW_CORE_API NoData {};
+constexpr NoData noData{};
 
 }  // namespace inviwo

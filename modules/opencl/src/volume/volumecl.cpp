@@ -37,11 +37,12 @@ namespace inviwo {
 VolumeCL::VolumeCL(size3_t dimensions, const DataFormatBase* format, const void* data,
                    const SwizzleMask& swizzleMask, InterpolationType interpolation,
                    const Wrapping3D& wrapping)
-    : VolumeCLBase()
-    , VolumeRepresentation(format)
-    , dimensions_(dimensions)
-    , imageFormat_(dataFormatToCLImageFormat(format->getId()))
-    , swizzleMask_(swizzleMask)
+    : VolumeCLBase{}
+    , VolumeRepresentation{}
+    , dataFormatBase_{format}
+    , dimensions_{dimensions}
+    , imageFormat_{dataFormatToCLImageFormat(format->getId())}
+    , swizzleMask_{swizzleMask}
     , interpolation_{interpolation}
     , wrapping_{wrapping} {
 
@@ -49,11 +50,12 @@ VolumeCL::VolumeCL(size3_t dimensions, const DataFormatBase* format, const void*
 }
 
 VolumeCL::VolumeCL(const VolumeCL& rhs)
-    : VolumeCLBase(rhs)
-    , VolumeRepresentation(rhs)
-    , dimensions_(rhs.dimensions_)
-    , imageFormat_(rhs.imageFormat_)
-    , swizzleMask_(rhs.swizzleMask_)
+    : VolumeCLBase{rhs}
+    , VolumeRepresentation{rhs}
+    , dataFormatBase_{rhs.dataFormatBase_}
+    , dimensions_{rhs.dimensions_}
+    , imageFormat_{rhs.imageFormat_}
+    , swizzleMask_{rhs.swizzleMask_}
     , interpolation_{rhs.interpolation_}
     , wrapping_{rhs.wrapping_} {
 

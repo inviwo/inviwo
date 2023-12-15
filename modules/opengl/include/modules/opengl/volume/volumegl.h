@@ -69,6 +69,8 @@ public:
     virtual ~VolumeGL();
     virtual VolumeGL* clone() const override;
 
+    virtual const DataFormatBase* getDataFormat() const override;
+
     void bindTexture(GLenum texUnit) const;
     void unbindTexture() const;
 

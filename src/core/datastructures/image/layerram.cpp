@@ -33,8 +33,7 @@
 
 namespace inviwo {
 
-LayerRAM::LayerRAM(LayerType type, const DataFormatBase* format)
-    : LayerRepresentation(type, format) {}
+LayerRAM::LayerRAM(LayerType type) : LayerRepresentation(type) {}
 
 bool LayerRAM::copyRepresentationsTo(LayerRepresentation* targetLayerRam) const {
     // We use a LayerRamResizer to copy/resize one representation into another.

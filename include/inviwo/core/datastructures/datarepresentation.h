@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/datastructures/nodata.h>
 #include <typeindex>
 
 namespace inviwo {
@@ -54,10 +55,6 @@ public:
     virtual DataRepresentation* clone() const = 0;
     virtual ~DataRepresentation() = default;
 
-    const DataFormatBase* getDataFormat() const;
-    std::string getDataFormatString() const;
-    DataFormatId getDataFormatId() const;
-
     virtual std::type_index getTypeIndex() const = 0;
 
     void setOwner(const Owner* owner);
@@ -68,39 +65,12 @@ public:
 
 protected:
     DataRepresentation() = default;
-    DataRepresentation(const DataFormatBase* format);
     DataRepresentation(const DataRepresentation& rhs) = default;
     DataRepresentation& operator=(const DataRepresentation& that) = default;
-    void setDataFormat(const DataFormatBase* format);
 
     bool isValid_ = true;
-    const DataFormatBase* dataFormatBase_ = DataUInt8::get();
     const Owner* owner_ = nullptr;
 };
-
-template <typename Owner>
-DataRepresentation<Owner>::DataRepresentation(const DataFormatBase* format)
-    : isValid_(true), dataFormatBase_(format), owner_(nullptr) {}
-
-template <typename Owner>
-const DataFormatBase* DataRepresentation<Owner>::getDataFormat() const {
-    return dataFormatBase_;
-}
-
-template <typename Owner>
-std::string DataRepresentation<Owner>::getDataFormatString() const {
-    return std::string(dataFormatBase_->getString());
-}
-
-template <typename Owner>
-DataFormatId DataRepresentation<Owner>::getDataFormatId() const {
-    return dataFormatBase_->getId();
-}
-
-template <typename Owner>
-void DataRepresentation<Owner>::setDataFormat(const DataFormatBase* format) {
-    dataFormatBase_ = format;
-}
 
 template <typename Owner>
 void DataRepresentation<Owner>::setOwner(const Owner* owner) {

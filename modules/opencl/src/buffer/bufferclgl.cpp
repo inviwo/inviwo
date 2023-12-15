@@ -33,34 +33,32 @@
 namespace inviwo {
 CLBufferSharingMap BufferCLGL::clBufferSharingMap_;
 
-BufferCLGL::BufferCLGL(size_t size, const DataFormatBase* format, BufferUsage usage,
-                       std::shared_ptr<BufferObject> data, cl_mem_flags readWriteFlag)
+BufferCLGL::BufferCLGL(std::shared_ptr<BufferObject> data, BufferUsage usage,
+                       cl_mem_flags readWriteFlag)
     : BufferCLBase()
-    , BufferRepresentation(format, usage)
+    , BufferRepresentation(usage)
     , bufferObject_(data)
-    , readWriteFlag_(readWriteFlag)
-    , size_(size) {
-    if (data) {
-        auto it = BufferCLGL::clBufferSharingMap_.find(data);
+    , readWriteFlag_(readWriteFlag) {
 
-        if (it == BufferCLGL::clBufferSharingMap_.end()) {
-            clBuffer_ = std::make_shared<cl::BufferGL>(OpenCL::getPtr()->getContext(),
-                                                       readWriteFlag_, data->getId());
-            BufferCLGL::clBufferSharingMap_.insert(BufferSharingPair(data, clBuffer_));
-        } else {
-            clBuffer_ = it->second;
-        }
+    IVW_ASSERT(bufferObject_, "bufferObject_ should never be nullptr");
 
-        data->addObserver(this);
+    auto it = BufferCLGL::clBufferSharingMap_.find(bufferObject_);
+    if (it == BufferCLGL::clBufferSharingMap_.end()) {
+        clBuffer_ = std::make_shared<cl::BufferGL>(OpenCL::getPtr()->getContext(), readWriteFlag_,
+                                                   bufferObject_->getId());
+        BufferCLGL::clBufferSharingMap_.insert(BufferSharingPair(bufferObject_, clBuffer_));
+    } else {
+        clBuffer_ = it->second;
     }
+
+    bufferObject_->addObserver(this);
 }
 
 BufferCLGL::BufferCLGL(const BufferCLGL& rhs)
     : BufferCLBase(rhs)
     , BufferRepresentation(rhs)
     , bufferObject_(std::make_shared<BufferObject>(*rhs.getBufferGL().get()))
-    , readWriteFlag_(rhs.readWriteFlag_)
-    , size_(rhs.size_) {
+    , readWriteFlag_(rhs.readWriteFlag_) {
     // Share the copied BufferObject
     clBuffer_ = std::make_shared<cl::BufferGL>(OpenCL::getPtr()->getContext(), readWriteFlag_,
                                                bufferObject_->getId());
@@ -82,30 +80,28 @@ BufferCLGL::~BufferCLGL() {
 
 BufferCLGL* BufferCLGL::clone() const { return new BufferCLGL(*this); }
 
-size_t BufferCLGL::getSize() const { return size_; }
+const DataFormatBase* BufferCLGL::getDataFormat() const { return bufferObject_->getDataFormat(); }
+
+size_t BufferCLGL::getSize() const {
+    return bufferObject_->getSizeInBytes() / bufferObject_->getDataFormat()->getSize();
+}
 
 void BufferCLGL::setSize(size_t size) {
-    if (size == size_) {
-        return;
-    }
-    size_ = size;
-
     // Make sure that the OpenCL buffer is deleted before changing the size.
     // By observing the BufferObject we will make sure that the shared OpenCL buffer is
     // deleted and reattached after resizing is done.
     bufferObject_->setSizeInBytes(size * getSizeOfElement());
 }
 
-void BufferCLGL::upload(const void* data, size_t size) {
+void BufferCLGL::upload(const void* data, size_t sizeInBytes) {
     // Resize buffer if necessary
-    if (size > size_ * getSizeOfElement()) {
-        setSize(size);
-    }
+    bufferObject_->setSizeInBytes(sizeInBytes);
+
     try {
         SyncCLGL glSync;
         glSync.addToAquireGLObjectList(this);
         glSync.aquireAllObjects();
-        OpenCL::getPtr()->getQueue().enqueueWriteBuffer(*clBuffer_, true, 0, size,
+        OpenCL::getPtr()->getQueue().enqueueWriteBuffer(*clBuffer_, true, 0, sizeInBytes,
                                                         const_cast<void*>(data));
     } catch (cl::Error& err) {
         LogError(getCLErrorString(err));

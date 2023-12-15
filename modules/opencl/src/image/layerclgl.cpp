@@ -37,22 +37,19 @@ namespace inviwo {
 CLTextureSharingMap LayerCLGL::clImageSharingMap_;
 
 LayerCLGL::LayerCLGL(std::shared_ptr<Texture2D> data, LayerType type)
-    : LayerCLBase(), LayerRepresentation(type, data->getDataFormat()), texture_(data) {
+    : LayerCLBase(), LayerRepresentation(type), texture_(data) {
 
     IVW_ASSERT(texture_, "Texture should never be nullptr");
 
-    if (texture_) {
-        initialize(texture_.get());
-        CLTextureSharingMap::iterator it = LayerCLGL::clImageSharingMap_.find(texture_);
+    initialize(texture_.get());
+    CLTextureSharingMap::iterator it = LayerCLGL::clImageSharingMap_.find(texture_);
 
-        if (it == LayerCLGL::clImageSharingMap_.end()) {
-            clImage_ =
-                std::make_shared<cl::Image2DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                                                GL_TEXTURE_2D, 0, texture_->getID());
-            LayerCLGL::clImageSharingMap_.insert(TextureCLImageSharingPair(texture_, clImage_));
-        } else {
-            clImage_ = it->second;
-        }
+    if (it == LayerCLGL::clImageSharingMap_.end()) {
+        clImage_ = std::make_shared<cl::Image2DGL>(
+            OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture_->getID());
+        LayerCLGL::clImageSharingMap_.insert(TextureCLImageSharingPair(texture_, clImage_));
+    } else {
+        clImage_ = it->second;
     }
 }
 
@@ -63,6 +60,8 @@ LayerCLGL::LayerCLGL(const LayerCLGL& rhs)
 }
 
 LayerCLGL::~LayerCLGL() { deinitialize(); }
+
+const DataFormatBase* LayerCLGL::getDataFormat() const { return texture_->getDataFormat(); }
 
 void LayerCLGL::initialize(Texture2D* texture) {
     ivwAssert(texture != 0, "Cannot initialize with null OpenGL texture");

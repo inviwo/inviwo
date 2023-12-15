@@ -46,10 +46,6 @@ namespace inviwo {
  */
 class IVW_CORE_API BufferRAM : public BufferRepresentation {
 public:
-    BufferRAM(const DataFormatBase* format, BufferUsage usage = BufferUsage::Static,
-              BufferTarget target = BufferTarget::Data);
-    BufferRAM(const BufferRAM& rhs) = default;
-    BufferRAM& operator=(const BufferRAM& that) = default;
     virtual BufferRAM* clone() const override = 0;
     virtual ~BufferRAM() = default;
 
@@ -134,6 +130,11 @@ public:
     template <typename Result, template <class> class Predicate = dispatching::filter::All,
               typename Callable, typename... Args>
     auto dispatch(Callable&& callable, Args&&... args) const -> Result;
+
+protected:
+    BufferRAM(BufferUsage usage = BufferUsage::Static, BufferTarget target = BufferTarget::Data);
+    BufferRAM(const BufferRAM& rhs) = default;
+    BufferRAM& operator=(const BufferRAM& that) = default;
 };
 
 /**
@@ -152,6 +153,8 @@ public:
     BufferRAMPrecision<T, Target>& operator=(const BufferRAMPrecision<T, Target>& that) = default;
     virtual ~BufferRAMPrecision() = default;
     virtual BufferRAMPrecision<T, Target>* clone() const override;
+
+    virtual const DataFormatBase* getDataFormat() const override;
 
     virtual void setSize(size_t size) override;
     virtual size_t getSize() const override;
@@ -224,15 +227,19 @@ BufferRAMPrecision<T, Target>::BufferRAMPrecision(BufferUsage usage)
 
 template <typename T, BufferTarget Target>
 BufferRAMPrecision<T, Target>::BufferRAMPrecision(size_t size, BufferUsage usage)
-    : BufferRAM(DataFormat<T>::get(), usage, Target), data_(size) {}
+    : BufferRAM(usage, Target), data_(size) {}
 
 template <typename T, BufferTarget Target>
 BufferRAMPrecision<T, Target>::BufferRAMPrecision(std::vector<T> data, BufferUsage usage)
-    : BufferRAM(DataFormat<T>::get(), usage, Target), data_(std::move(data)) {}
+    : BufferRAM(usage, Target), data_(std::move(data)) {}
 
 template <typename T, BufferTarget Target>
 BufferRAMPrecision<T, Target>* BufferRAMPrecision<T, Target>::clone() const {
     return new BufferRAMPrecision<T, Target>(*this);
+}
+template <typename T, BufferTarget Target>
+const DataFormatBase* BufferRAMPrecision<T, Target>::getDataFormat() const {
+    return DataFormat<T>::get();
 }
 
 template <typename T, BufferTarget Target>
