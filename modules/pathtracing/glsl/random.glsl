@@ -103,4 +103,4 @@ vec2 random_2dto2d(uvec2 v) { return uintToFloatbyDiv(pcg2d(v)); }
 
 float random_2dto1d(uvec2 v) { return uintToFloatbyDiv(pcg(pcg(v.x) + v.y)); }
 
-float randomize(uint v) { return random_1dto1d(pcgRehash(v)); }
+float randomize(inout uint v) { return random_1dto1d(pcgRehash(v)); }
