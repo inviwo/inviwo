@@ -163,31 +163,16 @@ void addShaderDefines(Shader& shader, const ShadingMode& mode) {
         }
     }();
 
-    const int shadingNormalValue = [&]() -> int {
-        switch (mode) {
-            case ShadingMode::Ambient:
-            case ShadingMode::Diffuse:
-            case ShadingMode::Specular:
-            case ShadingMode::BlinnPhong:
-            case ShadingMode::Phong:
-                return 2;
-            case ShadingMode::BlinnPhongFront:
-            case ShadingMode::PhongFront:
-                return 0;
-            case ShadingMode::BlinnPhongBack:
-            case ShadingMode::PhongBack:
-                return 1;
-            case ShadingMode::None:
-            default:
-                return 0;
-        }
-    }();
-
     StrBuffer buff;
-    shader.getFragmentShaderObject()->addShaderDefine(shadingKey, shadingValue);
-    shader.getFragmentShaderObject()->addShaderDefine("SHADING_NORMAL",
-                                                      buff.replace("{}", shadingNormalValue));
-    shader.getFragmentShaderObject()->setShaderDefine("SHADING_ENABLED", mode != ShadingMode::None);
+    auto shadingNormalValueStr = buff.replace("{}", shadingNormalValue);
+    auto shaderObjects[] = {shader.getFragmentShaderObject(), shader.getComputeShaderObject()};
+    for (auto&& shaderObject: shaderObjects) {
+        if (shaderObject) {
+            shaderObject->addShaderDefine(shadingKey, shadingValue);
+            shaderObject->addShaderDefine("SHADING_NORMAL", shadingNormalValueStr);
+            shaderObject->setShaderDefine("SHADING_ENABLED", mode != ShadingMode::None);
+        }
+     }
 }
 
 void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property,
@@ -243,17 +228,41 @@ void addShaderDefines(Shader& shader, const RaycastingProperty& property) {
         // rendering type
         switch (property.renderingType_.get()) {
             case RaycastingProperty::RenderingType::DvrIsosurface:
-                shader.getFragmentShaderObject()->addShaderDefine("INCLUDE_DVR");
-                shader.getFragmentShaderObject()->addShaderDefine("INCLUDE_ISOSURFACES");
+                if (auto fso = shader.getFragmentShaderObject()) {
+                    fso->addShaderDefine("INCLUDE_DVR");
+                    fso->addShaderDefine("INCLUDE_ISOSURFACES");
+                }
+                if (auto cso = shader.getComputeShaderObject()) {
+                    cso->addShaderDefine("INCLUDE_DVR");
+                    cso->addShaderDefine("INCLUDE_ISOSURFACES");
+                }
+                // shader.getFragmentShaderObject()->addShaderDefine("INCLUDE_DVR");
+                // shader.getFragmentShaderObject()>addShaderDefine("INCLUDE_ISOSURFACES");
                 break;
             case RaycastingProperty::RenderingType::Isosurface:
-                shader.getFragmentShaderObject()->addShaderDefine("INCLUDE_ISOSURFACES");
-                shader.getFragmentShaderObject()->removeShaderDefine("INCLUDE_DVR");
+                if (auto fso = shader.getFragmentShaderObject()) {
+                    fso->addShaderDefine("INCLUDE_ISOSURFACES");
+                    fso->removeShaderDefine("INCLUDE_DVR");
+                }
+                if (auto cso = shader.getComputeShaderObject()) {
+                    cso->addShaderDefine("INCLUDE_ISOSURFACES");
+                    cso->removeShaderDefine("INCLUDE_DVR");
+                }
+                // shader.getFragmentShaderObject()->addShaderDefine("INCLUDE_ISOSURFACES");
+                // shader.getFragmentShaderObject()->removeShaderDefine("INCLUDE_DVR");
                 break;
             case RaycastingProperty::RenderingType::Dvr:
             default:
-                shader.getFragmentShaderObject()->addShaderDefine("INCLUDE_DVR");
-                shader.getFragmentShaderObject()->removeShaderDefine("INCLUDE_ISOSURFACES");
+                if (auto fso = shader.getFragmentShaderObject()) {
+                    fso->addShaderDefine("INCLUDE_DVR");
+                    fso->removeShaderDefine("INCLUDE_ISOSURFACES");
+                }
+                if (auto cso = shader.getComputeShaderObject()) {
+                    cso->addShaderDefine("INCLUDE_DVR");
+                    cso->removeShaderDefine("INCLUDE_ISOSURFACES");
+                }
+                // shader.getFragmentShaderObject()->addShaderDefine("INCLUDE_DVR");
+                // shader.getFragmentShaderObject()->removeShaderDefine("INCLUDE_ISOSURFACES");
                 break;
         }
     }
@@ -280,8 +289,17 @@ void addShaderDefines(Shader& shader, const RaycastingProperty& property) {
         const std::string_view key = "APPLY_CLASSIFICATION(transferFunc, voxel)";
         const std::string_view keyMulti =
             "APPLY_CHANNEL_CLASSIFICATION(transferFunc, voxel, channel)";
-        shader.getFragmentShaderObject()->addShaderDefine(key, value);
-        shader.getFragmentShaderObject()->addShaderDefine(keyMulti, valueMulti);
+
+        if (auto fso = shader.getFragmentShaderObject()) {
+            fso->addShaderDefine(key, value);
+            fso->addShaderDefine(keyMulti, valueMulti);
+        }
+        if (auto cso = shader.getComputeShaderObject()) {
+            cso->addShaderDefine(key, value);
+            cso->addShaderDefine(keyMulti, valueMulti);
+        }
+        // shader.getFragmentShaderObject()->addShaderDefine(key, value);
+        // shader.getFragmentShaderObject()->addShaderDefine(keyMulti, valueMulti);
     }
 
     {
@@ -313,7 +331,14 @@ void addShaderDefines(Shader& shader, const RaycastingProperty& property) {
         const std::string_view key =
             "APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera, isoValue, t, "
             "tDepth, tIncr)";
-        shader.getFragmentShaderObject()->addShaderDefine(key, value);
+        if (auto fso = shader.getFragmentShaderObject()) {
+            fso->addShaderDefine(key, value);
+        }
+        if (auto cso = shader.getComputeShaderObject()) {
+            cso->addShaderDefine(key, value);
+        }
+
+        // shader.getFragmentShaderObject()->addShaderDefine(key, value);
     }
 
     // gradients
@@ -380,17 +405,47 @@ void setShaderDefines(Shader& shader,
 
     StrBuffer buff;
     buff.replace(fmt::runtime(value), fmt::arg("channelDef", channelDef));
-    shader.getFragmentShaderObject()->addShaderDefine(key, buff);
-
+    if (auto fso = shader.getFragmentShaderObject()) {
+        fso->addShaderDefine(key, buff);
+    }
+    if (auto cso = shader.getComputeShaderObject()) {
+        cso->addShaderDefine(key, buff);
+    }
+    // shader.getFragmentShaderObject()->addShaderDefine(key, buff);
     buff.replace(fmt::runtime(valueChannel), fmt::arg("channel", channel));
-    shader.getFragmentShaderObject()->addShaderDefine(keyChannel, buff);
 
-    shader.getFragmentShaderObject()->addShaderDefine(keyAll, valueAll);
+    if (auto fso = shader.getFragmentShaderObject()) {
+        fso->addShaderDefine(keyChannel, buff);
+    }
+    if (auto cso = shader.getComputeShaderObject()) {
+        cso->addShaderDefine(keyChannel, buff);
+    }
+    // shader.getFragmentShaderObject()->addShaderDefine(keyChannel, buff);
+
+    if (auto fso = shader.getFragmentShaderObject()) {
+        fso->addShaderDefine(keyAll, valueAll);
+    }
+    if (auto cso = shader.getComputeShaderObject()) {
+        cso->addShaderDefine(keyAll, valueAll);
+    }
+    // shader.getFragmentShaderObject()->addShaderDefine(keyAll, valueAll);
 
     if (property.get() != RaycastingProperty::GradientComputation::None) {
-        shader.getFragmentShaderObject()->addShaderDefine("GRADIENTS_ENABLED");
+        if (auto fso = shader.getFragmentShaderObject()) {
+            fso->addShaderDefine("GRADIENTS_ENABLED");
+        }
+        if (auto cso = shader.getComputeShaderObject()) {
+            cso->addShaderDefine("GRADIENTS_ENABLED");
+        }
+        // shader.getFragmentShaderObject()->addShaderDefine("GRADIENTS_ENABLED");
     } else {
-        shader.getFragmentShaderObject()->removeShaderDefine("GRADIENTS_ENABLED");
+        if (auto fso = shader.getFragmentShaderObject()) {
+            fso->removeShaderDefine("GRADIENTS_ENABLED");
+        }
+        if (auto cso = shader.getComputeShaderObject()) {
+            cso->removeShaderDefine("GRADIENTS_ENABLED");
+        }
+        // shader.getFragmentShaderObject()->removeShaderDefine("GRADIENTS_ENABLED");
     }
 }
 
@@ -490,20 +545,47 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
 
     StrBuffer buff;
     buff.replace(fmt::runtime(gradientValue), fmt::arg("defaultChannel", defaultChannel));
-    shader.getFragmentShaderObject()->addShaderDefine(gradientComputationKey, buff);
+    if (auto fso = shader.getFragmentShaderObject()) {
+        fso->addShaderDefine(gradientComputationKey, buff);
+    }
+    if (auto cso = shader.getComputeShaderObject()) {
+        cso->addShaderDefine(gradientComputationKey, buff);
+    }
+    // shader.getFragmentShaderObject()->addShaderDefine(gradientComputationKey, buff);
 
     buff.replace(fmt::runtime(singleChannelGradientValue), fmt::arg("channel", channel));
-    shader.getFragmentShaderObject()->addShaderDefine(singleChannelGradientKey, buff);
+    if (auto fso = shader.getFragmentShaderObject()) {
+        fso->addShaderDefine(singleChannelGradientKey, buff);
+    }
+    if (auto cso = shader.getComputeShaderObject()) {
+        cso->addShaderDefine(singleChannelGradientKey, buff);
+    }
+    // shader.getFragmentShaderObject()->addShaderDefine(singleChannelGradientKey, buff);
 
-    shader.getFragmentShaderObject()->addShaderDefine(allChannelsGradientKey,
-                                                      allChannelsGradientValue);
+    if (auto fso = shader.getFragmentShaderObject()) {
+        fso->addShaderDefine(allChannelsGradientKey, allChannelsGradientValue);
+    }
+    if (auto cso = shader.getComputeShaderObject()) {
+        cso->addShaderDefine(allChannelsGradientKey, allChannelsGradientValue);
+    }
+    // shader.getFragmentShaderObject()->addShaderDefine(allChannelsGradientKey,
+    //                                                   allChannelsGradientValue);
 
-    if (property.gradientComputationMode_.isSelectedIdentifier("none")) {
-        shader.getFragmentShaderObject()->removeShaderDefine("GRADIENTS_ENABLED");
-    } else {
-        shader.getFragmentShaderObject()->addShaderDefine("GRADIENTS_ENABLED");
+    if (auto fso = shader.getFragmentShaderObject()) {
+        if (property.gradientComputationMode_.isSelectedIdentifier("none")) {
+            fso->removeShaderDefine("GRADIENTS_ENABLED");
+        } else {
+            fso->addShaderDefine("GRADIENTS_ENABLED");
+        }
     }
 
+    if (auto cso = shader.getComputeShaderObject()) {
+        if (property.gradientComputationMode_.isSelectedIdentifier("none")) {
+            cso->removeShaderDefine("GRADIENTS_ENABLED");
+        } else {
+            cso->addShaderDefine("GRADIENTS_ENABLED");
+        }
+    }
     // classification defines, red channel is used
     std::string_view classificationKey = "APPLY_CLASSIFICATION(transferFunc, voxel)";
     std::string_view classificationValue = "";
@@ -513,7 +595,14 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
         classificationValue = "applyTF(transferFunc, voxel.r)";
     else if (property.classificationMode_.isSelectedIdentifier("voxel-value"))
         classificationValue = "voxel";
-    shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
+
+    if (auto fso = shader.getFragmentShaderObject()) {
+        fso->addShaderDefine(classificationKey, classificationValue);
+    }
+    if (auto cso = shader.getComputeShaderObject()) {
+        cso->addShaderDefine(classificationKey, classificationValue);
+    }
+    // shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
 
     // classification of specific channel
     classificationKey = "APPLY_CHANNEL_CLASSIFICATION(transferFunc, voxel, channel)";
@@ -524,9 +613,15 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
         classificationValue = "applyTF(transferFunc, voxel, channel)";
     else if (property.classificationMode_.isSelectedIdentifier("voxel-value"))
         classificationValue = "voxel";
-    shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
 
-    // compositing defines
+    if (auto fso = shader.getFragmentShaderObject()) {
+        fso->addShaderDefine(classificationKey, classificationValue);
+    }
+    if (auto cso = shader.getComputeShaderObject()) {
+        cso->addShaderDefine(classificationKey, classificationValue);
+    }
+    // shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
+    //  compositing defines
     std::string_view compositingKey =
         "APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera, isoValue, t, tDepth, "
         "tIncr)";
@@ -549,7 +644,13 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     else if (property.compositingMode_.isSelectedIdentifier("ison"))
         compositingValue = "compositeISON(result, color, voxel.r, gradient, t, tDepth, isoValue)";
 
-    shader.getFragmentShaderObject()->addShaderDefine(compositingKey, compositingValue);
+    if (auto fso = shader.getFragmentShaderObject()) {
+        fso->addShaderDefine(compositingKey, compositingValue);
+    }
+    if (auto cso = shader.getComputeShaderObject()) {
+        cso->addShaderDefine(compositingKey, compositingValue);
+    }
+    // shader.getFragmentShaderObject()->addShaderDefine(compositingKey, compositingValue);
 }
 
 void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property) {
