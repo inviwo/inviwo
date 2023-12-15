@@ -33,10 +33,10 @@
 
 namespace inviwo {
 
-class IVW_MODULE_PATHTRACING_API pathtracingModule : public InviwoModule {
+class IVW_MODULE_PATHTRACING_API PathtracingModule : public InviwoModule {
 public:
-    pathtracingModule(InviwoApplication* app);
-    virtual ~pathtracingModule() = default;
+    PathtracingModule(InviwoApplication* app);
+    virtual ~PathtracingModule() = default;
 };
 
 }  // namespace inviwo

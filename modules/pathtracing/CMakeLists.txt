@@ -1,4 +1,4 @@
-ivw_module(pathtracing)
+ivw_module(Pathtracing)
 
 set(HEADER_FILES
     include/inviwo/pathtracing/pathtracingmodule.h
