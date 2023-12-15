@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-pathtracingModule::pathtracingModule(InviwoApplication* app) : InviwoModule(app, "pathtracing") {
+PathtracingModule::PathtracingModule(InviwoApplication* app) : InviwoModule(app, "Pathtracing") {
     // Add a directory to the search path of the Shadermanager
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
