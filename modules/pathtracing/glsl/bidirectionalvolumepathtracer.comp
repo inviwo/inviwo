@@ -31,7 +31,8 @@ uniform ImageParameters exitParameters;
 // output
 uniform layout(binding = 0, rgba8)
 image2D outportColor;
-writeonly uniform image2D outportDepth;
+uniform layout(binding = 1, r32f)
+image2D outportDepth;
 writeonly uniform image2D outportPicking;
 uniform ImageParameters outportParameters;
 
@@ -76,6 +77,7 @@ vec4 pathtrace(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float 
 
     float T = 0.0f;
     float extinctionUpper = 1.0f;
+
     float meanFreePath = woodcockTracking(samplePosition, rayDir, 0f, rayLength, hashSeed, volume,
                                           volumeParameters, transferFunction, extinctionUpper);
 
@@ -92,18 +94,17 @@ vec4 pathtrace(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float 
     } else {
         result = bgColor;
     }
-    depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryDepth, exitDepth), depth,
-                rayDepth == -1.0);
+    //depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryDepth, exitDepth), depth,
+    //            rayDepth == -1);
 
     return result;
 }
 
 void main() {
 
-    // The accumulated color along the ray;
     vec4 picking = vec4(0.0);  // The picking color of the ray
                                // The ray depth value [0, ray length], -1 means "no" depth.
-    float rayDepth = -1.0;     // Uses the same space as rayPosition. Usually used to track
+    float rayDepth = 0;        // Uses the same space as rayPosition. Usually used to track
                                // the depth of the "first" hit in DVR.
     float depth = 1.0;         // The image depth, from far to near [0, 1].
                                // Will be overridden by rayDepth if != -1 and then
@@ -130,12 +131,19 @@ void main() {
     vec4 color = pathtrace(outportParameters, entryPoint, exitPoint, entryPointDepth,
                            exitPointDepth, rayDepth, depth, raycaster, volumeParameters, bgColor);
 
+    // Picking needs to be selected better
+    // Picking might need some other treatment, like choosing the picking ID if it it is closer to
+    // the computed depth
+
     vec4 colorPrev = imageLoad(outportColor, storePos);
+    float depthPrev = imageLoad(outportDepth, storePos).x;
 
     float w = 1.0f - 1.0f / float(iteration + 1);
     vec4 colorFinal = mix(color, colorPrev, w);
+    //float depthFinal = depth > depthPrev ? depth : depthPrev;
+    float depthFinal = min(depth, depthPrev);
 
     imageStore(outportColor, storePos, colorFinal);
-    imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255));
+    imageStore(outportDepth, storePos, vec4(vec3(depthFinal), 255));
     imageStore(outportPicking, storePos, picking);
 }
