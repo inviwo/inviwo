@@ -30,6 +30,7 @@
 #include <inviwo/pathtracing/processors/volumepathtracer.h>
 #include <modules/opengl/openglmodule.h>
 #include <modules/opengl/shader/shadermanager.h>
+#include <modules/opengl/inviwoopengl.h>
 
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -56,11 +57,11 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumePathTracer::processorInfo_{
     "org.inviwo.VolumePathTracer",  // Class identifier
-    "VolumePathTracer",             // Display name
-    "Volume",                       // Category
+    "Volume Path Tracer",           // Display name
+    "Volume Rendering",             // Category
     CodeState::Experimental,        // Code state
     Tags::GL,                       // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp};
+};
 
 const ProcessorInfo VolumePathTracer::getProcessorInfo() const { return processorInfo_; }
 
@@ -130,21 +131,21 @@ VolumePathTracer::VolumePathTracer()
     });
 
     // Used for determining uniform float t_ms
-    time_start = std::chrono::high_resolution_clock::now();
+    timeStart_ = std::chrono::high_resolution_clock::now();
 
     addProperty(channel_);
     addProperty(raycasting_);
     addProperty(transferFunction_);
-    transferFunction_.onChange([this]() { invalidateProgressiveRendering(); });
 
     addProperty(camera_);
     addProperty(positionIndicator_);
-
     addProperty(light_);
-    light_.onChange([this]() { invalidateProgressiveRendering(); });
-
     addProperty(invalidateRendering_);
     addProperty(enableProgressiveRefinement_);
+
+    transferFunction_.onChange([this]() { invalidateProgressiveRendering(); });
+    light_.onChange([this]() { invalidateProgressiveRendering(); });
+
     enableProgressiveRefinement_.onChange([this]() { progressiveRefinementChanged(); });
 
     shader_.onReload([this]() {
@@ -154,14 +155,21 @@ VolumePathTracer::VolumePathTracer()
     progressiveRefinementChanged();
 }
 
-void VolumePathTracer::process() {
+void VolumePathTracer::initializeResources() {
+    invalidateProgressiveRendering();
 
+    utilgl::addShaderDefines(shader_, raycasting_);
+    utilgl::addShaderDefines(shader_, camera_);
+    utilgl::addShaderDefines(shader_, light_);
+}
+
+void VolumePathTracer::process() {
     shader_.activate();
 
     // Partial seeding for random values
-    time_now = std::chrono::high_resolution_clock::now();
+    timeNow_ = std::chrono::high_resolution_clock::now();
     using FpMilliseconds = std::chrono::duration<float, std::chrono::milliseconds::period>;
-    float t_ms = FpMilliseconds(time_now - time_start).count();
+    float MSSinceStart_ = FpMilliseconds(timeNow_ - timeStart_).count();
 
     if (iteration_ == 0) {
         // Copy depth and picking
@@ -181,7 +189,14 @@ void VolumePathTracer::process() {
         auto colorLayerGL = image->getColorLayer()->getEditableRepresentation<LayerGL>();
         colorLayerGL->bindImageTexture(unit1, GL_READ_WRITE);
         auto depthLayerGL = image->getDepthLayer()->getEditableRepresentation<LayerGL>();
-        depthLayerGL->bindImageTexture(unit2, GL_WRITE_ONLY);
+
+        GLenum texUnit_ = unit2.getEnum();
+        glActiveTexture(texUnit_);
+        glBindImageTexture(unit2.getUnitNumber(), depthLayerGL->getTexture()->getID(), 0, GL_FALSE,
+                           0, GL_READ_WRITE,
+                           GL_R32F /*depthLayerGL->getTexture()->getInternalFormat()*/);
+        glActiveTexture(GL_TEXTURE0);
+
         auto pickingLayerGL = image->getPickingLayer()->getEditableRepresentation<LayerGL>();
         pickingLayerGL->bindImageTexture(unit3, GL_WRITE_ONLY);
 
@@ -202,9 +217,8 @@ void VolumePathTracer::process() {
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
     utilgl::bindAndSetUniforms(shader_, units, *volumePort_.getData(), "volume");
     utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
-    shader_.setUniform("time_ms", t_ms);
+    shader_.setUniform("time_ms", MSSinceStart_);
     shader_.setUniform("iteration", iteration_);
-
     utilgl::setUniforms(shader_, camera_, raycasting_, positionIndicator_, light_, channel_);
 
     // Start render
