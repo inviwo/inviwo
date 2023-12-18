@@ -66,7 +66,7 @@ public:
      */
     using SpatialVector = Vector<SpatialSampler::SpatialDimensions, double>;
     using DataVector = Vector<SpatialSampler::DataDimensions, double>;
-    using DataHomogenousVector = Vector<SpatialSampler::DataDimensions + 1, double>;
+    using DataHomogeneousVector = Vector<SpatialSampler::DataDimensions + 1, double>;
     using DataMatrix = Matrix<SpatialSampler::DataDimensions, double>;
     using DataHomogeneousSpatialMatrix = Matrix<SpatialSampler::DataDimensions + 1, double>;
 
@@ -188,16 +188,19 @@ auto IntegralLineTracer<SpatialSampler, TimeDependent>::getSeedTransformationMat
 template <typename SpatialSampler, bool TimeDependent>
 inline auto IntegralLineTracer<SpatialSampler, TimeDependent>::seedTransform(
     const SpatialVector& seed) const -> SpatialVector {
+    using H = DataHomogeneousVector;
     if constexpr (IsTimeDependent) {
-        using V = DataVector;
-        auto p = seedTransformation_ * SpatialVector(V(seed), 1.0f);
-        return SpatialVector(V(p) / p[SpatialSampler::DataDimensions],
+        auto p = seedTransformation_ * SpatialVector(DataVector(seed), 1.0f);
+        return SpatialVector(DataVector(p) / p[SpatialSampler::DataDimensions],
                              seed[SpatialSampler::DataDimensions]);
+    } else if constexpr (SpatialSampler::DataDimensions == 3) {
+        auto p = seedTransformation_ * H(DataVector(seed), 1.0f);
+        return SpatialVector{p} / p[SpatialSampler::DataDimensions];
+    } else if constexpr (SpatialSampler::DataDimensions == 2) {
+        auto p = seedTransformation_ * H(DataVector(seed), 1.0f);
+        return SpatialVector{DataVector{p}, 0.0} / p[SpatialSampler::DataDimensions];
     } else {
-        using V = DataVector;
-        using H = DataHomogenousVector;
-        auto p = seedTransformation_ * H(V(seed), 1.0f);
-        return SpatialVector(p) / p[SpatialSampler::DataDimensions];
+        static_assert(util::alwaysFalse<SpatialSampler>(), "Unsupported number of DataDimensions");
     }
 }
 

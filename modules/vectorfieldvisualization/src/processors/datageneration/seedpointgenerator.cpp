@@ -205,7 +205,7 @@ void SeedPointGenerator::spherePoints() {
 
 void SeedPointGenerator::linePoints() {
     auto points = std::make_shared<std::vector<vec3>>();
-    float dt = 1.0f / (numberOfPoints_.get() - 1);
+    float dt = 1.0f / std::max((numberOfPoints_.get() - 1), 1);
     for (int i = 0; i < numberOfPoints_.get(); i++) {
         auto p = lineStart_.get() + (lineEnd_.get() - lineStart_.get()) * (i * dt);
         points->push_back(p);
