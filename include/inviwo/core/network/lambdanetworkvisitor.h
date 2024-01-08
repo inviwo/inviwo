@@ -94,8 +94,8 @@ struct LambdaNetworkVisitor : NetworkVisitor, Funcs... {
     using ProcessorOverload = decltype(std::declval<T>()(std::declval<Processor&>()));
 
     template <typename T>
-    using ProcessorEnter = decltype(
-        std::declval<T>()(std::declval<Processor&>(), std::declval<NetworkVisitorEnter>()));
+    using ProcessorEnter = decltype(std::declval<T>()(std::declval<Processor&>(),
+                                                      std::declval<NetworkVisitorEnter>()));
     template <typename T>
     using ProcessorExit =
         decltype(std::declval<T>()(std::declval<Processor&>(), std::declval<NetworkVisitorExit>()));
@@ -104,11 +104,11 @@ struct LambdaNetworkVisitor : NetworkVisitor, Funcs... {
     using CompositeOverload = decltype(std::declval<T>()(std::declval<CompositeProperty&>()));
 
     template <typename T>
-    using CompositeEnter = decltype(
-        std::declval<T>()(std::declval<CompositeProperty&>(), std::declval<NetworkVisitorEnter>()));
+    using CompositeEnter = decltype(std::declval<T>()(std::declval<CompositeProperty&>(),
+                                                      std::declval<NetworkVisitorEnter>()));
     template <typename T>
-    using CompositeExit = decltype(
-        std::declval<T>()(std::declval<CompositeProperty&>(), std::declval<NetworkVisitorExit>()));
+    using CompositeExit = decltype(std::declval<T>()(std::declval<CompositeProperty&>(),
+                                                     std::declval<NetworkVisitorExit>()));
 
     template <typename T>
     using PropertyOverload = decltype(std::declval<T>()(std::declval<Property&>()));
