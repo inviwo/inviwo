@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2023 Inviwo Foundation
+ * Copyright (c) 2020-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -189,7 +189,7 @@ constexpr auto operator+(const StaticString<N1>& a, const char (&b)[N2]) {
     return StaticString{a, b};
 }
 
-StaticString()->StaticString<0>;
+StaticString() -> StaticString<0>;
 template <typename... Ts>
 StaticString(Ts&&... strs) -> StaticString<(::inviwo::detail::static_size<Ts> + ...)>;
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021-2023 Inviwo Foundation
+ * Copyright (c) 2021-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -219,7 +219,7 @@ constexpr auto build_array(Functor&& func) noexcept {
 
 template <typename Ret = void, typename Functor, typename... Args>
 constexpr auto wrappingDispatch(Functor&& func, const Wrapping3D& wrapping, Args&&... args) {
-    using DispatchFunctor = Ret (*)(Functor && func, Args && ...);
+    using DispatchFunctor = Ret (*)(Functor&& func, Args&&...);
 
     constexpr auto table = build_array<3>([](auto x) constexpr {
         using XT = decltype(x);

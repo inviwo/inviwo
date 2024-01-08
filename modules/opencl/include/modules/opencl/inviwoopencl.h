@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2023 Inviwo Foundation
+ * Copyright (c) 2013-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -298,7 +298,7 @@ IVW_MODULE_OPENCL_API std::string errorCodeToString(cl_int err);
 IVW_MODULE_OPENCL_API std::string getCLErrorResolveHint(cl_int err);
 
 #if defined(IVW_DEBUG)
-#define LogCLError #if defined(__CL_ENABLE_EXCEPTIONS) \\LogOpenCLError(error)
+#define LogCLError #if defined (__CL_ENABLE_EXCEPTIONS) \\LogOpenCLError(error)
 #else
 #define LogCLError
 #endif
