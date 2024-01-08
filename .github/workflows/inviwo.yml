@@ -126,7 +126,7 @@ jobs:
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=ON
               -DIVW_MODULE_WEBBROWSER=ON
-              -DIVW_CFG_MSVC_FORCE_SHARED_CRT=ON            
+              -DIVW_CFG_MSVC_FORCE_SHARED_CRT=ON
 
         exclude:
           # Windows debug build are to big, they run out of diskspace

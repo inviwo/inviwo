@@ -97,8 +97,12 @@ def main(args):
         print_error("changelog-to-html.py was unable to locate the input file " + args.input)
         sys.exit(1)
 
-    with open(args.input, mode="r", encoding="utf-8") as f:
-        text = f.read()
+    try:
+        with open(args.input, mode="r", encoding="utf-8") as f:
+            text = f.read()
+    except FileNotFoundError:
+        print_error("changelog-to-html.py was unable to locate the input file " + args.input)
+        sys.exit(1)
 
     # remove first line starting with "Here we document changes..."
     if text.startswith(changelogBegin):
