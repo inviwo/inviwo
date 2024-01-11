@@ -90,6 +90,7 @@
 #include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/multifileproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/planeproperty.h>
@@ -111,6 +112,9 @@
 #include <inviwo/core/processors/compositeprocessor.h>
 #include <inviwo/core/processors/compositesink.h>
 #include <inviwo/core/processors/compositesource.h>
+#include <inviwo/core/processors/sequenceprocessor.h>
+#include <inviwo/core/processors/sequencecompositesink.h>
+#include <inviwo/core/processors/sequencecompositesource.h>
 
 #include <inviwo/core/util/stdextensions.h>
 
@@ -215,8 +219,8 @@ struct IntOptionConverterRegFunctor {
 struct DataTypeRegFunctor {
     template <typename T>
     auto operator()(InviwoModule& m) {
-        m.registerDefaultsForDataType<T>();
-        m.registerDefaultsForDataType<std::vector<T>>();
+        m.registerDefaultsForScalarDataType<T>();
+        m.registerDefaultsForScalarDataType<std::vector<T>>();
     }
 };
 
@@ -290,13 +294,18 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerPort<ImageInport>();
     registerPort<ImageMultiInport>();
     registerPort<ImageOutport>();
-    registerProcessor<CompositeSource<ImageInport, ImageOutport>>();
-    registerProcessor<CompositeSink<ImageInport, ImageOutport>>();
+
     registerProcessor<CompositeProcessor>();
+    registerProcessor<CompositeSink<ImageInport, ImageOutport>>();
+    registerProcessor<CompositeSource<ImageInport, ImageOutport>>();
+
+    registerProcessor<SequenceProcessor>();
+    registerProcessor<SequenceCompositeSink<ImageInport, DataOutport<DataSequence<Image>>>>();
+    registerProcessor<SequenceCompositeSource<DataInport<DataSequence<Image>>, ImageOutport>>();
 
     registerDefaultsForDataType<Mesh>();
     registerDefaultsForDataType<Volume>();
-    registerDefaultsForDataType<VolumeSequence>();
+    registerDefaultsForScalarDataType<VolumeSequence>();
     registerDefaultsForDataType<BufferBase>();
     registerDefaultsForDataType<LightSource>();
 
@@ -311,6 +320,9 @@ InviwoCore::InviwoCore(InviwoApplication* app)
         std::uint64_t, u64vec2, u64vec3, u64vec4>;
     // clang-format on
     util::for_each_type<types>{}(DataTypeRegFunctor{}, *this);
+
+
+
 
     // Register PortInspectors
     registerPortInspector(PortTraits<ImageOutport>::classIdentifier(),

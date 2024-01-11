@@ -32,6 +32,11 @@
 #include <inviwo/core/processors/compositeprocessor.h>
 #include <inviwo/core/processors/compositesource.h>
 #include <inviwo/core/processors/compositesink.h>
+
+#include <inviwo/core/processors/sequenceprocessor.h>
+#include <inviwo/core/processors/sequencecompositesource.h>
+#include <inviwo/core/processors/sequencecompositesink.h>
+
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
@@ -88,19 +93,19 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
             }
         }
 
-        for (auto& c : inConnections) {
-            auto portId = c.first->getClassIdentifier();
+        for (auto& [outport, inports] : inConnections) {
+            auto portId = outport->getClassIdentifier();
 
             if (auto source = std::shared_ptr<Processor>(pf->create(portId + ".metasource"))) {
                 if (auto metasouce = dynamic_cast<CompositeSourceBase*>(source.get())) {
                     subNetwork.addProcessor(source);
                     bool optional = true;
-                    for (auto inport : c.second) {
+                    for (auto inport : inports) {
                         optional &= inport->isOptional();
                         subNetwork.addConnection(metasouce->getOutports().front(), inport);
                     }
                     metasouce->getSuperInport().setOptional(optional);
-                    auto portIdentifier = c.second.front()->getIdentifier();
+                    auto portIdentifier = inports.front()->getIdentifier();
                     // Make first letter uppercase for readability when combined with processor
                     // display name
                     if (!portIdentifier.empty()) {
@@ -109,9 +114,9 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                     }
 
                     auto id = util::stripIdentifier(
-                        c.second.front()->getProcessor()->getDisplayName() + portIdentifier);
+                        inports.front()->getProcessor()->getDisplayName() + portIdentifier);
                     metasouce->getSuperInport().setIdentifier(id);
-                    network.addConnection(c.first, &metasouce->getSuperInport());
+                    network.addConnection(outport, &metasouce->getSuperInport());
                 } else {
                     LogErrorCustom(
                         "CompositeProcessor",
@@ -137,24 +142,24 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
             }
         }
 
-        for (auto& c : outConnections) {
-            auto portId = c.first->getClassIdentifier();
+        for (auto& [outport, inports] : outConnections) {
+            auto portId = outport->getClassIdentifier();
 
             if (auto sink = std::shared_ptr<Processor>(pf->create(portId + ".metasink"))) {
                 if (auto metasink = dynamic_cast<CompositeSinkBase*>(sink.get())) {
                     subNetwork.addProcessor(sink);
-                    subNetwork.addConnection(c.first, metasink->getInports().front());
-                    for (auto inport : c.second) {
+                    subNetwork.addConnection(outport, metasink->getInports().front());
+                    for (auto inport : inports) {
                         network.addConnection(&metasink->getSuperOutport(), inport);
                     }
-                    auto portIdentifier = c.first->getIdentifier();
+                    auto portIdentifier = outport->getIdentifier();
                     // Make first letter uppercase for readability when combined with processor
                     // display name
                     if (!portIdentifier.empty()) {
                         portIdentifier.front() =
                             static_cast<char>(std::toupper(portIdentifier.front()));
                     }
-                    auto id = util::stripIdentifier(c.first->getProcessor()->getDisplayName() +
+                    auto id = util::stripIdentifier(outport->getProcessor()->getDisplayName() +
                                                     portIdentifier);
                     metasink->getSuperOutport().setIdentifier(id);
                 } else {
@@ -286,6 +291,185 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
         }
 
         network.removeProcessor(&composite);
+    } catch (const Exception& e) {
+        util::log(e.getContext(), e.getMessage());
+    }
+}
+
+void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
+    try {
+        NetworkLock lock(&network);
+
+        std::vector<Processor*> selected;
+        util::copy_if(
+            network.getProcessors(), std::back_inserter(selected), [](const Processor* p) {
+                auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+                return m->isSelected();
+            });
+
+        std::vector<PortConnection> connections = network.getConnections();
+        std::vector<PropertyLink> links = network.getLinks();
+
+        auto app = network.getApplication();
+        auto comp = std::make_shared<SequenceProcessor>("sequence", "Sequence", app);
+        auto meta = comp->createMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+        auto center = util::getCenterPosition(selected);
+        meta->setPosition(center);
+
+        auto& subNetwork = comp->getSubNetwork();
+        NetworkLock subLock(&subNetwork);
+        for (auto p : selected) {
+            subNetwork.addProcessor(network.removeProcessor(p));
+        }
+        network.addProcessor(comp);
+        util::offsetPosition(selected, -center);
+        util::setSelected(selected, false);
+
+        // Connections
+        std::unordered_map<Outport*, std::vector<Inport*>> inConnections;
+        std::unordered_map<Outport*, std::vector<Inport*>> outConnections;
+
+        auto pf = app->getProcessorFactory();
+        for (auto& c : connections) {
+            auto out = util::contains(selected, c.getOutport()->getProcessor());
+            auto in = util::contains(selected, c.getInport()->getProcessor());
+            if (out && in) {
+                subNetwork.addConnection(c);
+            } else if (!out && in) {
+                inConnections[c.getOutport()].push_back(c.getInport());
+            } else if (out && !in) {
+                outConnections[c.getOutport()].push_back(c.getInport());
+            }
+        }
+
+        for (auto& [outport, inports] : inConnections) {
+            auto portId = outport->getClassIdentifier();
+
+            if (auto source = std::shared_ptr<Processor>(pf->create(fmt::format(
+                    "{}{}", portId, SequenceCompositeSourceBase::identifierSuffix())))) {
+                if (auto metasouce = dynamic_cast<SequenceCompositeSourceBase*>(source.get())) {
+                    subNetwork.addProcessor(source);
+                    bool optional = true;
+                    for (auto inport : inports) {
+                        optional &= inport->isOptional();
+                        subNetwork.addConnection(metasouce->getOutports().front(), inport);
+                    }
+                    metasouce->getSuperInport().setOptional(optional);
+                    auto portIdentifier = inports.front()->getIdentifier();
+                    // Make first letter uppercase for readability when combined with processor
+                    // display name
+                    if (!portIdentifier.empty()) {
+                        portIdentifier.front() =
+                            static_cast<char>(std::toupper(portIdentifier.front()));
+                    }
+
+                    auto id = util::stripIdentifier(
+                        inports.front()->getProcessor()->getDisplayName() + portIdentifier);
+                    metasouce->getSuperInport().setIdentifier(id);
+                    // network.addConnection(c.first, &metasouce->getSuperInport());
+                } else {
+                    LogErrorCustom(
+                        "SequenceProcessor",
+                        "Unable to find a Sequence Source Processor for outport: \""
+                            << portId
+                            << "\"\n"
+                               "Probably need to register a Sequence Source Processor for the "
+                               "port:\n"
+                               "registerProcessor<SequenceCompositeSource<InportType, "
+                               "OutportType>>();\n"
+                               "or use the convenience function:\n"
+                               "registerDefaultsForDataType<DataType>();");
+                }
+            } else {
+                LogErrorCustom(
+                    "SequenceProcessor",
+                    "Unable to find a Sequence Source Processor for outport: \""
+                        << portId
+                        << "\"\n"
+                           "Probably need to register a Sequence Source Processor for the port:\n"
+                           "registerProcessor<SequenceCompositeSource<InportType, "
+                           "OutportType>>();\n"
+                           "or use the convenience function:\n"
+                           "registerDefaultsForDataType<DataType>();");
+            }
+        }
+
+        for (auto& [outport, inports] : outConnections) {
+            auto portId = inports.front()->getClassIdentifier();
+
+            if (auto sink = std::shared_ptr<Processor>(pf->create(
+                    fmt::format("{}{}", portId, SequenceCompositeSinkBase::identifierSuffix())))) {
+                if (auto metasink = dynamic_cast<SequenceCompositeSinkBase*>(sink.get())) {
+                    subNetwork.addProcessor(sink);
+                    subNetwork.addConnection(outport, metasink->getInports().front());
+                    for (auto inport : inports) {
+                        // network.addConnection(&metasink->getSuperOutport(), inport);
+                    }
+                    auto portIdentifier = outport->getIdentifier();
+                    // Make first letter uppercase for readability when combined with processor
+                    // display name
+                    if (!portIdentifier.empty()) {
+                        portIdentifier.front() =
+                            static_cast<char>(std::toupper(portIdentifier.front()));
+                    }
+                    auto id = util::stripIdentifier(outport->getProcessor()->getDisplayName() +
+                                                    portIdentifier);
+                    metasink->getSuperOutport().setIdentifier(id);
+                } else {
+                    LogErrorCustom(
+                        "SequenceProcessor",
+                        "Unable to find a Sequence Sink Processor for outport: \""
+                            << portId
+                            << "\"\n"
+                               "Probably need to register a Sequence Sink Processor for the "
+                               "port:\n"
+                               "registerProcessor<SequenceCompositeSink<InportType, "
+                               "OutportType>>();\n"
+                               "or use the convenience function:\n"
+                               "registerDefaultsForDataType<DataType>();");
+                }
+            } else {
+                LogErrorCustom(
+                    "SequenceProcessor",
+                    "Unable to find a Sequence Sink Processor for outport: \""
+                        << portId
+                        << "\"\n"
+                           "Probably need to register a Sequence Sink Processor for the port:\n"
+                           "registerProcessor<SequenceCompositeSink<InportType, OutportType>>();\n"
+                           "or use the convenience function:\n"
+                           "registerDefaultsForDataType<DataType>();");
+            }
+        }
+
+        // Links
+        std::unordered_map<Property*, std::vector<Property*>> inLinks;
+        std::unordered_map<Property*, std::vector<Property*>> outLinks;
+        for (auto& l : links) {
+            auto out = util::contains(selected, l.getSource()->getOwner()->getProcessor());
+            auto in = util::contains(selected, l.getDestination()->getOwner()->getProcessor());
+            if (out && in) {
+                subNetwork.addLink(l);
+            } else if (!out && in) {
+                inLinks[l.getSource()].push_back(l.getDestination());
+            } else if (out && !in) {
+                outLinks[l.getSource()].push_back(l.getDestination());
+            }
+        }
+
+        for (auto& item : inLinks) {
+            for (auto p : item.second) {
+                auto prop = comp->addSuperProperty(p);
+                network.addLink(item.first, prop);
+            }
+        }
+
+        for (auto& item : outLinks) {
+            auto prop = comp->addSuperProperty(item.first);
+            for (auto p : item.second) {
+                network.addLink(prop, p);
+            }
+        }
+
     } catch (const Exception& e) {
         util::log(e.getContext(), e.getMessage());
     }
