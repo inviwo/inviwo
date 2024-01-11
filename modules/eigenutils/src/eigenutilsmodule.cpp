@@ -59,7 +59,7 @@ EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "
     registerProcessor<EigenNormalize>();
     registerProcessor<TestMatrix>();
 
-    registerDefaultsForDataType<Eigen::MatrixXf>();
+    registerDefaultsForScalarDataType<Eigen::MatrixXf>();
 
     registerPortInspector(PortTraits<DataOutport<Eigen::MatrixXf>>::classIdentifier(),
                           getPath(ModulePath::PortInspectors) / "eigenmatrix.inv");
