@@ -93,6 +93,7 @@
 #include <inviwo/core/properties/marginproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/multifileproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/planeproperty.h>
@@ -114,6 +115,9 @@
 #include <inviwo/core/processors/compositeprocessor.h>
 #include <inviwo/core/processors/compositesink.h>
 #include <inviwo/core/processors/compositesource.h>
+#include <inviwo/core/processors/sequenceprocessor.h>
+#include <inviwo/core/processors/sequencecompositesink.h>
+#include <inviwo/core/processors/sequencecompositesource.h>
 
 #include <inviwo/core/util/stdextensions.h>
 
@@ -197,13 +201,18 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerPort<ImageInport>();
     registerPort<ImageMultiInport>();
     registerPort<ImageOutport>();
-    registerProcessor<CompositeSource<ImageInport, ImageOutport>>();
-    registerProcessor<CompositeSink<ImageInport, ImageOutport>>();
+
     registerProcessor<CompositeProcessor>();
+    registerProcessor<CompositeSink<ImageInport, ImageOutport>>();
+    registerProcessor<CompositeSource<ImageInport, ImageOutport>>();
+
+    registerProcessor<SequenceProcessor>();
+    registerProcessor<SequenceCompositeSink<ImageInport, DataOutport<DataSequence<Image>>>>();
+    registerProcessor<SequenceCompositeSource<DataInport<DataSequence<Image>>, ImageOutport>>();
 
     registerDefaultsForDataType<Mesh>();
     registerDefaultsForDataType<Volume>();
-    registerDefaultsForDataType<VolumeSequence>();
+    registerDefaultsForScalarDataType<VolumeSequence>();
     registerDefaultsForDataType<BufferBase>();
     registerDefaultsForDataType<LightSource>();
 
@@ -220,9 +229,12 @@ InviwoCore::InviwoCore(InviwoApplication* app)
 
     // Functor for registering defaults for datatypes
     util::for_each_type<types>{}([&]<typename T>() {
-        registerDefaultsForDataType<T>();
-        registerDefaultsForDataType<std::vector<T>>();
+        registerDefaultsForScalarDataType<T>();
+        registerDefaultsForScalarDataType<std::vector<T>>();
     });
+
+
+
 
     // Register PortInspectors
     registerPortInspector(PortTraits<ImageOutport>::classIdentifier(),
