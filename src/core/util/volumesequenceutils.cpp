@@ -80,17 +80,22 @@ bool isSorted(const VolumeSequence& seq) {
 }
 
 VolumeSequence sortSequence(const VolumeSequence& seq) {
-    VolumeSequence sorted = seq;
-    std::sort(sorted.begin(), sorted.end(), [](const SharedVolume& a, const SharedVolume& b) {
-        auto t1 = getTimestamp(a);
-        auto t2 = getTimestamp(b);
-        return t1 < t2;
-    });
-    return sorted;
+    std::vector<std::shared_ptr<const Volume>> sorted;
+    for(auto&& item : seq) {
+        sorted.push_back(item);
+    }
+
+    std::sort(sorted.begin(), sorted.end(),
+              [](const std::shared_ptr<const Volume>& a, const std::shared_ptr<const Volume>& b) {
+                  auto t1 = getTimestamp(a);
+                  auto t2 = getTimestamp(b);
+                  return t1 < t2;
+              });
+    return VolumeSequence{sorted};
 }
 
-std::pair<SharedVolume, SharedVolume> getVolumesForTimestep(const VolumeSequence& seq, double t,
-                                                            bool sorted) {
+std::pair<std::shared_ptr<const Volume>, std::shared_ptr<const Volume>> getVolumesForTimestep(
+    const VolumeSequence& seq, double t, bool sorted) {
     if (seq.size() == 1) {
         return std::make_pair(seq.front(), seq.front());
     } else if (!hasTimestamps(seq)) {
@@ -106,7 +111,7 @@ std::pair<SharedVolume, SharedVolume> getVolumesForTimestep(const VolumeSequence
         return std::make_pair(seq[i], seq[i2]);
     } else if (sorted) {
         // find first volume with timestamp greater than t
-        auto it = std::find_if(seq.begin(), seq.end(), [t](const SharedVolume& v) {
+        auto it = std::find_if(seq.begin(), seq.end(), [t](const std::shared_ptr<const Volume>& v) {
             auto vt = getTimestamp(v);
             return t < vt;
         });
@@ -126,9 +131,11 @@ std::pair<SharedVolume, SharedVolume> getVolumesForTimestep(const VolumeSequence
     }
 }
 
-bool hasTimestamp(SharedVolume vol) { return vol->hasMetaData<DoubleMetaData>("timestamp"); }
+bool hasTimestamp(const std::shared_ptr<const Volume>& vol) {
+    return vol->hasMetaData<DoubleMetaData>("timestamp");
+}
 
-double getTimestamp(SharedVolume vol) {
+double getTimestamp(const std::shared_ptr<const Volume>& vol) {
     return vol->getMetaData<DoubleMetaData>("timestamp")->get();
 }
 

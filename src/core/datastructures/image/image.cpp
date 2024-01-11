@@ -346,6 +346,7 @@ dvec4 Image::readPixel(size2_t pos, LayerType layer, size_t index) const {
                                      });
 
     if (it != representations_.end()) {
+        it->second->update(false);
         return it->second->readPixel(pos, layer, index);
     } else {
         // Fallback. If no representation exist, create ImageRAM one

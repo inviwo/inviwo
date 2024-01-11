@@ -31,6 +31,7 @@
 
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/datastructures/datasequence.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
@@ -55,7 +56,7 @@ public:
     void process() override;
 
 protected:
-    DataInport<std::vector<std::shared_ptr<T>>> inport_;
+    DataInport<DataSequence<T>> inport_;
     OutportType outport_;
     SequenceTimerProperty timeStep_;
 
@@ -73,19 +74,11 @@ VectorElementSelectorProcessor<T, OutportType>::VectorElementSelectorProcessor()
     , timestamp_("timestamp", "Timestamp", 0, std::numeric_limits<double>::lowest(),
                  std::numeric_limits<double>::max(), std::numeric_limits<double>::epsilon(),
                  InvalidationLevel::Valid, PropertySemantics("Text")) {
-    addPort(inport_);
-    addPort(outport_);
+    addPorts(inport_, outport_);
 
-    addProperty(timeStep_);
-    addProperty(name_);
-    addProperty(timestamp_);
-    name_.setVisible(false);
-    name_.setReadOnly(true);
-    name_.setCurrentStateAsDefault();
-
-    timestamp_.setVisible(false);
-    timestamp_.setReadOnly(true);
-    timestamp_.setCurrentStateAsDefault();
+    addProperties(timeStep_, name_, timestamp_);
+    name_.setVisible(false).setReadOnly(true).setCurrentStateAsDefault();
+    timestamp_.setVisible(false).setReadOnly(true).setCurrentStateAsDefault();
 
     // This needs to be added by the child class
     // timeStep_.index_.autoLinkToProperty<VectorElementSelectorProcessor<T>>("timeStep.selectedSequenceIndex");
@@ -143,6 +136,8 @@ void VectorElementSelectorProcessor<T, OutportType>::process() {
         size_t index = std::min(data->size() - 1, static_cast<size_t>(timeStep_.index_.get() - 1));
 
         outport_.setData((*data)[index]);
+    } else {
+        outport_.detachData();
     }
 }
 

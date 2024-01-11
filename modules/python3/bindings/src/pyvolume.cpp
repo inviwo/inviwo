@@ -144,7 +144,102 @@ void exposeVolume(pybind11::module& m) {
         .def_property_readonly(
             "data", static_cast<const py::array& (VolumePy::*)() const>(&VolumePy::data));
 
-    py::bind_vector<VolumeSequence>(m, "VolumeSequence", py::module_local(false));
+
+    py::class_<VolumeSequence>(m, "VolumeSequence", py::module_local(false))
+        .def(py::init<>())
+        .def(py::init<std::span<std::shared_ptr<const Volume>>>(), py::arg("volumes"))
+        .def(py::init<const VolumeSequence&>(), "Copy constructor")
+
+        .def("__getitem__",
+             [](const VolumeSequence& v, std::ptrdiff_t i) -> std::shared_ptr<const Volume> {
+                 if (i < 0 && (i += v.size()) < 0) {
+                     throw py::index_error();
+                 }
+                 if (static_cast<size_t>(i) >= v.size()) {
+                     throw py::index_error();
+                 }
+                 return v[static_cast<size_t>(i)];
+             })
+
+        .def(
+            "__iter__",
+            [](const VolumeSequence& v) {
+                using ItType = VolumeSequence::const_iterator;
+                return py::make_iterator<py::return_value_policy::copy, ItType, ItType,
+                                         std::shared_ptr<const Volume>>(v.begin(), v.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "__bool__", [](const VolumeSequence& v) -> bool { return !v.empty(); },
+            "Check whether the list is nonempty")
+        .def("__len__", &VolumeSequence::size)
+        .def(
+            "erase",
+            [](VolumeSequence& v, size_t i) {
+                if (i >= v.size()) {
+                    throw py::index_error();
+                }
+                v.erase(v.begin() + i);
+            },
+            "erases element at index ``i``")
+
+        .def("empty", &VolumeSequence::empty, "checks whether the container is empty")
+        .def("size", &VolumeSequence::size, "returns the number of elements")
+        .def("push_back",
+             static_cast<void (VolumeSequence::*)(std::shared_ptr<const Volume>)>(
+                 &VolumeSequence::push_back),
+             "adds an element to the end")
+        .def("pop_back", &VolumeSequence::pop_back, "removes the last element")
+
+        .def("reserve", &VolumeSequence::reserve, "reserves storage")
+        .def("shrink_to_fit", &VolumeSequence::shrink_to_fit,
+             "reduces memory usage by freeing unused memory")
+
+        .def("clear", &VolumeSequence::clear, "clears the contents")
+        .def(
+            "front",
+            [](VolumeSequence& v) {
+                if (v.size()) {
+                    return v.front();
+                } else {
+                    throw py::index_error();
+                }
+            },
+            "access the first element")
+
+        .def(
+            "back",
+            [](VolumeSequence& v) {
+                if (v.size()) {
+                    return v.back();
+                } else {
+                    throw py::index_error();
+                }
+            },
+            "access the last element ")
+        .def(
+            "append",
+            [](VolumeSequence& v, std::shared_ptr<const Volume> value) { v.push_back(value); },
+            py::arg("x"), "Add an item to the end of the list")
+        .def(
+            "extend",
+            [](VolumeSequence& v, const VolumeSequence& src) {
+                v.insert(v.end(), src.begin(), src.end());
+            },
+            py::arg("L"), "Extend the list by appending all the items in the given list")
+        .def(
+            "insert",
+            [](VolumeSequence& v, std::ptrdiff_t i, std::shared_ptr<const Volume> x) {
+                // Can't use wrap_i; i == v.size() is OK
+                if (i < 0) {
+                    i += v.size();
+                }
+                if (i < 0 || static_cast<size_t>(i) > v.size()) {
+                    throw py::index_error();
+                }
+                v.insert(v.begin() + i, x);
+            },
+            py::arg("i"), py::arg("x"), "Insert an item at a given position.");
 
     exposeStandardDataPorts<Volume>(m, "Volume");
     exposeStandardDataPorts<VolumeSequence>(m, "VolumeSequence");

@@ -186,7 +186,7 @@ const DataFormatBase* niftiDataTypeToInviwoDataFormat(const nifti_image* niftiIm
 
     return DataFormatBase::get(type, components, precision);
 }
-std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(
+std::shared_ptr<VolumeSequence> NiftiReader::readData(
     const std::filesystem::path& filePath) {
     checkExists(filePath);
 
@@ -393,7 +393,7 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(
         }
     }
 
-    for (auto& vol : *volumes) {
+    for (auto vol : *volumes) {
         vol->dataMap_ = dm;
     }
 

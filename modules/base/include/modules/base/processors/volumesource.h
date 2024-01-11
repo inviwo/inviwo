@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/buttonproperty.h>              // for ButtonProperty
 #include <inviwo/core/properties/fileproperty.h>                // for FileProperty
 #include <inviwo/core/properties/optionproperty.h>              // for OptionProperty
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/util/fileextension.h>                     // for FileExtension, operator==
 #include <modules/base/properties/basisproperty.h>              // for BasisProperty
 #include <modules/base/properties/sequencetimerproperty.h>      // for SequenceTimerProperty
@@ -52,11 +53,9 @@ namespace inviwo {
 
 class Deserializer;
 class InviwoApplication;
-class Volume;
 
 class IVW_MODULE_BASE_API VolumeSource : public Processor {
 public:
-    using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 

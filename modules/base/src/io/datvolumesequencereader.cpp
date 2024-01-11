@@ -89,7 +89,7 @@ DatVolumeSequenceReader* DatVolumeSequenceReader::clone() const {
     return new DatVolumeSequenceReader(*this);
 }
 
-std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader::readData(
+std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
     const std::filesystem::path& filePath) {
 
     const auto fileDirectory = filePath.parent_path();

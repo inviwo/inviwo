@@ -30,32 +30,28 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 
 #include <vector>
 #include <memory>
 
 namespace inviwo {
 
-class Volume;
-using SharedVolume = std::shared_ptr<Volume>;
-using VolumeSequence = std::vector<SharedVolume>;
-
 namespace util {
 
-bool IVW_CORE_API hasTimestamps(const VolumeSequence& seq, bool checkfirstonly = true);
+IVW_CORE_API bool hasTimestamps(const VolumeSequence& seq, bool checkfirstonly = true);
 
-std::pair<double, double> IVW_CORE_API getTimestampRange(const VolumeSequence& seq,
+IVW_CORE_API std::pair<double, double> getTimestampRange(const VolumeSequence& seq,
                                                          bool sorted = true);
 
-bool IVW_CORE_API isSorted(const VolumeSequence& seq);
+IVW_CORE_API bool isSorted(const VolumeSequence& seq);
 VolumeSequence IVW_CORE_API sortSequence(const VolumeSequence& seq);
 
-std::pair<SharedVolume, SharedVolume> IVW_CORE_API getVolumesForTimestep(const VolumeSequence& seq,
-                                                                         double t,
-                                                                         bool sorted = true);
+IVW_CORE_API std::pair<std::shared_ptr<const Volume>, std::shared_ptr<const Volume>>
+getVolumesForTimestep(const VolumeSequence& seq, double t, bool sorted = true);
 
-bool IVW_CORE_API hasTimestamp(SharedVolume vol);
-double IVW_CORE_API getTimestamp(SharedVolume vol);
+bool IVW_CORE_API hasTimestamp(const std::shared_ptr<const Volume>& vol);
+double IVW_CORE_API getTimestamp(const std::shared_ptr<const Volume>& vol);
 }  // namespace util
 
 }  // namespace inviwo

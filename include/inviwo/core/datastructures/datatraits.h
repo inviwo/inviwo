@@ -234,6 +234,19 @@ struct DataTraits<std::vector<T, A>> {
     }
 };
 template <typename T, typename A>
+struct DataTraits<std::vector<const T, A>> {
+    static std::string classIdentifier() {
+        return util::appendIfNotEmpty(DataTraits<T>::classIdentifier(), ".const_vector");
+    }
+    static std::string dataName() { return fmt::format("vector<const {}>", DataTraits<T>::dataName()); }
+    static uvec3 colorCode() { return color::lighter(DataTraits<T>::colorCode(), 1.12f); }
+    static Document info(const std::vector<const T, A>& data) {
+        return detail::vectorInfo<T>(data.size(), data.empty() ? nullptr : &data.front(),
+                                     data.empty() ? nullptr : &data.back());
+    }
+};
+
+template <typename T, typename A>
 struct DataTraits<std::vector<T*, A>> {
     static std::string classIdentifier() {
         return util::appendIfNotEmpty(DataTraits<T>::classIdentifier(), ".ptr.vector");
@@ -247,6 +260,22 @@ struct DataTraits<std::vector<T*, A>> {
                                      data.empty() ? nullptr : data.back());
     }
 };
+
+template <typename T, typename A>
+struct DataTraits<std::vector<const T*, A>> {
+    static std::string classIdentifier() {
+        return util::appendIfNotEmpty(DataTraits<T>::classIdentifier(), ".const_ptr.vector");
+    }
+    static std::string dataName() { return fmt::format("vector<const {}*>", DataTraits<T>::dataName()); }
+    static uvec3 colorCode() {
+        return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
+    }
+    static Document info(const std::vector<const T*, A>& data) {
+        return detail::vectorInfo<T>(data.size(), data.empty() ? nullptr : data.front(),
+                                     data.empty() ? nullptr : data.back());
+    }
+};
+
 template <typename T, typename D, typename A>
 struct DataTraits<std::vector<std::unique_ptr<T, D>, A>> {
     static std::string classIdentifier() {
@@ -263,6 +292,25 @@ struct DataTraits<std::vector<std::unique_ptr<T, D>, A>> {
                                      data.empty() ? nullptr : data.back().get());
     }
 };
+
+template <typename T, typename D, typename A>
+struct DataTraits<std::vector<std::unique_ptr<const T, D>, A>> {
+    static std::string classIdentifier() {
+        return util::appendIfNotEmpty(DataTraits<T>::classIdentifier(), ".const_unique_ptr.vector");
+    }
+    static std::string dataName() {
+        return fmt::format("vector<unique_ptr<const {}>>", DataTraits<T>::dataName());
+    }
+    static uvec3 colorCode() {
+        return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
+    }
+    static Document info(const std::vector<std::unique_ptr<const T, D>, A>& data) {
+        return detail::vectorInfo<T>(data.size(), data.empty() ? nullptr : data.front().get(),
+                                     data.empty() ? nullptr : data.back().get());
+    }
+};
+
+
 template <typename T, typename A>
 struct DataTraits<std::vector<std::shared_ptr<T>, A>> {
     static std::string classIdentifier() {
@@ -275,6 +323,23 @@ struct DataTraits<std::vector<std::shared_ptr<T>, A>> {
         return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
     }
     static Document info(const std::vector<std::shared_ptr<T>, A>& data) {
+        return detail::vectorInfo<T>(data.size(), data.empty() ? nullptr : data.front().get(),
+                                     data.empty() ? nullptr : data.back().get());
+    }
+};
+
+template <typename T, typename A>
+struct DataTraits<std::vector<std::shared_ptr<const T>, A>> {
+    static std::string classIdentifier() {
+        return util::appendIfNotEmpty(DataTraits<T>::classIdentifier(), ".const_shared_ptr.vector");
+    }
+    static std::string dataName() {
+        return fmt::format("vector<shared_ptr<const {}>>", DataTraits<T>::dataName());
+    }
+    static uvec3 colorCode() {
+        return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
+    }
+    static Document info(const std::vector<std::shared_ptr<const T>, A>& data) {
         return detail::vectorInfo<T>(data.size(), data.empty() ? nullptr : data.front().get(),
                                      data.empty() ? nullptr : data.back().get());
     }

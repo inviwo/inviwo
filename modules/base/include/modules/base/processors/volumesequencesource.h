@@ -56,23 +56,6 @@ class DataReaderFactory;
 class Deserializer;
 class InviwoApplication;
 
-/** \docpage{org.inviwo.VolumeSequenceSource, Volume Vector Source}
- * ![](org.inviwo.VolumeSequenceSource.png?classIdentifier=org.inviwo.VolumeSequenceSource)
- * Loads a sequence of volume either from a 4D dataset or from a selection of 3D datasets. The
- * filename of the source data is available via MetaData.
- *
- * ### Outport
- *   * __data__ A sequence of volumes
- *
- * ### Properties
- *   * __Input type__ Select the input type, either select a single file to a 4D dataset or
- *                    use a folder
- *   * __Volume file__ If using single file mode, the file to load.
- *   * __Volume folder__ If using folder mode, the folder to look for data sets in.
- *   * __Filter__ If using folder mode, apply filter to the folder contents to find wanted
- *                data sets
- */
-
 /**
  * \class VolumeSequenceSource
  * \brief Loads a vector of volumes

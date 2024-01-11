@@ -31,11 +31,8 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/foreacharg.h>
+#include <inviwo/core/datastructures/datasequence.h>
 
-#include <warn/push>
-#include <warn/ignore/unused-function>
-#include <inviwo/core/properties/optionproperty.h>
-#include <warn/pop>
 
 // Cameras
 #include <inviwo/core/datastructures/camera/camera.h>

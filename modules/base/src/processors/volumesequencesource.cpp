@@ -70,7 +70,9 @@ const ProcessorInfo VolumeSequenceSource::processorInfo_{
     "Data Input",                     // Category
     CodeState::Stable,                // Code state
     Tags::CPU,                        // Tags
-};
+    R"(Loads a sequence of volume either from a 4D dataset or from a selection of 3D datasets. The
+       filename of the source data is available via MetaData.)"_unindentHelp};
+
 const ProcessorInfo VolumeSequenceSource::getProcessorInfo() const { return processorInfo_; }
 
 namespace {
@@ -92,14 +94,20 @@ std::optional<std::filesystem::path> getFirstFileInFolder(const std::filesystem:
 VolumeSequenceSource::VolumeSequenceSource(InviwoApplication* app)
     : Processor()
     , rf_{util::getDataReaderFactory(app)}
-    , outport_("data")
-    , inputType_("inputType", "Input type",
-                 {{"singlefile", "Single File", InputType::SingleFile},
-                  {"folder", "Folder", InputType::Folder}},
-                 1)
-    , file_("filename", "Volume file")
-    , folder_("folder", "Volume folder")
-    , filter_("filter_", "Filter", "*")
+    , outport_("data", "A sequence of volumes"_help)
+    , inputType_(
+          "inputType", "Input type",
+          "Select the input type, either select a single file to a 4D dataset or use a folder"_help,
+          {{"singlefile", "Single File", InputType::SingleFile},
+           {"folder", "Folder", InputType::Folder}},
+          1)
+    , file_("filename", "Volume file", "If using single file mode, the file to load"_help)
+    , folder_("folder", "Volume folder",
+              "If using folder mode, the folder to look for data sets in"_help)
+    , filter_(
+          "filter_", "Filter",
+          "If using folder mode, apply filter to the folder contents to find wanted data sets"_help,
+          "*")
     , reader_("reader", "Data Reader")
     , reload_("reload", "Reload data")
     , basis_("Basis", "Basis and offset")
