@@ -39,6 +39,7 @@
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationconvertermetafactory.h>
+#include <inviwo/core/datastructures/datasequence.h>
 #include <inviwo/core/ports/portfactoryobject.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
@@ -47,6 +48,8 @@
 #include <inviwo/core/processors/processorwidgetfactoryobject.h>
 #include <inviwo/core/processors/compositesink.h>
 #include <inviwo/core/processors/compositesource.h>
+#include <inviwo/core/processors/sequencecompositesink.h>
+#include <inviwo/core/processors/sequencecompositesource.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/propertyfactoryobject.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
@@ -221,6 +224,9 @@ public:
      */
     template <typename T>
     void registerDefaultsForDataType();
+
+    template <typename T>
+    void registerDefaultsForScalarDataType();
 
     void registerProperty(std::unique_ptr<PropertyFactoryObject> property);
     template <typename T>
@@ -398,6 +404,15 @@ void InviwoModule::registerPort() {
 
 template <typename T>
 void InviwoModule::registerDefaultsForDataType() {
+    registerDefaultsForScalarDataType<T>();
+
+    registerProcessor<SequenceCompositeSource<DataInport<DataSequence<T>>, DataOutport<T>>>();
+    registerProcessor<SequenceCompositeSink<DataInport<T>, DataOutport<DataSequence<T>>>>();
+
+}
+
+template <typename T>
+void InviwoModule::registerDefaultsForScalarDataType() {
     registerPort<DataInport<T>>();
     registerPort<DataInport<T, 0>>();
     registerPort<DataInport<T, 0, true>>();
