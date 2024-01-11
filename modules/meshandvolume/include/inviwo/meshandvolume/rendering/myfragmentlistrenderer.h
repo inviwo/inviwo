@@ -31,15 +31,9 @@
 #include <inviwo/meshandvolume/meshandvolumemoduledefine.h>
 
 #include <modules/opengl/inviwoopengl.h>
-#include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/buffer/bufferobject.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/util/dispatcher.h>
 #include <modules/meshrenderinggl/datastructures/rasterization.h>
 
@@ -47,16 +41,10 @@
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/datastructures/light/lightingstate.h>
 
-/*
-TODO: Upload volume to shader oit/display.frag and render volume
-*/
-
 namespace inviwo {
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
+class Image;
+
 class IVW_MODULE_MESHANDVOLUME_API MyFragmentListRenderer {
 public:
     MyFragmentListRenderer();
@@ -66,15 +54,17 @@ public:
 
     void setShaderUniforms(Shader& shader);
 
-    bool postPass(bool useIllustration, const Image* background);
+    bool postPass(bool useIllustration, const Image* background,
+                  std::function<void(Shader&)> setUniformsCallback);
 
     static bool supportsFragmentLists();
 
     typename Dispatcher<void()>::Handle onReload(std::function<void()> callback);
-    void setRaycastingState(const Rasterization::RaycastingState* rp, int id, TextureUnitContainer& units);
 
 private:
-    void buildShaders(bool hasBackground = false);
+    void initializeClearShader();
+    void initializeDisplayShader();
+    void rebuildShaders(bool hasBackground = false);
 
     void setUniforms(Shader& shader, TextureUnit& abuffUnit) const;
     void resizeBuffers(const size2_t& screenSize);

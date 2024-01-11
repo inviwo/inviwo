@@ -36,7 +36,6 @@
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/openglcapabilities.h>
 #include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/volume/volumeutils.h>
 
 #include <cstdio>
 #include <fmt/format.h>
@@ -44,6 +43,8 @@
 
 #include <modules/opengl/volume/volumegl.h>
 #include <inviwo/core/util/stringconversion.h>
+
+#pragma optimize("", off)
 
 namespace inviwo {
 
@@ -61,10 +62,17 @@ MyFragmentListRenderer::MyFragmentListRenderer()
     , display_("oit/simplequad.vert", "oit/mydisplay.frag", Shader::Build::No) {
 
     LGL_ERROR_CLASS;
-    buildShaders();
+    initializeDisplayShader();
+    initializeClearShader();
 
-    clear_.onReload([this]() { onReload_.invoke(); });
-    display_.onReload([this]() { onReload_.invoke(); });
+    clear_.onReload([this]() {
+        initializeClearShader();
+        onReload_.invoke();
+    });
+    display_.onReload([this]() {
+        initializeDisplayShader();
+        onReload_.invoke();
+    });
 
     abufferIdxTex_.initialize(nullptr);
 
@@ -115,7 +123,8 @@ void MyFragmentListRenderer::setShaderUniforms(Shader& shader) {
     // other uniforms
 }
 
-bool MyFragmentListRenderer::postPass(bool useIllustration, const Image* background) {
+bool MyFragmentListRenderer::postPass(bool useIllustration, const Image* background,
+                                      std::function<void(Shader&)> setUniformsCallback) {
     // memory barrier
     glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
 
@@ -136,26 +145,36 @@ bool MyFragmentListRenderer::postPass(bool useIllustration, const Image* backgro
     }
 
     // Build shader depending on inport state.
-    if (supportsFragmentLists() && static_cast<bool>(background) != builtWithBackground_)
-        buildShaders(background);
+    if (supportsFragmentLists() && static_cast<bool>(background) != builtWithBackground_) {
+        rebuildShaders(background);
+    }
 
     if (!useIllustration) {
         // render fragment list
         display_.activate();
         setUniforms(display_, textureUnits_[0]);
+        LGL_ERROR;
+        
+        setUniformsCallback(display_);
+        LGL_ERROR;
+        
         if (builtWithBackground_) {
             // Set depth buffer to read from.
             utilgl::bindAndSetUniforms(display_, textureUnits_, *background, "bg",
                                        ImageType::ColorDepth);
             display_.setUniform("reciprocalDimensions", vec2(1) / vec2(screenSize_));
         }
+        LGL_ERROR;
         utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
         utilgl::DepthMaskState depthMask(GL_TRUE);
         utilgl::DepthFuncState depthFunc(GL_ALWAYS);
         utilgl::CullFaceState culling(GL_NONE);
+        LGL_ERROR;
 
         utilgl::singleDrawImagePlaneRect();
+        LGL_ERROR;
+
         display_.deactivate();
     }
     textureUnits_.clear();
@@ -176,29 +195,22 @@ typename Dispatcher<void()>::Handle MyFragmentListRenderer::onReload(
     return onReload_.add(callback);
 }
 
-void MyFragmentListRenderer::setRaycastingState(const Rasterization::RaycastingState* rp, int id, TextureUnitContainer& units) {
-    display_.activate();
-    display_.setUniform("channel", rp->channel);
-    display_.setUniform("volumeId", id);
-    display_.setUniform("volWorldToData", rp->volume->getCoordinateTransformer().getWorldToDataMatrix());
-    
-    utilgl::bindAndSetUniforms(display_, units, *rp->volume, fmt::format("volumeSamplers[{}]", id));
-   
-    auto& unit = units.emplace_back();
-    utilgl::bindTexture(rp->tf, unit);
-    display_.setUniform(fmt::format("tfSamplers[{}]", id), unit);
-    //utilgl::setUniforms(display_, rp->lighting);
-
-    display_.deactivate();
-}
-
-void MyFragmentListRenderer::buildShaders(bool hasBackground) {
-    builtWithBackground_ = hasBackground;
-    auto* dfs = display_.getFragmentShaderObject();
-    dfs->clearShaderExtensions();
-
+void MyFragmentListRenderer::initializeClearShader() {
     auto* cfs = clear_.getFragmentShaderObject();
     cfs->clearShaderExtensions();
+
+    if (supportsFragmentLists()) {
+        cfs->addShaderExtension("GL_NV_gpu_shader5", true);
+        cfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
+        cfs->addShaderExtension("GL_NV_shader_buffer_load", true);
+        cfs->addShaderExtension("GL_EXT_bindable_uniform", true);
+    }
+    clear_.build();
+}
+
+void MyFragmentListRenderer::initializeDisplayShader() {
+    auto* dfs = display_.getFragmentShaderObject();
+    dfs->clearShaderExtensions();
 
     if (supportsFragmentLists()) {
         dfs->addShaderExtension("GL_NV_gpu_shader5", true);
@@ -206,22 +218,25 @@ void MyFragmentListRenderer::buildShaders(bool hasBackground) {
         dfs->addShaderExtension("GL_NV_shader_buffer_load", true);
         dfs->addShaderExtension("GL_EXT_bindable_uniform", true);
 
-        cfs->addShaderExtension("GL_NV_gpu_shader5", true);
-        cfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
-        cfs->addShaderExtension("GL_NV_shader_buffer_load", true);
-        cfs->addShaderExtension("GL_EXT_bindable_uniform", true);
-    }
-
-    if (supportsFragmentLists()) {
         if (builtWithBackground_) {
             dfs->addShaderDefine("BACKGROUND_AVAILABLE");
         } else {
             dfs->removeShaderDefine("BACKGROUND_AVAILABLE");
         }
-
-        display_.build();
-        clear_.build();
     }
+    display_.build();
+}
+
+void MyFragmentListRenderer::rebuildShaders(bool hasBackground) {
+    builtWithBackground_ = hasBackground;
+    auto* dfs = display_.getFragmentShaderObject();
+
+    if (builtWithBackground_) {
+        dfs->addShaderDefine("BACKGROUND_AVAILABLE");
+    } else {
+        dfs->removeShaderDefine("BACKGROUND_AVAILABLE");
+    }
+    display_.build();
 }
 
 void MyFragmentListRenderer::setUniforms(Shader& shader, TextureUnit& abuffUnit) const {

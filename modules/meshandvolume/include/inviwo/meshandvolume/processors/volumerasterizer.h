@@ -39,6 +39,7 @@
 #include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 
 namespace inviwo {
@@ -66,6 +67,7 @@ protected:
     std::shared_ptr<Shader> shader_;
     IsoTFProperty tf_;
     OptionPropertyInt channel_;
+    FloatProperty opacityScaling_;
     CameraProperty camera_;
     SimpleLightingProperty lighting_;
 };
@@ -79,7 +81,6 @@ public:
         return MyFragmentListRenderer::supportsFragmentLists();
     }
     virtual Document getInfo() const override;
-    virtual Rasterization* clone() const override;
     const RaycastingState* getRaycastingState() const;
 
 public:

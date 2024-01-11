@@ -36,6 +36,8 @@
 #include <modules/meshrenderinggl/ports/rasterizationport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <memory>
@@ -75,6 +77,8 @@ private:
 
     Image intermediateImage_;
 
+    CompositeProperty raycastingProps_; 
+    FloatProperty samplingDistance_;
     CameraProperty camera_;
     CameraTrackball trackball_;
 

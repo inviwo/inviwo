@@ -76,13 +76,17 @@ VolumeRasterizer::VolumeRasterizer()
                 {"channel3", "Channel 3", 2},
                 {"channel4", "Channel 4", 3}},
                0}
+    , opacityScaling_{"opacityScaling", "Opacity Scaling",
+                      util::ordinalScale(1.0f, 10.0f)
+                          .setInc(0.01f)
+                          .set("Scaling factor for the opacity in the transfer function."_help)}
     , camera_{"camera", "Camera", util::boundingBox(volumeInport_)}
     , lighting_{"lighting", "Lighting", &camera_} {
 
     addPort(volumeInport_);
     addPort(meshInport_);
     addPort(outport_);
-    addProperties(channel_, tf_, camera_, lighting_);
+    addProperties(channel_, opacityScaling_, tf_, camera_, lighting_);
 }
 
 void VolumeRasterizer::process() {
@@ -124,8 +128,8 @@ void VolumeRasterizer::setUniforms(Shader& shader, std::string_view prefix) cons
 }
 
 VolumeRasterization::VolumeRasterization(const VolumeRasterizer& processor)
-    : raycastState_{processor.tf_, processor.lighting_.getState(),
-                    processor.channel_.get(), processor.volumeInport_.getData()}
+    : raycastState_{processor.tf_, processor.lighting_.getState(), processor.channel_.get(),
+                    processor.opacityScaling_.get(), processor.volumeInport_.getData()}
     , shader_(processor.shader_)
     , volume_(processor.volumeInport_.getData())
     , boundingMesh_(processor.meshInport_.getData()) {}
@@ -134,17 +138,14 @@ void VolumeRasterization::rasterize(const ivec2& imageSize, const mat4& worldMat
                                     std::function<void(Shader&)> setUniformsRenderer) const {
     shader_->activate();
 
-    shader_->setUniform("halfScreenSize", imageSize / ivec2(2));
-
     const mat4 meshDataToVolumeData =
         volume_->getCoordinateTransformer().getWorldToDataMatrix() *
         boundingMesh_->getCoordinateTransformer().getDataToWorldMatrix();
-
     shader_->setUniform("meshDataToVolData", meshDataToVolumeData);
+    shader_->setUniform("halfScreenSize", imageSize / ivec2(2));
 
     setUniformsRenderer(*shader_);
 
-    // Set opengl states?
     {
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_FALSE);
         utilgl::DepthMaskState depthMask(GL_FALSE);
@@ -152,14 +153,12 @@ void VolumeRasterization::rasterize(const ivec2& imageSize, const mat4& worldMat
         utilgl::CullFaceState culling(GL_NONE);
         utilgl::GlBoolState blend(GL_BLEND, GL_FALSE);
 
-        // Finally, draw it
-        MeshDrawerGL::DrawObject drawer{boundingMesh_->getRepresentation<MeshGL>(),
-                                        boundingMesh_->getDefaultMeshInfo()};
-
         auto transform = CompositeTransform(boundingMesh_->getModelMatrix(),
                                             boundingMesh_->getWorldMatrix() * worldMatrixTransform);
         utilgl::setShaderUniforms(*shader_, transform, "geometry");
 
+        MeshDrawerGL::DrawObject drawer{boundingMesh_->getRepresentation<MeshGL>(),
+                                        boundingMesh_->getDefaultMeshInfo()};
         drawer.draw();
     }
     shader_->deactivate();
@@ -170,8 +169,6 @@ Document VolumeRasterization::getInfo() const {
     doc.append("p", "Volume rasterization functor");
     return doc;
 }
-
-Rasterization* VolumeRasterization::clone() const { return new VolumeRasterization(*this); }
 
 const VolumeRasterization::RaycastingState* VolumeRasterization::getRaycastingState() const {
     return &raycastState_;

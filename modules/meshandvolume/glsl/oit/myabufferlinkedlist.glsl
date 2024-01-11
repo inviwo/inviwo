@@ -163,7 +163,7 @@ vec4 compressVolumePixelData(abufferVolumePixel p) { // compress volume data
     p.position = clamp(p.position, 0, 1);
     uvec2 res = compressColor20bits(p.position.xyz);
     data.z = uintBitsToFloat(res.x);
-    data.w = uintBitsToFloat(res.y);
+    // data.w = uintBitsToFloat(res.y);
     //    data.w |= (p.id & 0x7) << 1; // Sets id
     //    data.w |= 0x1; // Sets type
     res.y |= (p.id & 0x7u) << 1u;
