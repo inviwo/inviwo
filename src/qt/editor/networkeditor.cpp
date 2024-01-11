@@ -824,6 +824,14 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         });
         expandAction->setDisabled(selectedComposites.empty());
 
+        auto sequenceAction = menu.addAction(QIcon(":/svgicons/composite-create-enabled.svg"),
+                                             tr("&Create Sequence Composite"));
+        connect(sequenceAction, &QAction::triggered, this, [this]() {
+            RenderContext::getPtr()->activateDefaultRenderContext();
+            util::replaceSelectionWithSequenceProcessor(*network_);
+        });
+        sequenceAction->setEnabled(selectedProcessors.size() > 1);
+
         auto selectPropAction =
             menu.addAction(QIcon(":/svgicons/developermode.svg"), tr("Configure Properties"));
         selectPropAction->setEnabled(selectedComposites.size() == 1);
