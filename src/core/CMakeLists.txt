@@ -252,6 +252,9 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetfactoryobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/sequencecompositesink.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/sequencecompositesource.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/sequenceprocessor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/advancedmaterialproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/boolcompositeproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/boolproperty.h
@@ -646,6 +649,9 @@ set(SOURCE_FILES
     processors/processorwidget.cpp
     processors/processorwidgetfactory.cpp
     processors/processorwidgetfactoryobject.cpp
+    processors/sequencecompositesink.cpp
+    processors/sequencecompositesource.cpp
+    processors/sequenceprocessor.cpp
     properties/advancedmaterialproperty.cpp
     properties/boolcompositeproperty.cpp
     properties/boolproperty.cpp
