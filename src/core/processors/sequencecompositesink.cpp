@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2024 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,40 +27,10 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/processors/sequencecompositesink.h>
 
 namespace inviwo {
 
-class ProcessorNetwork;
-class CompositeProcessor;
-
-namespace util {
-
-/**
- * Create a CompositeProcessor out of the currently selected processors and replace them with the
- * composite processors. The selected processors are moved from the current network into the sub
- * network of the composite processor. For each port connection between a selected and unselected
- * processor a composite sink or composite source processor is added to the sub network and
- * connections are made from the selected processor to the sink/source and from the composite
- * processor to the unselected processor. For each link between a selected and unselected processor,
- * a super property is added to the composite processor and the link added to it.
- */
-IVW_CORE_API void replaceSelectionWithCompositeProcessor(ProcessorNetwork& network);
-
-/**
- * Expand a composite processors sub network into its network. Effectively reversing the actions of
- * replaceSelectionWithCompositeProcessor. All processor except for composite sink and composite
- * source processors are moved from the sub network into the network of the composite processor.
- * Connections and links are the reestablished. Sources and sinks are discarded.
- */
-IVW_CORE_API void expandCompositeProcessorIntoNetwork(CompositeProcessor& composite);
-
-
-IVW_CORE_API void replaceSelectionWithSequenceProcessor(ProcessorNetwork& network);
-
-
-}  // namespace util
+SequenceCompositeSinkBase::SequenceCompositeSinkBase() : Processor() {}
 
 }  // namespace inviwo
