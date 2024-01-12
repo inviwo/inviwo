@@ -70,7 +70,6 @@
 #include <glm/vec2.hpp>               // for operator*, operator-
 #include <glm/vec4.hpp>               // for vec
 #include <glm/vector_relational.hpp>  // for any, greaterThan
-#include <half/half.hpp>              // for operator<<
 
 namespace inviwo {
 class Image;

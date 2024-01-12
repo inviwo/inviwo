@@ -93,15 +93,13 @@ HdrBloom::HdrBloom()
     , size_{512, 512}
     , horizontal_{util::make_array<levels_>([this](auto i) {
         return HdrBloom::FBOTex{
-            {},
-            {size_ / pow(size_t{2}, i + 1), GLFormats::get(DataFormatId::Vec4Float16), GL_LINEAR}};
+            {}, {size_ / pow(size_t{2}, i + 1), GL_RGBA, GL_RGBA16F, GL_HALF_FLOAT, GL_LINEAR}};
     })}
     , vertical_{util::make_array<levels_>([this](auto i) {
         return HdrBloom::FBOTex{
-            {},
-            {size_ / pow(size_t{2}, i + 1), GLFormats::get(DataFormatId::Vec4Float16), GL_LINEAR}};
+            {}, {size_ / pow(size_t{2}, i + 1), GL_RGBA, GL_RGBA16F, GL_HALF_FLOAT, GL_LINEAR}};
     })}
-    , bright_{{}, {size_, GLFormats::get(DataFormatId::Vec4Float16), GL_LINEAR}} {
+    , bright_{{}, {size_, GL_RGBA, GL_RGBA16F, GL_HALF_FLOAT, GL_LINEAR}} {
 
     addPort(inport_);
     addPort(outport_);

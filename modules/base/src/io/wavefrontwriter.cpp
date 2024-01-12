@@ -63,7 +63,6 @@
 #include <glm/matrix.hpp>            // for inverse, transpose
 #include <glm/vec3.hpp>              // for operator/
 #include <glm/vec4.hpp>              // for operator*, operator+
-#include <half/half.hpp>             // for operator/
 
 namespace inviwo {
 

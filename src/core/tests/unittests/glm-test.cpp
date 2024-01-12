@@ -41,10 +41,6 @@ namespace glm {}  // namespace glm
 
 namespace inviwo {
 
-TEST(GLMTest, isnan_half) {
-    auto isnan = util::isnan(std::numeric_limits<half_float::half>::quiet_NaN());
-    EXPECT_EQ(true, isnan);
-}
 TEST(GLMTest, isnan_vec2) {
     auto isnan = util::isnan(glm::vec2(std::numeric_limits<float>::quiet_NaN(), 1.f));
     EXPECT_EQ(true, isnan[0]);
@@ -65,10 +61,6 @@ TEST(GLMTest, isnan_vec4) {
     EXPECT_EQ(true, isnan[3]);
 }
 
-TEST(GLMTest, isfinite_half) {
-    auto isfinite = util::isfinite(std::numeric_limits<half_float::half>::quiet_NaN());
-    EXPECT_EQ(false, isfinite);
-}
 TEST(GLMTest, isfinite_vec2) {
     auto isfinite = util::isfinite(glm::vec2(std::numeric_limits<float>::quiet_NaN(), 1.f));
     EXPECT_EQ(false, isfinite[0]);

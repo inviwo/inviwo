@@ -152,8 +152,9 @@ auto dispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Result {
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto singleDispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Result {
     using Formats = DefaultDataFormats;
-    constexpr auto nFormats = std::tuple_size<Formats>::value;
+    constexpr auto nFormats = std::tuple_size_v<Formats>;
     using Functor = Result (*)(Callable&&, Args && ...);
+
     static constexpr auto table =
         detail::build_array<nFormats>([](auto formatIndex) constexpr -> Functor {
             constexpr size_t index = decltype(formatIndex)::value;
@@ -183,33 +184,30 @@ template <typename Result, template <class> class Predicate1, template <class> c
 auto doubleDispatch(DataFormatId format1, DataFormatId format2, Callable&& obj, Args&&... args)
     -> Result {
     using Formats = DefaultDataFormats;
-    constexpr auto nFormats = std::tuple_size<Formats>::value;
+    constexpr auto nFormats = std::tuple_size_v<Formats>;
     using Functor = Result (*)(Callable&&, Args && ...);
 
-    static constexpr auto table =
-        detail::build_array<nFormats * nFormats>([](auto formatIndex) constexpr -> Functor {
-            constexpr util::IndexMapper2D im(size2_t{nFormats, nFormats});
-            constexpr size2_t index = im(decltype(formatIndex)::value);
-            using Format1 = std::tuple_element_t<index[0], Formats>;
-            using Format2 = std::tuple_element_t<index[1], Formats>;
+    static constexpr auto table = detail::build_array<nFormats>([](auto index1) constexpr {
+        using Format1 = std::tuple_element_t<decltype(index1)::value, Formats>;
+        using T1 = typename Format1::type;
+        return detail::build_array<nFormats>([](auto index2) constexpr -> Functor {
+            using Format2 = std::tuple_element_t<decltype(index2)::value, Formats>;
+            using T2 = typename Format2::type;
             if constexpr (Predicate1<Format1>::value && Predicate2<Format2>::value) {
                 return [](Callable&& innerObj, Args&&... innerArgs) -> Result {
-                    using T1 = typename Format1::type;
-                    using T2 = typename Format2::type;
                     return innerObj.template operator()<T1, T2>(std::forward<Args>(innerArgs)...);
                 };
             } else {
                 return nullptr;
             }
         });
+    });
 
     using enum DataFormatId;
     if (format1 == NotSpecialized || format2 == NotSpecialized) {
         throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format not specialized");
-    }
-    constexpr util::IndexMapper2D im(size2_t{nFormats, nFormats});
-    const size2_t index{static_cast<size_t>(format1) - 1, static_cast<size_t>(format2) - 1};
-    if (auto fun = table[im(index)]) {
+    } else if (auto fun =
+                   table[static_cast<size_t>(format1) - 1][static_cast<size_t>(format2) - 1]) {
         return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
     } else {
         throw DispatchException(
@@ -223,40 +221,36 @@ template <typename Result, template <class> class Predicate1, template <class> c
 auto tripleDispatch(DataFormatId format1, DataFormatId format2, DataFormatId format3,
                     Callable&& obj, Args&&... args) -> Result {
     using Formats = DefaultDataFormats;
-    constexpr auto nFormats = std::tuple_size<Formats>::value;
+    constexpr auto nFormats = std::tuple_size_v<Formats>;
     using Functor = Result (*)(Callable&&, Args && ...);
 
-    static constexpr auto table = detail::build_array<nFormats * nFormats * nFormats>(
-        [](auto formatIndex) constexpr -> Functor {
-            constexpr util::IndexMapper3D im(size3_t{nFormats, nFormats, nFormats});
-            constexpr size3_t index = im(decltype(formatIndex)::value);
-            using Format1 = std::tuple_element_t<index[0], Formats>;
-            using Format2 = std::tuple_element_t<index[1], Formats>;
-            using Format3 = std::tuple_element_t<index[2], Formats>;
-            if constexpr (Predicate1<Format1>::value && Predicate2<Format2>::value &&
-                          Predicate3<Format3>::value) {
-                return [](Callable&& innerObj, Args&&... innerArgs) -> Result {
-                    using T1 = typename Format1::type;
-                    using T2 = typename Format2::type;
-                    using T3 = typename Format3::type;
-                    return innerObj.template operator()<T1, T2, T3>(
-                        std::forward<Args>(innerArgs)...);
-                };
-            } else {
-                return nullptr;
-            }
+    static constexpr auto table = detail::build_array<nFormats>([](auto index1) constexpr {
+        using Format1 = std::tuple_element_t<decltype(index1)::value, Formats>;
+        using T1 = typename Format1::type;
+        return detail::build_array<nFormats>([](auto index2) constexpr {
+            using Format2 = std::tuple_element_t<decltype(index2)::value, Formats>;
+            using T2 = typename Format2::type;
+            return detail::build_array<nFormats>([](auto index3) constexpr -> Functor {
+                using Format3 = std::tuple_element_t<decltype(index3)::value, Formats>;
+                using T3 = typename Format3::type;
+                if constexpr (Predicate1<Format1>::value && Predicate2<Format2>::value &&
+                              Predicate3<Format3>::value) {
+                    return [](Callable&& innerObj, Args&&... innerArgs) -> Result {
+                        return innerObj.template operator()<T1, T2, T3>(
+                            std::forward<Args>(innerArgs)...);
+                    };
+                } else {
+                    return nullptr;
+                }
+            });
         });
+    });
 
     using enum DataFormatId;
     if (format1 == NotSpecialized || format2 == NotSpecialized || format3 == NotSpecialized) {
         throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format not specialized");
-    }
-
-    constexpr util::IndexMapper3D im(size3_t{nFormats, nFormats, nFormats});
-    const size3_t index{static_cast<size_t>(format1) - 1, static_cast<size_t>(format2) - 1,
-                        static_cast<size_t>(format3) - 1};
-
-    if (auto fun = table[im(index)]) {
+    } else if (auto fun = table[static_cast<size_t>(format1) - 1][static_cast<size_t>(format2) - 1]
+                               [static_cast<size_t>(format3) - 1]) {
         return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
     } else {
         throw DispatchException(

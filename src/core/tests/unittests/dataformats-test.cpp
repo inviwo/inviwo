@@ -36,54 +36,6 @@
 
 namespace inviwo {
 
-TEST(DataFormatsTests, Float16Test) {
-    auto df = DataFloat16::get();
-    ASSERT_NE(nullptr, df);
-
-    EXPECT_EQ(2, df->getSize());
-    EXPECT_EQ(16, df->getPrecision());
-    EXPECT_EQ(1, df->getComponents());
-    EXPECT_STREQ("FLOAT16", df->getString());
-    EXPECT_EQ(NumericType::Float, df->getNumericType());
-    EXPECT_EQ(DataFormatId::Float16, df->getId());
-}
-
-TEST(DataFormatsTests, Float16Vec2Test) {
-    auto df = DataVec2Float16::get();
-    ASSERT_NE(nullptr, df);
-
-    EXPECT_EQ(4, df->getSize());
-    EXPECT_EQ(16, df->getPrecision());
-    EXPECT_EQ(2, df->getComponents());
-    EXPECT_STREQ("Vec2FLOAT16", df->getString());
-    EXPECT_EQ(NumericType::Float, df->getNumericType());
-    EXPECT_EQ(DataFormatId::Vec2Float16, df->getId());
-}
-
-TEST(DataFormatsTests, Float16Vec3Test) {
-    auto df = DataVec3Float16::get();
-    ASSERT_NE(nullptr, df);
-
-    EXPECT_EQ(6, df->getSize());
-    EXPECT_EQ(16, df->getPrecision());
-    EXPECT_EQ(3, df->getComponents());
-    EXPECT_STREQ("Vec3FLOAT16", df->getString());
-    EXPECT_EQ(NumericType::Float, df->getNumericType());
-    EXPECT_EQ(DataFormatId::Vec3Float16, df->getId());
-}
-
-TEST(DataFormatsTests, Float16Vec4Test) {
-    auto df = DataVec4Float16::get();
-    ASSERT_NE(nullptr, df);
-
-    EXPECT_EQ(8, df->getSize());
-    EXPECT_EQ(16, df->getPrecision());
-    EXPECT_EQ(4, df->getComponents());
-    EXPECT_STREQ("Vec4FLOAT16", df->getString());
-    EXPECT_EQ(NumericType::Float, df->getNumericType());
-    EXPECT_EQ(DataFormatId::Vec4Float16, df->getId());
-}
-
 TEST(DataFormatsTests, Float32Test) {
     auto df = DataFloat32::get();
     ASSERT_NE(nullptr, df);

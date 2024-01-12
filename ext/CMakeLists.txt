@@ -188,15 +188,6 @@ else()
 
 endif()
 
-# Half
-message(STATUS "add subdirectory: half")
-add_subdirectory(half)
-ivw_register_license_file(NAME "half" VERSION 1.12.0 MODULE Core EXT
-    URL "http://half.sourceforge.net"
-    TYPE "The MIT License"
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/half/LICENSE.txt
-)
-
 # utfcpp
 option(IVW_USE_EXTERNAL_UTFCPP "UTFCPP is provided externaly" OFF)
 if(NOT IVW_USE_EXTERNAL_UTFCPP)

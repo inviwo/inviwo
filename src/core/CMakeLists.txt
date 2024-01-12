@@ -868,7 +868,6 @@ find_package(warn CONFIG REQUIRED)
 find_package(md4c CONFIG REQUIRED)
 find_package(ticpp CONFIG REQUIRED)
 find_package(sml CONFIG REQUIRED)
-find_package(half CONFIG REQUIRED)
 find_package(flags CONFIG REQUIRED)
 find_package(tracywrap CONFIG REQUIRED)
 
@@ -895,7 +894,6 @@ target_link_libraries(inviwo-core
         warn::warn
         inviwo::tclap
         inviwo::sml
-        inviwo::half
         inviwo::flags
         inviwo::tracywrap
         fmt::fmt
@@ -977,7 +975,7 @@ install(DIRECTORY ${IVW_ROOT_DIR}/cmake/templates
 )
 
 
-set(packages fmt glm tclap roaring llnl-units utf8cpp warn ticpp md4c sml half flags tracywrap)
+set(packages fmt glm tclap roaring llnl-units utf8cpp warn ticpp md4c sml flags tracywrap)
 if(WIN32)
     list(APPEND packages stackwalker)
 endif()

@@ -67,24 +67,6 @@ size_t commonFormatPrecision(std::span<const DataFormatBase*> formats) {
 
 }  // namespace util
 
-namespace {
-struct AddInstance {
-    template <typename T>
-    void operator()(std::array<std::unique_ptr<DataFormatBase>,
-                               static_cast<int>(DataFormatId::NumberOfFormats)>& res) {
-        res[++i] = std::make_unique<T>();
-    }
-    int i = static_cast<int>(DataFormatId::NotSpecialized);
-};
-
-struct AddName {
-    template <typename T>
-    void operator()(std::unordered_map<std::string, const DataFormatBase*>& res) {
-        res[toLower(T::str())] = T::get();
-    }
-};
-}  // namespace
-
 DataFormatException::DataFormatException(const std::string& message, ExceptionContext context)
     : Exception(message, context) {}
 
@@ -98,6 +80,10 @@ DataFormatBase::DataFormatBase(DataFormatId t, size_t c, size_t size, double max
     , min_(min)
     , lowest_(lowest)
     , formatStr_(s) {}
+
+DataFormatBase::DataFormatBase()
+    : DataFormatBase(DataFormatId::NotSpecialized, 0, 0, 0.0, 0.0, 0.0, NumericType::NotSpecialized,
+                     "NotSpecialized") {}
 
 DataFormatBase::~DataFormatBase() = default;
 
@@ -143,18 +129,22 @@ void DataFormatBase::vec4DoubleToValue(dvec4 val, void* loc) const {
 const DataFormatBase* DataFormatBase::get() { return getPointer(DataFormatId::NotSpecialized); }
 
 const DataFormatBase* DataFormatBase::getPointer(DataFormatId id) {
-    using DataFormatArray = std::array<std::unique_ptr<DataFormatBase>,
-                                       static_cast<int>(DataFormatId::NumberOfFormats)>;
+    static_assert(static_cast<size_t>(DataFormatId::NumberOfFormats) ==
+                  std::tuple_size_v<DefaultDataFormats> + 1);
+
+    using DataFormatArray =
+        std::array<DataFormatBase, static_cast<int>(DataFormatId::NumberOfFormats)>;
     static const DataFormatArray instances = []() {
-        DataFormatArray res;
-        res[static_cast<int>(DataFormatId::NotSpecialized)] =
-            std::make_unique<DataFormatBase>(DataFormatId::NotSpecialized, 0, 0, 0.0, 0.0, 0.0,
-                                             NumericType::NotSpecialized, "NotSpecialized");
-        util::for_each_type<DefaultDataFormats>{}(AddInstance{}, res);
+        DataFormatArray res = {};
+        util::for_each_type<DefaultDataFormats>{}(
+            [&, i = static_cast<int>(DataFormatId::NotSpecialized)]<typename T>() mutable {
+                static_assert(sizeof(T) == sizeof(DataFormatBase));
+                new (&res[++i]) T();
+            });
         return res;
     }();
 
-    return instances[static_cast<int>(id)].get();
+    return &instances[static_cast<int>(id)];
 }
 
 const DataFormatBase* DataFormatBase::get(DataFormatId id) {
@@ -178,7 +168,10 @@ const DataFormatBase* DataFormatBase::get(const std::string& name) {
         res["float"] = DataFloat32::get();
         res["double"] = DataFloat64::get();
         res["notspecialized"] = DataFormatBase::get();
-        util::for_each_type<DefaultDataFormats>{}(AddName{}, res);
+
+        util::for_each_type<DefaultDataFormats>{}(
+            [&]<typename T>() { res[toLower(T::str())] = T::get(); });
+
         return res;
     }();
 
@@ -197,8 +190,6 @@ const DataFormatBase* DataFormatBase::get(NumericType type, size_t components, s
             switch (components) {
                 case 1:
                     switch (precision) {
-                        case 16:
-                            return DataFloat16::get();
                         case 32:
                             return DataFloat32::get();
                         case 64:
@@ -207,8 +198,6 @@ const DataFormatBase* DataFormatBase::get(NumericType type, size_t components, s
                     break;
                 case 2:
                     switch (precision) {
-                        case 16:
-                            return DataVec2Float16::get();
                         case 32:
                             return DataVec2Float32::get();
                         case 64:
@@ -217,8 +206,6 @@ const DataFormatBase* DataFormatBase::get(NumericType type, size_t components, s
                     break;
                 case 3:
                     switch (precision) {
-                        case 16:
-                            return DataVec3Float16::get();
                         case 32:
                             return DataVec3Float32::get();
                         case 64:
@@ -227,8 +214,6 @@ const DataFormatBase* DataFormatBase::get(NumericType type, size_t components, s
                     break;
                 case 4:
                     switch (precision) {
-                        case 16:
-                            return DataVec4Float16::get();
                         case 32:
                             return DataVec4Float32::get();
                         case 64:

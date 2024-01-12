@@ -31,6 +31,8 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/glmutils.h>
 
+#include <algorithm>
+
 namespace inviwo::util {
 
 // Type conversion

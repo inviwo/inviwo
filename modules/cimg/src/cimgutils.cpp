@@ -90,7 +90,6 @@
 #include <glm/detail/setup.hpp>      // for length_t
 #include <glm/gtc/type_ptr.hpp>      // for value_ptr
 #include <glm/vec2.hpp>              // for vec<>::(anonymous)
-#include <half/half.hpp>             // for half, operator!=
 #include <jpeglib.h>                 // for JPEG_LIB_VERSION_...
 #include <warn/pop>
 
@@ -113,73 +112,6 @@
 #ifdef cimg_use_openexr
 #include <OpenEXRConfig.h>  // for OPENEXR_VERSION_M...
 #endif
-
-// add CImg type specialization for half_float::half
-namespace cimg_library {
-namespace cimg {
-
-template <>
-struct type<half_float::half> {
-    static const char* string() {
-        static const char* const s = "half";
-        return s;
-    }
-    static bool is_float() { return true; }
-    static bool is_inf(const long double val) {
-        return half_float::isinf(static_cast<half_float::half>(val));
-    }
-    static bool is_nan(const long double val) {
-        return half_float::isnan(static_cast<half_float::half>(val));
-    }
-    static half_float::half min() { return std::numeric_limits<half_float::half>::lowest(); }
-    static half_float::half max() { return std::numeric_limits<half_float::half>::max(); }
-    static half_float::half inf() { return std::numeric_limits<half_float::half>::infinity(); }
-    static half_float::half nan() { return std::numeric_limits<half_float::half>::quiet_NaN(); }
-    static half_float::half cut(const double val) { return static_cast<half_float::half>(val); }
-    static const char* format() { return "%.9g"; }
-    static const char* format_s() { return "%g"; }
-    static double format(const half_float::half val) { return static_cast<double>(val); }
-};
-
-template <>
-struct superset<bool, half_float::half> {
-    typedef half_float::half type;
-};
-template <>
-struct superset<half_float::half, unsigned short> {
-    typedef float type;
-};
-template <>
-struct superset<half_float::half, short> {
-    typedef float type;
-};
-template <>
-struct superset<half_float::half, unsigned int> {
-    typedef float type;
-};
-template <>
-struct superset<half_float::half, int> {
-    typedef float type;
-};
-template <>
-struct superset<half_float::half, cimg_uint64> {
-    typedef float type;
-};
-template <>
-struct superset<half_float::half, cimg_int64> {
-    typedef float type;
-};
-template <>
-struct superset<half_float::half, float> {
-    typedef float type;
-};
-template <>
-struct superset<half_float::half, double> {
-    typedef double type;
-};
-
-}  // namespace cimg
-}  // namespace cimg_library
 
 namespace inviwo {
 

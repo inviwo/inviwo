@@ -33,6 +33,8 @@
 #include <sstream>
 #include <algorithm>
 
+#include <iostream>
+
 #include <inviwo/core/util/glm.h>
 
 namespace inviwo {

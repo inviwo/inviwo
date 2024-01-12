@@ -135,7 +135,7 @@ LayerShader::LayerShader(std::shared_ptr<StringShaderResource> fragmentShader)
               [&]() {
                   std::vector<OptionPropertyOption<DataFormatId>> formats;
                   formats.emplace_back("asinput", "Same as Input", DataFormatId::NotSpecialized);
-                  util::for_each_type<std::tuple<DataFloat16, DataFloat32, DataFloat64, DataInt8,
+                  util::for_each_type<std::tuple<DataFloat32, DataFloat64, DataInt8,
                                                  DataInt16, DataInt32, DataInt64, DataUInt8,
                                                  DataUInt16, DataUInt32, DataUInt64>>{}(
                       [&]<typename Format>() {

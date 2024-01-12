@@ -51,7 +51,6 @@ class DataFormatBase;
 // Do not set enums specifically, as NumberOfFormats is used to count the number of enums
 enum class DataFormatId : char {
     NotSpecialized = 0,
-    Float16,
     Float32,
     Float64,
     Int8,
@@ -62,7 +61,6 @@ enum class DataFormatId : char {
     UInt16,
     UInt32,
     UInt64,
-    Vec2Float16,
     Vec2Float32,
     Vec2Float64,
     Vec2Int8,
@@ -73,7 +71,6 @@ enum class DataFormatId : char {
     Vec2UInt16,
     Vec2UInt32,
     Vec2UInt64,
-    Vec3Float16,
     Vec3Float32,
     Vec3Float64,
     Vec3Int8,
@@ -84,7 +81,6 @@ enum class DataFormatId : char {
     Vec3UInt16,
     Vec3UInt32,
     Vec3UInt64,
-    Vec4Float16,
     Vec4Float32,
     Vec4Float64,
     Vec4Int8,
@@ -184,21 +180,12 @@ public:
     virtual void vec3DoubleToValue(dvec3, void*) const;
     virtual void vec4DoubleToValue(dvec4, void*) const;
 
-    // clang-format off
-    // T Models a type with a type
-    //    T::type = return type
-    // and a function:
-    //    template <class T>
-    //    type dispatch(Args... args);
-    template <typename T, typename... Args>
-    [[deprecated("was declared deprecated. Use dispatch in formatdispatch.h")]]
-    auto dispatch(T& obj, Args&&... args) const -> typename T::type;
-    // clang-format on
-
     template <typename T>
     static constexpr DataFormatId typeToId() noexcept;
 
 protected:
+    DataFormatBase();
+
     static const DataFormatBase* getPointer(DataFormatId id);
 
     DataFormatId formatId_;
@@ -281,8 +268,7 @@ constexpr DataFormatId DataFormat<T>::id() {
 template <typename T>
 constexpr DataFormatId DataFormatBase::typeToId() noexcept {
     // clang-format off
-    if constexpr(std::is_same_v<T, half_float::half>) { return DataFormatId::Float16; }
-    else if constexpr(std::is_same_v<T, glm::f32>) { return DataFormatId::Float32; }
+    if constexpr(std::is_same_v<T, glm::f32>) { return DataFormatId::Float32; }
     else if constexpr(std::is_same_v<T, glm::f64>) { return DataFormatId::Float64; }
     else if constexpr(std::is_same_v<T, glm::i8>)  { return DataFormatId::Int8; }
     else if constexpr(std::is_same_v<T, glm::i16>) { return DataFormatId::Int16; }
@@ -293,9 +279,6 @@ constexpr DataFormatId DataFormatBase::typeToId() noexcept {
     else if constexpr(std::is_same_v<T, glm::u32>) { return DataFormatId::UInt32; }
     else if constexpr(std::is_same_v<T, glm::u64>) { return DataFormatId::UInt64; }
 
-    else if constexpr(std::is_same_v<T, glm::tvec2<half_float::half, glm::defaultp>>) {
-        return DataFormatId::Vec2Float16;
-    }
     else if constexpr(std::is_same_v<T, glm::f32vec2>) { return DataFormatId::Vec2Float32; }
     else if constexpr(std::is_same_v<T, glm::f64vec2>) { return DataFormatId::Vec2Float64; }
     else if constexpr(std::is_same_v<T, glm::i8vec2>) { return DataFormatId::Vec2Int8; }
@@ -307,9 +290,6 @@ constexpr DataFormatId DataFormatBase::typeToId() noexcept {
     else if constexpr(std::is_same_v<T, glm::u32vec2>) { return DataFormatId::Vec2UInt32; }
     else if constexpr(std::is_same_v<T, glm::u64vec2>) { return DataFormatId::Vec2UInt64; }
 
-    else if constexpr(std::is_same_v<T, glm::tvec3<half_float::half, glm::defaultp>>) {
-        return DataFormatId::Vec3Float16;
-    }
     else if constexpr(std::is_same_v<T, glm::f32vec3>) { return DataFormatId::Vec3Float32; }
     else if constexpr(std::is_same_v<T, glm::f64vec3>) { return DataFormatId::Vec3Float64; }
     else if constexpr(std::is_same_v<T, glm::i8vec3>) { return DataFormatId::Vec3Int8; }
@@ -321,9 +301,6 @@ constexpr DataFormatId DataFormatBase::typeToId() noexcept {
     else if constexpr(std::is_same_v<T, glm::u32vec3>) { return DataFormatId::Vec3UInt32; }
     else if constexpr(std::is_same_v<T, glm::u64vec3>) { return DataFormatId::Vec3UInt64; }
 
-    else if constexpr(std::is_same_v<T, glm::tvec4<half_float::half, glm::defaultp>>) {
-        return DataFormatId::Vec4Float16;
-    }
     else if constexpr(std::is_same_v<T, glm::f32vec4>) { return DataFormatId::Vec4Float32; }
     else if constexpr(std::is_same_v<T, glm::f64vec4>) { return DataFormatId::Vec4Float64; }
     else if constexpr(std::is_same_v<T, glm::i8vec4>) { return DataFormatId::Vec4Int8; }
@@ -497,8 +474,6 @@ void DataFormat<T>::vec4DoubleToValue(dvec4 in, void* out) const {
 
 /*---------------Single Value Formats------------------*/
 // Floats
-using f16 = half_float::half;
-using DataFloat16 = DataFormat<f16>;
 using DataFloat32 = DataFormat<glm::f32>;
 using DataFloat64 = DataFormat<glm::f64>;
 
@@ -516,8 +491,6 @@ using DataUInt64 = DataFormat<glm::u64>;
 
 /*---------------Vec2 Formats--------------------*/
 // Floats
-using f16vec2 = glm::tvec2<half_float::half, glm::defaultp>;
-using DataVec2Float16 = DataFormat<f16vec2>;
 using DataVec2Float32 = DataFormat<glm::f32vec2>;
 using DataVec2Float64 = DataFormat<glm::f64vec2>;
 
@@ -535,8 +508,6 @@ using DataVec2UInt64 = DataFormat<glm::u64vec2>;
 
 /*---------------Vec3 Formats--------------------*/
 // Floats
-using f16vec3 = glm::tvec3<half_float::half, glm::defaultp>;
-using DataVec3Float16 = DataFormat<f16vec3>;
 using DataVec3Float32 = DataFormat<glm::f32vec3>;
 using DataVec3Float64 = DataFormat<glm::f64vec3>;
 
@@ -555,8 +526,6 @@ using DataVec3UInt64 = DataFormat<glm::u64vec3>;
 /*---------------Vec4 Value Formats------------------*/
 
 // Floats
-using f16vec4 = glm::tvec4<half_float::half, glm::defaultp>;
-using DataVec4Float16 = DataFormat<f16vec4>;
 using DataVec4Float32 = DataFormat<glm::f32vec4>;
 using DataVec4Float64 = DataFormat<glm::f64vec4>;
 
@@ -572,112 +541,14 @@ using DataVec4UInt16 = DataFormat<glm::u16vec4>;
 using DataVec4UInt32 = DataFormat<glm::u32vec4>;
 using DataVec4UInt64 = DataFormat<glm::u64vec4>;
 
-using DefaultDataFormats = std::tuple<
-    DataFloat16, DataFloat32, DataFloat64, DataInt8, DataInt16, DataInt32, DataInt64, DataUInt8,
-    DataUInt16, DataUInt32, DataUInt64, DataVec2Float16, DataVec2Float32, DataVec2Float64,
-    DataVec2Int8, DataVec2Int16, DataVec2Int32, DataVec2Int64, DataVec2UInt8, DataVec2UInt16,
-    DataVec2UInt32, DataVec2UInt64, DataVec3Float16, DataVec3Float32, DataVec3Float64, DataVec3Int8,
-    DataVec3Int16, DataVec3Int32, DataVec3Int64, DataVec3UInt8, DataVec3UInt16, DataVec3UInt32,
-    DataVec3UInt64, DataVec4Float16, DataVec4Float32, DataVec4Float64, DataVec4Int8, DataVec4Int16,
-    DataVec4Int32, DataVec4Int64, DataVec4UInt8, DataVec4UInt16, DataVec4UInt32, DataVec4UInt64>;
-
-template <typename T, typename... Args>
-auto DataFormatBase::dispatch(T& obj, Args&&... args) const -> typename T::type {
-    using R = typename T::type;
-    switch (formatId_) {
-        case DataFormatId::Float16:
-            return obj.template dispatch<DataFloat16>(std::forward<Args>(args)...);
-        case DataFormatId::Float32:
-            return obj.template dispatch<DataFloat32>(std::forward<Args>(args)...);
-        case DataFormatId::Float64:
-            return obj.template dispatch<DataFloat64>(std::forward<Args>(args)...);
-        case DataFormatId::Int8:
-            return obj.template dispatch<DataInt8>(std::forward<Args>(args)...);
-        case DataFormatId::Int16:
-            return obj.template dispatch<DataInt16>(std::forward<Args>(args)...);
-        case DataFormatId::Int32:
-            return obj.template dispatch<DataInt32>(std::forward<Args>(args)...);
-        case DataFormatId::Int64:
-            return obj.template dispatch<DataInt64>(std::forward<Args>(args)...);
-        case DataFormatId::UInt8:
-            return obj.template dispatch<DataUInt8>(std::forward<Args>(args)...);
-        case DataFormatId::UInt16:
-            return obj.template dispatch<DataUInt16>(std::forward<Args>(args)...);
-        case DataFormatId::UInt32:
-            return obj.template dispatch<DataUInt32>(std::forward<Args>(args)...);
-        case DataFormatId::UInt64:
-            return obj.template dispatch<DataUInt64>(std::forward<Args>(args)...);
-        case DataFormatId::Vec2Float16:
-            return obj.template dispatch<DataVec2Float16>(std::forward<Args>(args)...);
-        case DataFormatId::Vec2Float32:
-            return obj.template dispatch<DataVec2Float32>(std::forward<Args>(args)...);
-        case DataFormatId::Vec2Float64:
-            return obj.template dispatch<DataVec2Float64>(std::forward<Args>(args)...);
-        case DataFormatId::Vec2Int8:
-            return obj.template dispatch<DataVec2Int8>(std::forward<Args>(args)...);
-        case DataFormatId::Vec2Int16:
-            return obj.template dispatch<DataVec2Int16>(std::forward<Args>(args)...);
-        case DataFormatId::Vec2Int32:
-            return obj.template dispatch<DataVec2Int32>(std::forward<Args>(args)...);
-        case DataFormatId::Vec2Int64:
-            return obj.template dispatch<DataVec2Int64>(std::forward<Args>(args)...);
-        case DataFormatId::Vec2UInt8:
-            return obj.template dispatch<DataVec2UInt8>(std::forward<Args>(args)...);
-        case DataFormatId::Vec2UInt16:
-            return obj.template dispatch<DataVec2UInt16>(std::forward<Args>(args)...);
-        case DataFormatId::Vec2UInt32:
-            return obj.template dispatch<DataVec2UInt32>(std::forward<Args>(args)...);
-        case DataFormatId::Vec2UInt64:
-            return obj.template dispatch<DataVec2UInt64>(std::forward<Args>(args)...);
-        case DataFormatId::Vec3Float16:
-            return obj.template dispatch<DataVec3Float16>(std::forward<Args>(args)...);
-        case DataFormatId::Vec3Float32:
-            return obj.template dispatch<DataVec3Float32>(std::forward<Args>(args)...);
-        case DataFormatId::Vec3Float64:
-            return obj.template dispatch<DataVec3Float64>(std::forward<Args>(args)...);
-        case DataFormatId::Vec3Int8:
-            return obj.template dispatch<DataVec3Int8>(std::forward<Args>(args)...);
-        case DataFormatId::Vec3Int16:
-            return obj.template dispatch<DataVec3Int16>(std::forward<Args>(args)...);
-        case DataFormatId::Vec3Int32:
-            return obj.template dispatch<DataVec3Int32>(std::forward<Args>(args)...);
-        case DataFormatId::Vec3Int64:
-            return obj.template dispatch<DataVec3Int64>(std::forward<Args>(args)...);
-        case DataFormatId::Vec3UInt8:
-            return obj.template dispatch<DataVec3UInt8>(std::forward<Args>(args)...);
-        case DataFormatId::Vec3UInt16:
-            return obj.template dispatch<DataVec3UInt16>(std::forward<Args>(args)...);
-        case DataFormatId::Vec3UInt32:
-            return obj.template dispatch<DataVec3UInt32>(std::forward<Args>(args)...);
-        case DataFormatId::Vec3UInt64:
-            return obj.template dispatch<DataVec3UInt64>(std::forward<Args>(args)...);
-        case DataFormatId::Vec4Float16:
-            return obj.template dispatch<DataVec4Float16>(std::forward<Args>(args)...);
-        case DataFormatId::Vec4Float32:
-            return obj.template dispatch<DataVec4Float32>(std::forward<Args>(args)...);
-        case DataFormatId::Vec4Float64:
-            return obj.template dispatch<DataVec4Float64>(std::forward<Args>(args)...);
-        case DataFormatId::Vec4Int8:
-            return obj.template dispatch<DataVec4Int8>(std::forward<Args>(args)...);
-        case DataFormatId::Vec4Int16:
-            return obj.template dispatch<DataVec4Int16>(std::forward<Args>(args)...);
-        case DataFormatId::Vec4Int32:
-            return obj.template dispatch<DataVec4Int32>(std::forward<Args>(args)...);
-        case DataFormatId::Vec4Int64:
-            return obj.template dispatch<DataVec4Int64>(std::forward<Args>(args)...);
-        case DataFormatId::Vec4UInt8:
-            return obj.template dispatch<DataVec4UInt8>(std::forward<Args>(args)...);
-        case DataFormatId::Vec4UInt16:
-            return obj.template dispatch<DataVec4UInt16>(std::forward<Args>(args)...);
-        case DataFormatId::Vec4UInt32:
-            return obj.template dispatch<DataVec4UInt32>(std::forward<Args>(args)...);
-        case DataFormatId::Vec4UInt64:
-            return obj.template dispatch<DataVec4UInt64>(std::forward<Args>(args)...);
-        case DataFormatId::NotSpecialized:
-        case DataFormatId::NumberOfFormats:
-        default:
-            return R();
-    }
-}
+using DefaultDataFormats =
+    std::tuple<DataFloat32, DataFloat64, DataInt8, DataInt16, DataInt32, DataInt64, DataUInt8,
+               DataUInt16, DataUInt32, DataUInt64, DataVec2Float32, DataVec2Float64, DataVec2Int8,
+               DataVec2Int16, DataVec2Int32, DataVec2Int64, DataVec2UInt8, DataVec2UInt16,
+               DataVec2UInt32, DataVec2UInt64, DataVec3Float32, DataVec3Float64, DataVec3Int8,
+               DataVec3Int16, DataVec3Int32, DataVec3Int64, DataVec3UInt8, DataVec3UInt16,
+               DataVec3UInt32, DataVec3UInt64, DataVec4Float32, DataVec4Float64, DataVec4Int8,
+               DataVec4Int16, DataVec4Int32, DataVec4Int64, DataVec4UInt8, DataVec4UInt16,
+               DataVec4UInt32, DataVec4UInt64>;
 
 }  // namespace inviwo

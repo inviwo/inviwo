@@ -51,7 +51,6 @@
 
 #include <fmt/core.h>      // for basic_string_view
 #include <glm/gtx/io.hpp>  // for operator<<
-#include <half/half.hpp>   // for operator<<
 
 namespace inviwo {
 

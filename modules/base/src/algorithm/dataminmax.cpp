@@ -43,8 +43,6 @@
 #include <memory>         // for unique_ptr
 #include <unordered_set>  // for unordered_set
 
-#include <half/half.hpp>  // for operator<
-
 namespace inviwo {
 
 std::pair<dvec4, dvec4> util::volumeMinMax(const VolumeRAM* volume, IgnoreSpecialValues ignore) {

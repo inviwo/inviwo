@@ -59,7 +59,6 @@
 #include <fmt/core.h>      // for basic_string_view
 #include <glm/gtx/io.hpp>  // for operator<<
 #include <glm/vec2.hpp>    // for vec<>::(anonymous)
-#include <half/half.hpp>   // for operator<<
 
 class QModelIndex;
 

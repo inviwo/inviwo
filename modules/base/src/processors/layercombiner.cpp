@@ -131,12 +131,12 @@ void LayerCombiner::process() {
         for (size_t inputChannel = 0; inputChannel < activePorts.size(); ++inputChannel) {
             auto&& [port, srcChannel] = activePorts[inputChannel];
             port->getData()->getRepresentation<LayerRAM>()->dispatch<void>(
-                [&](auto srclayer, int srcChannel) {
+                [&](auto srclayer, int srcChannelArg) {
                     const auto srcData = srclayer->getDataTyped();
 
                     for (size_t i = 0; i < glm::compMul(dims); ++i) {
                         util::glmcomp(destData[i], inputChannel) =
-                            static_cast<ValueType>(util::glmcomp(srcData[i], srcChannel));
+                            static_cast<ValueType>(util::glmcomp(srcData[i], srcChannelArg));
                     }
                 },
                 srcChannel);

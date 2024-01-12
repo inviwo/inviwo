@@ -54,7 +54,6 @@
 #include <glm/common.hpp>              // for max, min
 #include <glm/gtx/component_wise.hpp>  // for compMax, compMin
 #include <glm/gtx/hash.hpp>            // for hash<>::operator()
-#include <half/half.hpp>               // for operator<
 
 namespace inviwo {
 class Deserializer;

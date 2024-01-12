@@ -141,7 +141,6 @@ private:
         // clang-format off
         {},                                                                                                 // NotSpecialized
         // 1 channels
-        {GL_RED,          GL_R16F,         GL_HALF_FLOAT,     1, 2, utilgl::Normalization::None},           // Float16
         {GL_RED,          GL_R32F,         GL_FLOAT,          1, 4, utilgl::Normalization::None},           // Float32
         {},                                                                                                 // Float64
         {GL_RED,          GL_R8_SNORM,     GL_BYTE,           1, 1, utilgl::Normalization::SignNormalized}, // Int8
@@ -153,7 +152,6 @@ private:
         {GL_RED_INTEGER,  GL_R32UI,        GL_UNSIGNED_INT,   1, 4, utilgl::Normalization::None},           // UInt32
         {},                                                                                                 // UInt64
         // 2 channels
-        {GL_RG,           GL_RG16F,        GL_HALF_FLOAT,     2, 2, utilgl::Normalization::None},           // Vec2Float16
         {GL_RG,           GL_RG32F,        GL_FLOAT,          2, 4, utilgl::Normalization::None},           // Vec2Float32
         {},                                                                                                 // Vec2Float64
         {GL_RG,           GL_RG8_SNORM,    GL_BYTE,           2, 1, utilgl::Normalization::SignNormalized}, // Vec2Int8
@@ -165,7 +163,6 @@ private:
         {GL_RG_INTEGER,   GL_RG32UI,       GL_UNSIGNED_INT,   2, 4, utilgl::Normalization::None},           // Vec2UInt32
         {},                                                                                                 // Vec2UInt64
         // 3 channels
-        {GL_RGB,          GL_RGB16F,       GL_HALF_FLOAT,     3, 2, utilgl::Normalization::None},           // Vec3Float16
         {GL_RGB,          GL_RGB32F,       GL_FLOAT,          3, 4, utilgl::Normalization::None},           // Vec3Float32
         {},                                                                                                 // Vec3Float64
         {GL_RGB,          GL_RGB8_SNORM,   GL_BYTE,           3, 1, utilgl::Normalization::SignNormalized}, // Vec3Int8
@@ -177,7 +174,6 @@ private:
         {GL_RGB_INTEGER,  GL_RGB32UI,      GL_UNSIGNED_INT,   3, 4, utilgl::Normalization::None},           // Vec3UInt32
         {},                                                                                                 // Vec4UInt64
         // 4 channels
-        {GL_RGBA,         GL_RGBA16F,      GL_HALF_FLOAT,     4, 2, utilgl::Normalization::None},           // Vec4Float16
         {GL_RGBA,         GL_RGBA32F,      GL_FLOAT,          4, 4, utilgl::Normalization::None},           // Vec4Float32
         {},                                                                                                 // Vec4Float64
         {GL_RGBA,         GL_RGBA8_SNORM,  GL_BYTE,           4, 1, utilgl::Normalization::SignNormalized}, // Vec4Int8
