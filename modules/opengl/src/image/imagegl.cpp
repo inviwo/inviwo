@@ -421,9 +421,6 @@ bool ImageGL::isValid() const {
 dvec4 ImageGL::readPixel(size2_t pos, LayerType layer, size_t index) const {
     frameBufferObject_.setReadBlit(true);
 
-    const auto layergl = getLayerGL(layer, index);
-    const auto tex = layergl->getTexture();
-
     switch (layer) {
         case LayerType::Depth:
             break;
@@ -437,18 +434,26 @@ dvec4 ImageGL::readPixel(size2_t pos, LayerType layer, size_t index) const {
     }
 
     // Make a buffer that can hold the largest possible pixel type
-    std::array<char, DataFormat<dvec4>::typesize> buffer;
-    GLvoid* ptr = static_cast<GLvoid*>(buffer.data());
+    vec4 res{0.0f};
+    GLvoid* ptr = static_cast<GLvoid*>(glm::value_ptr(res));
     const auto x = static_cast<GLint>(pos.x);
     const auto y = static_cast<GLint>(pos.y);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glReadPixels(x, y, 1, 1, tex->getFormat(), tex->getDataType(), ptr);
+
+    const auto layerGL = getLayerGL(layer, index);
+    const auto formatGL = layerGL->getTexture()->getFormat();
+    glReadPixels(x, y, 1, 1, formatGL, GL_FLOAT, ptr);
 
     // restore
     glReadBuffer(GL_COLOR_ATTACHMENT0);
     frameBufferObject_.setReadBlit(false);
 
-    return layergl->getDataFormat()->valueToVec4Double(ptr);
+    const auto format = layerGL->getDataFormat();
+    const auto scaled = format->getNumericType() != NumericType::Float
+                            ? dvec4{res} * (format->getMax() - format->getMin()) + format->getMin()
+                            : dvec4{res};
+
+    return scaled;
 }
 
 GLenum ImageGL::getPickingAttachmentID() const {

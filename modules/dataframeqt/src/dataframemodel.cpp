@@ -256,7 +256,7 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation, in
                 return QString("<b>%0</b> (Column %1)\nOrdinal (%2)")
                     .arg(utilqt::toQString(col->getHeader()))
                     .arg(section)
-                    .arg(col->getBuffer()->getDataFormat()->getString());
+                    .arg(utilqt::toQString(col->getBuffer()->getDataFormat()->getString()));
             }
         }();
         if (col->getCustomRange()) {

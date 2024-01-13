@@ -64,7 +64,7 @@ T stringTo(std::string_view str) {
 
 /**
  * @brief A string formating buffer
- * A utility for formating strings. Uses a stack buffer of 500 chars that will grow on the head if
+ * A utility for formatting strings. Uses a stack buffer of 500 chars that will grow on the heap if
  * needed. The StrBuffer is implicitly convertible to a string_view.
  */
 struct IVW_CORE_API StrBuffer {
@@ -373,13 +373,72 @@ IVW_CORE_API bool iCaseCmp(std::string_view l, std::string_view r);
  * @return true if the alphabetical order in the first string is less than the second string.
  */
 IVW_CORE_API bool iCaseLess(std::string_view l, std::string_view r);
+
+/**
+ * \brief Case insensitive less comparison of two strings to be used for template arguments.
+ */
+struct IVW_CORE_API CaseInsensitiveLess {
+    bool operator()(std::string_view l, std::string_view r) const {
+        return std::lexicographical_compare(
+            l.cbegin(), l.cend(), r.cbegin(), r.cend(),
+            [](std::string_view::value_type l1, std::string_view::value_type r1) {
+                return std::tolower(l1) < std::tolower(r1);
+            });
+    }
+    using is_transparent = int;
+};
 /**
  * \brief Case insensitive equal comparison of two strings to be used for template arguments.
- * @see iCaseCmp
  */
-struct IVW_CORE_API CaseInsensitiveCompare {
-    bool operator()(std::string_view a, std::string_view b) const;
+struct IVW_CORE_API CaseInsensitiveEqual {
+    bool operator()(std::string_view l, std::string_view r) const {
+        return std::equal(l.cbegin(), l.cend(), r.cbegin(), r.cend(),
+                          [](std::string_view::value_type l1, std::string_view::value_type r1) {
+                              return std::tolower(l1) == std::tolower(r1);
+                          });
+    }
     using is_transparent = int;
+};
+
+/**
+ * \brief Transparent string hashing for use in unordered containers with string keys
+ */
+struct IVW_CORE_API StringHash {
+    using hash_type = std::hash<std::string_view>;
+    using is_transparent = void;
+
+    std::size_t operator()(const char* str) const { return hash_type{}(str); }
+    std::size_t operator()(std::string_view str) const { return hash_type{}(str); }
+    std::size_t operator()(std::string const& str) const { return hash_type{}(str); }
+};
+
+/**
+ * \brief Transparent string case insensitive hashing for use in unordered containers with string
+ * keys
+ */
+struct IVW_CORE_API CaseInsensitiveStringHash {
+    using hash_type = std::hash<std::string_view>;
+    using is_transparent = void;
+
+    std::size_t operator()(const char* str) const { return hash(str); }
+    std::size_t operator()(std::string_view str) const { return hash(str); }
+    std::size_t operator()(std::string const& str) const { return hash(str); }
+
+private:
+    std::size_t hash(std::string_view str) const {
+        if (str.size() <= 128) {
+            std::array<char, 128> stack;
+            std::copy(str.begin(), str.end(), stack.begin());
+            std::transform(stack.begin(), stack.begin() + str.size(), stack.begin(),
+                           [](char c) { return static_cast<char>(std::tolower(c)); });
+            return hash_type{}(std::string_view(stack.data(), str.size()));
+        } else {
+            std::string copy(str);
+            std::transform(copy.begin(), copy.end(), copy.begin(),
+                           [](char c) { return static_cast<char>(std::tolower(c)); });
+            return hash_type{}(copy);
+        }
+    }
 };
 
 [[deprecated("use util::parseTypeIdName() in demangle.h instead")]] IVW_CORE_API std::string

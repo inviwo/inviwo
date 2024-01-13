@@ -97,6 +97,7 @@ workspace for example usage.
         self.outport.setData(mesh)
 
     def callback(self, pickevent):
+        print("pick: ", pickevent.pickedId)
         if (pickevent.state == ivw.PickingState.Updated):
             i = pickevent.pickedId
             p1 = self.positions[i * 3 + 0]

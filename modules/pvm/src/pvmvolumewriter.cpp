@@ -88,10 +88,10 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::filesystem::path&
     }
 #include <warn/pop>
 
-    if (components == 0)
-        throw DataWriterException("Error: Output format " + std::string(format->getString()) +
-                                      " not support by PVM writer",
-                                  IVW_CONTEXT);
+    if (components == 0) {
+        throw DataWriterException(IVW_CONTEXT, "Error: Output format {} not support by PVM writer",
+                                  format->getString());
+    }
 
     const VolumeRAM* vr = data->getRepresentation<VolumeRAM>();
     const unsigned char* dataPtr = (const unsigned char*)vr->getData();

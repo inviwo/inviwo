@@ -43,6 +43,7 @@
 #include <array>
 #include <memory>
 #include <span>
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -120,27 +121,35 @@ IVW_CORE_API NumericType commonNumericType(std::span<const DataFormatBase*> form
  */
 IVW_CORE_API size_t commonFormatPrecision(std::span<const DataFormatBase*> formats);
 
+namespace detail {
+template <template <typename> typename Wrapper, typename List>
+struct wrap;
+
+template <template <typename> typename Wrapper, template <typename...> typename List,
+          typename... Ts>
+struct wrap<Wrapper, List<Ts...>> {
+    using type = List<Wrapper<Ts>...>;
+};
+}  // namespace detail
+
+template <template <typename> typename Wrapper, typename List>
+using wrap = typename detail::wrap<Wrapper, List>::type;
+
 }  // namespace util
 
 class IVW_CORE_API DataFormatException : public Exception {
 public:
-    DataFormatException(const std::string& message = "",
-                        ExceptionContext context = ExceptionContext());
-    virtual ~DataFormatException() = default;
+    using Exception::Exception;
 };
 
-/*! \brief Defines general useful formats and new data types
+/** \brief Defines general useful formats and new data types
  * Non-virtual, meaning no dynamic_cast as string comparison is as fast/faster
  */
 class IVW_CORE_API DataFormatBase {
 public:
-    DataFormatBase(DataFormatId type, size_t components, size_t size, double max, double min,
-                   double lowest, NumericType nt, std::string_view s);
-    virtual ~DataFormatBase();
-
     static const DataFormatBase* get();
     static const DataFormatBase* get(DataFormatId id);
-    static const DataFormatBase* get(const std::string& name);
+    static const DataFormatBase* get(std::string_view name);
     static const DataFormatBase* get(NumericType type, size_t components, size_t precision);
 
     // Runtime interface
@@ -161,32 +170,20 @@ public:
     double getMax() const;
     double getMin() const;
     double getLowest() const;
-    const char* getString() const;
+    std::string_view getString() const;
     DataFormatId getId() const;
-
-    // Converter functions
-    virtual double valueToDouble(void*) const;
-    virtual dvec2 valueToVec2Double(void*) const;
-    virtual dvec3 valueToVec3Double(void*) const;
-    virtual dvec4 valueToVec4Double(void*) const;
-
-    virtual double valueToNormalizedDouble(void*) const;
-    virtual dvec2 valueToNormalizedVec2Double(void*) const;
-    virtual dvec3 valueToNormalizedVec3Double(void*) const;
-    virtual dvec4 valueToNormalizedVec4Double(void*) const;
-
-    virtual void doubleToValue(double, void*) const;
-    virtual void vec2DoubleToValue(dvec2, void*) const;
-    virtual void vec3DoubleToValue(dvec3, void*) const;
-    virtual void vec4DoubleToValue(dvec4, void*) const;
 
     template <typename T>
     static constexpr DataFormatId typeToId() noexcept;
 
 protected:
+    DataFormatBase(DataFormatId type, size_t components, size_t size, double max, double min,
+                   double lowest, NumericType nt, std::string_view s);
     DataFormatBase();
-
-    static const DataFormatBase* getPointer(DataFormatId id);
+    DataFormatBase(const DataFormatBase&) = delete;
+    DataFormatBase(DataFormatBase&&) = delete;
+    DataFormatBase& operator=(const DataFormatBase&) = delete;
+    DataFormatBase& operator=(DataFormatBase&&) = delete;
 
     DataFormatId formatId_;
     size_t components_;
@@ -195,15 +192,12 @@ protected:
     double max_;
     double min_;
     double lowest_;
-    std::string formatStr_;
+    std::string_view formatStr_;
 };
 
 template <typename T>
-class DataFormat : public DataFormatBase {
+class DataFormat final : public DataFormatBase {
 public:
-    DataFormat();
-    virtual ~DataFormat() = default;
-
     using type = T;
     using primitive = typename util::value_type<T>::type;
     static const size_t comp = util::extent<T>::value;
@@ -238,22 +232,21 @@ public:
     static std::string_view str();
     static constexpr auto staticStr();
 
-    // Converter functions
-    virtual double valueToDouble(void* val) const override;
-    virtual dvec2 valueToVec2Double(void* val) const override;
-    virtual dvec3 valueToVec3Double(void* val) const override;
-    virtual dvec4 valueToVec4Double(void* val) const override;
-
-    virtual double valueToNormalizedDouble(void* val) const override;
-    virtual dvec2 valueToNormalizedVec2Double(void* val) const override;
-    virtual dvec3 valueToNormalizedVec3Double(void* val) const override;
-    virtual dvec4 valueToNormalizedVec4Double(void* val) const override;
-
-    virtual void doubleToValue(double in, void* out) const override;
-    virtual void vec2DoubleToValue(dvec2 in, void* out) const override;
-    virtual void vec3DoubleToValue(dvec3 in, void* out) const override;
-    virtual void vec4DoubleToValue(dvec4 in, void* out) const override;
+private:
+    friend DataFormatBase;
+    DataFormat();
 };
+
+using DefaultDataTypes =
+    std::tuple<glm::f32, glm::f64, glm::i8, glm::i16, glm::i32, glm::i64, glm::u8, glm::u16,
+               glm::u32, glm::u64, glm::f32vec2, glm::f64vec2, glm::i8vec2, glm::i16vec2,
+               glm::i32vec2, glm::i64vec2, glm::u8vec2, glm::u16vec2, glm::u32vec2, glm::u64vec2,
+               glm::f32vec3, glm::f64vec3, glm::i8vec3, glm::i16vec3, glm::i32vec3, glm::i64vec3,
+               glm::u8vec3, glm::u16vec3, glm::u32vec3, glm::u64vec3, glm::f32vec4, glm::f64vec4,
+               glm::i8vec4, glm::i16vec4, glm::i32vec4, glm::i64vec4, glm::u8vec4, glm::u16vec4,
+               glm::u32vec4, glm::u64vec4>;
+
+using DefaultDataFormats = util::wrap<DataFormat, DefaultDataTypes>;
 
 template <typename T>
 DataFormat<T>::DataFormat()
@@ -264,60 +257,24 @@ template <typename T>
 constexpr DataFormatId DataFormat<T>::id() {
     return typeToId<T>();
 }
-
 template <typename T>
 constexpr DataFormatId DataFormatBase::typeToId() noexcept {
-    // clang-format off
-    if constexpr(std::is_same_v<T, glm::f32>) { return DataFormatId::Float32; }
-    else if constexpr(std::is_same_v<T, glm::f64>) { return DataFormatId::Float64; }
-    else if constexpr(std::is_same_v<T, glm::i8>)  { return DataFormatId::Int8; }
-    else if constexpr(std::is_same_v<T, glm::i16>) { return DataFormatId::Int16; }
-    else if constexpr(std::is_same_v<T, glm::i32>) { return DataFormatId::Int32; }
-    else if constexpr(std::is_same_v<T, glm::i64>) { return DataFormatId::Int64; }
-    else if constexpr(std::is_same_v<T, glm::u8>)  { return DataFormatId::UInt8; }
-    else if constexpr(std::is_same_v<T, glm::u16>) { return DataFormatId::UInt16; }
-    else if constexpr(std::is_same_v<T, glm::u32>) { return DataFormatId::UInt32; }
-    else if constexpr(std::is_same_v<T, glm::u64>) { return DataFormatId::UInt64; }
+    constexpr size_t index =
+        []<std::size_t... Is>(std::integer_sequence<std::size_t, Is...>) noexcept {
+        return ((std::is_same_v<std::tuple_element_t<Is, DefaultDataTypes>, T> ? Is + 1 : 0) + ...);
+    }
+    (std::make_integer_sequence<std::size_t, std::tuple_size_v<DefaultDataTypes>>{});
 
-    else if constexpr(std::is_same_v<T, glm::f32vec2>) { return DataFormatId::Vec2Float32; }
-    else if constexpr(std::is_same_v<T, glm::f64vec2>) { return DataFormatId::Vec2Float64; }
-    else if constexpr(std::is_same_v<T, glm::i8vec2>) { return DataFormatId::Vec2Int8; }
-    else if constexpr(std::is_same_v<T, glm::i16vec2>) { return DataFormatId::Vec2Int16; }
-    else if constexpr(std::is_same_v<T, glm::i32vec2>) { return DataFormatId::Vec2Int32; }
-    else if constexpr(std::is_same_v<T, glm::i64vec2>) { return DataFormatId::Vec2Int64; }
-    else if constexpr(std::is_same_v<T, glm::u8vec2>) { return DataFormatId::Vec2UInt8; }
-    else if constexpr(std::is_same_v<T, glm::u16vec2>) { return DataFormatId::Vec2UInt16; }
-    else if constexpr(std::is_same_v<T, glm::u32vec2>) { return DataFormatId::Vec2UInt32; }
-    else if constexpr(std::is_same_v<T, glm::u64vec2>) { return DataFormatId::Vec2UInt64; }
-
-    else if constexpr(std::is_same_v<T, glm::f32vec3>) { return DataFormatId::Vec3Float32; }
-    else if constexpr(std::is_same_v<T, glm::f64vec3>) { return DataFormatId::Vec3Float64; }
-    else if constexpr(std::is_same_v<T, glm::i8vec3>) { return DataFormatId::Vec3Int8; }
-    else if constexpr(std::is_same_v<T, glm::i16vec3>) { return DataFormatId::Vec3Int16; }
-    else if constexpr(std::is_same_v<T, glm::i32vec3>) { return DataFormatId::Vec3Int32; }
-    else if constexpr(std::is_same_v<T, glm::i64vec3>) { return DataFormatId::Vec3Int64; }
-    else if constexpr(std::is_same_v<T, glm::u8vec3>) { return DataFormatId::Vec3UInt8; }
-    else if constexpr(std::is_same_v<T, glm::u16vec3>) { return DataFormatId::Vec3UInt16; }
-    else if constexpr(std::is_same_v<T, glm::u32vec3>) { return DataFormatId::Vec3UInt32; }
-    else if constexpr(std::is_same_v<T, glm::u64vec3>) { return DataFormatId::Vec3UInt64; }
-
-    else if constexpr(std::is_same_v<T, glm::f32vec4>) { return DataFormatId::Vec4Float32; }
-    else if constexpr(std::is_same_v<T, glm::f64vec4>) { return DataFormatId::Vec4Float64; }
-    else if constexpr(std::is_same_v<T, glm::i8vec4>) { return DataFormatId::Vec4Int8; }
-    else if constexpr(std::is_same_v<T, glm::i16vec4>) { return DataFormatId::Vec4Int16; }
-    else if constexpr(std::is_same_v<T, glm::i32vec4>) { return DataFormatId::Vec4Int32; }
-    else if constexpr(std::is_same_v<T, glm::i64vec4>) { return DataFormatId::Vec4Int64; }
-    else if constexpr(std::is_same_v<T, glm::u8vec4>) { return DataFormatId::Vec4UInt8; }
-    else if constexpr(std::is_same_v<T, glm::u16vec4>) { return DataFormatId::Vec4UInt16; }
-    else if constexpr(std::is_same_v<T, glm::u32vec4>) { return DataFormatId::Vec4UInt32; }
-    else if constexpr(std::is_same_v<T, glm::u64vec4>) { return DataFormatId::Vec4UInt64; }
-    else return DataFormatId::NotSpecialized;
-    // clang-format on
+    if constexpr (index == 0) {
+        return DataFormatId::NotSpecialized;
+    } else {
+        return DataFormatId{index};
+    }
 }
 
 template <typename T>
 const DataFormat<T>* DataFormat<T>::get() {
-    return static_cast<const DataFormat<T>*>(getPointer(id()));
+    return static_cast<const DataFormat<T>*>(DataFormatBase::get(id()));
 }
 
 template <typename T>
@@ -421,134 +378,69 @@ constexpr double DataFormat<T>::maxToDouble() {
     return static_cast<double>(std::numeric_limits<primitive>::max());
 }
 
-template <typename T>
-double DataFormat<T>::valueToNormalizedDouble(void* val) const {
-    return util::glm_convert_normalized<double>(*static_cast<type*>(val));
-}
-template <typename T>
-dvec2 DataFormat<T>::valueToNormalizedVec2Double(void* val) const {
-    return util::glm_convert_normalized<dvec2>(*static_cast<type*>(val));
-}
-template <typename T>
-dvec3 DataFormat<T>::valueToNormalizedVec3Double(void* val) const {
-    return util::glm_convert_normalized<dvec3>(*static_cast<type*>(val));
-}
-template <typename T>
-dvec4 DataFormat<T>::valueToNormalizedVec4Double(void* val) const {
-    return util::glm_convert_normalized<dvec4>(*static_cast<type*>(val));
-}
-
-template <typename T>
-double DataFormat<T>::valueToDouble(void* val) const {
-    return util::glm_convert<double>(*static_cast<type*>(val));
-}
-template <typename T>
-dvec2 DataFormat<T>::valueToVec2Double(void* val) const {
-    return util::glm_convert<dvec2>(*static_cast<type*>(val));
-}
-template <typename T>
-dvec3 DataFormat<T>::valueToVec3Double(void* val) const {
-    return util::glm_convert<dvec3>(*static_cast<type*>(val));
-}
-template <typename T>
-dvec4 DataFormat<T>::valueToVec4Double(void* val) const {
-    return util::glm_convert<dvec4>(*static_cast<type*>(val));
-}
-
-template <typename T>
-void DataFormat<T>::doubleToValue(double in, void* out) const {
-    *static_cast<type*>(out) = util::glm_convert<type>(in);
-}
-template <typename T>
-void DataFormat<T>::vec2DoubleToValue(dvec2 in, void* out) const {
-    *static_cast<type*>(out) = util::glm_convert<type>(in);
-}
-template <typename T>
-void DataFormat<T>::vec3DoubleToValue(dvec3 in, void* out) const {
-    *static_cast<type*>(out) = util::glm_convert<type>(in);
-}
-template <typename T>
-void DataFormat<T>::vec4DoubleToValue(dvec4 in, void* out) const {
-    *static_cast<type*>(out) = util::glm_convert<type>(in);
-}
-
-/*---------------Single Value Formats------------------*/
-// Floats
+// Scalars
 using DataFloat32 = DataFormat<glm::f32>;
 using DataFloat64 = DataFormat<glm::f64>;
 
-// Integers
 using DataInt8 = DataFormat<glm::i8>;
 using DataInt16 = DataFormat<glm::i16>;
 using DataInt32 = DataFormat<glm::i32>;
 using DataInt64 = DataFormat<glm::i64>;
 
-// Unsigned Integers
 using DataUInt8 = DataFormat<glm::u8>;
 using DataUInt16 = DataFormat<glm::u16>;
 using DataUInt32 = DataFormat<glm::u32>;
 using DataUInt64 = DataFormat<glm::u64>;
 
-/*---------------Vec2 Formats--------------------*/
-// Floats
+// Vec2
 using DataVec2Float32 = DataFormat<glm::f32vec2>;
 using DataVec2Float64 = DataFormat<glm::f64vec2>;
 
-// Integers
 using DataVec2Int8 = DataFormat<glm::i8vec2>;
 using DataVec2Int16 = DataFormat<glm::i16vec2>;
 using DataVec2Int32 = DataFormat<glm::i32vec2>;
 using DataVec2Int64 = DataFormat<glm::i64vec2>;
 
-// Unsigned Integers
 using DataVec2UInt8 = DataFormat<glm::u8vec2>;
 using DataVec2UInt16 = DataFormat<glm::u16vec2>;
 using DataVec2UInt32 = DataFormat<glm::u32vec2>;
 using DataVec2UInt64 = DataFormat<glm::u64vec2>;
 
-/*---------------Vec3 Formats--------------------*/
-// Floats
+// Vec3
 using DataVec3Float32 = DataFormat<glm::f32vec3>;
 using DataVec3Float64 = DataFormat<glm::f64vec3>;
 
-// Integers
 using DataVec3Int8 = DataFormat<glm::i8vec3>;
 using DataVec3Int16 = DataFormat<glm::i16vec3>;
 using DataVec3Int32 = DataFormat<glm::i32vec3>;
 using DataVec3Int64 = DataFormat<glm::i64vec3>;
 
-// Unsigned Integers
 using DataVec3UInt8 = DataFormat<glm::u8vec3>;
 using DataVec3UInt16 = DataFormat<glm::u16vec3>;
 using DataVec3UInt32 = DataFormat<glm::u32vec3>;
 using DataVec3UInt64 = DataFormat<glm::u64vec3>;
 
-/*---------------Vec4 Value Formats------------------*/
-
-// Floats
+//  Vec4
 using DataVec4Float32 = DataFormat<glm::f32vec4>;
 using DataVec4Float64 = DataFormat<glm::f64vec4>;
 
-// Integers
 using DataVec4Int8 = DataFormat<glm::i8vec4>;
 using DataVec4Int16 = DataFormat<glm::i16vec4>;
 using DataVec4Int32 = DataFormat<glm::i32vec4>;
 using DataVec4Int64 = DataFormat<glm::i64vec4>;
 
-// Unsigned Integers
 using DataVec4UInt8 = DataFormat<glm::u8vec4>;
 using DataVec4UInt16 = DataFormat<glm::u16vec4>;
 using DataVec4UInt32 = DataFormat<glm::u32vec4>;
 using DataVec4UInt64 = DataFormat<glm::u64vec4>;
 
-using DefaultDataFormats =
-    std::tuple<DataFloat32, DataFloat64, DataInt8, DataInt16, DataInt32, DataInt64, DataUInt8,
-               DataUInt16, DataUInt32, DataUInt64, DataVec2Float32, DataVec2Float64, DataVec2Int8,
-               DataVec2Int16, DataVec2Int32, DataVec2Int64, DataVec2UInt8, DataVec2UInt16,
-               DataVec2UInt32, DataVec2UInt64, DataVec3Float32, DataVec3Float64, DataVec3Int8,
-               DataVec3Int16, DataVec3Int32, DataVec3Int64, DataVec3UInt8, DataVec3UInt16,
-               DataVec3UInt32, DataVec3UInt64, DataVec4Float32, DataVec4Float64, DataVec4Int8,
-               DataVec4Int16, DataVec4Int32, DataVec4Int64, DataVec4UInt8, DataVec4UInt16,
-               DataVec4UInt32, DataVec4UInt64>;
+inline std::string_view format_as(DataFormatId id) { return DataFormatBase::get(id)->getString(); }
+
+inline std::string_view format_as(const DataFormatBase& format) { return format.getString(); }
+
+template <typename T>
+constexpr std::string_view format_as(const DataFormat<T>&) {
+    return DataFormat<T>::str();
+}
 
 }  // namespace inviwo

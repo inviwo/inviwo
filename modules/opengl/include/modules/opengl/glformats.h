@@ -94,9 +94,9 @@ public:
 
     static constexpr const GLFormat& get(DataFormatId id) {
         if (!formats_[static_cast<size_t>(id)].valid) {
-            throw OpenGLException("Error no OpenGL format available for selected data format: " +
-                                      std::string(DataFormatBase::get(id)->getString()),
-                                  IVW_CONTEXT_CUSTOM("GLFormat"));
+            throw OpenGLException(IVW_CONTEXT_CUSTOM("GLFormat"),
+                                  "Error no OpenGL format available for selected data format: {}",
+                                  DataFormatBase::get(id)->getString());
         }
         return formats_[static_cast<size_t>(id)];
     }

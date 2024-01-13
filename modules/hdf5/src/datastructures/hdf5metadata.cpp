@@ -55,11 +55,15 @@ std::string MetaData::toString() const {
         case MetaData::HDFType::Group:
             return "Group     " + path_.toString();
         case MetaData::HDFType::DataSet:
-            return "DataSet   " + path_.toString() + " " + (format_ ? format_->getString() : "") +
-                   (dimensions_.empty() ? " [" + joinString(dimensions_, ", ") + "]" : "");
+            return "DataSet   " + path_.toString() + " " +
+                   std::string(format_ ? format_->getString() : std::string_view{""}) +
+                   std::string(dimensions_.empty() ? " [" + joinString(dimensions_, ", ") + "]"
+                                                   : "");
         case MetaData::HDFType::Attribute:
-            return "Attribute " + path_.toString() + " " + (format_ ? format_->getString() : "") +
-                   (dimensions_.empty() ? " [" + joinString(dimensions_, ", ") + "]" : "");
+            return "Attribute " + path_.toString() + " " +
+                   std::string(format_ ? format_->getString() : std::string_view{""}) +
+                   std::string(dimensions_.empty() ? " [" + joinString(dimensions_, ", ") + "]"
+                                                   : "");
         default:
             return "";
     }

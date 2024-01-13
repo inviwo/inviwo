@@ -46,7 +46,7 @@ public:
     virtual ~BufferRepresentation() = default;
 
     virtual const DataFormatBase* getDataFormat() const = 0;
-    std::string getDataFormatString() const { return getDataFormat()->getString(); }
+    std::string_view getDataFormatString() const { return getDataFormat()->getString(); }
     DataFormatId getDataFormatId() const { return getDataFormat()->getId(); }
 
     virtual void setSize(size_t size) = 0;

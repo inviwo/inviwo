@@ -43,7 +43,7 @@ TEST(DataFormatsTests, Float32Test) {
     EXPECT_EQ(4, df->getSize());
     EXPECT_EQ(32, df->getPrecision());
     EXPECT_EQ(1, df->getComponents());
-    EXPECT_STREQ("FLOAT32", df->getString());
+    EXPECT_EQ("FLOAT32", df->getString());
     EXPECT_EQ(NumericType::Float, df->getNumericType());
     EXPECT_EQ(DataFormatId::Float32, df->getId());
 }
@@ -55,7 +55,7 @@ TEST(DataFormatsTests, Float32Vec2Test) {
     EXPECT_EQ(8, df->getSize());
     EXPECT_EQ(32, df->getPrecision());
     EXPECT_EQ(2, df->getComponents());
-    EXPECT_STREQ("Vec2FLOAT32", df->getString());
+    EXPECT_EQ("Vec2FLOAT32", df->getString());
     EXPECT_EQ(NumericType::Float, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec2Float32, df->getId());
 }
@@ -67,7 +67,7 @@ TEST(DataFormatsTests, Float32Vec3Test) {
     EXPECT_EQ(12, df->getSize());
     EXPECT_EQ(32, df->getPrecision());
     EXPECT_EQ(3, df->getComponents());
-    EXPECT_STREQ("Vec3FLOAT32", df->getString());
+    EXPECT_EQ("Vec3FLOAT32", df->getString());
     EXPECT_EQ(NumericType::Float, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec3Float32, df->getId());
 }
@@ -79,7 +79,7 @@ TEST(DataFormatsTests, Float32Vec4Test) {
     EXPECT_EQ(16, df->getSize());
     EXPECT_EQ(32, df->getPrecision());
     EXPECT_EQ(4, df->getComponents());
-    EXPECT_STREQ("Vec4FLOAT32", df->getString());
+    EXPECT_EQ("Vec4FLOAT32", df->getString());
     EXPECT_EQ(NumericType::Float, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec4Float32, df->getId());
 }
@@ -91,7 +91,7 @@ TEST(DataFormatsTests, Float64Test) {
     EXPECT_EQ(8, df->getSize());
     EXPECT_EQ(64, df->getPrecision());
     EXPECT_EQ(1, df->getComponents());
-    EXPECT_STREQ("FLOAT64", df->getString());
+    EXPECT_EQ("FLOAT64", df->getString());
     EXPECT_EQ(NumericType::Float, df->getNumericType());
     EXPECT_EQ(DataFormatId::Float64, df->getId());
 }
@@ -103,7 +103,7 @@ TEST(DataFormatsTests, Float64Vec2Test) {
     EXPECT_EQ(16, df->getSize());
     EXPECT_EQ(64, df->getPrecision());
     EXPECT_EQ(2, df->getComponents());
-    EXPECT_STREQ("Vec2FLOAT64", df->getString());
+    EXPECT_EQ("Vec2FLOAT64", df->getString());
     EXPECT_EQ(NumericType::Float, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec2Float64, df->getId());
 }
@@ -115,7 +115,7 @@ TEST(DataFormatsTests, Float64Vec3Test) {
     EXPECT_EQ(24, df->getSize());
     EXPECT_EQ(64, df->getPrecision());
     EXPECT_EQ(3, df->getComponents());
-    EXPECT_STREQ("Vec3FLOAT64", df->getString());
+    EXPECT_EQ("Vec3FLOAT64", df->getString());
     EXPECT_EQ(NumericType::Float, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec3Float64, df->getId());
 }
@@ -127,7 +127,7 @@ TEST(DataFormatsTests, Float64Vec4Test) {
     EXPECT_EQ(32, df->getSize());
     EXPECT_EQ(64, df->getPrecision());
     EXPECT_EQ(4, df->getComponents());
-    EXPECT_STREQ("Vec4FLOAT64", df->getString());
+    EXPECT_EQ("Vec4FLOAT64", df->getString());
     EXPECT_EQ(NumericType::Float, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec4Float64, df->getId());
 }
@@ -139,7 +139,7 @@ TEST(DataFormatsTests, Int8Test) {
     EXPECT_EQ(1, df->getSize());
     EXPECT_EQ(8, df->getPrecision());
     EXPECT_EQ(1, df->getComponents());
-    EXPECT_STREQ("INT8", df->getString());
+    EXPECT_EQ("INT8", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Int8, df->getId());
 }
@@ -151,7 +151,7 @@ TEST(DataFormatsTests, Int8Vec2Test) {
     EXPECT_EQ(2, df->getSize());
     EXPECT_EQ(8, df->getPrecision());
     EXPECT_EQ(2, df->getComponents());
-    EXPECT_STREQ("Vec2INT8", df->getString());
+    EXPECT_EQ("Vec2INT8", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec2Int8, df->getId());
 }
@@ -163,7 +163,7 @@ TEST(DataFormatsTests, Int8Vec3Test) {
     EXPECT_EQ(3, df->getSize());
     EXPECT_EQ(8, df->getPrecision());
     EXPECT_EQ(3, df->getComponents());
-    EXPECT_STREQ("Vec3INT8", df->getString());
+    EXPECT_EQ("Vec3INT8", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec3Int8, df->getId());
 }
@@ -175,7 +175,7 @@ TEST(DataFormatsTests, Int8Vec4Test) {
     EXPECT_EQ(4, df->getSize());
     EXPECT_EQ(8, df->getPrecision());
     EXPECT_EQ(4, df->getComponents());
-    EXPECT_STREQ("Vec4INT8", df->getString());
+    EXPECT_EQ("Vec4INT8", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec4Int8, df->getId());
 }
@@ -187,7 +187,7 @@ TEST(DataFormatsTests, Int16Test) {
     EXPECT_EQ(2, df->getSize());
     EXPECT_EQ(16, df->getPrecision());
     EXPECT_EQ(1, df->getComponents());
-    EXPECT_STREQ("INT16", df->getString());
+    EXPECT_EQ("INT16", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Int16, df->getId());
 }
@@ -199,7 +199,7 @@ TEST(DataFormatsTests, Int16Vec2Test) {
     EXPECT_EQ(4, df->getSize());
     EXPECT_EQ(16, df->getPrecision());
     EXPECT_EQ(2, df->getComponents());
-    EXPECT_STREQ("Vec2INT16", df->getString());
+    EXPECT_EQ("Vec2INT16", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec2Int16, df->getId());
 }
@@ -211,7 +211,7 @@ TEST(DataFormatsTests, Int16Vec3Test) {
     EXPECT_EQ(6, df->getSize());
     EXPECT_EQ(16, df->getPrecision());
     EXPECT_EQ(3, df->getComponents());
-    EXPECT_STREQ("Vec3INT16", df->getString());
+    EXPECT_EQ("Vec3INT16", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec3Int16, df->getId());
 }
@@ -223,7 +223,7 @@ TEST(DataFormatsTests, Int16Vec4Test) {
     EXPECT_EQ(8, df->getSize());
     EXPECT_EQ(16, df->getPrecision());
     EXPECT_EQ(4, df->getComponents());
-    EXPECT_STREQ("Vec4INT16", df->getString());
+    EXPECT_EQ("Vec4INT16", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec4Int16, df->getId());
 }
@@ -235,7 +235,7 @@ TEST(DataFormatsTests, Int32Test) {
     EXPECT_EQ(4, df->getSize());
     EXPECT_EQ(32, df->getPrecision());
     EXPECT_EQ(1, df->getComponents());
-    EXPECT_STREQ("INT32", df->getString());
+    EXPECT_EQ("INT32", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Int32, df->getId());
 }
@@ -247,7 +247,7 @@ TEST(DataFormatsTests, Int32Vec2Test) {
     EXPECT_EQ(8, df->getSize());
     EXPECT_EQ(32, df->getPrecision());
     EXPECT_EQ(2, df->getComponents());
-    EXPECT_STREQ("Vec2INT32", df->getString());
+    EXPECT_EQ("Vec2INT32", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec2Int32, df->getId());
 }
@@ -259,7 +259,7 @@ TEST(DataFormatsTests, Int32Vec3Test) {
     EXPECT_EQ(12, df->getSize());
     EXPECT_EQ(32, df->getPrecision());
     EXPECT_EQ(3, df->getComponents());
-    EXPECT_STREQ("Vec3INT32", df->getString());
+    EXPECT_EQ("Vec3INT32", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec3Int32, df->getId());
 }
@@ -271,7 +271,7 @@ TEST(DataFormatsTests, Int32Vec4Test) {
     EXPECT_EQ(16, df->getSize());
     EXPECT_EQ(32, df->getPrecision());
     EXPECT_EQ(4, df->getComponents());
-    EXPECT_STREQ("Vec4INT32", df->getString());
+    EXPECT_EQ("Vec4INT32", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec4Int32, df->getId());
 }
@@ -283,7 +283,7 @@ TEST(DataFormatsTests, Int64Test) {
     EXPECT_EQ(8, df->getSize());
     EXPECT_EQ(64, df->getPrecision());
     EXPECT_EQ(1, df->getComponents());
-    EXPECT_STREQ("INT64", df->getString());
+    EXPECT_EQ("INT64", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Int64, df->getId());
 }
@@ -295,7 +295,7 @@ TEST(DataFormatsTests, Int64Vec2Test) {
     EXPECT_EQ(16, df->getSize());
     EXPECT_EQ(64, df->getPrecision());
     EXPECT_EQ(2, df->getComponents());
-    EXPECT_STREQ("Vec2INT64", df->getString());
+    EXPECT_EQ("Vec2INT64", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec2Int64, df->getId());
 }
@@ -307,7 +307,7 @@ TEST(DataFormatsTests, Int64Vec3Test) {
     EXPECT_EQ(24, df->getSize());
     EXPECT_EQ(64, df->getPrecision());
     EXPECT_EQ(3, df->getComponents());
-    EXPECT_STREQ("Vec3INT64", df->getString());
+    EXPECT_EQ("Vec3INT64", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec3Int64, df->getId());
 }
@@ -319,7 +319,7 @@ TEST(DataFormatsTests, Int64Vec4Test) {
     EXPECT_EQ(32, df->getSize());
     EXPECT_EQ(64, df->getPrecision());
     EXPECT_EQ(4, df->getComponents());
-    EXPECT_STREQ("Vec4INT64", df->getString());
+    EXPECT_EQ("Vec4INT64", df->getString());
     EXPECT_EQ(NumericType::SignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec4Int64, df->getId());
 }
@@ -331,7 +331,7 @@ TEST(DataFormatsTests, UInt8Test) {
     EXPECT_EQ(1, df->getSize());
     EXPECT_EQ(8, df->getPrecision());
     EXPECT_EQ(1, df->getComponents());
-    EXPECT_STREQ("UINT8", df->getString());
+    EXPECT_EQ("UINT8", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::UInt8, df->getId());
 }
@@ -343,7 +343,7 @@ TEST(DataFormatsTests, UInt8Vec2Test) {
     EXPECT_EQ(2, df->getSize());
     EXPECT_EQ(8, df->getPrecision());
     EXPECT_EQ(2, df->getComponents());
-    EXPECT_STREQ("Vec2UINT8", df->getString());
+    EXPECT_EQ("Vec2UINT8", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec2UInt8, df->getId());
 }
@@ -355,7 +355,7 @@ TEST(DataFormatsTests, UInt8Vec3Test) {
     EXPECT_EQ(3, df->getSize());
     EXPECT_EQ(8, df->getPrecision());
     EXPECT_EQ(3, df->getComponents());
-    EXPECT_STREQ("Vec3UINT8", df->getString());
+    EXPECT_EQ("Vec3UINT8", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec3UInt8, df->getId());
 }
@@ -367,7 +367,7 @@ TEST(DataFormatsTests, UInt8Vec4Test) {
     EXPECT_EQ(4, df->getSize());
     EXPECT_EQ(8, df->getPrecision());
     EXPECT_EQ(4, df->getComponents());
-    EXPECT_STREQ("Vec4UINT8", df->getString());
+    EXPECT_EQ("Vec4UINT8", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec4UInt8, df->getId());
 }
@@ -379,7 +379,7 @@ TEST(DataFormatsTests, UInt16Test) {
     EXPECT_EQ(2, df->getSize());
     EXPECT_EQ(16, df->getPrecision());
     EXPECT_EQ(1, df->getComponents());
-    EXPECT_STREQ("UINT16", df->getString());
+    EXPECT_EQ("UINT16", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::UInt16, df->getId());
 }
@@ -391,7 +391,7 @@ TEST(DataFormatsTests, UInt16Vec2Test) {
     EXPECT_EQ(4, df->getSize());
     EXPECT_EQ(16, df->getPrecision());
     EXPECT_EQ(2, df->getComponents());
-    EXPECT_STREQ("Vec2UINT16", df->getString());
+    EXPECT_EQ("Vec2UINT16", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec2UInt16, df->getId());
 }
@@ -403,7 +403,7 @@ TEST(DataFormatsTests, UInt16Vec3Test) {
     EXPECT_EQ(6, df->getSize());
     EXPECT_EQ(16, df->getPrecision());
     EXPECT_EQ(3, df->getComponents());
-    EXPECT_STREQ("Vec3UINT16", df->getString());
+    EXPECT_EQ("Vec3UINT16", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec3UInt16, df->getId());
 }
@@ -415,7 +415,7 @@ TEST(DataFormatsTests, UInt16Vec4Test) {
     EXPECT_EQ(8, df->getSize());
     EXPECT_EQ(16, df->getPrecision());
     EXPECT_EQ(4, df->getComponents());
-    EXPECT_STREQ("Vec4UINT16", df->getString());
+    EXPECT_EQ("Vec4UINT16", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec4UInt16, df->getId());
 }
@@ -427,7 +427,7 @@ TEST(DataFormatsTests, UInt32Test) {
     EXPECT_EQ(4, df->getSize());
     EXPECT_EQ(32, df->getPrecision());
     EXPECT_EQ(1, df->getComponents());
-    EXPECT_STREQ("UINT32", df->getString());
+    EXPECT_EQ("UINT32", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::UInt32, df->getId());
 }
@@ -439,7 +439,7 @@ TEST(DataFormatsTests, UInt32Vec2Test) {
     EXPECT_EQ(8, df->getSize());
     EXPECT_EQ(32, df->getPrecision());
     EXPECT_EQ(2, df->getComponents());
-    EXPECT_STREQ("Vec2UINT32", df->getString());
+    EXPECT_EQ("Vec2UINT32", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec2UInt32, df->getId());
 }
@@ -451,7 +451,7 @@ TEST(DataFormatsTests, UInt32Vec3Test) {
     EXPECT_EQ(12, df->getSize());
     EXPECT_EQ(32, df->getPrecision());
     EXPECT_EQ(3, df->getComponents());
-    EXPECT_STREQ("Vec3UINT32", df->getString());
+    EXPECT_EQ("Vec3UINT32", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec3UInt32, df->getId());
 }
@@ -463,7 +463,7 @@ TEST(DataFormatsTests, UInt32Vec4Test) {
     EXPECT_EQ(16, df->getSize());
     EXPECT_EQ(32, df->getPrecision());
     EXPECT_EQ(4, df->getComponents());
-    EXPECT_STREQ("Vec4UINT32", df->getString());
+    EXPECT_EQ("Vec4UINT32", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec4UInt32, df->getId());
 }
@@ -475,7 +475,7 @@ TEST(DataFormatsTests, UInt64Test) {
     EXPECT_EQ(8, df->getSize());
     EXPECT_EQ(64, df->getPrecision());
     EXPECT_EQ(1, df->getComponents());
-    EXPECT_STREQ("UINT64", df->getString());
+    EXPECT_EQ("UINT64", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::UInt64, df->getId());
 }
@@ -487,7 +487,7 @@ TEST(DataFormatsTests, UInt64Vec2Test) {
     EXPECT_EQ(16, df->getSize());
     EXPECT_EQ(64, df->getPrecision());
     EXPECT_EQ(2, df->getComponents());
-    EXPECT_STREQ("Vec2UINT64", df->getString());
+    EXPECT_EQ("Vec2UINT64", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec2UInt64, df->getId());
 }
@@ -499,7 +499,7 @@ TEST(DataFormatsTests, UInt64Vec3Test) {
     EXPECT_EQ(24, df->getSize());
     EXPECT_EQ(64, df->getPrecision());
     EXPECT_EQ(3, df->getComponents());
-    EXPECT_STREQ("Vec3UINT64", df->getString());
+    EXPECT_EQ("Vec3UINT64", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec3UInt64, df->getId());
 }
@@ -511,7 +511,7 @@ TEST(DataFormatsTests, UInt64Vec4Test) {
     EXPECT_EQ(32, df->getSize());
     EXPECT_EQ(64, df->getPrecision());
     EXPECT_EQ(4, df->getComponents());
-    EXPECT_STREQ("Vec4UINT64", df->getString());
+    EXPECT_EQ("Vec4UINT64", df->getString());
     EXPECT_EQ(NumericType::UnsignedInteger, df->getNumericType());
     EXPECT_EQ(DataFormatId::Vec4UInt64, df->getId());
 }

@@ -145,7 +145,7 @@ auto dispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Result {
         return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
     } else {
         throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format {} not supported",
-                                DataFormatBase::get(format)->getString());
+                                format);
     }
 }
 
@@ -175,7 +175,7 @@ auto singleDispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Resu
         return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
     } else {
         throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format {} not supported",
-                                DataFormatBase::get(format)->getString());
+                                format);
     }
 }
 
@@ -210,9 +210,8 @@ auto doubleDispatch(DataFormatId format1, DataFormatId format2, Callable&& obj, 
                    table[static_cast<size_t>(format1) - 1][static_cast<size_t>(format2) - 1]) {
         return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
     } else {
-        throw DispatchException(
-            IVW_CONTEXT_CUSTOM("Dispatching"), "Format combination {}, {}, not supported",
-            DataFormatBase::get(format1)->getString(), DataFormatBase::get(format2)->getString());
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"),
+                                "Format combination {}, {}, not supported", format1, format2);
     }
 }
 
@@ -253,10 +252,9 @@ auto tripleDispatch(DataFormatId format1, DataFormatId format2, DataFormatId for
                                [static_cast<size_t>(format3) - 1]) {
         return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
     } else {
-        throw DispatchException(
-            IVW_CONTEXT_CUSTOM("Dispatching"), "Format combination {}, {}, {} not supported",
-            DataFormatBase::get(format1)->getString(), DataFormatBase::get(format2)->getString(),
-            DataFormatBase::get(format3)->getString());
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"),
+                                "Format combination {}, {}, {} not supported", format1, format2,
+                                format3);
     }
 }
 

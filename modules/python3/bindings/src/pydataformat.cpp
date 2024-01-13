@@ -31,7 +31,7 @@
 
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/stdextensions.h>
-
+#include <inviwo/core/util/safecstr.h>
 #include <fmt/core.h>
 
 namespace inviwo {
@@ -59,7 +59,7 @@ void exposeDataFormat(pybind11::module& m) {
     dfid.value("NotSpecialized", DataFormatId::NotSpecialized);
     for (int i = 1; i < static_cast<int>(DataFormatId::NumberOfFormats); ++i) {
         auto format = DataFormatBase::get(static_cast<DataFormatId>(i));
-        dfid.value(format->getString(), static_cast<DataFormatId>(i));
+        dfid.value(SafeCStr{format->getString()}, static_cast<DataFormatId>(i));
     }
     dfid.value("NumberOfFormats", DataFormatId::NumberOfFormats);
 
