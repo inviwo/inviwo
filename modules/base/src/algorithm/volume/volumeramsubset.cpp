@@ -92,7 +92,7 @@ constexpr auto dispatcher = []<typename T>(
                  ivec3(1, 1, 1)));
     // per row
     size_t dataSize =
-        copyDimsWithoutBorder.x * static_cast<size_t>(volume->getDataFormat()->getSize());
+        copyDimsWithoutBorder.x * static_cast<size_t>(volume->getDataFormat()->getSizeInBytes());
     // allocate space
     auto newVolume = std::make_shared<VolumeRAMPrecision<T>>(
         dim + correctBorder.llf + correctBorder.urb, in->getSwizzleMask(), in->getInterpolation());

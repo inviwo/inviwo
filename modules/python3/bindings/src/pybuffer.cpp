@@ -130,11 +130,11 @@ void exposeBuffer(pybind11::module& m) {
             [&](BufferBase* buffer) -> py::array {
                 auto df = buffer->getDataFormat();
                 std::vector<size_t> shape = {buffer->getSize()};
-                std::vector<size_t> strides = {df->getSize()};
+                std::vector<size_t> strides = {df->getSizeInBytes()};
 
                 if (df->getComponents() > 1) {
                     shape.push_back(df->getComponents());
-                    strides.push_back(df->getSize() / df->getComponents());
+                    strides.push_back(df->getSizeInBytes() / df->getComponents());
                 }
 
                 auto data = buffer->getEditableRepresentation<BufferRAM>()->getData();

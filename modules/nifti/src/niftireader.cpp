@@ -443,7 +443,7 @@ std::shared_ptr<VolumeRepresentation> NiftiVolumeRAMLoader::createRepresentation
     const VolumeRepresentation& src) const {
 
     const auto format = niftiDataTypeToInviwoDataFormat(nim.get());
-    const auto voxelSize = format->getSize();
+    const auto voxelSize = format->getSizeInBytes();
 
     const std::size_t voxels = region_size[0] * region_size[1] * region_size[2] * region_size[3] *
                                region_size[4] * region_size[5] * region_size[6];
@@ -488,7 +488,7 @@ void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresenta
                                   nim->fname);
     }
 
-    const auto voxelSize = src.getDataFormat()->getSize();
+    const auto voxelSize = src.getDataFormat()->getSizeInBytes();
     const auto dim = size3_t{region_size[0], region_size[1], region_size[2]};
 
     flip(static_cast<char*>(data), voxelSize, dim, flipAxis);

@@ -95,7 +95,7 @@ VolumeMerger::VolumeMerger()
         shader_.build();
 
         auto inDF = inport_.getData()->getDataFormat();
-        dataFormat_ = DataFormatBase::get(inDF->getNumericType(), numVolumes, inDF->getSize() * 8);
+        dataFormat_ = DataFormatBase::get(inDF->getNumericType(), numVolumes, inDF->getPrecision());
 
         internalInvalid_ = true;
     };

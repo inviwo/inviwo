@@ -176,11 +176,11 @@ void exposeImage(py::module& m) {
                 auto dims = layer->getDimensions();
 
                 std::vector<size_t> shape = {dims.y, dims.x};
-                std::vector<size_t> strides = {df->getSize() * dims.x, df->getSize()};
+                std::vector<size_t> strides = {df->getSizeInBytes() * dims.x, df->getSizeInBytes()};
 
                 if (df->getComponents() > 1) {
                     shape.push_back(df->getComponents());
-                    strides.push_back(df->getSize() / df->getComponents());
+                    strides.push_back(df->getSizeInBytes() / df->getComponents());
                 }
 
                 auto data = layer->getEditableRepresentation<LayerRAM>()->getData();

@@ -44,7 +44,7 @@ BufferGL::BufferGL(size_t size, const DataFormatBase* format, BufferUsage usage,
     : BufferRepresentation(usage, target)
     , buffer_(data
                   ? data
-                  : std::make_shared<BufferObject>(size * format->getSize(), format, usage, target))
+                  : std::make_shared<BufferObject>(size * format->getSizeInBytes(), format, usage, target))
     , bufferArray_(nullptr)
     , size_(size) {}
 

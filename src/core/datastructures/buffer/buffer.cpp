@@ -43,7 +43,7 @@ BufferBase::BufferBase(size_t defaultSize, const DataFormatBase* defaultFormat, 
     , target_(target)
     , defaultDataFormat_(defaultFormat) {}
 
-size_t BufferBase::getSizeInBytes() const { return getSize() * getDataFormat()->getSize(); }
+size_t BufferBase::getSizeInBytes() const { return getSize() * getDataFormat()->getSizeInBytes(); }
 
 BufferUsage BufferBase::getBufferUsage() const { return usage_; }
 

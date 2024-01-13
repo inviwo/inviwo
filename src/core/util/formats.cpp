@@ -73,7 +73,7 @@ DataFormatBase::DataFormatBase(DataFormatId t, size_t c, size_t size, double max
                                double lowest, NumericType nt, std::string_view s)
     : formatId_(t)
     , components_(c)
-    , size_(size)
+    , sizeInBytes_(size)
     , numericType_(nt)
     , max_(max)
     , min_(min)
@@ -84,13 +84,14 @@ DataFormatBase::DataFormatBase()
     : DataFormatBase(DataFormatId::NotSpecialized, 0, 0, 0.0, 0.0, 0.0, NumericType::NotSpecialized,
                      "NotSpecialized") {}
 
-size_t DataFormatBase::getSize() const { return size_; }
+size_t DataFormatBase::getSizeInBytes() const { return sizeInBytes_; }
+size_t DataFormatBase::getSize() const { return sizeInBytes_; }
 
 NumericType DataFormatBase::getNumericType() const { return numericType_; }
 
 size_t DataFormatBase::getComponents() const { return components_; }
 
-size_t DataFormatBase::getPrecision() const { return size_ / components_ * 8; }
+size_t DataFormatBase::getPrecision() const { return sizeInBytes_ / components_ * 8; }
 
 double DataFormatBase::getMax() const { return max_; }
 

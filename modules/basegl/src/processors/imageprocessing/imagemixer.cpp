@@ -112,8 +112,8 @@ void ImageMixer::process() {
 
         // combine format0 and format1, preferring the larger type with respect to
         // precision (size in bit), number of components, and float over unsigned over signed
-        auto precision0 = format0->getSize() * 8 / format0->getComponents();
-        auto precision1 = format1->getSize() * 8 / format1->getComponents();
+        auto precision0 = format0->getPrecision();
+        auto precision1 = format1->getPrecision();
         auto nf0 = format0->getNumericType();
         auto nf1 = format1->getNumericType();
 

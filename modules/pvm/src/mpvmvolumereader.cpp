@@ -125,7 +125,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
 
     // Create new format
     const DataFormatBase* mformat =
-        DataFormatBase::get(format->getNumericType(), volumes.size(), format->getSize() * 8);
+        DataFormatBase::get(format->getNumericType(), volumes.size(), format->getSizeInBytes() * 8);
 
     // Create new volume
     auto volume = std::make_shared<Volume>(mdim, mformat);
@@ -155,8 +155,8 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
     }
 
     // Copy the data from the other volumes to the new multichannel volume
-    size_t mbytes = mformat->getSize();
-    size_t bytes = format->getSize();
+    size_t mbytes = mformat->getSizeInBytes();
+    size_t bytes = format->getSizeInBytes();
     size_t dims = mdim.x * mdim.y * mdim.z;
     size_t vsize = volumesDataPtr.size();
     for (size_t i = 0; i < dims; i++) {
@@ -175,7 +175,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
 void MPVMVolumeReader::printPVMMeta(const Volume& volume,
                                     const std::filesystem::path& fileName) const {
     size3_t dim = volume.getDimensions();
-    size_t bytes = dim.x * dim.y * dim.z * (volume.getDataFormat()->getSize());
+    size_t bytes = dim.x * dim.y * dim.z * (volume.getDataFormat()->getSizeInBytes());
     std::string size = util::formatBytesToString(bytes);
     LogInfo("Loaded volume: " << fileName << " size: " << size);
     printMetaInfo(volume, "description");

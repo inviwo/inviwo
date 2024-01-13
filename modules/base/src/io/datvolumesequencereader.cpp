@@ -390,7 +390,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         volume->dataMap_.valueAxis.name = state.valueName;
         volume->axes = state.axes;
 
-        const auto bytes = glm::compMul(state.dimensions) * (state.format->getSize());
+        const auto bytes = glm::compMul(state.dimensions) * (state.format->getSizeInBytes());
 
         for (auto elem : state.metadata) {
             volume->setMetaData<StringMetaData>(elem.first, elem.second);

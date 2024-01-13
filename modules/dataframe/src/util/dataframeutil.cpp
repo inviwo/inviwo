@@ -536,7 +536,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
                         throw Exception(IVW_CONTEXT_CUSTOM("dataframe::combineDataFrames"),
                                         "Column {} has different format in DataFrames ({}, {})",
                                         col->getHeader(), it->second->getString(),
-                                        col->getBuffer()->getDataFormat()->getSize());
+                                        col->getBuffer()->getDataFormat()->getString());
                     }
                 }
             }

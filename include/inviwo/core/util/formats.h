@@ -156,7 +156,8 @@ public:
     /**
      *	Returns the size of the format in bytes. For all components.
      */
-    size_t getSize() const;
+    size_t getSizeInBytes() const;
+    [[deprecated("use getSizeInBytes")]] size_t getSize() const;
     /**
      *	Returns the number of components in the format, 1 to 4.
      */
@@ -187,7 +188,7 @@ protected:
 
     DataFormatId formatId_;
     size_t components_;
-    size_t size_;
+    size_t sizeInBytes_;
     NumericType numericType_;
     double max_;
     double min_;
@@ -212,7 +213,7 @@ public:
     /**
      *	Returns the size of the format in bytes. For all components.
      */
-    static constexpr size_t size();
+    static constexpr size_t sizeInBytes();
     /**
      *	Returns the number of components in the format, 1 to 4.
      */
@@ -250,8 +251,8 @@ using DefaultDataFormats = util::wrap<DataFormat, DefaultDataTypes>;
 
 template <typename T>
 DataFormat<T>::DataFormat()
-    : DataFormatBase(id(), components(), size(), maxToDouble(), minToDouble(), lowestToDouble(),
-                     numericType(), str()) {}
+    : DataFormatBase(id(), components(), sizeInBytes(), maxToDouble(), minToDouble(),
+                     lowestToDouble(), numericType(), str()) {}
 
 template <typename T>
 constexpr DataFormatId DataFormat<T>::id() {
@@ -278,7 +279,7 @@ const DataFormat<T>* DataFormat<T>::get() {
 }
 
 template <typename T>
-constexpr size_t DataFormat<T>::size() {
+constexpr size_t DataFormat<T>::sizeInBytes() {
     return typesize;
 }
 
@@ -289,7 +290,7 @@ constexpr size_t DataFormat<T>::components() {
 
 template <typename T>
 constexpr size_t DataFormat<T>::precision() {
-    return size() / components() * 8;
+    return sizeInBytes() / components() * 8;
 }
 
 template <typename T>

@@ -89,7 +89,7 @@ void ImageMapping::afterInportChanged() {
     // Determine the precision of the output format based on the input,
     // but always output 4 component data representing RGBA
     const DataFormatBase* inputDataFormat = inport_.getData()->getDataFormat();
-    size_t precision = inputDataFormat->getSize() / inputDataFormat->getComponents() * 8;
+    size_t precision = inputDataFormat->getPrecision();
     const DataFormatBase* outputDataFormat =
         DataFormatBase::get(inputDataFormat->getNumericType(), 4, precision);
     if (dataFormat_ != outputDataFormat) {

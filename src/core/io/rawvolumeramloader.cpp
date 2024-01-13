@@ -44,10 +44,10 @@ RawVolumeRAMLoader* RawVolumeRAMLoader::clone() const { return new RawVolumeRAML
 std::shared_ptr<VolumeRepresentation> RawVolumeRAMLoader::createRepresentation(
     const VolumeRepresentation& src) const {
 
-    const auto size = glm::compMul(src.getDimensions()) * src.getDataFormat()->getSize();
+    const auto size = glm::compMul(src.getDimensions()) * src.getDataFormat()->getSizeInBytes();
     auto data = std::make_unique<char[]>(size);
     util::readBytesIntoBuffer(rawFile_, offset_, size, littleEndian_,
-                              src.getDataFormat()->getSize(), data.get());
+                              src.getDataFormat()->getSizeInBytes(), data.get());
 
     auto volumeRAM =
         createVolumeRAM(src.getDimensions(), src.getDataFormat(), data.get(), src.getSwizzleMask(),
@@ -66,8 +66,8 @@ void RawVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentati
     }
 
     const auto size = glm::compMul(src.getDimensions());
-    util::readBytesIntoBuffer(rawFile_, offset_, size * src.getDataFormat()->getSize(),
-                              littleEndian_, src.getDataFormat()->getSize(), volumeDst->getData());
+    util::readBytesIntoBuffer(rawFile_, offset_, size * src.getDataFormat()->getSizeInBytes(),
+                              littleEndian_, src.getDataFormat()->getSizeInBytes(), volumeDst->getData());
 
     volumeDst->setSwizzleMask(src.getSwizzleMask());
     volumeDst->setInterpolation(src.getInterpolation());

@@ -203,10 +203,9 @@ void Background::process() {
 
     if (inport_.isReady()) {
         // Check data format, make sure we always have 4 channels
-        auto inDataFromat = inport_.getData()->getDataFormat();
+        auto inDataFormat = inport_.getData()->getDataFormat();
         auto format =
-            DataFormatBase::get(inDataFromat->getNumericType(), 4,
-                                inDataFromat->getSize() * 8 / inDataFromat->getComponents());
+            DataFormatBase::get(inDataFormat->getNumericType(), 4, inDataFormat->getPrecision());
 
         if (outport_.getData()->getDataFormat() != format) {
             outport_.setData(std::make_shared<Image>(outport_.getDimensions(), format));
