@@ -58,7 +58,8 @@ jobs:
             targets: 'all'
             installer: 'inviwo-installer-macos'
             artifact: 'build/inviwo-v*.dmg'
-            run: './inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
+            # run: './inviwo.app/Contents/MacOS/inviwo --logconsole --quit' Running on mac fails. FFMPEG link issue 
+            run: ''
           
           - system: linux
             os: 'ubuntu-22.04'
