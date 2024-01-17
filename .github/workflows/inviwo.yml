@@ -45,6 +45,7 @@ jobs:
             targets: 'ALL_BUILD'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
+            run: './Release/inviwo-cli.exe --logconsole --quit'
           
           - system: macos
             os: 'macos-13' # for now macos-latest == macos-12 since macos-13 is still "beta"
@@ -57,6 +58,8 @@ jobs:
             targets: 'all'
             installer: 'inviwo-installer-macos'
             artifact: 'build/inviwo-v*.dmg'
+            # run: './inviwo.app/Contents/MacOS/inviwo --logconsole --quit' Running on mac fails. FFMPEG link issue 
+            run: ''
           
           - system: linux
             os: 'ubuntu-22.04'
@@ -65,13 +68,14 @@ jobs:
             cmake: >
               -DIVW_MODULE_EIGENUTILS=ON
               -DIVW_MODULE_HDF5=ON
-              -DIVW_MODULE_FFMPEG=ON
-              -DIVW_MODULE_WEBBROWSER=ON
+              -DIVW_MODULE_FFMPEG=OFF
+              -DIVW_MODULE_WEBBROWSER=OFF
               -DIVW_TEST_BENCHMARKS=OFF
             preset: ninja-developer
             targets: 'all'
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.deb'
+            run: QT_QPA_PLATFORM=offscreen ./inviwo --logconsole --quit
           
           # linkage
           - linkage: 'dynamic'
@@ -222,21 +226,6 @@ jobs:
         path: inviwo
         submodules: recursive
 
-    - name: "Generate Changelog"
-      id: build_changelog
-      uses: mikepenz/release-changelog-builder-action@v4
-      with:
-        toTag: ${{ github.ref }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: "Log Changelog"
-      shell: bash
-      run: |
-        echo "-- Changes --"
-        echo "${{ steps.build_changelog.outputs.changelog }}"
-        echo "-- End --"
-
     - name: "Configure CMake"
       shell: bash
       run: >
@@ -259,6 +248,11 @@ jobs:
         cmake --build build --config ${{ matrix.configuration }} 
         --parallel --target ${{ matrix.targets }}
 
+    - name: "Run"
+      shell: bash
+      working-directory: "build/bin"
+      run: ${{ matrix.run }}
+      
     - name: "Upload installer"
       if: matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
       uses: actions/upload-artifact@v4
@@ -281,10 +275,10 @@ jobs:
         path: build/docs/python-api/*
     
     - name: "Setup tmate session (on failure and debug_enabled)"
-      if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      if: ${{ failure() && (github.event_name == 'workflow_dispatch' && inputs.debug_enabled) }}
       uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 10
       with:
-        timeout-minutes: 15
         limit-access-to-actor: true
 
 
@@ -353,18 +347,16 @@ jobs:
       run: >
         cmake --build build --config Release --parallel --target all
 
-    # Libcef.so is in the bin not lib dir.
-    #- name: "Run"
-    #  shell: bash
-    #  run: |
-    #    cd build/bin
-    #    ./inviwo --logconsole --quit
+    - name: "Run"
+      shell: bash
+      working-directory: "build/bin"
+      run: QT_QPA_PLATFORM=offscreen ./inviwo --logconsole --quit
 
     - name: "Setup tmate session (on failure and debug_enabled)"
-      if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      if: ${{ failure() && (github.event_name == 'workflow_dispatch' && inputs.debug_enabled) }}
       uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 10
       with:
-        timeout-minutes: 15
         limit-access-to-actor: true
 
 
@@ -435,17 +427,42 @@ jobs:
         ./inviwo --logconsole --quit
 
     - name: "Setup tmate session (on failure and debug_enabled)"
-      if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      if: ${{ failure() && (github.event_name == 'workflow_dispatch' && inputs.debug_enabled) }}
       uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 10
       with:
-        timeout-minutes: 15
         limit-access-to-actor: true
+ 
+ 
+  create-changelog:
+    name: "Create Changelog"
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Generate Changelog"
+      id: changelog
+      uses: mikepenz/release-changelog-builder-action@v4
+      with:
+        toTag: ${{ github.ref }}
+        outputFile: changelog.md
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: "Log Changelog"
+      shell: bash
+      run: |
+        echo "-- Changes --"
+        echo "${{ steps.changelog.outputs.changelog }}"
+        echo "-- End --"
+    - name: "Upload Changelog"
+      uses: actions/upload-artifact@v3
+      with:
+        name: changelog.md
+        path: changelog.md
 
   update-api-docs:
     name: "Publish updated API Docs"
     if: github.ref == 'refs/heads/master'
-    needs: [build, test-installer]
+    needs: [build, test-installer, build-linux-apt]
     runs-on: windows-latest
     steps:
       - name: "Clone Inviwo"
@@ -488,7 +505,7 @@ jobs:
   update-latest-release:
     name: "Update latest release"
     if: github.ref == 'refs/heads/master'
-    needs: [build, test-installer]
+    needs: [build, test-installer, build-linux-apt]
     strategy:
       matrix:
         os: [windows-latest] # macos-latest,

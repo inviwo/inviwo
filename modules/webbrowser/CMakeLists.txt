@@ -78,14 +78,6 @@ endif()
 ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
 set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_TMP})
 
-# Determine the target output directory.
-# Inviwo: use CMAKE_RUNTIME_OUTPUT_DIRECTORY directory as output dir
-if(IVW_GENERATOR_IS_MULTI_CONFIG) 
-    set(CEF_TARGET_OUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>)
-else()
-    set(CEF_TARGET_OUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-endif()
-
 # Display configuration settings.
 #PRINT_CEF_CONFIG()
 
@@ -196,9 +188,16 @@ set(CEF_BINARY_DIR
     "${_CEF_ROOT}/$<$<CONFIG:RelWithDebInfo,MinSizeRel,Release>:Release>$<$<CONFIG:Debug>:Debug>"
 )
 
+# Determine the target output directory.
+# Inviwo: use CMAKE_RUNTIME_OUTPUT_DIRECTORY directory as output dir
 if (OS_MAC)
 	# Output path for the main app bundle.
-	set(CEF_APP "${CEF_TARGET_OUT_DIR}/${IVW_APP_INSTALL_NAME}.app")
+    if(IVW_GENERATOR_IS_MULTI_CONFIG) 
+	   set(CEF_APP "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${IVW_APP_INSTALL_NAME}.app")
+    else()
+        set(CEF_APP "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${IVW_APP_INSTALL_NAME}.app")
+    endif()
+
 	# Copy the CEF framework into the Frameworks directory
     add_custom_command(
         TARGET inviwo-module-webbrowser
@@ -249,17 +248,28 @@ elseif (WIN32)
     endif()
 
     # Copy CEF binary and resource files to the target output directory.
+    if(IVW_GENERATOR_IS_MULTI_CONFIG) 
+        set(CEF_TARGET_OUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>)
+    else()
+        set(CEF_TARGET_OUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+    endif()
+
     COPY_FILES("inviwo-module-webbrowser" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
     COPY_FILES("inviwo-module-webbrowser" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
 
     # Copy files into the bin directory (used by installer)
     install(DIRECTORY "${CEF_BINARY_DIR}/" # Note importance of / in the end to not put files into subfolder
             "${CEF_RESOURCE_DIR}/"
-            DESTINATION "${IVW_RUNTIME_INSTALL_DIR}"
+            DESTINATION "${IVW_LIBRARY_INSTALL_DIR}"
             COMPONENT Application)
 
 else () # Linux
     # Set rpath so that libraries can be placed next to the executable.
+    if(IVW_GENERATOR_IS_MULTI_CONFIG) 
+        set(CEF_TARGET_OUT_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>)
+    else()
+        set(CEF_TARGET_OUT_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+    endif()
     set_target_properties(inviwo-module-webbrowser PROPERTIES 
         INSTALL_RPATH "$ORIGIN"
         BUILD_WITH_INSTALL_RPATH TRUE
@@ -275,7 +285,7 @@ else () # Linux
     # Copy files into the bin directory (used by installer)
     install(DIRECTORY "${CEF_BINARY_DIR}/" # Note importance of / in the end to not put files into subfolder
             "${CEF_RESOURCE_DIR}/"
-            DESTINATION "${IVW_RUNTIME_INSTALL_DIR}"
+            DESTINATION "${IVW_LIBRARY_INSTALL_DIR}"
             COMPONENT Application)
 endif()
 
