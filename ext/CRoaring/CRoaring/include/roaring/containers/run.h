@@ -305,11 +305,6 @@ static inline bool run_container_empty(
 /* Copy one container into another. We assume that they are distinct. */
 void run_container_copy(const run_container_t *src, run_container_t *dst);
 
-/* Set the cardinality to zero (does not release memory). */
-static inline void run_container_clear(run_container_t *run) {
-    run->n_runs = 0;
-}
-
 /**
  * Append run described by vl to the run container, possibly merging.
  * It is assumed that the run would be inserted at the end of the container, no
@@ -440,6 +435,8 @@ void run_container_printf(const run_container_t *v);
 void run_container_printf_as_uint32_array(const run_container_t *v,
                                           uint32_t base);
 
+bool run_container_validate(const run_container_t *run, const char **reason);
+
 /**
  * Return the serialized size in bytes of a container having "num_runs" runs.
  */
@@ -486,6 +483,7 @@ static inline int32_t run_container_size_in_bytes(
 /**
  * Return true if the two containers have the same content.
  */
+ALLOW_UNALIGNED
 static inline bool run_container_equals(const run_container_t *container1,
                           const run_container_t *container2) {
     if (container1->n_runs != container2->n_runs) {
@@ -544,6 +542,10 @@ bool run_container_select(const run_container_t *container,
 void run_container_andnot(const run_container_t *src_1,
                           const run_container_t *src_2, run_container_t *dst);
 
+void run_container_offset(const run_container_t *c,
+                         container_t **loc, container_t **hic,
+                         uint16_t offset);
+
 /* Returns the smallest value (assumes not empty) */
 inline uint16_t run_container_minimum(const run_container_t *run) {
     if (run->n_runs == 0) return 0;
@@ -558,6 +560,9 @@ inline uint16_t run_container_maximum(const run_container_t *run) {
 
 /* Returns the number of values equal or smaller than x */
 int run_container_rank(const run_container_t *arr, uint16_t x);
+
+/* Returns the index of x, if not exsist return -1 */
+int run_container_get_index(const run_container_t *arr, uint16_t x);
 
 /* Returns the index of the first run containing a value at least as large as x, or -1 */
 inline int run_container_index_equalorlarger(const run_container_t *arr, uint16_t x) {
@@ -606,14 +611,15 @@ static inline void run_container_add_range_nruns(run_container_t* run,
 }
 
 /**
- * Add all values in range [min, max]
+ * Add all values in range [min, max]. This function is currently unused
+ * and left as documentation.
  */
-static inline void run_container_add_range(run_container_t* run,
+/*static inline void run_container_add_range(run_container_t* run,
                                            uint32_t min, uint32_t max) {
     int32_t nruns_greater = rle16_count_greater(run->runs, run->n_runs, max);
     int32_t nruns_less = rle16_count_less(run->runs, run->n_runs - nruns_greater, min);
     run_container_add_range_nruns(run, min, max, nruns_less, nruns_greater);
-}
+}*/
 
 /**
  * Shifts last $count elements either left (distance < 0) or right (distance > 0)

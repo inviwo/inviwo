@@ -93,7 +93,9 @@ inline container_t *ra_get_container_at_index(
 /**
  * Retrieves the key at index i
  */
-uint16_t ra_get_key_at_index(const roaring_array_t *ra, uint16_t i);
+inline uint16_t ra_get_key_at_index(const roaring_array_t *ra, uint16_t i) {
+    return ra->keys[i];
+}
 
 /**
  * Add a new key-value pair at index i
@@ -165,6 +167,8 @@ inline void ra_set_container_at_index(
     ra->containers[i] = c;
     ra->typecodes[i] = typecode;
 }
+
+container_t *ra_get_container(roaring_array_t *ra, uint16_t x, uint8_t *typecode);
 
 /**
  * If needed, increase the capacity of the array so that it can fit k values

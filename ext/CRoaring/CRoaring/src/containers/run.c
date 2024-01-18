@@ -3,6 +3,13 @@
 
 #include <roaring/containers/run.h>
 #include <roaring/portability.h>
+#include <roaring/memory.h>
+
+#if CROARING_IS_X64
+#ifndef CROARING_COMPILER_SUPPORTS_AVX512
+#error "CROARING_COMPILER_SUPPORTS_AVX512 needs to be defined."
+#endif // CROARING_COMPILER_SUPPORTS_AVX512
+#endif
 
 #ifdef __cplusplus
 extern "C" { namespace roaring { namespace internal {
@@ -17,7 +24,6 @@ extern inline bool run_container_contains(const run_container_t *run,
 extern inline int run_container_index_equalorlarger(const run_container_t *arr, uint16_t x);
 extern inline bool run_container_is_full(const run_container_t *run);
 extern inline bool run_container_nonzero_cardinality(const run_container_t *rc);
-extern inline void run_container_clear(run_container_t *run);
 extern inline int32_t run_container_serialized_size_in_bytes(int32_t num_runs);
 extern inline run_container_t *run_container_create_range(uint32_t start,
                                                    uint32_t stop);
@@ -77,13 +83,13 @@ bool run_container_add(run_container_t *run, uint16_t pos) {
 run_container_t *run_container_create_given_capacity(int32_t size) {
     run_container_t *run;
     /* Allocate the run container itself. */
-    if ((run = (run_container_t *)malloc(sizeof(run_container_t))) == NULL) {
+    if ((run = (run_container_t *)roaring_malloc(sizeof(run_container_t))) == NULL) {
         return NULL;
     }
     if (size <= 0 ) { // we don't want to rely on malloc(0)
         run->runs = NULL;
-    } else if ((run->runs = (rle16_t *)malloc(sizeof(rle16_t) * size)) == NULL) {
-        free(run);
+    } else if ((run->runs = (rle16_t *)roaring_malloc(sizeof(rle16_t) * size)) == NULL) {
+        roaring_free(run);
         return NULL;
     }
     run->capacity = size;
@@ -96,8 +102,8 @@ int run_container_shrink_to_fit(run_container_t *src) {
     int savings = src->capacity - src->n_runs;
     src->capacity = src->n_runs;
     rle16_t *oldruns = src->runs;
-    src->runs = (rle16_t *)realloc(oldruns, src->capacity * sizeof(rle16_t));
-    if (src->runs == NULL) free(oldruns);  // should never happen?
+    src->runs = (rle16_t *)roaring_realloc(oldruns, src->capacity * sizeof(rle16_t));
+    if (src->runs == NULL) roaring_free(oldruns);  // should never happen?
     return savings;
 }
 /* Create a new run container. Return NULL in case of failure. */
@@ -114,13 +120,70 @@ run_container_t *run_container_clone(const run_container_t *src) {
     return run;
 }
 
+void run_container_offset(const run_container_t *c,
+                          container_t **loc, container_t **hic,
+                          uint16_t offset) {
+    run_container_t *lo = NULL, *hi = NULL;
+
+    bool split;
+    int lo_cap, hi_cap;
+    int top, pivot;
+
+    top = (1 << 16) - offset;
+    pivot = run_container_index_equalorlarger(c, top);
+
+    if (pivot == -1) {
+        split = false;
+        lo_cap = c->n_runs;
+        hi_cap = 0;
+    } else {
+        split = c->runs[pivot].value < top;
+        lo_cap = pivot + (split ? 1 : 0);
+        hi_cap = c->n_runs - pivot;
+    }
+
+    if (loc && lo_cap) {
+        lo = run_container_create_given_capacity(lo_cap);
+        memcpy(lo->runs, c->runs, lo_cap*sizeof(rle16_t));
+        lo->n_runs = lo_cap;
+        for (int i = 0; i < lo_cap; ++i) {
+            lo->runs[i].value += offset;
+        }
+        *loc = (container_t*)lo;
+    }
+
+    if (hic && hi_cap) {
+        hi = run_container_create_given_capacity(hi_cap);
+        memcpy(hi->runs, c->runs+pivot, hi_cap*sizeof(rle16_t));
+        hi->n_runs = hi_cap;
+        for (int i = 0; i < hi_cap; ++i) {
+            hi->runs[i].value += offset;
+        }
+        *hic = (container_t*)hi;
+    }
+
+    // Fix the split.
+    if (split) {
+        if (lo != NULL) {
+            // Add the missing run to 'lo', exhausting length.
+            lo->runs[lo->n_runs-1].length = (1 << 16) - lo->runs[lo->n_runs-1].value - 1;
+        }
+
+        if (hi != NULL) {
+            // Fix the first run in 'hi'.
+            hi->runs[0].length -= UINT16_MAX - hi->runs[0].value + 1;
+            hi->runs[0].value = 0;
+        }
+    }
+}
+
 /* Free memory. */
 void run_container_free(run_container_t *run) {
     if(run->runs != NULL) {// Jon Strabala reports that some tools complain otherwise
-      free(run->runs);
+      roaring_free(run->runs);
       run->runs = NULL;  // pedantic
     }
-    free(run);
+    roaring_free(run);
 }
 
 void run_container_grow(run_container_t *run, int32_t min, bool copy) {
@@ -136,20 +199,16 @@ void run_container_grow(run_container_t *run, int32_t min, bool copy) {
     if (copy) {
         rle16_t *oldruns = run->runs;
         run->runs =
-            (rle16_t *)realloc(oldruns, run->capacity * sizeof(rle16_t));
-        if (run->runs == NULL) free(oldruns);
+            (rle16_t *)roaring_realloc(oldruns, run->capacity * sizeof(rle16_t));
+        if (run->runs == NULL) roaring_free(oldruns);
     } else {
         // Jon Strabala reports that some tools complain otherwise
         if (run->runs != NULL) {
-          free(run->runs);
+          roaring_free(run->runs);
         }
-        run->runs = (rle16_t *)malloc(run->capacity * sizeof(rle16_t));
+        run->runs = (rle16_t *)roaring_malloc(run->capacity * sizeof(rle16_t));
     }
-    // handle the case where realloc fails
-    if (run->runs == NULL) {
-      fprintf(stderr, "could not allocate memory\n");
-    }
-    assert(run->runs != NULL);
+    // We may have run->runs == NULL.
 }
 
 /* copy one container into another */
@@ -568,6 +627,7 @@ void run_container_andnot(const run_container_t *src_1,
     }
 }
 
+ALLOW_UNALIGNED
 int run_container_to_uint32_array(void *vout, const run_container_t *cont,
                                   uint32_t base) {
     int outpos = 0;
@@ -616,8 +676,60 @@ void run_container_printf_as_uint32_array(const run_container_t *cont,
     }
 }
 
+/*
+ * Validate the container. Returns true if valid.
+ */
+bool run_container_validate(const run_container_t *run, const char **reason) {
+    if (run->n_runs < 0) {
+        *reason = "negative run count";
+        return false;
+    }
+    if (run->capacity < 0) {
+        *reason = "negative run capacity";
+        return false;
+    }
+    if (run->capacity < run->n_runs) {
+        *reason = "capacity less than run count";
+        return false;
+    }
+
+    if (run->n_runs == 0) {
+        return true;
+    }
+    if (run->runs == NULL) {
+        *reason = "NULL runs";
+        return false;
+    }
+
+    // Use uint32_t to avoid overflow issues on ranges that contain UINT16_MAX.
+    uint32_t last_end = 0;
+    for (int i = 0; i < run->n_runs; ++i) {
+        uint32_t start = run->runs[i].value;
+        uint32_t end = start + run->runs[i].length + 1;
+        if (end <= start) {
+            *reason = "run start + length overflow";
+            return false;
+        }
+        if (end > (1<<16)) {
+            *reason = "run start + length too large";
+            return false;
+        }
+        if (start < last_end) {
+            *reason = "run start less than last end";
+            return false;
+        }
+        if (start == last_end && last_end != 0) {
+            *reason = "run start equal to last end, should have combined";
+            return false;
+        }
+        last_end = end;
+    }
+    return true;
+}
+
 int32_t run_container_write(const run_container_t *container, char *buf) {
-    memcpy(buf, &container->n_runs, sizeof(uint16_t));
+    uint16_t cast_16 = container->n_runs;
+    memcpy(buf, &cast_16, sizeof(uint16_t));
     memcpy(buf + sizeof(uint16_t), container->runs,
            container->n_runs * sizeof(rle16_t));
     return run_container_size_in_bytes(container);
@@ -626,7 +738,9 @@ int32_t run_container_write(const run_container_t *container, char *buf) {
 int32_t run_container_read(int32_t cardinality, run_container_t *container,
                            const char *buf) {
     (void)cardinality;
-    memcpy(&container->n_runs, buf, sizeof(uint16_t));
+    uint16_t cast_16;
+    memcpy(&cast_16, buf, sizeof(uint16_t));
+    container->n_runs = cast_16;
     if (container->n_runs > container->capacity)
         run_container_grow(container, container->n_runs, false);
     if(container->n_runs > 0) {
@@ -770,9 +884,73 @@ int run_container_rank(const run_container_t *container, uint16_t x) {
     return sum;
 }
 
-#ifdef CROARING_IS_X64
+int run_container_get_index(const run_container_t *container, uint16_t x) {
+    if (run_container_contains(container, x)) {
+        int sum = 0;
+        uint32_t x32 = x;
+        for (int i = 0; i < container->n_runs; i++) {
+            uint32_t startpoint = container->runs[i].value;
+            uint32_t length = container->runs[i].length;
+            uint32_t endpoint = length + startpoint;
+            if (x <= endpoint) {
+                if (x < startpoint) break;
+                return sum + (x32 - startpoint);
+            } else {
+                sum += length + 1;
+            }
+        }
+        return sum - 1;
+    } else {
+        return -1;
+    }
+}
+
+#if defined(CROARING_IS_X64) && CROARING_COMPILER_SUPPORTS_AVX512
+
+CROARING_TARGET_AVX512
+ALLOW_UNALIGNED
+/* Get the cardinality of `run'. Requires an actual computation. */
+static inline int _avx512_run_container_cardinality(const run_container_t *run) {
+    const int32_t n_runs = run->n_runs;
+    const rle16_t *runs = run->runs;
+
+    /* by initializing with n_runs, we omit counting the +1 for each pair. */
+    int sum = n_runs;
+    int32_t k = 0;
+    const int32_t step = sizeof(__m512i) / sizeof(rle16_t);
+    if (n_runs > step) {
+        __m512i total = _mm512_setzero_si512();
+        for (; k + step <= n_runs; k += step) {
+            __m512i ymm1 = _mm512_loadu_si512((const __m512i *)(runs + k));
+            __m512i justlengths = _mm512_srli_epi32(ymm1, 16);
+            total = _mm512_add_epi32(total, justlengths);
+        }
+
+        __m256i lo = _mm512_extracti32x8_epi32(total, 0);
+        __m256i hi = _mm512_extracti32x8_epi32(total, 1);
+
+        // a store might be faster than extract?
+        uint32_t buffer[sizeof(__m256i) / sizeof(rle16_t)];
+        _mm256_storeu_si256((__m256i *)buffer, lo);
+        sum += (buffer[0] + buffer[1]) + (buffer[2] + buffer[3]) +
+               (buffer[4] + buffer[5]) + (buffer[6] + buffer[7]);
+
+        _mm256_storeu_si256((__m256i *)buffer, hi);
+        sum += (buffer[0] + buffer[1]) + (buffer[2] + buffer[3]) +
+               (buffer[4] + buffer[5]) + (buffer[6] + buffer[7]);
+
+    }
+    for (; k < n_runs; ++k) {
+        sum += runs[k].length;
+    }
+
+    return sum;
+}
+
+CROARING_UNTARGET_AVX512
 
 CROARING_TARGET_AVX2
+ALLOW_UNALIGNED
 /* Get the cardinality of `run'. Requires an actual computation. */
 static inline int _avx2_run_container_cardinality(const run_container_t *run) {
     const int32_t n_runs = run->n_runs;
@@ -802,7 +980,7 @@ static inline int _avx2_run_container_cardinality(const run_container_t *run) {
     return sum;
 }
 
-CROARING_UNTARGET_REGION
+CROARING_UNTARGET_AVX2
 
 /* Get the cardinality of `run'. Requires an actual computation. */
 static inline int _scalar_run_container_cardinality(const run_container_t *run) {
@@ -819,7 +997,13 @@ static inline int _scalar_run_container_cardinality(const run_container_t *run) 
 }
 
 int run_container_cardinality(const run_container_t *run) {
-  if( croaring_avx2() ) {
+#if CROARING_COMPILER_SUPPORTS_AVX512
+  if( croaring_hardware_support() & ROARING_SUPPORTS_AVX512 ) {
+    return _avx512_run_container_cardinality(run);
+  }
+  else
+#endif
+  if( croaring_hardware_support() & ROARING_SUPPORTS_AVX2 ) {
     return _avx2_run_container_cardinality(run);
   } else {
     return _scalar_run_container_cardinality(run);

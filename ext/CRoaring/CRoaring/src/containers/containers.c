@@ -1,5 +1,6 @@
 
 #include <roaring/containers/containers.h>
+#include <roaring/memory.h>
 
 #ifdef __cplusplus
 extern "C" { namespace roaring { namespace internal {
@@ -50,7 +51,7 @@ void container_free(container_t *c, uint8_t type) {
             break;
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
     }
 }
 
@@ -67,7 +68,7 @@ void container_printf(const container_t *c, uint8_t type) {
             run_container_printf(const_CAST_run(c));
             return;
         default:
-            __builtin_unreachable();
+            roaring_unreachable;
     }
 }
 
@@ -90,7 +91,44 @@ void container_printf_as_uint32_array(
                 const_CAST_run(c), base);
             return;
         default:
-            __builtin_unreachable();
+            roaring_unreachable;
+    }
+}
+
+bool container_internal_validate(const container_t *container,
+                                 uint8_t typecode, const char **reason) {
+    if (container == NULL) {
+        *reason = "container is NULL";
+        return false;
+    }
+    // Not using container_unwrap_shared because it asserts if shared containers are nested
+    if (typecode == SHARED_CONTAINER_TYPE) {
+        const shared_container_t *shared_container = const_CAST_shared(container);
+        if (croaring_refcount_get(&shared_container->counter) == 0) {
+            *reason = "shared container has zero refcount";
+            return false;
+        }
+        if (shared_container->typecode == SHARED_CONTAINER_TYPE) {
+            *reason = "shared container is nested";
+            return false;
+        }
+        if (shared_container->container == NULL) {
+            *reason = "shared container has NULL container";
+            return false;
+        }
+        container = shared_container->container;
+        typecode = shared_container->typecode;
+    }
+    switch (typecode) {
+        case BITSET_CONTAINER_TYPE:
+            return bitset_container_validate(const_CAST_bitset(container), reason);
+        case ARRAY_CONTAINER_TYPE:
+            return array_container_validate(const_CAST_array(container), reason);
+        case RUN_CONTAINER_TYPE:
+            return run_container_validate(const_CAST_run(container), reason);
+        default:
+            *reason = "invalid typecode";
+            return false;
     }
 }
 
@@ -136,19 +174,22 @@ container_t *get_copy_of_container(
         shared_container_t *shared_container;
         if (*typecode == SHARED_CONTAINER_TYPE) {
             shared_container = CAST_shared(c);
-            shared_container->counter += 1;
+            croaring_refcount_inc(&shared_container->counter);
             return shared_container;
         }
         assert(*typecode != SHARED_CONTAINER_TYPE);
 
-        if ((shared_container = (shared_container_t *)malloc(
+        if ((shared_container = (shared_container_t *)roaring_malloc(
                  sizeof(shared_container_t))) == NULL) {
             return NULL;
         }
 
         shared_container->container = c;
         shared_container->typecode = *typecode;
-
+        // At this point, we are creating new shared container
+        // so there should be no other references, and setting
+        // the counter to 2 - even non-atomically - is safe as
+        // long as the value is set before the return statement.
         shared_container->counter = 2;
         *typecode = SHARED_CONTAINER_TYPE;
 
@@ -179,7 +220,7 @@ container_t *container_clone(const container_t *c, uint8_t typecode) {
             return NULL;
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return NULL;
     }
 }
@@ -187,15 +228,13 @@ container_t *container_clone(const container_t *c, uint8_t typecode) {
 container_t *shared_container_extract_copy(
     shared_container_t *sc, uint8_t *typecode
 ){
-    assert(sc->counter > 0);
     assert(sc->typecode != SHARED_CONTAINER_TYPE);
-    sc->counter--;
     *typecode = sc->typecode;
     container_t *answer;
-    if (sc->counter == 0) {
+    if (croaring_refcount_dec(&sc->counter)) {
         answer = sc->container;
         sc->container = NULL;  // paranoid
-        free(sc);
+        roaring_free(sc);
     } else {
         answer = container_clone(sc->container, *typecode);
     }
@@ -204,13 +243,11 @@ container_t *shared_container_extract_copy(
 }
 
 void shared_container_free(shared_container_t *container) {
-    assert(container->counter > 0);
-    container->counter--;
-    if (container->counter == 0) {
+    if (croaring_refcount_dec(&container->counter)) {
         assert(container->typecode != SHARED_CONTAINER_TYPE);
         container_free(container->container, container->typecode);
         container->container = NULL;  // paranoid
-        free(container);
+        roaring_free(container);
     }
 }
 

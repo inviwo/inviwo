@@ -256,7 +256,7 @@ option(IVW_USE_EXTERNAL_ROARING "CRoaring is provided externaly" OFF)
 if(NOT IVW_USE_EXTERNAL_ROARING)
     message(STATUS "add subdirectory: CRoaring")
     add_subdirectory(CRoaring)
-    ivw_register_license_file(NAME "CRoaring" VERSION 0.3.4 TARGET roaring MODULE Core EXT
+    ivw_register_license_file(NAME "CRoaring" VERSION 2.0.4 TARGET roaring MODULE Core EXT
         URL "https://github.com/RoaringBitmap/CRoaring"
         TYPE "Apache License 2.0"
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/CRoaring/CRoaring/LICENSE
