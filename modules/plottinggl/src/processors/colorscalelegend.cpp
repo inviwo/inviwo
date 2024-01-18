@@ -81,11 +81,11 @@ namespace plot {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ColorScaleLegend::processorInfo_{
-    "org.inviwo.ColorScaleLegend",  // Class identifier
-    "Color Scale Legend",           // Display name
-    "Plotting",                     // Category
-    CodeState::Stable,              // Code state
-    "GL, Plotting, TF",             // Tags
+    "org.inviwo.ColorScaleLegend",                                             // Class identifier
+    "Color Scale Legend",                                                      // Display name
+    "Plotting",                                                                // Category
+    CodeState::Stable,                                                         // Code state
+    Tags::GL | Tag{"Plotting"} | Tag{"Colormap"} | Tag{"TF"} | Tag{"Legend"},  // Tags
     "Displays a color legend axis based on a transfer function. If a volume is connected, its data "
     "ranges are considered. The corresponding values of the colors can be displayed next to the "
     "colors."_help};
