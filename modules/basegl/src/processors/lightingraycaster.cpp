@@ -86,6 +86,7 @@ LightingRaycaster::LightingRaycaster()
     , outport_("outport")
     , enableLightColor_("supportColoredLight", "Enable Light Color", false,
                         InvalidationLevel::InvalidResources)
+    , lightVolumeScaling_("lightVolumeScaling", "Light Volume Scaling", util::ordinalScale(1.0f, 2.0f))
     , transferFunction_("transferFunction", "Transfer function", &volumePort_)
     , channel_("channel", "Render Channel")
     , raycasting_("raycaster", "Raycasting")
@@ -125,12 +126,8 @@ LightingRaycaster::LightingRaycaster()
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
-    addProperty(raycasting_);
-    addProperty(camera_);
-    lighting_.addProperty(enableLightColor_);
-    addProperty(lighting_);
-    addProperty(channel_);
-    addProperty(transferFunction_);
+    addProperties(raycasting_, camera_, lighting_, channel_, transferFunction_);
+    lighting_.addProperties(enableLightColor_, lightVolumeScaling_);
 }
 
 void LightingRaycaster::initializeResources() {
@@ -155,7 +152,8 @@ void LightingRaycaster::process() {
     if (backgroundPort_.hasData()) {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
     }
-    utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, channel_);
+    utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, channel_,
+                        lightVolumeScaling_);
 
     utilgl::singleDrawImagePlaneRect();
 
