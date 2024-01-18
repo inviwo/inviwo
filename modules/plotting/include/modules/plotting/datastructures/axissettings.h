@@ -50,7 +50,6 @@ public:
     virtual ~AxisSettings() = default;
 
     virtual dvec2 getRange() const = 0;
-    virtual bool getUseDataRange() const = 0;
 
     virtual bool getAxisVisible() const = 0;
     virtual bool getMirrored() const = 0;

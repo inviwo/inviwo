@@ -44,7 +44,6 @@ class PlotTextSettings;
 
 AxisData::AxisData(const AxisSettings& s)
     : range{s.getRange()}
-    , useDataRange{s.getUseDataRange()}
     , visible{s.getAxisVisible()}
     , mirrored{s.getMirrored()}
     , color{s.getColor()}
@@ -67,8 +66,6 @@ vec4 AxisData::getColor() const { return color; }
 float AxisData::getWidth() const { return width; }
 
 float AxisData::getScalingFactor() const { return scalingFactor; }
-
-bool AxisData::getUseDataRange() const { return useDataRange; }
 
 dvec2 AxisData::getRange() const { return range; }
 

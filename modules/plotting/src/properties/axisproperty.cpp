@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -76,7 +76,7 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     , color_{"color", "Color",
              util::ordinalColor(vec4{0.0f, 0.0f, 0.0f, 1.0f}).set("Color of the axis"_help)}
     , width_{"width", "Width", util::ordinalLength(2.5f, 20.0f).set("Line width of the axis"_help)}
-    , useDataRange_{"useDataRange", "Use Data Range", true}
+    , overrideRange_{"overrideRange", "Override Axis Range", false}
     , range_{"range",
              "Axis Range",
              "Value range of the axis"_help,
@@ -88,6 +88,17 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
              0.0,
              InvalidationLevel::InvalidOutput,
              PropertySemantics::Text}
+    , customRange_{"customRange",
+                   "Custom Range",
+                   "Custom range overriding the range of the axis"_help,
+                   0.0,
+                   100.0,
+                   -1.0e6,
+                   1.0e6,
+                   0.01,
+                   0.0,
+                   InvalidationLevel::InvalidOutput,
+                   PropertySemantics::Text}
     , scalingFactor_{"scalingFactor", "Scaling Factor",
                      util::ordinalScale(1.0f, 10.0f)
                          .set("Scaling factor affecting tick lengths and offsets of axis caption "
@@ -108,7 +119,7 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
           "Set axis orientation, label position and the horizontal and vertical alignment of both labels and captions."_help,
           buttons(includeOrientationProperty), InvalidationLevel::Valid} {
 
-    range_.readonlyDependsOn(useDataRange_, [](const auto& p) { return p.get(); });
+    range_.setReadOnly(true);
     scalingFactor_.setVisible(false);
 
     // change default fonts, make axis labels slightly less pronounced
@@ -128,8 +139,8 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     majorTicks_.setCollapsed(true);
     minorTicks_.setCollapsed(true);
 
-    addProperties(color_, width_, useDataRange_, range_, alignment_, scalingFactor_, mirrored_,
-                  captionSettings_, labelSettings_, majorTicks_, minorTicks_);
+    addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_, scalingFactor_,
+                  mirrored_, captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 
     if (includeOrientationProperty) {
         orientation_.emplace(std::string_view{"orientation"}, std::string_view{"Orientation"},
@@ -147,7 +158,9 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     setCurrentStateAsDefault();
 
     majorTicks_.onChange([this]() { updateLabels(); });
+    overrideRange_.onChange([this]() { updateLabels(); });
     range_.onChange([this]() { updateLabels(); });
+    customRange_.onChange([this]() { updateLabels(); });
     labelSettings_.title_.onChange([this]() { updateLabels(); });
     // update label alignment to match current status
     updateLabels();
@@ -169,8 +182,9 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     : BoolCompositeProperty{rhs}
     , color_{rhs.color_}
     , width_{rhs.width_}
-    , useDataRange_{rhs.useDataRange_}
+    , overrideRange_{rhs.overrideRange_}
     , range_{rhs.range_}
+    , customRange_{rhs.customRange_}
     , scalingFactor_{rhs.scalingFactor_}
     , mirrored_{rhs.mirrored_}
     , orientation_{rhs.orientation_}
@@ -180,18 +194,18 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , minorTicks_{rhs.minorTicks_}
     , alignment_{rhs.alignment_} {
 
-    addProperties(color_, width_, useDataRange_, range_, alignment_, scalingFactor_, mirrored_,
-                  captionSettings_, labelSettings_, majorTicks_, minorTicks_);
+    addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_, scalingFactor_,
+                  mirrored_, captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 
     // insert orientation property only if rhs owns one, too
     if (orientation_) {
         insertProperty(7, *orientation_);
     }
 
-    range_.readonlyDependsOn(useDataRange_, [](const auto& p) { return p.get(); });
-
     majorTicks_.onChange([this]() { updateLabels(); });
+    overrideRange_.onChange([this]() { updateLabels(); });
     range_.onChange([this]() { updateLabels(); });
+    customRange_.onChange([this]() { updateLabels(); });
     labelSettings_.title_.onChange([this]() { updateLabels(); });
     // update label alignment to match current status
     updateLabels();
@@ -242,9 +256,8 @@ AxisProperty& AxisProperty::setRange(const dvec2& range) {
     if (range_.getRangeMax() < range.y) {
         range_.setRangeMax(range.y);
     }
-    if (useDataRange_) {
-        range_.set(range);
-    }
+    range_.set(range);
+
     return *this;
 }
 
@@ -284,7 +297,7 @@ AxisProperty& AxisProperty::setLineWidth(float width) {
 }
 
 void AxisProperty::updateLabels() {
-    const auto tickmarks = plot::getMajorTickPositions(majorTicks_, range_);
+    const auto tickmarks = plot::getMajorTickPositions(majorTicks_, getRange());
     categories_.clear();
     const auto& format = labelSettings_.title_.get();
     std::transform(tickmarks.begin(), tickmarks.end(), std::back_inserter(categories_),
@@ -301,9 +314,13 @@ float AxisProperty::getWidth() const { return width_.get(); }
 
 float AxisProperty::getScalingFactor() const { return scalingFactor_.get(); }
 
-bool AxisProperty::getUseDataRange() const { return useDataRange_.get(); }
-
-dvec2 AxisProperty::getRange() const { return range_.get(); }
+dvec2 AxisProperty::getRange() const {
+    if (overrideRange_) {
+        return customRange_.get();
+    } else {
+        return range_.get();
+    }
+}
 
 AxisSettings::Orientation AxisProperty::getOrientation() const {
     if (orientation_) {

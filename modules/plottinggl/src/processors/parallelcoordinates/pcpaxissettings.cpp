@@ -277,8 +277,6 @@ dvec2 PCPAxisSettings::getRange() const {
     }
 }
 
-bool PCPAxisSettings::getUseDataRange() const { return false; }
-
 bool PCPAxisSettings::getAxisVisible() const { return BoolCompositeProperty::isChecked(); }
 
 bool PCPAxisSettings::getMirrored() const { return invertRange.get(); }

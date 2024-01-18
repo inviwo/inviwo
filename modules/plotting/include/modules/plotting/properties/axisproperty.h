@@ -124,7 +124,6 @@ public:
 
     // Inherited via AxisSettings
     virtual dvec2 getRange() const override;
-    virtual bool getUseDataRange() const override;
 
     virtual bool getAxisVisible() const override;
     virtual bool getMirrored() const override;
@@ -145,8 +144,9 @@ public:
     // general properties
     FloatVec4Property color_;
     FloatProperty width_;
-    BoolProperty useDataRange_;
+    BoolProperty overrideRange_;
     DoubleMinMaxProperty range_;
+    DoubleMinMaxProperty customRange_;
     FloatProperty scalingFactor_;
 
     BoolProperty mirrored_;

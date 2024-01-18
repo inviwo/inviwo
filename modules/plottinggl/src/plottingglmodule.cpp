@@ -76,7 +76,7 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     registerDataVisualizer(std::make_unique<ScatterPlotDataFrameVisualizer>(app));
 }
 
-int PlottingGLModule::getVersion() const { return 4; }
+int PlottingGLModule::getVersion() const { return 5; }
 
 std::unique_ptr<VersionConverter> PlottingGLModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -292,6 +292,38 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                 return true;
             }};
             conv.convert(root);
+            [[fallthrough]];
+        }
+        case 4: {
+            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+                const auto& key = node->Value();
+                if (key != "Property") return true;
+                if (node->GetAttribute("type") != "org.inviwo.AxisProperty") {
+                    return true;
+                }
+                if (auto useDataRange =
+                        xml::getElement(node, "Properties/Property&identifier=useDataRange")) {
+
+                    useDataRange->SetAttribute("identifier", "overrideRange");
+                    if (auto elem = xml::getElement(useDataRange, "displayName")) {
+                        elem->SetAttribute("content", "Override Axis Range");
+                    }
+                    // flip checked state
+                    if (auto value = xml::getElement(useDataRange, "value")) {
+                        if (value->GetAttribute("content") == "0") {
+                            value->SetAttribute("content", "1");
+                        } else {
+                            value->SetAttribute("content", "0");
+                        }
+                    }
+                    res = true;
+                }
+                if (auto range = xml::getElement(node,"Properties/Property&identifier=range")) {
+                }
+                return true;
+            }};
+            conv.convert(root);
+
             return res;
         }
         default:
