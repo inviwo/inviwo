@@ -318,7 +318,7 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                     }
                     res = true;
                 }
-                if (auto range = xml::getElement(node,"Properties/Property&identifier=range")) {
+                if (auto range = xml::getElement(node, "Properties/Property&identifier=range")) {
                 }
                 return true;
             }};

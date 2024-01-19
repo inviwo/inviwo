@@ -86,7 +86,8 @@ LightingRaycaster::LightingRaycaster()
     , outport_("outport")
     , enableLightColor_("supportColoredLight", "Enable Light Color", false,
                         InvalidationLevel::InvalidResources)
-    , lightVolumeScaling_("lightVolumeScaling", "Light Volume Scaling", util::ordinalScale(1.0f, 2.0f))
+    , lightVolumeScaling_("lightVolumeScaling", "Light Volume Scaling",
+                          util::ordinalScale(1.0f, 2.0f))
     , transferFunction_("transferFunction", "Transfer function", &volumePort_)
     , channel_("channel", "Render Channel")
     , raycasting_("raycaster", "Raycasting")
