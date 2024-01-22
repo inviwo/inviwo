@@ -110,7 +110,7 @@ constexpr SwizzleMask swizzleMask(size_t numComponents) {
 const ProcessorInfo LayerShader::processorInfo_{
     "org.inviwo.LayerShader",                 // Class identifier
     "Layer Shader",                           // Display name
-    "Image Operation",                        // Category
+    "Layer Operation",                        // Category
     CodeState::Experimental,                  // Code state
     Tags::GL | Tag{"Layer"} | Tag{"Shader"},  // Tags
     R"(Applies a customizable shader to perform computations on the input layer.)"_unindentHelp};

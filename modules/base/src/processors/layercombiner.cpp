@@ -44,7 +44,7 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo LayerCombiner::processorInfo_{"org.inviwo.LayerCombiner",  // Class identifier
                                                   "Layer Combiner",            // Display name
-                                                  "Image Operation",           // Category
+                                                  "Layer Operation",           // Category
                                                   CodeState::Experimental,     // Code state
                                                   Tags::CPU | Tag{"Layer"},    // Tags
                                                   R"(
