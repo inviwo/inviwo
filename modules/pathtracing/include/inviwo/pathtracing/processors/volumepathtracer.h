@@ -49,6 +49,7 @@
 #include <inviwo/core/properties/simplelightingproperty.h>     // for SimpleLightingProperty
 #include <inviwo/core/properties/buttonproperty.h>             // for IterativeRendering
 #include <inviwo/core/util/timer.h>                            // for IterativeRendering
+#include <inviwo/core/properties/optionproperty.h>             // for Option<TransmittanceMethod>
 
 // outside of include/inviwo
 #include <modules/opengl/volume/volumegl.h>
@@ -58,6 +59,13 @@
 #include <modules/opengl/buffer/buffergl.h>
 
 namespace inviwo {
+
+enum class TransmittanceMethod {
+    //Riemann = 0, // not implemented and pointless to implement
+    Woodcock = 0,
+    RatioTracking,
+    ResidualRatioTracking
+};
 
 class IVW_MODULE_PATHTRACING_API VolumePathTracer : public Processor {
 public:
@@ -102,6 +110,8 @@ private:
     std::chrono::time_point<std::chrono::high_resolution_clock> timeNow_;
 
     // Progressive Refinement
+    OptionProperty<TransmittanceMethod> transmittanceMethod_;
+
     ButtonProperty invalidateRendering_;
     BoolProperty enableProgressiveRefinement_;
 

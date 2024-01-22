@@ -3,10 +3,10 @@
 #include "utils/intersection.glsl"
 #include "utils/gradients.glsl"
 
-// pseudo enums
-const uint WOODCOCK = 101;
-const uint RATIO = 102;
-const uint RESIDUALRATIO = 103;
+// Method Name pseudo enum
+const int WOODCOCK = 0;
+const int RATIO = 1;
+const int RESIDUALRATIO = 2;
 
 const float REFSAMPLINGINTERVAL = 150.0;
 
@@ -90,7 +90,7 @@ float residualRatioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStar
     return Tr * Tc;
 }
 
-float transmittance(uint METHOD, vec3 raystart, vec3 raydir, float tStart, float tEnd,
+float transmittance(int METHOD, vec3 raystart, vec3 raydir, float tStart, float tEnd,
                     inout uint hashSeed, sampler3D volume, VolumeParameters volumeParameters,
                     sampler2D transferFunction) {
 
