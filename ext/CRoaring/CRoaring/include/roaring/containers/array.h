@@ -68,6 +68,7 @@ void array_container_free(array_container_t *array);
 array_container_t *array_container_clone(const array_container_t *src);
 
 /* Get the cardinality of `array'. */
+ALLOW_UNALIGNED
 static inline int array_container_cardinality(const array_container_t *array) {
     return array->cardinality;
 }
@@ -86,10 +87,6 @@ void array_container_copy(const array_container_t *src, array_container_t *dst);
 void array_container_add_from_range(array_container_t *arr, uint32_t min,
                                     uint32_t max, uint16_t step);
 
-/* Set the cardinality to zero (does not release memory). */
-static inline void array_container_clear(array_container_t *array) {
-    array->cardinality = 0;
-}
 
 static inline bool array_container_empty(const array_container_t *array) {
     return array->cardinality == 0;
@@ -161,6 +158,8 @@ void array_container_printf(const array_container_t *v);
 void array_container_printf_as_uint32_array(const array_container_t *v,
                                             uint32_t base);
 
+bool array_container_validate(const array_container_t *v, const char **reason);
+
 /**
  * Return the serialized size in bytes of a container having cardinality "card".
  */
@@ -218,6 +217,7 @@ static inline int32_t array_container_size_in_bytes(
 /**
  * Return true if the two arrays have the same content.
  */
+ALLOW_UNALIGNED
 static inline bool array_container_equals(
     const array_container_t *container1,
     const array_container_t *container2) {
@@ -362,21 +362,31 @@ inline bool array_container_contains(const array_container_t *arr,
 
 }
 
+void array_container_offset(const array_container_t *c,
+                            container_t **loc, container_t **hic,
+                            uint16_t offset);
+
 //* Check whether a range of values from range_start (included) to range_end (excluded) is present. */
 static inline bool array_container_contains_range(const array_container_t *arr,
                                                     uint32_t range_start, uint32_t range_end) {
-
+    const int32_t range_count = range_end - range_start;
     const uint16_t rs_included = range_start;
     const uint16_t re_included = range_end - 1;
 
-    const uint16_t *carr = (const uint16_t *) arr->array;
+    // Empty range is always included
+    if (range_count <= 0) {
+        return true;
+    }
+    if (range_count > arr->cardinality) {
+        return false;
+    }
 
-    const int32_t start = advanceUntil(carr, -1, arr->cardinality, rs_included);
-    const int32_t end = advanceUntil(carr, start - 1, arr->cardinality, re_included);
-
-    return (start < arr->cardinality) && (end < arr->cardinality)
-            && (((uint16_t)(end - start)) == re_included - rs_included)
-            && (carr[start] == rs_included) && (carr[end] == re_included);
+    const int32_t start = binarySearch(arr->array, arr->cardinality, rs_included);
+    // If this sorted array contains all items in the range:
+    // * the start item must be found
+    // * the last item in range range_count must exist, and be the expected end value
+    return (start >= 0) && (arr->cardinality >= start + range_count) &&
+           (arr->array[start + range_count - 1] == re_included);
 }
 
 /* Returns the smallest value (assumes not empty) */
@@ -402,7 +412,18 @@ inline int array_container_rank(const array_container_t *arr, uint16_t x) {
     }
 }
 
-/* Returns the index of the first value equal or smaller than x, or -1 */
+/* Returns the index of x , if not exsist return -1 */
+inline int array_container_get_index(const array_container_t *arr, uint16_t x) {
+    const int32_t idx = binarySearch(arr->array, arr->cardinality, x);
+    const bool is_present = idx >= 0;
+    if (is_present) {
+        return idx;
+    } else {
+        return -1;
+    }
+}
+
+/* Returns the index of the first value equal or larger than x, or -1 */
 inline int array_container_index_equalorlarger(const array_container_t *arr, uint16_t x) {
     const int32_t idx = binarySearch(arr->array, arr->cardinality, x);
     const bool is_present = idx >= 0;
@@ -438,14 +459,15 @@ static inline void array_container_add_range_nvals(array_container_t *array,
 }
 
 /**
- * Adds all values in range [min,max].
+ * Adds all values in range [min,max]. This function is currently unused
+ * and left as a documentation.
  */
-static inline void array_container_add_range(array_container_t *array,
+/*static inline void array_container_add_range(array_container_t *array,
                                              uint32_t min, uint32_t max) {
     int32_t nvals_greater = count_greater(array->array, array->cardinality, max);
     int32_t nvals_less = count_less(array->array, array->cardinality - nvals_greater, min);
     array_container_add_range_nvals(array, min, max, nvals_less, nvals_greater);
-}
+}*/
 
 /*
  * Removes all elements array[pos] .. array[pos+count-1]

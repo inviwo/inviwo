@@ -55,11 +55,10 @@ extern "C" { namespace roaring { namespace internal {
  * A shared container is a wrapper around a container
  * with reference counting.
  */
-
 STRUCT_CONTAINER(shared_container_s) {
     container_t *container;
     uint8_t typecode;
-    uint32_t counter;  // to be managed atomically
+    croaring_refcount_t counter;  // to be managed atomically
 };
 
 typedef struct shared_container_s shared_container_t;
@@ -172,9 +171,10 @@ static inline bitset_container_t *container_to_bitset(
             return result;
         case SHARED_CONTAINER_TYPE:
             assert(false);
+            roaring_unreachable;
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return 0;  // unreached
 }
 
@@ -182,7 +182,7 @@ static inline bitset_container_t *container_to_bitset(
  * Get the container name from the typecode
  * (unused at time of writing)
  */
-static inline const char *get_container_name(uint8_t typecode) {
+/*static inline const char *get_container_name(uint8_t typecode) {
     switch (typecode) {
         case BITSET_CONTAINER_TYPE:
             return container_names[0];
@@ -194,10 +194,10 @@ static inline const char *get_container_name(uint8_t typecode) {
             return container_names[3];
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return "unknown";
     }
-}
+}*/
 
 static inline const char *get_full_container_name(
     const container_t *c, uint8_t typecode
@@ -219,16 +219,16 @@ static inline const char *get_full_container_name(
                     return shared_container_names[2];
                 default:
                     assert(false);
-                    __builtin_unreachable();
+                    roaring_unreachable;
                     return "unknown";
             }
             break;
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return "unknown";
     }
-    __builtin_unreachable();
+    roaring_unreachable;
     return NULL;
 }
 
@@ -248,7 +248,7 @@ static inline int container_get_cardinality(
             return run_container_cardinality(const_CAST_run(c));
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return 0;  // unreached
 }
 
@@ -270,7 +270,7 @@ static inline bool container_is_full(const container_t *c, uint8_t typecode) {
             return run_container_is_full(const_CAST_run(c));
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return 0;  // unreached
 }
 
@@ -287,7 +287,7 @@ static inline int container_shrink_to_fit(
             return run_container_shrink_to_fit(CAST_run(c));
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return 0;  // unreached
 }
 
@@ -371,7 +371,7 @@ static inline container_t *container_repair_after_lazy(
             assert(false);
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return 0;  // unreached
 }
 
@@ -397,7 +397,7 @@ static inline int32_t container_write(
             return run_container_write(const_CAST_run(c), buf);
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return 0;  // unreached
 }
 
@@ -419,7 +419,7 @@ static inline int32_t container_size_in_bytes(
             return run_container_size_in_bytes(const_CAST_run(c));
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return 0;  // unreached
 }
 
@@ -434,6 +434,9 @@ void container_printf(const container_t *container, uint8_t typecode);
  */
 void container_printf_as_uint32_array(const container_t *container,
                                       uint8_t typecode, uint32_t base);
+
+bool container_internal_validate(const container_t *container,
+                                 uint8_t typecode, const char **reason);
 
 /**
  * Checks whether a container is not empty, requires a  typecode
@@ -452,7 +455,7 @@ static inline bool container_nonzero_cardinality(
             return run_container_nonzero_cardinality(const_CAST_run(c));
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return 0;  // unreached
 }
 
@@ -484,7 +487,7 @@ static inline int container_to_uint32_array(
                             output, const_CAST_run(c), base);
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return 0;  // unreached
 }
 
@@ -524,7 +527,7 @@ static inline container_t *container_add(
             return c;
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return NULL;
     }
 }
@@ -564,7 +567,7 @@ static inline container_t *container_remove(
             return c;
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return NULL;
     }
 }
@@ -587,7 +590,7 @@ static inline bool container_contains(
             return run_container_contains(const_CAST_run(c), val);
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return false;
     }
 }
@@ -614,7 +617,7 @@ static inline bool container_contains_range(
                                                     range_start, range_end);
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return false;
     }
 }
@@ -670,7 +673,7 @@ static inline bool container_equals(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return false;
     }
 }
@@ -723,7 +726,7 @@ static inline bool container_is_subset(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return false;
     }
 }
@@ -818,7 +821,7 @@ static inline container_t *container_and(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return NULL;
     }
 }
@@ -871,7 +874,7 @@ static inline int container_and_cardinality(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return 0;
     }
 }
@@ -924,7 +927,7 @@ static inline bool container_intersect(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return 0;
     }
 }
@@ -1022,7 +1025,7 @@ static inline container_t *container_iand(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return NULL;
     }
 }
@@ -1134,7 +1137,7 @@ static inline container_t *container_or(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return NULL;  // unreached
     }
 }
@@ -1179,7 +1182,7 @@ static inline container_t *container_lazy_or(
                                 CAST_run(result));
             *result_type = RUN_CONTAINER_TYPE;
             // we are being lazy
-            result = convert_run_to_efficient_container(
+            result = convert_run_to_efficient_container_and_free(
                 CAST_run(result), result_type);
             return result;
 
@@ -1249,7 +1252,7 @@ static inline container_t *container_lazy_or(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return NULL;  // unreached
     }
 }
@@ -1361,7 +1364,7 @@ static inline container_t *container_ior(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return NULL;
     }
 }
@@ -1492,7 +1495,7 @@ static inline container_t *container_lazy_ior(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return NULL;
     }
 }
@@ -1579,8 +1582,45 @@ static inline container_t* container_xor(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return NULL;  // unreached
+    }
+}
+
+/* Applies an offset to the non-empty container 'c'.
+ * The results are stored in new containers returned via 'lo' and 'hi', for the
+ * low and high halves of the result (where the low half matches the original key
+ * and the high one corresponds to values for the following key).
+ * Either one of 'lo' and 'hi' are allowed to be 'NULL', but not both.
+ * Whenever one of them is not 'NULL', it should point to a 'NULL' container.
+ * Whenever one of them is 'NULL' the shifted elements for that part will not be
+ * computed.
+ * If either of the resulting containers turns out to be empty, the pointed
+ * container will remain 'NULL'.
+ */
+static inline void container_add_offset(const container_t *c, uint8_t type,
+                                        container_t **lo, container_t **hi,
+                                        uint16_t offset) {
+    assert(offset != 0);
+    assert(container_nonzero_cardinality(c, type));
+    assert(lo != NULL || hi != NULL);
+    assert(lo == NULL || *lo == NULL);
+    assert(hi == NULL || *hi == NULL);
+
+    switch (type) {
+    case BITSET_CONTAINER_TYPE:
+        bitset_container_offset(const_CAST_bitset(c), lo, hi, offset);
+        break;
+    case ARRAY_CONTAINER_TYPE:
+        array_container_offset(const_CAST_array(c), lo, hi, offset);
+        break;
+    case RUN_CONTAINER_TYPE:
+        run_container_offset(const_CAST_run(c), lo, hi, offset);
+        break;
+    default:
+        assert(false);
+        roaring_unreachable;
+        break;
     }
 }
 
@@ -1678,7 +1718,7 @@ static inline container_t *container_lazy_xor(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return NULL;  // unreached
     }
 }
@@ -1762,7 +1802,7 @@ static inline container_t *container_ixor(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return NULL;
     }
 }
@@ -1909,7 +1949,7 @@ static inline container_t *container_andnot(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return NULL;  // unreached
     }
 }
@@ -1995,7 +2035,7 @@ static inline container_t *container_iandnot(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
             return NULL;
     }
 }
@@ -2023,10 +2063,10 @@ static inline bool container_iterate(
                                          base, iterator, ptr);
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return false;
 }
 
@@ -2049,10 +2089,10 @@ static inline bool container_iterate64(
                                            iterator, high_bits, ptr);
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return false;
 }
 
@@ -2082,10 +2122,10 @@ static inline container_t *container_not(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return NULL;
 }
 
@@ -2118,10 +2158,10 @@ static inline container_t *container_not_range(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return NULL;
 }
 
@@ -2153,10 +2193,10 @@ static inline container_t *container_inot(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return NULL;
 }
 
@@ -2189,10 +2229,10 @@ static inline container_t *container_inot_range(
 
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return NULL;
 }
 
@@ -2222,10 +2262,10 @@ static inline bool container_select(
                                         start_rank, rank, element);
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return false;
 }
 
@@ -2242,10 +2282,10 @@ static inline uint16_t container_maximum(
             return run_container_maximum(const_CAST_run(c));
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return false;
 }
 
@@ -2262,10 +2302,10 @@ static inline uint16_t container_minimum(
             return run_container_minimum(const_CAST_run(c));
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
     return false;
 }
 
@@ -2284,10 +2324,30 @@ static inline int container_rank(
             return run_container_rank(const_CAST_run(c), x);
         default:
             assert(false);
-            __builtin_unreachable();
+            roaring_unreachable;
     }
     assert(false);
-    __builtin_unreachable();
+    roaring_unreachable;
+    return false;
+}
+
+// return the index of x, if not exsist return -1
+static inline int container_get_index(const container_t *c, uint8_t type,
+                                    uint16_t x) {
+    c = container_unwrap_shared(c, &type);
+    switch (type) {
+        case BITSET_CONTAINER_TYPE:
+            return bitset_container_get_index(const_CAST_bitset(c), x);
+        case ARRAY_CONTAINER_TYPE:
+            return array_container_get_index(const_CAST_array(c), x);
+        case RUN_CONTAINER_TYPE:
+            return run_container_get_index(const_CAST_run(c), x);
+        default:
+            assert(false);
+            roaring_unreachable;
+    }
+    assert(false);
+    roaring_unreachable;
     return false;
 }
 
@@ -2365,7 +2425,7 @@ static inline container_t *container_add_range(
             }
         }
         default:
-            __builtin_unreachable();
+            roaring_unreachable;
     }
 }
 
@@ -2393,7 +2453,7 @@ static inline container_t *container_remove_range(
 
             if (result_cardinality == 0) {
                 return NULL;
-            } else if (result_cardinality < DEFAULT_MAX_SIZE) {
+            } else if (result_cardinality <= DEFAULT_MAX_SIZE) {
                 *result_type = ARRAY_CONTAINER_TYPE;
                 bitset_reset_range(bitset->words, min, max+1);
                 bitset->cardinality = result_cardinality;
@@ -2432,18 +2492,10 @@ static inline container_t *container_remove_range(
             }
 
             run_container_remove_range(run, min, max);
-
-            if (run_container_serialized_size_in_bytes(run->n_runs) <=
-                    bitset_container_serialized_size_in_bytes()) {
-                *result_type = RUN_CONTAINER_TYPE;
-                return run;
-            } else {
-                *result_type = BITSET_CONTAINER_TYPE;
-                return bitset_container_from_run(run);
-            }
+            return convert_run_to_efficient_container(run, result_type);
         }
         default:
-            __builtin_unreachable();
+            roaring_unreachable;
      }
 }
 

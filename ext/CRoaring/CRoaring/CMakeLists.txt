@@ -1,11 +1,10 @@
-cmake_minimum_required(VERSION 2.9...3.18)
+cmake_minimum_required(VERSION 3.23...3.28)
 project(RoaringBitmap
   DESCRIPTION "Roaring bitmaps in C (and C++)"
   LANGUAGES CXX C
 )
 include(GNUInstallDirs)
-# Inviwo: Library will not be found after packaging if RPATH is not set.
-#set(CMAKE_MACOSX_RPATH OFF)
+
 if (NOT CMAKE_BUILD_TYPE)
                 message(STATUS "No build type selected, default to Release")
                 set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
@@ -16,11 +15,11 @@ if(CMAKE_C_COMPILER_ID STREQUAL "AppleClang" AND CMAKE_C_COMPILER_VERSION VERSIO
     message(FATAL_ERROR "${PROJECT_NAME} requires at least apple-clang version 11 to support runtime dispatching.")
 endif()
 set(ROARING_LIB_NAME roaring)
-set(PROJECT_VERSION_MAJOR 0)
-set(PROJECT_VERSION_MINOR 3)
+set(PROJECT_VERSION_MAJOR 2)
+set(PROJECT_VERSION_MINOR 0)
 set(PROJECT_VERSION_PATCH 4)
-set(ROARING_LIB_VERSION "0.3.4" CACHE STRING "Roaring library version")
-set(ROARING_LIB_SOVERSION "1" CACHE STRING "Roaring library soversion")
+set(ROARING_LIB_VERSION "2.0.4" CACHE STRING "Roaring library version")
+set(ROARING_LIB_SOVERSION "13" CACHE STRING "Roaring library soversion")
 
 option(ROARING_EXCEPTIONS "Enable exception-throwing interface" ON)
 if(NOT ROARING_EXCEPTIONS)
@@ -31,7 +30,7 @@ endif()
 option(ROARING_DISABLE_X64 "Forcefully disable x64 optimizations even if hardware supports it (this disables AVX)" OFF)
 option(ROARING_DISABLE_AVX "Forcefully disable AVX even if hardware supports it " OFF)
 option(ROARING_DISABLE_NEON "Forcefully disable NEON even if hardware supports it" OFF)
-option(ROARING_DISABLE_NATIVE "Forcefully disable -march optimizations (obsolete)" OFF)
+option(ROARING_DISABLE_AVX512 "Forcefully disable AVX512 even if compiler supports it" OFF)
 
 option(ROARING_BUILD_STATIC "Build a static library" ON)
 if(BUILD_SHARED_LIBS)
@@ -44,13 +43,16 @@ option(ROARING_BUILD_LTO "Build library with Link Time Optimization" OFF)
 option(ROARING_BUILD_C_AS_CPP "Build library C files using C++ compilation" OFF)
 option(ROARING_BUILD_C_TESTS_AS_CPP "Build test C files using C++ compilation" OFF)
 option(ROARING_SANITIZE "Sanitize addresses" OFF)
-option(ENABLE_ROARING_TESTS "If OFF, disable unit tests altogether" ON)
+option(ROARING_SANITIZE_THREADS "Sanitize threads" OFF)
+
+option(ENABLE_ROARING_TESTS "If OFF, disable unit tests altogether" ${BUILD_TESTING})
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake")
 
 find_package(CTargets)
 find_package(Options)
 find_package(LTO)
+include(Import)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/roaring.pc.in"
                "${CMAKE_CURRENT_BINARY_DIR}/roaring.pc" @ONLY)
@@ -61,7 +63,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/roaring.pc" DESTINATION ${CMAKE_INSTA
 
 add_library(roaring-headers INTERFACE)
 target_include_directories(roaring-headers INTERFACE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/${ROARING_LIB_NAME}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/roaring>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCDIR}>)
 add_library(roaring-headers-cpp INTERFACE)
 target_include_directories(roaring-headers-cpp INTERFACE
@@ -72,50 +74,52 @@ target_include_directories(roaring-headers-cpp INTERFACE
 ### Some users want the C++ header files to be installed as well.
 ### C++ header files get installed to /usr/local/include/roaring typically
 SET(CPP_ROARING_HEADERS cpp/roaring64map.hh  cpp/roaring.hh) # needs to be updated if we add more files
-install(FILES ${CPP_ROARING_HEADERS} DESTINATION include/${ROARING_LIB_NAME})
-install(DIRECTORY include/${ROARING_LIB_NAME} DESTINATION include)
+install(FILES ${CPP_ROARING_HEADERS} DESTINATION include/roaring)
+install(DIRECTORY include/roaring DESTINATION include)
 
 install(TARGETS roaring-headers roaring-headers-cpp
-   EXPORT ${ROARING_LIB_NAME}-config
+   EXPORT roaring-config
    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
    INCLUDES DESTINATION ${CMAKE_INSTALL_INCDIR})
-enable_testing()
 include(CTest)
+
+
+
+add_subdirectory(src)
+if(ENABLE_ROARING_TESTS)
 
 ##################################
 #### My understanding is that variable get passed down to subdirectories, so
 #### this needs to be done here.
-if(ENABLE_ROARING_TESTS)
-  set (TEST_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/testdata/")
-  set (BENCHMARK_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/benchmarks/realdata/")
-  MESSAGE( STATUS "BENCHMARK_DATA_DIR: " ${BENCHMARK_DATA_DIR} )
-  MESSAGE( STATUS "TEST_DATA_DIR: " ${TEST_DATA_DIR} )
-  configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/tests/config.h.in"
-                  "${CMAKE_CURRENT_SOURCE_DIR}/tests/config.h")
-endif()
+set (TEST_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/testdata/")
+set (BENCHMARK_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/benchmarks/realdata/")
+MESSAGE( STATUS "BENCHMARK_DATA_DIR: " ${BENCHMARK_DATA_DIR} )
+MESSAGE( STATUS "TEST_DATA_DIR: " ${TEST_DATA_DIR} )
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/tests/config.h.in"
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/config.h")
 #################################
 
-add_subdirectory(src)
-if(ENABLE_ROARING_TESTS)
-  add_subdirectory(benchmarks)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8) # we only include the benchmarks on 64-bit systems.
+    add_subdirectory(benchmarks)
+  endif()
   add_subdirectory(tests)
 endif()
-# Being terse is good, but knowing how the build is configured is important
-# and should not be hard to figure out.
-MESSAGE( STATUS "CMAKE_SYSTEM_PROCESSOR: " ${CMAKE_SYSTEM_PROCESSOR})
-MESSAGE( STATUS "CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE} ) # this tends to be "sticky" so you can remain unknowingly in debug mode
-MESSAGE( STATUS "ROARING_DISABLE_NEON: " ${ROARING_DISABLE_NEON} )
-MESSAGE( STATUS "ROARING_BUILD_STATIC: " ${ROARING_BUILD_STATIC} )
-MESSAGE( STATUS "ROARING_LINK_STATIC: " ${ROARING_LINK_STATIC} )
-MESSAGE( STATUS "ROARING_BUILD_LTO: " ${ROARING_BUILD_LTO} )
-MESSAGE( STATUS "ROARING_SANITIZE: " ${ROARING_SANITIZE} )
-MESSAGE( STATUS "CMAKE_C_COMPILER: " ${CMAKE_C_COMPILER} ) # important to know which compiler is used
-MESSAGE( STATUS "CMAKE_C_FLAGS: " ${CMAKE_C_FLAGS} ) # important to know the flags
-MESSAGE( STATUS "CMAKE_C_FLAGS_DEBUG: " ${CMAKE_C_FLAGS_DEBUG} )
-MESSAGE( STATUS "CMAKE_C_FLAGS_RELEASE: " ${CMAKE_C_FLAGS_RELEASE} )
-MESSAGE( STATUS "ROARING_EXCEPTIONS: " ${ROARING_EXCEPTIONS} )
+option(ENABLE_ROARING_MICROBENCHMARKS "Enable microbenchmarks" OFF)
+if(ENABLE_ROARING_MICROBENCHMARKS)
+    add_subdirectory(microbenchmarks)
+else()
+     MESSAGE( STATUS "You may enable microbenchmarks by setting ENABLE_ROARING_MICROBENCHMARKS to ON " )
+endif()
+add_library(roaring::roaring ALIAS roaring)
+
+set_target_properties(
+  roaring PROPERTIES
+  VERSION "${ROARING_LIB_VERSION}"
+  SOVERSION "${ROARING_LIB_SOVERSION}"
+  WINDOWS_EXPORT_ALL_SYMBOLS YES
+)
 
 set(CPACK_PACKAGE_VENDOR "Daniel Lemire")
 set(CPACK_PACKAGE_CONTACT "lemire@gmail.com")

@@ -4,9 +4,16 @@
  */
 
 #include <assert.h>
+#include <roaring/memory.h>
 #include <roaring/containers/array.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#if CROARING_IS_X64
+#ifndef CROARING_COMPILER_SUPPORTS_AVX512
+#error "CROARING_COMPILER_SUPPORTS_AVX512 needs to be defined."
+#endif // CROARING_COMPILER_SUPPORTS_AVX512
+#endif
 
 #ifdef __cplusplus
 extern "C" { namespace roaring { namespace internal {
@@ -18,11 +25,12 @@ extern inline int array_container_index_equalorlarger(const array_container_t *a
 
 extern inline int array_container_rank(const array_container_t *arr,
                                        uint16_t x);
+extern inline int array_container_get_index(const array_container_t *arr,
+                                          uint16_t x);
 extern inline bool array_container_contains(const array_container_t *arr,
                                             uint16_t pos);
 extern inline int array_container_cardinality(const array_container_t *array);
 extern inline bool array_container_nonzero_cardinality(const array_container_t *array);
-extern inline void array_container_clear(array_container_t *array);
 extern inline int32_t array_container_serialized_size_in_bytes(int32_t card);
 extern inline bool array_container_empty(const array_container_t *array);
 extern inline bool array_container_full(const array_container_t *array);
@@ -31,16 +39,16 @@ extern inline bool array_container_full(const array_container_t *array);
 array_container_t *array_container_create_given_capacity(int32_t size) {
     array_container_t *container;
 
-    if ((container = (array_container_t *)malloc(sizeof(array_container_t))) ==
+    if ((container = (array_container_t *)roaring_malloc(sizeof(array_container_t))) ==
         NULL) {
         return NULL;
     }
 
     if( size <= 0 ) { // we don't want to rely on malloc(0)
         container->array = NULL;
-    } else if ((container->array = (uint16_t *)malloc(sizeof(uint16_t) * size)) ==
+    } else if ((container->array = (uint16_t *)roaring_malloc(sizeof(uint16_t) * size)) ==
         NULL) {
-        free(container);
+        roaring_free(container);
         return NULL;
     }
 
@@ -51,7 +59,7 @@ array_container_t *array_container_create_given_capacity(int32_t size) {
 }
 
 /* Create a new array. Return NULL in case of failure. */
-array_container_t *array_container_create() {
+array_container_t *array_container_create(void) {
     return array_container_create_given_capacity(ARRAY_DEFAULT_INIT_SIZE);
 }
 
@@ -80,18 +88,45 @@ array_container_t *array_container_clone(const array_container_t *src) {
     return newcontainer;
 }
 
+void array_container_offset(const array_container_t *c,
+                            container_t **loc, container_t **hic,
+                            uint16_t offset) {
+    array_container_t *lo = NULL, *hi = NULL;
+    int top, lo_cap, hi_cap;
+
+    top = (1 << 16) - offset;
+
+    lo_cap = count_less(c->array, c->cardinality, top);
+    if (loc && lo_cap) {
+        lo = array_container_create_given_capacity(lo_cap);
+        for (int i = 0; i < lo_cap; ++i) {
+            array_container_add(lo, c->array[i] + offset);
+        }
+        *loc = (container_t*)lo;
+    }
+
+    hi_cap = c->cardinality - lo_cap;
+    if (hic && hi_cap) {
+        hi = array_container_create_given_capacity(hi_cap);
+        for (int i = lo_cap; i < c->cardinality; ++i) {
+            array_container_add(hi, c->array[i] + offset);
+        }
+        *hic = (container_t*)hi;
+    }
+}
+
 int array_container_shrink_to_fit(array_container_t *src) {
     if (src->cardinality == src->capacity) return 0;  // nothing to do
     int savings = src->capacity - src->cardinality;
     src->capacity = src->cardinality;
     if( src->capacity == 0) { // we do not want to rely on realloc for zero allocs
-      free(src->array);
+      roaring_free(src->array);
       src->array = NULL;
     } else {
       uint16_t *oldarray = src->array;
       src->array =
-        (uint16_t *)realloc(oldarray, src->capacity * sizeof(uint16_t));
-      if (src->array == NULL) free(oldarray);  // should never happen?
+        (uint16_t *)roaring_realloc(oldarray, src->capacity * sizeof(uint16_t));
+      if (src->array == NULL) roaring_free(oldarray);  // should never happen?
     }
     return savings;
 }
@@ -99,10 +134,10 @@ int array_container_shrink_to_fit(array_container_t *src) {
 /* Free memory. */
 void array_container_free(array_container_t *arr) {
     if(arr->array != NULL) {// Jon Strabala reports that some tools complain otherwise
-      free(arr->array);
+        roaring_free(arr->array);
       arr->array = NULL; // pedantic
     }
-    free(arr);
+    roaring_free(arr);
 }
 
 static inline int32_t grow_capacity(int32_t capacity) {
@@ -127,21 +162,17 @@ void array_container_grow(array_container_t *container, int32_t min,
 
     if (preserve) {
         container->array =
-            (uint16_t *)realloc(array, new_capacity * sizeof(uint16_t));
-        if (container->array == NULL) free(array);
+            (uint16_t *)roaring_realloc(array, new_capacity * sizeof(uint16_t));
+        if (container->array == NULL) roaring_free(array);
     } else {
         // Jon Strabala reports that some tools complain otherwise
         if (array != NULL) {
-          free(array);
+          roaring_free(array);
         }
-        container->array = (uint16_t *)malloc(new_capacity * sizeof(uint16_t));
+        container->array = (uint16_t *)roaring_malloc(new_capacity * sizeof(uint16_t));
     }
 
-    //  handle the case where realloc fails
-    if (container->array == NULL) {
-      fprintf(stderr, "could not allocate memory\n");
-    }
-    assert(container->array != NULL);
+    // if realloc fails, we have container->array == NULL.
 }
 
 /* Copy one container into another. We assume that they are distinct. */
@@ -189,8 +220,8 @@ void array_container_andnot(const array_container_t *array_1,
                             array_container_t *out) {
     if (out->capacity < array_1->cardinality)
         array_container_grow(out, array_1->cardinality, false);
-#ifdef CROARING_IS_X64
-    if(( croaring_avx2() ) && (out != array_1) && (out != array_2)) {
+#if CROARING_IS_X64
+    if(( croaring_hardware_support() & ROARING_SUPPORTS_AVX2 ) && (out != array_1) && (out != array_2)) {
       out->cardinality =
           difference_vector16(array_1->array, array_1->cardinality,
                             array_2->array, array_2->cardinality, out->array);
@@ -220,8 +251,8 @@ void array_container_xor(const array_container_t *array_1,
         array_container_grow(out, max_cardinality, false);
     }
 
-#ifdef CROARING_IS_X64
-    if( croaring_avx2() ) {
+#if CROARING_IS_X64
+    if( croaring_hardware_support() & ROARING_SUPPORTS_AVX2 ) {
       out->cardinality =
         xor_vector16(array_1->array, array_1->cardinality, array_2->array,
                      array_2->cardinality, out->array);
@@ -251,7 +282,7 @@ void array_container_intersection(const array_container_t *array1,
     int32_t card_1 = array1->cardinality, card_2 = array2->cardinality,
             min_card = minimum_int32(card_1, card_2);
     const int threshold = 64;  // subject to tuning
-#ifdef CROARING_IS_X64
+#if CROARING_IS_X64
     if (out->capacity < min_card) {
       array_container_grow(out, min_card + sizeof(__m128i) / sizeof(uint16_t),
         false);
@@ -269,8 +300,8 @@ void array_container_intersection(const array_container_t *array1,
         out->cardinality = intersect_skewed_uint16(
             array2->array, card_2, array1->array, card_1, out->array);
     } else {
-#ifdef CROARING_IS_X64
-       if( croaring_avx2() ) {
+#if CROARING_IS_X64
+       if( croaring_hardware_support() & ROARING_SUPPORTS_AVX2 ) {
         out->cardinality = intersect_vector16(
             array1->array, card_1, array2->array, card_2, out->array);
        } else {
@@ -297,8 +328,8 @@ int array_container_intersection_cardinality(const array_container_t *array1,
         return intersect_skewed_uint16_cardinality(array2->array, card_2,
                                                    array1->array, card_1);
     } else {
-#ifdef CROARING_IS_X64
-    if( croaring_avx2() ) {
+#if CROARING_IS_X64
+    if( croaring_hardware_support() & ROARING_SUPPORTS_AVX2 ) {
         return intersect_vector16_cardinality(array1->array, card_1,
                                               array2->array, card_2);
     } else {
@@ -334,7 +365,6 @@ bool array_container_intersect(const array_container_t *array1,
  * */
 void array_container_intersection_inplace(array_container_t *src_1,
                                           const array_container_t *src_2) {
-    // todo: can any of this be vectorized?
     int32_t card_1 = src_1->cardinality, card_2 = src_2->cardinality;
     const int threshold = 64;  // subject to tuning
     if (card_1 * threshold < card_2) {
@@ -344,16 +374,40 @@ void array_container_intersection_inplace(array_container_t *src_1,
         src_1->cardinality = intersect_skewed_uint16(
             src_2->array, card_2, src_1->array, card_1, src_1->array);
     } else {
+#if CROARING_IS_X64
+        if (croaring_hardware_support() & ROARING_SUPPORTS_AVX2) {
+            src_1->cardinality = intersect_vector16_inplace(
+                src_1->array, card_1, src_2->array, card_2);
+        } else {
+            src_1->cardinality = intersect_uint16(
+                src_1->array, card_1, src_2->array, card_2, src_1->array);
+        }
+#else
         src_1->cardinality = intersect_uint16(
-            src_1->array, card_1, src_2->array, card_2, src_1->array);
+                        src_1->array, card_1, src_2->array, card_2, src_1->array);
+#endif
     }
 }
 
+ALLOW_UNALIGNED
 int array_container_to_uint32_array(void *vout, const array_container_t *cont,
                                     uint32_t base) {
+
+#if CROARING_IS_X64
+    int support = croaring_hardware_support();
+#if CROARING_COMPILER_SUPPORTS_AVX512
+    if (support & ROARING_SUPPORTS_AVX512) {
+        return avx512_array_container_to_uint32_array(vout, cont->array, cont->cardinality, base);
+    }
+#endif
+    if (support & ROARING_SUPPORTS_AVX2) {
+        return array_container_to_uint32_array_vector16(vout, cont->array, cont->cardinality, base);
+    }
+#endif // CROARING_IS_X64
     int outpos = 0;
     uint32_t *out = (uint32_t *)vout;
-    for (int i = 0; i < cont->cardinality; ++i) {
+    size_t i = 0;
+    for ( ; i < (size_t)cont->cardinality; ++i) {
         const uint32_t val = base + cont->array[i];
         memcpy(out + outpos, &val,
                sizeof(uint32_t));  // should be compiled as a MOV on x64
@@ -384,6 +438,46 @@ void array_container_printf_as_uint32_array(const array_container_t *v,
     for (int i = 1; i < v->cardinality; ++i) {
         printf(",%u", v->array[i] + base);
     }
+}
+
+/*
+ * Validate the container. Returns true if valid.
+ */
+bool array_container_validate(const array_container_t *v, const char **reason) {
+    if (v->capacity < 0) {
+        *reason = "negative capacity";
+        return false;
+    }
+    if (v->cardinality < 0) {
+        *reason = "negative cardinality";
+        return false;
+    }
+    if (v->cardinality > v->capacity) {
+        *reason = "cardinality exceeds capacity";
+        return false;
+    }
+    if (v->cardinality > DEFAULT_MAX_SIZE) {
+        *reason = "cardinality exceeds DEFAULT_MAX_SIZE";
+        return false;
+    }
+    if (v->cardinality == 0) {
+        return true;
+    }
+
+    if (v->array == NULL) {
+        *reason = "NULL array pointer";
+        return false;
+    }
+    uint16_t prev = v->array[0];
+    for (int i = 1; i < v->cardinality; ++i) {
+        if (v->array[i] <= prev) {
+            *reason = "array elements not strictly increasing";
+            return false;
+        }
+        prev = v->array[i];
+    }
+
+    return true;
 }
 
 /* Compute the number of runs */

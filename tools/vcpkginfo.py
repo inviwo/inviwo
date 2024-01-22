@@ -77,6 +77,7 @@ if __name__ == '__main__':
             args.pkg
         ],
         cwd=args.manifest_dir,
+        stdin=subprocess.DEVNULL,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True
@@ -118,6 +119,7 @@ if __name__ == '__main__':
             f"{args.pkg}:{args.triplet}"
         ],
         cwd=args.manifest_dir,
+        stdin=subprocess.DEVNULL,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True

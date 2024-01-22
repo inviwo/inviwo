@@ -1,6 +1,5 @@
 option(ENABLE_ROARING_TESTS "If OFF, disable unit tests altogether" OFF)
 add_subdirectory(CRoaring)
-add_library(roaring::roaring ALIAS roaring)
 ivw_default_install_targets(roaring)
 ivw_move_targets_in_dir_to_folder(CRoaring ext)
 ivw_suppress_warnings_for_targets_in_dir(CRoaring)

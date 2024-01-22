@@ -5,7 +5,11 @@
 ########################################################################
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
-timestamp=$(date)  # capture to label files with their generation time
+case $SCRIPTPATH in
+    (*\ *) echo "Path ($SCRIPTPATH) cannot contain whitespace"; exit 1 ;;
+esac
+
+timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")  # capture to label files with their generation time
 
 function newline {
     echo ""
@@ -31,7 +35,10 @@ DEMOCPP="amalgamation_demo.cpp"
 ALL_PUBLIC_H="
 $SCRIPTPATH/include/roaring/roaring_version.h
 $SCRIPTPATH/include/roaring/roaring_types.h
+$SCRIPTPATH/include/roaring/portability.h
+$SCRIPTPATH/include/roaring/bitset/bitset.h
 $SCRIPTPATH/include/roaring/roaring.h
+$SCRIPTPATH/include/roaring/memory.h
 "
 
 # .hh header files for the C++ API wrapper => Order does not matter at present
@@ -42,12 +49,11 @@ $SCRIPTPATH/cpp/roaring64map.hh
 "
 
 # internal .h files => These are used in the implementation but aren't part of
-# the API.  They're all embedded at the head of the amalgamated C file, and
+# the API.  They are all embedded at the head of the amalgamated C file, and
 # need to be in this order.
 #
 ALL_PRIVATE_H="
 $SCRIPTPATH/include/roaring/isadetection.h
-$SCRIPTPATH/include/roaring/portability.h
 $SCRIPTPATH/include/roaring/containers/perfparameters.h
 $SCRIPTPATH/include/roaring/containers/container_defs.h
 $SCRIPTPATH/include/roaring/array_util.h
@@ -66,7 +72,6 @@ $SCRIPTPATH/include/roaring/containers/mixed_union.h
 $SCRIPTPATH/include/roaring/containers/mixed_xor.h
 $SCRIPTPATH/include/roaring/containers/containers.h
 $SCRIPTPATH/include/roaring/roaring_array.h
-$SCRIPTPATH/include/roaring/misc/configreport.h
 "
 
 # .c implementation files
@@ -75,13 +80,13 @@ $SCRIPTPATH/include/roaring/misc/configreport.h
 # has the definitions available from all the header files.  Since the order of
 # the top level declarations doesn't matter after that point, the file list is
 # generated automatically from git-tracked C files in the /src/ directory.
+# Sort them so every run uses the same order.
 #
-ALL_PRIVATE_C=$( ( \
+ALL_PRIVATE_C=$( ( ( \
     [ -d $SCRIPTPATH/.git ] \
         && ( type git >/dev/null 2>&1 ) \
-        && ( git ls-files $SCRIPTPATH/src/*.c $SCRIPTPATH/src/**/*c ) \
-    ) || ( find $SCRIPTPATH/src -name '*.c' ) )
-
+        && ( git -C $SCRIPTPATH ls-files 'src/*.c' ) \
+    ) || ( find $SCRIPTPATH/src -name '*.c' ) ) | sort )
 # Verify up-front that all the files exist
 #
 for i in ${ALL_PUBLIC_H} ${ALL_PUBLIC_HH} ${ALL_PRIVATE_H} ${ALL_PRIVATE_C}; do
@@ -165,13 +170,21 @@ echo "Creating ${DEMOC}..."
 
     cat <<< '
 #include <stdio.h>
+#include <stdlib.h>
 #include "roaring.c"
 int main() {
   roaring_bitmap_t *r1 = roaring_bitmap_create();
   for (uint32_t i = 100; i < 1000; i++) roaring_bitmap_add(r1, i);
   printf("cardinality = %d\n", (int) roaring_bitmap_get_cardinality(r1));
   roaring_bitmap_free(r1);
-  return 0;
+
+  bitset_t *b = bitset_create();
+  for (int k = 0; k < 1000; ++k) {
+        bitset_set(b, 3 * k);
+  }
+  printf("%zu \n", bitset_count(b));
+  bitset_free(b);
+  return EXIT_SUCCESS;
 }
 '
 } > "${DEMOC}"
@@ -241,10 +254,10 @@ CPPBIN=${DEMOCPP%%.*}
 echo "The interface is found in the file 'include/roaring/roaring.h'."
 newline
 echo "For C, try:"
-echo "cc -march=native -O3 -std=c11  -o ${CBIN} ${DEMOC}  && ./${CBIN} "
+echo "cc -O3 -std=c11  -o ${CBIN} ${DEMOC}  && ./${CBIN} "
 newline
 echo "For C++, try:"
-echo "c++ -march=native -O3 -std=c++11 -o ${CPPBIN} ${DEMOCPP}  && ./${CPPBIN} "
+echo "c++ -O3 -std=c++11 -o ${CPPBIN} ${DEMOCPP}  && ./${CPPBIN} "
 
 lowercase(){
     echo "$1" | tr 'A-Z' 'a-z'
@@ -256,8 +269,8 @@ newline
 echo "You can build a shared library with the following command:"
 
 if [ $OS == "darwin" ]; then
-  echo "cc -march=native -O3 -std=c11 -shared -o libroaring.dylib -fPIC roaring.c"
+  echo "cc  -O3 -std=c11 -shared -o libroaring.dylib -fPIC roaring.c"
 else
-  echo "cc -march=native -O3 -std=c11 -shared -o libroaring.so -fPIC roaring.c"
+  echo "cc -O3 -std=c11 -shared -o libroaring.so -fPIC roaring.c"
 fi
 

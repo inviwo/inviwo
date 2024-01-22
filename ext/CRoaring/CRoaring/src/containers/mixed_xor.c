@@ -230,7 +230,19 @@ bool array_array_container_lazy_xor(
     container_t **dst
 ){
     int totalCardinality = src_1->cardinality + src_2->cardinality;
-    // upper bound, but probably poor estimate for xor
+    //
+    // We assume that operations involving bitset containers will be faster than
+    // operations involving solely array containers, except maybe when array containers
+    // are small. Indeed, for example, it is cheap to compute the exclusive union between an array and
+    // a bitset container, generally more so than between a large array and another array.
+    // So it is advantageous to favour bitset containers during the computation.
+    // Of course, if we convert array containers eagerly to bitset containers, we may later
+    // need to revert the bitset containers to array containerr to satisfy the Roaring format requirements,
+    // but such one-time conversions at the end may not be overly expensive. We arrived to this design
+    // based on extensive benchmarking on unions.
+    // For XOR/exclusive union, we simply followed the heuristic used by the unions (see  mixed_union.c).
+    // Further tuning is possible.
+    //
     if (totalCardinality <= ARRAY_LAZY_LOWERBOUND) {
         *dst = array_container_create_given_capacity(totalCardinality);
         if (*dst != NULL)
@@ -300,9 +312,15 @@ bool bitset_bitset_container_ixor(
     bitset_container_t *src_1, const bitset_container_t *src_2,
     container_t **dst
 ){
-    bool ans = bitset_bitset_container_xor(src_1, src_2, dst);
-    bitset_container_free(src_1);
-    return ans;
+    int card = bitset_container_xor(src_1, src_2, src_1);
+    if (card <= DEFAULT_MAX_SIZE) {
+        *dst = array_container_from_bitset(src_1);
+        bitset_container_free(src_1);
+        return false;  // not bitset
+    } else {
+        *dst = src_1;
+        return true;
+    }
 }
 
 bool array_bitset_container_ixor(

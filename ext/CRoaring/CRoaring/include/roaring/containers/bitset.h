@@ -77,8 +77,8 @@ static inline void bitset_container_set(bitset_container_t *bitset,
     bitset->words[offset] = load;
 }
 
-/* Unset the ith bit.  */
-static inline void bitset_container_unset(bitset_container_t *bitset,
+/* Unset the ith bit. Currently unused. Could be used for optimization. */
+/*static inline void bitset_container_unset(bitset_container_t *bitset,
                                           uint16_t pos) {
     uint64_t shift = 6;
     uint64_t offset;
@@ -87,7 +87,7 @@ static inline void bitset_container_unset(bitset_container_t *bitset,
     uint64_t load = bitset->words[offset];
     ASM_CLEAR_BIT_DEC_WAS_SET(load, p, bitset->cardinality);
     bitset->words[offset] = load;
-}
+}*/
 
 /* Add `pos' to `bitset'. Returns true if `pos' was not present. Might be slower
  * than bitset_container_set.  */
@@ -142,15 +142,15 @@ static inline void bitset_container_set(bitset_container_t *bitset,
     bitset->words[pos >> 6] = new_word;
 }
 
-/* Unset the ith bit.  */
-static inline void bitset_container_unset(bitset_container_t *bitset,
+/* Unset the ith bit. Currently unused.  */
+/*static inline void bitset_container_unset(bitset_container_t *bitset,
                                           uint16_t pos) {
     const uint64_t old_word = bitset->words[pos >> 6];
     const int index = pos & 63;
     const uint64_t new_word = old_word & (~(UINT64_C(1) << index));
     bitset->cardinality -= (uint32_t)((old_word ^ new_word) >> index);
     bitset->words[pos >> 6] = new_word;
-}
+}*/
 
 /* Add `pos' to `bitset'. Returns true if `pos' was not present. Might be slower
  * than bitset_container_set.  */
@@ -232,6 +232,7 @@ static inline bool bitset_container_contains_range(const bitset_container_t *bit
 }
 
 /* Get the number of bits set */
+ALLOW_UNALIGNED
 static inline int bitset_container_cardinality(
     const bitset_container_t *bitset) {
     return bitset->cardinality;
@@ -254,19 +255,7 @@ void bitset_container_add_from_range(bitset_container_t *bitset, uint32_t min,
  * bitset->cardinality =  bitset_container_compute_cardinality(bitset).*/
 int bitset_container_compute_cardinality(const bitset_container_t *bitset);
 
-/* Get whether there is at least one bit set  (see bitset_container_empty for the reverse),
-   when the cardinality is unknown, it is computed and stored in the struct */
-static inline bool bitset_container_nonzero_cardinality(
-    bitset_container_t *bitset) {
-    // account for laziness
-    if (bitset->cardinality == BITSET_UNKNOWN_CARDINALITY) {
-        // could bail early instead with a nonzero result
-        bitset->cardinality = bitset_container_compute_cardinality(bitset);
-    }
-    return bitset->cardinality > 0;
-}
-
-/* Check whether this bitset is empty (see bitset_container_nonzero_cardinality for the reverse),
+/* Check whether this bitset is empty,
  *  it never modifies the bitset struct. */
 static inline bool bitset_container_empty(
     const bitset_container_t *bitset) {
@@ -315,6 +304,12 @@ int bitset_container_union(const bitset_container_t *src_1,
 int bitset_container_union_justcard(const bitset_container_t *src_1,
                                     const bitset_container_t *src_2);
 
+/* Computes the union of bitsets `src_1' and `src_2' into `dst', but does
+ * not update the cardinality. Provided to optimize chained operations. */
+int bitset_container_union_nocard(const bitset_container_t *src_1,
+				  const bitset_container_t *src_2,
+				  bitset_container_t *dst);
+
 /* Computes the union of bitsets `src_1' and `src_2' into `dst', but does not
  * update the cardinality. Provided to optimize chained operations. */
 int bitset_container_or_nocard(const bitset_container_t *src_1,
@@ -342,6 +337,12 @@ int bitset_container_intersection(const bitset_container_t *src_1,
  * cardinality. Same as bitset_container_and_justcard. */
 int bitset_container_intersection_justcard(const bitset_container_t *src_1,
                                            const bitset_container_t *src_2);
+
+/* Computes the intersection of bitsets `src_1' and `src_2' into `dst', but does
+ * not update the cardinality. Provided to optimize chained operations. */
+int bitset_container_intersection_nocard(const bitset_container_t *src_1,
+					 const bitset_container_t *src_2,
+					 bitset_container_t *dst);
 
 /* Computes the intersection of bitsets `src_1' and `src_2' into `dst', but does
  * not update the cardinality. Provided to optimize chained operations. */
@@ -383,6 +384,9 @@ int bitset_container_andnot_nocard(const bitset_container_t *src_1,
                                    const bitset_container_t *src_2,
                                    bitset_container_t *dst);
 
+void bitset_container_offset(const bitset_container_t *c,
+                             container_t **loc, container_t **hic,
+                             uint16_t offset);
 /*
  * Write out the 16-bit integers contained in this container as a list of 32-bit
  * integers using base
@@ -408,6 +412,8 @@ void bitset_container_printf(const bitset_container_t *v);
  */
 void bitset_container_printf_as_uint32_array(const bitset_container_t *v,
                                              uint32_t base);
+
+bool bitset_container_validate(const bitset_container_t *v, const char **reason);
 
 /**
  * Return the serialized size in bytes of a container.
@@ -488,6 +494,9 @@ uint16_t bitset_container_maximum(const bitset_container_t *container);
 
 /* Returns the number of values equal or smaller than x */
 int bitset_container_rank(const bitset_container_t *container, uint16_t x);
+
+/* Returns the index of x , if not exsist return -1 */
+int bitset_container_get_index(const bitset_container_t *container, uint16_t x);
 
 /* Returns the index of the first value equal or larger than x, or -1 */
 int bitset_container_index_equalorlarger(const bitset_container_t *container, uint16_t x);

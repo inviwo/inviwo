@@ -16,23 +16,20 @@ endif()
 if((NOT MSVC) AND ROARING_ARCH)
 set(OPT_FLAGS "-march=${ROARING_ARCH}")
 endif()
-if(ROARING_DISABLE_X64)
-  # we can manually disable any optimization for x64
-  set (OPT_FLAGS "${OPT_FLAGS} -DROARING_DISABLE_X64" )
-endif()
-if(ROARING_DISABLE_AVX)
-   # we can manually disable AVX by defining DISABLEAVX
-   set (OPT_FLAGS "${OPT_FLAGS} -DROARING_DISABLE_AVX" )
- endif()
-if(ROARING_DISABLE_NEON)
-  set (OPT_FLAGS "${OPT_FLAGS} -DDISABLENEON" )
-endif()
 
 if(FORCE_AVX) # some compilers like clang do not automagically define __AVX2__ and __BMI2__ even when the hardware supports it
 if(NOT MSVC)
    set (OPT_FLAGS "${OPT_FLAGS} -mavx2 -mbmi2")
 else()
    set (OPT_FLAGS "${OPT_FLAGS} /arch:AVX2")
+endif()
+endif()
+
+if(FORCE_AVX512) # some compilers like clang do not automagically define __AVX512__ even when the hardware supports it
+if(NOT MSVC)
+   set (OPT_FLAGS "${OPT_FLAGS} -mbmi2 -mavx512f -mavx512bw -mavx512dq -mavx512vbmi2 -mavx512bitalg -mavx512vpopcntdq")
+else()
+   set (OPT_FLAGS "${OPT_FLAGS} /arch:AVX512")
 endif()
 endif()
 
@@ -44,16 +41,10 @@ endif()
 set(WARNING_FLAGS "-Wall")
 if(NOT MSVC)
 set(WARNING_FLAGS "${WARNING_FLAGS} -Wextra -Wsign-compare -Wshadow -Wwrite-strings -Wpointer-arith -Winit-self")
-set(CMAKE_C_FLAGS_DEBUG "-ggdb")
-set(CMAKE_C_FLAGS_RELEASE "-O3")
 endif()
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${STD_FLAGS} ${OPT_FLAGS} ${INCLUDE_FLAGS} ${WARNING_FLAGS} ${ROARING_SANITIZE_FLAGS} ")
 
-if(NOT MSVC)
-set(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXXSTD_FLAGS} ${OPT_FLAGS} ${INCLUDE_FLAGS} ${WARNING_FLAGS} ${ROARING_SANITIZE_FLAGS} ")
 
 if(MSVC)
