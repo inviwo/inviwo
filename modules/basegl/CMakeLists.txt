@@ -56,6 +56,8 @@ set(HEADER_FILES
     include/modules/basegl/processors/imageprocessing/layershader.h
     include/modules/basegl/processors/instancerenderer.h
     include/modules/basegl/processors/isoraycaster.h
+    include/modules/basegl/processors/layerprocessing/layerbinary.h
+    include/modules/basegl/processors/layerprocessing/layerglprocessor.h
     include/modules/basegl/processors/layerrenderer.h
     include/modules/basegl/processors/lightingraycaster.h
     include/modules/basegl/processors/lightvolumegl.h
@@ -176,6 +178,8 @@ set(SOURCE_FILES
     src/processors/imageprocessing/layershader.cpp
     src/processors/instancerenderer.cpp
     src/processors/isoraycaster.cpp
+    src/processors/layerprocessing/layerbinary.cpp
+    src/processors/layerprocessing/layerglprocessor.cpp
     src/processors/layerrenderer.cpp
     src/processors/lightingraycaster.cpp
     src/processors/lightvolumegl.cpp
