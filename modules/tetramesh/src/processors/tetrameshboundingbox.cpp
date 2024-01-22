@@ -56,8 +56,7 @@ TetraMeshBoundingBox::TetraMeshBoundingBox()
 }
 
 void TetraMeshBoundingBox::process() {
-    auto mesh = meshutil::boundingBoxAdjacency(tetraMesh_.getData()->getModelMatrix(), color_);
-    mesh->setWorldMatrix(tetraMesh_.getData()->getWorldMatrix());
+    auto mesh = meshutil::boundingBoxAdjacency(tetraMesh_.getData()->getBoundingBox(), color_);
     mesh_.setData(mesh);
 }
 
