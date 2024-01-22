@@ -14,7 +14,7 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 set(SHADER_FILES
-    glsl/util/vectormatrixmethods.glsl
+    glsl/util/rayboxintersection.glsl
     glsl/random.glsl
     glsl/transmittance/transmittancemethods.glsl
     glsl/lightestimation.glsl
