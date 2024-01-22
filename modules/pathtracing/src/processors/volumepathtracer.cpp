@@ -78,6 +78,14 @@ VolumePathTracer::VolumePathTracer()
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , positionIndicator_("positionindicator", "Position Indicator")
     , light_("light", "Light", &camera_)
+    , transmittanceMethod_(
+          "transmittanceMethod", "Transmittance method",
+          {
+              {"Woodcock", "Woodcock", TransmittanceMethod::Woodcock},
+              {"RatioTracking", "Ratio Tracking", TransmittanceMethod::RatioTracking},
+              {"ResidualRatioTracking", "Residual Ratio Tracking",
+               TransmittanceMethod::ResidualRatioTracking},
+          })
     , invalidateRendering_("iterate", "Invalidate rendering")
     , enableProgressiveRefinement_("enableRefinement", "Enable progressive refinement", false)
     , progressiveTimer_(Timer::Milliseconds(100),
@@ -140,8 +148,17 @@ VolumePathTracer::VolumePathTracer()
     addProperty(camera_);
     addProperty(positionIndicator_);
     addProperty(light_);
+    addProperty(transmittanceMethod_);
     addProperty(invalidateRendering_);
     addProperty(enableProgressiveRefinement_);
+
+    transmittanceMethod_.onChange([this]() {
+        invalidate(InvalidationLevel::InvalidOutput);
+        invalidateProgressiveRendering();
+
+        shader_.setUniform("transmittanceMethod",
+                           static_cast<int>(transmittanceMethod_.getSelectedIndex()));
+    });
 
     transferFunction_.onChange([this]() { invalidateProgressiveRendering(); });
     light_.onChange([this]() { invalidateProgressiveRendering(); });
