@@ -181,8 +181,6 @@ float CategoricalAxisProperty::getWidth() const { return width_.get(); }
 
 float CategoricalAxisProperty::getScalingFactor() const { return scalingFactor_.get(); }
 
-bool CategoricalAxisProperty::getUseDataRange() const { return false; }
-
 dvec2 CategoricalAxisProperty::getRange() const {
     return {0, static_cast<double>(categories_.size()) - 1.0};
 }

@@ -87,7 +87,6 @@ public:
 
     // Inherited via AxisSettings
     virtual dvec2 getRange() const override;
-    virtual bool getUseDataRange() const override;
 
     virtual bool getAxisVisible() const override;
     virtual bool getMirrored() const override;

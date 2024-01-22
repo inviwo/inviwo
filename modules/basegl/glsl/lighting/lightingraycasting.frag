@@ -43,6 +43,7 @@ uniform sampler3D volume;
 
 uniform VolumeParameters lightVolumeParameters;
 uniform sampler3D lightVolume;
+uniform float lightVolumeScaling = 1.0;
 
 uniform sampler2D transferFunction;
 
@@ -125,9 +126,9 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
             // Light Volume Compositing
             lightVoxel = getVoxel(lightVolume, lightVolumeParameters, samplePos);
 #ifdef LIGHT_COLOR_ENABLED
-            color.rgb *= lightVoxel.rgb;
+            color.rgb *= lightVoxel.rgb * lightVolumeScaling;
 #else
-            color.rgb *= lightVoxel.r;
+            color.rgb *= lightVoxel.r * lightVolumeScaling;
 #endif
 
             result = APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera,

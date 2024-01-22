@@ -53,7 +53,6 @@ public:
     virtual ~AxisData() = default;
 
     dvec2 range = dvec2{0.0, 100.0};
-    bool useDataRange = true;
 
     bool visible = true;
     bool mirrored = false;
@@ -73,7 +72,6 @@ public:
 
     // Inherited via AxisSettings
     virtual dvec2 getRange() const override;
-    virtual bool getUseDataRange() const override;
 
     virtual bool getAxisVisible() const override;
     virtual bool getMirrored() const override;

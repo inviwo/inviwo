@@ -210,8 +210,6 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
             highlightChangedCallback_.invoke(highlighted_);
         }
     });
-    properties_.xAxis_.useDataRange_.onChange([&]() { properties_.xAxis_.setRange(minmaxX_); });
-    properties_.yAxis_.useDataRange_.onChange([&]() { properties_.yAxis_.setRange(minmaxY_); });
 
     boxSelectionChangedCallback_ = boxSelectionHandler_.addSelectionChangedCallback(
         [this](const std::vector<bool>& selected, bool append) {
