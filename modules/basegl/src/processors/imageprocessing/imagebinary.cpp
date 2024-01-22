@@ -49,11 +49,16 @@ const ProcessorInfo ImageBinary::processorInfo_{
     "Image Operation",         // Category
     CodeState::Stable,         // Code state
     Tags::GL,                  // Tags
-};
+    R"(Computes a binary image of the input image using a threshold. The output
+    will contain "0" for all values below the threshold and "1" otherwise.)"_unindentHelp};
+
 const ProcessorInfo ImageBinary::getProcessorInfo() const { return processorInfo_; }
 
 ImageBinary::ImageBinary()
-    : ImageGLProcessor("img_binary.frag"), threshold_("threshold", "Threshold", 0.5) {
+    : ImageGLProcessor("img_binary.frag")
+    , threshold_("threshold", "Threshold",
+                 util::ordinalLength(0.0f, 1.0f)
+                     .set("Threshold used for binarization of the input layer"_help)) {
     addProperty(threshold_);
 }
 

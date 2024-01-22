@@ -57,13 +57,13 @@ class ShaderResource;
 
 namespace detail {
 
-void syncMetaDataAndColorLayerState(ImageInport& inport, Image* dstImage,
+void syncMetaDataAndColorLayerState(ImageInport& inport, Image& dstImage,
                                     std::optional<SwizzleMask> swizzleMask = std::nullopt) {
     const auto srcImage = inport.getData();
     const auto srcColorLayer = srcImage->getColorLayer();
-    auto dstColorLayer = dstImage->getColorLayer();
+    auto dstColorLayer = dstImage.getColorLayer();
 
-    dstImage->copyMetaDataFrom(*srcImage);
+    dstImage.copyMetaDataFrom(*srcImage);
 
     dstColorLayer->setSwizzleMask(swizzleMask.value_or(srcColorLayer->getSwizzleMask()));
     dstColorLayer->setWrapping(inport.getData()->getColorLayer()->getWrapping());
@@ -91,7 +91,7 @@ bool needsNewImage(ImageInport& inport, ImageOutport& outport, const size2_t& ds
 
 }  // namespace detail
 
-ImageGLProcessor::ImageGLProcessor(const std::string& fragmentShader, bool buildShader)
+ImageGLProcessor::ImageGLProcessor(std::string_view fragmentShader, bool buildShader)
     : ImageGLProcessor(utilgl::findShaderResource(fragmentShader), buildShader) {}
 
 ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
@@ -134,8 +134,8 @@ void ImageGLProcessor::process() {
 
         if (!outport_.hasEditableData() ||
             detail::needsNewImage(inport_, outport_, dim, dataformat, swizzlemask)) {
-            Image* img = new Image(dim, dataformat);
-            detail::syncMetaDataAndColorLayerState(inport_, img, swizzlemask);
+            auto img = std::make_shared<Image>(dim, dataformat);
+            detail::syncMetaDataAndColorLayerState(inport_, *img, swizzlemask);
 
             outport_.setData(img);
         }
