@@ -48,6 +48,8 @@ uniform int channel;
 uniform float time_ms;
 uniform int iteration;
 
+uniform int transmittanceMethod;
+
 #define PI 3.1415
 
 layout(local_size_x = 16, local_size_y = 16) in;
@@ -87,15 +89,12 @@ vec4 pathtrace(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float 
         rayDepth = meanFreePath;
 
         result.rgb = estimateDirectLight(meanFreePath, volume, volumeParameters, transferFunction,
-                                         samplePosition, cameraDir, light, hashSeed, channel);
+                                         samplePosition, cameraDir, light, hashSeed, channel, transmittanceMethod);
 
         result.a = 1f - T;
-#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
     } else {
         result = bgColor;
-    }
-    //depth = mix(calculateDepthValue(camera, rayDepth / rayLength, entryDepth, exitDepth), depth,
-    //            rayDepth == -1);
+    }  
 
     return result;
 }
@@ -131,19 +130,13 @@ void main() {
     vec4 color = pathtrace(outportParameters, entryPoint, exitPoint, entryPointDepth,
                            exitPointDepth, rayDepth, depth, raycaster, volumeParameters, bgColor);
 
-    // Picking needs to be selected better
-    // Picking might need some other treatment, like choosing the picking ID if it it is closer to
-    // the computed depth
-
     vec4 colorPrev = imageLoad(outportColor, storePos);
-    float depthPrev = imageLoad(outportDepth, storePos).x;
+    //float depthPrev = imageLoad(outportDepth, storePos).x;
 
     float w = 1.0f - 1.0f / float(iteration + 1);
     vec4 colorFinal = mix(color, colorPrev, w);
-    //float depthFinal = depth > depthPrev ? depth : depthPrev;
-    float depthFinal = min(depth, depthPrev);
 
     imageStore(outportColor, storePos, colorFinal);
-    imageStore(outportDepth, storePos, vec4(vec3(depthFinal), 255));
+    imageStore(outportDepth, storePos, vec4(vec3(depth), 255));
     imageStore(outportPicking, storePos, picking);
 }
