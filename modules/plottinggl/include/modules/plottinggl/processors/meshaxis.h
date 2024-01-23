@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,27 +30,21 @@
 #pragma once
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
-
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
 #include <modules/plottinggl/utils/axis3dprocessorhelper.h>
+
+#include <array>
 
 namespace inviwo {
 
 namespace plot {
 
-/**
- * \class VolumeAxis
- * \brief Processor for rendering axis annotations next to a volume
- */
-class IVW_MODULE_PLOTTINGGL_API VolumeAxis : public Processor {
+class IVW_MODULE_PLOTTINGGL_API MeshAxis : public Processor {
 public:
-    enum class CaptionType { String, Data, Custom };
 
-    VolumeAxis();
+    MeshAxis();
 
     virtual void process() override;
 
@@ -58,14 +52,9 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    void updateCaptions();
-
-    VolumeInport inport_;
+    MeshInport inport_;
     ImageInport imageInport_;
     ImageOutport outport_;
-
-    OptionProperty<CaptionType> captionType_;
-    StringProperty customCaption_;
 
     Axis3DProcessorHelper axisHelper_;
 };

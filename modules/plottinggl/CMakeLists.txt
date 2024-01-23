@@ -14,6 +14,7 @@ set(HEADER_FILES
     include/modules/plottinggl/processors/axisrenderprocessor.h
     include/modules/plottinggl/processors/colorscalelegend.h
     include/modules/plottinggl/processors/imageplotprocessor.h
+    include/modules/plottinggl/processors/meshaxis.h
     include/modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h
     include/modules/plottinggl/processors/parallelcoordinates/pcpaxissettings.h
     include/modules/plottinggl/processors/persistencediagramplotprocessor.h
@@ -21,6 +22,7 @@ set(HEADER_FILES
     include/modules/plottinggl/processors/scatterplotprocessor.h
     include/modules/plottinggl/processors/volumeaxis.h
     include/modules/plottinggl/rendering/boxselectionrenderer.h
+    include/modules/plottinggl/utils/axis3dprocessorhelper.h
     include/modules/plottinggl/utils/axisrenderer.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -36,6 +38,7 @@ set(SOURCE_FILES
     src/processors/axisrenderprocessor.cpp
     src/processors/colorscalelegend.cpp
     src/processors/imageplotprocessor.cpp
+    src/processors/meshaxis.cpp
     src/processors/parallelcoordinates/parallelcoordinates.cpp
     src/processors/parallelcoordinates/pcpaxissettings.cpp
     src/processors/persistencediagramplotprocessor.cpp
@@ -43,6 +46,7 @@ set(SOURCE_FILES
     src/processors/scatterplotprocessor.cpp
     src/processors/volumeaxis.cpp
     src/rendering/boxselectionrenderer.cpp
+    src/utils/axis3dprocessorhelper.cpp
     src/utils/axisrenderer.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
