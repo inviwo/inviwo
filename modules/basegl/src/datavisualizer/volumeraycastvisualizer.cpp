@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/optionproperty.h>               // for OptionProperty
 #include <inviwo/core/properties/ordinalproperty.h>              // for FloatVec4Property, Float...
 #include <inviwo/core/properties/ordinalrefproperty.h>           // for FloatVec3RefProperty
+#include <inviwo/core/properties/cameraproperty.h>               // for CameraProperty
 #include <inviwo/core/rendering/datavisualizer.h>                // for DataVisualizer
 #include <inviwo/core/util/document.h>                           // for Document, Document::Docu...
 #include <inviwo/core/util/fileextension.h>                      // for FileExtension
@@ -137,6 +138,13 @@ std::vector<Processor*> VolumeRaycastVisualizer::addVisualizerNetwork(Outport* o
     net->addLink(lrp->getPropertyByIdentifier("camera"), eep->getPropertyByIdentifier("camera"));
 
     net->evaluateLinksFromProperty(vrc->getPropertyByIdentifier("camera"));
+
+    if (auto camera = dynamic_cast<CameraProperty*>(vrc->getPropertyByIdentifier("camera"))) {
+        camera->fitData();
+    }
+    if (auto canvas = dynamic_cast<CanvasProcessor*>(cvs)) {
+        canvas->setCanvasSize(size2_t{768, 768});
+    }
 
     return {cpg, eep, vrc, cvs, vbb, bak, lrp};
 }

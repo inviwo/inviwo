@@ -94,6 +94,10 @@ std::vector<Processor*> VolumeSliceVisualizer::addVisualizerNetwork(Outport* out
     net->addConnection(outport, vsl->getInports()[0]);
     net->addConnection(vsl->getOutports()[0], cvs->getInports()[0]);
 
+    if (auto canvas = dynamic_cast<CanvasProcessor*>(cvs)) {
+        canvas->setCanvasSize(size2_t{768, 768});
+    }
+
     return {vsl, cvs};
 }
 
