@@ -30,6 +30,7 @@
 #include <modules/plottinggl/processors/meshaxis.h>
 
 #include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/util/foreacharg.h>
 #include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
@@ -53,11 +54,13 @@ MeshAxis::MeshAxis()
     , imageInport_{"imageInport", "Background image (optional)"_help}
     , outport_{"outport",
                "Output image containing the rendered mesh axes and the optional input image"_help}
-    , axisHelper_{*this, util::boundingBox(inport_)} {
+    , axisHelper_{util::boundingBox(inport_)} {
 
     imageInport_.setOptional(true);
 
     addPorts(inport_, imageInport_, outport_);
+
+    util::for_each_in_tuple([&](Property& p) { addProperty(p); }, axisHelper_.props());
 
     // adjust scaling factor for label offsets and tick lengths
     axisHelper_.offsetScaling_.onChange(
@@ -71,6 +74,8 @@ MeshAxis::MeshAxis()
     // sync ranges when custom range is enabled or disabled
     axisHelper_.rangeMode_.onChange(
         [this]() { axisHelper_.adjustRanges(inport_.getData().get()); });
+
+    setAllPropertiesCurrentStateAsDefault();
 }
 
 void MeshAxis::process() {

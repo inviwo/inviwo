@@ -110,8 +110,7 @@ std::array<AxisParams, 3> findAxisPositions(dvec3 viewDirection) {
 
 namespace plot {
 
-Axis3DProcessorHelper::Axis3DProcessorHelper(Processor& owner,
-                                             std::function<std::optional<mat4>()> getBoundingBox,
+Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
                                              DimsRangeMode useDimsRange)
     : offsetScaling_{"offsetScaling",
                      "Offset Scaling",
@@ -200,7 +199,7 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(Processor& owner,
 
     presets_.setSerializationMode(PropertySerializationMode::None);
     presets_.onChange([&]() {
-        NetworkLock lock(&owner);
+        NetworkLock lock(&visibility_);
         if (presets_.getSelectedValue() == "all") {
             for (auto& p : visibleAxes_) {
                 p.set(true);
@@ -224,9 +223,6 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(Processor& owner,
     }
 
     axisStyle_.registerProperties(xAxis_, yAxis_, zAxis_);
-    owner.addProperties(offsetScaling_, axisOffset_, rangeMode_, customRanges_, visibility_,
-                        axisStyle_, xAxis_, yAxis_, zAxis_, camera_, trackball_);
-
     axisStyle_.setCollapsed(true);
     visibility_.setCollapsed(true);
     camera_.setCollapsed(true);
@@ -258,20 +254,7 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(Processor& owner,
     rangeYaxis_.onChange(linkAxisRanges(rangeYaxis_, yAxis_.range_));
     rangeZaxis_.onChange(linkAxisRanges(rangeZaxis_, zAxis_.range_));
 
-    // adjust scaling factor for label offsets and tick lengths
-    // offsetScaling_.onChange([&]() { adjustScalingFactor(); });
-
-    //// adjust axis ranges when input volume, i.e. its basis, changes
-    // inport_.onChange([&]() {
-    //     adjustScalingFactor();
-    //     adjustRanges();
-    // });
-    //// sync ranges when custom range is enabled or disabled
-    // rangeMode_.onChange([this]() { adjustRanges(); });
-
     customRanges_.setVisible(rangeMode_.getSelectedValue() == AxisRangeMode::Custom);
-
-    owner.setAllPropertiesCurrentStateAsDefault();
 }
 
 void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& entity) {

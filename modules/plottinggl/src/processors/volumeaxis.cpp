@@ -31,6 +31,7 @@
 
 #include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/util/foreacharg.h>
 #include <modules/opengl/texture/textureutils.h>
 
 #include <fmt/core.h>
@@ -62,14 +63,20 @@ VolumeAxis::VolumeAxis()
                     {"custom", "Custom Format (example '{n}{u: [}')", CaptionType::Custom}},
                    0)
     , customCaption_("customCaption", "Custom Caption", "{n}{u: [}")
-    , axisHelper_{*this, util::boundingBox(inport_)} {
+    , axisHelper_{util::boundingBox(inport_)} {
 
     imageInport_.setOptional(true);
 
     addPorts(inport_, imageInport_, outport_);
 
-    insertProperty(4, captionType_);
-    insertProperty(5, customCaption_);
+    util::for_each_in_tuple(
+        [&](Property& p) {
+            if (p.getIdentifier() == "visibility") {
+                addProperties(captionType_, customCaption_);
+            }
+            addProperty(p);
+        },
+        axisHelper_.props());
 
     captionType_.onChange([this]() { updateCaptions(); });
     customCaption_.onChange([this]() {
@@ -91,6 +98,8 @@ VolumeAxis::VolumeAxis()
     // sync ranges when custom range is enabled or disabled
     axisHelper_.rangeMode_.onChange(
         [this]() { axisHelper_.adjustRanges(inport_.getData().get()); });
+
+    setAllPropertiesCurrentStateAsDefault();
 }
 
 void VolumeAxis::process() {

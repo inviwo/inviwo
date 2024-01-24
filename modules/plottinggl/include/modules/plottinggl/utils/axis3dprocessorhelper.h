@@ -45,6 +45,8 @@
 #include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 
+#include <tuple>
+
 namespace inviwo {
 
 class Processor;
@@ -59,13 +61,22 @@ public:
 
     enum class DimsRangeMode { No, Yes };
 
-    Axis3DProcessorHelper(Processor& owner, std::function<std::optional<mat4>()> getBoundingBox,
+    Axis3DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
                           DimsRangeMode useDimsRange = DimsRangeMode::No);
 
     void renderAxes(size2_t outputDims, const SpatialEntity& entity);
 
     void adjustScalingFactor(const SpatialEntity* entity = nullptr);
     void adjustRanges(const SpatialEntity* entity);
+
+    auto props() {
+        return std::tie(offsetScaling_, axisOffset_, rangeMode_, customRanges_, visibility_,
+                        axisStyle_, xAxis_, yAxis_, zAxis_, camera_, trackball_);
+    }
+    auto props() const {
+        return std::tie(offsetScaling_, axisOffset_, rangeMode_, customRanges_, visibility_,
+                        axisStyle_, xAxis_, yAxis_, zAxis_, camera_, trackball_);
+    }
 
     OptionProperty<OffsetScaling> offsetScaling_;
     FloatProperty axisOffset_;
