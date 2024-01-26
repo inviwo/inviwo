@@ -26,7 +26,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
@@ -43,20 +42,18 @@
 #include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 
-#include <tuple>
-
 namespace inviwo {
 
 namespace plot {
 
-class IVW_MODULE_PLOTTINGGL_API Axis3DProcessorHelper {
+class IVW_MODULE_PLOTTINGGL_API Axis2DProcessorHelper {
 public:
     enum class AxisRangeMode { Dims, Basis, BasisOffset, World, Custom };
     enum class OffsetScaling { None, MinExtent, MaxExtent, MeanExtent, Diagonal };
 
     enum class DimsRangeMode { No, Yes };
 
-    Axis3DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
+    Axis2DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
                           DimsRangeMode useDimsRange = DimsRangeMode::No);
 
     void renderAxes(size2_t outputDims, const SpatialEntity& entity);
@@ -66,11 +63,11 @@ public:
 
     auto props() {
         return std::tie(offsetScaling_, axisOffset_, rangeMode_, customRanges_, visibility_,
-                        axisStyle_, xAxis_, yAxis_, zAxis_, camera_, trackball_);
+                        axisStyle_, xAxis_, yAxis_, camera_, trackball_);
     }
     auto props() const {
         return std::tie(offsetScaling_, axisOffset_, rangeMode_, customRanges_, visibility_,
-                        axisStyle_, xAxis_, yAxis_, zAxis_, camera_, trackball_);
+                        axisStyle_, xAxis_, yAxis_, camera_, trackball_);
     }
 
     OptionProperty<OffsetScaling> offsetScaling_;
@@ -81,21 +78,19 @@ public:
     CompositeProperty customRanges_;
     DoubleMinMaxProperty rangeXaxis_;
     DoubleMinMaxProperty rangeYaxis_;
-    DoubleMinMaxProperty rangeZaxis_;
 
     BoolCompositeProperty visibility_;
     OptionPropertyString presets_;
-    std::array<BoolProperty, 12> visibleAxes_;
+    std::array<BoolProperty, 4> visibleAxes_;
 
     AxisStyleProperty axisStyle_;
     AxisProperty xAxis_;
     AxisProperty yAxis_;
-    AxisProperty zAxis_;
 
     CameraProperty camera_;
     CameraTrackball trackball_;
 
-    std::array<AxisRenderer3D, 3> axisRenderers_;
+    std::array<AxisRenderer3D, 2> axisRenderers_;
 
 protected:
     bool propertyUpdate_;

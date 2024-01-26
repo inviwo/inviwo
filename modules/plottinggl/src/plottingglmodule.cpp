@@ -40,6 +40,7 @@
 #include <modules/plottinggl/processors/axisrenderprocessor.h>                 // for AxisR...
 #include <modules/plottinggl/processors/colorscalelegend.h>                    // for Color...
 #include <modules/plottinggl/processors/imageplotprocessor.h>                  // for Image...
+#include <modules/plottinggl/processors/layeraxis.h>
 #include <modules/plottinggl/processors/meshaxis.h>
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h>  // for Paral...
 #include <modules/plottinggl/processors/parallelcoordinates/pcpaxissettings.h>      // for PCPAx...
@@ -61,10 +62,11 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
 
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
-    registerProcessor<plot::MeshAxis>();
     registerProcessor<plot::AxisRenderProcessor>();
     registerProcessor<plot::ColorScaleLegend>();
     registerProcessor<plot::ImagePlotProcessor>();
+    registerProcessor<plot::LayerAxis>();
+    registerProcessor<plot::MeshAxis>();
     registerProcessor<plot::ParallelCoordinates>();
     registerProcessor<plot::PersistenceDiagramPlotProcessor>();
     registerProcessor<plot::ScatterPlotMatrixProcessor>();
