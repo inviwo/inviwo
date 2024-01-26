@@ -45,20 +45,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageToSpatialSampler, Image To Spatial Sampler}
- * ![](org.inviwo.ImageToSpatialSampler.png?classIdentifier=org.inviwo.ImageToSpatialSampler)
- *
- * Creates a Spatial Sampler for the given input image.
- *
- *
- * ### Inports
- *   * __image__ The input image.
- *
- * ### Outports
- *   * __sampler__ The created sampler.
- *
- */
-
 class IVW_MODULE_BASE_API ImageToSpatialSampler : public Processor {
 public:
     ImageToSpatialSampler();
@@ -71,7 +57,7 @@ public:
 
 private:
     ImageInport image_;
-    DataOutport<SpatialSampler<2, double>> sampler_;
+    DataOutport<SpatialSampler<dvec4>> sampler_;
 };
 
 }  // namespace inviwo

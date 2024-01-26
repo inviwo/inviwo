@@ -31,13 +31,13 @@
 
 namespace inviwo {
 
-template class IVW_CORE_TMPL_INST Spatial4DSampler<1, double>;
-template class IVW_CORE_TMPL_INST Spatial4DSampler<1, float>;
-template class IVW_CORE_TMPL_INST Spatial4DSampler<2, double>;
-template class IVW_CORE_TMPL_INST Spatial4DSampler<2, float>;
-template class IVW_CORE_TMPL_INST Spatial4DSampler<3, double>;
-template class IVW_CORE_TMPL_INST Spatial4DSampler<3, float>;
-template class IVW_CORE_TMPL_INST Spatial4DSampler<4, double>;
-template class IVW_CORE_TMPL_INST Spatial4DSampler<4, float>;
+template class IVW_CORE_TMPL_INST Spatial4DSampler<double>;
+template class IVW_CORE_TMPL_INST Spatial4DSampler<float>;
+template class IVW_CORE_TMPL_INST Spatial4DSampler<dvec2>;
+template class IVW_CORE_TMPL_INST Spatial4DSampler<vec2>;
+template class IVW_CORE_TMPL_INST Spatial4DSampler<dvec3>;
+template class IVW_CORE_TMPL_INST Spatial4DSampler<vec3>;
+template class IVW_CORE_TMPL_INST Spatial4DSampler<dvec4>;
+template class IVW_CORE_TMPL_INST Spatial4DSampler<vec4>;
 
 }  // namespace inviwo

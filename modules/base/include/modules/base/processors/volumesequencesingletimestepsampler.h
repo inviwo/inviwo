@@ -55,50 +55,6 @@
 
 namespace inviwo {
 
-class VolumeSequenceSingleTimestepSampler : public SpatialSampler<3, double> {
-public:
-    VolumeSequenceSingleTimestepSampler(double t, std::shared_ptr<const Volume> v0,
-                                        std::shared_ptr<const Volume> v1,
-                                        CoordinateSpace space = CoordinateSpace::Data)
-        : SpatialSampler(*v0, space), t_(t), v0_(v0, space), v1_(v1, space) {}
-
-protected:
-    virtual dvec3 sampleDataSpace(const dvec3& pos) const override {
-        auto a = v0_.sampleDataSpace(pos);
-        auto b = v1_.sampleDataSpace(pos);
-        return a + t_ * (b - a);
-    };
-
-    virtual bool withinBoundsDataSpace(const dvec3& pos) const override {
-        return v0_.withinBoundsDataSpace(pos) || v1_.withinBoundsDataSpace(pos);
-    };
-
-private:
-    double t_;
-    VolumeDoubleSampler<3> v0_;
-    VolumeDoubleSampler<3> v1_;
-};
-
-/** \docpage{org.inviwo.VolumeSequenceSingleTimestepSampler, Volume Sequence Single Timestep
- * Sampler}
- * ![](org.inviwo.VolumeSequenceSingleTimestepSampler.png?classIdentifier=org.inviwo.VolumeSequenceSingleTimestepSampler)
- *
- * Creates a spatial sampler for a given timestamp from a VolumeSequence. Will use linear
- * interpolation to sample between two volume in the sequence.
- * Useful for streamline visualization of a specific timestep
- *
- *
- * ### Inports
- *   * __volumeSequence__ The input sequence of volumes
- *
- * ### Outports
- *   * __sampler__ The created sampler
- *
- * ### Properties
- *   * __Timestamp__ the timestamp to sample at
- *
- */
-
 class IVW_MODULE_BASE_API VolumeSequenceSingleTimestepSamplerProcessor : public Processor {
 public:
     VolumeSequenceSingleTimestepSamplerProcessor();
@@ -111,7 +67,7 @@ public:
 
 private:
     VolumeSequenceInport volumeSequence_;
-    DataOutport<SpatialSampler<3, double>> sampler_;
+    DataOutport<SpatialSampler<dvec3>> sampler_;
 
     DoubleProperty timestamp_;
 };

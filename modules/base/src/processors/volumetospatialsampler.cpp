@@ -55,7 +55,7 @@ const ProcessorInfo VolumeToSpatialSampler::processorInfo_{
     "Volume To Spatial Sampler",          // Display name
     "Spatial Sampler",                    // Category
     CodeState::Experimental,              // Code state
-    Tags::None,                           // Tags
+    Tags::CPU,                           // Tags
 };
 const ProcessorInfo VolumeToSpatialSampler::getProcessorInfo() const { return processorInfo_; }
 
@@ -66,7 +66,7 @@ VolumeToSpatialSampler::VolumeToSpatialSampler()
 }
 
 void VolumeToSpatialSampler::process() {
-    auto sampler = std::make_shared<VolumeDoubleSampler<3>>(volume_.getData());
+    auto sampler = std::make_shared<VolumeSampler<dvec3>>(volume_.getData());
     sampler_.setData(sampler);
 }
 

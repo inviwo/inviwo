@@ -54,18 +54,21 @@ const ProcessorInfo ImageToSpatialSampler::processorInfo_{
     "Image To Spatial Sampler",          // Display name
     "Spatial Sampler",                   // Category
     CodeState::Experimental,             // Code state
-    Tags::None,                          // Tags
-};
+    Tags::CPU,                           // Tags
+    "Creates a Spatial Sampler for the given input image"_help};
+
 const ProcessorInfo ImageToSpatialSampler::getProcessorInfo() const { return processorInfo_; }
 
 ImageToSpatialSampler::ImageToSpatialSampler()
-    : Processor(), image_("image", true), sampler_("sampler") {
+    : Processor()
+    , image_("image", "The input image"_help, OutportDeterminesSize::Yes)
+    , sampler_("sampler", "The created sampler"_help) {
     addPort(image_);
     addPort(sampler_);
 }
 
 void ImageToSpatialSampler::process() {
-    auto sampler = std::make_shared<ImageSpatialSampler<2, double>>(image_.getData());
+    auto sampler = std::make_shared<ImageSampler<dvec4>>(image_.getData());
     sampler_.setData(sampler);
 }
 

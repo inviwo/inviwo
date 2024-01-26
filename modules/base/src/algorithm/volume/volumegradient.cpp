@@ -79,28 +79,23 @@ std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int
     const vec3 oy(0, spacing.y, 0);
     const vec3 oz(0, 0, spacing.z);
 
-    VolumeDoubleSampler<4> sampler(volume);
-    const auto worldSpace = VolumeDoubleSampler<3>::Space::World;
+    VolumeSampler sampler{volume, CoordinateSpace::World};
 
     util::IndexMapper3D index(volume->getDimensions());
     auto data = newVolumeRep->getDataTyped();
 
+    const dvec3 spacing2 = spacing * 2.0;
     float max = std::numeric_limits<float>::lowest();
     auto func = [&](const size3_t& pos) {
         const vec3 world{m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)};
 
-        vec3 g;
-        g.x = static_cast<float>((sampler.sample(world + ox, worldSpace) -
-                                  sampler.sample(world - ox, worldSpace))[channel] /
-                                 (2.0 * spacing.x));
-        g.y = static_cast<float>((sampler.sample(world + oy, worldSpace) -
-                                  sampler.sample(world - oy, worldSpace))[channel] /
-                                 (2.0 * spacing.y));
-        g.z = static_cast<float>((sampler.sample(world + oz, worldSpace) -
-                                  sampler.sample(world - oz, worldSpace))[channel] /
-                                 (2.0 * spacing.z));
-        data[index(pos)] = g;
+        const auto g = static_cast<vec3>(
+            dvec3{(sampler.sample(world + ox) - sampler.sample(world - ox))[channel],
+                  (sampler.sample(world + oy) - sampler.sample(world - oy))[channel],
+                  (sampler.sample(world + oz) - sampler.sample(world - oz))[channel]} /
+            spacing2);
 
+        data[index(pos)] = g;
         max = glm::max(max, glm::compMax(glm::abs(g)));
     };
 

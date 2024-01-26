@@ -79,19 +79,18 @@ std::unique_ptr<Volume> curlVolume(const Volume& volume) {
 
     volume.getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Vec3s>([&](auto
                                                                                               vol) {
-        using ValueType = util::PrecisionValueType<decltype(vol)>;
-        using ComponentType = typename ValueType::value_type;
-        using FloatType =
-            typename std::conditional_t<std::is_same<float, ComponentType>::value, float, double>;
-        using Sampler = TemplateVolumeSampler<ValueType, FloatType>;
+        using DataType = util::PrecisionValueType<decltype(vol)>;
+        using ComponentType = util::value_type_t<DataType>;
+        using SampleType =
+            typename std::conditional_t<std::is_same<float, ComponentType>::value, vec3, dvec3>;
+        using Sampler = TemplateVolumeSampler<SampleType, DataType>;
 
         util::IndexMapper3D index(volume.getDimensions());
         auto data = newVolumeRep->getDataTyped();
         float minV = std::numeric_limits<float>::max();
         float maxV = std::numeric_limits<float>::lowest();
 
-        const auto worldSpace = Sampler::Space::World;
-        const Sampler sampler(volume, worldSpace);
+        const Sampler sampler{volume, CoordinateSpace::World};
 
         util::forEachVoxel(*vol, [&](const size3_t& pos) {
             const vec3 world{m * vec4(vec3(pos) / vec3(volume.getDimensions() - size3_t(1)), 1)};

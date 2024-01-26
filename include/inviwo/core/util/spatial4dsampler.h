@@ -42,69 +42,68 @@ public:
     virtual ~Spatial4DSamplerBase() = default;
 };
 
-template <unsigned DataDims, typename T>
+template <typename ReturnType>
 class Spatial4DSampler : public Spatial4DSamplerBase {
 public:
     static const unsigned SpatialDimensions = 4;
-    static const unsigned DataDimensions = DataDims;
-    using Space = CoordinateSpace;
-    using ReturnType = Vector<DataDims, T>;
+    using type = ReturnType;
 
     Spatial4DSampler(std::shared_ptr<const SpatialEntity> spatialEntity);
     virtual ~Spatial4DSampler() = default;
 
-    virtual Vector<DataDims, T> sample(const dvec4& pos, Space space = Space::Data) const;
-    virtual Vector<DataDims, T> sample(const vec4& pos, Space space = Space::Data) const;
+    virtual ReturnType sample(const dvec4& pos,
+                              CoordinateSpace space = CoordinateSpace::Data) const;
+    virtual ReturnType sample(const vec4& pos, CoordinateSpace space = CoordinateSpace::Data) const;
 
-    virtual bool withinBounds(const dvec4& pos, Space space = Space::Data) const;
-    virtual bool withinBounds(const vec4& pos, Space space = Space::Data) const;
+    virtual bool withinBounds(const dvec4& pos,
+                              CoordinateSpace space = CoordinateSpace::Data) const;
+    virtual bool withinBounds(const vec4& pos, CoordinateSpace space = CoordinateSpace::Data) const;
 
     const SpatialCoordinateTransformer& getCoordinateTransformer() const;
     mat4 getModelMatrix() const;
     mat4 getWorldMatrix() const;
 
 protected:
-    virtual Vector<DataDims, T> sampleDataSpace(const dvec4& pos) const = 0;
+    virtual ReturnType sampleDataSpace(const dvec4& pos) const = 0;
     virtual bool withinBoundsDataSpace(const dvec4& pos) const = 0;
 
     std::shared_ptr<const SpatialEntity> spatialEntity_;
 };
 
-extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<1, double>;
-extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<1, float>;
-extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<2, double>;
-extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<2, float>;
-extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<3, double>;
-extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<3, float>;
-extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<4, double>;
-extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<4, float>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<double>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<float>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<dvec2>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<vec2>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<dvec3>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<vec3>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<dvec3>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<vec4>;
 
-template <unsigned DataDims, typename T>
-struct DataTraits<Spatial4DSampler<DataDims, T>> {
+template <typename ReturnType>
+struct DataTraits<Spatial4DSampler<ReturnType>> {
     static std::string classIdentifier() {
-        return fmt::format("org.inviwo.Spatial4DSampler.{}",
-                           DataFormat<Vector<DataDims, T>>::str());
+        return fmt::format("org.inviwo.Spatial4DSampler.{}", DataFormat<ReturnType>::str());
     }
     static std::string dataName() {
-        return fmt::format("Spatial4DSampler<{}>", DataFormat<Vector<DataDims, T>>::str());
+        return fmt::format("Spatial4DSampler<{}>", DataFormat<ReturnType>::str());
     }
     static uvec3 colorCode() { return uvec3(153, 0, 76); }
-    static Document info(const Spatial4DSampler<DataDims, T>&) {
+    static Document info(const Spatial4DSampler<ReturnType>&) {
         Document doc;
         doc.append("p", dataName());
         return doc;
     }
 };
 
-template <unsigned DataDims, typename T>
-Spatial4DSampler<DataDims, T>::Spatial4DSampler(std::shared_ptr<const SpatialEntity> spatialEntity)
+template <typename ReturnType>
+Spatial4DSampler<ReturnType>::Spatial4DSampler(std::shared_ptr<const SpatialEntity> spatialEntity)
     : spatialEntity_(spatialEntity) {}
 
-template <unsigned DataDims, typename T>
-Vector<DataDims, T> Spatial4DSampler<DataDims, T>::sample(const dvec4& pos, Space space) const {
+template <typename ReturnType>
+ReturnType Spatial4DSampler<ReturnType>::sample(const dvec4& pos, CoordinateSpace space) const {
     auto dataPos = dvec3(pos);
-    if (space != Space::Data) {
-        auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data);
+    if (space != CoordinateSpace::Data) {
+        auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, CoordinateSpace::Data);
         auto p = m * vec4(static_cast<vec3>(pos), 1.0);
         dataPos = vec3(p) / p.w;
     }
@@ -112,16 +111,16 @@ Vector<DataDims, T> Spatial4DSampler<DataDims, T>::sample(const dvec4& pos, Spac
     return sampleDataSpace(dvec4(dataPos, pos.w));
 }
 
-template <unsigned DataDims, typename T>
-Vector<DataDims, T> Spatial4DSampler<DataDims, T>::sample(const vec4& pos, Space space) const {
+template <typename ReturnType>
+ReturnType Spatial4DSampler<ReturnType>::sample(const vec4& pos, CoordinateSpace space) const {
     return sample(static_cast<dvec4>(pos), space);
 }
 
-template <unsigned DataDims, typename T>
-bool Spatial4DSampler<DataDims, T>::withinBounds(const dvec4& pos, Space space) const {
+template <typename ReturnType>
+bool Spatial4DSampler<ReturnType>::withinBounds(const dvec4& pos, CoordinateSpace space) const {
     auto dataPos = dvec3(pos);
-    if (space != Space::Data) {
-        auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data);
+    if (space != CoordinateSpace::Data) {
+        auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, CoordinateSpace::Data);
         auto p = m * vec4(static_cast<vec3>(dataPos), 1.0f);
         dataPos = vec3(p) / p.w;
     }
@@ -129,24 +128,23 @@ bool Spatial4DSampler<DataDims, T>::withinBounds(const dvec4& pos, Space space) 
     return withinBoundsDataSpace(dvec4(dataPos, pos.w));
 }
 
-template <unsigned DataDims, typename T>
-bool Spatial4DSampler<DataDims, T>::withinBounds(const vec4& pos, Space space) const {
+template <typename ReturnType>
+bool Spatial4DSampler<ReturnType>::withinBounds(const vec4& pos, CoordinateSpace space) const {
     return withinBounds(static_cast<dvec4>(pos), space);
 }
 
-template <unsigned DataDims, typename T>
-const SpatialCoordinateTransformer& Spatial4DSampler<DataDims, T>::getCoordinateTransformer()
-    const {
+template <typename ReturnType>
+const SpatialCoordinateTransformer& Spatial4DSampler<ReturnType>::getCoordinateTransformer() const {
     return spatialEntity_->getCoordinateTransformer();
 }
 
-template <unsigned DataDims, typename T>
-mat4 Spatial4DSampler<DataDims, T>::getModelMatrix() const {
+template <typename ReturnType>
+mat4 Spatial4DSampler<ReturnType>::getModelMatrix() const {
     return spatialEntity_->getModelMatrix();
 }
 
-template <unsigned DataDims, typename T>
-mat4 Spatial4DSampler<DataDims, T>::getWorldMatrix() const {
+template <typename ReturnType>
+mat4 Spatial4DSampler<ReturnType>::getWorldMatrix() const {
     return spatialEntity_->getWorldMatrix();
 }
 

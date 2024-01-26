@@ -48,7 +48,7 @@ public:
 
 private:
     LayerInport layer_;
-    DataOutport<SpatialSampler<2, double>> sampler_;
+    DataOutport<SpatialSampler<dvec4>> sampler_;
 };
 
 }  // namespace inviwo
