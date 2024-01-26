@@ -51,8 +51,6 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/qstringhelper.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QApplication>
 #include <QGraphicsDropShadowEffect>
 #include <QPainter>
@@ -61,12 +59,14 @@
 #include <QTextCursor>
 #include <QGraphicsView>
 #include <QGraphicsSceneMouseEvent>
-#include <QFontMetrics>
-#include <warn/pop>
+#include <QBrush>
+#include <QPen>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
-const QSizeF ProcessorGraphicsItem::size_ = {150.f, 50.f};
+const QSizeF ProcessorGraphicsItem::size_ = {150.0, 50.0};
 
 int pointSizeToPixelSize(const int pointSize) {
     // compute pixel size for fonts by assuming 96 dpi as basis
@@ -84,6 +84,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     , highlight_(false)
     , backgroundColor_(
           processor_->getProcessorInfo().codeState == CodeState::Deprecated ? "#562e14" : "#3b3d3d")
+    , backgroundJobs_{0}
 #if IVW_PROFILING
     , processCount_(0)
     , countLabel_(nullptr)
@@ -91,11 +92,12 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     , evalTime_(0.0)
     , totEvalTime_(0.0)
 #endif
-{
+    , errorText_{nullptr} {
+
     static constexpr int labelHeight = 8;
     auto width = static_cast<int>(size_.width());
 
-    setZValue(PROCESSORGRAPHICSITEM_DEPTH);
+    setZValue(depth::processor);
     setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
     setRect(-size_.width() / 2, -size_.height() / 2, size_.width(), size_.height());
 
@@ -145,7 +147,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     }
     auto tagSize = tagLabel_->usedTextWidth();
     identifierLabel_->setCrop(width - 2 * labelHeight - (tagSize > 0 ? tagSize + 4 : 0));
-    positionLablels();
+    positionLabels();
 
     processor_->ProcessorObservable::addObserver(this);
 
@@ -192,7 +194,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     setPos(QPointF(processorMeta_->getPosition().x, processorMeta_->getPosition().y));
 }
 
-void ProcessorGraphicsItem::positionLablels() {
+void ProcessorGraphicsItem::positionLabels() {
     static constexpr int labelMargin = 7;
 
     displayNameLabel_->setPos(QPointF(rect().left() + labelMargin, -2));
@@ -353,6 +355,10 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
             if (processorMeta_) {
                 processorMeta_->setPosition(ivec2(newPos.x(), newPos.y()));
             }
+            if (errorText_) {
+                errorText_->setPos(mapToScene(rect().topRight()) + ProcessorErrorItem::offset);
+                errorText_->setAnchor(mapToScene(rect().topRight()));
+            }
             if (auto editor = qobject_cast<NetworkEditor*>(scene())) {
                 editor->updateSceneSize();
             }
@@ -360,7 +366,12 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
         }
         case QGraphicsItem::ItemSelectedHasChanged:
             updateWidgets();
-            if (!highlight_ && processorMeta_) processorMeta_->setSelected(isSelected());
+            if (!highlight_ && processorMeta_) {
+                processorMeta_->setSelected(isSelected());
+            }
+            if (errorText_) {
+                errorText_->setActive(isSelected() && scene()->selectedItems().size() == 1);
+            }
             break;
         case QGraphicsItem::ItemVisibleHasChanged: {
             if (processorMeta_) {
@@ -402,14 +413,14 @@ void ProcessorGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 
 void ProcessorGraphicsItem::updateWidgets() {
     if (isSelected()) {
-        setZValue(SELECTED_PROCESSORGRAPHICSITEM_DEPTH);
+        setZValue(depth::processorSelected);
         if (!highlight_) {
             if (auto editor = getNetworkEditor()) {
                 editor->addPropertyWidgets(processor_);
             }
         }
     } else {
-        setZValue(PROCESSORGRAPHICSITEM_DEPTH);
+        setZValue(depth::processor);
         if (auto editor = getNetworkEditor()) {
             editor->removePropertyWidgets(processor_);
         }
@@ -433,18 +444,27 @@ void ProcessorGraphicsItem::onLabelGraphicsItemChanged(LabelGraphicsItem* item) 
                 identifierLabel_->setText(utilqt::toQString(processor_->getIdentifier()));
                 LogWarn(e.getMessage());
             }
-            positionLablels();
+            positionLabels();
         }
     }
 }
 
-void ProcessorGraphicsItem::onLabelGraphicsItemEdited(LabelGraphicsItem*) { positionLablels(); }
+void ProcessorGraphicsItem::onLabelGraphicsItemEdited(LabelGraphicsItem*) { positionLabels(); }
 
 std::string ProcessorGraphicsItem::getIdentifier() const { return processor_->getIdentifier(); }
 
 ProcessorLinkGraphicsItem* ProcessorGraphicsItem::getLinkGraphicsItem() const { return linkItem_; }
 
-void ProcessorGraphicsItem::onProcessorReadyChanged(Processor*) { statusItem_->update(); }
+void ProcessorGraphicsItem::onProcessorReadyChanged(Processor*) {
+    processor_->unsetMetaData<StringMetaData>("ProcessError");
+    statusItem_->updateState();
+
+    if (processor_->status() == ProcessorStatus::Error) {
+        setErrorText(processor_->status().reason());
+    } else if (errorText_) {
+        errorText_->clear();
+    }
+}
 
 void ProcessorGraphicsItem::onProcessorPortAdded(Processor*, Port* port) {
     if (auto inport = dynamic_cast<Inport*>(port)) {
@@ -462,23 +482,33 @@ void ProcessorGraphicsItem::onProcessorPortRemoved(Processor*, Port* port) {
     }
 }
 
-#if IVW_PROFILING
 void ProcessorGraphicsItem::onProcessorAboutToProcess(Processor*) {
+#if IVW_PROFILING
     processCount_++;
-    auto str =
-        QStringHelper<decltype(processCount_)>::toLocaleString(QLocale::system(), processCount_);
-    countLabel_->setText(str);
+    countLabel_->setText(utilqt::toQString(fmt::to_string(processCount_)));
     clock_.reset();
     clock_.start();
+#endif
+
+    if (processor_->hasMetaData("ProcessError")) {
+        processor_->unsetMetaData<StringMetaData>("ProcessError");
+        statusItem_->updateState();
+    }
+    if (errorText_) {
+        errorText_->clear();
+    }
 }
 
 void ProcessorGraphicsItem::onProcessorFinishedProcess(Processor*) {
+#if IVW_PROFILING
     clock_.stop();
     evalTime_ = clock_.getElapsedMilliseconds();
     maxEvalTime_ = maxEvalTime_ < evalTime_ ? evalTime_ : maxEvalTime_;
     totEvalTime_ += evalTime_;
+#endif
 }
 
+#if IVW_PROFILING
 void ProcessorGraphicsItem::resetTimeMeasurements() {
     processCount_ = 0;
     countLabel_->setText("0");
@@ -489,6 +519,18 @@ void ProcessorGraphicsItem::resetTimeMeasurements() {
 #endif
 
 ProcessorStatusGraphicsItem* ProcessorGraphicsItem::getStatusItem() const { return statusItem_; }
+
+void ProcessorGraphicsItem::setErrorText(std::string_view error) {
+    const auto ref = mapToScene(rect().topRight());
+    if (!errorText_) {
+        errorText_ = std::make_unique<ProcessorErrorItem>(ref);
+        scene()->addItem(errorText_.get());
+    }
+    errorText_->setPos(ref + ProcessorErrorItem::offset);
+    errorText_->setAnchor(ref);
+    errorText_->setText(error);
+    errorText_->setActive(isSelected());
+}
 
 void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     using P = Document::PathComponent;
@@ -504,10 +546,14 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     tb(H("Category"), processor_->getCategory());
     tb(H("Code"), processor_->getCodeState());
     tb(H("Tags"), processor_->getTags().getString());
-    tb(H("Ready"), processor_->isReady() ? "Yes" : "No");
+    tb(H("Status"), fmt::to_string(processor_->status()));
+    if (auto error = processor_->getMetaData<StringMetaData>("ProcessError")) {
+        tb(H("Error"), error->get());
+    }
     tb(H("Valid"), processor_->getInvalidationLevel());
     tb(H("Source"), processor_->isSource() ? "Yes" : "No");
     tb(H("Sink"), processor_->isSink() ? "Yes" : "No");
+    tb(H("Jobs"), fmt::to_string(backgroundJobs_));
 
 #if IVW_PROFILING
     tb(H("Eval Count"), processCount_);

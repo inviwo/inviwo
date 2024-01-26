@@ -56,7 +56,7 @@
 namespace inviwo {
 
 LinkGraphicsItem::LinkGraphicsItem(ivec3 color) : color_(color.r, color.g, color.b) {
-    setZValue(LINKGRAPHICSITEM_DEPTH);
+    setZValue(depth::link);
 }
 
 LinkGraphicsItem::~LinkGraphicsItem() = default;

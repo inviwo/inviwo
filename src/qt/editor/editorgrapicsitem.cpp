@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+#include <inviwo/qt/editor/editorgrapicsitem.h>
+
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -34,7 +36,6 @@
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/settings/systemsettings.h>
-#include <inviwo/qt/editor/editorgrapicsitem.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 

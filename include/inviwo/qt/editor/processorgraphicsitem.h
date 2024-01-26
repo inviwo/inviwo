@@ -33,12 +33,16 @@
 #include <inviwo/core/util/clock.h>
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/editorgrapicsitem.h>
+#include <inviwo/qt/editor/processorerroritem.h>
 #include <modules/qtwidgets/labelgraphicsitem.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QEvent>
 #include <warn/pop>
+
+class QGraphicsSimpleTextItem;
+class QGraphicsLineItem;
 
 namespace inviwo {
 
@@ -67,6 +71,7 @@ public:
     ProcessorOutportGraphicsItem* getOutportGraphicsItem(Outport* port) const;
     ProcessorLinkGraphicsItem* getLinkGraphicsItem() const;
     ProcessorStatusGraphicsItem* getStatusItem() const;
+    void setErrorText(std::string_view);
 
     void editDisplayName();
     void editIdentifier();
@@ -119,10 +124,15 @@ protected:
     virtual void onProcessorReadyChanged(Processor*) override;
     virtual void onProcessorPortAdded(Processor*, Port*) override;
     virtual void onProcessorPortRemoved(Processor*, Port*) override;
-#if IVW_PROFILING
     virtual void onProcessorAboutToProcess(Processor*) override;
     virtual void onProcessorFinishedProcess(Processor*) override;
-#endif
+
+    virtual void onProcessorStartBackgroundWork(Processor*, size_t jobs) override {
+        backgroundJobs_ += jobs;
+    };
+    virtual void onProcessorFinishBackgroundWork(Processor*, size_t jobs) override {
+        backgroundJobs_ -= jobs;
+    };
 
     // ProcessorMetaDataObserver overrides
     virtual void onProcessorMetaDataPositionChange() override;
@@ -130,7 +140,7 @@ protected:
     virtual void onProcessorMetaDataSelectionChange() override;
 
 private:
-    void positionLablels();
+    void positionLabels();
 
     Processor* processor_;
     LabelGraphicsItem* displayNameLabel_;
@@ -149,6 +159,7 @@ private:
 
     bool highlight_;
     QColor backgroundColor_;
+    size_t backgroundJobs_;
 
     std::shared_ptr<std::function<void(std::string_view, std::string_view)>> idChange_;
     std::shared_ptr<std::function<void(std::string_view, std::string_view)>> nameChange_;
@@ -161,6 +172,8 @@ private:
     double totEvalTime_;
     Clock clock_;
 #endif
+
+    std::unique_ptr<ProcessorErrorItem> errorText_;
 };
 
 }  // namespace inviwo

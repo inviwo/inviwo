@@ -52,7 +52,7 @@ CurveGraphicsItem::CurveGraphicsItem(QColor color, QColor borderColor, QColor se
     , borderColor_(borderColor)
     , selectedBorderColor_(selectedBorderColor)
     , infoLabel_{new QGraphicsTextItem(this)} {
-    setZValue(DRAGING_ITEM_DEPTH);
+    setZValue(depth::dragItem);
 
     infoLabel_->setVisible(false);
     infoLabel_->setTextInteractionFlags(Qt::NoTextInteraction);
@@ -216,7 +216,7 @@ ConnectionGraphicsItem::ConnectionGraphicsItem(ProcessorOutportGraphicsItem* out
     , connection_(connection) {
 
     setFlags(ItemIsSelectable | ItemIsFocusable);
-    setZValue(CONNECTIONGRAPHICSITEM_DEPTH);
+    setZValue(depth::connection);
     outport_->addConnection(this);
     inport_->addConnection(this);
 }

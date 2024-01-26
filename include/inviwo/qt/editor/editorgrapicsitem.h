@@ -54,15 +54,19 @@ enum InviwoUserGraphicsItemType {
     ProcessorStatusGraphicsType,
     ProcessorLinkGraphicsType,
     ProcessorInportGraphicsType,
-    ProcessorOutportGraphicsType
+    ProcessorOutportGraphicsType,
+    ProcessorErrorItemType
 };
 
+namespace depth {
 // Z value for various graphics items.
-static const qreal DRAGING_ITEM_DEPTH = 4.0f;
-static const qreal SELECTED_PROCESSORGRAPHICSITEM_DEPTH = 3.0f;
-static const qreal PROCESSORGRAPHICSITEM_DEPTH = 2.0f;
-static const qreal CONNECTIONGRAPHICSITEM_DEPTH = 1.0f;
-static const qreal LINKGRAPHICSITEM_DEPTH = 0.0f;
+static constexpr double dragItem = 4.0;
+static constexpr double processorSelected = 3.0;
+static constexpr double processorError = 2.5;
+static constexpr double processor = 2.0;
+static constexpr double connection = 1.0;
+static constexpr double link = 0.0;
+}  // namespace depth
 
 class Port;
 
