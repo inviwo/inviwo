@@ -36,6 +36,10 @@ image2D outportDepth;
 writeonly uniform image2D outportPicking;
 uniform ImageParameters outportParameters;
 
+// volume
+uniform sampler3D minMaxOpacity;
+uniform VolumeParameters minMaxOpacityParameters;
+
 // Uniform properties
 uniform CameraParameters camera;
 uniform VolumeIndicatorParameters positionindicator;
@@ -44,11 +48,10 @@ uniform LightParameters light;  // lighting
 uniform sampler2D transferFunction;
 
 uniform int channel;
-
 uniform float time_ms;
 uniform int iteration;
-
 uniform int transmittanceMethod;
+uniform bool partitionedTransmittance;
 
 #define PI 3.1415
 
@@ -86,6 +89,7 @@ vec4 pathtrace(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float 
     vec4 result = vec4(0.0);
     if (meanFreePath <= rayLength) {
         samplePosition = entryPoint + meanFreePath * rayDir;
+        
         rayDepth = meanFreePath;
 
         result.rgb = estimateDirectLight(meanFreePath, volume, volumeParameters, transferFunction,

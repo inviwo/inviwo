@@ -70,6 +70,7 @@ VolumePathTracer::VolumePathTracer()
     , volumePort_("Volume")
     , entryPort_("entry")
     , exitPort_("exit")
+    , minMaxOpacity_("VolumeMinMaxOpacity")
     , outport_("outport")
     , shader_({{ShaderType::Compute, "bidirectionalvolumepathtracer.comp"}})
     , channel_("channel", "Render Channel", {{"Channel 1", "Channel 1", 0}}, 0)
@@ -88,13 +89,15 @@ VolumePathTracer::VolumePathTracer()
           })
     , invalidateRendering_("iterate", "Invalidate rendering")
     , enableProgressiveRefinement_("enableRefinement", "Enable progressive refinement", false)
-    , progressiveTimer_(Timer::Milliseconds(100),
+    , progressiveTimer_(Timer::Milliseconds(0),
                         std::bind(&VolumePathTracer::onTimerEvent, this)) {
 
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
+    addPort(minMaxOpacity_, "OpacityPortGroup");
+    minMaxOpacity_.setOptional(true);
 
     volumePort_.onChange([this]() { invalidateProgressiveRendering(); });
     entryPort_.onChange([this]() { invalidateProgressiveRendering(); });
@@ -124,6 +127,19 @@ VolumePathTracer::VolumePathTracer()
             channel_.replaceOptions(channelOptions);
             channel_.setCurrentStateAsDefault();
         }
+    });
+
+    minMaxOpacity_.onConnect([this]() {
+        partitionedTransmittance_ = true;
+        invalidateProgressiveRendering();
+        invalidate(InvalidationLevel::InvalidOutput);
+        
+    });
+
+    minMaxOpacity_.onDisconnect([this]() {
+        partitionedTransmittance_ = false;
+        invalidateProgressiveRendering();
+        invalidate(InvalidationLevel::InvalidOutput);
     });
 
     raycasting_.gradientComputation_.onChange([this]() {
@@ -169,6 +185,7 @@ VolumePathTracer::VolumePathTracer()
         invalidate(InvalidationLevel::InvalidOutput);
         invalidateProgressiveRendering();
     });
+
     progressiveRefinementChanged();
 }
 
@@ -223,7 +240,7 @@ void VolumePathTracer::process() {
 
         units.push_back(std::move(unit1));
         units.push_back(std::move(unit2));
-        units.push_back(std::move(unit3));
+        units.push_back(std::move(unit3)); 
 
         StrBuffer buff;
         utilgl::setShaderUniforms(shader_, *image,
@@ -233,9 +250,14 @@ void VolumePathTracer::process() {
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
     utilgl::bindAndSetUniforms(shader_, units, *volumePort_.getData(), "volume");
+    if(partitionedTransmittance_) {
+        utilgl::bindAndSetUniforms(shader_, units, *minMaxOpacity_.getData(), "minMaxOpacity");
+    }
+
     utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
     shader_.setUniform("time_ms", MSSinceStart_);
     shader_.setUniform("iteration", iteration_);
+    shader_.setUniform("partitionedTransmittance", partitionedTransmittance_);
     utilgl::setUniforms(shader_, camera_, raycasting_, positionIndicator_, light_, channel_);
 
     // Start render
@@ -257,7 +279,7 @@ void VolumePathTracer::evaluateProgressiveRefinement() {
 
 void VolumePathTracer::progressiveRefinementChanged() {
     if (enableProgressiveRefinement_.get()) {
-        progressiveTimer_.start(Timer::Milliseconds(100));
+        progressiveTimer_.start(Timer::Milliseconds(0));
     } else {
         progressiveTimer_.stop();
     }
