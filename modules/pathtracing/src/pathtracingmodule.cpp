@@ -29,6 +29,7 @@
 
 #include <inviwo/pathtracing/pathtracingmodule.h>
 
+#include <inviwo/pathtracing/processors/uniformgridopacity.h>
 #include <inviwo/pathtracing/processors/volumepathtracer.h>
 #include <modules/opengl/shader/shadermanager.h>
 
@@ -41,8 +42,8 @@ PathtracingModule::PathtracingModule(InviwoApplication* app) : InviwoModule(app,
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
-    // registerProcessor<pathtracingProcessor>();
     registerProcessor<VolumePathTracer>();
+    registerProcessor<UniformGridOpacity>();
 
     // Properties
     // registerProperty<pathtracingProperty>();
@@ -55,8 +56,8 @@ PathtracingModule::PathtracingModule(InviwoApplication* app) : InviwoModule(app,
     // registerRepresentationConverter(std::make_unique<pathtracingDisk2RAMConverter>());
 
     // Ports
-    // registerPort<pathtracingOutport>();
-    // registerPort<pathtracingInport>();
+    //registerPort<UniformGrid3DInport>();
+    //registerPort<UniformGrid3DOutport>();
 
     // PropertyWidgets
     // registerPropertyWidget<pathtracingPropertyWidget, pathtracingProperty>("Default");

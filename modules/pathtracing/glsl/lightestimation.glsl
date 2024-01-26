@@ -19,10 +19,12 @@ vec3 estimateDirectLight(float rayStep, sampler3D volume, VolumeParameters volPa
     if (Tl == 0.0f) {
         return vec3(0f);
     }
+    
+    // NOTE: Shader macros have a tendency to not be recognized sometimes
 
     vec4 voxel = getNormalizedVoxel(volume, volParam, samplePos);
-    //vec3 gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volParam, samplePos, rcChannel);
-    vec3 gradient = gradientCentralDiff(vec4(0f), volume, volParam, samplePos, rcChannel);
+    vec3 gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volParam, samplePos, rcChannel);
+    //vec3 gradient = gradientCentralDiff(vec4(0f), volume, volParam, samplePos, rcChannel);
     gradient = normalize(gradient);
 
     gradient *= sign(voxel[rcChannel] / (1.0 - volParam.formatScaling) - volParam.formatOffset);
@@ -34,11 +36,11 @@ vec3 estimateDirectLight(float rayStep, sampler3D volume, VolumeParameters volPa
     vec3 sampleSpecular = tfSample.rgb;
 
     vec3 sampleWorldPos = (volParam.textureToWorld * vec4(samplePos, 1f)).xyz;
-    //vec3 color = APPLY_LIGHTING(light, sampleAmbient, sampleDiffuse, sampleSpecular, sampleWorldPos,
-    //                            -gradient, cameraDir);
+    vec3 color = APPLY_LIGHTING(light, sampleAmbient, sampleDiffuse, sampleSpecular, sampleWorldPos,
+                                -gradient, cameraDir);
 
-    vec3 color = shadeBlinnPhong(light, sampleAmbient, sampleDiffuse, sampleSpecular,
-                                 sampleWorldPos, -gradient, cameraDir);
+    //vec3 color = shadeBlinnPhong(light, sampleAmbient, sampleDiffuse, sampleSpecular,
+    //                             sampleWorldPos, -gradient, cameraDir);
 
     return color * Tl;
 }

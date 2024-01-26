@@ -93,6 +93,8 @@ private:
     ImageInport entryPort_;
     ImageInport exitPort_;
 
+    VolumeInport minMaxOpacity_;
+
     ImageOutport outport_;
 
     // Properties and Internals
@@ -110,7 +112,7 @@ private:
     std::chrono::time_point<std::chrono::high_resolution_clock> timeNow_;
 
     // Progressive Refinement
-    OptionProperty<TransmittanceMethod> transmittanceMethod_;
+    OptionProperty<TransmittanceMethod> transmittanceMethod_; 
 
     ButtonProperty invalidateRendering_;
     BoolProperty enableProgressiveRefinement_;
@@ -118,6 +120,8 @@ private:
     // Timer
     Timer progressiveTimer_;
     int iteration_ = 0;
+
+    bool partitionedTransmittance_;
 };
 
 }  // namespace inviwo
