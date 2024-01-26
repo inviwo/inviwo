@@ -143,6 +143,9 @@ Document Volume::getInfo() const {
     tb(H("Axis 2"), fmt::format("{}{: [}", axes[1].name, axes[1].unit));
     tb(H("Axis 3"), fmt::format("{}{: [}", axes[2].name, axes[2].unit));
 
+    tb(H("Basis"), getBasis());
+    tb(H("Offset"), getOffset());
+
     if (hasRepresentation<VolumeRAM>()) {
         if (hasHistograms()) {
             const auto& histograms = getHistograms();

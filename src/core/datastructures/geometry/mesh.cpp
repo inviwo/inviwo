@@ -391,6 +391,10 @@ Document Mesh::getInfo() const {
 
     utildoc::TableBuilder tb(doc.handle(), P::end());
 
+    tb(H("Axis 1"), fmt::format("{}{: [}", axes[0].name, axes[0].unit));
+    tb(H("Axis 2"), fmt::format("{}{: [}", axes[1].name, axes[1].unit));
+    tb(H("Axis 3"), fmt::format("{}{: [}", axes[2].name, axes[2].unit));
+
     tb(H(std::string("Buffers (") + std::to_string(buffers_.size()) + ")"));
 
     // show all the buffers

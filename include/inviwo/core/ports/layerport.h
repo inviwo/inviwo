@@ -74,6 +74,9 @@ struct DataTraits<Layer> {
         tb(H("Axis 1"), fmt::format("{}{: [}", layer.axes[0].name, layer.axes[0].unit));
         tb(H("Axis 2"), fmt::format("{}{: [}", layer.axes[1].name, layer.axes[1].unit));
 
+        tb(H("Basis"), layer.getBasis());
+        tb(H("Offset"), layer.getOffset());
+
         return doc;
     }
 };
