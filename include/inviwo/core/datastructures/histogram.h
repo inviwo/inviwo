@@ -86,7 +86,7 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
     // a size_t type with same extent as T
     using I = typename util::same_extent<T, size_t>::type;
 
-    constexpr size_t extent = util::rank<T>::value > 0 ? util::extent<T>::value : 1;
+    constexpr size_t extent = util::flat_extent_v<T>;
 
     // check whether number of bins exceeds the data range only if it is an integral type
     if constexpr (!std::is_floating_point_v<util::value_type_t<T>>) {
