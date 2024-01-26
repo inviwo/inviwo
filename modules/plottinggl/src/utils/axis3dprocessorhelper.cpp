@@ -352,18 +352,22 @@ void Axis3DProcessorHelper::adjustRanges(const SpatialEntity* entity) {
         offset = entity->getOffset();
 
         worldTrafo = entity->getCoordinateTransformer().getDataToWorldMatrix();
-    }
 
-    std::string xCaption{"x"};
-    std::string yCaption{"y"};
-    std::string zCaption{"z"};
+        std::array<AxisProperty*, 3> axes = {&xAxis_, &yAxis_, &zAxis_};
+        for (size_t i = 0; i < 3; ++i) {
+            if (auto axis = entity->getAxis(i)) {
+                util::updateDefaultState(axes[i]->captionSettings_.title_,
+                                         fmt::format("{}{: [}", axis->name, axis->unit),
+                                         util::OverwriteState::No);
+            } else {
+                util::updateDefaultState(axes[i]->captionSettings_.title_,
+                                         util::defaultAxesNames[i], util::OverwriteState::No);
+            }
+        }
+    }
 
     if (auto volume = dynamic_cast<const Volume*>(entity)) {
         volDims = dvec3(volume->getDimensions());
-
-        xCaption = fmt::format("{}{: [}", volume->axes[0].name, volume->axes[0].unit);
-        yCaption = fmt::format("{}{: [}", volume->axes[1].name, volume->axes[1].unit);
-        zCaption = fmt::format("{}{: [}", volume->axes[2].name, volume->axes[2].unit);
     }
 
     util::KeepTrueWhileInScope b(&propertyUpdate_);
@@ -399,10 +403,6 @@ void Axis3DProcessorHelper::adjustRanges(const SpatialEntity* entity) {
         default:
             break;
     }
-
-    util::updateDefaultState(xAxis_.captionSettings_.title_, xCaption, util::OverwriteState::No);
-    util::updateDefaultState(yAxis_.captionSettings_.title_, yCaption, util::OverwriteState::No);
-    util::updateDefaultState(zAxis_.captionSettings_.title_, zCaption, util::OverwriteState::No);
 
     customRanges_.setVisible(rangeMode_.getSelectedValue() == AxisRangeMode::Custom);
 }
