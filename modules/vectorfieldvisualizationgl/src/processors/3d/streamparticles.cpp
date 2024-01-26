@@ -63,14 +63,15 @@
 #include <inviwo/core/util/zip.h>                                       // for get, zip, zipIter...
 #include <modules/opengl/buffer/buffergl.h>                             // for BufferGL
 #include <modules/opengl/inviwoopengl.h>                                // for GL_SHADER_STORAGE...
-#include <modules/opengl/shader/shader.h>                               // for Shader, Shader::B...
-#include <modules/opengl/shader/shaderobject.h>                         // for ShaderObject
-#include <modules/opengl/shader/shadertype.h>                           // for ShaderType, Shade...
-#include <modules/opengl/shader/shaderutils.h>                          // for setUniforms
-#include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer
-#include <modules/opengl/texture/textureutils.h>                        // for bindAndSetUniforms
-#include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>      // for SeedPoints3DInport
+#include <modules/opengl/openglcapabilities.h>
+#include <modules/opengl/shader/shader.h>                           // for Shader, Shader::B...
+#include <modules/opengl/shader/shaderobject.h>                     // for ShaderObject
+#include <modules/opengl/shader/shadertype.h>                       // for ShaderType, Shade...
+#include <modules/opengl/shader/shaderutils.h>                      // for setUniforms
+#include <modules/opengl/texture/textureunit.h>                     // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>                    // for bindAndSetUniforms
+#include <modules/opengl/volume/volumeutils.h>                      // for bindAndSetUniforms
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>  // for SeedPoints3DInport
 
 #include <algorithm>      // for transform, fill, min
 #include <cstddef>        // for size_t
@@ -95,56 +96,68 @@ const ProcessorInfo StreamParticles::processorInfo_{
     "Particle",                    // Category
     CodeState::Experimental,       // Code state
     Tags::GL,                      // Tags
-};
+    R"(Processor that simulate particles moving through a velocity filed. Particles are initialized
+    based on the __seeds__ inport and are advected through the field using the Velocity Volume on
+    the __volume__ inport. If particles velocity has been zero for 0.5 seconds their position will
+    be reset to a random element in the seedpoint input vector. Reseeding is done on a less frequent
+    intervall than the advection based on the __Reseed interval__ property. Using GLSL Compute
+    Shaders, requires OpenGL 4.3)"_unindentHelp};
+
 const ProcessorInfo StreamParticles::getProcessorInfo() const { return processorInfo_; }
 
 StreamParticles::StreamParticles(InviwoApplication* app)
     : Processor()
-    , volume_{"volume"}
-    , seeds_{"seeds"}
-    , meshPort_{"particles"}
+    , volume_{"volume", "Velocity field"_help}
+    , seeds_{"seeds", "Starting position for particles"_help}
+    , meshPort_{"particles",
+                "Mesh containing position, color and radii buffers. Can be "
+                "connected to (for example) the Sphere Renderer Processor to render them"_help}
     , seedingSpace_{"seedingSpace",
                     "Seeding Space",
+                    "Tells the processor which space the seeds are defined in"_help,
                     {{"data", "Data", SeedingSpace::Data}, {"world", "World", SeedingSpace::World}}}
-    , advectionSpeed_{"advectionSpeed", "Advection Speed", 0.01f, 0.0f, 1.0f}
-    , internalSteps_{"advectionsPerFrame",
-                     "Advections per Frame",
-                     10,
-                     1,
-                     100,
-                     1,
-                     InvalidationLevel::InvalidResources}
-    , particleSize_{"particleSize", "Particle radius", 0.025f, 0.035f, 0.0f, 1.0f}
-    , minV_{"minV",
-            "Min velocity",
-            0,
-            0,
-            std::numeric_limits<float>::max(),
-            0.1f,
-            InvalidationLevel::Valid,
-            PropertySemantics::Text}
-    , maxV_{"maxV",
-            "Max velocity",
-            1,
-            0,
-            std::numeric_limits<float>::max(),
-            0.1f,
-            InvalidationLevel::Valid,
-            PropertySemantics::Text}
-    , tf_{"tf", "Velocity mapping",
+    , advectionSpeed_{"advectionSpeed", "Advection Speed",
+                      util::ordinalLength(0.01f, 1.0f)
+                          .set("How fast the particles will move each advection."_help)}
+    , internalSteps_{"advectionsPerFrame", "Advections per Frame",
+                     util::ordinalCount<int>(10, 100)
+                         .setMin(1)
+                         .set(InvalidationLevel::InvalidResources)
+                         .set("Can be used to increase advection "
+                              "speed without loss of precision"_help)}
+    , particleSize_{"particleSize",
+                    "Particle radius",
+                    "Maps velocity to radius of particle (For rendering that supports "
+                    "the Radii buffer, e.g. Sphere Renderer)."_help,
+                    0.025f,
+                    0.035f,
+                    0.0f,
+                    1.0f}
+    , minV_{"minV", "Min velocity",
+            util::ordinalLength(0.0f)
+                .set("Used together with __Max velocity__ to map velocity magnitude "
+                     "from [Min velocity, Max velocity] -> [0 1], used for mapping "
+                     "velocity to radius and color"_help)
+                .set(InvalidationLevel::Valid)
+                .set(PropertySemantics::Text)}
+    , maxV_{"maxV", "Max velocity",
+            util::ordinalLength(1.0f)
+                .set("Used together with __Min velocity__ to map velocity magnitude "
+                     "from [Min velocity, Max velocity] -> [0 1], used for mapping "
+                     "velocity to radius and color"_help)
+                .set(InvalidationLevel::Valid)
+                .set(PropertySemantics::Text)}
+    , tf_{"tf", "Velocity mapping", "Transferfunction to map a velocity to color"_help,
           TransferFunction::load(
               app->getPath(PathType::TransferFunctions, "/matplotlib/plasma.itf"))}
-    , reseedInterval_{[&]() {
-                          LGL_ERROR;
-                          return "reseedsInterval";
-                      }(),
-                      "Reseed interval", 1.0f, 0.0f, 10.0f}
+    , reseedInterval_{"reseedsInterval", "Reseed interval",
+                      util::ordinalLength(1.0f, 10.f)
+                          .set("Seconds between reseeding. When reseeding particles whose "
+                               "life is zero will get new position by selecting (randomly) "
+                               "from the input seed vector"_help)}
     , shader_{{{ShaderType::Compute, std::string{"streamparticles.comp"}}}, Shader::Build::No}
     , timer_{Timer::Milliseconds(17), [&]() { update(); }}
-    , reseedtime_{[&]() {
-        LGL_ERROR;
-        return 0.0;
-    }()}
+    , reseedtime_{0.0}
     , prevT_{0}
     , clock_{}
     , ready_{false}
@@ -169,6 +182,15 @@ StreamParticles::StreamParticles(InviwoApplication* app)
 }
 
 void StreamParticles::initializeResources() {
+    if (OpenGLCapabilities::getOpenGLVersion() < 430) {
+        isReady_.setUpdate([]() -> ProcessorStatus {
+            static constexpr std::string_view error{
+                "The StreamParticles processor requires OpenGL 4.3"};
+            return {ProcessorStatus::Error, error};
+        });
+        throw Exception(IVW_CONTEXT, "The StreamParticles processor requires OpenGL 4.3");
+    }
+
     shader_.getShaderObject(ShaderType::Compute)
         ->setShaderDefine("NUM_ADVECTIONS", true, toString(internalSteps_.get()));
     shader_.build();

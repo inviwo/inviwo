@@ -400,12 +400,18 @@ bool CanvasProcessor::isContextMenuAllowed() const { return allowContextMenu_; }
 void CanvasProcessor::setEvaluateWhenHidden(bool value) {
     if (value) {
         isSink_.setUpdate([]() { return true; });
-        isReady_.setUpdate([this]() { return allInportsAreReady(); });
+        isReady_.setUpdate(getDefaultIsReadyUpdater(this));
     } else {
         isSink_.setUpdate([this]() { return processorWidget_ && processorWidget_->isVisible(); });
-        isReady_.setUpdate([this]() {
-            return allInportsAreReady() && processorWidget_ && processorWidget_->isVisible();
-        });
+        isReady_.setUpdate(
+            [this, defaultCheck = getDefaultIsReadyUpdater(this)]() -> ProcessorStatus {
+                if (!processorWidget_ || !processorWidget_->isVisible()) {
+                    static constexpr std::string_view reason{"Canvas is not visible"};
+                    return {ProcessorStatus::NotReady, reason};
+                } else {
+                    return defaultCheck();
+                }
+            });
     }
 }
 

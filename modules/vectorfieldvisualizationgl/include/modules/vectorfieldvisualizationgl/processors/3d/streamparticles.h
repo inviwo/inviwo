@@ -57,41 +57,6 @@ namespace inviwo {
 class InviwoApplication;
 class Mesh;
 
-/** \docpage{org.inviwo.StreamParticles, Stream Particles}
- * ![](org.inviwo.StreamParticles.png?classIdentifier=org.inviwo.StreamParticles)
- *
- * Processor that simulate particles moving through a velocity filed. Particles are initialized
- * based on the __seeds__ inport and are advected through the field using the Velocity Volume on the
- * __volume__ inport. If particles velocity has been zero for 0.5 seconds their position will be
- * reset to a random element in the seedpoint input vector. Reseeding is done on a less frequent
- * intervall than the advection based on the __Reseed interval__ property. Using GLSL Compute
- * Shaders, requires OpenGL 4.3
- *
- *
- * ### Inports
- *   * __volume__ Velocity field.
- *   * __seeds__ Starting position for particles.
- *
- * ### Outports
- *   * __particles__ Mesh cotaining position, color and radii buffers. Can be conntected to (for
- * example) the Sphere Renderer Processor to render them.
- *
- * ### Properties
- *   * __Seeding Space__ Tells the processor which space the seeds are defined in.
- *   * __Advection Speed__ How fast the particles will move each advection.
- *   * __Advections per Frame__ Can be used to increase advection speed without loss of
- * precision.
- *   * __Paricle radius__ Maps velocity to radius of particle (For rendering that
- * supports the Radii buffer, e.g. Sphere Renderer).
- *   * __Min velocity__ See bellow.
- *   * __Max velocity__ Used together with __Min velocity__ to map velocity magnitude from [Min
- * velocity, Max velocity] -> [0 1], used for mapping velocity to radius and color.
- *   * __Velocity mapping__ Transferfunction to map a velocity to color.
- *   * __Reseed interval__ Seconds between reseeding. When reseeding particles whose life is zero
- * will get new position by selecting (randomly) from the input seed vector.
- *
- */
-
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API StreamParticles : public Processor {
 public:
     StreamParticles(InviwoApplication* app);
