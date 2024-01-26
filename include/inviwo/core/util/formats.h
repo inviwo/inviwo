@@ -43,6 +43,7 @@
 #include <array>
 #include <memory>
 #include <span>
+#include <bit>
 #include <fmt/format.h>
 
 namespace inviwo {
@@ -92,6 +93,9 @@ enum class DataFormatId : char {
     Vec4UInt16,
     Vec4UInt32,
     Vec4UInt64,
+    Mat2Float32,
+    Mat3Float32,
+    Mat4Float32,
     NumberOfFormats,
 };
 
@@ -151,6 +155,8 @@ public:
     static const DataFormatBase* get(DataFormatId id);
     static const DataFormatBase* get(std::string_view name);
     static const DataFormatBase* get(NumericType type, size_t components, size_t precision);
+    static const DataFormatBase* get(NumericType type, size_t components, size_t precision,
+                                     size_t rank);
 
     // Runtime interface
     /**
@@ -158,28 +164,47 @@ public:
      */
     size_t getSizeInBytes() const;
     [[deprecated("use getSizeInBytes")]] size_t getSize() const;
+
+    /**
+     *	Returns the rank in the format, 0, 1 or 2.
+     */
+    size_t getRank() const;
+
     /**
      *	Returns the number of components in the format, 1 to 4.
      */
     size_t getComponents() const;
+
     /**
      *	Returns number of bits in each component in the format. can be 8, 16, 32 or 64.
      */
     size_t getPrecision() const;
 
+    /**
+     *	Returns numeric type of the format see @NumericType
+     */
     NumericType getNumericType() const;
+
+    /**
+     *	Returns the name of the format
+     */
+    std::string_view getString() const;
+
+    /**
+     *	Returns DataFormatId of the format see @DataFormatId
+     */
+    DataFormatId getId() const;
+
     double getMax() const;
     double getMin() const;
     double getLowest() const;
-    std::string_view getString() const;
-    DataFormatId getId() const;
 
     template <typename T>
     static constexpr DataFormatId typeToId() noexcept;
 
 protected:
-    DataFormatBase(DataFormatId type, size_t components, size_t size, double max, double min,
-                   double lowest, NumericType nt, std::string_view s);
+    DataFormatBase(DataFormatId type, size_t rank, size_t components, size_t size, double max,
+                   double min, double lowest, NumericType nt, std::string_view s);
     DataFormatBase();
     DataFormatBase(const DataFormatBase&) = delete;
     DataFormatBase(DataFormatBase&&) = delete;
@@ -187,6 +212,7 @@ protected:
     DataFormatBase& operator=(DataFormatBase&&) = delete;
 
     DataFormatId formatId_;
+    size_t rank_;
     size_t components_;
     size_t sizeInBytes_;
     NumericType numericType_;
@@ -200,8 +226,8 @@ template <typename T>
 class DataFormat final : public DataFormatBase {
 public:
     using type = T;
-    using primitive = typename util::value_type<T>::type;
-    static const size_t comp = util::extent<T>::value;
+    using primitive = util::value_type_t<T>;
+    static const size_t comp = util::extent_v<T>;
     static const size_t typesize = sizeof(type);
     static const size_t compsize = sizeof(primitive);
     static const NumericType numtype = util::getNumericType<primitive>();
@@ -214,6 +240,12 @@ public:
      *	Returns the size of the format in bytes. For all components.
      */
     static constexpr size_t sizeInBytes();
+
+    /**
+     *	Returns the rank in the format, 0, 1 or 2.
+     */
+    static constexpr size_t rank();
+
     /**
      *	Returns the number of components in the format, 1 to 4.
      */
@@ -222,6 +254,10 @@ public:
      *	Returns number of bits in each component in the format. can be 8, 16, 32 or 64.
      */
     static constexpr size_t precision();
+
+    /**
+     *	Returns numeric type of the format see @NumericType
+     */
     static constexpr NumericType numericType();
 
     static constexpr T max();
@@ -246,13 +282,13 @@ using DefaultDataTypes =
                glm::f32vec3, glm::f64vec3, glm::i8vec3, glm::i16vec3, glm::i32vec3, glm::i64vec3,
                glm::u8vec3, glm::u16vec3, glm::u32vec3, glm::u64vec3, glm::f32vec4, glm::f64vec4,
                glm::i8vec4, glm::i16vec4, glm::i32vec4, glm::i64vec4, glm::u8vec4, glm::u16vec4,
-               glm::u32vec4, glm::u64vec4>;
+               glm::u32vec4, glm::u64vec4, glm::f32mat2, glm::f32mat3, glm::f32mat4>;
 
 using DefaultDataFormats = util::wrap<DataFormat, DefaultDataTypes>;
 
 template <typename T>
 DataFormat<T>::DataFormat()
-    : DataFormatBase(id(), components(), sizeInBytes(), maxToDouble(), minToDouble(),
+    : DataFormatBase(id(), rank(), components(), sizeInBytes(), maxToDouble(), minToDouble(),
                      lowestToDouble(), numericType(), str()) {}
 
 template <typename T>
@@ -284,13 +320,27 @@ constexpr size_t DataFormat<T>::sizeInBytes() {
 }
 
 template <typename T>
+constexpr size_t DataFormat<T>::rank() {
+    return util::rank_v<T>;
+}
+
+template <typename T>
 constexpr size_t DataFormat<T>::components() {
     return comp;
 }
 
 template <typename T>
 constexpr size_t DataFormat<T>::precision() {
-    return sizeInBytes() / components() * 8;
+    switch (rank()) {
+        case 0:
+            return sizeInBytes() * 8;
+        case 1:
+            return sizeInBytes() / components() * 8;
+        case 2:
+            return sizeInBytes() / components() / components() * 8;
+        default:
+            throw DataFormatException(SourceContext{}, "Invalid format rank {}", rank());
+    }
 }
 
 template <typename T>
@@ -300,47 +350,25 @@ constexpr NumericType DataFormat<T>::numericType() {
 
 template <typename T>
 constexpr auto DataFormat<T>::staticStr() {
-    constexpr auto prefix = []() {
-        if constexpr (components() == 1) {
-            return StaticString{""};
-        } else if constexpr (components() == 2) {
-            return StaticString{"Vec2"};
-        } else if constexpr (components() == 3) {
-            return StaticString{"Vec3"};
-        } else if constexpr (components() == 4) {
-            return StaticString{"Vec4"};
-        } else {
-            throw DataFormatException("Invalid format", IVW_CONTEXT_CUSTOM("DataFormat"));
-        }
-    };
+    constexpr std::tuple prefix{StaticString{""}, StaticString{"Vec"}, StaticString{"Mat"}};
+    constexpr std::tuple comps{StaticString{""}, StaticString{"2"}, StaticString{"3"},
+                               StaticString{"4"}};
+    constexpr std::tuple type{StaticString{"FLOAT"}, StaticString{"UINT"}, StaticString{"INT"}};
+    constexpr std::tuple prec{StaticString{"8"}, StaticString{"16"}, StaticString{"32"},
+                              StaticString{"64"}};
 
-    constexpr auto type = []() {
-        if constexpr (numericType() == NumericType::Float) {
-            return StaticString{"FLOAT"};
-        } else if constexpr (numericType() == NumericType::SignedInteger) {
-            return StaticString{"INT"};
-        } else if constexpr (numericType() == NumericType::UnsignedInteger) {
-            return StaticString{"UINT"};
-        } else {
-            throw DataFormatException("Invalid format", IVW_CONTEXT_CUSTOM("DataFormat"));
-        }
-    };
+    constexpr auto r = rank();
+    constexpr auto c = components() - 1;
+    constexpr auto t = static_cast<size_t>(numericType()) - 1;
+    constexpr auto p = static_cast<size_t>(64 - std::countl_zero(precision()) - 4);
 
-    constexpr auto prec = []() {
-        if constexpr (precision() == 8) {
-            return StaticString{"8"};
-        } else if constexpr (precision() == 16) {
-            return StaticString{"16"};
-        } else if constexpr (precision() == 32) {
-            return StaticString{"32"};
-        } else if constexpr (precision() == 64) {
-            return StaticString{"64"};
-        } else {
-            throw DataFormatException("Invalid format", IVW_CONTEXT_CUSTOM("DataFormat"));
-        }
-    };
+    static_assert(std::has_single_bit(precision()));
+    static_assert(r < std::tuple_size_v<decltype(prefix)>);
+    static_assert(c < std::tuple_size_v<decltype(comps)>);
+    static_assert(t < std::tuple_size_v<decltype(type)>);
+    static_assert(p < std::tuple_size_v<decltype(prec)>);
 
-    return prefix() + type() + prec();
+    return std::get<r>(prefix) + std::get<c>(comps) + std::get<t>(type) + std::get<p>(prec);
 }
 
 template <typename T>
