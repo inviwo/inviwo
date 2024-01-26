@@ -29,14 +29,10 @@
 
 #include <modules/opengl/canvasprocessorgl.h>
 
-#include <inviwo/core/algorithm/markdown.h>          // for operator""_unindentHelp
-#include <inviwo/core/ports/imageport.h>             // for ImageInport
-#include <inviwo/core/processors/canvasprocessor.h>  // for CanvasProcessor
-#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>   // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>    // for Tags, Tags::GL
-#include <inviwo/core/util/rendercontext.h>          // for RenderContext
-#include <modules/opengl/image/imagegl.h>            // for ImageGL
+#include <inviwo/core/algorithm/markdown.h>         // for operator""_unindentHelp
+#include <inviwo/core/processors/processorinfo.h>   // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>  // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>   // for Tags, Tags::GL
 
 #include <memory>       // for shared_ptr, shared_ptr<>::element_type
 #include <string>       // for string
@@ -58,18 +54,5 @@ const ProcessorInfo CanvasProcessorGL::processorInfo_{
 const ProcessorInfo CanvasProcessorGL::getProcessorInfo() const { return processorInfo_; }
 
 CanvasProcessorGL::CanvasProcessorGL(InviwoApplication* app) : CanvasProcessor(app) {}
-
-void CanvasProcessorGL::process() {
-    // ensure that the image inport has a GL representation
-    // otherwise the canvas widget will request a new one which in turn creates an fbo within the
-    // context of the canvas, i.e. not the default canvas.
-    //
-    // FIXME: this is not ideal
-    if (!inport_.getData()->hasRepresentation<ImageGL>()) {
-        RenderContext::getPtr()->activateDefaultRenderContext();
-        inport_.getData()->getRepresentation<ImageGL>();
-    }
-    CanvasProcessor::process();
-}
 
 }  // namespace inviwo
