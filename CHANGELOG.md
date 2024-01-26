@@ -1,7 +1,7 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
-## 2023-01-23
-Added a `Mesh Axis` processor for adding 3D axes to a mesh. This processor shares most of its functionality with the `Volume Axis` processor. The axes are either based on the basis and offset (corresponding to the model matrix) or the combination of model and world matrix.
+## 2023-01-26 `MeshAxis` and `LayerAxis` processors
+Added a `Mesh Axis` processor for adding 3D axes to a mesh and `Layer Axis` for 2D axes next to a layer. These processor share most of their functionality with the `Volume Axis` processor. The axes are either based on the basis and offset (corresponding to the model matrix) or the combination of model and world matrix.
 
 ## 2023-12-11 `Layer` ports and processors
 Added Layer inports and outports to handle 2D data as individual layers without any depth or picking information being attached. Similar to `Mesh`, a `Layer` is a spatial entity with its own basis and offset. Layers can be extracted from an `Image` with the `Image To Layer` processor or converted back with `Layer To Image`. Alternatively, the layer can be rendered directly in 3D with the `Layer Renderer`. Additional utility processors exist as well: 

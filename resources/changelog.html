@@ -33,8 +33,8 @@
 </style>
 </head>
 <body>
-<h2>2023-01-23</h2>
-<p>Added a <code class="notranslate">Mesh Axis</code> processor for adding 3D axes to a mesh. This processor shares most of its functionality with the <code class="notranslate">Volume Axis</code> processor. The axes are either based on the basis and offset (corresponding to the model matrix) or the combination of model and world matrix.</p>
+<h2>2023-01-26 <code class="notranslate">MeshAxis</code> and <code class="notranslate">LayerAxis</code> processors</h2>
+<p>Added a <code class="notranslate">Mesh Axis</code> processor for adding 3D axes to a mesh and <code class="notranslate">Layer Axis</code> for 2D axes next to a layer. These processor share most of their functionality with the <code class="notranslate">Volume Axis</code> processor. The axes are either based on the basis and offset (corresponding to the model matrix) or the combination of model and world matrix.</p>
 <h2>2023-12-11 <code class="notranslate">Layer</code> ports and processors</h2>
 <p>Added Layer inports and outports to handle 2D data as individual layers without any depth or picking information being attached. Similar to <code class="notranslate">Mesh</code>, a <code class="notranslate">Layer</code> is a spatial entity with its own basis and offset. Layers can be extracted from an <code class="notranslate">Image</code> with the <code class="notranslate">Image To Layer</code> processor or converted back with <code class="notranslate">Layer To Image</code>. Alternatively, the layer can be rendered directly in 3D with the <code class="notranslate">Layer Renderer</code>. Additional utility processors exist as well:</p>
 <ul>
