@@ -42,7 +42,7 @@ ProcessorNetworkEvaluator::ProcessorNetworkEvaluator(ProcessorNetwork* processor
     : processorNetwork_(processorNetwork)
     , processorsSorted_(util::topologicalSortFiltered(processorNetwork_))
     , needsSorting_(true)
-    , evaulationQueued_(false)
+    , evaluationQueued_(false)
     , exceptionHandler_(StandardEvaluationErrorHandler()) {
 
     processorNetwork_->addObserver(this);
@@ -54,42 +54,42 @@ void ProcessorNetworkEvaluator::setExceptionHandler(EvaluationErrorHandler handl
 
 void ProcessorNetworkEvaluator::onProcessorNetworkEvaluateRequest() {
     // Direct request, thus we don't want to queue the evaluation anymore
-    evaulationQueued_ = false;
+    evaluationQueued_ = false;
     requestEvaluate();
 }
 
 void ProcessorNetworkEvaluator::onProcessorNetworkUnlocked() {
     // Only evaluate if an evaluation is queued or the network is modified
-    if (evaulationQueued_) {
-        evaulationQueued_ = false;
+    if (evaluationQueued_) {
+        evaluationQueued_ = false;
         requestEvaluate();
     }
 }
 
 void ProcessorNetworkEvaluator::requestEvaluate() {
     // evaluation has been triggered but is currently queued
-    // requestEvaluate needs to be called with evaulationQueued_ false to continue.
-    if (evaulationQueued_) return;
+    // requestEvaluate needs to be called with evaluationQueued_ false to continue.
+    if (evaluationQueued_) return;
 
     // wait for linking to finish
     if (processorNetwork_->isLinking()) {
-        evaulationQueued_ = true;
+        evaluationQueued_ = true;
         return;
     }
 
     // evaluation disabled
     if (processorNetwork_->islocked()) {
-        evaulationQueued_ = true;
+        evaluationQueued_ = true;
         return;
     }
 
     // wait for invalidation to finish before evaluating
     if (processorNetwork_->isInvalidating()) {
-        evaulationQueued_ = true;
+        evaluationQueued_ = true;
         return;
     }
 
-    evaulationQueued_ = false;
+    evaluationQueued_ = false;
     // if we haven't returned yet, perform evaluation of the network
     evaluate();
 }

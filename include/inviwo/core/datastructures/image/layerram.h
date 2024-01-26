@@ -124,7 +124,7 @@ public:
      *  * __FloatNs__ Matches all floating point glm vector types of length N. N = 2,3,4.
      *
      * @param callable This should be a generic lambda or a struct with a generic call operator.
-     * it will be called with the specific LayerRamPresision<T> as the first argument and any
+     * it will be called with the specific LayerRAMPrecision<T> as the first argument and any
      * additional arguments (`args`) appended to that.
      * @param args Any additional arguments that should be passed on to the lambda.
      *
