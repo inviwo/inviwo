@@ -337,139 +337,147 @@ namespace filter {
  *	Default filters matches all types.
  */
 template <typename Format>
-struct All : std::true_type {};
+// struct All : std::true_type {};
+struct All : std::integral_constant<bool, Format::rank() < 2> {};
+
+template <typename Format>
+struct ScalarAndVecs : std::integral_constant<bool, Format::rank() < 2> {};
 
 /**
  *	Matches all floating point types. float, double, half, vec2, dvec3,...
  */
 template <typename Format>
-struct Floats : std::integral_constant<bool, Format::numtype == NumericType::Float> {};
+struct Floats
+    : std::integral_constant<bool, Format::rank() < 2 && Format::numtype == NumericType::Float> {};
 
 /**
  *	Matches all floating point scalar types.
  */
 template <typename Format>
 struct Float1s
-    : std::integral_constant<bool, Format::numtype == NumericType::Float && Format::comp == 1> {};
+    : std::integral_constant<bool, Format::rank() < 2 && Format::numtype == NumericType::Float &&
+                                       Format::comp == 1> {};
 /**
  *	Matches all floating point glm vectors types of length 2.
  */
 
 template <typename Format>
 struct Float2s
-    : std::integral_constant<bool, Format::numtype == NumericType::Float && Format::comp == 2> {};
+    : std::integral_constant<bool, Format::rank() < 2 && Format::numtype == NumericType::Float &&
+                                       Format::comp == 2> {};
 
 /**
  *	Matches all floating point glm vectors types of length 3.
  */
 template <typename Format>
 struct Float3s
-    : std::integral_constant<bool, Format::numtype == NumericType::Float && Format::comp == 3> {};
+    : std::integral_constant<bool, Format::rank() < 2 && Format::numtype == NumericType::Float &&
+                                       Format::comp == 3> {};
 
 /**
  *	Matches all floating point glm vectors types of length 4.
  */
 template <typename Format>
 struct Float4s
-    : std::integral_constant<bool, Format::numtype == NumericType::Float && Format::comp == 4> {};
+    : std::integral_constant<bool, Format::rank() < 2 && Format::numtype == NumericType::Float &&
+                                       Format::comp == 4> {};
 
 /**
  *	Matches all integer types, i.e. int, ivec2, uvec3...
  */
 template <typename Format>
-struct Integers : std::integral_constant<bool, Format::numtype != NumericType::Float> {};
+struct Integers
+    : std::integral_constant<bool, Format::rank() < 2 && Format::numtype != NumericType::Float> {};
 
 /**
  *	Matches all scalar types, i.e. int, char, long...
  */
 template <typename Format>
-struct Scalars : std::integral_constant<bool, Format::comp == 1> {};
+struct Scalars : std::integral_constant<bool, Format::rank() < 2 && Format::comp == 1> {};
 
 /**
  *	Matches all glm vector types, i.e. vec3, ivec3, uvec4,...
  */
 template <typename Format>
-struct Vecs : std::integral_constant<bool, Format::comp >= 2> {};
+struct Vecs : std::integral_constant<bool, Format::rank() < 2 && Format::comp >= 2> {};
 
 /**
  * Matches all glm vector types of length 2.
  */
 template <typename Format>
-struct Vec2s : std::integral_constant<bool, Format::comp == 2> {};
+struct Vec2s : std::integral_constant<bool, Format::rank() < 2 && Format::comp == 2> {};
 
 /**
  * Matches all glm vector types of length 3.
  */
 template <typename Format>
-struct Vec3s : std::integral_constant<bool, Format::comp == 3> {};
+struct Vec3s : std::integral_constant<bool, Format::rank() < 2 && Format::comp == 3> {};
 
 /**
  * Matches all glm vector types of length 4.
  */
 template <typename Format>
-struct Vec4s : std::integral_constant<bool, Format::comp == 4> {};
+struct Vec4s : std::integral_constant<bool, Format::rank() < 2 && Format::comp == 4> {};
 
 /**
  * Match all scalar signed or unsigned integer types
  */
 template <typename Format>
-struct IntegerScalars
-    : std::integral_constant<bool, (Format::comp == 1 && Format::numtype != NumericType::Float)> {};
+struct IntegerScalars : std::integral_constant<bool, (Format::rank() < 2 && Format::comp == 1 &&
+                                                      Format::numtype != NumericType::Float)> {};
 
 /**
  * Match all scalar signed integer types
  */
 template <typename Format>
 struct SignedIntegerScalars
-    : std::integral_constant<bool,
-                             (Format::comp == 1 && Format::numtype == NumericType::SignedInteger)> {
-};
+    : std::integral_constant<bool, (Format::rank() < 2 && Format::comp == 1 &&
+                                    Format::numtype == NumericType::SignedInteger)> {};
 
 /**
  * Match all scalar unsigned integer types
  */
 template <typename Format>
 struct UnsignedIntegerScalars
-    : std::integral_constant<bool, (Format::comp == 1 &&
+    : std::integral_constant<bool, (Format::rank() < 2 && Format::comp == 1 &&
                                     Format::numtype == NumericType::UnsignedInteger)> {};
 
 /**
  * Match all scalar floating point types
  */
 template <typename Format>
-struct FloatScalars
-    : std::integral_constant<bool, (Format::comp == 1 && Format::numtype == NumericType::Float)> {};
+struct FloatScalars : std::integral_constant<bool, (Format::rank() < 2 && Format::comp == 1 &&
+                                                    Format::numtype == NumericType::Float)> {};
 
 /**
  * Match all signed or unsigned integer vector types
  */
 template <typename Format>
-struct IntegerVecs
-    : std::integral_constant<bool, (Format::comp >= 2 && Format::numtype != NumericType::Float)> {};
+struct IntegerVecs : std::integral_constant<bool, (Format::rank() < 2 && Format::comp >= 2 &&
+                                                   Format::numtype != NumericType::Float)> {};
 
 /**
  * Match all signed or unsigned integer vector types
  */
 template <typename Format>
 struct SignedIntegerVecs
-    : std::integral_constant<bool,
-                             (Format::comp >= 2 && Format::numtype == NumericType::SignedInteger)> {
-};
+    : std::integral_constant<bool, (Format::rank() < 2 && Format::comp >= 2 &&
+                                    Format::numtype == NumericType::SignedInteger)> {};
 
 /**
  * Match all signed or unsigned integer vector types
  */
 template <typename Format>
 struct UnsignedIntegerVecs
-    : std::integral_constant<bool, (Format::comp >= 2 &&
+    : std::integral_constant<bool, (Format::rank() < 2 && Format::comp >= 2 &&
                                     Format::numtype == NumericType::UnsignedInteger)> {};
 
 /**
  * Match all floating point vector types
  */
 template <typename Format>
-struct FloatVecs
-    : std::integral_constant<bool, (Format::comp >= 2 && Format::numtype == NumericType::Float)> {};
+struct FloatVecs : std::integral_constant<bool, (Format::rank() < 2 && Format::comp >= 2 &&
+                                                 Format::numtype == NumericType::Float)> {};
 
 }  // namespace filter
 
