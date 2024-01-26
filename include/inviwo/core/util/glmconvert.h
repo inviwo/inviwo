@@ -45,7 +45,9 @@ namespace inviwo::util {
 // pad with zero. When there are more dimensions in source just discard the extra ones.
 template <typename To = double, typename From>
 inline constexpr To glm_convert(From x) {
-    if constexpr (util::rank<From>::value == 0 && util::rank<To>::value == 0) {
+    if constexpr (std::is_same_v<To, From>) {
+        return x;
+    } else if constexpr (util::rank<From>::value == 0 && util::rank<To>::value == 0) {
         // Scalar to Scalar conversion
         return static_cast<To>(x);
     } else if constexpr (util::rank<From>::value == 0 && util::rank<To>::value == 1) {
@@ -61,6 +63,26 @@ inline constexpr To glm_convert(From x) {
         To res(static_cast<typename To::value_type>(0));
         size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
         for (size_t i = 0; i < max; ++i) res[i] = static_cast<typename To::value_type>(x[i]);
+        return res;
+    } else if constexpr (util::rank<From>::value == 2 && util::rank<To>::value == 0) {
+        // Mat to Scalar conversion
+        return static_cast<To>(x[0][0]);
+    } else if constexpr (util::rank<From>::value == 0 && util::rank<To>::value == 2) {
+        // Scalar to Mat conversion
+        To res(typename To::value_type(0));
+        res[0][0] = static_cast<typename To::value_type>(x);
+        return res;
+    } else if constexpr (util::rank<From>::value == 2 && util::rank<To>::value == 1) {
+        // Mat to Vector conversion
+        To res(static_cast<typename To::value_type>(0));
+        size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
+        for (size_t i = 0; i < max; ++i) res[i] = static_cast<typename To::value_type>(x[i][0]);
+        return res;
+    } else if constexpr (util::rank<From>::value == 1 && util::rank<To>::value == 2) {
+        // Vector to Mat conversion
+        To res(static_cast<typename To::value_type>(0));
+        size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
+        for (size_t i = 0; i < max; ++i) res[i][0] = static_cast<typename To::value_type>(x[i]);
         return res;
     }
 }
@@ -95,10 +117,10 @@ constexpr bool is_scalar_conv =
     !std::is_same<To, From>::value && util::rank_v<To> == 0 && util::rank_v<From> == 0;
 
 template <typename T>
-constexpr bool is_unsigned_int = std::is_unsigned_v<T>&& std::is_integral_v<T>;
+constexpr bool is_unsigned_int = std::is_unsigned_v<T> && std::is_integral_v<T>;
 
 template <typename T>
-constexpr bool is_signed_int = std::is_signed_v<T>&& std::is_integral_v<T>;
+constexpr bool is_signed_int = std::is_signed_v<T> && std::is_integral_v<T>;
 
 template <typename T, typename To = T>
 constexpr To range = static_cast<To>(std::numeric_limits<T>::max()) -
@@ -288,7 +310,33 @@ constexpr To glm_convert_normalized(From x) {
         size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
         for (size_t i = 0; i < max; ++i) res[i] = glm_convert_normalized<T>(x[i]);
         return res;
+
+    } else if constexpr (util::rank<From>::value == 2 && util::rank<To>::value == 0) {
+        // Mat to Scalar conversion
+        return glm_convert_normalized<To>(x[0][0]);
+    } else if constexpr (util::rank<From>::value == 0 && util::rank<To>::value == 2) {
+        // Scalar to Mat conversion
+        To res(typename To::value_type(0));
+        res[0][0] = glm_convert_normalized<typename To::value_type>(x);
+        return res;
+    } else if constexpr (util::rank<From>::value == 2 && util::rank<To>::value == 1) {
+        // Mat to Vector conversion
+        To res(static_cast<typename To::value_type>(0));
+        size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
+        for (size_t i = 0; i < max; ++i) {
+            res[i] = glm_convert_normalized<typename To::value_type>(x[i][0]);
+        }
+        return res;
+    } else if constexpr (util::rank<From>::value == 1 && util::rank<To>::value == 2) {
+        // Vector to Mat conversion
+        To res(static_cast<typename To::value_type>(0));
+        size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
+        for (size_t i = 0; i < max; ++i) {
+            res[i][0] = glm_convert_normalized<typename To::value_type>(x[i]);
+        }
+        return res;
     }
+
 }  // namespace inviwo::util
 
 #include <warn/pop>
