@@ -96,10 +96,9 @@ namespace inviwo {
 class IVW_CORE_API SpatialEntity {
 public:
     SpatialEntity();
-    SpatialEntity(const SpatialEntity& rhs);
     SpatialEntity(const glm::mat4& modelMatrix);
     SpatialEntity(const glm::mat4& modelMatrix, const glm::mat4& worldMatrix);
-
+    SpatialEntity(const SpatialEntity& rhs);
     SpatialEntity& operator=(const SpatialEntity& that);
     virtual SpatialEntity* clone() const = 0;
     virtual ~SpatialEntity();
@@ -122,8 +121,8 @@ public:
         const Camera& camera) const;
 
 protected:
-    mutable SpatialCoordinateTransformer* transformer_;
-    mutable SpatialCameraCoordinateTransformer* cameraTransformer_;
+    mutable std::unique_ptr<SpatialCoordinateTransformer> transformer_;
+    mutable std::unique_ptr<SpatialCameraCoordinateTransformer> cameraTransformer_;
 
     glm::mat4 modelMatrix_;
     glm::mat4 worldMatrix_;
@@ -207,20 +206,21 @@ glm::mat4 StructuredGridEntity<N>::getIndexMatrix() const {
 template <unsigned int N>
 const StructuredCoordinateTransformer& StructuredGridEntity<N>::getCoordinateTransformer() const {
     if (!transformer_) {
-        transformer_ = new StructuredCoordinateTransformerImpl<N>(*this);
+        transformer_ = std::make_unique<StructuredCoordinateTransformerImpl<N>>(*this);
     }
-    return *static_cast<StructuredCoordinateTransformer*>(transformer_);
+    return *static_cast<StructuredCoordinateTransformer*>(transformer_.get());
 }
 
 template <unsigned int N>
 const StructuredCameraCoordinateTransformer& StructuredGridEntity<N>::getCoordinateTransformer(
     const Camera& camera) const {
     if (!cameraTransformer_) {
-        cameraTransformer_ = new StructuredCameraCoordinateTransformerImpl<N>(*this, camera);
+        cameraTransformer_ =
+            std::make_unique<StructuredCameraCoordinateTransformerImpl<N>>(*this, camera);
     }
-    static_cast<StructuredCameraCoordinateTransformerImpl<N>*>(cameraTransformer_)
+    static_cast<StructuredCameraCoordinateTransformerImpl<N>*>(cameraTransformer_.get())
         ->setCamera(camera);
-    return *static_cast<StructuredCameraCoordinateTransformer*>(cameraTransformer_);
+    return *static_cast<StructuredCameraCoordinateTransformer*>(cameraTransformer_.get());
 }
 
 extern template class IVW_CORE_TMPL_EXP StructuredGridEntity<2>;
