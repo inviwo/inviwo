@@ -46,7 +46,7 @@ public:
     template <typename T>  // T Should derive from MetaData
     T* add(std::string_view key, std::unique_ptr<T> metaData);
 
-    void remove(std::string_view key);
+    bool remove(std::string_view key);
     void removeAll();
 
     void rename(std::string_view newKey, const std::string& oldKey);
@@ -54,6 +54,8 @@ public:
     std::vector<std::string> getKeys() const;
     MetaData* get(std::string_view key);
     const MetaData* get(std::string_view key) const;
+    
+    bool contains(std::string_view key) const;
 
     bool empty() const;
 

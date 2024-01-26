@@ -35,10 +35,9 @@
 #include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
-/** \brief Holds metadata and access functionality for set/get
- *
+
+/** @brief Holds metadata and access functionality for set/get
  *  MetaDataOwner is the base class for all the objects that want to own metadata.
- *
  */
 class IVW_CORE_API MetaDataOwner {
 
@@ -60,8 +59,7 @@ public:
     void setMetaData(std::string_view key, U value);
 
     /**
-     * \brief unset, i.e. remove the metadata entry matching the given key and type
-     *
+     * @brief unset, i.e. remove the metadata entry matching the given key and type
      * @param key   key of the entry to be removed
      */
     template <typename T>
@@ -76,6 +74,8 @@ public:
     const T* getMetaData(std::string_view key) const;
     MetaDataMap* getMetaDataMap();
     const MetaDataMap* getMetaDataMap() const;
+
+    bool hasMetaData(std::string_view key) const;
 
     template <typename T>
     bool hasMetaData(std::string_view key) const;
@@ -109,9 +109,7 @@ void MetaDataOwner::setMetaData(std::string_view key, U value) {
 
 template <typename T>
 bool MetaDataOwner::unsetMetaData(std::string_view key) {
-    bool existed = hasMetaData<T>(key);
-    metaData_.remove(key);
-    return existed;
+    return metaData_.remove(key);
 }
 
 // param val is required to deduce the template argument
@@ -132,6 +130,10 @@ const T* MetaDataOwner::getMetaData(std::string_view key) const {
 template <typename T>
 T* MetaDataOwner::getMetaData(std::string_view key) {
     return dynamic_cast<T*>(metaData_.get(key));
+}
+
+inline bool MetaDataOwner::hasMetaData(std::string_view key) const {
+    return metaData_.contains(key);
 }
 
 template <typename T>

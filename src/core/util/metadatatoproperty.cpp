@@ -47,9 +47,9 @@ struct RegisterOrdinalPropertyForMetaData {
         std::unordered_map<std::string, std::function<void(const std::string& key, const MetaData*,
                                                            CompositeProperty&)>>& factory) {
 
-        factory[MetaDataPrimitiveType<T, 0, 0>{}.getClassIdentifier()] =
+        factory[MetaDataType<T>{}.getClassIdentifier()] =
             [](const std::string& key, const MetaData* meta, CompositeProperty& container) {
-                auto m = static_cast<const MetaDataPrimitiveType<T, 0, 0>*>(meta);
+                auto m = static_cast<const MetaDataType<T>*>(meta);
 
                 if (auto existingProperty = container.getPropertyByIdentifier(key)) {
                     if (auto p = dynamic_cast<OrdinalProperty<T>*>(existingProperty)) {
@@ -84,9 +84,9 @@ MetaDataToProperty::MetaDataToProperty() {
                    uvec2, uvec3, uvec4, mat2, mat3, mat4, dmat2, dmat3, dmat4>;
     util::for_each_type<ordinalMetaTypes>{}(RegisterOrdinalPropertyForMetaData{}, factory_);
 
-    factory_[MetaDataPrimitiveType<bool, 0, 0>{}.getClassIdentifier()] =
+    factory_[MetaDataType<bool>{}.getClassIdentifier()] =
         [](const std::string& key, const MetaData* meta, CompositeProperty& container) {
-            auto m = static_cast<const MetaDataPrimitiveType<bool, 0, 0>*>(meta);
+            auto m = static_cast<const MetaDataType<bool>*>(meta);
 
             if (auto existingProperty = container.getPropertyByIdentifier(key)) {
                 if (auto p = dynamic_cast<BoolProperty*>(existingProperty)) {
@@ -105,9 +105,9 @@ MetaDataToProperty::MetaDataToProperty() {
             container.addProperty(p.release(), true);
         };
 
-    factory_[MetaDataPrimitiveType<std::string, 0, 0>{}.getClassIdentifier()] =
+    factory_[MetaDataType<std::string>{}.getClassIdentifier()] =
         [](const std::string& key, const MetaData* meta, CompositeProperty& container) {
-            auto m = static_cast<const MetaDataPrimitiveType<std::string, 0, 0>*>(meta);
+            auto m = static_cast<const MetaDataType<std::string>*>(meta);
 
             if (auto existingProperty = container.getPropertyByIdentifier(key)) {
                 if (auto p = dynamic_cast<StringProperty*>(existingProperty)) {
