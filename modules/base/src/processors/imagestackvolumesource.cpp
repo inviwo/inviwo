@@ -93,8 +93,8 @@ namespace {
 
 template <typename Format>
 struct FloatOrIntMax32
-    : std::integral_constant<bool, Format::numtype == NumericType::Float || Format::compsize <= 4> {
-};
+    : std::integral_constant<bool, Format::rank() < 2 && (Format::numtype == NumericType::Float ||
+                                                          Format::compsize <= 4)> {};
 
 }  // namespace
 
