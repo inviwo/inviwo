@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/fmtutils.h>
 
 #include <functional>
 
@@ -40,6 +41,21 @@ class Processor;
 
 enum class EvaluationType { InitResource, PortOnChange, Process, NotReady };
 
+constexpr std::string_view enumToStr(EvaluationType type) {
+    switch (type) {
+        case EvaluationType::InitResource:
+            return "InitializeResources";
+        case EvaluationType::PortOnChange:
+            return "PortOnChange";
+        case EvaluationType::Process:
+            return "Process";
+        case EvaluationType::NotReady:
+            return "DoIfNotReady";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid EvaluationType enum value '{}'",
+                    static_cast<int>(type));
+}
+
 using EvaluationErrorHandler = std::function<void(Processor*, EvaluationType, ExceptionContext)>;
 
 struct IVW_CORE_API StandardEvaluationErrorHandler {
@@ -47,3 +63,6 @@ struct IVW_CORE_API StandardEvaluationErrorHandler {
 };
 
 }  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::EvaluationType> : inviwo::FlagFormatter<inviwo::EvaluationType> {};

@@ -37,36 +37,21 @@ namespace inviwo {
 
 void StandardEvaluationErrorHandler::operator()(Processor* processor, EvaluationType type,
                                                 ExceptionContext context) {
-    const std::string id = processor->getIdentifier();
-    const std::string func = [&]() {
-        switch (type) {
-            case EvaluationType::InitResource:
-                return "InitializeResources";
-            case EvaluationType::PortOnChange:
-                return "PortOnChange";
-            case EvaluationType::Process:
-                return "Process";
-            case EvaluationType::NotReady:
-                return "DoIfNotReady";
-            default:
-                return "Unknown";
-        }
-    }();
-
+    const auto& id = processor->getIdentifier();
     try {
         throw;
     } catch (Exception& e) {
-        util::log(e.getContext(), fmt::format("{} Error in {} : {}", id, func, e.getFullMessage()),
+        util::log(e.getContext(), fmt::format("{} Error in {} : {}", id, type, e.getFullMessage()),
                   LogLevel::Error);
     } catch (fmt::format_error& e) {
         util::log(context,
-                  fmt::format("{} Error in {} using fmt formatting: {}\n{}", id, func, e.what(),
+                  fmt::format("{} Error in {} using fmt formatting: {}\n{}", id, type, e.what(),
                               util::fmtHelp.view()),
                   LogLevel::Error);
     } catch (std::exception& e) {
-        util::log(context, fmt::format("{} Error in {} : {}", id, func, e.what()), LogLevel::Error);
+        util::log(context, fmt::format("{} Error in {} : {}", id, type, e.what()), LogLevel::Error);
     } catch (...) {
-        util::log(context, fmt::format("{} Error in {} : Unknown error", id, func),
+        util::log(context, fmt::format("{} Error in {} : Unknown error", id, type),
                   LogLevel::Error);
     }
 }
