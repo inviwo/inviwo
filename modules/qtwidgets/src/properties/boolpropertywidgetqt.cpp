@@ -31,7 +31,6 @@
 
 #include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
 #include <inviwo/core/properties/propertysemantics.h>       // for operator==, PropertySemantics
-#include <inviwo/core/util/rendercontext.h>                 // for RenderContext
 #include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
 
@@ -77,7 +76,6 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
 
         auto setPropertyValueFromString = [this]() {
             QString str(lineEdit_->text());
-            RenderContext::getPtr()->activateDefaultRenderContext();
             property_->set(str == "true" || str == "1");
         };
         connect(lineEdit_, &QLineEdit::editingFinished, setPropertyValueFromString);
@@ -90,10 +88,7 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
         setFocusPolicy(checkBox_->focusPolicy());
         setFocusProxy(checkBox_);
 
-        auto setPropertyValueFromCheckbox = [this](bool checked) {
-            RenderContext::getPtr()->activateDefaultRenderContext();
-            property_->set(checked);
-        };
+        auto setPropertyValueFromCheckbox = [this](bool checked) { property_->set(checked); };
         connect(checkBox_, &QCheckBox::toggled, setPropertyValueFromCheckbox);
         hLayout->addWidget(checkBox_);
     }

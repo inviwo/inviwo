@@ -42,6 +42,7 @@
 #include <inviwo/core/util/filedialog.h>
 #include <inviwo/core/io/imagewriterutil.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/rendercontext.h>
 
 namespace inviwo {
 
@@ -270,6 +271,7 @@ size2_t CanvasProcessor::getCustomDimensions() const { return customInputDimensi
 
 void CanvasProcessor::sizeChanged() {
     NetworkLock lock(this);
+    RenderContext::getPtr()->activateDefaultRenderContext();
 
     customInputDimensions_.setVisible(enableCustomInputDimensions_);
     customInputDimensions_.setReadOnly(keepAspectRatio_);
