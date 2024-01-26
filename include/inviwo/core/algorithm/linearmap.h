@@ -39,9 +39,16 @@ constexpr T linearMap(T val, glm::vec<2, T> from, glm::vec<2, T> to) noexcept {
     return (val - from.x) / (from.y - from.x) * (to.y - to.x) + to.x;
 }
 
-template <typename T, size_t N>
-constexpr glm::vec<N, T> linearMap(glm::vec<N, T> val, glm::vec<2, T> from,
+template <glm::length_t L, typename T>
+constexpr glm::vec<L, T> linearMap(glm::vec<L, T> val, glm::vec<2, T> from,
                                    glm::vec<2, T> to) noexcept {
+    static_assert(std::is_floating_point_v<T>);
+    return (val - from.x) / (from.y - from.x) * (to.y - to.x) + to.x;
+}
+
+template <glm::length_t C, glm::length_t R, typename T>
+constexpr glm::mat<C, R, T> linearMap(glm::mat<C, R, T> val, glm::vec<2, T> from,
+                                      glm::vec<2, T> to) noexcept {
     static_assert(std::is_floating_point_v<T>);
     return (val - from.x) / (from.y - from.x) * (to.y - to.x) + to.x;
 }
@@ -52,8 +59,15 @@ constexpr T linearMapToNormalized(T val, glm::vec<2, T> from) noexcept {
     return (val - from.x) / (from.y - from.x);
 }
 
-template <typename T, size_t N>
-constexpr glm::vec<N, T> linearMapToNormalized(glm::vec<N, T> val, glm::vec<2, T> from) noexcept {
+template <glm::length_t L, typename T>
+constexpr glm::vec<L, T> linearMapToNormalized(glm::vec<L, T> val, glm::vec<2, T> from) noexcept {
+    static_assert(std::is_floating_point_v<T>);
+    return (val - from.x) / (from.y - from.x);
+}
+
+template <glm::length_t C, glm::length_t R, typename T>
+constexpr glm::mat<C, R, T> linearMapToNormalized(glm::mat<C, R, T> val,
+                                                  glm::vec<2, T> from) noexcept {
     static_assert(std::is_floating_point_v<T>);
     return (val - from.x) / (from.y - from.x);
 }
@@ -64,8 +78,15 @@ constexpr T linearMapFromNormalized(T val, glm::vec<2, T> to) noexcept {
     return val * (to.y - to.x) + to.x;
 }
 
-template <typename T, size_t N>
-constexpr glm::vec<N, T> linearMapFromNormalized(glm::vec<N, T> val, glm::vec<2, T> to) noexcept {
+template <glm::length_t L, typename T>
+constexpr glm::vec<L, T> linearMapFromNormalized(glm::vec<L, T> val, glm::vec<2, T> to) noexcept {
+    static_assert(std::is_floating_point_v<T>);
+    return val * (to.y - to.x) + to.x;
+}
+
+template <glm::length_t C, glm::length_t R, typename T>
+constexpr glm::mat<C, R, T> linearMapFromNormalized(glm::mat<C, R, T> val,
+                                                    glm::vec<2, T> to) noexcept {
     static_assert(std::is_floating_point_v<T>);
     return val * (to.y - to.x) + to.x;
 }
