@@ -320,7 +320,28 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                     }
                     res = true;
                 }
-                if (auto range = xml::getElement(node, "Properties/Property&identifier=range")) {
+                if (auto properties = xml::getElement(node, "Properties")) {
+                    if (auto range =
+                            xml::getElement(properties, "Properties/Property&identifier=range")) {
+                        if (auto value = xml::getElement(range, "value")) {
+                            TxElement customRange{"Property"};
+                            customRange.SetAttribute("type", "org.inviwo.DoubleMinMaxProperty");
+                            customRange.SetAttribute("identifier", "customRange");
+                            TxElement valueNode("value");
+                            if (const auto* str = value->GetAttributePtr("x")) {
+                                valueNode.SetAttribute("x", *str);
+                            } else {
+                                valueNode.SetAttribute("x", "0.0");
+                            }
+                            if (const auto* str = value->GetAttributePtr("y")) {
+                                valueNode.SetAttribute("y", *str);
+                            } else {
+                                valueNode.SetAttribute("y", "100.0");
+                            }
+                            customRange.InsertEndChild(valueNode);
+                            properties->InsertEndChild(customRange);
+                        }
+                    }
                 }
                 return true;
             }};

@@ -43,7 +43,6 @@ namespace plot {
 
 class IVW_MODULE_PLOTTINGGL_API MeshAxis : public Processor {
 public:
-
     MeshAxis();
 
     virtual void process() override;
