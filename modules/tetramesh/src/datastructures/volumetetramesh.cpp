@@ -171,4 +171,11 @@ dvec2 VolumeTetraMesh::getDataRange() const {
     }
 }
 
+const Axis* VolumeTetraMesh::getAxis(size_t index) const {
+    if (volume_) {
+        return volume_->getAxis(index);
+    }
+    return nullptr;
+}
+
 }  // namespace inviwo

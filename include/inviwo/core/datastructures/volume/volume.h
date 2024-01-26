@@ -142,6 +142,11 @@ public:
      */
     vec3 getWorldSpaceGradientSpacing() const;
 
+    /**
+     * @copydoc SpatialEntity::getAxis
+     */
+    virtual const Axis* getAxis(size_t index) const override;
+
     DataMapper dataMap_;
     std::array<Axis, 3> axes;
 

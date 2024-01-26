@@ -95,6 +95,8 @@ public:
      */
     void setEnabled(bool enable);
 
+    virtual const Axis* getAxis(size_t) const override { return nullptr; }
+
     virtual Document getInfo() const;
 
     static uvec3 colorCode;

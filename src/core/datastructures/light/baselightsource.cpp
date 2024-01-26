@@ -60,7 +60,8 @@ mat4 getLightTransformationMatrix(vec3 pos, vec3 dir) {
     return transformationMatrix;
 }
 
-LightSource::LightSource() : fieldOfView_(0.5f * glm::pi<float>()) {}
+LightSource::LightSource()
+    : intensity_{1.0f}, fieldOfView_{glm::half_pi<float>()}, size_{0.0f}, enabled_{true} {}
 
 const inviwo::vec3 LightSource::getIntensity() const { return intensity_; }
 

@@ -34,6 +34,7 @@
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmutils.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <inviwo/core/datastructures/unitsystem.h>
 
 namespace inviwo {
 
@@ -119,6 +120,12 @@ public:
     virtual const SpatialCoordinateTransformer& getCoordinateTransformer() const;
     virtual const SpatialCameraCoordinateTransformer& getCoordinateTransformer(
         const Camera& camera) const;
+
+    /**
+     * returns the axis information corresponding to \p index
+     * @return nullptr if there is no axis for \p index
+     */
+    virtual const Axis* getAxis(size_t index) const = 0;
 
 protected:
     mutable std::unique_ptr<SpatialCoordinateTransformer> transformer_;

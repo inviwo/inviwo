@@ -202,6 +202,13 @@ vec3 Volume::getWorldSpaceGradientSpacing() const {
     return ds;
 }
 
+const Axis* Volume::getAxis(size_t index) const {
+    if (index >= 3) {
+        return nullptr;
+    }
+    return &axes[index];
+}
+
 uvec3 Volume::colorCode = uvec3(188, 101, 101);
 const std::string Volume::classIdentifier = "org.inviwo.Volume";
 const std::string Volume::dataName = "Volume";
