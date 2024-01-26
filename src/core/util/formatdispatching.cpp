@@ -28,7 +28,26 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
+
+std::string dispatching::detail::predicateNameHelper(const char* name) {
+    auto str = util::demangle(name);
+
+    // Example name "inviwo::dispatching::filter::Vec3s<inviwo::DataFormat<float>>"
+
+    constexpr std::string_view prefix = "inviwo::dispatching::filter::";
+    constexpr std::string_view postfix = "<inviwo::DataFormat<float>>";
+
+    if (str.ends_with(postfix)) {
+        str.erase(str.end() - postfix.size(), str.end());
+    }
+
+    if (str.starts_with(prefix)) {
+        str.erase(str.begin(), str.begin() + prefix.size());
+    }
+    return str;
+}
 
 }  // namespace inviwo
