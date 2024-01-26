@@ -33,6 +33,7 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/glmutils.h>
 #include <inviwo/core/util/glmcomp.h>
+#include <inviwo/core/util/glmmatext.h>
 
 #include <glm/common.hpp>
 
@@ -113,7 +114,7 @@ HistogramContainer::HistogramContainer(dvec2 dataRange, size_t bins, FirstIter b
     // a size_t type with same extent as T
     using I = typename util::same_extent<T, size_t>::type;
 
-    constexpr size_t extent = util::rank<T>::value > 0 ? util::extent<T>::value : 1;
+    constexpr size_t extent = util::flat_extent_v<T>;
 
     // check whether number of bins exceeds the data range only if it is an integral type
     if constexpr (!util::is_floating_point<typename util::value_type<T>::type>::value) {

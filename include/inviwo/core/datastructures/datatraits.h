@@ -145,7 +145,9 @@ struct DataTraits<T,
 
 // Specializations for glm mat types
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-struct DataTraits<glm::mat<C, R, T, Q>> {
+struct DataTraits<glm::mat<C, R, T, Q>,
+                  std::enable_if_t<DataFormatBase::typeToId<glm::mat<C, R, T, Q>>() ==
+                                   DataFormatId::NotSpecialized>> {
     static const std::string& classIdentifier() {
         static const std::string classId{"org.inviwo." +
                                          Defaultvalues<glm::mat<C, R, T, Q>>::getName()};
