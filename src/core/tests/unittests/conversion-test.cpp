@@ -115,11 +115,11 @@ static_assert(testMinMax<unsigned long long, unsigned int>());
 
 static_assert(testMinMax<signed char, signed short>());
 static_assert(testMinMax<signed short, signed int>());
-//static_assert(testMinMax<signed int, signed long long>());
+// static_assert(testMinMax<signed int, signed long long>());
 
 static_assert(testMinMax<signed short, signed char>());
 static_assert(testMinMax<signed int, signed short>());
-//static_assert(testMinMax<signed long long, signed int>());
+// static_assert(testMinMax<signed long long, signed int>());
 
 TEST(ConversionTests, Custom) { testmax<unsigned char, signed int>("unsigned char", "signed int"); }
 
@@ -221,7 +221,7 @@ CONV_TEST(signed_char2unsigned_long_long, signed char, unsigned long long)
 CONV_TEST(signed_char2signed_char, signed char, signed char)
 CONV_TEST(signed_char2signed_short, signed char, signed short)
 CONV_TEST(signed_char2signed_int, signed char, signed int)
-//CONV_TEST(signed_char2signed_long_long, signed char, signed long long)
+// CONV_TEST(signed_char2signed_long_long, signed char, signed long long)
 
 CONV_TEST(signed_short2float, signed short, float)
 CONV_TEST(signed_short2double, signed short, double)
@@ -232,7 +232,7 @@ CONV_TEST(signed_short2unsigned_long_long, signed short, unsigned long long)
 CONV_TEST(signed_short2signed_char, signed short, signed char)
 CONV_TEST(signed_short2signed_short, signed short, signed short)
 CONV_TEST(signed_short2signed_int, signed short, signed int)
-//CONV_TEST(signed_short2signed_long_long, signed short, signed long long)
+// CONV_TEST(signed_short2signed_long_long, signed short, signed long long)
 
 CONV_TEST(signed_int2float, signed int, float)
 CONV_TEST(signed_int2double, signed int, double)
@@ -243,7 +243,7 @@ CONV_TEST(signed_int2unsigned_long_long, signed int, unsigned long long)
 CONV_TEST(signed_int2signed_char, signed int, signed char)
 CONV_TEST(signed_int2signed_short, signed int, signed short)
 CONV_TEST(signed_int2signed_int, signed int, signed int)
-//CONV_TEST(signed_int2signed_long_long, signed int, signed long long)
+// CONV_TEST(signed_int2signed_long_long, signed int, signed long long)
 
 CONV_TEST(signed_long_long2float, signed long long, float)
 CONV_TEST(signed_long_long2double, signed long long, double)
