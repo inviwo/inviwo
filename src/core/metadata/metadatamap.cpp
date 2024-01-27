@@ -85,9 +85,7 @@ const MetaData* MetaDataMap::get(std::string_view key) const {
     return nullptr;
 }
 
-bool MetaDataMap::contains(std::string_view key) const {
-    return metaData_.contains(key);
-}
+bool MetaDataMap::contains(std::string_view key) const { return metaData_.contains(key); }
 
 bool MetaDataMap::empty() const { return metaData_.empty(); }
 

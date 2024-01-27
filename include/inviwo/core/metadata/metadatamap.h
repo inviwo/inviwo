@@ -54,7 +54,7 @@ public:
     std::vector<std::string> getKeys() const;
     MetaData* get(std::string_view key);
     const MetaData* get(std::string_view key) const;
-    
+
     bool contains(std::string_view key) const;
 
     bool empty() const;
