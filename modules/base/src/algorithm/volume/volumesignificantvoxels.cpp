@@ -37,9 +37,9 @@
 #include <algorithm>  // for count_if
 #include <cstddef>    // for size_t
 
-#include <glm/vec2.hpp>   // for operator!=, operator+
-#include <glm/vec3.hpp>   // for operator!=, operator+
-#include <glm/vec4.hpp>   // for operator!=, operator+
+#include <glm/vec2.hpp>  // for operator!=, operator+
+#include <glm/vec3.hpp>  // for operator!=, operator+
+#include <glm/vec4.hpp>  // for operator!=, operator+
 
 namespace inviwo {
 

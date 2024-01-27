@@ -67,7 +67,8 @@ void RawVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentati
 
     const auto size = glm::compMul(src.getDimensions());
     util::readBytesIntoBuffer(rawFile_, offset_, size * src.getDataFormat()->getSizeInBytes(),
-                              littleEndian_, src.getDataFormat()->getSizeInBytes(), volumeDst->getData());
+                              littleEndian_, src.getDataFormat()->getSizeInBytes(),
+                              volumeDst->getData());
 
     volumeDst->setSwizzleMask(src.getSwizzleMask());
     volumeDst->setInterpolation(src.getInterpolation());

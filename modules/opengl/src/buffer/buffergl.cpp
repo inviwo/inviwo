@@ -42,9 +42,9 @@ namespace inviwo {
 BufferGL::BufferGL(size_t size, const DataFormatBase* format, BufferUsage usage,
                    BufferTarget target, std::shared_ptr<BufferObject> data)
     : BufferRepresentation(usage, target)
-    , buffer_(data
-                  ? data
-                  : std::make_shared<BufferObject>(size * format->getSizeInBytes(), format, usage, target))
+    , buffer_(data ? data
+                   : std::make_shared<BufferObject>(size * format->getSizeInBytes(), format, usage,
+                                                    target))
     , bufferArray_(nullptr)
     , size_(size) {}
 

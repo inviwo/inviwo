@@ -47,7 +47,7 @@ std::shared_ptr<LayerGL> LayerRAM2GLConverter::createFrom(
                                          src->getInterpolation(), src->getWrapping());
 
     if (!dst) {
-        throw ConverterException(IVW_CONTEXT,"Cannot convert format '{}' from RAM to GL",
+        throw ConverterException(IVW_CONTEXT, "Cannot convert format '{}' from RAM to GL",
                                  *src->getDataFormat());
     }
 

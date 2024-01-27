@@ -29,6 +29,4 @@
 
 #include <inviwo/core/util/glm.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

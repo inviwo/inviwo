@@ -260,11 +260,10 @@ constexpr DataFormatId DataFormat<T>::id() {
 }
 template <typename T>
 constexpr DataFormatId DataFormatBase::typeToId() noexcept {
-    constexpr size_t index =
-        []<std::size_t... Is>(std::integer_sequence<std::size_t, Is...>) noexcept {
+    constexpr size_t index = []<std::size_t... Is>(
+                                 std::integer_sequence<std::size_t, Is...>) noexcept {
         return ((std::is_same_v<std::tuple_element_t<Is, DefaultDataTypes>, T> ? Is + 1 : 0) + ...);
-    }
-    (std::make_integer_sequence<std::size_t, std::tuple_size_v<DefaultDataTypes>>{});
+    }(std::make_integer_sequence<std::size_t, std::tuple_size_v<DefaultDataTypes>>{});
 
     if constexpr (index == 0) {
         return DataFormatId::NotSpecialized;

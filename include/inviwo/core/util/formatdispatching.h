@@ -134,7 +134,7 @@ template <typename Result, template <class> class Predicate, typename Callable, 
 auto dispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Result {
     using Formats = DefaultDataFormats;
     constexpr auto nFormats = std::tuple_size<Formats>::value;
-    using Functor = Result (*)(Callable&&, Args && ...);
+    using Functor = Result (*)(Callable&&, Args&&...);
     static constexpr auto table =
         detail::build_array<nFormats>([]<size_t index>() constexpr -> Functor {
             using Format = std::tuple_element_t<index, Formats>;
@@ -163,7 +163,7 @@ template <typename Result, template <class> class Predicate, typename Callable, 
 auto singleDispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Result {
     using Formats = DefaultDataFormats;
     constexpr auto nFormats = std::tuple_size_v<Formats>;
-    using Functor = Result (*)(Callable&&, Args && ...);
+    using Functor = Result (*)(Callable&&, Args&&...);
 
     static constexpr auto table =
         detail::build_array<nFormats>([]<size_t index>() constexpr -> Functor {
@@ -196,7 +196,7 @@ auto doubleDispatch(DataFormatId format1, DataFormatId format2, Callable&& obj, 
     -> Result {
     using Formats = DefaultDataFormats;
     constexpr auto nFormats = std::tuple_size_v<Formats>;
-    using Functor = Result (*)(Callable&&, Args && ...);
+    using Functor = Result (*)(Callable&&, Args&&...);
 
     static constexpr auto table = detail::build_array<nFormats>([]<size_t index1>() constexpr {
         using Format1 = std::tuple_element_t<index1, Formats>;
@@ -232,7 +232,7 @@ auto tripleDispatch(DataFormatId format1, DataFormatId format2, DataFormatId for
                     Callable&& obj, Args&&... args) -> Result {
     using Formats = DefaultDataFormats;
     constexpr auto nFormats = std::tuple_size_v<Formats>;
-    using Functor = Result (*)(Callable&&, Args && ...);
+    using Functor = Result (*)(Callable&&, Args&&...);
 
     static constexpr auto table = detail::build_array<nFormats>([]<size_t index1>() constexpr {
         using Format1 = std::tuple_element_t<index1, Formats>;
