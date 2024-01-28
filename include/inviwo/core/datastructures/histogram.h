@@ -39,6 +39,7 @@
 #include <iterator>
 #include <vector>
 #include <bitset>
+#include <array>
 
 namespace inviwo {
 enum class HistogramMode { Off, All, P99, P95, P90, Log };
