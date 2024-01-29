@@ -66,15 +66,15 @@ Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     addRepresentation(in);
 }
 
-Volume::Volume(const Volume& rhs, NoData)
+Volume::Volume(const Volume& rhs, NoData, const DataFormatBase* defaultFormat)
     : Data<Volume, VolumeRepresentation>{}
     , StructuredGridEntity<3>{rhs}
     , MetaDataOwner{rhs}
     , HistogramSupplier{}
-    , dataMap_{rhs.dataMap_}
+    , dataMap_{defaultFormat ? defaultFormat : rhs.dataMap_}
     , axes{rhs.axes}
     , defaultDimensions_{rhs.defaultDimensions_}
-    , defaultDataFormat_{rhs.defaultDataFormat_}
+    , defaultDataFormat_{defaultFormat ? defaultFormat : rhs.getDataFormat()}
     , defaultSwizzleMask_{rhs.defaultSwizzleMask_}
     , defaultInterpolation_{rhs.defaultInterpolation_}
     , defaultWrapping_{rhs.defaultWrapping_} {}

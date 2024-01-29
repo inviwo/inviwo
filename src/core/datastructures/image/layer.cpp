@@ -69,7 +69,7 @@ Layer::Layer(std::shared_ptr<LayerRepresentation> in)
 Layer::Layer(const Layer& rhs, NoData, const DataFormatBase* defaultFormat)
     : Data<Layer, LayerRepresentation>{}
     , StructuredGridEntity<2>{rhs}
-    , dataMap{defaultFormat ? defaultFormat : rhs.getDataFormat()}
+    , dataMap{defaultFormat ? defaultFormat : rhs.dataMap}
     , axes{rhs.axes}
     , defaultLayerType_{rhs.getLayerType()}
     , defaultDimensions_{rhs.getDimensions()}

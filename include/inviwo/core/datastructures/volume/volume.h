@@ -73,7 +73,15 @@ public:
                     const Wrapping3D& wrapping = wrapping3d::clampAll);
     explicit Volume(std::shared_ptr<VolumeRepresentation>);
     Volume(const Volume&) = default;
-    Volume(const Volume&, NoData);
+    /**
+     * Create a volume based on \p rhs without copying any data. If \p defaultFormat is a nullptr,
+     * the format of \p rhs is used.
+     * @param rhs             source volume providing the necessary information like dimensions,
+     *                        swizzle masks, interpolation, spatial transformations, etc.
+     * @param defaultFormat   data format of the new volume. If equal to nullptr, the format of \p
+     *                        rhs is used instead.
+     */
+    Volume(const Volume& rhs, NoData, const DataFormatBase* defaultFormat = nullptr);
     Volume& operator=(const Volume& that) = default;
     virtual Volume* clone() const override;
     virtual ~Volume();
