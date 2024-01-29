@@ -45,7 +45,14 @@ MetaData* MetaDataMap::add(std::string_view key, MetaData* metaData) {
     return metaData;
 }
 
-void MetaDataMap::remove(std::string_view key) { metaData_.erase(metaData_.find(key)); }
+bool MetaDataMap::remove(std::string_view key) {
+    if (auto it = metaData_.find(key); it != metaData_.end()) {
+        metaData_.erase(it);
+        return true;
+    } else {
+        return false;
+    }
+}
 
 void MetaDataMap::removeAll() { metaData_.clear(); }
 
@@ -77,6 +84,8 @@ const MetaData* MetaDataMap::get(std::string_view key) const {
     }
     return nullptr;
 }
+
+bool MetaDataMap::contains(std::string_view key) const { return metaData_.contains(key); }
 
 bool MetaDataMap::empty() const { return metaData_.empty(); }
 

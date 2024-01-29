@@ -32,7 +32,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/util/defaultvalues.h>
-#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmmat.h>
 
 #include <string>
 
@@ -40,56 +41,57 @@ namespace inviwo {
 
 class IVW_CORE_API MetaData : public Serializable {
 public:
-    MetaData() = default;
-    MetaData(const MetaData& rhs) = default;
-    MetaData& operator=(const MetaData& that) = default;
     virtual ~MetaData() = default;
-    virtual const std::string& getClassIdentifier() const;
+    virtual const std::string& getClassIdentifier() const = 0;
     virtual MetaData* clone() const = 0;
     virtual void serialize(Serializer& s) const = 0;
     virtual void deserialize(Deserializer& d) = 0;
     virtual bool equal(const MetaData& rhs) const = 0;
     friend bool IVW_CORE_API operator==(const MetaData& lhs, const MetaData& rhs);
     friend bool IVW_CORE_API operator!=(const MetaData& lhs, const MetaData& rhs);
+
+protected:
+    MetaData() = default;
+    MetaData(const MetaData& rhs) = default;
+    MetaData(MetaData&& rhs) = default;
+    MetaData& operator=(const MetaData& that) = default;
+    MetaData& operator=(MetaData&& that) = default;
 };
 
-template <typename T, int N, int M>
-class MetaDataPrimitiveType : public MetaData {};
-
 template <typename T>
-class MetaDataPrimitiveType<T, 0, 0> : public MetaData {
+class MetaDataType : public MetaData {
 public:
-    MetaDataPrimitiveType();
-    MetaDataPrimitiveType(T value);
-    MetaDataPrimitiveType(const MetaDataPrimitiveType& rhs);
-    MetaDataPrimitiveType& operator=(const MetaDataPrimitiveType& that);
-    virtual ~MetaDataPrimitiveType(){};
+    MetaDataType();
+    MetaDataType(T value);
+    MetaDataType(const MetaDataType& rhs) = default;
+    MetaDataType(MetaDataType&& rhs) = default;
+    MetaDataType& operator=(const MetaDataType& that) = default;
+    MetaDataType& operator=(MetaDataType&& that) = default;
+    virtual ~MetaDataType() = default;
     virtual const std::string& getClassIdentifier() const override;
-    virtual MetaDataPrimitiveType<T, 0, 0>* clone() const override;
+    virtual MetaDataType<T>* clone() const override;
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
     virtual void set(T value);
     virtual T get() const;
     virtual bool equal(const MetaData& rhs) const override;
+
     template <typename V>
-    friend bool operator==(const MetaDataPrimitiveType<V, 0, 0>& lhs,
-                           const MetaDataPrimitiveType<V, 0, 0>& rhs);
+    friend bool operator==(const MetaDataType<V>& lhs, const MetaDataType<V>& rhs);
 
 protected:
     T value_;
 };
 
 template <typename T>
-MetaDataPrimitiveType<T, 0, 0>::MetaDataPrimitiveType() : MetaData(), value_() {}
+MetaDataType<T>::MetaDataType() : MetaData(), value_() {}
 
 template <typename T>
-MetaDataPrimitiveType<T, 0, 0>::MetaDataPrimitiveType(T value) : MetaData(), value_(value) {}
+MetaDataType<T>::MetaDataType(T value) : MetaData(), value_(value) {}
 
 template <typename T>
-bool MetaDataPrimitiveType<T, 0, 0>::equal(const MetaData& rhs) const {
-    const MetaDataPrimitiveType<T, 0, 0>* tmp =
-        dynamic_cast<const MetaDataPrimitiveType<T, 0, 0>*>(&rhs);
-    if (tmp) {
+bool MetaDataType<T>::equal(const MetaData& rhs) const {
+    if (const auto* tmp = dynamic_cast<const MetaDataType<T>*>(&rhs)) {
         return tmp->value_ == value_;
     } else {
         return false;
@@ -97,319 +99,76 @@ bool MetaDataPrimitiveType<T, 0, 0>::equal(const MetaData& rhs) const {
 }
 
 template <typename T>
-bool operator==(const MetaDataPrimitiveType<T, 0, 0>& lhs,
-                const MetaDataPrimitiveType<T, 0, 0>& rhs) {
+bool operator==(const MetaDataType<T>& lhs, const MetaDataType<T>& rhs) {
     return lhs.value_ == rhs.value_;
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <typename T>
-MetaDataPrimitiveType<T, 0, 0>::MetaDataPrimitiveType(const MetaDataPrimitiveType& rhs)
-    : MetaData(rhs), value_(rhs.value_) {}
-
-template <typename T>
-MetaDataPrimitiveType<T, 0, 0>& MetaDataPrimitiveType<T, 0, 0>::operator=(
-    const MetaDataPrimitiveType<T, 0, 0>& that) {
-    if (this != &that) {
-        value_ = that.value_;
-        MetaData::operator=(that);
-    }
-    return *this;
-}
-
-template <typename T>
-const std::string& MetaDataPrimitiveType<T, 0, 0>::getClassIdentifier() const {
+const std::string& MetaDataType<T>::getClassIdentifier() const {
     static const std::string identifier = "org.inviwo." + Defaultvalues<T>::getName() + "MetaData";
     return identifier;
 }
 
 template <typename T>
-MetaDataPrimitiveType<T, 0, 0>* MetaDataPrimitiveType<T, 0, 0>::clone() const {
-    return new MetaDataPrimitiveType<T, 0, 0>(*this);
+MetaDataType<T>* MetaDataType<T>::clone() const {
+    return new MetaDataType<T>(*this);
 }
 
 template <typename T>
-void MetaDataPrimitiveType<T, 0, 0>::set(T value) {
+void MetaDataType<T>::set(T value) {
     value_ = value;
 }
 
 template <typename T>
-T MetaDataPrimitiveType<T, 0, 0>::get() const {
+T MetaDataType<T>::get() const {
     return value_;
 }
 
 template <typename T>
-void MetaDataPrimitiveType<T, 0, 0>::serialize(Serializer& s) const {
+void MetaDataType<T>::serialize(Serializer& s) const {
     s.serialize("MetaData", value_);
     s.serialize(SerializeConstants::TypeAttribute, getClassIdentifier(),
                 SerializationTarget::Attribute);
 }
 
 template <typename T>
-void MetaDataPrimitiveType<T, 0, 0>::deserialize(Deserializer& d) {
+void MetaDataType<T>::deserialize(Deserializer& d) {
     d.deserialize("MetaData", value_);
 }
 
-typedef MetaDataPrimitiveType<bool, 0, 0> BoolMetaData;
-typedef MetaDataPrimitiveType<int, 0, 0> IntMetaData;
-typedef MetaDataPrimitiveType<float, 0, 0> FloatMetaData;
-typedef MetaDataPrimitiveType<double, 0, 0> DoubleMetaData;
-typedef MetaDataPrimitiveType<std::string, 0, 0> StringMetaData;
-typedef MetaDataPrimitiveType<size_t, 0, 0> SizeMetaData;
+using BoolMetaData = MetaDataType<bool>;
+using IntMetaData = MetaDataType<int>;
+using FloatMetaData = MetaDataType<float>;
+using DoubleMetaData = MetaDataType<double>;
+using StringMetaData = MetaDataType<std::string>;
+using SizeMetaData = MetaDataType<size_t>;
 
-typedef MetaDataPrimitiveType<vec2, 0, 0> FloatVec2MetaData;
-typedef MetaDataPrimitiveType<vec3, 0, 0> FloatVec3MetaData;
-typedef MetaDataPrimitiveType<vec4, 0, 0> FloatVec4MetaData;
+using FloatVec2MetaData = MetaDataType<vec2>;
+using FloatVec3MetaData = MetaDataType<vec3>;
+using FloatVec4MetaData = MetaDataType<vec4>;
 
-typedef MetaDataPrimitiveType<dvec2, 0, 0> DoubleVec2MetaData;
-typedef MetaDataPrimitiveType<dvec3, 0, 0> DoubleVec3MetaData;
-typedef MetaDataPrimitiveType<dvec4, 0, 0> DoubleVec4MetaData;
+using DoubleVec2MetaData = MetaDataType<dvec2>;
+using DoubleVec3MetaData = MetaDataType<dvec3>;
+using DoubleVec4MetaData = MetaDataType<dvec4>;
 
-typedef MetaDataPrimitiveType<ivec2, 0, 0> IntVec2MetaData;
-typedef MetaDataPrimitiveType<ivec3, 0, 0> IntVec3MetaData;
-typedef MetaDataPrimitiveType<ivec4, 0, 0> IntVec4MetaData;
+using IntVec2MetaData = MetaDataType<ivec2>;
+using IntVec3MetaData = MetaDataType<ivec3>;
+using IntVec4MetaData = MetaDataType<ivec4>;
 
-typedef MetaDataPrimitiveType<uvec2, 0, 0> UIntVec2MetaData;
-typedef MetaDataPrimitiveType<uvec3, 0, 0> UIntVec3MetaData;
-typedef MetaDataPrimitiveType<uvec4, 0, 0> UIntVec4MetaData;
+using UIntVec2MetaData = MetaDataType<uvec2>;
+using UIntVec3MetaData = MetaDataType<uvec3>;
+using UIntVec4MetaData = MetaDataType<uvec4>;
 
-typedef MetaDataPrimitiveType<mat2, 0, 0> FloatMat2MetaData;
-typedef MetaDataPrimitiveType<mat3, 0, 0> FloatMat3MetaData;
-typedef MetaDataPrimitiveType<mat4, 0, 0> FloatMat4MetaData;
+using FloatMat2MetaData = MetaDataType<mat2>;
+using FloatMat3MetaData = MetaDataType<mat3>;
+using FloatMat4MetaData = MetaDataType<mat4>;
 
-typedef MetaDataPrimitiveType<dmat2, 0, 0> DoubleMat2MetaData;
-typedef MetaDataPrimitiveType<dmat3, 0, 0> DoubleMat3MetaData;
-typedef MetaDataPrimitiveType<dmat4, 0, 0> DoubleMat4MetaData;
+using DoubleMat2MetaData = MetaDataType<dmat2>;
+using DoubleMat3MetaData = MetaDataType<dmat3>;
+using DoubleMat4MetaData = MetaDataType<dmat4>;
 
-typedef MetaDataPrimitiveType<size2_t, 0, 0> Size2MetaData;
-typedef MetaDataPrimitiveType<size3_t, 0, 0> Size3MetaData;
-typedef MetaDataPrimitiveType<size4_t, 0, 0> Size4MetaData;
-
-// Vector specialization
-template <typename T, int N>
-class MetaDataPrimitiveType<T, N, 0> : public MetaData {
-public:
-    MetaDataPrimitiveType();
-    MetaDataPrimitiveType(T value);
-    MetaDataPrimitiveType(const MetaDataPrimitiveType& rhs);
-    MetaDataPrimitiveType& operator=(const MetaDataPrimitiveType& that);
-    virtual ~MetaDataPrimitiveType(){};
-    virtual const std::string& getClassIdentifier() const override;
-    virtual MetaDataPrimitiveType<T, N, 0>* clone() const override;
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-    virtual void set(Vector<N, T> value);
-    virtual Vector<N, T> get() const;
-    virtual bool equal(const MetaData& rhs) const override;
-    template <typename V>
-    friend bool operator==(const MetaDataPrimitiveType<V, N, 0>& lhs,
-                           const MetaDataPrimitiveType<V, 0, 0>& rhs);
-
-protected:
-    Vector<N, T> value_;
-};
-
-template <typename T, int N>
-MetaDataPrimitiveType<T, N, 0>::MetaDataPrimitiveType() : MetaData(), value_(0) {}
-
-template <typename T, int N>
-MetaDataPrimitiveType<T, N, 0>::MetaDataPrimitiveType(T value) : MetaData(), value_(value) {}
-
-template <typename T, int N>
-bool inviwo::MetaDataPrimitiveType<T, N, 0>::equal(const MetaData& rhs) const {
-    const MetaDataPrimitiveType<T, N, 0>* tmp =
-        dynamic_cast<const MetaDataPrimitiveType<T, N, 0>*>(&rhs);
-    if (tmp) {
-        return tmp->value_ == value_;
-    } else {
-        return false;
-    }
-}
-
-template <typename T, int N>
-bool operator==(const MetaDataPrimitiveType<T, N, 0>& lhs,
-                const MetaDataPrimitiveType<T, N, 0>& rhs) {
-    return lhs.value_ == rhs.value_;
-}
-
-template <typename T, int N>
-MetaDataPrimitiveType<T, N, 0>::MetaDataPrimitiveType(const MetaDataPrimitiveType& rhs)
-    : MetaData(rhs), value_(rhs.value_) {}
-
-template <typename T, int N>
-MetaDataPrimitiveType<T, N, 0>& MetaDataPrimitiveType<T, N, 0>::operator=(
-    const MetaDataPrimitiveType<T, N, 0>& that) {
-    if (this != &that) {
-        value_ = that.value_;
-        MetaData::operator=(that);
-    }
-
-    return *this;
-}
-
-template <typename T, int N>
-const std::string& MetaDataPrimitiveType<T, N, 0>::getClassIdentifier() const {
-    constexpr std::array<StaticString<1>, 4> num = {"1", "2", "3", "4"};
-    static const std::string identifier =
-        "org.inviwo.VectorMetaData<" + num[N - 1] + ", " + Defaultvalues<T>::getName() + ">";
-    return identifier;
-}
-
-template <typename T, int N>
-MetaDataPrimitiveType<T, N, 0>* MetaDataPrimitiveType<T, N, 0>::clone() const {
-    return new MetaDataPrimitiveType<T, N, 0>(*this);
-}
-
-template <typename T, int N>
-void MetaDataPrimitiveType<T, N, 0>::set(Vector<N, T> value) {
-    value_ = value;
-}
-
-template <typename T, int N>
-Vector<N, T> MetaDataPrimitiveType<T, N, 0>::get() const {
-    return value_;
-}
-
-template <typename T, int N>
-void inviwo::MetaDataPrimitiveType<T, N, 0>::serialize(Serializer& s) const {
-    s.serialize(SerializeConstants::TypeAttribute, getClassIdentifier(),
-                SerializationTarget::Attribute);
-    s.serialize("MetaData", value_);
-}
-
-template <typename T, int N>
-void inviwo::MetaDataPrimitiveType<T, N, 0>::deserialize(Deserializer& d) {
-    d.deserialize("MetaData", value_);
-}
-
-template <int N, typename T>
-class VectorMetaData : public MetaDataPrimitiveType<T, N, 0> {
-public:
-    VectorMetaData() : MetaDataPrimitiveType<T, N, 0>() {}
-    VectorMetaData(T value) : MetaDataPrimitiveType<T, N, 0>(value) {}
-    VectorMetaData(const VectorMetaData& rhs) : MetaDataPrimitiveType<T, N, 0>(rhs) {}
-    VectorMetaData& operator=(const VectorMetaData& that) {
-        if (this != &that) {
-            MetaDataPrimitiveType<T, N, 0>::operator=(that);
-        }
-        return *this;
-    }
-    virtual ~VectorMetaData(){};
-    virtual VectorMetaData<N, T>* clone() const { return new VectorMetaData<N, T>(*this); }
-};
-
-// Matrix specialization
-template <typename T, int N>
-class MetaDataPrimitiveType<T, N, N> : public MetaData {
-public:
-    MetaDataPrimitiveType();
-    MetaDataPrimitiveType(T value);
-    MetaDataPrimitiveType(const MetaDataPrimitiveType& rhs);
-    MetaDataPrimitiveType& operator=(const MetaDataPrimitiveType& that);
-    virtual ~MetaDataPrimitiveType(){};
-    virtual const std::string& getClassIdentifier() const override;
-    virtual MetaDataPrimitiveType<T, N, N>* clone() const override;
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-    virtual void set(Matrix<N, T> value);
-    virtual Matrix<N, T> get() const;
-    virtual bool equal(const MetaData& rhs) const override;
-    template <typename V>
-    friend bool operator==(const MetaDataPrimitiveType<V, N, N>& lhs,
-                           const MetaDataPrimitiveType<V, N, N>& rhs);
-
-protected:
-    Matrix<N, T> value_;
-};
-
-template <typename T, int N>
-MetaDataPrimitiveType<T, N, N>::MetaDataPrimitiveType() : MetaData(), value_(0) {}
-
-template <typename T, int N>
-MetaDataPrimitiveType<T, N, N>::MetaDataPrimitiveType(T value) : MetaData(), value_(value) {}
-
-template <typename T, int N>
-bool MetaDataPrimitiveType<T, N, N>::equal(const MetaData& rhs) const {
-    const MetaDataPrimitiveType<T, N, N>* tmp =
-        dynamic_cast<const MetaDataPrimitiveType<T, N, N>*>(&rhs);
-    if (tmp) {
-        return tmp->value_ == value_;
-    } else {
-        return false;
-    }
-}
-
-template <typename T, int N>
-bool operator==(const MetaDataPrimitiveType<T, N, N>& lhs,
-                const MetaDataPrimitiveType<T, N, N>& rhs) {
-    return lhs.value_ == rhs.value_;
-}
-
-template <typename T, int N>
-MetaDataPrimitiveType<T, N, N>::MetaDataPrimitiveType(const MetaDataPrimitiveType& rhs)
-    : MetaData(rhs), value_(rhs.value_) {}
-
-template <typename T, int N>
-MetaDataPrimitiveType<T, N, N>& MetaDataPrimitiveType<T, N, N>::operator=(
-    const MetaDataPrimitiveType<T, N, N>& that) {
-    if (this != &that) {
-        value_ = that.value_;
-        MetaData::operator=(that);
-    }
-
-    return *this;
-}
-
-template <typename T, int N>
-const std::string& MetaDataPrimitiveType<T, N, N>::getClassIdentifier() const {
-    constexpr std::array<StaticString<1>, 4> num = {"1", "2", "3", "4"};
-    static const std::string identifier =
-        "org.inviwo.MatrixMetaData<" + num[N - 1] + ", " + Defaultvalues<T>::getName() + ">";
-    return identifier;
-}
-
-template <typename T, int N>
-MetaDataPrimitiveType<T, N, N>* MetaDataPrimitiveType<T, N, N>::clone() const {
-    return new MetaDataPrimitiveType<T, N, N>(*this);
-}
-
-template <typename T, int N>
-void MetaDataPrimitiveType<T, N, N>::set(Matrix<N, T> value) {
-    value_ = value;
-}
-
-template <typename T, int N>
-Matrix<N, T> MetaDataPrimitiveType<T, N, N>::get() const {
-    return value_;
-}
-
-template <typename T, int N>
-void MetaDataPrimitiveType<T, N, N>::serialize(Serializer& s) const {
-    s.serialize(SerializeConstants::TypeAttribute, getClassIdentifier(),
-                SerializationTarget::Attribute);
-    s.serialize("MetaData", value_);
-}
-
-template <typename T, int N>
-void MetaDataPrimitiveType<T, N, N>::deserialize(Deserializer& d) {
-    d.deserialize("MetaData", value_);
-}
-
-template <int N, typename T>
-class MatrixMetaData : public MetaDataPrimitiveType<T, N, N> {
-public:
-    MatrixMetaData() : MetaDataPrimitiveType<T, N, N>() {}
-    MatrixMetaData(T value) : MetaDataPrimitiveType<T, N, N>(value) {}
-    MatrixMetaData(const MatrixMetaData& rhs) : MetaDataPrimitiveType<T, N, N>(rhs) {}
-    MatrixMetaData& operator=(const MatrixMetaData& that) {
-        if (this != &that) {
-            MetaDataPrimitiveType<T, N, N>::operator=(that);
-        }
-        return *this;
-    }
-    virtual ~MatrixMetaData(){};
-    virtual MatrixMetaData<N, T>* clone() const { return new MatrixMetaData<N, T>(*this); }
-};
-#endif
+using Size2MetaData = MetaDataType<size2_t>;
+using Size3MetaData = MetaDataType<size3_t>;
+using Size4MetaData = MetaDataType<size4_t>;
 
 }  // namespace inviwo

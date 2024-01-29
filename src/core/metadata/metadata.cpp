@@ -31,11 +31,6 @@
 
 namespace inviwo {
 
-const std::string& MetaData::getClassIdentifier() const {
-    static const std::string identifier = "MetaData";
-    return identifier;
-}
-
 bool operator==(const MetaData& lhs, const MetaData& rhs) { return lhs.equal(rhs); }
 
 bool operator!=(const MetaData& lhs, const MetaData& rhs) { return !operator==(lhs, rhs); }
