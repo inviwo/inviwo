@@ -154,6 +154,10 @@ template <length_t C, length_t R, typename T, qualifier Q>
 GLM_FUNC_QUALIFIER mat<C, R, T, Q> fract(const mat<C, R, T, Q>& a) {
     return detail::vectorize_mat(static_cast<T (*)(T)>(fract), a);
 }
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> sqrt(const mat<C, R, T, Q>& a) {
+    return detail::vectorize_mat(static_cast<T (*)(T)>(sqrt), a);
+}
 
 template <length_t C, length_t R, typename T, qualifier Q, typename Scalar>
 GLM_FUNC_QUALIFIER mat<C, R, T, Q> mod(const mat<C, R, T, Q>& a, Scalar s) {
