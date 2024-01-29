@@ -126,7 +126,7 @@ template <typename T, typename To = T>
 constexpr To range = static_cast<To>(std::numeric_limits<T>::max()) -
                      static_cast<To>(std::numeric_limits<T>::lowest());
 
-// If To is bigger then From then scale > 0 if To == From then scale == 0 else < 0
+// If To is bigger than From then scale > 0, if To == From then scale == 0, else < 0
 template <typename From, typename To>
 constexpr int scale = std::numeric_limits<std::make_unsigned_t<To>>::digits -
                       std::numeric_limits<std::make_unsigned_t<From>>::digits;
