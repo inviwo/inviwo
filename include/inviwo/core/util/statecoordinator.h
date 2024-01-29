@@ -49,9 +49,9 @@ public:
      * Construct a StateCoordinator with a initial value, a notification functor, and a update
      * functor.
      */
-    StateCoordinator(const T& value, std::function<void(const T&)> notifyer,
+    StateCoordinator(const T& value, std::function<void(const T&)> notifier,
                      std::function<T()> updater)
-        : updater_{std::move(updater)}, notifyer_{std::move(notifyer)}, value_{value} {}
+        : updater_{std::move(updater)}, notifier_{std::move(notifier)}, value_{value} {}
 
     /**
      * Trigger an update. Will call the updater and if the value changes call the notifier.
@@ -61,7 +61,7 @@ public:
         auto value = updater_();
         if (value != value_) {
             value_ = value;
-            notifyer_(value_);
+            notifier_(value_);
         }
     }
 
@@ -75,7 +75,7 @@ public:
     /**
      * Set the notifier functor
      */
-    void setNotify(std::function<void(const T&)> notifier) { notifyer_ = std::move(notifier); }
+    void setNotify(std::function<void(const T&)> notifier) { notifier_ = std::move(notifier); }
 
     /**
      *	Implicit conversion to value.
@@ -89,7 +89,7 @@ public:
 
 private:
     std::function<T()> updater_;
-    std::function<void(const T&)> notifyer_;
+    std::function<void(const T&)> notifier_;
     T value_;
 };
 
