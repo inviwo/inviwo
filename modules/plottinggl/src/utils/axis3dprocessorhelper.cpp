@@ -31,7 +31,7 @@
 
 #include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/network/networklock.h>
-#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/glm.h>
 #include <modules/opengl/texture/textureutils.h>
@@ -365,8 +365,10 @@ void Axis3DProcessorHelper::adjustRanges(const SpatialEntity* entity) {
         }
     }
 
-    if (auto volume = dynamic_cast<const Volume*>(entity)) {
-        volDims = dvec3(volume->getDimensions());
+    if (auto grid2d = dynamic_cast<const StructuredGridEntity<2>*>(entity)) {
+        volDims = dvec3(grid2d->getDimensions(), 0.0);
+    } else if (auto grid3d = dynamic_cast<const StructuredGridEntity<3>*>(entity)) {
+        volDims = dvec3(grid3d->getDimensions());
     }
 
     util::KeepTrueWhileInScope b(&propertyUpdate_);

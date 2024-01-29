@@ -31,14 +31,12 @@
 
 #include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/network/networklock.h>
-#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/glm.h>
 #include <modules/opengl/texture/textureutils.h>
 
 #include <fmt/core.h>
-
-#pragma optimize("", off)
 
 namespace inviwo {
 
@@ -325,8 +323,10 @@ void Axis2DProcessorHelper::adjustRanges(const SpatialEntity* entity) {
         }
     }
 
-    if (auto layer = dynamic_cast<const Layer*>(entity)) {
-        layerDims = dvec2(layer->getDimensions());
+    if (auto grid2d = dynamic_cast<const StructuredGridEntity<2>*>(entity)) {
+        layerDims = dvec2(grid2d->getDimensions());
+    } else if (auto grid3d = dynamic_cast<const StructuredGridEntity<3>*>(entity)) {
+        layerDims = dvec2(grid3d->getDimensions());
     }
 
     util::KeepTrueWhileInScope b(&propertyUpdate_);

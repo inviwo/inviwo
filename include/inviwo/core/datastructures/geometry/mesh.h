@@ -82,7 +82,7 @@ public:
     Mesh(const Mesh& rhs, NoData);
 
     Mesh& operator=(const Mesh& that);
-    virtual Mesh* clone() const;
+    virtual Mesh* clone() const override;
 
     virtual ~Mesh() = default;
     virtual Document getInfo() const;
