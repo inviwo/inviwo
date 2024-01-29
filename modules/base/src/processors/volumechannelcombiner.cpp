@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2023-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,49 +27,52 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/layercombiner.h>
+#include <modules/base/processors/volumechannelcombiner.h>
 
-#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
 #include <modules/base/algorithm/combinechannels.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo LayerCombiner::processorInfo_{
-    "org.inviwo.LayerCombiner",  // Class identifier
-    "Layer Combiner",            // Display name
-    "Layer Operation",           // Category
-    CodeState::Experimental,     // Code state
-    Tags::CPU | Tag{"Layer"},    // Tags
+const ProcessorInfo VolumeChannelCombiner::processorInfo_{
+    "org.inviwo.VolumeChannelCombiner",  // Class identifier
+    "Volume Channel Combiner",           // Display name
+    "Volume Operation",                  // Category
+    CodeState::Experimental,             // Code state
+    Tags::CPU | Tag{"Volume"},           // Tags
     R"(
-Combines multiple layers into a single layer with multiple channels. All layers must 
+Combines multiple volume channels into a single volume with multiple channels. All volumes must 
 share the same dimensions. The resulting data format depends on the common data type
 and precision of the inputs.
 )"_unindentHelp,
 };
 
-const ProcessorInfo LayerCombiner::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo VolumeChannelCombiner::getProcessorInfo() const { return processorInfo_; }
 
-LayerCombiner::LayerCombiner()
+namespace {
+const std::vector<OptionPropertyIntOption> channelsList = {{"channel1", "Channel 1", 0},
+                                                           {"channel2", "Channel 2", 1},
+                                                           {"channel3", "Channel 3", 2},
+                                                           {"channel4", "Channel 4", 3}};
+}
+
+VolumeChannelCombiner::VolumeChannelCombiner()
     : Processor{}
-    , source_{LayerInport{"source1", "Input for the first channel (red)"_help},
-              LayerInport{"source2", "Input for the second channel (green, optional)"_help},
-              LayerInport{"source3", "Input for the third channel (blue, optional)"_help},
-              LayerInport{"source4", "Input for the fourth channel (alpha, optional)"_help}}
-    , outport_{"outport", "Resulting Layer with combined channels"_help}
+    , source_{VolumeInport{"source1", "Input for the first channel (red)"_help},
+              VolumeInport{"source2", "Input for the second channel (green, optional)"_help},
+              VolumeInport{"source3", "Input for the third channel (blue, optional)"_help},
+              VolumeInport{"source4", "Input for the fourth channel (alpha, optional)"_help}}
+    , outport_{"outport", "Resulting Volume with combined channels"_help}
 
     , channel_{OptionPropertyInt{"dest1", "Channel 1 Out",
-                                 "Selected channel of the first input"_help,
-                                 util::enumeratedOptions("Channel", 4)},
+                                 "Selected channel of the first input"_help, channelsList},
                OptionPropertyInt{"dest2", "Channel 2 Out",
-                                 "Selected channel of the second input"_help,
-                                 util::enumeratedOptions("Channel", 4)},
+                                 "Selected channel of the second input"_help, channelsList},
                OptionPropertyInt{"dest3", "Channel 3 Out",
-                                 "Selected channel of the third input"_help,
-                                 util::enumeratedOptions("Channel", 4)},
+                                 "Selected channel of the third input"_help, channelsList},
                OptionPropertyInt{"dest4", "Channel 4 Out",
-                                 "Selected channel of the fourth input"_help,
-                                 util::enumeratedOptions("Channel", 4)}}
+                                 "Selected channel of the fourth input"_help, channelsList}}
     , dataRange_{"dataRange", "Data Range", source_[0], true} {
 
     addPorts(source_[0], source_[1], source_[2], source_[3], outport_);
@@ -83,13 +86,13 @@ LayerCombiner::LayerCombiner()
     addProperty(dataRange_);
 }
 
-void LayerCombiner::process() {
-    auto layer = util::combineChannels<Layer, LayerRAM>(
+void VolumeChannelCombiner::process() {
+    auto volume = util::combineChannels<Volume, VolumeRAM>(
         source_, {{channel_[0], channel_[1], channel_[2], channel_[3]}});
-    layer->dataMap.dataRange = dataRange_.getDataRange();
-    layer->dataMap.valueRange = dataRange_.getValueRange();
+    volume->dataMap_.dataRange = dataRange_.getDataRange();
+    volume->dataMap_.valueRange = dataRange_.getValueRange();
 
-    outport_.setData(layer);
+    outport_.setData(volume);
 }
 
 }  // namespace inviwo
