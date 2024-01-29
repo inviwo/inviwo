@@ -145,6 +145,13 @@ std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(
     return std::unique_ptr<std::vector<unsigned char>>();
 }
 
+const Axis* Layer::getAxis(size_t index) const {
+    if (index >= 2) {
+        return nullptr;
+    }
+    return &axes[index];
+}
+
 template class IVW_CORE_TMPL_INST DataReaderType<Layer>;
 template class IVW_CORE_TMPL_INST DataWriterType<Layer>;
 

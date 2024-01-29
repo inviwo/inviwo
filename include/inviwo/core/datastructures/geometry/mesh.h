@@ -82,7 +82,7 @@ public:
     Mesh(const Mesh& rhs, NoData);
 
     Mesh& operator=(const Mesh& that);
-    virtual Mesh* clone() const;
+    virtual Mesh* clone() const override;
 
     virtual ~Mesh() = default;
     virtual Document getInfo() const;
@@ -272,9 +272,16 @@ public:
      */
     void append(const Mesh& mesh);
 
+    /**
+     * @copydoc SpatialEntity::getAxis
+     */
+    virtual const Axis* getAxis(size_t index) const override;
+
     static uvec3 colorCode;
     static const std::string classIdentifier;
     static const std::string dataName;
+
+    std::array<Axis, 3> axes;
 
 protected:
     BufferVector buffers_;

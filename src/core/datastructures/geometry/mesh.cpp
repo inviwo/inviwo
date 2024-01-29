@@ -29,6 +29,7 @@
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/exception.h>
 
 #include <fmt/format.h>
 #include <ostream>
@@ -37,10 +38,11 @@ namespace inviwo {
 
 Mesh::Mesh(DrawType dt, ConnectivityType ct) : Mesh{MeshInfo{dt, ct}} {}
 
-Mesh::Mesh(Mesh::MeshInfo meshInfo)
+Mesh::Mesh(MeshInfo meshInfo)
     : DataGroup<Mesh, MeshRepresentation>()
     , SpatialEntity{}
     , MetaDataOwner{}
+    , axes{util::defaultAxes<3>()}
     , meshInfo_{meshInfo} {}
 
 Mesh::Mesh(const BufferVector& buffers, const IndexVector& indices)
@@ -53,6 +55,7 @@ Mesh::Mesh(const Mesh& rhs)
     : DataGroup<Mesh, MeshRepresentation>(rhs)
     , SpatialEntity(rhs)
     , MetaDataOwner(rhs)
+    , axes{rhs.axes}
     , meshInfo_(rhs.meshInfo_) {
     for (const auto& elem : rhs.buffers_) {
         buffers_.emplace_back(elem.first, std::shared_ptr<BufferBase>(elem.second->clone()));
@@ -66,6 +69,7 @@ Mesh::Mesh(const Mesh& rhs, NoData)
     : DataGroup<Mesh, MeshRepresentation>(rhs)
     , SpatialEntity(rhs)
     , MetaDataOwner(rhs)
+    , axes{rhs.axes}
     , meshInfo_(rhs.meshInfo_) {}
 
 Mesh& Mesh::operator=(const Mesh& that) {
@@ -73,6 +77,7 @@ Mesh& Mesh::operator=(const Mesh& that) {
         DataGroup<Mesh, MeshRepresentation>::operator=(that);
         SpatialEntity::operator=(that);
         MetaDataOwner::operator=(that);
+        axes = that.axes;
 
         BufferVector buffers;
         IndexVector indices;
@@ -365,6 +370,13 @@ void Mesh::append(const Mesh& mesh) {
     }
 }
 
+const Axis* Mesh::getAxis(size_t index) const {
+    if (index >= 3) {
+        return nullptr;
+    }
+    return &axes[index];
+}
+
 uvec3 Mesh::colorCode = uvec3(188, 188, 101);
 const std::string Mesh::classIdentifier = "org.inviwo.Mesh";
 const std::string Mesh::dataName = "Mesh";
@@ -378,6 +390,10 @@ Document Mesh::getInfo() const {
     doc.append("b", "Mesh", {{"style", "color:white;"}});
 
     utildoc::TableBuilder tb(doc.handle(), P::end());
+
+    tb(H("Axis 1"), fmt::format("{}{: [}", axes[0].name, axes[0].unit));
+    tb(H("Axis 2"), fmt::format("{}{: [}", axes[1].name, axes[1].unit));
+    tb(H("Axis 3"), fmt::format("{}{: [}", axes[2].name, axes[2].unit));
 
     tb(H(std::string("Buffers (") + std::to_string(buffers_.size()) + ")"));
 

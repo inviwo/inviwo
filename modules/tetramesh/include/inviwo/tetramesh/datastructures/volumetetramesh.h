@@ -79,6 +79,11 @@ public:
      */
     virtual dvec2 getDataRange() const override;
 
+    /**
+     * @copydoc SpatialEntity::getAxis
+     */
+    virtual const Axis* getAxis(size_t index) const override;
+
 private:
     std::shared_ptr<const Volume> volume_;
     int channel_;

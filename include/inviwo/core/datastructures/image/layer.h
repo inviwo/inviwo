@@ -116,6 +116,12 @@ public:
     std::unique_ptr<std::vector<unsigned char>> getAsCodedBuffer(
         const std::string& fileExtension) const;
 
+    /**
+     * returns the axis information corresponding to \p index
+     * @throws RangeException if \p index is out of bounds, i.e. \p index >= 2
+     */
+    virtual const Axis* getAxis(size_t index) const override;
+
     DataMapper dataMap;
     std::array<Axis, 2> axes;
 

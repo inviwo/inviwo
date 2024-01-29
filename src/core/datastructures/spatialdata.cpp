@@ -32,26 +32,16 @@
 
 namespace inviwo {
 
-SpatialEntity::SpatialEntity()
-    : transformer_(nullptr), cameraTransformer_(nullptr), modelMatrix_(1.0f), worldMatrix_(1.0f) {}
-
-SpatialEntity::SpatialEntity(const SpatialEntity& rhs)
-    : transformer_(nullptr)
-    , cameraTransformer_(nullptr)
-    , modelMatrix_(rhs.modelMatrix_)
-    , worldMatrix_(rhs.worldMatrix_) {}
+SpatialEntity::SpatialEntity() : SpatialEntity{mat4(1.0f), mat4(1.0f)} {}
 
 SpatialEntity::SpatialEntity(const glm::mat4& modelMatrix)
-    : transformer_(nullptr)
-    , cameraTransformer_(nullptr)
-    , modelMatrix_(modelMatrix)
-    , worldMatrix_(1.0f) {}
+    : SpatialEntity{modelMatrix, mat4(1.0f)} {}
 
 SpatialEntity::SpatialEntity(const glm::mat4& modelMatrix, const glm::mat4& worldMatrix)
-    : transformer_(nullptr)
-    , cameraTransformer_(nullptr)
-    , modelMatrix_(modelMatrix)
-    , worldMatrix_(worldMatrix) {}
+    : cameraTransformer_(nullptr), modelMatrix_(modelMatrix), worldMatrix_(worldMatrix) {}
+
+SpatialEntity::SpatialEntity(const SpatialEntity& rhs)
+    : modelMatrix_(rhs.modelMatrix_), worldMatrix_(rhs.worldMatrix_) {}
 
 SpatialEntity& SpatialEntity::operator=(const SpatialEntity& that) {
     if (this != &that) {
@@ -61,10 +51,7 @@ SpatialEntity& SpatialEntity::operator=(const SpatialEntity& that) {
     return *this;
 }
 
-SpatialEntity::~SpatialEntity() {
-    delete transformer_;
-    delete cameraTransformer_;
-}
+SpatialEntity::~SpatialEntity() = default;
 
 glm::vec3 SpatialEntity::getOffset() const {
     glm::vec3 offset(0.0f);
@@ -108,15 +95,20 @@ glm::mat4 SpatialEntity::getWorldMatrix() const { return worldMatrix_; }
 void SpatialEntity::setWorldMatrix(const glm::mat4& worldMatrix) { worldMatrix_ = worldMatrix; }
 
 const SpatialCoordinateTransformer& SpatialEntity::getCoordinateTransformer() const {
-    if (!transformer_) transformer_ = new SpatialCoordinateTransformerImpl(*this);
+    if (!transformer_) {
+        transformer_ = std::make_unique<SpatialCoordinateTransformerImpl>(*this);
+    }
     return *transformer_;
 }
 
-const SpatialCameraCoordinateTransformer& inviwo::SpatialEntity::getCoordinateTransformer(
+const SpatialCameraCoordinateTransformer& SpatialEntity::getCoordinateTransformer(
     const Camera& camera) const {
-    if (!cameraTransformer_)
-        cameraTransformer_ = new SpatialCameraCoordinateTransformerImpl(*this, camera);
-    static_cast<SpatialCameraCoordinateTransformerImpl*>(cameraTransformer_)->setCamera(camera);
+    if (!cameraTransformer_) {
+        cameraTransformer_ =
+            std::make_unique<SpatialCameraCoordinateTransformerImpl>(*this, camera);
+    }
+    static_cast<SpatialCameraCoordinateTransformerImpl*>(cameraTransformer_.get())
+        ->setCamera(camera);
     return *cameraTransformer_;
 }
 

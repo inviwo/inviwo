@@ -82,6 +82,8 @@ struct IVW_MODULE_MESHRENDERINGGL_API CompositeTransform : public SpatialEntity 
     CompositeTransform(const mat4& modelMatrix, const mat4& worldMatrix)
         : SpatialEntity(modelMatrix, worldMatrix) {}
     virtual SpatialEntity* clone() const override { return new CompositeTransform(*this); }
+
+    virtual const Axis* getAxis(size_t) const override { return nullptr; }
 };
 
 }  // namespace inviwo

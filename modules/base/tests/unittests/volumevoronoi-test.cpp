@@ -51,6 +51,8 @@ public:
     virtual Entity* clone() const override { return new Entity(*this); }
     virtual size3_t getDimensions() const override { return dimensions; }
 
+    virtual const Axis* getAxis(size_t) const override { return nullptr; }
+
     size3_t dimensions;
 };
 

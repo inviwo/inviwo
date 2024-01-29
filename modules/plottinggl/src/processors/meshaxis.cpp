@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,63 +27,40 @@
  *
  *********************************************************************************/
 
-#include <modules/plottinggl/processors/volumeaxis.h>
+#include <modules/plottinggl/processors/meshaxis.h>
 
 #include <inviwo/core/algorithm/boundingbox.h>
-#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/util/foreacharg.h>
 #include <modules/opengl/texture/textureutils.h>
-
-#include <fmt/core.h>
 
 namespace inviwo {
 
 namespace plot {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo VolumeAxis::processorInfo_{
-    "org.inviwo.VolumeAxis",     // Class identifier
-    "Volume Axis",               // Display name
+const ProcessorInfo MeshAxis::processorInfo_{
+    "org.inviwo.MeshAxis",       // Class identifier
+    "Mesh Axis",                 // Display name
     "Plotting",                  // Category
     CodeState::Stable,           // Code state
     Tags::GL | Tag{"Plotting"},  // Tags
-    "Renders x, y, and z axes next to the input volume."_help};
+    "Renders x, y, and z axes next to the input mesh."_help};
 
-const ProcessorInfo VolumeAxis::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo MeshAxis::getProcessorInfo() const { return processorInfo_; }
 
-VolumeAxis::VolumeAxis()
+MeshAxis::MeshAxis()
     : Processor()
-    , inport_{"volume", "Input volume"_help}
+    , inport_{"mesh", "Input mesh"_help}
     , imageInport_{"imageInport", "Background image (optional)"_help}
     , outport_{"outport",
-               "Output image containing the rendered volume axes and the optional input image"_help}
-    , captionType_("captionType", "Caption Type",
-                   {{"string", "Caption String", CaptionType::String},
-                    {"data", "Caption from Data", CaptionType::Data},
-                    {"custom", "Custom Format (example '{n}{u: [}')", CaptionType::Custom}},
-                   0)
-    , customCaption_("customCaption", "Custom Caption", "{n}{u: [}")
+               "Output image containing the rendered mesh axes and the optional input image"_help}
     , axisHelper_{util::boundingBox(inport_)} {
 
     imageInport_.setOptional(true);
 
     addPorts(inport_, imageInport_, outport_);
 
-    util::for_each_in_tuple(
-        [&](Property& p) {
-            if (p.getIdentifier() == "visibility") {
-                addProperties(captionType_, customCaption_);
-            }
-            addProperty(p);
-        },
-        axisHelper_.props());
-
-    captionType_.onChange([this]() { updateCaptions(); });
-    customCaption_.onChange([this]() {
-        if (captionType_.get() == CaptionType::Custom) {
-            updateCaptions();
-        }
-    });
+    util::for_each_in_tuple([&](Property& p) { addProperty(p); }, axisHelper_.props());
 
     // adjust scaling factor for label offsets and tick lengths
     axisHelper_.offsetScaling_.onChange(
@@ -93,7 +70,6 @@ VolumeAxis::VolumeAxis()
     inport_.onChange([&]() {
         axisHelper_.adjustScalingFactor(inport_.getData().get());
         axisHelper_.adjustRanges(inport_.getData().get());
-        updateCaptions();
     });
     // sync ranges when custom range is enabled or disabled
     axisHelper_.rangeMode_.onChange(
@@ -102,7 +78,7 @@ VolumeAxis::VolumeAxis()
     setAllPropertiesCurrentStateAsDefault();
 }
 
-void VolumeAxis::process() {
+void MeshAxis::process() {
     if (imageInport_.isReady()) {
         utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
     } else {
@@ -112,37 +88,6 @@ void VolumeAxis::process() {
     axisHelper_.renderAxes(outport_.getDimensions(), *inport_.getData());
 
     utilgl::deactivateCurrentTarget();
-}
-
-void VolumeAxis::updateCaptions() {
-    switch (captionType_.get()) {
-        case CaptionType::Data:
-            if (auto volume = inport_.getData()) {
-                axisHelper_.xAxis_.captionSettings_.title_.set(
-                    fmt::format("{}{: [}", volume->axes[0].name, volume->axes[0].unit));
-                axisHelper_.yAxis_.captionSettings_.title_.set(
-                    fmt::format("{}{: [}", volume->axes[1].name, volume->axes[1].unit));
-                axisHelper_.zAxis_.captionSettings_.title_.set(
-                    fmt::format("{}{: [}", volume->axes[2].name, volume->axes[2].unit));
-            }
-            break;
-        case CaptionType::Custom:
-            if (auto volume = inport_.getData()) {
-                axisHelper_.xAxis_.captionSettings_.title_.set(fmt::format(
-                    fmt::runtime(customCaption_.get()), fmt::arg("n", volume->axes[0].name),
-                    fmt::arg("u", volume->axes[0].unit)));
-                axisHelper_.yAxis_.captionSettings_.title_.set(fmt::format(
-                    fmt::runtime(customCaption_.get()), fmt::arg("n", volume->axes[1].name),
-                    fmt::arg("u", volume->axes[1].unit)));
-                axisHelper_.zAxis_.captionSettings_.title_.set(fmt::format(
-                    fmt::runtime(customCaption_.get()), fmt::arg("n", volume->axes[2].name),
-                    fmt::arg("u", volume->axes[2].unit)));
-            }
-            break;
-        case CaptionType::String:
-        default:
-            break;
-    }
 }
 
 }  // namespace plot
