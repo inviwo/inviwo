@@ -127,6 +127,7 @@
 #include <modules/base/processors/volumebasistransformer.h>                  // for BasisTransform
 #include <modules/base/processors/volumeboundaryplanes.h>                    // for VolumeBounda...
 #include <modules/base/processors/volumeboundingbox.h>                       // for VolumeBoundi...
+#include <modules/base/processors/volumechannelcombiner.h>
 #include <modules/base/processors/volumeconverter.h>                         // for VolumeConverter
 #include <modules/base/processors/volumecreator.h>                           // for VolumeCreator
 #include <modules/base/processors/volumecurlcpuprocessor.h>                  // for VolumeCurlCP...
@@ -241,6 +242,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VectorToBuffer<vec2>>();
     registerProcessor<VectorToBuffer<vec3>>();
     registerProcessor<VectorToBuffer<vec4>>();
+    registerProcessor<VolumeChannelCombiner>();
     registerProcessor<VolumeConverter>();
     registerProcessor<WorldTransformMeshDeprecated>();
     registerProcessor<WorldTransformVolumeDeprecated>();
