@@ -132,24 +132,23 @@ std::shared_ptr<Mesh> createCubeProxyGeometry(const std::shared_ptr<const Volume
 }
 
 std::shared_ptr<Mesh> createCubeProxyGeometry(const std::shared_ptr<const Volume>& volume,
-                                              const size3_t& clipMin, const size3_t& clipMax,
+                                              const ivec3& clipMin, const uvec3& clipExtent,
                                               meshutil::IncludeNormals normals) {
     if (!volume) {
         // the volume is required to figure out the clipped texture coordinates
         return createCubeProxyGeometry(volume, normals);
     }
 
-    const size3_t volDims = util::getVolumeDimensions(volume);
-    const vec3 extent(glm::max(vec3(volDims) - 1.0f, 1.0f));
+    const ivec3 volDims{util::getVolumeDimensions(volume)};
+    const vec3 volumeExtentInverse{1.0f / glm::max(vec3{volDims}, vec3{1.0f})};
 
-    // sanitize clip min/max args with respect to volume dimensions
-    const size3_t min = glm::min(clipMin, volDims);
-    const size3_t max = glm::min(clipMax, volDims);
+    ivec3 endPoint{clipMin + ivec3{clipExtent}};
+    // clamp positions to volume
+    ivec3 origin{glm::clamp(clipMin, ivec3{0}, volDims)};
+    endPoint = glm::clamp(endPoint, ivec3{0}, volDims);
 
-    vec3 clipOrigin(vec3(min) / extent);
-    vec3 clipExtent(vec3(max - min) / extent);
-
-    return createCubeProxyGeometry(volume, clipOrigin, clipExtent, normals);
+    return createCubeProxyGeometry(volume, vec3{origin} * volumeExtentInverse,
+                                   vec3{endPoint - origin} * volumeExtentInverse, normals);
 }
 
 }  // namespace algorithm

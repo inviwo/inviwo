@@ -95,13 +95,13 @@ CubeProxyGeometry::CubeProxyGeometry()
         // Update to the new dimensions.
         const auto dims = util::getVolumeDimensions(volume);
 
-        if (dims !=
-            size3_t(clipX_.getRangeMax() - 1, clipY_.getRangeMax() - 1, clipZ_.getRangeMax() - 1)) {
+        if (dims != size3_t(clipX_.getRangeMax(), clipY_.getRangeMax(), clipZ_.getRangeMax())) {
             NetworkLock lock(this);
 
-            clipX_.setRangeNormalized(ivec2(0, dims.x - 1));
-            clipY_.setRangeNormalized(ivec2(0, dims.y - 1));
-            clipZ_.setRangeNormalized(ivec2(0, dims.z - 1));
+            // set the clip ranges to [0,dims)
+            clipX_.setRangeNormalized(ivec2(0, dims.x));
+            clipY_.setRangeNormalized(ivec2(0, dims.y));
+            clipZ_.setRangeNormalized(ivec2(0, dims.z));
 
             // set the new dimensions to default if we were to press reset
             clipX_.setCurrentStateAsDefault();
@@ -117,9 +117,11 @@ void CubeProxyGeometry::process() {
     auto normals = addFaceNormals_ ? meshutil::IncludeNormals::Yes : meshutil::IncludeNormals::No;
     std::shared_ptr<Mesh> mesh;
     if (clippingEnabled_.get()) {
-        const size3_t clipMin(clipX_->x, clipY_->x, clipZ_->x);
-        const size3_t clipMax(clipX_->y, clipY_->y, clipZ_->y);
-        mesh = algorithm::createCubeProxyGeometry(inport_.getData(), clipMin, clipMax, normals);
+        const ivec3 clipMin{clipX_->x, clipY_->x, clipZ_->x};
+        const ivec3 clipMax{clipX_->y, clipY_->y, clipZ_->y};
+
+        const uvec3 clipExtent{glm::max(clipMax - clipMin, ivec3{0})};
+        mesh = algorithm::createCubeProxyGeometry(inport_.getData(), clipMin, clipExtent, normals);
     } else {
         mesh = algorithm::createCubeProxyGeometry(inport_.getData(), normals);
     }
