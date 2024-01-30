@@ -326,7 +326,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
 
-int BaseModule::getVersion() const { return 5; }
+int BaseModule::getVersion() const { return 6; }
 
 std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -485,6 +485,16 @@ bool BaseModule::Converter::convert(TxElement* root) {
             res |=
                 xml::changeAttribute(root, {xml::Kind::processor("org.inviwo.VolumeSlice")}, "type",
                                      "org.inviwo.VolumeSlice", "org.inviwo.VolumeSliceExtractor");
+
+            [[fallthrough]];
+        }
+        case 5: {
+            res |= xml::changeAttribute(root,
+                                        {{xml::Kind::processor("org.inviwo.VolumeSubset"),
+                                          xml::Kind::property("org.inviwo.Size_tMinMaxProperty")}},
+                                        "type", "org.inviwo.Size_tMinMaxProperty",
+                                        "org.inviwo.IntMinMaxProperty");
+
             return res;
         }
 
