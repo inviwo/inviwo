@@ -79,9 +79,12 @@ VolumeSubset::VolumeSubset()
     , outport_("outputVolume", "Output volume"_help)
     , enabled_("enabled", "Enable Operation", true)
     , adjustBasisAndOffset_("adjustBasisAndOffset", "Adjust Basis and Offset", true)
-    , rangeX_("rangeX", "X Slices", "Range X axis"_help, 0, 256, 0, 256, 1, 1)
-    , rangeY_("rangeY", "Y Slices", "Range Y axis"_help, 0, 256, 0, 256, 1, 1)
-    , rangeZ_("rangeZ", "Z Slices", "Range Z axis"_help, 0, 256, 0, 256, 1, 1)
+    , rangeX_("rangeX", "X Slices", "Open range [min,max) for the subset of the x axis"_help, 0,
+              256, 0, 256, 1, 1)
+    , rangeY_("rangeY", "Y Slices", "Open range [min,max) for the subset of the y axis"_help, 0,
+              256, 0, 256, 1, 1)
+    , rangeZ_("rangeZ", "Z Slices", "Open range [min,max) for the subset of the z axis"_help, 0,
+              256, 0, 256, 1, 1)
     , dims_{1, 1, 1} {
 
     addPorts(inport_, outport_);

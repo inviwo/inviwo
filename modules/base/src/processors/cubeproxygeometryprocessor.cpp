@@ -77,9 +77,12 @@ CubeProxyGeometry::CubeProxyGeometry()
                       "Face normals are included in the mesh"_help, true)
     , clippingEnabled_("clippingEnabled", "Enable Clipping",
                        "Enable axis aligned clipping of the mesh"_help, true)
-    , clipX_("clipX", "Clip X Slices", "Clip X axis"_help, 0, 256, 0, 256, 1, 1)
-    , clipY_("clipY", "Clip Y Slices", "Clip Y axis"_help, 0, 256, 0, 256, 1, 1)
-    , clipZ_("clipZ", "Clip Z Slices", "Clip Z axis"_help, 0, 256, 0, 256, 1, 1) {
+    , clipX_("clipX", "Clip X Slices", "Open range [min,max) for clipping the x axis"_help, 0, 256,
+             0, 256, 1, 1)
+    , clipY_("clipY", "Clip Y Slices", "Open range [min,max) for clipping the y axis"_help, 0, 256,
+             0, 256, 1, 1)
+    , clipZ_("clipZ", "Clip Z Slices", "Open range [min,max) for clipping the z axis"_help, 0, 256,
+             0, 256, 1, 1) {
 
     addPorts(inport_, outport_);
     addProperties(addFaceNormals_, clippingEnabled_, clipX_, clipY_, clipZ_);
