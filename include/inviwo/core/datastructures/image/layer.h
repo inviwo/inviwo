@@ -40,6 +40,8 @@
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
 
+#include <optional>
+
 namespace inviwo {
 
 class DataFormatBase;
@@ -59,13 +61,23 @@ public:
     Layer(const Layer&) = default;
     /**
      * Create a layer based on \p rhs without copying any data. If \p defaultFormat is a nullptr,
-     * the format of \p rhs is used.
+     * the format of \p rhs is used. This applies to all std::optional arguments, too. If not
+     * supplied, the corresponding value is taken from \p rhs.
      * @param rhs             source layer providing the necessary information like dimensions,
      *                        swizzle masks, interpolation, spatial transformations, etc.
+     * @param dims            custom dimension of the new layer, otherwise rhs.getDimensions()
      * @param defaultFormat   data format of the new layer. If equal to nullptr, the format of \p
      *                        rhs is used instead.
+     * @param defaultSwizzleMask   custom swizzle mask, otherwise rhs.getSwizzleMask()
+     * @param interpolation   custom interpolation, otherwise rhs.getInterpolation()
+     * @param wrapping        custom texture wrapping, otherwise rhs.getWrapping()
+
      */
-    Layer(const Layer& rhs, NoData, const DataFormatBase* defaultFormat = nullptr);
+    Layer(const Layer& rhs, NoData, std::optional<size2_t> dims = {},
+          const DataFormatBase* defaultFormat = nullptr, std::optional<LayerType> type = {},
+          std::optional<SwizzleMask> defaultSwizzleMask = {},
+          std::optional<InterpolationType> interpolation = {},
+          std::optional<Wrapping2D> wrapping = {});
     Layer& operator=(const Layer& that) = default;
     virtual Layer* clone() const override;
     virtual ~Layer() = default;

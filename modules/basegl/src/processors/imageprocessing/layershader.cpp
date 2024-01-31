@@ -242,7 +242,7 @@ void LayerShader::process() {
         reattach = true;
         internalInvalid_ = false;
 
-        layer_ = std::make_shared<Layer>(*inport_.getData(), noData, format);
+        layer_ = std::make_shared<Layer>(*inport_.getData(), noData, std::nullopt, format);
         layer_->setSwizzleMask(detail::swizzleMask(format->getComponents()));
 
         outport_.setData(layer_);

@@ -66,18 +66,20 @@ Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     addRepresentation(in);
 }
 
-Volume::Volume(const Volume& rhs, NoData, const DataFormatBase* defaultFormat)
+Volume::Volume(const Volume& rhs, NoData, std::optional<size3_t> dims,
+               const DataFormatBase* defaultFormat, std::optional<SwizzleMask> defaultSwizzleMask,
+               std::optional<InterpolationType> interpolation, std::optional<Wrapping3D> wrapping)
     : Data<Volume, VolumeRepresentation>{}
     , StructuredGridEntity<3>{rhs}
     , MetaDataOwner{rhs}
     , HistogramSupplier{}
     , dataMap_{defaultFormat ? defaultFormat : rhs.dataMap_}
     , axes{rhs.axes}
-    , defaultDimensions_{rhs.defaultDimensions_}
+    , defaultDimensions_{dims.value_or(rhs.defaultDimensions_)}
     , defaultDataFormat_{defaultFormat ? defaultFormat : rhs.getDataFormat()}
-    , defaultSwizzleMask_{rhs.defaultSwizzleMask_}
-    , defaultInterpolation_{rhs.defaultInterpolation_}
-    , defaultWrapping_{rhs.defaultWrapping_} {}
+    , defaultSwizzleMask_{defaultSwizzleMask.value_or(rhs.defaultSwizzleMask_)}
+    , defaultInterpolation_{interpolation.value_or(rhs.defaultInterpolation_)}
+    , defaultWrapping_{wrapping.value_or(rhs.defaultWrapping_)} {}
 
 Volume* Volume::clone() const { return new Volume(*this); }
 Volume::~Volume() = default;
