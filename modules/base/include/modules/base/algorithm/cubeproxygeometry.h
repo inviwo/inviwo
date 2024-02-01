@@ -47,7 +47,7 @@ IVW_MODULE_BASE_API std::shared_ptr<Mesh> createCubeProxyGeometry(
     const std::shared_ptr<const Volume>& volume, meshutil::IncludeNormals normals);
 
 /**
- * \brief create a clipped cube proxy geometry for the given volume
+ * \brief create a clipped cube proxy geometry for the given volume, no sanity checks are performed
  *
  * @param volume
  * @param clipOrigin  clip origin (bottom left corner), normalized texture coordinates [0,1]
@@ -59,15 +59,16 @@ IVW_MODULE_BASE_API std::shared_ptr<Mesh> createCubeProxyGeometry(
     meshutil::IncludeNormals normals);
 
 /**
- * \brief create a clipped cube proxy geometry for the given volume
+ * \brief create a clipped cube proxy geometry for the given \p volume. Both \p clipMin and \p
+ * clipExtent will be sanitized with respect to \p volume. This may result in an empty proxy mesh.
  *
  * @param volume
  * @param clipMin  bottom left clip position in voxel coordinates [0,volDim - 1]
- * @param clipMax  top right clip position in voxel coordinates [0,volDim - 1]
- * @return cube proxy geometry
+ * @param clipExtent  positive extent of the clipped volume in voxel coordinates [0,volDim - 1]
+ * @return cube proxy geometry. Returns
  */
 IVW_MODULE_BASE_API std::shared_ptr<Mesh> createCubeProxyGeometry(
-    const std::shared_ptr<const Volume>& volume, const size3_t& clipMin, const size3_t& clipMax,
+    const std::shared_ptr<const Volume>& volume, const ivec3& clipMin, const uvec3& clipExtent,
     meshutil::IncludeNormals normals);
 
 }  // namespace algorithm

@@ -114,8 +114,9 @@ void LayerCombiner::process() {
                               util::commonFormatPrecision(formats));
     }();
 
-    auto layer = std::make_shared<Layer>(*activePorts.front().first->getData(), noData,
-                                         DataFormatBase::get(type, activePorts.size(), precision));
+    auto layer =
+        std::make_shared<Layer>(*activePorts.front().first->getData(), noData, std::nullopt,
+                                DataFormatBase::get(type, activePorts.size(), precision));
 
     auto layerRam = layer->getEditableRepresentation<LayerRAM>();
 

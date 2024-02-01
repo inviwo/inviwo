@@ -100,6 +100,10 @@ std::vector<Processor*> ImageBackgroundVisualizer::addVisualizerNetwork(
     net->addConnection(outport, bg->getInports()[0]);
     net->addConnection(bg->getOutports()[0], cvs->getInports()[0]);
 
+    if (auto canvas = dynamic_cast<CanvasProcessor*>(cvs)) {
+        canvas->setCanvasSize(size2_t{768, 768});
+    }
+
     return {bg, cvs};
 }
 

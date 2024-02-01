@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<InviwoWorkspace version="3">
+    <maskMin content="0" />
+    <maskMax content="1" />
+    <type content="0" />
+    <Points>
+        <Point>
+            <pos content="0" />
+            <rgba x="0.24313726" y="0.14901961" z="0.65882355" w="1" />
+        </Point>
+        <Point>
+            <pos content="0.08158508158508158" />
+            <rgba x="0.27450982" y="0.23921569" z="0.8784314" w="1" />
+        </Point>
+        <Point>
+            <pos content="0.19813519813519814" />
+            <rgba x="0.26666668" y="0.39607844" z="0.99215686" w="1" />
+        </Point>
+        <Point>
+            <pos content="0.2540792540792541" />
+            <rgba x="0.19607843" y="0.4862745" z="0.9882353" w="1" />
+        </Point>
+        <Point>
+            <pos content="0.4125874125874126" />
+            <rgba x="0.09803922" y="0.6784314" z="0.8627451" w="1" />
+        </Point>
+        <Point>
+            <pos content="0.47086247086247085" />
+            <rgba x="0" y="0.7294118" z="0.7764706" w="1" />
+        </Point>
+        <Point>
+            <pos content="0.49184149184149184" />
+            <rgba x="0.03529412" y="0.7411765" z="0.7411765" w="1" />
+        </Point>
+        <Point>
+            <pos content="0.5198135198135199" />
+            <rgba x="0.13725491" y="0.75686276" z="0.6862745" w="1" />
+        </Point>
+        <Point>
+            <pos content="0.578088578088578" />
+            <rgba x="0.22352941" y="0.7882353" z="0.5803922" w="1" />
+        </Point>
+        <Point>
+            <pos content="0.6526806526806527" />
+            <rgba x="0.44705883" y="0.8039216" z="0.39215687" w="1" />
+        </Point>
+        <Point>
+            <pos content="0.7389277389277389" />
+            <rgba x="0.7607843" y="0.7647059" z="0.17254902" w="1" />
+        </Point>
+        <Point>
+            <pos content="0.7668997668997669" />
+            <rgba x="0.8392157" y="0.74509805" z="0.15294118" w="1" />
+        </Point>
+        <Point>
+            <pos content="0.8368298368298368" />
+            <rgba x="0.99607843" y="0.7411765" z="0.23921569" w="1" />
+        </Point>
+        <Point>
+            <pos content="0.9463869463869464" />
+            <rgba x="0.9607843" y="0.9098039" z="0.14509805" w="1" />
+        </Point>
+        <Point>
+            <pos content="1" />
+            <rgba x="0.9764706" y="0.9843137" z="0.08235294" w="1" />
+        </Point>
+    </Points>
+</InviwoWorkspace>

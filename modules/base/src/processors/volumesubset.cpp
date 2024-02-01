@@ -45,6 +45,7 @@
 #include <inviwo/core/properties/valuewrapper.h>                        // for PropertySerializa...
 #include <inviwo/core/util/glmmat.h>                                    // for mat3
 #include <inviwo/core/util/glmvec.h>                                    // for vec3, size3_t
+#include <inviwo/core/algorithm/markdown.h>                             // for operator""_help...
 #include <modules/base/algorithm/volume/volumeramsubset.h>              // for VolumeRAMSubSet
 
 #include <functional>     // for __base
@@ -67,26 +68,27 @@ const ProcessorInfo VolumeSubset::processorInfo_{
     "Volume Operation",         // Category
     CodeState::Stable,          // Code state
     Tags::CPU,                  // Tags
-};
+    R"(Extract an axis-aligned subset of a Volume and adjusts the basis of the resulting volume
+       so that it is aligned with the input volume.)"_unindentHelp};
+
 const ProcessorInfo VolumeSubset::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSubset::VolumeSubset()
     : Processor()
-    , inport_("inputVolume")
-    , outport_("outputVolume")
+    , inport_("inputVolume", "Input Volume"_help)
+    , outport_("outputVolume", "Output volume"_help)
     , enabled_("enabled", "Enable Operation", true)
     , adjustBasisAndOffset_("adjustBasisAndOffset", "Adjust Basis and Offset", true)
-    , rangeX_("rangeX", "X Slices", 0, 256, 0, 256, 1, 1)
-    , rangeY_("rangeY", "Y Slices", 0, 256, 0, 256, 1, 1)
-    , rangeZ_("rangeZ", "Z Slices", 0, 256, 0, 256, 1, 1) {
-    addPort(inport_);
-    addPort(outport_);
-    addProperty(enabled_);
-    addProperty(adjustBasisAndOffset_);
-    addProperty(rangeX_);
-    addProperty(rangeY_);
-    addProperty(rangeZ_);
-    dims_ = size3_t(1, 1, 1);
+    , rangeX_("rangeX", "X Slices", "Open range [min,max) for the subset of the x axis"_help, 0,
+              256, 0, 256, 1, 1)
+    , rangeY_("rangeY", "Y Slices", "Open range [min,max) for the subset of the y axis"_help, 0,
+              256, 0, 256, 1, 1)
+    , rangeZ_("rangeZ", "Z Slices", "Open range [min,max) for the subset of the z axis"_help, 0,
+              256, 0, 256, 1, 1)
+    , dims_{1, 1, 1} {
+
+    addPorts(inport_, outport_);
+    addProperties(enabled_, adjustBasisAndOffset_, rangeX_, rangeY_, rangeZ_);
 
     // Since the ranges depend on the input volume dimensions, we make sure to always
     // serialize them so we can do a proper renormalization when we load new data.
@@ -100,9 +102,9 @@ VolumeSubset::VolumeSubset()
         // Update to the new dimensions.
         dims_ = inport_.getData()->getDimensions();
 
-        rangeX_.setRangeNormalized(size2_t(0, dims_.x));
-        rangeY_.setRangeNormalized(size2_t(0, dims_.y));
-        rangeZ_.setRangeNormalized(size2_t(0, dims_.z));
+        rangeX_.setRangeNormalized(ivec2(0, dims_.x));
+        rangeY_.setRangeNormalized(ivec2(0, dims_.y));
+        rangeZ_.setRangeNormalized(ivec2(0, dims_.z));
 
         // set the new dimensions to default if we were to press reset
         rangeX_.setCurrentStateAsDefault();
@@ -116,12 +118,14 @@ VolumeSubset::~VolumeSubset() = default;
 void VolumeSubset::process() {
     if (enabled_.get()) {
         const auto vol = inport_.getData()->getRepresentation<VolumeRAM>();
-        const size3_t offset{rangeX_.get().x, rangeY_.get().x, rangeZ_.get().x};
+        const size3_t inputDims = vol->getDimensions();
+        const size3_t offset{
+            glm::min(size3_t{rangeX_.get().x, rangeY_.get().x, rangeZ_.get().x}, inputDims)};
         const size3_t dim = size3_t{rangeX_.get().y, rangeY_.get().y, rangeZ_.get().y} - offset;
 
-        if (dim == dims_)
+        if (dim == dims_) {
             outport_.setData(inport_.getData());
-        else {
+        } else {
             auto volume = std::make_shared<Volume>(*inport_.getData(), NoData{});
             volume->addRepresentation(VolumeRAMSubSet::apply(vol, dim, offset));
 

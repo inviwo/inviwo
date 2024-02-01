@@ -77,9 +77,12 @@ CubeProxyGeometry::CubeProxyGeometry()
                       "Face normals are included in the mesh"_help, true)
     , clippingEnabled_("clippingEnabled", "Enable Clipping",
                        "Enable axis aligned clipping of the mesh"_help, true)
-    , clipX_("clipX", "Clip X Slices", "Clip X axis"_help, 0, 256, 0, 256, 1, 1)
-    , clipY_("clipY", "Clip Y Slices", "Clip Y axis"_help, 0, 256, 0, 256, 1, 1)
-    , clipZ_("clipZ", "Clip Z Slices", "Clip Z axis"_help, 0, 256, 0, 256, 1, 1) {
+    , clipX_("clipX", "Clip X Slices", "Open range [min,max) for clipping the x axis"_help, 0, 256,
+             0, 256, 1, 1)
+    , clipY_("clipY", "Clip Y Slices", "Open range [min,max) for clipping the y axis"_help, 0, 256,
+             0, 256, 1, 1)
+    , clipZ_("clipZ", "Clip Z Slices", "Open range [min,max) for clipping the z axis"_help, 0, 256,
+             0, 256, 1, 1) {
 
     addPorts(inport_, outport_);
     addProperties(addFaceNormals_, clippingEnabled_, clipX_, clipY_, clipZ_);
@@ -95,13 +98,13 @@ CubeProxyGeometry::CubeProxyGeometry()
         // Update to the new dimensions.
         const auto dims = util::getVolumeDimensions(volume);
 
-        if (dims !=
-            size3_t(clipX_.getRangeMax() - 1, clipY_.getRangeMax() - 1, clipZ_.getRangeMax() - 1)) {
+        if (dims != size3_t(clipX_.getRangeMax(), clipY_.getRangeMax(), clipZ_.getRangeMax())) {
             NetworkLock lock(this);
 
-            clipX_.setRangeNormalized(ivec2(0, dims.x - 1));
-            clipY_.setRangeNormalized(ivec2(0, dims.y - 1));
-            clipZ_.setRangeNormalized(ivec2(0, dims.z - 1));
+            // set the clip ranges to [0,dims)
+            clipX_.setRangeNormalized(ivec2(0, dims.x));
+            clipY_.setRangeNormalized(ivec2(0, dims.y));
+            clipZ_.setRangeNormalized(ivec2(0, dims.z));
 
             // set the new dimensions to default if we were to press reset
             clipX_.setCurrentStateAsDefault();
@@ -117,9 +120,11 @@ void CubeProxyGeometry::process() {
     auto normals = addFaceNormals_ ? meshutil::IncludeNormals::Yes : meshutil::IncludeNormals::No;
     std::shared_ptr<Mesh> mesh;
     if (clippingEnabled_.get()) {
-        const size3_t clipMin(clipX_->x, clipY_->x, clipZ_->x);
-        const size3_t clipMax(clipX_->y, clipY_->y, clipZ_->y);
-        mesh = algorithm::createCubeProxyGeometry(inport_.getData(), clipMin, clipMax, normals);
+        const ivec3 clipMin{clipX_->x, clipY_->x, clipZ_->x};
+        const ivec3 clipMax{clipX_->y, clipY_->y, clipZ_->y};
+
+        const uvec3 clipExtent{glm::max(clipMax - clipMin, ivec3{0})};
+        mesh = algorithm::createCubeProxyGeometry(inport_.getData(), clipMin, clipExtent, normals);
     } else {
         mesh = algorithm::createCubeProxyGeometry(inport_.getData(), normals);
     }

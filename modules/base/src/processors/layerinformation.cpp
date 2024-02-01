@@ -30,6 +30,7 @@
 #include <modules/base/processors/layerinformation.h>
 
 #include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 
@@ -47,10 +48,30 @@ const ProcessorInfo LayerInformation::getProcessorInfo() const { return processo
 LayerInformation::LayerInformation()
     : Processor{}
     , layer_("layer", "Input layer"_help)
-    , layerInfo_("dataInformation", "Data Information") {
+    , layerInfo_("dataInformation", "Data Information")
+    , transformations_("transformations", "Transformations")
+    , modelTransform_("modelTransform_", "Model Transform", mat4(1.0f),
+                      util::filled<mat3>(std::numeric_limits<float>::lowest()),
+                      util::filled<mat3>(std::numeric_limits<float>::max()),
+                      util::filled<mat3>(0.001f), InvalidationLevel::Valid)
+    , worldTransform_("worldTransform_", "World Transform", mat4(1.0f),
+                      util::filled<mat3>(std::numeric_limits<float>::lowest()),
+                      util::filled<mat3>(std::numeric_limits<float>::max()),
+                      util::filled<mat3>(0.001f), InvalidationLevel::Valid)
+    , basis_("basis", "Basis", mat3(1.0f), util::filled<mat3>(std::numeric_limits<float>::lowest()),
+             util::filled<mat3>(std::numeric_limits<float>::max()), util::filled<mat3>(0.001f),
+             InvalidationLevel::Valid)
+    , offset_("offset", "Offset", vec3(0.0f), vec3(std::numeric_limits<float>::lowest()),
+              vec3(std::numeric_limits<float>::max()), vec3(0.001f), InvalidationLevel::Valid,
+              PropertySemantics::Text) {
 
     addPort(layer_);
-    addProperties(layerInfo_);
+
+    transformations_.addProperties(modelTransform_, worldTransform_, basis_, offset_);
+    transformations_.setCollapsed(true);
+    transformations_.setReadOnly(true);
+
+    addProperties(layerInfo_, transformations_);
 
     layerInfo_.setReadOnly(true);
     layerInfo_.setSerializationMode(PropertySerializationMode::None);
@@ -62,6 +83,11 @@ void LayerInformation::process() {
     auto layer = layer_.getData();
 
     layerInfo_.updateForNewLayer(*layer, util::OverwriteState::Yes);
+
+    util::updateDefaultState(modelTransform_, layer->getModelMatrix(), util::OverwriteState::Yes);
+    util::updateDefaultState(worldTransform_, layer->getWorldMatrix(), util::OverwriteState::Yes);
+    util::updateDefaultState(basis_, layer->getBasis(), util::OverwriteState::Yes);
+    util::updateDefaultState(offset_, layer->getOffset(), util::OverwriteState::Yes);
 }
 
 }  // namespace inviwo

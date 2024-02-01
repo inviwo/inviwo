@@ -88,6 +88,10 @@ std::vector<Processor*> ImageVisualizer::addVisualizerNetwork(Outport* outport,
     auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 3}));
     net->addConnection(outport, cvs->getInports()[0]);
 
+    if (auto canvas = dynamic_cast<CanvasProcessor*>(cvs)) {
+        canvas->setCanvasSize(size2_t{768, 768});
+    }
+
     return {cvs};
 }
 

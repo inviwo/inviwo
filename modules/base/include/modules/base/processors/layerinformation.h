@@ -34,6 +34,8 @@
 #include <inviwo/core/ports/layerport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/base/properties/layerinformationproperty.h>
 
 namespace inviwo {
@@ -51,6 +53,12 @@ private:
     LayerInport layer_;
 
     LayerInformationProperty layerInfo_;
+
+    CompositeProperty transformations_;
+    FloatMat4Property modelTransform_;
+    FloatMat4Property worldTransform_;
+    FloatMat3Property basis_;
+    FloatVec3Property offset_;
 };
 
 }  // namespace inviwo

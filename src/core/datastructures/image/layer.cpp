@@ -66,17 +66,20 @@ Layer::Layer(std::shared_ptr<LayerRepresentation> in)
     addRepresentation(in);
 }
 
-Layer::Layer(const Layer& rhs, NoData, const DataFormatBase* defaultFormat)
+Layer::Layer(const Layer& rhs, NoData, std::optional<size2_t> dims,
+             const DataFormatBase* defaultFormat, std::optional<LayerType> type,
+             std::optional<SwizzleMask> defaultSwizzleMask,
+             std::optional<InterpolationType> interpolation, std::optional<Wrapping2D> wrapping)
     : Data<Layer, LayerRepresentation>{}
     , StructuredGridEntity<2>{rhs}
-    , dataMap{defaultFormat ? defaultFormat : rhs.getDataFormat()}
+    , dataMap{defaultFormat ? defaultFormat : rhs.dataMap}
     , axes{rhs.axes}
-    , defaultLayerType_{rhs.getLayerType()}
-    , defaultDimensions_{rhs.getDimensions()}
+    , defaultLayerType_{type.value_or(rhs.getLayerType())}
+    , defaultDimensions_{dims.value_or(rhs.getDimensions())}
     , defaultDataFormat_{defaultFormat ? defaultFormat : rhs.getDataFormat()}
-    , defaultSwizzleMask_{rhs.getSwizzleMask()}
-    , defaultInterpolation_{rhs.getInterpolation()}
-    , defaultWrapping_{rhs.getWrapping()} {}
+    , defaultSwizzleMask_{defaultSwizzleMask.value_or(rhs.getSwizzleMask())}
+    , defaultInterpolation_{interpolation.value_or(rhs.getInterpolation())}
+    , defaultWrapping_{wrapping.value_or(rhs.getWrapping())} {}
 
 Layer* Layer::clone() const { return new Layer(*this); }
 

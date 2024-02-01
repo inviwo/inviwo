@@ -46,6 +46,8 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
+#include <optional>
+
 namespace inviwo {
 
 class Camera;
@@ -73,7 +75,24 @@ public:
                     const Wrapping3D& wrapping = wrapping3d::clampAll);
     explicit Volume(std::shared_ptr<VolumeRepresentation>);
     Volume(const Volume&) = default;
-    Volume(const Volume&, NoData);
+    /**
+     * Create a volume based on \p rhs without copying any data. If \p defaultFormat is a nullptr,
+     * the format of \p rhs is used. This applies to all std::optional arguments, too. If not
+     * supplied, the corresponding value is taken from \p rhs.
+     * @param rhs             source volume providing the necessary information like dimensions,
+     *                        swizzle masks, interpolation, spatial transformations, etc.
+     * @param dims            custom dimension of the new volume, otherwise rhs.getDimensions()
+     * @param defaultFormat   data format of the new volume. If equal to nullptr, the format of \p
+     *                        rhs is used instead.
+     * @param defaultSwizzleMask   custom swizzle mask, otherwise rhs.getSwizzleMask()
+     * @param interpolation   custom interpolation, otherwise rhs.getInterpolation()
+     * @param wrapping        custom texture wrapping, otherwise rhs.getWrapping()
+     */
+    Volume(const Volume& rhs, NoData, std::optional<size3_t> dims = {},
+           const DataFormatBase* defaultFormat = nullptr,
+           std::optional<SwizzleMask> defaultSwizzleMask = {},
+           std::optional<InterpolationType> interpolation = {},
+           std::optional<Wrapping3D> wrapping = {});
     Volume& operator=(const Volume& that) = default;
     virtual Volume* clone() const override;
     virtual ~Volume();

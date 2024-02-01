@@ -42,6 +42,7 @@
 #include <QGraphicsSceneHoverEvent>
 #include <QPainter>
 #include <QPainterPath>
+#include <QPainterPathStroker>
 #include <warn/pop>
 
 namespace inviwo {
@@ -93,14 +94,18 @@ QPainterPath CurveGraphicsItem::obtainCurvePath(QPointF startPoint, QPointF endP
 
 void CurveGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
     const auto color = getColor();
+    auto stroker = QPainterPathStroker{};
+    stroker.setCapStyle(Qt::RoundCap);
     if (isSelected()) {
-        p->setPen(QPen(selectedBorderColor_, 4.0, Qt::SolidLine, Qt::RoundCap));
+        p->setPen(QPen(selectedBorderColor_, 1.0, Qt::SolidLine, Qt::RoundCap));
+        stroker.setWidth(3.0);
     } else {
-        p->setPen(QPen(borderColor_, 3.0, Qt::SolidLine, Qt::RoundCap));
+        p->setPen(QPen(borderColor_, 0.5, Qt::SolidLine, Qt::RoundCap));
+        stroker.setWidth(2.5);
     }
-    p->drawPath(path_);
-    p->setPen(QPen(color, 2.0, Qt::SolidLine, Qt::RoundCap));
-    p->drawPath(path_);
+
+    p->setBrush(color);
+    p->drawPath(stroker.createStroke(path_));
 }
 
 QPainterPath CurveGraphicsItem::shape() const {

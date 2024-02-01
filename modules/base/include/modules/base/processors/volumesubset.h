@@ -40,25 +40,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeSubset, Volume Subset}
- * ![](org.inviwo.VolumeSubset.png?classIdentifier=org.inviwo.VolumeSubset)
- *
- * ...
- *
- * ### Inports
- *   * __volume.inport__ ...
- *
- * ### Outports
- *   * __volume.outport__ ...
- *
- * ### Properties
- *   * __Y Slices__ ...
- *   * __Enable Operation__ ...
- *   * __X Slices__ ...
- *   * __Z Slices__ ...
- *   * __Adjust Basis and Offset__ ...
- *
- */
 class IVW_MODULE_BASE_API VolumeSubset : public Processor {
 public:
     VolumeSubset();
@@ -77,9 +58,9 @@ private:
     BoolProperty enabled_;
     BoolProperty adjustBasisAndOffset_;
 
-    IntSizeTMinMaxProperty rangeX_;
-    IntSizeTMinMaxProperty rangeY_;
-    IntSizeTMinMaxProperty rangeZ_;
+    IntMinMaxProperty rangeX_;
+    IntMinMaxProperty rangeY_;
+    IntMinMaxProperty rangeZ_;
 
     size3_t dims_;
 };
