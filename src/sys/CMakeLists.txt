@@ -50,8 +50,10 @@ ivw_install_helper(TARGET inviwo-module-system
 # Save information for python tools. used for regression
 ivw_mod_dep_to_mod_name(ivw_module_mod_names ${enabled_modules})
 ivw_mod_name_to_class(ivw_module_classes ${ivw_module_mod_names})
-ivw_private_create_pyconfig(
-    MODULE_DIRS ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES}
-    ENABLED_MODULES ${ivw_module_classes}
-    TARGET inviwo
-)
+if (IVW_APP_INVIWO)
+    ivw_private_create_pyconfig(
+        MODULE_DIRS ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES}
+        ENABLED_MODULES ${ivw_module_classes}
+        TARGET inviwo
+    )
+endif()
