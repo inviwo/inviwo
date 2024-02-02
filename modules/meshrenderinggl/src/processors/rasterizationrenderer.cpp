@@ -30,31 +30,34 @@
 #include <modules/meshrenderinggl/processors/rasterizationrenderer.h>
 
 #include <inviwo/core/algorithm/boundingbox.h>
-#include <inviwo/core/datastructures/image/image.h>                  // for Image
-#include <inviwo/core/interaction/cameratrackball.h>                 // for CameraTrackball
-#include <inviwo/core/ports/imageport.h>                             // for BaseImageInport, Ima...
-#include <inviwo/core/ports/inportiterable.h>                        // for InportIterable<>::co...
-#include <inviwo/core/ports/outportiterable.h>                       // for OutportIterable
-#include <inviwo/core/processors/processor.h>                        // for Processor
-#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                   // for CodeState, CodeState...
-#include <inviwo/core/processors/processortags.h>                    // for Tags, Tags::GL
-#include <inviwo/core/properties/boolcompositeproperty.h>            // for BoolCompositeProperty
-#include <inviwo/core/properties/boolproperty.h>                     // for BoolProperty
-#include <inviwo/core/properties/cameraproperty.h>                   // for CameraProperty
-#include <inviwo/core/properties/invalidationlevel.h>                // for InvalidationLevel
-#include <inviwo/core/properties/ordinalproperty.h>                  // for FloatProperty, Float...
-#include <inviwo/core/properties/property.h>                         // for Property
-#include <inviwo/core/properties/propertysemantics.h>                // for PropertySemantics
-#include <inviwo/core/util/dispatcher.h>                             // for Dispatcher<>::Handle
-#include <inviwo/core/util/glmmat.h>                                 // for mat4
-#include <inviwo/core/util/glmvec.h>                                 // for uvec3, vec3
-#include <inviwo/core/util/logcentral.h>                             // for LogCentral, LogProce...
-#include <modules/meshrenderinggl/datastructures/rasterization.h>    // IWYU pragma: keep
+#include <inviwo/core/datastructures/image/image.h>                // for Image
+#include <inviwo/core/interaction/cameratrackball.h>               // for CameraTrackball
+#include <inviwo/core/ports/imageport.h>                           // for BaseImageInport, Ima...
+#include <inviwo/core/ports/inportiterable.h>                      // for InportIterable<>::co...
+#include <inviwo/core/ports/outportiterable.h>                     // for OutportIterable
+#include <inviwo/core/processors/processor.h>                      // for Processor
+#include <inviwo/core/processors/processorinfo.h>                  // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                 // for CodeState, CodeState...
+#include <inviwo/core/processors/processortags.h>                  // for Tags, Tags::GL
+#include <inviwo/core/properties/boolcompositeproperty.h>          // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>                   // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>                 // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>              // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>                // for FloatProperty, Float...
+#include <inviwo/core/properties/property.h>                       // for Property
+#include <inviwo/core/properties/propertysemantics.h>              // for PropertySemantics
+#include <inviwo/core/util/dispatcher.h>                           // for Dispatcher<>::Handle
+#include <inviwo/core/util/glmmat.h>                               // for mat4
+#include <inviwo/core/util/glmvec.h>                               // for uvec3, vec3
+#include <inviwo/core/util/logcentral.h>                           // for LogCentral, LogProce...
+#include <modules/meshrenderinggl/datastructures/rasterization.h>  // IWYU pragma: keep
+#include <modules/meshrenderinggl/processors/rasterizer.h>
 #include <modules/meshrenderinggl/ports/rasterizationport.h>         // for RasterizationInport
 #include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>  // for FragmentListRenderer
 #include <modules/opengl/shader/shaderutils.h>                       // for ImageInport, setUnif...
 #include <modules/opengl/texture/textureutils.h>                     // for activateTargetAndCle...
+
+#include <modules/meshrenderinggl/rasterizeevent.h>
 
 #include <functional>   // for __base
 #include <string>       // for string
@@ -81,11 +84,13 @@ const ProcessorInfo RasterizationRenderer::processorInfo_{
 
 const ProcessorInfo RasterizationRenderer::getProcessorInfo() const { return processorInfo_; }
 
+void RasterizationRenderer::initializeResources() { initializeShader_.invoke(); }
+
 RasterizationRenderer::RasterizationRenderer()
     : Processor{}
     , rasterizations_{"rastarizations",
                       "Input rasterizations filling the fragment lists/render target"_help}
-    , imageInport_{"imageInport", "Optional background image"_help}
+    , background_{"imageInport", "Optional background image"_help}
     , outport_{"image",
                "output image containing the rendered objects and the optional input image"_help}
     , intermediateImage_{}
@@ -114,10 +119,10 @@ RasterizationRenderer::RasterizationRenderer()
 
     // input and output ports
     addPort(rasterizations_);
-    addPort(imageInport_).setOptional(true);
+    addPort(background_).setOptional(true);
     addPort(outport_);
 
-    addProperties(camera_, lighting_, trackball_, illustrationSettings_.enabled_);
+    addProperties(illustrationSettings_.enabled_, lighting_, camera_, trackball_);
     camera_.setCollapsed(true);
     trackball_.setCollapsed(true);
 
@@ -127,12 +132,9 @@ RasterizationRenderer::RasterizationRenderer()
         flrReload_ = flr_->onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     }
 
-    imageInport_.onChange([this]() {
-        if (imageInport_.hasData()) {
-            intermediateImage_.setDimensions(imageInport_.getData()->getDimensions());
-        } else {
-            intermediateImage_.setDimensions(outport_.getData()->getDimensions());
-        }
+    onConnect_ = rasterizations_.onConnectScoped([&](Outport* outport) {
+        RasterizeEvent e{std::dynamic_pointer_cast<RasterizationRenderer>(shared_from_this())};
+        rasterizations_.propagateEvent(&e, outport);
     });
 }
 
@@ -172,83 +174,64 @@ RasterizationRenderer::IllustrationSettings::getSettings() const {
     };
 }
 
+void RasterizationRenderer::configureShader(Shader& shader) const {
+    utilgl::addDefines(shader, lighting_);
+}
+
+void RasterizationRenderer::setUniforms(Shader& shader, UseFragmentList useFragmentList) const {
+    utilgl::setUniforms(shader, camera_, lighting_);
+    if (flr_ && useFragmentList == UseFragmentList::Yes) {
+        flr_->setShaderUniforms(shader);
+    }
+}
+
 void RasterizationRenderer::process() {
-    bool fragmentLists = false;
-    bool containsOpaque = false;
-    for (auto rasterization : rasterizations_) {
-        if (auto rp = rasterization->getProcessor()) {
-            if (rp->usesFragmentLists()) {
-                fragmentLists = true;
-            } else {
-                containsOpaque = true;
+    if (!flr_) {
+        utilgl::activateTargetAndClearOrCopySource(outport_, background_);
+        for (const auto& rasterization : rasterizations_) {
+            if (rasterization->usesFragmentLists() == UseFragmentList::No) {
+                rasterization->rasterize(outport_.getDimensions(), mat4(1.0));
             }
         }
+        utilgl::deactivateCurrentTarget();
+        return;
     }
 
-    bool useIntermediateTarget = imageInport_.getData() && fragmentLists && containsOpaque;
-    if (useIntermediateTarget) {
-        utilgl::activateTargetAndClearOrCopySource(intermediateImage_, imageInport_);
-    } else {
-        utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
+    if (intermediateImage_.getDimensions() != outport_.getDimensions()) {
+        intermediateImage_.setDimensions(outport_.getDimensions());
+    }
+
+    // render into a temp image to be able to compare depths in the final pass
+    utilgl::activateTargetAndClearOrCopySource(intermediateImage_, background_);
+    for (const auto& rasterization : rasterizations_) {
+        if (rasterization->usesFragmentLists() == UseFragmentList::No) {
+            rasterization->rasterize(outport_.getDimensions(), mat4(1.0));
+        }
     }
 
     // Loop: fragment list may need another try if not enough space for the pixels was available
-    bool retry = false;
-    do {
-        retry = false;
+    for (bool success = false; !success;) {
+        // prepare fragment list rendering
+        flr_->prePass(outport_.getDimensions());
 
-        if (flr_ && fragmentLists) {
-            // prepare fragment list rendering
-            flr_->prePass(outport_.getDimensions());
-        }
-
-        for (auto rasterization : rasterizations_) {
-            if (auto rp = rasterization->getProcessor()) {
-                rp->rasterize(
-                    outport_.getDimensions(), mat4(1.0),
-                    [this, fragmentLists](Shader& shader) {
-                        utilgl::setUniforms(shader, camera_, lighting_);
-                        if (flr_ && fragmentLists) flr_->setShaderUniforms(shader);
-                    },
-                    [this](Shader& shader) {
-                        if (!shader.isReady() || lighting_.shadingMode_.isModified() ||
-                            !shader.getFragmentShaderObject()->hasShaderDefine(
-                                "APPLY_LIGHTING(lighting, materialAmbientColor, "
-                                "materialDiffuseColor, "
-                                "materialSpecularColor, position, normal, toCameraDir)")) {
-
-                            const bool set = FragmentListRenderer::supportsFragmentLists();
-                            constexpr auto Enable = ShaderObject::ExtensionBehavior::Enable;
-                            auto* fso = shader.getFragmentShaderObject();
-                            fso->setShaderExtension("GL_NV_gpu_shader5", Enable, set);
-                            fso->setShaderExtension("GL_EXT_shader_image_load_store", Enable, set);
-                            fso->setShaderExtension("GL_NV_shader_buffer_load", Enable, set);
-                            fso->setShaderExtension("GL_EXT_bindable_uniform", Enable, set);
-
-                            utilgl::addDefines(shader, lighting_);
-                            shader.build();
-                        }
-                    });
+        flr_->beginCount();
+        for (const auto& rasterization : rasterizations_) {
+            if (rasterization->usesFragmentLists() == UseFragmentList::Yes) {
+                rasterization->rasterize(outport_.getDimensions(), mat4(1.0));
             }
         }
+        flr_->endCount();
 
-        if (flr_ && fragmentLists) {
-            // final processing of fragment list rendering
-            if (useIntermediateTarget) {
-                utilgl::deactivateCurrentTarget();
-                utilgl::activateTargetAndCopySource(outport_, intermediateImage_);
-            }
-
-            const bool useIllustration = illustrationSettings_.enabled_.isChecked() &&
-                                         FragmentListRenderer::supportsIllustration();
-            if (useIllustration) {
-                flr_->setIllustrationSettings(illustrationSettings_.getSettings());
-            }
-            const Image* background =
-                useIntermediateTarget ? &intermediateImage_ : imageInport_.getData().get();
-            retry = !flr_->postPass(useIllustration, background);
+        utilgl::activateTargetAndCopySource(outport_, intermediateImage_);
+        // final processing of fragment list rendering
+        const bool useIllustration = illustrationSettings_.enabled_.isChecked() &&
+                                     FragmentListRenderer::supportsIllustration();
+        if (useIllustration) {
+            flr_->setIllustrationSettings(illustrationSettings_.getSettings());
         }
-    } while (retry);
+
+        success = flr_->postPass(useIllustration, &intermediateImage_);
+    }
 
     utilgl::deactivateCurrentTarget();
 }

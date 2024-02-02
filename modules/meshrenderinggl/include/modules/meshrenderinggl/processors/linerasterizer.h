@@ -44,6 +44,7 @@
 #include <modules/basegl/datastructures/meshshadercache.h>         // for MeshShaderC...
 #include <modules/meshrenderinggl/datastructures/rasterization.h>  // for Rasterization
 #include <modules/meshrenderinggl/ports/rasterizationport.h>       // for RasterizationOutport
+#include <modules/meshrenderinggl/processors/rasterizer.h>
 
 #include <functional>  // for function
 #include <memory>      // for shared_ptr
@@ -80,7 +81,7 @@ class Shader;
  * \class LineRasterizer
  * \brief Renders input geometry with 2D lines
  */
-class IVW_MODULE_MESHRENDERINGGL_API LineRasterizer : public RasterizationProcessor {
+class IVW_MODULE_MESHRENDERINGGL_API LineRasterizer : public Rasterizer {
     friend class LineRasterization;
 
 public:
@@ -92,18 +93,16 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                           std::function<void(Shader&)> setUniforms,
-                           std::function<void(Shader&)> initializeShader) override;
-    virtual bool usesFragmentLists() const override;
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) override;
+    virtual UseFragmentList usesFragmentLists() const override;
 
     virtual std::optional<mat4> boundingBox() const override;
 
     virtual Document getInfo() const override;
 
 private:
-    void configureShader(Shader& shader);
-    void setUniforms(Shader& shader) const;
+    virtual void configureShader(Shader& shader) override;
+    virtual void setUniforms(Shader& shader) override;
 
     MeshFlatMultiInport inport_;
     LineSettingsProperty lineSettings_;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,47 +27,41 @@
  *
  *********************************************************************************/
 
-#include <modules/meshrenderinggl/datastructures/rasterization.h>
-#include <modules/meshrenderinggl/processors/rasterizer.h>
-
-#include <inviwo/core/util/document.h>  // for Document
+#include <modules/meshrenderinggl/rasterizeevent.h>
+#include <modules/meshrenderinggl/ports/rasterizationport.h>
+#include <modules/meshrenderinggl/processors/rasterizationrenderer.h>
 
 namespace inviwo {
 
-Document Rasterization::getInfo() const {
-    if (auto p = getProcessor()) {
-        return p->getInfo();
+void RasterizeHandle::configureShader(Shader& shader) const {
+    if (auto proc = processor_.lock()) {
+        proc->configureShader(shader);
+    }
+}
+
+void RasterizeHandle::setUniforms(Shader& shader, UseFragmentList useFragmentList) const {
+    if (auto proc = processor_.lock()) {
+        proc->setUniforms(shader, useFragmentList);
+    }
+}
+
+RasterizeEvent::RasterizeEvent(std::shared_ptr<RasterizationRenderer> processor)
+    : Event(), processor_{processor} {}
+
+RasterizeEvent* RasterizeEvent::clone() const { return new RasterizeEvent(*this); }
+
+bool RasterizeEvent::shouldPropagateTo(Inport* inport, Processor*, Outport*) {
+    return dynamic_cast<RasterizationInport*>(inport) != nullptr;
+}
+
+RasterizeHandle RasterizeEvent::addInitializeShaderCallback(std::function<void()> callback) const {
+    if (auto proc = processor_.lock()) {
+        return RasterizeHandle(proc->initializeShader_.add(callback), proc);
     } else {
-        Document doc;
-        doc.append("p", "Rasterization functor.");
-        return doc;
+        return {};
     }
 }
 
-Rasterization::Rasterization(std::shared_ptr<Rasterizer> processor) : processor_{processor} {}
-
-std::shared_ptr<Rasterizer> Rasterization::getProcessor() const { return processor_.lock(); }
-
-void Rasterization::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) const {
-    if (auto rp = getProcessor()) {
-        rp->rasterize(imageSize, worldMatrixTransform);
-    }
-}
-
-UseFragmentList Rasterization::usesFragmentLists() const {
-    if (auto p = getProcessor()) {
-        return p->usesFragmentLists();
-    } else {
-        return UseFragmentList::No;
-    }
-}
-
-std::optional<mat4> Rasterization::boundingBox() const {
-    if (auto p = getProcessor()) {
-        return p->boundingBox();
-    } else {
-        return std::nullopt;
-    }
-}
+uint64_t RasterizeEvent::hash() const { return chash(); }
 
 }  // namespace inviwo

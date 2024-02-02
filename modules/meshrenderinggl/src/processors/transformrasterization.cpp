@@ -53,7 +53,7 @@ const ProcessorInfo TransformRasterization::processorInfo_{
 const ProcessorInfo TransformRasterization::getProcessorInfo() const { return processorInfo_; }
 
 TransformRasterization::TransformRasterization()
-    : RasterizationProcessor()
+    : Rasterizer()
     , inport_("input")
     , transformSetting_("transformSettings", "Additional Transform") {
 
@@ -64,16 +64,13 @@ TransformRasterization::TransformRasterization()
     transformSetting_.setCollapsed(false);
 }
 
-void TransformRasterization::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                                       std::function<void(Shader&)> setUniforms,
-                                       std::function<void(Shader&)> initializeShader) {
+void TransformRasterization::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
 
-    if (auto p = inport_.getData()->getProcessor()) {
-        p->rasterize(imageSize, transformSetting_.getMatrix() * worldMatrixTransform, setUniforms,
-                     initializeShader);
+    if (auto p = inport_.getData()) {
+        p->rasterize(imageSize, transformSetting_.getMatrix() * worldMatrixTransform);
     }
 }
-bool TransformRasterization::usesFragmentLists() const {
+UseFragmentList TransformRasterization::usesFragmentLists() const {
     return inport_.getData()->usesFragmentLists();
 }
 

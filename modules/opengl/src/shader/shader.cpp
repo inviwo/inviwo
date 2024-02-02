@@ -366,6 +366,8 @@ std::string Shader::processLog(std::string log) const {
 
 bool Shader::isReady() const { return ready_; }
 
+void Shader::invalidate() { ready_ = false; }
+
 void Shader::activate() {
     if (!ready_)
         throw OpenGLException(

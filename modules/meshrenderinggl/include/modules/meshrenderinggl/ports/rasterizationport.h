@@ -29,14 +29,68 @@
 
 #pragma once
 
+#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>  // for IVW_MODULE_MESHRENDERI...
+
+#include <inviwo/core/util/staticstring.h>
 #include <inviwo/core/ports/datainport.h>   // for DataInport
 #include <inviwo/core/ports/dataoutport.h>  // for DataOutport
+#include <modules/meshrenderinggl/datastructures/rasterization.h>
 
 namespace inviwo {
-class Rasterization;
 
-using RasterizationOutport = DataOutport<Rasterization>;
+class IVW_MODULE_MESHRENDERINGGL_API RasterizationInport : public DataInport<Rasterization, 0> {
+public:
+    using Super = DataInport<Rasterization, 0>;
+    using Super::Super;
 
-using RasterizationInport = DataInport<Rasterization, 0, true>;
+    virtual bool canConnectTo(const Port* port) const override;
+
+    virtual void connectTo(Outport* port) override {
+        if (!port->getConnectedInports().empty()) {
+            throw Exception(IVW_CONTEXT,
+                            "A RasterizationOutport can only be connected to one inport");
+        }
+        Super::connectTo(port);
+    }
+};
+
+class IVW_MODULE_MESHRENDERINGGL_API RasterizationOutport : public DataOutport<Rasterization> {
+public:
+    using Super = DataOutport<Rasterization>;
+    using Super::Super;
+};
+
+inline bool RasterizationInport::canConnectTo(const Port* port) const {
+    if (!port || port->getProcessor() == getProcessor() || circularConnection(port)) {
+        return false;
+    }
+
+    if (auto outport = dynamic_cast<const RasterizationOutport*>(port)) {
+        if (outport->getConnectedInports().empty()) {
+            // Only allow an outport to be connected to one inport
+            return true;
+        }
+    }
+
+    return false;
+}
+
+template <>
+struct PortTraits<RasterizationInport> {
+    static std::string_view classIdentifier() {
+        static const std::string classId =
+            fmt::format("{}.multi.inport", DataTraits<Rasterization>::classIdentifier());
+        return classId;
+    }
+};
+
+template <>
+struct PortTraits<RasterizationOutport> {
+    static std::string_view classIdentifier() {
+        static const std::string classId =
+            fmt::format("{}outport", DataTraits<Rasterization>::classIdentifier());
+        return classId;
+    }
+};
 
 }  // namespace inviwo

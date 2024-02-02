@@ -36,6 +36,7 @@
 #include <modules/base/properties/transformlistproperty.h>    // for TransformListProperty
 #include <modules/meshrenderinggl/ports/rasterizationport.h>  // for RasterizationInport
 #include <modules/meshrenderinggl/datastructures/rasterization.h>
+#include <modules/meshrenderinggl/processors/rasterizer.h>
 
 namespace inviwo {
 
@@ -57,15 +58,13 @@ namespace inviwo {
  * \class TransformRasterization
  * \brief Applies an additional transform on a given rasterization object.
  */
-class IVW_MODULE_MESHRENDERINGGL_API TransformRasterization : public RasterizationProcessor {
+class IVW_MODULE_MESHRENDERINGGL_API TransformRasterization : public Rasterizer {
 public:
     TransformRasterization();
     virtual ~TransformRasterization() = default;
 
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                           std::function<void(Shader&)> setUniforms,
-                           std::function<void(Shader&)> initializeShader) override;
-    virtual bool usesFragmentLists() const override;
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) override;
+    virtual UseFragmentList usesFragmentLists() const override;
 
     virtual std::optional<mat4> boundingBox() const override;
 

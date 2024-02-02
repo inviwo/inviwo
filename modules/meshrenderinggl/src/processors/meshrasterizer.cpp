@@ -128,9 +128,8 @@ const ProcessorInfo MeshRasterizer::processorInfo_{
 const ProcessorInfo MeshRasterizer::getProcessorInfo() const { return processorInfo_; }
 
 MeshRasterizer::MeshRasterizer()
-    : RasterizationProcessor()
+    : Rasterizer()
     , inport_("geometry", "Input meshes"_help)
-    , lightingProperty_("lighting", "Lighting")
     , forceOpaque_("forceOpaque", "Shade Opaque",
                    "Draw the mesh opaquly instead of transparent. Disables all transparency"_help,
                    false, InvalidationLevel::InvalidResources)
@@ -153,14 +152,14 @@ MeshRasterizer::MeshRasterizer()
            {"nmax", "Based on N.Max", meshutil::CalculateMeshNormalsMode::WeightNMax}},
           3, InvalidationLevel::InvalidResources)
     , faceSettings_{true, false}
-    , shader_(std::make_shared<Shader>("fancymeshrenderer.vert", "fancymeshrenderer.geom",
-                                       "fancymeshrenderer.frag", Shader::Build::No)) {
+    , shader_{"fancymeshrenderer.vert", "fancymeshrenderer.geom", "fancymeshrenderer.frag",
+              Shader::Build::No} {
     // input and output ports
     addPort(inport_).onChange([this]() { updateMeshes(); });
 
     drawSilhouette_.onChange([this]() { updateMeshes(); });
 
-    addProperties(lightingProperty_, forceOpaque_, drawSilhouette_, silhouetteColor_, normalSource_,
+    addProperties(forceOpaque_, drawSilhouette_, silhouetteColor_, normalSource_,
                   normalComputationMode_, alphaSettings_, edgeSettings_, faceSettings_[0].show_,
                   faceSettings_[1].show_);
 
@@ -177,8 +176,6 @@ MeshRasterizer::MeshRasterizer()
     edgeSettings_.visibilityDependsOn(drawSilhouette_, edgeVis);
     edgeSettings_.visibilityDependsOn(faceSettings_[0].showEdges_, edgeVis);
     edgeSettings_.visibilityDependsOn(faceSettings_[1].showEdges_, edgeVis);
-
-    lightingProperty_.setCollapsed(true);
 
     silhouetteColor_.setSemantics(PropertySemantics::Color);
 
@@ -375,8 +372,8 @@ void MeshRasterizer::FaceSettings::copyFrontToBack() {
 }
 
 void MeshRasterizer::initializeResources() {
+    Rasterizer::configureShader(shader_);
     // shading defines
-    utilgl::addShaderDefines(*shader_, lightingProperty_);
 
     const std::array<std::pair<std::string, bool>, 15> defines = {
         {{"USE_FRAGMENT_LIST", !forceOpaque_.get()},
@@ -398,10 +395,12 @@ void MeshRasterizer::initializeResources() {
                             faceSettings_[1].colorSource_ == ColorSource::VertexColor}}};
 
     for (auto&& [key, val] : defines) {
-        for (auto&& so : shader_->getShaderObjects()) {
+        for (auto&& so : shader_.getShaderObjects()) {
             so.setShaderDefine(key, val);
         }
     }
+
+    shader_.build();
 }
 
 void MeshRasterizer::FaceSettings::setUniforms(Shader& shader, std::string_view prefix) const {
@@ -431,9 +430,29 @@ void MeshRasterizer::FaceSettings::setUniforms(Shader& shader, std::string_view 
                    val);
     }
 }
-void MeshRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                               std::function<void(Shader&)> setUniformsRenderer,
-                               std::function<void(Shader&)> initializeShader) {
+
+void MeshRasterizer::setUniforms(Shader& shader) {
+    Rasterizer::setUniforms(shader);
+    // update face render settings
+    for (size_t j = 0; j < faceSettings_.size(); ++j) {
+        const std::string prefix = fmt::format("renderSettings[{}].", j);
+        auto& face = faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : j];
+        face.setUniforms(shader_, prefix);
+    }
+
+    // update alpha settings
+    alphaSettings_.setUniforms(shader_, "alphaSettings.");
+
+    // update other global fragment shader settings
+    shader_.setUniform("silhouetteColor", silhouetteColor_);
+
+    // update geometry shader settings
+    shader_.setUniform("geomSettings.edgeWidth", edgeSettings_.edgeThickness_);
+    shader_.setUniform("geomSettings.triangleNormal",
+                       normalSource_ == NormalSource::GenerateTriangle);
+}
+
+void MeshRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
 
     if (!faceSettings_[0].show_ && !faceSettings_[1].show_) {
         outport_.setData(nullptr);
@@ -441,79 +460,47 @@ void MeshRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTr
         return;  // everything is culled
     }
 
-    initializeShader(*shader_);
+    const std::array<bool, 2> showFace = {faceSettings_[0].show_, faceSettings_[1].show_};
 
-    shader_->activate();
-
-    // general settings for camera, lighting, picking, mesh data
-    utilgl::setUniforms(*shader_, lightingProperty_);
-
-    // update face render settings
-    for (size_t j = 0; j < faceSettings_.size(); ++j) {
-        const std::string prefix = fmt::format("renderSettings[{}].", j);
-        auto& face = faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : j];
-        face.setUniforms(*shader_, prefix);
-    }
-
-    // update alpha settings
-    alphaSettings_.setUniforms(*shader_, "alphaSettings.");
-
-    // update other global fragment shader settings
-    shader_->setUniform("silhouetteColor", silhouetteColor_);
-
-    // update geometry shader settings
-    shader_->setUniform("geomSettings.edgeWidth", edgeSettings_.edgeThickness_);
-    shader_->setUniform("geomSettings.triangleNormal",
-                        normalSource_ == NormalSource::GenerateTriangle);
-
-    shader_->deactivate();
-
-    std::array<bool, 2> showFace = {faceSettings_[0].show_, faceSettings_[1].show_};
-
-    std::array<const Layer*, 2> tfTextures = {
+    const std::array<const Layer*, 2> tfTextures = {
         faceSettings_[0].transferFunction_->getData(),
         faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : 1]
             .transferFunction_->getData()};
 
-    shader_->activate();
+    utilgl::Activate activate{&shader_};
 
     // set transfer function textures
     std::array<TextureUnit, 2> transFuncUnit;
     for (size_t j = 0; j < 2; ++j) {
         const LayerGL* transferFunctionGL = tfTextures[j]->getRepresentation<LayerGL>();
         transferFunctionGL->bindTexture(transFuncUnit[j].getEnum());
-        shader_->setUniform(fmt::format("transferFunction{}", j), transFuncUnit[j].getUnitNumber());
+        shader_.setUniform(fmt::format("transferFunction{}", j), transFuncUnit[j].getUnitNumber());
     }
 
-    shader_->setUniform("halfScreenSize", imageSize / ivec2(2));
+    setUniforms(shader_);
+    shader_.setUniform("halfScreenSize", imageSize / ivec2(2));
 
-    // call the callback provided by the renderer calling this function
-    setUniformsRenderer(*shader_);
-    {
-        // various OpenGL states: depth, blending, culling
-        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, forceOpaque_);
-        utilgl::DepthMaskState depthMask(forceOpaque_ ? GL_TRUE : GL_FALSE);
+    // various OpenGL states: depth, blending, culling
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, forceOpaque_);
+    utilgl::DepthMaskState depthMask(forceOpaque_ ? GL_TRUE : GL_FALSE);
 
-        utilgl::CullFaceState culling(!showFace[0] && showFace[1]   ? GL_FRONT
-                                      : showFace[0] && !showFace[1] ? GL_BACK
-                                                                    : GL_NONE);
-        utilgl::BlendModeState blendModeState(forceOpaque_ ? GL_ONE : GL_SRC_ALPHA,
-                                              forceOpaque_ ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
+    utilgl::CullFaceState culling(!showFace[0] && showFace[1]   ? GL_FRONT
+                                  : showFace[0] && !showFace[1] ? GL_BACK
+                                                                : GL_NONE);
+    utilgl::BlendModeState blendModeState(forceOpaque_ ? GL_ONE : GL_SRC_ALPHA,
+                                          forceOpaque_ ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
 
-        // Finally, draw it
-        for (auto mesh : enhancedMeshes_) {
-            MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
-                                            mesh->getDefaultMeshInfo()};
-            auto transform = CompositeTransform(mesh->getModelMatrix(),
-                                                mesh->getWorldMatrix() * worldMatrixTransform);
-            utilgl::setShaderUniforms(*shader_, transform, "geometry");
-            shader_->setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
+    // Finally, draw it
+    for (auto mesh : enhancedMeshes_) {
+        MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
+                                        mesh->getDefaultMeshInfo()};
+        auto transform = CompositeTransform(mesh->getModelMatrix(),
+                                            mesh->getWorldMatrix() * worldMatrixTransform);
+        utilgl::setShaderUniforms(shader_, transform, "geometry");
+        shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
 
-            drawer.draw();
-        }
+        drawer.draw();
     }
-
-    shader_->deactivate();
 }
 
 void MeshRasterizer::updateMeshes() {
@@ -560,7 +547,8 @@ Document MeshRasterizer::getInfo() const {
     Document doc;
     doc.append("p", fmt::format("Mesh rasterization functor with {} {}. {}", enhancedMeshes_.size(),
                                 (enhancedMeshes_.size() == 1) ? " mesh" : " meshes",
-                                usesFragmentLists() ? "Using A-buffer" : "Rendering opaque"));
+                                usesFragmentLists() == UseFragmentList::Yes ? "Using A-buffer"
+                                                                            : "Rendering opaque"));
     return doc;
 }
 

@@ -37,6 +37,7 @@
 #include <modules/meshrenderinggl/processors/linerasterizer.h>          // for LineRasterizer
 #include <modules/meshrenderinggl/processors/meshrasterizer.h>          // for MeshRasterizer
 #include <modules/meshrenderinggl/processors/rasterizationrenderer.h>   // for RasterizationRend...
+#include <modules/meshrenderinggl/processors/rasterizer.h>
 #include <modules/meshrenderinggl/processors/sphererasterizer.h>        // for SphereRasterizer
 #include <modules/meshrenderinggl/processors/transformrasterization.h>  // for TransformRasteriz...
 #include <modules/opengl/shader/shadermanager.h>                        // for ShaderManager

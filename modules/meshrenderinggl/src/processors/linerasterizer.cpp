@@ -88,7 +88,7 @@ const ProcessorInfo LineRasterizer::processorInfo_{
 const ProcessorInfo LineRasterizer::getProcessorInfo() const { return processorInfo_; }
 
 LineRasterizer::LineRasterizer()
-    : RasterizationProcessor()
+    : Rasterizer()
     , inport_("geometry")
     , lineSettings_("lineSettings", "Line Settings")
     , forceOpaque_("forceOpaque", "Shade Opaque", false, InvalidationLevel::InvalidResources)
@@ -153,6 +153,7 @@ void LineRasterizer::initializeResources() {
 }
 
 void LineRasterizer::configureShader(Shader& shader) {
+    Rasterizer::configureShader(shader);
     auto fso = shader.getFragmentShaderObject();
 
     fso->setShaderDefine("USE_FRAGMENT_LIST",
@@ -168,7 +169,8 @@ void LineRasterizer::configureShader(Shader& shader) {
     shader.build();
 }
 
-void LineRasterizer::setUniforms(Shader& shader) const {
+void LineRasterizer::setUniforms(Shader& shader) {
+    Rasterizer::setUniforms(shader);
 
     shader.setUniform("lineWidth", lineSettings_.getWidth());
     shader.setUniform("antialiasing", lineSettings_.getAntialiasingWidth());
@@ -184,21 +186,16 @@ void LineRasterizer::setUniforms(Shader& shader) const {
     if (overwriteColor_.get()) shader.setUniform("overwriteColor", constantColor_.get());
 }
 
-void LineRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                               std::function<void(Shader&)> setUniformsRenderer,
-                               std::function<void(Shader&)> initializeShader) {
+void LineRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
 
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     utilgl::DepthMaskState depthMask(true);
     utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
     auto setup = [&](Shader& shader, const auto& transform) {
-        initializeShader(shader);
-        shader.activate();
         setUniforms(shader);
         utilgl::setShaderUniforms(shader, transform, "geometry");
         shader.setUniform("screenDim", vec2(imageSize));
-        setUniformsRenderer(shader);
     };
 
     for (auto mesh : inport_) {
@@ -213,23 +210,24 @@ void LineRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTr
                 if (mesh->getIndexMeshInfo(i).dt != DrawType::Lines) continue;
 
                 auto& shader = lineShaders_.getShader(*mesh, mesh->getIndexMeshInfo(i));
+                utilgl::Activate activate{&shader};
                 setup(shader, transform);
                 drawer.draw(i);
-                shader.deactivate();
             }
         } else if (mesh->getDefaultMeshInfo().dt == DrawType::Lines) {
             auto& shader = lineShaders_.getShader(*mesh);
+            utilgl::Activate activate{&shader};
             setup(shader, transform);
             drawer.draw();
-            shader.deactivate();
         }
     }
 }
 
 std::optional<mat4> LineRasterizer::boundingBox() const { return util::boundingBox(inport_)(); }
 
-bool LineRasterizer::usesFragmentLists() const {
-    return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
+UseFragmentList LineRasterizer::usesFragmentLists() const {
+    return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists() ? UseFragmentList::Yes
+                                                                          : UseFragmentList::No;
 }
 
 Document LineRasterizer::getInfo() const {
@@ -237,7 +235,8 @@ Document LineRasterizer::getInfo() const {
     const auto size = inport_.getVectorData().size();
     doc.append("p", fmt::format("Line rasterization functor with {} line {}. {}.", size,
                                 (size == 1) ? " mesh" : " meshes",
-                                usesFragmentLists() ? "Using A-buffer" : "Rendering opaque"));
+                                usesFragmentLists() == UseFragmentList::Yes ? "Using A-buffer"
+                                                                            : "Rendering opaque"));
     return doc;
 }
 

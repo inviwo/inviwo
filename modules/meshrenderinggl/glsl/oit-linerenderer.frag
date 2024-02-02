@@ -146,7 +146,7 @@ void main() {
     if (color.a > 0.0) {
         ivec2 coords = ivec2(gl_FragCoord.xy);
 
-        abufferRender(coords, depth, vec4(color.xyz, color.a *alpha));
+        abufferRender(coords, depth, vec4(color.xyz, color.a * alpha));
     }
     discard;
 

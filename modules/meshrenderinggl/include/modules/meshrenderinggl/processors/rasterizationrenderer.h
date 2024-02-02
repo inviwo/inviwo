@@ -31,14 +31,14 @@
 
 #include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>  // for IVW_MODULE_MESHRENDE...
 
-#include <inviwo/core/datastructures/image/image.h>                  // for Image
-#include <inviwo/core/interaction/cameratrackball.h>                 // for CameraTrackball
-#include <inviwo/core/ports/imageport.h>                             // for ImageInport, ImageOu...
-#include <inviwo/core/processors/processor.h>                        // for Processor
-#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
-#include <inviwo/core/properties/boolcompositeproperty.h>            // for BoolCompositeProperty
-#include <inviwo/core/properties/cameraproperty.h>                   // for CameraProperty
-#include <inviwo/core/properties/ordinalproperty.h>                  // for FloatProperty, Float...
+#include <inviwo/core/datastructures/image/image.h>        // for Image
+#include <inviwo/core/interaction/cameratrackball.h>       // for CameraTrackball
+#include <inviwo/core/ports/imageport.h>                   // for ImageInport, ImageOu...
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
+#include <inviwo/core/properties/cameraproperty.h>         // for CameraProperty
+#include <inviwo/core/properties/ordinalproperty.h>        // for FloatProperty, Float...
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/util/dispatcher.h>                             // for Dispatcher, Dispatch...
 #include <modules/meshrenderinggl/ports/rasterizationport.h>         // for RasterizationInport
@@ -47,6 +47,8 @@
 #include <optional>
 
 namespace inviwo {
+class RasterizeEvent;
+class RasterizeHandle;
 
 class IVW_MODULE_MESHRENDERINGGL_API RasterizationRenderer : public Processor {
 public:
@@ -56,16 +58,21 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    /**
-     * \brief Performs the rendering.
-     */
-    virtual void process() override;
+    virtual void initializeResources() override;
 
+    virtual void process() override;
+    
 protected:
+    friend RasterizeHandle;
+    friend RasterizeEvent;
+
+    void configureShader(Shader& shader) const;
+    void setUniforms(Shader& shader, UseFragmentList useFragmentList) const;
+
     std::optional<mat4> boundingBox() const;
 
     RasterizationInport rasterizations_;
-    ImageInport imageInport_;
+    ImageInport background_;
     ImageOutport outport_;
     Image intermediateImage_;
 
@@ -89,7 +96,10 @@ protected:
     IllustrationSettings illustrationSettings_;
 
     std::optional<FragmentListRenderer> flr_;
-    typename Dispatcher<void()>::Handle flrReload_;
+    DispatcherHandle<void()> flrReload_;
+    DispatcherHandle<void(Outport*)> onConnect_;
+
+    Dispatcher<void()> initializeShader_;
 };
 
 }  // namespace inviwo

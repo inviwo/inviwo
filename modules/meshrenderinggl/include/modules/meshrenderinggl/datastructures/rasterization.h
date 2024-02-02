@@ -31,13 +31,12 @@
 
 #include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>  // for IVW_MODULE_MESHRENDERIN...
 
-#include <inviwo/core/processors/processor.h>
-#include <modules/meshrenderinggl/ports/rasterizationport.h>
-
 #include <inviwo/core/datastructures/datatraits.h>  // for DataTraits
 #include <inviwo/core/util/document.h>              // for Document
 #include <inviwo/core/util/glmmat.h>                // for mat4
 #include <inviwo/core/util/glmvec.h>                // for uvec3, ivec2
+
+#include <modules/meshrenderinggl/rasterizeevent.h>
 
 #include <functional>  // for function
 #include <string>      // for string
@@ -45,89 +44,51 @@
 
 namespace inviwo {
 class Shader;
-class RasterizationProcessor;
+class Rasterizer;
 
 /**
- * \brief A functor class for rendering geometry into a fragment list
+ * @brief A functor class for rendering geometry into a fragment list
  * Will be applied by a renderer containing an A-buffer.
  */
 class IVW_MODULE_MESHRENDERINGGL_API Rasterization {
 public:
     Rasterization() = default;
-    Rasterization(std::shared_ptr<RasterizationProcessor> processor);
+    Rasterization(std::shared_ptr<Rasterizer> processor);
     Rasterization(const Rasterization&) = delete;
     Rasterization(Rasterization&&) = delete;
     Rasterization& operator=(const Rasterization&) = delete;
     Rasterization& operator=(Rasterization&&) = delete;
 
-    std::shared_ptr<RasterizationProcessor> getProcessor() const;
+    std::shared_ptr<Rasterizer> getProcessor() const;
+
+    void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) const;
 
     /**
-     * \brief Query whether fragments will be emitted.
+     * @brief Query whether fragments will be emitted.
      * @return True for order-independent rendering, false for opaque rasterization.
      */
-    bool usesFragmentLists() const;
+    UseFragmentList usesFragmentLists() const;
 
     /**
-     * \brief Get data description for the network interface.
+     * @brief Get data description for the network interface.
      * @return Specific information about this rasterization type/instance.
      */
     Document getInfo() const;
 
     /**
-     * \brief Return the world space bounding box of the rendered geometry.
+     * @brief Return the world space bounding box of the rendered geometry.
      */
     std::optional<mat4> boundingBox() const;
 
 private:
-    std::weak_ptr<RasterizationProcessor> processor_;
-};
-
-class IVW_MODULE_MESHRENDERINGGL_API RasterizationProcessor : public Processor {
-public:
-    RasterizationProcessor(std::string_view identifier = "", std::string_view displayName = "");
-
-    virtual void initializeResources() override;
-
-    virtual void process() final;
- 
-
-
-
-    /**
-     * \brief Render the fragments, with all setup and evaluation taken care of.
-     * If opaque is set, a standard render call instead.
-     * @param imageSize Size in pixels.
-     * @param worldMatrixTransform Additional transform to be applied before rendering.
-     * @param setUniforms Binds the fragment list buffer and sets required uniforms.
-     */
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                           std::function<void(Shader&)> setUniforms,
-                           std::function<void(Shader&)> initializeShader) = 0;
-
-    /**
-     * \brief Query whether fragments will be emitted.
-     * @return True for order-independent rendering, false for opaque rasterization.
-     */
-    virtual bool usesFragmentLists() const = 0;
-
-    /**
-     * \brief Return the world space bounding box of the rendered geometry.
-     */
-    virtual std::optional<mat4> boundingBox() const { return std::nullopt; }
-
-    virtual Document getInfo() const { return Document{}; }
-
-    RasterizationOutport outport_;
-    
-    bool needsInitialize_;
+    std::weak_ptr<Rasterizer> processor_;
 };
 
 template <>
 struct DataTraits<Rasterization> {
-    static std::string classIdentifier() { return "org.inviwo.Rasterization"; }
-    static std::string dataName() { return "Rasterization"; }
-    static uvec3 colorCode() { return uvec3(80, 160, 160); }
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.Rasterization"; }
+    static constexpr std::string_view dataName() { return "Rasterization"; }
+    static constexpr uvec3 colorCode() { return uvec3(80, 160, 160); }
     static Document info(const Rasterization& data) { return data.getInfo(); }
 };
 }  // namespace inviwo

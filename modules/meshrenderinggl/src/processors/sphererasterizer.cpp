@@ -88,7 +88,7 @@ const ProcessorInfo SphereRasterizer::processorInfo_{
 const ProcessorInfo SphereRasterizer::getProcessorInfo() const { return processorInfo_; }
 
 SphereRasterizer::SphereRasterizer()
-    : RasterizationProcessor()
+    : Rasterizer()
     , inport_("inport", R"(
         The input mesh uses the following buffers:
         * PositionAttrib   vec3
@@ -148,39 +148,40 @@ void SphereRasterizer::initializeResources() {
 }
 
 void SphereRasterizer::configureShader(Shader& shader) {
+    Rasterizer::configureShader(shader);
     utilgl::addDefines(shader, labels_, periodic_, config_, clip_);
-
-    auto* fso = shader.getFragmentShaderObject();
-    fso->setShaderDefine("USE_FRAGMENT_LIST", usesFragmentLists());
+    shader.build();
 }
 
-bool SphereRasterizer::usesFragmentLists() const {
-    return !forceOpaque_.get() && FragmentListRenderer::supportsFragmentLists();
+void SphereRasterizer::setUniforms(Shader& shader) {
+    Rasterizer::setUniforms(shader);
+    utilgl::setUniforms(shader, config_, clip_, bnl_, periodic_, labels_, texture_);
 }
 
-void SphereRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                                 std::function<void(Shader&)> setUniforms,
-                                 std::function<void(Shader&)> initializeShader) {
+UseFragmentList SphereRasterizer::usesFragmentLists() const {
+    return !forceOpaque_.get() && FragmentListRenderer::supportsFragmentLists()
+               ? UseFragmentList::Yes
+               : UseFragmentList::No;
+}
+
+void SphereRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
 
     bnl_.update();
 
     utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, !usesFragmentLists());
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, usesFragmentLists() == UseFragmentList::No);
 
     TextureUnitContainer cont;
     utilgl::bind(cont, bnl_, labels_, config_, texture_);
 
     for (auto mesh : inport_) {
         auto& shader = shaders_.getShader(*mesh);
-        initializeShader(shader);
+        utilgl::Activate activate{&shader};
 
-        shader.activate();
-
-        utilgl::setUniforms(shader, config_, clip_, bnl_, periodic_, labels_, texture_);
-        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / imageSize.x, 2.0f / imageSize.y));
         setUniforms(shader);
+        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / imageSize.x, 2.0f / imageSize.y));
 
-        auto transform = CompositeTransform(mesh->getModelMatrix(),
+        const auto transform = CompositeTransform(mesh->getModelMatrix(),
                                             mesh->getWorldMatrix() * worldMatrixTransform);
         utilgl::setShaderUniforms(shader, transform, "geometry");
 
@@ -195,8 +196,6 @@ void SphereRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrix
                 break;
             }
         }
-
-        shader.deactivate();
     }
 }
 
@@ -205,7 +204,8 @@ Document SphereRasterizer::getInfo() const {
     const auto size = inport_.getVectorData().size();
     doc.append("p", fmt::format("Sphere mesh rasterization functor with {} mesh{}. {}.", size,
                                 (size == 1) ? "" : "es",
-                                usesFragmentLists() ? "Using A-buffer" : "Rendering opaque"));
+                                usesFragmentLists() == UseFragmentList::Yes ? "Using A-buffer"
+                                                                            : "Rendering opaque"));
     return doc;
 }
 

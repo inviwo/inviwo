@@ -122,7 +122,6 @@ void FragmentListRenderer::prePass(const size2_t& screenSize) {
     resizeBuffers(screenSize);
 
     // reset counter
-
     GLuint v[1] = {0};
     atomicCounter_.upload(v, sizeof(GLuint));
     atomicCounter_.unbind();
@@ -143,12 +142,16 @@ void FragmentListRenderer::prePass(const size2_t& screenSize) {
     // memory barrier
     glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
 
+    LGL_ERROR;
+}
+
+void FragmentListRenderer::beginCount() {
     // start query
     // The query is used to determinate the size needed for the shader storage buffer
     // to store all the fragments.
     glBeginQuery(GL_SAMPLES_PASSED, totalFragmentQuery_);
-    LGL_ERROR;
 }
+void FragmentListRenderer::endCount() { glEndQuery(GL_SAMPLES_PASSED); }
 
 bool FragmentListRenderer::postPass(bool useIllustration, const Image* background) {
     // memory barrier
@@ -156,9 +159,10 @@ bool FragmentListRenderer::postPass(bool useIllustration, const Image* backgroun
 
     // get query result
     GLuint numFrags = 0;
-    glEndQuery(GL_SAMPLES_PASSED);
     glGetQueryObjectuiv(totalFragmentQuery_, GL_QUERY_RESULT, &numFrags);
     LGL_ERROR;
+
+    LogInfo("Fragments: " << numFrags << " max: " << fragmentSize_);
 
     // check if enough space was available
     if (numFrags > fragmentSize_) {
@@ -213,11 +217,11 @@ bool FragmentListRenderer::postPass(bool useIllustration, const Image* backgroun
     return true;  // success, enough storage available
 }
 
-void FragmentListRenderer::setShaderUniforms(Shader& shader) {
+void FragmentListRenderer::setShaderUniforms(Shader& shader) const {
     setUniforms(shader, textureUnits_[0]);
 }
 
-void FragmentListRenderer::setUniforms(Shader& shader, TextureUnit& abuffUnit) const {
+void FragmentListRenderer::setUniforms(Shader& shader, const TextureUnit& abuffUnit) const {
     // screen size textures
 
     abuffUnit.activate();
@@ -264,7 +268,7 @@ bool FragmentListRenderer::supportsIllustration() {
     return support;
 }
 
-typename Dispatcher<void()>::Handle FragmentListRenderer::onReload(std::function<void()> callback) {
+DispatcherHandle<void()> FragmentListRenderer::onReload(std::function<void()> callback) {
     return onReload_.add(callback);
 }
 
@@ -286,21 +290,17 @@ void FragmentListRenderer::buildShaders(bool hasBackground) {
         cfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
         cfs->addShaderExtension("GL_NV_shader_buffer_load", true);
         cfs->addShaderExtension("GL_EXT_bindable_uniform", true);
-    }
 
-    auto* ffs = illustration_.fill.getFragmentShaderObject();
-    ffs->setShaderExtension("GL_ARB_shader_atomic_counter_ops",
-                            ShaderObject::ExtensionBehavior::Enable, supportsIllustration());
-
-    if (supportsFragmentLists()) {
         dfs->setShaderDefine("BACKGROUND_AVAILABLE", builtWithBackground_);
         display_.build();
         clear_.build();
     }
 
     if (supportsIllustration()) {
-        illustration_.fill.getFragmentShaderObject()->setShaderDefine("BACKGROUND_AVAILABLE",
-                                                                      builtWithBackground_);
+        auto* ffs = illustration_.fill.getFragmentShaderObject();
+        ffs->setShaderExtension("GL_ARB_shader_atomic_counter_ops",
+                                ShaderObject::ExtensionBehavior::Enable, supportsIllustration());
+        ffs->setShaderDefine("BACKGROUND_AVAILABLE", builtWithBackground_);
         illustration_.fill.build();
         illustration_.draw.build();
         illustration_.neighbors.build();

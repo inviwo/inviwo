@@ -16,8 +16,10 @@ set(HEADER_FILES
     include/modules/meshrenderinggl/processors/linerasterizer.h
     include/modules/meshrenderinggl/processors/meshrasterizer.h
     include/modules/meshrenderinggl/processors/rasterizationrenderer.h
+    include/modules/meshrenderinggl/processors/rasterizer.h
     include/modules/meshrenderinggl/processors/sphererasterizer.h
     include/modules/meshrenderinggl/processors/transformrasterization.h
+    include/modules/meshrenderinggl/rasterizeevent.h
     include/modules/meshrenderinggl/rendering/fragmentlistrenderer.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -35,8 +37,10 @@ set(SOURCE_FILES
     src/processors/linerasterizer.cpp
     src/processors/meshrasterizer.cpp
     src/processors/rasterizationrenderer.cpp
+    src/processors/rasterizer.cpp
     src/processors/sphererasterizer.cpp
     src/processors/transformrasterization.cpp
+    src/rasterizeevent.cpp
     src/rendering/fragmentlistrenderer.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

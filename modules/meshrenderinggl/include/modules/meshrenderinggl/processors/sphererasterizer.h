@@ -49,6 +49,7 @@
 #include <modules/base/properties/transformlistproperty.h>         // for TransformListProperty
 #include <modules/meshrenderinggl/datastructures/rasterization.h>  // for Rasterization
 #include <modules/meshrenderinggl/ports/rasterizationport.h>       // for RasterizationOutport
+#include <modules/meshrenderinggl/processors/rasterizer.h>
 
 #include <modules/basegl/util/meshbnlgl.h>
 #include <modules/basegl/util/uniformlabelatlasgl.h>
@@ -69,7 +70,7 @@ class Mesh;
 class MeshShaderCache;
 class Shader;
 
-class IVW_MODULE_MESHRENDERINGGL_API SphereRasterizer : public RasterizationProcessor {
+class IVW_MODULE_MESHRENDERINGGL_API SphereRasterizer : public Rasterizer {
     friend class SphereRasterization;
 
 public:
@@ -83,14 +84,12 @@ public:
 
     virtual Document getInfo() const override;
     virtual std::optional<mat4> boundingBox() const override;
-    virtual bool usesFragmentLists() const override;
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                           std::function<void(Shader&)> setUniforms,
-                           std::function<void(Shader&)> initializeShader) override;
+    virtual UseFragmentList usesFragmentLists() const override;
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) override;
 
 private:
-    void configureShader(Shader& shader);
-    void configureOITShader(Shader& shader);
+    virtual void configureShader(Shader& shader) override;
+    virtual void setUniforms(Shader& shader) override;
 
     enum class RenderMode {
         EntireMesh,  //!< render all vertices of the input mesh as glyphs

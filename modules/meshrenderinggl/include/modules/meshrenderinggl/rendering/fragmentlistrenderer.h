@@ -87,7 +87,7 @@ public:
      * The uniforms are defined in <code>oit/abufferlinkedlist.glsl</code>
      * \param shader the shader of the object to be rendered
      */
-    void setShaderUniforms(Shader& shader);
+    void setShaderUniforms(Shader& shader) const;
 
     /**
      * \brief Finishes the fragment list pass and renders the final result.
@@ -99,6 +99,9 @@ public:
      * space for all fragments was available and the procedure should be repeated.
      */
     bool postPass(bool useIllustration, const Image* background);
+
+    void beginCount();
+    void endCount();
 
     struct IllustrationSettings {
         vec3 edgeColor_;
@@ -113,19 +116,20 @@ public:
     }
 
     /**
-     * \brief Tests if fragment lists are supported by the current opengl context.
+     * @brief Tests if fragment lists are supported by the current opengl context.
      * Fragment lists require OpenGL 4.3
-     * \return true iff they are supported
+     * @return true iff they are supported
      */
     static bool supportsFragmentLists();
     /**
-     * \brief Tests if the illustration buffer are supported and can therefore be enabled.
+     * @brief Tests if the illustration buffer are supported and can therefore be enabled.
      * The Illustration Buffer requires OpenGL 4.6 or OpenGL 4.5 with the extension
-     * "GL_ARB_shader_atomic_counter_ops". \return true iff they are supported
+     * "GL_ARB_shader_atomic_counter_ops".
+     * @return true iff they are supported
      */
     static bool supportsIllustration();
 
-    typename Dispatcher<void()>::Handle onReload(std::function<void()> callback);
+    DispatcherHandle<void()> onReload(std::function<void()> callback);
 
     void debugFragmentLists(std::ostream& oss);
     void debugIllustrationBuffer(std::ostream& oss);
@@ -133,7 +137,7 @@ public:
 private:
     void buildShaders(bool hasBackground = false);
 
-    void setUniforms(Shader& shader, TextureUnit& abuffUnit) const;
+    void setUniforms(Shader& shader, const TextureUnit& abuffUnit) const;
     void resizeBuffers(const size2_t& screenSize);
 
     void fillIllustration(TextureUnit& abuffUnit, TextureUnit& idxUnit, TextureUnit& countUnit,
@@ -183,7 +187,7 @@ private:
     };
 
     Illustration illustration_;
-    typename Dispatcher<void()>::Handle illustrationOnReload_;
+    DispatcherHandle<void()> illustrationOnReload_;
 
     Dispatcher<void()> onReload_;
 };

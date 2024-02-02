@@ -51,6 +51,7 @@
 #include <modules/meshrenderinggl/datastructures/rasterization.h>    // for Rasterization
 #include <modules/meshrenderinggl/ports/rasterizationport.h>         // for RasterizationOutport
 #include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>  // for FragmentListRenderer
+#include <modules/meshrenderinggl/processors/rasterizer.h>
 
 #include <array>        // for array
 #include <functional>   // for __base, function
@@ -71,7 +72,7 @@ class Shader;
  * transparent mesh. Many alpha computation modes, shading modes, color modes can be combined and
  * even selected individually for the front- and back face.
  */
-class IVW_MODULE_MESHRENDERINGGL_API MeshRasterizer : public RasterizationProcessor {
+class IVW_MODULE_MESHRENDERINGGL_API MeshRasterizer : public Rasterizer {
     friend class MeshRasterization;
 
 public:
@@ -83,12 +84,11 @@ public:
 
     virtual void initializeResources() override;
 
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                           std::function<void(Shader&)> setUniforms,
-                           std::function<void(Shader&)> initializeShader) override;
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) override;
 
-    virtual bool usesFragmentLists() const override {
-        return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
+    virtual UseFragmentList usesFragmentLists() const override {
+        return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists() ? UseFragmentList::Yes
+                                                                              : UseFragmentList::No;
     }
 
     virtual std::optional<mat4> boundingBox() const override;
@@ -103,9 +103,9 @@ protected:
      */
     void updateMeshes();
 
-    MeshFlatMultiInport inport_;
+    virtual void setUniforms(Shader& shader) override;
 
-    SimpleLightingProperty lightingProperty_;
+    MeshFlatMultiInport inport_;
 
     BoolProperty forceOpaque_;
 
@@ -219,7 +219,7 @@ protected:
     std::array<FaceSettings, 2> faceSettings_;
 
     std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;
-    std::shared_ptr<Shader> shader_;
+    Shader shader_;
 
     /**
      * \brief This flag is set to true if adjacency information is available in the shader.
