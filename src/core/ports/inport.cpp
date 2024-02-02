@@ -115,6 +115,7 @@ void Inport::connectTo(Outport* outport) {
         setChanged(true, outport);  // mark that we should call onChange.
         isReady_.update();
         onConnectCallback_.invokeAll();
+        onConnectDispatcher_.invoke(outport);
         invalidate(InvalidationLevel::InvalidOutput);
     }
 }
@@ -127,6 +128,7 @@ void Inport::disconnectFrom(Outport* outport) {
         setChanged(true, outport);      // mark that we should call onChange.
         isReady_.update();
         onDisconnectCallback_.invokeAll();
+        onDisconnectDispatcher_.invoke(outport);
         invalidate(InvalidationLevel::InvalidOutput);
     }
 }
@@ -173,18 +175,29 @@ void Inport::removeOnInvalid(const BaseCallBack* callback) { onInvalidCallback_.
 const BaseCallBack* Inport::onConnect(std::function<void()> lambda) {
     return onConnectCallback_.addLambdaCallback(lambda);
 }
-std::shared_ptr<std::function<void()>> Inport::onConnectScoped(std::function<void()> lambda) {
-    return onConnectCallback_.addLambdaCallbackRaii(lambda);
-}
 void Inport::removeOnConnect(const BaseCallBack* callback) { onConnectCallback_.remove(callback); }
+
 const BaseCallBack* Inport::onDisconnect(std::function<void()> lambda) {
     return onDisconnectCallback_.addLambdaCallback(lambda);
+}
+void Inport::removeOnDisconnect(const BaseCallBack* callback) {
+    onDisconnectCallback_.remove(callback);
+}
+
+std::shared_ptr<std::function<void()>> Inport::onConnectScoped(std::function<void()> lambda) {
+    return onConnectCallback_.addLambdaCallbackRaii(lambda);
 }
 std::shared_ptr<std::function<void()>> Inport::onDisconnectScoped(std::function<void()> lambda) {
     return onDisconnectCallback_.addLambdaCallbackRaii(lambda);
 }
-void Inport::removeOnDisconnect(const BaseCallBack* callback) {
-    onDisconnectCallback_.remove(callback);
+
+std::shared_ptr<std::function<void(Outport*)>> Inport::onConnectScoped(
+    std::function<void(Outport*)> lambda) {
+    return onConnectDispatcher_.add(std::move(lambda));
+}
+std::shared_ptr<std::function<void(Outport*)>> Inport::onDisconnectScoped(
+    std::function<void(Outport*)> lambda) {
+    return onDisconnectDispatcher_.add(std::move(lambda));
 }
 
 void Inport::setIsReadyUpdater(std::function<bool()> updater) {

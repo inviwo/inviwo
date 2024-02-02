@@ -93,4 +93,7 @@ private:
     int32_t concurrent_dispatcher_count = 0;
 };
 
+template <typename C>
+using DispatcherHandle = typename Dispatcher<C>::Handle;
+
 }  // namespace inviwo

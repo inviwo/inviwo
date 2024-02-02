@@ -118,10 +118,14 @@ public:
     std::shared_ptr<std::function<void()>> onInvalidScoped(std::function<void()> lambda);
 
     const BaseCallBack* onConnect(std::function<void()> lambda);
-    std::shared_ptr<std::function<void()>> onConnectScoped(std::function<void()> lambda);
-
     const BaseCallBack* onDisconnect(std::function<void()> lambda);
+
+    std::shared_ptr<std::function<void()>> onConnectScoped(std::function<void()> lambda);
     std::shared_ptr<std::function<void()>> onDisconnectScoped(std::function<void()> lambda);
+    std::shared_ptr<std::function<void(Outport*)>> onConnectScoped(
+        std::function<void(Outport*)> lambda);
+    std::shared_ptr<std::function<void(Outport*)>> onDisconnectScoped(
+        std::function<void(Outport*)> lambda);
 
     void removeOnChange(const BaseCallBack* callback);
     void removeOnInvalid(const BaseCallBack* callback);
@@ -173,6 +177,8 @@ private:
 
     CallBackList onConnectCallback_;
     CallBackList onDisconnectCallback_;
+    Dispatcher<void(Outport*)> onConnectDispatcher_;
+    Dispatcher<void(Outport*)> onDisconnectDispatcher_;
 };
 
 }  // namespace inviwo
