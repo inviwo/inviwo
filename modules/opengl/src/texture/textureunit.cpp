@@ -32,6 +32,7 @@
 #include <inviwo/core/util/assertion.h>      // for ivwAssert
 #include <inviwo/core/util/sourcecontext.h>  // for IVW_CONTEXT
 #include <modules/opengl/openglexception.h>  // for OpenGLException
+#include <modules/opengl/texture/samplerobject.h>
 
 #include <algorithm>    // for max
 #include <string_view>  // for string_view
@@ -40,6 +41,7 @@
 namespace inviwo {
 
 std::vector<bool> TextureUnit::textureUnits_{};
+std::vector<GLint> TextureUnit::samplerObjects_{};
 
 TextureUnit::TextureUnit() : unitEnum_(0), unitNumber_(0) {
     ivwAssert(!textureUnits_.empty(), "Texture unit handler not initialized.");
@@ -80,12 +82,27 @@ TextureUnit& TextureUnit::operator=(TextureUnit&& that) noexcept {
 TextureUnit::~TextureUnit() {
     if (textureUnits_.size() > static_cast<size_t>(unitNumber_)) {
         textureUnits_[static_cast<size_t>(unitNumber_)] = false;
+        if (samplerObjects_[static_cast<size_t>(unitNumber_)] != 0) {
+            glBindSampler(unitNumber_, 0);
+            samplerObjects_[static_cast<size_t>(unitNumber_)] = 0;
+        }
     }
 }
 
-void TextureUnit::initialize(int numUnits) { textureUnits_.resize(numUnits, false); }
+void TextureUnit::initialize(int numUnits) {
+    textureUnits_.resize(numUnits, false);
+    samplerObjects_.resize(numUnits, 0);
+}
 
-void TextureUnit::deinitialize() { textureUnits_.clear(); }
+void TextureUnit::deinitialize() {
+    textureUnits_.clear();
+    samplerObjects_.clear();
+}
+
+void TextureUnit::bindSampler(const SamplerObject& so) {
+    glBindSampler(unitNumber_, so.getID());
+    samplerObjects_[static_cast<size_t>(unitNumber_)] = so.getID();
+}
 
 TextureUnitContainer::TextureUnitContainer(size_t i) : units_{} {
     units_.reserve(std::max(size_t{8}, i));

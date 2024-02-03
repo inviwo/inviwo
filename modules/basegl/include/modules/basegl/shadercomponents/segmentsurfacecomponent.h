@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2024 Inviwo Foundation
+ * Copyright (c) 2022 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,22 +27,43 @@
  *
  *********************************************************************************/
 
-#include <inviwo/volume/processors/atlasboundary.h>
-#include <inviwo/volume/processors/volumeregionstatistics.h>
-#include <inviwo/volume/processors/volumeregionmapper.h>
-#include <inviwo/volume/processors/volumevoronoisegmentation.h>
-#include <inviwo/volume/volumemodule.h>
+#pragma once
+
+#include <modules/basegl/baseglmoduledefine.h>
+
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/selectioncolorproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <modules/opengl/texture/samplerobject.h>
+
+#include <string>
 
 namespace inviwo {
 
-VolumeModule::VolumeModule(InviwoApplication* app) : InviwoModule(app, "Volume") {
-    // Register objects that can be shared with the rest of inviwo here:
+/**
+ * Takes an atlas volume from the atlascomponent in range [0, 3] of intergral type.
+ * Uses brushing and linking to show filtered, selected and highlighted segments.
+ */
+class IVW_MODULE_BASEGL_API SegmentSurfaceComponent : public ShaderComponent {
+public:
+    SegmentSurfaceComponent(VolumeInport& atlas);
+    virtual std::string_view getName() const override;
+    virtual void process(Shader& shader, TextureUnitContainer&) override;
+    virtual std::vector<Property*> getProperties() override;
+    virtual std::vector<Segment> getSegments() override;
 
-    // Processors
-    registerProcessor<VolumeRegionMapper>();
-    registerProcessor<VolumeRegionStatistics>();
-    registerProcessor<VolumeVoronoiSegmentation>();
-    registerProcessor<AtlasBoundary>();
-}
+private:
+    std::string name_;
+    BoolCompositeProperty useAtlasBoundary_;
+    BoolProperty applyBoundaryLight_;
+    SelectionColorProperty showHighlighted_;
+    SelectionColorProperty showSelected_;
+    SelectionColorProperty showFiltered_;
+    SamplerObject linearSampler_;
+    FloatProperty textureSpaceGradientSpacingScale_;
+    VolumeInport& atlas_;
+};
 
 }  // namespace inviwo

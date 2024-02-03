@@ -78,6 +78,8 @@ public:
 
     void onPickingEvent(PickingEvent* e);
 
+    VolumeInport& getAtlasInport() { return atlas_; }
+
 private:
     enum class ColoringGroup { All, Selected, Unselected, Filtered, Unfiltered, Zero };
     enum class ColoringAction { None, SetColor, SetAlpha, SetScheme };
