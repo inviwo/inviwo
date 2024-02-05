@@ -88,7 +88,7 @@ IVW_MODULE_CIMG_API void updateVolume(VolumeRAM& volume, const std::filesystem::
 IVW_MODULE_CIMG_API void saveLayer(const LayerRAM& layer, const std::filesystem::path& filePath);
 IVW_MODULE_CIMG_API void saveLayer(const LayerRAM& layer, std::vector<unsigned char>& dst,
                                    std::string_view extension);
-                                   
+
 IVW_MODULE_CIMG_API bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target);
 
 IVW_MODULE_CIMG_API std::string getLibJPGVersion();

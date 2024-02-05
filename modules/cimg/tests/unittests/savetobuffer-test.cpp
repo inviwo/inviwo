@@ -47,7 +47,6 @@
 #include <modules/cimg/cimgutils.h>
 #include <modules/cimg/cimglayerreader.h>
 
-
 #include <fstream>
 #include <array>
 #include <cstdio>

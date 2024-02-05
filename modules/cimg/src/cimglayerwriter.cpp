@@ -31,9 +31,9 @@
 
 #include <inviwo/core/datastructures/image/layer.h>  // for Layer (ptr only), DataWriterType
 #include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/io/datawriter.h>               // for DataWriterType
-#include <inviwo/core/util/fileextension.h>          // for FileExtension
-#include <modules/cimg/cimgutils.h>                  // for saveLayer, saveLayerToBuffer
+#include <inviwo/core/io/datawriter.h>       // for DataWriterType
+#include <inviwo/core/util/fileextension.h>  // for FileExtension
+#include <modules/cimg/cimgutils.h>          // for saveLayer, saveLayerToBuffer
 
 namespace inviwo {
 
