@@ -41,7 +41,6 @@ BufferRAM::BufferRAM(BufferUsage usage, BufferTarget target)
 
 std::type_index BufferRAM::getTypeIndex() const { return std::type_index(typeid(BufferRAM)); }
 
-//! [Format Dispatching Example]
 std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataFormatBase* format,
                                            BufferUsage usage, BufferTarget target) {
 
@@ -57,7 +56,6 @@ std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataFormatBase* fo
             }
         });
 }
-//! [Format Dispatching Example]
 
 bool operator==(const BufferBase& bufA, const BufferBase& bufB) {
     if (&bufA == &bufB) {

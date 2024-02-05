@@ -30,6 +30,8 @@
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#include <inviwo/core/datastructures/volume/volumeram.h>
+
 namespace inviwo {
 
 std::string dispatching::detail::predicateNameHelper(const char* name) {
@@ -49,5 +51,66 @@ std::string dispatching::detail::predicateNameHelper(const char* name) {
     }
     return str;
 }
+
+#include <warn/push>
+#include <warn/ignore/unused-function>
+
+namespace {
+
+//! [Format singleDispatch example]
+std::shared_ptr<VolumeRAM> create(DataFormatId dataFormatId) {
+    return dispatching::singleDispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::All>(
+        dataFormatId, []<typename T>() {
+            return std::make_shared<VolumeRAMPrecision<T>>(size3_t{128, 128, 128});
+        });
+}
+//! [Format singleDispatch example]
+
+//! [Format doubleDispatch example]
+std::shared_ptr<VolumeRAMPrecision<double>> sum(const VolumeRAM& v1, const VolumeRAM& v2) {
+    auto sum = std::make_shared<VolumeRAMPrecision<double>>(v1.getDimensions());
+
+    dispatching::doubleDispatch<void, dispatching::filter::Scalars, dispatching::filter::Scalars>(
+        v1.getDataFormat()->getId(), v2.getDataFormat()->getId(), [&]<typename T1, typename T2>() {
+            const auto& ram1 = static_cast<const VolumeRAMPrecision<T1>&>(v1);
+            const auto& ram2 = static_cast<const VolumeRAMPrecision<T2>&>(v2);
+
+            const auto data1 = ram1.getView();
+            const auto data2 = ram2.getView();
+            auto dest = sum->getView();
+
+            for (size_t i = 0; data1.size(); ++i) {
+                dest[i] = static_cast<double>(data1[i]) + static_cast<double>(data2[i]);
+            }
+        });
+    return sum;
+}
+//! [Format doubleDispatch example]
+
+//! [Format tripleDispatch example]
+std::shared_ptr<VolumeRAM> sum(const VolumeRAM& v1, const VolumeRAM& v2, DataFormatId sumType) {
+    return dispatching::tripleDispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::Scalars,
+                                       dispatching::filter::Scalars, dispatching::filter::Scalars>(
+        v1.getDataFormat()->getId(), v2.getDataFormat()->getId(), sumType,
+        [&]<typename T1, typename T2, typename T3>() {
+            auto sum = std::make_shared<VolumeRAMPrecision<T3>>(v1.getDimensions());
+            const auto& ram1 = static_cast<const VolumeRAMPrecision<T1>&>(v1);
+            const auto& ram2 = static_cast<const VolumeRAMPrecision<T2>&>(v2);
+
+            const auto data1 = ram1.getView();
+            const auto data2 = ram2.getView();
+            auto dest = sum->getView();
+
+            for (size_t i = 0; data1.size(); ++i) {
+                dest[i] = static_cast<T3>(data1[i]) + static_cast<T3>(data2[i]);
+            }
+            return sum;
+        });
+}
+//! [Format tripleDispatch example]
+
+}  // namespace
+
+#include <warn/pop>
 
 }  // namespace inviwo

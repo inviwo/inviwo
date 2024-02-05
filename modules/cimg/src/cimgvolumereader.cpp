@@ -84,26 +84,11 @@ CImgVolumeRAMLoader* CImgVolumeRAMLoader::clone() const { return new CImgVolumeR
 std::shared_ptr<VolumeRepresentation> CImgVolumeRAMLoader::createRepresentation(
     const VolumeRepresentation& src) const {
 
-    size3_t dimensions = src.getDimensions();
-    DataFormatId formatId = DataFormatId::NotSpecialized;
-
-    std::filesystem::path fileName = sourceFile_;
-
-    if (!std::filesystem::is_regular_file(fileName)) {
-        const auto newPath = filesystem::addBasePath(fileName);
-
-        if (std::filesystem::is_regular_file(newPath)) {
-            fileName = newPath;
-        } else {
-            throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);
-        }
-    }
-
-    void* data = cimgutil::loadVolumeData(nullptr, fileName, dimensions, formatId);
-    auto volumeRAM =
-        createVolumeRAM(dimensions, DataFormatBase::get(formatId), data, src.getSwizzleMask(),
-                        src.getInterpolation(), src.getWrapping());
-
+    const auto fileName = findFile(sourceFile_);
+    auto volumeRAM = cimgutil::loadVolume(fileName);
+    volumeRAM->setWrapping(src.getWrapping());
+    volumeRAM->setInterpolation(src.getInterpolation());
+    volumeRAM->setSwizzleMask(src.getSwizzleMask());
     return volumeRAM;
 }
 
@@ -111,22 +96,11 @@ void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentat
                                                const VolumeRepresentation& src) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
-    size3_t dimensions = src.getDimensions();
-    DataFormatId formatId = DataFormatId::NotSpecialized;
-
-    std::filesystem::path fileName = sourceFile_;
-
-    if (!std::filesystem::is_regular_file(fileName)) {
-        const auto newPath = filesystem::addBasePath(fileName);
-
-        if (std::filesystem::is_regular_file(newPath)) {
-            fileName = newPath;
-        } else {
-            throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);
-        }
-    }
-
-    cimgutil::loadVolumeData(volumeDst->getData(), fileName, dimensions, formatId);
+    const auto fileName = findFile(sourceFile_);
+    cimgutil::updateVolume(*volumeDst, fileName);
+    volumeDst->setWrapping(src.getWrapping());
+    volumeDst->setInterpolation(src.getInterpolation());
+    volumeDst->setSwizzleMask(src.getSwizzleMask());
 }
 
 }  // namespace inviwo

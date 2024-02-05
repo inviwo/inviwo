@@ -38,12 +38,15 @@
 #include <windows.h>
 #endif
 
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/io/tempfilehandle.h>
 #include <inviwo/core/util/filesystem.h>
 #include <modules/cimg/cimgutils.h>
 #include <modules/cimg/cimglayerreader.h>
+
 
 #include <fstream>
 #include <array>
@@ -63,7 +66,9 @@ TEST(CImgUtils, cimgToBuffer) {
     // write layer to a temporary file
     util::TempFileHandle tmpFile("cimg", testExtension);
 
-    cimgutil::saveLayer(tmpFile.getFileName(), layer.get());
+    auto ram = layer->getRepresentation<LayerRAM>();
+    ASSERT_TRUE(ram != nullptr);
+    cimgutil::saveLayer(*ram, tmpFile.getFileName());
 
     // read file contents
     std::vector<unsigned char> fileContents;
@@ -80,13 +85,13 @@ TEST(CImgUtils, cimgToBuffer) {
     }
 
     // write layer to buffer
-    auto imgBuffer = cimgutil::saveLayerToBuffer(testExtension, layer.get());
-    ASSERT_TRUE(imgBuffer != nullptr) << "buffer is empty";
+    std::vector<unsigned char> buffer;
+    cimgutil::saveLayer(*ram, buffer, testExtension);
+    ASSERT_TRUE(!buffer.empty()) << "buffer is empty";
 
     // compare buffer and file contents
-
-    ASSERT_TRUE(fileContents.size() == imgBuffer->size()) << "buffer and file size does not match";
-    EXPECT_EQ(*imgBuffer.get(), fileContents) << "buffer and file contents do not match";
+    ASSERT_TRUE(fileContents.size() == buffer.size()) << "buffer and file size does not match";
+    EXPECT_EQ(buffer, fileContents) << "buffer and file contents do not match";
 }
 
 }  // namespace inviwo

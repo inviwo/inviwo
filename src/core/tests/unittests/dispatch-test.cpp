@@ -38,55 +38,34 @@
 
 namespace inviwo {
 
-struct RamDispatcher {
-    template <typename Result, typename Format, typename Callable, typename... Args>
-    Result operator()(Callable&& obj, BufferRAM* bufferram, Args... args) {
-        return obj(
-            static_cast<BufferRAMPrecision<typename Format::type, BufferTarget::Data>*>(bufferram),
-            std::forward<Args>(args)...);
-    }
-};
-template <typename Result, template <class> class Predicate = dispatching::filter::All,
-          typename Callable, typename... Args>
-Result dispatch(BufferRAM* bufferram, Callable&& obj, Args... args) {
-    RamDispatcher disp;
-    return dispatching::dispatch<Result, Predicate>(bufferram->getDataFormatId(), disp,
-                                                    std::forward<Callable>(obj), bufferram,
-                                                    std::forward<Args>(args)...);
-}
-
 using res_t = std::tuple<DataFormatId, NumericType, size_t, size_t>;
 
 template <template <class> class Predicate>
 res_t test(DataFormatId id) {
-    auto buf =
-        createBufferRAM(10, DataFormatBase::get(id), BufferUsage::Static, BufferTarget::Data);
-
-    return dispatch<res_t, Predicate>(buf.get(), [](auto b) -> res_t {
-        (void)b;
-        using BT = typename std::decay<decltype(*b)>::type;
-        using DT = typename BT::type;
-        return res_t{DataFormat<DT>::id(), DataFormat<DT>::numericType(),
-                     DataFormat<DT>::components(), DataFormat<DT>::precision()};
+    return dispatching::singleDispatch<res_t, Predicate>(id, []<typename T>() -> res_t {
+        return res_t{DataFormat<T>::id(), DataFormat<T>::numericType(), DataFormat<T>::components(),
+                     DataFormat<T>::precision()};
     });
 }
 
 TEST(DispatchTests, Test1) {
-    auto res = test<dispatching::filter::Vecs>(DataFormatId::Vec3Float32);
+    auto&& [dataFormatId, numericType, components, precision] =
+        test<dispatching::filter::Vecs>(DataFormatId::Vec3Float32);
 
-    EXPECT_EQ(DataFormatId::Vec3Float32, std::get<0>(res));
-    EXPECT_EQ(NumericType::Float, std::get<1>(res));
-    EXPECT_EQ(3, std::get<2>(res));
-    EXPECT_EQ(32, std::get<3>(res));
+    EXPECT_EQ(DataFormatId::Vec3Float32, dataFormatId);
+    EXPECT_EQ(NumericType::Float, numericType);
+    EXPECT_EQ(3, components);
+    EXPECT_EQ(32, precision);
 }
 
 TEST(DispatchTests, Test2) {
-    auto res = test<dispatching::filter::Integers>(DataFormatId::Vec3Int32);
+    auto&& [dataFormatId, numericType, components, precision] =
+        test<dispatching::filter::Integers>(DataFormatId::Vec3Int32);
 
-    EXPECT_EQ(DataFormatId::Vec3Int32, std::get<0>(res));
-    EXPECT_EQ(NumericType::SignedInteger, std::get<1>(res));
-    EXPECT_EQ(3, std::get<2>(res));
-    EXPECT_EQ(32, std::get<3>(res));
+    EXPECT_EQ(DataFormatId::Vec3Int32, dataFormatId);
+    EXPECT_EQ(NumericType::SignedInteger, numericType);
+    EXPECT_EQ(3, components);
+    EXPECT_EQ(32, precision);
 }
 
 TEST(DispatchTests, ThrowTest1) {
@@ -102,17 +81,14 @@ TEST(DispatchTests, InstantiationTest1) {
     auto buf = createBufferRAM(10, DataFormatBase::get(DataFormatId::Float32), BufferUsage::Static,
                                BufferTarget::Data);
 
-    auto res = dispatch<float, dispatching::filter::Scalars>(buf.get(), [](auto b) {
-        (void)b;
-        using BT = typename std::decay<decltype(*b)>::type;
-        using DT = typename BT::type;
-
-        DT v1{0};
-        DT v2{1};
-
-        auto min = std::min(v1, v2);
-        return static_cast<float>(min);
-    });
+    auto res = dispatching::singleDispatch<float, dispatching::filter::Scalars>(
+        buf->getDataFormat()->getId(), [&]<typename T>() {
+            using D = util::value_type_t<T>;
+            D v1{0};
+            D v2{1};
+            auto min = std::min(v1, v2);
+            return static_cast<float>(min);
+        });
     EXPECT_EQ(0.0f, res);
 }
 
@@ -120,17 +96,14 @@ TEST(DispatchTests, InstantiationTest2) {
     auto buf = createBufferRAM(10, DataFormatBase::get(DataFormatId::Vec3Float32),
                                BufferUsage::Static, BufferTarget::Data);
 
-    auto res = dispatch<float, dispatching::filter::Vecs>(buf.get(), [](auto b) {
-        (void)b;
-        using BT = typename std::decay<decltype(*b)>::type;
-        using DT = typename BT::type;
-
-        DT v1{0};
-        DT v2{1};
-
-        auto min = glm::min(v1, v2);
-        return static_cast<float>(min[0]);
-    });
+    auto res = dispatching::singleDispatch<float, dispatching::filter::Vecs>(
+        buf->getDataFormat()->getId(), [&]<typename T>() {
+            using D = util::value_type_t<T>;
+            D v1{0};
+            D v2{1};
+            auto min = std::min(v1, v2);
+            return static_cast<float>(min);
+        });
     EXPECT_EQ(0.0f, res);
 }
 
