@@ -83,7 +83,7 @@ BufferCLGL* BufferCLGL::clone() const { return new BufferCLGL(*this); }
 const DataFormatBase* BufferCLGL::getDataFormat() const { return bufferObject_->getDataFormat(); }
 
 size_t BufferCLGL::getSize() const {
-    return bufferObject_->getSizeInBytes() / bufferObject_->getDataFormat()->getSize();
+    return bufferObject_->getSizeInBytes() / bufferObject_->getDataFormat()->getSizeInBytes();
 }
 
 void BufferCLGL::setSize(size_t size) {

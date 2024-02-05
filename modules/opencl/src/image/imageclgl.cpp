@@ -47,8 +47,8 @@ LayerCLGL* ImageCLGL::getLayerCL() { return layerCLGL_; }
 
 const LayerCLGL* ImageCLGL::getLayerCL() const { return layerCLGL_; }
 
-dvec4 ImageCLGL::readPixel(size2_t pos, LayerType layer, size_t index /*= 0*/) const {
-    return layerCLGL_->readPixel(pos, layer, index);
+dvec4 ImageCLGL::readPixel(size2_t pos, LayerType, size_t) const {
+    return layerCLGL_->readPixel(pos);
 }
 
 bool ImageCLGL::copyRepresentationsTo(ImageRepresentation* targetRep) const {

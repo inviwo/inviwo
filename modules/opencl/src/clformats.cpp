@@ -53,10 +53,6 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
                                         IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatId::Float16:
-            clFormat = cl::ImageFormat(CL_R, CL_HALF_FLOAT);
-            break;
-
         case DataFormatId::Float32:
             clFormat = cl::ImageFormat(CL_R, CL_FLOAT);
             break;
@@ -100,10 +96,6 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
                                         IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatId::Vec2Float16:
-            clFormat = cl::ImageFormat(CL_RG, CL_HALF_FLOAT);
-            break;
-
         case DataFormatId::Vec2Float32:
             clFormat = cl::ImageFormat(CL_RG, CL_FLOAT);
             break;
@@ -144,11 +136,6 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
 
         case DataFormatId::Vec2UInt64:
             throw OpenCLFormatException("Unsupported data format: Vec2UINT64",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
-            break;
-
-        case DataFormatId::Vec3Float16:
-            throw OpenCLFormatException("Unsupported data format: Vec3FLOAT16",
                                         IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
             break;
 
@@ -200,10 +187,6 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
         case DataFormatId::Vec3UInt64:
             throw OpenCLFormatException("Unsupported data format: Vec3UINT64",
                                         IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
-            break;
-
-        case DataFormatId::Vec4Float16:
-            clFormat = cl::ImageFormat(CL_RGBA, CL_HALF_FLOAT);
             break;
 
         case DataFormatId::Vec4Float32:
@@ -297,8 +280,6 @@ CLFormats::CLFormat::CLFormat()
 
 CLFormats::CLFormats() {
     // 1 channel
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Float16)] =
-        CLFormat(CL_R, CL_HALF_FLOAT, Normalization::None);
     CLFormatArray_[static_cast<size_t>(DataFormatId::Float32)] =
         CLFormat(CL_R, CL_FLOAT, Normalization::None);
     CLFormatArray_[static_cast<size_t>(DataFormatId::Int8)] =
@@ -314,8 +295,6 @@ CLFormats::CLFormats() {
     CLFormatArray_[static_cast<size_t>(DataFormatId::UInt32)] =
         CLFormat(CL_R, CL_UNSIGNED_INT32, Normalization::None);
     // 2 channels
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2Float16)] =
-        CLFormat(CL_RG, CL_HALF_FLOAT, Normalization::None);
     CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2Float32)] =
         CLFormat(CL_RG, CL_FLOAT, Normalization::None);
     CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2Int8)] =
@@ -334,8 +313,6 @@ CLFormats::CLFormats() {
     // Not supported
 
     // 4 channels
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4Float16)] =
-        CLFormat(CL_RGBA, CL_HALF_FLOAT, Normalization::None);
     CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4Float32)] =
         CLFormat(CL_RGBA, CL_FLOAT, Normalization::None);
     CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4Int8)] =

@@ -46,8 +46,8 @@ LayerCL* ImageCL::getLayerCL() { return layerCL_; }
 
 const LayerCL* ImageCL::getLayerCL() const { return layerCL_; }
 
-dvec4 ImageCL::readPixel(size2_t pos, LayerType layer, size_t index /*= 0*/) const {
-    return layerCL_->readPixel(pos, layer, index);
+dvec4 ImageCL::readPixel(size2_t pos, LayerType, size_t) const {
+    return layerCL_->readPixel(pos);
 }
 
 bool ImageCL::copyRepresentationsTo(ImageRepresentation* targetRep) const {

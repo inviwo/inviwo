@@ -75,7 +75,7 @@ public:
      * Read a single pixel value out of the specified layer at pos. Should only be used to read
      * single values not entire images.
      */
-    virtual dvec4 readPixel(size2_t pos, LayerType layer, size_t index = 0) const;
+    dvec4 readPixel(size2_t pos) const;
 
     /**
      * \brief update the swizzle mask of the channels for sampling color layers
