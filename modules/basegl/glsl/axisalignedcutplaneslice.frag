@@ -32,20 +32,21 @@
 #include "utils/sampler3d.glsl"
 #include "utils/classification.glsl"
 
-
 uniform sampler3D volume;
 uniform VolumeParameters volumeParameters;
 uniform sampler2D transferfunction;
 
+uniform bool useTF = true;
 uniform int channel;
 
-in vec4 color_;
-in vec3 texCoord_;
+in Fragment {
+    smooth vec3 texCoord;
+} in_frag;
 
 void main() {
-    vec4 src = getNormalizedVoxel(volume, volumeParameters, texCoord_);
-#ifdef USE_TF
-    src = applyTF(transferfunction, src, channel);
-#endif
-    FragData0 = src;
+    vec4 src = getNormalizedVoxel(volume, volumeParameters, in_frag.texCoord);
+
+    vec4 color = mix(src, applyTF(transferfunction, src, channel), bvec4(useTF));
+
+    FragData0 = color;
 }

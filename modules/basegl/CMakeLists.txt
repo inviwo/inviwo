@@ -246,8 +246,8 @@ ivw_group("Source Files" ${SOURCE_FILES})
 set(SHADER_FILES
     glsl/embeddedvolumeslice.frag
     glsl/embeddedvolumeslice.vert
-    glsl/axisalignedcutplaneboundingbox.frag
     glsl/axisalignedcutplaneslice.frag
+    glsl/axisalignedcutplaneslice.vert
     glsl/background.frag
     glsl/cubeglyph.frag
     glsl/cubeglyph.geom

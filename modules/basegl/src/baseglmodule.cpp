@@ -212,7 +212,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerDataVisualizer(std::make_unique<MeshVisualizer>(app));
 }
 
-int BaseGLModule::getVersion() const { return 6; }
+int BaseGLModule::getVersion() const { return 7; }
 
 std::unique_ptr<VersionConverter> BaseGLModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -481,6 +481,54 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
                         res |= true;
                     }
                 });
+            [[fallthrough]];
+        }
+        case 6: {
+            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+                const auto& key = node->Value();
+                if (key != "Processor") return true;
+                if (node->GetAttribute("type") != "org.inviwo.AxisAlignedCutPlane") {
+                    return true;
+                }
+                if (auto disableTF =
+                        xml::getElement(node, "Properties/Property&identifier=disableTF")) {
+
+                    disableTF->SetAttribute("identifier", "applyTF");
+                    if (auto elem = xml::getElement(disableTF, "displayName")) {
+                        elem->SetAttribute("content", "Apply TF");
+                    }
+                    // flip checked state
+                    if (auto value = xml::getElement(disableTF, "value")) {
+                        if (value->GetAttribute("content") == "0") {
+                            value->SetAttribute("content", "1");
+                        } else {
+                            value->SetAttribute("content", "0");
+                        }
+                    }
+                    res = true;
+                }
+
+                for (auto&& [path, newIdentifier, newDisplayName, sliceIdentifier] :
+                     {std::tuple{"x", "xAxis", "X Axis", "sliceX"},
+                      std::tuple{"y", "yAxis", "Z Axis", "sliceY"},
+                      std::tuple{"z", "zAxis", "Z Axis", "sliceZ"}}) {
+
+                    if (auto prop = xml::getElement(
+                            node, fmt::format("Properties/Property&identifier={}", path))) {
+                        prop->SetAttribute("identifier", newIdentifier);
+                        if (auto elem = xml::getElement(prop, "displayName")) {
+                            elem->SetAttribute("content", newDisplayName);
+                        }
+                        if (auto slice =
+                                xml::getElement(prop, "Properties/Property&identifier=slice")) {
+                            slice->SetAttribute("identifier", sliceIdentifier);
+                        }
+                        res = true;
+                    }
+                }
+                return true;
+            }};
+            conv.convert(root);
 
             return res;
         }
