@@ -30,6 +30,8 @@
 #ifndef IVW_INTERSECTION_GLSL
 #define IVW_INTERSECTION_GLSL
 
+#include "utils/structs.glsl" //! #include "./structs.glsl"
+
 // Intersection test of a ray with a plane. 
 // If intersecting, t0 is set to the point of intersection along the ray
 bool rayPlaneIntersection(in PlaneParameters plane, in vec3 point, in vec3 rayDir, inout float t0, in float t1) {

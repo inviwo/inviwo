@@ -30,7 +30,7 @@
 #ifndef IVW_SAMPLER2D_GLSL
 #define IVW_SAMPLER2D_GLSL
 
-#include "utils/structs.glsl"
+#include "utils/structs.glsl" //! #include "./structs.glsl"
 
 vec4 textureLookup2Dnormalized(sampler2D tex, ImageParameters textureParams, vec2 samplePos) {
     return texture(tex, samplePos);

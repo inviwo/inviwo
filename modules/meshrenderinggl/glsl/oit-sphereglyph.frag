@@ -30,9 +30,9 @@
 // Owned by the SphereRasterizer Processor
 // Should be very similar to sphereglyph.frag
 
-#include "utils/structs.glsl"
-#include "utils/shading.glsl"
-#include "utils/glyphs.glsl"
+#include "utils/structs.glsl" //! #include "../../opengl/glsl/utils/structs.glsl"
+#include "utils/shading.glsl" //! #include "../../opengl/glsl/utils/shading.glsl"
+#include "utils/glyphs.glsl"  //! #include "../../opengl/glsl/utils/glyphs.glsl"
 
 #define PI 3.1415926535897932384626433832795
 

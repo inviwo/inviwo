@@ -30,7 +30,7 @@
 #ifndef IVW_SAMPLER3D_GLSL
 #define IVW_SAMPLER3D_GLSL
 
-#include "utils/structs.glsl"
+#include "utils/structs.glsl" //! #include "./structs.glsl"
 
 //
 // Fetch texture data using texture coordinates [0,1]

@@ -26,11 +26,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#include "utils/structs.glsl"
-#include "utils/depth.glsl"
+//! #version 460
+#include "utils/structs.glsl" //! #include "../../opengl/glsl/utils/structs.glsl"
+#include "utils/depth.glsl"   //! #include "../../opengl/glsl/utils/depth.glsl"
 
 #ifdef USE_FRAGMENT_LIST
-#include "oit/abufferlinkedlist.glsl"
+#include "oit/abufferlinkedlist.glsl" 
 
 // this is important for the occlusion query
 layout(early_fragment_tests) in;

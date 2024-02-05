@@ -30,6 +30,8 @@
 #ifndef IVW_GLYPHS_GLSL
 #define IVW_GLYPHS_GLSL
 
+#include "utils/structs.glsl" //! #include "./structs.glsl"
+
 // shade the visible cut surface of a glyph when it gets clipped by the near clip plane
 //
 // @param glyphCenter     center of the glyph in object space

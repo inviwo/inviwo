@@ -29,7 +29,7 @@
 #ifndef IVW_SHADING_GLSL
 #define IVW_SHADING_GLSL
 
-#include "utils/structs.glsl"
+#include "utils/structs.glsl" //! #include "./structs.glsl"
 
 // Helper functions to calculate the shading
 vec3 shadeDiffuseCalculation(LightParameters light_, vec3 materialDiffuseColor, vec3 normal,
