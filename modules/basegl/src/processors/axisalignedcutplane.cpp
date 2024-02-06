@@ -101,6 +101,7 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
 
     for (size_t i = 0; i < axes_.size(); ++i) {
         axes_[i].addProperty(slices_[i]);
+        slices_[i].setSerializationMode(PropertySerializationMode::All);
     }
     addProperties(channel_, axes_[0], axes_[1], axes_[2], applyTF_, tf_, camera_, trackball_);
 
