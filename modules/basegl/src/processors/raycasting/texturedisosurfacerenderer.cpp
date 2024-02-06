@@ -61,9 +61,9 @@ namespace inviwo {
 namespace {
 
 const std::vector<OptionPropertyIntOption> channelsList = {{"channel1", "Channel 1", 0},
-                                                           {"channel2", "Channel 2", 0},
-                                                           {"channel3", "Channel 3", 0},
-                                                           {"channel4", "Channel 4", 0}};
+                                                           {"channel2", "Channel 2", 1},
+                                                           {"channel3", "Channel 3", 2},
+                                                           {"channel4", "Channel 4", 3}};
 
 }
 
