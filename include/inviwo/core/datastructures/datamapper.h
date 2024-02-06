@@ -52,7 +52,9 @@ class DataFormatBase;
 class IVW_CORE_API DataMapper {
 public:
     DataMapper();
-    DataMapper(const DataFormatBase* format);
+    DataMapper(const DataFormatBase* format, Axis valueAxis = {});
+    explicit DataMapper(dvec2 dataRange, Axis valueAxis = {});
+    DataMapper(dvec2 dataRange, dvec2 valueRange, Axis valueAxis = {});
     DataMapper(const DataMapper& rhs);
     DataMapper& operator=(const DataMapper& that);
 
@@ -83,6 +85,7 @@ public:
      */
     Axis valueAxis;  ///< Name and Unit, i.e. "absorption", "Hounsfield".
 
+    static dvec2 defaultDataRangeFor(const DataFormatBase* format);
     void initWithFormat(const DataFormatBase* format);
 
     /**

@@ -52,6 +52,68 @@ namespace inviwo {
 
 class Camera;
 
+struct IVW_CORE_API VolumeConfig {
+    std::optional<size3_t> dimensions = std::nullopt;
+    const DataFormatBase* format = nullptr;
+    std::optional<SwizzleMask> swizzleMask = std::nullopt;
+    std::optional<InterpolationType> interpolation = std::nullopt;
+    std::optional<Wrapping3D> wrapping = std::nullopt;
+    std::optional<Axis> xAxis = std::nullopt;
+    std::optional<Axis> yAxis = std::nullopt;
+    std::optional<Axis> zAxis = std::nullopt;
+    std::optional<Axis> valueAxis = std::nullopt;
+    std::optional<dvec2> dataRange = std::nullopt;
+    std::optional<dvec2> valueRange = std::nullopt;
+    std::optional<mat4> model = std::nullopt;
+    std::optional<mat4> world = std::nullopt;
+
+    static constexpr auto defaultDimensions = size3_t(128, 128, 128);
+    static inline const DataFormatBase* defaultFormat = DataUInt8::get();
+    static constexpr auto defaultSwizzleMask = swizzlemasks::rgba;
+    static constexpr auto defaultInterpolation = InterpolationType::Linear;
+    static constexpr auto defaultWrapping = wrapping3d::clampAll;
+    static inline const auto defaultXAxis = Axis{"x", Unit{}};
+    static inline const auto defaultYAxis = Axis{"y", Unit{}};
+    static inline const auto defaultZAxis = Axis{"z", Unit{}};
+    static inline const auto defaultValueAxis = Axis{};
+    static dvec2 defaultDataRange(const DataFormatBase* format = defaultFormat) {
+        return DataMapper::defaultDataRangeFor(format);
+    }
+    static dvec2 defaultValueRange(const DataFormatBase* format = defaultFormat) {
+        return defaultDataRange(format);
+    }
+    static constexpr auto defaultModel = mat4{1.0f};
+    static constexpr auto defaultWorld = mat4{1.0f};
+
+    DataMapper dataMap() {
+        auto dataFormat = format ? format : VolumeConfig::defaultFormat;
+        return DataMapper{dataRange.value_or(defaultDataRange(dataFormat)),
+                          valueRange.value_or(defaultValueRange(dataFormat)),
+                          valueAxis.value_or(defaultValueAxis)};
+    }
+
+    VolumeConfig& updateFrom(const VolumeConfig& config) {
+        static constexpr auto update = [](auto& dest, const auto& src) {
+            if (src) {
+                dest = src.value();
+            }
+        };
+        update(dimensions, config.dimensions);
+        if (config.format) format = config.format;
+        update(swizzleMask, config.swizzleMask);
+        update(interpolation, config.interpolation);
+        update(wrapping, config.wrapping);
+        update(xAxis, config.xAxis);
+        update(yAxis, config.yAxis);
+        update(zAxis, config.zAxis);
+        update(valueAxis, config.valueAxis);
+        update(dataRange, config.dataRange);
+        update(valueRange, config.valueRange);
+        update(model, config.model);
+        update(world, config.world);
+    }
+};
+
 /**
  * \ingroup datastructures
  *
@@ -68,11 +130,12 @@ class IVW_CORE_API Volume : public Data<Volume, VolumeRepresentation>,
                             public MetaDataOwner,
                             public HistogramSupplier {
 public:
-    explicit Volume(size3_t defaultDimensions = size3_t(128, 128, 128),
-                    const DataFormatBase* defaultFormat = DataUInt8::get(),
-                    const SwizzleMask& defaultSwizzleMask = swizzlemasks::rgba,
-                    InterpolationType interpolation = InterpolationType::Linear,
-                    const Wrapping3D& wrapping = wrapping3d::clampAll);
+    explicit Volume(size3_t defaultDimensions = VolumeConfig::defaultDimensions,
+                    const DataFormatBase* defaultFormat = VolumeConfig::defaultFormat,
+                    const SwizzleMask& defaultSwizzleMask = VolumeConfig::defaultSwizzleMask,
+                    InterpolationType interpolation = VolumeConfig::defaultInterpolation,
+                    const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
+    explicit Volume(VolumeConfig config);
     explicit Volume(std::shared_ptr<VolumeRepresentation>);
     Volume(const Volume&) = default;
     /**
@@ -88,11 +151,7 @@ public:
      * @param interpolation   custom interpolation, otherwise rhs.getInterpolation()
      * @param wrapping        custom texture wrapping, otherwise rhs.getWrapping()
      */
-    Volume(const Volume& rhs, NoData, std::optional<size3_t> dims = {},
-           const DataFormatBase* defaultFormat = nullptr,
-           std::optional<SwizzleMask> defaultSwizzleMask = {},
-           std::optional<InterpolationType> interpolation = {},
-           std::optional<Wrapping3D> wrapping = {});
+    Volume(const Volume& rhs, NoData, VolumeConfig config = {});
     Volume& operator=(const Volume& that) = default;
     virtual Volume* clone() const override;
     virtual ~Volume();
@@ -177,6 +236,8 @@ public:
     const typename representation_traits<Volume, Kind>::type* getRep() const;
 
     std::shared_ptr<HistogramCalculationState> calculateHistograms(size_t bins = 2048) const;
+
+    VolumeConfig config() const;
 
 protected:
     size3_t defaultDimensions_;
