@@ -40,6 +40,8 @@
 #include <memory>
 #include <filesystem>
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 template <typename Repr>
