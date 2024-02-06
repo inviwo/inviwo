@@ -36,7 +36,7 @@
 ivw_append_install_list(DIRECTORY)
 
 # GTest
-option(IVW_USE_EXTERNAL_GTEST "GTest is provided externaly" OFF)
+option(IVW_USE_EXTERNAL_GTEST "GTest is provided externally" OFF)
  # don't install, used in build only
 if(NOT IVW_USE_EXTERNAL_GTEST AND (IVW_TEST_UNIT_TESTS OR IVW_TEST_INTEGRATION_TESTS))
     message(STATUS "add subdirectory: gtest")
@@ -106,7 +106,7 @@ ivw_register_license_file(NAME "Flags" MODULE Core EXT
 )
 
 # GLM
-option(IVW_USE_EXTERNAL_GLM "GLM is provided externaly" OFF)
+option(IVW_USE_EXTERNAL_GLM "GLM is provided externally" OFF)
 if(NOT IVW_USE_EXTERNAL_GLM)
     message(STATUS "add subdirectory: glm")
     add_subdirectory(glm)
@@ -130,7 +130,7 @@ ivw_register_license_file(NAME "TiCPP" TARGET ticpp MODULE Core EXT
 # benchmark
 option(IVW_TEST_BENCHMARKS "Generate benchmark targets" OFF)
 if(IVW_TEST_BENCHMARKS)
-    option(IVW_USE_EXTERNAL_BENCHMARK "Goggle Benchmark is provided externaly" OFF)
+    option(IVW_USE_EXTERNAL_BENCHMARK "Goggle Benchmark is provided externally" OFF)
      # don't install, used in build only
     if(NOT IVW_USE_EXTERNAL_BENCHMARK)
         message(STATUS "add subdirectory: benchmark")
@@ -141,7 +141,7 @@ if(IVW_TEST_BENCHMARKS)
 endif()
 
 # Warn
-option(IVW_USE_EXTERNAL_WARN "Warn is provided externaly" OFF)
+option(IVW_USE_EXTERNAL_WARN "Warn is provided externally" OFF)
 if(NOT IVW_USE_EXTERNAL_WARN)
     message(STATUS "add subdirectory: warn")
     add_subdirectory(warn)     # No package available
@@ -156,7 +156,7 @@ else()
 endif()
 
 # tclap
-option(IVW_USE_EXTERNAL_TCLAP "TCLAP is provided externaly" OFF)
+option(IVW_USE_EXTERNAL_TCLAP "TCLAP is provided externally" OFF)
 if(NOT IVW_USE_EXTERNAL_TCLAP)
     message(STATUS "add subdirectory: tclap")
     add_subdirectory(tclap)
@@ -182,14 +182,38 @@ else()
         BASE_DIRS ${TCLAP_INCLUDE_DIRS}
         FILES
             ${TCLAP_INCLUDE_DIRS}/tclap/Arg.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/ArgException.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/ArgTraits.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/CmdLine.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/CmdLineInterface.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/CmdLineOutput.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/Constraint.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/DocBookOutput.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/HelpVisitor.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/IgnoreRestVisitor.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/MultiArg.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/MultiSwitchArg.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/OptionalUnlabeledTracker.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/sstream.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/StandardTraits.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/StdOutput.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/SwitchArg.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/UnlabeledMultiArg.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/UnlabeledValueArg.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/ValueArg.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/ValuesConstraint.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/VersionVisitor.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/Visitor.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/XorHandler.h
+            ${TCLAP_INCLUDE_DIRS}/tclap/ZshCompletionOutput.h
     )
-
+    ivw_folder(tclap vcpkg)
     ivw_install_helper(TARGET tclap NAMESPACE inviwo DESTINATION inviwo)
 
 endif()
 
 # utfcpp
-option(IVW_USE_EXTERNAL_UTFCPP "UTFCPP is provided externaly" OFF)
+option(IVW_USE_EXTERNAL_UTFCPP "UTFCPP is provided externally" OFF)
 if(NOT IVW_USE_EXTERNAL_UTFCPP)
     message(STATUS "add subdirectory: utf")
     add_subdirectory(utf)
@@ -204,7 +228,7 @@ else()
 endif()
 
 # nlohmann json
-option(IVW_USE_EXTERNAL_JSON "JSON is provided externaly" OFF)
+option(IVW_USE_EXTERNAL_JSON "JSON is provided externally" OFF)
 if(NOT IVW_USE_EXTERNAL_JSON)
     message(STATUS "add subdirectory: json")
     add_subdirectory(json)
@@ -219,7 +243,7 @@ else()
 endif()
 
 # Fmt
-option(IVW_USE_EXTERNAL_FMT "Fmt is provided externaly" OFF)
+option(IVW_USE_EXTERNAL_FMT "Fmt is provided externally" OFF)
 if(NOT IVW_USE_EXTERNAL_FMT)
     message(STATUS "add subdirectory: fmt")
     add_subdirectory(fmt)
@@ -243,7 +267,7 @@ ivw_register_license_file(NAME "[Boost].SML" VERSION 1.1.0 target inviwo::sml MO
 )
 
 # CRoaring
-option(IVW_USE_EXTERNAL_ROARING "CRoaring is provided externaly" OFF)
+option(IVW_USE_EXTERNAL_ROARING "CRoaring is provided externally" OFF)
 if(NOT IVW_USE_EXTERNAL_ROARING)
     message(STATUS "add subdirectory: CRoaring")
     add_subdirectory(CRoaring)
@@ -259,7 +283,7 @@ else()
 endif()
 
 # Units
-option(IVW_USE_EXTERNAL_UNITS "Units is provided externaly (https://github.com/LLNL/units)" OFF)
+option(IVW_USE_EXTERNAL_UNITS "Units is provided externally (https://github.com/LLNL/units)" OFF)
 if(NOT IVW_USE_EXTERNAL_UNITS)
     message(STATUS "add subdirectory: units")
     add_subdirectory(units)
@@ -293,7 +317,7 @@ if(WIN32) # Stackwalker for windows for stack traces in the log
 endif()
 
 if(IVW_ENABLE_PYTHON)
-    option(IVW_USE_EXTERNAL_PYBIND11 "Pybind11 is provided externaly" OFF)
+    option(IVW_USE_EXTERNAL_PYBIND11 "Pybind11 is provided externally" OFF)
     if(NOT IVW_USE_EXTERNAL_PYBIND11)
         message(STATUS "add subdirectory: pybind11")
         add_subdirectory(pybind11)
