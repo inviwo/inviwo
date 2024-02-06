@@ -204,8 +204,7 @@ std::shared_ptr<LayerRAM> loadLayer(const std::filesystem::path& filePath) {
                                           "could not find proper data type");
             }
 
-            return dispatching::singleDispatch<std::shared_ptr<LayerRAM>,
-                                               dispatching::filter::ScalarAndVecs>(
+            return dispatching::singleDispatch<std::shared_ptr<LayerRAM>, dispatching::filter::All>(
                 imageFormat->getId(), [&]<typename T>() -> std::shared_ptr<LayerRAM> {
                     constexpr auto swizzleMask = swizzlemasks::defaultColor(util::extent_v<T>);
                     img._is_shared = true;  // Steal the buffer from img
@@ -219,8 +218,7 @@ std::shared_ptr<LayerRAM> loadLayer(const std::filesystem::path& filePath) {
 std::shared_ptr<LayerRAM> loadLayerTiff(const std::filesystem::path& filePath) {
     const auto header = cimgutil::getTIFFHeader(filePath);
 
-    return dispatching::singleDispatch<std::shared_ptr<LayerRAM>,
-                                       dispatching::filter::ScalarAndVecs>(
+    return dispatching::singleDispatch<std::shared_ptr<LayerRAM>, dispatching::filter::All>(
         header.format->getId(), [&]<typename T>() -> std::shared_ptr<LayerRAM> {
             using Scalar = util::value_type_t<T>;
 
@@ -271,7 +269,7 @@ std::shared_ptr<VolumeRAM> loadVolume(const std::filesystem::path& filePath) {
             }
 
             return dispatching::singleDispatch<std::shared_ptr<VolumeRAM>,
-                                               dispatching::filter::ScalarAndVecs>(
+                                               dispatching::filter::All>(
                 imageFormat->getId(), [&]<typename T>() -> std::shared_ptr<VolumeRAM> {
                     img._is_shared = true;  // Steal the buffer from img
                     return std::make_shared<VolumeRAMPrecision<T>>(
@@ -282,8 +280,7 @@ std::shared_ptr<VolumeRAM> loadVolume(const std::filesystem::path& filePath) {
 
 std::shared_ptr<VolumeRAM> loadVolume(const std::filesystem::path& filePath,
                                       const DataFormatBase* format, size3_t dims) {
-    return dispatching::singleDispatch<std::shared_ptr<VolumeRAM>,
-                                       dispatching::filter::ScalarAndVecs>(
+    return dispatching::singleDispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::All>(
         format->getId(), [&]<typename T>() -> std::shared_ptr<VolumeRAM> {
             using Scalar = util::value_type_t<T>;
             cimg_library::CImg<Scalar> img(filePath.string().c_str());
@@ -307,25 +304,24 @@ std::shared_ptr<VolumeRAM> loadVolume(const std::filesystem::path& filePath,
 }
 
 void updateVolume(VolumeRAM& volume, const std::filesystem::path& filePath) {
-    volume.dispatch<void, dispatching::filter::ScalarAndVecs>(
-        [&]<typename T>(VolumeRAMPrecision<T>* vr) {
-            using Scalar = util::value_type_t<T>;
-            cimg_library::CImg<Scalar> img(filePath.string().c_str());
-            const auto components = static_cast<size_t>(img.spectrum());
-            const auto dimensions = size3_t{img.width(), img.height(), img.depth()};
-            img.mirror("y");  // Image is up-side-down
+    volume.dispatch<void, dispatching::filter::All>([&]<typename T>(VolumeRAMPrecision<T>* vr) {
+        using Scalar = util::value_type_t<T>;
+        cimg_library::CImg<Scalar> img(filePath.string().c_str());
+        const auto components = static_cast<size_t>(img.spectrum());
+        const auto dimensions = size3_t{img.width(), img.height(), img.depth()};
+        img.mirror("y");  // Image is up-side-down
 
-            if (vr->getDimensions() != dimensions) {
-                throw DataReaderException(IVW_CONTEXT_CUSTOM("cimgutil::updateVolume"),
-                                          "Volume size missmatch");
-            }
-            if (util::extent_v<T> != components) {
-                throw DataReaderException(IVW_CONTEXT_CUSTOM("cimgutil::updateVolume"),
-                                          "Volume component missmatch");
-            }
-            auto* dst = static_cast<Scalar*>(vr->getData());
-            std::copy(img.data(), img.data() + glm::compMul(dimensions) * components, dst);
-        });
+        if (vr->getDimensions() != dimensions) {
+            throw DataReaderException(IVW_CONTEXT_CUSTOM("cimgutil::updateVolume"),
+                                      "Volume size missmatch");
+        }
+        if (util::extent_v<T> != components) {
+            throw DataReaderException(IVW_CONTEXT_CUSTOM("cimgutil::updateVolume"),
+                                      "Volume component missmatch");
+        }
+        auto* dst = static_cast<Scalar*>(vr->getData());
+        std::copy(img.data(), img.data() + glm::compMul(dimensions) * components, dst);
+    });
 }
 
 template <typename T>
@@ -413,7 +409,7 @@ bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target) {
     if (!target->getData()) return false;
     if (source->getDataFormatId() != target->getDataFormatId()) return false;
 
-    return source->dispatch<bool, dispatching::filter::ScalarAndVecs>(
+    return source->dispatch<bool, dispatching::filter::All>(
         [&]<typename T>(const LayerRAMPrecision<T>* srcRep) {
             using P = util::value_type_t<T>;  // comp type i.e float
             const size_t rank = util::rank<T>::value;
