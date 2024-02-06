@@ -67,7 +67,7 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
     requires requires(T data) {
         typename T::repr;
         std::is_base_of_v<typename T::repr, TRAMrep>;
-        data.getRepresentation<TRAMrep>();
+        data.template getRepresentation<TRAMrep>();
     }
 {
 
@@ -102,7 +102,7 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
 #include <warn/ignore/conversion>
 #include <warn/ignore/conversion-loss>
 
-    data->getEditableRepresentation<TRAMrep>()->dispatch<void>([&](auto ramrep) {
+    data->template getEditableRepresentation<TRAMrep>()->template dispatch<void>([&](auto ramrep) {
         using PrecisionType = util::PrecisionValueType<decltype(ramrep)>;
         using ValueType = util::value_type_t<PrecisionType>;
 
@@ -111,7 +111,7 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
 
         for (size_t inputChannel = 0; inputChannel < activePorts.size(); ++inputChannel) {
             auto&& [port, srcChannel] = activePorts[inputChannel];
-            port->getData()->getRepresentation<TRAMrep>()->dispatch<void>(
+            port->getData()->template getRepresentation<TRAMrep>()->template dispatch<void>(
                 [&](auto srcramrep, int srcChannelArg) {
                     const auto srcData = srcramrep->getDataTyped();
 
