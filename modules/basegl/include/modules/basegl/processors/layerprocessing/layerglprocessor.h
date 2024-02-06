@@ -94,7 +94,6 @@ protected:
     // if a custom data format is specified, i.e. dataFormat_ != nullptr, this swizzle mask is used
     SwizzleMask swizzleMask_;
     bool internalInvalid_;
-    std::string fragmentShader_;
     Shader shader_;
     FrameBufferObject fbo_;
 };

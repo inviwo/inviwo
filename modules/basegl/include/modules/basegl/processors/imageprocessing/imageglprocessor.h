@@ -102,8 +102,6 @@ protected:
 
     bool internalInvalid_;
 
-    std::string fragmentShader_;
-
     Shader shader_;
 };
 
