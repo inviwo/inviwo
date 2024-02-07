@@ -19,8 +19,10 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 set(SHADER_FILES
     glsl/util/rayboxintersection.glsl
-    glsl/random.glsl
+    glsl/util/rayminmax.glsl
+    glsl/uniformgrid.glsl
     glsl/transmittance/transmittancemethods.glsl
+    glsl/random.glsl
     glsl/lightestimation.glsl
     glsl/bidirectionalvolumepathtracer.comp
 )
