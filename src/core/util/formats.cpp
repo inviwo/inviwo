@@ -162,21 +162,22 @@ const DataFormatBase* DataFormatBase::get(std::string_view name) {
 
 const DataFormatBase* DataFormatBase::get(NumericType type, size_t components, size_t precision) {
     static const auto table = []() {
-        std::array<std::array<std::array<const DataFormatBase*, 2>, 4>, 4> res = {nullptr};
+        std::array<std::array<std::array<const DataFormatBase*, 4>, 4>, 4> res = {nullptr};
         util::for_each_type<DefaultDataFormats>{}([&]<typename F>() {
             const auto n = static_cast<size_t>(F::numericType());
-            const auto c = F::components();
-            const auto p = F::precision() / 8 - 1;
+            const auto c = F::components() - 1;
+            const auto p = 64 - std::countl_zero(F::precision()) - 4;
             res[n][c][p] = F::get();
         });
         return res;
     }();
 
     const auto n = static_cast<size_t>(type);
-    const auto c = components;
-    const auto p = precision / 8 - 1;
+    const auto c = components - 1;
+    const auto p = static_cast<size_t>(64 - std::countl_zero(precision) - 4);
 
-    if (n < table.size() && c < table[0].size() && p < table[0][0].size()) {
+    if (std::has_single_bit(precision) && n < table.size() && c < table[0].size() &&
+        p < table[0][0].size()) {
         return table[n][c][p];
     } else {
         return nullptr;
