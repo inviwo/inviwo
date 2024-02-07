@@ -71,8 +71,11 @@ void UniformGridOpacity::process() {
         outDim, swizzlemasks::rgba, InterpolationType::Nearest, curVolume->getWrapping());
     auto stats = std::make_shared<Volume>(statsRep);
 
-    stats->dataMap_.dataRange = curVolume->dataMap_.dataRange;
-    stats->dataMap_.valueRange = curVolume->dataMap_.valueRange;
+    //stats->dataMap_.dataRange = curVolume->dataMap_.dataRange; // should map from 0,1
+    stats->dataMap_.dataRange.x = 0; // should map from 0,1
+    stats->dataMap_.dataRange.y = 1; // should map from 0,1
+    stats->dataMap_.valueRange = curVolume->dataMap_.valueRange; // makes sense to match operated volume
+    //stats->dataMap_.valueRange = std::make_shared<inviwo::dvec2>({0, 1});
 
     vec4* data = statsRep->getDataTyped();
 
@@ -124,8 +127,6 @@ void UniformGridOpacity::process() {
                     vec4 minMaxVal(static_cast<float>(minOpacity),
                                               static_cast<float>(maxOpacity),
                                               static_cast<float>(avgOpacity), 0.f);
-
-                    
 
                     data[VolumeRAM::posToIndex(size3_t(x, y, z), outDim)] = minMaxVal;
                 }
