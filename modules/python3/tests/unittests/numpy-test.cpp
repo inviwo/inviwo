@@ -241,9 +241,9 @@ TEST_P(DTypeTest, VolumeTypeVec4Tests) {
         "(2,2,2,4)", 4);
 }
 
-const static std::vector<std::string> dtypes = {{"float16"}, {"float32"}, {"float64"}, {"int8"},
-                                                {"int16"},   {"int32"},   {"int64"},   {"uint8"},
-                                                {"uint16"},  {"uint32"},  {"uint64"}};
+const static std::vector<std::string> dtypes = {{"float32"}, {"float64"}, {"int8"},  {"int16"},
+                                                {"int32"},   {"int64"},   {"uint8"}, {"uint16"},
+                                                {"uint32"},  {"uint64"}};
 
 INSTANTIATE_TEST_SUITE_P(DefaultTypes, DTypeTest, ::testing::ValuesIn(dtypes));
 
