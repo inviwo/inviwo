@@ -58,23 +58,14 @@
 
 namespace inviwo {
 
-namespace {
-
-const std::vector<OptionPropertyIntOption> channelsList = {{"channel1", "Channel 1", 0},
-                                                           {"channel2", "Channel 2", 0},
-                                                           {"channel3", "Channel 3", 0},
-                                                           {"channel4", "Channel 4", 0}};
-
-}
-
 TexturedIsoSurfaceComponent::TexturedIsoSurfaceComponent(std::string_view volume)
     : ShaderComponent()
     , volume{volume}
     , colorPort{"colorVolume", "Volume used to texture the iso surface"_help}
     , iso{nullptr}
     , tf{nullptr}
-    , isoChannel("isoChannel", "Iso Channel", channelsList, 0)
-    , colorChannel("colorChannel", "Color Channel", channelsList, 0)
+    , isoChannel("isoChannel", "Iso Channel", util::enumeratedOptions("Channel", 4), 0)
+    , colorChannel("colorChannel", "Color Channel", util::enumeratedOptions("Channel", 4), 0)
     , samplingRate("samplingRate", "Sampling rate", 2.0f, 1.0f, 20.0f) {}
 
 std::string_view TexturedIsoSurfaceComponent::getName() const { return "Texture"; }

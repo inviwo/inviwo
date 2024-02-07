@@ -342,6 +342,7 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                             }
                             customRange.InsertEndChild(valueNode);
                             properties->InsertEndChild(customRange);
+                            res = true;
                         }
                     }
                 }

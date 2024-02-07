@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,9 +27,18 @@
  * 
  *********************************************************************************/
 
+#include "utils/structs.glsl"
 
-uniform vec4 boundingBoxColor;
+uniform CameraParameters camera;
+uniform VolumeParameters volumeParameters;
 
+uniform mat4 sliceTrafo = mat4(1.0);
+
+out Fragment {
+    smooth vec3 texCoord;    
+} out_vert;
+ 
 void main() {
-    FragData0 = boundingBoxColor;
+    out_vert.texCoord = vec3(sliceTrafo * vec4(in_TexCoord, 1.0));
+    gl_Position = camera.worldToClip * volumeParameters.dataToWorld * sliceTrafo * in_Vertex;
 }

@@ -410,6 +410,17 @@ using OptionPropertyFloat = OptionProperty<float>;
 using OptionPropertyDouble = OptionProperty<double>;
 using OptionPropertyString = OptionProperty<std::string>;
 
+namespace util {
+
+/**
+ * A factory function for setting up a OptionPropertyInt with enumerated options. That is,
+ * "@p name 1", "@p name 2", etc. up to @p count.
+ */
+IVW_CORE_API std::vector<OptionPropertyIntOption> enumeratedOptions(std::string_view name,
+                                                                    size_t count);
+
+}  // namespace util
+
 template <typename T>
 OptionPropertyOption<T>::OptionPropertyOption() = default;
 

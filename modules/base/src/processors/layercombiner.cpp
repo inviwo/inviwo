@@ -55,13 +55,6 @@ and precision of the inputs.
 
 const ProcessorInfo LayerCombiner::getProcessorInfo() const { return processorInfo_; }
 
-namespace {
-const std::vector<OptionPropertyIntOption> channelsList = {{"channel1", "Channel 1", 0},
-                                                           {"channel2", "Channel 2", 1},
-                                                           {"channel3", "Channel 3", 2},
-                                                           {"channel4", "Channel 4", 3}};
-}
-
 LayerCombiner::LayerCombiner()
     : Processor{}
     , source_{LayerInport{"source1", "Input for the first channel (red)"_help},
@@ -71,13 +64,17 @@ LayerCombiner::LayerCombiner()
     , outport_{"outport", "Resulting Layer with combined channels"_help}
 
     , channel_{OptionPropertyInt{"dest1", "Channel 1 Out",
-                                 "Selected channel of the first input"_help, channelsList},
+                                 "Selected channel of the first input"_help,
+                                 util::enumeratedOptions("Channel", 4)},
                OptionPropertyInt{"dest2", "Channel 2 Out",
-                                 "Selected channel of the second input"_help, channelsList},
+                                 "Selected channel of the second input"_help,
+                                 util::enumeratedOptions("Channel", 4)},
                OptionPropertyInt{"dest3", "Channel 3 Out",
-                                 "Selected channel of the third input"_help, channelsList},
+                                 "Selected channel of the third input"_help,
+                                 util::enumeratedOptions("Channel", 4)},
                OptionPropertyInt{"dest4", "Channel 4 Out",
-                                 "Selected channel of the fourth input"_help, channelsList}}
+                                 "Selected channel of the fourth input"_help,
+                                 util::enumeratedOptions("Channel", 4)}}
     , dataRange_{"dataRange", "Data Range", source_[0], true} {
 
     addPorts(source_[0], source_[1], source_[2], source_[3], outport_);
