@@ -42,15 +42,16 @@ class IVW_CORE_API LayerDisk : public LayerRepresentation,
                                public DiskRepresentation<LayerRepresentation, LayerDisk> {
 public:
     explicit LayerDisk(size2_t dimensions, const DataFormatBase* format,
-                       LayerType type = LayerType::Color,
-                       const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-                       InterpolationType interpolation = InterpolationType::Linear,
-                       const Wrapping2D& wrap = wrapping2d::clampAll);
-    explicit LayerDisk(std::string url, size2_t dimensions, const DataFormatBase* format,
-                       LayerType type = LayerType::Color,
-                       const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-                       InterpolationType interpolation = InterpolationType::Linear,
-                       const Wrapping2D& wrap = wrapping2d::clampAll);
+                       LayerType type = LayerConfig::defaultType,
+                       const SwizzleMask& swizzleMask = LayerConfig::defaultSwizzleMask,
+                       InterpolationType interpolation = LayerConfig::defaultInterpolation,
+                       const Wrapping2D& wrap = LayerConfig::defaultWrapping);
+    explicit LayerDisk(const std::filesystem::path& url, size2_t dimensions,
+                       const DataFormatBase* format, LayerType type = LayerConfig::defaultType,
+                       const SwizzleMask& swizzleMask = LayerConfig::defaultSwizzleMask,
+                       InterpolationType interpolation = LayerConfig::defaultInterpolation,
+                       const Wrapping2D& wrap = LayerConfig::defaultWrapping);
+    explicit LayerDisk(const LayerReprConfig& config, const std::filesystem::path& path = {});
     LayerDisk(const LayerDisk& rhs) = default;
     LayerDisk& operator=(const LayerDisk& that) = default;
     virtual LayerDisk* clone() const override;

@@ -59,4 +59,12 @@ std::shared_ptr<LayerRAM> createLayerRAM(const size2_t& dimensions, LayerType ty
         });
 }
 
+std::shared_ptr<LayerRAM> createLayerRAM(const LayerReprConfig& config) {
+    auto format = config.format ? config.format : LayerConfig::defaultFormat;
+    return dispatching::singleDispatch<std::shared_ptr<LayerRAM>, dispatching::filter::All>(
+        format->getId(), [&]<typename T>() {
+            return std::make_shared<LayerRAMPrecision<T>>(config);
+        });
+}
+
 }  // namespace inviwo

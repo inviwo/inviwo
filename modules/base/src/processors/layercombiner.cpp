@@ -48,7 +48,7 @@ const ProcessorInfo LayerCombiner::processorInfo_{"org.inviwo.LayerCombiner",  /
                                                   CodeState::Experimental,     // Code state
                                                   Tags::CPU | Tag{"Layer"},    // Tags
                                                   R"(
-Combines multiple layers into a single layer with multiple channels. All layers must 
+Combines multiple layers into a single layer with multiple channels. All layers must
 share the same dimensions. The resulting data format depends on the common data type
 and precision of the inputs.
 )"_unindentHelp};
@@ -111,9 +111,9 @@ void LayerCombiner::process() {
                               util::commonFormatPrecision(formats));
     }();
 
-    auto layer =
-        std::make_shared<Layer>(*activePorts.front().first->getData(), noData, std::nullopt,
-                                DataFormatBase::get(type, activePorts.size(), precision));
+    auto layer = std::make_shared<Layer>(
+        *activePorts.front().first->getData(), noData,
+        LayerConfig{.format = DataFormatBase::get(type, activePorts.size(), precision)});
 
     auto layerRam = layer->getEditableRepresentation<LayerRAM>();
 

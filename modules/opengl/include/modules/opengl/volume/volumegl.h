@@ -57,11 +57,14 @@ struct GL {};
 class IVW_MODULE_OPENGL_API VolumeGL : public VolumeRepresentation {
 
 public:
-    VolumeGL(size3_t dimensions = size3_t(128, 128, 128),
-             const DataFormatBase* format = DataFormatBase::get(),
-             const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-             InterpolationType interpolation = InterpolationType::Linear,
-             const Wrapping3D& wrapping = wrapping3d::clampAll, bool initializeTexture = true);
+    VolumeGL(size3_t dimensions = VolumeConfig::defaultDimensions,
+             const DataFormatBase* format = VolumeConfig::defaultFormat,
+             const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
+             InterpolationType interpolation = VolumeConfig::defaultInterpolation,
+             const Wrapping3D& wrapping = VolumeConfig::defaultWrapping,
+             bool initializeTexture = true);
+
+    explicit VolumeGL(const VolumeReprConfig& config, bool initializeTexture = true);
 
     VolumeGL(std::shared_ptr<Texture3D> tex);
     VolumeGL(const VolumeGL& rhs);

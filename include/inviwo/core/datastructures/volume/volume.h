@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/histogramtools.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/volume/volumeconfig.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/representationtraits.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
@@ -46,73 +47,9 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
-#include <optional>
-
 namespace inviwo {
 
 class Camera;
-
-struct IVW_CORE_API VolumeConfig {
-    std::optional<size3_t> dimensions = std::nullopt;
-    const DataFormatBase* format = nullptr;
-    std::optional<SwizzleMask> swizzleMask = std::nullopt;
-    std::optional<InterpolationType> interpolation = std::nullopt;
-    std::optional<Wrapping3D> wrapping = std::nullopt;
-    std::optional<Axis> xAxis = std::nullopt;
-    std::optional<Axis> yAxis = std::nullopt;
-    std::optional<Axis> zAxis = std::nullopt;
-    std::optional<Axis> valueAxis = std::nullopt;
-    std::optional<dvec2> dataRange = std::nullopt;
-    std::optional<dvec2> valueRange = std::nullopt;
-    std::optional<mat4> model = std::nullopt;
-    std::optional<mat4> world = std::nullopt;
-
-    static constexpr auto defaultDimensions = size3_t(128, 128, 128);
-    static inline const DataFormatBase* defaultFormat = DataUInt8::get();
-    static constexpr auto defaultSwizzleMask = swizzlemasks::rgba;
-    static constexpr auto defaultInterpolation = InterpolationType::Linear;
-    static constexpr auto defaultWrapping = wrapping3d::clampAll;
-    static inline const auto defaultXAxis = Axis{"x", Unit{}};
-    static inline const auto defaultYAxis = Axis{"y", Unit{}};
-    static inline const auto defaultZAxis = Axis{"z", Unit{}};
-    static inline const auto defaultValueAxis = Axis{};
-    static dvec2 defaultDataRange(const DataFormatBase* format = defaultFormat) {
-        return DataMapper::defaultDataRangeFor(format);
-    }
-    static dvec2 defaultValueRange(const DataFormatBase* format = defaultFormat) {
-        return defaultDataRange(format);
-    }
-    static constexpr auto defaultModel = mat4{1.0f};
-    static constexpr auto defaultWorld = mat4{1.0f};
-
-    DataMapper dataMap() {
-        auto dataFormat = format ? format : VolumeConfig::defaultFormat;
-        return DataMapper{dataRange.value_or(defaultDataRange(dataFormat)),
-                          valueRange.value_or(defaultValueRange(dataFormat)),
-                          valueAxis.value_or(defaultValueAxis)};
-    }
-
-    VolumeConfig& updateFrom(const VolumeConfig& config) {
-        static constexpr auto update = [](auto& dest, const auto& src) {
-            if (src) {
-                dest = src.value();
-            }
-        };
-        update(dimensions, config.dimensions);
-        if (config.format) format = config.format;
-        update(swizzleMask, config.swizzleMask);
-        update(interpolation, config.interpolation);
-        update(wrapping, config.wrapping);
-        update(xAxis, config.xAxis);
-        update(yAxis, config.yAxis);
-        update(zAxis, config.zAxis);
-        update(valueAxis, config.valueAxis);
-        update(dataRange, config.dataRange);
-        update(valueRange, config.valueRange);
-        update(model, config.model);
-        update(world, config.world);
-    }
-};
 
 /**
  * \ingroup datastructures
@@ -139,17 +76,13 @@ public:
     explicit Volume(std::shared_ptr<VolumeRepresentation>);
     Volume(const Volume&) = default;
     /**
-     * Create a volume based on \p rhs without copying any data. If \p defaultFormat is a nullptr,
-     * the format of \p rhs is used. This applies to all std::optional arguments, too. If not
-     * supplied, the corresponding value is taken from \p rhs.
+     * Create a volume based on @p rhs without copying any data. State from @p rhs can be
+     * overridden by the @p config
      * @param rhs             source volume providing the necessary information like dimensions,
      *                        swizzle masks, interpolation, spatial transformations, etc.
-     * @param dims            custom dimension of the new volume, otherwise rhs.getDimensions()
-     * @param defaultFormat   data format of the new volume. If equal to nullptr, the format of \p
-     *                        rhs is used instead.
-     * @param defaultSwizzleMask   custom swizzle mask, otherwise rhs.getSwizzleMask()
-     * @param interpolation   custom interpolation, otherwise rhs.getInterpolation()
-     * @param wrapping        custom texture wrapping, otherwise rhs.getWrapping()
+     * @param noData          Tag type to indicate that representations should not be copied from
+     *                        rhs
+     * @param config          custom parameters overriding values from @p rhs
      */
     Volume(const Volume& rhs, NoData, VolumeConfig config = {});
     Volume& operator=(const Volume& that) = default;

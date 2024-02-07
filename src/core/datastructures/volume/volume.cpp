@@ -88,16 +88,14 @@ Volume::Volume(const Volume& rhs, NoData, VolumeConfig config)
                               config.world.value_or(rhs.getWorldMatrix())}
     , MetaDataOwner{rhs}
     , HistogramSupplier{}
-    , dataMap_{config.dataRange.value_or(rhs.dataMap_.dataRange),
-               config.valueRange.value_or(rhs.dataMap_.valueRange),
-               config.valueAxis.value_or(rhs.dataMap_.valueAxis)}
+    , dataMap_{config.dataMap(rhs.dataMap_)}
     , axes{config.xAxis.value_or(rhs.axes[0]), config.yAxis.value_or(rhs.axes[1]),
            config.zAxis.value_or(rhs.axes[2])}
-    , defaultDimensions_{config.dimensions.value_or(rhs.defaultDimensions_)}
+    , defaultDimensions_{config.dimensions.value_or(rhs.getDimensions())}
     , defaultDataFormat_{config.format ? config.format : rhs.getDataFormat()}
-    , defaultSwizzleMask_{config.swizzleMask.value_or(rhs.defaultSwizzleMask_)}
-    , defaultInterpolation_{config.interpolation.value_or(rhs.defaultInterpolation_)}
-    , defaultWrapping_{config.wrapping.value_or(rhs.defaultWrapping_)} {}
+    , defaultSwizzleMask_{config.swizzleMask.value_or(rhs.getSwizzleMask())}
+    , defaultInterpolation_{config.interpolation.value_or(rhs.getInterpolation())}
+    , defaultWrapping_{config.wrapping.value_or(rhs.getWrapping())} {}
 
 Volume* Volume::clone() const { return new Volume(*this); }
 Volume::~Volume() = default;

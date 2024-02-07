@@ -51,6 +51,20 @@ Layer::Layer(size2_t defaultDimensions, const DataFormatBase* defaultFormat, Lay
     , defaultInterpolation_{interpolation}
     , defaultWrapping_{wrapping} {}
 
+Layer::Layer(LayerConfig config)
+    : Data<Layer, LayerRepresentation>{}
+    , StructuredGridEntity<2>{config.model.value_or(LayerConfig::defaultModel),
+                              config.world.value_or(LayerConfig::defaultWorld)}
+    , dataMap{config.dataMap()}
+    , axes{config.xAxis.value_or(LayerConfig::defaultXAxis),
+           config.yAxis.value_or(LayerConfig::defaultYAxis)}
+    , defaultLayerType_{config.type.value_or(LayerConfig::defaultType)}
+    , defaultDimensions_{config.dimensions.value_or(LayerConfig::defaultDimensions)}
+    , defaultDataFormat_{config.format ? config.format : LayerConfig::defaultFormat}
+    , defaultSwizzleMask_{config.swizzleMask.value_or(LayerConfig::defaultSwizzleMask)}
+    , defaultInterpolation_{config.interpolation.value_or(LayerConfig::defaultInterpolation)}
+    , defaultWrapping_{config.wrapping.value_or(LayerConfig::defaultWrapping)} {}
+
 Layer::Layer(std::shared_ptr<LayerRepresentation> in)
     : Data<Layer, LayerRepresentation>{}
     , StructuredGridEntity<2>{}
@@ -66,20 +80,18 @@ Layer::Layer(std::shared_ptr<LayerRepresentation> in)
     addRepresentation(in);
 }
 
-Layer::Layer(const Layer& rhs, NoData, std::optional<size2_t> dims,
-             const DataFormatBase* defaultFormat, std::optional<LayerType> type,
-             std::optional<SwizzleMask> defaultSwizzleMask,
-             std::optional<InterpolationType> interpolation, std::optional<Wrapping2D> wrapping)
+Layer::Layer(const Layer& rhs, NoData, LayerConfig config)
     : Data<Layer, LayerRepresentation>{}
-    , StructuredGridEntity<2>{rhs}
-    , dataMap{defaultFormat ? defaultFormat : rhs.dataMap}
-    , axes{rhs.axes}
-    , defaultLayerType_{type.value_or(rhs.getLayerType())}
-    , defaultDimensions_{dims.value_or(rhs.getDimensions())}
-    , defaultDataFormat_{defaultFormat ? defaultFormat : rhs.getDataFormat()}
-    , defaultSwizzleMask_{defaultSwizzleMask.value_or(rhs.getSwizzleMask())}
-    , defaultInterpolation_{interpolation.value_or(rhs.getInterpolation())}
-    , defaultWrapping_{wrapping.value_or(rhs.getWrapping())} {}
+    , StructuredGridEntity<2>{config.model.value_or(rhs.getModelMatrix()),
+                              config.world.value_or(rhs.getWorldMatrix())}
+    , dataMap{config.dataMap(rhs.dataMap)}
+    , axes{config.xAxis.value_or(rhs.axes[0]), config.yAxis.value_or(rhs.axes[1])}
+    , defaultLayerType_{config.type.value_or(rhs.getLayerType())}
+    , defaultDimensions_{config.dimensions.value_or(rhs.getDimensions())}
+    , defaultDataFormat_{config.format ? config.format : rhs.getDataFormat()}
+    , defaultSwizzleMask_{config.swizzleMask.value_or(rhs.getSwizzleMask())}
+    , defaultInterpolation_{config.interpolation.value_or(rhs.getInterpolation())}
+    , defaultWrapping_{config.wrapping.value_or(rhs.getWrapping())} {}
 
 Layer* Layer::clone() const { return new Layer(*this); }
 
@@ -153,6 +165,22 @@ const Axis* Layer::getAxis(size_t index) const {
         return nullptr;
     }
     return &axes[index];
+}
+
+LayerConfig Layer::config() const {
+    return {.dimensions = getDimensions(),
+            .format = getDataFormat(),
+            .type = getLayerType(),
+            .swizzleMask = getSwizzleMask(),
+            .interpolation = getInterpolation(),
+            .wrapping = getWrapping(),
+            .xAxis = axes[0],
+            .yAxis = axes[1],
+            .valueAxis = dataMap.valueAxis,
+            .dataRange = dataMap.dataRange,
+            .valueRange = dataMap.valueRange,
+            .model = getModelMatrix(),
+            .world = getWorldMatrix()};
 }
 
 template class IVW_CORE_TMPL_INST DataReaderType<Layer>;

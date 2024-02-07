@@ -31,7 +31,6 @@
 
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/datastructures/nodata.h>
 #include <typeindex>
 
 namespace inviwo {

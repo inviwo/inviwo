@@ -176,16 +176,17 @@ class VolumeRAMPrecision : public VolumeRAM {
 public:
     using type = T;
 
-    explicit VolumeRAMPrecision(size3_t dimensions = size3_t(128, 128, 128),
-                                const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-                                InterpolationType interpolation = InterpolationType::Linear,
-                                const Wrapping3D& wrapping = wrapping3d::clampAll);
+    explicit VolumeRAMPrecision(
+        size3_t dimensions = VolumeConfig::defaultDimensions,
+        const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
+        InterpolationType interpolation = VolumeConfig::defaultInterpolation,
+        const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
     VolumeRAMPrecision(T* data, size3_t dimensions,
-                       const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-                       InterpolationType interpolation = InterpolationType::Linear,
-                       const Wrapping3D& wrapping = wrapping3d::clampAll);
+                       const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
+                       InterpolationType interpolation = VolumeConfig::defaultInterpolation,
+                       const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
+    explicit VolumeRAMPrecision(const VolumeReprConfig& config);
     VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs);
-    VolumeRAMPrecision(NoData, const VolumeRepresentation& rhs);
     VolumeRAMPrecision<T>& operator=(const VolumeRAMPrecision<T>& that);
     virtual VolumeRAMPrecision<T>* clone() const override;
     virtual ~VolumeRAMPrecision();
@@ -317,6 +318,18 @@ VolumeRAMPrecision<T>::VolumeRAMPrecision(T* data, size3_t dimensions,
 }
 
 template <typename T>
+VolumeRAMPrecision<T>::VolumeRAMPrecision(const VolumeReprConfig& config)
+    : VolumeRAMPrecision{config.dimensions.value_or(VolumeConfig::defaultDimensions),
+                         config.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask),
+                         config.interpolation.value_or(VolumeConfig::defaultInterpolation),
+                         config.wrapping.value_or(VolumeConfig::defaultWrapping)} {
+
+    if (config.format && config.format != getDataFormat()) {
+        throw Exception(IVW_CONTEXT, "Creating representation with unmatched type and format");
+    }
+}
+
+template <typename T>
 VolumeRAMPrecision<T>::VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs)
     : VolumeRAM{rhs}
     , dimensions_{rhs.dimensions_}
@@ -328,16 +341,6 @@ VolumeRAMPrecision<T>::VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs)
 
     std::copy(rhs.getView().begin(), rhs.getView().end(), data_.get());
 }
-
-template <typename T>
-VolumeRAMPrecision<T>::VolumeRAMPrecision(NoData, const VolumeRepresentation& rhs)
-    : VolumeRAM{}
-    , dimensions_{rhs.getDimensions()}
-    , ownsDataPtr_{true}
-    , data_{std::make_unique<T[]>(glm::compMul(dimensions_))}
-    , swizzleMask_{rhs.getSwizzleMask()}
-    , interpolation_{rhs.getInterpolation()}
-    , wrapping_{rhs.getWrapping()} {}
 
 template <typename T>
 VolumeRAMPrecision<T>& VolumeRAMPrecision<T>::operator=(const VolumeRAMPrecision<T>& that) {

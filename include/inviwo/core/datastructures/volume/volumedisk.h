@@ -44,16 +44,19 @@ namespace inviwo {
 class IVW_CORE_API VolumeDisk : public VolumeRepresentation,
                                 public DiskRepresentation<VolumeRepresentation, VolumeDisk> {
 public:
-    VolumeDisk(size3_t dimensions = size3_t(128, 128, 128),
-               const DataFormatBase* format = DataUInt8::get(),
-               const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-               InterpolationType interpolation = InterpolationType::Linear,
-               const Wrapping3D& wrapping = wrapping3d::clampAll);
-    VolumeDisk(const std::filesystem::path& path, size3_t dimensions = size3_t(128, 128, 128),
-               const DataFormatBase* format = DataUInt8::get(),
-               const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-               InterpolationType interpolation = InterpolationType::Linear,
-               const Wrapping3D& wrapping = wrapping3d::clampAll);
+    VolumeDisk(size3_t dimensions = VolumeConfig::defaultDimensions,
+               const DataFormatBase* format = VolumeConfig::defaultFormat,
+               const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
+               InterpolationType interpolation = VolumeConfig::defaultInterpolation,
+               const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
+    VolumeDisk(const std::filesystem::path& path,
+               size3_t dimensions = VolumeConfig::defaultDimensions,
+               const DataFormatBase* format = VolumeConfig::defaultFormat,
+               const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
+               InterpolationType interpolation = VolumeConfig::defaultInterpolation,
+               const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
+    explicit VolumeDisk(const VolumeReprConfig& config, const std::filesystem::path& path = {});
+    
     VolumeDisk(const VolumeDisk& rhs) = default;
     VolumeDisk& operator=(const VolumeDisk& that) = default;
     virtual VolumeDisk* clone() const override;

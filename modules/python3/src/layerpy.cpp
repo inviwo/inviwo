@@ -82,6 +82,14 @@ LayerPy::LayerPy(size2_t dimensions, LayerType type, const DataFormatBase* forma
                                                             getDataFormat()->getComponents()})}
     , dims_{dimensions} {}
 
+LayerPy::LayerPy(const LayerReprConfig& config)
+    : LayerPy{config.dimensions.value_or(LayerConfig::defaultDimensions),
+              config.type.value_or(LayerConfig::defaultType),
+              config.format ? config.format : LayerConfig::defaultFormat,
+              config.swizzleMask.value_or(LayerConfig::defaultSwizzleMask),
+              config.interpolation.value_or(LayerConfig::defaultInterpolation),
+              config.wrapping.value_or(LayerConfig::defaultWrapping)} {}
+
 LayerPy::~LayerPy() {}
 
 LayerPy* LayerPy::clone() const { return new LayerPy(*this); }

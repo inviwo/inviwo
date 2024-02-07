@@ -48,16 +48,22 @@ class DataFormatBase;
 
 #include <warn/push>
 #include <warn/ignore/attributes>
+/**
+ * \ingroup datastructures
+ */
 class IVW_MODULE_PYTHON3_API VolumePy : public VolumeRepresentation {
 public:
-    VolumePy(pybind11::array data, const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-             InterpolationType interpolation = InterpolationType::Linear,
-             const Wrapping3D& wrapping = wrapping3d::clampAll);
+    VolumePy(pybind11::array data,
+             const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
+             InterpolationType interpolation = VolumeConfig::defaultInterpolation,
+             const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
 
     VolumePy(size3_t dimensions, const DataFormatBase* format,
-             const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-             InterpolationType interpolation = InterpolationType::Linear,
-             const Wrapping3D& wrapping = wrapping3d::clampAll);
+             const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
+             InterpolationType interpolation = VolumeConfig::defaultInterpolation,
+             const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
+
+    explicit VolumePy(const VolumeReprConfig& config);
 
     virtual ~VolumePy() = default;
 

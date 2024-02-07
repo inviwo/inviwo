@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/datarepresentation.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/image/layerconfig.h>
 
 namespace inviwo {
 
@@ -90,6 +91,8 @@ public:
      * Copy and resize the representations of this onto the target.
      */
     virtual bool copyRepresentationsTo(LayerRepresentation*) const = 0;
+    
+    LayerReprConfig config() const;
 
 protected:
     LayerRepresentation(LayerType type = LayerType::Color);
