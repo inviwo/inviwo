@@ -44,10 +44,7 @@ namespace inviwo {
 
 namespace {
 
-const std::vector<OptionPropertyIntOption> channelsList = {{"channel1", "Channel 1", 0},
-                                                           {"channel2", "Channel 2", 1},
-                                                           {"channel3", "Channel 3", 2},
-                                                           {"channel4", "Channel 4", 3}};
+const std::vector<OptionPropertyIntOption> channelsList = util::enumeratedOptions("Channel", 4);
 
 void normalizedPropertyUpdate(IntProperty& prop, int maxValue) {
     if (prop.getMaxValue() == maxValue) {

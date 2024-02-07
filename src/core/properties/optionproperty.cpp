@@ -29,6 +29,8 @@
 
 #include <inviwo/core/properties/optionproperty.h>
 
+#include <fmt/core.h>
+
 namespace inviwo {
 
 BaseOptionProperty::BaseOptionProperty(std::string_view identifier, std::string_view displayName,
@@ -69,5 +71,14 @@ template class IVW_CORE_TMPL_INST OptionProperty<float>;
 template class IVW_CORE_TMPL_INST OptionProperty<double>;
 template class IVW_CORE_TMPL_INST OptionProperty<std::string>;
 /// @endcond
+
+std::vector<OptionPropertyIntOption> util::enumeratedOptions(std::string_view name, size_t count) {
+    std::vector<OptionPropertyIntOption> res;
+    for (size_t i = 0; i < count; ++i) {
+        res.emplace_back(fmt::format("{}{}", toLower(name), i + 1),
+                         fmt::format("{} {}", name, i + 1), static_cast<int>(i));
+    }
+    return res;
+}
 
 }  // namespace inviwo
