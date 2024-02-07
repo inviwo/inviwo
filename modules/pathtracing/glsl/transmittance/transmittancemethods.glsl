@@ -8,7 +8,7 @@ const int WOODCOCK = 0;
 const int RATIO = 1;
 const int RESIDUALRATIO = 2;
 
-const float REFSAMPLINGINTERVAL = 150.0;
+#define REFSAMPLINGINTERVAL 150.0
 
 float opacityToExtinction(float s_max) { return s_max * REFSAMPLINGINTERVAL; }
 
