@@ -50,6 +50,8 @@ class DataFormatBase;
  */
 class IVW_CORE_API Layer : public Data<Layer, LayerRepresentation>, public StructuredGridEntity<2> {
 public:
+    using Config = LayerConfig;
+
     explicit Layer(size2_t defaultDimensions = LayerConfig::defaultDimensions,
                    const DataFormatBase* defaultFormat = LayerConfig::defaultFormat,
                    LayerType type = LayerConfig::defaultType,

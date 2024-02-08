@@ -67,6 +67,7 @@ class IVW_CORE_API Volume : public Data<Volume, VolumeRepresentation>,
                             public MetaDataOwner,
                             public HistogramSupplier {
 public:
+    using Config = VolumeConfig;
     explicit Volume(size3_t defaultDimensions = VolumeConfig::defaultDimensions,
                     const DataFormatBase* defaultFormat = VolumeConfig::defaultFormat,
                     const SwizzleMask& defaultSwizzleMask = VolumeConfig::defaultSwizzleMask,

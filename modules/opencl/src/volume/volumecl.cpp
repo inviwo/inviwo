@@ -49,6 +49,14 @@ VolumeCL::VolumeCL(size3_t dimensions, const DataFormatBase* format, const void*
     initialize(data);
 }
 
+VolumeCL::VolumeCL(const VolumeReprConfig& config, const void* data)
+    : VolumeCL{config.dimensions.value_or(VolumeConfig::defaultDimensions),
+               config.format ? config.format : VolumeConfig::defaultFormat,
+               data,
+               config.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask),
+               config.interpolation.value_or(VolumeConfig::defaultInterpolation),
+               config.wrapping.value_or(VolumeConfig::defaultWrapping)} {}
+
 VolumeCL::VolumeCL(const VolumeCL& rhs)
     : VolumeCLBase{rhs}
     , VolumeRepresentation{rhs}
