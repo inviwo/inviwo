@@ -36,6 +36,7 @@
 #include <modules/opengl/shader/standardshaders.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -44,15 +45,12 @@ LayerGLProcessor::LayerGLProcessor(std::shared_ptr<const ShaderResource> fragmen
     : Processor()
     , inport_("inport", "The input layer"_help)
     , outport_("output", "Resulting output layer"_help)
-    , dataFormat_(nullptr)
-    , swizzleMask_(swizzlemasks::rgba)
-    , internalInvalid_(false)
-    , shader_({utilgl::imgQuadVert(), {ShaderType::Fragment, fragmentShader}}, build) {
+    , shader_({utilgl::imgQuadVert(), {ShaderType::Fragment, fragmentShader}}, Shader::Build::No)
+    , config{} {
 
     addPorts(inport_, outport_);
 
     inport_.onChange([this]() {
-        markInvalid();
         afterInportChanged();
     });
 
@@ -61,23 +59,21 @@ LayerGLProcessor::LayerGLProcessor(std::shared_ptr<const ShaderResource> fragmen
 
 void LayerGLProcessor::initializeResources() {
     shader_.build();
-    internalInvalid_ = true;
 }
 
 void LayerGLProcessor::process() {
-    bool reattach = false;
+    const auto& input = *inport_.getData();
 
-    if (internalInvalid_) {
+    bool reattach = false;
+    const auto newConfig = outputConfig(input);
+    if (!layer_ || config == newConfig) {
+        config = newConfig;
+        layer_ = std::make_shared<Layer>(input, noData, config);
         reattach = true;
-        internalInvalid_ = false;
-        layer_ = std::make_shared<Layer>(*inport_.getData(), noData, std::nullopt, dataFormat_);
-        if (dataFormat_) {
-            layer_->setSwizzleMask(swizzleMask_);
-        }
         outport_.setData(layer_);
     }
 
-    shader_.activate();
+    utilgl::Activate activateShader{&shader_};
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters");
 
     TextureUnitContainer cont;
@@ -86,25 +82,24 @@ void LayerGLProcessor::process() {
     preProcess(cont);
 
     const size2_t dim{inport_.getData()->getDimensions()};
-    fbo_.activate();
-    glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
-    // We always need to ask for an editable representation, this will invalidate any other
-    // representations
-    LayerGL* destLayer = layer_->getEditableRepresentation<LayerGL>();
-    if (reattach) {
-        fbo_.attachColorTexture(destLayer->getTexture().get(), 0);
+    {
+        utilgl::Activate activateFbo{&fbo_};
+        utilgl::ViewportState viewport{0, 0, static_cast<GLsizei>(dim.x),
+                                       static_cast<GLsizei>(dim.y)};
+
+        // We always need to ask for an editable representation, this will invalidate any other
+        // representations
+        auto destLayer = layer_->getEditableRepresentation<LayerGL>();
+        if (reattach) {
+            fbo_.attachColorTexture(destLayer->getTexture().get(), 0);
+        }
+
+        utilgl::singleDrawImagePlaneRect();
     }
-
-    utilgl::singleDrawImagePlaneRect();
-
-    shader_.deactivate();
-    fbo_.deactivate();
 
     postProcess();
 }
-
-void LayerGLProcessor::markInvalid() { internalInvalid_ = true; }
 
 void LayerGLProcessor::preProcess(TextureUnitContainer&) {}
 

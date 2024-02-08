@@ -77,8 +77,6 @@ std::shared_ptr<VolumeRAM> VolumeGL2RAMConverter::createFrom(
 
     src->getTexture()->download(dst->getData());
     return dst;
-
-    return nullptr;
 }
 
 void VolumeGL2RAMConverter::update(std::shared_ptr<const VolumeGL> src,

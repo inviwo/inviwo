@@ -72,18 +72,25 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
 {
 
     using PortChannel = std::pair<const DataInport<T>*, int>;
-    std::vector<PortChannel> activePorts;
-    for (auto&& [port, channel] : util::zip(sources, selectedPortChannels)) {
-        if (port.hasData()) {
-            activePorts.emplace_back(&port, channel);
-        }
-    }
 
-    const auto dims{activePorts.front().first->getData()->getDimensions()};
-    if (std::ranges::any_of(
-            activePorts, [dims](auto& p) { return p.first->getData()->getDimensions() != dims; })) {
-        throw Exception("Dimensions of all inports need to be identical",
-                        IVW_CONTEXT_CUSTOM("util::combineChannels"));
+    const auto activePorts = [&]() {
+        std::vector<PortChannel> res;
+        for (auto&& [port, channel] : util::zip(sources, selectedPortChannels)) {
+            if (port.hasData()) {
+                res.emplace_back(&port, channel);
+            }
+        }
+        return res;
+    }();
+
+    if (auto it =
+            std::ranges::adjacent_find(activePorts, std::not_equal_to<>{},
+                                       [](auto& p) { return p.first->getData()->getDimensions(); });
+        it != activePorts.end()) {
+        throw Exception(IVW_CONTEXT_CUSTOM("util::combineChannels"),
+                        "Dimensions of all inports need to be identical, found {} and {}",
+                        it->first->getData()->getDimensions(),
+                        std::next(it)->first->getData()->getDimensions());
     }
 
     auto&& [type, precision] = [&]() {
@@ -95,8 +102,13 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
                               util::commonFormatPrecision(formats));
     }();
 
-    auto data = std::make_shared<T>(*activePorts.front().first->getData(), noData, std::nullopt,
-                                    DataFormatBase::get(type, activePorts.size(), precision));
+    auto commonFormat = DataFormatBase::get(type, activePorts.size(), precision);
+
+    using Config = typename T::Config;
+    auto data =
+        std::make_shared<T>(*activePorts.front().first->getData(), noData,
+                            Config{.format = commonFormat,
+                                   .swizzleMask = swizzlemasks::defaultData(activePorts.size())});
 
 #include <warn/push>
 #include <warn/ignore/conversion>
@@ -125,8 +137,6 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
     });
 
 #include <warn/pop>
-
-    data->setSwizzleMask(swizzlemasks::defaultData(activePorts.size()));
     return data;
 }
 

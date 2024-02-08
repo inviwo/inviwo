@@ -40,6 +40,7 @@ namespace inviwo {
 class IVW_MODULE_BASEGL_API LayerBinary : public LayerGLProcessor {
 public:
     LayerBinary();
+    virtual void initializeResources() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -47,9 +48,11 @@ public:
 private:
     virtual void preProcess(TextureUnitContainer& cont) override;
     virtual void postProcess() override;
+    virtual LayerConfig outputConfig(const Layer& input) const override;
 
     OptionPropertyInt channel_;
     FloatProperty threshold_;
+    OptionPropertyString comparison_;
 };
 
 }  // namespace inviwo

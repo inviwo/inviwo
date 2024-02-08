@@ -36,6 +36,8 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 
+#include <optional>
+
 namespace inviwo {
 
 class Layer;
@@ -43,9 +45,8 @@ class DataFormatBase;
 class ShaderResource;
 class TextureUnitContainer;
 
-/*! \class ImageGLProcessor
- *
- * \brief Base class for layer processing on the GPU using OpenGL.
+/**
+ * @brief Base class for layer processing on the GPU using OpenGL.
  *
  * The LayerGLProcessor provides the basic structure for layer processing on the GPU.
  * Derived shaders have to provide a custom fragment shader which is used during rendering.
@@ -53,7 +54,7 @@ class TextureUnitContainer;
  * post-processing of the layer data set in the outport. Furthermore, it is possible to
  * be notified of changes in the input layer by overwriting LayerGLProcessor::afterInportChanged().
  *
- * \see ImageGLProcessor
+ * @see ImageGLProcessor
  */
 class IVW_MODULE_BASEGL_API LayerGLProcessor : public Processor {
 public:
@@ -65,37 +66,46 @@ public:
     virtual void process() override;
 
 protected:
-    void markInvalid();
-
-    /*! \brief this function gets called right before the actual processing but
+    /** @brief this function gets called right before the actual processing but
      *         after the shader has been activated
      *
-     * overwrite this function in the derived class to perform things like custom shader setup
+     * Overwrite this function in the derived class to perform things like custom shader setup.
      */
     virtual void preProcess(TextureUnitContainer& cont);
 
-    /*! \brief this function gets called at the end of the process function
+    /** @brief this function gets called at the end of the process function
      *
-     * overwrite this function in the derived class to perform post-processing
+     * Overwrite this function in the derived class to perform post-processing.
      */
     virtual void postProcess();
 
-    /*! \brief this function gets called whenever the inport changes
+    /** @brief this function gets called whenever the inport changes
      *
-     * overwrite this function in the derived class to be notified of inport onChange events
+     * Overwrite this function in the derived class to be notified of inport onChange events.
      */
     virtual void afterInportChanged();
+
+    /** @brief Returns the output configuration for the layer.
+     *
+     * By default the output layer will have the same config (@see LayerConfig) as the input layer.
+     * This function should be overridden in derived classes to provide the specific configuration
+     * for the output layer.
+     *
+     * @param input the input data given
+     * @return The output configuration for the layer.
+     */
+    virtual LayerConfig outputConfig([[maybe_unused]] const Layer& input) const {
+    return LayerConfig{};
+}
 
     LayerInport inport_;
     LayerOutport outport_;
     std::shared_ptr<Layer> layer_;
-
-    const DataFormatBase* dataFormat_;
-    // if a custom data format is specified, i.e. dataFormat_ != nullptr, this swizzle mask is used
-    SwizzleMask swizzleMask_;
-    bool internalInvalid_;
     Shader shader_;
     FrameBufferObject fbo_;
+
+private:
+    LayerConfig config;
 };
 
 }  // namespace inviwo
