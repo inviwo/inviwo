@@ -84,5 +84,4 @@ struct IVW_CORE_API LayerReprConfig {
     std::optional<Wrapping2D> wrapping = std::nullopt;
 };
 
-
 }  // namespace inviwo

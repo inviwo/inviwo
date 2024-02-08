@@ -83,5 +83,4 @@ struct IVW_CORE_API VolumeReprConfig {
     std::optional<Wrapping3D> wrapping = std::nullopt;
 };
 
-
 }  // namespace inviwo

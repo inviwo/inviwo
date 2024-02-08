@@ -56,7 +56,7 @@ public:
                InterpolationType interpolation = VolumeConfig::defaultInterpolation,
                const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
     explicit VolumeDisk(const VolumeReprConfig& config, const std::filesystem::path& path = {});
-    
+
     VolumeDisk(const VolumeDisk& rhs) = default;
     VolumeDisk& operator=(const VolumeDisk& that) = default;
     virtual VolumeDisk* clone() const override;
