@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/qt/applicationbase/qtapplicationbasemoduledefine.h>
 
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/network/workspacemanager.h>
@@ -45,15 +45,15 @@ class QEvent;
 
 namespace inviwo {
 
-class InviwoMainWindow;
 class AutoSaver;
 
 /**
  * \class UndoManager
  */
-class IVW_QTEDITOR_API UndoManager : public QObject, public ProcessorNetworkObserver {
+class IVW_QTAPPLICATIONBASE_API UndoManager : public QObject, public ProcessorNetworkObserver {
 public:
-    UndoManager(InviwoMainWindow* mainWindow);
+    UndoManager(InviwoApplication* app, QObject* mainWindow, int numRestoreFiles = 100000,
+                int restoreFrequency = 1440);
     UndoManager(const UndoManager&) = delete;
     UndoManager(UndoManager&&) = delete;
     UndoManager& operator=(const UndoManager&) = delete;
@@ -90,7 +90,7 @@ private:
     virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) override;
     virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) override;
 
-    InviwoMainWindow* mainWindow_;
+    InviwoApplication* app_;
     WorkspaceManager* manager_;
     std::filesystem::path refPath_;
 

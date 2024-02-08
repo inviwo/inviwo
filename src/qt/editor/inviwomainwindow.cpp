@@ -251,10 +251,11 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
                               false,
                               "",
                               "path"}
-    , undoManager_(this)
+    , undoManager_(app, this, app->getSettingsByType<EditorSettings>()->numRestoreFiles.get(),
+                   app->getSettingsByType<EditorSettings>()->restoreFrequency.get()),
     , visibleWidgetsClearHandle_{
           app->getWorkspaceManager()->onClear([&]() { visibleWidgetState_.processors.clear(); })} {
-
+    , undoManager_(app, this)
     setObjectName("InviwoMainWindow");
 
     setAcceptDrops(true);

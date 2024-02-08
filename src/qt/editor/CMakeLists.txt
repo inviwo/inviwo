@@ -51,7 +51,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/resourcemanager/resourcemanagerdockwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/settingswidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/toolsmenu.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/undomanager.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspaceannotationsqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacemodelroles.h
     ${MOC_FILES}
@@ -101,7 +100,6 @@ set(SOURCE_FILES
     settingswidget.cpp
     subpropertyselectiondialog.cpp
     toolsmenu.cpp
-    undomanager.cpp
     verticallabel.cpp
     welcomewidget.cpp
     workspaceannotationsqt.cpp

@@ -29,12 +29,10 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
-#include <inviwo/qt/editor/inviwomainwindow.h>
-#include <inviwo/qt/editor/undomanager.h>
+#include <inviwo/qt/applicationbase/undomanager.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/threadutil.h>
-#include <modules/qtwidgets/editorsettings.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -63,7 +61,7 @@ class AutoSaver {
 public:
     using clock_t = std::chrono::system_clock;
 
-    AutoSaver(InviwoApplication* app)
+    AutoSaver(int numRestoreFiles = 100000, int restoreFrequency = 1440)
         : path_{filesystem::getPath(PathType::Settings)}
         , sessionStart_{clock_t::now()}
         , restored_{[this]() -> std::optional<std::string> {
@@ -77,7 +75,7 @@ public:
             return std::nullopt;
         }()}
         , quit_{false}
-        , saver_{[this, app]() {
+        , saver_{[this, numRestoreFiles, restoreFrequency]() {
             util::setThreadDescription("Inviwo AutoSave");
             for (;;) {
 
@@ -97,13 +95,6 @@ public:
                 }
 
                 if (str) {
-                    int numRestoreFiles = 100000;
-                    int restoreFrequency = 1440;
-                    if (auto* settings = app->getSettingsByType<EditorSettings>()) {
-                        numRestoreFiles = settings->numRestoreFiles.get();
-                        restoreFrequency = settings->restoreFrequency.get();
-                    }
-
                     std::filesystem::create_directories(path_ / "autosaves");
                     {
                         // make sure we have closed the file _before_ we copy it.
@@ -174,23 +165,24 @@ private:
     std::thread saver_;
 };
 
-UndoManager::UndoManager(InviwoMainWindow* mainWindow)
-    : mainWindow_(mainWindow)
-    , manager_{mainWindow_->getInviwoApplication()->getWorkspaceManager()}
-    , refPath_{filesystem::findBasePath()}
-    , autoSaver_{std::make_unique<AutoSaver>(mainWindow_->getInviwoApplication())}
+UndoManager::UndoManager(InviwoApplication* app, QObject* mainWindow, int numRestoreFiles,
+                         int restoreFrequency)
+    : app_(app)
+    , manager_{app->getWorkspaceManager()}
+    , refPath_{filesystem::findBasePath()},
+      autoSaver_{std::make_unique<AutoSaver>(numRestoreFiles, restoreFrequency)}
 
 {
 
     QApplication::instance()->installEventFilter(this);
 
-    mainWindow_->getInviwoApplication()->getProcessorNetwork()->addObserver(this);
+    app->getProcessorNetwork()->addObserver(this);
 
-    undoAction_ = new QAction(QIcon(":/svgicons/undo.svg"), QAction::tr("&Undo"), mainWindow_);
+    undoAction_ = new QAction(QIcon(":/svgicons/undo.svg"), QAction::tr("&Undo"), mainWindow);
     undoAction_->setShortcut(QKeySequence::Undo);
     undoAction_->connect(undoAction_, &QAction::triggered, [this]() { undoState(); });
 
-    redoAction_ = new QAction(QIcon(":/svgicons/redo.svg"), QAction::tr("&Redo"), mainWindow_);
+    redoAction_ = new QAction(QIcon(":/svgicons/redo.svg"), QAction::tr("&Redo"), mainWindow);
     redoAction_->setShortcut(QKeySequence::Redo);
     redoAction_->connect(redoAction_, &QAction::triggered, [this]() { redoState(); });
 
@@ -236,7 +228,7 @@ void UndoManager::pushState() {
     undoBuffer_.erase(undoBuffer_.begin() + offset, undoBuffer_.end());
     undoBuffer_.push_back(str);
 
-    if (!mainWindow_->getInviwoApplication()->getProcessorNetwork()->empty()) {
+    if (!app_->getProcessorNetwork()->empty()) {
         autoSaver_->save(str);
     }
 
