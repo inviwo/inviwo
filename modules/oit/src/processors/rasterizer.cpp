@@ -56,9 +56,7 @@ void Rasterizer::configureShader(Shader& shader) {
     handle_.configureShader(shader);
 }
 
-void Rasterizer::setUniforms(Shader& shader) {
-    handle_.setUniforms(shader, usesFragmentLists());
-}
+void Rasterizer::setUniforms(Shader& shader) { handle_.setUniforms(shader, usesFragmentLists()); }
 
 void Rasterizer::propagateEvent(Event* event, Outport* source) {
     if (event->hash() == RasterizeEvent::chash()) {

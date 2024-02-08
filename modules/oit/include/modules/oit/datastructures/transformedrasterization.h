@@ -31,10 +31,10 @@
 
 #include <modules/oit/oitmoduledefine.h>  // for IVW_MODULE_MESHRENDERI...
 
-#include <inviwo/core/datastructures/spatialdata.h>                // for SpatialEntity
-#include <inviwo/core/util/document.h>                             // for Document
-#include <inviwo/core/util/glmmat.h>                               // for mat4
-#include <inviwo/core/util/glmvec.h>                               // for ivec2
+#include <inviwo/core/datastructures/spatialdata.h>    // for SpatialEntity
+#include <inviwo/core/util/document.h>                 // for Document
+#include <inviwo/core/util/glmmat.h>                   // for mat4
+#include <inviwo/core/util/glmvec.h>                   // for ivec2
 #include <modules/oit/datastructures/rasterization.h>  // for Rasterization
 
 #include <functional>   // for function

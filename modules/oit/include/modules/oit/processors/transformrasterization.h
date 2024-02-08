@@ -31,10 +31,10 @@
 
 #include <modules/oit/oitmoduledefine.h>  // for IVW_MODULE_MESHRENDERIN...
 
-#include <inviwo/core/processors/processor.h>                 // for Processor
-#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
-#include <modules/base/properties/transformlistproperty.h>    // for TransformListProperty
-#include <modules/oit/ports/rasterizationport.h>  // for RasterizationInport
+#include <inviwo/core/processors/processor.h>               // for Processor
+#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
+#include <modules/base/properties/transformlistproperty.h>  // for TransformListProperty
+#include <modules/oit/ports/rasterizationport.h>            // for RasterizationInport
 #include <modules/oit/datastructures/rasterization.h>
 #include <modules/oit/processors/rasterizer.h>
 

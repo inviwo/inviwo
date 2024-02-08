@@ -30,32 +30,32 @@
 #include <modules/oit/processors/rasterizationrenderer.h>
 
 #include <inviwo/core/algorithm/boundingbox.h>
-#include <inviwo/core/datastructures/image/image.h>                // for Image
-#include <inviwo/core/interaction/cameratrackball.h>               // for CameraTrackball
-#include <inviwo/core/ports/imageport.h>                           // for BaseImageInport, Ima...
-#include <inviwo/core/ports/inportiterable.h>                      // for InportIterable<>::co...
-#include <inviwo/core/ports/outportiterable.h>                     // for OutportIterable
-#include <inviwo/core/processors/processor.h>                      // for Processor
-#include <inviwo/core/processors/processorinfo.h>                  // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                 // for CodeState, CodeState...
-#include <inviwo/core/processors/processortags.h>                  // for Tags, Tags::GL
-#include <inviwo/core/properties/boolcompositeproperty.h>          // for BoolCompositeProperty
-#include <inviwo/core/properties/boolproperty.h>                   // for BoolProperty
-#include <inviwo/core/properties/cameraproperty.h>                 // for CameraProperty
-#include <inviwo/core/properties/invalidationlevel.h>              // for InvalidationLevel
-#include <inviwo/core/properties/ordinalproperty.h>                // for FloatProperty, Float...
-#include <inviwo/core/properties/property.h>                       // for Property
-#include <inviwo/core/properties/propertysemantics.h>              // for PropertySemantics
-#include <inviwo/core/util/dispatcher.h>                           // for Dispatcher<>::Handle
-#include <inviwo/core/util/glmmat.h>                               // for mat4
-#include <inviwo/core/util/glmvec.h>                               // for uvec3, vec3
-#include <inviwo/core/util/logcentral.h>                           // for LogCentral, LogProce...
-#include <modules/oit/datastructures/rasterization.h>  // IWYU pragma: keep
+#include <inviwo/core/datastructures/image/image.h>        // for Image
+#include <inviwo/core/interaction/cameratrackball.h>       // for CameraTrackball
+#include <inviwo/core/ports/imageport.h>                   // for BaseImageInport, Ima...
+#include <inviwo/core/ports/inportiterable.h>              // for InportIterable<>::co...
+#include <inviwo/core/ports/outportiterable.h>             // for OutportIterable
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>         // for CodeState, CodeState...
+#include <inviwo/core/processors/processortags.h>          // for Tags, Tags::GL
+#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>         // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel
+#include <inviwo/core/properties/ordinalproperty.h>        // for FloatProperty, Float...
+#include <inviwo/core/properties/property.h>               // for Property
+#include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics
+#include <inviwo/core/util/dispatcher.h>                   // for Dispatcher<>::Handle
+#include <inviwo/core/util/glmmat.h>                       // for mat4
+#include <inviwo/core/util/glmvec.h>                       // for uvec3, vec3
+#include <inviwo/core/util/logcentral.h>                   // for LogCentral, LogProce...
+#include <modules/oit/datastructures/rasterization.h>      // IWYU pragma: keep
 #include <modules/oit/processors/rasterizer.h>
 #include <modules/oit/ports/rasterizationport.h>         // for RasterizationInport
 #include <modules/oit/rendering/fragmentlistrenderer.h>  // for FragmentListRenderer
-#include <modules/opengl/shader/shaderutils.h>                       // for ImageInport, setUnif...
-#include <modules/opengl/texture/textureutils.h>                     // for activateTargetAndCle...
+#include <modules/opengl/shader/shaderutils.h>           // for ImageInport, setUnif...
+#include <modules/opengl/texture/textureutils.h>         // for activateTargetAndCle...
 
 #include <modules/oit/rasterizeevent.h>
 

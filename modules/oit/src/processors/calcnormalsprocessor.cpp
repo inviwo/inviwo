@@ -29,15 +29,15 @@
 
 #include <modules/oit/processors/calcnormalsprocessor.h>
 
-#include <inviwo/core/datastructures/geometry/mesh.h>       // for Mesh
-#include <inviwo/core/ports/meshport.h>                     // for MeshInport, MeshOutport
-#include <inviwo/core/processors/processor.h>               // for Processor
-#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>          // for CodeState, CodeState::Experim...
-#include <inviwo/core/processors/processortags.h>           // for Tags, Tags::CPU
-#include <inviwo/core/properties/optionproperty.h>          // for OptionPropertyOption, OptionP...
-#include <inviwo/core/util/staticstring.h>                  // for operator+
-#include <modules/oit/algorithm/calcnormals.h>  // for CalculateMeshNormalsMode, cal...
+#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
+#include <inviwo/core/ports/meshport.h>                // for MeshInport, MeshOutport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Experim...
+#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::CPU
+#include <inviwo/core/properties/optionproperty.h>     // for OptionPropertyOption, OptionP...
+#include <inviwo/core/util/staticstring.h>             // for operator+
+#include <modules/oit/algorithm/calcnormals.h>         // for CalculateMeshNormalsMode, cal...
 
 #include <memory>  // for shared_ptr
 

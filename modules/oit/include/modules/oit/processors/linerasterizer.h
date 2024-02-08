@@ -31,19 +31,19 @@
 
 #include <modules/oit/oitmoduledefine.h>  // for IVW_MODULE_MESHRENDERI...
 
-#include <inviwo/core/ports/meshport.h>                            // for MeshFlatMultiInport
-#include <inviwo/core/processors/processor.h>                      // for Processor
-#include <inviwo/core/processors/processorinfo.h>                  // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>                   // for BoolProperty
-#include <inviwo/core/properties/ordinalproperty.h>                // for FloatProperty, FloatVe...
-#include <inviwo/core/util/document.h>                             // for Document
-#include <inviwo/core/util/glmmat.h>                               // for mat4
-#include <inviwo/core/util/glmvec.h>                               // for ivec2
-#include <modules/base/properties/transformlistproperty.h>         // for TransformListProperty
-#include <modules/basegl/properties/linesettingsproperty.h>        // for LineSettingsProperty
-#include <modules/basegl/datastructures/meshshadercache.h>         // for MeshShaderC...
-#include <modules/oit/datastructures/rasterization.h>  // for Rasterization
-#include <modules/oit/ports/rasterizationport.h>       // for RasterizationOutport
+#include <inviwo/core/ports/meshport.h>                      // for MeshFlatMultiInport
+#include <inviwo/core/processors/processor.h>                // for Processor
+#include <inviwo/core/processors/processorinfo.h>            // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>             // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>          // for FloatProperty, FloatVe...
+#include <inviwo/core/util/document.h>                       // for Document
+#include <inviwo/core/util/glmmat.h>                         // for mat4
+#include <inviwo/core/util/glmvec.h>                         // for ivec2
+#include <modules/base/properties/transformlistproperty.h>   // for TransformListProperty
+#include <modules/basegl/properties/linesettingsproperty.h>  // for LineSettingsProperty
+#include <modules/basegl/datastructures/meshshadercache.h>   // for MeshShaderC...
+#include <modules/oit/datastructures/rasterization.h>        // for Rasterization
+#include <modules/oit/ports/rasterizationport.h>             // for RasterizationOutport
 #include <modules/oit/processors/rasterizer.h>
 
 #include <functional>  // for function

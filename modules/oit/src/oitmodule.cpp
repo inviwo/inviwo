@@ -29,18 +29,18 @@
 
 #include <modules/oit/oitmodule.h>
 
-#include <inviwo/core/common/inviwomodule.h>                            // for InviwoModule, Mod...
-#include <inviwo/core/ports/outportiterable.h>                          // for OutportIterableIm...
-#include <inviwo/core/util/exception.h>                                 // for Exception
-#include <modules/oit/ports/rasterizationport.h>            // for RasterizationOutport
-#include <modules/oit/processors/calcnormalsprocessor.h>    // for CalcNormalsProcessor
-#include <modules/oit/processors/linerasterizer.h>          // for LineRasterizer
-#include <modules/oit/processors/meshrasterizer.h>          // for MeshRasterizer
-#include <modules/oit/processors/rasterizationrenderer.h>   // for RasterizationRend...
+#include <inviwo/core/common/inviwomodule.h>               // for InviwoModule, Mod...
+#include <inviwo/core/ports/outportiterable.h>             // for OutportIterableIm...
+#include <inviwo/core/util/exception.h>                    // for Exception
+#include <modules/oit/ports/rasterizationport.h>           // for RasterizationOutport
+#include <modules/oit/processors/calcnormalsprocessor.h>   // for CalcNormalsProcessor
+#include <modules/oit/processors/linerasterizer.h>         // for LineRasterizer
+#include <modules/oit/processors/meshrasterizer.h>         // for MeshRasterizer
+#include <modules/oit/processors/rasterizationrenderer.h>  // for RasterizationRend...
 #include <modules/oit/processors/rasterizer.h>
 #include <modules/oit/processors/sphererasterizer.h>        // for SphereRasterizer
 #include <modules/oit/processors/transformrasterization.h>  // for TransformRasteriz...
-#include <modules/opengl/shader/shadermanager.h>                        // for ShaderManager
+#include <modules/opengl/shader/shadermanager.h>            // for ShaderManager
 
 #include <functional>  // for __base
 #include <memory>      // for unique_ptr
@@ -50,8 +50,7 @@
 namespace inviwo {
 class InviwoApplication;
 
-OITModule::OITModule(InviwoApplication* app)
-    : InviwoModule(app, "Oit") {
+OITModule::OITModule(InviwoApplication* app) : InviwoModule(app, "Oit") {
 
     // Add a directory to the search path of the Shadermanager
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));

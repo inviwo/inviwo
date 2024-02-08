@@ -31,26 +31,26 @@
 
 #include <modules/oit/oitmoduledefine.h>  // for IVW_MODULE_MESHRENDE...
 
-#include <inviwo/core/ports/meshport.h>                              // for MeshFlatMultiInport
-#include <inviwo/core/processors/processor.h>                        // for Processor
-#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
-#include <inviwo/core/properties/boolcompositeproperty.h>            // for BoolCompositeProperty
-#include <inviwo/core/properties/boolproperty.h>                     // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                   // for ButtonProperty
-#include <inviwo/core/properties/compositeproperty.h>                // for CompositeProperty
-#include <inviwo/core/properties/optionproperty.h>                   // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                  // for FloatProperty, Float...
-#include <inviwo/core/properties/simplelightingproperty.h>           // for SimpleLightingProperty
-#include <inviwo/core/properties/transferfunctionproperty.h>         // for TransferFunctionProp...
-#include <inviwo/core/util/document.h>                               // for Document
-#include <inviwo/core/util/glmmat.h>                                 // for mat4
-#include <inviwo/core/util/glmvec.h>                                 // for ivec2
-#include <inviwo/core/util/staticstring.h>                           // for operator+
-#include <modules/base/properties/transformlistproperty.h>           // for TransformListProperty
-#include <modules/oit/algorithm/calcnormals.h>           // for CalculateMeshNormals...
-#include <modules/oit/datastructures/rasterization.h>    // for Rasterization
-#include <modules/oit/ports/rasterizationport.h>         // for RasterizationOutport
-#include <modules/oit/rendering/fragmentlistrenderer.h>  // for FragmentListRenderer
+#include <inviwo/core/ports/meshport.h>                       // for MeshFlatMultiInport
+#include <inviwo/core/processors/processor.h>                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
+#include <inviwo/core/properties/boolcompositeproperty.h>     // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>              // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>            // for ButtonProperty
+#include <inviwo/core/properties/compositeproperty.h>         // for CompositeProperty
+#include <inviwo/core/properties/optionproperty.h>            // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>           // for FloatProperty, Float...
+#include <inviwo/core/properties/simplelightingproperty.h>    // for SimpleLightingProperty
+#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProp...
+#include <inviwo/core/util/document.h>                        // for Document
+#include <inviwo/core/util/glmmat.h>                          // for mat4
+#include <inviwo/core/util/glmvec.h>                          // for ivec2
+#include <inviwo/core/util/staticstring.h>                    // for operator+
+#include <modules/base/properties/transformlistproperty.h>    // for TransformListProperty
+#include <modules/oit/algorithm/calcnormals.h>                // for CalculateMeshNormals...
+#include <modules/oit/datastructures/rasterization.h>         // for Rasterization
+#include <modules/oit/ports/rasterizationport.h>              // for RasterizationOutport
+#include <modules/oit/rendering/fragmentlistrenderer.h>       // for FragmentListRenderer
 #include <modules/oit/processors/rasterizer.h>
 
 #include <array>        // for array

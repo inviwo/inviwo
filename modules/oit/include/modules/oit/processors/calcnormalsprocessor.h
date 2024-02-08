@@ -31,12 +31,12 @@
 
 #include <modules/oit/oitmoduledefine.h>  // for IVW_MODULE_MESHRENDERIN...
 
-#include <inviwo/core/ports/meshport.h>                     // for MeshInport, MeshOutport
-#include <inviwo/core/processors/processor.h>               // for Processor
-#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
-#include <inviwo/core/properties/optionproperty.h>          // for OptionProperty
-#include <inviwo/core/util/staticstring.h>                  // for operator+
-#include <modules/oit/algorithm/calcnormals.h>  // for CalculateMeshNormalsMode
+#include <inviwo/core/ports/meshport.h>             // for MeshInport, MeshOutport
+#include <inviwo/core/processors/processor.h>       // for Processor
+#include <inviwo/core/processors/processorinfo.h>   // for ProcessorInfo
+#include <inviwo/core/properties/optionproperty.h>  // for OptionProperty
+#include <inviwo/core/util/staticstring.h>          // for operator+
+#include <modules/oit/algorithm/calcnormals.h>      // for CalculateMeshNormalsMode
 
 #include <functional>   // for __base
 #include <string>       // for operator==, operator+

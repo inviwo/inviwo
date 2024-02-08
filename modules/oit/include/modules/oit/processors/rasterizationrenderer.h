@@ -40,7 +40,7 @@
 #include <inviwo/core/properties/cameraproperty.h>         // for CameraProperty
 #include <inviwo/core/properties/ordinalproperty.h>        // for FloatProperty, Float...
 #include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/util/dispatcher.h>                             // for Dispatcher, Dispatch...
+#include <inviwo/core/util/dispatcher.h>                 // for Dispatcher, Dispatch...
 #include <modules/oit/ports/rasterizationport.h>         // for RasterizationInport
 #include <modules/oit/rendering/fragmentlistrenderer.h>  // for FragmentListRenderer
 
@@ -61,7 +61,7 @@ public:
     virtual void initializeResources() override;
 
     virtual void process() override;
-    
+
 protected:
     friend RasterizeHandle;
     friend RasterizeEvent;
