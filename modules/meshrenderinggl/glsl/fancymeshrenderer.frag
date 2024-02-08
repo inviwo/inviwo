@@ -341,7 +341,7 @@ void main() {
     if (fragColor.a > 0.0) {
         ivec2 coords = ivec2(gl_FragCoord.xy);
         float depth = gl_FragCoord.z;
-        abufferRender(coords, depth, fragColor);
+        abufferMeshRender(coords, depth, fragColor);
     }
     discard;
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2022-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,25 +27,40 @@
  *
  *********************************************************************************/
 
-#ifndef ABUFFERCOMMONS_H
-#define ABUFFERCOMMONS_H
-
-// max depth of the chain, all others are discarded during the final rendering
-#define ABUFFER_SIZE 32
-
-// Helpers
-uint compressColor(vec3 color) {
-    uint c = (int((color.r * 1023)) & 0x3ff) << 22;
-    c += (int((color.g * 1023)) & 0x3ff) << 12;
-    c += (int((color.b * 1023)) & 0x3ff) << 2;
-    return c;
-}
-vec3 uncompressColor(uint c) {
-    vec3 color;
-    color.r = float((c >> 22) & 0x3ff) / 1023.0f;
-    color.g = float((c >> 12) & 0x3ff) / 1023.0f;
-    color.b = float((c >> 2) & 0x3ff) / 1023.0f;
-    return color;
-}
-
+#ifdef _MSC_VER
+#pragma comment(linker, "/SUBSYSTEM:CONSOLE")
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+#include <vld.h>
 #endif
+#endif
+
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/consolelogger.h>
+#include <inviwo/testutil/configurablegtesteventlistener.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
+
+int main(int argc, char** argv) {
+    using namespace inviwo;
+    LogCentral::init();
+    auto logger = std::make_shared<ConsoleLogger>();
+    LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
+    LogCentral::getPtr()->registerLogger(logger);
+
+    int ret = -1;
+    {
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+        VLDDisable();
+        ::testing::InitGoogleTest(&argc, argv);
+        VLDEnable();
+#else
+        ::testing::InitGoogleTest(&argc, argv);
+#endif
+        inviwo::ConfigurableGTestEventListener::setup();
+        ret = RUN_ALL_TESTS();
+    }
+    return ret;
+}

@@ -99,16 +99,16 @@ void main() {
         vec4 color = vec4(0);
         uint lastPtr = 0;
         vec4 nextFragment = selectionSortNext(pixelIdx, 0.0, lastPtr);
-        abufferPixel unpackedFragment = uncompressPixelData(nextFragment);
-        gl_FragDepth = min(backgroundDepth, unpackedFragment.depth);
+        abufferMeshPixel unpackedMeshFragment = uncompressMeshPixelData(nextFragment);
+        gl_FragDepth = min(backgroundDepth, unpackedMeshFragment.depth);
 
-        while (unpackedFragment.depth >= 0 && unpackedFragment.depth <= backgroundDepth) {
-            vec4 c = unpackedFragment.color;
+        while (unpackedMeshFragment.depth >= 0 && unpackedMeshFragment.depth <= backgroundDepth) {
+            vec4 c = unpackedMeshFragment.color;
             color.rgb = color.rgb + (1 - color.a) * c.a * c.rgb;
             color.a = color.a + (1 - color.a) * c.a;
 
-            nextFragment = selectionSortNext(pixelIdx, unpackedFragment.depth, lastPtr);
-            unpackedFragment = uncompressPixelData(nextFragment);
+            nextFragment = selectionSortNext(pixelIdx, unpackedMeshFragment.depth, lastPtr);
+            unpackedMeshFragment = uncompressMeshPixelData(nextFragment);
         }
 
         FragData0 = color;

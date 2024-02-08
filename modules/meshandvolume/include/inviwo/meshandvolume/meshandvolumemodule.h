@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2022-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,26 +26,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifndef ABUFFERCOMMONS_H
-#define ABUFFERCOMMONS_H
+#include <inviwo/meshandvolume/meshandvolumemoduledefine.h>
+#include <inviwo/core/common/inviwomodule.h>
 
-// max depth of the chain, all others are discarded during the final rendering
-#define ABUFFER_SIZE 32
+namespace inviwo {
 
-// Helpers
-uint compressColor(vec3 color) {
-    uint c = (int((color.r * 1023)) & 0x3ff) << 22;
-    c += (int((color.g * 1023)) & 0x3ff) << 12;
-    c += (int((color.b * 1023)) & 0x3ff) << 2;
-    return c;
-}
-vec3 uncompressColor(uint c) {
-    vec3 color;
-    color.r = float((c >> 22) & 0x3ff) / 1023.0f;
-    color.g = float((c >> 12) & 0x3ff) / 1023.0f;
-    color.b = float((c >> 2) & 0x3ff) / 1023.0f;
-    return color;
-}
+class IVW_MODULE_MESHANDVOLUME_API MeshAndVolumeModule : public InviwoModule {
+public:
+    MeshAndVolumeModule(InviwoApplication* app);
+    virtual ~MeshAndVolumeModule() = default;
+};
 
-#endif
+}  // namespace inviwo

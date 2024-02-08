@@ -225,7 +225,7 @@ void MeshRasterizer::AlphaSettings::setUniforms(Shader& shader, std::string_view
                        auto& aval) { shader.setUniform(fmt::format("{}{}", prefix, akey), aval); },
                    val);
     }
-}  // namespace inviwo
+}
 
 MeshRasterizer::EdgeSettings::EdgeSettings()
     : CompositeProperty("edges", "Edges")

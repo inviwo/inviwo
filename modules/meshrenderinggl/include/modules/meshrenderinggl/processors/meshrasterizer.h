@@ -81,7 +81,7 @@ class Shader;
  *   * __geometry__ Input meshes
  *
  * ### Outports
- *   * __image__ Rasterization functir to facilitate rendering in a rendering processor
+ *   * __image__ Rasterization functor to facilitate rendering in a rendering processor
  *
  * ### Properties
  *   * __Lighting__ Standard lighting settings

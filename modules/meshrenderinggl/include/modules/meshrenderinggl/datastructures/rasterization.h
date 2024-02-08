@@ -35,6 +35,9 @@
 #include <inviwo/core/util/document.h>              // for Document
 #include <inviwo/core/util/glmmat.h>                // for mat4
 #include <inviwo/core/util/glmvec.h>                // for uvec3, ivec2
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/properties/isotfproperty.h>
 
 #include <functional>  // for function
 #include <string>      // for string
@@ -76,6 +79,15 @@ public:
      * @return Specific information about this rasterization type/instance.
      */
     virtual Document getInfo() const;
+
+    struct RaycastingState {
+        IsoTFProperty tf;
+        LightingState lighting;
+        int channel;
+        float opacityScaling;
+        std::shared_ptr<const Volume> volume;
+    };
+    virtual const RaycastingState* getRaycastingState() const;
 };
 
 template <>

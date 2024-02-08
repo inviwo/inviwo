@@ -39,4 +39,6 @@ Document Rasterization::getInfo() const {
     return doc;
 }
 
+const Rasterization::RaycastingState* Rasterization::getRaycastingState() const { return nullptr; }
+
 }  // namespace inviwo
