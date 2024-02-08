@@ -45,7 +45,7 @@ double getMeasure(const Connectivity& grid, const Channel& positions, GridPrimit
 
                 double measure = -1;
 
-                measure = inviwo::dispatching::dispatch<double, dispatching::filter::Scalars>(
+                measure = inviwo::dispatching::singleDispatch<double, dispatching::filter::Scalars>(
                     positions.getDataFormatId(), HexVolumeComputer(), grid, positions, index);
 
                 return measure;
