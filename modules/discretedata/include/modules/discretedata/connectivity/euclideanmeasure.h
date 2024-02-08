@@ -61,18 +61,18 @@ struct HexVolumeComputer {
     template <typename T>
     double computeHexVolume(const Channel& positions, const std::vector<ind>& corners);
 
-    template <typename R, typename T>
+    template <typename T>
     double operator()(const Connectivity& grid, const Channel& positions, ind index);
 };
 
-template <typename R, typename T>
+template <typename T>
 double HexVolumeComputer::operator()(const Connectivity& grid, const Channel& positions,
                                      ind index) {
 
     // Get all corner points.
     std::vector<ind> corners;
     grid.getConnections(corners, index, GridPrimitive::Volume, GridPrimitive::Vertex, true);
-    return computeHexVolume<typename T::type>(positions, corners);
+    return computeHexVolume<T>(positions, corners);
 }
 
 template <typename T>

@@ -30,6 +30,8 @@
 #ifndef IVW_DEPTH_GLSL
 #define IVW_DEPTH_GLSL
 
+#include "utils/structs.glsl" //! #include "./structs.glsl"
+
 float convertScreenToEye(CameraParameters camera, float depthScreen) {
     float depthNDC = 2.0 * depthScreen - 1.0;
     float depthEye = 2.0 * camera.nearPlane * camera.farPlane /

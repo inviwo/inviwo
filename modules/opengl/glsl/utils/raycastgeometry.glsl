@@ -30,6 +30,8 @@
 #ifndef IVW_RAYCASTGEOMETRY_GLSL
 #define IVW_RAYCASTGEOMETRY_GLSL
 
+#include "utils/structs.glsl" //! #include "./structs.glsl"
+
 vec4 drawPlanes(in vec4 oldres, in vec3 pos, in vec3 dir, in float inc, PlaneParameters plane,
                 in float t, inout float tDepth) {
     vec4 result = oldres;

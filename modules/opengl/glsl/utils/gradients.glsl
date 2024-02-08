@@ -30,6 +30,9 @@
 #ifndef IVW_GRADIENTS_GLSL
 #define IVW_GRADIENTS_GLSL
 
+#include "utils/structs.glsl" //! #include "./structs.glsl"
+#include "utils/sampler3d.glsl" //! #include "./sampler3d.glsl"
+
 // Compute gradient for 1 channel.
 
 // Compute world space gradient using forward difference: f' = ( f(x+h)-f(x) ) / h
