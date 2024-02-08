@@ -2,6 +2,7 @@
 #include "utils/shading.glsl"
 #include "utils/intersection.glsl"
 #include "utils/gradients.glsl"
+#include "util/rayminmax.glsl"
 
 // Method Name pseudo enum
 const int WOODCOCK = 0;
@@ -90,9 +91,44 @@ float residualRatioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStar
     return Tr * Tc;
 }
 
+float partitionedTransmittanceTracking(int METHOD, vec3 raystart, vec3 raydir, float tStart, float tEnd,
+                    inout uint hashSeed, sampler3D volume, VolumeParameters volumeParameters,
+                    sampler2D transferFunction, sampler3D opacity, VolumeParameters opacityParameters) {
+    
+    
+
+    float opacityUpperbound = 1.0f;
+    float opacityControl = 0.5f;
+
+    /*
+    vec2 minMax = rayMinMax(raystart, raydir, tStart, tEnd, opacity, opacityParameters, volumeParameters);
+    opacityUpperbound = minMax.y;
+    */
+
+    switch (METHOD) {
+        case WOODCOCK:
+            float meanFreePath =
+                woodcockTracking(raystart, raydir, tStart, tEnd, hashSeed, volume, volumeParameters,
+                                 transferFunction, opacityUpperbound);
+            return meanFreePath >= tEnd ? 1f : 0f;
+        case RATIO:
+            return ratioTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed, volume,
+                                              volumeParameters, transferFunction,
+                                              opacityUpperbound);
+        case RESIDUALRATIO:
+            return residualRatioTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed,
+                                                      volume, volumeParameters, transferFunction,
+                                                      opacityUpperbound, opacityControl);
+    }
+
+    return 0f;
+}
+
 float transmittance(int METHOD, vec3 raystart, vec3 raydir, float tStart, float tEnd,
                     inout uint hashSeed, sampler3D volume, VolumeParameters volumeParameters,
                     sampler2D transferFunction) {
+
+
 
     float opacityUpperbound = 1.0f;
     float opacityControl = 0.5f;
