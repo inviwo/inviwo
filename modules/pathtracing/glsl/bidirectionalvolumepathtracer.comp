@@ -13,6 +13,7 @@
 #include "random.glsl"
 #include "transmittance/transmittancemethods.glsl"
 #include "lightestimation.glsl"
+#include "util/rayminmax.glsl"
 
 // volume
 uniform sampler3D volume;
@@ -81,26 +82,35 @@ vec4 pathtrace(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float 
     vec3 samplePosition = entryPoint;
 
     float T = 0.0f;
-    float extinctionUpper = 1.0f;
+    vec2 minMax = vec2(0.f, 1.0f);
+
+    float t1 = rayLength;
+    float t0 = 0.f;
+
+    minMax = rayMinMax(entryPoint, rayDir, t0, t1, minMaxOpacity, minMaxOpacityParameters,
+                        volumeParameters, partitionedTransmittance);
+    
 
     float meanFreePath = woodcockTracking(samplePosition, rayDir, 0f, rayLength, hashSeed, volume,
-                                          volumeParameters, transferFunction, extinctionUpper);
+                                          volumeParameters, transferFunction, minMax.y);
 
     vec4 result = vec4(0.0);
     if (meanFreePath <= rayLength) {
         samplePosition = entryPoint + meanFreePath * rayDir;
-        
+
         rayDepth = meanFreePath;
 
-        result.rgb = estimateDirectLight(meanFreePath, volume, volumeParameters, transferFunction,
-                                         samplePosition, cameraDir, light, hashSeed, channel, transmittanceMethod);
-
+        result.rgb = estimateDirectLightUniformGrid(
+            volume, volumeParameters, transferFunction, minMaxOpacity,
+            minMaxOpacityParameters, partitionedTransmittance, samplePosition, cameraDir, light,
+            hashSeed, channel, transmittanceMethod);
         result.a = 1f - T;
+
     } else {
         result = bgColor;
-    }  
+    }
 
-    return result;
+    return mix(result, vec4(minMax, 0f, 1f), 0.0);
 }
 
 void main() {
@@ -135,7 +145,7 @@ void main() {
                            exitPointDepth, rayDepth, depth, raycaster, volumeParameters, bgColor);
 
     vec4 colorPrev = imageLoad(outportColor, storePos);
-    //float depthPrev = imageLoad(outportDepth, storePos).x;
+    // float depthPrev = imageLoad(outportDepth, storePos).x;
 
     float w = 1.0f - 1.0f / float(iteration + 1);
     vec4 colorFinal = mix(color, colorPrev, w);
