@@ -50,6 +50,22 @@ Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
     , defaultInterpolation_{interpolation}
     , defaultWrapping_{wrapping} {}
 
+Volume::Volume(VolumeConfig config)
+    : Data<Volume, VolumeRepresentation>{}
+    , StructuredGridEntity<3>{config.model.value_or(VolumeConfig::defaultModel),
+                              config.world.value_or(VolumeConfig::defaultWorld)}
+    , MetaDataOwner{}
+    , HistogramSupplier{}
+    , dataMap_{config.dataMap()}
+    , axes{config.xAxis.value_or(VolumeConfig::defaultXAxis),
+           config.yAxis.value_or(VolumeConfig::defaultYAxis),
+           config.zAxis.value_or(VolumeConfig::defaultZAxis)}
+    , defaultDimensions_{config.dimensions.value_or(VolumeConfig::defaultDimensions)}
+    , defaultDataFormat_{config.format ? config.format : VolumeConfig::defaultFormat}
+    , defaultSwizzleMask_{config.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask)}
+    , defaultInterpolation_{config.interpolation.value_or(VolumeConfig::defaultInterpolation)}
+    , defaultWrapping_{config.wrapping.value_or(VolumeConfig::defaultWrapping)} {}
+
 Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     : Data<Volume, VolumeRepresentation>{}
     , StructuredGridEntity<3>{}
@@ -66,20 +82,20 @@ Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     addRepresentation(in);
 }
 
-Volume::Volume(const Volume& rhs, NoData, std::optional<size3_t> dims,
-               const DataFormatBase* defaultFormat, std::optional<SwizzleMask> defaultSwizzleMask,
-               std::optional<InterpolationType> interpolation, std::optional<Wrapping3D> wrapping)
+Volume::Volume(const Volume& rhs, NoData, VolumeConfig config)
     : Data<Volume, VolumeRepresentation>{}
-    , StructuredGridEntity<3>{rhs}
+    , StructuredGridEntity<3>{config.model.value_or(rhs.getModelMatrix()),
+                              config.world.value_or(rhs.getWorldMatrix())}
     , MetaDataOwner{rhs}
     , HistogramSupplier{}
-    , dataMap_{defaultFormat ? defaultFormat : rhs.dataMap_}
-    , axes{rhs.axes}
-    , defaultDimensions_{dims.value_or(rhs.defaultDimensions_)}
-    , defaultDataFormat_{defaultFormat ? defaultFormat : rhs.getDataFormat()}
-    , defaultSwizzleMask_{defaultSwizzleMask.value_or(rhs.defaultSwizzleMask_)}
-    , defaultInterpolation_{interpolation.value_or(rhs.defaultInterpolation_)}
-    , defaultWrapping_{wrapping.value_or(rhs.defaultWrapping_)} {}
+    , dataMap_{config.dataMap(rhs.dataMap_)}
+    , axes{config.xAxis.value_or(rhs.axes[0]), config.yAxis.value_or(rhs.axes[1]),
+           config.zAxis.value_or(rhs.axes[2])}
+    , defaultDimensions_{config.dimensions.value_or(rhs.getDimensions())}
+    , defaultDataFormat_{config.format ? config.format : rhs.getDataFormat()}
+    , defaultSwizzleMask_{config.swizzleMask.value_or(rhs.getSwizzleMask())}
+    , defaultInterpolation_{config.interpolation.value_or(rhs.getInterpolation())}
+    , defaultWrapping_{config.wrapping.value_or(rhs.getWrapping())} {}
 
 Volume* Volume::clone() const { return new Volume(*this); }
 Volume::~Volume() = default;
@@ -212,6 +228,22 @@ const Axis* Volume::getAxis(size_t index) const {
         return nullptr;
     }
     return &axes[index];
+}
+
+VolumeConfig Volume::config() const {
+    return {.dimensions = getDimensions(),
+            .format = getDataFormat(),
+            .swizzleMask = getSwizzleMask(),
+            .interpolation = getInterpolation(),
+            .wrapping = getWrapping(),
+            .xAxis = axes[0],
+            .yAxis = axes[1],
+            .zAxis = axes[2],
+            .valueAxis = dataMap_.valueAxis,
+            .dataRange = dataMap_.dataRange,
+            .valueRange = dataMap_.valueRange,
+            .model = getModelMatrix(),
+            .world = getWorldMatrix()};
 }
 
 uvec3 Volume::colorCode = uvec3(188, 101, 101);

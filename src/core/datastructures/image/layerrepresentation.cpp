@@ -36,4 +36,13 @@ LayerRepresentation::LayerRepresentation(LayerType type) : DataRepresentation{},
 
 LayerType LayerRepresentation::getLayerType() const { return layerType_; }
 
+LayerReprConfig LayerRepresentation::config() const {
+    return {.dimensions = getDimensions(),
+            .format = getDataFormat(),
+            .type = getLayerType(),
+            .swizzleMask = getSwizzleMask(),
+            .interpolation = getInterpolation(),
+            .wrapping = getWrapping()};
+}
+
 }  // namespace inviwo

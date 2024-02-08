@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/datarepresentation.h>
 #include <inviwo/core/datastructures/representationtraits.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/volume/volumeconfig.h>
 
 namespace inviwo {
 
@@ -67,6 +68,8 @@ public:
 
     virtual void setWrapping(const Wrapping3D& wrapping) = 0;
     virtual Wrapping3D getWrapping() const = 0;
+
+    VolumeReprConfig config() const;
 
 protected:
     VolumeRepresentation() = default;

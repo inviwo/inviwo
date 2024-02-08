@@ -156,17 +156,18 @@ class LayerRAMPrecision : public LayerRAM {
 public:
     using type = T;
 
-    explicit LayerRAMPrecision(size2_t dimensions = size2_t(8, 8),
-                               LayerType type = LayerType::Color,
-                               const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-                               InterpolationType interpolation = InterpolationType::Linear,
-                               const Wrapping2D& wrap = wrapping2d::clampAll);
-    LayerRAMPrecision(T* data, size2_t dimensions, LayerType type = LayerType::Color,
-                      const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-                      InterpolationType interpolation = InterpolationType::Linear,
-                      const Wrapping2D& wrap = wrapping2d::clampAll);
+    explicit LayerRAMPrecision(size2_t dimensions = LayerConfig::defaultDimensions,
+                               LayerType type = LayerConfig::defaultType,
+                               const SwizzleMask& swizzleMask = LayerConfig::defaultSwizzleMask,
+                               InterpolationType interpolation = LayerConfig::defaultInterpolation,
+                               const Wrapping2D& wrap = LayerConfig::defaultWrapping);
+    LayerRAMPrecision(T* data, size2_t dimensions, LayerType type = LayerConfig::defaultType,
+                      const SwizzleMask& swizzleMask = LayerConfig::defaultSwizzleMask,
+                      InterpolationType interpolation = LayerConfig::defaultInterpolation,
+                      const Wrapping2D& wrap = LayerConfig::defaultWrapping);
+    explicit LayerRAMPrecision(const LayerReprConfig& config);
+
     LayerRAMPrecision(const LayerRAMPrecision<T>& rhs);
-    LayerRAMPrecision(NoData, const LayerRepresentation& rhs);
     LayerRAMPrecision<T>& operator=(const LayerRAMPrecision<T>& that);
     virtual LayerRAMPrecision<T>* clone() const override;
     virtual ~LayerRAMPrecision() = default;
@@ -245,6 +246,8 @@ IVW_CORE_API std::shared_ptr<LayerRAM> createLayerRAM(
     InterpolationType interpolation = InterpolationType::Linear,
     const Wrapping2D& wrapping = wrapping2d::clampAll);
 
+IVW_CORE_API std::shared_ptr<LayerRAM> createLayerRAM(const LayerReprConfig& config);
+
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(size2_t dimensions, LayerType type,
                                         const SwizzleMask& swizzleMask,
@@ -277,6 +280,19 @@ LayerRAMPrecision<T>::LayerRAMPrecision(T* data, size2_t dimensions, LayerType t
 }
 
 template <typename T>
+LayerRAMPrecision<T>::LayerRAMPrecision(const LayerReprConfig& config)
+    : LayerRAMPrecision{config.dimensions.value_or(LayerConfig::defaultDimensions),
+                        config.type.value_or(LayerConfig::defaultType),
+                        config.swizzleMask.value_or(LayerConfig::defaultSwizzleMask),
+                        config.interpolation.value_or(LayerConfig::defaultInterpolation),
+                        config.wrapping.value_or(LayerConfig::defaultWrapping)} {
+
+    if (config.format && config.format != getDataFormat()) {
+        throw Exception(IVW_CONTEXT, "Creating representation with unmatched type and format");
+    }
+}
+
+template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(const LayerRAMPrecision<T>& rhs)
     : LayerRAM(rhs)
     , dimensions_(rhs.dimensions_)
@@ -285,19 +301,6 @@ LayerRAMPrecision<T>::LayerRAMPrecision(const LayerRAMPrecision<T>& rhs)
     , interpolation_{rhs.interpolation_}
     , wrapping_{rhs.wrapping_} {
     std::copy(rhs.getView().begin(), rhs.getView().end(), data_.get());
-}
-
-template <typename T>
-LayerRAMPrecision<T>::LayerRAMPrecision(NoData, const LayerRepresentation& rhs)
-    : LayerRAM(rhs.getLayerType())
-    , dimensions_(rhs.getDimensions())
-    , data_(std::make_unique<T[]>(glm::compMul(dimensions_)))
-    , swizzleMask_(rhs.getSwizzleMask())
-    , interpolation_{rhs.getInterpolation()}
-    , wrapping_{rhs.getWrapping()} {
-
-    std::fill(data_.get(), data_.get() + glm::compMul(dimensions_),
-              (layerType_ == LayerType::Depth) ? T{1} : T{0});
 }
 
 template <typename T>

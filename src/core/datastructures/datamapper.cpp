@@ -32,15 +32,20 @@
 
 namespace inviwo {
 
-DataMapper::DataMapper(const DataFormatBase* format) { initWithFormat(format); }
-
-DataMapper::DataMapper() { initWithFormat(DataUInt8::get()); }
+DataMapper::DataMapper() : DataMapper(DataUInt8::get()) {}
+DataMapper::DataMapper(const DataFormatBase* format, Axis aValueAxis)
+    : dataRange{defaultDataRangeFor(format)}, valueRange{dataRange}, valueAxis{aValueAxis} {}
+DataMapper::DataMapper(dvec2 aDataRange, Axis aValueAxis)
+    : dataRange{aDataRange}, valueRange{dataRange}, valueAxis{aValueAxis} {}
+DataMapper::DataMapper(dvec2 aDataRange, dvec2 aValueRange, Axis aValueAxis)
+    : dataRange{aDataRange}, valueRange{aValueRange}, valueAxis{aValueAxis} {}
 
 DataMapper::DataMapper(const DataMapper& rhs) = default;
 
 DataMapper& DataMapper::operator=(const DataMapper& that) = default;
 
-void DataMapper::initWithFormat(const DataFormatBase* format) {
+dvec2 DataMapper::defaultDataRangeFor(const DataFormatBase* format) {
+    dvec2 dataRange{};
     dataRange.y = format->getMax();
     switch (format->getNumericType()) {
         case NumericType::Float:
@@ -56,7 +61,12 @@ void DataMapper::initWithFormat(const DataFormatBase* format) {
             dataRange.x = format->getMin();
             break;
     }
+    return dataRange;
+}
 
+void DataMapper::initWithFormat(const DataFormatBase* format) {
+
+    dataRange = defaultDataRangeFor(format);
     valueRange = dataRange;
     valueAxis = {"", Unit{}};
 }

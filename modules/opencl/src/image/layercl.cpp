@@ -49,6 +49,14 @@ LayerCL::LayerCL(size2_t dimensions, LayerType type, const DataFormatBase* forma
     , wrapping_{wrapping} {
     initialize(data);
 }
+LayerCL::LayerCL(const LayerReprConfig& config, const void* data)
+    : LayerCL{config.dimensions.value_or(LayerConfig::defaultDimensions),
+              config.type.value_or(LayerConfig::defaultType),
+              config.format ? config.format : LayerConfig::defaultFormat,
+              config.swizzleMask.value_or(LayerConfig::defaultSwizzleMask),
+              config.interpolation.value_or(LayerConfig::defaultInterpolation),
+              config.wrapping.value_or(LayerConfig::defaultWrapping),
+              data} {}
 
 LayerCL::LayerCL(const LayerCL& rhs)
     : LayerCLBase(rhs)

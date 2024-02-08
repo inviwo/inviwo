@@ -66,6 +66,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/imagerepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/imagetypes.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layer.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerconfig.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerdisk.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerramconverter.h
@@ -96,6 +97,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/unitsystem.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volume.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeborder.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeconfig.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumedisk.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramconverter.h
@@ -457,6 +459,7 @@ set(SOURCE_FILES
     datastructures/image/imagerepresentation.cpp
     datastructures/image/imagetypes.cpp
     datastructures/image/layer.cpp
+    datastructures/image/layerconfig.cpp
     datastructures/image/layerdisk.cpp
     datastructures/image/layerram.cpp
     datastructures/image/layerramconverter.cpp
@@ -483,6 +486,7 @@ set(SOURCE_FILES
     datastructures/unitsystem.cpp
     datastructures/volume/volume.cpp
     datastructures/volume/volumeborder.cpp
+    datastructures/volume/volumeconfig.cpp
     datastructures/volume/volumedisk.cpp
     datastructures/volume/volumeram.cpp
     datastructures/volume/volumeramconverter.cpp

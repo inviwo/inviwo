@@ -30,4 +30,14 @@
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 #include <inviwo/core/datastructures/datarepresentation.h>
 
-namespace inviwo {}  // namespace inviwo
+namespace inviwo {
+
+VolumeReprConfig VolumeRepresentation::config() const {
+    return {.dimensions = getDimensions(),
+            .format = getDataFormat(),
+            .swizzleMask = getSwizzleMask(),
+            .interpolation = getInterpolation(),
+            .wrapping = getWrapping()};
+}
+
+}  // namespace inviwo

@@ -42,6 +42,7 @@ public:
              const void* data = nullptr, const SwizzleMask& swizzleMask = swizzlemasks::rgba,
              InterpolationType interpolation = InterpolationType::Linear,
              const Wrapping3D& wrapping = wrapping3d::clampAll);
+    explicit VolumeCL(const VolumeReprConfig& config, const void* data = nullptr);
     virtual ~VolumeCL();
     VolumeCL(const VolumeCL& rhs);
 

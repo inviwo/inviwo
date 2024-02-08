@@ -43,6 +43,7 @@ public:
                      const SwizzleMask& swizzleMask = swizzlemasks::rgba,
                      InterpolationType interpolation = InterpolationType::Linear,
                      const Wrapping2D& wrapping = wrapping2d::clampAll, const void* data = nullptr);
+    explicit LayerCL(const LayerReprConfig& config, const void* data = nullptr);
     LayerCL(const LayerCL& other);
     virtual ~LayerCL();
 

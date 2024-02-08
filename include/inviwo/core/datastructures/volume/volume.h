@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/histogramtools.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/volume/volumeconfig.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/representationtraits.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
@@ -45,8 +46,6 @@
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
-
-#include <optional>
 
 namespace inviwo {
 
@@ -68,31 +67,25 @@ class IVW_CORE_API Volume : public Data<Volume, VolumeRepresentation>,
                             public MetaDataOwner,
                             public HistogramSupplier {
 public:
-    explicit Volume(size3_t defaultDimensions = size3_t(128, 128, 128),
-                    const DataFormatBase* defaultFormat = DataUInt8::get(),
-                    const SwizzleMask& defaultSwizzleMask = swizzlemasks::rgba,
-                    InterpolationType interpolation = InterpolationType::Linear,
-                    const Wrapping3D& wrapping = wrapping3d::clampAll);
+    using Config = VolumeConfig;
+    explicit Volume(size3_t defaultDimensions = VolumeConfig::defaultDimensions,
+                    const DataFormatBase* defaultFormat = VolumeConfig::defaultFormat,
+                    const SwizzleMask& defaultSwizzleMask = VolumeConfig::defaultSwizzleMask,
+                    InterpolationType interpolation = VolumeConfig::defaultInterpolation,
+                    const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
+    explicit Volume(VolumeConfig config);
     explicit Volume(std::shared_ptr<VolumeRepresentation>);
     Volume(const Volume&) = default;
     /**
-     * Create a volume based on \p rhs without copying any data. If \p defaultFormat is a nullptr,
-     * the format of \p rhs is used. This applies to all std::optional arguments, too. If not
-     * supplied, the corresponding value is taken from \p rhs.
+     * Create a volume based on @p rhs without copying any data. State from @p rhs can be
+     * overridden by the @p config
      * @param rhs             source volume providing the necessary information like dimensions,
      *                        swizzle masks, interpolation, spatial transformations, etc.
-     * @param dims            custom dimension of the new volume, otherwise rhs.getDimensions()
-     * @param defaultFormat   data format of the new volume. If equal to nullptr, the format of \p
-     *                        rhs is used instead.
-     * @param defaultSwizzleMask   custom swizzle mask, otherwise rhs.getSwizzleMask()
-     * @param interpolation   custom interpolation, otherwise rhs.getInterpolation()
-     * @param wrapping        custom texture wrapping, otherwise rhs.getWrapping()
+     * @param noData          Tag type to indicate that representations should not be copied from
+     *                        rhs
+     * @param config          custom parameters overriding values from @p rhs
      */
-    Volume(const Volume& rhs, NoData, std::optional<size3_t> dims = {},
-           const DataFormatBase* defaultFormat = nullptr,
-           std::optional<SwizzleMask> defaultSwizzleMask = {},
-           std::optional<InterpolationType> interpolation = {},
-           std::optional<Wrapping3D> wrapping = {});
+    Volume(const Volume& rhs, NoData, VolumeConfig config = {});
     Volume& operator=(const Volume& that) = default;
     virtual Volume* clone() const override;
     virtual ~Volume();
@@ -177,6 +170,8 @@ public:
     const typename representation_traits<Volume, Kind>::type* getRep() const;
 
     std::shared_ptr<HistogramCalculationState> calculateHistograms(size_t bins = 2048) const;
+
+    VolumeConfig config() const;
 
 protected:
     size3_t defaultDimensions_;

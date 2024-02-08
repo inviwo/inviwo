@@ -174,7 +174,7 @@ std::shared_ptr<Volume> convertVolume(DataFormatId dstScalarFormatId, const Volu
             std::span<const SrcFormat> srcData = ramSrcTyped->getView();
 
             using DstFormat = util::same_extent_t<SrcFormat, DstScalarFormat>;
-            auto ramDst = std::make_shared<VolumeRAMPrecision<DstFormat>>(noData, *ramSrcTyped);
+            auto ramDst = std::make_shared<VolumeRAMPrecision<DstFormat>>(ramSrcTyped->config());
             std::span<DstFormat> dstData = ramDst->getView();
 
             if (mapData) {

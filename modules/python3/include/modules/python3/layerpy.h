@@ -48,17 +48,22 @@ class DataFormatBase;
 
 #include <warn/push>
 #include <warn/ignore/attributes>
+/**
+ * \ingroup datastructures
+ */
 class IVW_MODULE_PYTHON3_API LayerPy : public LayerRepresentation {
 public:
-    LayerPy(pybind11::array data, LayerType type = LayerType::Color,
-            const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-            InterpolationType interpolation = InterpolationType::Linear,
-            const Wrapping2D& wrapping = wrapping2d::clampAll);
+    LayerPy(pybind11::array data, LayerType type = LayerConfig::defaultType,
+            const SwizzleMask& swizzleMask = LayerConfig::defaultSwizzleMask,
+            InterpolationType interpolation = LayerConfig::defaultInterpolation,
+            const Wrapping2D& wrapping = LayerConfig::defaultWrapping);
 
     LayerPy(size2_t dimensions, LayerType type, const DataFormatBase* format,
-            const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-            InterpolationType interpolation = InterpolationType::Linear,
-            const Wrapping2D& wrapping = wrapping2d::clampAll);
+            const SwizzleMask& swizzleMask = LayerConfig::defaultSwizzleMask,
+            InterpolationType interpolation = LayerConfig::defaultInterpolation,
+            const Wrapping2D& wrapping = LayerConfig::defaultWrapping);
+
+    explicit LayerPy(const LayerReprConfig& config);
 
     virtual ~LayerPy();
 

@@ -34,13 +34,12 @@
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
+#include <inviwo/core/datastructures/image/layerconfig.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/unitsystem.h>
 
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
-
-#include <optional>
 
 namespace inviwo {
 
@@ -51,33 +50,27 @@ class DataFormatBase;
  */
 class IVW_CORE_API Layer : public Data<Layer, LayerRepresentation>, public StructuredGridEntity<2> {
 public:
-    explicit Layer(size2_t defaultDimensions = size2_t(8, 8),
-                   const DataFormatBase* defaultFormat = DataVec4UInt8::get(),
-                   LayerType type = LayerType::Color,
-                   const SwizzleMask& defaultSwizzleMask = swizzlemasks::rgba,
-                   InterpolationType interpolation = InterpolationType::Linear,
-                   const Wrapping2D& wrapping = wrapping2d::clampAll);
+    using Config = LayerConfig;
+
+    explicit Layer(size2_t defaultDimensions = LayerConfig::defaultDimensions,
+                   const DataFormatBase* defaultFormat = LayerConfig::defaultFormat,
+                   LayerType type = LayerConfig::defaultType,
+                   const SwizzleMask& defaultSwizzleMask = LayerConfig::defaultSwizzleMask,
+                   InterpolationType interpolation = LayerConfig::defaultInterpolation,
+                   const Wrapping2D& wrapping = LayerConfig::defaultWrapping);
+    explicit Layer(LayerConfig config);
     explicit Layer(std::shared_ptr<LayerRepresentation>);
     Layer(const Layer&) = default;
     /**
-     * Create a layer based on \p rhs without copying any data. If \p defaultFormat is a nullptr,
-     * the format of \p rhs is used. This applies to all std::optional arguments, too. If not
-     * supplied, the corresponding value is taken from \p rhs.
+     * Create a layer based on \p rhs without copying any representations. State from @p rhs can be
+     * overridden by the @p config
      * @param rhs             source layer providing the necessary information like dimensions,
      *                        swizzle masks, interpolation, spatial transformations, etc.
-     * @param dims            custom dimension of the new layer, otherwise rhs.getDimensions()
-     * @param defaultFormat   data format of the new layer. If equal to nullptr, the format of \p
-     *                        rhs is used instead.
-     * @param defaultSwizzleMask   custom swizzle mask, otherwise rhs.getSwizzleMask()
-     * @param interpolation   custom interpolation, otherwise rhs.getInterpolation()
-     * @param wrapping        custom texture wrapping, otherwise rhs.getWrapping()
-
+     * @param noData          Tag type to indicate that representations should not be copied from
+     *                        rhs
+     * @param config          custom parameters overriding values from @p rhs
      */
-    Layer(const Layer& rhs, NoData, std::optional<size2_t> dims = {},
-          const DataFormatBase* defaultFormat = nullptr, std::optional<LayerType> type = {},
-          std::optional<SwizzleMask> defaultSwizzleMask = {},
-          std::optional<InterpolationType> interpolation = {},
-          std::optional<Wrapping2D> wrapping = {});
+    Layer(const Layer& rhs, NoData, LayerConfig config = {});
     Layer& operator=(const Layer& that) = default;
     virtual Layer* clone() const override;
     virtual ~Layer() = default;
@@ -133,6 +126,8 @@ public:
      * @throws RangeException if \p index is out of bounds, i.e. \p index >= 2
      */
     virtual const Axis* getAxis(size_t index) const override;
+
+    LayerConfig config() const;
 
     DataMapper dataMap;
     std::array<Axis, 2> axes;

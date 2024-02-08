@@ -42,8 +42,8 @@ LayerDisk::LayerDisk(size2_t dimensions, const DataFormatBase* format, LayerType
     , interpolation_{interpolation}
     , wrapping_{wrapping} {}
 
-LayerDisk::LayerDisk(std::string url, size2_t dimensions, const DataFormatBase* format,
-                     LayerType type, const SwizzleMask& swizzleMask,
+LayerDisk::LayerDisk(const std::filesystem::path& url, size2_t dimensions,
+                     const DataFormatBase* format, LayerType type, const SwizzleMask& swizzleMask,
                      InterpolationType interpolation, const Wrapping2D& wrapping)
     : LayerRepresentation(type)
     , DiskRepresentation<LayerRepresentation, LayerDisk>(url)
@@ -52,6 +52,15 @@ LayerDisk::LayerDisk(std::string url, size2_t dimensions, const DataFormatBase* 
     , swizzleMask_(swizzleMask)
     , interpolation_{interpolation}
     , wrapping_{wrapping} {}
+
+LayerDisk::LayerDisk(const LayerReprConfig& config, const std::filesystem::path& path)
+    : LayerDisk{path,
+                config.dimensions.value_or(LayerConfig::defaultDimensions),
+                config.format ? config.format : LayerConfig::defaultFormat,
+                config.type.value_or(LayerConfig::defaultType),
+                config.swizzleMask.value_or(LayerConfig::defaultSwizzleMask),
+                config.interpolation.value_or(LayerConfig::defaultInterpolation),
+                config.wrapping.value_or(LayerConfig::defaultWrapping)} {}
 
 LayerDisk::~LayerDisk() = default;
 

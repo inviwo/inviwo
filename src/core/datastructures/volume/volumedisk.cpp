@@ -53,6 +53,14 @@ VolumeDisk::VolumeDisk(const std::filesystem::path& srcFile, size3_t dimensions,
     , interpolation_{interpolation}
     , wrapping_{wrapping} {}
 
+VolumeDisk::VolumeDisk(const VolumeReprConfig& config, const std::filesystem::path& path)
+    : VolumeDisk{path,
+                 config.dimensions.value_or(VolumeConfig::defaultDimensions),
+                 config.format ? config.format : VolumeConfig::defaultFormat,
+                 config.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask),
+                 config.interpolation.value_or(VolumeConfig::defaultInterpolation),
+                 config.wrapping.value_or(VolumeConfig::defaultWrapping)} {}
+
 VolumeDisk* VolumeDisk::clone() const { return new VolumeDisk(*this); }
 
 std::type_index VolumeDisk::getTypeIndex() const { return std::type_index(typeid(VolumeDisk)); }

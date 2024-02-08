@@ -50,13 +50,14 @@ class TextureUnit;
  */
 class IVW_MODULE_OPENGL_API LayerGL : public LayerRepresentation {
 public:
-    explicit LayerGL(std::shared_ptr<Texture2D> tex, LayerType type = LayerType::Color);
-
-    explicit LayerGL(size2_t dimensions = size2_t(256, 256), LayerType type = LayerType::Color,
-                     const DataFormatBase* format = DataVec4UInt8::get(),
-                     const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-                     InterpolationType interpolation = InterpolationType::Linear,
-                     const Wrapping2D& wrapping = wrapping2d::clampAll);
+    explicit LayerGL(std::shared_ptr<Texture2D> tex, LayerType type = LayerConfig::defaultType);
+    explicit LayerGL(size2_t dimensions = LayerConfig::defaultDimensions,
+                     LayerType type = LayerConfig::defaultType,
+                     const DataFormatBase* format = LayerConfig::defaultFormat,
+                     const SwizzleMask& swizzleMask = LayerConfig::defaultSwizzleMask,
+                     InterpolationType interpolation = LayerConfig::defaultInterpolation,
+                     const Wrapping2D& wrapping = LayerConfig::defaultWrapping);
+    explicit LayerGL(const LayerReprConfig& config);
 
     LayerGL(const LayerGL& rhs);
     LayerGL& operator=(const LayerGL& rhs);
