@@ -30,11 +30,6 @@
 
 #include <glm/fwd.hpp>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <half/half.hpp>
-#include <warn/pop>
-
 #include <type_traits>
 
 namespace inviwo {
@@ -44,9 +39,6 @@ namespace util {
 template <typename T>
 struct is_floating_point : public std::is_floating_point<T> {};
 
-template <>
-struct is_floating_point<half_float::half> : std::true_type {};
-
 template <typename T>
 constexpr bool is_floating_point_v = is_floating_point<T>::value;
 
@@ -55,9 +47,6 @@ struct rank : public std::rank<T> {};
 
 template <typename T>
 struct rank<const T> : public rank<T> {};
-
-template <>
-struct rank<half_float::half> : public std::integral_constant<std::size_t, 0> {};
 
 template <glm::length_t L, typename T, glm::qualifier Q>
 struct rank<glm::vec<L, T, Q>> : public std::integral_constant<std::size_t, 1> {};

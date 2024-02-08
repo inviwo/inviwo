@@ -493,37 +493,23 @@ size_t inline LayerRAM::posToIndex(const size2_t& pos, const size2_t& dim) {
     return pos.x + (pos.y * dim.x);
 }
 
-namespace detail {
-struct LayerRamDispatcher {
-    template <typename Result, typename Format, typename Callable, typename... Args>
-    Result operator()(Callable&& obj, LayerRAM* layerram, Args... args) {
-        return obj(static_cast<LayerRAMPrecision<typename Format::type>*>(layerram),
-                   std::forward<Args>(args)...);
-    }
-};
-
-struct LayerRamConstDispatcher {
-    template <typename Result, typename Format, typename Callable, typename... Args>
-    Result operator()(Callable&& obj, const LayerRAM* layerram, Args... args) {
-        return obj(static_cast<const LayerRAMPrecision<typename Format::type>*>(layerram),
-                   std::forward<Args>(args)...);
-    }
-};
-}  // namespace detail
-
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto LayerRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
-    detail::LayerRamDispatcher dispatcher;
-    return dispatching::dispatch<Result, Predicate>(getDataFormatId(), dispatcher,
-                                                    std::forward<Callable>(callable), this,
-                                                    std::forward<Args>(args)...);
+    return dispatching::singleDispatch<Result, Predicate>(
+        getDataFormatId(),
+        [this]<typename T>(Callable&& obj, Args&&... args) -> Result {
+            return obj(static_cast<LayerRAMPrecision<T>*>(this), std::forward<Args>(args)...);
+        },
+        std::forward<Callable>(callable), std::forward<Args>(args)...);
 }
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto LayerRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
-    detail::LayerRamConstDispatcher dispatcher;
-    return dispatching::dispatch<Result, Predicate>(getDataFormatId(), dispatcher,
-                                                    std::forward<Callable>(callable), this,
-                                                    std::forward<Args>(args)...);
+    return dispatching::singleDispatch<Result, Predicate>(
+        getDataFormatId(),
+        [this]<typename T>(Callable&& obj, Args&&... args) -> Result {
+            return obj(static_cast<const LayerRAMPrecision<T>*>(this), std::forward<Args>(args)...);
+        },
+        std::forward<Callable>(callable), std::forward<Args>(args)...);
 }
 
 class IVW_CORE_API LayerRamResizer {

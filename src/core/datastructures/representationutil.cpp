@@ -56,29 +56,22 @@ class BufferRAMFactoryObject
 public:
     virtual std::unique_ptr<BufferRepresentation> create(
         const typename BufferRepresentation::ReprOwner* buffer) {
-        return dispatching::dispatch<std::unique_ptr<BufferRepresentation>,
-                                     dispatching::filter::All>(buffer->getDataFormat()->getId(),
-                                                               Dispatcher{}, buffer);
+        return dispatching::singleDispatch<std::unique_ptr<BufferRepresentation>,
+                                           dispatching::filter::All>(
+            buffer->getDataFormat()->getId(),
+            [&]<typename T>() -> std::unique_ptr<BufferRepresentation> {
+                switch (buffer->getBufferTarget()) {
+                    case BufferTarget::Index:
+                        return std::make_unique<BufferRAMPrecision<T, BufferTarget::Index>>(
+                            buffer->getSize(), buffer->getBufferUsage());
+
+                    case BufferTarget::Data:
+                    default:
+                        return std::make_unique<BufferRAMPrecision<T, BufferTarget::Data>>(
+                            buffer->getSize(), buffer->getBufferUsage());
+                }
+            });
     }
-
-private:
-    struct Dispatcher {
-        template <typename Result, typename Format>
-        Result operator()(const BufferBase* buffer) {
-            switch (buffer->getBufferTarget()) {
-                case BufferTarget::Index:
-                    return std::make_unique<
-                        BufferRAMPrecision<typename Format::type, BufferTarget::Index>>(
-                        buffer->getSize(), buffer->getBufferUsage());
-
-                case BufferTarget::Data:
-                default:
-                    return std::make_unique<
-                        BufferRAMPrecision<typename Format::type, BufferTarget::Data>>(
-                        buffer->getSize(), buffer->getBufferUsage());
-            }
-        }
-    };
 };
 
 class LayerRAMFactoryObject
@@ -86,20 +79,15 @@ class LayerRAMFactoryObject
 public:
     virtual std::unique_ptr<LayerRepresentation> create(
         const typename LayerRepresentation::ReprOwner* layer) {
-        return dispatching::dispatch<std::unique_ptr<LayerRepresentation>,
-                                     dispatching::filter::All>(layer->getDataFormat()->getId(),
-                                                               Dispatcher{}, layer);
+        return dispatching::singleDispatch<std::unique_ptr<LayerRepresentation>,
+                                           dispatching::filter::All>(
+            layer->getDataFormat()->getId(),
+            [&]<typename T>() -> std::unique_ptr<LayerRepresentation> {
+                return std::make_unique<LayerRAMPrecision<T>>(
+                    layer->getDimensions(), layer->getLayerType(), layer->getSwizzleMask(),
+                    layer->getInterpolation(), layer->getWrapping());
+            });
     }
-
-private:
-    struct Dispatcher {
-        template <typename Result, typename Format>
-        Result operator()(const Layer* layer) {
-            return std::make_unique<LayerRAMPrecision<typename Format::type>>(
-                layer->getDimensions(), layer->getLayerType(), layer->getSwizzleMask(),
-                layer->getInterpolation(), layer->getWrapping());
-        }
-    };
 };
 
 class VolumeRAMFactoryObject
@@ -107,20 +95,15 @@ class VolumeRAMFactoryObject
 public:
     virtual std::unique_ptr<VolumeRepresentation> create(
         const typename VolumeRepresentation::ReprOwner* volume) {
-        return dispatching::dispatch<std::unique_ptr<VolumeRepresentation>,
-                                     dispatching::filter::All>(volume->getDataFormat()->getId(),
-                                                               Dispatcher{}, volume);
+        return dispatching::singleDispatch<std::unique_ptr<VolumeRepresentation>,
+                                           dispatching::filter::All>(
+            volume->getDataFormat()->getId(),
+            [&]<typename T>() -> std::unique_ptr<VolumeRepresentation> {
+                return std::make_unique<VolumeRAMPrecision<T>>(
+                    volume->getDimensions(), volume->getSwizzleMask(), volume->getInterpolation(),
+                    volume->getWrapping());
+            });
     }
-
-private:
-    struct Dispatcher {
-        template <typename Result, typename Format>
-        Result operator()(const Volume* volume) {
-            return std::make_unique<VolumeRAMPrecision<typename Format::type>>(
-                volume->getDimensions(), volume->getSwizzleMask(), volume->getInterpolation(),
-                volume->getWrapping());
-        }
-    };
 };
 
 template <typename T>

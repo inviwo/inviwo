@@ -42,8 +42,8 @@
 #include <filesystem>
 
 namespace inviwo {
-class Layer;
 class LayerRAM;
+class VolumeRAM;
 
 namespace cimgutil {
 
@@ -71,66 +71,23 @@ struct IVW_MODULE_CIMG_API TIFFHeader {
 IVW_MODULE_CIMG_API TIFFHeader getTIFFHeader(const std::filesystem::path& filename);
 
 /**
- * Loads layer data from a specified filePath.
+ * Loads layer from a specified filePath.
  **/
-IVW_MODULE_CIMG_API void* loadLayerData(void* dst, const std::filesystem::path& filePath,
-                                        uvec2& out_dim, DataFormatId& formatId,
-                                        bool rescaleToDim = false);
+IVW_MODULE_CIMG_API std::shared_ptr<LayerRAM> loadLayer(const std::filesystem::path& filePath);
+IVW_MODULE_CIMG_API std::shared_ptr<LayerRAM> loadLayerTiff(const std::filesystem::path& filePath);
 
 /**
- * Loads volume data from a specified filePath.
+ * Loads volume from a specified filePath.
  **/
-IVW_MODULE_CIMG_API void* loadVolumeData(void* dst, const std::filesystem::path& filePath,
-                                         size3_t& out_dim, DataFormatId& formatId);
+IVW_MODULE_CIMG_API std::shared_ptr<VolumeRAM> loadVolume(const std::filesystem::path& filePath);
+IVW_MODULE_CIMG_API std::shared_ptr<VolumeRAM> loadVolume(const std::filesystem::path& filePath,
+                                                          const DataFormatBase* format,
+                                                          size3_t dims);
+IVW_MODULE_CIMG_API void updateVolume(VolumeRAM& volume, const std::filesystem::path& filePath);
 
-/**
- * Saves an layer of an image to a specified filename.
- * @param filePath the path including filename and extension, which is used to determine the image
- * format
- * @param inputImage specifies the image that is to be saved.
- */
-IVW_MODULE_CIMG_API void saveLayer(const std::filesystem::path& filePath, const Layer* inputImage);
-
-/**
- * Saves an layer of an unsigned char buffer.
- * @param extension  specifies the output image format
- * @param inputImage specifies the image that is to be saved.
- */
-IVW_MODULE_CIMG_API std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(
-    std::string_view extension, const Layer* inputImage);
-
-/**
- * Load TIFF image data.
- * \see TIFFLayerReader
- * \see getTIFFHeader
- */
-void* loadTIFFLayerData(void* dst, const std::filesystem::path& filePath, TIFFHeader header,
-                        bool rescaleToDim = false);
-
-/**
- * Load TIFF stack as volume.
- * \see TIFFStackVolumeRAMLoader
- * \see getTIFFHeader
- */
-void* loadTIFFVolumeData(void* dst, const std::filesystem::path& filePath, TIFFHeader header);
-
-/**
- * \brief Rescales Layer of given image data
- *
- * @param inputLayer image data that needs to be rescaled
- * @param dst_dim is destination dimensions
- * @return rescaled raw data
- */
-IVW_MODULE_CIMG_API void* rescaleLayer(const Layer* inputLayer, uvec2 dst_dim);
-
-/**
- * \brief Rescales LayerRAM representation uses FILTER_BILINEAR by default.
- *
- * @param layerRam representation that needs rescaling
- * @param dst_dim is destination dimensions
- * @return rescaled raw data
- */
-IVW_MODULE_CIMG_API void* rescaleLayerRAM(const LayerRAM* layerRam, uvec2 dst_dim);
+IVW_MODULE_CIMG_API void saveLayer(const LayerRAM& layer, const std::filesystem::path& filePath);
+IVW_MODULE_CIMG_API void saveLayer(const LayerRAM& layer, std::vector<unsigned char>& dst,
+                                   std::string_view extension);
 
 IVW_MODULE_CIMG_API bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target);
 

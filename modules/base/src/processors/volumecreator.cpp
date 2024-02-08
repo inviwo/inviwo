@@ -54,40 +54,9 @@
 #include <glm/common.hpp>              // for max, min
 #include <glm/gtx/component_wise.hpp>  // for compMax, compMin
 #include <glm/gtx/hash.hpp>            // for hash<>::operator()
-#include <half/half.hpp>               // for operator<
 
 namespace inviwo {
 class Deserializer;
-
-namespace {
-struct Helper {
-    template <typename Format>
-    void operator()(std::vector<OptionPropertyOption<DataFormatId>>& formats) {
-        formats.emplace_back(Format::str(), Format::str(), Format::id());
-    }
-};
-
-struct Creator {
-    template <typename Result, typename Format>
-    Result operator()(VolumeCreator::Type type, size3_t size, size_t index) {
-        switch (type) {
-            case VolumeCreator::Type::SingleVoxel:
-                return std::shared_ptr<Volume>(
-                    util::makeSingleVoxelVolume<typename Format::type>(size));
-            case VolumeCreator::Type::Sphere:
-                return std::shared_ptr<Volume>(
-                    util::makeSphericalVolume<typename Format::type>(size));
-            case VolumeCreator::Type::Ripple:
-                return std::shared_ptr<Volume>(util::makeRippleVolume<typename Format::type>(size));
-            case VolumeCreator::Type::MarchingCube:
-                return std::shared_ptr<Volume>(
-                    util::makeMarchingCubeVolume<typename Format::type>(index));
-            default:
-                return std::shared_ptr<Volume>{};
-        }
-    }
-};
-}  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeCreator::processorInfo_{
@@ -111,7 +80,9 @@ VolumeCreator::VolumeCreator()
     , format_{"format", "Format",
               [&]() {
                   std::vector<OptionPropertyOption<DataFormatId>> formats;
-                  util::for_each_type<DefaultDataFormats>{}(Helper{}, formats);
+                  util::for_each_type<DefaultDataFormats>{}([&]<typename Format>() {
+                      formats.emplace_back(Format::str(), Format::str(), Format::id());
+                  });
                   return formats;
               }(),
               1}
@@ -130,8 +101,26 @@ VolumeCreator::VolumeCreator()
 void VolumeCreator::process() {
     if (util::any_of(util::ref<Property>(format_, type_, dimensions_, index_),
                      &Property::isModified)) {
-        loadedData_ = dispatching::dispatch<std::shared_ptr<Volume>, dispatching::filter::All>(
-            format_.get(), Creator{}, type_.get(), dimensions_.get(), index_.get());
+        loadedData_ =
+            dispatching::singleDispatch<std::shared_ptr<Volume>, dispatching::filter::All>(
+                format_.get(), [&]<typename T>() {
+                    switch (type_.get()) {
+                        case VolumeCreator::Type::SingleVoxel:
+                            return std::shared_ptr<Volume>(
+                                util::makeSingleVoxelVolume<T>(dimensions_.get()));
+                        case VolumeCreator::Type::Sphere:
+                            return std::shared_ptr<Volume>(
+                                util::makeSphericalVolume<T>(dimensions_.get()));
+                        case VolumeCreator::Type::Ripple:
+                            return std::shared_ptr<Volume>(
+                                util::makeRippleVolume<T>(dimensions_.get()));
+                        case VolumeCreator::Type::MarchingCube:
+                            return std::shared_ptr<Volume>(
+                                util::makeMarchingCubeVolume<T>(index_.get()));
+                        default:
+                            return std::shared_ptr<Volume>{};
+                    }
+                });
 
         basis_.updateForNewEntity(*loadedData_, deserialized_);
         information_.updateForNewVolume(

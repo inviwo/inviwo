@@ -54,8 +54,7 @@
 #include <type_traits>    // for remove_extent_t
 #include <unordered_set>  // for unordered_set
 
-#include <fmt/core.h>     // for format, format_to
-#include <half/half.hpp>  // for operator<
+#include <fmt/core.h>  // for format, format_to
 
 namespace inviwo {
 

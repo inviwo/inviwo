@@ -30,9 +30,10 @@
 #include <modules/cimg/cimglayerwriter.h>
 
 #include <inviwo/core/datastructures/image/layer.h>  // for Layer (ptr only), DataWriterType
-#include <inviwo/core/io/datawriter.h>               // for DataWriterType
-#include <inviwo/core/util/fileextension.h>          // for FileExtension
-#include <modules/cimg/cimgutils.h>                  // for saveLayer, saveLayerToBuffer
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/io/datawriter.h>       // for DataWriterType
+#include <inviwo/core/util/fileextension.h>  // for FileExtension
+#include <modules/cimg/cimgutils.h>          // for saveLayer, saveLayerToBuffer
 
 namespace inviwo {
 
@@ -56,12 +57,18 @@ CImgLayerWriter::CImgLayerWriter() : DataWriterType<Layer>() {
 CImgLayerWriter* CImgLayerWriter::clone() const { return new CImgLayerWriter(*this); }
 
 void CImgLayerWriter::writeData(const Layer* data, const std::filesystem::path& filePath) const {
-    cimgutil::saveLayer(filePath, data);
+    if (auto ram = data->getRepresentation<LayerRAM>()) {
+        cimgutil::saveLayer(*ram, filePath);
+    }
 }
 
 std::unique_ptr<std::vector<unsigned char>> CImgLayerWriter::writeDataToBuffer(
     const Layer* data, const std::string_view fileExtension) const {
-    return cimgutil::saveLayerToBuffer(fileExtension, data);
+    auto buffer = std::make_unique<std::vector<unsigned char>>();
+    if (auto ram = data->getRepresentation<LayerRAM>()) {
+        cimgutil::saveLayer(*ram, *buffer, fileExtension);
+    }
+    return buffer;
 }
 
 }  // namespace inviwo

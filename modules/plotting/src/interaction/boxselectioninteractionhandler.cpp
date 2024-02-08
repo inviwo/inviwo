@@ -55,7 +55,6 @@
 #include <glm/common.hpp>              // for max, abs, min
 #include <glm/gtx/component_wise.hpp>  // for compMax
 #include <glm/vec2.hpp>                // for vec<>::(anonymous)
-#include <half/half.hpp>               // for operator<, operator>
 
 namespace inviwo {
 

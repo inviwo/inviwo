@@ -41,13 +41,17 @@
 namespace inviwo {
 
 std::shared_ptr<BufferGL> BufferRAM2GLConverter::createFrom(
-    std::shared_ptr<const BufferRAM> bufferRAM) const {
-    auto buffer =
-        std::make_shared<BufferGL>(bufferRAM->getSize(), bufferRAM->getDataFormat(),
-                                   bufferRAM->getBufferUsage(), bufferRAM->getBufferTarget());
+    std::shared_ptr<const BufferRAM> src) const {
+    auto dst = std::make_shared<BufferGL>(src->getSize(), src->getDataFormat(),
+                                          src->getBufferUsage(), src->getBufferTarget());
 
-    buffer->upload(bufferRAM->getData(), bufferRAM->getSize() * bufferRAM->getSizeOfElement());
-    return buffer;
+    if (!dst) {
+        throw ConverterException(IVW_CONTEXT, "Cannot convert format '{}' from RAM to GL",
+                                 *src->getDataFormat());
+    }
+
+    dst->upload(src->getData(), src->getSize() * src->getSizeOfElement());
+    return dst;
 }
 
 void BufferRAM2GLConverter::update(std::shared_ptr<const BufferRAM> src,
@@ -61,11 +65,10 @@ std::shared_ptr<BufferRAM> BufferGL2RAMConverter::createFrom(
     auto dst = createBufferRAM(src->getSize(), src->getDataFormat(), src->getBufferUsage(),
                                src->getBufferTarget());
 
-    if (!dst)
-        throw ConverterException(std::string("Cannot convert format from GL to RAM: ") +
-                                     src->getDataFormat()->getString(),
-                                 IVW_CONTEXT);
-
+    if (!dst) {
+        throw ConverterException(IVW_CONTEXT, "Cannot convert format '{}' from GL to RAM",
+                                 *src->getDataFormat());
+    }
     src->download(dst->getData());
     return dst;
 }

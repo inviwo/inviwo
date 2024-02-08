@@ -59,7 +59,6 @@
 #include <fmt/core.h>      // for basic_string_view
 #include <glm/gtx/io.hpp>  // for operator<<
 #include <glm/vec2.hpp>    // for vec<>::(anonymous)
-#include <half/half.hpp>   // for operator<<
 
 class QModelIndex;
 
@@ -257,7 +256,7 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation, in
                 return QString("<b>%0</b> (Column %1)\nOrdinal (%2)")
                     .arg(utilqt::toQString(col->getHeader()))
                     .arg(section)
-                    .arg(col->getBuffer()->getDataFormat()->getString());
+                    .arg(utilqt::toQString(col->getBuffer()->getDataFormat()->getString()));
             }
         }();
         if (col->getCustomRange()) {

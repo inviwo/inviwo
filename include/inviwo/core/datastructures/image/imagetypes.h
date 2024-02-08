@@ -107,8 +107,35 @@ constexpr SwizzleMask redGreen = {
     {ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::Zero}};
 constexpr SwizzleMask depth = luminance;
 
-IVW_CORE_API SwizzleMask defaultColor(size_t numComponents);
-IVW_CORE_API SwizzleMask defaultData(size_t numComponents);
+constexpr SwizzleMask defaultColor(size_t numComponents) noexcept {
+    switch (numComponents) {
+        case 1:
+            return swizzlemasks::luminance;
+        case 2:
+            return swizzlemasks::luminanceAlpha;
+        case 3:
+            return swizzlemasks::rgb;
+        case 4:
+            return swizzlemasks::rgba;
+        default:
+            return swizzlemasks::rgba;
+    }
+}
+constexpr SwizzleMask defaultData(size_t numComponents) noexcept {
+    switch (numComponents) {
+        case 1:
+            return swizzlemasks::luminance;
+        case 2:
+            return SwizzleMask{ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero,
+                               ImageChannel::One};
+        case 3:
+            return swizzlemasks::rgb;
+        case 4:
+            return swizzlemasks::rgba;
+        default:
+            return swizzlemasks::rgba;
+    }
+}
 }  // namespace swizzlemasks
 
 namespace wrapping2d {
@@ -125,16 +152,16 @@ constexpr Wrapping3D mirrorAll = {Wrapping::Mirror, Wrapping::Mirror, Wrapping::
 
 #include <warn/push>
 #include <warn/ignore/unused-function>
-inline bool typeContainsColor(ImageType type) {
+constexpr bool typeContainsColor(ImageType type) {
     return (type == ImageType::ColorOnly || type == ImageType::ColorDepth ||
             type == ImageType::ColorPicking || type == ImageType::ColorDepthPicking);
 }
 
-inline bool typeContainsDepth(ImageType type) {
+constexpr bool typeContainsDepth(ImageType type) {
     return (type == ImageType::ColorDepth || type == ImageType::ColorDepthPicking);
 }
 
-inline bool typeContainsPicking(ImageType type) {
+constexpr bool typeContainsPicking(ImageType type) {
     return (type == ImageType::ColorPicking || type == ImageType::ColorDepthPicking);
 }
 #include <warn/pop>

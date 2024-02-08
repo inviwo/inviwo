@@ -47,27 +47,16 @@ bool LayerRAM::copyRepresentationsTo(LayerRepresentation* targetLayerRam) const 
 
 std::type_index LayerRAM::getTypeIndex() const { return std::type_index(typeid(LayerRAM)); }
 
-struct LayerRAMCreationDispatcher {
-    using type = std::shared_ptr<LayerRAM>;
-    template <typename Result, typename T>
-    std::shared_ptr<LayerRAM> operator()(const size2_t& dimensions, LayerType type,
-                                         const SwizzleMask& swizzleMask,
-                                         InterpolationType interpolation,
-                                         const Wrapping2D& wrapping) {
-        using F = typename T::type;
-        return std::make_shared<LayerRAMPrecision<F>>(dimensions, type, swizzleMask, interpolation,
-                                                      wrapping);
-    }
-};
-
 std::shared_ptr<LayerRAM> createLayerRAM(const size2_t& dimensions, LayerType type,
                                          const DataFormatBase* format,
                                          const SwizzleMask& swizzleMask,
                                          InterpolationType interpolation,
                                          const Wrapping2D& wrapping) {
-    LayerRAMCreationDispatcher disp;
-    return dispatching::dispatch<std::shared_ptr<LayerRAM>, dispatching::filter::All>(
-        format->getId(), disp, dimensions, type, swizzleMask, interpolation, wrapping);
+    return dispatching::singleDispatch<std::shared_ptr<LayerRAM>, dispatching::filter::All>(
+        format->getId(), [&]<typename T>() {
+            return std::make_shared<LayerRAMPrecision<T>>(dimensions, type, swizzleMask,
+                                                          interpolation, wrapping);
+        });
 }
 
 }  // namespace inviwo

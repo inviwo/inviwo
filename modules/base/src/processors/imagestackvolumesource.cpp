@@ -80,7 +80,6 @@
 #include <glm/gtx/scalar_multiplication.hpp>  // for operator*
 #include <glm/vec2.hpp>                       // for operator!=
 #include <glm/vec3.hpp>                       // for operator*
-#include <half/half.hpp>                      // for operator-, operator/
 
 #include <fmt/std.h>
 

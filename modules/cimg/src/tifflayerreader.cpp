@@ -51,14 +51,7 @@ TIFFLayerReader* TIFFLayerReader::clone() const { return new TIFFLayerReader(*th
 
 std::shared_ptr<inviwo::Layer> TIFFLayerReader::readData(const std::filesystem::path& fileName) {
     checkExists(fileName);
-
-    auto header = cimgutil::getTIFFHeader(fileName);
-    auto data = cimgutil::loadTIFFLayerData(nullptr, fileName, header, false);
-
-    auto layer = dispatching::dispatch<std::shared_ptr<Layer>, dispatching::filter::All>(
-        header.format->getId(), *this, data, size2_t{header.dimensions}, header.swizzleMask);
-
-    return layer;
+    return std::make_shared<Layer>(cimgutil::loadLayerTiff(fileName));
 }
 
 }  // namespace inviwo

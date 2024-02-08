@@ -128,24 +128,21 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                 // register all color layers
                 for (std::size_t i = 0; i < image->getNumberOfColorLayers(); ++i) {
                     const auto layer = image->getColorLayer(i);
-                    std::stringstream ss;
-                    ss << "Color Layer " << i << " " << layer->getDataFormat()->getString();
-                    layers.push_back({ss.str(), layer});
+                    layers.push_back(
+                        {fmt::format("Color Layer {} {}", i, layer->getDataFormat()->getString()),
+                         layer});
                 }
 
                 // register picking layer
-                {
-                    std::stringstream ss;
-                    ss << "Picking Layer "
-                       << image->getPickingLayer()->getDataFormat()->getString();
-                    layers.push_back({ss.str(), image->getPickingLayer()});
-                }
+                layers.push_back(
+                    {fmt::format("Picking Layer {}",
+                                 image->getPickingLayer()->getDataFormat()->getString()),
+                     image->getPickingLayer()});
                 // register depth layer
-                {
-                    std::stringstream ss;
-                    ss << "Depth Layer " << image->getDepthLayer()->getDataFormat()->getString();
-                    layers.push_back({ss.str(), image->getDepthLayer()});
-                }
+                layers.push_back(
+                    {fmt::format("Depth Layer {}",
+                                 image->getPickingLayer()->getDataFormat()->getString()),
+                     image->getDepthLayer()});
             } else {
                 // outport is not an ImageOutport, show only first color layer
                 layers.push_back({"", image->getColorLayer(0)});

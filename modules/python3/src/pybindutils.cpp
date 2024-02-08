@@ -91,53 +91,18 @@ const DataFormatBase* getDataFormat(pybind11::ssize_t components, pybind11::arra
     return format;
 }
 
-struct BufferFromArrayDispatcher {
-    using type = std::unique_ptr<BufferBase>;
-
-    template <typename Result, typename T>
-    std::unique_ptr<BufferBase> operator()(pybind11::array& arr) {
-        using Type = typename T::type;
-        auto buf = std::make_unique<Buffer<Type>>(arr.shape(0));
-        memcpy(buf->getEditableRAMRepresentation()->getData(), arr.data(0), arr.nbytes());
-        return buf;
-    }
-};
-
-struct LayerFromArrayDispatcher {
-    using type = std::unique_ptr<Layer>;
-
-    template <typename Result, typename T>
-    std::unique_ptr<Layer> operator()(pybind11::array& arr) {
-        using Type = typename T::type;
-        size2_t dims(arr.shape(1), arr.shape(0));
-        auto layerRAM = std::make_shared<LayerRAMPrecision<Type>>(dims);
-        memcpy(layerRAM->getData(), arr.data(0), arr.nbytes());
-        return std::make_unique<Layer>(layerRAM);
-    }
-};
-
-struct VolumeFromArrayDispatcher {
-    using type = std::unique_ptr<Volume>;
-
-    template <typename Result, typename T>
-    std::unique_ptr<Volume> operator()(pybind11::array& arr) {
-        using Type = typename T::type;
-        size3_t dims(arr.shape(2), arr.shape(1), arr.shape(0));
-        auto volumeRAM = std::make_shared<VolumeRAMPrecision<Type>>(dims);
-        memcpy(volumeRAM->getData(), arr.data(0), arr.nbytes());
-        return std::make_unique<Volume>(volumeRAM);
-    }
-};
-
 std::unique_ptr<BufferBase> createBuffer(pybind11::array& arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 1 || ndim == 2, "ndims must be either 1 or 2");
     auto df = pyutil::getDataFormat(ndim == 1 ? 1 : arr.shape(1), arr);
 
     if (pybind11::array::c_style == (arr.flags() & pybind11::array::c_style)) {
-        BufferFromArrayDispatcher dispatcher;
-        return dispatching::dispatch<std::unique_ptr<BufferBase>, dispatching::filter::All>(
-            df->getId(), dispatcher, arr);
+        return dispatching::singleDispatch<std::unique_ptr<BufferBase>, dispatching::filter::All>(
+            df->getId(), [&]<typename Type>() {
+                auto buf = std::make_unique<Buffer<Type>>(arr.shape(0));
+                memcpy(buf->getEditableRAMRepresentation()->getData(), arr.data(0), arr.nbytes());
+                return buf;
+            });
     } else {
         throw Exception(
             "Unable to create a Buffer from array: The array is not in contiguous C order. Use "
@@ -152,9 +117,13 @@ std::unique_ptr<Layer> createLayer(pybind11::array& arr) {
     auto df = pyutil::getDataFormat(ndim == 2 ? 1 : arr.shape(2), arr);
 
     if (pybind11::array::c_style == (arr.flags() & pybind11::array::c_style)) {
-        LayerFromArrayDispatcher dispatcher;
-        return dispatching::dispatch<std::unique_ptr<Layer>, dispatching::filter::All>(
-            df->getId(), dispatcher, arr);
+        return dispatching::singleDispatch<std::unique_ptr<Layer>, dispatching::filter::All>(
+            df->getId(), [&]<typename Type>() {
+                const size2_t dims(arr.shape(1), arr.shape(0));
+                auto layerRAM = std::make_shared<LayerRAMPrecision<Type>>(dims);
+                memcpy(layerRAM->getData(), arr.data(0), arr.nbytes());
+                return std::make_unique<Layer>(layerRAM);
+            });
     } else {
         throw Exception(
             "Unable to create a Layer from array: The array is not in contiguous C order. Use "
@@ -169,9 +138,13 @@ std::unique_ptr<Volume> createVolume(pybind11::array& arr) {
     auto df = pyutil::getDataFormat(ndim == 3 ? 1 : arr.shape(3), arr);
 
     if (pybind11::array::c_style == (arr.flags() & pybind11::array::c_style)) {
-        VolumeFromArrayDispatcher dispatcher;
-        return dispatching::dispatch<std::unique_ptr<Volume>, dispatching::filter::All>(
-            df->getId(), dispatcher, arr);
+        return dispatching::singleDispatch<std::unique_ptr<Volume>, dispatching::filter::All>(
+            df->getId(), [&]<typename Type>() {
+                const size3_t dims(arr.shape(2), arr.shape(1), arr.shape(0));
+                auto volumeRAM = std::make_shared<VolumeRAMPrecision<Type>>(dims);
+                memcpy(volumeRAM->getData(), arr.data(0), arr.nbytes());
+                return std::make_unique<Volume>(volumeRAM);
+            });
     } else {
         throw Exception(
             "Unable to create a Volume from array: The array is not in contiguous C order. Use "

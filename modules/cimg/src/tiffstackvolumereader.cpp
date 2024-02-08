@@ -68,8 +68,9 @@ std::shared_ptr<Volume> TIFFStackVolumeReader::readData(const std::filesystem::p
     checkExists(filePath);
 
     auto header = cimgutil::getTIFFHeader(filePath);
-    auto volume = std::make_shared<Volume>(header.dimensions, header.format);
     auto volumeDisk = std::make_shared<VolumeDisk>(filePath, header.dimensions, header.format);
+    auto volume = std::make_shared<Volume>(volumeDisk);
+
     volume->dataMap_.dataRange = dvec2{header.format->getLowest(), header.format->getMax()};
     volume->dataMap_.valueRange = dvec2{header.format->getLowest(), header.format->getMax()};
 
@@ -95,26 +96,12 @@ TIFFStackVolumeRAMLoader* TIFFStackVolumeRAMLoader::clone() const {
 
 std::shared_ptr<VolumeRepresentation> TIFFStackVolumeRAMLoader::createRepresentation(
     const VolumeRepresentation& src) const {
-    auto fileName = sourceFile_;
+    const auto fileName = findFile(sourceFile_);
 
-    if (!std::filesystem::is_regular_file(fileName)) {
-        const auto newPath = filesystem::addBasePath(fileName);
-
-        if (std::filesystem::is_regular_file(newPath)) {
-            fileName = newPath;
-        } else {
-            throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);
-        }
-    }
-    cimgutil::TIFFHeader header;
-    header.format = src.getDataFormat();
-    header.dimensions = src.getDimensions();
-    auto data = cimgutil::loadTIFFVolumeData(nullptr, fileName, header);
-
-    auto volumeRAM =
-        createVolumeRAM(src.getDimensions(), src.getDataFormat(), data, src.getSwizzleMask(),
-                        src.getInterpolation(), src.getWrapping());
-
+    auto volumeRAM = cimgutil::loadVolume(fileName, src.getDataFormat(), src.getDimensions());
+    volumeRAM->setWrapping(src.getWrapping());
+    volumeRAM->setInterpolation(src.getInterpolation());
+    volumeRAM->setSwizzleMask(src.getSwizzleMask());
     return volumeRAM;
 }
 
@@ -122,21 +109,11 @@ void TIFFStackVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepres
                                                     const VolumeRepresentation& src) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
-    auto fileName = sourceFile_;
-    if (!std::filesystem::is_regular_file(fileName)) {
-        const auto newPath = filesystem::addBasePath(fileName);
-
-        if (std::filesystem::is_regular_file(newPath)) {
-            fileName = newPath;
-        } else {
-            throw DataReaderException(IVW_CONTEXT, "Error could not find input file: {}", fileName);
-        }
-    }
-
-    cimgutil::TIFFHeader header;
-    header.format = src.getDataFormat();
-    header.dimensions = src.getDimensions();
-    cimgutil::loadTIFFVolumeData(volumeDst->getData(), fileName, header);
+    const auto fileName = findFile(sourceFile_);
+    cimgutil::updateVolume(*volumeDst, fileName);
+    volumeDst->setWrapping(src.getWrapping());
+    volumeDst->setInterpolation(src.getInterpolation());
+    volumeDst->setSwizzleMask(src.getSwizzleMask());
 }
 
 }  // namespace inviwo

@@ -41,48 +41,52 @@
 namespace inviwo {
 
 std::shared_ptr<LayerGL> LayerRAM2GLConverter::createFrom(
-    std::shared_ptr<const LayerRAM> layerRAM) const {
-    auto layerGL = std::make_shared<LayerGL>(layerRAM->getDimensions(), layerRAM->getLayerType(),
-                                             layerRAM->getDataFormat(), layerRAM->getSwizzleMask(),
-                                             layerRAM->getInterpolation(), layerRAM->getWrapping());
-    layerGL->getTexture()->initialize(layerRAM->getData());
-    return layerGL;
+    std::shared_ptr<const LayerRAM> src) const {
+    auto dst = std::make_shared<LayerGL>(src->getDimensions(), src->getLayerType(),
+                                         src->getDataFormat(), src->getSwizzleMask(),
+                                         src->getInterpolation(), src->getWrapping());
+
+    if (!dst) {
+        throw ConverterException(IVW_CONTEXT, "Cannot convert format '{}' from RAM to GL",
+                                 *src->getDataFormat());
+    }
+
+    dst->getTexture()->initialize(src->getData());
+    return dst;
 }
 
-void LayerRAM2GLConverter::update(std::shared_ptr<const LayerRAM> layerSrc,
-                                  std::shared_ptr<LayerGL> layerDst) const {
-    layerDst->setDimensions(layerSrc->getDimensions());
-    layerDst->setSwizzleMask(layerSrc->getSwizzleMask());
-    layerDst->setInterpolation(layerSrc->getInterpolation());
-    layerDst->setWrapping(layerSrc->getWrapping());
+void LayerRAM2GLConverter::update(std::shared_ptr<const LayerRAM> src,
+                                  std::shared_ptr<LayerGL> dst) const {
+    dst->setDimensions(src->getDimensions());
+    dst->setSwizzleMask(src->getSwizzleMask());
+    dst->setInterpolation(src->getInterpolation());
+    dst->setWrapping(src->getWrapping());
 
-    layerDst->getTexture()->upload(layerSrc->getData());
+    dst->getTexture()->upload(src->getData());
 }
 
 std::shared_ptr<LayerRAM> LayerGL2RAMConverter::createFrom(
-    std::shared_ptr<const LayerGL> layerGL) const {
-    auto layerRAM = createLayerRAM(layerGL->getDimensions(), layerGL->getLayerType(),
-                                   layerGL->getDataFormat(), layerGL->getSwizzleMask(),
-                                   layerGL->getInterpolation(), layerGL->getWrapping());
+    std::shared_ptr<const LayerGL> src) const {
+    auto dst = createLayerRAM(src->getDimensions(), src->getLayerType(), src->getDataFormat(),
+                              src->getSwizzleMask(), src->getInterpolation(), src->getWrapping());
 
-    if (layerRAM) {
-        layerGL->getTexture()->download(layerRAM->getData());
-        return layerRAM;
-    } else {
-        LogError("Cannot convert format from GL to RAM:" << layerGL->getDataFormat()->getString());
+    if (!dst) {
+        throw ConverterException(IVW_CONTEXT, "Cannot convert format '{}' from GL to RAM",
+                                 *src->getDataFormat());
     }
 
-    return nullptr;
+    src->getTexture()->download(dst->getData());
+    return dst;
 }
 
-void LayerGL2RAMConverter::update(std::shared_ptr<const LayerGL> layerSrc,
-                                  std::shared_ptr<LayerRAM> layerDst) const {
-    layerDst->setDimensions(layerSrc->getDimensions());
-    layerDst->setSwizzleMask(layerSrc->getSwizzleMask());
-    layerDst->setInterpolation(layerSrc->getInterpolation());
-    layerDst->setWrapping(layerSrc->getWrapping());
+void LayerGL2RAMConverter::update(std::shared_ptr<const LayerGL> src,
+                                  std::shared_ptr<LayerRAM> dst) const {
+    dst->setDimensions(src->getDimensions());
+    dst->setSwizzleMask(src->getSwizzleMask());
+    dst->setInterpolation(src->getInterpolation());
+    dst->setWrapping(src->getWrapping());
 
-    layerSrc->getTexture()->download(layerDst->getData());
+    src->getTexture()->download(dst->getData());
 }
 
 }  // namespace inviwo

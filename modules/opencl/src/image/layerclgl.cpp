@@ -32,6 +32,8 @@
 #include <modules/opencl/image/layerclresizer.h>
 #include <modules/opencl/syncclgl.h>
 #include <modules/opengl/openglutils.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glmutils.h>
 
 namespace inviwo {
 CLTextureSharingMap LayerCLGL::clImageSharingMap_;
@@ -156,14 +158,22 @@ void LayerCLGL::notifyAfterTextureInitialization() {
 
 std::type_index LayerCLGL::getTypeIndex() const { return std::type_index(typeid(LayerCLGL)); }
 
-dvec4 LayerCLGL::readPixel(size2_t pos, LayerType /*layer*/, size_t /*index*/) const {
-    std::array<char, DataFormat<dvec4>::typesize> buffer;
-    auto ptr = static_cast<void*>(buffer.data());
+dvec4 LayerCLGL::readPixel(size2_t pos) const {
+    return dispatching::singleDispatch<dvec4, dispatching::filter::All>(
+        getDataFormat()->getId(), [&]<typename T>() {
+            T res{};
 
-    OpenCL::getPtr()->getQueue().enqueueReadImage(*clImage_, true, glm::size3_t(pos, 0),
-                                                  glm::size3_t(1, 1, 1), 0, 0, ptr);
-
-    return getDataFormat()->valueToVec4Double(ptr);
+            if constexpr (util::rank_v<T> == 0) {
+                OpenCL::getPtr()->getQueue().enqueueReadImage(*clImage_, true, glm::size3_t(pos, 0),
+                                                              glm::size3_t(1, 1, 1), 0, 0,
+                                                              static_cast<void*>(&res));
+            } else {
+                OpenCL::getPtr()->getQueue().enqueueReadImage(
+                    *clImage_, true, glm::size3_t(pos, 0), glm::size3_t(1, 1, 1), 0, 0,
+                    static_cast<void*>(glm::value_ptr(res)));
+            }
+            return util::glm_convert<dvec4>(res);
+        });
 }
 
 void LayerCLGL::setSwizzleMask(const SwizzleMask& mask) { texture_->setSwizzleMask(mask); }

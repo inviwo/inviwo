@@ -111,7 +111,7 @@ void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
 
     if (auto fout = std::ofstream(rawPath, std::ios::out | std::ios::binary)) {
         fout.write(static_cast<const char*>(vr->getData()),
-                   glm::compMul(vr->getDimensions()) * vr->getDataFormat()->getSize());
+                   glm::compMul(vr->getDimensions()) * vr->getDataFormat()->getSizeInBytes());
     } else {
         throw DataWriterException(IVW_CONTEXT_CUSTOM("util::writeIvfVolume"),
                                   "Could not write to raw file: {}", rawPath);

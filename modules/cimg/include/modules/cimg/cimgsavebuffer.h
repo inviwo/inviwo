@@ -64,40 +64,6 @@ namespace inviwo {
 namespace cimgutil {
 
 template <typename T>
-std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img, std::string_view ext);
-
-template <typename T>
-const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_library::CImg<T>& img,
-                                                  std::string_view ext);
-
-template <typename T>
-std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img,
-                                            std::string_view ext) {
-    // estimate upper bound for size of the image with an additional header
-    const size_t header = 1024;  // assume 1kB is enough for a header
-    const size_t upperBound = img.width() * img.height() * img.spectrum() * sizeof(T) + header;
-
-    util::MemoryFileHandle memfile(upperBound);
-    saveCImgToFileStream(memfile.getHandle(), img, ext);
-
-    if (memfile.checkForOverflow()) {
-        // overflow detected buffer was too small, try again with twice the size
-        memfile.resize(upperBound * 4u);
-        saveCImgToFileStream(memfile.getHandle(), img, ext);
-
-        if (memfile.checkForOverflow()) {
-            throw Exception("Failed not save image to buffer, exceeding buffer size.",
-                            IVW_CONTEXT_CUSTOM("cimgutil::saveCImgToBuffer"));
-        }
-    }
-
-    auto it = memfile.getBuffer().begin();
-    std::vector<unsigned char> data(it, it + memfile.getNumberOfBytesInBuffer());
-
-    return data;
-}
-
-template <typename T>
 const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_library::CImg<T>& img,
                                                   std::string_view extension) {
     // the following code was taken from CImg::save() and slightly adapted
@@ -145,6 +111,39 @@ const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_libra
         return img.save_raw(handle);
     else
         throw cimg_library::CImgIOException("unsupported format");
+}
+
+template <typename T>
+void saveCImgToBuffer(const cimg_library::CImg<T>& img, std::string_view ext,
+                      std::vector<unsigned char>& buff) {
+    // estimate upper bound for size of the image with an additional header
+    const size_t header = 1024;  // assume 1kB is enough for a header
+    const size_t upperBound = img.width() * img.height() * img.spectrum() * sizeof(T) + header;
+
+    util::MemoryFileHandle memfile(upperBound);
+    saveCImgToFileStream(memfile.getHandle(), img, ext);
+
+    if (memfile.checkForOverflow()) {
+        // overflow detected buffer was too small, try again with twice the size
+        memfile.resize(upperBound * 4u);
+        saveCImgToFileStream(memfile.getHandle(), img, ext);
+
+        if (memfile.checkForOverflow()) {
+            throw Exception("Failed not save image to buffer, exceeding buffer size.",
+                            IVW_CONTEXT_CUSTOM("cimgutil::saveCImgToBuffer"));
+        }
+    }
+
+    auto it = memfile.getBuffer().begin();
+    buff.assign(it, it + memfile.getNumberOfBytesInBuffer());
+}
+
+template <typename T>
+std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img,
+                                            std::string_view ext) {
+    std::vector<unsigned char> res;
+    saveCImgToBuffer(img, ext, res);
+    return res;
 }
 
 }  // namespace cimgutil

@@ -88,7 +88,6 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     bitDepth_->addItem("signed long int (64-bit integer)", static_cast<int>(DataFormatId::Int64));
     bitDepth_->addItem("unsigned long int (64-bit unsigned integer)",
                        static_cast<int>(DataFormatId::UInt64));
-    bitDepth_->addItem("half (16-bit floating point)", static_cast<int>(DataFormatId::Float16));
     bitDepth_->addItem("float (32-bit floating point)", static_cast<int>(DataFormatId::Float32));
     bitDepth_->addItem("double (64-bit floating point)", static_cast<int>(DataFormatId::Float64));
     connect(bitDepth_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,

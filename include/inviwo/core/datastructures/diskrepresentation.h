@@ -32,11 +32,15 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/cloneableptr.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/io/datareaderexception.h>
 
 #include <string>
 #include <string_view>
 #include <memory>
 #include <filesystem>
+
+#include <fmt/std.h>
 
 namespace inviwo {
 
@@ -117,6 +121,18 @@ public:
     virtual DiskRepresentationLoader* clone() const = 0;
     virtual std::shared_ptr<Repr> createRepresentation(const Repr&) const = 0;
     virtual void updateRepresentation(std::shared_ptr<Repr> dest, const Repr&) const = 0;
+
+    static std::filesystem::path findFile(const std::filesystem::path& path) {
+        if (std::filesystem::is_regular_file(path)) {
+            return path;
+        } else if (const auto newPath = filesystem::addBasePath(path);
+                   std::filesystem::is_regular_file(newPath)) {
+            return newPath;
+        } else {
+            throw DataReaderException(IVW_CONTEXT_CUSTOM("DiskRepresentationLoader"),
+                                      "Error could not find input file: {}", path);
+        }
+    }
 };
 
 }  // namespace inviwo

@@ -54,7 +54,6 @@
 
 #include <glm/gtc/type_ptr.hpp>  // for value_ptr
 #include <glm/gtx/io.hpp>        // for operator<<
-#include <half/half.hpp>         // for operator<<
 #include <nlohmann/json.hpp>     // for iteration_proxy_v...
 
 namespace inviwo {
@@ -134,15 +133,6 @@ void to_json(json& j, const DataFrame& df) {
                                     node[header] = json();
                                 } else {
                                     node[header] = val;
-                                }
-                            });
-                        } else if constexpr (std::is_same_v<ValueType, half_float::half>) {
-                            printers.push_back([br, header](json& node, size_t index) {
-                                const auto val = br->getDataContainer()[index];
-                                if (std::isnan(val)) {
-                                    node[header] = json();
-                                } else {
-                                    node[header] = static_cast<float>(val);
                                 }
                             });
                         } else {

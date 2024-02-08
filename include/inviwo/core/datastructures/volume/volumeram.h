@@ -555,38 +555,25 @@ void VolumeRAMPrecision<T>::setFromNormalizedDVec4(const size3_t& pos, dvec4 val
     data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
 }
 
-namespace detail {
-struct VolumeRamDispatcher {
-    template <typename Result, typename Format, typename Callable, typename... Args>
-    Result operator()(Callable&& obj, VolumeRAM* volumeram, Args... args) {
-        return obj(static_cast<VolumeRAMPrecision<typename Format::type>*>(volumeram),
-                   std::forward<Args>(args)...);
-    }
-};
-
-struct VolumeRamConstDispatcher {
-    template <typename Result, typename Format, typename Callable, typename... Args>
-    Result operator()(Callable&& obj, const VolumeRAM* volumeram, Args... args) {
-        return obj(static_cast<const VolumeRAMPrecision<typename Format::type>*>(volumeram),
-                   std::forward<Args>(args)...);
-    }
-};
-}  // namespace detail
-
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto VolumeRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
-    detail::VolumeRamDispatcher dispatcher;
-    return dispatching::dispatch<Result, Predicate>(getDataFormatId(), dispatcher,
-                                                    std::forward<Callable>(callable), this,
-                                                    std::forward<Args>(args)...);
+    return dispatching::singleDispatch<Result, Predicate>(
+        getDataFormatId(),
+        [this]<typename T>(Callable&& obj, Args... args) {
+            return obj(static_cast<VolumeRAMPrecision<T>*>(this), std::forward<Args>(args)...);
+        },
+        std::forward<Callable>(callable), std::forward<Args>(args)...);
 }
 
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto VolumeRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
-    detail::VolumeRamConstDispatcher dispatcher;
-    return dispatching::dispatch<Result, Predicate>(getDataFormatId(), dispatcher,
-                                                    std::forward<Callable>(callable), this,
-                                                    std::forward<Args>(args)...);
+    return dispatching::singleDispatch<Result, Predicate>(
+        getDataFormatId(),
+        [this]<typename T>(Callable&& obj, Args... args) {
+            return obj(static_cast<const VolumeRAMPrecision<T>*>(this),
+                       std::forward<Args>(args)...);
+        },
+        std::forward<Callable>(callable), std::forward<Args>(args)...);
 }
 
 }  // namespace inviwo

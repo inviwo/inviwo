@@ -63,7 +63,6 @@
 #include <glm/vec2.hpp>                  // for vec<>::(anonymous)
 #include <glm/vec3.hpp>                  // for operator+, operator-
 #include <glm/vec4.hpp>                  // for vec
-#include <half/half.hpp>                 // for half, operator<
 
 namespace inviwo {
 

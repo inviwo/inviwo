@@ -48,7 +48,6 @@
 #include <glm/mat2x2.hpp>  // for mat<>::col_type
 #include <glm/matrix.hpp>  // for inverse
 #include <glm/vec2.hpp>    // for vec<>::(anonymous)
-#include <half/half.hpp>   // for operator*
 
 namespace inviwo {
 namespace statsutil {

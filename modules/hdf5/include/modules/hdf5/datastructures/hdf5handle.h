@@ -52,8 +52,6 @@
 #include <vector>
 #include <ostream>
 
-#include <half/half.hpp>
-
 namespace inviwo {
 
 namespace hdf5 {

@@ -52,7 +52,7 @@ public:
     virtual const size3_t& getDimensions() const = 0;
 
     virtual const DataFormatBase* getDataFormat() const = 0;
-    std::string getDataFormatString() const { return getDataFormat()->getString(); }
+    std::string_view getDataFormatString() const { return getDataFormat()->getString(); }
     DataFormatId getDataFormatId() const { return getDataFormat()->getId(); }
     /**
      * \brief update the swizzle mask of the color channels when sampling the volume

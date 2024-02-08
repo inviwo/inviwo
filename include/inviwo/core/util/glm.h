@@ -62,8 +62,6 @@
 #include <glm/ext/vector_relational.hpp>
 #include <glm/ext/matrix_relational.hpp>
 
-#include <half/half.hpp>
-
 #include <warn/pop>
 
 #include <limits>
@@ -71,13 +69,6 @@
 #include <utility>
 
 namespace inviwo {
-
-static_assert(std::is_standard_layout<half_float::half>::value, "");
-static_assert(std::is_trivially_copyable<half_float::half>::value, "");
-static_assert(std::is_default_constructible<half_float::half>::value, "");
-static_assert(std::is_trivially_default_constructible<half_float::half>::value, "");
-static_assert(std::is_trivial<half_float::half>::value, "");
-static_assert(std::is_standard_layout<half_float::half>::value, "");
 
 using quat = glm::quat;
 
@@ -93,9 +84,6 @@ glm::vec<L, bool, Q> isfinite(const glm::vec<L, T, Q>& x) {
     return glm::isfinite(x);
 }
 
-template <>
-IVW_CORE_API bool isfinite(const half_float::half& v);
-
 template <typename T>
 bool isnan(const T& v) {
     return std::isnan(v);
@@ -105,9 +93,6 @@ template <glm::length_t L, typename T, glm::qualifier Q>
 glm::vec<L, bool, Q> isnan(const glm::vec<L, T, Q>& x) {
     return glm::isnan(x);
 }
-
-template <>
-IVW_CORE_API bool isnan(const half_float::half& v);
 
 template <class U, class T, class BinaryOperation>
 U accumulate(T x, U init, BinaryOperation op) {

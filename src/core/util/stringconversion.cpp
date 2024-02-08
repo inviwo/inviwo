@@ -392,10 +392,6 @@ std::string removeSubString(std::string_view str, std::string_view strToRemove) 
     return newString;
 }
 
-bool CaseInsensitiveCompare::operator()(std::string_view a, std::string_view b) const {
-    return iCaseLess(a, b);
-}
-
 std::string parseTypeIdName(const char* name) { return util::parseTypeIdName(name); }
 
 std::string msToString(double ms, bool includeZeros, bool spacing) {

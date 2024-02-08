@@ -88,7 +88,6 @@
 #include <glm/common.hpp>  // for clamp
 #include <glm/vec2.hpp>    // for vec<>::(anonymous)
 #include <glm/vec4.hpp>    // for operator+, vec<...
-#include <half/half.hpp>   // for operator<, oper...
 
 namespace inviwo {
 

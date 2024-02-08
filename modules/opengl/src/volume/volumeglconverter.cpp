@@ -41,48 +41,54 @@
 namespace inviwo {
 
 std::shared_ptr<VolumeGL> VolumeRAM2GLConverter::createFrom(
-    std::shared_ptr<const VolumeRAM> volumeRAM) const {
-    auto volume = std::make_shared<VolumeGL>(
-        volumeRAM->getDimensions(), volumeRAM->getDataFormat(), volumeRAM->getSwizzleMask(),
-        volumeRAM->getInterpolation(), volumeRAM->getWrapping(), false);
-    volume->getTexture()->initialize(volumeRAM->getData());
-    return volume;
+    std::shared_ptr<const VolumeRAM> src) const {
+    auto dst = std::make_shared<VolumeGL>(src->getDimensions(), src->getDataFormat(),
+                                          src->getSwizzleMask(), src->getInterpolation(),
+                                          src->getWrapping(), false);
+
+    if (!dst) {
+        throw ConverterException(IVW_CONTEXT, "Cannot convert format '{}' from RAM to GL",
+                                 *src->getDataFormat());
+    }
+
+    dst->getTexture()->initialize(src->getData());
+    return dst;
 }
 
-void VolumeRAM2GLConverter::update(std::shared_ptr<const VolumeRAM> volumeSrc,
-                                   std::shared_ptr<VolumeGL> volumeDst) const {
-    volumeDst->setDimensions(volumeSrc->getDimensions());
-    volumeDst->setSwizzleMask(volumeSrc->getSwizzleMask());
-    volumeDst->setInterpolation(volumeSrc->getInterpolation());
-    volumeDst->setWrapping(volumeSrc->getWrapping());
+void VolumeRAM2GLConverter::update(std::shared_ptr<const VolumeRAM> src,
+                                   std::shared_ptr<VolumeGL> dst) const {
+    dst->setDimensions(src->getDimensions());
+    dst->setSwizzleMask(src->getSwizzleMask());
+    dst->setInterpolation(src->getInterpolation());
+    dst->setWrapping(src->getWrapping());
 
-    volumeDst->getTexture()->upload(volumeSrc->getData());
+    dst->getTexture()->upload(src->getData());
 }
 
 std::shared_ptr<VolumeRAM> VolumeGL2RAMConverter::createFrom(
-    std::shared_ptr<const VolumeGL> volumeGL) const {
-    auto volume = createVolumeRAM(volumeGL->getDimensions(), volumeGL->getDataFormat(), nullptr,
-                                  volumeGL->getSwizzleMask(), volumeGL->getInterpolation(),
-                                  volumeGL->getWrapping());
+    std::shared_ptr<const VolumeGL> src) const {
+    auto dst = createVolumeRAM(src->getDimensions(), src->getDataFormat(), nullptr,
+                               src->getSwizzleMask(), src->getInterpolation(), src->getWrapping());
 
-    if (volume) {
-        volumeGL->getTexture()->download(volume->getData());
-        return volume;
-    } else {
-        LogError("Cannot convert format from GL to RAM:" << volumeGL->getDataFormat()->getString());
+    if (!dst) {
+        throw ConverterException(IVW_CONTEXT, "Cannot convert format '{}' from GL to RAM",
+                                 *src->getDataFormat());
     }
+
+    src->getTexture()->download(dst->getData());
+    return dst;
 
     return nullptr;
 }
 
-void VolumeGL2RAMConverter::update(std::shared_ptr<const VolumeGL> volumeSrc,
-                                   std::shared_ptr<VolumeRAM> volumeDst) const {
-    volumeDst->setDimensions(volumeSrc->getDimensions());
-    volumeDst->setSwizzleMask(volumeSrc->getSwizzleMask());
-    volumeDst->setInterpolation(volumeSrc->getInterpolation());
-    volumeDst->setWrapping(volumeSrc->getWrapping());
+void VolumeGL2RAMConverter::update(std::shared_ptr<const VolumeGL> src,
+                                   std::shared_ptr<VolumeRAM> dst) const {
+    dst->setDimensions(src->getDimensions());
+    dst->setSwizzleMask(src->getSwizzleMask());
+    dst->setInterpolation(src->getInterpolation());
+    dst->setWrapping(src->getWrapping());
 
-    volumeSrc->getTexture()->download(volumeDst->getData());
+    src->getTexture()->download(dst->getData());
 }
 
 }  // namespace inviwo

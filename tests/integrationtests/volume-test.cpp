@@ -210,12 +210,6 @@ TEST(VolumeTest, DatReaderLoadTypeUINT16BigEndian) {
 TEST(VolumeTest, DatReaderLoadTypeINT16BigEndian) {
     testDatVolumeLoad<glm::int16>("testdata.INT16.BigEndian.dat");
 }
-TEST(VolumeTest, DatReaderLoadTypeFLOAT16LittleEndian) {
-    testDatVolumeLoad<half_float::half>("testdata.FLOAT16.LittleEndian.dat");
-}
-TEST(VolumeTest, DatReaderLoadTypeFLOAT16BigEndian) {
-    testDatVolumeLoad<half_float::half>("testdata.FLOAT16.BigEndian.dat");
-}
 
 // 32 bit
 TEST(VolumeTest, DatReaderLoadTypeUINT32) {
@@ -274,12 +268,6 @@ TEST(VolumeTest, IvfReaderLoadTypeUINT16BigEndian) {
 }
 TEST(VolumeTest, IvfReaderLoadTypeINT16BigEndian) {
     testIvfVolumeLoad<glm::int16>("testdata.INT16.BigEndian.ivf");
-}
-TEST(VolumeTest, IvfReaderLoadTypeFLOAT16LittleEndian) {
-    testIvfVolumeLoad<half_float::half>("testdata.FLOAT16.LittleEndian.ivf");
-}
-TEST(VolumeTest, IvfReaderLoadTypeFLOAT16BigEndian) {
-    testIvfVolumeLoad<half_float::half>("testdata.FLOAT16.BigEndian.ivf");
 }
 
 // 32 bit
@@ -342,12 +330,6 @@ TEST(VolumeTest, DatReaderCloneTypeUINT16BigEndian) {
 TEST(VolumeTest, DatReaderCloneTypeINT16BigEndian) {
     testDatVolumeClone<glm::int16>("testdata.INT16.BigEndian.dat");
 }
-TEST(VolumeTest, DatReaderCloneTypeFLOAT16LittleEndian) {
-    testDatVolumeClone<half_float::half>("testdata.FLOAT16.LittleEndian.dat");
-}
-TEST(VolumeTest, DatReaderCloneTypeFLOAT16BigEndian) {
-    testDatVolumeClone<half_float::half>("testdata.FLOAT16.BigEndian.dat");
-}
 
 // 32 bit
 TEST(VolumeTest, DatReaderCloneTypeUINT32) {
@@ -406,12 +388,6 @@ TEST(VolumeTest, IvfReaderCloneTypeUINT16BigEndian) {
 }
 TEST(VolumeTest, IvfReaderCloneTypeINT16BigEndian) {
     testIvfVolumeClone<glm::int16>("testdata.INT16.BigEndian.ivf");
-}
-TEST(VolumeTest, IvfReaderCloneTypeFLOAT16LittleEndian) {
-    testIvfVolumeClone<half_float::half>("testdata.FLOAT16.LittleEndian.ivf");
-}
-TEST(VolumeTest, IvfReaderCloneTypeFLOAT16BigEndian) {
-    testIvfVolumeClone<half_float::half>("testdata.FLOAT16.BigEndian.ivf");
 }
 
 // 32 bit

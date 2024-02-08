@@ -50,7 +50,7 @@ public:
               const SwizzleMask& swizzleMask = swizzlemasks::rgba,
               const std::array<GLenum, 2>& wrapping = {GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE},
               GLint level = 0);
-    Texture2D(size2_t dimensions, GLint format, GLint internalformat, GLenum dataType,
+    Texture2D(size2_t dimensions, GLint format, GLint internalFormat, GLenum dataType,
               GLenum filtering, const SwizzleMask& swizzleMask = swizzlemasks::rgba,
               const std::array<GLenum, 2>& wrapping = {GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE},
               GLint level = 0);

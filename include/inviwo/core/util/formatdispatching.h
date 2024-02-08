@@ -32,9 +32,12 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/indexmapper.h>
 
 #include <tuple>
 #include <type_traits>
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 
@@ -45,9 +48,7 @@ namespace dispatching {
  */
 class IVW_CORE_API DispatchException : public Exception {
 public:
-    DispatchException(const std::string& message = "",
-                      ExceptionContext context = ExceptionContext());
-    virtual ~DispatchException() throw() = default;
+    using Exception::Exception;
 };
 
 namespace detail {
@@ -87,84 +88,252 @@ struct Filter<Predicate, std::tuple<Args...>> {
     using type = typename Filter<Predicate, Args...>::type;
 };
 
-/**
- * Helper class to find the matching DataFormatId among a sorted list of types.
- * Does a binary search in the type list.
- */
-template <typename Result, int B, int E, typename... Args>
-struct DispatchHelper {};
+template <typename Index, typename Functor, Index... Is>
+constexpr auto build_array_impl(Functor&& func, std::integer_sequence<Index, Is...>) noexcept {
+    return std::array{func.template operator()<Is>()...};
+}
 
-#include <warn/push>
-#include <warn/ignore/constant-conditional>
+template <std::size_t N, typename Index = size_t, typename Functor>
+constexpr auto build_array(Functor&& func) noexcept {
+    return build_array_impl<Index>(std::forward<Functor>(func),
+                                   std::make_integer_sequence<Index, N>());
+}
 
-template <typename Result, int B, int E, typename... Formats>
-struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
-    static const int M = (B + E) / 2;
-    using Format = typename std::tuple_element<M, std::tuple<Formats...>>::type;
+std::string IVW_CORE_API predicateNameHelper(const char* name);
 
-    template <typename Callable, typename... Args>
-    static Result dispatch(DataFormatId id, Callable&& obj, Args&&... args) {
-        if (B > E)
-            throw DispatchException(
-                "Format " + std::string(DataFormatBase::get(id)->getString()) + " not supported",
-                IVW_CONTEXT_CUSTOM("Dispatching"));
-
-        if (id == Format::id()) {
-            return (obj.template operator()<Result, Format>(std::forward<Args>(args)...));
-        } else if (static_cast<int>(id) < static_cast<int>(Format::id())) {
-            return DispatchHelper<Result, B, M - 1, std::tuple<Formats...>>::dispatch(
-                id, std::forward<Callable>(obj), std::forward<Args>(args)...);
-        } else {
-            return DispatchHelper<Result, M + 1, E, std::tuple<Formats...>>::dispatch(
-                id, std::forward<Callable>(obj), std::forward<Args>(args)...);
-        }
-    }
-};
-
-#include <warn/pop>
+template <template <class> class Predicate>
+std::string predicateName() {
+    return predicateNameHelper(typeid(Predicate<DataFormat<float>>).name());
+}
 
 }  // namespace detail
 
 /**
- * Function for dispatching a DataFormat based on the DataFormatId.
- * The matching DataFormat is found using binary search in the type list.
- *
- * # Template arguments:
- *  * __Result__ the return type of the lambda.
- *  * __Predicate__ A type that is used to filter the list of types to consider in the
- *    dispatching. The `dispatching::filter` namespace have a few standard ones predefined.
+ * Function for dispatching on a DataFormat
  *
  * # Example
- * \snippet src/core/datastructures/buffer/bufferram.cpp Format Dispatching Example
+ * Create a VolumeRAMPrecision<T> with the type of T given by the runtime dataFormatId.
+ * @snippet src/core/util/formatdispatching.cpp Format singleDispatch example
+ *
+ * @tparam Result the return type of the lambda.
+ * @tparam Predicate a type that is used to filter the list of types to consider in the
+ *    dispatching. The `dispatching::filter` namespace have a few standard ones predefined.
  *
  * @param format ID if for the dataformat to dispatch on
- * @param obj This should be a struct with a generic call operator taking two template
- * arguments the result type and DataFormat type. The callable will be called with the supplied
- * arguments (`args`).
- * @param args Any arguments that should be passed on to the lambda.
+ * @param obj This should be a callable with a generic call operator taking a template argument
+ *  T of the dispatch type. The callable will be called with the supplied arguments (`args`).
+ *  For example []<typename T>() {}. T here will be, float, double, int, ... vec2, dvec2, etc.
+ * @param args Any arguments that should be passed on to the callable.
  *
- *
- * @throws dispatching::DispatchException in the case that the format of the buffer is not in
+ * @throws dispatching::DispatchException in the case that the format is not in
  * the list of formats after the filtering.
  */
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
-auto dispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Result {
-    // Has to be in order of increasing id
-
+auto singleDispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Result {
     using Formats = DefaultDataFormats;
+    constexpr auto nFormats = std::tuple_size_v<Formats>;
+    using Functor = Result (*)(Callable&&, Args&&...);
 
-    using FilteredFormats = typename detail::Filter<Predicate, Formats>::type;
+    static constexpr auto table =
+        detail::build_array<nFormats>([]<size_t index>() constexpr -> Functor {
+            using Format = std::tuple_element_t<index, Formats>;
+            if constexpr (Predicate<Format>::value) {
+                return [](Callable&& innerObj, Args&&... innerArgs) -> Result {
+                    using T = typename Format::type;
+                    return innerObj.template operator()<T>(std::forward<Args>(innerArgs)...);
+                };
+            } else {
+                return nullptr;
+            }
+        });
 
-    return detail::DispatchHelper<Result, 0, std::tuple_size<FilteredFormats>::value - 1,
-                                  FilteredFormats>::dispatch(format, std::forward<Callable>(obj),
-                                                             std::forward<Args>(args)...);
+    if (format == DataFormatId::NotSpecialized) {
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format not specialized");
+    } else if (auto fun = table[static_cast<int>(format) - 1]) {
+        return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
+    } else {
+        const auto expected = detail::predicateName<Predicate>();
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"),
+                                "Format {} not supported, expected type matching {}", format,
+                                expected);
+    }
+}
+
+/**
+ * Function for dispatching on two DataFormats
+ *
+ * # Example
+ * Add two VolumeRAMPrecisions with different runtime types
+ * @snippet src/core/util/formatdispatching.cpp Format doubleDispatch example
+ *
+ * @tparam Result the return type of the lambda.
+ * @tparam Predicate1 a type that is used to filter the list of types to consider in the
+ *    dispatching for the first format1.
+ *    The `dispatching::filter` namespace have a few standard ones predefined.
+ * @tparam Predicate2 a type that is used to filter the list of types to consider in the
+ *    dispatching for the second format2.
+ *    The `dispatching::filter` namespace have a few standard ones predefined.
+ *
+ * @param format1 ID if for the first dataformat to dispatch on
+ * @param format2 ID if for the second dataformat to dispatch on
+ * @param obj This should be a callable with a generic call operator taking two template arguments
+ *  T1 and T2 of the dispatch types. The callable will be called with the supplied arguments
+ * (`args`). For example []<typename T1, typename T2>() {}.
+ * T1 and T2 here will be, float, double, int, ... vec2, dvec2, etc.
+ * @param args Any arguments that should be passed on to the callable.
+ *
+ * @throws dispatching::DispatchException in the case that the format is not in
+ * the list of formats after the filtering.
+ */
+template <typename Result, template <class> class Predicate1, template <class> class Predicate2,
+          typename Callable, typename... Args>
+auto doubleDispatch(DataFormatId format1, DataFormatId format2, Callable&& obj, Args&&... args)
+    -> Result {
+    using Formats = DefaultDataFormats;
+    constexpr auto nFormats = std::tuple_size_v<Formats>;
+    using Functor = Result (*)(Callable&&, Args&&...);
+
+    static constexpr auto table = detail::build_array<nFormats>([]<size_t index1>() constexpr {
+        using Format1 = std::tuple_element_t<index1, Formats>;
+        using T1 = typename Format1::type;
+        return detail::build_array<nFormats>([]<size_t index2>() constexpr -> Functor {
+            using Format2 = std::tuple_element_t<index2, Formats>;
+            using T2 = typename Format2::type;
+            if constexpr (Predicate1<Format1>::value && Predicate2<Format2>::value) {
+                return [](Callable&& innerObj, Args&&... innerArgs) -> Result {
+                    return innerObj.template operator()<T1, T2>(std::forward<Args>(innerArgs)...);
+                };
+            } else {
+                return nullptr;
+            }
+        });
+    });
+
+    using enum DataFormatId;
+    if (format1 == NotSpecialized || format2 == NotSpecialized) {
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format not specialized");
+    } else if (auto fun =
+                   table[static_cast<size_t>(format1) - 1][static_cast<size_t>(format2) - 1]) {
+        return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
+    } else {
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"),
+                                "Format combination {}, {}, not supported", format1, format2);
+    }
+}
+
+/**
+ * Function for dispatching on three DataFormats
+ *
+ * # Example
+ * Add two VolumeRAMPrecisions with different runtime types and a runtime result type
+ * @snippet src/core/util/formatdispatching.cpp Format tripleDispatch example
+ *
+ * @tparam Result the return type of the lambda.
+ * @tparam Predicate1 a type that is used to filter the list of types to consider in the
+ *    dispatching for the first format1.
+ *    The `dispatching::filter` namespace have a few standard ones predefined.
+ * @tparam Predicate2 a type that is used to filter the list of types to consider in the
+ *    dispatching for the second format2.
+ *    The `dispatching::filter` namespace have a few standard ones predefined.
+ * @tparam Predicate3 a type that is used to filter the list of types to consider in the
+ *    dispatching for the third format3.
+ *    The `dispatching::filter` namespace have a few standard ones predefined.
+ *
+ * @param format1 ID if for the first dataformat to dispatch on
+ * @param format2 ID if for the second dataformat to dispatch on
+ * @param format3 ID if for the third dataformat to dispatch on
+ * @param obj This should be a callable with a generic call operator taking three template arguments
+ *  T1, T2 and T3 of the dispatch types. The callable will be called with the supplied arguments
+ * (`args`). For example []<typename T1, typename T2, typename T3>() {}.
+ * T1 and T2 here will be, float, double, int, ... vec2, dvec2, etc.
+ * @param args Any arguments that should be passed on to the callable.
+ *
+ * @throws dispatching::DispatchException in the case that the format is not in
+ * the list of formats after the filtering.
+ */
+template <typename Result, template <class> class Predicate1, template <class> class Predicate2,
+          template <class> class Predicate3, typename Callable, typename... Args>
+auto tripleDispatch(DataFormatId format1, DataFormatId format2, DataFormatId format3,
+                    Callable&& obj, Args&&... args) -> Result {
+    using Formats = DefaultDataFormats;
+    constexpr auto nFormats = std::tuple_size_v<Formats>;
+    using Functor = Result (*)(Callable&&, Args&&...);
+
+    static constexpr auto table = detail::build_array<nFormats>([]<size_t index1>() constexpr {
+        using Format1 = std::tuple_element_t<index1, Formats>;
+        using T1 = typename Format1::type;
+        return detail::build_array<nFormats>([]<size_t index2>() constexpr {
+            using Format2 = std::tuple_element_t<index2, Formats>;
+            using T2 = typename Format2::type;
+            return detail::build_array<nFormats>([]<size_t index3>() constexpr -> Functor {
+                using Format3 = std::tuple_element_t<index3, Formats>;
+                using T3 = typename Format3::type;
+                if constexpr (Predicate1<Format1>::value && Predicate2<Format2>::value &&
+                              Predicate3<Format3>::value) {
+                    return [](Callable&& innerObj, Args&&... innerArgs) -> Result {
+                        return innerObj.template operator()<T1, T2, T3>(
+                            std::forward<Args>(innerArgs)...);
+                    };
+                } else {
+                    return nullptr;
+                }
+            });
+        });
+    });
+
+    using enum DataFormatId;
+    if (format1 == NotSpecialized || format2 == NotSpecialized || format3 == NotSpecialized) {
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format not specialized");
+    } else if (auto fun = table[static_cast<size_t>(format1) - 1][static_cast<size_t>(format2) - 1]
+                               [static_cast<size_t>(format3) - 1]) {
+        return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
+    } else {
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"),
+                                "Format combination {}, {}, {} not supported", format1, format2,
+                                format3);
+    }
+}
+
+/**
+ * Same functionality as singleDispatch, but the callable is passed both the dispatch type and
+ * the return type as template arguments. And the dispatch type is passed as a DataFormat<T> where
+ * as singleDispatch passes T directly.
+ * @see singleDispatch
+ */
+template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
+[[deprecated("Use singleDispatch")]] auto dispatch(DataFormatId format, Callable&& obj,
+                                                   Args&&... args) -> Result {
+    using Formats = DefaultDataFormats;
+    constexpr auto nFormats = std::tuple_size<Formats>::value;
+    using Functor = Result (*)(Callable&&, Args&&...);
+    static constexpr auto table =
+        detail::build_array<nFormats>([]<size_t index>() constexpr -> Functor {
+            using Format = std::tuple_element_t<index, Formats>;
+            if constexpr (Predicate<Format>::value) {
+                return [](Callable&& innerObj, Args&&... innerArgs) -> Result {
+                    return innerObj.template operator()<Result, Format>(
+                        std::forward<Args>(innerArgs)...);
+                };
+            } else {
+                return nullptr;
+            }
+        });
+    if (format == DataFormatId::NotSpecialized) {
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format not specialized");
+    } else if (auto fun = table[static_cast<int>(format) - 1]) {
+        return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
+    } else {
+        const auto expected = detail::predicateName<Predicate>();
+        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"),
+                                "Format {} not supported, expected type matching {}", format,
+                                expected);
+    }
 }
 
 /**
  *	Namespace with standard DataFormat type filters.
  */
 namespace filter {
-
 /**
  *	Default filters matches all types.
  */

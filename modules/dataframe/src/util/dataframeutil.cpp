@@ -66,7 +66,6 @@
 #include <glm/vec2.hpp>      // for operator==, opera...
 #include <glm/vec3.hpp>      // for operator==, opera...
 #include <glm/vec4.hpp>      // for operator==, opera...
-#include <half/half.hpp>     // for operator==, opera...
 
 namespace inviwo {
 
@@ -537,7 +536,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
                         throw Exception(IVW_CONTEXT_CUSTOM("dataframe::combineDataFrames"),
                                         "Column {} has different format in DataFrames ({}, {})",
                                         col->getHeader(), it->second->getString(),
-                                        col->getBuffer()->getDataFormat()->getSize());
+                                        col->getBuffer()->getDataFormat()->getString());
                     }
                 }
             }

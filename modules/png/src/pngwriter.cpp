@@ -56,7 +56,6 @@
 #include <glm/common.hpp>              // for max, min, clamp
 #include <glm/fwd.hpp>                 // for uint16
 #include <glm/gtx/component_wise.hpp>  // for compMul
-#include <half/half.hpp>               // for operator<
 #include <png.h>                       // for png_structp, png_...
 #include <pngconf.h>                   // for png_const_charp
 

@@ -120,7 +120,7 @@ TEST(Python3Representations, LayerRAM2Py) {
 
     EXPECT_EQ(3, arr.ndim()) << "LayerPy numpy ndims";
     EXPECT_EQ(dims, size2_t(arr.shape(1), arr.shape(0))) << "LayerPy numpy dimensions";
-    EXPECT_STREQ("Vec2INT32", pyformat->getString()) << "LayerPy data format";
+    EXPECT_EQ("Vec2INT32", pyformat->getString()) << "LayerPy data format";
 
     // check correct, consecutive ordering of the pybind array
     const pybind11::array_t<int> d = layerpy->data();
@@ -208,7 +208,7 @@ TEST(Python3Representations, VolumeRAM2Py) {
     EXPECT_EQ(4, arr.ndim()) << "VolumePy numpy ndims";
     EXPECT_EQ(dims, size3_t(arr.shape(2), arr.shape(1), arr.shape(0)))
         << "VolumePy numpy dimensions";
-    EXPECT_STREQ("Vec2INT32", pyformat->getString()) << "VolumePy data format";
+    EXPECT_EQ("Vec2INT32", pyformat->getString()) << "VolumePy data format";
 
     // check correct, consecutive ordering of the pybind array
     const pybind11::array_t<int> d = volumepy->data();
