@@ -68,6 +68,8 @@ void Rasterizer::propagateEvent(Event* event, Outport* source) {
 }
 
 void Rasterizer::process() {
+    preprocess();
+
     auto rasterization =
         std::make_shared<Rasterization>(std::dynamic_pointer_cast<Rasterizer>(shared_from_this()));
     outport_.setData(rasterization);

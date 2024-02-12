@@ -54,6 +54,12 @@ public:
     virtual void process() final;
 
     /**
+     * Called by process() to allow for pre-processing of the inputs prior to rasterization. For
+     * example to create an intermediate representation.
+     */
+    virtual void preprocess() {}
+
+    /**
      * @brief Render the fragments, with all setup and evaluation taken care of.
      * If opaque is set, a standard render call instead.
      * @param imageSize Size in pixels.
