@@ -27,31 +27,42 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/basegl/baseglmoduledefine.h>
-
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <modules/basegl/processors/layerprocessing/layerglprocessor.h>
+#include <modules/basegl/processors/layerprocessing/layergrayscale.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API LayerBinary : public LayerGLProcessor {
-public:
-    LayerBinary();
-    virtual void initializeResources() override;
+const ProcessorInfo LayerGrayscale::processorInfo_{
+    "org.inviwo.LayerGrayscale",  // Class identifier
+    "Layer Grayscale",            // Display name
+    "Layer Operation",            // Category
+    CodeState::Stable,            // Code state
+    Tags::GL,                     // Tags
+    R"(Compute a gray-scale image from a color input layer. The alpha channel is not touched.
+    The input image is converted to gray-scale as follows
+    grayValue = l.r * in.r + l.g * in.g + l.b * in.b
+    out.rgb = vec3(grayValue)
+    out.a = in.a
+    The color conversion factor _l_ depends on the chosen luminance model:
+     * _perceived_ l.rgb = vec3(0.299, 0.587, 0.114)
+     * _relative_ l.rgb = vec3(0.2126, 0.7152, 0.0722), XYZ color space
+     * _average_ l.rgb = vec3(1/3, 1/3, 1/3)
+     * _red_ l.rgb = vec3(1, 0, 0)
+     * _green_ l.rgb = vec3(0, 1, 0)
+     * _blue_ l.rgb = vec3(0, 0, 1))"_unindentHelp};
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+const ProcessorInfo LayerGrayscale::getProcessorInfo() const { return processorInfo_; }
 
-private:
-    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;
-    virtual LayerConfig outputConfig(const Layer& input) const override;
+LayerGrayscale::LayerGrayscale()
+    : LayerGLProcessor(utilgl::findShaderResource("img_graysc.frag"))
+    , luminanceModel_{"luminanceModel", "Luminance Model", luminance::optionState()} {
 
-    OptionPropertyInt channel_;
-    FloatProperty threshold_;
-    OptionPropertyString comparison_;
-};
+    addProperty(luminanceModel_);
+    outport_.setHelp("The grayscale output image."_help);
+}
+
+void LayerGrayscale::preProcess(TextureUnitContainer&, const Layer&, Layer&) {
+    shader_.setUniform("weights", luminance::weights(luminanceModel_.get()));
+}
 
 }  // namespace inviwo

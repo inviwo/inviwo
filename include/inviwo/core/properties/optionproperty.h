@@ -417,7 +417,8 @@ namespace util {
  * "@p name 1", "@p name 2", etc. up to @p count.
  */
 IVW_CORE_API std::vector<OptionPropertyIntOption> enumeratedOptions(std::string_view name,
-                                                                    size_t count);
+                                                                    size_t count, int start = 0,
+                                                                    int step = 1);
 
 }  // namespace util
 

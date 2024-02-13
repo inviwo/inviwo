@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,16 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/processors/imageprocessing/imageinvert.h>
-
-#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                       // for CodeState, CodeS...
-#include <inviwo/core/processors/processortags.h>                        // for Tags, Tags::GL
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
-
-#include <string>  // for string
+#include <modules/basegl/processors/layerprocessing/layerinvert.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
-const ProcessorInfo ImageInvert::processorInfo_{
-    "org.inviwo.ImageInvert",  // Class identifier
-    "Image Invert",            // Display name
-    "Image Operation",         // Category
+
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo LayerInvert::processorInfo_{
+    "org.inviwo.LayerInvert",  // Class identifier
+    "Layer Invert",            // Display name
+    "Layer Operation",         // Category
     CodeState::Stable,         // Code state
     Tags::GL,                  // Tags
     R"(Create the invert image of an input image. The alpha channel is not touched.
@@ -51,10 +47,8 @@ const ProcessorInfo ImageInvert::processorInfo_{
     
     The input range is assumed to be normalized, i.e. [0, 1].)"_unindentHelp};
 
-const ProcessorInfo ImageInvert::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo LayerInvert::getProcessorInfo() const { return processorInfo_; }
 
-ImageInvert::ImageInvert() : ImageGLProcessor("img_invert.frag") {}
-
-ImageInvert::~ImageInvert() {}
+LayerInvert::LayerInvert() : LayerGLProcessor{utilgl::findShaderResource("img_invert.frag")} {}
 
 }  // namespace inviwo

@@ -43,57 +43,56 @@
 namespace inviwo {
 class TextureUnitContainer;
 
+namespace luminance {
+std::vector<OptionPropertyOption<Model>> options() {
+    return {{"perceived", "Perceived", Model::PerceivedLum},
+            {"relative", "Relative", Model::RelativeLum},
+            {"average", "Average", Model::AverageLum},
+            {"red", "Red only", Model::RedOnly},
+            {"green", "Green only", Model::GreenOnly},
+            {"blue", "Blue only", Model::BlueOnly}};
+}
+
+OptionPropertyState<Model> optionState() {
+    return {.options = options(),
+            .selectedIndex = 0,
+            .help =
+                "Model for converting the input to grayscale. Options are perceived (default), "
+                "relative, average, red only, green only, and blue only"_help};
+}
+}  // namespace luminance
+
 const ProcessorInfo ImageGrayscale::processorInfo_{
     "org.inviwo.ImageGrayscale",  // Class identifier
     "Image Grayscale",            // Display name
     "Image Operation",            // Category
     CodeState::Stable,            // Code state
     Tags::GL,                     // Tags
-};
+    R"(Compute a gray-scale image from a color input image. The alpha channel is not touched.
+    The input image is converted to gray-scale as follows
+    grayValue = l.r * in.r + l.g * in.g + l.b * in.b
+    out.rgb = vec3(grayValue)
+    out.a = in.a
+    The color conversion factor _l_ depends on the chosen luminance model:
+     * _perceived_ l.rgb = vec3(0.299, 0.587, 0.114)
+     * _relative_ l.rgb = vec3(0.2126, 0.7152, 0.0722), XYZ color space
+     * _average_ l.rgb = vec3(1/3, 1/3, 1/3)
+     * _red_ l.rgb = vec3(1, 0, 0)
+     * _green_ l.rgb = vec3(0, 1, 0)
+     * _blue_ l.rgb = vec3(0, 0, 1))"_unindentHelp};
+
 const ProcessorInfo ImageGrayscale::getProcessorInfo() const { return processorInfo_; }
 
 ImageGrayscale::ImageGrayscale()
-    : ImageGLProcessor("img_graysc.frag"), luminanceModel_("luminanceModel", "Luminance Model") {
-    luminanceModel_.addOption("perceived", "Perceived", LuminanceModels::PerceivedLum);
-    luminanceModel_.addOption("relative", "Relative", LuminanceModels::RelativeLum);
-    luminanceModel_.addOption("average", "Average", LuminanceModels::AverageLum);
-    luminanceModel_.addOption("red", "Red only", LuminanceModels::RedOnly);
-    luminanceModel_.addOption("green", "Green only", LuminanceModels::GreenOnly);
-    luminanceModel_.addOption("blue", "Blue only", LuminanceModels::BlueOnly);
-    luminanceModel_.setSelectedValue(LuminanceModels::PerceivedLum);
-    luminanceModel_.setCurrentStateAsDefault();
+    : ImageGLProcessor("img_graysc.frag")
+    , luminanceModel_("luminanceModel", "Luminance Model", luminance::optionState()) {
 
     addProperty(luminanceModel_);
+    outport_.setHelp("The grayscale output image."_help);
 }
 
-ImageGrayscale::~ImageGrayscale() {}
-
 void ImageGrayscale::preProcess(TextureUnitContainer&) {
-    vec3 lumScale(1.0f);
-    switch (luminanceModel_.get()) {
-        case LuminanceModels::PerceivedLum:
-            lumScale = vec3(0.299f, 0.587f, 0.114f);
-            break;
-        case LuminanceModels::RelativeLum:
-            lumScale = vec3(0.2126f, 0.7152f, 0.0722f);
-            break;
-        case LuminanceModels::AverageLum:
-            lumScale = vec3(1.0f / 3.0f);
-            break;
-        case LuminanceModels::RedOnly:
-            lumScale = vec3(1.0f, 0.0f, 0.0f);
-            break;
-        case LuminanceModels::GreenOnly:
-            lumScale = vec3(0.0f, 1.0f, 0.0f);
-            break;
-        case LuminanceModels::BlueOnly:
-            lumScale = vec3(0.0f, 0.0f, 1.0f);
-            break;
-        default:
-            break;
-    }
-
-    shader_.setUniform("lumScale_", lumScale);
+    shader_.setUniform("weights", luminance::weights(luminanceModel_.get()));
 }
 
 }  // namespace inviwo

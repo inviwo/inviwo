@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,42 +27,29 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/processors/imageprocessing/imagemapping.h>
-
-#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>            // for CodeState, CodeS...
-#include <inviwo/core/processors/processortags.h>             // for Tags, Tags::GL
-#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunction...
-#include <inviwo/core/util/formats.h>                         // for DataFormatBase
-#include <modules/opengl/shader/shader.h>                     // for Shader
+#include <modules/basegl/processors/layerprocessing/layermapping.h>
 #include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureunit.h>               // for TextureUnit
 #include <modules/opengl/texture/textureutils.h>
-
-#include <cstddef>        // for size_t
-#include <memory>         // for shared_ptr, uniq...
-#include <ostream>        // for operator<<, basi...
-#include <string>         // for string
-#include <string_view>    // for string_view
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
 
 namespace inviwo {
 
-const ProcessorInfo ImageMapping::processorInfo_{"org.inviwo.ImageMapping",  // Class identifier
-                                                 "Image Mapping",            // Display name
-                                                 "Image Operation",          // Category
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo LayerMapping::processorInfo_{"org.inviwo.LayerMapping",  // Class identifier
+                                                 "Layer Mapping",            // Display name
+                                                 "Layer Operation",          // Category
                                                  CodeState::Stable,          // Code state
                                                  Tags::GL,                   // Tags
                                                  R"(
 Maps the input image to an output image with the help of a transfer function.
 )"_unindentHelp};
-const ProcessorInfo ImageMapping::getProcessorInfo() const { return processorInfo_; }
 
-ImageMapping::ImageMapping()
-    : ImageGLProcessor("img_mapping.frag")
+const ProcessorInfo LayerMapping::getProcessorInfo() const { return processorInfo_; }
+
+LayerMapping::LayerMapping()
+    : LayerGLProcessor{utilgl::findShaderResource("img_mapping.frag")}
     , channel_{"channel", "Channel", "Selected channel used for mapping"_help,
                util::enumeratedOptions("Channel", 4)}
+
     , transferFunction_(
           "transferFunction", "Transfer Function",
           "The transfer function used for mapping input to output values including the "
@@ -70,17 +57,16 @@ ImageMapping::ImageMapping()
     addProperties(channel_, transferFunction_);
 }
 
-void ImageMapping::preProcess(TextureUnitContainer& container) {
+void LayerMapping::preProcess(TextureUnitContainer& container, const Layer& input, Layer& output) {
     utilgl::bindAndSetUniforms(shader_, container, transferFunction_);
     utilgl::setUniforms(shader_, channel_);
 }
 
-void ImageMapping::afterInportChanged() {
-    // Determine the precision of the output format based on the input,
-    // but always output 4 component data representing RGBA
-    const DataFormatBase* inputDataFormat = inport_.getData()->getDataFormat();
-    size_t precision = inputDataFormat->getPrecision();
-    dataFormat_ = DataFormatBase::get(inputDataFormat->getNumericType(), 4, precision);
+LayerConfig LayerMapping::outputConfig([[maybe_unused]] const Layer& input) const {
+    auto inputFormat = input.getDataFormat();
+    auto outputFormat =
+        DataFormatBase::get(inputFormat->getNumericType(), 4, inputFormat->getPrecision());
+    return input.config().updateFrom({.format = outputFormat});
 }
 
 }  // namespace inviwo

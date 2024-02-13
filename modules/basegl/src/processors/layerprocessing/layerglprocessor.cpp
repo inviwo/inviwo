@@ -38,73 +38,79 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
-LayerGLProcessor::LayerGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
-                                   Shader::Build build)
+LayerGLProcessor::LayerGLProcessor(Shader shader)
     : Processor()
     , inport_("inport", "The input layer"_help)
-    , outport_("output", "Resulting output layer"_help)
-    , shader_({utilgl::imgQuadVert(), {ShaderType::Fragment, fragmentShader}}, Shader::Build::No)
+    , outport_("outport", "Resulting output layer"_help)
+    , shader_(std::move(shader))
     , config{} {
 
     addPorts(inport_, outport_);
-
-    inport_.onChange([this]() {
-        afterInportChanged();
-    });
-
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-void LayerGLProcessor::initializeResources() {
-    shader_.build();
-}
+LayerGLProcessor::LayerGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader)
+    : LayerGLProcessor(Shader{{utilgl::imgQuadVert(), {ShaderType::Fragment, fragmentShader}},
+                              Shader::Build::No}) {}
+
+void LayerGLProcessor::initializeResources() { shader_.build(); }
 
 void LayerGLProcessor::process() {
     const auto& input = *inport_.getData();
-
-    bool reattach = false;
-    const auto newConfig = outputConfig(input);
-    if (!layer_ || config == newConfig) {
+    if (const auto newConfig = outputConfig(input); config != newConfig) {
+        cache_.clear();
         config = newConfig;
-        layer_ = std::make_shared<Layer>(input, noData, config);
-        reattach = true;
-        outport_.setData(layer_);
     }
 
+    auto&& [fbo, layer] = [&]() -> decltype(auto) {
+        auto unusedIt = std::ranges::find_if(
+            cache_, [](const std::pair<FrameBufferObject, std::shared_ptr<Layer>>& item) {
+                return item.second.use_count() == 1;
+            });
+        if (unusedIt != cache_.end()) {
+            return *unusedIt;
+        } else {
+            auto& item = cache_.emplace_back(FrameBufferObject{}, std::make_shared<Layer>(config));
+            auto* layerGL = item.second->getEditableRepresentation<LayerGL>();
+            utilgl::Activate activateFbo{&item.first};
+            item.first.attachColorTexture(layerGL->getTexture().get(), 0);
+            return item;
+        }
+    }();
+
     utilgl::Activate activateShader{&shader_};
-    utilgl::setShaderUniforms(shader_, outport_, "outportParameters");
+    utilgl::setShaderUniforms(shader_, *layer, "outportParameters_");
 
     TextureUnitContainer cont;
-    utilgl::bindAndSetUniforms(shader_, cont, *inport_.getData(), "inport");
+    utilgl::bindAndSetUniforms(shader_, cont, *inport_.getData(), "inport_");
 
-    preProcess(cont);
+    preProcess(cont, input, *layer);
 
-    const size2_t dim{inport_.getData()->getDimensions()};
-
+    const auto dim = input.getDimensions();
     {
-        utilgl::Activate activateFbo{&fbo_};
+        utilgl::Activate activateFbo{&fbo};
         utilgl::ViewportState viewport{0, 0, static_cast<GLsizei>(dim.x),
                                        static_cast<GLsizei>(dim.y)};
 
         // We always need to ask for an editable representation, this will invalidate any other
         // representations
-        auto destLayer = layer_->getEditableRepresentation<LayerGL>();
-        if (reattach) {
-            fbo_.attachColorTexture(destLayer->getTexture().get(), 0);
-        }
-
+        layer->getEditableRepresentation<LayerGL>();
         utilgl::singleDrawImagePlaneRect();
     }
 
-    postProcess();
+    postProcess(input, *layer);
+
+    outport_.setData(layer);
 }
 
-void LayerGLProcessor::preProcess(TextureUnitContainer&) {}
-
-void LayerGLProcessor::postProcess() {}
-
-void LayerGLProcessor::afterInportChanged() {}
+LayerConfig LayerGLProcessor::outputConfig([[maybe_unused]] const Layer& input) const {
+    return input.config();
+}
+void LayerGLProcessor::preProcess(TextureUnitContainer&, const Layer&, Layer&) {}
+void LayerGLProcessor::postProcess(const Layer& input, Layer& output) {}
 
 }  // namespace inviwo

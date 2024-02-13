@@ -32,12 +32,13 @@
 
 uniform ImageParameters outportParameters_;
 
-uniform sampler2D transferFunc_;
 uniform sampler2D inport_;
+uniform int channel = 0;
+uniform sampler2D transferFunction;
 
 void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec4 value = texture(inport_, texCoords);
-    vec4 color = applyTF(transferFunc_, value);
+    float value = texture(inport_, texCoords)[channel];
+    vec4 color = applyTF(transferFunction, value);
     FragData0 = color;
 }

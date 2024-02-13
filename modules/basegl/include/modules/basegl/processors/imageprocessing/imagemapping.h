@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
 #include <inviwo/core/properties/transferfunctionproperty.h>             // for TransferFunction...
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 class TextureUnitContainer;
@@ -44,7 +45,6 @@ class TextureUnitContainer;
 class IVW_MODULE_BASEGL_API ImageMapping : public ImageGLProcessor {
 public:
     ImageMapping();
-    ~ImageMapping();
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
@@ -53,6 +53,7 @@ protected:
     virtual void afterInportChanged() override;
 
 private:
+    OptionPropertyInt channel_;
     TransferFunctionProperty transferFunction_;
 };
 

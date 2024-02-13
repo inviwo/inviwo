@@ -1,3 +1,4 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -90,10 +91,7 @@ Shader::Shader(const std::vector<std::pair<ShaderType, std::string>>& items, Bui
     : warningLevel_{UniformWarning::Ignore} {
 
     for (auto& item : items) {
-        shaderObjects_.emplace_back(item.first, utilgl::findShaderResource(item.second));
-        attached_.emplace_back(false);
-        callbacks_.emplace_back(
-            shaderObjects_.back().onChange([this](ShaderObject* o) { rebuildShader(o); }));
+        setShaderObject(item.first, utilgl::findShaderResource(item.second));
     }
 
     if (buildShader) build();
@@ -106,10 +104,7 @@ Shader::Shader(
     : warningLevel_{UniformWarning::Ignore} {
 
     for (auto& item : items) {
-        shaderObjects_.emplace_back(item.first, item.second);
-        attached_.emplace_back(false);
-        callbacks_.emplace_back(
-            shaderObjects_.back().onChange([this](ShaderObject* o) { rebuildShader(o); }));
+        setShaderObject(item.first, item.second);
     }
     if (buildShader) build();
     ShaderManager::getPtr()->registerShader(this);
@@ -119,10 +114,7 @@ Shader::Shader(std::vector<std::unique_ptr<ShaderObject>>& shaderObjects, Build 
     : warningLevel_{UniformWarning::Ignore} {
 
     for (auto& obj : shaderObjects) {
-        shaderObjects_.emplace_back(std::move(*obj));
-        attached_.emplace_back(false);
-        callbacks_.emplace_back(
-            shaderObjects_.back().onChange([this](ShaderObject* o) { rebuildShader(o); }));
+        setShaderObject(std::move(*obj));
     }
 
     if (buildShader) build();
@@ -494,6 +486,17 @@ auto Shader::getShaderObjects() -> util::iter_range<iterator> {
 }
 auto Shader::getShaderObjects() const -> util::iter_range<const_iterator> {
     return util::as_range(begin(), end());
+}
+
+void Shader::setShaderObject(ShaderType type, std::shared_ptr<const ShaderResource> resource) {
+    setShaderObject(ShaderObject{type, resource});
+}
+
+void Shader::setShaderObject(ShaderObject object) {
+    shaderObjects_.emplace_back(std::move(object));
+    attached_.emplace_back(false);
+    callbacks_.emplace_back(
+        shaderObjects_.back().onChange([this](ShaderObject* o) { rebuildShader(o); }));
 }
 
 void Shader::setUniform(std::string_view name, bool value) const {

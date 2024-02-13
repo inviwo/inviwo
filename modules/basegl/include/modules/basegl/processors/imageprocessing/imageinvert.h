@@ -36,26 +36,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageInvert, Image Invert}
- * Create the invert image of an input image. The alpha channel is not touched.
- * ![](org.inviwo.ImageInvert.png?classIdentifier=org.inviwo.ImageInvert)
- * This processor computes the inverted image as follows
- *
- *     out.rgb = 1.0 - in.rgb
- *     out.a = in.a
- *
- * The input range is assumed to be normalized, i.e. [0, 1].
- *
- * ### Inports
- *   * __ImageInport__ The input image.
- *
- * ### Outports
- *   * __ImageOutport__ The output image.
- */
-
-/*! \class ImageInvert
- *
- * \brief Create the invert image of an input image. Alpha channel is not touched.
+/** \brief Create the invert image of an input image. Alpha channel is not touched.
  *
  * This processor computes the inverted image by subtracting the rgb channels from 1.0
  * utilizing the ImageGLProcessor.

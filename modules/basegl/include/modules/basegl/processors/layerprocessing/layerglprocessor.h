@@ -58,8 +58,8 @@ class TextureUnitContainer;
  */
 class IVW_MODULE_BASEGL_API LayerGLProcessor : public Processor {
 public:
-    LayerGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
-                     Shader::Build build = Shader::Build::Yes);
+    LayerGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader);
+    LayerGLProcessor(Shader shader);
 
     virtual void initializeResources() override;
 
@@ -71,19 +71,13 @@ protected:
      *
      * Overwrite this function in the derived class to perform things like custom shader setup.
      */
-    virtual void preProcess(TextureUnitContainer& cont);
+    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output);
 
     /** @brief this function gets called at the end of the process function
      *
      * Overwrite this function in the derived class to perform post-processing.
      */
-    virtual void postProcess();
-
-    /** @brief this function gets called whenever the inport changes
-     *
-     * Overwrite this function in the derived class to be notified of inport onChange events.
-     */
-    virtual void afterInportChanged();
+    virtual void postProcess(const Layer& input, Layer& output);
 
     /** @brief Returns the output configuration for the layer.
      *
@@ -94,18 +88,15 @@ protected:
      * @param input the input data given
      * @return The output configuration for the layer.
      */
-    virtual LayerConfig outputConfig([[maybe_unused]] const Layer& input) const {
-    return LayerConfig{};
-}
+    virtual LayerConfig outputConfig([[maybe_unused]] const Layer& input) const;
 
     LayerInport inport_;
     LayerOutport outport_;
-    std::shared_ptr<Layer> layer_;
     Shader shader_;
-    FrameBufferObject fbo_;
 
 private:
     LayerConfig config;
+    std::vector<std::pair<FrameBufferObject, std::shared_ptr<Layer>>> cache_;
 };
 
 }  // namespace inviwo

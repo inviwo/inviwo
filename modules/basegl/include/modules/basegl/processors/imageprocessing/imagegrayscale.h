@@ -38,8 +38,8 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-namespace LuminanceModels {
-enum Models {
+namespace luminance {
+enum class Model {
     PerceivedLum,  // Y = 0.299 R + 0.587 G + 0.114 B
     RelativeLum,   // Y = 0.2126 R + 0.7152 G + 0.0722 B
     AverageLum,    // Y = 0.3333 R + 0.3333 G + 0.3333 B
@@ -47,36 +47,31 @@ enum Models {
     GreenOnly,     // Y = G
     BlueOnly,      // Y = B
 };
+
+constexpr vec3 weights(Model model) {
+    using enum Model;
+    switch (model) {
+        case PerceivedLum:
+            return vec3(0.299f, 0.587f, 0.114f);
+        case RelativeLum:
+            return vec3(0.2126f, 0.7152f, 0.0722f);
+        case AverageLum:
+            return vec3(1.0f / 3.0f);
+        case RedOnly:
+            return vec3(1.0f, 0.0f, 0.0f);
+        case GreenOnly:
+            return vec3(0.0f, 1.0f, 0.0f);
+        case BlueOnly:
+            return vec3(0.0f, 0.0f, 1.0f);
+    }
+    return vec3(1.0f / 3.0f);
 }
 
-/** \docpage{org.inviwo.ImageGrayscale, Image Grayscale}
- * Compute a gray-scale image from a color input image. The alpha channel is not touched.
- * ![](org.inviwo.ImageGrayscale.png?classIdentifier=org.inviwo.ImageGrayscale)
- * The input image is converted to gray-scale as follows
- *
- *     grayValue = l.r * in.r + l.g * in.g + l.b * in.b
- *     out.rgb = vec3(grayValue)
- *     out.a = in.a
- *
- * The color conversion factor _l_ depends on the chosen luminance model:
- *   * _perceived_ l.rgb = vec3(0.299, 0.587, 0.114)
- *   * _relative_ l.rgb = vec3(0.2126, 0.7152, 0.0722), XYZ color space
- *   * _average_ l.rgb = vec3(1/3, 1/3, 1/3)
- *   * _red_ l.rgb = vec3(1/3, 0, 0)
- *   * _green_ l.rgb = vec3(0, 1/3, 0)
- *   * _blue_ l.rgb = vec3(0, 0, 1/3)
- *
- * ### Inports
- *   * __ImageInport__ The input image.
- *
- * ### Outports
- *   * __ImageOutport__ The grayscale output image.
- *
- * ### Properties
- *   * __Luminance Model__ Model for converting the input to grayscale. Options are
- *                         perceived (default), relative, average, red only, green only,
- *                         and blue only.
- */
+std::vector<OptionPropertyOption<Model>> options();
+
+OptionPropertyState<Model> optionState();
+
+}  // namespace luminance
 
 /*! \class ImageGrayscale
  *
@@ -89,7 +84,6 @@ enum Models {
 class IVW_MODULE_BASEGL_API ImageGrayscale : public ImageGLProcessor {
 public:
     ImageGrayscale();
-    ~ImageGrayscale();
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
@@ -97,7 +91,7 @@ protected:
     virtual void preProcess(TextureUnitContainer& cont) override;
 
 private:
-    OptionPropertyInt luminanceModel_;
+    OptionProperty<luminance::Model> luminanceModel_;
 };
 
 }  // namespace inviwo

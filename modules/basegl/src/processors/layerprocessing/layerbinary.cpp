@@ -54,28 +54,24 @@ constexpr std::string_view fragmentShader = util::trim(R"(
 #define COMPARE >
 #endif
 
-uniform sampler2D inport;
-uniform ImageParameters inportParameters;
-uniform ImageParameters outportParameters;
+uniform sampler2D inport_;
+uniform ImageParameters outportParameters_;
 uniform int channel = 0;
 uniform float threshold = 0.5;
 
 void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
-    const bvec4 b = bvec4(texture(inport, texCoords)[channel] COMPARE threshold);
+    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
+    bvec4 b = bvec4(texture(inport_, texCoords)[channel] COMPARE threshold);
     FragData0 = mix(vec4(0), vec4(1), b);
 }
 )");
 
-const std::vector<OptionPropertyIntOption> channelsList = {{"channel1", "Channel 1", 0},
-                                                           {"channel2", "Channel 2", 1},
-                                                           {"channel3", "Channel 3", 2},
-                                                           {"channel4", "Channel 4", 3}};
 }  // namespace
 
 LayerBinary::LayerBinary()
     : LayerGLProcessor{std::make_shared<StringShaderResource>("LayerBinary.frag", fragmentShader)}
-    , channel_{"channel", "Channel", "Selected channel used for binarization"_help, channelsList}
+    , channel_{"channel", "Channel", "Selected channel used for binarization"_help,
+               util::enumeratedOptions("Channel", 4)}
     , threshold_{"threshold", "Threshold",
                  util::ordinalSymmetricVector(0.5f, 1.0f)
                      .set("Threshold used for binarization of the input layer"_help)}
@@ -96,15 +92,14 @@ void LayerBinary::initializeResources() {
     LayerGLProcessor::initializeResources();
 }
 
-void LayerBinary::preProcess(TextureUnitContainer&) {
+void LayerBinary::preProcess(TextureUnitContainer&, const Layer&, Layer&) {
     utilgl::setUniforms(shader_, channel_, threshold_);
 }
 
 LayerConfig LayerBinary::outputConfig(const Layer& input) const {
-    return {.dataRange = DataMapper::defaultDataRangeFor(input.getDataFormat()),
-            .valueRange = dvec2(0.0, 1.0)};
+    return input.config().updateFrom(
+        {.dataRange = DataMapper::defaultDataRangeFor(input.getDataFormat()),
+         .valueRange = dvec2(0.0, 1.0)});
 }
-
-void LayerBinary::postProcess() {}
 
 }  // namespace inviwo

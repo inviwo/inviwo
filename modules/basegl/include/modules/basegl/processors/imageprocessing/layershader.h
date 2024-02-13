@@ -41,27 +41,25 @@
 #include <inviwo/core/util/formats.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/basegl/processors/layerprocessing/layerglprocessor.h>
 
 namespace inviwo {
 
 class StringShaderResource;
 
-class IVW_MODULE_BASEGL_API LayerShader : public Processor {
+class IVW_MODULE_BASEGL_API LayerShader : public LayerGLProcessor {
 public:
     LayerShader();
-
-    virtual void initializeResources() override;
-    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;
+    virtual LayerConfig outputConfig(const Layer& input) const override;
+
 private:
     LayerShader(std::shared_ptr<StringShaderResource> fragmentShader);
     std::shared_ptr<StringShaderResource> fragmentShader_;
-
-    LayerInport inport_;
-    LayerOutport outport_;
 
     StringProperty inputFormat_;
     OptionProperty<DataFormatId> format_;
@@ -72,11 +70,6 @@ private:
     DoubleMinMaxProperty outputDataRange_;
 
     StringProperty fragmentShaderSource_;
-
-    Shader shader_;
-    FrameBufferObject fbo_;
-
-    std::shared_ptr<Layer> layer_;
 
     bool internalInvalid_;
 };
