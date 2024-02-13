@@ -488,7 +488,7 @@ auto Shader::getShaderObjects() const -> util::iter_range<const_iterator> {
     return util::as_range(begin(), end());
 }
 
-void Shader::setShaderObject(ShaderType type, std::shared_ptr<const ShaderResource> resource) {
+void Shader::setShaderObject(ShaderType type, std::shared_ptr<const ShaderResource> resource) {
     setShaderObject(ShaderObject{type, resource});
 }
 
