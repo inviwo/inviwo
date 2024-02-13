@@ -195,10 +195,11 @@ void VolumePathTracer::initializeResources() {
     utilgl::addShaderDefines(shader_, raycasting_);
     utilgl::addShaderDefines(shader_, camera_);
     utilgl::addShaderDefines(shader_, light_);
+    shader_.build();
 }
 
 void VolumePathTracer::process() {
-    shader_.activate();
+    
 
     // Partial seeding for random values
     timeNow_ = std::chrono::high_resolution_clock::now();
@@ -207,10 +208,18 @@ void VolumePathTracer::process() {
 
     if (iteration_ == 0) {
         // Copy depth and picking
+        //utilgl::activateAndClearTarget(outport_);
         Image* outImage = outport_.getEditableData().get();
         ImageGL* outImageGL = outImage->getEditableRepresentation<ImageGL>();
         entryPort_.getData()->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
     }
+    
+
+    shader_.activate();
+
+    shader_.setUniform("time_ms", MSSinceStart_);
+    shader_.setUniform("iteration", iteration_);
+    shader_.setUniform("partitionedTransmittance", partitionedTransmittance_);
 
     TextureUnitContainer units;
     /*
@@ -255,15 +264,14 @@ void VolumePathTracer::process() {
     }
 
     utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
-    shader_.setUniform("time_ms", MSSinceStart_);
-    shader_.setUniform("iteration", iteration_);
-    shader_.setUniform("partitionedTransmittance", partitionedTransmittance_);
+
     utilgl::setUniforms(shader_, camera_, raycasting_, positionIndicator_, light_, channel_);
 
     // Start render
     glDispatchCompute(outport_.getDimensions().x / 16, outport_.getDimensions().y / 16, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     shader_.deactivate();
+    //utilgl::deactivateCurrentTarget(); // adding utilgl overhead just in case
 
     ++iteration_;
 }
