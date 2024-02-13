@@ -61,7 +61,10 @@ class AutoSaver {
 public:
     using clock_t = std::chrono::system_clock;
 
-    AutoSaver(int numRestoreFiles = 100000, int restoreFrequency = 1440)
+    AutoSaver(
+        std::function<int()> numRestoreFiles = []()->int {
+        return 100000; },
+        std::function<int()> restoreFrequency = []()->int { return 1440; })
         : path_{filesystem::getPath(PathType::Settings)}
         , sessionStart_{clock_t::now()}
         , restored_{[this]() -> std::optional<std::string> {
@@ -105,14 +108,14 @@ public:
                     std::filesystem::copy(path_ / "autosave.inv.tmp", path_ / "autosave.inv",
                                           std::filesystem::copy_options::overwrite_existing);
 
-                    if (clock_t::now() - sessionStart_ > std::chrono::minutes(restoreFrequency)) {
+                    if (clock_t::now() - sessionStart_ > std::chrono::minutes(restoreFrequency())) {
                         sessionStart_ = clock_t::now();
                     }
                     std::filesystem::copy(path_ / "autosave.inv.tmp",
                                           path_ / "autosaves" / sessionName(sessionStart_),
                                           std::filesystem::copy_options::overwrite_existing);
 
-                    clearOldSaves(path_ / "autosaves", numRestoreFiles);
+                    clearOldSaves(path_ / "autosaves", numRestoreFiles());
                 }
             }
         }} {}
@@ -165,10 +168,12 @@ private:
     std::thread saver_;
 };
 
-UndoManager::UndoManager(InviwoApplication* app, QObject* mainWindow, int numRestoreFiles,
-                         int restoreFrequency)
-    : app_(app)
-    , manager_{app->getWorkspaceManager()}
+UndoManager::UndoManager(
+    WorkspaceManager* wm, ProcessorNetwork* network,
+    std::function<int()> numRestoreFiles,
+    std::function<int()> restoreFrequency)
+    : network_{network}
+    , manager_{wm}
     , refPath_{filesystem::findBasePath()},
       autoSaver_{std::make_unique<AutoSaver>(numRestoreFiles, restoreFrequency)}
 
@@ -176,13 +181,13 @@ UndoManager::UndoManager(InviwoApplication* app, QObject* mainWindow, int numRes
 
     QApplication::instance()->installEventFilter(this);
 
-    app->getProcessorNetwork()->addObserver(this);
+    network_->addObserver(this);
 
-    undoAction_ = new QAction(QIcon(":/svgicons/undo.svg"), QAction::tr("&Undo"), mainWindow);
+    undoAction_ = new QAction(QIcon(":/svgicons/undo.svg"), QAction::tr("&Undo"), this);
     undoAction_->setShortcut(QKeySequence::Undo);
     undoAction_->connect(undoAction_, &QAction::triggered, [this]() { undoState(); });
 
-    redoAction_ = new QAction(QIcon(":/svgicons/redo.svg"), QAction::tr("&Redo"), mainWindow);
+    redoAction_ = new QAction(QIcon(":/svgicons/redo.svg"), QAction::tr("&Redo"), this);
     redoAction_->setShortcut(QKeySequence::Redo);
     redoAction_->connect(redoAction_, &QAction::triggered, [this]() { redoState(); });
 
@@ -228,7 +233,7 @@ void UndoManager::pushState() {
     undoBuffer_.erase(undoBuffer_.begin() + offset, undoBuffer_.end());
     undoBuffer_.push_back(str);
 
-    if (!app_->getProcessorNetwork()->empty()) {
+    if (!network_->empty()) {
         autoSaver_->save(str);
     }
 
