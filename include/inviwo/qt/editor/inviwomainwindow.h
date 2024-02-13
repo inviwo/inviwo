@@ -33,7 +33,7 @@
 #include <inviwo/qt/editor/networkeditorobserver.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/network/workspacemanager.h>
-#include <inviwo/qt/editor/undomanager.h>
+#include <inviwo/qt/applicationbase/undomanager.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

@@ -10,6 +10,7 @@ set(MOC_FILES
 set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/applicationbase/qtapplicationbasemoduledefine.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/applicationbase/qtlocale.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/applicationbase/undomanager.h
     ${MOC_FILES}
 )
 ivw_group("Header Files" BASE ${IVW_INCLUDE_DIR}/inviwo/qt/applicationbase/ ${HEADER_FILES})
@@ -18,6 +19,7 @@ ivw_group("Header Files" BASE ${IVW_INCLUDE_DIR}/inviwo/qt/applicationbase/ ${HE
 set(SOURCE_FILES
     qtapptools.cpp
     qtlocale.cpp
+    undomanager.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
