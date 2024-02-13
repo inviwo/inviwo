@@ -62,9 +62,8 @@ public:
     using clock_t = std::chrono::system_clock;
 
     AutoSaver(
-        std::function<int()> numRestoreFiles = []()->int {
-        return 100000; },
-        std::function<int()> restoreFrequency = []()->int { return 1440; })
+        std::function<int()> numRestoreFiles = []() -> int { return 100000; },
+        std::function<int()> restoreFrequency = []() -> int { return 1440; })
         : path_{filesystem::getPath(PathType::Settings)}
         , sessionStart_{clock_t::now()}
         , restored_{[this]() -> std::optional<std::string> {
@@ -168,14 +167,13 @@ private:
     std::thread saver_;
 };
 
-UndoManager::UndoManager(
-    WorkspaceManager* wm, ProcessorNetwork* network,
-    std::function<int()> numRestoreFiles,
-    std::function<int()> restoreFrequency)
+UndoManager::UndoManager(WorkspaceManager* wm, ProcessorNetwork* network,
+                         std::function<int()> numRestoreFiles,
+                         std::function<int()> restoreFrequency)
     : network_{network}
     , manager_{wm}
-    , refPath_{filesystem::findBasePath()},
-      autoSaver_{std::make_unique<AutoSaver>(numRestoreFiles, restoreFrequency)}
+    , refPath_{filesystem::findBasePath()}
+    , autoSaver_{std::make_unique<AutoSaver>(numRestoreFiles, restoreFrequency)}
 
 {
 

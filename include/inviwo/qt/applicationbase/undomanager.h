@@ -53,7 +53,8 @@ class ProcessorNetwork;
  */
 class IVW_QTAPPLICATIONBASE_API UndoManager : public QObject, public ProcessorNetworkObserver {
 public:
-    UndoManager(WorkspaceManager* wm, ProcessorNetwork* network,
+    UndoManager(
+        WorkspaceManager* wm, ProcessorNetwork* network,
         std::function<int()> numRestoreFiles = []() -> int { return 100000; },
         std::function<int()> restoreFrequency = []() -> int { return 1440; });
     UndoManager(const UndoManager&) = delete;
