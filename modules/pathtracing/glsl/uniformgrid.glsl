@@ -15,8 +15,6 @@ void setupUniformGridTraversal(vec3 x1, vec3 x2, vec3 cellDim, ivec3 maxCells, o
 
     cellCoordEnd = clamp(ivec3(x2 / cellDim), ivec3(0), maxCells - 1);
 
-    // vec3 < vec3 unspecified, use lessThan?
-    // reword using our 'glsl select'
     bvec3 x1LessThanx2 = lessThan(x1, x2);
     bvec3 x1GreaterThanx2 = greaterThan(x1, x2);
 
@@ -29,6 +27,7 @@ void setupUniformGridTraversal(vec3 x1, vec3 x2, vec3 cellDim, ivec3 maxCells, o
     // the current cell
     vec3 invAbsDir = 1.f / abs(x2 - x1);
 
+    // cellDim * cellCoordf
     vec3 minx = cellDim * cellCoordf;
     vec3 maxx = minx + cellDim;
     dt = mix(maxx - x1, x1 - minx, x1GreaterThanx2) * invAbsDir;
@@ -42,25 +41,46 @@ void setupUniformGridTraversal(vec3 x1, vec3 x2, vec3 cellDim, ivec3 maxCells, o
     deltatx = cellDim * invAbsDir;
 }
 
+bool stepToNextCellHit(vec3 deltatx, ivec3 di, ivec3 cellCoordEnd, inout vec3 dt,
+                       inout ivec3 cellCoord, out float tHit) {
+    bvec3 advance = bvec3((dt.x <= dt.y && dt.x <= dt.z), (dt.x > dt.y && dt.y <= dt.z),
+                          (dt.x > dt.z && dt.y > dt.z));
+
+    tHit = advance.x != false ? dt.x : (advance.y != false ? dt.y : dt.z);
+
+    bvec3 cellCoordsEqual = equal(cellCoord, cellCoordEnd);
+    if (any(mix(bvec3(false), advance, cellCoordsEqual))) {
+        return false;
+    }
+
+
+    dt += mix(vec3(0), deltatx, advance);
+    cellCoord += ivec3(mix(ivec3(0), di, advance));
+
+
+    return true;
+}
+
 bool stepToNextCellNoHit(vec3 deltatx, ivec3 di, ivec3 cellCoordEnd, inout vec3 dt,
                          inout ivec3 cellCoord) {
-#ifdef OPTIMIZE_STEP_FOR_SIMD
+    //#ifdef OPTIMIZE_STEP_FOR_SIMD
     bvec3 advance = bvec3((dt.x <= dt.y && dt.x <= dt.z), (dt.x > dt.y && dt.y <= dt.z),
                           (dt.x > dt.z && dt.y > dt.z));
 
     bvec3 cellCoordsEqual = equal(cellCoord, cellCoordEnd);
-    // use mix, these tiny operations might not be simd optimized
-    if (any(bvec3(advance.x && cellCoordsEqual.x, advance.y && cellCoordsEqual.y,
-                  advance.z && cellCoordsEqual.z))) {
+    // corresponds to bvec3 && bvec3
+    // bvec3(advance.x && cellCoordsEqual.x, advance.y && cellCoordsEqual.y,
+    //      advance.z && cellCoordsEqual.z);
+    if (any(mix(bvec3(false), advance, cellCoordsEqual))) {
         return false;
     }
-    dt += mix(vec3(0), deltatx, advance);
 
+    dt += mix(vec3(0), deltatx, advance);
     cellCoord += ivec3(mix(ivec3(0), di, advance));
 
-#else
+    //#else
 
-#endif
+    //#endif
 
     return true;
 }
