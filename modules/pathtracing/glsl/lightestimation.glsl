@@ -15,14 +15,22 @@ vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam,
 
     rayBoxIntersection(vec3(0f), vec3(1f), samplePos, toLightDir, t0, t1);
 
-    float Tl = 0.0f;
+    float Tl = 1.0f;
 
-    // Tl = partitionedTransmittanceTracking(transmittanceMethod, samplePos, toLightDir, t0, t1,
-    //                                       hashSeed, volume, volParam, tf, opacity, opacityParam);
+    Tl = partitionedTransmittanceTracking(transmittanceMethod, samplePos, toLightDir, t0, t1,
+                                          hashSeed, volume, volParam, tf, opacity, opacityParam);
 
-    Tl = transmittance(transmittanceMethod, samplePos, toLightDir, t0, t1, hashSeed, volume,
-                       volParam, tf);
+    // Tl = transmittance(transmittanceMethod, samplePos, toLightDir, t0, t1, hashSeed, volume,
+    //                   volParam, tf);
 
+    // NOTE: There is a visual bug caused by a rayMinMax, transmittance with
+    //       rayBoxIntersection modified start and end, and gradient sign shift being called.
+    //       I can't explain why this chain of operations causes the side-effect, I just know that
+    //       removing one of them solves it. The side-effect, simply explained, shadeing becomes
+    //       darker for brighter spots depending on how far along z you view. Z sign flipping
+    //       causing darker shading by disregarding 'shadows' from Tl. This gradient operations just
+    //       shifts what viewing directions this error occurs in.
+    // Tl = 1.0f;
     if (Tl == 0.0f) {
         return vec3(0f);
     }
@@ -52,7 +60,7 @@ vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam,
 
     return color * Tl;
 }
-
+/*
 vec3 estimateDirectLight(sampler3D volume, VolumeParameters volParam, sampler2D tf, vec3 samplePos,
                          vec3 cameraDir, LightParameters light, uint hashSeed, int rcChannel,
                          int transmittanceMethod) {
@@ -97,3 +105,4 @@ vec3 estimateDirectLight(sampler3D volume, VolumeParameters volParam, sampler2D 
 
     return color * Tl;
 }
+*/
