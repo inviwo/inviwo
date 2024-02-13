@@ -160,7 +160,7 @@ public:
     ShaderObject* getComputeShaderObject();
     ShaderObject* getTesselationControlShaderObject();
     ShaderObject* getTesselationEvaluationShaderObject();
-    
+
     void setShaderObject(ShaderType type, std::shared_ptr<const ShaderResource> resource);
     void setShaderObject(ShaderObject object);
 

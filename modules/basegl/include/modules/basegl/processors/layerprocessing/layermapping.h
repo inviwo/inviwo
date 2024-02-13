@@ -31,7 +31,7 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <modules/basegl/processors/layerprocessing/layerglprocessor.h>
-#include <inviwo/core/properties/transferfunctionproperty.h> 
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
@@ -45,7 +45,7 @@ public:
 
 protected:
     virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;
-    
+
     virtual LayerConfig outputConfig([[maybe_unused]] const Layer& input) const override;
 
 private:

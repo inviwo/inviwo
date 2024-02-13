@@ -36,7 +36,7 @@
 #include <inviwo/core/util/formats.h>                         // for DataFormatBase
 #include <modules/opengl/shader/shader.h>                     // for Shader
 #include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureunit.h>               // for TextureUnit
+#include <modules/opengl/texture/textureunit.h>  // for TextureUnit
 #include <modules/opengl/texture/textureutils.h>
 
 #include <cstddef>        // for size_t
