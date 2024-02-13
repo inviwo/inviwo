@@ -67,35 +67,37 @@ uint getHashSeed() {
     return hashSeed;
 }
 
-vec4 pathtrace(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float entryDepth,
-               float exitDepth, float rayDepth, inout float depth,
-               RaycastingParameters rayCastParam, VolumeParameters volParam, vec4 bgColor) {
+vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth,
+               float exitDepth, float rayDepth, inout float depth, vec4 bgColor) {
 
     vec3 ray = exitPoint - entryPoint;
     vec3 rayDir = normalize(ray);
-    float rayLength = length(ray);
+    float t1 = length(ray);
+    float t0 = 0.f;
 
     uint hashSeed = getHashSeed();
 
-    vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volParam.textureToWorld);
+    vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volumeParameters.textureToWorld);
 
     vec3 samplePosition = entryPoint;
 
     float T = 0.0f;
     vec2 minMax = vec2(0.f, 1.0f);
 
-    float t1 = rayLength;
-    float t0 = 0.f;
-
-    minMax = rayMinMax(entryPoint, rayDir, t0, t1, minMaxOpacity, minMaxOpacityParameters,
-                        volumeParameters, partitionedTransmittance);
     
 
-    float meanFreePath = woodcockTracking(samplePosition, rayDir, 0f, rayLength, hashSeed, volume,
+    vec3 cellDim = volumeParameters.dimensions * minMaxOpacityParameters.reciprocalDimensions;
+    //cellDim = vec3(1f);
+    
+    minMax = rayMinMax(entryPoint, rayDir, t0, t1, minMaxOpacity, minMaxOpacityParameters,
+                            volumeParameters, partitionedTransmittance);
+    
+    
+    float meanFreePath = woodcockTracking(samplePosition, rayDir, t0, t1, hashSeed, volume,
                                           volumeParameters, transferFunction, minMax.y);
-
+    
     vec4 result = vec4(0.0);
-    if (meanFreePath <= rayLength) {
+    if (meanFreePath <= t1) {
         samplePosition = entryPoint + meanFreePath * rayDir;
 
         rayDepth = meanFreePath;
@@ -109,7 +111,7 @@ vec4 pathtrace(ImageParameters outParam, vec3 entryPoint, vec3 exitPoint, float 
     } else {
         result = bgColor;
     }
-
+    
     return mix(result, vec4(minMax, 0f, 1f), 0.0);
 }
 
@@ -141,8 +143,8 @@ void main() {
         return;
     }
 
-    vec4 color = pathtrace(outportParameters, entryPoint, exitPoint, entryPointDepth,
-                           exitPointDepth, rayDepth, depth, raycaster, volumeParameters, bgColor);
+    vec4 color = pathtrace(entryPoint, exitPoint, entryPointDepth,
+                           exitPointDepth, rayDepth, depth, bgColor);
 
     vec4 colorPrev = imageLoad(outportColor, storePos);
     // float depthPrev = imageLoad(outportDepth, storePos).x;
