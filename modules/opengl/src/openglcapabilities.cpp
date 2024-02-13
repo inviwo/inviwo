@@ -389,7 +389,8 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     // GLSL
     shadersAreSupported_ = (glVersion_ >= 200);
     shadersAreSupportedARB_ = isExtensionSupported("GL_EXT_ARB_fragment_program");
-    geometryShadersAreSupported_ = isExtensionSupported("GL_EXT_ARB_geometry_shader4");
+    geometryShadersAreSupported_ =
+        (glVersion_ >= 320) || isExtensionSupported("GL_EXT_ARB_geometry_shader4");
 
     GLint numberOfSupportedVersions = 0;
     const GLubyte* glslStrByte = nullptr;
