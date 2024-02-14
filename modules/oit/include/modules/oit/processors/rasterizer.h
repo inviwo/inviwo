@@ -51,13 +51,7 @@ public:
     virtual void configureShader(Shader& shader);
     virtual void setUniforms(Shader& shader);
 
-    virtual void process() final;
-
-    /**
-     * Called by process() to allow for pre-processing of the inputs prior to rasterization. For
-     * example to create an intermediate representation.
-     */
-    virtual void preprocess() {}
+    virtual void process() override;
 
     /**
      * @brief Render the fragments, with all setup and evaluation taken care of.
