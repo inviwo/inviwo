@@ -17,11 +17,14 @@ vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam,
 
     float Tl = 1.0f;
 
-    Tl = partitionedTransmittanceTracking(transmittanceMethod, samplePos, toLightDir, t0, t1,
-                                          hashSeed, volume, volParam, tf, opacity, opacityParam);
-
-    // Tl = transmittance(transmittanceMethod, samplePos, toLightDir, t0, t1, hashSeed, volume,
-    //                   volParam, tf);
+    if (partitionedTransmittance) {
+        Tl =
+            partitionedTransmittanceTracking(transmittanceMethod, samplePos, toLightDir, t0, t1,
+                                             hashSeed, volume, volParam, tf, opacity, opacityParam);
+    } else {
+        //Tl = transmittance(transmittanceMethod, samplePos, toLightDir, t0, t1, hashSeed, volume,
+        //                   volParam, tf);
+    }
 
     // NOTE: There is a visual bug caused by a rayMinMax, transmittance with
     //       rayBoxIntersection modified start and end, and gradient sign shift being called.
