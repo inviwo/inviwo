@@ -64,7 +64,9 @@ enum class TransmittanceMethod {
     //Riemann = 0, // not implemented and pointless to implement
     Woodcock = 0,
     RatioTracking,
-    ResidualRatioTracking
+    ResidualRatioTracking,
+    PoissonRatioTracking,
+    PoissonResidualRatioTracking
 };
 
 class IVW_MODULE_PATHTRACING_API VolumePathTracer : public Processor {

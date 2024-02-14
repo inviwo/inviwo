@@ -86,11 +86,14 @@ VolumePathTracer::VolumePathTracer()
               {"RatioTracking", "Ratio Tracking", TransmittanceMethod::RatioTracking},
               {"ResidualRatioTracking", "Residual Ratio Tracking",
                TransmittanceMethod::ResidualRatioTracking},
+              {"PoissonRatioTracking", "Poisson Ratio Tracking",
+               TransmittanceMethod::PoissonRatioTracking},
+              {"PoissonResidualRatioTracking", "Poisson Residual Ratio Tracking",
+               TransmittanceMethod::PoissonResidualRatioTracking},
           })
     , invalidateRendering_("iterate", "Invalidate rendering")
     , enableProgressiveRefinement_("enableRefinement", "Enable progressive refinement", false)
-    , progressiveTimer_(Timer::Milliseconds(0),
-                        std::bind(&VolumePathTracer::onTimerEvent, this)) {
+    , progressiveTimer_(Timer::Milliseconds(0), std::bind(&VolumePathTracer::onTimerEvent, this)) {
 
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
@@ -133,7 +136,6 @@ VolumePathTracer::VolumePathTracer()
         partitionedTransmittance_ = true;
         invalidateProgressiveRendering();
         invalidate(InvalidationLevel::InvalidOutput);
-        
     });
 
     minMaxOpacity_.onDisconnect([this]() {
@@ -199,7 +201,6 @@ void VolumePathTracer::initializeResources() {
 }
 
 void VolumePathTracer::process() {
-    
 
     // Partial seeding for random values
     timeNow_ = std::chrono::high_resolution_clock::now();
@@ -208,12 +209,11 @@ void VolumePathTracer::process() {
 
     if (iteration_ == 0) {
         // Copy depth and picking
-        //utilgl::activateAndClearTarget(outport_);
+        // utilgl::activateAndClearTarget(outport_);
         Image* outImage = outport_.getEditableData().get();
         ImageGL* outImageGL = outImage->getEditableRepresentation<ImageGL>();
         entryPort_.getData()->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
     }
-    
 
     shader_.activate();
 
@@ -249,7 +249,7 @@ void VolumePathTracer::process() {
 
         units.push_back(std::move(unit1));
         units.push_back(std::move(unit2));
-        units.push_back(std::move(unit3)); 
+        units.push_back(std::move(unit3));
 
         StrBuffer buff;
         utilgl::setShaderUniforms(shader_, *image,
@@ -259,7 +259,7 @@ void VolumePathTracer::process() {
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
     utilgl::bindAndSetUniforms(shader_, units, *volumePort_.getData(), "volume");
-    if(partitionedTransmittance_) {
+    if (partitionedTransmittance_) {
         utilgl::bindAndSetUniforms(shader_, units, *minMaxOpacity_.getData(), "minMaxOpacity");
     }
 
@@ -271,7 +271,7 @@ void VolumePathTracer::process() {
     glDispatchCompute(outport_.getDimensions().x / 16, outport_.getDimensions().y / 16, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     shader_.deactivate();
-    //utilgl::deactivateCurrentTarget(); // adding utilgl overhead just in case
+    // utilgl::deactivateCurrentTarget(); // adding utilgl overhead just in case
 
     ++iteration_;
 }
