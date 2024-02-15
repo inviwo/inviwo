@@ -51,7 +51,7 @@ public:
     virtual void configureShader(Shader& shader);
     virtual void setUniforms(Shader& shader);
 
-    virtual void process() final;
+    virtual void process() override;
 
     /**
      * @brief Render the fragments, with all setup and evaluation taken care of.

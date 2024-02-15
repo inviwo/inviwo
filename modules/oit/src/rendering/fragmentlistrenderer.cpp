@@ -162,8 +162,6 @@ bool FragmentListRenderer::postPass(bool useIllustration, const Image* backgroun
     glGetQueryObjectuiv(totalFragmentQuery_, GL_QUERY_RESULT, &numFrags);
     LGL_ERROR;
 
-    LogInfo("Fragments: " << numFrags << " max: " << fragmentSize_);
-
     // check if enough space was available
     if (numFrags > fragmentSize_) {
         // we have to resize the fragment storage buffer
