@@ -69,6 +69,7 @@ enum class TransmittanceMethod {
     PoissonResidualRatioTracking,
     IndependentPoissonTracking,
     DependentPoissonTracking,
+    GeometricResidualTracking,
 };
 
 class IVW_MODULE_PATHTRACING_API VolumePathTracer : public Processor {
