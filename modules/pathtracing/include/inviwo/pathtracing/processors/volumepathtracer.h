@@ -66,7 +66,9 @@ enum class TransmittanceMethod {
     RatioTracking,
     ResidualRatioTracking,
     PoissonRatioTracking,
-    PoissonResidualRatioTracking
+    PoissonResidualRatioTracking,
+    IndependentPoissonTracking,
+    DependentPoissonTracking,
 };
 
 class IVW_MODULE_PATHTRACING_API VolumePathTracer : public Processor {
@@ -101,6 +103,7 @@ private:
 
     // Properties and Internals
     Shader shader_;
+    Shader shaderUniform_;
     OptionPropertyInt channel_;
     RaycastingProperty raycasting_;
     TransferFunctionProperty transferFunction_;
@@ -124,6 +127,7 @@ private:
     int iteration_ = 0;
 
     bool partitionedTransmittance_;
+    Shader* activeShader_;
 };
 
 }  // namespace inviwo

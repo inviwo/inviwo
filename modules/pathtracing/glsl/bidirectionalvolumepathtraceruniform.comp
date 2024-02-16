@@ -37,6 +37,10 @@ image2D outportDepth;
 writeonly uniform image2D outportPicking;
 uniform ImageParameters outportParameters;
 
+// volume
+uniform sampler3D minMaxOpacity;
+uniform VolumeParameters minMaxOpacityParameters;
+
 // Uniform properties
 uniform CameraParameters camera;
 uniform VolumeIndicatorParameters positionindicator;
@@ -48,6 +52,7 @@ uniform int channel;
 uniform float time_ms;
 uniform int iteration;
 uniform int transmittanceMethod;
+uniform bool partitionedTransmittance;
 
 #define PI 3.1415
 
@@ -62,8 +67,8 @@ uint getHashSeed() {
     return hashSeed;
 }
 
-vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth, float rayDepth,
-               inout float depth, vec4 bgColor) {
+vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth,
+               float exitDepth, float rayDepth, inout float depth, vec4 bgColor) {
 
     vec3 ray = exitPoint - entryPoint;
     vec3 rayDir = normalize(ray);
@@ -77,26 +82,32 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
     vec3 samplePosition = entryPoint;
 
     float T = 0.0f;
-
+    vec2 minMax = vec2(0.f, 1.0f);
+    
+    minMax = rayMinMax(entryPoint, rayDir, t0, t1, minMaxOpacity, minMaxOpacityParameters,
+                            volumeParameters);
+    
+    
     float meanFreePath = woodcockTracking(samplePosition, rayDir, t0, t1, hashSeed, volume,
-                                          volumeParameters, transferFunction, 1.0f);
-
+                                          volumeParameters, transferFunction, minMax.y);
+    
     vec4 result = vec4(0.0);
     if (meanFreePath <= t1) {
         samplePosition = entryPoint + meanFreePath * rayDir;
 
         rayDepth = meanFreePath;
 
-        result.rgb = estimateDirectLight(volume, volumeParameters, transferFunction,
-                                         samplePosition, cameraDir, light,
-                                         hashSeed, channel, transmittanceMethod);
+        result.rgb = estimateDirectLightUniformGrid(
+            volume, volumeParameters, transferFunction, minMaxOpacity,
+            minMaxOpacityParameters, samplePosition, cameraDir, light,
+            hashSeed, channel, transmittanceMethod);
         result.a = 1f - T;
 
     } else {
         result = bgColor;
     }
-
-    return result;
+    
+    return mix(result, vec4(minMax, 0f, 1f), 0.0);
 }
 
 void main() {
@@ -127,8 +138,8 @@ void main() {
         return;
     }
 
-    vec4 color =
-        pathtrace(entryPoint, exitPoint, entryPointDepth, exitPointDepth, rayDepth, depth, bgColor);
+    vec4 color = pathtrace(entryPoint, exitPoint, entryPointDepth,
+                           exitPointDepth, rayDepth, depth, bgColor);
 
     vec4 colorPrev = imageLoad(outportColor, storePos);
     // float depthPrev = imageLoad(outportDepth, storePos).x;

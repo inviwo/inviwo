@@ -1,12 +1,8 @@
 #include "uniformgrid.glsl"
 
 vec2 rayMinMax(vec3 pos, vec3 dir, float t0, float t1, sampler3D opacity,
-               VolumeParameters opacityParameters, VolumeParameters dataParameters,
-               bool partitionedTransmittance) {
+               VolumeParameters opacityParameters, VolumeParameters dataParameters) {
                 
-    if (!partitionedTransmittance) {
-        return vec2(0, 1f);
-    }
     vec3 cellDim = dataParameters.dimensions * opacityParameters.reciprocalDimensions;
 
     vec3 x_1 = pos + t0 * dir;

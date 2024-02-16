@@ -4,9 +4,8 @@
 
 vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam, sampler2D tf,
                                     sampler3D opacity, VolumeParameters opacityParam,
-                                    bool partitionedTransmittance, vec3 samplePos, vec3 cameraDir,
-                                    LightParameters light, uint hashSeed, int rcChannel,
-                                    int transmittanceMethod) {
+                                    vec3 samplePos, vec3 cameraDir, LightParameters light,
+                                    uint hashSeed, int rcChannel, int transmittanceMethod) {
 
     vec3 toLightPath = (volParam.worldToTexture * vec4(light.position, 1f)).xyz - samplePos;
     vec3 toLightDir = normalize(toLightPath);
@@ -17,14 +16,8 @@ vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam,
 
     float Tl = 1.0f;
 
-    if (partitionedTransmittance) {
-        Tl =
-            partitionedTransmittanceTracking(transmittanceMethod, samplePos, toLightDir, t0, t1,
-                                             hashSeed, volume, volParam, tf, opacity, opacityParam);
-    } else {
-        //Tl = transmittance(transmittanceMethod, samplePos, toLightDir, t0, t1, hashSeed, volume,
-        //                   volParam, tf);
-    }
+    Tl = partitionedTransmittanceTracking(transmittanceMethod, samplePos, toLightDir, t0, t1,
+                                          hashSeed, volume, volParam, tf, opacity, opacityParam);
 
     // NOTE: There is a visual bug caused by a rayMinMax, transmittance with
     //       rayBoxIntersection modified start and end, and gradient sign shift being called.
@@ -63,7 +56,7 @@ vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam,
 
     return color * Tl;
 }
-/*
+
 vec3 estimateDirectLight(sampler3D volume, VolumeParameters volParam, sampler2D tf, vec3 samplePos,
                          vec3 cameraDir, LightParameters light, uint hashSeed, int rcChannel,
                          int transmittanceMethod) {
@@ -108,4 +101,3 @@ vec3 estimateDirectLight(sampler3D volume, VolumeParameters volParam, sampler2D 
 
     return color * Tl;
 }
-*/
