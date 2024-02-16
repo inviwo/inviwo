@@ -15,10 +15,11 @@ vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam,
     rayBoxIntersection(vec3(0f), vec3(1f), samplePos, toLightDir, t0, t1);
 
     float Tl = 1.0f;
-
+    
     Tl = partitionedTransmittanceTracking(transmittanceMethod, samplePos, toLightDir, t0, t1,
                                           hashSeed, volume, volParam, tf, opacity, opacityParam);
                                           
+
     // Tl = 1.0f;
     if (Tl == 0.0f) {
         return vec3(0f);
@@ -47,7 +48,7 @@ vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam,
     // vec3 color = shadeBlinnPhong(light, sampleAmbient, sampleDiffuse, sampleSpecular,
     //                              sampleWorldPos, -gradient, cameraDir);
 
-    return color * Tl;
+    return color*Tl;
 }
 
 vec3 estimateDirectLight(sampler3D volume, VolumeParameters volParam, sampler2D tf, vec3 samplePos,
