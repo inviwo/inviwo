@@ -11,6 +11,9 @@ const int RATIO = 1;
 const int RESIDUALRATIO = 2;
 const int POISSONRATIO = 3;
 const int POISSONRESIDUAL = 4;
+const int INDEPENDENTPOISSON = 5;
+const int DEPENDENTPOISSON = 6;
+const int GEOMETRICRESIDUAL = 7;
 
 #define REFSAMPLINGINTERVAL 150.0
 
@@ -256,6 +259,35 @@ float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, flo
     return 1.f;
 }
 
+float geometricTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
+                                     inout uint hashSeed, sampler3D volume,
+                                     VolumeParameters volumeParameters, sampler2D transferFunction,
+                                     float opacityUpperbound, float opacityControl) {
+    if (opacityUpperbound < 2e-6) {
+        return 1.f;
+    }
+
+    float invMaxExtinction = 1.f / opacityUpperbound;  // should it be extinction or opacity
+                                                       // (extinctionToOpacity(extinction)) ?
+    float d = (tEnd - tStart);
+    float Tc = exp(-opacityToExtinction(opacityControl) * d);
+    float Tr = 1.f;  // Transmittance
+
+    // What is the chance of succesfully traversing through from tStart to tEnd
+    int k = geomertric0_uni(hashSeed, d * (opacityToExtinction(opacityUpperbound)));
+
+    for (int i = 0; i < k; i++) {
+        float t = tStart + randomize(hashSeed) * d;
+        vec3 samplePos = raystart + t * raydir;
+        vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
+        float opacity = applyTF(transferFunction, volumeSample).a;
+
+        Tr *= (1.f - (opacity - opacityControl) * invMaxExtinction);
+    }
+
+    return Tr * Tc;
+}
+
 float partitionedTransmittanceTracking(int METHOD, vec3 raystart, vec3 raydir, float tStart,
                                        float tEnd, inout uint hashSeed, sampler3D volume,
                                        VolumeParameters volumeParameters,
@@ -313,19 +345,33 @@ float partitionedTransmittanceTracking(int METHOD, vec3 raystart, vec3 raydir, f
                                                         volumeParameters, transferFunction,
                                                         minMax.y, avg);
                 break;
+
             case POISSONRATIO:
-                T *=  poissonTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed,
-                                                      volume, volumeParameters, transferFunction,
-                                                      minMax.y);
+                T *= poissonTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed, volume,
+                                                  volumeParameters, transferFunction, minMax.y);
                 break;
 
             case POISSONRESIDUAL:
-                T *=  poissonResidualTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed,
-                                                      volume, volumeParameters, transferFunction,
-                                                      minMax.y, avg);
+                T *= poissonResidualTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed,
+                                                          volume, volumeParameters,
+                                                          transferFunction, minMax.y, avg);
                 break;
-                                            
-        }   
+            case INDEPENDENTPOISSON:
+                T *= independentMultiPoissonTrackingTransmittance(
+                    raystart, raydir, tStart, tEnd, hashSeed, volume, volumeParameters,
+                    transferFunction, minMax.y);
+                break;
+            case DEPENDENTPOISSON:
+                T *= dependentMultiPoissonTrackingTransmittance(raystart, raydir, tStart, tEnd,
+                                                                hashSeed, volume, volumeParameters,
+                                                                transferFunction, minMax.y);
+                break;
+            case GEOMETRICRESIDUAL:
+                T *= geometricTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed,
+                                                    volume, volumeParameters, transferFunction,
+                                                    minMax.y, avg);
+                break;
+        }
     }
 
     return T;
@@ -343,6 +389,7 @@ float transmittance(int METHOD, vec3 raystart, vec3 raydir, float tStart, float 
             float meanFreePath =
                 woodcockTracking(raystart, raydir, tStart, tEnd, hashSeed, volume, volumeParameters,
                                  transferFunction, opacityUpperbound);
+            //return meanFreePath;
             return meanFreePath >= tEnd ? 1f : 0f;
         case RATIO:
             return ratioTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed, volume,
@@ -353,15 +400,27 @@ float transmittance(int METHOD, vec3 raystart, vec3 raydir, float tStart, float 
                                                       volume, volumeParameters, transferFunction,
                                                       opacityUpperbound, opacityControl);
         case POISSONRATIO:
-                return poissonTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed,
-                                                      volume, volumeParameters, transferFunction,
-                                                      opacityUpperbound);
-
+            return poissonTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed, volume,
+                                                volumeParameters, transferFunction,
+                                                opacityUpperbound);
 
         case POISSONRESIDUAL:
             return poissonResidualTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed,
-                                                      volume, volumeParameters, transferFunction,
-                                                      opacityUpperbound, opacityControl);
+                                                        volume, volumeParameters, transferFunction,
+                                                        opacityUpperbound, opacityControl);
+        case INDEPENDENTPOISSON:
+            return independentMultiPoissonTrackingTransmittance(raystart, raydir, tStart, tEnd,
+                                                                hashSeed, volume, volumeParameters,
+                                                                transferFunction, opacityUpperbound);
+        case DEPENDENTPOISSON:
+            return dependentMultiPoissonTrackingTransmittance(raystart, raydir, tStart, tEnd,
+                                                              hashSeed, volume, volumeParameters,
+                                                              transferFunction, opacityUpperbound);
+
+        case GEOMETRICRESIDUAL:
+            return geometricTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed, volume,
+                                                  volumeParameters, transferFunction, opacityUpperbound,
+                                                  opacityControl);
     }
 
     return 0f;
