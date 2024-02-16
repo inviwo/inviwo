@@ -18,14 +18,7 @@ vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam,
 
     Tl = partitionedTransmittanceTracking(transmittanceMethod, samplePos, toLightDir, t0, t1,
                                           hashSeed, volume, volParam, tf, opacity, opacityParam);
-
-    // NOTE: There is a visual bug caused by a rayMinMax, transmittance with
-    //       rayBoxIntersection modified start and end, and gradient sign shift being called.
-    //       I can't explain why this chain of operations causes the side-effect, I just know that
-    //       removing one of them solves it. The side-effect, simply explained, shadeing becomes
-    //       darker for brighter spots depending on how far along z you view. Z sign flipping
-    //       causing darker shading by disregarding 'shadows' from Tl. This gradient operations just
-    //       shifts what viewing directions this error occurs in.
+                                          
     // Tl = 1.0f;
     if (Tl == 0.0f) {
         return vec3(0f);

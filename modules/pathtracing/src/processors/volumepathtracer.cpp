@@ -175,35 +175,25 @@ VolumePathTracer::VolumePathTracer()
     addProperty(invalidateRendering_);
     addProperty(enableProgressiveRefinement_);
 
-    if(partitionedTransmittance_) {
-        //activeShader_ = std::make_shared<Shader>(shaderUniform_);
+    if (partitionedTransmittance_) {
         activeShader_ = &shaderUniform_;
     } else {
         activeShader_ = &shader_;
     }
-
-    
 
     transmittanceMethod_.onChange([this]() {
         invalidate(InvalidationLevel::InvalidOutput);
         invalidateProgressiveRendering();
 
         activeShader_->setUniform("transmittanceMethod",
-                           static_cast<int>(transmittanceMethod_.getSelectedIndex()));
-        //shaderUniform_.setUniform("transmittanceMethod",
-        //                          static_cast<int>(transmittanceMethod_.getSelectedIndex()));
+                                  static_cast<int>(transmittanceMethod_.getSelectedIndex()));
     });
 
     transferFunction_.onChange([this]() { invalidateProgressiveRendering(); });
     light_.onChange([this]() { invalidateProgressiveRendering(); });
 
     enableProgressiveRefinement_.onChange([this]() { progressiveRefinementChanged(); });
-    /*
-    shader_.onReload([this]() {
-        invalidate(InvalidationLevel::InvalidOutput);
-        invalidateProgressiveRendering();
-    });
-    */
+
     activeShader_->onReload([this]() {
         invalidate(InvalidationLevel::InvalidOutput);
         invalidateProgressiveRendering();
@@ -216,18 +206,12 @@ void VolumePathTracer::initializeResources() {
     invalidateProgressiveRendering();
 
     // Test to see if this works for compute shaders. I see no reason why it wouldnt
+    // TODO: Make use of defines in shaders were applicable, e.g. transmittanceMethods.
     // ShaderObject::addShaderDefine
-
     utilgl::addShaderDefines(*activeShader_, raycasting_);
     utilgl::addShaderDefines(*activeShader_, camera_);
     utilgl::addShaderDefines(*activeShader_, light_);
     activeShader_->build();
-    /*
-    utilgl::addShaderDefines(shaderUniform_, raycasting_);
-    utilgl::addShaderDefines(shaderUniform_, camera_);
-    utilgl::addShaderDefines(shaderUniform_, light_);
-    shaderUniform_.build();
-    */
 }
 
 void VolumePathTracer::process() {
@@ -248,19 +232,7 @@ void VolumePathTracer::process() {
     activeShader_->activate();
     activeShader_->setUniform("time_ms", MSSinceStart_);
     activeShader_->setUniform("iteration", iteration_);
-    /*
-    if (partitionedTransmittance_) {
-        shaderUniform_.activate();
 
-        shaderUniform_.setUniform("time_ms", MSSinceStart_);
-        shaderUniform_.setUniform("iteration", iteration_);
-    } else {
-        shader_.activate();
-
-        shader_.setUniform("time_ms", MSSinceStart_);
-        shader_.setUniform("iteration", iteration_);
-    }
-    */
     TextureUnitContainer units;
     /*
     Stand in for:
@@ -286,17 +258,7 @@ void VolumePathTracer::process() {
         activeShader_->setUniform("outportColor", unit1);
         activeShader_->setUniform("outportDepth", unit2);
         activeShader_->setUniform("outportPicking", unit3);
-        /*
-        if (partitionedTransmittance_) {
-            shaderUniform_.setUniform("outportColor", unit1);
-            shaderUniform_.setUniform("outportDepth", unit2);
-            shaderUniform_.setUniform("outportPicking", unit3);
-        } else {
-            shader_.setUniform("outportColor", unit1);
-            shader_.setUniform("outportDepth", unit2);
-            shader_.setUniform("outportPicking", unit3);
-        }
-        */
+
         units.push_back(std::move(unit1));
         units.push_back(std::move(unit2));
         units.push_back(std::move(unit3));
@@ -304,67 +266,26 @@ void VolumePathTracer::process() {
         StrBuffer buff;
 
         utilgl::setShaderUniforms(*activeShader_, *image,
-                                      buff.replace("{}Parameters", outport_.getIdentifier()));
-        /*
-        if (partitionedTransmittance_) {
-            utilgl::setShaderUniforms(shaderUniform_, *image,
-                                      buff.replace("{}Parameters", outport_.getIdentifier()));
-        } else {
-            utilgl::setShaderUniforms(shader_, *image,
-                                      buff.replace("{}Parameters", outport_.getIdentifier()));
-        }
-        */
+                                  buff.replace("{}Parameters", outport_.getIdentifier()));
     }
-    
+
     utilgl::bindAndSetUniforms(*activeShader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(*activeShader_, units, exitPort_, ImageType::ColorDepth);
     utilgl::bindAndSetUniforms(*activeShader_, units, *volumePort_.getData(), "volume");
-    if(partitionedTransmittance_) {
+    if (partitionedTransmittance_) {
         utilgl::bindAndSetUniforms(*activeShader_, units, *minMaxOpacity_.getData(),
-                                "minMaxOpacity");
+                                   "minMaxOpacity");
     }
-    
+
     utilgl::bindAndSetUniforms(*activeShader_, units, transferFunction_);
 
-    utilgl::setUniforms(*activeShader_, camera_, raycasting_, positionIndicator_, light_,
-                        channel_);
+    utilgl::setUniforms(*activeShader_, camera_, raycasting_, positionIndicator_, light_, channel_);
 
-
-
-    /*
-    if (partitionedTransmittance_) {
-        utilgl::bindAndSetUniforms(shaderUniform_, units, entryPort_, ImageType::ColorDepthPicking);
-        utilgl::bindAndSetUniforms(shaderUniform_, units, exitPort_, ImageType::ColorDepth);
-        utilgl::bindAndSetUniforms(shaderUniform_, units, *volumePort_.getData(), "volume");
-        utilgl::bindAndSetUniforms(shaderUniform_, units, *minMaxOpacity_.getData(),
-                                   "minMaxOpacity");
-        utilgl::bindAndSetUniforms(shaderUniform_, units, transferFunction_);
-
-        utilgl::setUniforms(shaderUniform_, camera_, raycasting_, positionIndicator_, light_,
-                            channel_);
-
-    } else {
-        utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
-        utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
-        utilgl::bindAndSetUniforms(shader_, units, *volumePort_.getData(), "volume");
-        utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
-
-        utilgl::setUniforms(shader_, camera_, raycasting_, positionIndicator_, light_, channel_);
-    }
-    */
     // Start render
     glDispatchCompute(outport_.getDimensions().x / 16, outport_.getDimensions().y / 16, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     activeShader_->deactivate();
-    /*
-    if (partitionedTransmittance_) {
-        shaderUniform_.deactivate();
-    } else {
-        shader_.deactivate();
-    }
-    */
-    // utilgl::deactivateCurrentTarget(); // adding utilgl overhead just in case
 
     ++iteration_;
 }
