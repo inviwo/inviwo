@@ -95,6 +95,8 @@ VolumePathTracer::VolumePathTracer()
                TransmittanceMethod::IndependentPoissonTracking},
               {"DependentMultiPoissonTracking", "Dependent Multi Poisson Tracking",
                TransmittanceMethod::IndependentPoissonTracking},
+              {"GeometricResidualTracking", "Geometric Residual Ratio Tracking",
+               TransmittanceMethod::GeometricResidualTracking},
           })
     , invalidateRendering_("iterate", "Invalidate rendering")
     , enableProgressiveRefinement_("enableRefinement", "Enable progressive refinement", false)
@@ -137,6 +139,8 @@ VolumePathTracer::VolumePathTracer()
         }
     });
 
+    // NOTE: This will be set to false, 0
+    partitionedTransmittance_ = minMaxOpacity_.isConnected();
     minMaxOpacity_.onConnect([this]() {
         partitionedTransmittance_ = true;
         invalidateProgressiveRendering();
@@ -175,29 +179,16 @@ VolumePathTracer::VolumePathTracer()
     addProperty(invalidateRendering_);
     addProperty(enableProgressiveRefinement_);
 
-    if (partitionedTransmittance_) {
-        activeShader_ = &shaderUniform_;
-    } else {
-        activeShader_ = &shader_;
-    }
+    
 
-    transmittanceMethod_.onChange([this]() {
-        invalidate(InvalidationLevel::InvalidOutput);
-        invalidateProgressiveRendering();
-
-        activeShader_->setUniform("transmittanceMethod",
-                                  static_cast<int>(transmittanceMethod_.getSelectedIndex()));
-    });
+    
 
     transferFunction_.onChange([this]() { invalidateProgressiveRendering(); });
     light_.onChange([this]() { invalidateProgressiveRendering(); });
 
     enableProgressiveRefinement_.onChange([this]() { progressiveRefinementChanged(); });
 
-    activeShader_->onReload([this]() {
-        invalidate(InvalidationLevel::InvalidOutput);
-        invalidateProgressiveRendering();
-    });
+    
 
     progressiveRefinementChanged();
 }
@@ -205,9 +196,34 @@ VolumePathTracer::VolumePathTracer()
 void VolumePathTracer::initializeResources() {
     invalidateProgressiveRendering();
 
+    if (partitionedTransmittance_) {
+        activeShader_ = &shaderUniform_;
+    } else {
+        activeShader_ = &shader_;
+    }
+
+    // moved from construction due to activeShader_ being un initializable before
+    activeShader_->onReload([this]() {
+        invalidate(InvalidationLevel::InvalidOutput);
+        invalidateProgressiveRendering();
+    });
+    // moved from construction due to activeShader_ being un initializable before
+    transmittanceMethod_.onChange([this]() {
+        invalidate(InvalidationLevel::InvalidOutput);
+        invalidateProgressiveRendering();
+
+        activeShader_->setUniform("transmittanceMethod",
+                                  static_cast<int>(transmittanceMethod_.getSelectedIndex()));
+
+        activeShader_->getShaderObject(ShaderType::Compute)->addShaderDefine("METHOD", transmittanceMethod_.getSelectedValue());
+    });
+
+    
+
     // Test to see if this works for compute shaders. I see no reason why it wouldnt
     // TODO: Make use of defines in shaders were applicable, e.g. transmittanceMethods.
     // ShaderObject::addShaderDefine
+    
     utilgl::addShaderDefines(*activeShader_, raycasting_);
     utilgl::addShaderDefines(*activeShader_, camera_);
     utilgl::addShaderDefines(*activeShader_, light_);
@@ -215,7 +231,6 @@ void VolumePathTracer::initializeResources() {
 }
 
 void VolumePathTracer::process() {
-
     // Partial seeding for random values
     timeNow_ = std::chrono::high_resolution_clock::now();
     using FpMilliseconds = std::chrono::duration<float, std::chrono::milliseconds::period>;

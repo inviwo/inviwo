@@ -67,8 +67,8 @@ uint getHashSeed() {
     return hashSeed;
 }
 
-vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth,
-               float exitDepth, float rayDepth, inout float depth, vec4 bgColor) {
+vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth, float rayDepth,
+               inout float depth, vec4 bgColor) {
 
     vec3 ray = exitPoint - entryPoint;
     vec3 rayDir = normalize(ray);
@@ -85,11 +85,14 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth,
     vec2 minMax = vec2(0.f, 1.0f);
 
     minMax = rayMinMax(entryPoint, rayDir, t0, t1, minMaxOpacity, minMaxOpacityParameters,
-                            volumeParameters);
+                       volumeParameters);
+    minMax.y += 1e-6;
+
+    // float meanFreePath = woodcockTracking(samplePosition, rayDir, t0, t1, hashSeed, volume,
+    //                                      volumeParameters, transferFunction, minMax.y);
     
-    
-    float meanFreePath = woodcockTracking(samplePosition, rayDir, t0, t1, hashSeed, volume,
-                                          volumeParameters, transferFunction, minMax.y);
+    float meanFreePath = poissonTrackingTransmittance(samplePosition, rayDir, t0, t1, hashSeed, volume, volumeParameters,
+        transferFunction, 1.0f);
     
     vec4 result = vec4(0.0);
     if (meanFreePath <= t1) {
@@ -99,15 +102,14 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth,
         depth = rayDepth;
 
         result.rgb = estimateDirectLightUniformGrid(
-            volume, volumeParameters, transferFunction, minMaxOpacity,
-            minMaxOpacityParameters, samplePosition, cameraDir, light,
-            hashSeed, channel, transmittanceMethod);
+            volume, volumeParameters, transferFunction, minMaxOpacity, minMaxOpacityParameters,
+            samplePosition, cameraDir, light, hashSeed, channel, transmittanceMethod);
         result.a = 1f - T;
 
     } else {
         result = bgColor;
     }
-    
+
     return mix(result, vec4(minMax, 0f, 1f), 0.0);
 }
 
@@ -139,8 +141,8 @@ void main() {
         return;
     }
 
-    vec4 color = pathtrace(entryPoint, exitPoint, entryPointDepth,
-                           exitPointDepth, rayDepth, depth, bgColor);
+    vec4 color =
+        pathtrace(entryPoint, exitPoint, entryPointDepth, exitPointDepth, rayDepth, depth, bgColor);
 
     vec4 colorPrev = imageLoad(outportColor, storePos);
 
