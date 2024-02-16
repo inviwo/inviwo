@@ -46,13 +46,12 @@ const ProcessorInfo UniformGridOpacity::getProcessorInfo() const { return proces
 UniformGridOpacity::UniformGridOpacity()
     : Processor{}
     , inport_{"data"}
-    //, outport_{"MinMaxOpacity"}
     , outportVolume_{"MinMaxOpacityVolume"}
     , transferFunction_("transferFunction", "Transfer function")
     , volumeRegionSize_("region", "Region size", 8, 1, 100) {
 
     addPort(inport_);
-    //addPort(outport_);
+    // addPort(outport_);
     addPort(outportVolume_);
 
     addProperty(transferFunction_);
@@ -71,15 +70,14 @@ void UniformGridOpacity::process() {
         outDim, swizzlemasks::rgba, InterpolationType::Nearest, curVolume->getWrapping());
     auto stats = std::make_shared<Volume>(statsRep);
 
-    //stats->dataMap_.dataRange = curVolume->dataMap_.dataRange; // should map from 0,1
-    stats->dataMap_.dataRange.x = 0; // should map from 0,1
-    stats->dataMap_.dataRange.y = 1; // should map from 0,1
-    stats->dataMap_.valueRange = curVolume->dataMap_.valueRange; // makes sense to match operated volume
-    //stats->dataMap_.valueRange = std::make_shared<inviwo::dvec2>({0, 1});
+    stats->dataMap_.dataRange.x = 0;  // should map from 0,1
+    stats->dataMap_.dataRange.y = 1;  // should map from 0,1
+    stats->dataMap_.valueRange =
+        curVolume->dataMap_.valueRange;  // makes sense to match operated volume
 
     vec4* data = statsRep->getDataTyped();
 
-    curRAMVolume->dispatch<void, dispatching::filter::Scalars>([&] <typename VR>(VR* vr) {
+    curRAMVolume->dispatch<void, dispatching::filter::Scalars>([&]<typename VR>(VR* vr) {
         using T = typename VR::type;
         using P = typename util::same_extent<T, double>::type;
 
@@ -92,8 +90,6 @@ void UniformGridOpacity::process() {
 
         const auto& dataMapper = vr->getOwner()->dataMap_;
         const T* src = static_cast<const T*>(volume->getData());
-        
-        
 
         for (size_t z = 0; z < outDim.z; ++z) {
             for (size_t y = 0; y < outDim.y; ++y) {
@@ -110,7 +106,8 @@ void UniformGridOpacity::process() {
                     for (auto z = startCoord.z; z < endCoord.z; ++z) {
                         for (auto y = startCoord.y; y < endCoord.y; ++y) {
                             for (auto x = startCoord.x; x < endCoord.x; ++x) {
-                                size_t volumePos = x + (y * dataDims.x) + (z * dataDims.x * dataDims.y);
+                                size_t volumePos =
+                                    x + (y * dataDims.x) + (z * dataDims.x * dataDims.y);
                                 T valueA = src[volumePos];
                                 auto v = static_cast<double>(dataMapper.mapFromDataToValue(valueA));
                                 auto vn = dataMapper.mapFromValueToNormalized(v);
@@ -118,15 +115,13 @@ void UniformGridOpacity::process() {
                                 minOpacity = glm::min(minOpacity, opacity);
                                 maxOpacity = glm::max(maxOpacity, opacity);
                                 avgOpacity += opacity;
-                                 
                             }
                         }
                     }
                     avgOpacity /= static_cast<double>(region.x * region.y * region.z);
 
-                    vec4 minMaxVal(static_cast<float>(minOpacity),
-                                              static_cast<float>(maxOpacity),
-                                              static_cast<float>(avgOpacity), 0.f);
+                    vec4 minMaxVal(static_cast<float>(minOpacity), static_cast<float>(maxOpacity),
+                                   static_cast<float>(avgOpacity), 0.f);
 
                     data[VolumeRAM::posToIndex(size3_t(x, y, z), outDim)] = minMaxVal;
                 }
@@ -135,7 +130,6 @@ void UniformGridOpacity::process() {
     });
 
     outportVolume_.setData(stats);
-
 };
 
 }  // namespace inviwo

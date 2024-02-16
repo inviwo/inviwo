@@ -221,7 +221,7 @@ float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, flo
         vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
         float extinction = applyTF(transferFunction, volumeSample).a;
         opacityControl += extinction;
-        // and if the macro isnt defined?
+        // and if POISSON_TRACKING_N isnt defined?
 
         if (i < 16) extinctions[i] = extinction;
     }
@@ -234,7 +234,8 @@ float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, flo
 
     int k = poisson_uni(hashSeed, d * (opacityToExtinction(opacityUpperbound - opacityControl)));
 
-    // why 16? why is POISSON_TRACKING_N = 16? optimal after testing
+    // why 16? why is POISSON_TRACKING_N = 16? optimal after testing?
+    // 16 is defualt, but the processor can rewrite it when building the shader, if requested.
     int kCached = min(min(k, N), 16);
     int ki = 0;
 
