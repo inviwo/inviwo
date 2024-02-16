@@ -11,6 +11,37 @@ int poisson_uni(inout uint randHash, float lambda) {
     return k;
 }
 
-int geomertric_uni() {
-    return 0;
+//counting success
+int geomertric1_uni(inout uint randHash, float p) {
+
+    int k = 0;
+    bool cont = true;
+
+    do {
+        k++;
+        if(randomize(randHash) > p) {
+            cont = false;
+        }
+
+    } while (cont);
+
+    return k;
+}
+
+//counting failure
+int geomertric0_uni(inout uint randHash, float p) {
+
+    int k = -1;
+    bool cont = true;
+
+    do {
+        k++;
+        
+        if(randomize(randHash) > p) {
+            cont = false;
+        }
+
+    } while (cont);
+
+    return k;
 }
