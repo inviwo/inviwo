@@ -83,7 +83,7 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth,
 
     float T = 0.0f;
     vec2 minMax = vec2(0.f, 1.0f);
-    
+
     minMax = rayMinMax(entryPoint, rayDir, t0, t1, minMaxOpacity, minMaxOpacityParameters,
                             volumeParameters);
     
@@ -96,6 +96,7 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth,
         samplePosition = entryPoint + meanFreePath * rayDir;
 
         rayDepth = meanFreePath;
+        depth = rayDepth;
 
         result.rgb = estimateDirectLightUniformGrid(
             volume, volumeParameters, transferFunction, minMaxOpacity,
@@ -142,7 +143,6 @@ void main() {
                            exitPointDepth, rayDepth, depth, bgColor);
 
     vec4 colorPrev = imageLoad(outportColor, storePos);
-    // float depthPrev = imageLoad(outportDepth, storePos).x;
 
     float w = 1.0f - 1.0f / float(iteration + 1);
     vec4 colorFinal = mix(color, colorPrev, w);
