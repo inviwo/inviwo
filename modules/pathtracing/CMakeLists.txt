@@ -19,6 +19,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 set(SHADER_FILES
     glsl/bidirectionalvolumepathtracer.comp
+    glsl/bidirectionalvolumepathtraceruniform.comp
     glsl/distributions.glsl
     glsl/lightestimation.glsl
     glsl/random.glsl
