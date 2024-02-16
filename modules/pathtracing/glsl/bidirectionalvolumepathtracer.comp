@@ -86,6 +86,7 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
         samplePosition = entryPoint + meanFreePath * rayDir;
 
         rayDepth = meanFreePath;
+        depth = rayDepth;
 
         result.rgb = estimateDirectLight(volume, volumeParameters, transferFunction,
                                          samplePosition, cameraDir, light,
@@ -131,7 +132,6 @@ void main() {
         pathtrace(entryPoint, exitPoint, entryPointDepth, exitPointDepth, rayDepth, depth, bgColor);
 
     vec4 colorPrev = imageLoad(outportColor, storePos);
-    // float depthPrev = imageLoad(outportDepth, storePos).x;
 
     float w = 1.0f - 1.0f / float(iteration + 1);
     vec4 colorFinal = mix(color, colorPrev, w);
