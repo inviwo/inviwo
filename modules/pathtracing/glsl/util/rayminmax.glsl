@@ -19,13 +19,13 @@ vec2 rayMinMax(vec3 pos, vec3 dir, float t0, float t1, sampler3D opacity,
 
     bool continueTraversal = true;
 
-    vec3 minMax = getNormalizedVoxel(opacity, opacityParameters, cellCoord).xyz;
+    vec3 minMax = getVoxel(opacity, opacityParameters, cellCoord).xyz;
     int c = 0;
 
     continueTraversal = stepToNextCellNoHit(deltatx, di, cellCoordEnd, dt, cellCoord);
 
     while (continueTraversal) {
-        vec3 gridMinMaxVal = getNormalizedVoxel(opacity, opacityParameters, cellCoord).xyz;
+        vec3 gridMinMaxVal = getVoxel(opacity, opacityParameters, cellCoord).xyz;
         
         minMax =
             vec3(min(minMax.x, gridMinMaxVal.x), max(minMax.y, gridMinMaxVal.y), gridMinMaxVal.z);

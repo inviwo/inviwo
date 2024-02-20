@@ -88,12 +88,16 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
                        volumeParameters);
     minMax.y += 1e-6;
 
-    // float meanFreePath = woodcockTracking(samplePosition, rayDir, t0, t1, hashSeed, volume,
-    //                                      volumeParameters, transferFunction, minMax.y);
-    
-    float meanFreePath = poissonTrackingTransmittance(samplePosition, rayDir, t0, t1, hashSeed, volume, volumeParameters,
-        transferFunction, 1.0f);
-    
+    // this corresponds to an actual distance travelled
+    float meanFreePath = woodcockTracking(samplePosition, rayDir, t0, t1, hashSeed, volume,
+                                          volumeParameters, transferFunction, minMax.y);
+
+    /*
+    // everything else is transmittance, what is returned is not necesarily a random distance to travel
+    float meanFreePath = partitionedTransmittanceTracking(transmittanceMethod, samplePosition, rayDir, t0, t1, hashSeed,
+    volume, volumeParameters, transferFunction, minMaxOpacity, minMaxOpacityParameters);
+    */
+
     vec4 result = vec4(0.0);
     if (meanFreePath <= t1) {
         samplePosition = entryPoint + meanFreePath * rayDir;

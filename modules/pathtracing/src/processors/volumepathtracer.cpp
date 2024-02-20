@@ -202,23 +202,23 @@ void VolumePathTracer::initializeResources() {
         activeShader_ = &shader_;
     }
 
-    // moved from construction due to activeShader_ being un initializable before
+    // moved from construction due to activeShader_ being uninitializable before
     activeShader_->onReload([this]() {
         invalidate(InvalidationLevel::InvalidOutput);
         invalidateProgressiveRendering();
     });
-    // moved from construction due to activeShader_ being un initializable before
+    // moved from construction due to activeShader_ being uninitializable before
     transmittanceMethod_.onChange([this]() {
         invalidate(InvalidationLevel::InvalidOutput);
         invalidateProgressiveRendering();
+        
+        std::cout << "onChange transmittanceMethod index " << transmittanceMethod_.getSelectedIndex() << ", shader name " << activeShader_->getComputeShaderObject()->getFileName() << std::endl;
 
         activeShader_->setUniform("transmittanceMethod",
                                   static_cast<int>(transmittanceMethod_.getSelectedIndex()));
-
-        activeShader_->getShaderObject(ShaderType::Compute)->addShaderDefine("METHOD", transmittanceMethod_.getSelectedValue());
+        
+        //activeShader_->getShaderObject(ShaderType::Compute)->addShaderDefine("METHOD", transmittanceMethod_.getSelectedValue());
     });
-
-    
 
     // Test to see if this works for compute shaders. I see no reason why it wouldnt
     // TODO: Make use of defines in shaders were applicable, e.g. transmittanceMethods.
