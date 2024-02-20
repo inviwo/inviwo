@@ -19,6 +19,9 @@ vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam,
     Tl = partitionedTransmittanceTracking(transmittanceMethod, samplePos, toLightDir, t0, t1,
                                           hashSeed, volume, volParam, tf, opacity, opacityParam);
                                           
+    if(Tl < 0) {
+        return vec3(1.0, 0.0, 0.0);
+    }
 
     // Tl = 1.0f;
     if (Tl == 0.0f) {
