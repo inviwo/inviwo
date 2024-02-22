@@ -71,6 +71,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/mesh2drenderprocessorgl.h
     include/modules/basegl/processors/meshpicking.h
     include/modules/basegl/processors/meshrenderprocessorgl.h
+    include/modules/basegl/processors/meshtexturerenderprocessorgl.h
     include/modules/basegl/processors/multichannelraycaster.h
     include/modules/basegl/processors/pointrenderer.h
     include/modules/basegl/processors/raycasting/atlasvolumeraycaster.h
@@ -200,6 +201,7 @@ set(SOURCE_FILES
     src/processors/mesh2drenderprocessorgl.cpp
     src/processors/meshpicking.cpp
     src/processors/meshrenderprocessorgl.cpp
+    src/processors/meshtexturerenderprocessorgl.cpp
     src/processors/multichannelraycaster.cpp
     src/processors/pointrenderer.cpp
     src/processors/raycasting/atlasvolumeraycaster.cpp
@@ -302,6 +304,7 @@ set(SHADER_FILES
     glsl/mesh2drendering.vert
     glsl/meshrendering.frag
     glsl/meshrendering.vert
+    glsl/meshrenderingtextured.frag
     glsl/multichannelraycaster.frag
     glsl/pointrenderer.frag
     glsl/pointrenderer.vert
