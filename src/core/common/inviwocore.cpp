@@ -66,6 +66,7 @@
 // Ports
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/layerport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/bufferport.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
@@ -314,6 +315,8 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     // Register PortInspectors
     registerPortInspector(PortTraits<ImageOutport>::classIdentifier(),
                           app->getPath(PathType::PortInspectors, "/imageportinspector.inv"));
+    registerPortInspector(PortTraits<LayerOutport>::classIdentifier(),
+                          app->getPath(PathType::PortInspectors, "/layerportinspector.inv"));
     registerPortInspector(PortTraits<VolumeOutport>::classIdentifier(),
                           app->getPath(PathType::PortInspectors, "/volumeportinspector.inv"));
     registerPortInspector(PortTraits<MeshOutport>::classIdentifier(),
