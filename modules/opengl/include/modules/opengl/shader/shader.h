@@ -151,15 +151,15 @@ public:
     const ShaderObject* getGeometryShaderObject() const;
     const ShaderObject* getFragmentShaderObject() const;
     const ShaderObject* getComputeShaderObject() const;
-    const ShaderObject* getTesselationControlShaderObject() const;
-    const ShaderObject* getTesselationEvaluationShaderObject() const;
+    const ShaderObject* getTessellationControlShaderObject() const;
+    const ShaderObject* getTessellationEvaluationShaderObject() const;
 
     ShaderObject* getVertexShaderObject();
     ShaderObject* getGeometryShaderObject();
     ShaderObject* getFragmentShaderObject();
     ShaderObject* getComputeShaderObject();
-    ShaderObject* getTesselationControlShaderObject();
-    ShaderObject* getTesselationEvaluationShaderObject();
+    ShaderObject* getTessellationControlShaderObject();
+    ShaderObject* getTessellationEvaluationShaderObject();
 
     void setShaderObject(ShaderType type, std::shared_ptr<const ShaderResource> resource);
     void setShaderObject(ShaderObject object);
