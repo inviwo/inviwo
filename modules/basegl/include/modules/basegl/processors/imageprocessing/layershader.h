@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/stringsproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <modules/base/properties/datarangeproperty.h>
@@ -60,18 +61,30 @@ public:
 private:
     LayerShader(std::shared_ptr<StringShaderResource> fragmentShader);
     std::shared_ptr<StringShaderResource> fragmentShader_;
+    StringProperty fragmentShaderSource_;
 
     StringProperty inputFormat_;
     OptionProperty<DataFormatId> format_;
     OptionPropertyInt channels_;
 
-    BoolProperty applyDataMapping_;
-    DataRangeProperty dataRange_;
-    DoubleMinMaxProperty outputDataRange_;
+    struct RangeOpts {
+        CompositeProperty comp;
+        DoubleMinMaxProperty input;
+        OptionPropertyInt mode;
+        DoubleMinMaxProperty output;
+    };
 
-    StringProperty fragmentShaderSource_;
+    RangeOpts dataRange_;
+    RangeOpts valueRange_;
 
-    bool internalInvalid_;
+    struct AxisOpts {
+        CompositeProperty comp;
+        StringsProperty<2> input;
+        OptionPropertyInt mode;
+        StringsProperty<2> output;
+    };
+
+    AxisOpts valueAxis_;
 };
 
 }  // namespace inviwo

@@ -45,23 +45,17 @@ DataMapper::DataMapper(const DataMapper& rhs) = default;
 DataMapper& DataMapper::operator=(const DataMapper& that) = default;
 
 dvec2 DataMapper::defaultDataRangeFor(const DataFormatBase* format) {
-    dvec2 dataRange{};
-    dataRange.y = format->getMax();
     switch (format->getNumericType()) {
         case NumericType::Float:
-            dataRange.x = -format->getMax();
-            break;
+            return {0.0, 1.0};
         case NumericType::UnsignedInteger:
-            dataRange.x = 0.0;
-            break;
+            return {0.0, format->getMax()};
         case NumericType::SignedInteger:
-            dataRange.x = format->getMin();
-            break;
+            return {format->getMin(), format->getMax()};
         case NumericType::NotSpecialized:
-            dataRange.x = format->getMin();
-            break;
+            return {format->getMin(), format->getMax()};
     }
-    return dataRange;
+    return {format->getMin(), format->getMax()};
 }
 
 void DataMapper::initWithFormat(const DataFormatBase* format) {

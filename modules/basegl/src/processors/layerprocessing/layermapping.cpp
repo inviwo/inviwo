@@ -57,7 +57,7 @@ LayerMapping::LayerMapping()
     addProperties(channel_, transferFunction_);
 }
 
-void LayerMapping::preProcess(TextureUnitContainer& container, const Layer& input, Layer& output) {
+void LayerMapping::preProcess(TextureUnitContainer& container, const Layer&, Layer&) {
     utilgl::bindAndSetUniforms(shader_, container, transferFunction_);
     utilgl::setUniforms(shader_, channel_);
 }
