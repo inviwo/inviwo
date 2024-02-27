@@ -95,8 +95,8 @@ void LayerGLProcessor::process() {
         utilgl::Activate activateFbo{&fbo};
         utilgl::ViewportState viewport{0, 0, static_cast<GLsizei>(dim.x),
                                        static_cast<GLsizei>(dim.y)};
-        //utilgl::DepthMaskState depthMask{GL_FALSE};
-        //utilgl::GlBoolState depthTest{GL_DEPTH_TEST, false};
+        // utilgl::DepthMaskState depthMask{GL_FALSE};
+        // utilgl::GlBoolState depthTest{GL_DEPTH_TEST, false};
 
         // We always need to ask for an editable representation, this will invalidate any other
         // representations
