@@ -122,6 +122,36 @@ public:
         const std::string& fileExtension) const;
 
     /**
+     * \brief Computes the spacing to be used for gradient computation. Also works for layers with
+     * non-orthogonal basis.
+     *
+     * For orthogonal lattices this will be equal to the world space texel spacing.
+     * For non-orthogonal lattices it will be the longer of the axes projected
+     * onto the world space axes.
+     *
+     *        World space
+     *
+     *         b ^           ^
+     *          /            |
+     * y ^     /             dy
+     *   |    /  texel       |
+     *   |   /__________>a   \/
+     *   |   <----dx--->
+     *   |____________> x
+     *
+     *
+     * The actual gradient spacing vectors are given by
+     * mat2{ gradientSpacing.x,        0,
+     *             0,            gradientSpacing.y }
+     * However, we do not return the zeroes.
+     *
+     * To get the spacing in texture space use:
+     * mat3{glm::scale(worldToTextureMatrix, vec3{getWorldSpaceGradientSpacing(), 1.0f})};
+     * @return Step size for gradient computation in world space.
+     */
+    vec2 getWorldSpaceGradientSpacing() const;
+
+    /**
      * returns the axis information corresponding to \p index
      * @throws RangeException if \p index is out of bounds, i.e. \p index >= 2
      */
