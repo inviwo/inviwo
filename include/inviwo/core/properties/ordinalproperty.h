@@ -60,41 +60,46 @@ struct OrdinalPropertyState {
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput;
     PropertySemantics semantics = defaultSemantics();
     Document help = {};
+    ReadOnly readOnly = ReadOnly::No;
 
-    auto set(T newValue) -> OrdinalPropertyState {
+    auto set(T newValue) -> OrdinalPropertyState& {
         value = newValue;
         return *this;
     }
-    auto setMin(T newMin) -> OrdinalPropertyState {
+    auto setMin(T newMin) -> OrdinalPropertyState& {
         min = newMin;
         return *this;
     }
-    auto setMin(ConstraintBehavior newMinConstraint) -> OrdinalPropertyState {
+    auto setMin(ConstraintBehavior newMinConstraint) -> OrdinalPropertyState& {
         minConstraint = newMinConstraint;
         return *this;
     }
-    auto setMax(T newMax) -> OrdinalPropertyState {
+    auto setMax(T newMax) -> OrdinalPropertyState& {
         max = newMax;
         return *this;
     }
-    auto setMax(ConstraintBehavior newMaxConstraint) -> OrdinalPropertyState {
+    auto setMax(ConstraintBehavior newMaxConstraint) -> OrdinalPropertyState& {
         maxConstraint = newMaxConstraint;
         return *this;
     }
-    auto setInc(T newIncrement) -> OrdinalPropertyState {
+    auto setInc(T newIncrement) -> OrdinalPropertyState& {
         increment = newIncrement;
         return *this;
     }
-    auto set(InvalidationLevel newInvalidationLevel) -> OrdinalPropertyState {
+    auto set(InvalidationLevel newInvalidationLevel) -> OrdinalPropertyState& {
         invalidationLevel = newInvalidationLevel;
         return *this;
     }
-    auto set(PropertySemantics newSemantics) -> OrdinalPropertyState {
+    auto set(PropertySemantics newSemantics) -> OrdinalPropertyState& {
         semantics = newSemantics;
         return *this;
     }
-    auto set(Document newHelp) -> OrdinalPropertyState {
+    auto set(Document newHelp) -> OrdinalPropertyState& {
         help = newHelp;
+        return *this;
+    }
+    auto set(ReadOnly newReadOnly) -> OrdinalPropertyState& {
+        readOnly = newReadOnly;
         return *this;
     }
 
@@ -126,7 +131,8 @@ public:
                                                                      ConstraintBehavior::Editable},
         const T& increment = Defaultvalues<T>::getInc(),
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = OrdinalPropertyState<T>::defaultSemantics());
+        PropertySemantics semantics = OrdinalPropertyState<T>::defaultSemantics(),
+        ReadOnly readOnly = ReadOnly::No);
 
     OrdinalProperty(
         std::string_view identifier, std::string_view displayName,
@@ -439,8 +445,8 @@ OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_vie
                                     const std::pair<T, ConstraintBehavior>& minValue,
                                     const std::pair<T, ConstraintBehavior>& maxValue,
                                     const T& increment, InvalidationLevel invalidationLevel,
-                                    PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
+                                    PropertySemantics semantics, ReadOnly readOnly)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics, readOnly)
     , value_("value", value)
     , minValue_("minvalue", minValue.first)
     , maxValue_("maxvalue", maxValue.first)
@@ -481,7 +487,8 @@ OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_vie
                       std::pair{state.max, state.maxConstraint},
                       state.increment,
                       state.invalidationLevel,
-                      state.semantics} {}
+                      state.semantics,
+                      state.readOnly} {}
 
 template <typename T>
 OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_view displayName,

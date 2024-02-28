@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/base/processors/datasource.h>
 #include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/layerinformationproperty.h>
 
 #include <filesystem>
 
@@ -58,6 +59,7 @@ public:
 private:
     IntVec2Property dimensions_;
     BasisProperty basis_;
+    LayerInformationProperty information_;
 };
 
 }  // namespace inviwo

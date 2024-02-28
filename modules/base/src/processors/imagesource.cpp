@@ -71,72 +71,31 @@ const ProcessorInfo ImageSource::processorInfo_{"org.inviwo.ImageSource",  // Cl
                                                 "Loads an image from disk."_help};
 const ProcessorInfo ImageSource::getProcessorInfo() const { return processorInfo_; }
 
-ImageSource::ImageSource(InviwoApplication* app, const std::filesystem::path& filePath)
-    : Processor()
-    , rf_(util::getDataReaderFactory(app))
-    , outport_("image", "The loaded image"_help, DataVec4UInt8::get(), HandleResizeEvents::No)
-    , file_("imageFileName", "File name", "The name of the image file to load"_help, filePath,
-            "image")
-    , reader_("reader", "Data Reader")
-    , reload_("reload", "Reload data")
-    , imageDimension_("imageDimension_", "Dimension",
-                      util::ordinalCount(size2_t{0}, size2_t{4096})
-                          .set("Dimensions of the image file"_help)
-                          .set(InvalidationLevel::Valid)
-                          .set(PropertySemantics::Text)) {
+ImageSource::ImageSource(InviwoApplication* app, const std::filesystem::path& file)
+    : DataSource<Image, ImageOutport, Layer>(util::getDataReaderFactory(app), file, "image")
+    , dimensions_("dimensions", "Layer Dimensions",
+                  util::ordinalCount(ivec2{0}, ivec2{4096})
+                      .set("Dimensions of the image file"_help)
+                      .set(InvalidationLevel::Valid)
+                      .set(PropertySemantics::Text)
+                      .set(ReadOnly::Yes)) {
 
-    addPort(outport_);
-    addProperties(file_, reader_, reload_, imageDimension_);
-    imageDimension_.setReadOnly(true);
+    port_.setIdentifier("image");
+    port_.setHandleResizeEvents(false);
+    filePath.setIdentifier("imageFileName");
 
-    util::updateFilenameFilters<Layer>(*rf_, file_, reader_);
-    util::updateReaderFromFile(file_, reader_);
-
-    // make sure that we always process even if not connected
-    isSink_.setUpdate([]() { return true; });
-    isReady_.setUpdate([this]() {
-        return !loadingFailed_ && std::filesystem::is_regular_file(file_.get()) &&
-               !reader_.getSelectedValue().empty();
-    });
-    file_.onChange([this]() {
-        loadingFailed_ = false;
-        util::updateReaderFromFile(file_, reader_);
-        isReady_.update();
-    });
-    reader_.onChange([this]() {
-        loadingFailed_ = false;
-        isReady_.update();
-    });
+    DataSource<Image, ImageOutport, Layer>::filePath.setDisplayName("Image File");
+    addProperties(dimensions_);
 }
 
-void ImageSource::process() {
-    if (file_.get().empty()) return;
-
-    const auto sext = reader_.getSelectedValue();
-    if (auto reader = rf_->getReaderForTypeAndExtension<Layer>(sext, file_.get())) {
-        try {
-            auto outLayer = reader->readData(file_.get());
-            outport_.setData(std::make_shared<Image>(outLayer));
-            imageDimension_.set(outLayer->getDimensions());
-        } catch (DataReaderException const& e) {
-            util::log(e.getContext(),
-                      fmt::format("Could not load data: {}, {}", file_.get(), e.getMessage()),
-                      LogLevel::Error);
-            loadingFailed_ = true;
-            outport_.detachData();
-            isReady_.update();
-        }
-    } else {
-        LogError("Could not find a data reader for file: " << file_.get());
-        loadingFailed_ = true;
-        outport_.detachData();
-        isReady_.update();
-    }
+std::shared_ptr<Image> ImageSource::transform(std::shared_ptr<Layer> layer) {
+    return std::make_shared<Image>(layer);
 }
-
-void ImageSource::deserialize(Deserializer& d) {
-    Processor::deserialize(d);
-    util::updateFilenameFilters<Layer>(*rf_, file_, reader_);
+void ImageSource::dataLoaded(std::shared_ptr<Image> data) {
+    dimensions_.set(data->getDimensions());
+}
+void ImageSource::dataDeserialized(std::shared_ptr<Image> data) {
+    dimensions_.set(data->getDimensions());
 }
 
 }  // namespace inviwo

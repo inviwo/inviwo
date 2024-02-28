@@ -51,25 +51,31 @@ LayerSource::LayerSource(InviwoApplication* app, const std::filesystem::path& fi
                   util::ordinalCount(ivec2{0}, ivec2{4096})
                       .set("Dimensions of the image file"_help)
                       .set(InvalidationLevel::Valid)
-                      .set(PropertySemantics::Text))
-    , basis_("Basis", "Basis and offset") {
+                      .set(PropertySemantics::Text)
+                      .set(ReadOnly::Yes))
+    , basis_("Basis", "Basis and offset")
+    , information_("Information", "Data information") {
 
     DataSource<Layer, LayerOutport>::filePath.setDisplayName("Image File");
-    addProperties(dimensions_, basis_);
+    addProperties(dimensions_, basis_, information_);
     basis_.onChange([this]() { reload.setModified(); });
 }
 
 void LayerSource::dataLoaded(std::shared_ptr<Layer> data) {
     dimensions_.set(data->getDimensions());
     basis_.updateForNewEntity(*data, false);
-
     basis_.updateEntity(*data);
+
+    information_.updateForNewLayer(*data, util::OverwriteState::No);
+    information_.updateLayer(*data);
 }
 void LayerSource::dataDeserialized(std::shared_ptr<Layer> data) {
     dimensions_.set(data->getDimensions());
     basis_.updateForNewEntity(*data, true);
-
     basis_.updateEntity(*data);
+
+    information_.updateForNewLayer(*data, util::OverwriteState::Yes);
+    information_.updateLayer(*data);
 }
 
 }  // namespace inviwo

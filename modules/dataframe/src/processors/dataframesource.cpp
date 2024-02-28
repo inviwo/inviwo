@@ -66,12 +66,12 @@ DataFrameSource::DataFrameSource(InviwoApplication* app, const std::filesystem::
 }
 
 void DataFrameSource::dataLoaded(std::shared_ptr<DataFrame> data) {
-    columns_.updateForNewDataFrame(*loadedData_, util::OverwriteState::Yes);
-    columns_.updateDataFrame(*loadedData_);
+    columns_.updateForNewDataFrame(*data, util::OverwriteState::Yes);
+    columns_.updateDataFrame(*data);
 }
 void DataFrameSource::dataDeserialized(std::shared_ptr<DataFrame> data) {
-    columns_.updateForNewDataFrame(*loadedData_, util::OverwriteState::No);
-    columns_.updateDataFrame(*loadedData_);
+    columns_.updateForNewDataFrame(*data, util::OverwriteState::No);
+    columns_.updateDataFrame(*data);
 }
 
 }  // namespace inviwo
