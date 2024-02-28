@@ -61,6 +61,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/layerprocessing/layergrayscale.h
     include/modules/basegl/processors/layerprocessing/layerinvert.h
     include/modules/basegl/processors/layerprocessing/layermapping.h
+    include/modules/basegl/processors/layerprocessing/layernormalization.h
     include/modules/basegl/processors/layerrenderer.h
     include/modules/basegl/processors/lightingraycaster.h
     include/modules/basegl/processors/lightvolumegl.h
@@ -186,6 +187,7 @@ set(SOURCE_FILES
     src/processors/layerprocessing/layergrayscale.cpp
     src/processors/layerprocessing/layerinvert.cpp
     src/processors/layerprocessing/layermapping.cpp
+    src/processors/layerprocessing/layernormalization.cpp
     src/processors/layerrenderer.cpp
     src/processors/lightingraycaster.cpp
     src/processors/lightvolumegl.cpp

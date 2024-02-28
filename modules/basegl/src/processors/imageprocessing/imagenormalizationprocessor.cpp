@@ -141,9 +141,9 @@ void ImageNormalizationProcessor::preProcess(TextureUnitContainer&) {
 void ImageNormalizationProcessor::updateMinMax() {
     if (!inport_.hasData()) return;
 
-    const LayerRAM* img = inport_.getData()->getColorLayer()->getRepresentation<LayerRAM>();
+    const LayerRAM* layer = inport_.getData()->getColorLayer()->getRepresentation<LayerRAM>();
 
-    auto df = img->getDataFormat();
+    auto df = layer->getDataFormat();
     if (df->getNumericType() == NumericType::SignedInteger ||
         df->getNumericType() == NumericType::UnsignedInteger) {
         if (df->getSizeInBytes() > 8) {
@@ -154,7 +154,7 @@ void ImageNormalizationProcessor::updateMinMax() {
         }
     }
 
-    auto minMax = util::layerMinMax(img, IgnoreSpecialValues::Yes);
+    auto minMax = util::layerMinMax(layer, IgnoreSpecialValues::Yes);
 
     min_ = minMax.first;
     max_ = minMax.second;
