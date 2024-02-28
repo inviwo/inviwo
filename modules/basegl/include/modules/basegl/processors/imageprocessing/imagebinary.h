@@ -38,21 +38,6 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.ImageBinary, Image Binary}
- * ![](org.inviwo.ImageBinary.png?classIdentifier=org.inviwo.ImageBinary)
- * Computes a binary image of the input image using a threshold. The output
- * will contain "0" for all values below the threshold and "1" otherwise.
- *
- * ### Inports
- *   * __inputImage__ Input image
- *
- * ### Outports
- *   * __outputImage__ Binary output image
- *
- * ### Properties
- *   * __Threshold__ Threshold used for the binarization of the input image
- */
-
 /**
  * \class ImageBinary
  *

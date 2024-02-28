@@ -35,6 +35,7 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
+#include <inviwo/core/ports/layerport.h>
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -249,6 +250,7 @@ void exposeImage(py::module& m) {
                 self.getSwizzleMask(), self.getInterpolation(), self.getWrapping());
         });
 
+    exposeStandardDataPorts<Layer>(m, "Layer");
     exposeInport<ImageInport>(m, "Image");
     exposeInport<ImageMultiInport>(m, "ImageMulti");
     exposeOutport<ImageOutport>(m, "Image")

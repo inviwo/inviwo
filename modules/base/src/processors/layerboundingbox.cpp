@@ -36,7 +36,7 @@ namespace inviwo {
 const ProcessorInfo LayerBoundingBox::processorInfo_{
     "org.inviwo.LayerBoundingBox",  // Class identifier
     "Layer Bounding Box",           // Display name
-    "Image Operation",              // Category
+    "Layer Operation",              // Category
     CodeState::Stable,              // Code state
     Tags::CPU,                      // Tags
     "Creates a mesh containing the bounding box of a layer, that is lines with "

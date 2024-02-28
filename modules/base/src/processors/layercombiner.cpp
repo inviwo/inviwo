@@ -30,28 +30,23 @@
 #include <modules/base/processors/layercombiner.h>
 
 #include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/glmutils.h>
-
-#include <algorithm>
-#include <span>
+#include <modules/base/algorithm/combinechannels.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo LayerCombiner::processorInfo_{"org.inviwo.LayerCombiner",  // Class identifier
-                                                  "Layer Combiner",            // Display name
-                                                  "Image Operation",           // Category
-                                                  CodeState::Experimental,     // Code state
-                                                  Tags::CPU | Tag{"Layer"},    // Tags
-                                                  R"(
-Combines multiple layers into a single layer with multiple channels. All layers must
+const ProcessorInfo LayerCombiner::processorInfo_{
+    "org.inviwo.LayerCombiner",  // Class identifier
+    "Layer Combiner",            // Display name
+    "Layer Operation",           // Category
+    CodeState::Experimental,     // Code state
+    Tags::CPU | Tag{"Layer"},    // Tags
+    R"(
+Combines multiple layers into a single layer with multiple channels. All layers must 
 share the same dimensions. The resulting data format depends on the common data type
 and precision of the inputs.
-)"_unindentHelp};
+)"_unindentHelp,
+};
 
 const ProcessorInfo LayerCombiner::getProcessorInfo() const { return processorInfo_; }
 
@@ -89,63 +84,8 @@ LayerCombiner::LayerCombiner()
 }
 
 void LayerCombiner::process() {
-    std::vector<std::pair<LayerInport*, int>> activePorts;
-    for (auto&& [port, channel] : util::zip(source_, channel_)) {
-        if (port.hasData()) {
-            activePorts.push_back({&port, channel.get()});
-        }
-    }
-
-    const size2_t dims{activePorts.front().first->getData()->getDimensions()};
-    if (std::ranges::any_of(
-            activePorts, [dims](auto& p) { return p.first->getData()->getDimensions() != dims; })) {
-        throw Exception("Image dimensions of all inports need to be identical", IVW_CONTEXT);
-    }
-
-    auto&& [type, precision] = [&]() {
-        std::vector<const DataFormatBase*> formats;
-        for (auto p : activePorts) {
-            formats.push_back(p.first->getData()->getDataFormat());
-        }
-        return std::make_pair(util::commonNumericType(formats),
-                              util::commonFormatPrecision(formats));
-    }();
-
-    auto layer = std::make_shared<Layer>(
-        *activePorts.front().first->getData(), noData,
-        LayerConfig{.format = DataFormatBase::get(type, activePorts.size(), precision)});
-
-    auto layerRam = layer->getEditableRepresentation<LayerRAM>();
-
-#include <warn/push>
-#include <warn/ignore/conversion>
-#include <warn/ignore/conversion-loss>
-
-    layerRam->dispatch<void>([&](auto layerram) {
-        using PrecisionType = util::PrecisionValueType<decltype(layerram)>;
-        using ValueType = util::value_type_t<PrecisionType>;
-
-        const size2_t dims{layerram->getDimensions()};
-        auto destData = layerram->getDataTyped();
-
-        for (size_t inputChannel = 0; inputChannel < activePorts.size(); ++inputChannel) {
-            auto&& [port, srcChannel] = activePorts[inputChannel];
-            port->getData()->getRepresentation<LayerRAM>()->dispatch<void>(
-                [&](auto srclayer, int srcChannelArg) {
-                    const auto srcData = srclayer->getDataTyped();
-
-                    for (size_t i = 0; i < glm::compMul(dims); ++i) {
-                        util::glmcomp(destData[i], inputChannel) =
-                            static_cast<ValueType>(util::glmcomp(srcData[i], srcChannelArg));
-                    }
-                },
-                srcChannel);
-        }
-    });
-
-#include <warn/pop>
-
-    layer->setSwizzleMask(swizzlemasks::defaultData(activePorts.size()));
+    auto layer = util::combineChannels<Layer, LayerRAM>(
+        source_, {{channel_[0], channel_[1], channel_[2], channel_[3]}});
     layer->dataMap.dataRange = dataRange_.getDataRange();
     layer->dataMap.valueRange = dataRange_.getValueRange();
 

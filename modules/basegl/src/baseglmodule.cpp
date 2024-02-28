@@ -75,6 +75,10 @@
 #include <modules/basegl/processors/imageprocessing/layershader.h>
 #include <modules/basegl/processors/instancerenderer.h>  // for Ins...
 #include <modules/basegl/processors/isoraycaster.h>      // for ISO...
+#include <modules/basegl/processors/layerprocessing/layerbinary.h>
+#include <modules/basegl/processors/layerprocessing/layergrayscale.h>
+#include <modules/basegl/processors/layerprocessing/layerinvert.h>
+#include <modules/basegl/processors/layerprocessing/layermapping.h>
 #include <modules/basegl/processors/layerrenderer.h>
 #include <modules/basegl/processors/lightingraycaster.h>                       // for Lig...
 #include <modules/basegl/processors/lightvolumegl.h>                           // for Lig...
@@ -184,6 +188,10 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<ImageScaling>();
     registerProcessor<ImageSubsetGL>();
     registerProcessor<Jacobian2D>();
+    registerProcessor<LayerBinary>();
+    registerProcessor<LayerGrayscale>();
+    registerProcessor<LayerInvert>();
+    registerProcessor<LayerMapping>();
     registerProcessor<LayerRenderer>();
     registerProcessor<LayerShader>();
     registerProcessor<RowLayout>();

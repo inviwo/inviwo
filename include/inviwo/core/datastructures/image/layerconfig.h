@@ -73,6 +73,8 @@ struct IVW_CORE_API LayerConfig {
     DataMapper dataMap() const;
     DataMapper dataMap(const DataMapper& defaultMapper) const;
     LayerConfig& updateFrom(const LayerConfig& config);
+
+    friend bool operator==(const LayerConfig&, const LayerConfig&) = default;
 };
 
 struct IVW_CORE_API LayerReprConfig {

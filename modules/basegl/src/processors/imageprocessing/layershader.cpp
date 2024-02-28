@@ -56,8 +56,8 @@ void main() {
 constexpr std::string_view defaultFrag = R"(#include "utils/structs.glsl"
 #include "utils/sampler2d.glsl"
 
-uniform sampler2D layer;
-uniform ImageParameters layerParameters;
+uniform sampler2D inport_;
+uniform ImageParameters outportParameters_;
 
 struct FormatScaling {
     float formatScaling;
@@ -75,7 +75,7 @@ in Fragment {
 
 void main() {
     // access normalized input value, then renormalize with respect to output data range
-    vec4 value = getNormalizedTexel(layer, layerParameters, in_frag.texCoord);
+    vec4 value = getNormalizedTexel(inport_, outportParameters_, in_frag.texCoord);
     FragData0 = value / (1.0 - destRange.formatScaling) - destRange.formatOffset;
 
     // regular texture access, no output mapping
@@ -84,33 +84,13 @@ void main() {
 }
 )";
 
-const std::vector<OptionPropertyIntOption> channelsList = {{"channel1", "1 Channel", 1},
-                                                           {"channel2", "2 Channels", 2},
-                                                           {"channel3", "3 Channels", 3},
-                                                           {"channel4", "4 Channels", 4}};
-
-constexpr SwizzleMask swizzleMask(size_t numComponents) {
-    switch (numComponents) {
-        case 1:
-            return swizzlemasks::luminance;
-        case 2:
-            return SwizzleMask{ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero,
-                               ImageChannel::One};
-        case 3:
-            return swizzlemasks::rgb;
-        case 4:
-        default:
-            return swizzlemasks::rgba;
-    }
-};
-
 }  // namespace detail
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo LayerShader::processorInfo_{
     "org.inviwo.LayerShader",                 // Class identifier
     "Layer Shader",                           // Display name
-    "Image Operation",                        // Category
+    "Layer Operation",                        // Category
     CodeState::Experimental,                  // Code state
     Tags::GL | Tag{"Layer"} | Tag{"Shader"},  // Tags
     R"(Applies a customizable shader to perform computations on the input layer.)"_unindentHelp};
@@ -118,15 +98,15 @@ const ProcessorInfo LayerShader::processorInfo_{
 const ProcessorInfo LayerShader::getProcessorInfo() const { return processorInfo_; }
 
 LayerShader::LayerShader()
-    : LayerShader(
-          std::make_shared<StringShaderResource>("layer_shader.frag", detail::defaultFrag)) {}
-
-LayerShader::LayerShader(std::shared_ptr<StringShaderResource> fragmentShader)
-    : Processor{}
-    , fragmentShader_(fragmentShader)
-    , inport_{"inport", "Input layer"_help}
-    , outport_{"outport", "Resulting layer, the format is determined by *Output Format*."_help}
-
+    : LayerGLProcessor(Shader{
+          {{ShaderType::Vertex,
+            std::make_shared<StringShaderResource>("layer_shader.vert", detail::vertexShader)}},
+          Shader::Build::No})
+    , fragmentShader_{std::make_shared<StringShaderResource>("layer_shader.frag",
+                                                             detail::defaultFrag)}
+    , fragmentShaderSource_{"fragmentShaderSource", "Fragment Shader",
+                            std::string{detail::defaultFrag}, InvalidationLevel::InvalidResources,
+                            PropertySemantics::ShaderEditor}
     , inputFormat_{"inputFormat", "Input Format", "Data format of the input layer"_help}
     , format_{"outputFormat", "Output Format",
               "Determines the data format of the output in combination with the number of "
@@ -144,132 +124,140 @@ LayerShader::LayerShader(std::shared_ptr<StringShaderResource> fragmentShader)
                   return formats;
               }(),
               0}
-    , channels_{"channels", "Channels", "Number of channels in the output layer"_help,
-                detail::channelsList}
-    , applyDataMapping_{"applyDataMapping", "Renormalization to Output Data Range", false}
-    , dataRange_{"dataRange", "Data Range", inport_, true}
-    , outputDataRange_{"outputDataRange",
-                       "Output Data Range",
-                       0.0,
-                       1.0,
-                       std::numeric_limits<double>::lowest(),
-                       std::numeric_limits<double>::max(),
-                       0.01,
-                       0.0,
-                       InvalidationLevel::InvalidOutput,
-                       PropertySemantics::Text}
+    , channels_{"outputChannels", "Output Channels",
+                []() {
+                    OptionPropertyState<int> state{
+                        .options = util::enumeratedOptions("Channels", 4, 1),
+                        .selectedIndex = 0,
+                        .help = "Number of channels in the output layer"_help};
+                    state.options.emplace(state.options.begin(), "asinput", "Same as Input", 0);
+                    return state;
+                }()}
 
-    , fragmentShaderSource_{"fragmentShaderSource", "Fragment Shader",
-                            std::string{detail::defaultFrag}, InvalidationLevel::InvalidResources,
-                            PropertySemantics::ShaderEditor}
-    , shader_{{{ShaderType::Vertex,
-                std::make_shared<StringShaderResource>("layer_shader.vert", detail::vertexShader)},
-               {ShaderType::Fragment, fragmentShader}},
-              Shader::Build::Yes}
-    , internalInvalid_{false} {
+    , dataRange_{.comp{"dataRange", "Data Range"},
+                 .input{"input", "Input", 0.0, 1.0, std::numeric_limits<double>::lowest(),
+                        std::numeric_limits<double>::max(), 0.01, 0.0, InvalidationLevel::Valid,
+                        PropertySemantics::Text},
+                 .mode{"output",
+                       "Output",
+                       {{"asinput", "Same as Input", 0},
+                        {"asformat", "Default For Output Format", 1},
+                        {"custom", "Custom Range", 2}},
+                       0},
+                 .output{"custom", "Custom", 0.0, 1.0, std::numeric_limits<double>::lowest(),
+                         std::numeric_limits<double>::max(), 0.01, 0.0,
+                         InvalidationLevel::InvalidOutput, PropertySemantics::Text}}
+    , valueRange_{.comp{"valueRange", "Value Range"},
+                  .input{"input", "Input", 0.0, 1.0, std::numeric_limits<double>::lowest(),
+                         std::numeric_limits<double>::max(), 0.01, 0.0, InvalidationLevel::Valid,
+                         PropertySemantics::Text},
+                  .mode{"output",
+                        "Output",
+                        {{"asinput", "Same as Input", 0},
+                         {"asformat", "Default For Output Format", 1},
+                         {"custom", "Custom Range", 2}},
+                        0},
+                  .output{"custom", "Custom", 0.0, 1.0, std::numeric_limits<double>::lowest(),
+                          std::numeric_limits<double>::max(), 0.01, 0.0,
+                          InvalidationLevel::InvalidOutput, PropertySemantics::Text}}
+    , valueAxis_{.comp{"valueAxis", "Value Axis"},
+                 .input{"input", "Input", std::array{std::string_view{""}, std::string_view{""}},
+                        InvalidationLevel::Valid},
+                 .mode{"output",
+                       "Output",
+                       {{"asinput", "Same as Input", 0}, {"custom", "Custom Axis", 2}},
+                       0},
+                 .output{"custom", "Custom"}}
 
-    addPorts(inport_, outport_);
-    addProperties(fragmentShaderSource_);
+{
+
+    shader_.setShaderObject(ShaderType::Fragment, fragmentShader_);
+    shader_.onReload([&]() { invalidate(InvalidationLevel::InvalidResources); });
+    fragmentShaderSource_.onChange(
+        [this]() { fragmentShader_->setSource(fragmentShaderSource_.get()); });
+
+    dataRange_.comp.addProperties(dataRange_.input, dataRange_.mode, dataRange_.output);
+    valueRange_.comp.addProperties(valueRange_.input, valueRange_.mode, valueRange_.output);
+    valueAxis_.comp.addProperties(valueAxis_.input, valueAxis_.mode, valueAxis_.output);
+
+    addProperties(fragmentShaderSource_, inputFormat_, format_, channels_, dataRange_.comp,
+                  valueRange_.comp, valueAxis_.comp);
 
     inputFormat_.setReadOnly(true);
-    outputDataRange_.setReadOnly(true);
-    outputDataRange_.setSerializationMode(PropertySerializationMode::All);
-    dataRange_.insertProperty(2, outputDataRange_);
-    addProperties(inputFormat_, format_, channels_, applyDataMapping_, dataRange_);
+    dataRange_.input.setReadOnly(true);
+    valueRange_.input.setReadOnly(true);
+    valueAxis_.input.setReadOnly(true);
 
-    auto updateOutputRange = [this]() {
-        const auto* format = (format_.get() == DataFormatId::NotSpecialized)
-                                 ? (inport_.hasData() ? inport_.getData()->getDataFormat()
-                                                      : DataFormatBase::get(DataFormatId::Float32))
-                                 : DataFormatBase::get(format_);
-        if (applyDataMapping_ && (format->getNumericType() != NumericType::Float)) {
-            outputDataRange_.set(DataMapper{format}.dataRange);
-        } else if (inport_.hasData()) {
-            outputDataRange_.set(inport_.getData()->dataMap.dataRange);
-        }
-    };
-    applyDataMapping_.onChange(updateOutputRange);
-    format_.onChange(updateOutputRange);
+    valueAxis_.input.strings[0].setDisplayName("name").setCurrentStateAsDefault();
+    valueAxis_.input.strings[1].setDisplayName("unit").setCurrentStateAsDefault();
+    valueAxis_.output.strings[0].setDisplayName("name").setCurrentStateAsDefault();
+    valueAxis_.output.strings[1].setDisplayName("unit").setCurrentStateAsDefault();
 
-    inport_.onChange([this, updateOutputRange]() {
-        internalInvalid_ = true;
+    inport_.onChange([this]() {
         if (inport_.hasData()) {
             inputFormat_.set(inport_.getData()->getDataFormat()->getString());
-            updateOutputRange();
+            dataRange_.input.set(inport_.getData()->dataMap.dataRange);
+            valueRange_.input.set(inport_.getData()->dataMap.valueRange);
+            valueAxis_.input.strings[0].set(inport_.getData()->dataMap.valueAxis.name);
+            valueAxis_.input.strings[1].set(
+                fmt::to_string(inport_.getData()->dataMap.valueAxis.unit));
         }
     });
-
-    fragmentShaderSource_.onChange(
-        [&]() { fragmentShader_->setSource(fragmentShaderSource_.get()); });
-    shader_.onReload([&]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-void LayerShader::initializeResources() {
-    shader_.build();
-    internalInvalid_ = true;
+void LayerShader::preProcess(TextureUnitContainer&, const Layer&, Layer& output) {
+    utilgl::setShaderUniforms(shader_, output.dataMap, output.getDataFormat(), "destRange");
 }
 
-void LayerShader::process() {
-    const DataFormatBase* format = [&]() {
-        const auto format = (format_.get() == DataFormatId::NotSpecialized)
-                                ? inport_.getData()->getDataFormat()
-                                : DataFormatBase::get(format_);
-        return DataFormatBase::get(format->getNumericType(), channels_.get(),
-                                   format->getPrecision());
+LayerConfig LayerShader::outputConfig(const Layer& input) const {
+    auto inputFormat = inport_.getData()->getDataFormat();
+    const auto* format = [&]() {
+        const auto numericType = format_.get() == DataFormatId::NotSpecialized
+                                     ? inputFormat->getNumericType()
+                                     : DataFormatBase::get(format_)->getNumericType();
+        const auto precision = format_.get() == DataFormatId::NotSpecialized
+                                   ? inputFormat->getPrecision()
+                                   : DataFormatBase::get(format_)->getPrecision();
+        const auto channels =
+            channels_.get() == 0 ? static_cast<int>(inputFormat->getComponents()) : channels_.get();
+        return DataFormatBase::get(numericType, channels, precision);
     }();
 
-    const auto destRange = [&]() -> DataMapper {
-        DataMapper mapper;
-        if (dataRange_.getCustomRangeEnabled()) {
-            mapper.dataRange = dataRange_.getCustomDataRange();
+    const auto dataRange = [&]() {
+        if (dataRange_.mode.get() == 0) {
+            return input.dataMap.dataRange;
+        } else if (dataRange_.mode.get() == 1) {
+            return DataMapper::defaultDataRangeFor(format);
         } else {
-            if (!applyDataMapping_) {
-                if (format->getNumericType() != NumericType::Float) {
-                    mapper.initWithFormat(format);
-                } else {
-                    mapper.dataRange = dvec2{0.0, 1.0};
-                }
-            } else {
-                mapper.dataRange = dvec2{inport_.getData()->dataMap.dataRange};
-            }
+            return dataRange_.output.get();
         }
-        return mapper;
-    }();
+    };
 
-    bool reattach = false;
+    const auto valueRange = [&]() {
+        if (valueRange_.mode.get() == 0) {
+            return input.dataMap.valueRange;
+        } else if (valueRange_.mode.get() == 1) {
+            return DataMapper::defaultDataRangeFor(format);
+        } else {
+            return valueRange_.output.get();
+        }
+    };
 
-    if (internalInvalid_ || format != outport_.getData()->getDataFormat()) {
-        reattach = true;
-        internalInvalid_ = false;
+    const auto valueAxis = [&]() {
+        if (valueAxis_.mode.get() == 0) {
+            return input.dataMap.valueAxis;
+        } else {
+            return Axis{.name = valueAxis_.output.strings[0].get(),
+                        .unit = units::unit_from_string(valueAxis_.output.strings[1].get())};
+        }
+    };
 
-        layer_ = std::make_shared<Layer>(*inport_.getData(), noData, LayerConfig{.format = format});
-        layer_->setSwizzleMask(detail::swizzleMask(format->getComponents()));
-
-        outport_.setData(layer_);
-    }
-
-    shader_.activate();
-
-    const size2_t dim{inport_.getData()->getDimensions()};
-    fbo_.activate();
-    glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
-
-    TextureUnitContainer cont;
-
-    utilgl::bindAndSetUniforms(shader_, cont, *inport_.getData(), "layer");
-    utilgl::setShaderUniforms(shader_, destRange, format, "destRange");
-
-    // We always need to ask for a editable representation
-    // this will invalidate any other representations
-    LayerGL* layerGL = layer_->getEditableRepresentation<LayerGL>();
-    if (reattach) {
-        fbo_.attachColorTexture(layerGL->getTexture().get(), 0);
-    }
-
-    utilgl::singleDrawImagePlaneRect();
-
-    shader_.deactivate();
-    fbo_.deactivate();
+    return input.config().updateFrom(
+        {.format = format,
+         .swizzleMask = swizzlemasks::defaultData(format->getComponents()),
+         .valueAxis = valueAxis(),
+         .dataRange = dataRange(),
+         .valueRange = valueRange()});
 }
 
 }  // namespace inviwo

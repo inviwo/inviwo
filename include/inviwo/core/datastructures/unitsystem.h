@@ -57,6 +57,7 @@ using Unit = units::precise_unit;
 struct IVW_CORE_API Axis {
     std::string name;
     Unit unit;
+    friend bool operator==(const Axis&, const Axis&) = default;
 };
 
 namespace util {

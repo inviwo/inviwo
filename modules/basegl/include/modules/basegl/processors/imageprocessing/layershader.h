@@ -35,50 +35,56 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/stringsproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <modules/base/properties/datarangeproperty.h>
 #include <inviwo/core/util/formats.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/basegl/processors/layerprocessing/layerglprocessor.h>
 
 namespace inviwo {
 
 class StringShaderResource;
 
-class IVW_MODULE_BASEGL_API LayerShader : public Processor {
+class IVW_MODULE_BASEGL_API LayerShader : public LayerGLProcessor {
 public:
     LayerShader();
-
-    virtual void initializeResources() override;
-    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;
+    virtual LayerConfig outputConfig(const Layer& input) const override;
+
 private:
     LayerShader(std::shared_ptr<StringShaderResource> fragmentShader);
     std::shared_ptr<StringShaderResource> fragmentShader_;
-
-    LayerInport inport_;
-    LayerOutport outport_;
+    StringProperty fragmentShaderSource_;
 
     StringProperty inputFormat_;
     OptionProperty<DataFormatId> format_;
     OptionPropertyInt channels_;
 
-    BoolProperty applyDataMapping_;
-    DataRangeProperty dataRange_;
-    DoubleMinMaxProperty outputDataRange_;
+    struct RangeOpts {
+        CompositeProperty comp;
+        DoubleMinMaxProperty input;
+        OptionPropertyInt mode;
+        DoubleMinMaxProperty output;
+    };
 
-    StringProperty fragmentShaderSource_;
+    RangeOpts dataRange_;
+    RangeOpts valueRange_;
 
-    Shader shader_;
-    FrameBufferObject fbo_;
+    struct AxisOpts {
+        CompositeProperty comp;
+        StringsProperty<2> input;
+        OptionPropertyInt mode;
+        StringsProperty<2> output;
+    };
 
-    std::shared_ptr<Layer> layer_;
-
-    bool internalInvalid_;
+    AxisOpts valueAxis_;
 };
 
 }  // namespace inviwo

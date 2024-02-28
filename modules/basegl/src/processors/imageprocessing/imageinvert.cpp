@@ -43,7 +43,14 @@ const ProcessorInfo ImageInvert::processorInfo_{
     "Image Operation",         // Category
     CodeState::Stable,         // Code state
     Tags::GL,                  // Tags
-};
+    R"(Create the invert image of an input image. The alpha channel is not touched.
+    This processor computes the inverted image as follows
+   
+      out.rgb = 1.0 - in.rgb
+      out.a = in.a
+    
+    The input range is assumed to be normalized, i.e. [0, 1].)"_unindentHelp};
+
 const ProcessorInfo ImageInvert::getProcessorInfo() const { return processorInfo_; }
 
 ImageInvert::ImageInvert() : ImageGLProcessor("img_invert.frag") {}

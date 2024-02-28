@@ -29,21 +29,15 @@
 
 #include <modules/basegl/processors/imageprocessing/imagemapping.h>
 
-#include <inviwo/core/datastructures/image/layer.h>                      // for Layer
-#include <inviwo/core/datastructures/representationconverter.h>          // for RepresentationCo...
-#include <inviwo/core/datastructures/representationconverterfactory.h>   // for RepresentationCo...
-#include <inviwo/core/datastructures/transferfunction.h>                 // for TransferFunction
-#include <inviwo/core/ports/imageport.h>                                 // for ImageInport
-#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                       // for CodeState, CodeS...
-#include <inviwo/core/processors/processortags.h>                        // for Tags, Tags::GL
-#include <inviwo/core/properties/transferfunctionproperty.h>             // for TransferFunction...
-#include <inviwo/core/util/formats.h>                                    // for DataFormatBase
-#include <inviwo/core/util/logcentral.h>                                 // for LogCentral, LogWarn
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
-#include <modules/opengl/image/layergl.h>                                // for LayerGL
-#include <modules/opengl/shader/shader.h>                                // for Shader
-#include <modules/opengl/texture/textureunit.h>                          // for TextureUnit
+#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>            // for CodeState, CodeS...
+#include <inviwo/core/processors/processortags.h>             // for Tags, Tags::GL
+#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunction...
+#include <inviwo/core/util/formats.h>                         // for DataFormatBase
+#include <modules/opengl/shader/shader.h>                     // for Shader
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureunit.h>  // for TextureUnit
+#include <modules/opengl/texture/textureutils.h>
 
 #include <cstddef>        // for size_t
 #include <memory>         // for shared_ptr, uniq...
@@ -67,22 +61,18 @@ const ProcessorInfo ImageMapping::getProcessorInfo() const { return processorInf
 
 ImageMapping::ImageMapping()
     : ImageGLProcessor("img_mapping.frag")
+    , channel_{"channel", "Channel", "Selected channel used for mapping"_help,
+               util::enumeratedOptions("Channel", 4)}
     , transferFunction_(
           "transferFunction", "Transfer Function",
           "The transfer function used for mapping input to output values including the "
           "alpha channel."_help) {
-    addProperty(transferFunction_);
+    addProperties(channel_, transferFunction_);
 }
 
-ImageMapping::~ImageMapping() {}
-
-void ImageMapping::preProcess(TextureUnitContainer&) {
-    TextureUnit transFuncUnit;
-    const Layer* tfLayer = transferFunction_.get().getData();
-    const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
-
-    transferFunctionGL->bindTexture(transFuncUnit.getEnum());
-    shader_.setUniform("transferFunc_", transFuncUnit.getUnitNumber());
+void ImageMapping::preProcess(TextureUnitContainer& container) {
+    utilgl::bindAndSetUniforms(shader_, container, transferFunction_);
+    utilgl::setUniforms(shader_, channel_);
 }
 
 void ImageMapping::afterInportChanged() {
@@ -90,18 +80,7 @@ void ImageMapping::afterInportChanged() {
     // but always output 4 component data representing RGBA
     const DataFormatBase* inputDataFormat = inport_.getData()->getDataFormat();
     size_t precision = inputDataFormat->getPrecision();
-    const DataFormatBase* outputDataFormat =
-        DataFormatBase::get(inputDataFormat->getNumericType(), 4, precision);
-    if (dataFormat_ != outputDataFormat) {
-        dataFormat_ = outputDataFormat;
-
-        // The TF mapping currently only uses the first channel, print warning if we have more
-        // channels
-        if (inputDataFormat->getComponents() > 1)
-            LogWarn("Input data has "
-                    << inputDataFormat->getComponents()
-                    << " components, only the first component will be used in the mapping");
-    }
+    dataFormat_ = DataFormatBase::get(inputDataFormat->getNumericType(), 4, precision);
 }
 
 }  // namespace inviwo

@@ -5,6 +5,7 @@ ivw_module(Base)
 set(HEADER_FILES
     include/modules/base/algorithm/algorithmoptions.h
     include/modules/base/algorithm/cohensutherland.h
+    include/modules/base/algorithm/combinechannels.h
     include/modules/base/algorithm/convexhull.h
     include/modules/base/algorithm/convexhullmesh.h
     include/modules/base/algorithm/cubeproxygeometry.h
@@ -114,6 +115,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumebasistransformer.h
     include/modules/base/processors/volumeboundaryplanes.h
     include/modules/base/processors/volumeboundingbox.h
+    include/modules/base/processors/volumechannelcombiner.h
     include/modules/base/processors/volumeconverter.h
     include/modules/base/processors/volumecreator.h
     include/modules/base/processors/volumecurlcpuprocessor.h
@@ -150,6 +152,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/algorithm/algorithmoptions.cpp
     src/algorithm/cohensutherland.cpp
+    src/algorithm/combinechannels.cpp
     src/algorithm/convexhullmesh.cpp
     src/algorithm/cubeproxygeometry.cpp
     src/algorithm/dataminmax.cpp
@@ -252,6 +255,7 @@ set(SOURCE_FILES
     src/processors/vectortobuffer.cpp
     src/processors/volumeboundaryplanes.cpp
     src/processors/volumeboundingbox.cpp
+    src/processors/volumechannelcombiner.cpp
     src/processors/volumeconverter.cpp
     src/processors/volumecreator.cpp
     src/processors/volumecurlcpuprocessor.cpp

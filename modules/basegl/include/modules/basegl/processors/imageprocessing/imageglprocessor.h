@@ -60,7 +60,7 @@ class TextureUnitContainer;
 class IVW_MODULE_BASEGL_API ImageGLProcessor : public Processor {
 public:
     ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader, bool buildShader = true);
-    ImageGLProcessor(const std::string& fragmentShader, bool buildShader = true);
+    ImageGLProcessor(std::string_view fragmentShader, bool buildShader = true);
     virtual ~ImageGLProcessor();
 
     virtual void initializeResources() override;
@@ -101,8 +101,6 @@ protected:
     SwizzleMask swizzleMask_;
 
     bool internalInvalid_;
-
-    std::string fragmentShader_;
 
     Shader shader_;
 };

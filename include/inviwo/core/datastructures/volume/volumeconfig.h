@@ -73,6 +73,8 @@ struct IVW_CORE_API VolumeConfig {
     DataMapper dataMap() const;
     DataMapper dataMap(const DataMapper& defaultMapper) const;
     VolumeConfig& updateFrom(const VolumeConfig& config);
+
+    friend bool operator==(const VolumeConfig&, const VolumeConfig&) = default;
 };
 
 struct IVW_CORE_API VolumeReprConfig {

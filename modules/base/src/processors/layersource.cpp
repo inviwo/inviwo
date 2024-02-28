@@ -56,15 +56,20 @@ LayerSource::LayerSource(InviwoApplication* app, const std::filesystem::path& fi
 
     DataSource<Layer, LayerOutport>::filePath.setDisplayName("Image File");
     addProperties(dimensions_, basis_);
+    basis_.onChange([this]() { reload.setModified(); });
 }
 
 void LayerSource::dataLoaded(std::shared_ptr<Layer> data) {
     dimensions_.set(data->getDimensions());
     basis_.updateForNewEntity(*data, false);
+
+    basis_.updateEntity(*data);
 }
 void LayerSource::dataDeserialized(std::shared_ptr<Layer> data) {
     dimensions_.set(data->getDimensions());
     basis_.updateForNewEntity(*data, true);
+
+    basis_.updateEntity(*data);
 }
 
 }  // namespace inviwo

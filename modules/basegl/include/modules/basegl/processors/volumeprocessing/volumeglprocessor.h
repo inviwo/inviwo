@@ -91,7 +91,6 @@ protected:
 
     const DataFormatBase* dataFormat_;
     bool internalInvalid_;
-    std::string fragmentShader_;
     Shader shader_;
     FrameBufferObject fbo_;
 };

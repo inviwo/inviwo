@@ -108,7 +108,7 @@ void VolumeGLProcessor::process() {
     fbo_.activate();
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
-    // We always need to ask for a editable representation
+    // We always need to ask for an editable representation
     // this will invalidate any other representations
     VolumeGL* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
     if (reattach) {
