@@ -56,7 +56,7 @@ public:
     int type() const override { return Type; }
 
     void update(const QRectF& rect = QRectF());
-    
+
 protected:
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
     virtual void activityIndicatorChanged(bool active) override;
@@ -65,7 +65,7 @@ private:
     enum class State { Error, Invalid, Running, Ready };
     static constexpr float size_{10.0f};
     static constexpr float lineWidth_{1.0f};
-    
+
     Processor* processor_;
 
     State state_;

@@ -39,7 +39,6 @@
 
 namespace inviwo {
 
-
 class IVW_QTEDITOR_API ProcessorErrorItem : public QGraphicsRectItem {
 public:
     ProcessorErrorItem(QPointF anchor);
@@ -51,15 +50,15 @@ public:
     void clear();
     void setAnchor(QPointF p);
     void setActive(bool active);
-    
+
     QString text() const;
 
     void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
-    
+
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = static_cast<int>(UserType) + static_cast<int>(ProcessorErrorItemType) };
     virtual int type() const override { return Type; }
-    
+
     static constexpr QPointF offset{3.0f, -3.0f};
 
 protected:
@@ -72,6 +71,5 @@ protected:
     bool pressing_;
     QPointF anchorPos_;
 };
-
 
 }  // namespace inviwo

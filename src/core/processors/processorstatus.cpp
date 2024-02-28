@@ -29,7 +29,4 @@
 
 #include <inviwo/core/processors/processorstatus.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

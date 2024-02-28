@@ -53,7 +53,6 @@ class ProcessorNetwork;
 class NetworkVisitor;
 class InviwoApplication;
 
-
 /**
  * \defgroup processors Processors
  */
