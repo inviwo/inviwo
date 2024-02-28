@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/noiseprocessor.h>
+#include <modules/base/processors/noisegenerator2d.h>
 
 #include <inviwo/core/algorithm/markdown.h>               // for operator""_help, operator""_uni...
 #include <inviwo/core/datastructures/image/imagetypes.h>  // for luminance
@@ -62,13 +62,14 @@ namespace inviwo {
 class Image;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo NoiseProcessor::processorInfo_{"org.inviwo.NoiseProcessor",  // Class identifier
-                                                   "Noise Generator 2D",         // Display name
-                                                   "Data Creation",              // Category
-                                                   CodeState::Experimental,      // Code state
-                                                   Tag::CPU | Tag("Image"),      // Tags
-                                                   R"(
-    A processor to generate noise images.
+const ProcessorInfo NoiseGenerator2D::processorInfo_{
+    "org.inviwo.NoiseGenerator2D",           // Class identifier
+    "Noise Generator 2D",                    // Display name
+    "Data Creation",                         // Category
+    CodeState::Stable,                       // Code state
+    Tag::CPU | Tag("Layer") | Tag("Noise"),  // Tags
+    R"(
+    A processor to generate a noise layer.
     Using the Mersenne Twister 19937 generator to generate random numbers.
         
     ![Image Of Noise Types](file:~modulePath~/docs/images/noise_types.png)
@@ -82,13 +83,14 @@ const ProcessorInfo NoiseProcessor::processorInfo_{"org.inviwo.NoiseProcessor", 
       constructed using two [Halton Sequence](https://en.wikipedia.org/wiki/Halton_sequence)
       of different bases (base 2 and base 3 gives good results)
       
-    )"_unindentHelp};
+    )"_unindentHelp,
+};
 
-const ProcessorInfo NoiseProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo NoiseGenerator2D::getProcessorInfo() const { return processorInfo_; }
 
-NoiseProcessor::NoiseProcessor()
+NoiseGenerator2D::NoiseGenerator2D()
     : Processor()
-    , noise_("noise", "Generated noise image"_help, DataFloat32::get(), HandleResizeEvents::No)
+    , noise_("noise", "Generated noise image"_help)
     , size_("size", "Size", "Size of the output image."_help, ivec2(256),
             {ivec2(32), ConstraintBehavior::Editable}, {ivec2(4096), ConstraintBehavior::Editable})
     , type_("type", "Type", "Type of noise to generate."_help,
@@ -154,36 +156,35 @@ NoiseProcessor::NoiseProcessor()
     typeOnChange();
 }
 
-NoiseProcessor::~NoiseProcessor() {}
+NoiseGenerator2D::~NoiseGenerator2D() {}
 
-void NoiseProcessor::process() {
+void NoiseGenerator2D::process() {
     if (useSameSeed_.get()) {
         mt_.seed(seed_.get());
     }
 
     std::uniform_real_distribution<float> r(range_.get().x, range_.get().y);
-    std::shared_ptr<Image> img;
+    std::shared_ptr<Layer> layer;
 
     switch (type_.get()) {
         case NoiseType::Random:
-            img = util::randomImage<float>(size_.get(), mt_, r);
+            layer = util::randomLayer<float>(size_.get(), mt_, r);
             break;
         case NoiseType::Perlin:
-            img = util::perlinNoise(size_.get(), persistence_.get(), levels_.get().x,
-                                    levels_.get().y, mt_);
+            layer = util::perlinNoise(size_.get(), persistence_.get(), levels_.get().x,
+                                      levels_.get().y, mt_);
             break;
         case NoiseType::PoissonDisk:
-            img = util::poissonDisk(size_.get(), poissonDotsAlongX_.get(), poissonMaxPoints_.get(),
-                                    mt_);
+            layer = util::poissonDisk(size_.get(), poissonDotsAlongX_.get(),
+                                      poissonMaxPoints_.get(), mt_);
             break;
         case NoiseType::HaltonSequence:
-            img = util::haltonSequence<float>(size_.get(), haltonNumPoints_.get(),
-                                              haltonXBase_.get(), haltonYBase_.get());
+            layer = util::haltonSequence<float>(size_.get(), haltonNumPoints_.get(),
+                                                haltonXBase_.get(), haltonYBase_.get());
             break;
     }
 
-    img->getColorLayer()->setSwizzleMask(swizzlemasks::luminance);
-    noise_.setData(img);
+    noise_.setData(layer);
 }
 
 }  // namespace inviwo

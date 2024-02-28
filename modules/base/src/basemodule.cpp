@@ -106,7 +106,7 @@
 #include <modules/base/processors/meshplaneclipping.h>                     // for MeshPlaneCli...
 #include <modules/base/processors/meshsequenceelementselectorprocessor.h>  // for MeshSequence...
 #include <modules/base/processors/meshsource.h>                            // for MeshSource
-#include <modules/base/processors/noiseprocessor.h>                        // for NoiseProcessor
+#include <modules/base/processors/noisegenerator2d.h>                      // for NoiseGenerator2D
 #include <modules/base/processors/noisevolumeprocessor.h>                  // for NoiseVolumeP...
 #include <modules/base/processors/ordinalpropertyanimator.h>               // for OrdinalPrope...
 #include <modules/base/processors/orientationindicator.h>                  // for OrientationI...
@@ -221,7 +221,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MeshInformation>();
     registerProcessor<MeshMapping>();
     registerProcessor<MeshPlaneClipping>();
-    registerProcessor<NoiseProcessor>();
+    registerProcessor<NoiseGenerator2D>();
     registerProcessor<PixelToBufferProcessor>();
     registerProcessor<Point3DGenerationProcessor>();
     registerProcessor<PointLightSourceProcessor>();
@@ -328,7 +328,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
 
-int BaseModule::getVersion() const { return 6; }
+int BaseModule::getVersion() const { return 7; }
 
 std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -496,7 +496,12 @@ bool BaseModule::Converter::convert(TxElement* root) {
                                           xml::Kind::property("org.inviwo.Size_tMinMaxProperty")}},
                                         "type", "org.inviwo.Size_tMinMaxProperty",
                                         "org.inviwo.IntMinMaxProperty");
-
+            [[fallthrough]];
+        }
+        case 6: {
+            res |= xml::changeAttribute(root, {{xml::Kind::processor("org.inviwo.NoiseProcessor")}},
+                                        "type", "org.inviwo.NoiseProcessor",
+                                        "org.inviwo.NoiseGenerator2D");
             return res;
         }
 

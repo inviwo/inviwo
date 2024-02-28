@@ -31,7 +31,7 @@
 
 #include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/ports/imageport.h>               // for ImageOutport
+#include <inviwo/core/ports/layerport.h>
 #include <inviwo/core/processors/processor.h>          // for Processor
 #include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
 #include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
@@ -52,19 +52,19 @@ namespace inviwo {
 /**
  * \brief A processor to generate a noise image
  */
-class IVW_MODULE_BASE_API NoiseProcessor : public Processor {
+class IVW_MODULE_BASE_API NoiseGenerator2D : public Processor {
     enum class NoiseType { Random, Perlin, PoissonDisk, HaltonSequence };
 
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    NoiseProcessor();
-    virtual ~NoiseProcessor();
+    NoiseGenerator2D();
+    virtual ~NoiseGenerator2D();
 
     virtual void process() override;
 
 protected:
-    ImageOutport noise_;
+    LayerOutport noise_;
 
     IntSize2Property size_;           ///< Size of the output image.
     OptionProperty<NoiseType> type_;  ///< Witch type of noise to generate.

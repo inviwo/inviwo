@@ -91,21 +91,23 @@ std::vector<T> haltonSequence(size_t base, size_t numberOfPoints) {
 }
 
 /**
- * Generate an Image with sparse noise based on a pair of two Halton Sequences.
+ * Generate a Layer with sparse noise based on a pair of two Halton Sequences.
  * @see haltonSequence(size_t base, size_t numberOfPoints)
  * @see https://en.wikipedia.org/wiki/Halton_sequence
- * @param dims size of the resulting image.
+ * @param dims size of the resulting layer.
  * @param numberOfPoints number of points to generate
  * @param baseX base used for the fractions to generate the x-values
  * @param baseY base used for the fractions to generate the y-values
  */
 template <typename T>
-std::shared_ptr<Image> haltonSequence(size2_t dims, size_t numberOfPoints, size_t baseX = 2,
+std::shared_ptr<Layer> haltonSequence(size2_t dims, size_t numberOfPoints, size_t baseX = 2,
                                       size_t baseY = 3) {
 
-    std::shared_ptr<Image> img = std::make_shared<Image>(dims, DataFormat<T>::get());
-    auto ram = static_cast<LayerRAMPrecision<T>*>(
-        img->getColorLayer()->getEditableRepresentation<LayerRAM>());
+    std::shared_ptr<Layer> layer =
+        std::make_shared<Layer>(LayerConfig{.dimensions = dims,
+                                            .format = DataFormat<T>::get(),
+                                            .swizzleMask = swizzlemasks::defaultData(1)});
+    auto ram = static_cast<LayerRAMPrecision<T>*>(layer->getEditableRepresentation<LayerRAM>());
 
     const auto x = util::haltonSequence<T>(baseX, numberOfPoints);
     const auto y = util::haltonSequence<T>(baseY, numberOfPoints);
@@ -119,7 +121,7 @@ std::shared_ptr<Image> haltonSequence(size2_t dims, size_t numberOfPoints, size_
         auto coord = dimsf * vec2(xi, yi);
         data[index(coord)] = 1;
     }
-    return img;
+    return layer;
 }
 /**
  * Generate an Volume with sparse noise based on a three Halton Sequences.
@@ -210,10 +212,10 @@ void randomSequence(T* data, size_t numberOfElements, Rand& randomNumberGenerato
 }
 
 /**
- * Generate an Image with white noise based using C++ a given random number generator and
+ * Generate a Layer with white noise based using C++ a given random number generator and
  * distribution.
- * @param dims Size of the output image
- * @param randomNumberGenerator the Random number generator to use, defaults to the Mersenne Twister
+ * @param dims Size of the output layer
+ * @param randomNumberGenerator the random number generator to use, defaults to the Mersenne Twister
  * engine (std::mt19937)
  * @param distribution the distribution to use for the random numbers, defaults to
  * std::uniform_int/real_distribution between zero and one
@@ -222,15 +224,17 @@ template <typename T, typename Rand = std::mt19937,
           typename Dist = typename std::conditional<std::is_integral<T>::value,
                                                     std::uniform_int_distribution<T>,
                                                     std::uniform_real_distribution<T>>::type>
-std::shared_ptr<Image> randomImage(size2_t dims, Rand& randomNumberGenerator = Rand(),
+std::shared_ptr<Layer> randomLayer(size2_t dims, Rand& randomNumberGenerator = Rand(),
                                    Dist& distribution = Dist(0, 1)) {
-    std::shared_ptr<Image> img = std::make_shared<Image>(dims, DataFormat<T>::get());
-    auto ram = static_cast<LayerRAMPrecision<T>*>(
-        img->getColorLayer()->getEditableRepresentation<LayerRAM>());
+    std::shared_ptr<Layer> layer =
+        std::make_shared<Layer>(LayerConfig{.dimensions = dims,
+                                            .format = DataFormat<T>::get(),
+                                            .swizzleMask = swizzlemasks::defaultData(1)});
+    auto ram = static_cast<LayerRAMPrecision<T>*>(layer->getEditableRepresentation<LayerRAM>());
 
     randomSequence(ram->getDataTyped(), dims.x * dims.y, randomNumberGenerator, distribution);
 
-    return img;
+    return layer;
 }
 
 /**
@@ -261,38 +265,40 @@ std::shared_ptr<Volume> randomVolume(size3_t dims, Rand& randomNumberGenerator =
 }
 
 /**
- * Generate an Image with perlin noise, a cloud like noise using the sum of several white noise
- * images with different frequencies
- * @param dims Size of the output image
+ * Generate a Layer with perlin noise, a cloud like noise using the sum of several white noise
+ * layers with different frequencies
+ * @param dims Size of the output layer
  * @param persistence controls the amplitude used in the different frequencies
  * @param startLevel controls the min level used. The level is determining the frequency to use
- * in each white noise image as 2^level
+ * in each white noise layer as 2^level
  * @param endLevel controlsthe max level used.
  * @param randomNumberGenerator the Random number generator to use, defaults to the Mersenne Twister
  * engine (std::mt19937)
  */
 template <typename Rand = std::mt19937>
-std::shared_ptr<Image> perlinNoise(size2_t dims, float persistence, size_t startLevel,
+std::shared_ptr<Layer> perlinNoise(size2_t dims, float persistence, size_t startLevel,
                                    size_t endLevel, Rand& randomNumberGenerator = Rand()) {
-    std::shared_ptr<Image> img = std::make_shared<Image>(dims, DataFloat32::get());
-    auto ram = static_cast<LayerRAMPrecision<float>*>(
-        img->getColorLayer()->getEditableRepresentation<LayerRAM>());
-
-    auto size = nextPow2(std::max(dims.x, dims.y));
-    std::vector<std::shared_ptr<Image>> levels;
+    const auto size = nextPow2(std::max(dims.x, dims.y));
+    std::vector<std::shared_ptr<Layer>> levels;
     std::vector<TemplateImageSampler<float, float>> samplers;
     auto currentSize = std::pow(2, startLevel);
     auto iterations = endLevel - startLevel + 1;
     float currentPersistance = 1;
     while (currentSize <= size && iterations--) {
-        size2_t imgsize{static_cast<size_t>(currentSize)};
+        size2_t layerSize{static_cast<size_t>(currentSize)};
         auto dist = std::uniform_real_distribution<float>(-currentPersistance, currentPersistance);
-        auto img1 = util::randomImage<float>(imgsize, randomNumberGenerator, dist);
-        samplers.push_back(TemplateImageSampler<float, float>(img1.get()));
-        levels.push_back(img1);
+        auto randomLayer = util::randomLayer<float>(layerSize, randomNumberGenerator, dist);
+        samplers.push_back(TemplateImageSampler<float, float>(randomLayer.get()));
+        levels.push_back(randomLayer);
         currentSize *= 2;
         currentPersistance *= persistence;
     }
+
+    std::shared_ptr<Layer> layer =
+        std::make_shared<Layer>(LayerConfig{.dimensions = dims,
+                                            .format = DataFloat32::get(),
+                                            .swizzleMask = swizzlemasks::defaultData(1)});
+    auto ram = static_cast<LayerRAMPrecision<float>*>(layer->getEditableRepresentation<LayerRAM>());
 
     auto data = ram->getDataTyped();
     float repri = 1.0f / size;
@@ -310,13 +316,13 @@ std::shared_ptr<Image> perlinNoise(size2_t dims, float persistence, size_t start
         }
     }
 
-    return img;
+    return layer;
 }
 
 /**
- * Generate an Image with sparse noise based on the perlin noise algorith.
+ * Generate a Layer with sparse noise based on the perlin noise algorith.
  * @see http://devmag.org.za/2009/05/03/poisson-disk-sampling/
- * @param dims Size of the output image
+ * @param dims Size of the output layer
  * @param poissonDotsAlongX controlls the amount on points there is on average per line, set the
  * minimum distance between points
  * @param maxPoints a fallback variable to prevent generating to many points
@@ -324,10 +330,8 @@ std::shared_ptr<Image> perlinNoise(size2_t dims, float persistence, size_t start
  * engine (std::mt19937)
  */
 template <typename Rand = std::mt19937>
-std::shared_ptr<Image> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_t maxPoints,
+std::shared_ptr<Layer> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_t maxPoints,
                                    Rand& randomNumberGenerator = Rand()) {
-    std::shared_ptr<Image> img = std::make_shared<Image>(dims, DataFloat32::get());
-
     std::uniform_int_distribution<int> rx(0, static_cast<int>(dims.x));
     std::uniform_int_distribution<int> ry(0, static_cast<int>(dims.y));
     std::uniform_real_distribution<float> rand(0, 1);
@@ -346,11 +350,15 @@ std::shared_ptr<Image> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
         return glm::i32vec2(newX, newY);
     };
 
-    auto gridImg = std::make_unique<Image>(gridSize, DataVec2Int32::get());
-    auto grid = gridImg->getColorLayer()->getEditableRepresentation<LayerRAM>();
+    std::shared_ptr<Layer> layer =
+        std::make_shared<Layer>(LayerConfig{.dimensions = dims,
+                                            .format = DataFloat32::get(),
+                                            .swizzleMask = swizzlemasks::defaultData(1)});
+    auto imgData = static_cast<float*>(layer->getEditableRepresentation<LayerRAM>()->getData());
 
-    auto imgData =
-        static_cast<float*>(img->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
+    auto gridLayer = std::make_unique<Layer>(
+        LayerConfig{.dimensions = gridSize, .format = DataVec2Int32::get()});
+    auto grid = gridLayer->getEditableRepresentation<LayerRAM>();
     auto gridData = static_cast<glm::i32vec2*>(grid->getData());
     util::IndexMapper2D imgIndex(dims);
     util::IndexMapper2D gridIndex(gridSize);
@@ -416,7 +424,7 @@ std::shared_ptr<Image> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
         }
     }
 
-    return img;
+    return layer;
 }
 
 }  // namespace util
