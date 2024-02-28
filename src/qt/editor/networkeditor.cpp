@@ -67,6 +67,7 @@
 #include <inviwo/qt/editor/processorlistwidget.h>
 #include <inviwo/qt/editor/processorportgraphicsitem.h>
 #include <inviwo/qt/editor/processorprogressgraphicsitem.h>
+#include <inviwo/qt/editor/processorerroritem.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/editor/processorstatusgraphicsitem.h>
@@ -93,6 +94,7 @@
 #include <QMimeData>
 #include <QMargins>
 #include <QGraphicsView>
+#include <QGraphicsSimpleTextItem>
 
 #include <fmt/std.h>
 
@@ -100,17 +102,52 @@ namespace inviwo {
 
 const int NetworkEditor::gridSpacing_ = 25;
 
-NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
+NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
     : QGraphicsScene()
     , processorDragHelper_{new ProcessorDragHelper(*this)}
     , linkDragHelper_{new LinkDragHelper(*this)}
     , connectionDragHelper_{new ConnectionDragHelper(*this)}
     , processorItem_(nullptr)
-    , mainwindow_(mainwindow)
-    , network_(mainwindow->getInviwoApplication()->getProcessorNetwork())
+    , mainWindow_(mainWindow)
+    , network_(mainWindow->getInviwoApplication()->getProcessorNetwork())
     , modified_(false)
     , backgroundVisible_(true)
     , adjustSceneToChange_(true) {
+
+    mainWindow->getInviwoApplication()->getProcessorNetworkEvaluator()->setExceptionHandler(
+        [this](Processor* processor, EvaluationType type, ExceptionContext context) {
+            const auto& id = processor->getIdentifier();
+            const auto error = [&](std::string error) {
+                processor->setMetaData<StringMetaData>("ProcessError", error);
+                if (auto pgi = getProcessorGraphicsItem(processor)) {
+                    pgi->getStatusItem()->updateState();
+                    pgi->setErrorText(error);
+                }
+            };
+
+            try {
+                throw;
+            } catch (const Exception& e) {
+                error(fmt::format("{}: {}", type, e.getMessage()));
+                util::log(e.getContext(),
+                          fmt::format("{} Error in {} : {}", id, type, e.getFullMessage()),
+                          LogLevel::Error);
+            } catch (const fmt::format_error& e) {
+                error(fmt::format("{}: {}", type, e.what()));
+                util::log(context,
+                          fmt::format("{} Error in {} using fmt formatting: {}\n{}", id, type,
+                                      e.what(), util::fmtHelp.view()),
+                          LogLevel::Error);
+            } catch (const std::exception& e) {
+                error(fmt::format("{}: {}", type, e.what()));
+                util::log(context, fmt::format("{} Error in {} : {}", id, type, e.what()),
+                          LogLevel::Error);
+            } catch (...) {
+                error(fmt::format("{}: Unknown error", type));
+                util::log(context, fmt::format("{} Error in {} : Unknown error", id, type),
+                          LogLevel::Error);
+            }
+        });
 
     network_->addObserver(this);
 
@@ -138,9 +175,9 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
 }
 
 ProcessorNetwork* NetworkEditor::getNetwork() const { return network_; }
-InviwoMainWindow* NetworkEditor::getMainWindow() const { return mainwindow_; }
+InviwoMainWindow* NetworkEditor::getMainWindow() const { return mainWindow_; }
 TextLabelOverlay& NetworkEditor::getOverlay() const {
-    return mainwindow_->getNetworkEditorOverlay();
+    return mainWindow_->getNetworkEditorOverlay();
 }
 
 ProcessorGraphicsItem* NetworkEditor::addProcessorRepresentations(Processor* processor) {
@@ -204,7 +241,7 @@ void NetworkEditor::addPropertyWidgets(Processor* processor) {
     if (it == processorGraphicsItems_.end() ||
         QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier)) {
         QCoreApplication::postEvent(
-            mainwindow_->getPropertyListWidget(),
+            mainWindow_->getPropertyListWidget(),
             new PropertyListEvent(PropertyListEvent::Action::Add, processor->getIdentifier()),
             Qt::LowEventPriority);
     }
@@ -212,14 +249,14 @@ void NetworkEditor::addPropertyWidgets(Processor* processor) {
 
 void NetworkEditor::removePropertyWidgets(Processor* processor) {
     QCoreApplication::postEvent(
-        mainwindow_->getPropertyListWidget(),
+        mainWindow_->getPropertyListWidget(),
         new PropertyListEvent(PropertyListEvent::Action::Remove, processor->getIdentifier()),
         Qt::LowEventPriority);
 }
 
 void NetworkEditor::removeAndDeletePropertyWidgets(Processor* processor) {
     // Will not use events here since we might delete the processor
-    mainwindow_->getPropertyListWidget()->removeAndDeleteProcessorProperties(processor);
+    mainWindow_->getPropertyListWidget()->removeAndDeleteProcessorProperties(processor);
 }
 
 ConnectionGraphicsItem* NetworkEditor::addConnectionGraphicsItem(const PortConnection& connection) {
@@ -291,12 +328,12 @@ void NetworkEditor::removeLinkGraphicsItem(LinkConnectionGraphicsItem* linkGraph
 }
 
 void NetworkEditor::showLinkDialog(Processor* processor1, Processor* processor2) {
-    auto dialog = new LinkDialog(processor1, processor2, mainwindow_);
+    auto dialog = new LinkDialog(processor1, processor2, mainWindow_);
     dialog->show();
 }
 
 std::shared_ptr<const Image> NetworkEditor::renderPortInspectorImage(Outport* outport) {
-    auto pim = mainwindow_->getInviwoApplication()->getPortInspectorManager();
+    auto pim = mainWindow_->getInviwoApplication()->getPortInspectorManager();
     return pim->renderPortInspectorImage(outport);
 }
 
@@ -487,7 +524,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     auto addVisualizers = [this](QMenu& menu, ProcessorOutportGraphicsItem* ogi) {
         auto outport = ogi->getPort();
 
-        auto app = mainwindow_->getInviwoApplication();
+        auto app = mainWindow_->getInviwoApplication();
         auto pim = app->getPortInspectorManager();
 
         if (pim->isPortInspectorSupported(outport)) {
@@ -632,7 +669,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             QAction* showPropAction = menu.addAction(tr("Show &Properties"));
             connect(showPropAction, &QAction::triggered, [this, processor]() {
                 auto plw = std::make_unique<PropertyListWidget>(
-                    mainwindow_, mainwindow_->getInviwoApplication());
+                    mainWindow_, mainWindow_->getInviwoApplication());
                 plw->setFloating(true);
                 plw->addProcessorProperties(processor->getProcessor());
                 plw->setWindowTitle(utilqt::toQString(processor->getProcessor()->getDisplayName()));
@@ -643,7 +680,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             QAction* internalLink = menu.addAction(tr("Show Internal &Links"));
             connect(internalLink, &QAction::triggered,
                     [this, processor = processor->getProcessor()]() {
-                        auto dialog = new LinkDialog(processor, processor, mainwindow_);
+                        auto dialog = new LinkDialog(processor, processor, mainWindow_);
                         dialog->show();
                     });
 
@@ -738,14 +775,14 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             menu.addAction(QIcon(":/svgicons/developermode.svg"), tr("Configure Properties"));
         selectPropAction->setEnabled(selectedComposites.size() == 1);
         connect(selectPropAction, &QAction::triggered, this, [this, selectedComposites]() {
-            auto dialog = new SubPropertySelectionDialog(*selectedComposites.begin(), mainwindow_);
+            auto dialog = new SubPropertySelectionDialog(*selectedComposites.begin(), mainWindow_);
             dialog->show();
         });
 
         auto saveCompAction = menu.addAction(QIcon(":/svgicons/save.svg"), tr("&Save Composite"));
         connect(saveCompAction, &QAction::triggered, this, [this, selectedComposites]() {
             for (auto& p : selectedComposites) {
-                const auto compDir = mainwindow_->getInviwoApplication()->getPath(
+                const auto compDir = mainWindow_->getInviwoApplication()->getPath(
                     PathType::Settings, "/composites", true);
                 const auto filename = util::findUniqueIdentifier(
                     util::stripIdentifier(p->getDisplayName()),
@@ -768,26 +805,19 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         auto cutAction = menu.addAction(QIcon(":/svgicons/edit-cut.svg"), tr("Cu&t"));
         cutAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
         connect(cutAction, &QAction::triggered, this, [this]() {
-            auto data = cut();
-            auto mimedata = std::make_unique<QMimeData>();
-            mimedata->setData(utilqt::toQString(getMimeTag()), data);
-            mimedata->setData(QString("text/plain"), data);
-            QApplication::clipboard()->setMimeData(mimedata.release());
+            auto mimeData = cut();
+            QApplication::clipboard()->setMimeData(mimeData.release());
         });
 
         auto copyAction = menu.addAction(QIcon(":/svgicons/edit-copy.svg"), tr("&Copy"));
         copyAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
         connect(copyAction, &QAction::triggered, this, [this]() {
-            auto data = copy();
-            auto mimedata = std::make_unique<QMimeData>();
-            mimedata->setData(utilqt::toQString(getMimeTag()), data);
-            mimedata->setData(QString("text/plain"), data);
-            QApplication::clipboard()->setMimeData(mimedata.release());
+            auto mimeData = copy();
+            QApplication::clipboard()->setMimeData(mimeData.release());
         });
 
         auto pasteAction = menu.addAction(QIcon(":/svgicons/edit-paste.svg"), tr("&Paste"));
-        auto clipboard = QApplication::clipboard();
-        auto mimeData = clipboard->mimeData();
+        auto mimeData = QApplication::clipboard()->mimeData();
         if (mimeData->formats().contains(utilqt::toQString(getMimeTag()))) {
             pasteAction->setEnabled(true);
         } else if (mimeData->formats().contains(QString("text/plain"))) {
@@ -796,12 +826,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             pasteAction->setEnabled(false);
         }
         connect(pasteAction, &QAction::triggered, this, [this]() {
-            auto clipboard = QApplication::clipboard();
-            auto mimeData = clipboard->mimeData();
-            if (mimeData->formats().contains(utilqt::toQString(getMimeTag()))) {
-                paste(mimeData->data(utilqt::toQString(getMimeTag())));
-            } else if (mimeData->formats().contains(QString("text/plain"))) {
-                paste(mimeData->data(QString("text/plain")));
+            if (auto mimeData = QApplication::clipboard()->mimeData()) {
+                paste(*mimeData);
             }
         });
 
@@ -819,7 +845,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 }
 
 void NetworkEditor::showProcessorHelp(const std::string& classIdentifier, bool raise /*= false*/) {
-    auto help = mainwindow_->getHelpWidget();
+    auto help = mainWindow_->getHelpWidget();
     if (raise) {
         if (!help->isVisible()) help->show();
         help->raise();
@@ -883,7 +909,27 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
     });
 }
 
-QByteArray NetworkEditor::copy() const {
+std::unique_ptr<QMimeData> NetworkEditor::copy() const {
+    auto copyError = [](auto&& container) -> std::unique_ptr<QMimeData> {
+        if (container.size() == 1) {
+            if (auto error = qgraphicsitem_cast<ProcessorErrorItem*>(container.front())) {
+                const auto str = utilqt::fromQString(error->text());
+                QByteArray byteArray(str.c_str(), static_cast<int>(str.length()));
+                auto mimeData = std::make_unique<QMimeData>();
+                mimeData->setData(QString("text/plain"), byteArray);
+                return mimeData;
+            }
+        }
+        return nullptr;
+    };
+
+    if (auto mimeData = copyError(selectedItems())) {
+        return mimeData;
+    }
+    if (auto mimeData = copyError(clickedOnItems_)) {
+        return mimeData;
+    }
+
     std::stringstream ss;
     std::vector<ProcessorGraphicsItem*> items;
     for (auto& item : clickedOnItems_) {
@@ -903,26 +949,39 @@ QByteArray NetworkEditor::copy() const {
 
     pastePos_.first = false;
 
-    return byteArray;
+    auto mimeData = std::make_unique<QMimeData>();
+    mimeData->setData(utilqt::toQString(NetworkEditor::getMimeTag()), byteArray);
+    mimeData->setData(QString("text/plain"), byteArray);
+
+    return mimeData;
 }
 
-QByteArray NetworkEditor::cut() {
+std::unique_ptr<QMimeData> NetworkEditor::cut() {
     auto res = copy();
     deleteSelection();
     return res;
 }
 
-void NetworkEditor::paste(QByteArray mimeData) {
+void NetworkEditor::paste(const QMimeData& mimeData) {
+    QByteArray data;
+    if (mimeData.formats().contains(utilqt::toQString(NetworkEditor::getMimeTag()))) {
+        data = mimeData.data(utilqt::toQString(NetworkEditor::getMimeTag()));
+    } else if (mimeData.formats().contains(QString("text/plain"))) {
+        data = mimeData.data(QString("text/plain"));
+    } else {
+        return;
+    }
+
     NetworkLock lock(network_);
     try {
         auto orgBounds = util::getBoundingBox(network_);
 
         std::stringstream ss;
-        for (auto d : mimeData) ss << d;
+        for (auto d : data) ss << d;
         // Activate the default context, might be needed in processor constructors.
         RenderContext::getPtr()->activateDefaultRenderContext();
         auto added = util::appendPartialProcessorNetwork(network_, ss, "",
-                                                         mainwindow_->getInviwoApplication());
+                                                         mainWindow_->getInviwoApplication());
 
         auto center = util::getCenterPosition(added);
         auto bounds = util::getBoundingBox(added);
@@ -968,7 +1027,7 @@ void NetworkEditor::append(const std::filesystem::path& workspace) {
     NetworkLock lock(network_);
     try {
         const auto added =
-            util::appendProcessorNetwork(network_, workspace, mainwindow_->getInviwoApplication());
+            util::appendProcessorNetwork(network_, workspace, mainWindow_->getInviwoApplication());
 
         // Make sure the pasted processors are in the view
         auto selection = selectedItems();

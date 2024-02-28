@@ -229,6 +229,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorpair.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorstate.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorstatus.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processortags.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processortraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorutils.h
@@ -602,6 +603,7 @@ set(SOURCE_FILES
     processors/processorinfo.cpp
     processors/processorpair.cpp
     processors/processorstate.cpp
+    processors/processorstatus.cpp
     processors/processortags.cpp
     processors/processorutils.cpp
     processors/processorwidget.cpp

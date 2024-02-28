@@ -90,12 +90,12 @@ class IVW_QTEDITOR_API NetworkEditor : public QGraphicsScene,
     Q_OBJECT
 #include <warn/pop>
 public:
-    NetworkEditor(InviwoMainWindow* mainwindow);
+    NetworkEditor(InviwoMainWindow* mainWindow);
     virtual ~NetworkEditor() = default;
 
-    QByteArray copy() const;
-    QByteArray cut();
-    void paste(QByteArray data);
+    std::unique_ptr<QMimeData> copy() const;
+    std::unique_ptr<QMimeData> cut();
+    void paste(const QMimeData& data);
     void append(const std::filesystem::path& workspace);
     void selectAll();
     void deleteSelection();
@@ -240,7 +240,7 @@ private:
     std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0, 0}};
     mutable std::pair<bool, ivec2> pastePos_ = {false, ivec2{0, 0}};
 
-    InviwoMainWindow* mainwindow_;
+    InviwoMainWindow* mainWindow_;
     ProcessorNetwork* network_;
     static const int gridSpacing_;
     bool modified_;

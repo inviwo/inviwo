@@ -44,64 +44,67 @@ ProcessorStatusGraphicsItem::ProcessorStatusGraphicsItem(QGraphicsRectItem* pare
                                                          Processor* processor)
     : EditorGraphicsItem(parent)
     , processor_(processor)
-    , size_(10.0f)
-    , lineWidth_(1.0f)
     , state_(processor_->isReady() ? State::Ready : State::Invalid)
     , current_(processor_->isReady() ? State::Ready : State::Invalid) {
     setRect(-0.5f * size_ - lineWidth_, -0.5f * size_ - lineWidth_, size_ + 2.0 * lineWidth_,
             size_ + 2.0 * lineWidth_);
 }
 
-void ProcessorStatusGraphicsItem::setRunning(bool running) {
-    if (running) {
+void ProcessorStatusGraphicsItem::updateState(bool running) {
+    if (processor_->hasMetaData("ProcessError")) {
+        state_ = State::Error;
+    } else if (running) {
         state_ = State::Running;
-    } else if (processor_->isReady()) {
-        state_ = State::Ready;
     } else {
-        state_ = State::Invalid;
+        switch (processor_->status().status()) {
+            case ProcessorStatus::Ready:
+                state_ = State::Ready;
+                break;
+            case ProcessorStatus::NotReady:
+                state_ = State::Invalid;
+                break;
+            case ProcessorStatus::Error:
+                state_ = State::Error;
+                break;
+        }
     }
-    update();
+    if (current_ != state_) EditorGraphicsItem::update();
 }
 
 void ProcessorStatusGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
-    qreal ledRadius = size_ / 2.0f;
-    QColor baseColor = QColor(0, 170, 0).lighter(200);
+    constexpr qreal ledRadius = size_ / 2.0f;
+    constexpr QColor readyColor{68, 243, 68};
+    constexpr QColor invalidColor{30, 81, 30};
+    constexpr QColor errorColor{241, 49, 49};
+    constexpr QColor runningColor{253, 211, 37};
+    constexpr QColor borderColor{124, 124, 124};
 
-    QColor ledColor;
-    QColor borderColor(124, 124, 124);
+    const auto ledColor = [&]() {
+        switch (state_) {
+            case State::Ready:
+                return readyColor;
+            case State::Running:
+                return runningColor;
+            case State::Invalid:
+                return invalidColor;
+            case State::Error:
+                return errorColor;
+        }
+        return invalidColor;
+    }();
 
-    switch (state_) {
-        case State::Ready:
-            ledColor = baseColor;
-            break;
-        case State::Running:
-            ledColor = QColor(255, 221, 85);
-            break;
-        case State::Invalid:
-            ledColor = baseColor.darker(400);
-            break;
-    }
     current_ = state_;
 
     p->save();
-    p->setPen(QPen(borderColor, 1.0));
+    p->setPen(QPen(borderColor, lineWidth_));
     p->setRenderHint(QPainter::Antialiasing, true);
     p->setBrush(QBrush(ledColor));
     p->drawEllipse(QPointF(0.0f, 0.0f), ledRadius, ledRadius);
     p->restore();
 }
 
-void ProcessorStatusGraphicsItem::activityIndicatorChanged(bool active) { setRunning(active); }
+void ProcessorStatusGraphicsItem::activityIndicatorChanged(bool active) { updateState(active); }
 
-void ProcessorStatusGraphicsItem::update(const QRectF& rect) {
-    if (state_ != State::Running) {
-        if (processor_->isReady()) {
-            state_ = State::Ready;
-        } else {
-            state_ = State::Invalid;
-        }
-    }
-    if (current_ != state_) EditorGraphicsItem::update(rect);
-}
+void ProcessorStatusGraphicsItem::update(const QRectF&) { updateState(false); }
 
 }  // namespace inviwo

@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processorstatus.h>
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/util/statecoordinator.h>
 #include <inviwo/core/util/dispatcher.h>
@@ -287,6 +288,14 @@ public:
     bool isReady() const;
 
     /**
+     * Returns whether the processor is ready to be processed. By default this will call
+     * allInportsAreReady. This behavior can be customized by setting the isReady_ update functor.
+     * @see StateCoordinator
+     * @see allInportsAreReady
+     */
+    const ProcessorStatus& status() const;
+
+    /**
      * Deriving classes should override this function to do the main work of the processor.
      * This function is called by the ProcessorNetworkEvaluator when the network is evaluated and
      * the processor is invalid, i.e. some of its inports or properties has been modified, and is
@@ -317,7 +326,7 @@ public:
     /**
      * Triggers invalidation.
      * Perform only full reimplementation of this function, meaning never call
-     * Proccessor::invalidate()
+     * Processor::invalidate()
      * in your reimplemented invalidation function.
      * The general scheme is that the processor will invalidate is self and it's outports
      * the outports will in turn invalidate their connected inports, which will invalidate their
@@ -428,7 +437,8 @@ public:
 
 protected:
     std::unique_ptr<ProcessorWidget> processorWidget_;
-    StateCoordinator<bool> isReady_;
+    StateCoordinator<ProcessorStatus> isReady_;
+    static std::function<ProcessorStatus()> getDefaultIsReadyUpdater(Processor*);
     StateCoordinator<bool> isSink_;
     StateCoordinator<bool> isSource_;
     /**

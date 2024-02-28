@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,63 +26,50 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QGraphicsItem>
+#include <inviwo/qt/editor/editorgrapicsitem.h>
+
 #include <QGraphicsRectItem>
-#include <QGraphicsSceneHelpEvent>
-#include <warn/pop>
+#include <QString>
+#include <QPointF>
+
+#include <string_view>
 
 namespace inviwo {
 
-class NetworkEditor;
-
-enum InviwoUserGraphicsItemType {
-    ProcessorGraphicsType = 1,
-    CurveGraphicsType,
-    ConnectionDragGraphicsType,
-    ConnectionGraphicsType,
-    LinkGraphicsType,
-    LinkConnectionDragGraphicsType,
-    LinkConnectionGraphicsType,
-    ProcessorProgressGraphicsType,
-    ProcessorStatusGraphicsType,
-    ProcessorLinkGraphicsType,
-    ProcessorInportGraphicsType,
-    ProcessorOutportGraphicsType,
-    ProcessorErrorItemType
-};
-
-namespace depth {
-// Z value for various graphics items.
-static constexpr double dragItem = 4.0;
-static constexpr double processorSelected = 3.0;
-static constexpr double processorError = 2.5;
-static constexpr double processor = 2.0;
-static constexpr double connection = 1.0;
-static constexpr double link = 0.0;
-}  // namespace depth
-
-class Port;
-
-class IVW_QTEDITOR_API EditorGraphicsItem : public QGraphicsRectItem {
+class IVW_QTEDITOR_API ProcessorErrorItem : public QGraphicsRectItem {
 public:
-    EditorGraphicsItem();
-    EditorGraphicsItem(QGraphicsItem* parent);
-    virtual ~EditorGraphicsItem();
-    QPoint mapPosToSceen(QPointF pos) const;
+    ProcessorErrorItem(QPointF anchor);
 
-    virtual void showToolTip(QGraphicsSceneHelpEvent* event);
-    void showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) const;
+    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options,
+                       QWidget* widget) override;
+
+    void setText(std::string_view error);
+    void clear();
+    void setAnchor(QPointF p);
+    void setActive(bool active);
+
+    QString text() const;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
+
+    // override for qgraphicsitem_cast (refer qt documentation)
+    enum { Type = static_cast<int>(UserType) + static_cast<int>(ProcessorErrorItemType) };
+    virtual int type() const override { return Type; }
+
+    static constexpr QPointF offset{3.0f, -3.0f};
 
 protected:
-    void showToolTipHelper(QGraphicsSceneHelpEvent* event, QString string) const;
-    NetworkEditor* getNetworkEditor() const;
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+
+    QGraphicsSimpleTextItem* text_;
+    QGraphicsLineItem* line_;
+    bool hasError_;
+    bool active_;
+    bool pressing_;
+    QPointF anchorPos_;
 };
 
 }  // namespace inviwo

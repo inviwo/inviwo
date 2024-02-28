@@ -50,7 +50,7 @@ LinkDragHelper::~LinkDragHelper() = default;
 void LinkDragHelper::start(ProcessorLinkGraphicsItem* item, QPointF endPos) {
     link_ = std::make_unique<LinkConnectionDragGraphicsItem>(item, endPos);
     editor_.addItem(link_.get());
-    link_->setZValue(DRAGING_ITEM_DEPTH);
+    link_->setZValue(depth::dragItem);
     link_->show();
 }
 

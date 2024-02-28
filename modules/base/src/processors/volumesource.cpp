@@ -63,7 +63,8 @@
 #include <type_traits>  // for remove_extent_t
 #include <utility>      // for move
 
-#include <fmt/core.h>  // for format
+#include <fmt/format.h>  // for format
+#include <fmt/std.h>
 
 namespace inviwo {
 class Deserializer;
@@ -107,17 +108,31 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& 
 
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
-    isReady_.setUpdate([this]() {
-        return !loadingFailed_ && std::filesystem::is_regular_file(file_.get()) &&
-               !reader_.getSelectedValue().empty();
+    isReady_.setUpdate([this]() -> ProcessorStatus {
+        if (loadingFailed_) {
+            return {ProcessorStatus::Error, error_};
+        } else if (file_.get().empty()) {
+            static constexpr std::string_view reason{"File not set"};
+            return {ProcessorStatus::NotReady, reason};
+        } else if (!std::filesystem::is_regular_file(file_.get())) {
+            static constexpr std::string_view reason{"Invalid or missing file"};
+            return {ProcessorStatus::Error, reason};
+        } else if (reader_.getSelectedValue().empty()) {
+            static constexpr std::string_view reason{"No reader found for file"};
+            return {ProcessorStatus::Error, reason};
+        } else {
+            return ProcessorStatus::Ready;
+        }
     });
     file_.onChange([this]() {
-        loadingFailed_ = false;
         util::updateReaderFromFile(file_, reader_);
+        loadingFailed_ = false;
+        error_.clear();
         isReady_.update();
     });
     reader_.onChange([this]() {
         loadingFailed_ = false;
+        error_.clear();
         isReady_.update();
     });
 }
@@ -150,16 +165,18 @@ void VolumeSource::load(bool deserialize) {
                 std::swap(volumes, volumes_);
                 rm->addResource(file_.get().generic_string(), volumes_, reload_.isModified());
             } else {
-                LogProcessorError("Could not find a data reader for file: " << file_.get());
                 volumes_.reset();
+                error_ = fmt::format("Could not find a data reader for file: {}", file_.get());
                 loadingFailed_ = true;
                 isReady_.update();
+                LogProcessorError(error_);
             }
         } catch (DataReaderException const& e) {
-            LogProcessorError(e.getMessage());
             volumes_.reset();
+            error_ = e.getMessage();
             loadingFailed_ = true;
             isReady_.update();
+            LogProcessorError(e.getMessage());
         }
     }
 

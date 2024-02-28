@@ -138,31 +138,20 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
             switch (t) {
                 case MenuItemType::cut: {
                     if (editor_->selectedItems().empty()) return;
-                    auto data = editor_->cut();
-                    auto mimedata = std::make_unique<QMimeData>();
-                    mimedata->setData(utilqt::toQString(NetworkEditor::getMimeTag()), data);
-                    mimedata->setData(QString("text/plain"), data);
-                    QApplication::clipboard()->setMimeData(mimedata.release());
+                    auto mimeData = editor_->cut();
+                    QApplication::clipboard()->setMimeData(mimeData.release());
                     return;
                 }
                 case MenuItemType::copy: {
                     if (editor_->selectedItems().empty()) return;
-                    auto data = editor_->copy();
-                    auto mimedata = std::make_unique<QMimeData>();
-                    mimedata->setData(utilqt::toQString(NetworkEditor::getMimeTag()), data);
-                    mimedata->setData(QString("text/plain"), data);
-                    QApplication::clipboard()->setMimeData(mimedata.release());
+                    auto mimeData = editor_->copy();
+                    QApplication::clipboard()->setMimeData(mimeData.release());
                     return;
                 }
                 case MenuItemType::paste: {
                     auto clipboard = QApplication::clipboard();
-                    auto mimeData = clipboard->mimeData();
-                    if (mimeData->formats().contains(
-                            utilqt::toQString(NetworkEditor::getMimeTag()))) {
-                        editor_->paste(
-                            mimeData->data(utilqt::toQString(NetworkEditor::getMimeTag())));
-                    } else if (mimeData->formats().contains(QString("text/plain"))) {
-                        editor_->paste(mimeData->data(QString("text/plain")));
+                    if (auto mimeData = clipboard->mimeData()) {
+                        editor_->paste(*mimeData);
                     }
                     return;
                 }

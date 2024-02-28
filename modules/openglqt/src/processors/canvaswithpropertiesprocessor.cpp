@@ -188,8 +188,13 @@ CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
     });
 
     isSink_.setUpdate([this]() { return processorWidget_ && processorWidget_->isVisible(); });
-    isReady_.setUpdate([this]() {
-        return allInportsAreReady() && processorWidget_ && processorWidget_->isVisible();
+    isReady_.setUpdate([this, defaultCheck = getDefaultIsReadyUpdater(this)]() -> ProcessorStatus {
+        if (!processorWidget_ || !processorWidget_->isVisible()) {
+            static constexpr std::string_view reason{"Canvas is not visible"};
+            return {ProcessorStatus::NotReady, reason};
+        } else {
+            return defaultCheck();
+        }
     });
 }
 

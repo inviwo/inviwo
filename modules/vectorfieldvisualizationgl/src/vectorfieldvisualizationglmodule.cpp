@@ -33,8 +33,6 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/io/serialization/ticpp.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
-#include <modules/opengl/openglcapabilities.h>
-#include <modules/opengl/openglmodule.h>
 #include <modules/opengl/shader/shadermanager.h>
 #include <modules/vectorfieldvisualizationgl/processors/2d/hedgehog2d.h>
 #include <modules/vectorfieldvisualizationgl/processors/2d/lic2d.h>
@@ -80,10 +78,7 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
     registerProcessor<TMIP>();
     registerProcessor<VectorFieldGenerator4D>();
 
-    auto& gl = app->getModuleByType<OpenGLModule>()->getOpenGLCapabilities();
-    if (gl.getOpenGLVersion() >= 430) {
-        registerProcessor<StreamParticles>();
-    }
+    registerProcessor<StreamParticles>();
 }
 
 int VectorFieldVisualizationGLModule::getVersion() const { return 1; }

@@ -46,12 +46,23 @@
 
 namespace inviwo {
 
+std::function<ProcessorStatus()> Processor::getDefaultIsReadyUpdater(Processor* p) {
+    return [p]() -> ProcessorStatus {
+        if (p->allInportsAreReady()) {
+            return ProcessorStatus::Ready;
+        } else {
+            static constexpr std::string_view reason{"Inports are not ready"};
+            return {ProcessorStatus::NotReady, reason};
+        }
+    };
+}
+
 Processor::Processor(std::string_view identifier, std::string_view displayName)
     : PropertyOwner()
     , ProcessorObservable()
     , processorWidget_(nullptr)
     , isReady_{true, [this](const bool&) { notifyObserversReadyChange(this); },
-               [this]() { return allInportsAreReady(); }}
+               getDefaultIsReadyUpdater(this)}
     , isSink_{true, [this](const bool&) { notifyObserversSinkChange(this); },
               [this]() { return outports_.empty(); }}
     , isSource_{true, [this](const bool&) { notifyObserversSourceChange(this); },
@@ -302,7 +313,9 @@ bool Processor::isSource() const { return isSource_; }
 
 bool Processor::isSink() const { return isSink_; }
 
-bool Processor::isReady() const { return isReady_; }
+bool Processor::isReady() const { return isReady_.get(); }
+
+const ProcessorStatus& Processor::status() const { return isReady_.get(); }
 
 bool Processor::allInportsAreReady() const {
     return util::all_of(inports_, [](Inport* p) { return p->isReady() || p->isOptional(); });

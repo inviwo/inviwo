@@ -83,6 +83,7 @@ private:
 
     bool deserialized_ = false;
     bool loadingFailed_ = false;
+    std::string error_;
 };
 
 }  // namespace inviwo
