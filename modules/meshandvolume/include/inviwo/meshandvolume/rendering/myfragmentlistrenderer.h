@@ -30,16 +30,13 @@
 
 #include <inviwo/meshandvolume/meshandvolumemoduledefine.h>
 
+#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/glmvec.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>
-#include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/buffer/bufferobject.h>
-#include <inviwo/core/util/dispatcher.h>
-#include <modules/meshrenderinggl/datastructures/rasterization.h>
-
+#include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/texture/textureunit.h>
-#include <inviwo/core/datastructures/transferfunction.h>
-#include <inviwo/core/datastructures/light/lightingstate.h>
 
 namespace inviwo {
 
@@ -52,21 +49,22 @@ public:
 
     void prePass(const size2_t& screenSize);
 
-    void setShaderUniforms(Shader& shader);
+    void setShaderUniforms(Shader& shader) const;
 
     bool postPass(bool useIllustration, const Image* background,
-                  std::function<void(Shader&)> setUniformsCallback);
+                  std::function<void(Shader&, TextureUnitContainer&)> setUniformsCallback);
+
+    void beginCount();
+    void endCount();
 
     static bool supportsFragmentLists();
 
-    typename Dispatcher<void()>::Handle onReload(std::function<void()> callback);
+    DispatcherHandle<void()> onReload(std::function<void()> callback);
 
 private:
-    void initializeClearShader();
-    void initializeDisplayShader();
-    void rebuildShaders(bool hasBackground = false);
+    void buildShaders(bool hasBackground = false);
 
-    void setUniforms(Shader& shader, TextureUnit& abuffUnit) const;
+    void setUniforms(Shader& shader, const TextureUnit& abuffUnit) const;
     void resizeBuffers(const size2_t& screenSize);
 
     size2_t screenSize_;

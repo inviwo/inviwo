@@ -96,7 +96,7 @@ uniform sampler2D tfSamplers[4];
 uniform VolumeParameters volumeParameters[4];
 uniform int volumeChannels[4];
 uniform float opacityScaling[4] = float[4](1, 1, 1, 1);
-uniform LightParameters lighting[4];
+uniform LightParameters lighting;
 
 struct RaycastingInfo {
     // TODO: needed for illumination calculations or similar?

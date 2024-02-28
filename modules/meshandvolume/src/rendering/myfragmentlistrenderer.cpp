@@ -44,8 +44,6 @@
 #include <modules/opengl/volume/volumegl.h>
 #include <inviwo/core/util/stringconversion.h>
 
-#pragma optimize("", off)
-
 namespace inviwo {
 
 MyFragmentListRenderer::MyFragmentListRenderer()
@@ -62,17 +60,11 @@ MyFragmentListRenderer::MyFragmentListRenderer()
     , display_("oit/simplequad.vert", "oit/mydisplay.frag", Shader::Build::No) {
 
     LGL_ERROR_CLASS;
-    initializeDisplayShader();
-    initializeClearShader();
 
-    clear_.onReload([this]() {
-        initializeClearShader();
-        onReload_.invoke();
-    });
-    display_.onReload([this]() {
-        initializeDisplayShader();
-        onReload_.invoke();
-    });
+    buildShaders();
+
+    clear_.onReload([this]() { onReload_.invoke(); });
+    display_.onReload([this]() { onReload_.invoke(); });
 
     abufferIdxTex_.initialize(nullptr);
 
@@ -90,7 +82,6 @@ void MyFragmentListRenderer::prePass(const size2_t& screenSize) {
     resizeBuffers(screenSize);
 
     // reset counter
-
     GLuint v[1] = {0};
     atomicCounter_.upload(v, sizeof(GLuint));
     atomicCounter_.unbind();
@@ -111,26 +102,26 @@ void MyFragmentListRenderer::prePass(const size2_t& screenSize) {
     // memory barrier
     glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
 
+    LGL_ERROR;
+}
+
+void MyFragmentListRenderer::beginCount() {
     // start query
     // The query is used to determinate the size needed for the shader storage buffer
     // to store all the fragments.
     glBeginQuery(GL_SAMPLES_PASSED, totalFragmentQuery_);
     LGL_ERROR;
 }
+void MyFragmentListRenderer::endCount() { glEndQuery(GL_SAMPLES_PASSED); }
 
-void MyFragmentListRenderer::setShaderUniforms(Shader& shader) {
-    setUniforms(shader, textureUnits_[0]);
-    // other uniforms
-}
-
-bool MyFragmentListRenderer::postPass(bool useIllustration, const Image* background,
-                                      std::function<void(Shader&)> setUniformsCallback) {
+bool MyFragmentListRenderer::postPass(
+    bool useIllustration, const Image* background,
+    std::function<void(Shader&, TextureUnitContainer&)> setUniformsCallback) {
     // memory barrier
     glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
 
     // get query result
     GLuint numFrags = 0;
-    glEndQuery(GL_SAMPLES_PASSED);
     glGetQueryObjectuiv(totalFragmentQuery_, GL_QUERY_RESULT, &numFrags);
     LGL_ERROR;
 
@@ -146,7 +137,7 @@ bool MyFragmentListRenderer::postPass(bool useIllustration, const Image* backgro
 
     // Build shader depending on inport state.
     if (supportsFragmentLists() && static_cast<bool>(background) != builtWithBackground_) {
-        rebuildShaders(background);
+        buildShaders(background);
     }
 
     if (!useIllustration) {
@@ -154,10 +145,10 @@ bool MyFragmentListRenderer::postPass(bool useIllustration, const Image* backgro
         display_.activate();
         setUniforms(display_, textureUnits_[0]);
         LGL_ERROR;
-        
-        setUniformsCallback(display_);
+
+        setUniformsCallback(display_, textureUnits_);
         LGL_ERROR;
-        
+
         if (builtWithBackground_) {
             // Set depth buffer to read from.
             utilgl::bindAndSetUniforms(display_, textureUnits_, *background, "bg",
@@ -174,7 +165,6 @@ bool MyFragmentListRenderer::postPass(bool useIllustration, const Image* backgro
 
         utilgl::singleDrawImagePlaneRect();
         LGL_ERROR;
-
         display_.deactivate();
     }
     textureUnits_.clear();
@@ -182,64 +172,12 @@ bool MyFragmentListRenderer::postPass(bool useIllustration, const Image* backgro
     return true;  // success, enough storage available
 }
 
-bool MyFragmentListRenderer::supportsFragmentLists() {
-    return OpenGLCapabilities::getOpenGLVersion() >= 430 &&
-           OpenGLCapabilities::isExtensionSupported("GL_NV_gpu_shader5") &&
-           OpenGLCapabilities::isExtensionSupported("GL_EXT_shader_image_load_store") &&
-           OpenGLCapabilities::isExtensionSupported("GL_NV_shader_buffer_load") &&
-           OpenGLCapabilities::isExtensionSupported("GL_EXT_bindable_uniform");
+void MyFragmentListRenderer::setShaderUniforms(Shader& shader) const {
+    setUniforms(shader, textureUnits_[0]);
 }
 
-typename Dispatcher<void()>::Handle MyFragmentListRenderer::onReload(
-    std::function<void()> callback) {
-    return onReload_.add(callback);
-}
-
-void MyFragmentListRenderer::initializeClearShader() {
-    auto* cfs = clear_.getFragmentShaderObject();
-    cfs->clearShaderExtensions();
-
-    if (supportsFragmentLists()) {
-        cfs->addShaderExtension("GL_NV_gpu_shader5", true);
-        cfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
-        cfs->addShaderExtension("GL_NV_shader_buffer_load", true);
-        cfs->addShaderExtension("GL_EXT_bindable_uniform", true);
-    }
-    clear_.build();
-}
-
-void MyFragmentListRenderer::initializeDisplayShader() {
-    auto* dfs = display_.getFragmentShaderObject();
-    dfs->clearShaderExtensions();
-
-    if (supportsFragmentLists()) {
-        dfs->addShaderExtension("GL_NV_gpu_shader5", true);
-        dfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
-        dfs->addShaderExtension("GL_NV_shader_buffer_load", true);
-        dfs->addShaderExtension("GL_EXT_bindable_uniform", true);
-
-        if (builtWithBackground_) {
-            dfs->addShaderDefine("BACKGROUND_AVAILABLE");
-        } else {
-            dfs->removeShaderDefine("BACKGROUND_AVAILABLE");
-        }
-    }
-    display_.build();
-}
-
-void MyFragmentListRenderer::rebuildShaders(bool hasBackground) {
-    builtWithBackground_ = hasBackground;
-    auto* dfs = display_.getFragmentShaderObject();
-
-    if (builtWithBackground_) {
-        dfs->addShaderDefine("BACKGROUND_AVAILABLE");
-    } else {
-        dfs->removeShaderDefine("BACKGROUND_AVAILABLE");
-    }
-    display_.build();
-}
-
-void MyFragmentListRenderer::setUniforms(Shader& shader, TextureUnit& abuffUnit) const {
+void MyFragmentListRenderer::setUniforms(Shader& shader, const TextureUnit& abuffUnit) const {
+    LGL_ERROR;
     // screen size textures
 
     abuffUnit.activate();
@@ -260,6 +198,47 @@ void MyFragmentListRenderer::setUniforms(Shader& shader, TextureUnit& abuffUnit)
     shader.setUniform("AbufferParams.screenWidth", static_cast<GLint>(screenSize_.x));
     shader.setUniform("AbufferParams.screenHeight", static_cast<GLint>(screenSize_.y));
     shader.setUniform("AbufferParams.storageSize", static_cast<GLuint>(fragmentSize_));
+    LGL_ERROR;
+}
+
+bool MyFragmentListRenderer::supportsFragmentLists() {
+    static const bool support =
+        OpenGLCapabilities::getOpenGLVersion() >= 430 &&
+        OpenGLCapabilities::isExtensionSupported("GL_NV_gpu_shader5") &&
+        OpenGLCapabilities::isExtensionSupported("GL_EXT_shader_image_load_store") &&
+        OpenGLCapabilities::isExtensionSupported("GL_NV_shader_buffer_load") &&
+        OpenGLCapabilities::isExtensionSupported("GL_EXT_bindable_uniform");
+
+    return support;
+}
+
+DispatcherHandle<void()> MyFragmentListRenderer::onReload(std::function<void()> callback) {
+    return onReload_.add(callback);
+}
+
+void MyFragmentListRenderer::buildShaders(bool hasBackground) {
+    builtWithBackground_ = hasBackground;
+    auto* dfs = display_.getFragmentShaderObject();
+    dfs->clearShaderExtensions();
+
+    auto* cfs = clear_.getFragmentShaderObject();
+    cfs->clearShaderExtensions();
+
+    if (supportsFragmentLists()) {
+        dfs->addShaderExtension("GL_NV_gpu_shader5", true);
+        dfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
+        dfs->addShaderExtension("GL_NV_shader_buffer_load", true);
+        dfs->addShaderExtension("GL_EXT_bindable_uniform", true);
+
+        cfs->addShaderExtension("GL_NV_gpu_shader5", true);
+        cfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
+        cfs->addShaderExtension("GL_NV_shader_buffer_load", true);
+        cfs->addShaderExtension("GL_EXT_bindable_uniform", true);
+
+        dfs->setShaderDefine("BACKGROUND_AVAILABLE", builtWithBackground_);
+        display_.build();
+        clear_.build();
+    }
 }
 
 void MyFragmentListRenderer::resizeBuffers(const size2_t& screenSize) {

@@ -28,11 +28,14 @@
  *********************************************************************************/
 
 #include <inviwo/meshandvolume/processors/mvrenderer.h>
-#include <modules/meshrenderinggl/datastructures/rasterization.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/volume/volumeutils.h>
+#include <modules/opengl/image/layergl.h>
 #include <inviwo/core/util/stringconversion.h>
+
+#include <modules/oit/datastructures/rasterization.h>
+#include <modules/oit/rasterizeevent.h>
 
 #include <fmt/core.h>
 
@@ -58,162 +61,174 @@ const ProcessorInfo MVRenderer::getProcessorInfo() const { return processorInfo_
 
 MVRenderer::MVRenderer()
     : rasterizations_("raster")
-    , imageInport_(std::make_shared<ImageInport>("imageInport"))
-    , imageOutport_("image")
+    , background_{"imageInport", "Optional background image"_help}
+    , outport_("image")
     , raycastingProps_{"raycasting", "Raycasting",
                        "Properties relevant for volumetric raycasting during rasterization"_help}
     , samplingDistance_("samplingDistance", "Sampling Distance (world space)",
                         util::ordinalScale(0.01f, 1.0f)
                             .set("Distance between volume samples in world space."_help))
     , camera_("camera", "Camera")
+    , lighting_{"lighting", "Lighting", &camera_}
     , trackball_(&camera_)
-    , flr_{[this]() {
-        if (!MyFragmentListRenderer::supportsFragmentLists()) {
-            throw Exception{IVW_CONTEXT, "Fragment list not supported."};
+    , flr_{[]() -> std::optional<MyFragmentListRenderer> {
+        if (MyFragmentListRenderer::supportsFragmentLists())
+            return std::optional<MyFragmentListRenderer>{std::in_place};
+        else {
+            return std::nullopt;
         }
-        return std::make_unique<MyFragmentListRenderer>();
     }()} {
 
-    addPort(rasterizations_);
-    addPort(*imageInport_).setOptional(true);
-    addPort(imageOutport_);
+    if (!MyFragmentListRenderer::supportsFragmentLists()) {
+        LogProcessorWarn(
+            "Fragment lists are not supported by the hardware -> volume rasterization disabled, "
+            "regular meshes rendered without sorting.");
+    }
 
-    addProperties(camera_, raycastingProps_);
-    raycastingProps_.addProperties(samplingDistance_, trackball_);
+    addPort(rasterizations_);
+    addPort(background_).setOptional(true);
+    addPort(outport_);
+
+    raycastingProps_.addProperties(samplingDistance_);
+    addProperties(camera_, raycastingProps_, lighting_, trackball_);
     camera_.setCollapsed(true);
     trackball_.setCollapsed(true);
 
-    flrReload_ = flr_->onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    if (flr_) {
+        flrReload_ = flr_->onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    }
 
-    imageInport_->onChange([this]() {
-        if (imageInport_->hasData()) {
-            intermediateImage_.setDimensions(imageInport_->getData()->getDimensions());
-        } else {
-            intermediateImage_.setDimensions(imageOutport_.getData()->getDimensions());
-        }
+    onConnect_ = rasterizations_.onConnectScoped([&](Outport* outport) {
+        RasterizeEvent e{std::dynamic_pointer_cast<MVRenderer>(shared_from_this())};
+        rasterizations_.propagateEvent(&e, outport);
     });
 }
 
 void MVRenderer::process() {
-    LGL_ERROR;
-
-    bool fragmentLists = false;
-    bool containsOpaque = false;
-    for (auto rasterization : rasterizations_) {
-        if (rasterization->usesFragmentLists()) {
-            fragmentLists = true;
-        } else {
-            containsOpaque = true;
+    if (!flr_) {
+        utilgl::activateTargetAndClearOrCopySource(outport_, background_);
+        for (const auto& rasterization : rasterizations_) {
+            if (rasterization->usesFragmentLists() == UseFragmentList::No) {
+                rasterization->rasterize(outport_.getDimensions(), mat4(1.0));
+            }
         }
+        utilgl::deactivateCurrentTarget();
+        return;
     }
 
-    utilgl::activateTargetAndClearOrCopySource(intermediateImage_, *imageInport_);
+    // assign volume IDs to each VolumeRasterizer
+    volumeIds_.clear();
+    int volumeId = 0;
+    for (auto rasterization : rasterizations_) {
+        if (rasterization->getRaycastingState()) {
+            if (volumeId < maxSupportedVolumeRasterizers) {
+                volumeIds_.emplace(rasterization.get(), volumeId);
+            }
+            ++volumeId;
+        }
+    }
+    if (volumeId > maxSupportedVolumeRasterizers) {
+        LogWarn(
+            fmt::format("More than {} Volume Rasterizers connected to {} ({}). Omitting "
+                        "surplus rasterizers.",
+                        maxSupportedVolumeRasterizers, getDisplayName(), getIdentifier()));
+    }
 
-    bool useIntermediateTarget = imageInport_->getData() && fragmentLists && containsOpaque;
-    if (useIntermediateTarget) {
-        utilgl::activateTargetAndClearOrCopySource(intermediateImage_, *imageInport_);
-    } else {
-        utilgl::activateTargetAndClearOrCopySource(imageOutport_, *imageInport_);
+    if (intermediateImage_.getDimensions() != outport_.getDimensions()) {
+        intermediateImage_.setDimensions(outport_.getDimensions());
+    }
+
+    // render into a temp image to be able to compare depths in the final pass
+    utilgl::activateTargetAndClearOrCopySource(intermediateImage_, background_);
+    for (const auto& rasterization : rasterizations_) {
+        if (rasterization->usesFragmentLists() == UseFragmentList::No) {
+            rasterization->rasterize(outport_.getDimensions(), mat4(1.0));
+        }
     }
 
     // Loop: fragment list may need another try if not enough space for the pixels was available
-    bool retry = false;
-    do {
-        retry = false;
-        LGL_ERROR;
-        if (flr_ && fragmentLists) {
-            flr_->prePass(imageOutport_.getDimensions());
-        }
+    for (bool success = false; !success;) {
 
-        int volumeId = 0;
-        for (auto rasterization : rasterizations_) {  // Calculate color
-            rasterization->rasterize(imageOutport_.getDimensions(), mat4(1.0),
-                                     [this, &volumeId, fragmentLists](Shader& sh) {  // volume
-                                         utilgl::setUniforms(sh, camera_);
-                                         sh.setUniform("volumeId", volumeId);
-                                         if (flr_ && fragmentLists) {
-                                             flr_->setShaderUniforms(sh);
-                                         }
-                                     });
-            if (rasterization->getRaycastingState()) {
-                ++volumeId;
+        flr_->prePass(outport_.getDimensions());
+
+        flr_->beginCount();
+        for (auto rasterization : rasterizations_) {
+            if (rasterization->usesFragmentLists() == UseFragmentList::Yes) {
+                rasterization->rasterize(outport_.getDimensions(), mat4(1.0));
             }
-            LGL_ERROR;
         }
-        LGL_ERROR;
-        if (volumeId >= maxSupportedVolumeRasterizers) {
-            LogWarn(
-                fmt::format("More than {} Volume Rasterizers connected to {} ({}). Omitting "
-                            "surplus rasterizers.",
-                            maxSupportedVolumeRasterizers, getDisplayName(), getIdentifier()));
-        }
+        flr_->endCount();
 
-        if (flr_ && fragmentLists) {
-            // final processing of fragment list rendering
-            if (useIntermediateTarget) {
-                utilgl::deactivateCurrentTarget();
-                utilgl::activateTargetAndCopySource(imageOutport_, intermediateImage_);
-            }
+        utilgl::activateTargetAndCopySource(outport_, intermediateImage_);
 
-            auto uniformsCallback = [&](Shader& shader) {
-                utilgl::setShaderUniforms(shader, camera_, "camera");
-                shader.setUniform("samplingDistance", samplingDistance_);
+        auto uniformsCallback = [&](Shader& shader, TextureUnitContainer& texUnits) {
+            utilgl::setUniforms(shader, camera_, lighting_);
+            shader.setUniform("samplingDistance", samplingDistance_);
 
-                StrBuffer buff;
-                TextureUnitContainer texUnits;
-                int volumeId = 0;
-                for (auto rasterization : rasterizations_) {
-                    auto raycastingState = rasterization->getRaycastingState();
-                    if (raycastingState && volumeId < maxSupportedVolumeRasterizers) {
-                        shader.setUniform(buff.replace("volumeChannels[{}]", volumeId),
-                                          raycastingState->channel);
-                        shader.setUniform(buff.replace("opacityScaling[{}]", volumeId),
-                                          raycastingState->opacityScaling);
+            StrBuffer buff;
+            for (auto&& [volumeRasterizer, id] : volumeIds_) {
+                auto raycastingState = volumeRasterizer->getRaycastingState();
+                if (raycastingState && id < maxSupportedVolumeRasterizers) {
+                    shader.setUniform(buff.replace("volumeChannels[{}]", id),
+                                      raycastingState->channel);
+                    shader.setUniform(buff.replace("opacityScaling[{}]", id),
+                                      raycastingState->opacityScaling);
 
-                        auto& volUnit = texUnits.emplace_back();
-                        utilgl::bindTexture(*raycastingState->volume, volUnit);
-                        shader.setUniform(buff.replace("volumeSamplers[{}]", volumeId),
-                                          volUnit.getUnitNumber());
-                        utilgl::setShaderUniforms(shader, *raycastingState->volume,
-                                                  StrBuffer{"volumeParameters[{}]", volumeId});
+                    auto& volUnit = texUnits.emplace_back();
+                    utilgl::bindTexture(*raycastingState->volume, volUnit);
+                    shader.setUniform(buff.replace("volumeSamplers[{}]", id),
+                                      volUnit.getUnitNumber());
+                    utilgl::setShaderUniforms(shader, *raycastingState->volume,
+                                              StrBuffer{"volumeParameters[{}]", id});
 
+                    if (raycastingState->tfLookup) {
                         auto& tfUnit = texUnits.emplace_back();
-                        utilgl::bindTexture(raycastingState->tf, tfUnit);
-                        shader.setUniform(buff.replace("tfSamplers[{}]", volumeId),
+                        tfUnit.activate();
+                        const auto* layerGL =
+                            raycastingState->tfLookup->getRepresentation<LayerGL>();
+                        layerGL->bindTexture(tfUnit);
+                        shader.setUniform(buff.replace("tfSamplers[{}]", id),
                                           tfUnit.getUnitNumber());
-
-                        utilgl::setShaderUniforms(shader, raycastingState->lighting,
-                                                  buff.replace("lighting[{}]", volumeId));
-
-                        ++volumeId;
                     }
                 }
-                LGL_ERROR;
+            }
 
-                // Duplicate volume and TF texture unit IDs for remaining unused texture array
-                // samplers (up to maxSupportedVolumeRasterizers). Otherwise, if an unbound array
-                // sampler is used (e.g. in the switch-case statement as compile-time expression),
-                // the draw call results in an invalid operation. The same error is generated when
-                // setting the samplers to 0.
-                const GLint volumeSampler = texUnits[texUnits.size() - 2].getUnitNumber();
-                const GLint tfSampler = texUnits[texUnits.size() - 1].getUnitNumber();
-                while (volumeId > 0 && volumeId < maxSupportedVolumeRasterizers) {
-                    shader.setUniform(buff.replace("volumeSamplers[{}]", volumeId), volumeSampler);
-                    shader.setUniform(buff.replace("tfSamplers[{}]", volumeId), tfSampler);
-                    ++volumeId;
-                }
-                LGL_ERROR;
-            };
+            // Duplicate volume and TF texture unit IDs for remaining unused texture array
+            // samplers (up to maxSupportedVolumeRasterizers). Otherwise, if an unbound array
+            // sampler is used (e.g. in the switch-case statement as compile-time expression),
+            // the draw call results in an invalid operation. The same error is generated when
+            // setting the samplers to 0.
+            const GLint volumeSampler = texUnits[texUnits.size() - 2].getUnitNumber();
+            const GLint tfSampler = texUnits[texUnits.size() - 1].getUnitNumber();
+            while (volumeId > 0 && volumeId < maxSupportedVolumeRasterizers) {
+                shader.setUniform(buff.replace("volumeSamplers[{}]", volumeId), volumeSampler);
+                shader.setUniform(buff.replace("tfSamplers[{}]", volumeId), tfSampler);
+                ++volumeId;
+            }
+        };
 
-            const Image* background =
-                useIntermediateTarget ? &intermediateImage_ : imageInport_->getData().get();
-            retry = !flr_->postPass(false, background, uniformsCallback);
-        }
-        LGL_ERROR;
-    } while (retry);
-    LGL_ERROR;
+        success = flr_->postPass(false, &intermediateImage_, uniformsCallback);
+    }
 
     utilgl::deactivateCurrentTarget();
+}
+
+void MVRenderer::configureShader(Shader& shader) const { utilgl::addDefines(shader, lighting_); }
+
+void MVRenderer::setUniforms(Shader& shader, UseFragmentList useFragmentList,
+                             const Rasterization* rasterizer) const {
+    utilgl::setUniforms(shader, camera_, lighting_);
+    if (flr_ && useFragmentList == UseFragmentList::Yes) {
+        flr_->setShaderUniforms(shader);
+
+        if (auto it = volumeIds_.find(rasterizer); it != volumeIds_.end()) {
+            shader.setUniform("volumeId", it->second);
+        }
+    }
+}
+
+DispatcherHandle<void()> MVRenderer::addInitializeShaderCallback(std::function<void()> callback) {
+    return initializeShader_.add(callback);
 }
 
 }  // namespace inviwo

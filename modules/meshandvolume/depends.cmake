@@ -6,6 +6,6 @@ set(dependencies
     InviwoBaseGLModule
     InviwoDataFrameModule
     InviwoVolumeModule
-    InviwoMeshRenderingGLModule
+    InviwoOITModule
 )
 set(EnableByDefault ON)
