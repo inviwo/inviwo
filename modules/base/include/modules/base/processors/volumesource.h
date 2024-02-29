@@ -31,12 +31,12 @@
 
 #include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/ports/volumeport.h>                       // for VolumeOutport
-#include <inviwo/core/processors/processor.h>                   // for Processor
-#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
-#include <inviwo/core/properties/buttonproperty.h>              // for ButtonProperty
-#include <inviwo/core/properties/fileproperty.h>                // for FileProperty
-#include <inviwo/core/properties/optionproperty.h>              // for OptionProperty
+#include <inviwo/core/ports/volumeport.h>           // for VolumeOutport
+#include <inviwo/core/processors/processor.h>       // for Processor
+#include <inviwo/core/processors/processorinfo.h>   // for ProcessorInfo
+#include <inviwo/core/properties/buttonproperty.h>  // for ButtonProperty
+#include <inviwo/core/properties/fileproperty.h>    // for FileProperty
+#include <inviwo/core/properties/optionproperty.h>  // for OptionProperty
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/util/fileextension.h>                     // for FileExtension, operator==
 #include <modules/base/properties/basisproperty.h>              // for BasisProperty

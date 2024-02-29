@@ -186,8 +186,7 @@ const DataFormatBase* niftiDataTypeToInviwoDataFormat(const nifti_image* niftiIm
 
     return DataFormatBase::get(type, components, precision);
 }
-std::shared_ptr<VolumeSequence> NiftiReader::readData(
-    const std::filesystem::path& filePath) {
+std::shared_ptr<VolumeSequence> NiftiReader::readData(const std::filesystem::path& filePath) {
     checkExists(filePath);
 
     /* read input dataset, but not data */

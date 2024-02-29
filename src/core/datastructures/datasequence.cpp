@@ -29,7 +29,4 @@
 
 #include <inviwo/core/datastructures/datasequence.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -33,7 +33,6 @@
 #include <inviwo/core/util/foreacharg.h>
 #include <inviwo/core/datastructures/datasequence.h>
 
-
 // Cameras
 #include <inviwo/core/datastructures/camera/camera.h>
 #include <inviwo/core/datastructures/camera/orthographiccamera.h>

@@ -81,7 +81,7 @@ bool isSorted(const VolumeSequence& seq) {
 
 VolumeSequence sortSequence(const VolumeSequence& seq) {
     std::vector<std::shared_ptr<const Volume>> sorted;
-    for(auto&& item : seq) {
+    for (auto&& item : seq) {
         sorted.push_back(item);
     }
 

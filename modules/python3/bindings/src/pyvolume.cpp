@@ -144,7 +144,6 @@ void exposeVolume(pybind11::module& m) {
         .def_property_readonly(
             "data", static_cast<const py::array& (VolumePy::*)() const>(&VolumePy::data));
 
-
     py::class_<VolumeSequence>(m, "VolumeSequence", py::module_local(false))
         .def(py::init<>())
         .def(py::init<std::span<std::shared_ptr<const Volume>>>(), py::arg("volumes"))

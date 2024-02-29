@@ -62,7 +62,8 @@ class IVW_CORE_API VolumeSequenceSampler : public Spatial4DSampler<3, double> {
     };
 
 public:
-    VolumeSequenceSampler(std::shared_ptr<const VolumeSequence> volumeSequence, bool allowLooping = true);
+    VolumeSequenceSampler(std::shared_ptr<const VolumeSequence> volumeSequence,
+                          bool allowLooping = true);
     virtual ~VolumeSequenceSampler();
 
     void setAllowedLooping(bool allowed = true) { allowLooping_ = allowed; }
