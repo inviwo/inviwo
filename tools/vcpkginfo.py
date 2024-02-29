@@ -83,14 +83,15 @@ if __name__ == '__main__':
         text=True
     )
     if cmd.returncode != 0 and len(cmd.stderr) > 0:
-        print(f"Error calling vcpkg return {cmd.returncode}", file=sys.stderr)
-        print(f"Stdout: {cmd.stdout}", file=sys.stderr)
-        print(f"Stderr: {cmd.stderr}", file=sys.stderr)
-        print(f"manifest_dir {args.manifest_dir}", file=sys.stderr)
-        print("Call:", file=sys.stderr)
-        print([args.vcpkg, install, "x-package-info", "--x-json", f"{args.pkg}"],
-              file=sys.stderr)
-        exit(100)
+        if "warning: Embedding `vcpkg-configuration`" not in cmd.stderr:
+            print(f"Error calling vcpkg return {cmd.returncode}", file=sys.stderr)
+            print(f"Stdout: {cmd.stdout}", file=sys.stderr)
+            print(f"Stderr: {cmd.stderr}", file=sys.stderr)
+            print(f"manifest_dir {args.manifest_dir}", file=sys.stderr)
+            print("Call:", file=sys.stderr)
+            print([args.vcpkg, install, "x-package-info", "--x-json", f"{args.pkg}"],
+                  file=sys.stderr)
+            exit(100)
 
     if cmd.stdout.startswith("warning: Embedding `vcpkg-configuration` in a manifest file is an EXPERIMENTAL feature."):
         cmd.stdout = '\n'.join(cmd.stdout.splitlines()[1:])
@@ -125,14 +126,15 @@ if __name__ == '__main__':
         text=True
     )
     if cmd.returncode != 0 and len(cmd.stderr) > 0:
-        print(f"Error calling vcpkg return {cmd.returncode}", file=sys.stderr)
-        print(f"Stdout: {cmd.stdout}", file=sys.stderr)
-        print(f"Stderr: {cmd.stderr}", file=sys.stderr)
-        print(f"manifest_dir {args.manifest_dir}", file=sys.stderr)
-        print("Call:", file=sys.stderr)
-        print([args.vcpkg, install, "x-package-info", "--x-json", f"{args.pkg}"],
-              file=sys.stderr)
-        exit(4)
+        if "warning: Embedding `vcpkg-configuration`" not in cmd.stderr:
+            print(f"Error calling vcpkg return {cmd.returncode}", file=sys.stderr)
+            print(f"Stdout: {cmd.stdout}", file=sys.stderr)
+            print(f"Stderr: {cmd.stderr}", file=sys.stderr)
+            print(f"manifest_dir {args.manifest_dir}", file=sys.stderr)
+            print("Call:", file=sys.stderr)
+            print([args.vcpkg, install, "x-package-info", "--x-json", f"{args.pkg}"],
+                  file=sys.stderr)
+            exit(4)
 
     if cmd.stdout.startswith("warning: Embedding `vcpkg-configuration` in a manifest file is an EXPERIMENTAL feature."):
         cmd.stdout = '\n'.join(cmd.stdout.splitlines()[1:])
