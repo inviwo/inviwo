@@ -196,7 +196,7 @@ def warn(def state, refjob = 'daily/appleclang') {
 
 def unittest(def state) {
     if(state.env.disableUnittest) return
-    cmd('Unit Tests', 'build/bin', ['DISPLAY=:' + state.cfg.display]) {
+    cmd('Unit Tests', 'build/bin', ['DISPLAY=:' + state.cfg.display, 'INVIWO_TERSE_TEST_OUTPUT']) {
         checked(state, "Unit Test", false) {
             sh '''
                 rc=0
