@@ -366,35 +366,35 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(
         // In other words:
         // The minimum value will correspond to 0 and the maximum will correspond to 1 in the
         // Transfer Function
-        auto volRAM = volumes->front()->getRepresentation<VolumeRAM>();
-        auto minmax = util::volumeMinMax(volRAM);
-        // minmax always have four components, unused components are set to zero.
-        // Hence, only consider components used by the data format
-        dvec2 dataRange(minmax.first[0], minmax.second[0]);
-        // min/max of all components
-        for (size_t component = 1; component < format->getComponents(); ++component) {
-            dataRange = dvec2(glm::min(dataRange[0], minmax.first[component]),
-                              glm::max(dataRange[1], minmax.second[component]));
+        for (auto& vol : *volumes) {
+
+            auto volRAM = vol->getRepresentation<VolumeRAM>();
+            auto minmax = util::volumeMinMax(volRAM);
+            // minmax always have four components, unused components are set to zero.
+            // Hence, only consider components used by the data format
+            dvec2 dataRange(minmax.first[0], minmax.second[0]);
+            // min/max of all components
+            for (size_t component = 1; component < format->getComponents(); ++component) {
+                dataRange = dvec2(glm::min(dataRange[0], minmax.first[component]),
+                                  glm::max(dataRange[1], minmax.second[component]));
+            }
+            dm.dataRange = dataRange;
+
+            if (niftiImage->scl_slope != 0) {
+                // If the scl_slope field is nonzero, then each voxel value in the dataset
+                // should be scaled as
+                //    y = scl_slope  x + scl_inter
+                // where x = stored voxel value and y = "true" voxel value
+                dm.valueRange.x = static_cast<double>(niftiImage->scl_slope) * dm.dataRange.x +
+                                  static_cast<double>(niftiImage->scl_inter);
+                dm.valueRange.y = static_cast<double>(niftiImage->scl_slope) * dm.dataRange.y +
+                                  static_cast<double>(niftiImage->scl_inter);
+
+            } else {
+                dm.valueRange = dm.dataRange;
+            }
+            vol->dataMap_ = dm;
         }
-        dm.dataRange = dataRange;
-
-        if (niftiImage->scl_slope != 0) {
-            // If the scl_slope field is nonzero, then each voxel value in the dataset
-            // should be scaled as
-            //    y = scl_slope  x + scl_inter
-            // where x = stored voxel value and y = "true" voxel value
-            dm.valueRange.x = static_cast<double>(niftiImage->scl_slope) * dm.dataRange.x +
-                              static_cast<double>(niftiImage->scl_inter);
-            dm.valueRange.y = static_cast<double>(niftiImage->scl_slope) * dm.dataRange.y +
-                              static_cast<double>(niftiImage->scl_inter);
-
-        } else {
-            dm.valueRange = dm.dataRange;
-        }
-    }
-
-    for (auto& vol : *volumes) {
-        vol->dataMap_ = dm;
     }
 
     return volumes;
