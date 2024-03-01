@@ -88,9 +88,8 @@ const ProcessorInfo VolumeSequenceSingleTimestepSamplerProcessor::processorInfo_
     CodeState::Experimental,                           // Code state
     Tags::None,                                        // Tags
     R"(Creates a spatial sampler for a given timestamp from a VolumeSequence. Will use linear
-    interpolation to sample between two volume in the sequence.
-    Useful for streamline visualization of a specific time step)"_unindentHelp};
-
+    interpolation to sample between two adjacent volumes in the sequence.
+    Useful for streamline visualization of a specific time step.)"_unindentHelp};
 const ProcessorInfo VolumeSequenceSingleTimestepSamplerProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
@@ -99,7 +98,7 @@ VolumeSequenceSingleTimestepSamplerProcessor::VolumeSequenceSingleTimestepSample
     : Processor()
     , volumeSequence_("volumeSequence", "The input sequence of volumes"_help)
     , sampler_("sampler", "The created sampler"_help)
-    , timestamp_("timestamp", "Timestamp", "the timestamp to sample at"_help) {
+    , timestamp_("timestamp", "Timestamp", "The timestamp to sample at"_help) {
 
     addPort(volumeSequence_);
     addPort(sampler_);
