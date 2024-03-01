@@ -27,11 +27,17 @@
  *
  *********************************************************************************/
 
- 
-uniform sampler2D inportColor;
+#include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
+
+uniform sampler2D inport;
+uniform ImageParameters inportParameters;
 
 in vec3 texCoord_;
 
 void main(void) {
-    FragData0 = vec4(vec3(length(texture(inportColor,texCoord_.xy).rg)),1);
+    vec2 value = getNormalizedTexel(inport, inportParameters, texCoord_.xy).xy;
+    float magnitude = length(value);
+
+    FragData0 = vec4(magnitude);
 }

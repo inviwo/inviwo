@@ -31,27 +31,20 @@
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
-#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/processors/layerprocessing/layerglprocessor.h>
 
 namespace inviwo {
 
-class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector2DDivergence : public Processor {
+class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector2DDivergence : public LayerGLProcessor {
 public:
+    Vector2DDivergence();
+    
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    Vector2DDivergence();
-    virtual ~Vector2DDivergence() = default;
-
-    virtual void process() override;
 
 private:
-    ImageInport inport_;
-    ImageOutport outport_;
-
-    Shader shader_;
+    virtual LayerConfig outputConfig([[maybe_unused]] const Layer& input) const override;
 };
 
 }  // namespace inviwo

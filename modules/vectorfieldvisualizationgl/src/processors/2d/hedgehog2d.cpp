@@ -66,13 +66,15 @@ const ProcessorInfo HedgeHog2D::processorInfo_{
     "Hedge Hog 2D",                // Display name
     "Vector Field Visualization",  // Category
     CodeState::Stable,             // Code state
-    Tags::GL,                      // Tags
+    Tags::GL | Tag{"Mesh"},        // Tags
+    R"(Creates a mesh for a hedgehog plot of a 2D vector field using arrow and
+    quiver glyphs.)"_unindentHelp,
 };
 const ProcessorInfo HedgeHog2D::getProcessorInfo() const { return processorInfo_; }
 
 HedgeHog2D::HedgeHog2D()
     : Processor()
-    , vectorFeild_("vectorFeild", true)
+    , inport_("inport", "2D vector field"_help)
     , mesh_("mesh")
     , glyphScale_("glyphScale", "Glyph Scale", 0.9f, 0.0f, 2.0f)
     , numberOfGlyphs_("numberOfGlyphs", "Number of Glyphs", ivec2(30), ivec2(1), ivec2(1000))
@@ -91,7 +93,7 @@ HedgeHog2D::HedgeHog2D()
 
     , rd_()
     , mt_(rd_()) {
-    addPort(vectorFeild_);
+    addPort(inport_);
     addPort(mesh_);
 
     addProperty(color_);
@@ -132,7 +134,7 @@ void HedgeHog2D::process() {
     float dx = 1.0f / numberOfGlyphs_.get().x;
     float dy = 1.0f / numberOfGlyphs_.get().y;
 
-    ImageSampler sampler(vectorFeild_.getData().get());
+    ImageSampler sampler(inport_.getData());
 
     std::uniform_real_distribution<float> jitterx(-dx / 2, dx / 2);
     std::uniform_real_distribution<float> jittery(-dy / 2, dy / 2);

@@ -29,19 +29,9 @@
 
 #include <modules/vectorfieldvisualizationgl/processors/2d/vector2dcurl.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::ColorOnly
-#include <inviwo/core/ports/imageport.h>                  // for ImageInport, ImageOutport
-#include <inviwo/core/processors/processor.h>             // for Processor
-#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>        // for CodeState, CodeState::Experimental
-#include <inviwo/core/processors/processortags.h>         // for Tags, Tags::GL
-#include <inviwo/core/util/formats.h>                     // for DataFormat, DataVec4Float32
-#include <modules/opengl/shader/shader.h>                 // for Shader
-#include <modules/opengl/texture/textureunit.h>           // for TextureUnitContainer
-#include <modules/opengl/texture/textureutils.h>          // for activateAndClearTarget, bindAnd...
-
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <inviwo/core/util/formats.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
@@ -50,33 +40,29 @@ const ProcessorInfo Vector2DCurl::processorInfo_{
     "org.inviwo.Vector2DCurl",     // Class identifier
     "Vector 2D Curl",              // Display name
     "Vector Field Visualization",  // Category
-    CodeState::Experimental,       // Code state
-    Tags::GL,                      // Tags
+    CodeState::Stable,             // Code state
+    Tags::GL | Tag{"Layer"},       // Tags
+    R"(Computes the curl of a 2D vector field.)"_unindentHelp,
 };
 const ProcessorInfo Vector2DCurl::getProcessorInfo() const { return processorInfo_; }
 
-Vector2DCurl::Vector2DCurl()
-    : Processor()
-    , inport_("inport", true)
-    , outport_("outport", DataVec4Float32::get())
-    , shader_("vector2dcurl.frag")
+Vector2DCurl::Vector2DCurl() : LayerGLProcessor{utilgl::findShaderResource("vector2dcurl.frag")} {}
 
-{
-
-    addPort(inport_);
-    addPort(outport_);
+void Vector2DCurl::preProcess(TextureUnitContainer&, const Layer& input, Layer&) {
+    const auto gradientSpacing{input.getWorldSpaceGradientSpacing()};
+    shader_.setUniform("worldSpaceGradientSpacing", gradientSpacing);
+    shader_.setUniform("textureSpaceGradientSpacing",
+                       mat2{glm::scale(input.getCoordinateTransformer().getWorldToTextureMatrix(),
+                                       vec3{gradientSpacing, 1.0f})});
 }
 
-void Vector2DCurl::process() {
-    utilgl::activateAndClearTarget(outport_);
-
-    shader_.activate();
-    TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(shader_, units, inport_, ImageType::ColorOnly);
-
-    utilgl::singleDrawImagePlaneRect();
-    shader_.deactivate();
-    utilgl::deactivateCurrentTarget();
+LayerConfig Vector2DCurl::outputConfig(const Layer& input) const {
+    const double gradientEstimate = glm::compMax(glm::abs(input.dataMap.dataRange)) /
+                                    glm::compMax(input.getWorldSpaceGradientSpacing());
+    return input.config().updateFrom({.format = DataFloat32::get(),
+                                      .swizzleMask = swizzlemasks::defaultData(0),
+                                      .dataRange = dvec2{-gradientEstimate, gradientEstimate},
+                                      .valueRange = dvec2{-gradientEstimate, gradientEstimate}});
 }
 
 }  // namespace inviwo

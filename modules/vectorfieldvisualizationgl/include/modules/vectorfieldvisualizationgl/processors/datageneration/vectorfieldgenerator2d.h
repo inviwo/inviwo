@@ -31,13 +31,16 @@
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/layerport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/layerinformationproperty.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/buffer/framebufferobject.h>
 
 namespace inviwo {
 
@@ -53,17 +56,23 @@ public:
     virtual void process() override;
 
 protected:
-    ImageOutport outport_;
+    LayerOutport outport_;
 
-    IntSize2Property size_;
+    IntVec2Property size_;
 
-    FloatMinMaxProperty xRange_;
-    FloatMinMaxProperty yRange_;
+    FloatMinMaxProperty domainU_;
+    FloatMinMaxProperty domainV_;
 
     StringProperty xValue_;
     StringProperty yValue_;
 
+    LayerInformationProperty information_;
+    BasisProperty basis_;
+
     Shader shader_;
+    FrameBufferObject fbo_;
+    std::shared_ptr<Layer> layer_;
+    LayerConfig config;
 };
 
 }  // namespace inviwo

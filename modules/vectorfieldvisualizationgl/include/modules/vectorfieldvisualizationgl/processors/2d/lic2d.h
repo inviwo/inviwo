@@ -31,38 +31,37 @@
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <modules/basegl/processors/layerprocessing/layerglprocessor.h>
 
 namespace inviwo {
 
-class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API LIC2D : public Processor {
+class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API LIC2D : public LayerGLProcessor {
 public:
+    LIC2D();
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    LIC2D();
-    virtual ~LIC2D() {}
 
-    virtual void process() override;
+private:
+    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;
+    virtual LayerConfig outputConfig([[maybe_unused]] const Layer& input) const override;
 
-protected:
-    ImageInport vectorField_;
-    ImageInport noiseTexture_;
-    ImageOutport LIC2D_;
+    LayerInport noiseTexture_;
 
     IntProperty samples_;
     FloatProperty stepLength_;
     BoolProperty normalizeVectors_;
-    BoolProperty intensityMapping_;
     BoolProperty useRK4_;
 
-    Shader shader_;
-
-private:
+    BoolCompositeProperty postProcessing_;
+    BoolProperty intensityMapping_;
+    FloatProperty brightness_;
+    FloatProperty contrast_;
+    FloatProperty gamma_;
 };
 
 }  // namespace inviwo

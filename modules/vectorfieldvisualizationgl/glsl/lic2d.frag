@@ -27,20 +27,25 @@
  * 
  *********************************************************************************/
 
-uniform sampler2D vectorFieldColor;
-uniform sampler2D noiseTextureColor;
+uniform sampler2D inport;
+uniform sampler2D noiseTexture;
 
 uniform int samples;
 uniform float stepLength;
 uniform bool normalizeVectors;
-uniform bool intensityMapping;
 uniform bool useRK4;
+
+uniform bool postProcessing = false;
+uniform bool intensityMapping = false;
+uniform float brightness = 0.0; // in [-1, 1]
+uniform float contrast = 0.0;   // in [-1, 1]
+uniform float gamma = 1.0;
 
 in vec3 texCoord_;
 
 
 vec2 euler(vec2 posF ){
-    vec2 V0 = texture(vectorFieldColor, posF).rg;
+    vec2 V0 = texture(inport, posF).rg;
     if(normalizeVectors){
         V0 = normalize(V0);
     }
@@ -80,16 +85,13 @@ void traverse(inout  float v , inout int c,vec2 posF , float stepSize,int steps)
         if(posF.x > 1 ) break;
         if(posF.y > 1 ) break;
 
-        v += texture(noiseTextureColor, posF.xy).r;
+        v += texture(noiseTexture, posF.xy).r;
         c += 1;
     }
 }
 
-
-
-
 void main() {
-	float v = texture(noiseTextureColor, texCoord_.xy).r;
+	float v = texture(noiseTexture, texCoord_.xy).r;
 
 	int c = 1;
 	traverse(v,c,texCoord_.xy , stepLength , samples / 2);
@@ -97,8 +99,13 @@ void main() {
 
 	v /= c;
 
-    if(intensityMapping)
-        v = pow(v,(5.0/pow((v+1.0),4)));
+    if (postProcessing) {
+        v = mix(v, pow(v, 5.0 / pow(v + 1.0, 4)), intensityMapping);
+        // brightness-contrast
+        v = clamp((v - 0.5) * (contrast + 1.0) + 0.5 + brightness, 0, 1);
+        // gamma correction
+        v = pow(v, gamma);
+    }
 
-    FragData0 = vec4(v,v,v,1.0);
+    FragData0 = vec4(v);
 }

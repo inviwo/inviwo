@@ -31,27 +31,21 @@
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
-#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/processors/layerprocessing/layerglprocessor.h>
 
 namespace inviwo {
 
-class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector2DCurl : public Processor {
+class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector2DCurl : public LayerGLProcessor {
 public:
+    Vector2DCurl();
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    Vector2DCurl();
-    virtual ~Vector2DCurl() = default;
-
-    virtual void process() override;
 
 private:
-    ImageInport inport_;
-    ImageOutport outport_;
-
-    Shader shader_;
+    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;
+    virtual LayerConfig outputConfig([[maybe_unused]] const Layer& input) const override;
 };
 
 }  // namespace inviwo

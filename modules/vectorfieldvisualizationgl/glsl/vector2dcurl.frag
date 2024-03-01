@@ -30,24 +30,27 @@
 #include "utils/structs.glsl"
 #include "utils/sampler2d.glsl"
 
-uniform sampler2D inportColor;
+uniform sampler2D inport;
 uniform ImageParameters inportParameters;
+uniform ImageParameters outportParameters;
+
+uniform vec2 worldSpaceGradientSpacing = vec2(1.0);
+uniform mat2 textureSpaceGradientSpacing = mat2(1.0);
 
 in vec3 texCoord_;
 
+float partialDiff(in vec2 texcoord, in vec2 gradientTextureSpacing, in float gradientWorldSpacing, in int channel) {
+    float fds = getNormalizedTexel(inport, inportParameters, texcoord + gradientTextureSpacing)[channel]
+        - getNormalizedTexel(inport, inportParameters, texcoord - gradientTextureSpacing)[channel];
+    return fds / gradientWorldSpacing * 0.5;
+}
+
 void main(void) {
-	vec2 o = inportParameters.reciprocalDimensions;
-	mat2 J;  
-	J[0] =  texture(inportColor,texCoord_.xy  + vec2(o.x,0)).xy;
-	J[0] -= texture(inportColor,texCoord_.xy  - vec2(o.x,0)).xy;
-	J[1] =  texture(inportColor,texCoord_.xy  + vec2(0,o.y)).xy;
-	J[1] -= texture(inportColor,texCoord_.xy  - vec2(0,o.y)).xy;
-	J[0] *= 0.5;
-	J[1] *= 0.5;
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
 
-	float v = 0;
+    float fydx = partialDiff(texCoords.xy, textureSpaceGradientSpacing[0], worldSpaceGradientSpacing[0], 1);
+    float fxdy = partialDiff(texCoords.xy, textureSpaceGradientSpacing[1], worldSpaceGradientSpacing[1], 0);
+    v = fydx - fxdy;
 
-	v = J[1][0] - J[0][1];
-
-	FragData0 = vec4(v);
+    FragData0 = vec4(v);
 }
