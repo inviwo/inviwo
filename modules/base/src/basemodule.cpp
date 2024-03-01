@@ -91,6 +91,8 @@
 #include <modules/base/processors/inputselector.h>          // for InputSelector
 #include <modules/base/processors/layerboundingbox.h>
 #include <modules/base/processors/layercombiner.h>
+#include <modules/base/processors/layercontour.h>
+#include <modules/base/processors/layerdistancetransform.h>
 #include <modules/base/processors/imagedistancetransform.h>
 #include <modules/base/processors/layerinformation.h>
 #include <modules/base/processors/layersource.h>
@@ -211,6 +213,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<ImageToLayer>();
     registerProcessor<LayerBoundingBox>();
     registerProcessor<LayerCombiner>();
+    registerProcessor<LayerContour>();
+    registerProcessor<LayerDistanceTransform>();
     registerProcessor<LayerInformation>();
     registerProcessor<LayerSource>();
     registerProcessor<LayerToImage>();

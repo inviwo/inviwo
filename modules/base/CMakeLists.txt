@@ -79,6 +79,8 @@ set(HEADER_FILES
     include/modules/base/processors/inputselector.h
     include/modules/base/processors/layerboundingbox.h
     include/modules/base/processors/layercombiner.h
+    include/modules/base/processors/layercontour.h
+    include/modules/base/processors/layerdistancetransform.h
     include/modules/base/processors/layerinformation.h
     include/modules/base/processors/layersource.h
     include/modules/base/processors/layertoimage.h
@@ -221,6 +223,8 @@ set(SOURCE_FILES
     src/processors/inputselector.cpp
     src/processors/layerboundingbox.cpp
     src/processors/layercombiner.cpp
+    src/processors/layercontour.cpp
+    src/processors/layerdistancetransform.cpp
     src/processors/layerinformation.cpp
     src/processors/layersource.cpp
     src/processors/layertoimage.cpp
