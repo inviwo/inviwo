@@ -105,7 +105,6 @@ private:
 
     ColumnMetaDataListProperty columns_;
     std::shared_ptr<DataFrame> loadedData_;
-    bool loadingFailed_;
     std::string error_;
     bool deserialized_;
 };
