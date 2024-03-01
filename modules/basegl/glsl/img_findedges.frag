@@ -29,30 +29,30 @@
 
 #include "utils/structs.glsl"
 
-uniform ImageParameters outportParameters_;
+uniform ImageParameters outportParameters;
 
-uniform sampler2D inport_;
-uniform float alpha_;
+uniform sampler2D inport;
+uniform float alpha;
 
 void main() {
-    vec2 texCoordsM = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec3 colorM     = texture(inport_, texCoordsM).rgb;
-    vec2 texCoordsR     = vec2(gl_FragCoord.x + 1.0 , gl_FragCoord.y)       * outportParameters_.reciprocalDimensions;
-    vec2 texCoordsL     = vec2(gl_FragCoord.x - 1.0 , gl_FragCoord.y)       * outportParameters_.reciprocalDimensions;
-    vec2 texCoordsU     = vec2(gl_FragCoord.x       , gl_FragCoord.y + 1.0) * outportParameters_.reciprocalDimensions;
-    vec2 texCoordsD     = vec2(gl_FragCoord.x       , gl_FragCoord.y - 1.0) * outportParameters_.reciprocalDimensions;
-    vec2 texCoordsUL    = vec2(gl_FragCoord.x + 1.0, gl_FragCoord.y - 1.0)  * outportParameters_.reciprocalDimensions;
-    vec2 texCoordsUR    = vec2(gl_FragCoord.x + 1.0, gl_FragCoord.y + 1.0)  * outportParameters_.reciprocalDimensions;
-    vec2 texCoordsDL    = vec2(gl_FragCoord.x - 1.0, gl_FragCoord.y - 1.0)  * outportParameters_.reciprocalDimensions;
-    vec2 texCoordsDR    = vec2(gl_FragCoord.x - 1.0, gl_FragCoord.y + 1.0)  * outportParameters_.reciprocalDimensions;
-    vec3 colorR  = texture(inport_, texCoordsR).rgb;
-    vec3 colorL  = texture(inport_, texCoordsL).rgb;
-    vec3 colorU  = texture(inport_, texCoordsU).rgb;
-    vec3 colorD  = texture(inport_, texCoordsD).rgb;
-    vec3 colorUL = texture(inport_, texCoordsUL).rgb;
-    vec3 colorUR = texture(inport_, texCoordsUR).rgb;
-    vec3 colorDL = texture(inport_, texCoordsDL).rgb;
-    vec3 colorDR = texture(inport_, texCoordsDR).rgb;
+    vec2 texCoordsM = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+    vec3 colorM     = texture(inport, texCoordsM).rgb;
+    vec2 texCoordsR     = vec2(gl_FragCoord.x + 1.0 , gl_FragCoord.y)       * outportParameters.reciprocalDimensions;
+    vec2 texCoordsL     = vec2(gl_FragCoord.x - 1.0 , gl_FragCoord.y)       * outportParameters.reciprocalDimensions;
+    vec2 texCoordsU     = vec2(gl_FragCoord.x       , gl_FragCoord.y + 1.0) * outportParameters.reciprocalDimensions;
+    vec2 texCoordsD     = vec2(gl_FragCoord.x       , gl_FragCoord.y - 1.0) * outportParameters.reciprocalDimensions;
+    vec2 texCoordsUL    = vec2(gl_FragCoord.x + 1.0, gl_FragCoord.y - 1.0)  * outportParameters.reciprocalDimensions;
+    vec2 texCoordsUR    = vec2(gl_FragCoord.x + 1.0, gl_FragCoord.y + 1.0)  * outportParameters.reciprocalDimensions;
+    vec2 texCoordsDL    = vec2(gl_FragCoord.x - 1.0, gl_FragCoord.y - 1.0)  * outportParameters.reciprocalDimensions;
+    vec2 texCoordsDR    = vec2(gl_FragCoord.x - 1.0, gl_FragCoord.y + 1.0)  * outportParameters.reciprocalDimensions;
+    vec3 colorR  = texture(inport, texCoordsR).rgb;
+    vec3 colorL  = texture(inport, texCoordsL).rgb;
+    vec3 colorU  = texture(inport, texCoordsU).rgb;
+    vec3 colorD  = texture(inport, texCoordsD).rgb;
+    vec3 colorUL = texture(inport, texCoordsUL).rgb;
+    vec3 colorUR = texture(inport, texCoordsUR).rgb;
+    vec3 colorDL = texture(inport, texCoordsDL).rgb;
+    vec3 colorDR = texture(inport, texCoordsDR).rgb;
     float valR   = (colorR.r + colorR.g + colorR.b)/3.0;
     float valL   = (colorL.r + colorL.g + colorL.b)/3.0;
     float valU   = (colorU.r + colorU.g + colorU.b)/3.0;
@@ -64,6 +64,6 @@ void main() {
     float valX  = valUR + 2.0*valR + valDR - valUL - 2.0*valL - valUR;
     float valY  = valUL + 2.0*valU + valUR - valDL - 2.0*valD - valDR;
     float val   = length(vec2(valX, valY));
-    vec4 color = vec4(vec3(val) * alpha_ + colorM * (1 - alpha_), 1.0);
+    vec4 color = vec4(vec3(val) * alpha + colorM * (1 - alpha), 1.0);
     FragData0 = color;
 }

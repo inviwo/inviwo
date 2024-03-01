@@ -34,20 +34,21 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo LayerMapping::processorInfo_{"org.inviwo.LayerMapping",  // Class identifier
-                                                 "Layer Mapping",            // Display name
-                                                 "Layer Operation",          // Category
-                                                 CodeState::Stable,          // Code state
-                                                 Tags::GL,                   // Tags
-                                                 R"(
-Maps the input image to an output image with the help of a transfer function.
-)"_unindentHelp};
+const ProcessorInfo LayerMapping::processorInfo_{
+    "org.inviwo.LayerMapping",  // Class identifier
+    "Layer Mapping",            // Display name
+    "Layer Operation",          // Category
+    CodeState::Stable,          // Code state
+    Tags::GL,                   // Tags
+    R"(Applies a transferfunction to one channel of a Layer. The format of the RGBA output will
+    match the input with a data range of [0, 1].)"_unindentHelp,
+};
 
 const ProcessorInfo LayerMapping::getProcessorInfo() const { return processorInfo_; }
 
 LayerMapping::LayerMapping()
     : LayerGLProcessor{utilgl::findShaderResource("img_mapping.frag")}
-    , channel_{"channel", "Channel", "Selected channel used for mapping"_help,
+    , channel_{"channel", "Channel", "Selected channel used for TF mapping"_help,
                util::enumeratedOptions("Channel", 4)}
 
     , transferFunction_(
@@ -66,7 +67,10 @@ LayerConfig LayerMapping::outputConfig([[maybe_unused]] const Layer& input) cons
     auto inputFormat = input.getDataFormat();
     auto outputFormat =
         DataFormatBase::get(inputFormat->getNumericType(), 4, inputFormat->getPrecision());
-    return input.config().updateFrom({.format = outputFormat});
+    return input.config().updateFrom({.format = outputFormat,
+                                      .swizzleMask = swizzlemasks::rgba,
+                                      .dataRange = DataMapper::defaultDataRangeFor(inputFormat),
+                                      .valueRange = dvec2{0.0, 1.0}});
 }
 
 }  // namespace inviwo

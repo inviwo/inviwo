@@ -76,11 +76,13 @@ void ImageMapping::preProcess(TextureUnitContainer& container) {
 }
 
 void ImageMapping::afterInportChanged() {
-    // Determine the precision of the output format based on the input,
-    // but always output 4 component data representing RGBA
-    const DataFormatBase* inputDataFormat = inport_.getData()->getDataFormat();
-    size_t precision = inputDataFormat->getPrecision();
-    dataFormat_ = DataFormatBase::get(inputDataFormat->getNumericType(), 4, precision);
+    if (inport_.hasData()) {
+        // Determine the precision of the output format based on the input,
+        // but always output 4 component data representing RGBA
+        const DataFormatBase* inputDataFormat = inport_.getData()->getDataFormat();
+        size_t precision = inputDataFormat->getPrecision();
+        dataFormat_ = DataFormatBase::get(inputDataFormat->getNumericType(), 4, precision);
+    }
 }
 
 }  // namespace inviwo

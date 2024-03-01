@@ -29,16 +29,16 @@
 
 #include "utils/structs.glsl"
 
-uniform sampler2D inport_;
-uniform ImageParameters outportParameters_;
+uniform sampler2D inport;
+uniform ImageParameters outportParameters;
 uniform float intensity;
 uniform bool darken;
 
-vec2 iResolution = outportParameters_.dimensions.xy;
+vec2 iResolution = outportParameters.dimensions.xy;
 
 float lookup(vec2 p, float dx, float dy) {
     vec2 uv = (p.xy + vec2(dx * intensity, dy * intensity)) / iResolution.xy;
-    vec4 c = texture(inport_, uv.xy);
+    vec4 c = texture(inport, uv.xy);
 	
 	// return as luma
     return 0.2126*c.r + 0.7152*c.g + 0.0722*c.b;
@@ -46,7 +46,7 @@ float lookup(vec2 p, float dx, float dy) {
 
 void main() {
     if(!darken){
-        FragData0 = texture(inport_, gl_FragCoord.xy/ iResolution.xy);
+        FragData0 = texture(inport, gl_FragCoord.xy/ iResolution.xy);
         return;
     }
 
@@ -71,7 +71,7 @@ void main() {
     
     float g = gx*gx + gy*gy;
     
-    vec4 col = texture(inport_, p / iResolution.xy);
+    vec4 col = texture(inport, p / iResolution.xy);
     col.xyz *= vec3(1.0) - vec3(0.6) * g;
     
     FragData0 = col;

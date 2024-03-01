@@ -73,7 +73,7 @@ void Jacobian2D::initializeResources() {
 }
 
 void Jacobian2D::preProcess(TextureUnitContainer&) {
-    shader_.setUniform("renormalization_", renormalization_.get() ? 1 : 0);
+    shader_.setUniform("renormalization", renormalization_.get());
 }
 
 }  // namespace inviwo

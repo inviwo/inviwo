@@ -24,29 +24,23 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "utils/structs.glsl"
 
-uniform ImageParameters outportParameters_;
-uniform sampler2D inport_;
+uniform sampler2D inport;
+uniform ImageParameters outportParameters;
 
-uniform vec4 min_;    
-uniform vec4 max_;    
+uniform vec4 minValue = vec4(0);
+uniform vec4 maxValue = vec4(1);
 
-uniform float typeMax_;
-uniform float typeMin_;
+uniform float minDataType = 0.0;
+uniform float maxDataType = 1.0;
 
 void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec4 pixel = texture(inport_, texCoords);
-    
-    pixel.rgb *= (typeMax_ - typeMin_);
-    pixel.rgb += typeMin_;
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+    vec4 value = texture(inport, texCoords) * (maxDataType - minDataType) + minDataType;
 
-    pixel.rgb -= min_.rgb;
-    pixel.rgb /= (max_.rgb - min_.rgb);
-    
-    FragData0 = pixel;
+    FragData0 = (value - minValue) / (maxValue - minValue);
 }

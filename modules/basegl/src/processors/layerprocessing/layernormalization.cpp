@@ -46,35 +46,8 @@ const ProcessorInfo LayerNormalization::processorInfo_{
 
 const ProcessorInfo LayerNormalization::getProcessorInfo() const { return processorInfo_; }
 
-namespace {
-
-constexpr std::string_view fragmentShader = util::trim(R"(
-#include "utils/structs.glsl"
-#include "utils/sampler2d.glsl"
-
-uniform sampler2D inport;
-uniform ImageParameters inportParameters;
-uniform ImageParameters outportParameters;
-
-uniform vec4 minValue = vec4(0);
-uniform vec4 maxValue = vec4(1);
-
-uniform float minDataType = 0.0;
-uniform float maxDataType = 1.0;
-
-void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
-    vec4 value = texture(inport, texCoords) * (maxDataType - minDataType) + minDataType;
-
-    FragData0 = (value - minValue) / (maxValue - minValue);
-}
-)");
-
-}  // namespace
-
 LayerNormalization::LayerNormalization()
-    : LayerGLProcessor{std::make_shared<StringShaderResource>("LayerNormalization.frag",
-                                                              fragmentShader)}
+    : LayerGLProcessor{utilgl::findShaderResource("img_normalize.frag")}
     , normalizeIndividually_{"normalizeIndividually", "Normalize Channels Individually",
                              "If true, each channel will be normalized on its own. "
                              "Otherwise the global min/max values are used for all channels."_help}
@@ -96,9 +69,9 @@ LayerNormalization::LayerNormalization()
     dataMax_.setReadOnly(true);
 }
 
-void LayerNormalization::preProcess(TextureUnitContainer&) {
+void LayerNormalization::preProcess(TextureUnitContainer&, const Layer& input, Layer& output) {
     if (inport_.isChanged()) {
-        auto minMax = util::layerMinMax(inport_.getData().get(), IgnoreSpecialValues::Yes);
+        auto minMax = util::layerMinMax(&input, IgnoreSpecialValues::Yes);
         dataMin_.set(minMax.first);
         dataMax_.set(minMax.second);
     }
@@ -117,22 +90,20 @@ void LayerNormalization::preProcess(TextureUnitContainer&) {
         minValue = dvec4{glm::compMin(minValue)};
     }
 
-    shader_.setUniform("minValue", vec4{minValue});
-    shader_.setUniform("maxValue", vec4{maxValue});
-
-    auto dataformat = inport_.getData()->getDataFormat();
-
     float minDataType = 0.0f;
     float maxDataType = 1.0f;
-    if (dataformat->getNumericType() != NumericType::Float) {
+    if (auto dataformat = input.getDataFormat();
+        dataformat->getNumericType() != NumericType::Float) {
         minDataType = static_cast<float>(dataformat->getMin());
         maxDataType = static_cast<float>(dataformat->getMax());
     }
 
-    if (dataformat->getNumericType() == NumericType::Float) {
-        layer_->dataMap.dataRange = dvec2{0.0, 1.0};
-    }
-    layer_->dataMap.valueRange = valueRange;
+    shader_.setUniform("minValue", vec4{minValue});
+    shader_.setUniform("maxValue", vec4{maxValue});
+    shader_.setUniform("minDataType", minDataType);
+    shader_.setUniform("maxDataType", maxDataType);
+
+    output.dataMap.valueRange = valueRange;
 }
 
 LayerConfig LayerNormalization::outputConfig(const Layer& input) const {
@@ -140,7 +111,5 @@ LayerConfig LayerNormalization::outputConfig(const Layer& input) const {
         {.dataRange = DataMapper::defaultDataRangeFor(input.getDataFormat()),
          .valueRange = dvec2(0.0, 1.0)});
 }
-
-void LayerNormalization::postProcess() {}
 
 }  // namespace inviwo

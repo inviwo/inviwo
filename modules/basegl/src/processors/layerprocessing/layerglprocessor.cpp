@@ -83,10 +83,10 @@ void LayerGLProcessor::process() {
     }();
 
     utilgl::Activate activateShader{&shader_};
-    utilgl::setShaderUniforms(shader_, *layer, "outportParameters_");
+    utilgl::setShaderUniforms(shader_, *layer, "outportParameters");
 
     TextureUnitContainer cont;
-    utilgl::bindAndSetUniforms(shader_, cont, *inport_.getData(), "inport_");
+    utilgl::bindAndSetUniforms(shader_, cont, *inport_.getData(), "inport");
 
     preProcess(cont, input, *layer);
 

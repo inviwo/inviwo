@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,35 +24,31 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "utils/structs.glsl"
+#pragma once
 
-uniform ImageParameters outportParameters;
+#include <modules/basegl/baseglmoduledefine.h>
 
-uniform sampler2D inport;
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <modules/basegl/processors/layerprocessing/layerglprocessor.h>
 
-uniform bool renormalization = true;
+namespace inviwo {
 
-void main() {
-    vec2 dx = vec2(outportParameters.reciprocalDimensions.x, 0);
-    vec2 dy = vec2(0, outportParameters.reciprocalDimensions.y);
+class IVW_MODULE_BASEGL_API LayerGradient : public LayerGLProcessor {
+public:
+    LayerGradient();
 
-    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
-    // compute Jacobian using central differences
-    vec2 du = (texture(inport,texCoords + dx ).xy - texture(inport,texCoords - dx ).xy) * 0.5;
-    vec2 dv = (texture(inport,texCoords + dy ).xy - texture(inport,texCoords - dy ).xy) * 0.5;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-    if (renormalization) {
-        du /= outportParameters.reciprocalDimensions.xy;
-        dv /= outportParameters.reciprocalDimensions.xy;
-    }
+private:
+    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;
+    virtual LayerConfig outputConfig([[maybe_unused]] const Layer& input) const override;
 
-    mat2 m = mat2(du, dv);
-#if defined(INVERT_JACOBIAN)
-    m = inverse(m);
-#endif
+    OptionPropertyInt channel_;
+};
 
-    FragData0 = vec4(m[0], m[1]);
-}
+}  // namespace inviwo

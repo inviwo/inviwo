@@ -29,13 +29,13 @@
 
 #include "utils/structs.glsl"
 
-uniform ImageParameters outportParameters_;
+uniform ImageParameters outportParameters;
 
-uniform sampler2D inport_;
+uniform sampler2D inport;
 
 void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec4 inputColor = texture(inport_, texCoords);
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+    vec4 inputColor = texture(inport, texCoords);
     vec4 color = vec4(1.0 - inputColor.rgb, inputColor.a);
     FragData0 = color;
 }

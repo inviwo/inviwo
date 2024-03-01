@@ -58,6 +58,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/isoraycaster.h
     include/modules/basegl/processors/layerprocessing/layerbinary.h
     include/modules/basegl/processors/layerprocessing/layerglprocessor.h
+    include/modules/basegl/processors/layerprocessing/layergradient.h
     include/modules/basegl/processors/layerprocessing/layergrayscale.h
     include/modules/basegl/processors/layerprocessing/layerinvert.h
     include/modules/basegl/processors/layerprocessing/layermapping.h
@@ -184,6 +185,7 @@ set(SOURCE_FILES
     src/processors/isoraycaster.cpp
     src/processors/layerprocessing/layerbinary.cpp
     src/processors/layerprocessing/layerglprocessor.cpp
+    src/processors/layerprocessing/layergradient.cpp
     src/processors/layerprocessing/layergrayscale.cpp
     src/processors/layerprocessing/layerinvert.cpp
     src/processors/layerprocessing/layermapping.cpp
@@ -266,13 +268,13 @@ set(SHADER_FILES
     glsl/cubeglyph.vert
     glsl/heightfield.frag
     glsl/heightfield.vert
-    glsl/imagegradient.frag
     glsl/img_binary.frag
     glsl/img_channel_combine.frag
     glsl/img_channel_select.frag
     glsl/img_convolution.frag
     glsl/img_findedges.frag
     glsl/img_gamma.frag
+    glsl/img_gradient.frag
     glsl/img_graysc.frag
     glsl/img_highpass.frag
     glsl/img_invert.frag

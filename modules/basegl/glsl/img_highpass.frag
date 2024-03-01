@@ -29,15 +29,15 @@
 
 #include "utils/structs.glsl"
 
-uniform ImageParameters outportParameters_;
+uniform ImageParameters outportParameters;
 
-uniform sampler2D inport_;
+uniform sampler2D inport;
 
 uniform int kernelSize;
 uniform bool sharpen;
 
 void main() {
-    vec4 p = texture(inport_,gl_FragCoord.xy* outportParameters_.reciprocalDimensions);
+    vec4 p = texture(inport, gl_FragCoord.xy* outportParameters.reciprocalDimensions);
     vec3 v = vec3(0);
     int k2 = kernelSize/2;
     int startX = int(gl_FragCoord.x) - k2;
@@ -48,7 +48,7 @@ void main() {
     for(int y = startY  ; y < endY ; y++){
         for(int x = startX  ; x < endX ; x++){
             if(x == gl_FragCoord.x && y == gl_FragCoord.y) continue;
-            v += texture(inport_,vec2(x,y) * outportParameters_.reciprocalDimensions).xyz;
+            v += texture(inport,vec2(x,y) * outportParameters.reciprocalDimensions).xyz;
             w++;
         }
     }
