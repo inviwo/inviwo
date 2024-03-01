@@ -85,7 +85,7 @@ void setShaderUniforms(Shader& shader, const Volume& volume, std::string_view sa
 
     const auto gradientSpacing = volume.getWorldSpaceGradientSpacing();
     // Transform the world space gradient spacing to texture space.
-    // Wold space gradient spacing is given by:
+    // World space gradient spacing is given by:
     // mat3{ gradientSpacing.x         0                     0
     //             0             gradientSpacing.y           0
     //             0                   0               gradientSpacing.z }
