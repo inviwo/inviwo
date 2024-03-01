@@ -59,7 +59,7 @@ public:
     virtual void dataDeserialized(std::shared_ptr<Image> data) override;
 
 private:
-    IntVec2Property dimensions_;
+    IntSize2Property dimensions_;
 };
 
 }  // namespace inviwo

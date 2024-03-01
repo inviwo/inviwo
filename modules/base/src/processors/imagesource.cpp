@@ -74,7 +74,7 @@ const ProcessorInfo ImageSource::getProcessorInfo() const { return processorInfo
 ImageSource::ImageSource(InviwoApplication* app, const std::filesystem::path& file)
     : DataSource<Image, ImageOutport, Layer>(util::getDataReaderFactory(app), file, "image")
     , dimensions_("imageDimension_", "Image Dimensions",
-                  util::ordinalCount(ivec2{0}, ivec2{4096})
+                  util::ordinalCount(size2_t{0}, size2_t{4096})
                       .set("Dimensions of the image file"_help)
                       .set(InvalidationLevel::Valid)
                       .set(PropertySemantics::Text)
