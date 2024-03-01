@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/layerdistancetransformram.h>
+#include <modules/base/processors/imagedistancetransform.h>
 
 #include <inviwo/core/datastructures/image/image.h>                  // for Image
 #include <inviwo/core/datastructures/image/layer.h>                  // for Layer
@@ -43,6 +43,7 @@
 #include <inviwo/core/util/glmvec.h>                                 // for size2_t, size3_t
 #include <modules/base/algorithm/image/layerramdistancetransform.h>  // for layerDistanceTransform
 #include <modules/base/datastructures/imagereusecache.h>             // for ImageReuseCache
+#include <modules/base/algorithm/dataminmax.h>
 
 #include <functional>   // for __base
 #include <memory>       // for shared_ptr, shared_p...
@@ -58,24 +59,38 @@
 
 namespace inviwo {
 
-const ProcessorInfo LayerDistanceTransformRAM::processorInfo_{
-    "org.inviwo.LayerDistanceTransformRAM",  // Class identifier
-    "Image Distance Transform",              // Display name
-    "Image Operation",                       // Category
-    CodeState::Stable,                       // Code state
-    Tags::CPU,                               // Tags
+const ProcessorInfo ImageDistanceTransform::processorInfo_{
+    "org.inviwo.ImageDistanceTransform",  // Class identifier
+    "Image Distance Transform",           // Display name
+    "Image Operation",                    // Category
+    CodeState::Stable,                    // Code state
+    Tags::CPU,                            // Tags
+    R"(Computes the distance transform of a layer dataset using a threshold value
+    The result is the distance from each pixel to the closest feature. It will only work
+    correctly for layers with a orthogonal basis. It uses the Saito's algorithm to compute
+    the Euclidean distance.)"_unindentHelp,
 };
-const ProcessorInfo LayerDistanceTransformRAM::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo ImageDistanceTransform::getProcessorInfo() const { return processorInfo_; }
 
-LayerDistanceTransformRAM::LayerDistanceTransformRAM()
+ImageDistanceTransform::ImageDistanceTransform()
     : PoolProcessor()
-    , imagePort_("inputImage")
-    , outport_("outputImage", DataVec4UInt8::get(), false)
-    , threshold_("threshold", "Threshold", 0.5, 0.0, 1.0)
-    , flip_("flip", "Flip", false)
-    , normalize_("normalize", "Use normalized threshold", true)
-    , resultDistScale_("distScale", "Scaling Factor", 1.0f, 0.0f, 1.0e3, 0.05f)
-    , resultSquaredDist_("distSquared", "Squared Distance", false)
+    , imagePort_("inputImage", "Input image"_help)
+    , outport_("outputImage", "Scalar image representing the distance transform (float)"_help,
+               DataVec4UInt8::get(), HandleResizeEvents::No)
+    , threshold_(
+          "threshold", "Threshold",
+          "Pixels with a value  __larger___ then the then the threshold will be considered as features, i.e. have a zero distance."_help,
+          0.5, {0.0, ConstraintBehavior::Ignore}, {1.0, ConstraintBehavior::Ignore})
+    , flip_("flip", "Flip",
+            "Consider features as pixels with a values __smaller__ then threshold instead."_help,
+            false)
+    , normalize_("normalize", "Use normalized threshold",
+                 "Use normalized values when comparing to the threshold."_help, true)
+    , resultDistScale_("distScale", "Scaling Factor",
+                       util::ordinalScale(1.0, 1000.0)
+                           .set("Scaling factor to apply to the output distance field."_help))
+    , resultSquaredDist_("distSquared", "Squared Distance",
+                         "Output the squared distance field"_help, false)
     , uniformUpsampling_("uniformUpsampling", "Uniform Upsampling", false)
     , upsampleFactorUniform_("upsampleFactorUniform", "Sampling Factor", 1, 1, 10)
     , upsampleFactorVec2_("upsampleFactorVec2", "Sampling Factor", size2_t(1), size2_t(1),
@@ -93,9 +108,9 @@ LayerDistanceTransformRAM::LayerDistanceTransformRAM()
                                                [](const auto& p) { return p.get(); });
 }
 
-LayerDistanceTransformRAM::~LayerDistanceTransformRAM() = default;
+ImageDistanceTransform::~ImageDistanceTransform() = default;
 
-void LayerDistanceTransformRAM::process() {
+void ImageDistanceTransform::process() {
     const auto calc = [image = imagePort_.getData(),
                        upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
                                                            : upsampleFactorVec2_.get(),
@@ -115,6 +130,10 @@ void LayerDistanceTransformRAM::process() {
         util::layerDistanceTransform(image->getColorLayer(), dstRepr, upsample, threshold,
                                      normalize, flip, square, scale, progress);
 
+        auto max = glm::compMax(util::layerMinMax(dstRepr, IgnoreSpecialValues::Yes).second);
+        dstImage->getColorLayer()->dataMap.dataRange = dvec2{0.0, max};
+        dstImage->getColorLayer()->dataMap.valueRange = dvec2{0.0, max};
+
         cache.add(dstImage);
         return dstImage;
     };
@@ -124,23 +143,6 @@ void LayerDistanceTransformRAM::process() {
         outport_.setData(result);
         newResults();
     });
-}
-
-std::ostream& operator<<(std::ostream& ss, LayerDistanceTransformRAM::DataRangeMode m) {
-    switch (m) {
-        case LayerDistanceTransformRAM::DataRangeMode::Diagonal:
-            ss << "Diagonal";
-            break;
-        case LayerDistanceTransformRAM::DataRangeMode::MinMax:
-            ss << "MinMax";
-            break;
-        case LayerDistanceTransformRAM::DataRangeMode::Custom:
-            ss << "Custom";
-            break;
-        default:
-            break;
-    }
-    return ss;
 }
 
 }  // namespace inviwo

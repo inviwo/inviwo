@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/base/algorithm/image/imagecontour.h>
+#include <modules/base/algorithm/image/layercontour.h>
 
 #include <inviwo/core/datastructures/geometry/geometrytype.h>           // for ConnectivityType
 #include <inviwo/core/datastructures/geometry/typedmesh.h>              // for BasicMesh, TypedMesh
@@ -139,7 +139,7 @@ constexpr auto dispatcher = []<typename T>(const LayerRepresentation* in, size_t
 
 }  // namespace
 
-std::shared_ptr<Mesh> ImageContour::apply(const LayerRepresentation* in, size_t channel,
+std::shared_ptr<Mesh> computeLayerContour(const LayerRepresentation* in, size_t channel,
                                           double isoValue, vec4 color) {
     auto df = in->getDataFormat();
     if (df->getNumericType() != NumericType::Float) {

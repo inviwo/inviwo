@@ -31,30 +31,17 @@
 
 #include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/ports/imageport.h>             // for ImageInport
-#include <inviwo/core/ports/meshport.h>              // for MeshOutport
-#include <inviwo/core/processors/processor.h>        // for Processor
-#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
-#include <inviwo/core/properties/ordinalproperty.h>  // for DoubleProperty, FloatVec4Property
+#include <inviwo/core/util/glmvec.h>  // for vec4
+
+#include <cstddef>  // for size_t
+#include <memory>   // for shared_ptr
 
 namespace inviwo {
+class LayerRepresentation;
+class Mesh;
 
-class IVW_MODULE_BASE_API ImageContourProcessor : public Processor {
-public:
-    ImageContourProcessor();
-    virtual ~ImageContourProcessor() = default;
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    ImageInport image_;
-    MeshOutport outport_;
-    IntSizeTProperty channel_;
-    DoubleProperty isoValue_;
-    FloatVec4Property color_;
-};
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> computeLayerContour(const LayerRepresentation* in,
+                                                              size_t channel, double isoValue,
+                                                              vec4 color = vec4(1.0));
 
 }  // namespace inviwo

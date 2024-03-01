@@ -10,7 +10,7 @@ set(HEADER_FILES
     include/modules/base/algorithm/convexhullmesh.h
     include/modules/base/algorithm/cubeproxygeometry.h
     include/modules/base/algorithm/dataminmax.h
-    include/modules/base/algorithm/image/imagecontour.h
+    include/modules/base/algorithm/image/layercontour.h
     include/modules/base/algorithm/image/layerramdistancetransform.h
     include/modules/base/algorithm/image/layerramsubset.h
     include/modules/base/algorithm/mesh/axisalignedboundingbox.h
@@ -66,6 +66,7 @@ set(HEADER_FILES
     include/modules/base/processors/gridplanes.h
     include/modules/base/processors/heightfieldmapper.h
     include/modules/base/processors/imagecontourprocessor.h
+    include/modules/base/processors/imagedistancetransform.h
     include/modules/base/processors/imageexport.h
     include/modules/base/processors/imageinformation.h
     include/modules/base/processors/imagesequenceelementselectorprocessor.h
@@ -78,7 +79,6 @@ set(HEADER_FILES
     include/modules/base/processors/inputselector.h
     include/modules/base/processors/layerboundingbox.h
     include/modules/base/processors/layercombiner.h
-    include/modules/base/processors/layerdistancetransformram.h
     include/modules/base/processors/layerinformation.h
     include/modules/base/processors/layersource.h
     include/modules/base/processors/layertoimage.h
@@ -156,7 +156,7 @@ set(SOURCE_FILES
     src/algorithm/convexhullmesh.cpp
     src/algorithm/cubeproxygeometry.cpp
     src/algorithm/dataminmax.cpp
-    src/algorithm/image/imagecontour.cpp
+    src/algorithm/image/layercontour.cpp
     src/algorithm/image/layerramdistancetransform.cpp
     src/algorithm/image/layerramsubset.cpp
     src/algorithm/mesh/axisalignedboundingbox.cpp
@@ -208,6 +208,7 @@ set(SOURCE_FILES
     src/processors/gridplanes.cpp
     src/processors/heightfieldmapper.cpp
     src/processors/imagecontourprocessor.cpp
+    src/processors/imagedistancetransform.cpp
     src/processors/imageexport.cpp
     src/processors/imageinformation.cpp
     src/processors/imagesequenceelementselectorprocessor.cpp
@@ -220,7 +221,6 @@ set(SOURCE_FILES
     src/processors/inputselector.cpp
     src/processors/layerboundingbox.cpp
     src/processors/layercombiner.cpp
-    src/processors/layerdistancetransformram.cpp
     src/processors/layerinformation.cpp
     src/processors/layersource.cpp
     src/processors/layertoimage.cpp

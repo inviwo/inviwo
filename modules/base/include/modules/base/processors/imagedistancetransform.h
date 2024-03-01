@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2024 Inviwo Foundation
+ * Copyright (c) 2017-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,19 +31,39 @@
 
 #include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/util/glmvec.h>  // for vec4
-
-#include <cstddef>  // for size_t
-#include <memory>   // for shared_ptr
+#include <inviwo/core/ports/imageport.h>                  // for ImageInport, ImageOutport
+#include <inviwo/core/processors/poolprocessor.h>         // for PoolProcessor
+#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>          // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>       // for DoubleProperty, IntProperty
+#include <modules/base/datastructures/imagereusecache.h>  // for ImageReuseCache
 
 namespace inviwo {
-class LayerRepresentation;
-class Mesh;
 
-class IVW_MODULE_BASE_API ImageContour {
+class IVW_MODULE_BASE_API ImageDistanceTransform : public PoolProcessor {
 public:
-    static std::shared_ptr<Mesh> apply(const LayerRepresentation* in, size_t channel,
-                                       double isoValue, vec4 color = vec4(1.0));
+    ImageDistanceTransform();
+    virtual ~ImageDistanceTransform();
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    ImageInport imagePort_;
+    ImageOutport outport_;
+
+    ImageReuseCache imageCache_;
+
+    DoubleProperty threshold_;
+    BoolProperty flip_;
+    BoolProperty normalize_;
+    DoubleProperty resultDistScale_;  // scaling factor for distances
+    BoolProperty resultSquaredDist_;  // determines whether output uses squared euclidean distances
+    BoolProperty uniformUpsampling_;
+    IntProperty upsampleFactorUniform_;    // uniform upscaling of the output field
+    IntSize2Property upsampleFactorVec2_;  // non-uniform upscaling of the output field
 };
 
 }  // namespace inviwo

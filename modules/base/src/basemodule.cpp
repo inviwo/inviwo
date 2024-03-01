@@ -91,7 +91,7 @@
 #include <modules/base/processors/inputselector.h>          // for InputSelector
 #include <modules/base/processors/layerboundingbox.h>
 #include <modules/base/processors/layercombiner.h>
-#include <modules/base/processors/layerdistancetransformram.h>  // for LayerDistanc...
+#include <modules/base/processors/imagedistancetransform.h>
 #include <modules/base/processors/layerinformation.h>
 #include <modules/base/processors/layersource.h>
 #include <modules/base/processors/layertoimage.h>
@@ -202,6 +202,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MeshSource>();
     registerProcessor<HeightFieldMapper>();
     registerProcessor<ImageExport>();
+    registerProcessor<ImageDistanceTransform>();
     registerProcessor<ImageInformation>();
     registerProcessor<ImageSnapshot>();
     registerProcessor<ImageSource>();
@@ -210,7 +211,6 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<ImageToLayer>();
     registerProcessor<LayerBoundingBox>();
     registerProcessor<LayerCombiner>();
-    registerProcessor<LayerDistanceTransformRAM>();
     registerProcessor<LayerInformation>();
     registerProcessor<LayerSource>();
     registerProcessor<LayerToImage>();
@@ -499,6 +499,9 @@ bool BaseModule::Converter::convert(TxElement* root) {
             [[fallthrough]];
         }
         case 6: {
+            res |= xml::changeAttribute(
+                root, {{xml::Kind::processor("org.inviwo.LayerDistanceTransformRAM")}}, "type",
+                "org.inviwo.LayerDistanceTransformRAM", "org.inviwo.ImageDistanceTransform");
             res |= xml::changeAttribute(root, {{xml::Kind::processor("org.inviwo.NoiseProcessor")}},
                                         "type", "org.inviwo.NoiseProcessor",
                                         "org.inviwo.NoiseGenerator2D");
