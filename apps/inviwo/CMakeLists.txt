@@ -95,6 +95,7 @@ if(WIN32)
     target_link_libraries(inviwo-cli PUBLIC
         inviwo::core
         inviwo::module-system
+        inviwo::python-helper
         inviwo::qtapplicationbase
         inviwo::qteditor
         Qt6::Core 
