@@ -59,7 +59,7 @@
     PYBIND11_EMBEDDED_MODULE_IMPL(name)                                                      \
     void PYBIND11_CONCAT(inviwo_static_pybind_init_, name)() {                               \
         if (Py_IsInitialized() != 0) {                                                       \
-              pybind11::pybind11_fail(                                                       \
+            pybind11::pybind11_fail(                                                         \
                 "Can't add new modules after the interpreter has been initialized");         \
         }                                                                                    \
         auto result = PyImport_AppendInittab(PYBIND11_TOSTRING(name),                        \

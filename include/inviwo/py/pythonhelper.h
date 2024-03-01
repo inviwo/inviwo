@@ -32,5 +32,5 @@
 #include <inviwo/py/inviwopythonhelperdefine.h>
 
 namespace inviwo {
-    IVW_PYTHONHELPER_API void initializePythonModules();
+IVW_PYTHONHELPER_API void initializePythonModules();
 }

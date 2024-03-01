@@ -49,7 +49,6 @@
 #include <inviwo/sys/moduleloading.h>
 #include <inviwo/py/pythonhelper.h>
 
-
 #include <sstream>
 #include <algorithm>
 #include <array>
@@ -105,7 +104,6 @@ int main(int argc, char** argv) {
     inviwo::util::registerModulesFiltered(inviwoApp.getModuleManager(), filter,
                                           inviwoApp.getSystemSettings().moduleSearchPaths_.get(),
                                           clp.getModuleSearchPaths());
-
 
     qtApp.processEvents();
 
