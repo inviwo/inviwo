@@ -91,11 +91,8 @@ namespace inviwo {
  *     + Datfile: sequence1.dat
  *     + Datfile: sequence2.dat
  */
-class IVW_MODULE_BASE_API DatVolumeSequenceReader
-    : public DataReaderType<std::vector<std::shared_ptr<Volume>>> {
+class IVW_MODULE_BASE_API DatVolumeSequenceReader : public DataReaderType<VolumeSequence> {
 public:
-    using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
-
     DatVolumeSequenceReader();
     DatVolumeSequenceReader(const DatVolumeSequenceReader& rhs);
     DatVolumeSequenceReader& operator=(const DatVolumeSequenceReader& that);

@@ -29,6 +29,7 @@
 
 #include <inviwo/core/interaction/events/resizeevent.h>
 
+#include <inviwo/core/datastructures/datasequence.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
@@ -50,6 +51,7 @@ bool ResizeEvent::shouldPropagateTo(Inport* inport, Processor* processor, Outpor
     // Only propagate to image ports in the same port group.
     if (processor->getPortGroup(inport) == processor->getPortGroup(source)) {
         if (dynamic_cast<ImagePortBase*>(inport)) return true;
+        if (dynamic_cast<DataInport<DataSequence<Image>>*>(inport)) return true;
     }
     return false;
 }

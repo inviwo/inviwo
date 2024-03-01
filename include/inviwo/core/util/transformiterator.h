@@ -54,6 +54,7 @@ struct TransformIterator {
     using difference_type = typename std::iterator_traits<Iter>::difference_type;
     using iterator_category = typename std::iterator_traits<Iter>::iterator_category;
 
+    using base_iterator = Iter;
     using base_value = typename std::iterator_traits<Iter>::value_type;
     using base_reference = typename std::iterator_traits<Iter>::reference;
     using base_pointer = typename std::iterator_traits<Iter>::pointer;
@@ -63,7 +64,9 @@ struct TransformIterator {
     using pointer = std::add_pointer_t<value_type>;
 
     TransformIterator() = default;
-    TransformIterator(Iter iterator) : transform_{}, iterator_(iterator) {}
+    TransformIterator(Iter iterator)
+        requires std::default_initializable<Transform>
+        : transform_{Transform{}}, iterator_(iterator) {}
     TransformIterator(Transform transform, Iter iterator)
         : transform_{std::move(transform)}, iterator_(iterator) {
         static_assert(std::is_same<base_reference, decltype(*std::declval<Iter>())>::value, "");
@@ -90,6 +93,13 @@ struct TransformIterator {
         }
         return *this;
     }
+
+    template <typename Other>
+    TransformIterator(const Other& other)
+        requires(!std::is_same_v<TransformIterator, Other>) &&
+                    std::default_initializable<Transform> &&
+                    std::constructible_from<Iter, typename Other::base_iterator>
+        : transform_{}, iterator_(other.base()) {}
 
     TransformIterator& operator++() {
         ++iterator_;

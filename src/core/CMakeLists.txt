@@ -46,6 +46,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datagrouprepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datamapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datarepresentation.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datasequence.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datatraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/diskrepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/basicmesh.h
@@ -444,6 +445,7 @@ set(SOURCE_FILES
     datastructures/coordinatetransformer.cpp
     datastructures/datamapper.cpp
     datastructures/datarepresentation.cpp
+    datastructures/datasequence.cpp
     datastructures/datatraits.cpp
     datastructures/geometry/basicmesh.cpp
     datastructures/geometry/geometrytype.cpp

@@ -32,15 +32,15 @@
 
 namespace inviwo {
 
-VolumeSequenceSampler::VolumeSequenceSampler(
-    std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeSequence, bool allowLooping)
+VolumeSequenceSampler::VolumeSequenceSampler(std::shared_ptr<const VolumeSequence> volumeSequence,
+                                             bool allowLooping)
     : Spatial4DSampler<3, double>(volumeSequence->front())
     , wrappers_()
     , allowLooping_(allowLooping)
     , timeRange_(0, 0)
     , totDuration_(0) {
 
-    for (const auto& vol : (*volumeSequence.get())) {
+    for (const auto& vol : *volumeSequence) {
         wrappers_.emplace_back(std::make_shared<Wrapper>(vol));
     }
 

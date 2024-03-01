@@ -45,11 +45,13 @@ ConfigurableGTestEventListener& ConfigurableGTestEventListener::setup() {
     auto default_printer = listeners.Release(listeners.default_result_printer());
 
     auto listener = new ConfigurableGTestEventListener(default_printer);
-    listener->showEnvironment = false;
-    listener->showTestCases = false;
-    listener->showTestNames = false;
-    listener->showSuccesses = false;
-    listener->showInlineFailures = false;
+    if (std::getenv("INVIWO_TERSE_TEST_OUTPUT")) {
+        listener->showEnvironment = false;
+        listener->showTestCases = false;
+        listener->showTestNames = false;
+        listener->showSuccesses = false;
+        listener->showInlineFailures = false;
+    }
     listeners.Append(listener);
 
     return *listener;

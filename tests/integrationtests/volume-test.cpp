@@ -29,9 +29,8 @@
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <modules/opengl/volume/volumegl.h>
+#include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/indexmapper.h>
@@ -73,7 +72,7 @@ void testDatVolumeLoad(std::string_view filename) {
 
     auto reader = InviwoApplication::getPtr()
                       ->getDataReaderFactory()
-                      ->getReaderForTypeAndExtension<std::vector<std::shared_ptr<Volume>>>(file);
+                      ->getReaderForTypeAndExtension<VolumeSequence>(file);
     ASSERT_TRUE(reader.get() != nullptr);
     auto volumeSeq = reader->readData(file);
     ASSERT_EQ(1, volumeSeq->size());
@@ -169,7 +168,7 @@ void testDatVolumeClone(std::string_view filename) {
     auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
     auto reader = InviwoApplication::getPtr()
                       ->getDataReaderFactory()
-                      ->getReaderForTypeAndExtension<std::vector<std::shared_ptr<Volume>>>(file);
+                      ->getReaderForTypeAndExtension<VolumeSequence>(file);
     ASSERT_TRUE(reader.get() != nullptr);
     auto volumeSeq = reader->readData(file);
     ASSERT_EQ(1, volumeSeq->size());

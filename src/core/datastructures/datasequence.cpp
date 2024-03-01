@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2024 Inviwo Foundation
+ * Copyright (c) 2023-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,31 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/core/datastructures/datasequence.h>
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-
-#include <vector>
-#include <memory>
-
-namespace inviwo {
-
-namespace util {
-
-IVW_CORE_API bool hasTimestamps(const VolumeSequence& seq, bool checkfirstonly = true);
-
-IVW_CORE_API std::pair<double, double> getTimestampRange(const VolumeSequence& seq,
-                                                         bool sorted = true);
-
-IVW_CORE_API bool isSorted(const VolumeSequence& seq);
-VolumeSequence IVW_CORE_API sortSequence(const VolumeSequence& seq);
-
-IVW_CORE_API std::pair<std::shared_ptr<const Volume>, std::shared_ptr<const Volume>>
-getVolumesForTimestep(const VolumeSequence& seq, double t, bool sorted = true);
-
-bool IVW_CORE_API hasTimestamp(const std::shared_ptr<const Volume>& vol);
-double IVW_CORE_API getTimestamp(const std::shared_ptr<const Volume>& vol);
-}  // namespace util
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo
