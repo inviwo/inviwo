@@ -100,7 +100,7 @@ void setShaderUniforms(Shader& shader, const Volume& volume, std::string_view sa
 
     shader.setUniform(buff.replace("{}.worldSpaceGradientSpacing", samplerID), gradientSpacing);
 
-    setShaderUniforms(shader, volume.dataMap_, volume.getDataFormat(), samplerID);
+    setShaderUniforms(shader, volume.dataMap, volume.getDataFormat(), samplerID);
 }
 
 void setShaderUniforms(Shader& shader, const VolumeInport& port, std::string_view samplerID) {

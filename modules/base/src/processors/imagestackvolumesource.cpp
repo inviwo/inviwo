@@ -280,9 +280,9 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
             }
 
             auto volume = std::make_shared<Volume>(volumeRAM);
-            volume->dataMap_.dataRange =
+            volume->dataMap.dataRange =
                 dvec2{DataFormat<PrimitiveType>::lowest(), DataFormat<PrimitiveType>::max()};
-            volume->dataMap_.valueRange =
+            volume->dataMap.valueRange =
                 dvec2{DataFormat<PrimitiveType>::lowest(), DataFormat<PrimitiveType>::max()};
 
             const auto size = vec3(0.01f) * static_cast<vec3>(volumeRAM->getDimensions());

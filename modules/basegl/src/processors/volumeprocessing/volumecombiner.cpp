@@ -356,8 +356,8 @@ void VolumeCombiner::process() {
 }
 
 void VolumeCombiner::updateDataRange() {
-    dvec2 dataRange = inport_.getData()->dataMap_.dataRange;
-    dvec2 valueRange = inport_.getData()->dataMap_.valueRange;
+    dvec2 dataRange = inport_.getData()->dataMap.dataRange;
+    dvec2 valueRange = inport_.getData()->dataMap.valueRange;
 
     if (rangeMode_.getSelectedIdentifier() == "maxRange") {
         auto minmax = [](const dvec2& a, const dvec2& b) {
@@ -365,12 +365,12 @@ void VolumeCombiner::updateDataRange() {
         };
 
         for (const auto& vol : inport_) {
-            dataRange = minmax(dataRange, vol->dataMap_.dataRange);
-            valueRange = minmax(valueRange, vol->dataMap_.valueRange);
+            dataRange = minmax(dataRange, vol->dataMap.dataRange);
+            valueRange = minmax(valueRange, vol->dataMap.valueRange);
         }
     } else {
-        dataRange = inport_.getVectorData()[rangeMode_.getSelectedValue()]->dataMap_.dataRange;
-        valueRange = inport_.getVectorData()[rangeMode_.getSelectedValue()]->dataMap_.valueRange;
+        dataRange = inport_.getVectorData()[rangeMode_.getSelectedValue()]->dataMap.dataRange;
+        valueRange = inport_.getVectorData()[rangeMode_.getSelectedValue()]->dataMap.valueRange;
     }
     outputDataRange_.set(dataRange);
     outputValueRange_.set(valueRange);
@@ -380,8 +380,8 @@ void VolumeCombiner::updateDataRange() {
         valueRange = customValueRange_;
     }
 
-    volume_->dataMap_.dataRange = dataRange;
-    volume_->dataMap_.valueRange = valueRange;
+    volume_->dataMap.dataRange = dataRange;
+    volume_->dataMap.valueRange = valueRange;
 }
 
 }  // namespace inviwo

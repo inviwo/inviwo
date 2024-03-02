@@ -97,15 +97,15 @@ VolumeGradientProcessor::~VolumeGradientProcessor() = default;
 
 void VolumeGradientProcessor::preProcess(TextureUnitContainer&) {
     shader_.setUniform("channel", channel_.getSelectedValue());
-    shader_.setUniform("dataRange", vec2(inport_.getData()->dataMap_.dataRange));
+    shader_.setUniform("dataRange", vec2(inport_.getData()->dataMap.dataRange));
 }
 
 void VolumeGradientProcessor::postProcess() {
     if (!dataInChannel4_) {
-        volume_->dataMap_.valueAxis.name = "gradient";
-        volume_->dataMap_.valueAxis.unit =
-            inport_.getData()->dataMap_.valueAxis.unit / inport_.getData()->axes[0].unit;
-        volume_->dataMap_ = inport_.getData()->dataMap_;
+        volume_->dataMap.valueAxis.name = "gradient";
+        volume_->dataMap.valueAxis.unit =
+            inport_.getData()->dataMap.valueAxis.unit / inport_.getData()->axes[0].unit;
+        volume_->dataMap = inport_.getData()->dataMap;
         volume_->setWrapping(inport_.getData()->getWrapping());
     }
 }

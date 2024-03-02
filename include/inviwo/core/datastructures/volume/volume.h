@@ -160,7 +160,7 @@ public:
      */
     virtual const Axis* getAxis(size_t index) const override;
 
-    DataMapper dataMap_;
+    DataMapper dataMap;
     std::array<Axis, 3> axes;
 
     static uvec3 colorCode;

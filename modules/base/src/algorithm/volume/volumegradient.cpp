@@ -66,8 +66,8 @@ std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int
     auto newVolume = std::make_unique<Volume>(*volume, noData);
     auto newVolumeRep = std::make_shared<VolumeRAMPrecision<vec3>>(volume->getDimensions());
     newVolume->addRepresentation(newVolumeRep);
-    newVolume->dataMap_.valueAxis.name = "gradient";
-    newVolume->dataMap_.valueAxis.unit = volume->dataMap_.valueAxis.unit / volume->axes[0].unit;
+    newVolume->dataMap.valueAxis.name = "gradient";
+    newVolume->dataMap.valueAxis.unit = volume->dataMap.valueAxis.unit / volume->axes[0].unit;
 
     auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
 
@@ -101,8 +101,8 @@ std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int
 
     util::forEachVoxelParallel(*volume->getRepresentation<VolumeRAM>(), func);
 
-    newVolume->dataMap_.dataRange = dvec2(-max, max);
-    newVolume->dataMap_.valueRange = dvec2(-max, max);
+    newVolume->dataMap.dataRange = dvec2(-max, max);
+    newVolume->dataMap.valueRange = dvec2(-max, max);
 
     return newVolume;
 }

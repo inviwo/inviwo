@@ -73,7 +73,7 @@ void exposeVolume(pybind11::module& m) {
         .def_property("swizzlemask", &Volume::getSwizzleMask, &Volume::setSwizzleMask)
         .def_property("interpolation", &Volume::getInterpolation, &Volume::setInterpolation)
         .def_property("wrapping", &Volume::getWrapping, &Volume::setWrapping)
-        .def_readwrite("dataMap", &Volume::dataMap_)
+        .def_readwrite("dataMap", &Volume::dataMap)
         .def_readwrite("axes", &Volume::axes)
         .def("hasRepresentations", &Volume::hasRepresentations)
         .def("addRepresentation", &Volume::addRepresentation)
@@ -111,8 +111,8 @@ void exposeVolume(pybind11::module& m) {
                 "modelMatrix = {}\n"
                 "worldMatrix = {}>",
                 volume.getDataFormat()->getString(), volume.getDimensions(),
-                volume.dataMap_.dataRange, volume.dataMap_.valueRange,
-                volume.dataMap_.valueAxis.name, volume.dataMap_.valueAxis.unit,
+                volume.dataMap.dataRange, volume.dataMap.valueRange,
+                volume.dataMap.valueAxis.name, volume.dataMap.valueAxis.unit,
                 volume.getModelMatrix(), volume.getWorldMatrix());
         });
 

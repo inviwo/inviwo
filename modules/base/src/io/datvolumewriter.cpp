@@ -123,10 +123,10 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
     print("WorldVector2", wtm[1]);
     print("WorldVector3", wtm[2]);
     print("WorldVector4", wtm[3]);
-    print("DataRange", data.dataMap_.dataRange);
-    print("ValueRange", data.dataMap_.valueRange);
-    print("ValueUnit", data.dataMap_.valueAxis.unit);
-    print("ValueName", data.dataMap_.valueAxis.name);
+    print("DataRange", data.dataMap.dataRange);
+    print("ValueRange", data.dataMap.valueRange);
+    print("ValueUnit", data.dataMap.valueAxis.unit);
+    print("ValueName", data.dataMap.valueAxis.name);
 
     print("Axis1Name", data.axes[0].name);
     print("Axis2Name", data.axes[1].name);

@@ -233,7 +233,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
 
     if (auto port = propertyPtr_->getVolumeInport()) {
         const auto portChange = [this, port]() {
-            auto dataMap = port->hasData() ? port->getData()->dataMap_ : DataMapper{};
+            auto dataMap = port->hasData() ? port->getData()->dataMap : DataMapper{};
             domainMin_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(0.0)));
             domainMax_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(1.0)));
         };
@@ -477,7 +477,7 @@ void TFPropertyDialog::onTFTypeChangedInternal() {
     dvec2 valueRange(0.0, 1.0);
     if (auto port = propertyPtr_->getVolumeInport()) {
         if (port->hasData()) {
-            valueRange = port->getData()->dataMap_.valueRange;
+            valueRange = port->getData()->dataMap.valueRange;
         }
     }
     // TODO: how to handle different TF types?

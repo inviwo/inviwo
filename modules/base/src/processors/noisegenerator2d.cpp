@@ -29,34 +29,13 @@
 
 #include <modules/base/processors/noisegenerator2d.h>
 
-#include <inviwo/core/algorithm/markdown.h>               // for operator""_help, operator""_uni...
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for luminance
-#include <inviwo/core/datastructures/image/layer.h>       // for Layer
-#include <inviwo/core/ports/imageport.h>                  // for ImageOutport, HandleResizeEvents
-#include <inviwo/core/processors/processor.h>             // for Processor
-#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>        // for CodeState, CodeState::Experimental
-#include <inviwo/core/processors/processortags.h>         // for Tag, Tag::CPU
-#include <inviwo/core/properties/boolproperty.h>          // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>     // for CompositeProperty
-#include <inviwo/core/properties/constraintbehavior.h>    // for ConstraintBehavior, ConstraintB...
-#include <inviwo/core/properties/minmaxproperty.h>        // for IntMinMaxProperty, FloatMinMaxP...
-#include <inviwo/core/properties/optionproperty.h>        // for OptionPropertyOption, OptionPro...
-#include <inviwo/core/properties/ordinalproperty.h>       // for IntProperty, IntSizeTProperty
-#include <inviwo/core/util/formats.h>                     // for DataFloat32, DataFormat
-#include <inviwo/core/util/glmvec.h>                      // for ivec2
-#include <inviwo/core/util/staticstring.h>                // for operator+
-#include <inviwo/core/util/zip.h>                         // for zipper
-#include <modules/base/algorithm/randomutils.h>           // for haltonSequence, nextPow2, perli...
-
-#include <algorithm>    // for max
-#include <cmath>        // for log, round
-#include <memory>       // for shared_ptr
-#include <type_traits>  // for remove_extent_t
-
-#include <glm/detail/qualifier.hpp>   // for tvec2
-#include <glm/vec2.hpp>               // for vec, vec<>::(anonymous)
-#include <glm/vector_relational.hpp>  // for any, greaterThanEqual, lessThan
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/base/algorithm/randomutils.h>
 
 namespace inviwo {
 class Image;
@@ -121,12 +100,15 @@ NoiseGenerator2D::NoiseGenerator2D()
                    "Use the same seed for each call to process."_help, true)
     , seed_("seed", "Seed", "The seed used to initialize the random sequence"_help, 1,
             {0, ConstraintBehavior::Immutable}, {1000, ConstraintBehavior::Ignore})
+    , information_("Information", "Data Information")
+    , basis_("Basis", "Basis and Offset")
     , rd_()
     , mt_(rd_()) {
 
     addPort(noise_);
     addProperties(size_, type_, range_, levels_, persistence_, poissonDotsAlongX_,
-                  poissonMaxPoints_, haltonNumPoints_, haltonXBase_, haltonYBase_);
+                  poissonMaxPoints_, haltonNumPoints_, haltonXBase_, haltonYBase_, information_,
+                  basis_);
 
     auto typeOnChange = [&]() {
         range_.setVisible(type_.getSelectedValue() == NoiseType::Random);
@@ -156,8 +138,6 @@ NoiseGenerator2D::NoiseGenerator2D()
     typeOnChange();
 }
 
-NoiseGenerator2D::~NoiseGenerator2D() {}
-
 void NoiseGenerator2D::process() {
     if (useSameSeed_.get()) {
         mt_.seed(seed_.get());
@@ -183,6 +163,14 @@ void NoiseGenerator2D::process() {
                                                 haltonXBase_.get(), haltonYBase_.get());
             break;
     }
+
+    const bool deserializing = getNetwork()->isDeserializing();
+    basis_.updateForNewEntity(*layer, deserializing);
+    information_.updateForNewLayer(
+        *layer, deserializing ? util::OverwriteState::Yes : util::OverwriteState::No);
+
+    information_.updateLayer(*layer);
+    basis_.updateEntity(*layer);
 
     noise_.setData(layer);
 }

@@ -111,7 +111,7 @@ void LIC3D::preProcess(TextureUnitContainer& cont) {
 }
 
 void LIC3D::postProcess() {
-    volume_->dataMap_.valueRange = volume_->dataMap_.dataRange = dvec2(0, 255);
+    volume_->dataMap.valueRange = volume_->dataMap.dataRange = dvec2(0, 255);
 }
 
 }  // namespace inviwo

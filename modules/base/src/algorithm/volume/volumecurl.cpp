@@ -116,8 +116,8 @@ std::unique_ptr<Volume> curlVolume(const Volume& volume) {
             });
 
             auto range = std::max(std::abs(minV), std::abs(maxV));
-            newVolume->dataMap_.dataRange = dvec2(-range, range);
-            newVolume->dataMap_.valueRange = dvec2(minV, maxV);
+            newVolume->dataMap.dataRange = dvec2(-range, range);
+            newVolume->dataMap.valueRange = dvec2(minV, maxV);
         });
 
     return newVolume;

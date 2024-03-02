@@ -80,9 +80,9 @@ std::unique_ptr<Volume> generateVolume(const size3_t& dimensions, const mat3& ba
     auto volume = std::make_unique<Volume>(ram);
     volume->setBasis(basis);
     volume->setOffset(-0.5f * (basis[0] + basis[1] + basis[2]));
-    volume->dataMap_.dataRange.x = glm::compMin(minmax.first);
-    volume->dataMap_.dataRange.y = glm::compMax(minmax.second);
-    volume->dataMap_.valueRange = volume->dataMap_.dataRange;
+    volume->dataMap.dataRange.x = glm::compMin(minmax.first);
+    volume->dataMap.dataRange.y = glm::compMax(minmax.second);
+    volume->dataMap.valueRange = volume->dataMap.dataRange;
     return volume;
 }
 

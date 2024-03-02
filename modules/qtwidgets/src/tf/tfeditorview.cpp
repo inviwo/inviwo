@@ -325,7 +325,7 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
     double gridOrigin = sRect.left();  // horizontal origin of the grid
     // adjust grid origin if there is a data mapper available
     if (volumeInport_ && volumeInport_->hasData()) {
-        auto& datamap = volumeInport_->getData()->dataMap_;
+        auto& datamap = volumeInport_->getData()->dataMap;
         if ((datamap.valueRange.x < 0.0) && (datamap.valueRange.y > 0.0)) {
             gridOrigin = datamap.mapFromValueToNormalized(0.0) * sRect.width() + sRect.left();
 

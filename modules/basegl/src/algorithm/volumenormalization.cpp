@@ -102,7 +102,7 @@ std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
     shader_.deactivate();
     fbo_.deactivate();
 
-    outVolume->dataMap_.dataRange = outVolume->dataMap_.valueRange = dvec2{0, 1};
+    outVolume->dataMap.dataRange = outVolume->dataMap.valueRange = dvec2{0, 1};
 
     return outVolume;
 }

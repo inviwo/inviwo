@@ -114,7 +114,7 @@ void TMIP::process() {
         volume0_->setWorldMatrix(firstVol->getWorldMatrix());
         // pass on metadata
         volume0_->copyMetaDataFrom(*firstVol);
-        volume0_->dataMap_ = firstVol->dataMap_;
+        volume0_->dataMap = firstVol->dataMap;
 
         volume1_ = std::shared_ptr<Volume>(volume0_->clone());
     }

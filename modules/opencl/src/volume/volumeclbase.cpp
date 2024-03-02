@@ -51,7 +51,7 @@ vec2 VolumeCLBase::getVolumeDataOffsetAndScaling(const Volume* volume) const {
     // Changes here should also be done there.
     // Compute data scaling based on volume data range
 
-    dvec2 dataRange = volume->dataMap_.dataRange;
+    dvec2 dataRange = volume->dataMap.dataRange;
     DataMapper defaultRange(volume->getDataFormat());
     double typescale = CLFormats::get(volume->getDataFormat()->getId()).scaling;
     defaultRange.dataRange *= typescale;
@@ -121,7 +121,7 @@ const Buffer<glm::u8>& VolumeCLBase::getVolumeStruct(const Volume* volume) const
     // Changes here should also be done there.
     // Compute data scaling based on volume data range
 
-    dvec2 dataRange = volume->dataMap_.dataRange;
+    dvec2 dataRange = volume->dataMap.dataRange;
     DataMapper defaultRange(volume->getDataFormat());
     double typescale = CLFormats::get(volume->getDataFormat()->getId()).scaling;
     defaultRange.dataRange *= typescale;

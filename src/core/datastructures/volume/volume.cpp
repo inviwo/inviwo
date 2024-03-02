@@ -42,7 +42,7 @@ Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
     , StructuredGridEntity<3>{}
     , MetaDataOwner{}
     , HistogramSupplier{}
-    , dataMap_{defaultFormat}
+    , dataMap{defaultFormat}
     , axes{util::defaultAxes<3>()}
     , defaultDimensions_{defaultDimensions}
     , defaultDataFormat_{defaultFormat}
@@ -56,7 +56,7 @@ Volume::Volume(VolumeConfig config)
                               config.world.value_or(VolumeConfig::defaultWorld)}
     , MetaDataOwner{}
     , HistogramSupplier{}
-    , dataMap_{config.dataMap()}
+    , dataMap{config.dataMap()}
     , axes{config.xAxis.value_or(VolumeConfig::defaultXAxis),
            config.yAxis.value_or(VolumeConfig::defaultYAxis),
            config.zAxis.value_or(VolumeConfig::defaultZAxis)}
@@ -71,7 +71,7 @@ Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     , StructuredGridEntity<3>{}
     , MetaDataOwner{}
     , HistogramSupplier{}
-    , dataMap_{in->getDataFormat()}
+    , dataMap{in->getDataFormat()}
     , axes{util::defaultAxes<3>()}
     , defaultDimensions_{in->getDimensions()}
     , defaultDataFormat_{in->getDataFormat()}
@@ -88,7 +88,7 @@ Volume::Volume(const Volume& rhs, NoData, VolumeConfig config)
                               config.world.value_or(rhs.getWorldMatrix())}
     , MetaDataOwner{rhs}
     , HistogramSupplier{}
-    , dataMap_{config.dataMap(rhs.dataMap_)}
+    , dataMap{config.dataMap(rhs.dataMap)}
     , axes{config.xAxis.value_or(rhs.axes[0]), config.yAxis.value_or(rhs.axes[1]),
            config.zAxis.value_or(rhs.axes[2])}
     , defaultDimensions_{config.dimensions.value_or(rhs.getDimensions())}
@@ -154,9 +154,9 @@ Document Volume::getInfo() const {
     tb(H("SwizzleMask"), getSwizzleMask());
     tb(H("Interpolation"), getInterpolation());
     tb(H("Wrapping"), getWrapping());
-    tb(H("Data Range"), dataMap_.dataRange);
-    tb(H("Value Range"), dataMap_.valueRange);
-    tb(H("Value"), fmt::format("{}{: [}", dataMap_.valueAxis.name, dataMap_.valueAxis.unit));
+    tb(H("Data Range"), dataMap.dataRange);
+    tb(H("Value Range"), dataMap.valueRange);
+    tb(H("Value"), fmt::format("{}{: [}", dataMap.valueAxis.name, dataMap.valueAxis.unit));
     tb(H("Axis 1"), fmt::format("{}{: [}", axes[0].name, axes[0].unit));
     tb(H("Axis 2"), fmt::format("{}{: [}", axes[1].name, axes[1].unit));
     tb(H("Axis 3"), fmt::format("{}{: [}", axes[2].name, axes[2].unit));
@@ -239,9 +239,9 @@ VolumeConfig Volume::config() const {
             .xAxis = axes[0],
             .yAxis = axes[1],
             .zAxis = axes[2],
-            .valueAxis = dataMap_.valueAxis,
-            .dataRange = dataMap_.dataRange,
-            .valueRange = dataMap_.valueRange,
+            .valueAxis = dataMap.valueAxis,
+            .dataRange = dataMap.dataRange,
+            .valueRange = dataMap.valueRange,
             .model = getModelMatrix(),
             .world = getWorldMatrix()};
 }
@@ -252,7 +252,7 @@ const std::string Volume::dataName = "Volume";
 
 std::shared_ptr<HistogramCalculationState> Volume::calculateHistograms(size_t bins) const {
     return HistogramSupplier::startCalculation(getRepresentationShared<VolumeRAM>(),
-                                               dataMap_.dataRange, bins);
+                                               dataMap.dataRange, bins);
 }
 
 template class IVW_CORE_TMPL_INST DataReaderType<Volume>;

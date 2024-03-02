@@ -185,10 +185,10 @@ void VolumeInformationProperty::updateForNewVolume(const Volume& volume,
     overwrite = (overwrite == util::OverwriteState::Yes && !isChecked()) ? util::OverwriteState::Yes
                                                                          : util::OverwriteState::No;
 
-    util::updateDefaultState(dataRange, volume.dataMap_.dataRange, overwrite);
-    util::updateDefaultState(valueRange, volume.dataMap_.valueRange, overwrite);
-    util::updateDefaultState(valueName, volume.dataMap_.valueAxis.name, overwrite);
-    util::updateDefaultState(valueUnit, fmt::to_string(volume.dataMap_.valueAxis.unit), overwrite);
+    util::updateDefaultState(dataRange, volume.dataMap.dataRange, overwrite);
+    util::updateDefaultState(valueRange, volume.dataMap.valueRange, overwrite);
+    util::updateDefaultState(valueName, volume.dataMap.valueAxis.name, overwrite);
+    util::updateDefaultState(valueUnit, fmt::to_string(volume.dataMap.valueAxis.unit), overwrite);
     util::updateDefaultState(interpolation, volume.getInterpolation(), overwrite);
     for (auto&& [prop, axis] : util::zip(axesNames.strings, volume.axes)) {
         util::updateDefaultState(prop, axis.name, overwrite);
@@ -202,16 +202,16 @@ void VolumeInformationProperty::updateForNewVolume(const Volume& volume,
 }
 
 void VolumeInformationProperty::updateVolume(Volume& volume) {
-    if (volume.dataMap_.dataRange != dataRange.get()) {
+    if (volume.dataMap.dataRange != dataRange.get()) {
         if (volume.hasHistograms()) {
             volume.getHistograms().clear();
         }
     }
 
-    volume.dataMap_.dataRange = dataRange.get();
-    volume.dataMap_.valueRange = valueRange.get();
-    volume.dataMap_.valueAxis.name = valueName.get();
-    volume.dataMap_.valueAxis.unit = units::unit_from_string(valueUnit.get());
+    volume.dataMap.dataRange = dataRange.get();
+    volume.dataMap.valueRange = valueRange.get();
+    volume.dataMap.valueAxis.name = valueName.get();
+    volume.dataMap.valueAxis.unit = units::unit_from_string(valueUnit.get());
     volume.setInterpolation(interpolation.getSelectedValue());
     for (auto&& [prop, axis] : util::zip(axesNames.strings, volume.axes)) {
         axis.name = prop.get();

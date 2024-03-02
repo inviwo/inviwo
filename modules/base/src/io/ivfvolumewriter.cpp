@@ -88,10 +88,10 @@ void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
     s.serialize("BasisAndOffset", data.getModelMatrix());
     s.serialize("WorldTransform", data.getWorldMatrix());
     s.serialize("Dimension", data.getDimensions());
-    s.serialize("DataRange", data.dataMap_.dataRange);
-    s.serialize("ValueRange", data.dataMap_.valueRange);
-    s.serialize("ValueName", data.dataMap_.valueAxis.name);
-    s.serialize("ValueUnit", units::to_string(data.dataMap_.valueAxis.unit));
+    s.serialize("DataRange", data.dataMap.dataRange);
+    s.serialize("ValueRange", data.dataMap.valueRange);
+    s.serialize("ValueName", data.dataMap.valueAxis.name);
+    s.serialize("ValueUnit", units::to_string(data.dataMap.valueAxis.unit));
 
     s.serialize("Axis1Name", data.axes[0].name);
     s.serialize("Axis1Unit", units::to_string(data.axes[0].unit));

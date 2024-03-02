@@ -195,9 +195,9 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
     utilgl::bindAndSetUniforms(shader, cont, atlas_);
 
     // DataRange is probably inclusive so we need to add 1.
-    const auto nSegments = static_cast<uint32_t>(atlas_.getData()->dataMap_.dataRange.y -
-                                                 atlas_.getData()->dataMap_.dataRange.x + 1.0);
-    minSegmentId_ = static_cast<int32_t>(atlas_.getData()->dataMap_.dataRange.x);
+    const auto nSegments = static_cast<uint32_t>(atlas_.getData()->dataMap.dataRange.y -
+                                                 atlas_.getData()->dataMap.dataRange.x + 1.0);
+    minSegmentId_ = static_cast<int32_t>(atlas_.getData()->dataMap.dataRange.x);
     picking_.resize(nSegments);
 
     shader.setUniform(fmt::format("{0}PickingStart", getName()),
@@ -360,8 +360,8 @@ void AtlasComponent::onPickingEvent(PickingEvent* e) {
 
     if (e->getHoverState() == PickingHoverState::Enter) {
         if (auto data = atlas_.getData()) {
-            e->setToolTip(fmt::format("{}: {}{: [}", data->dataMap_.valueAxis.name, id,
-                                      data->dataMap_.valueAxis.unit));
+            e->setToolTip(fmt::format("{}: {}{: [}", data->dataMap.valueAxis.name, id,
+                                      data->dataMap.valueAxis.unit));
         } else {
             e->setToolTip(fmt::format("Segment: {}", id));
         }

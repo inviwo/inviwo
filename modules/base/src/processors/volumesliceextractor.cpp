@@ -312,7 +312,7 @@ std::shared_ptr<Image> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
 
     if (useTF) {
         using D = glm::vec<4, V>;
-        auto mapData = [&dm = vrprecision->getOwner()->dataMap_, tf = state.tf,
+        auto mapData = [&dm = vrprecision->getOwner()->dataMap, tf = state.tf,
                         offset = state.alphaOffset](T value) {
             auto sample = tf->sample(
                 glm::clamp(dm.mapFromDataToNormalized(util::glmcomp(value, 0)), 0.0, 1.0));
@@ -322,7 +322,7 @@ std::shared_ptr<Image> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
         return extractSliceInternal<T, D>(vrprecision, state, mapData);
     } else {
         using D = util::same_extent_t<T, V>;
-        auto mapData = [&dm = vrprecision->getOwner()->dataMap_](T value) {
+        auto mapData = [&dm = vrprecision->getOwner()->dataMap](T value) {
             return util::glm_convert_normalized<D>(glm::clamp(dm.mapFromDataToNormalized(value),
                                                               util::same_extent_t<T, double>(0.0),
                                                               util::same_extent_t<T, double>(1.0)));

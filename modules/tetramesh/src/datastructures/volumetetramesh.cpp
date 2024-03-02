@@ -165,7 +165,7 @@ mat4 VolumeTetraMesh::getBoundingBox() const {
 
 dvec2 VolumeTetraMesh::getDataRange() const {
     if (volume_) {
-        return volume_->dataMap_.dataRange;
+        return volume_->dataMap.dataRange;
     } else {
         return dvec2{0.0, 1.0};
     }

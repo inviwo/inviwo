@@ -121,8 +121,8 @@ DataRangeProperty::DataRangeProperty(std::string_view identifier, std::string_vi
     port.onChange([&]() {
         if (port.hasData()) {
             const auto data = port.getData();
-            dataRange_.set(data->dataMap_.dataRange);
-            valueRange_.set(data->dataMap_.valueRange);
+            dataRange_.set(data->dataMap.dataRange);
+            valueRange_.set(data->dataMap.valueRange);
         }
     });
 }
@@ -160,8 +160,8 @@ DataRangeProperty* DataRangeProperty::clone() const { return new DataRangeProper
 
 void DataRangeProperty::updateFromVolume(std::shared_ptr<Volume> volume) {
     if (!volume) return;
-    dataRange_.set(volume->dataMap_.dataRange);
-    valueRange_.set(volume->dataMap_.valueRange);
+    dataRange_.set(volume->dataMap.dataRange);
+    valueRange_.set(volume->dataMap.valueRange);
 }
 
 void DataRangeProperty::updateFromLayer(std::shared_ptr<Layer> layer) {

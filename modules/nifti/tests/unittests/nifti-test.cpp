@@ -110,8 +110,8 @@ TEST(Nifti1, avg152T1_LR) {
     auto vol = reader.readData(filename)->front();
     ASSERT_EQ(size3_t(91, 109, 91), vol->getDimensions()) << "Dimension mismatch";
 
-    ASSERT_EQ(dvec2(0, 255), vol->dataMap_.dataRange);
-    ASSERT_EQ(dvec2(0, 255), vol->dataMap_.valueRange);
+    ASSERT_EQ(dvec2(0, 255), vol->dataMap.dataRange);
+    ASSERT_EQ(dvec2(0, 255), vol->dataMap.valueRange);
 
     // The x-axis should be flipped to ensure neurological convention
     ASSERT_EQ(mat3(vec3(182, 0, 0), vec3(0, 218, 0), vec3(0, 0, 182)), vol->getBasis());
@@ -177,8 +177,8 @@ TEST(Nifti1, avg152T1_RL) {
     auto vol = reader.readData(filename)->front();
     ASSERT_EQ(size3_t(91, 109, 91), vol->getDimensions()) << "Dimension mismatch";
 
-    ASSERT_EQ(dvec2(0, 255), vol->dataMap_.dataRange);
-    ASSERT_EQ(dvec2(0, 255), vol->dataMap_.valueRange);
+    ASSERT_EQ(dvec2(0, 255), vol->dataMap.dataRange);
+    ASSERT_EQ(dvec2(0, 255), vol->dataMap.valueRange);
 
     ASSERT_EQ(mat3(vec3(182, 0, 0), vec3(0, 218, 0), vec3(0, 0, 182)), vol->getBasis());
 }

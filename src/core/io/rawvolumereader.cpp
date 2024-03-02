@@ -184,7 +184,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& f
         vd->setLoader(loader.release());
         volume->addRepresentation(vd);
 
-        volume->dataMap_ = dataMapper_;
+        volume->dataMap = dataMapper_;
         std::string size = util::formatBytesToString(dimensions_.x * dimensions_.y * dimensions_.z *
                                                      (format_->getSizeInBytes()));
         LogInfo("Loaded volume: " << filePath << " size: " << size);

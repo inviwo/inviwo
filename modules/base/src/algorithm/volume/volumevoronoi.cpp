@@ -177,9 +177,9 @@ std::shared_ptr<Volume> voronoiSegmentation(
         std::minmax_element(seedPointsWithIndices.begin(), seedPointsWithIndices.end(),
                             [](const auto& a, const auto& b) { return a.first < b.first; });
 
-    voronoiVolume->dataMap_.dataRange =
+    voronoiVolume->dataMap.dataRange =
         dvec2{static_cast<double>(itMin->first), static_cast<double>(itMax->first)};
-    voronoiVolume->dataMap_.valueRange = voronoiVolume->dataMap_.dataRange;
+    voronoiVolume->dataMap.valueRange = voronoiVolume->dataMap.dataRange;
 
     if (itMax->first > std::numeric_limits<unsigned short>::max()) {
         throw Exception(IVW_CONTEXT_CUSTOM("VoronoiSegmentation"),
