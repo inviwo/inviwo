@@ -158,6 +158,7 @@ set(SOURCE_FILES
     src/algorithm/convexhullmesh.cpp
     src/algorithm/cubeproxygeometry.cpp
     src/algorithm/dataminmax.cpp
+    src/algorithm/randomutils.cpp
     src/algorithm/image/layercontour.cpp
     src/algorithm/image/layerramdistancetransform.cpp
     src/algorithm/image/layerramsubset.cpp

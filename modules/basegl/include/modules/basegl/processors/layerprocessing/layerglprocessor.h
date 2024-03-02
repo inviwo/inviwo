@@ -49,10 +49,11 @@ class TextureUnitContainer;
  * @brief Base class for layer processing on the GPU using OpenGL.
  *
  * The LayerGLProcessor provides the basic structure for layer processing on the GPU.
- * Derived shaders have to provide a custom fragment shader which is used during rendering.
- * Optionally, derived classes can overwrite LayerGLProcessor::postProcess() to perform
- * post-processing of the layer data set in the outport. Furthermore, it is possible to
- * be notified of changes in the input layer by overwriting LayerGLProcessor::afterInportChanged().
+ * Derived processors have to provide a custom fragment shader which is used during rendering.
+ * Optionally, derived classes can overwrite LayerGLProcessor::preProcess() and
+ * LayerGLProcessor::postProcess() to perform pre- and post-processing of the Layer directly before
+ * and after rendering. Furthermore, it is possible to be specify the data format of the output
+ * Layer by overriding LayerGLProcessor::outputConfig().
  *
  * @see ImageGLProcessor
  */

@@ -37,7 +37,7 @@ namespace inviwo {
 const ProcessorInfo LayerGradient::processorInfo_{
     "org.inviwo.LayerGradient",  // Class identifier
     "Layer Gradient",            // Display name
-    "Undefined",                 // Category
+    "Layer Operation",           // Category
     CodeState::Stable,           // Code state
     Tags::GL | Tag{"Layer"},     // Tags
     R"(Computes the gradient of one channel of the input Layer.)"_unindentHelp,
@@ -53,7 +53,7 @@ LayerGradient::LayerGradient()
     addProperties(channel_);
 }
 
-void LayerGradient::preProcess(TextureUnitContainer&, const Layer& input, Layer& output) {
+void LayerGradient::preProcess(TextureUnitContainer&, const Layer& input, Layer&) {
     const auto gradientSpacing{input.getWorldSpaceGradientSpacing()};
     shader_.setUniform("worldSpaceGradientSpacing", gradientSpacing);
     shader_.setUniform("textureSpaceGradientSpacing",
