@@ -1,5 +1,17 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2024-03-01 `LayerGLProcessor` and changes to `VectorFieldVisualizationGL` module
+Recently, `Layer` ports and connections were added to handle individual layers instead of an `Image` consisting of one or more color layers, a picking layer, and a depth layer. Thus, a `Layer` can now be considered a two-dimensional dataset with up to four components. Similar to a volume, a layer is a spatial entity with a basis and offset embedded in 3D. This allows for rendering a layer for example in relation to a mesh or volume, or use the camera for zooming and panning, which is not possible for images in the regular canvas.
+
+The `LayerGLProcessor`, similar to `ImageGLProcessor`, provides a base class for processing layers on the GPU using OpenGL fragment shaders. Derived processors have to provide a custom fragment shader which is used during rendering. Optionally, derived classes can overwrite `LayerGLProcessor::preProcess()` and `LayerGLProcessor::postProcess()` to perform pre- and post-processing of the Layer directly before and after rendering. Furthermore, it is possible to be specify the data format of the output Layer by overriding `LayerGLProcessor::outputConfig()`.
+
+Layer operation processors have been added matching most of the existing image operation processors. Note that the output dimensions of these processors will typically be identical to the input. That is the dimensions are _not_ based on the size of the canvas. Use the `Layer Resampling` processor to upsample or downsample the Layer to the desired dimensions beforehand.
+
+The 2D processors in `VectorFieldVisualizationGL` module work now directly with Layers and no longer with Image. This may require restoring the port connections manually and/or adding `Layer To Image` or `Image To Layer` converters in between. Basic image post-processing functionality was added to the 2D LIC processor to increase brightness and contrast directly.
+
+## 2024-03-01 `Volume::dataMap_` renamed to `Volume::dataMap`
+The DataMapper member in Volume `dataMap_` was renamed to `dataMap` since it is a public class member.
+
 ## 2023-01-26 `MeshAxis` and `LayerAxis` processors
 Added a `Mesh Axis` processor for adding 3D axes to a mesh and `Layer Axis` for 2D axes next to a layer. These processor share most of their functionality with the `Volume Axis` processor. The axes are either based on the basis and offset (corresponding to the model matrix) or the combination of model and world matrix.
 
