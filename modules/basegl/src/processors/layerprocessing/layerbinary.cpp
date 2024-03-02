@@ -45,29 +45,6 @@ const ProcessorInfo LayerBinary::processorInfo_{
 
 const ProcessorInfo LayerBinary::getProcessorInfo() const { return processorInfo_; }
 
-namespace {
-
-constexpr std::string_view fragmentShader = util::trim(R"(
-#include "utils/structs.glsl"
-
-#ifndef COMPARE
-#define COMPARE >
-#endif
-
-uniform sampler2D inport;
-uniform ImageParameters outportParameters;
-uniform int channel = 0;
-uniform float threshold = 0.5;
-
-void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
-    bvec4 b = bvec4(texture(inport, texCoords)[channel] COMPARE threshold);
-    FragData0 = mix(vec4(0), vec4(1), b);
-}
-)");
-
-}  // namespace
-
 LayerBinary::LayerBinary()
     : LayerGLProcessor{utilgl::findShaderResource("img_binary.frag")}
     , channel_{"channel", "Channel", "Selected channel used for binarization"_help,

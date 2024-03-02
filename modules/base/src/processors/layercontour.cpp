@@ -64,7 +64,7 @@ LayerContour::LayerContour()
 
 void LayerContour::process() {
     if (auto components = inport_.getData()->getDataFormat()->getComponents();
-        components < channel_.get()) {
+        static_cast<int>(components) < channel_.get()) {
         throw Exception(IVW_CONTEXT, "Invalid channel {} selected, input Layer has {} channels.",
                         channel_.get() + 1, components);
     }
