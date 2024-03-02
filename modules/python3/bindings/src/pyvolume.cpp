@@ -111,9 +111,8 @@ void exposeVolume(pybind11::module& m) {
                 "modelMatrix = {}\n"
                 "worldMatrix = {}>",
                 volume.getDataFormat()->getString(), volume.getDimensions(),
-                volume.dataMap.dataRange, volume.dataMap.valueRange,
-                volume.dataMap.valueAxis.name, volume.dataMap.valueAxis.unit,
-                volume.getModelMatrix(), volume.getWorldMatrix());
+                volume.dataMap.dataRange, volume.dataMap.valueRange, volume.dataMap.valueAxis.name,
+                volume.dataMap.valueAxis.unit, volume.getModelMatrix(), volume.getWorldMatrix());
         });
 
     py::class_<VolumeRepresentation>(m, "VolumeRepresentation")
