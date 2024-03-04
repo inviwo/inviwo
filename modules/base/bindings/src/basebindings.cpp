@@ -29,15 +29,17 @@
 
 #include <modules/base/pythonbindings/io/volumewriting.h>
 #include <modules/base/pythonbindings/algorithm/volumeoperations.h>
+#include <modules/python3/pybindmodule.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <pybind11/embed.h>
 #include <warn/pop>
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(ivwbase, m) {
+INVIWO_PYBIND_MODULE(ivwbase, m) {
     m.doc() = R"doc(
         Base Module API
     

@@ -1,6 +1,5 @@
 # Create python module
 set(HEADER_FILES
-    include/inviwopy/inviwopy.h
     include/inviwopy/properties/pyminmaxproperties.h
     include/inviwopy/properties/pyoptionproperties.h
     include/inviwopy/properties/pyordinalproperties.h

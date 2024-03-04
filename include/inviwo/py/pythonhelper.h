@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,32 +27,10 @@
  *
  *********************************************************************************/
 
-#include <ivwdataframe/ivwdataframe.h>
+#pragma once
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <pybind11/embed.h>
-#include <warn/pop>
+#include <inviwo/py/inviwopythonhelperdefine.h>
 
-#include <modules/python3/python3module.h>
-#include <modules/python3/pybindutils.h>
-#include <modules/python3/pythoninterpreter.h>
-#include <modules/python3/pybindmodule.h>
-
-#include <ivwdataframe/pydataframe.h>
-
-namespace py = pybind11;
-
-INVIWO_PYBIND_MODULE(ivwdataframe, m) {
-
-    py::module::import("inviwopy");
-
-    using namespace inviwo;
-
-    m.doc() = R"doc(
-        DataFrame Module API
-        )doc";
-
-    exposeDataFrame(m);
+namespace inviwo {
+IVW_PYTHONHELPER_API void initializePythonModules();
 }

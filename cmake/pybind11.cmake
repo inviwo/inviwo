@@ -43,23 +43,39 @@ define_property(
     FULL_DOCS "List of inviwo python app targets"
 )
 
-function (ivw_add_py_wrapper target)
+function(ivw_add_py_wrapper target)
     if(IVW_MODULE_PYTHON3)
         find_package(pybind11 CONFIG REQUIRED)
-        pybind11_add_module(${target} ${ARGN})
-        set_target_properties(${target} PROPERTIES DEBUG_POSTFIX "")
-        set_target_properties(${target} PROPERTIES PREFIX "")
-        set_target_properties(${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
+        if(BUILD_SHARED_LIBS) 
+            pybind11_add_module(${target} NO_EXTRAS ${ARGN})
+            set_target_properties(${target} PROPERTIES 
+                DEBUG_POSTFIX ""
+                LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+            
+                # pybind will set the visibility to hidden by default, but we run into 
+                # problems with dynamic cast of our templated precision types on OSX 
+                # if hidden is used. So until we figure out how to manage that make 
+                # the visibility default.
+                CXX_VISIBILITY_PRESET "default"
+            )
+        else()
+            add_library(${target} STATIC ${ARGN})
+            target_link_libraries(${target} PUBLIC 
+                pybind11::pybind11
+                pybind11::embed
+            )
+        endif()
         ivw_define_standard_definitions(${target} ${target})
+        ivw_define_standard_properties(${target})
         ivw_folder(${target} pymodules)
 
-        set_property(GLOBAL APPEND PROPERTY IVW_PYMODULE_LIST ${target})
-        ivw_define_standard_properties(${target})
+        target_link_libraries(${target} PRIVATE 
+            $<$<CXX_COMPILER_ID:MSVC>:pybind11::windows_extras>
+            pybind11::lto
+        )
 
-        # pybind will set the visibility to hidden by default, but we run into problems with dynamic cast
-        # of our templated precision types on OSX if hidden is used. So until we figure out how to manage 
-        # that make the visibility default.
-        set_target_properties(${target} PROPERTIES CXX_VISIBILITY_PRESET "default")
+        set_property(GLOBAL APPEND PROPERTY IVW_PYMODULE_LIST ${target})
     endif()
 endfunction()
 
