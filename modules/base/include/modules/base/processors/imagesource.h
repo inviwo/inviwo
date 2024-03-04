@@ -39,37 +39,27 @@
 #include <inviwo/core/properties/optionproperty.h>   // for OptionProperty
 #include <inviwo/core/properties/ordinalproperty.h>  // for IntSize2Property
 #include <inviwo/core/util/fileextension.h>          // for FileExtension, operator==, operator<<
-
-#include <functional>   // for __base
-#include <string>       // for operator==, string
-#include <string_view>  // for operator==
-#include <vector>       // for operator!=, vector, operator==
+#include <modules/base/processors/datasource.h>
 
 namespace inviwo {
 
-class DataReaderFactory;
-class Deserializer;
 class InviwoApplication;
 
-class IVW_MODULE_BASE_API ImageSource : public Processor {
+class IVW_MODULE_BASE_API ImageSource : public DataSource<Image, ImageOutport, Layer> {
 public:
-    ImageSource(InviwoApplication* app, const std::filesystem::path& filePath = "");
-    virtual ~ImageSource() = default;
-
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void process() override;
-    virtual void deserialize(Deserializer& d) override;
+    ImageSource(InviwoApplication* app, const std::filesystem::path& filePath = "");
+    virtual ~ImageSource() = default;
+
+    virtual std::shared_ptr<Image> transform(std::shared_ptr<Layer> layer) override;
+
+    virtual void dataLoaded(std::shared_ptr<Image> data) override;
+    virtual void dataDeserialized(std::shared_ptr<Image> data) override;
 
 private:
-    DataReaderFactory* rf_;
-    ImageOutport outport_;
-    FileProperty file_;
-    OptionProperty<FileExtension> reader_;
-    ButtonProperty reload_;
-    IntSize2Property imageDimension_;
-    bool loadingFailed_ = false;
+    IntSize2Property dimensions_;
 };
 
 }  // namespace inviwo

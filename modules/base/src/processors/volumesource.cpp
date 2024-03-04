@@ -109,7 +109,7 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& 
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
     isReady_.setUpdate([this]() -> ProcessorStatus {
-        if (loadingFailed_) {
+        if (!error_.empty()) {
             return {ProcessorStatus::Error, error_};
         } else if (file_.get().empty()) {
             static constexpr std::string_view reason{"File not set"};
@@ -126,12 +126,10 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& 
     });
     file_.onChange([this]() {
         util::updateReaderFromFile(file_, reader_);
-        loadingFailed_ = false;
         error_.clear();
         isReady_.update();
     });
     reader_.onChange([this]() {
-        loadingFailed_ = false;
         error_.clear();
         isReady_.update();
     });
@@ -152,14 +150,14 @@ void VolumeSource::load(bool deserialize) {
         volumes_ = rm->getResource<VolumeSequence>(file_.get().generic_string());
     } else {
         try {
-            if (auto volVecReader =
+            if (auto volumeSequenceReader =
                     rf->getReaderForTypeAndExtension<VolumeSequence>(sext, file_.get())) {
-                auto volumes = volVecReader->readData(file_.get(), this);
+                auto volumes = volumeSequenceReader->readData(file_.get(), this);
                 std::swap(volumes, volumes_);
                 rm->addResource(file_.get().generic_string(), volumes_, reload_.isModified());
-            } else if (auto volreader =
+            } else if (auto volumeReader =
                            rf->getReaderForTypeAndExtension<Volume>(sext, file_.get())) {
-                auto volume = volreader->readData(file_.get(), this);
+                auto volume = volumeReader->readData(file_.get(), this);
                 auto volumes = std::make_shared<VolumeSequence>();
                 volumes->push_back(volume);
                 std::swap(volumes, volumes_);
@@ -167,14 +165,12 @@ void VolumeSource::load(bool deserialize) {
             } else {
                 volumes_.reset();
                 error_ = fmt::format("Could not find a data reader for file: {}", file_.get());
-                loadingFailed_ = true;
                 isReady_.update();
                 LogProcessorError(error_);
             }
         } catch (DataReaderException const& e) {
             volumes_.reset();
             error_ = e.getMessage();
-            loadingFailed_ = true;
             isReady_.update();
             LogProcessorError(e.getMessage());
         }
@@ -183,8 +179,9 @@ void VolumeSource::load(bool deserialize) {
     if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
         // store filename in metadata
         for (auto volume : *volumes_) {
-            if (!volume->hasMetaData<StringMetaData>("filename"))
+            if (!volume->hasMetaData<StringMetaData>("filename")) {
                 volume->setMetaData<StringMetaData>("filename", file_.get().generic_string());
+            }
         }
 
         basis_.updateForNewEntity(*(*volumes_)[0], deserialize);
@@ -212,7 +209,7 @@ void VolumeSource::process() {
 
         outport_.setData((*volumes_)[index]);
     } else {
-        outport_.detachData();
+        outport_.clear();
     }
 }
 

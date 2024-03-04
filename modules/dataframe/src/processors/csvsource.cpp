@@ -106,7 +106,7 @@ CSVSource::CSVSource(const std::filesystem::path& file)
                    {"nanOrZero", "Nan Or Zero", CSVReader::EmptyField::NanOrZero}}}
     , reloadData_{"reloadData", "Reload Data"}
     , columns_{"columns", "Column MetaData"}
-    , loadingFailed_{false}
+    , error_{}
     , deserialized_{false} {
 
     emptyField_.setSelectedValue(CSVReader::defaultEmptyField);
@@ -122,14 +122,26 @@ CSVSource::CSVSource(const std::filesystem::path& file)
     includeFilters_.setCollapsed(true);
     excludeFilters_.setCollapsed(true);
 
-    isReady_.setUpdate(
-        [this]() { return !loadingFailed_ && std::filesystem::is_regular_file(inputFile_.get()); });
+    isReady_.setUpdate([this]() -> ProcessorStatus {
+        if (!error_.empty()) {
+            return {ProcessorStatus::Error, error_};
+        } else if (inputFile_.get().empty()) {
+            static constexpr std::string_view reason{"File not set"};
+            return {ProcessorStatus::NotReady, reason};
+        } else if (!std::filesystem::is_regular_file(inputFile_.get())) {
+            static constexpr std::string_view reason{"Invalid or missing file"};
+            return {ProcessorStatus::Error, reason};
+        } else {
+            return ProcessorStatus::Ready;
+        }
+    });
+
     for (auto&& item :
          util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_, firstRowIsHeaders_,
                              firstColumnIsIndices_, unitsInHeaders_, unitRegexp_, doublePrecision_,
                              exampleRows_, rowComment_, locale_, emptyField_)) {
         std::invoke(&Property::onChange, item, [this]() {
-            loadingFailed_ = false;
+            error_.clear();
             isReady_.update();
         });
     }
@@ -173,9 +185,10 @@ void CSVSource::process() {
         columns_.updateDataFrame(*dataFrame);
         data_.setData(dataFrame);
     } catch (const Exception& e) {
-        LogProcessorError(e.getMessage());
+        error_ = e.getMessage();
         data_.clear();
-        loadingFailed_ = true;
+        isReady_.update();
+        LogProcessorError(error_);
     }
 }
 

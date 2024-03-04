@@ -81,7 +81,6 @@ private:
     SequenceTimerProperty volumeSequence_;
 
     bool deserialized_ = false;
-    bool loadingFailed_ = false;
     std::string error_;
 };
 

@@ -80,6 +80,8 @@ struct PropertyTraits {
     static const std::string& classIdentifier() { return util::classIdentifier<T>(); }
 };
 
+enum class ReadOnly { No, Yes };
+
 // Deprecated
 #define InviwoPropertyInfo()                                                             \
     virtual std::string getClassIdentifier() const override { return CLASS_IDENTIFIER; } \
@@ -133,7 +135,8 @@ public:
     Property(std::string_view identifier = "", std::string_view displayName = "",
              Document help = {},
              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-             PropertySemantics semantics = PropertySemantics::Default);
+             PropertySemantics semantics = PropertySemantics::Default,
+             ReadOnly readOnly = ReadOnly::No);
 
     Property(std::string_view identifier, std::string_view displayName,
              InvalidationLevel invalidationLevel,

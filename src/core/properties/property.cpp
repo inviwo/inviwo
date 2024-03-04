@@ -41,13 +41,14 @@
 namespace inviwo {
 
 Property::Property(std::string_view identifier, std::string_view displayName, Document help,
-                   InvalidationLevel invalidationLevel, PropertySemantics semantics)
+                   InvalidationLevel invalidationLevel, PropertySemantics semantics,
+                   ReadOnly readOnly)
     : PropertyObservable()
     , MetaDataOwner()
     , serializationMode_(PropertySerializationMode::Default)
     , identifier_(identifier)
     , displayName_("displayName", std::string(displayName))
-    , readOnly_("readonly", false)
+    , readOnly_("readonly", readOnly == ReadOnly::Yes)
     , semantics_("semantics", semantics)
     , visible_("visible", true)
     , propertyModified_(true)
