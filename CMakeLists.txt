@@ -108,21 +108,41 @@ file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/pkg)
 # Provide option to enable Python support in Inviwo
 option(IVW_ENABLE_PYTHON "Enable Python support in Inviwo" ON)
 if(IVW_ENABLE_PYTHON)
-    find_package(Python3 COMPONENTS Interpreter Development NumPy)
-    if(NOT Python3_FOUND OR 
-       NOT Python3_Interpreter_FOUND OR 
-       NOT Python3_Development_FOUND OR 
-       NOT Python3_NumPy_FOUND)
-        message(FATAL_ERROR "Python3 not available and/or NumPy module not installed.\n"
-            "Please install Python3 and NumPy or disable IVW_ENABLE_PYTHON.\n"
+    find_package(Python3 COMPONENTS Interpreter Development QUIET)
+    if(NOT Python3_Interpreter_FOUND)
+        message(FATAL_ERROR "Python3 executable not found\n"
+            "Please install Python3 or disable IVW_ENABLE_PYTHON.\n"
             "If you have a python installation that is not found, consider "
             "setting Python3_ROOT_DIR to the root directory of your "
-            "Python 3 installation.\n"
+            "Python 3 installation.\n")
+    endif()
+
+    if(NOT Python3_Development_FOUND)
+        message(FATAL_ERROR
+            "Python3 development headers not found\n"
+            "Please install Python3 or disable IVW_ENABLE_PYTHON.\n"
+            "If you have a python installation that is not found, consider "
+            "setting Python3_ROOT_DIR to the root directory of your "
+            "Python 3 installation.\n")
+    endif()
+
+    if(DEFINED VCPKG_INSTALLED_DIR)
+        cmake_path(IS_PREFIX VCPKG_INSTALLED_DIR ${Python3_EXECUTABLE} NORMALIZE isVcpkgPython)
+        if(isVcpkgPython)
+            # we found python in the vcpkg, lets install all the needed python packages
+            execute_process(COMMAND "${Python3_EXECUTABLE}" "-m" "ensurepip" "--upgrade")
+            execute_process(COMMAND "${Python3_EXECUTABLE}" "-m" "pip" "install" "numpy" "certifi")
+        endif()
+    endif()
+
+    find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)
+    if(NOT Python3_NumPy_FOUND)
+        message(WARNING "NumPy module not installed.\n"
+            "Please install NumPy or disable IVW_ENABLE_PYTHON.\n"
             "Note: Inviwo will not access user site-package folders. "
             "Make sure to install the packages site-wide or add "
             "your user site-package folder to the environment variable `PYTHONPATH`,\n"
-            "for example \"PYTHONPATH=%appdata%\\Python\\Python311\\site-packages\"."
-            )
+            "for example \"PYTHONPATH=%appdata%\\Python\\Python311\\site-packages\".")
     endif()
 
     message(STATUS "    executable:  ${Python3_EXECUTABLE}")
