@@ -189,7 +189,7 @@ public:
      * @param y Y coordinate of the position to sample at, expects range [0 1]
      */
     ReturnType sample(double x, double y) const;
-    
+
     using SpatialSampler<ReturnType>::sample;
 
 protected:

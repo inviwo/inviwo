@@ -45,7 +45,6 @@ public:
     SpatialSampler(const SpatialEntity& spatialEntity,
                    CoordinateSpace space = CoordinateSpace::Data);
     virtual ~SpatialSampler() = default;
-    
 
     ReturnType sample(const dvec3& pos) const;
     ReturnType sample(const vec3& pos) const;

@@ -55,7 +55,7 @@ const ProcessorInfo VolumeToSpatialSampler::processorInfo_{
     "Volume To Spatial Sampler",          // Display name
     "Spatial Sampler",                    // Category
     CodeState::Experimental,              // Code state
-    Tags::CPU,                           // Tags
+    Tags::CPU,                            // Tags
 };
 const ProcessorInfo VolumeToSpatialSampler::getProcessorInfo() const { return processorInfo_; }
 
