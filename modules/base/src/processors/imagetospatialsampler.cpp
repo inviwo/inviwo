@@ -68,7 +68,7 @@ ImageToSpatialSampler::ImageToSpatialSampler()
 }
 
 void ImageToSpatialSampler::process() {
-    auto sampler = std::make_shared<ImageSampler<dvec4>>(image_.getData());
+    auto sampler = std::make_shared<ImageSampler<dvec2>>(image_.getData());
     sampler_.setData(sampler);
 }
 

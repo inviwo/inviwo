@@ -107,7 +107,7 @@ public:
      * @param space in what CoordinateSpace x and y is defined in
      */
     ReturnType sample(double x, double y, CoordinateSpace space) const {
-        return SpatialSampler<ReturnType>::sample(dvec3(x, y, 0.0), space);
+        return sample(dvec3(x, y, 0.0), space);
     }
 
     /**
@@ -115,9 +115,7 @@ public:
      * @param x X coordinate of the position to sample at
      * @param y Y coordinate of the position to sample at
      */
-    ReturnType sample(double x, double y) const {
-        return SpatialSampler<ReturnType>::sample(dvec3(x, y, 0.0));
-    }
+    ReturnType sample(double x, double y) const { return sample(dvec3(x, y, 0.0)); }
 
 protected:
     virtual ReturnType sampleDataSpace(const dvec3& pos) const override {
@@ -131,7 +129,7 @@ protected:
         samples[2] = getPixel(indexPos + size2_t(0, 1));
         samples[3] = getPixel(indexPos + size2_t(1, 1));
 
-        return Interpolation<dvec4>::bilinear(samples, interpolants);
+        return Interpolation<ReturnType>::bilinear(samples, interpolants);
     }
 
     virtual bool withinBoundsDataSpace(const dvec3& pos) const override {
