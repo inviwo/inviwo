@@ -57,8 +57,8 @@ template <typename ReturnType = dvec4>
 class ImageSampler : public SpatialSampler<ReturnType> {
 public:
     /**
-     * Creates a ImageSampler for the given LayerRAM, does not take ownership of ram.
-     * Use ImageSampler(std::shared_ptr<const Image>) to ensure that the LayerRAM is
+     * Creates an ImageSampler for the given LayerRAM. Does not take ownership of supplied data.
+     * @note Use ImageSampler(std::shared_ptr<const Image>) to ensure that the LayerRAM is
      * available for the lifetime of the ImageSampler
      */
     ImageSampler(const LayerRAM* ram)

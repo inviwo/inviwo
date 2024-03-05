@@ -68,7 +68,7 @@ protected:
     };
 
     virtual bool withinBoundsDataSpace(const dvec3& pos) const override {
-        return v0_.withinBounds(pos, CoordinateSpace::Data) ||
+        return v0_.withinBounds(pos, CoordinateSpace::Data) &&
                v1_.withinBounds(pos, CoordinateSpace::Data);
     };
 
