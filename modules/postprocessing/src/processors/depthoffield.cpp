@@ -261,7 +261,9 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
 
         // Prepare Halton sequence
         if (haltonX_.size() != simViewCountApprox_.get()) {
-            haltonX_ = util::haltonSequence<float>(2, simViewCountApprox_.get());
+            haltonX_.resize(simViewCountApprox_);
+            std::generate_n(haltonX_.begin(), maxEvalCount,
+                            [i = 1]() mutable { return util::haltonSequence<float>(i++, 2); });
         }
         if (!haltonImg_ || haltonImg_->getDimensions().x != simViewCountApprox_.get()) {
             haltonImg_ = std::make_shared<Image>(size2_t(simViewCountApprox_.get(), 1),
@@ -278,10 +280,14 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
 
         // Prepare Halton sequences
         if (haltonX_.size() != maxEvalCount) {
-            haltonX_ = util::haltonSequence<float>(2, maxEvalCount);
+            haltonX_.resize(maxEvalCount);
+            std::generate_n(haltonX_.begin(), maxEvalCount,
+                            [i = 1]() mutable { return util::haltonSequence<float>(i++, 2); });
         }
         if (haltonY_.size() != maxEvalCount) {
-            haltonY_ = util::haltonSequence<float>(3, maxEvalCount);
+            haltonY_.resize(maxEvalCount);
+            std::generate_n(haltonY_.begin(), maxEvalCount,
+                            [i = 1]() mutable { return util::haltonSequence<float>(i++, 3); });
         }
     }
 

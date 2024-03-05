@@ -52,7 +52,7 @@ class TextureUnitContainer;
  * Derived processors have to provide a custom fragment shader which is used during rendering.
  * Optionally, derived classes can overwrite LayerGLProcessor::preProcess() and
  * LayerGLProcessor::postProcess() to perform pre- and post-processing of the Layer directly before
- * and after rendering. Furthermore, it is possible to be specify the data format of the output
+ * and after rendering. Furthermore, it is possible to specify the data format of the output
  * Layer by overriding LayerGLProcessor::outputConfig().
  *
  * @see ImageGLProcessor

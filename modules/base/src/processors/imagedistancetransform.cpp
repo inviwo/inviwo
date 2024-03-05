@@ -65,10 +65,9 @@ const ProcessorInfo ImageDistanceTransform::processorInfo_{
     "Image Operation",                    // Category
     CodeState::Stable,                    // Code state
     Tags::CPU,                            // Tags
-    R"(Computes the distance transform of a layer dataset using a threshold value
-    The result is the distance from each pixel to the closest feature. It will only work
-    correctly for layers with a orthogonal basis. It uses the Saito's algorithm to compute
-    the Euclidean distance.)"_unindentHelp,
+    R"(Computes the closest distance to a threshold value for each texel in the first color layer
+    of the input Image. It uses Saito's algorithm to compute the Euclidean distance.
+    Note: Only works correctly for Layers with an orthogonal basis.)"_unindentHelp,
 };
 const ProcessorInfo ImageDistanceTransform::getProcessorInfo() const { return processorInfo_; }
 
@@ -79,10 +78,10 @@ ImageDistanceTransform::ImageDistanceTransform()
                DataVec4UInt8::get(), HandleResizeEvents::No)
     , threshold_(
           "threshold", "Threshold",
-          "Pixels with a value  __larger___ then the then the threshold will be considered as features, i.e. have a zero distance."_help,
+          "Pixels with a value  __larger___ than the threshold will be considered as features, i.e. have a zero distance."_help,
           0.5, {0.0, ConstraintBehavior::Ignore}, {1.0, ConstraintBehavior::Ignore})
     , flip_("flip", "Flip",
-            "Consider features as pixels with a values __smaller__ then threshold instead."_help,
+            "Consider features as pixels with a values __smaller__ than threshold instead."_help,
             false)
     , normalize_("normalize", "Use normalized threshold",
                  "Use normalized values when comparing to the threshold."_help, true)

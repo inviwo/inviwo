@@ -80,8 +80,7 @@ void ImageBinary::preProcess(TextureUnitContainer&) {
 
 void ImageBinary::afterInportChanged() {
     if (inport_.hasData()) {
-        const DataFormatBase* format = inport_.getData()->getColorLayer()->getDataFormat();
-        dataFormat_ = DataFormatBase::get(format->getNumericType(), 1, format->getPrecision());
+        dataFormat_ = DataFormatBase::get(DataFormatId::UInt8);
         swizzleMask_ = swizzlemasks::defaultColor(1);
     }
 }

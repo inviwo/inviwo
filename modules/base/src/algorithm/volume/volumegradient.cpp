@@ -62,12 +62,14 @@ namespace inviwo {
 namespace util {
 
 std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int channel) {
+    auto newVolume = std::make_unique<Volume>(
+        *volume, noData,
+        volume->config().updateFrom({
+            .valueAxis = Axis{"gradient", volume->dataMap.valueAxis.unit / volume->axes[0].unit},
+        }));
 
-    auto newVolume = std::make_unique<Volume>(*volume, noData);
     auto newVolumeRep = std::make_shared<VolumeRAMPrecision<vec3>>(volume->getDimensions());
     newVolume->addRepresentation(newVolumeRep);
-    newVolume->dataMap.valueAxis.name = "gradient";
-    newVolume->dataMap.valueAxis.unit = volume->dataMap.valueAxis.unit / volume->axes[0].unit;
 
     auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
 

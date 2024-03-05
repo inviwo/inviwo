@@ -123,22 +123,23 @@ SeedPointGenerator2D::SeedPointGenerator2D()
 
 void SeedPointGenerator2D::process() {
     auto seeds = std::make_shared<std::vector<vec3>>();
-    seeds->reserve(numPoints_.get());
+    seeds->resize(numPoints_.get());
 
     auto createSpatialSeeds = [&]() {
         switch (generator_.get()) {
             case Generator::Random: {
                 std::uniform_real_distribution<float> dis(0, 1);
-                seeds->resize(numPoints_.get());
                 std::ranges::generate(*seeds, [&]() { return vec3{dis(mt_), dis(mt_), 0.0f}; });
                 break;
             }
             case Generator::HaltonSequence: {
-                auto x = util::haltonSequence<float>(haltonXBase_.get(), numPoints_);
-                auto y = util::haltonSequence<float>(haltonYBase_.get(), numPoints_);
-                for (auto&& it : util::zip(x, y)) {
-                    seeds->emplace_back(get<0>(it), get<1>(it), 0.0f);
-                }
+                std::ranges::generate_n(seeds->begin(), numPoints_,
+                                        [i = 1, baseX = haltonXBase_.get(),
+                                         baseY = haltonYBase_.get()]() mutable -> vec3 {
+                                            return vec3{util::haltonSequence<float>(i++, baseX),
+                                                        util::haltonSequence<float>(i++, baseY),
+                                                        0.0f};
+                                        });
                 break;
             }
 
@@ -150,14 +151,16 @@ void SeedPointGenerator2D::process() {
         switch (generator_.get()) {
             case Generator::Random: {
                 std::uniform_real_distribution<float> dis(0, 1);
-                seeds->resize(numPoints_.get());
                 std::ranges::generate(*seeds, [&]() { return vec3{dis(mt_), 0.0f, 0.0f}; });
                 break;
             }
             case Generator::HaltonSequence: {
-                for (auto x : util::haltonSequence<float>(haltonXBase_.get(), numPoints_)) {
-                    seeds->emplace_back(x, 0.0f, 0.0f);
-                }
+                std::ranges::generate_n(
+                    seeds->begin(), numPoints_,
+                    [i = 1, baseX = haltonXBase_.get(),
+                     baseY = haltonYBase_.get()]() mutable -> vec3 {
+                        return vec3{util::haltonSequence<float>(i++, baseX), 0.0f, 0.0f};
+                    });
                 break;
             }
 

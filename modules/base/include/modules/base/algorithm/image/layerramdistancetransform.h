@@ -69,11 +69,11 @@ namespace util {
  *  http://www.cs.jhu.edu/~misha/ReadingSeminar/Papers/Saito94.pdf
  *
  * Calculates the distance in base mat space
- *     * Predicate is a function of type (const T &value) -> bool to deside if a value in the input
+ * @tparam Predicate is a function of type <tt>(const T &value) -> bool</tt> to decide if a value in the input
  *       is a "feature".
- *     * ValueTransform is a function of type (const U& squaredDist) -> U that is appiled to all
+ * @tparam ValueTransform is a function of type <tt>(const U& squaredDist) -> U</tt> that is appiled to all
  *       squared distance values at the end of the calculation.
- *     * ProcessCallback is a function of type (double progress) -> void that is called with a value
+ * @tparam ProcessCallback is a function of type <tt>(double progress) -> void</tt> that is called with a value
  *       from 0 to 1 to indicate the progress of the calculation.
  */
 template <typename T, typename U, typename Predicate, typename ValueTransform,

@@ -29,6 +29,7 @@
 
 #include "utils/structs.glsl"
 #include "utils/sampler2d.glsl"
+#include "utils/gradients.glsl"
 
 uniform sampler2D inport;
 uniform ImageParameters inportParameters;
@@ -39,18 +40,14 @@ uniform mat2 textureSpaceGradientSpacing = mat2(1.0);
 
 in vec3 texCoord_;
 
-float partialDiff(in vec2 texcoord, in vec2 gradientTextureSpacing, in float gradientWorldSpacing, in int channel) {
-    float fds = getNormalizedTexel(inport, inportParameters, texcoord + gradientTextureSpacing)[channel]
-        - getNormalizedTexel(inport, inportParameters, texcoord - gradientTextureSpacing)[channel];
-    return fds / gradientWorldSpacing * 0.5;
-}
-
 void main(void) {
     vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
 
-    float fydx = partialDiff(texCoords.xy, textureSpaceGradientSpacing[0], worldSpaceGradientSpacing[0], 1);
-    float fxdy = partialDiff(texCoords.xy, textureSpaceGradientSpacing[1], worldSpaceGradientSpacing[1], 0);
-    v = fydx - fxdy;
+    float fydx = partialDiff(inport, inportParameters, texCoords.xy, 
+                             textureSpaceGradientSpacing[0], worldSpaceGradientSpacing[0], 1);
+    float fxdy = partialDiff(inport, inportParameters, texCoords.xy, 
+                             textureSpaceGradientSpacing[1], worldSpaceGradientSpacing[1], 0);
+    float v = fydx - fxdy;
 
     FragData0 = vec4(v);
 }
