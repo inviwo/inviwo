@@ -72,15 +72,16 @@ std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volu
                                               double scale) {
 
     return dispatching::singleDispatch<std::shared_ptr<Volume>, dispatching::filter::All>(
-        volume->getDataFormat()->getId(), [&]<typename T>() -> std::shared_ptr<Volume> {
-            using R = typename util::same_extent<T, float>::type;
+        volume->getDataFormat()->getId(), [&]<typename DataType>() -> std::shared_ptr<Volume> {
+            using SampleType = typename util::same_extent_t<DataType, double>;
+            using DstType = typename util::same_extent_t<DataType, float>;
 
-            auto srcRAM =
-                static_cast<const VolumeRAMPrecision<T>*>(volume->getRepresentation<VolumeRAM>());
+            auto srcRAM = static_cast<const VolumeRAMPrecision<DataType>*>(
+                volume->getRepresentation<VolumeRAM>());
 
             const auto dims = srcRAM->getDimensions();
 
-            auto dstRAM = std::make_shared<VolumeRAMPrecision<R>>(
+            auto dstRAM = std::make_shared<VolumeRAMPrecision<DstType>>(
                 dims, swizzlemasks::rgba, InterpolationType::Linear, srcRAM->getWrapping());
 
             auto newVolume = std::make_shared<Volume>(dstRAM);
@@ -98,7 +99,7 @@ std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volu
 
             const auto o = glm::diagonal3x3(spacing);
 
-            using Sampler = TemplateVolumeSampler<T, double, double>;
+            using Sampler = TemplateVolumeSampler<SampleType, DataType>;
             const Sampler s(volume, CoordinateSpace::World);
 
             const util::IndexMapper3D index{volume->getDimensions()};
@@ -122,7 +123,7 @@ std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volu
                     (s.sample(world + o[2]) + center - s.sample(world - o[2])) * resSpace2.z;
                 const auto laplacian = center + D2x + D2y + D2z;
 
-                if constexpr (1 < util::extent_v<T>) {
+                if constexpr (1 < util::extent_v<DataType>) {
                     minval = glm::min(minval, glm::compMin(laplacian));
                     maxval = glm::max(maxval, glm::compMax(laplacian));
                 } else {
@@ -130,7 +131,7 @@ std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volu
                     maxval = glm::max(maxval, laplacian);
                 }
 
-                newData[index(pos)] = static_cast<R>(laplacian);
+                newData[index(pos)] = static_cast<DstType>(laplacian);
             };
 
             util::forEachVoxelParallel(dims, func);
@@ -142,8 +143,8 @@ std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volu
                 case VolumeLaplacianPostProcessing::Normalized:
                     util::forEachVoxelParallel(dims, [&](const size3_t& pos) {
                         newData[index(pos)] =
-                            (newData[index(pos)] + R{static_cast<float>(rangeMax)}) /
-                            R{static_cast<float>(2.0 * rangeMax)};
+                            (newData[index(pos)] + DstType{static_cast<float>(rangeMax)}) /
+                            DstType{static_cast<float>(2.0 * rangeMax)};
                     });
                     newVolume->dataMap_.dataRange = dvec2(0.0, 1.0);
                     newVolume->dataMap_.valueRange = dvec2(0.0, 1.0);
@@ -151,16 +152,17 @@ std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volu
                 case VolumeLaplacianPostProcessing::SignNormalized:
                     util::forEachVoxelParallel(dims, [&](const size3_t& pos) {
                         newData[index(pos)] =
-                            (newData[index(pos)] + R{static_cast<float>(rangeMax)}) /
-                                R{static_cast<float>(rangeMax)} -
-                            R{1.0f};
+                            (newData[index(pos)] + DstType{static_cast<float>(rangeMax)}) /
+                                DstType{static_cast<float>(rangeMax)} -
+                            DstType{1.0f};
                     });
                     newVolume->dataMap_.dataRange = dvec2(-1.0, 1.0);
                     newVolume->dataMap_.valueRange = dvec2(-1.0, 1.0);
                     break;
                 case VolumeLaplacianPostProcessing::Scaled:
                     util::forEachVoxelParallel(dims, [&](const size3_t& pos) {
-                        newData[index(pos)] = newData[index(pos)] * R{static_cast<float>(scale)};
+                        newData[index(pos)] =
+                            newData[index(pos)] * DstType{static_cast<float>(scale)};
                     });
                     newVolume->dataMap_.dataRange = dvec2(-rangeMax * scale, rangeMax * scale);
                     newVolume->dataMap_.valueRange = dvec2(-rangeMax * scale, rangeMax * scale);

@@ -61,7 +61,7 @@ TEST(Volume, volume_region_map_test_sorted_continuous_sequence) {
     std::vector<int> dst = {1, 1, 1, 2, 2, 2, 3, 3, 3};
     util::remap(*volume, src, dst, 0, false);
 
-    using VolSampler = TemplateVolumeSampler<int, int, int, 1>;
+    using VolSampler = TemplateVolumeSampler<int, int>;
     const VolSampler sampler(volume);
 
     EXPECT_EQ(1, sampler.sample(vec3(0.f, 0.f, 0.f)));
@@ -107,7 +107,7 @@ TEST(Volume, volume_region_map_test_unordered_map) {
     std::vector<int> dst = {1, 1, 1, 2, 2, 2, 3, 3, 3};
     util::remap(*volume, src, dst, 0, false);
 
-    using VolSampler = TemplateVolumeSampler<int, int, int, 1>;
+    using VolSampler = TemplateVolumeSampler<int, int>;
     const VolSampler sampler(volume);
 
     EXPECT_EQ(1, sampler.sample(vec3(0.f, 0.f, 0.f)));
@@ -153,7 +153,7 @@ TEST(Volume, volume_region_map_test_binary_search) {
     std::vector<int> dst = {1, 1, 2, 2};
     util::remap(*volume, src, dst, 0, false);
 
-    using VolSampler = TemplateVolumeSampler<int, int, int, 1>;
+    using VolSampler = TemplateVolumeSampler<int, int>;
     const VolSampler sampler(volume);
 
     EXPECT_EQ(1, sampler.sample(vec3(0.f, 0.f, 0.f)));

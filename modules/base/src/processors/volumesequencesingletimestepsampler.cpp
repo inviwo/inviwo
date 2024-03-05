@@ -51,6 +51,35 @@
 
 namespace inviwo {
 
+namespace {
+
+class VolumeSequenceSingleTimestepSampler : public SpatialSampler<dvec3> {
+public:
+    VolumeSequenceSingleTimestepSampler(double t, std::shared_ptr<const Volume> v0,
+                                        std::shared_ptr<const Volume> v1,
+                                        CoordinateSpace space = CoordinateSpace::Data)
+        : SpatialSampler(*v0, space), t_(t), v0_(v0, space), v1_(v1, space) {}
+
+protected:
+    virtual dvec3 sampleDataSpace(const dvec3& pos) const override {
+        const auto a = v0_.sample(pos, CoordinateSpace::Data);
+        const auto b = v1_.sample(pos, CoordinateSpace::Data);
+        return a + t_ * (b - a);
+    };
+
+    virtual bool withinBoundsDataSpace(const dvec3& pos) const override {
+        return v0_.withinBounds(pos, CoordinateSpace::Data) &&
+               v1_.withinBounds(pos, CoordinateSpace::Data);
+    };
+
+private:
+    double t_;
+    VolumeSampler<dvec3> v0_;
+    VolumeSampler<dvec3> v1_;
+};
+
+}  // namespace
+
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeSequenceSingleTimestepSamplerProcessor::processorInfo_{
     "org.inviwo.VolumeSequenceSingleTimestepSampler",  // Class identifier
@@ -58,17 +87,18 @@ const ProcessorInfo VolumeSequenceSingleTimestepSamplerProcessor::processorInfo_
     "Spatial Sampler",                                 // Category
     CodeState::Experimental,                           // Code state
     Tags::None,                                        // Tags
-};
-
+    R"(Creates a spatial sampler for a given timestamp from a VolumeSequence. Will use linear
+    interpolation to sample between two adjacent volumes in the sequence.
+    Useful for streamline visualization of a specific time step.)"_unindentHelp};
 const ProcessorInfo VolumeSequenceSingleTimestepSamplerProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 
 VolumeSequenceSingleTimestepSamplerProcessor::VolumeSequenceSingleTimestepSamplerProcessor()
     : Processor()
-    , volumeSequence_("volumeSequence")
-    , sampler_("sampler")
-    , timestamp_("timestamp", "Timestamp") {
+    , volumeSequence_("volumeSequence", "The input sequence of volumes"_help)
+    , sampler_("sampler", "The created sampler"_help)
+    , timestamp_("timestamp", "Timestamp", "The timestamp to sample at"_help) {
 
     addPort(volumeSequence_);
     addPort(sampler_);
@@ -80,18 +110,18 @@ VolumeSequenceSingleTimestepSamplerProcessor::VolumeSequenceSingleTimestepSample
         if (!sampler_.hasData()) return;
         auto seq = volumeSequence_.getData();
         if (!util::hasTimestamps(*seq, false)) {
-            LogWarn("Input volume Sequence does not have timestamps, behaviour is undefined");
+            LogWarn("Input volume Sequence does not have timestamps, behavior is undefined");
         }
 
-        auto newrange = util::getTimestampRange(*seq);
+        auto newRange = util::getTimestampRange(*seq);
         float t = static_cast<float>((timestamp_.get() - timestamp_.getMinValue()) /
                                      (timestamp_.getMaxValue() - timestamp_.getMinValue()));
 
-        timestamp_.setMinValue(newrange.first);
-        timestamp_.setMaxValue(newrange.second);
+        timestamp_.setMinValue(newRange.first);
+        timestamp_.setMaxValue(newRange.second);
         timestamp_.setCurrentStateAsDefault();
 
-        timestamp_.set(newrange.first + t * (newrange.second - newrange.first));
+        timestamp_.set(newRange.first + t * (newRange.second - newRange.first));
     });
 }
 

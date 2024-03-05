@@ -44,21 +44,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeSequenceToSpatial4DSampler, Volume Sequence To Spatial4DSampler}
- * ![](org.inviwo.VolumeSequenceToSpatial4DSampler.png?classIdentifier=org.inviwo.VolumeSequenceToSpatial4DSampler)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
 class IVW_MODULE_BASE_API VolumeSequenceToSpatial4DSampler : public Processor {
 public:
     VolumeSequenceToSpatial4DSampler();
@@ -71,7 +56,7 @@ public:
 
 private:
     VolumeSequenceInport volumeSequence_;
-    DataOutport<Spatial4DSampler<3, double>> sampler_;
+    DataOutport<Spatial4DSampler<dvec3>> sampler_;
 
     BoolProperty allowLooping_;
 };

@@ -34,7 +34,7 @@ namespace inviwo {
 
 VolumeSequenceSampler::VolumeSequenceSampler(std::shared_ptr<const VolumeSequence> volumeSequence,
                                              bool allowLooping)
-    : Spatial4DSampler<3, double>(volumeSequence->front())
+    : Spatial4DSampler<dvec3>(volumeSequence->front())
     , wrappers_()
     , allowLooping_(allowLooping)
     , timeRange_(0, 0)

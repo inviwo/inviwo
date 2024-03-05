@@ -46,20 +46,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeToSpatialSampler, Volume To Spatial Sampler}
- * ![](org.inviwo.VolumeToSpatialSampler.png?classIdentifier=org.inviwo.VolumeToSpatialSampler)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
 class IVW_MODULE_BASE_API VolumeToSpatialSampler : public Processor {
 public:
     VolumeToSpatialSampler();
@@ -72,7 +58,7 @@ public:
 
 private:
     VolumeInport volume_;
-    DataOutport<SpatialSampler<3, double>> sampler_;
+    DataOutport<SpatialSampler<dvec3>> sampler_;
 };
 
 }  // namespace inviwo

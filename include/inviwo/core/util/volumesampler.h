@@ -41,54 +41,52 @@
 namespace inviwo {
 
 /**
- * \class VolumeDoubleSampler
+ * \class VolumeSampler
  */
-template <unsigned int DataDims>
-class VolumeDoubleSampler : public SpatialSampler<DataDims, double> {
+template <typename ReturnType = dvec4>
+class VolumeSampler : public SpatialSampler<ReturnType> {
 public:
-    VolumeDoubleSampler(std::shared_ptr<const Volume> vol,
-                        CoordinateSpace space = CoordinateSpace::Data);
-    VolumeDoubleSampler(const Volume& vol, CoordinateSpace space = CoordinateSpace::Data);
-    virtual ~VolumeDoubleSampler() = default;
+    VolumeSampler(std::shared_ptr<const Volume> vol, CoordinateSpace space = CoordinateSpace::Data);
+    VolumeSampler(const Volume& vol, CoordinateSpace space = CoordinateSpace::Data);
+    VolumeSampler& operator=(const VolumeSampler&) = default;
 
-    VolumeDoubleSampler& operator=(const VolumeDoubleSampler&) = default;
-
-    virtual Vector<DataDims, double> sampleDataSpace(const dvec3& pos) const override;
-    virtual bool withinBoundsDataSpace(const dvec3& pos) const override;
+    virtual ~VolumeSampler() = default;
 
 protected:
-    Vector<DataDims, double> getVoxel(const size3_t& pos) const;
+    virtual ReturnType sampleDataSpace(const dvec3& pos) const override;
+    virtual bool withinBoundsDataSpace(const dvec3& pos) const override;
+    ReturnType getVoxel(const size3_t& pos) const;
 
     std::shared_ptr<const Volume> volume_;
     const VolumeRAM* ram_;
     size3_t dims_;
 };
 
-using VolumeSampler = VolumeDoubleSampler<4>;
+template <size_t N = 4>
+using VolumeDoubleSampler = VolumeSampler<util::glmtype_t<double, N>>;
 
-template <unsigned int DataDims>
-VolumeDoubleSampler<DataDims>::VolumeDoubleSampler(std::shared_ptr<const Volume> vol,
-                                                   CoordinateSpace space)
-    : VolumeDoubleSampler(*vol, space) {
+template <typename ReturnType>
+VolumeSampler<ReturnType>::VolumeSampler(std::shared_ptr<const Volume> vol, CoordinateSpace space)
+    : VolumeSampler(*vol, space) {
     volume_ = vol;
 }
 
-template <unsigned int DataDims>
-VolumeDoubleSampler<DataDims>::VolumeDoubleSampler(const Volume& vol, CoordinateSpace space)
-    : SpatialSampler<DataDims, double>(vol, space)
+template <typename ReturnType>
+VolumeSampler<ReturnType>::VolumeSampler(const Volume& vol, CoordinateSpace space)
+    : SpatialSampler<ReturnType>(vol, space)
     , ram_(vol.getRepresentation<VolumeRAM>())
     , dims_(vol.getDimensions()) {}
 
-template <unsigned int DataDims>
-Vector<DataDims, double> VolumeDoubleSampler<DataDims>::sampleDataSpace(const dvec3& pos) const {
+template <typename ReturnType>
+auto VolumeSampler<ReturnType>::sampleDataSpace(const dvec3& pos) const -> ReturnType {
     if (!withinBoundsDataSpace(pos)) {
-        return Vector<DataDims, double>(0.0);
+        return ReturnType(0.0);
     }
     const dvec3 samplePos = pos * dvec3(dims_ - size3_t(1));
     const size3_t indexPos = size3_t(samplePos);
     const dvec3 interpolants = samplePos - dvec3(indexPos);
 
-    Vector<DataDims, double> samples[8];
+    ReturnType samples[8];
     samples[0] = getVoxel(indexPos);
     samples[1] = getVoxel(indexPos + size3_t(1, 0, 0));
     samples[2] = getVoxel(indexPos + size3_t(0, 1, 0));
@@ -99,35 +97,35 @@ Vector<DataDims, double> VolumeDoubleSampler<DataDims>::sampleDataSpace(const dv
     samples[6] = getVoxel(indexPos + size3_t(0, 1, 1));
     samples[7] = getVoxel(indexPos + size3_t(1, 1, 1));
 
-    return Interpolation<Vector<DataDims, double>>::trilinear(samples, interpolants);
+    return Interpolation<ReturnType, double>::trilinear(samples, interpolants);
 }
 
 template <>
-inline Vector<1, double> VolumeDoubleSampler<1>::getVoxel(const size3_t& pos) const {
+inline double VolumeSampler<double>::getVoxel(const size3_t& pos) const {
     const auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
     return ram_->getAsDouble(p);
 }
 
 template <>
-inline Vector<2, double> VolumeDoubleSampler<2>::getVoxel(const size3_t& pos) const {
+inline dvec2 VolumeSampler<dvec2>::getVoxel(const size3_t& pos) const {
     const auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
     return ram_->getAsDVec2(p);
 }
 
 template <>
-inline Vector<3, double> VolumeDoubleSampler<3>::getVoxel(const size3_t& pos) const {
+inline dvec3 VolumeSampler<dvec3>::getVoxel(const size3_t& pos) const {
     const auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
     return ram_->getAsDVec3(p);
 }
 
 template <>
-inline Vector<4, double> VolumeDoubleSampler<4>::getVoxel(const size3_t& pos) const {
+inline dvec4 VolumeSampler<dvec4>::getVoxel(const size3_t& pos) const {
     const auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
     return ram_->getAsDVec4(p);
 }
 
-template <unsigned int DataDims>
-bool VolumeDoubleSampler<DataDims>::withinBoundsDataSpace(const dvec3& pos) const {
+template <typename ReturnType>
+bool VolumeSampler<ReturnType>::withinBoundsDataSpace(const dvec3& pos) const {
     return !(glm::any(glm::lessThan(pos, dvec3(0.0))) ||
              glm::any(glm::greaterThan(pos, dvec3(1.0))));
 }
