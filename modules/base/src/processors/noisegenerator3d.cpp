@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/noisevolumeprocessor.h>
+#include <modules/base/processors/noisegenerator3d.h>
 
 #include <inviwo/core/algorithm/markdown.h>            // for operator""_unindentHelp
 #include <inviwo/core/ports/volumeport.h>              // for VolumeInport, VolumeOutport
@@ -55,15 +55,15 @@ namespace inviwo {
 class Volume;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo NoiseVolumeProcessor::processorInfo_{
-    "org.inviwo.NoiseVolumeProcessor",  // Class identifier
-    "Noise Generator 3D",               // Display name
-    "Data Creation",                    // Category
-    CodeState::Experimental,            // Code state
-    Tag::CPU | Tag("Volume"),           // Tags
+const ProcessorInfo NoiseGenerator3D::processorInfo_{
+    "org.inviwo.NoiseGenerator3D",  // Class identifier
+    "Noise Generator 3D",           // Display name
+    "Data Creation",                // Category
+    CodeState::Experimental,        // Code state
+    Tag::CPU | Tag("Volume"),       // Tags
     R"(
-    A processor to generate noise volumes.
-    Using the Mersenne Twister 19937 generator to generate random numbers.
+    A processor that generates noise volumes using the Mersenne Twister 19937 generator
+    for random number generation.
     
     ![Image Of Noise Types](file:~modulePath~/docs/images/noise_types.png)
     
@@ -77,9 +77,9 @@ const ProcessorInfo NoiseVolumeProcessor::processorInfo_{
     [base/noise_volume_generation.inv](file:~modulePath~/data/workspaces/noise_volume_generation.inv)
     )"_unindentHelp};
 
-const ProcessorInfo NoiseVolumeProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo NoiseGenerator3D::getProcessorInfo() const { return processorInfo_; }
 
-NoiseVolumeProcessor::NoiseVolumeProcessor()
+NoiseGenerator3D::NoiseGenerator3D()
     : Processor()
     , basisVolume_("forBasis")
     , volume_("volume_")
@@ -129,7 +129,7 @@ NoiseVolumeProcessor::NoiseVolumeProcessor()
     typeOnChange();
 }
 
-void NoiseVolumeProcessor::process() {
+void NoiseGenerator3D::process() {
     if (useSameSeed_.get()) {
         mt_.seed(seed_.get());
     }

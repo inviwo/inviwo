@@ -27,30 +27,29 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/processors/layerprocessing/layermapping.h>
+#include <modules/basegl/processors/layerprocessing/layercolormapping.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo LayerMapping::processorInfo_{
-    "org.inviwo.LayerMapping",  // Class identifier
-    "Layer Mapping",            // Display name
-    "Layer Operation",          // Category
-    CodeState::Stable,          // Code state
-    Tags::GL,                   // Tags
+const ProcessorInfo LayerColorMapping::processorInfo_{
+    "org.inviwo.LayerColorMapping",  // Class identifier
+    "Layer Color Mapping",           // Display name
+    "Layer Operation",               // Category
+    CodeState::Stable,               // Code state
+    Tags::GL,                        // Tags
     R"(Applies a transferfunction to one channel of a Layer. The format of the RGBA output will
-    match the input with a data range of [0, 1].)"_unindentHelp,
+    match the input with a value range of [0, 1].)"_unindentHelp,
 };
 
-const ProcessorInfo LayerMapping::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo LayerColorMapping::getProcessorInfo() const { return processorInfo_; }
 
-LayerMapping::LayerMapping()
+LayerColorMapping::LayerColorMapping()
     : LayerGLProcessor{utilgl::findShaderResource("img_mapping.frag")}
-    , channel_{"channel", "Channel", "Selected channel used for TF mapping"_help,
+    , channel_{"channel", "Channel", "Selected channel used for color mapping"_help,
                util::enumeratedOptions("Channel", 4)}
-
     , transferFunction_(
           "transferFunction", "Transfer Function",
           "The transfer function used for mapping input to output values including the "
@@ -58,12 +57,12 @@ LayerMapping::LayerMapping()
     addProperties(channel_, transferFunction_);
 }
 
-void LayerMapping::preProcess(TextureUnitContainer& container, const Layer&, Layer&) {
+void LayerColorMapping::preProcess(TextureUnitContainer& container, const Layer&, Layer&) {
     utilgl::bindAndSetUniforms(shader_, container, transferFunction_);
     utilgl::setUniforms(shader_, channel_);
 }
 
-LayerConfig LayerMapping::outputConfig([[maybe_unused]] const Layer& input) const {
+LayerConfig LayerColorMapping::outputConfig([[maybe_unused]] const Layer& input) const {
     auto inputFormat = input.getDataFormat();
     auto outputFormat =
         DataFormatBase::get(inputFormat->getNumericType(), 4, inputFormat->getPrecision());

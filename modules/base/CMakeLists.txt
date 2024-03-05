@@ -96,7 +96,7 @@ set(HEADER_FILES
     include/modules/base/processors/meshsequenceelementselectorprocessor.h
     include/modules/base/processors/meshsource.h
     include/modules/base/processors/noisegenerator2d.h
-    include/modules/base/processors/noisevolumeprocessor.h
+    include/modules/base/processors/noisegenerator3d.h
     include/modules/base/processors/ordinalpropertyanimator.h
     include/modules/base/processors/orientationindicator.h
     include/modules/base/processors/pixeltobufferprocessor.h
@@ -241,7 +241,7 @@ set(SOURCE_FILES
     src/processors/meshsequenceelementselectorprocessor.cpp
     src/processors/meshsource.cpp
     src/processors/noisegenerator2d.cpp
-    src/processors/noisevolumeprocessor.cpp
+    src/processors/noisegenerator3d.cpp
     src/processors/ordinalpropertyanimator.cpp
     src/processors/orientationindicator.cpp
     src/processors/pixeltobufferprocessor.cpp

@@ -49,12 +49,12 @@
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API NoiseVolumeProcessor : public Processor {
+class IVW_MODULE_BASE_API NoiseGenerator3D : public Processor {
     enum class NoiseType { Random, HaltonSequence };
 
 public:
-    NoiseVolumeProcessor();
-    virtual ~NoiseVolumeProcessor() = default;
+    NoiseGenerator3D();
+    virtual ~NoiseGenerator3D() = default;
 
     virtual void process() override;
 

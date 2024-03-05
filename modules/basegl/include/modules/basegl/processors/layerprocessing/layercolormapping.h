@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,28 +29,24 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEG...
-
-#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/properties/transferfunctionproperty.h>             // for TransferFunction...
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
+#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/processors/layerprocessing/layerglprocessor.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
-class TextureUnitContainer;
 
-/**
- * \brief Maps the input image to an output with the help of a transfer function.
- */
-class IVW_MODULE_BASEGL_API ImageMapping : public ImageGLProcessor {
+class IVW_MODULE_BASEGL_API LayerColorMapping : public LayerGLProcessor {
 public:
-    ImageMapping();
+    LayerColorMapping();
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 protected:
-    virtual void preProcess(TextureUnitContainer& cont) override;
-    virtual void afterInportChanged() override;
+    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;
+
+    virtual LayerConfig outputConfig([[maybe_unused]] const Layer& input) const override;
 
 private:
     OptionPropertyInt channel_;
