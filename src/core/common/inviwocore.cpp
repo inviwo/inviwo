@@ -221,8 +221,8 @@ struct DataTypeRegFunctor {
 
 }  // namespace
 
-template class OptionProperty<OptionRegEnumInt>;
-template class OptionProperty<OptionRegEnumUInt>;
+// template class OptionProperty<OptionRegEnumInt>;
+// template class OptionProperty<OptionRegEnumUInt>;
 
 InviwoCore::Observer::Observer(InviwoCore& core, InviwoApplication* app)
     : FileObserver(app), core_(core) {}

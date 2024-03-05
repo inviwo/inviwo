@@ -76,7 +76,7 @@ extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<dvec2>;
 extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<vec2>;
 extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<dvec3>;
 extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<vec3>;
-extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<dvec3>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<dvec4>;
 extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<vec4>;
 
 template <typename ReturnType>
