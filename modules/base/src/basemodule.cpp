@@ -507,9 +507,9 @@ bool BaseModule::Converter::convert(TxElement* root) {
             res |= xml::changeAttribute(root, {{xml::Kind::processor("org.inviwo.NoiseProcessor")}},
                                         "type", "org.inviwo.NoiseProcessor",
                                         "org.inviwo.NoiseGenerator2D");
-            res |= xml::changeAttribute(root, {{xml::Kind::processor("org.inviwo.NoiseVolumeProcessor")}},
-                                        "type", "org.inviwo.NoiseVolumeProcessor",
-                                        "org.inviwo.NoiseGenerator3D");
+            res |= xml::changeAttribute(
+                root, {{xml::Kind::processor("org.inviwo.NoiseVolumeProcessor")}}, "type",
+                "org.inviwo.NoiseVolumeProcessor", "org.inviwo.NoiseGenerator3D");
             return res;
         }
 

@@ -123,8 +123,7 @@ std::unique_ptr<Volume> divergenceVolume(const Volume& volume) {
             newVolume->dataMap.dataRange = dvec2(-range, range);
             newVolume->dataMap.valueRange = dvec2(minV, maxV);
             newVolume->dataMap.valueAxis.name = "divergence";
-            newVolume->dataMap.valueAxis.unit =
-                volume.dataMap.valueAxis.unit / volume.axes[0].unit;
+            newVolume->dataMap.valueAxis.unit = volume.dataMap.valueAxis.unit / volume.axes[0].unit;
         });
 
     return newVolume;
