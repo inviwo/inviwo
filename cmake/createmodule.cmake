@@ -140,7 +140,8 @@ function(ivw_create_module)
         ivw_folder(${${mod}_target} "${${mod}_group}")
     endif()
 
-    ivw_register_docs(INPUT_DIRS ${${mod}_incPath}
+    ivw_register_docs(
+        INPUT_DIRS ${${mod}_incPath}
         IMAGE_PATHS ${${mod}_path}/docs/images
         INCLUDE_PATHS ${${mod}_path}/glsl
         INCLUDE_PATHS_FROM_TARGETS ${${mod}_target}

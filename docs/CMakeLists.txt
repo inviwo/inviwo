@@ -108,26 +108,16 @@ add_custom_target(DOXY-ALL
 set_target_properties("DOXY-ALL" PROPERTIES FOLDER "docs" EXCLUDE_FROM_ALL TRUE)
 
 get_property(input_dirs GLOBAL PROPERTY IVW_DOC_INPUT_DIRS)
-foreach(dir IN LISTS input_dirs)
-    if(EXISTS ${dir})
-        list(APPEND all_input ${dir})
-    endif()
-endforeach()
+ivw_private_clean_path_list(input_dirs input_dirs)
+list(APPEND all_input ${input_dirs})
 
 get_property(image_paths GLOBAL PROPERTY IVW_DOC_IMAGE_PATHS)
-foreach(dir IN LISTS image_paths)
-    if(EXISTS ${dir})
-        list(APPEND image_path_list ${dir})
-    endif()
-endforeach()
+ivw_private_clean_path_list(image_paths image_paths)
+list(APPEND image_path_list ${image_paths})
 
 get_property(include_paths GLOBAL PROPERTY IVW_DOC_INCLUDE_PATHS)
-foreach(dir IN LISTS include_paths)
-    if(EXISTS ${dir})
-        list(APPEND incpaths ${dir})
-    endif()
-endforeach()
-
+ivw_private_clean_path_list(include_paths include_paths)
+list(APPEND incpaths ${include_paths})
 
 # Inviwo
 ivw_private_make_doxyfile(
