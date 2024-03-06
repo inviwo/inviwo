@@ -46,6 +46,7 @@
 #include <memory>       // for shared_ptr, make_shared
 #include <type_traits>  // for remove_extent_t
 #include <algorithm>
+#include <ranges>
 
 namespace inviwo {
 
@@ -133,13 +134,13 @@ void SeedPointGenerator2D::process() {
                 break;
             }
             case Generator::HaltonSequence: {
-                std::ranges::generate_n(seeds->begin(), numPoints_,
-                                        [i = 1, baseX = haltonXBase_.get(),
-                                         baseY = haltonYBase_.get()]() mutable -> vec3 {
-                                            return vec3{util::haltonSequence<float>(i++, baseX),
-                                                        util::haltonSequence<float>(i++, baseY),
-                                                        0.0f};
-                                        });
+                std::ranges::copy(std::views::iota(size_t{1}, seeds->size()) |
+                                      std::views::transform([baseX = haltonXBase_.get(),
+                                                             baseY = haltonYBase_.get()](int i) {
+                                          return vec3{util::haltonSequence<float>(i, baseX),
+                                                      util::haltonSequence<float>(i, baseY), 0.0f};
+                                      }),
+                                  seeds->begin());
                 break;
             }
 

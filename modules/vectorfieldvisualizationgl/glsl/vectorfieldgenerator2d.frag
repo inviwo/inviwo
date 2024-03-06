@@ -33,14 +33,14 @@ uniform vec2 xRange;
 uniform vec2 yRange;
 
 vec2 getWorldPosition(vec2 pos) {
-	return vec2(pos.x * (xRange.y - xRange.x) + xRange.x,
-				pos.y * (yRange.y - yRange.x) + yRange.x);
+    return vec2(pos.x * (xRange.y - xRange.x) + xRange.x,
+                pos.y * (yRange.y - yRange.x) + yRange.x);
 }
 
 void main() {
-	vec2 worldPos = getWorldPosition(texCoord_.xy);
+    vec2 worldPos = getWorldPosition(texCoord_.xy);
 
-	vec4 value = vec4(0);	
+    vec4 value = vec4(0);   
     value.x = U_VALUE(worldPos.x, worldPos.y);
     value.y = V_VALUE(worldPos.x, worldPos.y);
 
