@@ -35,7 +35,6 @@
 
 #include <vector>
 
-
 namespace inviwo {
 
 void exposeGLMTypes(pybind11::module& m);
