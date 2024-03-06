@@ -58,6 +58,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/python3/processortrampoline.h>
+#include <modules/python3/opaquetypes.h>
 
 #include <fmt/format.h>
 #include <fmt/std.h>

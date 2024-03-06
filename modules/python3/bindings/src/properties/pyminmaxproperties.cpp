@@ -36,6 +36,8 @@
 #include <inviwo/core/util/foreacharg.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#include <modules/python3/opaquetypes.h>
+
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 #include <fmt/format.h>

@@ -34,24 +34,6 @@
 #include <pybind11/pybind11.h>
 #include <warn/pop>
 
-#include <inviwo/core/util/glm.h>
-
-#include <vector>
-
-// Need to declare vectors of glm types as opaque otherwise they will be copied back and
-// forth between c++ and python
-PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<2, 2, double>>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<2, 3, double>>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<2, 4, double>>)
-
-PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<3, 2, double>>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<3, 3, double>>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<3, 4, double>>)
-
-PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<4, 2, double>>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<4, 3, double>>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<4, 4, double>>)
-
 namespace inviwo {
 
 void exposeGLMMatTypesDouble(pybind11::module& m);

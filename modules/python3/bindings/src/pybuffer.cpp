@@ -42,6 +42,7 @@
 
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pyportutils.h>
+#include <modules/python3/opaquetypes.h>
 
 #include <pybind11/numpy.h>
 

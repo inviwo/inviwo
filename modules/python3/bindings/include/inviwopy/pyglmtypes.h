@@ -35,27 +35,6 @@
 
 #include <vector>
 
-// Need to declare vectors of glm types as opaque otherwise they will be copied back and
-// forth to python
-PYBIND11_MAKE_OPAQUE(std::vector<float>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::vec<2, float>>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::vec<3, float>>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::vec<4, float>>)
-
-PYBIND11_MAKE_OPAQUE(std::vector<double>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::vec<2, double>>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::vec<3, double>>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::vec<4, double>>)
-
-PYBIND11_MAKE_OPAQUE(std::vector<int>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::vec<2, int>>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::vec<3, int>>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::vec<4, int>>)
-
-PYBIND11_MAKE_OPAQUE(std::vector<unsigned int>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::vec<2, unsigned int>>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::vec<3, unsigned int>>)
-PYBIND11_MAKE_OPAQUE(std::vector<glm::vec<4, unsigned int>>)
 
 namespace inviwo {
 

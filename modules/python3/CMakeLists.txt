@@ -5,6 +5,7 @@ find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)
 
 set(HEADER_FILES
     include/modules/python3/layerpy.h
+    include/modules/python3/opaquetypes.h
     include/modules/python3/processortrampoline.h
     include/modules/python3/pybindflags.h
     include/modules/python3/pybindutils.h

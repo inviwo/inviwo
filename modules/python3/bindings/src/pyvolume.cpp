@@ -41,14 +41,13 @@
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pyportutils.h>
 #include <modules/python3/volumepy.h>
+#include <modules/python3/opaquetypes.h>
 
 #include <pybind11/numpy.h>
 #include <pybind11/stl_bind.h>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-
-PYBIND11_MAKE_OPAQUE(inviwo::VolumeSequence)
 
 namespace inviwo {
 
