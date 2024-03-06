@@ -37,6 +37,7 @@
 
 #include <modules/python3/pybindflags.h>
 #include <modules/python3/pybindmodule.h>
+#include <modules/python3/opaquetypes.h>
 
 #include <modules/brushingandlinking/datastructures/brushingaction.h>
 #include <modules/brushingandlinking/datastructures/indexlist.h>

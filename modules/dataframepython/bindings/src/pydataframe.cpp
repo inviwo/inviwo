@@ -44,6 +44,7 @@
 #include <inviwo/core/util/safecstr.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <modules/python3/pyportutils.h>
+#include <modules/python3/opaquetypes.h>
 
 #include <fmt/format.h>
 
