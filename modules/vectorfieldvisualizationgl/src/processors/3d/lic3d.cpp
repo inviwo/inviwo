@@ -103,6 +103,18 @@ void LIC3D::preProcess(TextureUnitContainer& cont) {
     shader_.setUniform("invBasis", glm::inverse(vectorField_.getData()->getBasis()));
 }
 
-void LIC3D::postProcess() { volume_->setSwizzleMask(swizzlemasks::rgba); }
+void LIC3D::postProcess() {
+    volume_->setSwizzleMask(swizzlemasks::rgba);
+
+    // since this processor uses VolumeGLProcessor::inport_ for the noise texture, we need to
+    // copy all metadata including transformations from the vector field here
+    auto source = vectorField_.getData();
+
+    volume_->dataMap.dataRange = DataMapper::defaultDataRangeFor(volume_->getDataFormat());
+    volume_->setModelMatrix(source->getModelMatrix());
+    volume_->setWorldMatrix(source->getWorldMatrix());
+    volume_->copyMetaDataFrom(*source);
+    volume_->axes = source->axes;
+}
 
 }  // namespace inviwo

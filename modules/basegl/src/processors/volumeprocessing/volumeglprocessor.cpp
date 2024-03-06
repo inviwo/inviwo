@@ -92,8 +92,8 @@ void VolumeGLProcessor::process() {
     if (internalInvalid_) {
         reattach = true;
         internalInvalid_ = false;
-        volume_ = std::make_shared<Volume>(*inport_.getData(), noData);
-        if (dataFormat_) volume_->setDataFormat(dataFormat_);
+        volume_ = std::make_shared<Volume>(
+            inport_.getData()->config().updateFrom({.format = dataFormat_}));
         outport_.setData(volume_);
     }
 

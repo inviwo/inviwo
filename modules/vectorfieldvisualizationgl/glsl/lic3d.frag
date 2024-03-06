@@ -60,7 +60,6 @@ void main(void) {
 
     if (voxelVelo < 0.000001) {
         discard;
-        return;
     }
 
     int c = 1;
@@ -101,11 +100,6 @@ void main(void) {
 
     if (intensityMapping) {
         v = pow(v, (4.0 / pow((v + 1.0), 4)));
-    }
-
-    if (v < 0.6 && false) {
-        discard;
-        return;
     }
 
     vec4 color = applyTF(tf, voxelVelo / velocityScale);
