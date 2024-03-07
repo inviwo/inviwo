@@ -221,7 +221,6 @@ struct DataTypeRegFunctor {
 
 }  // namespace
 
-
 InviwoCore::Observer::Observer(InviwoCore& core, InviwoApplication* app)
     : FileObserver(app), core_(core) {}
 void InviwoCore::Observer::fileChanged(const std::filesystem::path& dir) {

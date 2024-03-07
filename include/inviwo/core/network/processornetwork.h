@@ -317,7 +317,7 @@ public:
      * @param[in] destination Property at which link ends
      */
     void removeLink(Property* source, Property* destination);
-    
+
     /**
      * Remove and delete Property Link from the network
      * Removes a link between two properties, that are owned by processor network.
