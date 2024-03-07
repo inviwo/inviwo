@@ -134,7 +134,7 @@ public:
      * return true if type is one of following type:
      * bool, char, signed int, unsigned int, float, double, long double, std::string
      *
-     * @param type can be one of  bool, char, signed int, unsigned int, float, double, long double,
+     * @tparam U the type to test
      * std::string
      * @return true or false
      */

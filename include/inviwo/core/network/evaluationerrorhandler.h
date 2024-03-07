@@ -64,5 +64,7 @@ struct IVW_CORE_API StandardEvaluationErrorHandler {
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::EvaluationType> : inviwo::FlagFormatter<inviwo::EvaluationType> {};
+#endif

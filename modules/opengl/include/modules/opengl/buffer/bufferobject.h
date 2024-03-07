@@ -167,9 +167,8 @@ public:
 
     /**
      * Upload data from a container \p cont into the buffer. This also binds the buffer.
-     * @param data          data to be uploaded. The underlying data must match the current GL
+     * @param cont          data to be uploaded. The underlying data must match the current GL
      *                      format of the buffer.
-     * @param sizeInBytes   size of the uploaded data
      * @param policy        resizing policy when \p sizeInBytes differs from the current size
      * @see upload(const void*, GLsizeiptr, SizePolicy)
      */

@@ -86,7 +86,7 @@ public:
      *                        rhs
      * @param config          custom parameters overriding values from @p rhs
      */
-    Volume(const Volume& rhs, NoData, VolumeConfig config = {});
+    Volume(const Volume& rhs, NoData noData, VolumeConfig config = {});
     Volume& operator=(const Volume& that) = default;
     virtual Volume* clone() const override;
     virtual ~Volume();

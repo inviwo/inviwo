@@ -42,7 +42,7 @@ target_sources(inviwo-python-helper
         ${CMAKE_CURRENT_BINARY_DIR}/python-helper.cpp
 )
 
-ivw_define_standard_definitions(IVW_SYS inviwo-python-helper)
+ivw_define_standard_definitions(IVW_PYTHONHELPER inviwo-python-helper)
 ivw_define_standard_properties(inviwo-python-helper)
 
 ivw_install_helper(TARGET inviwo-python-helper

@@ -64,7 +64,6 @@ protected:
      * Update light source parameters. Transformation will be given in texture space.
      *
      * @param lightSource
-     * @return
      */
     void updateLightSource(DiffuseLight* lightSource);
 

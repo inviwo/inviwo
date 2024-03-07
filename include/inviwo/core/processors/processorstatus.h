@@ -96,6 +96,7 @@ constexpr std::string_view ProcessorStatus::str() const { return enumToStr(statu
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::ProcessorStatus::Status>
     : inviwo::FlagFormatter<inviwo::ProcessorStatus::Status> {};
@@ -112,3 +113,4 @@ struct fmt::formatter<inviwo::ProcessorStatus> : fmt::formatter<fmt::string_view
         return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
     }
 };
+#endif
