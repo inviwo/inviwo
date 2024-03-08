@@ -223,12 +223,12 @@ public:
     void setData(Image* data);  // will assume ownership of data.
 
     /**
-     * \copydoc DataOutport<Image>::detachData
+     * \copydoc inviwo::DataOutport<Image>::detachData
      */
     virtual std::shared_ptr<const Image> detachData() override;
 
     /**
-     * \copydoc DataOutport<Image>::clear
+     * \copydoc inviwo::DataOutport<Image>::clear
      */
     virtual void clear() override;
 

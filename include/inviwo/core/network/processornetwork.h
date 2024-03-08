@@ -294,7 +294,6 @@ public:
      * Adds a link between two properties, that are owned by processor network.
      * @param[in] source Property at which link starts
      * @param[in] destination Property at which link ends
-     * @return PropertyLink* Newly added link
      */
     void addLink(Property* source, Property* destination);
 
@@ -316,9 +315,14 @@ public:
      * Removes a link between two properties, that are owned by processor network.
      * @param[in] source Property at which link starts
      * @param[in] destination Property at which link ends
-     * @return void
      */
     void removeLink(Property* source, Property* destination);
+
+    /**
+     * Remove and delete Property Link from the network
+     * Removes a link between two properties, that are owned by processor network.
+     * @param[in] link The property link to remove.
+     */
     void removeLink(const PropertyLink& link);
 
     /**

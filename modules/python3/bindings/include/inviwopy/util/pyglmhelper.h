@@ -35,6 +35,7 @@
 #include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/core/util/assertion.h>
 #include <modules/python3/pyportutils.h>
+#include <modules/python3/opaquetypes.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>

@@ -35,11 +35,14 @@
 #include <flags/flags.h>
 #include <fmt/format.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #if __has_include(<llnl-units/units.hpp>)
 #include <llnl-units/units.hpp>
 #else
 #include <units/units.hpp>
 #endif
+#include <warn/pop>
 
 #include <string_view>
 #include <tuple>
@@ -227,6 +230,8 @@ IVW_CORE_API std::back_insert_iterator<fmt::memory_buffer> formatUnitTo(
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 /**
  * Formatting specialization for Units
  * The Units have a Format Specification Mini-Language
@@ -359,3 +364,4 @@ struct fmt::formatter<::inviwo::Unit> {
         return formatter_.format(std::string_view{buff.data(), buff.size()}, ctx);
     }
 };
+#endif

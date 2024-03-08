@@ -45,8 +45,9 @@ namespace inviwo {
 
 void exposeVolumeOperations(pybind11::module& m) {
 
-    m.def("curlVolume", [](Volume& vol) { return util::curlVolume(vol).release(); });
-    m.def("divergenceVolume", [](Volume& vol) { return util::divergenceVolume(vol).release(); });
+    m.def("curlVolume", [](Volume& vol) { return std::shared_ptr<Volume>(util::curlVolume(vol)); });
+    m.def("divergenceVolume",
+          [](Volume& vol) { return std::shared_ptr<Volume>(util::divergenceVolume(vol)); });
 }
 
 }  // namespace inviwo

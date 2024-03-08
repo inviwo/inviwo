@@ -42,7 +42,7 @@ target_sources(inviwo-python-helper
         ${CMAKE_CURRENT_BINARY_DIR}/python-helper.cpp
 )
 
-ivw_define_standard_definitions(IVW_SYS inviwo-python-helper)
+ivw_define_standard_definitions(IVW_PYTHONHELPER inviwo-python-helper)
 ivw_define_standard_properties(inviwo-python-helper)
 
 ivw_install_helper(TARGET inviwo-python-helper
@@ -54,7 +54,8 @@ ivw_install_helper(TARGET inviwo-python-helper
 # Add build dependency towards any pybind11 targets and inviwo::python-helper,
 # if python is not enabled, this pymodules list will be empty
 
-message(STATUS "Modules: ${pymodules}")
+ivw_join(";" ", " pylist ${pymodules})
+message(STATUS "Found Python Modules: ${pylist}")
 if(pymodules)
     if(BUILD_SHARED_LIBS)
         add_dependencies(inviwo-python-helper ${pymodules})

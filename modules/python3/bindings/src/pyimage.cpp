@@ -45,6 +45,7 @@
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pyportutils.h>
 #include <modules/python3/layerpy.h>
+#include <modules/python3/opaquetypes.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>

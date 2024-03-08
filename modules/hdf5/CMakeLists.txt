@@ -55,53 +55,31 @@ if (NOT IVW_USE_EXTERNAL_HDF5)
     
     find_package(ZLIB REQUIRED)
     set(ZLIB_SHARED_LIBRARY ${ZLIB_LIBRARIES}) # our zlib config is missing this one"
-    option(HDF5_ENABLE_Z_LIB_SUPPORT "Enable Zlib Filters" ON)
+    set(HDF5_ENABLE_Z_LIB_SUPPORT ON)
    
-    set(HDF5_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-    set(HDF5_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
-    set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+    set(HDF5_BUILD_EXAMPLES OFF)
+    set(HDF5_BUILD_TOOLS OFF)
+    set(BUILD_TESTING OFF)
+    set(HDF5_BUILD_CPP_LIB ON)
+    set(HDF5_BUILD_HL_LIB ON)
+
+    if(BUILD_SHARED_LIBS)
+        set(BUILD_STATIC_LIBS OFF)
+    endif()
 
     add_subdirectory(ext/hdf5)
 
-    set(h5-static hdf5-static hdf5_hl-static hdf5_cpp-static hdf5_hl_cpp-static)
-    set(h5-cmake H5detect H5make_libsettings)
+    ivw_get_targets_in_dir_recursive(hdf5Targets ext/hdf5)
+    ivw_remove_from_list(hdf5Targets hdf5Targets mirror_server mirror_server_stop)
+    ivw_join(";" ", " hdf5list ${hdf5Targets})
+    message(STATUS "HDF5 Targets: ${hdf5list}")
 
-    set(h5-targets ${h5-static} ${h5-cmake})
-    if(BUILD_SHARED_LIBS)
-        set(h5-shared hdf5-shared hdf5_hl-shared hdf5_cpp-shared hdf5_hl_cpp-shared)
-        set(h5-targets ${h5-targets} ${h5-shared})
-    endif()
+    set_target_properties(${hdf5Targets} PROPERTIES FOLDER ext/hdf5)
+    ivw_suppress_compiler_warnings(${hdf5Targets})
 
-    set_target_properties(${h5-targets} PROPERTIES FOLDER ext/hdf5)
-    ivw_suppress_compiler_warnings(${h5-targets})
+    target_link_libraries(inviwo-module-hdf5 PUBLIC ${hdf5Targets})
 
-    # Configure some specific warnings.
-    if(WIN32 AND MSVC)
-        foreach(target ${h5-targets})
-            target_compile_options(${target} PRIVATE "/w24005")
-        endforeach()
-        set_property(TARGET ${h5-static} APPEND_STRING PROPERTY STATIC_LIBRARY_FLAGS " /IGNORE:4221")
-    endif()
-
-    if(BUILD_SHARED_LIBS)
-        target_link_libraries(inviwo-module-hdf5 PUBLIC ${h5-shared})
-    else()
-        target_link_libraries(inviwo-module-hdf5 PUBLIC ${h5-static})
-    endif()
-
-    # not sure why this dir is nto picked up automatically
-    # Needed to pick up some generated headers.
-    set(hdf_inc_dirs "")
-    foreach(target ${h5-targets})
-        get_target_property(inc_dirs ${target} INCLUDE_DIRECTORIES)
-        if(inc_dirs)
-            list(APPEND hdf_inc_dirs ${inc_dirs})
-        endif()
-    endforeach()
-    remove_duplicates(hdf_unique_inc_dirs ${hdf_inc_dirs})
-    target_include_directories(inviwo-module-hdf5 PUBLIC ${hdf_unique_inc_dirs})
-
-    ivw_register_license_file(NAME hdf5 VERSION 1.10.0.1 MODULE HDF5
+    ivw_register_license_file(NAME hdf5 VERSION 1.14.3 MODULE HDF5
         URL http://www.hdfgroup.org/HDF5/
         TYPE "BSD-style"
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/hdf5/COPYING

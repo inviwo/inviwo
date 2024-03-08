@@ -3,6 +3,18 @@ function(ivw_private_format_doxy_arg retval)
     set(${retval} ${result} PARENT_SCOPE)
 endfunction()
 
+function(ivw_private_clean_path_list list_var retval)
+    set(paths)
+    foreach(dir IN LISTS ${list_var})
+        if(EXISTS ${dir} AND IS_DIRECTORY ${dir})
+            list(APPEND paths ${dir})
+        endif()
+    endforeach()
+    list(SORT paths)
+    list(REMOVE_DUPLICATES paths)
+    set(${retval} ${paths} PARENT_SCOPE)
+endfunction()
+
 function(ivw_private_make_doxyfile)
     set(options
         GENERATE_IMG
@@ -156,7 +168,6 @@ DOT_PATH               = \"${DOXYGEN_DOT_PATH}\"
 DOTFILE_DIRS           =
 DOT_GRAPH_MAX_NODES    = 200
 MAX_DOT_GRAPH_DEPTH    = 0
-DOT_TRANSPARENT        = NO
 DOT_MULTI_TARGETS      = YES
 GENERATE_LEGEND        = YES
 DOT_CLEANUP            = YES

@@ -70,7 +70,7 @@ public:
      *                        rhs
      * @param config          custom parameters overriding values from @p rhs
      */
-    Layer(const Layer& rhs, NoData, LayerConfig config = {});
+    Layer(const Layer& rhs, NoData noData, LayerConfig config = {});
     Layer& operator=(const Layer& that) = default;
     virtual Layer* clone() const override;
     virtual ~Layer() = default;

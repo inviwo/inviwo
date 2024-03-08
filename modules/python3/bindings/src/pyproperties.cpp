@@ -53,6 +53,8 @@
 #include <inviwo/core/util/colorconversion.h>
 #include <inviwo/core/datastructures/tfprimitive.h>
 
+#include <modules/python3/opaquetypes.h>
+
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
 #include <pybind11/functional.h>

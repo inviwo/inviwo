@@ -65,5 +65,7 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MouseCursor c);
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::MouseCursor> : inviwo::FlagFormatter<inviwo::MouseCursor> {};
+#endif
