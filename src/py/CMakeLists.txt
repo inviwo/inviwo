@@ -54,7 +54,8 @@ ivw_install_helper(TARGET inviwo-python-helper
 # Add build dependency towards any pybind11 targets and inviwo::python-helper,
 # if python is not enabled, this pymodules list will be empty
 
-message(STATUS "Modules: ${pymodules}")
+ivw_join(";" ", " pylist ${pymodules})
+message(STATUS "Found Python Modules: ${pylist}")
 if(pymodules)
     if(BUILD_SHARED_LIBS)
         add_dependencies(inviwo-python-helper ${pymodules})

@@ -29,6 +29,7 @@
 
 cmake_minimum_required(VERSION 3.23...3.27 FATAL_ERROR)
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
+message(STATUS "CMake version: ${CMAKE_VERSION}")
 
 set(IVW_MAJOR_VERSION 0)
 set(IVW_MINOR_VERSION 9)

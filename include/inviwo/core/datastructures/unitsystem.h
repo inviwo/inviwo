@@ -35,11 +35,14 @@
 #include <flags/flags.h>
 #include <fmt/format.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #if __has_include(<llnl-units/units.hpp>)
 #include <llnl-units/units.hpp>
 #else
 #include <units/units.hpp>
 #endif
+#include <warn/pop>
 
 #include <string_view>
 #include <tuple>
