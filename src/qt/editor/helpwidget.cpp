@@ -360,7 +360,8 @@ std::tuple<std::string, std::filesystem::path> loadIdUrl(const QUrl& url, Inviwo
 
     const auto processorClassIdentifier = utilqt::fromQString(list.front());
     try {
-        if (auto processor = app->getProcessorFactory()->create(processorClassIdentifier, app)) {
+        if (auto processor =
+                app->getProcessorFactory()->createShared(processorClassIdentifier, app)) {
             auto help = help::buildProcessorHelp(*processor);
             const auto& module = findModule(*app, processorClassIdentifier);
 

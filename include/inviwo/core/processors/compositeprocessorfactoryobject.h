@@ -48,7 +48,7 @@ public:
     CompositeProcessorFactoryObject(const std::filesystem::path& filen);
     virtual ~CompositeProcessorFactoryObject() = default;
 
-    virtual std::unique_ptr<Processor> create(InviwoApplication* app) override;
+    virtual std::shared_ptr<Processor> create(InviwoApplication* app) const override;
 
     virtual Document getMetaInformation() const override;
 

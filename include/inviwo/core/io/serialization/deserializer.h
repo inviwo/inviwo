@@ -1234,7 +1234,7 @@ void Deserializer::deserialize(std::string_view key, std::shared_ptr<T>& data) {
                 for (auto base : registeredFactories_) {
                     if (base->hasKey(typeId)) {
                         if (auto factory = dynamic_cast<Factory<T, std::string_view>*>(base)) {
-                            if ((data = std::shared_ptr<T>(factory->create(typeId)))) {
+                            if ((data = factory->createShared(typeId))) {
                                 break;
                             }
                         }

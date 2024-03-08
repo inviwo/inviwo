@@ -93,7 +93,7 @@ void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
         for (auto& pfo : processors) {
             auto action = modMenu->addAction(utilqt::toQString(pfo->getDisplayName()));
             docsMenu->connect(action, &QAction::triggered, [pfo, factory]() {
-                const auto processor = factory->create(pfo->getClassIdentifier());
+                const auto processor = factory->createShared(pfo->getClassIdentifier());
                 const auto& inports = processor->getInports();
                 const auto& outports = processor->getOutports();
                 const auto& properties = processor->getPropertiesRecursive();
@@ -331,7 +331,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
 
         for (auto&& key : factory->getKeyView()) {
             try {
-                auto processor = factory->create(key, app);
+                auto processor = factory->createShared(key, app);
 
                 size_t indent = 0;
                 LambdaNetworkVisitor visitor{

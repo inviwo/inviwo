@@ -91,7 +91,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
         for (auto& c : inConnections) {
             auto portId = c.first->getClassIdentifier();
 
-            if (auto source = std::shared_ptr<Processor>(pf->create(portId + ".metasource"))) {
+            if (auto source = pf->createShared(portId + ".metasource")) {
                 if (auto metasouce = dynamic_cast<CompositeSourceBase*>(source.get())) {
                     subNetwork.addProcessor(source);
                     bool optional = true;
@@ -140,7 +140,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
         for (auto& c : outConnections) {
             auto portId = c.first->getClassIdentifier();
 
-            if (auto sink = std::shared_ptr<Processor>(pf->create(portId + ".metasink"))) {
+            if (auto sink = std::shared_ptr<Processor>(pf->createShared(portId + ".metasink"))) {
                 if (auto metasink = dynamic_cast<CompositeSinkBase*>(sink.get())) {
                     subNetwork.addProcessor(sink);
                     subNetwork.addConnection(c.first, metasink->getInports().front());

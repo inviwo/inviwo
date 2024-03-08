@@ -53,7 +53,6 @@ namespace pool {
 /** PoolProcesor implementation details */
 namespace detail {
 
-struct Wrapper;
 struct State;
 template <typename Result, typename Done>
 struct StateTemplate;
@@ -309,26 +308,23 @@ private:
     static void callDone(InviwoApplication* app,
                          std::shared_ptr<pool::detail::StateTemplate<Result, Done>> state);
 
+    Delay& getDelay();
+
     pool::Options options_;
     std::vector<std::shared_ptr<pool::detail::State>> states_;
     util::OnScopeExit notifyRemainingJobsFinish_;
-    std::shared_ptr<pool::detail::Wrapper> wrapper_;
     std::vector<Submission> queue_;
-    Delay delay_;
-    util::OnScopeExit delayBackgoundJobReset_;
+    std::optional<Delay> delay_;
+    util::OnScopeExit delayBackgroundJobReset_;
 };
 
 namespace pool::detail {
-struct IVW_CORE_API Wrapper {
-    Wrapper(PoolProcessor& pp) : processor(pp) {}
-    PoolProcessor& processor;
-};
 
 struct IVW_CORE_API State {
-    State(std::weak_ptr<Wrapper> processor, size_t count)
+    State(std::weak_ptr<PoolProcessor> processor, size_t count)
         : processor(processor), count{count}, stop{false}, progress(count), nJobs{count} {}
 
-    std::weak_ptr<Wrapper> processor;
+    std::weak_ptr<PoolProcessor> processor;
     std::atomic<size_t> count;
     std::atomic<bool> stop;
     std::vector<std::atomic<float>> progress;
@@ -347,7 +343,7 @@ struct IVW_CORE_API State {
 
 template <typename Result, typename Done>
 struct StateTemplate : State {
-    StateTemplate(std::weak_ptr<Wrapper> processor, size_t count, Done&& done)
+    StateTemplate(std::weak_ptr<PoolProcessor> processor, size_t count, Done&& done)
         : State(processor, count), futures{}, done{std::forward<Done>(done)} {}
 
     std::vector<std::future<Result>> futures;
@@ -404,24 +400,23 @@ inline void PoolProcessor::callDone(
 
     if (state->count.fetch_sub(1) == 1) {
         util::dispatchFrontAndForget(app, [state]() {
-            if (auto wrapper = state->processor.lock()) {
-                auto& p = wrapper->processor;
-                const bool isLast = p.removeState(state);
-                p.getProgressBar().setActive(p.hasJobs());
-                if (isLast) p.getProgressBar().hide();
+            if (auto p = state->processor.lock()) {
+                const bool isLast = p->removeState(state);
+                p->getProgressBar().setActive(p->hasJobs());
+                if (isLast) p->getProgressBar().hide();
 
-                if (p.queuedDispatch() && !p.queue_.empty()) {
-                    p.submit(p.queue_.front());
-                    p.queue_.clear();
+                if (p->queuedDispatch() && !p->queue_.empty()) {
+                    p->submit(p->queue_.front());
+                    p->queue_.clear();
                     return;
                 }
 
-                p.notifyObserversFinishBackgroundWork(&p, state->nJobs);
+                p->notifyObserversFinishBackgroundWork(p.get(), state->nJobs);
 
                 if (state->stop) return;
 
-                if (isLast || p.keepOldJobs()) {
-                    done(p, state);
+                if (isLast || p->keepOldJobs()) {
+                    done(*p, state);
                 }
             }
         });
@@ -464,12 +459,12 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
         queue_.clear();
         queue_.push_back(std::move(sub));
 
-        if (!delayBackgoundJobReset_) {
+        if (!delayBackgroundJobReset_) {
             notifyObserversStartBackgroundWork(this, 1);
-            delayBackgoundJobReset_.setAction(
+            delayBackgroundJobReset_.setAction(
                 [this]() { notifyObserversFinishBackgroundWork(this, 1); });
         }
-        delay_.start();
+        getDelay().start();
 
     } else if (queuedDispatch() && !states_.empty()) {
         queue_.clear();
@@ -511,12 +506,12 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
     if (delayDispatch()) {
         queue_.clear();
         queue_.push_back(std::move(sub));
-        if (!delayBackgoundJobReset_) {
+        if (!delayBackgroundJobReset_) {
             notifyObserversStartBackgroundWork(this, 1);
-            delayBackgoundJobReset_.setAction(
+            delayBackgroundJobReset_.setAction(
                 [this]() { notifyObserversFinishBackgroundWork(this, 1); });
         }
-        delay_.start();
+        getDelay().start();
 
     } else if (queuedDispatch() && !states_.empty()) {
         queue_.clear();
@@ -541,8 +536,9 @@ inline void PoolProcessor::setupProgress() {
 template <typename Result, typename Done>
 inline std::shared_ptr<pool::detail::StateTemplate<Result, Done>> PoolProcessor::makeState(
     size_t count, Done&& done) {
-    return std::make_shared<pool::detail::StateTemplate<Result, Done>>(wrapper_, count,
-                                                                       std::forward<Done>(done));
+    return std::make_shared<pool::detail::StateTemplate<Result, Done>>(
+        std::dynamic_pointer_cast<PoolProcessor>(shared_from_this()), count,
+        std::forward<Done>(done));
 }
 
 template <typename Result, typename Job>

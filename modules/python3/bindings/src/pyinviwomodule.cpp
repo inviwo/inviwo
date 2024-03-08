@@ -53,7 +53,7 @@ public:
                                  "PythonProcessor"}
         , pfo_(pfo) {}
 
-    virtual std::unique_ptr<Processor> create(InviwoApplication* app) override {
+    virtual std::shared_ptr<Processor> create(InviwoApplication* app) const override {
         return pfo_.cast<ProcessorFactoryObject*>()->create(app);
     }
 

@@ -57,9 +57,9 @@ void pool::detail::State::setProgress(size_t id, float newProgress) {
     if (!progressUpdate.valid() || util::is_future_ready(progressUpdate)) {
         const auto total =
             std::accumulate(progress.begin(), progress.end(), 0.0f) / progress.size();
-        progressUpdate = dispatchFront([this, p = processor, total]() {
-            if (auto wrapper = p.lock()) {
-                wrapper->processor.progress(this, total);
+        progressUpdate = dispatchFront([this, poolProcessor = processor, total]() {
+            if (auto p = poolProcessor.lock()) {
+                p->progress(this, total);
             }
         });
     }
@@ -75,26 +75,9 @@ PoolProcessor::PoolProcessor(pool::Options options, const std::string& identifie
                                        [](size_t sum, auto& state) { return sum + state->nJobs; });
         notifyObserversFinishBackgroundWork(this, running);
     }}
-    , wrapper_{std::make_shared<pool::detail::Wrapper>(*this)}
     , queue_{}
-    , delay_{std::chrono::milliseconds(500),
-             [wrapper = std::weak_ptr<pool::detail::Wrapper>(wrapper_)]() {
-                 if (auto w = wrapper.lock()) {
-                     auto& p = w->processor;
-
-                     if (p.queuedDispatch() && !p.states_.empty()) {
-                         p.delayBackgoundJobReset_.call();
-                         return;
-                     }
-
-                     if (!p.queue_.empty()) {
-                         p.submit(p.queue_.front());
-                         p.queue_.clear();
-                     }
-                     p.delayBackgoundJobReset_.call();
-                 }
-             }}
-    , delayBackgoundJobReset_{nullptr} {}
+    , delay_{}
+    , delayBackgroundJobReset_{nullptr} {}
 
 PoolProcessor::~PoolProcessor() { stopJobs(); }
 
@@ -172,6 +155,29 @@ bool PoolProcessor::removeState(const std::shared_ptr<pool::detail::State>& stat
     states_.erase(it);
 
     return isLast;
+}
+
+Delay& PoolProcessor::getDelay() {
+    if (!delay_) {
+        delay_.emplace(std::chrono::milliseconds(500),
+                       [poolProcessor = std::weak_ptr<PoolProcessor>(
+                            std::dynamic_pointer_cast<PoolProcessor>(shared_from_this()))]() {
+                           if (auto p = poolProcessor.lock()) {
+
+                               if (p->queuedDispatch() && !p->states_.empty()) {
+                                   p->delayBackgroundJobReset_.call();
+                                   return;
+                               }
+
+                               if (!p->queue_.empty()) {
+                                   p->submit(p->queue_.front());
+                                   p->queue_.clear();
+                               }
+                               p->delayBackgroundJobReset_.call();
+                           }
+                       });
+    }
+    return delay_.value();
 }
 
 }  // namespace inviwo

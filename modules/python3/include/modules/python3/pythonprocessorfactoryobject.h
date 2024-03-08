@@ -67,7 +67,7 @@ public:
     PythonProcessorFactoryObject(InviwoApplication* app, const std::filesystem::path& file);
     virtual ~PythonProcessorFactoryObject() = default;
 
-    virtual std::unique_ptr<Processor> create(InviwoApplication* app) override;
+    virtual std::shared_ptr<Processor> create(InviwoApplication* app) const override;
 
     virtual Document getMetaInformation() const override {
         Document doc;
