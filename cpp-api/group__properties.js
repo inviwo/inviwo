@@ -248,12 +248,6 @@ var group__properties =
     [ "inviwo::VolumeInformationProperty", "classinviwo_1_1VolumeInformationProperty.html", [
       [ "clone", "classinviwo_1_1VolumeInformationProperty.html#adf965a40daa1fd309d74624e7f717703", null ]
     ] ],
-    [ "inviwo::FontFaceOptionProperty", "classinviwo_1_1FontFaceOptionProperty.html", [
-      [ "clone", "classinviwo_1_1FontFaceOptionProperty.html#aa200414f61972f6d95f5be638e9a7d00", null ]
-    ] ],
-    [ "inviwo::FontProperty", "classinviwo_1_1FontProperty.html", [
-      [ "clone", "classinviwo_1_1FontProperty.html#a9039e6e644dac4a5a781640da2b457fd", null ]
-    ] ],
     [ "inviwo::SplitterProperty", "classinviwo_1_1SplitterProperty.html", [
       [ "clone", "classinviwo_1_1SplitterProperty.html#a82441a3819e8497587a45a2e9f0dddcf", null ]
     ] ],
@@ -263,6 +257,12 @@ var group__properties =
     ] ],
     [ "inviwo::ColumnMetaDataProperty", "classinviwo_1_1ColumnMetaDataProperty.html", [
       [ "clone", "classinviwo_1_1ColumnMetaDataProperty.html#a01f8f7ec5d94e2a4b290c9123a79792a", null ]
+    ] ],
+    [ "inviwo::FontFaceOptionProperty", "classinviwo_1_1FontFaceOptionProperty.html", [
+      [ "clone", "classinviwo_1_1FontFaceOptionProperty.html#aa200414f61972f6d95f5be638e9a7d00", null ]
+    ] ],
+    [ "inviwo::FontProperty", "classinviwo_1_1FontProperty.html", [
+      [ "clone", "classinviwo_1_1FontProperty.html#a9039e6e644dac4a5a781640da2b457fd", null ]
     ] ],
     [ "inviwo::IsoTFProperty", "classinviwo_1_1IsoTFProperty.html", [
       [ "clone", "classinviwo_1_1IsoTFProperty.html#af4d1eb69c443e143d4eb78b178e7b69c", null ],

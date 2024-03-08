@@ -1,5 +1,6 @@
 var classinviwo_1_1LightSource =
 [
+    [ "getAxis", "classinviwo_1_1LightSource.html#a7a25c4c59cd7c2de9b13f0714fae9581", null ],
     [ "getFieldOfView", "classinviwo_1_1LightSource.html#a06754e4860cb5e10ff9ce6e62314509d", null ],
     [ "getIntensity", "classinviwo_1_1LightSource.html#a5df1e2bd503cbdbf50628f6028d2e4b7", null ],
     [ "getPower", "classinviwo_1_1LightSource.html#a478d8cf3831f0a8ba5dfcbcfb9e22799", null ],

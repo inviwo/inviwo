@@ -1,5 +1,5 @@
 var classinviwo_1_1LayerShader =
 [
-    [ "initializeResources", "classinviwo_1_1LayerShader.html#a188063c41405ae344d70d6d627816343", null ],
-    [ "process", "classinviwo_1_1LayerShader.html#a6513293fc1d8317d7186f872035401f3", null ]
+    [ "outputConfig", "classinviwo_1_1LayerShader.html#a575f403b4ad8430b4c1d9a0f411c4f90", null ],
+    [ "preProcess", "classinviwo_1_1LayerShader.html#a24df391d0bcf10abbb11dda7d369b865", null ]
 ];

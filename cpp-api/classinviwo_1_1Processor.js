@@ -24,5 +24,6 @@ var classinviwo_1_1Processor =
     [ "removePortFromGroups", "classinviwo_1_1Processor.html#a46d0dc5bd8ce5d056f56b716f7dc6ab8", null ],
     [ "setDisplayName", "classinviwo_1_1Processor.html#a95d35c34cb770108c90609f062d33940", null ],
     [ "setIdentifier", "classinviwo_1_1Processor.html#a84911c1af44e34f3aa57fababe2b545f", null ],
-    [ "setValid", "classinviwo_1_1Processor.html#a3b59c6bac28be62250911b9e1e006f1a", null ]
+    [ "setValid", "classinviwo_1_1Processor.html#a3b59c6bac28be62250911b9e1e006f1a", null ],
+    [ "status", "classinviwo_1_1Processor.html#a1bc3af8dcfabb8599f4ff0f8c769bebf", null ]
 ];

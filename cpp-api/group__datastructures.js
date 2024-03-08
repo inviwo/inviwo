@@ -51,6 +51,7 @@ var group__datastructures =
       [ "append", "classinviwo_1_1Mesh.html#adecd7912703c869a82b24f6e16f44d7a", null ],
       [ "findBuffer", "classinviwo_1_1Mesh.html#ae155b6a91b6ac8b0625f2b908fbd2671", null ],
       [ "findBuffer", "classinviwo_1_1Mesh.html#a239e83ef48a22b53c50c1d8c5f225e84", null ],
+      [ "getAxis", "classinviwo_1_1Mesh.html#a89e3bb28b40d5348c71b01f2c13c0c11", null ],
       [ "getBuffer", "classinviwo_1_1Mesh.html#a32009290f5edc6f5d232377f8b7c8f2d", null ],
       [ "hasBuffer", "classinviwo_1_1Mesh.html#a475a7d5e20a41326017d35f43f1b2041", null ],
       [ "removeBuffer", "classinviwo_1_1Mesh.html#afed75d44303eb3508431db389d4414d7", null ],
@@ -87,8 +88,9 @@ var group__datastructures =
       [ "readPixel", "classinviwo_1_1ImageRepresentation.html#a362870b0305d5a2b1185259751a8acc3", null ]
     ] ],
     [ "inviwo::Layer", "classinviwo_1_1Layer.html", [
-      [ "Layer", "classinviwo_1_1Layer.html#af6413c74e34e16bf3c62744ef42b30dd", null ],
+      [ "Layer", "classinviwo_1_1Layer.html#a5d6413493cc39af83d9c963208fadbac", null ],
       [ "getAsCodedBuffer", "classinviwo_1_1Layer.html#a64ab7ab95627b197b0f0acbc69992c65", null ],
+      [ "getAxis", "classinviwo_1_1Layer.html#a3342bd3b3d89657d1aa4d0bd26d6976c", null ],
       [ "setDataFormat", "classinviwo_1_1Layer.html#a22cec9c5eda608715ab9f3247e33ecdc", null ],
       [ "setDimensions", "classinviwo_1_1Layer.html#a5a391bf0198feabcfc3303d7a6ec6ce9", null ],
       [ "setSwizzleMask", "classinviwo_1_1Layer.html#a2af0ae316f42a135a2ff85f51fe561cf", null ]
@@ -132,32 +134,6 @@ var group__datastructures =
     ] ],
     [ "inviwo::VolumeRepresentation", "classinviwo_1_1VolumeRepresentation.html", [
       [ "setSwizzleMask", "classinviwo_1_1VolumeRepresentation.html#a8be6fc5c6f302729ddfdc64c69e84bbd", null ]
-    ] ],
-    [ "inviwo::BufferGL", "classinviwo_1_1BufferGL.html", [
-      [ "BufferGL", "classinviwo_1_1BufferGL.html#ab49161288e5d034a87359d9441e39c87", null ],
-      [ "getSize", "classinviwo_1_1BufferGL.html#a90e94bb6110e4ab89ac0853a4d6a699f", null ],
-      [ "setSize", "classinviwo_1_1BufferGL.html#af0177cd8bf7b367ea76ec4892bc7dd11", null ]
-    ] ],
-    [ "inviwo::MeshGL", "classinviwo_1_1MeshGL.html", null ],
-    [ "inviwo::ImageGL", "classinviwo_1_1ImageGL.html", [
-      [ "activate", "classinviwo_1_1ImageGL.html#a146bc12a7d55310dee0bfed89260c663", null ],
-      [ "activateBuffer", "classinviwo_1_1ImageGL.html#a96fb2497d6c9305c8d1e9c583749593d", null ],
-      [ "copyRepresentationsTo", "classinviwo_1_1ImageGL.html#a7833625af7ef0656aaa3dccd23260bc2", null ],
-      [ "copyRepresentationsTo", "classinviwo_1_1ImageGL.html#a6a12dab086d4092aa0677e616ccfa47f", null ],
-      [ "deactivateBuffer", "classinviwo_1_1ImageGL.html#a6d3cb49f6074d74357c5b76612fda76a", null ],
-      [ "priority", "classinviwo_1_1ImageGL.html#a5fc88ba4752fd8178abdafbffb5cccfa", null ],
-      [ "readPixel", "classinviwo_1_1ImageGL.html#a2f336a9e19f3f2abf361a7214b21b815", null ],
-      [ "updateFrom", "classinviwo_1_1ImageGL.html#a28bbfe7e1f40e59c228f8b6741385878", null ]
-    ] ],
-    [ "inviwo::LayerGL", "classinviwo_1_1LayerGL.html", [
-      [ "copyRepresentationsTo", "classinviwo_1_1LayerGL.html#a934c5ce8247a62ced97c43db6a4fa678", null ],
-      [ "setDimensions", "classinviwo_1_1LayerGL.html#a777f94a4d21fc8e50d9186891bdd3fd2", null ],
-      [ "setInterpolation", "classinviwo_1_1LayerGL.html#ada7a98f2d20ade92663bc309e61178e2", null ],
-      [ "setSwizzleMask", "classinviwo_1_1LayerGL.html#a962914ca5decd6eaec460ae958af2b17", null ],
-      [ "setWrapping", "classinviwo_1_1LayerGL.html#a95590dbeb19c7c3c7cfd928707a93e6a", null ]
-    ] ],
-    [ "inviwo::VolumeGL", "classinviwo_1_1VolumeGL.html", [
-      [ "setSwizzleMask", "classinviwo_1_1VolumeGL.html#abb500fe800856982c8a2bc64d9608af4", null ]
     ] ],
     [ "inviwo::Column", "classinviwo_1_1Column.html", [
       [ "append", "classinviwo_1_1Column.html#a5aef9c57fade6598d41d0320bdd4a363", null ],
@@ -211,6 +187,42 @@ var group__datastructures =
       [ "getNumberOfRows", "classinviwo_1_1DataFrame.html#a12a02c14e6332d8349918fa7567e7c2b", null ],
       [ "updateIndexBuffer", "classinviwo_1_1DataFrame.html#aead3ace85e0c7e161f0d45b8372fa186", null ]
     ] ],
+    [ "inviwo::BufferGL", "classinviwo_1_1BufferGL.html", [
+      [ "BufferGL", "classinviwo_1_1BufferGL.html#ab49161288e5d034a87359d9441e39c87", null ],
+      [ "getSize", "classinviwo_1_1BufferGL.html#a90e94bb6110e4ab89ac0853a4d6a699f", null ],
+      [ "setSize", "classinviwo_1_1BufferGL.html#af0177cd8bf7b367ea76ec4892bc7dd11", null ]
+    ] ],
+    [ "inviwo::MeshGL", "classinviwo_1_1MeshGL.html", null ],
+    [ "inviwo::ImageGL", "classinviwo_1_1ImageGL.html", [
+      [ "activate", "classinviwo_1_1ImageGL.html#a146bc12a7d55310dee0bfed89260c663", null ],
+      [ "activateBuffer", "classinviwo_1_1ImageGL.html#a96fb2497d6c9305c8d1e9c583749593d", null ],
+      [ "copyRepresentationsTo", "classinviwo_1_1ImageGL.html#a7833625af7ef0656aaa3dccd23260bc2", null ],
+      [ "copyRepresentationsTo", "classinviwo_1_1ImageGL.html#a6a12dab086d4092aa0677e616ccfa47f", null ],
+      [ "deactivateBuffer", "classinviwo_1_1ImageGL.html#a6d3cb49f6074d74357c5b76612fda76a", null ],
+      [ "priority", "classinviwo_1_1ImageGL.html#a5fc88ba4752fd8178abdafbffb5cccfa", null ],
+      [ "readPixel", "classinviwo_1_1ImageGL.html#a2f336a9e19f3f2abf361a7214b21b815", null ],
+      [ "updateFrom", "classinviwo_1_1ImageGL.html#a28bbfe7e1f40e59c228f8b6741385878", null ]
+    ] ],
+    [ "inviwo::LayerGL", "classinviwo_1_1LayerGL.html", [
+      [ "copyRepresentationsTo", "classinviwo_1_1LayerGL.html#a934c5ce8247a62ced97c43db6a4fa678", null ],
+      [ "setDimensions", "classinviwo_1_1LayerGL.html#a777f94a4d21fc8e50d9186891bdd3fd2", null ],
+      [ "setInterpolation", "classinviwo_1_1LayerGL.html#ada7a98f2d20ade92663bc309e61178e2", null ],
+      [ "setSwizzleMask", "classinviwo_1_1LayerGL.html#a962914ca5decd6eaec460ae958af2b17", null ],
+      [ "setWrapping", "classinviwo_1_1LayerGL.html#a95590dbeb19c7c3c7cfd928707a93e6a", null ]
+    ] ],
+    [ "inviwo::VolumeGL", "classinviwo_1_1VolumeGL.html", [
+      [ "setSwizzleMask", "classinviwo_1_1VolumeGL.html#abb500fe800856982c8a2bc64d9608af4", null ]
+    ] ],
+    [ "inviwo::LayerPy", "classinviwo_1_1LayerPy.html", [
+      [ "copyRepresentationsTo", "classinviwo_1_1LayerPy.html#aab8772bad863566041975e1313348ca0", null ],
+      [ "setDimensions", "classinviwo_1_1LayerPy.html#a0d2d813133eab552e8dbffc8dd567925", null ],
+      [ "setInterpolation", "classinviwo_1_1LayerPy.html#a9f69fc556f83daa60d9bbcc0ed79390f", null ],
+      [ "setSwizzleMask", "classinviwo_1_1LayerPy.html#a201c526bcdaad1b14db278c624cff39a", null ],
+      [ "setWrapping", "classinviwo_1_1LayerPy.html#a72ba6c1b39498606bfbf344c7f493b21", null ]
+    ] ],
+    [ "inviwo::VolumePy", "classinviwo_1_1VolumePy.html", [
+      [ "setSwizzleMask", "classinviwo_1_1VolumePy.html#a81c78760e3ee150ea6722831d0844379", null ]
+    ] ],
     [ "inviwo::TypedMesh< BufferTraits >", "classinviwo_1_1TypedMesh.html", [
       [ "addVertex", "classinviwo_1_1TypedMesh.html#a827a74be2582dbde141ec2a2c1cbd05b", null ],
       [ "addVertices", "classinviwo_1_1TypedMesh.html#a50d621b6246bf8320aa072fb964e669a", null ],
@@ -249,6 +261,8 @@ var group__datastructures =
       [ "sample", "classinviwo_1_1TransferFunction.html#aa52a0aa0e806e39476707bb9aafab91d", null ]
     ] ],
     [ "inviwo::Volume", "classinviwo_1_1Volume.html", [
+      [ "Volume", "classinviwo_1_1Volume.html#ada49c08873408b170c8b761505edd7cb", null ],
+      [ "getAxis", "classinviwo_1_1Volume.html#ae35f92051c747d90698af086b553db0d", null ],
       [ "getWorldSpaceGradientSpacing", "classinviwo_1_1Volume.html#aafefe072dff4ed87f4a77046a9305b20", null ],
       [ "setDataFormat", "classinviwo_1_1Volume.html#a971717c1d60d35828f36214ee028132f", null ],
       [ "setDimensions", "classinviwo_1_1Volume.html#af24450063e3e7369126ef7552cd480af", null ],

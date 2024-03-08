@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['pointsizestate_0',['PointSizeState',['../namespaceinviwo_1_1utilgl.html#a2e1326b7a1f09c3fc937a59dd2e3493f',1,'inviwo::utilgl']]],
-  ['postexcolormesh_1',['PosTexColorMesh',['../group__typedmesh.html#ga3f41315ed242ddd12bb5382dea72db64',1,'inviwo']]],
-  ['precisiontype_2',['PrecisionType',['../namespaceinviwo_1_1util.html#a2b5f1041e36b51c7bdbeb40c5d836fc0',1,'inviwo::util']]],
-  ['precisionvaluetype_3',['PrecisionValueType',['../namespaceinviwo_1_1util.html#ab46a88fc5a27a696a911ff806d367b56',1,'inviwo::util']]]
+  ['scopedclockcpu_0',['ScopedClockCPU',['../namespaceinviwo.html#a806fc4898bb735226c40792f31eb7385',1,'inviwo']]],
+  ['scopedclockgl_1',['ScopedClockGL',['../namespaceinviwo.html#a004a67c6cc285b364b95c1b6a1ecf76b',1,'inviwo']]],
+  ['selectionfunc_2',['SelectionFunc',['../classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#adfd6f9668bd1f2858e7ab9d1f7bd508b',1,'inviwo::plot::BoxSelectionInteractionHandler']]],
+  ['spheremesh_3',['SphereMesh',['../group__typedmesh.html#gafddba801d4e659e2242b0896545a5065',1,'inviwo']]]
 ];

@@ -86,7 +86,7 @@ var searchData=
   ['buffertomeshprocessor_83',['BufferToMeshProcessor',['../classinviwo_1_1BufferToMeshProcessor.html',1,'inviwo']]],
   ['build_84',['Build',['../classinviwo_1_1detail_1_1Build.html',1,'inviwo::detail']]],
   ['buildinfo_85',['BuildInfo',['../structinviwo_1_1util_1_1BuildInfo.html',1,'inviwo::util']]],
-  ['button_86',['button',['../structinviwo_1_1ButtonGroupProperty_1_1Button.html',1,'inviwo::ButtonGroupProperty::Button'],['../classinviwo_1_1glui_1_1Button.html',1,'inviwo::glui::Button']]],
+  ['button_86',['Button',['../structinviwo_1_1ButtonGroupProperty_1_1Button.html',1,'inviwo::ButtonGroupProperty::Button'],['../classinviwo_1_1glui_1_1Button.html',1,'inviwo::glui::Button']]],
   ['buttongroupproperty_87',['ButtonGroupProperty',['../classinviwo_1_1ButtonGroupProperty.html',1,'inviwo']]],
   ['buttongrouppropertywidgetqt_88',['ButtonGroupPropertyWidgetQt',['../classinviwo_1_1ButtonGroupPropertyWidgetQt.html',1,'inviwo']]],
   ['buttonkeyframe_89',['ButtonKeyframe',['../classinviwo_1_1animation_1_1ButtonKeyframe.html',1,'inviwo::animation']]],

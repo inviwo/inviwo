@@ -34,6 +34,7 @@ var classinviwo_1_1ProcessorNetwork =
     [ "processorRange", "classinviwo_1_1ProcessorNetwork.html#a546a4a423635a285ed0b3c6189e24c30", null ],
     [ "removeConnection", "classinviwo_1_1ProcessorNetwork.html#a62ddd19690e22a6765dc44e7491d6364", null ],
     [ "removeConnection", "classinviwo_1_1ProcessorNetwork.html#a8e75314ee2a8d8f3687aa6de2c290a44", null ],
+    [ "removeLink", "classinviwo_1_1ProcessorNetwork.html#a576cbe934cd0dca0e374df5784555a35", null ],
     [ "removeLink", "classinviwo_1_1ProcessorNetwork.html#a3a46dc34c3db9a0de8d46d057f212c45", null ],
     [ "removeProcessor", "classinviwo_1_1ProcessorNetwork.html#a5fbd91ab17632f5481b3ca633249534f", null ],
     [ "removeProcessor", "classinviwo_1_1ProcessorNetwork.html#a48fa3511f71454d29a1873142f119e32", null ]

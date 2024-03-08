@@ -1,6 +1,6 @@
 var classinviwo_1_1Rasterization =
 [
-    [ "getInfo", "classinviwo_1_1Rasterization.html#aae27416e9b687604152e4ced8ca2f157", null ],
-    [ "rasterize", "classinviwo_1_1Rasterization.html#ab32a5605533c209527498bcc4fcc1fb5", null ],
-    [ "usesFragmentLists", "classinviwo_1_1Rasterization.html#ad7c7dfec83d936ebb377502d113476e1", null ]
+    [ "boundingBox", "classinviwo_1_1Rasterization.html#a254be5a108130725bb310a2dd5da771b", null ],
+    [ "getInfo", "classinviwo_1_1Rasterization.html#ad0e01a92feab10ab61e333837e4d8ae9", null ],
+    [ "usesFragmentLists", "classinviwo_1_1Rasterization.html#adf0e25d6aed145f6fc9c3d548e635160", null ]
 ];

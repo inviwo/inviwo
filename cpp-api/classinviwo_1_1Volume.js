@@ -1,5 +1,7 @@
 var classinviwo_1_1Volume =
 [
+    [ "Volume", "classinviwo_1_1Volume.html#ada49c08873408b170c8b761505edd7cb", null ],
+    [ "getAxis", "classinviwo_1_1Volume.html#ae35f92051c747d90698af086b553db0d", null ],
     [ "getWorldSpaceGradientSpacing", "classinviwo_1_1Volume.html#aafefe072dff4ed87f4a77046a9305b20", null ],
     [ "setDataFormat", "classinviwo_1_1Volume.html#a971717c1d60d35828f36214ee028132f", null ],
     [ "setDimensions", "classinviwo_1_1Volume.html#af24450063e3e7369126ef7552cd480af", null ],

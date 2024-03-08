@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['depthfuncstate_0',['DepthFuncState',['../namespaceinviwo_1_1utilgl.html#a82445161f9b02dcd64e949c5c309b788',1,'inviwo::utilgl']]],
-  ['depthmaskstate_1',['DepthMaskState',['../namespaceinviwo_1_1utilgl.html#a5fbc3c9b44e33162e4df0f3995c6c33a',1,'inviwo::utilgl']]]
+  ['depthfuncstate_0',['DepthFuncState',['../namespaceinviwo_1_1utilgl.html#a25c7c3b66b8c4cc490159490288758a5',1,'inviwo::utilgl']]],
+  ['depthmaskstate_1',['DepthMaskState',['../namespaceinviwo_1_1utilgl.html#a211fca561d574fe4157ff03e50a090bb',1,'inviwo::utilgl']]]
 ];

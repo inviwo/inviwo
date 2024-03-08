@@ -11,6 +11,7 @@ var classinviwo_1_1Mesh =
     [ "append", "classinviwo_1_1Mesh.html#adecd7912703c869a82b24f6e16f44d7a", null ],
     [ "findBuffer", "classinviwo_1_1Mesh.html#ae155b6a91b6ac8b0625f2b908fbd2671", null ],
     [ "findBuffer", "classinviwo_1_1Mesh.html#a239e83ef48a22b53c50c1d8c5f225e84", null ],
+    [ "getAxis", "classinviwo_1_1Mesh.html#a89e3bb28b40d5348c71b01f2c13c0c11", null ],
     [ "getBuffer", "classinviwo_1_1Mesh.html#a32009290f5edc6f5d232377f8b7c8f2d", null ],
     [ "hasBuffer", "classinviwo_1_1Mesh.html#a475a7d5e20a41326017d35f43f1b2041", null ],
     [ "removeBuffer", "classinviwo_1_1Mesh.html#afed75d44303eb3508431db389d4414d7", null ],

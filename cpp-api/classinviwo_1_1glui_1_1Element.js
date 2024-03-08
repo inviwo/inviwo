@@ -13,5 +13,5 @@ var classinviwo_1_1glui_1_1Element =
     [ "setWidgetExtentScaled", "classinviwo_1_1glui_1_1Element.html#acb5ae46d152a68cb5a05b1817188d3ba", null ],
     [ "triggerAction", "classinviwo_1_1glui_1_1Element.html#a8e02d83395898ee8f9c561463b1250ec", null ],
     [ "updateState", "classinviwo_1_1glui_1_1Element.html#a6d2fc67612baecf4593f98695b015fa6", null ],
-    [ "moveAction_", "classinviwo_1_1glui_1_1Element.html#adb87d0ac3771a0873e34297d5bebf29a", null ]
+    [ "moveAction_", "classinviwo_1_1glui_1_1Element.html#ab520916c64688587abe6f2570a3053d6", null ]
 ];

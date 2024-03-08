@@ -19,5 +19,6 @@ var searchData=
   ['keyframesequencetyped_16',['KeyframeSequenceTyped',['../classinviwo_1_1animation_1_1KeyframeSequenceTyped.html',1,'inviwo::animation']]],
   ['keyframesequencewidgetqt_17',['KeyframeSequenceWidgetQt',['../classinviwo_1_1animation_1_1KeyframeSequenceWidgetQt.html',1,'inviwo::animation']]],
   ['keyframewidgetqt_18',['KeyframeWidgetQt',['../classinviwo_1_1animation_1_1KeyframeWidgetQt.html',1,'inviwo::animation']]],
-  ['keyframewidgetqtlock_19',['KeyframeWidgetQtLock',['../structinviwo_1_1animation_1_1KeyframeWidgetQtLock.html',1,'inviwo::animation']]]
+  ['keyframewidgetqtlock_19',['KeyframeWidgetQtLock',['../structinviwo_1_1animation_1_1KeyframeWidgetQtLock.html',1,'inviwo::animation']]],
+  ['kind_20',['Kind',['../classinviwo_1_1xml_1_1Kind.html',1,'inviwo::xml']]]
 ];

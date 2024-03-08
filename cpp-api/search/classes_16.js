@@ -25,5 +25,7 @@ var searchData=
   ['workspacetreemodel_22',['WorkspaceTreeModel',['../classinviwo_1_1WorkspaceTreeModel.html',1,'inviwo']]],
   ['workspacetreeview_23',['WorkspaceTreeView',['../classinviwo_1_1WorkspaceTreeView.html',1,'inviwo']]],
   ['worldtransformdeprecated_24',['WorldTransformDeprecated',['../classinviwo_1_1WorldTransformDeprecated.html',1,'inviwo']]],
-  ['wrapper_25',['wrapper',['../structinviwo_1_1pool_1_1detail_1_1Wrapper.html',1,'inviwo::pool::detail::Wrapper'],['../structinviwo_1_1utildoc_1_1TableBuilder_1_1Wrapper.html',1,'inviwo::utildoc::TableBuilder::Wrapper']]]
+  ['wrap_25',['wrap',['../structinviwo_1_1util_1_1detail_1_1wrap.html',1,'inviwo::util::detail']]],
+  ['wrap_3c_20wrapper_2c_20list_3c_20ts_2e_2e_2e_20_3e_20_3e_26',['wrap&lt; Wrapper, List&lt; Ts... &gt; &gt;',['../structinviwo_1_1util_1_1detail_1_1wrap_3_01Wrapper_00_01List_3_01Ts_8_8_8_01_4_01_4.html',1,'inviwo::util::detail']]],
+  ['wrapper_27',['Wrapper',['../structinviwo_1_1pool_1_1detail_1_1Wrapper.html',1,'inviwo::pool::detail::Wrapper'],['../structinviwo_1_1utildoc_1_1TableBuilder_1_1Wrapper.html',1,'inviwo::utildoc::TableBuilder::Wrapper']]]
 ];
