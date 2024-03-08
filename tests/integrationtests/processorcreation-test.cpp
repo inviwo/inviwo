@@ -87,7 +87,7 @@ TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
     LGL_ERROR;
 
     LogErrorCheck checklog(GetParam());
-    auto s = std::shared_ptr<Processor>(factory_->create(GetParam()));
+    auto s = std::shared_ptr<Processor>(factory_->createShared(GetParam()));
 
     LGL_ERROR;
 

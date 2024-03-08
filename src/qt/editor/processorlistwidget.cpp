@@ -350,7 +350,7 @@ std::shared_ptr<Processor> ProcessorTreeWidget::createProcessor(QString cid) {
     RenderContext::getPtr()->activateDefaultRenderContext();
     const auto className = utilqt::fromQString(cid);
     try {
-        if (auto p = app_->getProcessorFactory()->create(className)) {
+        if (auto p = app_->getProcessorFactory()->createShared(className)) {
             recordProcessorUse(className);
             return p;
         }
