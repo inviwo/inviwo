@@ -74,7 +74,6 @@ protected:
 
 private:
     util::TFPropertyConcept* tfPropertyPtr_;
-    VolumeInport* volumeInport_;
     HistogramMode histogramMode_;
     HistogramSelection histogramSelection_;
 

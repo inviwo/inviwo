@@ -63,7 +63,7 @@ void TFPrimitiveSetObservable::notifyTFTypeChanged(const TFPrimitiveSet& primiti
 }
 
 TFPrimitiveSet::TFPrimitiveSet(const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type)
-    : type_("type", type) {
+    : type_(type) {
     add(values);
 }
 
@@ -107,11 +107,10 @@ void TFPrimitiveSet::set(const_iterator sbegin, const_iterator send) {
 }
 
 void TFPrimitiveSet::setType(TFPrimitiveSetType type) {
-    if (type_ == type) {
-        return;
+    if (type_ != type) {
+        type_ = type;
+        notifyTFTypeChanged(*this);
     }
-    type_ = type;
-    notifyTFTypeChanged(*this);
 }
 
 dvec2 TFPrimitiveSet::getRange() const {
@@ -339,12 +338,15 @@ void TFPrimitiveSet::onTFPrimitiveChange(const TFPrimitive& p) {
 }
 
 void TFPrimitiveSet::serialize(Serializer& s) const {
-    type_.serialize(s, PropertySerializationMode::All);
+    s.serialize("type", type_);
     s.serialize(serializationKey(), values_, serializationItemKey());
 }
 
 void TFPrimitiveSet::deserialize(Deserializer& d) {
-    if (type_.deserialize(d, PropertySerializationMode::All)) {
+    TFPrimitiveSetType type = type_;
+    d.deserialize("type", type);
+    if (type_ != type) {
+        type_ = type;
         notifyTFTypeChanged(*this);
     }
 
@@ -383,21 +385,21 @@ vec4 TFPrimitiveSet::interpolateColor(double t) const {
     return glm::mix(it->getColor(), next->getColor(), x);
 }
 
-void TFPrimitiveSet::interpolateAndStoreColors(vec4* dataArray, const size_t dataSize) const {
+void TFPrimitiveSet::interpolateAndStoreColors(std::span<vec4> data) const {
     const auto toInd = [&](const TFPrimitive& p) {
-        return static_cast<size_t>(ceil(p.getPosition() * (dataSize - 1)));
+        return static_cast<size_t>(ceil(p.getPosition() * (data.size() - 1)));
     };
 
     if (empty()) {  // in case of 0 points
-        std::fill(dataArray, dataArray + dataSize, vec4(0.0f));
+        std::fill(data.begin(), data.end(), vec4(0.0f));
     } else if (size() == 1) {  // in case of 1 point
-        std::fill(dataArray, dataArray + dataSize, front().getColor());
+        std::fill(data.begin(), data.end(), front().getColor());
     } else {  // in case of more than 1 points
         const size_t leftX = toInd(front());
         const size_t rightX = toInd(back());
 
-        std::fill(dataArray, dataArray + leftX + 1, front().getColor());
-        std::fill(dataArray + rightX, dataArray + dataSize, back().getColor());
+        std::fill(data.begin(), data.begin() + leftX + 1, front().getColor());
+        std::fill(data.begin() + rightX, data.end(), back().getColor());
 
         auto pLeft = begin();
         auto pRight = ++begin();
@@ -405,12 +407,12 @@ void TFPrimitiveSet::interpolateAndStoreColors(vec4* dataArray, const size_t dat
         while (pRight != end()) {
             const auto lrgba = pLeft->getColor();
             const auto rrgba = pRight->getColor();
-            const auto lx = pLeft->getPosition() * (dataSize - 1);
-            const auto rx = pRight->getPosition() * (dataSize - 1);
+            const auto lx = pLeft->getPosition() * (data.size() - 1);
+            const auto rx = pRight->getPosition() * (data.size() - 1);
 
             for (size_t n = toInd(*pLeft); n < toInd(*pRight); ++n) {
                 const float x = static_cast<float>((n - lx) / (rx - lx));
-                dataArray[n] = glm::mix(lrgba, rrgba, x);
+                data[n] = glm::mix(lrgba, rrgba, x);
             }
             ++pLeft;
             ++pRight;

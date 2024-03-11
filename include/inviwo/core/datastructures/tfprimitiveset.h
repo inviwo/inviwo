@@ -39,6 +39,7 @@
 #include <inviwo/core/util/transformiterator.h>
 
 #include <string_view>
+#include <span>
 
 namespace inviwo {
 
@@ -246,10 +247,9 @@ public:
      * Interpolate the color between all neighboring pairs of TFPrimitives and write the result to
      * dataArray. The range of all TFPrimitives is [0,1] when TF type is relative
      *
-     * @param dataArray   write location for interpolated colors
-     * @param size   size of dataArray
+     * @param data   write interpolated colors into data
      */
-    void interpolateAndStoreColors(vec4* dataArray, const size_t size) const;
+    void interpolateAndStoreColors(std::span<vec4> data) const;
 
     friend IVW_CORE_API bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
     friend IVW_CORE_API bool operator!=(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
@@ -276,7 +276,7 @@ protected:
     std::vector<TFPrimitive*> sorted_;
 
 private:
-    ValueWrapper<TFPrimitiveSetType> type_;
+    TFPrimitiveSetType type_;
 };
 
 inline TFPrimitiveSetType TFPrimitiveSet::getType() const { return type_; }

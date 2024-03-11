@@ -175,7 +175,6 @@ private:
     TFEditorPrimitive* dragItem_ = nullptr;
     bool mouseMovedSincePress_ = false;
     bool mouseDoubleClick_ = false;
-    DataMapper dataMap_;
 
     std::vector<std::vector<TFEditorPrimitive*>> groups_;
     int moveMode_;
@@ -183,8 +182,6 @@ private:
     bool selectNewPrimitives_;
     TFEditorPrimitive::ItemType lastInsertedPrimitiveType_ =
         TFEditorPrimitive::TFEditorUnknownPrimitiveType;
-
-    std::vector<std::shared_ptr<std::function<void()>>> portCallBacks_;
 };
 
 inline double TFEditor::getControlPointSize() const { return controlPointSize_; }

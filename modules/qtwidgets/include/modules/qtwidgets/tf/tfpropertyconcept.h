@@ -36,8 +36,9 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>  // IWYU pragma: keep
 #include <inviwo/core/properties/isovalueproperty.h>          // IWYU pragma: keep
 #include <inviwo/core/util/glmvec.h>                          // for dvec2
-#include <inviwo/core/network/networklock.h>                  // for NetworkLock
-#include <modules/qtwidgets/tf/tfutils.h>                     // for exportToFile, importFro...
+#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/network/networklock.h>  // for NetworkLock
+#include <modules/qtwidgets/tf/tfutils.h>     // for exportToFile, importFro...
 
 #include <utility>  // for declval
 
@@ -80,11 +81,17 @@ struct IVW_MODULE_QTWIDGETS_API TFPropertyConcept {
     virtual HistogramSelection getHistogramSelection() const = 0;
 
     virtual VolumeInport* getVolumeInport() = 0;
+
+    virtual const DataMapper& getDataMap() const = 0;
+
     virtual void addObserver(TFPropertyObserver* observer) = 0;
     virtual void removeObserver(TFPropertyObserver* observer) = 0;
 
     virtual void showExportDialog() const = 0;
     virtual void showImportDialog() = 0;
+
+    virtual bool hasData() const = 0;
+    virtual DispatcherHandle<void()> onDataChange(std::function<void()>) = 0;
 };
 
 template <typename U>
@@ -96,7 +103,14 @@ public:
     template <typename T>
     using hasISOProp = decltype(std::declval<T>().isovalues_);
 
-    TFPropertyModel(U* data) : data_(data) {}
+    TFPropertyModel(U* data) : data_(data) {
+        if (auto* port = data_->getVolumeInport()) {
+            auto callback = [this]() { onDataChangeDispatcher_.invoke(); };
+            portCallbacks_.emplace_back(port->onChangeScoped(callback));
+            portCallbacks_.emplace_back(port->onConnectScoped(callback));
+            portCallbacks_.emplace_back(port->onDisconnectScoped(callback));
+        }
+    }
 
     virtual Property* getProperty() const override { return data_; }
 
@@ -206,8 +220,26 @@ public:
         }
     }
 
+    virtual const DataMapper& getDataMap() const override {
+        static const DataMapper default_;
+        if (auto* port = data_->getVolumeInport()) {
+            if (port->hasData()) {
+                return port->getData()->dataMap_;
+            }
+        }
+        return default_;
+    }
+
+    virtual bool hasData() const override { return  data_->getVolumeInport() != nullptr; }
+
+    virtual DispatcherHandle<void()> onDataChange(std::function<void()> callback) override {
+        return onDataChangeDispatcher_.add(callback)
+    }
+
 private:
     U* data_;
+    Dispatcher<void()> onDataChangeDispatcher_;
+    std::vector<std::shared_ptr<std::function<void()>>> portCallbacks_;
 };
 
 }  // namespace util
