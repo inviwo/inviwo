@@ -78,7 +78,6 @@ TFEditorView::TFEditorView(util::TFPropertyConcept* tfProperty, QGraphicsScene* 
                            QWidget* parent)
     : QGraphicsView(scene, parent)
     , tfPropertyPtr_{tfProperty}
-    , volumeInport_{tfProperty->getVolumeInport()}
     , histogramMode_{tfProperty->getHistogramMode()}
     , histogramSelection_{tfProperty->getHistogramSelection()}
     , maskHorizontal_{0.0, 1.0} {
@@ -90,13 +89,8 @@ TFEditorView::TFEditorView(util::TFPropertyConcept* tfProperty, QGraphicsScene* 
     this->setCacheMode(QGraphicsView::CacheBackground);
 
     tfPropertyPtr_->addObserver(this);
+    tfPropertyPtr_->onDataChange([this]() { updateHistogram(); });
 
-    if (volumeInport_) {
-        const auto portChange = [this]() { updateHistogram(); };
-        callbackOnChange = volumeInport_->onChangeScoped(portChange);
-        callbackOnConnect = volumeInport_->onConnectScoped(portChange);
-        callbackOnDisconnect = volumeInport_->onDisconnectScoped(portChange);
-    }
     updateHistogram();
 }
 
@@ -286,8 +280,10 @@ void TFEditorView::updateHistogram(const HistogramContainer& histCont) {
 }
 
 void TFEditorView::updateHistogram() {
-    if (histogramMode_ != HistogramMode::Off && volumeInport_ && volumeInport_->isReady()) {
-        if (auto volume = volumeInport_->getData()) {
+    auto volumeInport = tfPropertyPtr_->getVolumeInport();
+
+    if (histogramMode_ != HistogramMode::Off && volumeInport && volumeInport->isReady()) {
+        if (auto volume = volumeInport->getData()) {
             if (volume->hasHistograms()) {
                 updateHistogram(volume->getHistograms());
             } else if (!histCalculation_) {
@@ -323,19 +319,18 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
     gridPen.setCosmetic(true);
 
     double gridOrigin = sRect.left();  // horizontal origin of the grid
+    
     // adjust grid origin if there is a data mapper available
-    if (volumeInport_ && volumeInport_->hasData()) {
-        auto& datamap = volumeInport_->getData()->dataMap;
-        if ((datamap.valueRange.x < 0.0) && (datamap.valueRange.y > 0.0)) {
-            gridOrigin = datamap.mapFromValueToNormalized(0.0) * sRect.width() + sRect.left();
+    const auto& datamap = tfPropertyPtr_->getDataMap();
+    if ((datamap.valueRange.x < 0.0) && (datamap.valueRange.y > 0.0)) {
+        gridOrigin = datamap.mapFromValueToNormalized(0.0) * sRect.width() + sRect.left();
 
-            // draw line at zero
-            gridPen.setWidthF(3.0f);
-            gridPen.setColor(colorOrigin);
-            painter->setPen(gridPen);
-            painter->drawLine(
-                QLineF(QPointF(gridOrigin, sRect.bottom()), QPointF(gridOrigin, sRect.top())));
-        }
+        // draw line at zero
+        gridPen.setWidthF(3.0f);
+        gridPen.setColor(colorOrigin);
+        painter->setPen(gridPen);
+        painter->drawLine(
+            QLineF(QPointF(gridOrigin, sRect.bottom()), QPointF(gridOrigin, sRect.top())));
     }
 
     QVector<QLineF> lines;

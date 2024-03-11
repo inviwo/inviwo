@@ -126,9 +126,10 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
             helpBtn->setIconSize(iconsize);
             layout->insertWidget(1, helpBtn);
 
-            auto module = util::getInviwoApplication(property_)->getModuleByType<QtWidgetsModule>();
+            auto qtModule =
+                util::getInviwoApplication(property_)->getModuleByType<QtWidgetsModule>();
             QObject::connect(helpBtn, &QToolButton::clicked, this,
-                             [module]() { module->showTFHelpWindow(); });
+                             [qtModule]() { qtModule->showTFHelpWindow(); });
         }
     }
 
@@ -231,17 +232,13 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
     domainMin_ = new QLabel("0.0");
     domainMax_ = new QLabel("1.0");
 
-    if (auto port = propertyPtr_->getVolumeInport()) {
-        const auto portChange = [this, port]() {
-            auto dataMap = port->hasData() ? port->getData()->dataMap : DataMapper{};
-            domainMin_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(0.0)));
-            domainMax_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(1.0)));
-        };
-        portCallbacks_.emplace_back(port->onChangeScoped(portChange));
-        portCallbacks_.emplace_back(port->onConnectScoped(portChange));
-        portCallbacks_.emplace_back(port->onDisconnectScoped(portChange));
-        portChange();
-    }
+    const auto dataChange = [this]() {
+        const auto& dataMap = propertyPtr_->getDataMap();
+        domainMin_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(0.0)));
+        domainMax_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(1.0)));
+    };
+    propertyPtr_->onDataChange(dataChange);
+    dataChange();
 
     // set up TF primitive widgets
     {
@@ -252,13 +249,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
                 &TFSelectionWatcher::setPosition);
 
         // ensure that the range of primitive scalar is matching value range of volume data
-        if (auto port = propertyPtr_->getVolumeInport()) {
-            const auto portChange = [this]() { onTFTypeChangedInternal(); };
-
-            portCallbacks_.emplace_back(port->onChangeScoped(portChange));
-            portCallbacks_.emplace_back(port->onConnectScoped(portChange));
-            portCallbacks_.emplace_back(port->onDisconnectScoped(portChange));
-        }
+        propertyPtr_->onDataChange([this]() { onTFTypeChangedInternal(); });
         // update value mapping for position widget with respect to TF type and port
         onTFTypeChangedInternal();
 
@@ -385,9 +376,11 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
 
     updateFromProperty();
     updateTitleFromProperty();
-    if (!propertyPtr_->getVolumeInport()) {
-        chkShowHistogram_->setVisible(false);
-    }
+
+    chkShowHistogram_->setVisible(propertyPtr_->hasData());
+    propertyPtr_->onDataChange(
+        [this]() { chkShowHistogram_->setVisible(propertyPtr_->hasData()); });
+
     loadState();
 }
 
@@ -474,12 +467,8 @@ void TFPropertyDialog::onTFTypeChanged(const TFPrimitiveSet&) { onTFTypeChangedI
 
 void TFPropertyDialog::onTFTypeChangedInternal() {
     // adjust value mapping in primitive widget for position
-    dvec2 valueRange(0.0, 1.0);
-    if (auto port = propertyPtr_->getVolumeInport()) {
-        if (port->hasData()) {
-            valueRange = port->getData()->dataMap.valueRange;
-        }
-    }
+    dvec2 valueRange = propertyPtr_->getDataMap().valueRange;
+
     // TODO: how to handle different TF types?
     // perform mapping only, if all TF are of relative type
     const bool allRelative = std::all_of(tfSets_.begin(), tfSets_.end(), [](TFPrimitiveSet* elem) {

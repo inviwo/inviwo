@@ -97,7 +97,6 @@ TFEditor::TFEditor(util::TFPropertyConcept* tfProperty,
     : QGraphicsScene(parent)
     , tfPropertyPtr_(tfProperty)
     , tfSets_(primitiveSets)
-    , dataMap_()
     , groups_()
     , moveMode_(0)
     , selectNewPrimitives_(false) {
@@ -107,16 +106,6 @@ TFEditor::TFEditor(util::TFPropertyConcept* tfProperty,
 
     // The default BSP tree tends to crash...
     setItemIndexMethod(QGraphicsScene::NoIndex);
-
-    if (auto port = tfProperty->getVolumeInport()) {
-        const auto portChange = [this, port]() {
-            dataMap_ = port->hasData() ? port->getData()->dataMap : DataMapper{};
-        };
-        portCallBacks_.push_back(port->onChangeScoped(portChange));
-        portCallBacks_.push_back(port->onConnectScoped(portChange));
-        portCallBacks_.push_back(port->onDisconnectScoped(portChange));
-        portChange();
-    }
 
     // initialize editor with current tf
     if (tfPropertyPtr_->hasTF()) {
@@ -958,7 +947,7 @@ void TFEditor::setControlPointSize(double val) {
 
 void TFEditor::setRelativeSceneOffset(const dvec2& offset) { relativeSceneOffset_ = offset; }
 
-const DataMapper& TFEditor::getDataMapper() const { return dataMap_; }
+const DataMapper& TFEditor::getDataMapper() const { return tfPropertyPtr_->getDataMap(); }
 
 std::vector<TFPrimitive*> TFEditor::getSelectedPrimitives() const {
     std::vector<TFPrimitive*> selection;
