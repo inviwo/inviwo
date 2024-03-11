@@ -182,13 +182,12 @@ void TransferFunction::calcTransferValues() const {
     IVW_ASSERT(std::is_sorted(sorted_.begin(), sorted_.end(), comparePtr{}), "Should be sorted");
 
     // We assume the the points a sorted here.
-    auto dataArray = dataRepr_->getDataTyped();
-    const auto size = dataRepr_->getDimensions().x;
+    auto data = dataRepr_->getView();
 
-    interpolateAndStoreColors(dataArray, size);
+    interpolateAndStoreColors(data);
 
-    for (size_t i = 0; i < size_t(maskMin_ * size); i++) dataArray[i].a = 0.0;
-    for (size_t i = size_t(maskMax_ * size); i < size; i++) dataArray[i].a = 0.0;
+    for (size_t i = 0; i < size_t(maskMin_ * data.size()); i++) data[i].a = 0.0;
+    for (size_t i = size_t(maskMax_ * data.size()); i < data.size(); i++) data[i].a = 0.0;
 
     data_->invalidateAllOther(dataRepr_.get());
 
