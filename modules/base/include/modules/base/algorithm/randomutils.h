@@ -286,7 +286,7 @@ template <typename Rand = std::mt19937>
 std::shared_ptr<Layer> perlinNoise(size2_t dims, float persistence, size_t startLevel,
                                    size_t endLevel, Rand& randomNumberGenerator = Rand()) {
     const auto size = std::bit_ceil(std::max(dims.x, dims.y));
-    std::vector<std::shared_ptr<LayerRAMPrecision<float>>> levels;
+    std::vector<std::shared_ptr<Layer>> levels;
     std::vector<TemplateImageSampler<float, float>> samplers;
     auto currentSize = std::pow(2, startLevel);
     auto iterations = endLevel - startLevel + 1;
@@ -294,7 +294,7 @@ std::shared_ptr<Layer> perlinNoise(size2_t dims, float persistence, size_t start
     while (currentSize <= size && iterations--) {
         size2_t layerSize{static_cast<size_t>(currentSize)};
         auto dist = std::uniform_real_distribution<float>(-currentPersistance, currentPersistance);
-        auto randomLayer = util::randomLayerRAM<float>(layerSize, randomNumberGenerator, dist);
+        auto randomLayer = util::randomLayer<float>(layerSize, randomNumberGenerator, dist);
         samplers.push_back(TemplateImageSampler<float, float>(randomLayer.get()));
         levels.push_back(randomLayer);
         currentSize *= 2;
