@@ -34,6 +34,7 @@ layout(location = 5) in int in_tetraFaceId;
 
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
+uniform int pickingID;
 
 out Fragment {
     smooth vec4 worldPosition;
@@ -46,7 +47,7 @@ out Fragment {
 
 void main(void) {
     // gl_VertexID
-    out_vert.color = vec4(pickingIndexToColor(in_tetraFaceId + 1), 1.0);
+    out_vert.color = vec4(pickingIndexToColor(pickingID), 1.0);
     out_vert.tetraFaceId = in_tetraFaceId;
     out_vert.camPosData = vec3(geometry.worldToData * vec4(camera.position, 1.0));
 

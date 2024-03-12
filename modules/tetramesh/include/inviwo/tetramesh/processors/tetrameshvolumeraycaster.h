@@ -32,9 +32,11 @@
 #include <inviwo/tetramesh/tetrameshmoduledefine.h>
 #include <inviwo/tetramesh/ports/tetrameshport.h>
 #include <inviwo/tetramesh/datastructures/tetrameshbuffers.h>
+#include <inviwo/core/interaction/pickingmapper.h>  // for PickingMapper
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/ports/imageport.h>
@@ -46,6 +48,7 @@
 namespace inviwo {
 
 class Mesh;
+class PickingEvent;
 
 class IVW_MODULE_TETRAMESH_API TetraMeshVolumeRaycaster : public Processor {
 public:
@@ -56,6 +59,8 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
+    void handlePickingEvent(PickingEvent* p);
 
 private:
     TetraMeshInport inport_;
@@ -68,13 +73,17 @@ private:
     TransferFunctionProperty tf_;
     FloatProperty opacityScaling_;
     IntProperty maxSteps_;
+    StringProperty pickingOutput_;
 
     Shader shader_;
     TetraMeshBuffers buffers_;
     std::shared_ptr<Mesh> mesh_;
+    PickingMapper picking_;
 
     std::vector<vec4> tetraNodes_;
     std::vector<ivec4> tetraNodeIds_;
+
+    FloatVec3Property cutplane_;
 };
 
 }  // namespace inviwo
