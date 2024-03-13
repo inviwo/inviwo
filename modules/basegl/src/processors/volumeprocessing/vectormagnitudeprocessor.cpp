@@ -94,8 +94,8 @@ void VectorMagnitudeProcessor::postProcess() {
         maxV = std::max(maxV, minMax.second[i]);
     }
 
-    volume_->dataMap_.dataRange = dvec2(0, std::abs(maxV));
-    volume_->dataMap_.valueRange = dvec2(minV, maxV);
+    volume_->dataMap.dataRange = dvec2(0, std::abs(maxV));
+    volume_->dataMap.valueRange = dvec2(minV, maxV);
 }
 
 }  // namespace inviwo

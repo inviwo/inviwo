@@ -200,8 +200,8 @@ void VolumeRegionShrink::process() {
         out_[0] = std::shared_ptr<Volume>(volume->clone());
     }
 
-    dataRange_.set(volume->dataMap_.dataRange);
-    valueRange_.set(volume->dataMap_.valueRange);
+    dataRange_.set(volume->dataMap.dataRange);
+    valueRange_.set(volume->dataMap.valueRange);
 
     out_[0]->setModelMatrix(volume->getModelMatrix());
     out_[0]->setWorldMatrix(volume->getWorldMatrix());
@@ -209,12 +209,12 @@ void VolumeRegionShrink::process() {
     out_[0]->setWrapping(volume->getWrapping());
     out_[0]->setInterpolation(volume->getInterpolation());
     out_[0]->copyMetaDataFrom(*volume);
-    out_[0]->dataMap_ = volume->dataMap_;
-    out_[0]->dataMap_.dataRange.x =
-        std::min(out_[0]->dataMap_.dataRange.x, static_cast<double>(fillValue_));
-    out_[0]->dataMap_.dataRange.y =
-        std::max(out_[0]->dataMap_.dataRange.y, static_cast<double>(fillValue_));
-    out_[0]->dataMap_.valueRange = out_[0]->dataMap_.dataRange;
+    out_[0]->dataMap = volume->dataMap;
+    out_[0]->dataMap.dataRange.x =
+        std::min(out_[0]->dataMap.dataRange.x, static_cast<double>(fillValue_));
+    out_[0]->dataMap.dataRange.y =
+        std::max(out_[0]->dataMap.dataRange.y, static_cast<double>(fillValue_));
+    out_[0]->dataMap.valueRange = out_[0]->dataMap.dataRange;
 
     const size3_t dim{volume->getDimensions()};
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
@@ -262,12 +262,12 @@ void VolumeRegionShrink::process() {
     out_[1]->setWrapping(volume->getWrapping());
     out_[1]->setInterpolation(volume->getInterpolation());
     out_[1]->copyMetaDataFrom(*volume);
-    out_[1]->dataMap_ = volume->dataMap_;
-    out_[1]->dataMap_.dataRange.x =
-        std::min(out_[1]->dataMap_.dataRange.x, static_cast<double>(fillValue_));
-    out_[1]->dataMap_.dataRange.y =
-        std::max(out_[1]->dataMap_.dataRange.y, static_cast<double>(fillValue_));
-    out_[1]->dataMap_.valueRange = out_[1]->dataMap_.dataRange;
+    out_[1]->dataMap = volume->dataMap;
+    out_[1]->dataMap.dataRange.x =
+        std::min(out_[1]->dataMap.dataRange.x, static_cast<double>(fillValue_));
+    out_[1]->dataMap.dataRange.y =
+        std::max(out_[1]->dataMap.dataRange.y, static_cast<double>(fillValue_));
+    out_[1]->dataMap.valueRange = out_[1]->dataMap.dataRange;
 
     VolumeGL* outGL1 = out_[1]->getEditableRepresentation<VolumeGL>();
     fbo_.attachColorTexture(outGL1->getTexture().get(), 1);

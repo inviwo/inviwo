@@ -101,7 +101,7 @@ std::shared_ptr<Volume> VolumeSubsample::subsample(std::shared_ptr<const Volume>
     auto vol = volume->getRepresentation<VolumeRAM>();
     auto sample = std::make_shared<Volume>(util::volumeSubSample(vol, f));
     sample->copyMetaDataFrom(*volume);
-    sample->dataMap_ = volume->dataMap_;
+    sample->dataMap = volume->dataMap;
     sample->setModelMatrix(volume->getModelMatrix());
     sample->setWorldMatrix(volume->getWorldMatrix());
     return sample;

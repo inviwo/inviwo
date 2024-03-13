@@ -29,27 +29,16 @@
 
 #include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h>
 
-#include <inviwo/core/datastructures/image/image.h>       // for Image
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageChannel, ImageChannel::Green
-#include <inviwo/core/datastructures/image/layer.h>       // for Layer
-#include <inviwo/core/ports/imageport.h>                  // for ImageOutport
-#include <inviwo/core/processors/processor.h>             // for Processor
-#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>        // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>         // for Tags, Tags::GL
-#include <inviwo/core/properties/invalidationlevel.h>     // for InvalidationLevel, Invalidation...
-#include <inviwo/core/properties/minmaxproperty.h>        // for FloatMinMaxProperty
-#include <inviwo/core/properties/stringproperty.h>        // for StringProperty
-#include <inviwo/core/util/formats.h>                     // for DataVec2Float32, DataFormat
-#include <inviwo/core/util/glmvec.h>                      // for size2_t
-#include <modules/opengl/shader/shader.h>                 // for Shader, Shader::Build
-#include <modules/opengl/shader/shaderobject.h>           // for ShaderObject
-#include <modules/opengl/shader/shaderutils.h>            // for setUniforms
-#include <modules/opengl/texture/textureutils.h>          // for activateAndClearTarget, deactiv...
-
-#include <memory>       // for make_shared, shared_ptr
-#include <string>       // for basic_string, string
-#include <string_view>  // for string_view
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <modules/opengl/image/layergl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/shader/standardshaders.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -58,51 +47,90 @@ const ProcessorInfo VectorFieldGenerator2D::processorInfo_{
     "Vector Field Generator 2D",          // Display name
     "Data Creation",                      // Category
     CodeState::Stable,                    // Code state
-    Tags::GL,                             // Tags
+    Tags::GL | Tag{"Layer"},              // Tags
+    "Generate a 2D vector field by using separate functions in u and v direction."_unindentHelp,
 };
+
 const ProcessorInfo VectorFieldGenerator2D::getProcessorInfo() const { return processorInfo_; }
 
 VectorFieldGenerator2D::VectorFieldGenerator2D()
     : Processor()
-    , outport_("outport", DataVec2Float32::get(), false)
-    , size_("size", "Field size", size2_t(16), size2_t(1), size2_t(1024))
-    , xRange_("xRange", "X Range", -1, 1, -10, 10)
-    , yRange_("yRange", "Y Range", -1, 1, -10, 10)
-    , xValue_("x", "X", "-x", InvalidationLevel::InvalidResources)
-    , yValue_("y", "Y", "y", InvalidationLevel::InvalidResources)
+    , outport_{"outport"}
+    , size_{"size", "Field size",
+            util::ordinalCount(ivec2{16}, ivec2{1024}).set("Dimensions of the vector field"_help)}
+    , domainU_("xRange", "U Domain",
+               "Domain in u direction for which the functions are evaluated."_help, -1.0f, 1.0f,
+               -10.0f, 10.0f)
+    , domainV_("yRange", "V Domain",
+               "Domain in v direction for which the functions are evaluated."_help, -1.0f, 1.0f,
+               -10.0f, 10.0f)
+    , xValue_("x", "U",
+              "Function u(x,y) evaluated along u direction (uses GLSL functionality)."_help, "-x",
+              InvalidationLevel::InvalidResources)
+    , yValue_("y", "V",
+              "Function v(x,y) evaluated along v direction (uses GLSL functionality)."_help, "y",
+              InvalidationLevel::InvalidResources)
+    , information_("Information", "Data Information")
+    , basis_("Basis", "Basis and Offset")
     , shader_("vectorfieldgenerator2d.frag", Shader::Build::No) {
+
     addPort(outport_);
 
-    addProperties(size_, xValue_, yValue_, xRange_, yRange_);
+    domainU_.setSemantics(PropertySemantics::Text);
+    domainV_.setSemantics(PropertySemantics::Text);
+    addProperties(size_, xValue_, yValue_, domainU_, domainV_, information_, basis_);
+
+    setAllPropertiesCurrentStateAsDefault();
 }
 
 VectorFieldGenerator2D::~VectorFieldGenerator2D() = default;
 
 void VectorFieldGenerator2D::initializeResources() {
-    shader_.getFragmentShaderObject()->addShaderDefine("X_VALUE(x,y)", xValue_.get());
-    shader_.getFragmentShaderObject()->addShaderDefine("Y_VALUE(x,y)", yValue_.get());
+    shader_.getFragmentShaderObject()->addShaderDefine("U_VALUE(x,y)", xValue_.get());
+    shader_.getFragmentShaderObject()->addShaderDefine("V_VALUE(x,y)", yValue_.get());
 
     shader_.build();
 }
 
 void VectorFieldGenerator2D::process() {
-
-    auto layer = std::make_shared<Layer>(
-        size_, DataVec2Float32::get(), LayerType::Color,
-        SwizzleMask{ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One});
-    auto image = std::make_shared<Image>(layer);
-
-    utilgl::activateAndClearTarget(*image, ImageType::ColorOnly);
+    bool reattach = false;
+    const LayerConfig newConfig{.dimensions = size_.get(),
+                                .format = DataVec2Float32::get(),
+                                .swizzleMask = swizzlemasks::defaultData(0)};
+    if (!layer_ || config != newConfig) {
+        config = newConfig;
+        layer_ = std::make_shared<Layer>(config);
+        reattach = true;
+        outport_.setData(layer_);
+    }
 
     shader_.activate();
-    utilgl::setUniforms(shader_, xRange_, yRange_);
+    utilgl::setUniforms(shader_, domainU_, domainV_);
 
-    utilgl::singleDrawImagePlaneRect();
+    const ivec2 dim{size_.get()};
+    {
+        utilgl::Activate activateFbo{&fbo_};
+        utilgl::ViewportState viewport{0, 0, static_cast<GLsizei>(dim.x),
+                                       static_cast<GLsizei>(dim.y)};
+
+        // We always need to ask for an editable representation, this will invalidate any other
+        // representations
+        auto destLayer = layer_->getEditableRepresentation<LayerGL>();
+        if (reattach) {
+            fbo_.attachColorTexture(destLayer->getTexture().get(), 0);
+        }
+
+        utilgl::singleDrawImagePlaneRect();
+    }
 
     shader_.deactivate();
-    utilgl::deactivateCurrentTarget();
 
-    outport_.setData(image);
+    const bool deserializing = getNetwork()->isDeserializing();
+    basis_.updateForNewEntity(*layer_, deserializing);
+    information_.updateForNewLayer(
+        *layer_, deserializing ? util::OverwriteState::Yes : util::OverwriteState::No);
+    basis_.updateEntity(*layer_);
+    information_.updateLayer(*layer_);
 }
 
 }  // namespace inviwo

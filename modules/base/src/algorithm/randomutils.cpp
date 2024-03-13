@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,23 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/base/algorithm/randomutils.h>
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
-
-#include <inviwo/core/util/glmvec.h>  // for vec4
-
-#include <cstddef>  // for size_t
-#include <memory>   // for shared_ptr
-
-namespace inviwo {
-class LayerRepresentation;
-class Mesh;
-
-class IVW_MODULE_BASE_API ImageContour {
-public:
-    static std::shared_ptr<Mesh> apply(const LayerRepresentation* in, size_t channel,
-                                       double isoValue, vec4 color = vec4(1.0));
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -29,24 +29,24 @@
 
 #include "utils/structs.glsl"
 
-uniform ImageParameters outportParameters_;
+uniform ImageParameters outportParameters;
 
-uniform sampler2D inport_;
+uniform sampler2D inport;
 
-uniform int renormalization_ = 1;
+uniform bool renormalization = true;
 
 void main() {
-    vec2 dx = vec2(outportParameters_.reciprocalDimensions.x, 0);
-    vec2 dy = vec2(0, outportParameters_.reciprocalDimensions.y);
+    vec2 dx = vec2(outportParameters.reciprocalDimensions.x, 0);
+    vec2 dy = vec2(0, outportParameters.reciprocalDimensions.y);
 
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
     // compute Jacobian using central differences
-    vec2 du = (texture(inport_,texCoords + dx ).xy - texture(inport_,texCoords - dx ).xy) * 0.5;
-    vec2 dv = (texture(inport_,texCoords + dy ).xy - texture(inport_,texCoords - dy ).xy) * 0.5;
+    vec2 du = (texture(inport,texCoords + dx ).xy - texture(inport,texCoords - dx ).xy) * 0.5;
+    vec2 dv = (texture(inport,texCoords + dy ).xy - texture(inport,texCoords - dy ).xy) * 0.5;
 
-    if (renormalization_  > 0) {
-        du /= outportParameters_.reciprocalDimensions.xy;
-        dv /= outportParameters_.reciprocalDimensions.xy;
+    if (renormalization) {
+        du /= outportParameters.reciprocalDimensions.xy;
+        dv /= outportParameters.reciprocalDimensions.xy;
     }
 
     mat2 m = mat2(du, dv);

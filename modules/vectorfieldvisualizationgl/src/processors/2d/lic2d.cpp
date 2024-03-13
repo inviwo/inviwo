@@ -29,23 +29,9 @@
 
 #include <modules/vectorfieldvisualizationgl/processors/2d/lic2d.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::ColorOnly
-#include <inviwo/core/ports/imageport.h>                  // for ImageOutport, ImageInport
-#include <inviwo/core/processors/processor.h>             // for Processor
-#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>        // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>         // for Tags, Tags::GL
-#include <inviwo/core/properties/boolproperty.h>          // for BoolProperty
-#include <inviwo/core/properties/invalidationlevel.h>     // for InvalidationLevel, Invalidation...
-#include <inviwo/core/properties/ordinalproperty.h>       // for FloatProperty, IntProperty
-#include <modules/opengl/shader/shader.h>                 // for Shader
-#include <modules/opengl/shader/shaderutils.h>            // for setUniforms
-#include <modules/opengl/texture/textureunit.h>           // for TextureUnitContainer
-#include <modules/opengl/texture/textureutils.h>          // for bindAndSetUniforms, activateAnd...
-
-#include <functional>   // for __base
-#include <string>       // for operator+, string
-#include <string_view>  // for string_view
+#include <inviwo/core/util/formats.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
 
@@ -55,48 +41,75 @@ const ProcessorInfo LIC2D::processorInfo_{
     "LIC2D",                       // Display name
     "Vector Field Visualization",  // Category
     CodeState::Stable,             // Code state
-    Tags::GL,                      // Tags
+    Tags::GL | Tag{"Layer"},       // Tags
+    R"(Performs a line integral convolution (LIC) on a 2D vector field.)"_unindentHelp,
 };
 const ProcessorInfo LIC2D::getProcessorInfo() const { return processorInfo_; }
 
 LIC2D::LIC2D()
-    : Processor()
-    , vectorField_("vectorField", true)
-    , noiseTexture_("noiseTexture", true)
-    , LIC2D_("LIC2D")
-    , samples_("samples", "Number of steps", 20, 3, 100)
-    , stepLength_("stepLength", "Step Length", 0.003f, 0.0001f, 0.01f, 0.0001f)
-    , normalizeVectors_("normalizeVectors", "Normalize vectors", true)
-    , intensityMapping_("intensityMapping", "Enable intensity remapping", false)
-    , useRK4_("useRK4", "Use Runge-Kutta4", true)
-    , shader_("lic2d.frag") {
-    addPort(vectorField_);
-    addPort(noiseTexture_);
-    addPort(LIC2D_);
+    : LayerGLProcessor{utilgl::findShaderResource("lic2d.frag")}
+    , noiseTexture_{"noiseTexture",
+                    "2D noise layer which will be convoluted along the vector field"_help}
+    , samples_{"samples", "Number of Steps",
+               util::ordinalCount(20, 100).setMin(2).set(
+                   "Total number of steps, both forward and backward."_help)}
+    , stepLength_{"stepLength", "Step Length",
+                  util::ordinalScale(0.003f, 0.01f).set("Length of each integration step."_help)}
+    , normalizeVectors_{"normalizeVectors", "Normalize Vectors",
+                        "Vectors are normalized prior integration."_help, true}
+    , useRK4_{"useRK4", "Use Runge-Kutta4",
+              "Use Runge-Kutta fourth order as integration scheme, otherwise Euler integration is used."_help,
+              true}
+    , postProcessing_{"postProcessing", "Post Processing",
+                      "Apply some basic image operations to enhance the LIC"_help, true}
+    , intensityMapping_{"intensityMapping", "Enable Intensity Remapping",
+                        "Remap the resulting intensity values $v$ with $v^(5 / (v + 1)^4)$. "
+                        "This will increase contrast."_help,
+                        false}
+    , brightness_{"brightness",
+                  "Brightness",
+                  "Adjusts the overall brightness"_help,
+                  0.0f,
+                  {-1.0f, ConstraintBehavior::Immutable},
+                  {1.0f, ConstraintBehavior::Immutable}}
+    , contrast_{"contrast",
+                "Contrast",
+                "Adjusts the overall contrast"_help,
+                0.0f,
+                {-1.0f, ConstraintBehavior::Immutable},
+                {1.0f, ConstraintBehavior::Immutable}}
+    , gamma_{"gamma",
+             "Gamma Correction",
+             "Gamma correction using $v^gamma$"_help,
+             1.0f,
+             {0.0f, ConstraintBehavior::Immutable},
+             {2.0f, ConstraintBehavior::Immutable}} {
 
-    addProperty(samples_);
-    addProperty(stepLength_);
-    addProperty(normalizeVectors_);
-    addProperty(intensityMapping_);
-    addProperty(useRK4_);
+    outport_.setHelp("Resulting layer with grayscale LIC (single channel)"_help);
+    addPort(noiseTexture_);
+    addProperties(samples_, stepLength_, useRK4_, normalizeVectors_, postProcessing_);
+    postProcessing_.addProperties(intensityMapping_, brightness_, contrast_, gamma_);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
 }
 
-void LIC2D::process() {
-    utilgl::activateAndClearTarget(LIC2D_);
+void LIC2D::preProcess(TextureUnitContainer& cont, const Layer&, Layer&) {
+    utilgl::bindAndSetUniforms(shader_, cont, noiseTexture_);
+    utilgl::setUniforms(shader_, samples_, stepLength_, normalizeVectors_, useRK4_);
+    shader_.setUniform("postProcessing", postProcessing_.isChecked());
+    if (postProcessing_) {
+        utilgl::setUniforms(shader_, intensityMapping_, brightness_, contrast_, gamma_);
+    }
+}
 
-    shader_.activate();
-    TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(shader_, units, vectorField_, ImageType::ColorOnly);
-    utilgl::bindAndSetUniforms(shader_, units, noiseTexture_, ImageType::ColorOnly);
+LayerConfig LIC2D::outputConfig(const Layer& input) const {
+    const DataFormatBase* format = input.getDataFormat();
 
-    utilgl::setUniforms(shader_, LIC2D_, samples_, stepLength_, normalizeVectors_,
-                        intensityMapping_, useRK4_);
-
-    utilgl::singleDrawImagePlaneRect();
-    shader_.deactivate();
-    utilgl::deactivateCurrentTarget();
+    return input.config().updateFrom(
+        {.format = DataFormatBase::get(format->getNumericType(), 1, format->getPrecision()),
+         .swizzleMask = swizzlemasks::defaultData(1),
+         .dataRange = dvec2{0.0, 1.0},
+         .valueRange = dvec2{0.0, 1.0}});
 }
 
 }  // namespace inviwo

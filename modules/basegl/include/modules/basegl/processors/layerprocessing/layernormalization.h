@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,30 +24,35 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "utils/structs.glsl"
+#pragma once
 
-uniform ImageParameters outportParameters_;
+#include <modules/basegl/baseglmoduledefine.h>
 
-uniform sampler2D inport_;
-uniform int channel = 0;
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/basegl/processors/layerprocessing/layerglprocessor.h>
 
-uniform int renormalization_ = 1;
+namespace inviwo {
 
-void main() {
-    vec2 dx = vec2(outportParameters_.reciprocalDimensions.x, 0);
-    vec2 dy = vec2(0, outportParameters_.reciprocalDimensions.y);
+class IVW_MODULE_BASEGL_API LayerNormalization : public LayerGLProcessor {
+public:
+    LayerNormalization();
 
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec2 gradient;
-    // compute gradient using central differences
-    gradient.x = (texture(inport_,texCoords + dx )[channel] - texture(inport_,texCoords - dx )[channel]) * 0.5;
-    gradient.y = (texture(inport_,texCoords + dy )[channel] - texture(inport_,texCoords - dy )[channel]) * 0.5;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-    if (renormalization_  > 0) {
-        gradient /= outportParameters_.reciprocalDimensions.x;
-    }
-    FragData0 = vec4(gradient, 0, 1); 
-}
+private:
+    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;
+    virtual LayerConfig outputConfig([[maybe_unused]] const Layer& input) const override;
+
+    BoolProperty normalizeIndividually_;
+    BoolProperty zeroCentered_;
+    DoubleVec4Property dataMin_;
+    DoubleVec4Property dataMax_;
+};
+
+}  // namespace inviwo

@@ -29,23 +29,17 @@
 
 #include <modules/basegl/processors/imageprocessing/imagegradient.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>                 // for ImageChannel
-#include <inviwo/core/ports/imageport.h>                                 // for ImageInport
-#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                       // for CodeState, CodeS...
-#include <inviwo/core/processors/processortags.h>                        // for Tags, Tags::GL
-#include <inviwo/core/properties/boolproperty.h>                         // for BoolProperty
-#include <inviwo/core/properties/optionproperty.h>                       // for OptionPropertyInt
-#include <inviwo/core/util/formats.h>                                    // for DataFormat, Data...
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
-#include <modules/opengl/shader/shader.h>                                // for Shader
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <functional>   // for __base
-#include <memory>       // for shared_ptr
-#include <sstream>      // for stringstream
-#include <string>       // for char_traits, string
-#include <string_view>  // for string_view
-#include <type_traits>  // for remove_extent_t
+#include <functional>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <string_view>
+#include <type_traits>
 
 namespace inviwo {
 class TextureUnitContainer;
@@ -57,13 +51,13 @@ const ProcessorInfo ImageGradient::processorInfo_{
     "Image Operation",           // Category
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
+    R"(Computes the gradient of one channel of the input image.)"_unindentHelp,
 };
 const ProcessorInfo ImageGradient::getProcessorInfo() const { return processorInfo_; }
 
 ImageGradient::ImageGradient()
-    : ImageGLProcessor("imagegradient.frag")
-    , channel_("channel", "Channel")
-    , renormalization_("renormalization", "Renormalization", true) {
+    : ImageGLProcessor("img_gradient.frag"), channel_("channel", "Channel") {
+
     dataFormat_ = DataVec2Float32::get();
     swizzleMask_ = {
         {ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One}};
@@ -86,12 +80,23 @@ ImageGradient::ImageGradient()
     });
 
     addProperty(channel_);
-    addProperty(renormalization_);
 }
 
 void ImageGradient::preProcess(TextureUnitContainer&) {
+    const auto layer = inport_.getData()->getColorLayer();
+    const auto gradientSpacing{layer->getWorldSpaceGradientSpacing()};
+    shader_.setUniform("worldSpaceGradientSpacing", gradientSpacing);
+    shader_.setUniform("textureSpaceGradientSpacing",
+                       mat2{glm::scale(layer->getCoordinateTransformer().getWorldToTextureMatrix(),
+                                       vec3{gradientSpacing, 1.0f})});
+
     shader_.setUniform("channel", channel_.getSelectedValue());
-    shader_.setUniform("renormalization_", renormalization_.get() ? 1 : 0);
+
+    const double gradientEstimate = glm::compMax(glm::abs(layer->dataMap.dataRange)) /
+                                    glm::compMax(layer->getWorldSpaceGradientSpacing());
+    auto outputLayer = outport_.getEditableData()->getColorLayer();
+    outputLayer->dataMap.dataRange = dvec2{-gradientEstimate, gradientEstimate};
+    outputLayer->dataMap.valueRange = dvec2{-gradientEstimate, gradientEstimate};
 }
 
 }  // namespace inviwo

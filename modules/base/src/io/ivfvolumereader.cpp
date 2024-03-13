@@ -101,14 +101,14 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& f
     volume->setModelMatrix(basisAndOffset);
     volume->setWorldMatrix(worldTransform);
 
-    d.deserialize("DataRange", volume->dataMap_.dataRange);
-    d.deserialize("ValueRange", volume->dataMap_.valueRange);
-    d.deserialize("ValueName", volume->dataMap_.valueAxis.name);
+    d.deserialize("DataRange", volume->dataMap.dataRange);
+    d.deserialize("ValueRange", volume->dataMap.valueRange);
+    d.deserialize("ValueName", volume->dataMap.valueAxis.name);
 
     std::string tmp;
     d.deserialize("ValueUnit", tmp);
     if (!tmp.empty()) {
-        volume->dataMap_.valueAxis.unit = units::unit_from_string(tmp);
+        volume->dataMap.valueAxis.unit = units::unit_from_string(tmp);
     }
 
     tmp.clear();

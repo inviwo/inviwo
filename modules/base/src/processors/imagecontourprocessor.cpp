@@ -44,7 +44,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>                     // for IntSizeTProperty
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
 #include <inviwo/core/util/glmvec.h>                                    // for vec4
-#include <modules/base/algorithm/image/imagecontour.h>                  // for ImageContour
+#include <modules/base/algorithm/image/layercontour.h>
 
 #include <memory>         // for shared_ptr, uniqu...
 #include <string>         // for string
@@ -69,14 +69,14 @@ const ProcessorInfo ImageContourProcessor::getProcessorInfo() const { return pro
 ImageContourProcessor::ImageContourProcessor()
     : Processor()
     , image_("image", "Input image"_help, OutportDeterminesSize::Yes)
-    , mesh_("mesh", "Contour mesh"_help)
+    , outport_("mesh", "Contour mesh"_help)
     , channel_("channel", "Channel", "The image channel used to extract the contour"_help, 0,
                {0, ConstraintBehavior::Immutable}, {4, ConstraintBehavior::Editable})
-    , isoValue_("iso", "ISO Value", "The contour iso value"_help, 0.5,
+    , isoValue_("iso", "Isovalue", "The isovalue of the contour "_help, 0.5,
                 {0, ConstraintBehavior::Ignore}, {1, ConstraintBehavior::Ignore})
     , color_("color", "Color", util::ordinalColor(vec4(1.0)).set("The contour color"_help)) {
 
-    addPorts(image_, mesh_);
+    addPorts(image_, outport_);
     addProperties(channel_, isoValue_, color_);
 }
 
@@ -85,8 +85,8 @@ void ImageContourProcessor::process() {
         auto max = image_.getData()->getDataFormat()->getComponents() - 1;
         channel_.setMaxValue(max);
     }
-    mesh_.setData(
-        ImageContour::apply(image_.getData()->getColorLayer()->getRepresentation<LayerRAM>(),
+    outport_.setData(
+        computeLayerContour(image_.getData()->getColorLayer()->getRepresentation<LayerRAM>(),
                             channel_, isoValue_, color_));
 }
 

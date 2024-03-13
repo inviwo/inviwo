@@ -30,19 +30,20 @@
 #include "utils/structs.glsl"
 #include "utils/sampler2d.glsl"
 
-uniform sampler2D inportColor;
+uniform sampler2D inport;
 uniform ImageParameters inportParameters;
+uniform ImageParameters outportParameters;
 
 in vec3 texCoord_;
 
 void main(void) {
-	vec2 o = inportParameters.reciprocalDimensions;
+	vec2 o = outportParameters.reciprocalDimensions;
 	mat2 J;    
-	J[0] =  ((texture(inportColor,texCoord_.xy  + vec2(o.x,0))
-	        - texture(inportColor,texCoord_.xy  - vec2(o.x,0)) ) * 0.5).xy;
+	J[0] =  ((texture(inport, texCoord_.xy  + vec2(o.x,0))
+	        - texture(inport, texCoord_.xy  - vec2(o.x,0)) ) * 0.5).xy;
 
-	J[1] =  ((texture(inportColor,texCoord_.xy  + vec2(0,o.y))
-	        - texture(inportColor,texCoord_.xy  - vec2(0,o.y)) ) * 0.5).xy;
+	J[1] =  ((texture(inport, texCoord_.xy  + vec2(0,o.y))
+	        - texture(inport, texCoord_.xy  - vec2(0,o.y)) ) * 0.5).xy;
 
 	float v = 0;
 

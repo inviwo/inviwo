@@ -58,6 +58,8 @@ enum class InterpolationType : int {
     Lanczos = 6           // lanczos interpolation.
 };
 
+enum class ConsiderAspectRatio { No, Yes };
+
 enum class TIFFResolutionUnit { None, Inch, Centimeter };
 
 struct IVW_MODULE_CIMG_API TIFFHeader {
@@ -90,6 +92,10 @@ IVW_MODULE_CIMG_API void saveLayer(const LayerRAM& layer, std::vector<unsigned c
                                    std::string_view extension);
 
 IVW_MODULE_CIMG_API bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target);
+
+IVW_MODULE_CIMG_API bool rescaleLayerRamToLayerRam(
+    const LayerRAM* source, LayerRAM* target, cimgutil::InterpolationType interpolation,
+    cimgutil::ConsiderAspectRatio aspectRatio = cimgutil::ConsiderAspectRatio::Yes);
 
 IVW_MODULE_CIMG_API std::string getLibJPGVersion();
 IVW_MODULE_CIMG_API std::string getOpenEXRVersion();

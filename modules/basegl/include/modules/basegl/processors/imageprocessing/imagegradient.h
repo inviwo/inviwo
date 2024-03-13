@@ -32,7 +32,6 @@
 #include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEG...
 
 #include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>                         // for BoolProperty
 #include <inviwo/core/properties/optionproperty.h>                       // for OptionPropertyInt
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
 
@@ -71,7 +70,6 @@ protected:
 
 private:
     OptionPropertyInt channel_;
-    BoolProperty renormalization_;
 };
 
 }  // namespace inviwo

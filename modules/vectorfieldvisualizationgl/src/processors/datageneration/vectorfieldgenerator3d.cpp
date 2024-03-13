@@ -117,8 +117,8 @@ void VectorFieldGenerator3D::initializeResources() {
 void VectorFieldGenerator3D::process() {
 
     auto volume = std::make_shared<Volume>(size_.get(), DataVec3Float32::get());
-    volume->dataMap_.dataRange = vec2(0, 1);
-    volume->dataMap_.valueRange = vec2(-1, 1);
+    volume->dataMap.dataRange = vec2(0, 1);
+    volume->dataMap.valueRange = vec2(-1, 1);
 
     shader_.activate();
     TextureUnitContainer cont;

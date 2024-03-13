@@ -29,15 +29,17 @@
 
 #include "utils/structs.glsl"
 
-uniform sampler2D inport_;
-uniform ImageParameters outportParameters_;
+#ifndef COMPARE
+#define COMPARE >
+#endif
 
-
-uniform float threshold;
+uniform sampler2D inport;
+uniform ImageParameters outportParameters;
+uniform int channel = 0;
+uniform float threshold = 0.5;
 
 void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    bool b = texture(inport_, texCoords).r >= threshold;
-    float v = b ? 1.0f : 0.0f;
-    FragData0 = vec4(v,v,v,1.0);
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+    bvec4 b = bvec4(texture(inport, texCoords)[channel] COMPARE threshold);
+    FragData0 = mix(vec4(0), vec4(1), b);
 }

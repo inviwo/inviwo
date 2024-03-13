@@ -29,39 +29,32 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEG...
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>                         // for BoolProperty
-#include <inviwo/core/properties/stringproperty.h>                       // for StringProperty
-#include <inviwo/core/util/glmvec.h>                                     // for dvec4
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 
 namespace inviwo {
 class TextureUnitContainer;
 
-/**
- * \brief Normalizes the rgb channels of an input image given a specific range.
- */
 class IVW_MODULE_BASEGL_API ImageNormalizationProcessor : public ImageGLProcessor {
 public:
     ImageNormalizationProcessor();
-    virtual ~ImageNormalizationProcessor();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 protected:
     virtual void preProcess(TextureUnitContainer& cont) override;
-    void updateMinMax();
 
 private:
     BoolProperty normalizeSeparately_;
     BoolProperty zeroCentered_;
-    StringProperty minS_;
-    StringProperty maxS_;
-    dvec4 min_;
-    dvec4 max_;
+    DoubleVec4Property dataMin_;
+    DoubleVec4Property dataMax_;
 };
 
 }  // namespace inviwo

@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/processors/imageprocessing/imagemapping.h>
+#include <modules/basegl/processors/imageprocessing/imagecolormapping.h>
 
 #include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
 #include <inviwo/core/processors/processorstate.h>            // for CodeState, CodeS...
@@ -49,17 +49,19 @@
 
 namespace inviwo {
 
-const ProcessorInfo ImageMapping::processorInfo_{"org.inviwo.ImageMapping",  // Class identifier
-                                                 "Image Mapping",            // Display name
-                                                 "Image Operation",          // Category
-                                                 CodeState::Stable,          // Code state
-                                                 Tags::GL,                   // Tags
-                                                 R"(
-Maps the input image to an output image with the help of a transfer function.
-)"_unindentHelp};
-const ProcessorInfo ImageMapping::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo ImageColorMapping::processorInfo_{
+    "org.inviwo.ImageColorMapping",  // Class identifier
+    "Image Color Mapping",           // Display name
+    "Image Operation",               // Category
+    CodeState::Stable,               // Code state
+    Tags::GL,                        // Tags
+    R"(
+    Maps the input image to an output image with the help of a transfer function.
+    )"_unindentHelp,
+};
+const ProcessorInfo ImageColorMapping::getProcessorInfo() const { return processorInfo_; }
 
-ImageMapping::ImageMapping()
+ImageColorMapping::ImageColorMapping()
     : ImageGLProcessor("img_mapping.frag")
     , channel_{"channel", "Channel", "Selected channel used for mapping"_help,
                util::enumeratedOptions("Channel", 4)}
@@ -70,17 +72,19 @@ ImageMapping::ImageMapping()
     addProperties(channel_, transferFunction_);
 }
 
-void ImageMapping::preProcess(TextureUnitContainer& container) {
+void ImageColorMapping::preProcess(TextureUnitContainer& container) {
     utilgl::bindAndSetUniforms(shader_, container, transferFunction_);
     utilgl::setUniforms(shader_, channel_);
 }
 
-void ImageMapping::afterInportChanged() {
-    // Determine the precision of the output format based on the input,
-    // but always output 4 component data representing RGBA
-    const DataFormatBase* inputDataFormat = inport_.getData()->getDataFormat();
-    size_t precision = inputDataFormat->getPrecision();
-    dataFormat_ = DataFormatBase::get(inputDataFormat->getNumericType(), 4, precision);
+void ImageColorMapping::afterInportChanged() {
+    if (inport_.hasData()) {
+        // Determine the precision of the output format based on the input,
+        // but always output 4 component data representing RGBA
+        const DataFormatBase* inputDataFormat = inport_.getData()->getDataFormat();
+        size_t precision = inputDataFormat->getPrecision();
+        dataFormat_ = DataFormatBase::get(inputDataFormat->getNumericType(), 4, precision);
+    }
 }
 
 }  // namespace inviwo

@@ -393,7 +393,7 @@ std::shared_ptr<VolumeSequence> NiftiReader::readData(const std::filesystem::pat
     }
 
     for (auto vol : *volumes) {
-        vol->dataMap_ = dm;
+        vol->dataMap = dm;
     }
 
     return volumes;

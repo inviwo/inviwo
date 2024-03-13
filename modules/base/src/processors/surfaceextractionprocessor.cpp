@@ -121,8 +121,8 @@ SurfaceExtraction::SurfaceExtraction()
             minmax = std::accumulate(volume_.begin(), volume_.end(), minmax,
                                      [](decltype(minmax) mm, std::shared_ptr<const Volume> v) {
                                          return std::make_pair(
-                                             std::min(mm.first, v->dataMap_.dataRange.x),
-                                             std::max(mm.second, v->dataMap_.dataRange.y));
+                                             std::min(mm.first, v->dataMap.dataRange.x),
+                                             std::max(mm.second, v->dataMap.dataRange.y));
                                      });
 
             isoValue_.setMinValue(static_cast<float>(minmax.first));

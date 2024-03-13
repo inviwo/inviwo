@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024 Inviwo Foundation
+ * Copyright (c) 2017-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,28 +29,41 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/processors/layerprocessing/layerglprocessor.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+
+#include <inviwo/core/ports/imageport.h>                  // for ImageInport, ImageOutport
+#include <inviwo/core/processors/poolprocessor.h>         // for PoolProcessor
+#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>          // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>       // for DoubleProperty, IntProperty
+#include <modules/base/datastructures/imagereusecache.h>  // for ImageReuseCache
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API LayerMapping : public LayerGLProcessor {
+class IVW_MODULE_BASE_API ImageDistanceTransform : public PoolProcessor {
 public:
-    LayerMapping();
+    ImageDistanceTransform();
+    virtual ~ImageDistanceTransform();
+
+    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
-    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;
-
-    virtual LayerConfig outputConfig([[maybe_unused]] const Layer& input) const override;
-
 private:
-    OptionPropertyInt channel_;
-    TransferFunctionProperty transferFunction_;
+    ImageInport imagePort_;
+    ImageOutport outport_;
+
+    ImageReuseCache imageCache_;
+
+    DoubleProperty threshold_;
+    BoolProperty flip_;
+    BoolProperty normalize_;
+    DoubleProperty resultDistScale_;  // scaling factor for distances
+    BoolProperty resultSquaredDist_;  // determines whether output uses squared euclidean distances
+    BoolProperty uniformUpsampling_;
+    IntProperty upsampleFactorUniform_;    // uniform upscaling of the output field
+    IntSize2Property upsampleFactorVec2_;  // non-uniform upscaling of the output field
 };
 
 }  // namespace inviwo

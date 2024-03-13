@@ -33,8 +33,8 @@
 
 #include "utils/structs.glsl"
 
-uniform sampler2D inport_;
-uniform ImageParameters outportParameters_;
+uniform sampler2D inport;
+uniform ImageParameters outportParameters;
 
 uniform float exposure = 1.0;
 uniform float gamma = 2.2;
@@ -56,7 +56,7 @@ vec3 Uncharted2Tonemap(vec3 x) {
 
 vec4 Uncharted2(vec2 tc) {
     const float W = 11.2;
-    vec4 texColor = texture(inport_, tc);
+    vec4 texColor = texture(inport, tc);
     texColor.rgb *= exposure;  // Exposure Adjustment
 
     float ExposureBias = 2.0;
@@ -70,7 +70,7 @@ vec4 Uncharted2(vec2 tc) {
 }
 
 vec4 Reinhard(vec2 tc) {
-    vec4 texColor = texture(inport_, tc);
+    vec4 texColor = texture(inport, tc);
     texColor.rgb *= exposure;  // Exposure Adjustment
     texColor.rgb = texColor.rgb / (1 + texColor.rgb);
     vec3 retColor = pow(texColor.rgb, vec3(1.0 / gamma));
@@ -78,7 +78,7 @@ vec4 Reinhard(vec2 tc) {
 }
 
 vec4 Gamma(vec2 tc) {
-    vec4 texColor = texture(inport_, tc);
+    vec4 texColor = texture(inport, tc);
     texColor.rgb *= exposure;  // Exposure Adjustment
     vec3 retColor = pow(texColor.rgb, vec3(1.0 / gamma));
     return clamp(vec4(retColor, texColor.a), 0, 1);
@@ -86,11 +86,11 @@ vec4 Gamma(vec2 tc) {
 
 //----------------------------------------------------------------------------------
 void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
 #ifdef METHOD
 
 #if METHOD == 0
-    vec4 color = texture(inport_, texCoords);
+    vec4 color = texture(inport, texCoords);
     outColor = clamp(vec4(color.rgb * exposure, color.a), 0, 1);
 #elif METHOD == 1
     outColor = Gamma(texCoords);
@@ -101,6 +101,6 @@ void main() {
 #endif
 
 #else
-    outColor = texture(inport_, texCoords);
+    outColor = texture(inport, texCoords);
 #endif
 }

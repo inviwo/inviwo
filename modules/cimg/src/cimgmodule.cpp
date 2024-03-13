@@ -40,6 +40,7 @@
 #include <modules/cimg/cimgutils.h>                     // for getLibJPGVersion, getOpenEXRVersion
 #include <modules/cimg/tifflayerreader.h>               // for TIFFLayerReader
 #include <modules/cimg/tiffstackvolumereader.h>         // for TIFFStackVolumeReader
+#include <modules/cimg/processors/layerresampling.h>
 
 #include <ostream>  // for operator<<, char_traits
 
@@ -60,6 +61,8 @@ CImgModule::CImgModule(InviwoApplication* app)
 
     // Register Data Writers
     registerDataWriter(std::make_unique<CImgLayerWriter>());
+
+    registerProcessor<LayerResampling>();
 
     if (!app_->getLayerRamResizer()) {
         app_->setLayerRamResizer(resizer_.get());

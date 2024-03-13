@@ -64,7 +64,7 @@
 #include <modules/basegl/processors/imageprocessing/imagelayer.h>                   // for Ima...
 #include <modules/basegl/processors/imageprocessing/imagelayoutgl.h>                // for Ima...
 #include <modules/basegl/processors/imageprocessing/imagelowpass.h>                 // for Ima...
-#include <modules/basegl/processors/imageprocessing/imagemapping.h>                 // for Ima...
+#include <modules/basegl/processors/imageprocessing/imagecolormapping.h>            // for Ima...
 #include <modules/basegl/processors/imageprocessing/imagemixer.h>                   // for Ima...
 #include <modules/basegl/processors/imageprocessing/imagenormalizationprocessor.h>  // for Ima...
 #include <modules/basegl/processors/imageprocessing/imageoverlaygl.h>               // for Ima...
@@ -76,9 +76,11 @@
 #include <modules/basegl/processors/instancerenderer.h>  // for Ins...
 #include <modules/basegl/processors/isoraycaster.h>      // for ISO...
 #include <modules/basegl/processors/layerprocessing/layerbinary.h>
+#include <modules/basegl/processors/layerprocessing/layergradient.h>
 #include <modules/basegl/processors/layerprocessing/layergrayscale.h>
 #include <modules/basegl/processors/layerprocessing/layerinvert.h>
-#include <modules/basegl/processors/layerprocessing/layermapping.h>
+#include <modules/basegl/processors/layerprocessing/layercolormapping.h>
+#include <modules/basegl/processors/layerprocessing/layernormalization.h>
 #include <modules/basegl/processors/layerrenderer.h>
 #include <modules/basegl/processors/lightingraycaster.h>                       // for Lig...
 #include <modules/basegl/processors/lightvolumegl.h>                           // for Lig...
@@ -171,6 +173,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<ImageBinary>();
     registerProcessor<ImageChannelCombine>();
     registerProcessor<ImageChannelSelect>();
+    registerProcessor<ImageColorMapping>();
     registerProcessor<ImageCompositeProcessorGL>();
     registerProcessor<ImageGamma>();
     registerProcessor<ImageGradient>();
@@ -180,7 +183,6 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<ImageLayer>();
     registerProcessor<ImageLayoutGL>();
     registerProcessor<ImageLowPass>();
-    registerProcessor<ImageMapping>();
     registerProcessor<ImageMixer>();
     registerProcessor<ImageNormalizationProcessor>();
     registerProcessor<ImageOverlayGL>();
@@ -189,9 +191,11 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<ImageSubsetGL>();
     registerProcessor<Jacobian2D>();
     registerProcessor<LayerBinary>();
+    registerProcessor<LayerColorMapping>();
+    registerProcessor<LayerGradient>();
     registerProcessor<LayerGrayscale>();
     registerProcessor<LayerInvert>();
-    registerProcessor<LayerMapping>();
+    registerProcessor<LayerNormalization>();
     registerProcessor<LayerRenderer>();
     registerProcessor<LayerShader>();
     registerProcessor<RowLayout>();
@@ -220,7 +224,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerDataVisualizer(std::make_unique<MeshVisualizer>(app));
 }
 
-int BaseGLModule::getVersion() const { return 7; }
+int BaseGLModule::getVersion() const { return 8; }
 
 std::unique_ptr<VersionConverter> BaseGLModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -538,6 +542,15 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
             }};
             conv.convert(root);
 
+            [[fallthrough]];
+        }
+        case 7: {
+            res |= xml::changeAttribute(root, {{xml::Kind::processor("org.inviwo.ImageMapping")}},
+                                        "type", "org.inviwo.ImageMapping",
+                                        "org.inviwo.ImageColorMapping");
+            res |= xml::changeAttribute(root, {{xml::Kind::processor("org.inviwo.LayerMapping")}},
+                                        "type", "org.inviwo.LayerMapping",
+                                        "org.inviwo.LayerColorMapping");
             return res;
         }
 

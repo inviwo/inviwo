@@ -41,6 +41,7 @@
 #include <mutex>
 #include <unordered_map>
 #include <memory>
+#include <type_traits>
 
 namespace inviwo {
 
@@ -414,5 +415,34 @@ bool Data<Self, Repr>::hasRepresentations() const {
     std::scoped_lock lock(mutex_);
     return !representations_.empty();
 }
+
+template <template <typename...> class F>
+struct conversion_tester {
+    template <typename... Ts>
+    conversion_tester(const F<Ts...>&);
+};
+
+template <class From, template <typename...> class To>
+constexpr bool is_instance_of = std::is_convertible_v<From, conversion_tester<To>>;
+
+/**
+ * Concept for ensuring that @p T is an instance of the Data class.
+ */
+template <typename T>
+concept DataType = is_instance_of<T, Data>;
+
+/**
+ * Concept for ensuring that @p D is an instance of the Data class that @p TRAMrep is a RAM
+ * representation of @p D as well.
+ *
+ * Usage:
+ *
+ *     template <DataType T, RepresentationOf<T> TRAMrep>
+ *     std::shared_ptr<T> createFromRAMRepresentation(std::shared_ptr<TRAMrep> ramRep) {
+ *         return std::make_shared<T>(ramRep);
+ *     }
+ */
+template <typename D, typename Rep>
+concept RepresentationOf = is_instance_of<D, Data> && std::is_base_of_v<typename D::repr, Rep>;
 
 }  // namespace inviwo

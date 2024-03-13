@@ -66,6 +66,6 @@ ImageGamma::ImageGamma()
 
 ImageGamma::~ImageGamma() = default;
 
-void ImageGamma::preProcess(TextureUnitContainer&) { shader_.setUniform("gamma_", gamma_.get()); }
+void ImageGamma::preProcess(TextureUnitContainer&) { shader_.setUniform("gamma", gamma_.get()); }
 
 }  // namespace inviwo

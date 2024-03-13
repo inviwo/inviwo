@@ -405,6 +405,13 @@ void saveLayer(const LayerRAM& layer, std::vector<unsigned char>& dst, std::stri
 }
 
 bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target) {
+    auto interpolation = detail::toCImgInterpolationType(source->getInterpolation());
+    return rescaleLayerRamToLayerRam(source, target, interpolation);
+}
+
+bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target,
+                               cimgutil::InterpolationType interpolation,
+                               cimgutil::ConsiderAspectRatio aspectRatio) {
     if (!source->getData()) return false;
     if (!target->getData()) return false;
     if (source->getDataFormatId() != target->getDataFormatId()) return false;
@@ -422,14 +429,18 @@ bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target) {
             const double targetAspect =
                 static_cast<double>(targetDim.x) / static_cast<double>(targetDim.y);
 
-            const uvec2 resizeDim{
-                sourceAspect > targetAspect ? targetDim.x : targetDim.y * sourceAspect,
-                sourceAspect > targetAspect ? targetDim.x / sourceAspect : targetDim.y};
+            const uvec2 resizeDim = [&]() {
+                if (aspectRatio == cimgutil::ConsiderAspectRatio::Yes) {
+                    return uvec2{
+                        sourceAspect > targetAspect ? targetDim.x : targetDim.y * sourceAspect,
+                        sourceAspect > targetAspect ? targetDim.x / sourceAspect : targetDim.y};
+                } else {
+                    return targetDim;
+                }
+            }();
 
             auto srcData = static_cast<const P*>(source->getData());
             P* dstData = static_cast<P*>(target->getData());
-
-            auto interpolation = detail::toCImgInterpolationType(source->getInterpolation());
 
             if (rank == 0) {
                 cimg_library::CImg<P> src(srcData, sourceDim.x, sourceDim.y, 1, 1, true);
@@ -441,7 +452,7 @@ bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target) {
                 dst.draw_image(targetDim.x / 2 - resizeDim.x / 2, targetDim.y / 2 - resizeDim.y / 2,
                                resized);
             } else {
-                // Inviwo store pixels interleaved (RGBRGBRGB),
+                // Inviwo stores pixels interleaved (RGBRGBRGB),
                 // CImg stores pixels in a planar format (RRRRGGGGBBBB).
                 // Permute from interleaved to planar format,
                 // we need to specify yzcx as input instead of cxyz

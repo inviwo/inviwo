@@ -78,16 +78,10 @@ LIC3D::LIC3D()
     , velocityScale_("velocityScale", "Velocity Scale (inverse)", 1, 0, 10)
     , alphaScale_("alphaScale", "Alpha Scale", 500, 0.01f, 100000, 0.01f)
     , noiseVolume_(nullptr) {
-    addPort(vectorField_);
 
-    addProperty(samples_);
-    addProperty(stepLength_);
-    addProperty(normalizeVectors_);
-    addProperty(intensityMapping_);
-    addProperty(noiseRepeat_);
-    addProperty(tf_);
-    addProperty(velocityScale_);
-    addProperty(alphaScale_);
+    addPort(vectorField_);
+    addProperties(samples_, stepLength_, normalizeVectors_, intensityMapping_, noiseRepeat_, tf_,
+                  velocityScale_, alphaScale_);
 
     tf_.get().clear();
     tf_.get().add(0.0, vec4(0, 0, 1, 1));
@@ -96,11 +90,10 @@ LIC3D::LIC3D()
 
     setAllPropertiesCurrentStateAsDefault();
 
-    this->dataFormat_ = DataVec4UInt8::get();
+    dataFormat_ = DataVec4UInt8::get();
 }
 
 void LIC3D::preProcess(TextureUnitContainer& cont) {
-
     utilgl::bindAndSetUniforms(shader_, cont, *vectorField_.getData().get(), "vectorField");
     utilgl::setUniforms(shader_, samples_, stepLength_, normalizeVectors_, intensityMapping_,
                         noiseRepeat_, alphaScale_, velocityScale_);
@@ -111,7 +104,17 @@ void LIC3D::preProcess(TextureUnitContainer& cont) {
 }
 
 void LIC3D::postProcess() {
-    volume_->dataMap_.valueRange = volume_->dataMap_.dataRange = dvec2(0, 255);
+    volume_->setSwizzleMask(swizzlemasks::rgba);
+
+    // since this processor uses VolumeGLProcessor::inport_ for the noise texture, we need to
+    // copy all metadata including transformations from the vector field here
+    auto source = vectorField_.getData();
+
+    volume_->dataMap.dataRange = DataMapper::defaultDataRangeFor(volume_->getDataFormat());
+    volume_->setModelMatrix(source->getModelMatrix());
+    volume_->setWorldMatrix(source->getWorldMatrix());
+    volume_->copyMetaDataFrom(*source);
+    volume_->axes = source->axes;
 }
 
 }  // namespace inviwo

@@ -365,7 +365,7 @@ Document Image::getInfo() const {
     Document doc;
     doc.append("b", "Image", {{"style", "color:white;"}});
     utildoc::TableBuilder tb(doc.handle(), P::end());
-    tb(H("Color channels"), colorLayers_.size());
+    tb(H("Color layers"), colorLayers_.size());
     tb(H("Depth"), getDepthLayer() ? "Yes" : "No");
     tb(H("Picking"), getPickingLayer() ? "Yes" : "No");
     tb(H("Format"), getDataFormat()->getString());

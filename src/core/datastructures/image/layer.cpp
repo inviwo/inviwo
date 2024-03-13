@@ -160,6 +160,54 @@ std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(
     return std::unique_ptr<std::vector<unsigned char>>();
 }
 
+vec2 Layer::getWorldSpaceGradientSpacing() const {
+    mat3 textureToWorld = mat3(getCoordinateTransformer().getTextureToWorldMatrix());
+
+    const vec3 extent{glm::length2(textureToWorld[0]), glm::length2(textureToWorld[1]),
+                      glm::length2(textureToWorld[2])};
+
+    // basis vectors
+    vec3 a;
+    vec3 b;
+    if (extent[0] < glm::epsilon<float>()) {
+        a = textureToWorld[1];
+        b = textureToWorld[2];
+    } else if (extent[1] < glm::epsilon<float>()) {
+        a = textureToWorld[0];
+        b = textureToWorld[2];
+    } else {
+        a = textureToWorld[0];
+        b = textureToWorld[1];
+    }
+    // basis vectors with a length of one texel, may be non-orthogonal
+    const auto dimensions = getDimensions();
+    a /= static_cast<float>(dimensions[0]);
+    b /= static_cast<float>(dimensions[1]);
+
+    // Project the texel basis vectors
+    // onto the world space x/y axes,
+    // and choose the longest projected vector
+    // for each axis.
+    // Using the fact that
+    // vec2 x{ 1.f, 0 };
+    // vec2 y{ 0, 1.f };
+    // such that
+    // ax' = dot(x, a) = a.x
+    // bx' = dot(x, b) = b.x
+    // and so on.
+    auto signedMax = [](const float& x1, const float& x2) {
+        return (std::abs(x1) >= std::abs(x2)) ? x1 : x2;
+    };
+
+    vec2 ds{signedMax(a.x, b.x), signedMax(a.y, b.y)};
+
+    // Return the spacing in world space,
+    // actually given by:
+    // { gradientSpacing.x         0
+    //         0             gradientSpacing.y }
+    return ds;
+}
+
 const Axis* Layer::getAxis(size_t index) const {
     if (index >= 2) {
         return nullptr;

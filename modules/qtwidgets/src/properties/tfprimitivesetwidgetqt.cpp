@@ -89,7 +89,7 @@ void TFPrimitiveSetWidgetQt::setPropertyValue() {
 
     auto port = propertyPtr_->getVolumePort();
     if (performMapping && port && port->hasData()) {
-        const dvec2 range = port->getData()->dataMap_.valueRange;
+        const dvec2 range = port->getData()->dataMap.valueRange;
 
         auto renormalizePos = [range](double pos) { return (pos - range.x) / (range.y - range.x); };
         for (auto& elem : primitives) {
@@ -113,7 +113,7 @@ void TFPrimitiveSetWidgetQt::updateFromProperty() {
     dvec2 range(0.0, 1.0);
     auto port = propertyPtr_->getVolumePort();
     if (port && port->hasData()) {
-        range = port->getData()->dataMap_.valueRange;
+        range = port->getData()->dataMap.valueRange;
     } else {
         // no need to perform mapping without a proper value range
         performMapping = false;

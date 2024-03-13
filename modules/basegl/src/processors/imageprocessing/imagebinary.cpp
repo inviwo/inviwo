@@ -29,15 +29,7 @@
 
 #include <modules/basegl/processors/imageprocessing/imagebinary.h>
 
-#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                       // for CodeState, CodeS...
-#include <inviwo/core/processors/processortags.h>                        // for Tags, Tags::GL
-#include <inviwo/core/properties/ordinalproperty.h>                      // for FloatProperty
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
-#include <modules/opengl/shader/shaderutils.h>                           // for setUniforms
-
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 class TextureUnitContainer;
@@ -56,12 +48,41 @@ const ProcessorInfo ImageBinary::getProcessorInfo() const { return processorInfo
 
 ImageBinary::ImageBinary()
     : ImageGLProcessor("img_binary.frag")
-    , threshold_("threshold", "Threshold",
-                 util::ordinalLength(0.0f, 1.0f)
-                     .set("Threshold used for binarization of the input layer"_help)) {
-    addProperty(threshold_);
+    , channel_{"channel", "Channel", "Selected channel used for binarization"_help,
+               util::enumeratedOptions("Channel", 4)}
+    , threshold_{"threshold", "Threshold",
+                 util::ordinalSymmetricVector(0.5f, 1.0f)
+                     .set("Threshold used for binarization of the input layer"_help)}
+    , comparison_{"comparison",
+                  "Comparison",
+                  "Comparison function for threshold"_help,
+                  {{"greater", "Greater", ">"},
+                   {"greaterEqual", "Greater Equal", ">="},
+                   {"less", "Less", "<"},
+                   {"lessEqual", "Less Equal", "<="}},
+                  0,
+                  InvalidationLevel::InvalidResources} {
+    addProperties(channel_, threshold_, comparison_);
 }
 
-void ImageBinary::preProcess(TextureUnitContainer&) { utilgl::setUniforms(shader_, threshold_); }
+void ImageBinary::initializeResources() {
+    shader_.getFragmentShaderObject()->addShaderDefine("COMPARE", comparison_.getSelectedValue());
+    ImageGLProcessor::initializeResources();
+}
+
+void ImageBinary::preProcess(TextureUnitContainer&) {
+    utilgl::setUniforms(shader_, channel_, threshold_);
+
+    auto layer = outport_.getEditableData()->getColorLayer();
+    layer->dataMap.dataRange = DataMapper::defaultDataRangeFor(layer->getDataFormat());
+    layer->dataMap.valueRange = dvec2{0.0, 1.0};
+}
+
+void ImageBinary::afterInportChanged() {
+    if (inport_.hasData()) {
+        dataFormat_ = DataFormatBase::get(DataFormatId::UInt8);
+        swizzleMask_ = swizzlemasks::defaultColor(1);
+    }
+}
 
 }  // namespace inviwo

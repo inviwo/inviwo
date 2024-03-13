@@ -162,29 +162,29 @@ void DistanceTransformRAM::process() {
 
         auto dstVol = std::make_shared<Volume>(*volume, noData);
         dstVol->addRepresentation(dstRepr);
-        dstVol->dataMap_.valueAxis.name = "distance";
-        dstVol->dataMap_.valueAxis.unit = volume->axes[0].unit;
+        dstVol->dataMap.valueAxis.name = "distance";
+        dstVol->dataMap.valueAxis.unit = volume->axes[0].unit;
 
         switch (dataRangeMode) {
             case DistanceTransformRAM::DataRangeMode::Diagonal: {
                 const auto basis = volume->getBasis();
                 const auto diagonal = basis[0] + basis[1] + basis[2];
                 const auto maxDist = square ? glm::length2(diagonal) : glm::length(diagonal);
-                dstVol->dataMap_.dataRange = dvec2(0.0, maxDist);
-                dstVol->dataMap_.valueRange = dvec2(0.0, maxDist);
+                dstVol->dataMap.dataRange = dvec2(0.0, maxDist);
+                dstVol->dataMap.valueRange = dvec2(0.0, maxDist);
                 break;
             }
             case DistanceTransformRAM::DataRangeMode::MinMax: {
                 auto minmax = util::dataMinMax(dstRepr->getDataTyped(),
                                                glm::compMul(dstRepr->getDimensions()));
 
-                dstVol->dataMap_.dataRange = dvec2(minmax.first[0], minmax.second[0]);
-                dstVol->dataMap_.valueRange = dvec2(minmax.first[0], minmax.second[0]);
+                dstVol->dataMap.dataRange = dvec2(minmax.first[0], minmax.second[0]);
+                dstVol->dataMap.valueRange = dvec2(minmax.first[0], minmax.second[0]);
                 break;
             }
             case DistanceTransformRAM::DataRangeMode::Custom: {
-                dstVol->dataMap_.dataRange = customDataRange;
-                dstVol->dataMap_.valueRange = customDataRange;
+                dstVol->dataMap.dataRange = customDataRange;
+                dstVol->dataMap.valueRange = customDataRange;
                 break;
             }
             default:

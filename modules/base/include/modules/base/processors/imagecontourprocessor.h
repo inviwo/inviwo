@@ -51,7 +51,7 @@ public:
 
 private:
     ImageInport image_;
-    MeshOutport mesh_;
+    MeshOutport outport_;
     IntSizeTProperty channel_;
     DoubleProperty isoValue_;
     FloatVec4Property color_;

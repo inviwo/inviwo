@@ -56,11 +56,10 @@ uniform float noiseRepeat = 5.f;
 
 void main(void) {
     float v = texture(noise, mod(texCoord_.xyz * noiseRepeat, 1)).r;
-    float voxelVelo = length(texture(vectorField, texCoord_.xyz).xyz);
+    float voxelVelo = length(vec3(getVoxel(vectorField, vectorFieldParameters, texCoord_.xyz)));
 
     if (voxelVelo < 0.000001) {
         discard;
-        return;
     }
 
     int c = 1;
@@ -68,7 +67,7 @@ void main(void) {
 
     posF = texCoord_.xyz;
     for (int i = 0; i < samples / 2; i++) {
-        vec3 V0 = texture(vectorField, posF).rgb;
+        vec3 V0 = getVoxel(vectorField, vectorFieldParameters, posF).rgb;
         if (normalizeVectors) {
             V0 = normalize(V0);
         }
@@ -83,7 +82,7 @@ void main(void) {
     }
     posF = texCoord_.xyz;
     for (int i = 0; i < samples / 2; i++) {
-        vec3 V0 = texture(vectorField, posF).rgb;
+        vec3 V0 = getVoxel(vectorField, vectorFieldParameters, posF).rgb;
         if (normalizeVectors) {
             V0 = normalize(V0);
         }
@@ -101,11 +100,6 @@ void main(void) {
 
     if (intensityMapping) {
         v = pow(v, (4.0 / pow((v + 1.0), 4)));
-    }
-
-    if (v < 0.6 && false) {
-        discard;
-        return;
     }
 
     vec4 color = applyTF(tf, voxelVelo / velocityScale);

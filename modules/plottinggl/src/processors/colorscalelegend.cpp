@@ -205,8 +205,8 @@ ColorScaleLegend::ColorScaleLegend()
                 break;
             case LabelType::Data:
                 if (auto volume = volumeInport_.getData()) {
-                    axis_.setCaption(fmt::format("{}{: [}", volume->dataMap_.valueAxis.name,
-                                                 volume->dataMap_.valueAxis.unit));
+                    axis_.setCaption(fmt::format("{}{: [}", volume->dataMap.valueAxis.name,
+                                                 volume->dataMap.valueAxis.unit));
                 } else {
                     axis_.setCaption("?");
                 }
@@ -214,8 +214,8 @@ ColorScaleLegend::ColorScaleLegend()
             case LabelType::Custom:
                 if (auto volume = volumeInport_.getData()) {
                     axis_.setCaption(fmt::format(fmt::runtime(title_.get()),
-                                                 fmt::arg("n", volume->dataMap_.valueAxis.name),
-                                                 fmt::arg("u", volume->dataMap_.valueAxis.unit)));
+                                                 fmt::arg("n", volume->dataMap.valueAxis.name),
+                                                 fmt::arg("u", volume->dataMap.valueAxis.unit)));
                 } else {
                     axis_.setCaption("?");
                 }
@@ -301,7 +301,7 @@ void ColorScaleLegend::process() {
 
     // update the legend range if a volume is connected to inport
     if (volumeInport_.isChanged() && volumeInport_.hasData()) {
-        axis_.setRange(volumeInport_.getData()->dataMap_.valueRange);
+        axis_.setRange(volumeInport_.getData()->dataMap.valueRange);
     } else if (!volumeInport_.isConnected()) {
         axis_.setRange(vec2(0, 1));
     }

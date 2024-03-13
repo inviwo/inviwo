@@ -179,16 +179,16 @@ void HDF5ToVolume::process() {
     }
     switch (overrideRange_.getSelectedIndex()) {
         case 0:  // Data
-            volume_->dataMap_.dataRange = dataRange_.get();
+            volume_->dataMap.dataRange = dataRange_.get();
             break;
         case 1:  // Custom
-            volume_->dataMap_.dataRange = outDataRange_.get();
+            volume_->dataMap.dataRange = outDataRange_.get();
             break;
         default:
             break;
     }
-    volume_->dataMap_.valueRange = valueRange_.get();
-    volume_->dataMap_.valueAxis.unit = units::unit_from_string(valueUnit_.get());
+    volume_->dataMap.valueRange = valueRange_.get();
+    volume_->dataMap.valueAxis.unit = units::unit_from_string(valueUnit_.get());
 }
 
 mat4 HDF5ToVolume::getBasisFromMeta(MetaData meta) {
@@ -339,7 +339,7 @@ void HDF5ToVolume::makeVolume() {
                 data->getVolumeAtPathAsType(Path(data->getGroup().getObjName()) + volumeMeta.path_,
                                             selection_.getSelection(), format));
 
-            dataRange_.set(volume_->dataMap_.dataRange);
+            dataRange_.set(volume_->dataMap.dataRange);
             outport_.setData(volume_);
 
         } catch (const H5::GroupIException& e) {

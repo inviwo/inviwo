@@ -29,42 +29,38 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>               // for ImageOutport
-#include <inviwo/core/processors/processor.h>          // for Processor
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
-#include <inviwo/core/properties/minmaxproperty.h>     // for FloatMinMaxProperty, IntMinMaxProp...
-#include <inviwo/core/properties/optionproperty.h>     // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>    // for IntProperty, IntSizeTProperty, Flo...
-#include <inviwo/core/util/staticstring.h>             // for operator+
+#include <inviwo/core/ports/layerport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/base/properties/layerinformationproperty.h>
+#include <modules/base/properties/basisproperty.h>
 
-#include <functional>   // for __base
-#include <random>       // for mt19937, random_device
-#include <string>       // for operator==, string
-#include <string_view>  // for operator==
-#include <vector>       // for operator!=, vector, operator==
+#include <random>
 
 namespace inviwo {
 
 /**
  * \brief A processor to generate a noise image
  */
-class IVW_MODULE_BASE_API NoiseProcessor : public Processor {
+class IVW_MODULE_BASE_API NoiseGenerator2D : public Processor {
     enum class NoiseType { Random, Perlin, PoissonDisk, HaltonSequence };
 
 public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-    NoiseProcessor();
-    virtual ~NoiseProcessor();
+    NoiseGenerator2D();
 
     virtual void process() override;
 
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
 protected:
-    ImageOutport noise_;
+    LayerOutport noise_;
 
     IntSize2Property size_;           ///< Size of the output image.
     OptionProperty<NoiseType> type_;  ///< Witch type of noise to generate.
@@ -82,6 +78,9 @@ protected:
     CompositeProperty randomness_;
     BoolProperty useSameSeed_;  ///< Use the same seed for each call to process.
     IntProperty seed_;          ///<  The seed used to initialize the random sequence
+
+    LayerInformationProperty information_;
+    BasisProperty basis_;
 
 private:
     std::random_device rd_;

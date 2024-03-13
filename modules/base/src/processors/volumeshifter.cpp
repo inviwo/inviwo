@@ -112,7 +112,7 @@ void VolumeShifter::process() {
 
     auto vol = std::make_shared<Volume>(volumeRam);
     vol->copyMetaDataFrom(*(inport_.getData()));
-    vol->dataMap_ = inport_.getData()->dataMap_;
+    vol->dataMap = inport_.getData()->dataMap;
     vol->setModelMatrix(inport_.getData()->getModelMatrix());
     vol->setWorldMatrix(inport_.getData()->getWorldMatrix());
 

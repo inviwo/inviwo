@@ -30,16 +30,16 @@
 #include "utils/structs.glsl"
 #include "colortools.glsl"
 
-uniform sampler2D inport_;
-uniform ImageParameters outportParameters_;
+uniform sampler2D inport;
+uniform ImageParameters outportParameters;
 
 uniform float hue;
 uniform float sat;
 uniform float lum;
 
 void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec4 inColor = texture(inport_, texCoords);
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+    vec4 inColor = texture(inport, texCoords);
     
     vec3 hslColor = rgb2hsl(inColor.rgb);
 

@@ -327,6 +327,7 @@ void NetworkEditorView::exportViewToFile(const std::filesystem::path& filename, 
     }
     const QRect destRect(QPoint(0, 0), rect.size().toSize());
 
+    const bool bgPreviousState = editor_->isBackgroundVisible();
     editor_->setBackgroundVisible(backgroundVisible);
 
     auto renderCall = [&, entireScene](QPainter& painter) {
@@ -346,7 +347,13 @@ void NetworkEditorView::exportViewToFile(const std::filesystem::path& filename, 
         renderCall(painter);
         painter.end();
     } else {
+        const bool supportsAlpha = toLower(filename.extension().string()) == ".png";
+
         QImage image(destRect.size(), QImage::Format_ARGB32);
+        if (!supportsAlpha) {
+            image.fill(Qt::white);
+        }
+
         QPainter painter(&image);
         painter.setRenderHint(QPainter::Antialiasing);
         renderCall(painter);
@@ -354,7 +361,7 @@ void NetworkEditorView::exportViewToFile(const std::filesystem::path& filename, 
         image.save(utilqt::toQString(filename));
     }
 
-    editor_->setBackgroundVisible(true);
+    editor_->setBackgroundVisible(bgPreviousState);
 }
 
 QImage NetworkEditorView::exportViewToImage(bool entireScene, bool backgroundVisible, QSize size) {
@@ -378,6 +385,7 @@ QImage NetworkEditorView::exportViewToImage(bool entireScene, bool backgroundVis
         rect += QMarginsF(padding, 0.0, padding, 0.0);
     }
 
+    const bool bgPreviousState = editor_->isBackgroundVisible();
     editor_->setBackgroundVisible(backgroundVisible);
 
     auto renderCall = [&, entireScene](QPainter& painter) {
@@ -394,7 +402,7 @@ QImage NetworkEditorView::exportViewToImage(bool entireScene, bool backgroundVis
     renderCall(painter);
     painter.end();
 
-    editor_->setBackgroundVisible(true);
+    editor_->setBackgroundVisible(bgPreviousState);
     return image;
 }
 

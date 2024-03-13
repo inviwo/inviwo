@@ -376,7 +376,7 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
                 if (!dialog.normalized->isChecked()) {
                     if (auto port = property->getVolumeInport()) {
                         const auto dataMap =
-                            port->hasData() ? port->getData()->dataMap_ : DataMapper{};
+                            port->hasData() ? port->getData()->dataMap : DataMapper{};
                         start = dataMap.mapFromValueToNormalized(start);
                         middle = dataMap.mapFromValueToNormalized(middle);
                         stop = dataMap.mapFromValueToNormalized(stop);

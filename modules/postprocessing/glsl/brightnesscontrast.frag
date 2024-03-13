@@ -29,8 +29,8 @@
 
 #include "utils/structs.glsl"
 
-uniform sampler2D inport_;
-uniform ImageParameters outportParameters_;
+uniform sampler2D inport;
+uniform ImageParameters outportParameters;
 
 uniform float brightness;
 uniform float contrast;
@@ -40,7 +40,7 @@ vec4 brightnessContrast(vec4 value, float brightness, float contrast) {
 }
 
 void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec4 inColor = texture(inport_, texCoords);
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+    vec4 inColor = texture(inport, texCoords);
     FragData0 = brightnessContrast(inColor, brightness, contrast);
 }

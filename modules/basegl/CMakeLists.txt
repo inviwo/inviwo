@@ -35,6 +35,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/imageprocessing/imagebinary.h
     include/modules/basegl/processors/imageprocessing/imagechannelcombine.h
     include/modules/basegl/processors/imageprocessing/imagechannelselect.h
+    include/modules/basegl/processors/imageprocessing/imagecolormapping.h
     include/modules/basegl/processors/imageprocessing/imagecompositeprocessorgl.h
     include/modules/basegl/processors/imageprocessing/imagegamma.h
     include/modules/basegl/processors/imageprocessing/imageglprocessor.h
@@ -45,7 +46,6 @@ set(HEADER_FILES
     include/modules/basegl/processors/imageprocessing/imagelayer.h
     include/modules/basegl/processors/imageprocessing/imagelayoutgl.h
     include/modules/basegl/processors/imageprocessing/imagelowpass.h
-    include/modules/basegl/processors/imageprocessing/imagemapping.h
     include/modules/basegl/processors/imageprocessing/imagemixer.h
     include/modules/basegl/processors/imageprocessing/imagenormalizationprocessor.h
     include/modules/basegl/processors/imageprocessing/imageoverlaygl.h
@@ -57,10 +57,12 @@ set(HEADER_FILES
     include/modules/basegl/processors/instancerenderer.h
     include/modules/basegl/processors/isoraycaster.h
     include/modules/basegl/processors/layerprocessing/layerbinary.h
+    include/modules/basegl/processors/layerprocessing/layercolormapping.h
     include/modules/basegl/processors/layerprocessing/layerglprocessor.h
+    include/modules/basegl/processors/layerprocessing/layergradient.h
     include/modules/basegl/processors/layerprocessing/layergrayscale.h
     include/modules/basegl/processors/layerprocessing/layerinvert.h
-    include/modules/basegl/processors/layerprocessing/layermapping.h
+    include/modules/basegl/processors/layerprocessing/layernormalization.h
     include/modules/basegl/processors/layerrenderer.h
     include/modules/basegl/processors/lightingraycaster.h
     include/modules/basegl/processors/lightvolumegl.h
@@ -160,6 +162,7 @@ set(SOURCE_FILES
     src/processors/imageprocessing/imagebinary.cpp
     src/processors/imageprocessing/imagechannelcombine.cpp
     src/processors/imageprocessing/imagechannelselect.cpp
+    src/processors/imageprocessing/imagecolormapping.cpp
     src/processors/imageprocessing/imagecompositeprocessorgl.cpp
     src/processors/imageprocessing/imagegamma.cpp
     src/processors/imageprocessing/imageglprocessor.cpp
@@ -170,7 +173,6 @@ set(SOURCE_FILES
     src/processors/imageprocessing/imagelayer.cpp
     src/processors/imageprocessing/imagelayoutgl.cpp
     src/processors/imageprocessing/imagelowpass.cpp
-    src/processors/imageprocessing/imagemapping.cpp
     src/processors/imageprocessing/imagemixer.cpp
     src/processors/imageprocessing/imagenormalizationprocessor.cpp
     src/processors/imageprocessing/imageoverlaygl.cpp
@@ -182,10 +184,12 @@ set(SOURCE_FILES
     src/processors/instancerenderer.cpp
     src/processors/isoraycaster.cpp
     src/processors/layerprocessing/layerbinary.cpp
+    src/processors/layerprocessing/layercolormapping.cpp
     src/processors/layerprocessing/layerglprocessor.cpp
+    src/processors/layerprocessing/layergradient.cpp
     src/processors/layerprocessing/layergrayscale.cpp
     src/processors/layerprocessing/layerinvert.cpp
-    src/processors/layerprocessing/layermapping.cpp
+    src/processors/layerprocessing/layernormalization.cpp
     src/processors/layerrenderer.cpp
     src/processors/lightingraycaster.cpp
     src/processors/lightvolumegl.cpp
@@ -264,13 +268,13 @@ set(SHADER_FILES
     glsl/cubeglyph.vert
     glsl/heightfield.frag
     glsl/heightfield.vert
-    glsl/imagegradient.frag
     glsl/img_binary.frag
     glsl/img_channel_combine.frag
     glsl/img_channel_select.frag
     glsl/img_convolution.frag
     glsl/img_findedges.frag
     glsl/img_gamma.frag
+    glsl/img_gradient.frag
     glsl/img_graysc.frag
     glsl/img_highpass.frag
     glsl/img_invert.frag

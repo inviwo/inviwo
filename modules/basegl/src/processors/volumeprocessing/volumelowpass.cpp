@@ -130,10 +130,10 @@ void VolumeLowPass::postProcess() {
             min = std::min(min, minmax.first[i]);
             max = std::max(max, minmax.second[i]);
         }
-        volume_->dataMap_.valueRange = volume_->dataMap_.dataRange = dvec2(min, max);
+        volume_->dataMap.valueRange = volume_->dataMap.dataRange = dvec2(min, max);
 
     } else {
-        volume_->dataMap_ = inport_.getData()->dataMap_;
+        volume_->dataMap = inport_.getData()->dataMap;
     }
 }
 

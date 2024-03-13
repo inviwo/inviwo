@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2024 Inviwo Foundation
+ * Copyright (c) 2015-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,32 +29,19 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEG...
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/properties/transferfunctionproperty.h>             // for TransferFunction...
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/glmvec.h>  // for vec4
+
+#include <cstddef>  // for size_t
+#include <memory>   // for shared_ptr
 
 namespace inviwo {
-class TextureUnitContainer;
+class LayerRepresentation;
+class Mesh;
 
-/**
- * \brief Maps the input image to an output with the help of a transfer function.
- */
-class IVW_MODULE_BASEGL_API ImageMapping : public ImageGLProcessor {
-public:
-    ImageMapping();
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-protected:
-    virtual void preProcess(TextureUnitContainer& cont) override;
-    virtual void afterInportChanged() override;
-
-private:
-    OptionPropertyInt channel_;
-    TransferFunctionProperty transferFunction_;
-};
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> computeLayerContour(const LayerRepresentation* in,
+                                                              size_t channel, double isoValue,
+                                                              vec4 color = vec4(1.0));
 
 }  // namespace inviwo

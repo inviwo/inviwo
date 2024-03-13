@@ -378,16 +378,16 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
         volume->setWorldMatrix(state.wtm);
 
         if (state.dataRange) {
-            volume->dataMap_.dataRange = *state.dataRange;
+            volume->dataMap.dataRange = *state.dataRange;
         }
         if (state.valueRange) {
-            volume->dataMap_.valueRange = *state.valueRange;
+            volume->dataMap.valueRange = *state.valueRange;
         } else {
-            volume->dataMap_.valueRange = volume->dataMap_.dataRange;
+            volume->dataMap.valueRange = volume->dataMap.dataRange;
         }
 
-        volume->dataMap_.valueAxis.unit = state.valueUnit;
-        volume->dataMap_.valueAxis.name = state.valueName;
+        volume->dataMap.valueAxis.unit = state.valueUnit;
+        volume->dataMap.valueAxis.name = state.valueName;
         volume->axes = state.axes;
 
         const auto bytes = glm::compMul(state.dimensions) * (state.format->getSizeInBytes());
@@ -425,10 +425,10 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
                                           glm::max(computedRange[1], minmax.second[component]));
                 }
                 // Set value range
-                volumes->front()->dataMap_.dataRange = computedRange;
+                volumes->front()->dataMap.dataRange = computedRange;
                 // Also set value range if not specified
                 if (!state.valueRange) {
-                    volumes->front()->dataMap_.valueRange = computedRange;
+                    volumes->front()->dataMap.valueRange = computedRange;
                 }
                 // Performance warning for larger volumes (rougly > 2MB)
                 if (bytes < 128 * 128 * 128 || state.sequences > 1) {

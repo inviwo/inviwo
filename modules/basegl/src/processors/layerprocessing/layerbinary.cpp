@@ -45,31 +45,8 @@ const ProcessorInfo LayerBinary::processorInfo_{
 
 const ProcessorInfo LayerBinary::getProcessorInfo() const { return processorInfo_; }
 
-namespace {
-
-constexpr std::string_view fragmentShader = util::trim(R"(
-#include "utils/structs.glsl"
-
-#ifndef COMPARE
-#define COMPARE >
-#endif
-
-uniform sampler2D inport_;
-uniform ImageParameters outportParameters_;
-uniform int channel = 0;
-uniform float threshold = 0.5;
-
-void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    bvec4 b = bvec4(texture(inport_, texCoords)[channel] COMPARE threshold);
-    FragData0 = mix(vec4(0), vec4(1), b);
-}
-)");
-
-}  // namespace
-
 LayerBinary::LayerBinary()
-    : LayerGLProcessor{std::make_shared<StringShaderResource>("LayerBinary.frag", fragmentShader)}
+    : LayerGLProcessor{utilgl::findShaderResource("img_binary.frag")}
     , channel_{"channel", "Channel", "Selected channel used for binarization"_help,
                util::enumeratedOptions("Channel", 4)}
     , threshold_{"threshold", "Threshold",
@@ -97,9 +74,12 @@ void LayerBinary::preProcess(TextureUnitContainer&, const Layer&, Layer&) {
 }
 
 LayerConfig LayerBinary::outputConfig(const Layer& input) const {
+    auto format = input.getDataFormat();
     return input.config().updateFrom(
-        {.dataRange = DataMapper::defaultDataRangeFor(input.getDataFormat()),
-         .valueRange = dvec2(0.0, 1.0)});
+        {.format = DataFormatBase::get(format->getNumericType(), 1, format->getPrecision()),
+         .swizzleMask = swizzlemasks::defaultData(1),
+         .dataRange = DataMapper::defaultDataRangeFor(input.getDataFormat()),
+         .valueRange = dvec2{0.0, 1.0}});
 }
 
 }  // namespace inviwo

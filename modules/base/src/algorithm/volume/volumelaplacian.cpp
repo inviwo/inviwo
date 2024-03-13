@@ -88,9 +88,9 @@ std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volu
             newVolume->setModelMatrix(volume->getModelMatrix());
             newVolume->setWorldMatrix(volume->getWorldMatrix());
             newVolume->axes = volume->axes;
-            newVolume->dataMap_.valueAxis.name = "laplacian";
-            newVolume->dataMap_.valueAxis.unit =
-                volume->dataMap_.valueAxis.unit / volume->axes[0].unit / volume->axes[0].unit;
+            newVolume->dataMap.valueAxis.name = "laplacian";
+            newVolume->dataMap.valueAxis.unit =
+                volume->dataMap.valueAxis.unit / volume->axes[0].unit / volume->axes[0].unit;
 
             const dmat4 m{volume->getCoordinateTransformer().getDataToWorldMatrix()};
             const auto a = m * dvec4(0, 0, 0, 1);
@@ -146,8 +146,8 @@ std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volu
                             (newData[index(pos)] + DstType{static_cast<float>(rangeMax)}) /
                             DstType{static_cast<float>(2.0 * rangeMax)};
                     });
-                    newVolume->dataMap_.dataRange = dvec2(0.0, 1.0);
-                    newVolume->dataMap_.valueRange = dvec2(0.0, 1.0);
+                    newVolume->dataMap.dataRange = dvec2(0.0, 1.0);
+                    newVolume->dataMap.valueRange = dvec2(0.0, 1.0);
                     break;
                 case VolumeLaplacianPostProcessing::SignNormalized:
                     util::forEachVoxelParallel(dims, [&](const size3_t& pos) {
@@ -156,21 +156,21 @@ std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volu
                                 DstType{static_cast<float>(rangeMax)} -
                             DstType{1.0f};
                     });
-                    newVolume->dataMap_.dataRange = dvec2(-1.0, 1.0);
-                    newVolume->dataMap_.valueRange = dvec2(-1.0, 1.0);
+                    newVolume->dataMap.dataRange = dvec2(-1.0, 1.0);
+                    newVolume->dataMap.valueRange = dvec2(-1.0, 1.0);
                     break;
                 case VolumeLaplacianPostProcessing::Scaled:
                     util::forEachVoxelParallel(dims, [&](const size3_t& pos) {
                         newData[index(pos)] =
                             newData[index(pos)] * DstType{static_cast<float>(scale)};
                     });
-                    newVolume->dataMap_.dataRange = dvec2(-rangeMax * scale, rangeMax * scale);
-                    newVolume->dataMap_.valueRange = dvec2(-rangeMax * scale, rangeMax * scale);
+                    newVolume->dataMap.dataRange = dvec2(-rangeMax * scale, rangeMax * scale);
+                    newVolume->dataMap.valueRange = dvec2(-rangeMax * scale, rangeMax * scale);
                     break;
                 case VolumeLaplacianPostProcessing::None:
                 default:
-                    newVolume->dataMap_.dataRange = dvec2(-rangeMax, rangeMax);
-                    newVolume->dataMap_.valueRange = dvec2(-rangeMax, rangeMax);
+                    newVolume->dataMap.dataRange = dvec2(-rangeMax, rangeMax);
+                    newVolume->dataMap.valueRange = dvec2(-rangeMax, rangeMax);
                     break;
             }
 

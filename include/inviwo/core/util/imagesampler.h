@@ -57,25 +57,17 @@ template <typename ReturnType = dvec4>
 class ImageSampler : public SpatialSampler<ReturnType> {
 public:
     /**
-     * Creates an ImageSampler for the given LayerRAM. Does not take ownership of supplied data.
-     * @note Use ImageSampler(std::shared_ptr<const Image>) to ensure that the LayerRAM is
-     * available for the lifetime of the ImageSampler
-     */
-    ImageSampler(const LayerRAM* ram)
-        : SpatialSampler<ReturnType>(*ram->getOwner())
-        , layer_(ram)
-        , dims_(layer_->getDimensions())
-        , sharedImage_(nullptr) {}
-
-    /**
      * Creates a ImageSampler for the given Layer, does not take ownership of \p layer.
      * Use ImageSampler(std::shared_ptr<const Layer>) to ensure that the Layer is available
      * for the lifetime of the ImageSampler
      */
-    ImageSampler(const Layer* layer) : ImageSampler(layer->getRepresentation<LayerRAM>()) {}
+    ImageSampler(const Layer* layer)
+        : SpatialSampler<ReturnType>(*layer)
+        , layer_(layer->getRepresentation<LayerRAM>())
+        , dims_(layer->getDimensions())
+        , sharedImage_(nullptr) {}
 
-    ImageSampler(std::shared_ptr<const Layer> layer)
-        : ImageSampler(layer->getRepresentation<LayerRAM>()) {
+    ImageSampler(std::shared_ptr<const Layer> layer) : ImageSampler(layer.get()) {
         sharedLayer_ = layer;
     }
 
@@ -169,7 +161,6 @@ using ImageSpatialSampler = ImageSampler<glm::vec<4, double>>;
 template <typename ReturnType, typename DataType>
 class TemplateImageSampler : public SpatialSampler<ReturnType> {
 public:
-    TemplateImageSampler(const LayerRAM* ram);
     TemplateImageSampler(const Layer* layer);
     TemplateImageSampler(const Image* img);
     TemplateImageSampler(std::shared_ptr<const Image> sharedImage);
@@ -203,24 +194,20 @@ protected:
 };
 
 template <typename ReturnType, typename DataType>
-TemplateImageSampler<ReturnType, DataType>::TemplateImageSampler(const LayerRAM* ram)
-    : SpatialSampler<ReturnType>(*ram->getOwner())
-    , data_(static_cast<const DataType*>(ram->getData()))
-    , dims_(ram->getDimensions())
+TemplateImageSampler<ReturnType, DataType>::TemplateImageSampler(const Layer* layer)
+    : SpatialSampler<ReturnType>(*layer)
+    , data_(static_cast<const DataType*>(layer->getRepresentation<LayerRAM>()->getData()))
+    , dims_(layer->getDimensions())
     , ic_(dims_)
     , sharedImage_(nullptr) {
-    if (ram->getDataFormat() != DataFormat<DataType>::get()) {
+    if (layer->getDataFormat() != DataFormat<DataType>::get()) {
         throw Exception(IVW_CONTEXT,
                         "Type mismatch when trying to initialize TemplateImageSampler. Image is {} "
                         "but expected {}",
-                        ram->getDataFormat()->getString(),
+                        layer->getDataFormat()->getString(),
                         DataFormat<DataType>::get()->getString());
     }
 }
-
-template <typename ReturnType, typename DataType>
-TemplateImageSampler<ReturnType, DataType>::TemplateImageSampler(const Layer* layer)
-    : TemplateImageSampler(layer->getRepresentation<LayerRAM>()) {}
 
 template <typename ReturnType, typename DataType>
 TemplateImageSampler<ReturnType, DataType>::TemplateImageSampler(const Image* img)

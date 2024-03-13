@@ -32,23 +32,17 @@ in vec3 texCoord_;
 uniform vec2 xRange;
 uniform vec2 yRange;
 
-float getPos(float v ,vec2 range){ 
-	return range.x + v * (range.y - range.x);
-}
-
-vec4 getPos(){
-	return vec4(
-		      getPos(texCoord_.x , xRange)
-			, getPos(texCoord_.y , yRange)
-			, 0
-			, 1.0
-		);
+vec2 getWorldPosition(vec2 pos) {
+    return vec2(pos.x * (xRange.y - xRange.x) + xRange.x,
+                pos.y * (yRange.y - yRange.x) + yRange.x);
 }
 
 void main() {
-    vec4 pos = getPos();
-    vec4 value = vec4(0,0,0,1);
-    value.x = X_VALUE(pos.x,pos.y);
-    value.y = Y_VALUE(pos.x,pos.y);
+    vec2 worldPos = getWorldPosition(texCoord_.xy);
+
+    vec4 value = vec4(0);   
+    value.x = U_VALUE(worldPos.x, worldPos.y);
+    value.y = V_VALUE(worldPos.x, worldPos.y);
+
     FragData0 = value;
 }

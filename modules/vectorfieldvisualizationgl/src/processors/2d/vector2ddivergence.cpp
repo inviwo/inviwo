@@ -29,19 +29,8 @@
 
 #include <modules/vectorfieldvisualizationgl/processors/2d/vector2ddivergence.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::ColorOnly
-#include <inviwo/core/ports/imageport.h>                  // for ImageInport, ImageOutport
-#include <inviwo/core/processors/processor.h>             // for Processor
-#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>        // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>         // for Tags, Tags::GL
-#include <inviwo/core/util/formats.h>                     // for DataFormat, DataVec4Float32
-#include <modules/opengl/shader/shader.h>                 // for Shader
-#include <modules/opengl/texture/textureunit.h>           // for TextureUnitContainer
-#include <modules/opengl/texture/textureutils.h>          // for activateAndClearTarget, bindAnd...
-
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <inviwo/core/util/formats.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
@@ -51,30 +40,21 @@ const ProcessorInfo Vector2DDivergence::processorInfo_{
     "Vector 2D Divergence",           // Display name
     "Vector Field Visualization",     // Category
     CodeState::Stable,                // Code state
-    Tags::GL,                         // Tags
+    Tags::GL | Tag{"Layer"},          // Tags
+    R"(Computes the divergence of a 2D vector field.)"_unindentHelp,
 };
 const ProcessorInfo Vector2DDivergence::getProcessorInfo() const { return processorInfo_; }
 
 Vector2DDivergence::Vector2DDivergence()
-    : Processor()
-    , inport_("inport", true)
-    , outport_("outport", DataVec4Float32::get())
-    , shader_("vector2ddivergence.frag") {
+    : LayerGLProcessor{utilgl::findShaderResource("vector2ddivergence.frag")} {}
 
-    addPort(inport_);
-    addPort(outport_);
-}
-
-void Vector2DDivergence::process() {
-    utilgl::activateAndClearTarget(outport_);
-
-    shader_.activate();
-    TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(shader_, units, inport_, ImageType::ColorOnly);
-
-    utilgl::singleDrawImagePlaneRect();
-    shader_.deactivate();
-    utilgl::deactivateCurrentTarget();
+LayerConfig Vector2DDivergence::outputConfig(const Layer& input) const {
+    const double max = glm::compMax(glm::abs(input.dataMap.dataRange));
+    const double gradientEstimate = max / glm::compMax(input.getWorldSpaceGradientSpacing());
+    return input.config().updateFrom({.format = DataFloat32::get(),
+                                      .swizzleMask = swizzlemasks::defaultData(0),
+                                      .dataRange = dvec2{0.0, 3.0 * gradientEstimate},
+                                      .valueRange = dvec2{0.0, 3.0 * gradientEstimate}});
 }
 
 }  // namespace inviwo

@@ -275,13 +275,13 @@ struct StatsFunctor {
     std::vector<std::vector<std::vector<double>*>> regionCoM;
 
     StatsFunctor(const Volume& volume, const Volume& atlas, CoordinateSpace destSpace)
-        : nRegions{static_cast<size_t>(atlas.dataMap_.dataRange.y - atlas.dataMap_.dataRange.x + 1)}
-        , minRegionId{static_cast<size_t>(atlas.dataMap_.dataRange.x)}
+        : nRegions{static_cast<size_t>(atlas.dataMap.dataRange.y - atlas.dataMap.dataRange.x + 1)}
+        , minRegionId{static_cast<size_t>(atlas.dataMap.dataRange.x)}
         , channels{volume.getDataFormat()->getComponents()}
         , df{std::make_shared<DataFrame>(static_cast<uint32_t>(nRegions))}
         , volumeRep{volume.getRepresentation<VolumeRAM>()}
         , atlasRep{atlas.getRepresentation<VolumeRAM>()}
-        , map{volume.dataMap_}
+        , map{volume.dataMap}
         , dim{static_cast<dvec3>(volume.getDimensions())}
         , data2dest{volume.getCoordinateTransformer().getMatrix(CoordinateSpace::Data, destSpace)}
         , index2dest{volume.getCoordinateTransformer().getMatrix(CoordinateSpace::Index, destSpace)}

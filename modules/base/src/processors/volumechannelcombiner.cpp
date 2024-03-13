@@ -89,8 +89,8 @@ VolumeChannelCombiner::VolumeChannelCombiner()
 void VolumeChannelCombiner::process() {
     auto volume = util::combineChannels<Volume, VolumeRAM>(
         source_, {{channel_[0], channel_[1], channel_[2], channel_[3]}});
-    volume->dataMap_.dataRange = dataRange_.getDataRange();
-    volume->dataMap_.valueRange = dataRange_.getValueRange();
+    volume->dataMap.dataRange = dataRange_.getDataRange();
+    volume->dataMap.valueRange = dataRange_.getValueRange();
 
     outport_.setData(volume);
 }

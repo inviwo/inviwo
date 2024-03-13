@@ -110,7 +110,7 @@ TFEditor::TFEditor(util::TFPropertyConcept* tfProperty,
 
     if (auto port = tfProperty->getVolumeInport()) {
         const auto portChange = [this, port]() {
-            dataMap_ = port->hasData() ? port->getData()->dataMap_ : DataMapper{};
+            dataMap_ = port->hasData() ? port->getData()->dataMap : DataMapper{};
         };
         portCallBacks_.push_back(port->onChangeScoped(portChange));
         portCallBacks_.push_back(port->onConnectScoped(portChange));

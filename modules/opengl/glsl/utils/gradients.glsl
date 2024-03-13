@@ -32,6 +32,8 @@
 
 #include "utils/structs.glsl" //! #include "./structs.glsl"
 #include "utils/sampler3d.glsl" //! #include "./sampler3d.glsl"
+#include "utils/sampler2d.glsl" //! #include "./sampler2d.glsl"
+
 
 // Compute gradient for 1 channel.
 
@@ -208,6 +210,14 @@ vec3 gradientPrecomputedXYZ(sampler3D volume, VolumeParameters volumeParams, vec
 vec3 gradientPrecomputedYZW(sampler3D volume, VolumeParameters volumeParams, vec3 samplePos) {
     vec3 gradient = getVoxel(volume, volumeParams, samplePos).yzw;
     return (volumeParams.textureToWorldNormalMatrix * vec4(gradient, 0.0)).xyz;
+}
+
+// compute the partial differential for a given component using central differences
+float partialDiff(sampler2D tex, ImageParameters texParams, in vec2 texcoord, 
+                  in vec2 gradientTextureSpacing, in float gradientWorldSpacing, in int component) {
+    float fds = getNormalizedTexel(tex, texParams, texcoord + gradientTextureSpacing)[component]
+        - getNormalizedTexel(tex, texParams, texcoord - gradientTextureSpacing)[component];
+    return fds / gradientWorldSpacing * 0.5;
 }
 
 #endif // IVW_GRADIENTS_GLSL

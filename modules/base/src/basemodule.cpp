@@ -91,7 +91,9 @@
 #include <modules/base/processors/inputselector.h>          // for InputSelector
 #include <modules/base/processors/layerboundingbox.h>
 #include <modules/base/processors/layercombiner.h>
-#include <modules/base/processors/layerdistancetransformram.h>  // for LayerDistanc...
+#include <modules/base/processors/layercontour.h>
+#include <modules/base/processors/layerdistancetransform.h>
+#include <modules/base/processors/imagedistancetransform.h>
 #include <modules/base/processors/layerinformation.h>
 #include <modules/base/processors/layersource.h>
 #include <modules/base/processors/layertoimage.h>
@@ -106,8 +108,8 @@
 #include <modules/base/processors/meshplaneclipping.h>                     // for MeshPlaneCli...
 #include <modules/base/processors/meshsequenceelementselectorprocessor.h>  // for MeshSequence...
 #include <modules/base/processors/meshsource.h>                            // for MeshSource
-#include <modules/base/processors/noiseprocessor.h>                        // for NoiseProcessor
-#include <modules/base/processors/noisevolumeprocessor.h>                  // for NoiseVolumeP...
+#include <modules/base/processors/noisegenerator2d.h>                      // for NoiseGenerator2D
+#include <modules/base/processors/noisegenerator3d.h>                      // for NoiseGenerator3D
 #include <modules/base/processors/ordinalpropertyanimator.h>               // for OrdinalPrope...
 #include <modules/base/processors/orientationindicator.h>                  // for OrientationI...
 #include <modules/base/processors/pixeltobufferprocessor.h>                // for PixelToBuffe...
@@ -193,93 +195,93 @@ using WorldTransformMeshDeprecated = WorldTransformDeprecated<Mesh>;
 using WorldTransformVolumeDeprecated = WorldTransformDeprecated<Volume>;
 
 BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
+    registerProcessor<BasisTransformMesh>();
+    registerProcessor<BasisTransformVolume>();
+    registerProcessor<BufferToMeshProcessor>();
+    registerProcessor<CameraFrustum>();
     registerProcessor<ConvexHull2DProcessor>();
     registerProcessor<CubeProxyGeometry>();
     registerProcessor<DiffuseLightSourceProcessor>();
     registerProcessor<DirectionalLightSourceProcessor>();
     registerProcessor<DistanceTransformRAM>();
     registerProcessor<GridPlanes>();
-    registerProcessor<MeshSource>();
     registerProcessor<HeightFieldMapper>();
+    registerProcessor<ImageContourProcessor>();
+    registerProcessor<ImageDistanceTransform>();
     registerProcessor<ImageExport>();
     registerProcessor<ImageInformation>();
+    registerProcessor<ImageSequenceElementSelectorProcessor>();
     registerProcessor<ImageSnapshot>();
     registerProcessor<ImageSource>();
     registerProcessor<ImageSourceSeries>();
     registerProcessor<ImageStackVolumeSource>();
     registerProcessor<ImageToLayer>();
+    registerProcessor<ImageToSpatialSampler>();
     registerProcessor<LayerBoundingBox>();
     registerProcessor<LayerCombiner>();
-    registerProcessor<LayerDistanceTransformRAM>();
+    registerProcessor<LayerContour>();
+    registerProcessor<LayerDistanceTransform>();
     registerProcessor<LayerInformation>();
     registerProcessor<LayerSource>();
     registerProcessor<LayerToImage>();
     registerProcessor<LayerToSpatialSampler>();
     registerProcessor<MeshClipping>();
     registerProcessor<MeshColorFromNormals>();
+    registerProcessor<MeshConverterProcessor>();
     registerProcessor<MeshCreator>();
+    registerProcessor<MeshExport>();
     registerProcessor<MeshInformation>();
     registerProcessor<MeshMapping>();
     registerProcessor<MeshPlaneClipping>();
-    registerProcessor<NoiseProcessor>();
+    registerProcessor<MeshSequenceElementSelectorProcessor>();
+    registerProcessor<MeshSource>();
+    registerProcessor<NoiseGenerator2D>();
+    registerProcessor<NoiseGenerator3D>();
+    registerProcessor<OrdinalPropertyAnimator>();
+    registerProcessor<OrientationIndicator>();
     registerProcessor<PixelToBufferProcessor>();
+    registerProcessor<PixelValue>();
     registerProcessor<Point3DGenerationProcessor>();
     registerProcessor<PointLightSourceProcessor>();
-    registerProcessor<OrdinalPropertyAnimator>();
+    registerProcessor<RandomMeshGenerator>();
+    registerProcessor<RandomSphereGenerator>();
+    registerProcessor<SingleVoxel>();
     registerProcessor<SpotLightSourceProcessor>();
+    registerProcessor<StereoCameraSyncer>();
     registerProcessor<SurfaceExtraction>();
-    registerProcessor<VolumeBoundaryPlanes>();
-    registerProcessor<VolumeSource>();
-    registerProcessor<VolumeExport>();
-    registerProcessor<BasisTransformMesh>();
-    registerProcessor<BasisTransformVolume>();
-    registerProcessor<TrianglesToWireframe>();
+    registerProcessor<TFSelector>();
     registerProcessor<TransformLayer>();
     registerProcessor<TransformMesh>();
     registerProcessor<TransformVolume>();
-    registerProcessor<VectorToBuffer<unsigned int>>();
+    registerProcessor<TrianglesToWireframe>();
     registerProcessor<VectorToBuffer<float>>();
+    registerProcessor<VectorToBuffer<unsigned int>>();
     registerProcessor<VectorToBuffer<vec2>>();
     registerProcessor<VectorToBuffer<vec3>>();
     registerProcessor<VectorToBuffer<vec4>>();
+    registerProcessor<VolumeBoundaryPlanes>();
+    registerProcessor<VolumeBoundingBox>();
     registerProcessor<VolumeChannelCombiner>();
     registerProcessor<VolumeConverter>();
-    registerProcessor<WorldTransformMeshDeprecated>();
-    registerProcessor<WorldTransformVolumeDeprecated>();
-    registerProcessor<VolumeSliceExtractor>();
-    registerProcessor<VolumeSubsample>();
-    registerProcessor<VolumeSubset>();
-    registerProcessor<ImageContourProcessor>();
-    registerProcessor<VolumeSequenceSource>();
-    registerProcessor<VolumeSequenceElementSelectorProcessor>();
-    registerProcessor<ImageSequenceElementSelectorProcessor>();
-    registerProcessor<MeshSequenceElementSelectorProcessor>();
-
-    registerProcessor<VolumeBoundingBox>();
-    registerProcessor<SingleVoxel>();
-    registerProcessor<StereoCameraSyncer>();
-
-    registerProcessor<VolumeToSpatialSampler>();
-    registerProcessor<OrientationIndicator>();
-    registerProcessor<PixelValue>();
-    registerProcessor<VolumeSequenceToSpatial4DSampler>();
-    registerProcessor<VolumeGradientCPUProcessor>();
+    registerProcessor<VolumeCreator>();
     registerProcessor<VolumeCurlCPUProcessor>();
     registerProcessor<VolumeDivergenceCPUProcessor>();
-    registerProcessor<VolumeLaplacianProcessor>();
-    registerProcessor<MeshExport>();
-    registerProcessor<RandomMeshGenerator>();
-    registerProcessor<RandomSphereGenerator>();
-    registerProcessor<NoiseVolumeProcessor>();
-    registerProcessor<BufferToMeshProcessor>();
-    registerProcessor<ImageToSpatialSampler>();
-    registerProcessor<CameraFrustum>();
-    registerProcessor<VolumeSequenceSingleTimestepSamplerProcessor>();
-    registerProcessor<VolumeCreator>();
-    registerProcessor<MeshConverterProcessor>();
+    registerProcessor<VolumeExport>();
+    registerProcessor<VolumeGradientCPUProcessor>();
     registerProcessor<VolumeInformation>();
-    registerProcessor<TFSelector>();
+    registerProcessor<VolumeLaplacianProcessor>();
+    registerProcessor<VolumeSequenceElementSelectorProcessor>();
+    registerProcessor<VolumeSequenceSingleTimestepSamplerProcessor>();
+    registerProcessor<VolumeSequenceSource>();
+    registerProcessor<VolumeSequenceToSpatial4DSampler>();
     registerProcessor<VolumeShifter>();
+    registerProcessor<VolumeSliceExtractor>();
+    registerProcessor<VolumeSource>();
+    registerProcessor<VolumeSubsample>();
+    registerProcessor<VolumeSubset>();
+    registerProcessor<VolumeToSpatialSampler>();
+    registerProcessor<WorldTransformMeshDeprecated>();
+    registerProcessor<WorldTransformVolumeDeprecated>();
 
     // input selectors
     registerProcessor<InputSelector<MultiDataInport<Volume>, VolumeOutport>>();
@@ -328,7 +330,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
 
-int BaseModule::getVersion() const { return 6; }
+int BaseModule::getVersion() const { return 7; }
 
 std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -496,7 +498,18 @@ bool BaseModule::Converter::convert(TxElement* root) {
                                           xml::Kind::property("org.inviwo.Size_tMinMaxProperty")}},
                                         "type", "org.inviwo.Size_tMinMaxProperty",
                                         "org.inviwo.IntMinMaxProperty");
-
+            [[fallthrough]];
+        }
+        case 6: {
+            res |= xml::changeAttribute(
+                root, {{xml::Kind::processor("org.inviwo.LayerDistanceTransformRAM")}}, "type",
+                "org.inviwo.LayerDistanceTransformRAM", "org.inviwo.ImageDistanceTransform");
+            res |= xml::changeAttribute(root, {{xml::Kind::processor("org.inviwo.NoiseProcessor")}},
+                                        "type", "org.inviwo.NoiseProcessor",
+                                        "org.inviwo.NoiseGenerator2D");
+            res |= xml::changeAttribute(
+                root, {{xml::Kind::processor("org.inviwo.NoiseVolumeProcessor")}}, "type",
+                "org.inviwo.NoiseVolumeProcessor", "org.inviwo.NoiseGenerator3D");
             return res;
         }
 

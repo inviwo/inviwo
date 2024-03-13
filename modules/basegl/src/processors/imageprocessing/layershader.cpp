@@ -56,8 +56,8 @@ void main() {
 constexpr std::string_view defaultFrag = R"(#include "utils/structs.glsl"
 #include "utils/sampler2d.glsl"
 
-uniform sampler2D inport_;
-uniform ImageParameters outportParameters_;
+uniform sampler2D inport;
+uniform ImageParameters outportParameters;
 
 struct FormatScaling {
     float formatScaling;
@@ -75,11 +75,11 @@ in Fragment {
 
 void main() {
     // access normalized input value, then renormalize with respect to output data range
-    vec4 value = getNormalizedTexel(inport_, outportParameters_, in_frag.texCoord);
+    vec4 value = getNormalizedTexel(inport, outportParameters, in_frag.texCoord);
     FragData0 = value / (1.0 - destRange.formatScaling) - destRange.formatOffset;
 
     // regular texture access, no output mapping
-    // vec4 value = texture(layer, in_frag.texCoord);
+    // vec4 value = texture(inport, in_frag.texCoord);
     // FragData0 = value;
 }
 )";

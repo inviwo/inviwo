@@ -142,7 +142,7 @@ VolumeConverter::VolumeConverter()
         if (enableDataMapping_ && (format->getNumericType() != NumericType::Float)) {
             outputDataRange_.set(DataMapper{format}.dataRange);
         } else if (inport_.hasData()) {
-            outputDataRange_.set(inport_.getData()->dataMap_.dataRange);
+            outputDataRange_.set(inport_.getData()->dataMap.dataRange);
         }
     };
     enableDataMapping_.onChange(updateOutputRange);
@@ -179,7 +179,7 @@ std::shared_ptr<Volume> convertVolume(DataFormatId dstScalarFormatId, const Volu
 
             if (mapData) {
                 const dvec2 srcRange{(src.getDataFormat()->getNumericType() != NumericType::Float)
-                                         ? src.dataMap_.dataRange
+                                         ? src.dataMap.dataRange
                                          : dvec2{0.0, 1.0}};
 
                 using DstDoubleFormat = util::same_extent_t<SrcFormat, double>;
@@ -230,8 +230,8 @@ void VolumeConverter::process() {
                     return {dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
                 }
             } else {
-                return {inport_.getData()->dataMap_.dataRange,
-                        inport_.getData()->dataMap_.valueRange};
+                return {inport_.getData()->dataMap.dataRange,
+                        inport_.getData()->dataMap.valueRange};
             }
         }
     }();
@@ -244,8 +244,8 @@ void VolumeConverter::process() {
             return convertVolume(dstFormat_.get(), *srcVolume, enableDataMapping_, dstRange.first);
         }
     }();
-    dstVolume->dataMap_.dataRange = dstRange.first;
-    dstVolume->dataMap_.valueRange = dstRange.second;
+    dstVolume->dataMap.dataRange = dstRange.first;
+    dstVolume->dataMap.valueRange = dstRange.second;
 
     outport_.setData(dstVolume);
 }

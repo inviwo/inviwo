@@ -28,17 +28,19 @@
  *********************************************************************************/
 
 #include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
 #include "utils/classification.glsl"
 
-uniform ImageParameters outportParameters_;
+uniform ImageParameters inportParameters;
+uniform ImageParameters outportParameters;
 
-uniform sampler2D inport_;
-uniform int channel = 0;
+uniform sampler2D inport;
 uniform sampler2D transferFunction;
+uniform int channel = 0;
 
 void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    float value = texture(inport_, texCoords)[channel];
-    vec4 color = applyTF(transferFunction, value);
-    FragData0 = color;
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+    float value = getNormalizedTexel(inport, inportParameters, texCoords)[channel];
+
+    FragData0 = applyTF(transferFunction, value);
 }

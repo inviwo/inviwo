@@ -33,7 +33,7 @@
 
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
-#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/layerport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
@@ -65,7 +65,14 @@ public:
     virtual void process() override;
 
 private:
-    ImageInport vectorFeild_;
+    void adjustVisibilites();
+    vec4 getColor(const dvec2& velocity);
+    void createArrow(BasicMesh& mesh, IndexBufferRAM& index, float x, float y, float dx, float dy,
+                     const dvec2& velocity);
+    void createQuiver(BasicMesh& mesh, IndexBufferRAM& index, float x, float y, float dx, float dy,
+                      const dvec2& velocity);
+
+    LayerInport inport_;
     MeshOutport mesh_;
 
     FloatProperty glyphScale_;
@@ -86,15 +93,6 @@ private:
 
     std::random_device rd_;
     std::mt19937 mt_;
-
-    void adjustVisibilites();
-
-    vec4 getColor(const dvec2& velocity);
-
-    void createArrow(BasicMesh& mesh, IndexBufferRAM& index, float x, float y, float dx, float dy,
-                     const dvec2& velocity);
-    void createQuiver(BasicMesh& mesh, IndexBufferRAM& index, float x, float y, float dx, float dy,
-                      const dvec2& velocity);
 };
 
 }  // namespace inviwo

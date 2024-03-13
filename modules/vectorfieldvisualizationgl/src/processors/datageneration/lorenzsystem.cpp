@@ -113,16 +113,16 @@ LorenzSystem::~LorenzSystem() {}
 
 void LorenzSystem::process() {
     auto volume = std::make_shared<Volume>(size_.get(), DataVec3Float32::get());
-    volume->dataMap_.dataRange = vec2(0, 1);
-    volume->dataMap_.valueRange = vec2(-1, 1);
+    volume->dataMap.dataRange = vec2(0, 1);
+    volume->dataMap.valueRange = vec2(-1, 1);
 
     auto curlvolume = std::make_shared<Volume>(size_.get(), DataVec3Float32::get());
-    curlvolume->dataMap_.dataRange = vec2(0, 1);
-    curlvolume->dataMap_.valueRange = vec2(-1, 1);
+    curlvolume->dataMap.dataRange = vec2(0, 1);
+    curlvolume->dataMap.valueRange = vec2(-1, 1);
 
     auto divvolume = std::make_shared<Volume>(size_.get(), DataFloat32::get());
-    divvolume->dataMap_.dataRange = vec2(0, 1);
-    divvolume->dataMap_.valueRange = vec2(-1, 1);
+    divvolume->dataMap.dataRange = vec2(0, 1);
+    divvolume->dataMap.valueRange = vec2(-1, 1);
 
     // Basis and offset
     vec3 corners[4];

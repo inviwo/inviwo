@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEG...
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/properties/ordinalproperty.h>                      // for FloatProperty
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 
 namespace inviwo {
-class TextureUnitContainer;
 
 /**
  * \class ImageBinary
@@ -45,17 +45,20 @@ class TextureUnitContainer;
  */
 class IVW_MODULE_BASEGL_API ImageBinary : public ImageGLProcessor {
 public:
+    ImageBinary();
+
+    virtual void initializeResources() override;
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    ImageBinary();
-    virtual ~ImageBinary() {}
-
-protected:
-    virtual void preProcess(TextureUnitContainer& cont) override;
-
-    FloatProperty threshold_;
 
 private:
+    virtual void preProcess(TextureUnitContainer& cont) override;
+    virtual void afterInportChanged() override;
+
+    OptionPropertyInt channel_;
+    FloatProperty threshold_;
+    OptionPropertyString comparison_;
 };
 
 }  // namespace inviwo

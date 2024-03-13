@@ -10,7 +10,7 @@ set(HEADER_FILES
     include/modules/base/algorithm/convexhullmesh.h
     include/modules/base/algorithm/cubeproxygeometry.h
     include/modules/base/algorithm/dataminmax.h
-    include/modules/base/algorithm/image/imagecontour.h
+    include/modules/base/algorithm/image/layercontour.h
     include/modules/base/algorithm/image/layerramdistancetransform.h
     include/modules/base/algorithm/image/layerramsubset.h
     include/modules/base/algorithm/mesh/axisalignedboundingbox.h
@@ -66,6 +66,7 @@ set(HEADER_FILES
     include/modules/base/processors/gridplanes.h
     include/modules/base/processors/heightfieldmapper.h
     include/modules/base/processors/imagecontourprocessor.h
+    include/modules/base/processors/imagedistancetransform.h
     include/modules/base/processors/imageexport.h
     include/modules/base/processors/imageinformation.h
     include/modules/base/processors/imagesequenceelementselectorprocessor.h
@@ -78,7 +79,8 @@ set(HEADER_FILES
     include/modules/base/processors/inputselector.h
     include/modules/base/processors/layerboundingbox.h
     include/modules/base/processors/layercombiner.h
-    include/modules/base/processors/layerdistancetransformram.h
+    include/modules/base/processors/layercontour.h
+    include/modules/base/processors/layerdistancetransform.h
     include/modules/base/processors/layerinformation.h
     include/modules/base/processors/layersource.h
     include/modules/base/processors/layertoimage.h
@@ -93,8 +95,8 @@ set(HEADER_FILES
     include/modules/base/processors/meshplaneclipping.h
     include/modules/base/processors/meshsequenceelementselectorprocessor.h
     include/modules/base/processors/meshsource.h
-    include/modules/base/processors/noiseprocessor.h
-    include/modules/base/processors/noisevolumeprocessor.h
+    include/modules/base/processors/noisegenerator2d.h
+    include/modules/base/processors/noisegenerator3d.h
     include/modules/base/processors/ordinalpropertyanimator.h
     include/modules/base/processors/orientationindicator.h
     include/modules/base/processors/pixeltobufferprocessor.h
@@ -156,7 +158,8 @@ set(SOURCE_FILES
     src/algorithm/convexhullmesh.cpp
     src/algorithm/cubeproxygeometry.cpp
     src/algorithm/dataminmax.cpp
-    src/algorithm/image/imagecontour.cpp
+    src/algorithm/randomutils.cpp
+    src/algorithm/image/layercontour.cpp
     src/algorithm/image/layerramdistancetransform.cpp
     src/algorithm/image/layerramsubset.cpp
     src/algorithm/mesh/axisalignedboundingbox.cpp
@@ -208,6 +211,7 @@ set(SOURCE_FILES
     src/processors/gridplanes.cpp
     src/processors/heightfieldmapper.cpp
     src/processors/imagecontourprocessor.cpp
+    src/processors/imagedistancetransform.cpp
     src/processors/imageexport.cpp
     src/processors/imageinformation.cpp
     src/processors/imagesequenceelementselectorprocessor.cpp
@@ -220,7 +224,8 @@ set(SOURCE_FILES
     src/processors/inputselector.cpp
     src/processors/layerboundingbox.cpp
     src/processors/layercombiner.cpp
-    src/processors/layerdistancetransformram.cpp
+    src/processors/layercontour.cpp
+    src/processors/layerdistancetransform.cpp
     src/processors/layerinformation.cpp
     src/processors/layersource.cpp
     src/processors/layertoimage.cpp
@@ -235,8 +240,8 @@ set(SOURCE_FILES
     src/processors/meshplaneclipping.cpp
     src/processors/meshsequenceelementselectorprocessor.cpp
     src/processors/meshsource.cpp
-    src/processors/noiseprocessor.cpp
-    src/processors/noisevolumeprocessor.cpp
+    src/processors/noisegenerator2d.cpp
+    src/processors/noisegenerator3d.cpp
     src/processors/ordinalpropertyanimator.cpp
     src/processors/orientationindicator.cpp
     src/processors/pixeltobufferprocessor.cpp

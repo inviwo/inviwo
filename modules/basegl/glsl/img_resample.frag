@@ -29,9 +29,9 @@
 
 #include "utils/structs.glsl"
 
-uniform ImageParameters outportParameters_;
+uniform ImageParameters outportParameters;
 
-uniform sampler2D inport_;
+uniform sampler2D inport;
 
 #ifdef BICUBIC_INTERPOLATION
 vec4 cubic(float v)
@@ -79,9 +79,9 @@ vec4 bilinearInterpolation(sampler2D tex, vec2 coord, vec2 scale){
 
 void main() {
 #ifdef BICUBIC_INTERPOLATION
-    vec4 outputColor = bicubicInterpolation(inport_, gl_FragCoord.xy, outportParameters_.reciprocalDimensions);
+    vec4 outputColor = bicubicInterpolation(inport, gl_FragCoord.xy, outportParameters.reciprocalDimensions);
 #else
-    vec4 outputColor = bilinearInterpolation(inport_, gl_FragCoord.xy, outportParameters_.reciprocalDimensions);
+    vec4 outputColor = bilinearInterpolation(inport, gl_FragCoord.xy, outportParameters.reciprocalDimensions);
 #endif
     FragData0 = outputColor;
 }
