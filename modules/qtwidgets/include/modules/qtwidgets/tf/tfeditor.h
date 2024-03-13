@@ -56,15 +56,12 @@ class TFEditorControlPoint;
 class TFEditorIsovalue;
 class TFPrimitive;
 class TFPrimitiveSet;
-
-namespace util {
-struct TFPropertyConcept;
-}
+class TFPropertyConcept;
 
 class IVW_MODULE_QTWIDGETS_API TFEditor : public QGraphicsScene, public TFEditorPrimitiveObserver {
     Q_OBJECT
 public:
-    TFEditor(util::TFPropertyConcept* tfProperty, const std::vector<TFPrimitiveSet*>& primitiveSets,
+    TFEditor(TFPropertyConcept* tfProperty, const std::vector<TFPrimitiveSet*>& primitiveSets,
              QWidget* parent = nullptr);
     virtual ~TFEditor();
 
@@ -160,7 +157,7 @@ private:
     double controlPointSize_ = 15.0;           //!< size of TF primitives
     dvec2 relativeSceneOffset_ = dvec2(10.0);  //!< offset for duplicating TF primitives
 
-    util::TFPropertyConcept* tfPropertyPtr_;
+    TFPropertyConcept* tfPropertyPtr_;
     std::vector<TFPrimitiveSet*> tfSets_;
 
     using PointVec = std::vector<TFEditorControlPoint*>;

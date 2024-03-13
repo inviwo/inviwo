@@ -30,12 +30,12 @@
 #include <inviwo/core/datastructures/datamapper.h>   // for DataMapper
 #include <inviwo/core/datastructures/histogram.h>    // for HistogramMode, HistogramContainer
 #include <inviwo/core/network/networklock.h>         // for NetworkLock
-#include <inviwo/core/ports/volumeport.h>            // for VolumeInport
 #include <inviwo/core/util/glmvec.h>                 // for dvec2
 #include <inviwo/core/util/zip.h>                    // for enumerate, zipIterator, zipper
 #include <modules/qtwidgets/tf/tfeditorview.h>       // for TFEditorView
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>  // for TFPropertyConcept
-
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <algorithm>    // for min, max
 #include <bitset>       // for __bitset<>::reference, bitset, bitse...
 #include <cmath>        // for log10, pow
@@ -74,12 +74,11 @@ class QWidget;
 
 namespace inviwo {
 
-TFEditorView::TFEditorView(util::TFPropertyConcept* tfProperty, QGraphicsScene* scene,
-                           QWidget* parent)
+TFEditorView::TFEditorView(TFPropertyConcept* tfProperty, QGraphicsScene* scene, QWidget* parent)
     : QGraphicsView(scene, parent)
     , tfPropertyPtr_{tfProperty}
-    , histogramMode_{tfProperty->getHistogramMode()}
-    , histogramSelection_{tfProperty->getHistogramSelection()}
+    , histogramState_{.mode = tfProperty->getHistogramMode(),
+                      .selection = tfProperty->getHistogramSelection()}
     , maskHorizontal_{0.0, 1.0} {
 
     setMouseTracking(true);
@@ -89,9 +88,17 @@ TFEditorView::TFEditorView(util::TFPropertyConcept* tfProperty, QGraphicsScene* 
     this->setCacheMode(QGraphicsView::CacheBackground);
 
     tfPropertyPtr_->addObserver(this);
-    tfPropertyPtr_->onDataChange([this]() { updateHistogram(); });
 
-    updateHistogram();
+    histogramChangeHandle_ =
+        tfPropertyPtr_->onHistogramChange([this](TFPropertyConcept::HistogramChange change,
+                                                 const std::vector<Histogram1D>& histograms) {
+            histogramState_.change = change;
+            histogramState_.histograms = std::move(histograms);
+            histogramState_.polygons = HistogramState::createHistogramPolygons(
+                histogramState_.histograms, histogramState_.mode);
+            resetCachedContent();
+            update();
+        });
 }
 
 TFEditorView::~TFEditorView() = default;
@@ -108,15 +115,19 @@ void TFEditorView::onZoomHChange(const dvec2&) { updateZoom(); }
 void TFEditorView::onZoomVChange(const dvec2&) { updateZoom(); }
 
 void TFEditorView::onHistogramModeChange(HistogramMode mode) {
-    if (histogramMode_ != mode) {
-        histogramMode_ = mode;
-        updateHistogram();
+    if (histogramState_.mode != mode) {
+        histogramState_.mode = mode;
+
+        histogramState_.polygons = HistogramState::createHistogramPolygons(
+            histogramState_.histograms, histogramState_.mode);
+        resetCachedContent();
+        update();
     }
 }
 
 void TFEditorView::onHistogramSelectionChange(HistogramSelection selection) {
-    if (histogramSelection_ != selection) {
-        histogramSelection_ = selection;
+    if (histogramState_.selection != selection) {
+        histogramState_.selection = selection;
         resetCachedContent();
         update();
     }
@@ -227,83 +238,56 @@ void TFEditorView::drawForeground(QPainter* painter, const QRectF& rect) {
     QGraphicsView::drawForeground(painter, rect);
 }
 
-void TFEditorView::updateHistogram(const HistogramContainer& histCont) {
-    histograms_.clear();
-    if (histCont.empty()) return;
+QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D& histogram,
+                                                               HistogramMode mode) {
+    const auto stepSize = 1.0 / histogram.counts.size();
 
-    const auto sRect = sceneRect();
+    QPolygonF polygon{};
+    polygon << QPointF(0.0, 0.0);
 
-    for (size_t channel = 0; channel < histCont.size(); ++channel) {
-        const auto& normHistogramData = histCont[channel].getData();
-        const auto stepSize = sRect.width() / normHistogramData.size();
-
-        histograms_.push_back(QPolygonF());
-        double scale = 1.0;
-        switch (histogramMode_) {
-            case HistogramMode::Off:  // Don't show
-                return;
-            case HistogramMode::All:  // show all
-                scale = 1.0;
-                break;
-            case HistogramMode::P99:  // show 99%
-                scale = histCont[channel].histStats_.percentiles[99];
-                break;
-            case HistogramMode::P95:  // show 95%
-                scale = histCont[channel].histStats_.percentiles[95];
-                break;
-            case HistogramMode::P90:  // show 90%
-                scale = histCont[channel].histStats_.percentiles[90];
-                break;
-            case HistogramMode::Log:  // show log%
-                scale = 1.0;
-                break;
-        }
-        double height;
-        double maxCount = histCont[channel].getMaximumBinValue();
-
-        histograms_.back() << QPointF(0.0, 0.0);
-
-        for (size_t i = 0; i < normHistogramData.size(); i++) {
-            if (histogramMode_ == HistogramMode::Log) {
-                height = std::log10(1.0 + maxCount * normHistogramData[i]) / std::log10(maxCount);
-
-            } else {
-                height = normHistogramData[i] / scale;
-                height = std::min(height, 1.0);
-            }
-            height *= sRect.height();
-            histograms_.back() << QPointF(i * stepSize, height)
-                               << QPointF((i + 1) * stepSize, height);
-        }
-        histograms_.back() << QPointF(sRect.width(), 0.0f) << QPointF(0.0f, 0.0f);
-    }
-}
-
-void TFEditorView::updateHistogram() {
-    auto volumeInport = tfPropertyPtr_->getVolumeInport();
-
-    if (histogramMode_ != HistogramMode::Off && volumeInport && volumeInport->isReady()) {
-        if (auto volume = volumeInport->getData()) {
-            if (volume->hasHistograms()) {
-                updateHistogram(volume->getHistograms());
-            } else if (!histCalculation_) {
-                histograms_.clear();
-                histCalculation_ = volume->calculateHistograms(2048);
-                histCalculation_->whenDone([this](const HistogramContainer& histograms) {
-                    updateHistogram(histograms);
-                    resetCachedContent();
-                    update();
-                    histCalculation_.reset();
-                });
-            }
-        } else {
-            histograms_.clear();
+    if (mode == HistogramMode::Log) {
+        double maxCount = histogram.maxCount;
+        for (size_t i = 0; i < histogram.counts.size(); i++) {
+            double height = std::log10(1.0 + histogram.counts[i]) / std::log10(maxCount);
+            polygon << QPointF(i * stepSize, height) << QPointF((i + 1) * stepSize, height);
         }
     } else {
-        histograms_.clear();
+        const double scale = [&]() {
+            switch (mode) {
+                case HistogramMode::All:  // show all
+                    return histogram.histStats.percentiles[100];
+                case HistogramMode::P99:  // show 99%
+                    return histogram.histStats.percentiles[99];
+                case HistogramMode::P95:  // show 95%
+                    return histogram.histStats.percentiles[95];
+                case HistogramMode::P90:  // show 90%
+                    return histogram.histStats.percentiles[90];
+                default:
+                    return histogram.histStats.percentiles[100];
+            }
+        }();
+        for (size_t i = 0; i < histogram.counts.size(); i++) {
+            double height = histogram.counts[i] / scale;
+            height = std::min(height, 1.0);
+            polygon << QPointF(i * stepSize, height) << QPointF((i + 1) * stepSize, height);
+        }
     }
-    resetCachedContent();
-    update();
+    polygon << QPointF(1.0f, 0.0f) << QPointF(0.0f, 0.0f);
+
+    return polygon;
+}
+
+std::vector<QPolygonF> TFEditorView::HistogramState::createHistogramPolygons(
+    const std::vector<Histogram1D>& histograms, HistogramMode mode) {
+    std::vector<QPolygonF> polygons;
+
+    if (mode != HistogramMode::Off) {
+        for (const auto& histogram : histograms) {
+            polygons.push_back(createHistogramPolygon(histogram, mode));
+        }
+    }
+
+    return polygons;
 }
 
 void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
@@ -314,12 +298,12 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
     const QColor colorOrigin(102, 106, 115);
     const int gridSpacing = 50;
 
-    QRectF sRect = sceneRect();
+    const auto sRect = sceneRect();
     QPen gridPen;
     gridPen.setCosmetic(true);
 
     double gridOrigin = sRect.left();  // horizontal origin of the grid
-    
+
     // adjust grid origin if there is a data mapper available
     const auto& datamap = tfPropertyPtr_->getDataMap();
     if ((datamap.valueRange.x < 0.0) && (datamap.valueRange.y > 0.0)) {
@@ -354,37 +338,73 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
     painter->setPen(gridPen);
     painter->drawLines(lines);
 
-    // histogram
-    if (histCalculation_ && histogramMode_ != HistogramMode::Off) {
-        painter->save();
-        painter->resetTransform();
+    histogramState_.paintHistograms(painter, sceneRect(), this->rect());
+}
 
-        QPen pen;
-        pen.setColor(QColor(180, 180, 180, 255));
-        painter->setPen(pen);
-        auto font = painter->font();
-        font.setPointSize(12);
-        painter->setFont(font);
-        painter->drawText(QRect(0, 0, width(), height()).adjusted(20, 10, -20, -10),
+void TFEditorView::HistogramState::paintHistogram(QPainter* painter, const QPolygonF& histogram,
+                                                  const QRectF& sceneRect) const {
+    utilqt::Save saved{painter};
+    QPen pen;
+    pen.setColor(QColor(68, 102, 170, 150));
+    pen.setWidthF(2.0f);
+    pen.setCosmetic(true);
+    painter->setPen(pen);
+
+    QBrush brush;
+    brush.setColor(QColor(68, 102, 170, 100));
+    brush.setStyle(Qt::SolidPattern);
+    painter->setBrush(brush);
+
+    painter->setTransform(QTransform::fromScale(sceneRect.width(), sceneRect.height()), true);
+    painter->drawPolygon(histogram);
+}
+
+void TFEditorView::HistogramState::paintLabel(QPainter* painter, size_t index, size_t count,
+                                              const QRect& rect) const {
+    utilqt::Save saved{painter};
+    painter->resetTransform();
+    QPen pen;
+    pen.setColor(QColor(68, 102, 170, 255).lighter());
+    painter->setPen(pen);
+    auto font = painter->font();
+    font.setPointSize(12);
+    painter->setFont(font);
+    painter->drawText(QRect(0, 0, rect.width(), rect.height())
+                          .adjusted(20, 10, -20, -10 - 10 * static_cast<int>(count)),
+                      Qt::AlignRight | Qt::AlignTop,
+                      utilqt::toQString(fmt::format("Channel: {}", index + 1)));
+}
+
+void TFEditorView::HistogramState::paintState(QPainter* painter, const QRect& rect) const {
+    utilqt::Save saved{painter};
+    painter->resetTransform();
+    QPen pen;
+    pen.setColor(QColor(68, 102, 170, 255).lighter());
+    painter->setPen(pen);
+    auto font = painter->font();
+    font.setPointSize(12);
+    painter->setFont(font);
+    if (change == TFPropertyConcept::HistogramChange::Requested) {
+        painter->drawText(QRect(0, 0, rect.width(), rect.height()).adjusted(20, 10, -20, -10),
                           Qt::AlignRight | Qt::AlignTop, QString("Calculating histogram..."));
-        painter->restore();
+    } else if (change == TFPropertyConcept::HistogramChange::NoData) {
+        painter->drawText(QRect(0, 0, rect.width(), rect.height()).adjusted(20, 10, -20, -10),
+                          Qt::AlignRight | Qt::AlignTop, QString("Histogram not available"));
     }
+}
 
-    for (auto&& [i, elem] : util::enumerate(histograms_)) {
-        if (!histogramSelection_[i]) continue;
+void TFEditorView::HistogramState::paintHistograms(QPainter* painter, const QRectF& sceneRect,
+                                                   const QRect& rect) const {
+    if (mode == HistogramMode::Off) return;
 
-        QPen pen;
-        pen.setColor(QColor(68, 102, 170, 150));
-        pen.setWidthF(2.0f);
-        pen.setCosmetic(true);
-        painter->setPen(pen);
+    paintState(painter, rect);
 
-        QBrush brush;
-        brush.setColor(QColor(68, 102, 170, 100));
-        brush.setStyle(Qt::SolidPattern);
-        painter->setBrush(brush);
-
-        painter->drawPolygon(elem);
+    size_t count = 0;
+    for (auto&& [i, histogram] : util::enumerate(polygons)) {
+        if (!selection[i]) continue;
+        paintLabel(painter, i, count, rect);
+        paintHistogram(painter, histogram, sceneRect);
+        ++count;
     }
 }
 

@@ -35,27 +35,44 @@
 
 namespace inviwo {
 
+namespace {
+
+constexpr auto histCalc = [](std::any anyData) {
+    auto data = std::any_cast<std::pair<DataMapper, std::shared_ptr<const VolumeRAM>>>(anyData);
+    return data.second->dispatch<std::vector<Histogram1D>>(
+        [&]<typename T>(const VolumeRAMPrecision<T>* repr) {
+            return util::calculateHistograms(repr->getView(), data.first, 2048);
+        });
+};
+
+auto histData(const Volume& v) {
+    return [&v]() -> std::any {
+        return std::pair{v.dataMap, v.getRepresentationShared<VolumeRAM>()};
+    };
+}
+
+}  // namespace
+
 Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
                const SwizzleMask& defaultSwizzleMask, InterpolationType interpolation,
                const Wrapping3D& wrapping)
     : Data<Volume, VolumeRepresentation>{}
     , StructuredGridEntity<3>{}
     , MetaDataOwner{}
-    , HistogramSupplier{}
     , dataMap{defaultFormat}
     , axes{util::defaultAxes<3>()}
     , defaultDimensions_{defaultDimensions}
     , defaultDataFormat_{defaultFormat}
     , defaultSwizzleMask_{defaultSwizzleMask}
     , defaultInterpolation_{interpolation}
-    , defaultWrapping_{wrapping} {}
+    , defaultWrapping_{wrapping}
+    , histograms_{histData(*this), histCalc} {}
 
 Volume::Volume(VolumeConfig config)
     : Data<Volume, VolumeRepresentation>{}
     , StructuredGridEntity<3>{config.model.value_or(VolumeConfig::defaultModel),
                               config.world.value_or(VolumeConfig::defaultWorld)}
     , MetaDataOwner{}
-    , HistogramSupplier{}
     , dataMap{config.dataMap()}
     , axes{config.xAxis.value_or(VolumeConfig::defaultXAxis),
            config.yAxis.value_or(VolumeConfig::defaultYAxis),
@@ -64,20 +81,21 @@ Volume::Volume(VolumeConfig config)
     , defaultDataFormat_{config.format ? config.format : VolumeConfig::defaultFormat}
     , defaultSwizzleMask_{config.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask)}
     , defaultInterpolation_{config.interpolation.value_or(VolumeConfig::defaultInterpolation)}
-    , defaultWrapping_{config.wrapping.value_or(VolumeConfig::defaultWrapping)} {}
+    , defaultWrapping_{config.wrapping.value_or(VolumeConfig::defaultWrapping)}
+    , histograms_{histData(*this), histCalc} {}
 
 Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     : Data<Volume, VolumeRepresentation>{}
     , StructuredGridEntity<3>{}
     , MetaDataOwner{}
-    , HistogramSupplier{}
     , dataMap{in->getDataFormat()}
     , axes{util::defaultAxes<3>()}
     , defaultDimensions_{in->getDimensions()}
     , defaultDataFormat_{in->getDataFormat()}
     , defaultSwizzleMask_{in->getSwizzleMask()}
     , defaultInterpolation_{in->getInterpolation()}
-    , defaultWrapping_{in->getWrapping()} {
+    , defaultWrapping_{in->getWrapping()}
+    , histograms_{histData(*this), histCalc} {
 
     addRepresentation(in);
 }
@@ -87,7 +105,6 @@ Volume::Volume(const Volume& rhs, NoData, VolumeConfig config)
     , StructuredGridEntity<3>{config.model.value_or(rhs.getModelMatrix()),
                               config.world.value_or(rhs.getWorldMatrix())}
     , MetaDataOwner{rhs}
-    , HistogramSupplier{}
     , dataMap{config.dataMap(rhs.dataMap)}
     , axes{config.xAxis.value_or(rhs.axes[0]), config.yAxis.value_or(rhs.axes[1]),
            config.zAxis.value_or(rhs.axes[2])}
@@ -95,7 +112,8 @@ Volume::Volume(const Volume& rhs, NoData, VolumeConfig config)
     , defaultDataFormat_{config.format ? config.format : rhs.getDataFormat()}
     , defaultSwizzleMask_{config.swizzleMask.value_or(rhs.getSwizzleMask())}
     , defaultInterpolation_{config.interpolation.value_or(rhs.getInterpolation())}
-    , defaultWrapping_{config.wrapping.value_or(rhs.getWrapping())} {}
+    , defaultWrapping_{config.wrapping.value_or(rhs.getWrapping())}
+    , histograms_{histData(*this), histCalc} {}
 
 Volume* Volume::clone() const { return new Volume(*this); }
 Volume::~Volume() = default;
@@ -164,26 +182,16 @@ Document Volume::getInfo() const {
     tb(H("Basis"), getBasis());
     tb(H("Offset"), getOffset());
 
-    if (hasRepresentation<VolumeRAM>()) {
-        if (hasHistograms()) {
-            const auto& histograms = getHistograms();
-            for (size_t i = 0; i < histograms.size(); ++i) {
-                std::stringstream ss;
-                ss << "Channel " << i << " Min: " << histograms[i].stats_.min
-                   << " Mean: " << histograms[i].stats_.mean << " Max: " << histograms[i].stats_.max
-                   << " Std: " << histograms[i].stats_.standardDeviation;
-                tb(H("Stats"), ss.str());
-
-                std::stringstream ss2;
-                ss2 << "(1: " << histograms[i].stats_.percentiles[1]
-                    << ", 25: " << histograms[i].stats_.percentiles[25]
-                    << ", 50: " << histograms[i].stats_.percentiles[50]
-                    << ", 75: " << histograms[i].stats_.percentiles[75]
-                    << ", 99: " << histograms[i].stats_.percentiles[99] << ")";
-                tb(H("Percentiles"), ss2.str());
-            }
-        }
-    }
+    histograms_.forEach([&](const Histogram1D& histogram, size_t channel) {
+        tb(H("Stats"), fmt::format("Channel {} Min: {}, Mean: {}, Max: {}, Std: {}", channel,
+                                   histogram.dataStats.min, histogram.dataStats.mean,
+                                   histogram.dataStats.max, histogram.dataStats.standardDeviation));
+        tb(H("Percentiles"),
+           fmt::format("(1: {}, 25: {}, 50: {}, 75: {}, 99: {})",
+                       histogram.dataStats.percentiles[1], histogram.dataStats.percentiles[25],
+                       histogram.dataStats.percentiles[50], histogram.dataStats.percentiles[75],
+                       histogram.dataStats.percentiles[99]));
+    });
     return doc;
 }
 
@@ -250,9 +258,11 @@ uvec3 Volume::colorCode = uvec3(188, 101, 101);
 const std::string Volume::classIdentifier = "org.inviwo.Volume";
 const std::string Volume::dataName = "Volume";
 
-std::shared_ptr<HistogramCalculationState> Volume::calculateHistograms(size_t bins) const {
-    return HistogramSupplier::startCalculation(getRepresentationShared<VolumeRAM>(),
-                                               dataMap.dataRange, bins);
+void Volume::discardHistograms() { histograms_.discard(); }
+
+DispatcherHandle<HistogramCache::Callback> Volume::calculateHistograms(
+    std::function<void(const std::vector<Histogram1D>&)> whenDone) const {
+    return histograms_.calculateHistograms(std::move(whenDone));
 }
 
 template class IVW_CORE_TMPL_INST DataReaderType<Volume>;

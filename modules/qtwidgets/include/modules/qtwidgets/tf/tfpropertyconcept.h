@@ -43,14 +43,12 @@
 #include <utility>  // for declval
 
 namespace inviwo {
-
-namespace util {
-
 /**
  * \class TFPropertyConcept
  * \brief property interface used by the TF dialog to support different TF properties
  */
-struct IVW_MODULE_QTWIDGETS_API TFPropertyConcept {
+class IVW_MODULE_QTWIDGETS_API TFPropertyConcept {
+public:
     virtual ~TFPropertyConcept() = default;
     virtual Property* getProperty() const = 0;
 
@@ -80,8 +78,6 @@ struct IVW_MODULE_QTWIDGETS_API TFPropertyConcept {
     virtual void setHistogramSelection(HistogramSelection selection) = 0;
     virtual HistogramSelection getHistogramSelection() const = 0;
 
-    virtual VolumeInport* getVolumeInport() = 0;
-
     virtual const DataMapper& getDataMap() const = 0;
 
     virtual void addObserver(TFPropertyObserver* observer) = 0;
@@ -91,7 +87,12 @@ struct IVW_MODULE_QTWIDGETS_API TFPropertyConcept {
     virtual void showImportDialog() = 0;
 
     virtual bool hasData() const = 0;
-    virtual DispatcherHandle<void()> onDataChange(std::function<void()>) = 0;
+    [[nodiscard]] virtual DispatcherHandle<void()> onDataChange(std::function<void()>) = 0;
+
+    enum class HistogramChange { NoData, Requested, NewData };
+    using HistogramCallback = void(HistogramChange, const std::vector<Histogram1D>&);
+    [[nodiscard]] virtual DispatcherHandle<HistogramCallback> onHistogramChange(
+        std::function<HistogramCallback>) = 0;
 };
 
 template <typename U>
@@ -105,7 +106,10 @@ public:
 
     TFPropertyModel(U* data) : data_(data) {
         if (auto* port = data_->getVolumeInport()) {
-            auto callback = [this]() { onDataChangeDispatcher_.invoke(); };
+            auto callback = [this]() {
+                onDataChangeDispatcher_.invoke();
+                setUpHistogramCallback();
+            };
             portCallbacks_.emplace_back(port->onChangeScoped(callback));
             portCallbacks_.emplace_back(port->onConnectScoped(callback));
             portCallbacks_.emplace_back(port->onDisconnectScoped(callback));
@@ -189,8 +193,6 @@ public:
         return data_->getHistogramSelection();
     }
 
-    virtual VolumeInport* getVolumeInport() override { return data_->getVolumeInport(); }
-
     virtual void addObserver(TFPropertyObserver* observer) override {
         data_->TFPropertyObservable::addObserver(observer);
     }
@@ -224,24 +226,47 @@ public:
         static const DataMapper default_;
         if (auto* port = data_->getVolumeInport()) {
             if (port->hasData()) {
-                return port->getData()->dataMap_;
+                return port->getData()->dataMap;
             }
         }
         return default_;
     }
 
-    virtual bool hasData() const override { return  data_->getVolumeInport() != nullptr; }
+    virtual bool hasData() const override { return data_->getVolumeInport() != nullptr; }
 
     virtual DispatcherHandle<void()> onDataChange(std::function<void()> callback) override {
-        return onDataChangeDispatcher_.add(callback)
+        return onDataChangeDispatcher_.add(callback);
+    }
+
+    virtual DispatcherHandle<HistogramCallback> onHistogramChange(
+        std::function<HistogramCallback> callback) override {
+        auto handle = histogramChangeCallbacks_.add(std::move(callback));
+        setUpHistogramCallback();
+        return handle;
     }
 
 private:
+    void setUpHistogramCallback() {
+        if (auto* port = data_->getVolumeInport()) {
+            if (auto volume = port->getData()) {
+                histogramChangeCallbacks_.invoke(HistogramChange::Requested,
+                                                 std::vector<Histogram1D>{});
+                histogramHandle_ = volume->calculateHistograms(
+                    [this](const std::vector<Histogram1D>& histograms) -> void {
+                        histogramChangeCallbacks_.invoke(HistogramChange::NewData, histograms);
+                    });
+                return;
+            }
+        }
+        histogramHandle_.reset();
+        histogramChangeCallbacks_.invoke(HistogramChange::NoData, std::vector<Histogram1D>{});
+    }
+
     U* data_;
     Dispatcher<void()> onDataChangeDispatcher_;
+    Dispatcher<HistogramCallback> histogramChangeCallbacks_;
+    DispatcherHandle<HistogramCache::Callback> histogramHandle_;
     std::vector<std::shared_ptr<std::function<void()>>> portCallbacks_;
 };
-
-}  // namespace util
 
 }  // namespace inviwo

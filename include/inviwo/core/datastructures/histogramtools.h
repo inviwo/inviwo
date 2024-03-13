@@ -30,75 +30,45 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/datastructures/histogram.h>
 #include <inviwo/core/util/dispatcher.h>
-#include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
 
-#include <atomic>
 #include <memory>
 #include <vector>
+#include <any>
+#include <mutex>
+#include <map>
 
 namespace inviwo {
 
-class HistogramSupplier;
-
-class IVW_CORE_API HistogramCalculationState {
+class IVW_CORE_API HistogramCache {
 public:
-    friend HistogramSupplier;
-    HistogramCalculationState(std::weak_ptr<HistogramContainer> container, size_t bins,
-                              dvec2 dataRange)
-        : container_{container}
-        , stop_{std::make_shared<std::atomic<bool>>(false)}
-        , bins_{bins}
-        , dataRange_{dataRange} {}
+    using Callback = void(const std::vector<Histogram1D>&);
 
-    ~HistogramCalculationState() { *stop_ = true; }
+    HistogramCache(std::function<std::any()> getData,
+                   std::function<std::vector<Histogram1D>(std::any)> calculate);
+    HistogramCache(const HistogramCache& rhs);
+    HistogramCache(HistogramCache&& rhs) noexcept;
+    HistogramCache& operator=(const HistogramCache& that);
+    HistogramCache& operator=(HistogramCache&& that) noexcept;
 
-    void whenDone(std::function<void(const HistogramContainer&)> callback);
+    DispatcherHandle<Callback> calculateHistograms(std::function<Callback> whenDone) const;
 
-    size_t getBins() const { return bins_; }
-    dvec2 getDataRange() const { return dataRange_; }
+    void forEach(const std::function<void(const Histogram1D&, size_t)>&) const;
+    void discard();
 
 private:
-    std::weak_ptr<HistogramContainer> container_;
-    Dispatcher<void(const HistogramContainer&)> callbacks_;
-    std::vector<std::shared_ptr<std::function<void(const HistogramContainer&)>>> callbackHandles_;
-    std::shared_ptr<std::atomic<bool>> stop_;
-    bool done = false;
+    enum class Status { Valid, Calculating, NotSet };
+    struct State {
+        std::function<std::vector<Histogram1D>(std::any)> calculate;
+        std::mutex mutex;
+        std::vector<Histogram1D> histograms;
+        Dispatcher<Callback> callbacks;
+        Status status = Status::NotSet;
+    };
 
-    size_t bins_;
-    dvec2 dataRange_;
-};
-
-class IVW_CORE_API HistogramSupplier {
-public:
-    HistogramSupplier();
-    HistogramSupplier(const HistogramSupplier& rhs);
-    HistogramSupplier(HistogramSupplier&& rhs) = default;
-    HistogramSupplier& operator=(const HistogramSupplier& that);
-    HistogramSupplier& operator=(HistogramSupplier&& that) = default;
-
-    virtual ~HistogramSupplier() = default;
-
-    bool hasHistograms() const { return !histograms_->empty(); }
-    const HistogramContainer& getHistograms() const { return *histograms_; }
-    HistogramContainer& getHistograms() { return *histograms_; }
-
-    void invalidateHistogram() {
-        histograms_->clear();
-        calculation_.reset();
-    }
-
-protected:
-    std::shared_ptr<HistogramCalculationState> startCalculation(
-        std::shared_ptr<const VolumeRAM> volumeRam, dvec2 dataRange, size_t bins) const;
-
-private:
-    static void done(std::shared_ptr<HistogramCalculationState> state,
-                     HistogramContainer histograms);
-
-    mutable std::shared_ptr<HistogramCalculationState> calculation_;
-    mutable std::shared_ptr<HistogramContainer> histograms_;
+    std::function<std::any()> getData_;
+    std::shared_ptr<State> state_;
 };
 
 }  // namespace inviwo
