@@ -74,14 +74,13 @@ namespace inviwo {
 class EventPropagator;
 class Image;
 class IsoValueProperty;
+class IsoValueCollection;
 class Layer;
 class ProcessorNetwork;
 class TransferFunction;
 class TransferFunctionProperty;
-
-namespace util {
-struct TFPropertyConcept;
-}
+class TFPropertyConcept;
+class IsoTFProperty;
 
 namespace utilqt {
 
@@ -163,6 +162,14 @@ constexpr QColor toQColor(const ivec4& v) { return QColor(v.r, v.g, v.b, v.a); }
 constexpr QColor toQColor(const uvec4& v) { return QColor(v.r, v.g, v.b, v.a); }
 constexpr QColor toQColor(const vec4& v) { return toQColor(ivec4(v * 255.0f)); }
 
+IVW_MODULE_QTWIDGETS_API void paintCheckerBoard(QPainter& painter, const QRectF& rect);
+IVW_MODULE_QTWIDGETS_API void paint(const TransferFunction& tf, QPainter& painter,
+                                    const QRectF& rect);
+IVW_MODULE_QTWIDGETS_API void paint(const IsoValueCollection& isoValues, QPainter& painter,
+                                    const QRectF& rect);
+IVW_MODULE_QTWIDGETS_API void paintMask(const dvec2& mask, const dvec2& range, QPainter& painter,
+                                        const QRectF& rect);
+
 IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TransferFunction& tf, const QSize& size);
 
 IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TransferFunctionProperty& tfproperty,
@@ -170,7 +177,9 @@ IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TransferFunctionProperty& tfpro
 
 IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const IsoValueProperty& property, const QSize& size);
 
-IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept,
+IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const IsoTFProperty& property, const QSize& size);
+
+IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TFPropertyConcept& propertyConcept,
                                            const QSize& size);
 
 IVW_MODULE_QTWIDGETS_API QPointF clamp(const QPointF& pos, const QRectF& rect);
@@ -327,6 +336,30 @@ IVW_MODULE_QTWIDGETS_API std::vector<std::string> getMonoSpaceFonts();
  * @return the index or 0 if the default font was not found
  */
 IVW_MODULE_QTWIDGETS_API size_t getDefaultMonoSpaceFontIndex();
+
+template <typename T>
+struct Save {
+    explicit Save(T* item) : item_(item) { item->save(); }
+    Save(const Save&) = delete;
+    Save(Save&& rhs) : item_{rhs.item_} { rhs.item_ = nullptr; };
+    Save& operator=(const Save&) = delete;
+    Save& operator=(Save&& that) {
+        if (this != &that) {
+            std::swap(item_, that.item_);
+            if (that.item_) {
+                that.item_->disable();
+                that.item_ = nullptr;
+            }
+        }
+        return *this;
+    };
+    ~Save() {
+        if (item_) item_->restore();
+    }
+
+private:
+    T* item_;
+};
 
 }  // namespace utilqt
 

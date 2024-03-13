@@ -33,10 +33,10 @@
 
 #include <modules/qtwidgets/inviwowidgetsqt.h>              // for IvwPushButton
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
-#include <modules/qtwidgets/tf/tfpropertyconcept.h>         // for TFPropertyConcept
 #include <modules/qtwidgets/tf/tfpropertydialog.h>          // for TFPropertyDialog
 
 #include <memory>  // for unique_ptr
+#include <variant>
 
 class QMenu;
 class QResizeEvent;
@@ -82,8 +82,8 @@ public:
 private:
     void showEvent(QShowEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
-
-    std::unique_ptr<util::TFPropertyConcept> propertyPtr_ = nullptr;
+    
+    std::variant<TransferFunctionProperty*, IsoValueProperty*, IsoTFProperty*> property_;
 };
 
 }  // namespace inviwo

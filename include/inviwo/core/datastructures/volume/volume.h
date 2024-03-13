@@ -65,8 +65,7 @@ class Camera;
  */
 class IVW_CORE_API Volume : public Data<Volume, VolumeRepresentation>,
                             public StructuredGridEntity<3>,
-                            public MetaDataOwner,
-                            public HistogramSupplier {
+                            public MetaDataOwner {
 public:
     using Config = VolumeConfig;
     explicit Volume(size3_t defaultDimensions = VolumeConfig::defaultDimensions,
@@ -170,7 +169,9 @@ public:
     template <typename Kind>
     const typename representation_traits<Volume, Kind>::type* getRep() const;
 
-    std::shared_ptr<HistogramCalculationState> calculateHistograms(size_t bins = 2048) const;
+    [[nodiscard]] DispatcherHandle<HistogramCache::Callback> calculateHistograms(
+        std::function<void(const std::vector<Histogram1D>&)> whenDone) const;
+    void discardHistograms();
 
     VolumeConfig config() const;
 
@@ -180,6 +181,8 @@ protected:
     SwizzleMask defaultSwizzleMask_;
     InterpolationType defaultInterpolation_;
     Wrapping3D defaultWrapping_;
+
+    HistogramCache histograms_;
 };
 
 template <typename Kind>

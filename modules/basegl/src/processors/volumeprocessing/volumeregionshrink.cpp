@@ -222,7 +222,6 @@ void VolumeRegionShrink::process() {
     fbo_.activate();
     VolumeGL* outGL0 = out_[0]->getEditableRepresentation<VolumeGL>();
     fbo_.attachColorTexture(outGL0->getTexture().get(), 0);
-    out_[0]->invalidateHistogram();
 
     utilgl::Activate as{&shader_};
 
@@ -271,7 +270,6 @@ void VolumeRegionShrink::process() {
 
     VolumeGL* outGL1 = out_[1]->getEditableRepresentation<VolumeGL>();
     fbo_.attachColorTexture(outGL1->getTexture().get(), 1);
-    out_[1]->invalidateHistogram();
 
     size_t src = 1;
     size_t dst = 0;
@@ -285,6 +283,7 @@ void VolumeRegionShrink::process() {
     }
 
     FrameBufferObject::deactivateFBO();
+    out_[dst]->discardHistograms();
     outport_.setData(out_[dst]);
 }
 
