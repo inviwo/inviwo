@@ -44,14 +44,15 @@
 #include <inviwo/core/processors/canvasprocessor.h>           // for CanvasProcessor
 #include <inviwo/core/properties/isovalueproperty.h>          // for IsoValueProperty
 #include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
-#include <inviwo/core/util/exception.h>                       // for Exception
-#include <inviwo/core/util/glmvec.h>                          // for ivec2, vec4, dvec2
-#include <inviwo/core/util/logcentral.h>                      // for LogCentral, LogWarnCustom
-#include <inviwo/core/util/safecstr.h>                        // for SafeCStr
-#include <inviwo/core/util/sourcecontext.h>                   // for IVW_CONTEXT_CUSTOM
-#include <inviwo/core/util/stringconversion.h>                // for replaceInString, toString
-#include <inviwo/core/util/transformiterator.h>               // for TransformIterator
-#include <inviwo/core/util/zip.h>                             // for enumerate, zipIterator, zipper
+#include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/util/exception.h>          // for Exception
+#include <inviwo/core/util/glmvec.h>             // for ivec2, vec4, dvec2
+#include <inviwo/core/util/logcentral.h>         // for LogCentral, LogWarnCustom
+#include <inviwo/core/util/safecstr.h>           // for SafeCStr
+#include <inviwo/core/util/sourcecontext.h>      // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/stringconversion.h>   // for replaceInString, toString
+#include <inviwo/core/util/transformiterator.h>  // for TransformIterator
+#include <inviwo/core/util/zip.h>                // for enumerate, zipIterator, zipper
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>  // for TFPropertyConcept
 
@@ -117,194 +118,135 @@ QMainWindow* getApplicationMainWindow() {
     }
 }
 
-QPixmap toQPixmap(const TransferFunction& tf, const QSize& size) {
+void paintCheckerBoard(QPainter& painter, const QRectF& rect) {
+    QPixmap checkerBoard(10, 10);
+    QPainter checkerBoardPainter(&checkerBoard);
+    checkerBoardPainter.fillRect(0, 0, 5, 5, Qt::lightGray);
+    checkerBoardPainter.fillRect(5, 0, 5, 5, Qt::darkGray);
+    checkerBoardPainter.fillRect(0, 5, 5, 5, Qt::darkGray);
+    checkerBoardPainter.fillRect(5, 5, 5, 5, Qt::lightGray);
+    checkerBoardPainter.end();
+
+    painter.fillRect(rect, QBrush(checkerBoard));
+}
+
+void paint(const TransferFunction& tf, QPainter& painter, const QRectF& rect) {
     QLinearGradient gradient;
-    for (const auto& tfpoint : tf) {
-        vec4 curColor = tfpoint.getColor();
+    for (const auto& point : tf) {
+        vec4 curColor = point.getColor();
         // increase alpha to allow better visibility by 1 - (1 - a)^4
         curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
-        gradient.setColorAt(tfpoint.getPosition(), utilqt::toQColor(curColor));
+        gradient.setColorAt(point.getPosition(), utilqt::toQColor(curColor));
     }
 
     // gradient should stretch entire pixmap from left to right
-    gradient.setStart(QPointF(0.0, 0.0));
-    gradient.setFinalStop(QPointF(size.width(), 0.0));
+    gradient.setStart(rect.bottomLeft());
+    gradient.setFinalStop(rect.bottomRight());
 
-    QPixmap tfPixmap(size);
-    QPainter tfPainter(&tfPixmap);
-
-    QPixmap checkerBoard(10, 10);
-    QPainter checkerBoardPainter(&checkerBoard);
-    checkerBoardPainter.fillRect(0, 0, 5, 5, Qt::lightGray);
-    checkerBoardPainter.fillRect(5, 0, 5, 5, Qt::darkGray);
-    checkerBoardPainter.fillRect(0, 5, 5, 5, Qt::darkGray);
-    checkerBoardPainter.fillRect(5, 5, 5, 5, Qt::lightGray);
-    checkerBoardPainter.end();
-
-    QRect r(QPoint(0, 0), size);
-    // fill pixmap background with a checkerboard
-    tfPainter.fillRect(r, QBrush(checkerBoard));
-    // draw TF gradient on top
-    tfPainter.fillRect(r, gradient);
-
-    return tfPixmap;
+    painter.fillRect(rect, gradient);
 }
 
-QPixmap toQPixmap(const TransferFunctionProperty& tfproperty, const QSize& size) {
-    auto tfPixmap = toQPixmap(tfproperty.get(), size);
-    QPainter tfPainter(&tfPixmap);
+void paint(const IsoValueCollection& isoValues, QPainter& painter, const QRectF& rect) {
+    const auto range = isoValues.getRange();
+    auto normalize = [&](double pos) { return (pos - range.x) / (range.y - range.x); };
 
-    const auto tfRange = tfproperty.get().getRange();
-
-    // draw masking indicators
-    const QColor maskColor(25, 25, 25, 150);
-    if (tfproperty.getMask().x > tfRange.x) {
-        // normalize mask position with respect to TF range
-        const double maskPos = (tfproperty.getMask().x - tfRange.x) / (tfRange.y - tfRange.x);
-        QRect rectMask(QPoint(0, 0),
-                       QSize(static_cast<int>(maskPos * size.width()), size.height()));
-        tfPainter.fillRect(rectMask, maskColor);
-        tfPainter.drawLine(rectMask.bottomRight(), rectMask.topRight());
-    }
-
-    if (tfproperty.getMask().y < tfRange.y) {
-        // normalize mask position with respect to TF range
-        const double maskPos = (tfproperty.getMask().y - tfRange.x) / (tfRange.y - tfRange.x);
-        QRect rectMask(QPoint(static_cast<int>(maskPos * size.width()), 0),
-                       QPoint(size.width(), size.height()));
-        tfPainter.fillRect(rectMask, maskColor);
-        tfPainter.drawLine(rectMask.bottomLeft(), rectMask.topLeft());
-    }
-    return tfPixmap;
-}
-
-QPixmap toQPixmap(const IsoValueProperty& property, const QSize& size) {
-    QPixmap tfPixmap(size);
-    QPainter painter(&tfPixmap);
-
-    QPixmap checkerBoard(10, 10);
-    QPainter checkerBoardPainter(&checkerBoard);
-    checkerBoardPainter.fillRect(0, 0, 5, 5, Qt::lightGray);
-    checkerBoardPainter.fillRect(5, 0, 5, 5, Qt::darkGray);
-    checkerBoardPainter.fillRect(0, 5, 5, 5, Qt::darkGray);
-    checkerBoardPainter.fillRect(5, 5, 5, 5, Qt::lightGray);
-    checkerBoardPainter.end();
-
-    QRect r(QPoint(0, 0), size);
-    // fill pixmap background with a checkerboard
-    painter.fillRect(r, QBrush(checkerBoard));
-
-    const auto tfRange = property.get().getRange();
-    auto normalize = [tfRange](double pos) { return (pos - tfRange.x) / (tfRange.y - tfRange.x); };
-
-    // draw a small hour glass for each isovalue
+    // draw a small hour glass for each iso value
     const double halfWidth = 6.0;
 
+    Save saved(&painter);
     painter.setPen(QPen(Qt::black, 1.0, Qt::SolidLine));
     painter.setRenderHint(QPainter::Antialiasing);
-    // add vertical lines for each isovalue
-    for (const auto& isovalue : property.get()) {
-        vec4 curColor = isovalue.getColor();
+    // add vertical lines for each iso value
+    for (const auto& isoValue : isoValues) {
+        vec4 curColor = isoValue.getColor();
         // increase alpha to allow better visibility by 1 - (1 - a)^4
         curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
-        double pos = normalize(isovalue.getPosition()) * size.width();
+        const auto pos = normalize(isoValue.getPosition()) * rect.width();
 
         painter.setBrush(utilqt::toQColor(curColor));
         painter.drawPolygon(QPolygonF(
-            {QPointF(pos - halfWidth, size.height()), QPointF(pos + halfWidth, size.height()),
+            {QPointF(pos - halfWidth, rect.height()), QPointF(pos + halfWidth, rect.height()),
              QPointF(pos - halfWidth, 0.0), QPointF(pos + halfWidth, 0.0)}));
     }
-    return tfPixmap;
 }
 
-QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept, const QSize& size) {
-
-    QPixmap tfPixmap(size);
-    QPainter painter(&tfPixmap);
-
-    QPixmap checkerBoard(10, 10);
-    QPainter checkerBoardPainter(&checkerBoard);
-    checkerBoardPainter.fillRect(0, 0, 5, 5, Qt::lightGray);
-    checkerBoardPainter.fillRect(5, 0, 5, 5, Qt::darkGray);
-    checkerBoardPainter.fillRect(0, 5, 5, 5, Qt::darkGray);
-    checkerBoardPainter.fillRect(5, 5, 5, 5, Qt::lightGray);
-    checkerBoardPainter.end();
-
-    QRect r(QPoint(0, 0), size);
-    // fill pixmap background with a checkerboard
-    painter.fillRect(r, QBrush(checkerBoard));
-
-    if (propertyConcept.hasTF() && !propertyConcept.getTransferFunction()->empty()) {
-        // draw TF gradient on top
-
-        QLinearGradient gradient;
-        for (const auto& tfpoint : *propertyConcept.getTransferFunction()) {
-            vec4 curColor = tfpoint.getColor();
-            // increase alpha to allow better visibility by 1 - (1 - a)^4
-            curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
-            gradient.setColorAt(tfpoint.getPosition(), utilqt::toQColor(curColor));
-        }
-
-        // gradient should stretch entire pixmap from left to right
-        gradient.setStart(QPointF(0.0, 0.0));
-        gradient.setFinalStop(QPointF(size.width(), 0.0));
-        painter.fillRect(r, gradient);
+void paintMask(const dvec2& mask, const dvec2& range, QPainter& painter, const QRectF& rect) {
+    // draw masking indicators
+    const QColor maskColor(25, 25, 25, 150);
+    if (mask.x > range.x) {
+        // normalize mask position with respect to TF range
+        const double maskPos = (mask.x - range.x) / (range.y - range.x);
+        QRectF rectMask{rect.topLeft(), QSizeF{maskPos * rect.width(), rect.height()}};
+        painter.fillRect(rectMask, maskColor);
+        painter.drawLine(rectMask.bottomRight(), rectMask.topRight());
     }
 
-    if (propertyConcept.hasIsovalues()) {
-        // draw a small hour glass for each isovalue
-        const double halfWidth = 6.0;
-        painter.save();
-        painter.setRenderHint(QPainter::Antialiasing);
-
-        const auto tfRange = propertyConcept.getIsovalues()->getRange();
-        auto normalize = [tfRange](double pos) {
-            return (pos - tfRange.x) / (tfRange.y - tfRange.x);
-        };
-
-        painter.setPen(QPen(Qt::black, 1.0, Qt::SolidLine));
-        // add vertical lines for each isovalue
-        for (const auto& isovalue : *propertyConcept.getIsovalues()) {
-            vec4 curColor = isovalue.getColor();
-            // increase alpha to allow better visibility by 1 - (1 - a)^4
-            curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
-            double pos = normalize(isovalue.getPosition()) * size.width();
-
-            painter.setBrush(utilqt::toQColor(curColor));
-            painter.drawPolygon(QPolygonF(
-                {QPointF(pos - halfWidth, size.height()), QPointF(pos + halfWidth, size.height()),
-                 QPointF(pos - halfWidth, 0.0), QPointF(pos + halfWidth, 0.0)}));
-        }
-
-        painter.restore();
+    if (mask.y < range.y) {
+        // normalize mask position with respect to TF range
+        const double maskPos = (mask.y - range.x) / (range.y - range.x);
+        QRectF rectMask{rect.topLeft() + QPointF{maskPos * rect.width(), 0.0}, rect.bottomRight()};
+        painter.fillRect(rectMask, maskColor);
+        painter.drawLine(rectMask.bottomLeft(), rectMask.topLeft());
     }
+}
 
-    if (propertyConcept.supportsMask()) {
-        const auto tfRange = propertyConcept.getTransferFunction()->getRange();
-        // draw masking indicators
-        const QColor maskColor(25, 25, 25, 150);
-        if (propertyConcept.getMask().x > tfRange.x) {
-            // normalize mask position with respect to TF range
-            const double maskPos =
-                (propertyConcept.getMask().x - tfRange.x) / (tfRange.y - tfRange.x);
-            QRect rectMask(QPoint(0, 0),
-                           QSize(static_cast<int>(maskPos * size.width()), size.height()));
-            painter.fillRect(rectMask, maskColor);
-            painter.drawLine(rectMask.bottomRight(), rectMask.topRight());
-        }
+QPixmap toQPixmap(const TransferFunction& tf, const QSize& size) {
+    QPixmap pixmap{size};
+    QPainter painter{&pixmap};
+    QRectF rect{QPointF(0, 0), size};
+    paintCheckerBoard(painter, rect);
+    paint(tf, painter, rect);
+    return pixmap;
+}
 
-        if (propertyConcept.getMask().y < tfRange.y) {
-            // normalize mask position with respect to TF range
-            const double maskPos =
-                (propertyConcept.getMask().y - tfRange.x) / (tfRange.y - tfRange.x);
-            QRect rectMask(QPoint(static_cast<int>(maskPos * size.width()), 0),
-                           QPoint(size.width(), size.height()));
-            painter.fillRect(rectMask, maskColor);
-            painter.drawLine(rectMask.bottomLeft(), rectMask.topLeft());
+QPixmap toQPixmap(const TransferFunctionProperty& property, const QSize& size) {
+    QPixmap pixmap{size};
+    QPainter painter{&pixmap};
+    QRectF rect{QPointF(0, 0), size};
+    paintCheckerBoard(painter, rect);
+    paint(property.get(), painter, rect);
+    paintMask(property.getMask(), property.get().getRange(), painter, rect);
+    return pixmap;
+}
+
+QPixmap toQPixmap(const IsoValueProperty& property, const QSize& size) {
+    QPixmap pixmap{size};
+    QPainter painter{&pixmap};
+    QRectF rect{QPointF(0, 0), size};
+    paintCheckerBoard(painter, rect);
+    paint(property.get(), painter, rect);
+    return pixmap;
+}
+
+QPixmap toQPixmap(const IsoTFProperty& property, const QSize& size) {
+    QPixmap pixmap{size};
+    QPainter painter{&pixmap};
+    QRectF rect{QPointF(0, 0), size};
+    paintCheckerBoard(painter, rect);
+    paint(property.tf_.get(), painter, rect);
+    paint(property.isovalues_.get(), painter, rect);
+    paintMask(property.tf_.getMask(), property.tf_.get().getRange(), painter, rect);
+    return pixmap;
+}
+
+QPixmap toQPixmap(const TFPropertyConcept& propertyConcept, const QSize& size) {
+    QPixmap pixmap{size};
+    QPainter painter{&pixmap};
+    QRectF rect{QPointF(0, 0), size};
+    paintCheckerBoard(painter, rect);
+
+    if (auto* tf = propertyConcept.getTransferFunction()) {
+        paint(*tf, painter, rect);
+    }
+    if (auto* isoValues = propertyConcept.getIsovalues()) {
+        paint(*isoValues, painter, rect);
+    }
+    if (auto* tf = propertyConcept.getTransferFunction()) {
+        if (propertyConcept.supportsMask()) {
+            paintMask(propertyConcept.getMask(), tf->getRange(), painter, rect);
         }
     }
-
-    return tfPixmap;
+    return pixmap;
 }
 
 QPointF clamp(const QPointF& pos, const QRectF& rect) {

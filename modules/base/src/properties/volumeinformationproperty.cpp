@@ -202,11 +202,7 @@ void VolumeInformationProperty::updateForNewVolume(const Volume& volume,
 }
 
 void VolumeInformationProperty::updateVolume(Volume& volume) {
-    if (volume.dataMap.dataRange != dataRange.get()) {
-        if (volume.hasHistograms()) {
-            volume.getHistograms().clear();
-        }
-    }
+    const bool discardHistograms = volume.dataMap.dataRange != dataRange.get();
 
     volume.dataMap.dataRange = dataRange.get();
     volume.dataMap.valueRange = valueRange.get();
@@ -221,6 +217,10 @@ void VolumeInformationProperty::updateVolume(Volume& volume) {
     }
     volume.setWrapping({wrapping[0].getSelectedValue(), wrapping[1].getSelectedValue(),
                         wrapping[2].getSelectedValue()});
+
+    if (discardHistograms) {
+        volume.discardHistograms();
+    }
 }
 
 }  // namespace inviwo

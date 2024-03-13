@@ -35,11 +35,12 @@
 #include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
 #include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
 #include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
-#include <inviwo/core/util/assertion.h>                                 // for ivwAssert
-#include <inviwo/core/util/formatdispatching.h>                         // for dispatch, All
-#include <inviwo/core/util/formats.h>                                   // for NumericType, Data...
-#include <inviwo/core/util/glmvec.h>                                    // for size2_t, size3_t
-#include <inviwo/core/util/exception.h>                                 // for Exception
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/util/assertion.h>          // for ivwAssert
+#include <inviwo/core/util/formatdispatching.h>  // for dispatch, All
+#include <inviwo/core/util/formats.h>            // for NumericType, Data...
+#include <inviwo/core/util/glmvec.h>             // for size2_t, size3_t
+#include <inviwo/core/util/exception.h>          // for Exception
 
 #include <cstring>        // for memcpy
 #include <unordered_map>  // for unordered_map

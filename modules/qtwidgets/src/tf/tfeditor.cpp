@@ -92,7 +92,7 @@ constexpr auto derefOperator(Operator&& op, Proj&& proj = {}) {
     };
 }
 
-TFEditor::TFEditor(util::TFPropertyConcept* tfProperty,
+TFEditor::TFEditor(TFPropertyConcept* tfProperty,
                    const std::vector<TFPrimitiveSet*>& primitiveSets, QWidget* parent)
     : QGraphicsScene(parent)
     , tfPropertyPtr_(tfProperty)

@@ -35,6 +35,7 @@
 #include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
 #include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
 #include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/io/datareader.h>                                  // for DataReaderType
 #include <inviwo/core/io/datareaderexception.h>                         // for DataReaderException
 #include <inviwo/core/io/datareaderfactory.h>                           // for DataReaderFactory

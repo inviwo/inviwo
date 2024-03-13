@@ -33,6 +33,9 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/glmutils.h>
 #include <inviwo/core/util/glmcomp.h>
+#include <inviwo/core/util/glmmatext.h>
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/util/dispatcher.h>
 
 #include <glm/common.hpp>
 
@@ -40,6 +43,7 @@
 #include <vector>
 #include <bitset>
 #include <array>
+#include <span>
 
 namespace inviwo {
 enum class HistogramMode { Off, All, P99, P95, P90, Log };
@@ -47,82 +51,51 @@ enum class HistogramMode { Off, All, P99, P95, P90, Log };
 using HistogramSelection = std::bitset<32>;
 constexpr HistogramSelection histogramSelectionAll{0xffffffff};
 
-/**
- *The NormalizedHistogram has a array of bins and all bins are normalized.
- *It can be de-normalized using the maxiumBinValue_.
- */
-class IVW_CORE_API NormalizedHistogram {
-public:
-    struct Stats {
-        double min;
-        double max;
-        double mean;
-        double standardDeviation;
-        std::vector<double> percentiles;
-    };
-
-    NormalizedHistogram();
-
-    NormalizedHistogram(dvec2 dataRange, std::vector<double> counts, double min, double max,
-                        double mean, double standardDeviation);
-
-    std::vector<double>& getData();
-    const std::vector<double>& getData() const;
-    double& operator[](size_t i);
-    const double& operator[](size_t i) const;
-
-    double getMaximumBinValue() const;
-
-    Stats stats_;
-    Stats histStats_;
-    dvec2 dataRange_;
-
-protected:
-    std::vector<double> data_;
-    double maximumBinCount_;
+struct IVW_CORE_API Statistics {
+    double min;
+    double max;
+    double mean;
+    double standardDeviation;
+    std::vector<double> percentiles;
 };
 
-class IVW_CORE_API HistogramContainer {
-public:
-    HistogramContainer() = default;
-    template <typename FirstIter, typename LastIter>
-    HistogramContainer(dvec2 range, size_t bins, FirstIter begin, LastIter end);
+struct IVW_CORE_API Histogram1D {
+    std::vector<size_t> counts;
+    size_t totalCounts{0};
+    size_t maxCount{0};
+    DataMapper dataMap{};
+    size_t underflow{0};
+    size_t overflow{0};
 
-    const NormalizedHistogram& operator[](size_t i) const;
-    const NormalizedHistogram& get(size_t i) const;
-
-    NormalizedHistogram& operator[](size_t i);
-    NormalizedHistogram& get(size_t i);
-
-    size_t size() const;
-    bool empty() const;
-
-    void clear();
-
-private:
-    std::vector<NormalizedHistogram> histograms_;
+    Statistics dataStats;
+    Statistics histStats;
 };
 
-template <typename FirstIter, typename LastIter>
-HistogramContainer::HistogramContainer(dvec2 dataRange, size_t bins, FirstIter begin,
-                                       LastIter end) {
-    using T = typename std::iterator_traits<FirstIter>::value_type;
+namespace util {
 
+IVW_CORE_API std::vector<double> calculatePercentiles(const std::vector<size_t> hist, dvec2 range,
+                                                      size_t sum);
+IVW_CORE_API Statistics calculateHistogramStats(const std::vector<size_t>& hist);
+
+template <typename T>
+std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const DataMapper& dataMap,
+                                             size_t bins) {
     // a double type with the same extent as T
     using D = typename util::same_extent<T, double>::type;
-    // a size_t type with same extent as T
-    using I = typename util::same_extent<T, size_t>::type;
+    // a ptrdiff_t type with same extent as T
+    using I = typename util::same_extent<T, std::ptrdiff_t>::type;
 
     constexpr size_t extent = util::rank<T>::value > 0 ? util::extent<T>::value : 1;
 
     // check whether number of bins exceeds the data range only if it is an integral type
-    if constexpr (!util::is_floating_point<typename util::value_type<T>::type>::value) {
-        bins = std::min(bins, static_cast<std::size_t>(dataRange.y - dataRange.x + 1));
+    if constexpr (!std::is_floating_point_v<util::value_type_t<T>>) {
+        bins =
+            std::min(bins, static_cast<std::size_t>(dataMap.dataRange.y - dataMap.dataRange.x + 1));
     }
 
-    std::array<std::vector<double>, extent> histData;
+    std::array<std::vector<size_t>, extent> hists;
     for (size_t i = 0; i < extent; ++i) {
-        histData[i].resize(bins, 0.0);
+        hists[i].resize(bins, 0);
     }
 
     D min(std::numeric_limits<double>::max());
@@ -131,12 +104,17 @@ HistogramContainer::HistogramContainer(dvec2 dataRange, size_t bins, FirstIter b
     D sum2(0);
     size_t count(0);
 
-    const D rangeMin(dataRange.x);
-    const D rangeScaleFactor(static_cast<double>(bins - 1) / (dataRange.y - dataRange.x));
+    std::array<size_t, extent> underflow{0};
+    std::array<size_t, extent> overflow{0};
 
-    for (; begin != end; ++begin) {
+    const D rangeMin(dataMap.dataRange.x);
+    const D rangeScaleFactor(static_cast<double>(bins - 1) /
+                             (dataMap.dataRange.y - dataMap.dataRange.x));
 
-        const auto val = static_cast<D>(*begin);
+    const std::ptrdiff_t maxBin = bins - 1;
+
+    for (const auto& item : data) {
+        const auto val = static_cast<D>(item);
 
         min = glm::min(min, val);
         max = glm::max(max, val);
@@ -144,11 +122,16 @@ HistogramContainer::HistogramContainer(dvec2 dataRange, size_t bins, FirstIter b
         sum2 += val * val;
         count++;
 
-        const auto ind = static_cast<I>(glm::clamp((val - rangeMin) * rangeScaleFactor, D{0.0},
-                                                   D{static_cast<double>(bins - 1)}));
-        for (size_t i = 0; i < extent; ++i) {
-            const auto v = util::glmcomp(ind, i);
-            ++histData[i][v];
+        const auto ind = static_cast<I>((val - rangeMin) * rangeScaleFactor);
+        for (size_t channel = 0; channel < extent; ++channel) {
+            const auto v = util::glmcomp(ind, channel);
+            if (v < 0) {
+                ++underflow[channel];
+            } else if (v > maxBin) {
+                ++overflow[channel];
+            } else {
+                ++hists[channel][v];
+            }
         }
     }
 
@@ -156,11 +139,31 @@ HistogramContainer::HistogramContainer(dvec2 dataRange, size_t bins, FirstIter b
     const auto mean = sum / dcount;
     const auto stddev = glm::sqrt((dcount * sum2 - sum * sum) / (dcount * (dcount - D{1})));
 
-    for (size_t i = 0; i < extent; ++i) {
-        histograms_.emplace_back(dataRange, std::move(histData[i]), util::glmcomp(min, i),
-                                 util::glmcomp(max, i), util::glmcomp(mean, i),
-                                 util::glmcomp(stddev, i));
+    std::vector<Histogram1D> histograms;
+
+    for (size_t channel = 0; channel < extent; ++channel) {
+        const auto maxBinCount = *std::max_element(hists[channel].begin(), hists[channel].end());
+
+        histograms.push_back(Histogram1D{
+            .counts = hists[channel],
+            .totalCounts = count,
+            .maxCount = maxBinCount,
+            .dataMap = dataMap,
+            .underflow = underflow[channel],
+            .overflow = overflow[channel],
+            .dataStats = {.min = util::glmcomp(min, channel),
+                          .max = util::glmcomp(max, channel),
+                          .mean = util::glmcomp(mean, channel),
+                          .standardDeviation = util::glmcomp(stddev, channel),
+                          .percentiles =
+                              calculatePercentiles(hists[channel], dataMap.dataRange, count)},
+            .histStats = calculateHistogramStats(hists[channel]),
+        });
     }
+
+    return histograms;
 }
+
+}  // namespace util
 
 }  // namespace inviwo

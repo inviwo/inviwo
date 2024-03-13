@@ -77,7 +77,7 @@ TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
     , tf_{"TransferFunction", value}
     , zoomH_("zoomH_", dvec2(0.0, 1.0))
     , zoomV_("zoomV_", dvec2(0.0, 1.0))
-    , histogramMode_("showHistogram_", HistogramMode::All)
+    , histogramMode_("showHistogram_", volumeInport ? HistogramMode::All : HistogramMode::Off)
     , histogramSelection_("histogramSelection", histogramSelectionAll)
     , volumeInport_(volumeInport) {
 

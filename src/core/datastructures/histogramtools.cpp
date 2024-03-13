@@ -28,64 +28,103 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/histogramtools.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/common/inviwoapplication.h>
-
-#include <glm/gtx/component_wise.hpp>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 
-void HistogramCalculationState::whenDone(std::function<void(const HistogramContainer&)> callback) {
-    if (auto container = container_.lock(); container && done) {
-        callback(*container);
-    } else {
-        callbackHandles_.push_back(callbacks_.add(callback));
-    }
+HistogramCache::HistogramCache(std::function<std::any()> getData,
+                               std::function<std::vector<Histogram1D>(std::any)> calculate)
+    : getData_{getData}, state_{std::make_shared<State>()} {
+    state_->calculate = calculate;
 }
-
-HistogramSupplier::HistogramSupplier() : histograms_{std::make_shared<HistogramContainer>()} {}
-
-HistogramSupplier::HistogramSupplier(const HistogramSupplier& rhs)
-    : histograms_{std::make_shared<HistogramContainer>(*rhs.histograms_)} {}
-
-HistogramSupplier& HistogramSupplier::operator=(const HistogramSupplier& that) {
+HistogramCache::HistogramCache(const HistogramCache& rhs)
+    : getData_{rhs.getData_}, state_{std::make_shared<State>()} {
+    state_->calculate = rhs.state_->calculate;
+    state_->histograms = rhs.state_->histograms;
+}
+HistogramCache::HistogramCache(HistogramCache&& rhs) noexcept
+    : getData_{std::move(rhs.getData_)}, state_{std::move(rhs.state_)} {}
+HistogramCache& HistogramCache::operator=(const HistogramCache& that) {
     if (this != &that) {
-        histograms_ = std::make_shared<HistogramContainer>(*that.histograms_);
+        getData_ = that.getData_;
+        state_ = std::make_shared<State>();
+        state_->calculate = that.state_->calculate;
+        state_->histograms = that.state_->histograms;
+    }
+    return *this;
+}
+HistogramCache& HistogramCache::operator=(HistogramCache&& that) noexcept {
+    if (this != &that) {
+        getData_ = std::move(that.getData_);
+        state_ = std::move(that.state_);
     }
     return *this;
 }
 
-std::shared_ptr<HistogramCalculationState> HistogramSupplier::startCalculation(
-    std::shared_ptr<const VolumeRAM> volumeRam, dvec2 dataRange, size_t bins) const {
-    if (!calculation_ || calculation_->getBins() != bins ||
-        calculation_->getDataRange() != dataRange) {
+DispatcherHandle<HistogramCache::Callback> HistogramCache::calculateHistograms(
+    std::function<void(const std::vector<Histogram1D>&)> whenDone) const {
+    std::scoped_lock lock{state_->mutex};
+    DispatcherHandle<HistogramCache::Callback> handle = nullptr;
 
-        histograms_ = std::make_shared<HistogramContainer>();
-        calculation_ = std::make_shared<HistogramCalculationState>(histograms_, bins, dataRange);
+    if (state_->status == Status::Valid && whenDone) {
+        whenDone(state_->histograms);
+    } else if (state_->status != Status::Valid && whenDone) {
+        handle = state_->callbacks.add(whenDone);
+    }
 
-        dispatchPool([weakState = std::weak_ptr<HistogramCalculationState>(calculation_),
-                      stop = calculation_->stop_, volumeRam, dataRange, bins]() {
-            auto histograms = volumeRam->dispatch<HistogramContainer>([&](auto vr) {
-                return HistogramContainer(dataRange, bins, vr->getDataTyped(),
-                                          vr->getDataTyped() + glm::compMul(vr->getDimensions()));
-            });
-            if (*stop) return;
-            dispatchFrontAndForget([hist = std::move(histograms), weakState]() {
-                if (auto s = weakState.lock()) {
-                    done(s, std::move(hist));
-                }
-            });
+    if (state_->status == Status::NotSet) {
+        if (whenDone) {
+            handle = state_->callbacks.add(whenDone);
+        }
+        state_->status = Status::Calculating;
+        dispatchPool([data = getData_(), weakState = std::weak_ptr<State>(state_)]() {
+            if (auto state = weakState.lock()) {
+                auto newHistograms = state->calculate(data);
+                dispatchFrontAndForget([weakState = std::weak_ptr<State>(state),
+                                        newHistograms = std::move(newHistograms)]() {
+                    if (auto state = weakState.lock()) {
+                        std::scoped_lock lock{state->mutex};
+                        state->histograms = std::move(newHistograms);
+                        state->status = Status::Valid;
+                        state->callbacks.invoke(state->histograms);
+                    }
+                });
+            }
         });
     }
-    return calculation_;
+
+    return handle;
 }
 
-void HistogramSupplier::done(std::shared_ptr<HistogramCalculationState> state,
-                             HistogramContainer histograms) {
-    state->callbacks_.invoke(histograms);
-    state->done = true;
-    if (auto container = state->container_.lock()) {
-        *container = std::move(histograms);
+void HistogramCache::forEach(
+    const std::function<void(const Histogram1D&, size_t)>& callback) const {
+    std::scoped_lock lock{state_->mutex};
+    for (auto&& [channel, histogram] : util::enumerate(state_->histograms)) {
+        callback(histogram, channel);
+    }
+}
+
+void HistogramCache::discard() {
+    bool recaclulate = false;
+    {
+        std::scoped_lock lock{state_->mutex};
+
+        if (state_->status == Status::NotSet) {
+            return;
+        } else if (state_->status == Status::Valid) {
+            state_->status = Status::NotSet;
+            recaclulate = true;
+        } else if (state_->status == Status::Calculating) {
+            auto newState = std::make_shared<State>();
+            newState->calculate = state_->calculate;
+            newState->callbacks = std::move(state_->callbacks);
+            state_ = std::move(newState);
+            recaclulate = true;
+        }
+    }
+    if (recaclulate) {
+        calculateHistograms(nullptr);
     }
 }
 

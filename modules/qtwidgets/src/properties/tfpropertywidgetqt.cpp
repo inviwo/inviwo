@@ -160,21 +160,18 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
 }
 
 TFPushButton::TFPushButton(TransferFunctionProperty* property, QWidget* parent)
-    : IvwPushButton(parent)
-    , propertyPtr_(std::make_unique<util::TFPropertyModel<TransferFunctionProperty>>(property)) {}
+    : IvwPushButton(parent), property_{property} {}
 
 TFPushButton::TFPushButton(IsoValueProperty* property, QWidget* parent)
-    : IvwPushButton(parent)
-    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoValueProperty>>(property)) {}
+    : IvwPushButton(parent), property_{property} {}
 
 TFPushButton::TFPushButton(IsoTFProperty* property, QWidget* parent)
-    : IvwPushButton(parent)
-    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoTFProperty>>(property)) {}
+    : IvwPushButton(parent), property_{property} {}
 
 void TFPushButton::updateFromProperty() {
     if (!isVisible()) return;
     const QSize size = this->size() - QSize(2, 2);
-    setIcon(utilqt::toQPixmap(*propertyPtr_, size));
+    std::visit([&](auto* prop) { setIcon(utilqt::toQPixmap(*prop, size)); }, property_);
     setIconSize(size);
 }
 

@@ -63,9 +63,7 @@ class TFEditor;
 class TFEditorView;
 class TFLineEdit;
 class TFSelectionWatcher;
-namespace util {
-struct TFPropertyConcept;
-}  // namespace util
+class TFPropertyConcept;
 
 class IVW_MODULE_QTWIDGETS_API TFPropertyDialog : public PropertyEditorWidgetQt,
                                                   public TFPrimitiveSetObserver,
@@ -74,7 +72,7 @@ public:
     TFPropertyDialog(TransferFunctionProperty* tfProperty);
     TFPropertyDialog(IsoValueProperty* isoProperty);
     TFPropertyDialog(IsoTFProperty* isotfProperty);
-    ~TFPropertyDialog();
+    virtual ~TFPropertyDialog();
 
     virtual QSize sizeHint() const override;
     virtual QSize minimumSizeHint() const override;
@@ -107,7 +105,7 @@ protected:
     virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
 
 private:
-    TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> model,
+    TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model,
                      std::vector<TFPrimitiveSet*> tfSets);
 
     void updateTFPreview();
@@ -121,7 +119,7 @@ private:
     static constexpr int verticalSliderRange_ = 1000;
     const int defaultOffset_ = 5;  //!< offset in pixel
 
-    std::unique_ptr<util::TFPropertyConcept> propertyPtr_;
+    std::unique_ptr<TFPropertyConcept> propertyPtr_;
     std::vector<TFPrimitiveSet*> tfSets_;
 
     std::unique_ptr<ColorWheel> colorWheel_;
@@ -151,6 +149,8 @@ private:
 
     bool ongoingUpdate_ = false;
     Processor::NameDispatcherHandle onNameChange_;
+    
+    DispatcherHandle<void()> dataChangeHandle_;
 };
 
 }  // namespace inviwo

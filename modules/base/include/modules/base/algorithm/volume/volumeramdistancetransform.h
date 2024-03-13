@@ -30,6 +30,7 @@
 #pragma once
 
 #include <inviwo/core/datastructures/volume/volume.h>  // for Volume
+#include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/exception.h>                // for Exception
 #include <inviwo/core/util/formatdispatching.h>        // for Scalars, PrecisionValueType
 #include <inviwo/core/util/glmconvert.h>               // for glm_convert_normalized

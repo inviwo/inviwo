@@ -99,18 +99,18 @@ class QVBoxLayout;
 namespace inviwo {
 
 TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* property)
-    : TFPropertyDialog(std::make_unique<util::TFPropertyModel<TransferFunctionProperty>>(property),
+    : TFPropertyDialog(std::make_unique<TFPropertyModel<TransferFunctionProperty>>(property),
                        {&property->get()}) {}
 
 TFPropertyDialog::TFPropertyDialog(IsoValueProperty* property)
-    : TFPropertyDialog(std::make_unique<util::TFPropertyModel<IsoValueProperty>>(property),
+    : TFPropertyDialog(std::make_unique<TFPropertyModel<IsoValueProperty>>(property),
                        {&property->get()}) {}
 
 TFPropertyDialog::TFPropertyDialog(IsoTFProperty* property)
-    : TFPropertyDialog(std::make_unique<util::TFPropertyModel<IsoTFProperty>>(property),
+    : TFPropertyDialog(std::make_unique<TFPropertyModel<IsoTFProperty>>(property),
                        {&property->tf_.get(), &property->isovalues_.get()}) {}
 
-TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> model,
+TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model,
                                    std::vector<TFPrimitiveSet*> tfSets)
     : PropertyEditorWidgetQt(model->getProperty(), "Transfer Function Editor", "TFEditorWidget")
     , sliderRange_(1024)
@@ -236,38 +236,35 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
         const auto& dataMap = propertyPtr_->getDataMap();
         domainMin_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(0.0)));
         domainMax_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(1.0)));
+        // ensure that the range of primitive scalar is matching value range of volume data
+        onTFTypeChangedInternal();
     };
-    propertyPtr_->onDataChange(dataChange);
-    dataChange();
+    dataChangeHandle_ = propertyPtr_->onDataChange(dataChange);
 
     // set up TF primitive widgets
-    {
-        primitivePos_ = new TFLineEdit();
-        connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetPosition, primitivePos_,
-                &TFLineEdit::setValue);
-        connect(primitivePos_, &TFLineEdit::valueChanged, tfSelectionWatcher_.get(),
-                &TFSelectionWatcher::setPosition);
+    primitivePos_ = new TFLineEdit();
+    connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetPosition, primitivePos_,
+            &TFLineEdit::setValue);
+    connect(primitivePos_, &TFLineEdit::valueChanged, tfSelectionWatcher_.get(),
+            &TFSelectionWatcher::setPosition);
 
-        // ensure that the range of primitive scalar is matching value range of volume data
-        propertyPtr_->onDataChange([this]() { onTFTypeChangedInternal(); });
-        // update value mapping for position widget with respect to TF type and port
-        onTFTypeChangedInternal();
+    primitiveAlpha_ = new TFLineEdit();
+    // only accept values in [0, 1]
+    primitiveAlpha_->setValidRange(dvec2(0.0, 1.0));
+    connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetAlpha, primitiveAlpha_,
+            &TFLineEdit::setValue);
+    connect(primitiveAlpha_, &TFLineEdit::valueChanged, tfSelectionWatcher_.get(),
+            &TFSelectionWatcher::setAlpha);
 
-        primitiveAlpha_ = new TFLineEdit();
-        // only accept values in [0, 1]
-        primitiveAlpha_->setValidRange(dvec2(0.0, 1.0));
-        connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetAlpha, primitiveAlpha_,
-                &TFLineEdit::setValue);
-        connect(primitiveAlpha_, &TFLineEdit::valueChanged, tfSelectionWatcher_.get(),
-                &TFSelectionWatcher::setAlpha);
+    primitiveColor_ = new TFColorEdit();
+    primitiveColor_->setColor(QColor(Qt::black), true);
+    connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor, primitiveColor_,
+            &TFColorEdit::setColor);
+    connect(primitiveColor_, &TFColorEdit::colorChanged, tfSelectionWatcher_.get(),
+            &TFSelectionWatcher::setColor);
 
-        primitiveColor_ = new TFColorEdit();
-        primitiveColor_->setColor(QColor(Qt::black), true);
-        connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor, primitiveColor_,
-                &TFColorEdit::setColor);
-        connect(primitiveColor_, &TFColorEdit::colorChanged, tfSelectionWatcher_.get(),
-                &TFSelectionWatcher::setColor);
-    }
+    dataChange();
+    
 
     QFrame* leftPanel = new QFrame(this);
     QGridLayout* leftLayout = new QGridLayout();
@@ -376,10 +373,6 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
 
     updateFromProperty();
     updateTitleFromProperty();
-
-    chkShowHistogram_->setVisible(propertyPtr_->hasData());
-    propertyPtr_->onDataChange(
-        [this]() { chkShowHistogram_->setVisible(propertyPtr_->hasData()); });
 
     loadState();
 }
