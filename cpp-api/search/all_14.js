@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['ui_20properties_0',['UI Properties',['../classinviwo_1_1glui_1_1GLUIProcessor.html#autotoc_md339',1,'UI Properties'],['../classinviwo_1_1GLUITestProcessor.html#autotoc_md342',1,'UI Properties']]],
+  ['ui_20properties_0',['UI Properties',['../classinviwo_1_1glui_1_1GLUIProcessor.html#autotoc_md336',1,'UI Properties'],['../classinviwo_1_1GLUITestProcessor.html#autotoc_md339',1,'UI Properties']]],
   ['unbind_1',['unbind',['../classinviwo_1_1BufferObject.html#afa8e63c12530ac1730cbc42735d8cfff',1,'inviwo::BufferObject::unbind()'],['../classinviwo_1_1BufferObjectArray.html#ae3cd1cd991bc3b71df399866af8167de',1,'inviwo::BufferObjectArray::unbind()']]],
   ['undomanager_2',['UndoManager',['../classinviwo_1_1UndoManager.html',1,'inviwo']]],
   ['uniformlabelatlasgl_3',['UniformLabelAtlasGL',['../classinviwo_1_1UniformLabelAtlasGL.html',1,'inviwo']]],
@@ -42,6 +42,6 @@ var searchData=
   ['url_5f_39',['url_',['../classinviwo_1_1WebBrowserProcessor.html#ad85667748eed3e826db2f2066d23f938',1,'inviwo::WebBrowserProcessor']]],
   ['usage_40',['Simple Usage',['../classinviwo_1_1TypedMesh.html#autotoc_md11',1,'']]],
   ['userinterfaceglmodule_41',['UserInterfaceGLModule',['../classinviwo_1_1UserInterfaceGLModule.html',1,'inviwo']]],
-  ['usesameseed_5f_42',['useSameSeed_',['../classinviwo_1_1NoiseProcessor.html#a04dd837096f7c56128c67e165d0aa46f',1,'inviwo::NoiseProcessor']]],
+  ['usesameseed_5f_42',['useSameSeed_',['../classinviwo_1_1NoiseGenerator2D.html#a9b4810635304ea8aa5b2afddfcd06d9f',1,'inviwo::NoiseGenerator2D']]],
   ['usesfragmentlists_43',['usesFragmentLists',['../classinviwo_1_1Rasterization.html#adf0e25d6aed145f6fc9c3d548e635160',1,'inviwo::Rasterization::usesFragmentLists()'],['../classinviwo_1_1LineRasterizer.html#a8256f960e1d7705c7081d88e6c369419',1,'inviwo::LineRasterizer::usesFragmentLists()'],['../classinviwo_1_1MeshRasterizer.html#a382ccd7d38f69510f7f58bb6edf65baf',1,'inviwo::MeshRasterizer::usesFragmentLists()'],['../classinviwo_1_1Rasterizer.html#af655a9aaed160762644ee53381181f6b',1,'inviwo::Rasterizer::usesFragmentLists()'],['../classinviwo_1_1SphereRasterizer.html#af2245b2402bdbdeefea29b5b797eeebd',1,'inviwo::SphereRasterizer::usesFragmentLists()'],['../classinviwo_1_1TransformRasterization.html#af32ca96169b8c9a57c1be4b5354ea107',1,'inviwo::TransformRasterization::usesFragmentLists()']]]
 ];

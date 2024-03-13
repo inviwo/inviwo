@@ -119,8 +119,6 @@ $(function(){initNavTree('classinviwo_1_1ImageSampler.html',''); initResizable()
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a120d62b829a465be677d7a9cf4950d6f" id="r_a120d62b829a465be677d7a9cf4950d6f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a120d62b829a465be677d7a9cf4950d6f">ImageSampler</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">ram</a>)</td></tr>
-<tr class="separator:a120d62b829a465be677d7a9cf4950d6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88ff8a52dd56a2f43b4fc12cee7adf55" id="r_a88ff8a52dd56a2f43b4fc12cee7adf55"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88ff8a52dd56a2f43b4fc12cee7adf55">ImageSampler</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">layer</a>)</td></tr>
 <tr class="separator:a88ff8a52dd56a2f43b4fc12cee7adf55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab05b645a73d27117cbee7c40068bf977" id="r_ab05b645a73d27117cbee7c40068bf977"><td class="memItemLeft" align="right" valign="top"><a id="ab05b645a73d27117cbee7c40068bf977" name="ab05b645a73d27117cbee7c40068bf977"></a>
@@ -232,36 +230,8 @@ dmat4&#160;</td><td class="memItemRight" valign="bottom"><b>transform_</b></td><
 class inviwo::ImageSampler&lt; ReturnType &gt;</div><p><a class="el" href="classinviwo_1_1ImageSampler.html" title="ImageSampler aids sampling of images using Bi-Linear Interpolation.">ImageSampler</a> aids sampling of images using Bi-Linear <a class="el" href="classinviwo_1_1Interpolation.html">Interpolation</a>. </p>
 <p>A helper class to aid sampling of images. Expects the input to be on the range [0 1]. Eg., input of (0,0) will return the color of the bottom left pixel and (1,1) will return then top right pixel. Output values are bi-linear interpolated between the 4 nearest neighbors. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a120d62b829a465be677d7a9cf4950d6f" name="a120d62b829a465be677d7a9cf4950d6f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a120d62b829a465be677d7a9cf4950d6f">&#9670;&#160;</a></span>ImageSampler() <span class="overload">[1/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a>  = dvec4&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1ImageSampler.html">inviwo::ImageSampler</a>&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a> &gt;::ImageSampler </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> *</td>          <td class="paramname"><span class="paramname"><em>ram</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Creates an <a class="el" href="classinviwo_1_1ImageSampler.html" title="ImageSampler aids sampling of images using Bi-Linear Interpolation.">ImageSampler</a> for the given <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a>. Does not take ownership of supplied data. </p><dl class="section note"><dt>Note</dt><dd>Use <a class="el" href="#ac120fdaac2a9c8ae3a30c36cbe6554a5">ImageSampler(std::shared_ptr&lt;const Image&gt;)</a> to ensure that the <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> is available for the lifetime of the <a class="el" href="classinviwo_1_1ImageSampler.html" title="ImageSampler aids sampling of images using Bi-Linear Interpolation.">ImageSampler</a> </dd></dl>
-
-</div>
-</div>
 <a id="a88ff8a52dd56a2f43b4fc12cee7adf55" name="a88ff8a52dd56a2f43b4fc12cee7adf55"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a88ff8a52dd56a2f43b4fc12cee7adf55">&#9670;&#160;</a></span>ImageSampler() <span class="overload">[2/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a88ff8a52dd56a2f43b4fc12cee7adf55">&#9670;&#160;</a></span>ImageSampler() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -289,7 +259,7 @@ template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnTy
 </div>
 </div>
 <a id="afcd8b1cd094431e4d2a0dbcb3235f97d" name="afcd8b1cd094431e4d2a0dbcb3235f97d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afcd8b1cd094431e4d2a0dbcb3235f97d">&#9670;&#160;</a></span>ImageSampler() <span class="overload">[3/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#afcd8b1cd094431e4d2a0dbcb3235f97d">&#9670;&#160;</a></span>ImageSampler() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -317,7 +287,7 @@ template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnTy
 </div>
 </div>
 <a id="ac120fdaac2a9c8ae3a30c36cbe6554a5" name="ac120fdaac2a9c8ae3a30c36cbe6554a5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac120fdaac2a9c8ae3a30c36cbe6554a5">&#9670;&#160;</a></span>ImageSampler() <span class="overload">[4/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ac120fdaac2a9c8ae3a30c36cbe6554a5">&#9670;&#160;</a></span>ImageSampler() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

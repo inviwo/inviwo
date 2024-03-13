@@ -120,9 +120,6 @@ $(function(){initNavTree('classinviwo_1_1TemplateImageSampler.html',''); initRes
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a284b457bded91490089d29607c6e5d7f" id="r_a284b457bded91490089d29607c6e5d7f"><td class="memItemLeft" align="right" valign="top"><a id="a284b457bded91490089d29607c6e5d7f" name="a284b457bded91490089d29607c6e5d7f"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TemplateImageSampler</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">ram</a>)</td></tr>
-<tr class="separator:a284b457bded91490089d29607c6e5d7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac160f47de0066eabf83b7a730d1df21f" id="r_ac160f47de0066eabf83b7a730d1df21f"><td class="memItemLeft" align="right" valign="top"><a id="ac160f47de0066eabf83b7a730d1df21f" name="ac160f47de0066eabf83b7a730d1df21f"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>TemplateImageSampler</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">layer</a>)</td></tr>
 <tr class="separator:ac160f47de0066eabf83b7a730d1df21f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -214,7 +211,7 @@ Protected Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a3bced1527f0ad0a613f7f797df070ae6" id="r_a3bced1527f0ad0a613f7f797df070ae6"><td class="memItemLeft" align="right" valign="top"><a id="a3bced1527f0ad0a613f7f797df070ae6" name="a3bced1527f0ad0a613f7f797df070ae6"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>data_</b></td></tr>
+<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> DataType *&#160;</td><td class="memItemRight" valign="bottom"><b>data_</b></td></tr>
 <tr class="separator:a3bced1527f0ad0a613f7f797df070ae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5c61bf5f9533fea7596030a832396a7" id="r_af5c61bf5f9533fea7596030a832396a7"><td class="memItemLeft" align="right" valign="top"><a id="af5c61bf5f9533fea7596030a832396a7" name="af5c61bf5f9533fea7596030a832396a7"></a>
 size2_t&#160;</td><td class="memItemRight" valign="bottom"><b>dims_</b></td></tr>
@@ -248,7 +245,7 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:ad78fbeba33d664543ac3bd3730d8b4ea inherit pub_static_attribs_classinviwo_1_1SpatialSampler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a>, typename <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a>&gt;<br />
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a>, typename DataType&gt;<br />
 class inviwo::TemplateImageSampler&lt; ReturnType, DataType &gt;</div><p>TemplateImageSampler&lt;T,P&gt; aids sampling of images of a given type (T) using Bi-Linear <a class="el" href="classinviwo_1_1Interpolation.html">Interpolation</a> with precision (P). </p>
 <p>A helper class to aid sampling of images of a given type (T). Expects the input to be on the range [0 1]. Eg., input of (0,0) will return the color of the bottom left pixel and (1,1) will return then top right pixel. Output values are bi-linear interpolated between the 4 nearest neighbors.</p>
 <p>The template parameter P should be either double or float. When T is either float our double P should be the same. </p>
@@ -259,10 +256,10 @@ class inviwo::TemplateImageSampler&lt; ReturnType, DataType &gt;</div><p>Templat
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a> , typename <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a> &gt; </div>
+template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a> , typename DataType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a> <a class="el" href="classinviwo_1_1TemplateImageSampler.html">inviwo::TemplateImageSampler</a>&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a> &gt;::sample </td>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a> <a class="el" href="classinviwo_1_1TemplateImageSampler.html">inviwo::TemplateImageSampler</a>&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a>, DataType &gt;::sample </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">double</a></td>          <td class="paramname"><span class="paramname"><em>x</em>, </span></td>
         </tr>
@@ -290,10 +287,10 @@ template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnTy
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a> , typename <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a> &gt; </div>
+template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a> , typename DataType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a> <a class="el" href="classinviwo_1_1TemplateImageSampler.html">inviwo::TemplateImageSampler</a>&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a> &gt;::sample2D </td>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a> <a class="el" href="classinviwo_1_1TemplateImageSampler.html">inviwo::TemplateImageSampler</a>&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a>, DataType &gt;::sample2D </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> dvec2 &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em></span></td><td>)</td>
           <td> const</td>
@@ -315,13 +312,13 @@ template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnTy
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a> , typename <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a> &gt; </div>
+template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a> , typename DataType &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">auto</a> <a class="el" href="classinviwo_1_1TemplateImageSampler.html">inviwo::TemplateImageSampler</a>&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a> &gt;::sampleDataSpace </td>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">auto</a> <a class="el" href="classinviwo_1_1TemplateImageSampler.html">inviwo::TemplateImageSampler</a>&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a>, DataType &gt;::sampleDataSpace </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> dvec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em></span></td><td>)</td>
           <td> const</td>
@@ -344,13 +341,13 @@ template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnTy
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a> , typename <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a> &gt; </div>
+template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a> , typename DataType &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">bool</a> <a class="el" href="classinviwo_1_1TemplateImageSampler.html">inviwo::TemplateImageSampler</a>&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a> &gt;::withinBoundsDataSpace </td>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">bool</a> <a class="el" href="classinviwo_1_1TemplateImageSampler.html">inviwo::TemplateImageSampler</a>&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">ReturnType</a>, DataType &gt;::withinBoundsDataSpace </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> dvec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em></span></td><td>)</td>
           <td> const</td>

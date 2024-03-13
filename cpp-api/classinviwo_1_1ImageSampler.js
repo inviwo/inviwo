@@ -1,6 +1,5 @@
 var classinviwo_1_1ImageSampler =
 [
-    [ "ImageSampler", "classinviwo_1_1ImageSampler.html#a120d62b829a465be677d7a9cf4950d6f", null ],
     [ "ImageSampler", "classinviwo_1_1ImageSampler.html#a88ff8a52dd56a2f43b4fc12cee7adf55", null ],
     [ "ImageSampler", "classinviwo_1_1ImageSampler.html#afcd8b1cd094431e4d2a0dbcb3235f97d", null ],
     [ "ImageSampler", "classinviwo_1_1ImageSampler.html#ac120fdaac2a9c8ae3a30c36cbe6554a5", null ],

@@ -74,5 +74,5 @@ var searchData=
   ['ordinalscale_71',['ordinalScale',['../namespaceinviwo_1_1util.html#ae10672d3ce62a8142941c05a182ca335',1,'inviwo::util']]],
   ['ordinalsymmetricvector_72',['ordinalSymmetricVector',['../namespaceinviwo_1_1util.html#aa58b65316e88fa13b51e3f2a3093b066',1,'inviwo::util']]],
   ['outport_73',['Outport',['../classinviwo_1_1Outport.html#ad78341c428fbde3f94c9c53f3eca9ae5',1,'inviwo::Outport']]],
-  ['outputconfig_74',['outputConfig',['../classinviwo_1_1LayerShader.html#a575f403b4ad8430b4c1d9a0f411c4f90',1,'inviwo::LayerShader::outputConfig()'],['../classinviwo_1_1LayerGLProcessor.html#a70b327ac7d0eb87a39ad53949ff02d15',1,'inviwo::LayerGLProcessor::outputConfig()'],['../classinviwo_1_1LayerMapping.html#ab2f231f84958cc8ebbdd700b996d9d20',1,'inviwo::LayerMapping::outputConfig()']]]
+  ['outputconfig_74',['outputConfig',['../classinviwo_1_1LayerShader.html#a575f403b4ad8430b4c1d9a0f411c4f90',1,'inviwo::LayerShader::outputConfig()'],['../classinviwo_1_1LayerColorMapping.html#a281e78e7f09db0e3867bbbf9ce81df6d',1,'inviwo::LayerColorMapping::outputConfig()'],['../classinviwo_1_1LayerGLProcessor.html#a70b327ac7d0eb87a39ad53949ff02d15',1,'inviwo::LayerGLProcessor::outputConfig()']]]
 ];

@@ -69,7 +69,7 @@ var searchData=
   ['adjacency_20information_66',['Creating a bounding box with Adjacency information',['../classinviwo_1_1TypedMesh.html#autotoc_md13',1,'']]],
   ['advance_67',['advance',['../structinviwo_1_1TextRenderer_1_1GlyphEntry.html#a7115a2c4d17198784c35826385beb0f7',1,'inviwo::TextRenderer::GlyphEntry']]],
   ['advancedmaterialproperty_68',['AdvancedMaterialProperty',['../classinviwo_1_1AdvancedMaterialProperty.html',1,'inviwo']]],
-  ['afterinportchanged_69',['afterInportChanged',['../classinviwo_1_1ImageGLProcessor.html#ae1eb80e4d20074c67b00b4bc7fcf1712',1,'inviwo::ImageGLProcessor::afterInportChanged()'],['../classinviwo_1_1ImageMapping.html#a14b7cc2271e771f48fc5064074fadd3f',1,'inviwo::ImageMapping::afterInportChanged()'],['../classinviwo_1_1VolumeGLProcessor.html#a8a8d1d4e9d8e3745938352795695faff',1,'inviwo::VolumeGLProcessor::afterInportChanged()']]],
+  ['afterinportchanged_69',['afterInportChanged',['../classinviwo_1_1ImageColorMapping.html#aa92d65d8d271b2962ba44cfc900f097e',1,'inviwo::ImageColorMapping::afterInportChanged()'],['../classinviwo_1_1ImageGLProcessor.html#ae1eb80e4d20074c67b00b4bc7fcf1712',1,'inviwo::ImageGLProcessor::afterInportChanged()'],['../classinviwo_1_1VolumeGLProcessor.html#a8a8d1d4e9d8e3745938352795695faff',1,'inviwo::VolumeGLProcessor::afterInportChanged()']]],
   ['alignalphatobottom_70',['alignAlphaToBottom',['../namespaceinviwo_1_1util.html#a2f406a130b054515fd4dceb5b35b84ba',1,'inviwo::util']]],
   ['alignalphatomean_71',['alignAlphaToMean',['../namespaceinviwo_1_1util.html#ad833fb2a28acd35e6be134baa81331fa',1,'inviwo::util']]],
   ['alignalphatotop_72',['alignAlphaToTop',['../namespaceinviwo_1_1util.html#a92665c9b8c2cd085faf8e4b701edbdc7',1,'inviwo::util']]],

@@ -170,7 +170,7 @@ var searchData=
   ['tuberendering_167',['TubeRendering',['../classinviwo_1_1TubeRendering.html',1,'inviwo']]],
   ['tuple_5felement_3c_20n_2c_20_3a_3ainviwo_3a_3autil_3a_3adetailzip_3a_3aproxy_3c_20ts_2e_2e_2e_20_3e_20_3e_168',['tuple_element&lt; N, ::inviwo::util::detailzip::proxy&lt; Ts... &gt; &gt;',['../structstd_1_1tuple__element_3_01N_00_01_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html',1,'std']]],
   ['tuple_5fsize_3c_3a_3ainviwo_3a_3autil_3a_3adetailzip_3a_3aproxy_3c_20ts_2e_2e_2e_20_3e_20_3e_169',['tuple_size&lt;::inviwo::util::detailzip::proxy&lt; Ts... &gt; &gt;',['../structstd_1_1tuple__size_3_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html',1,'std']]],
-  ['type_5f_170',['type_',['../classinviwo_1_1NoiseProcessor.html#a18c9414dfe22b38909818d8e9b303073',1,'inviwo::NoiseProcessor']]],
+  ['type_5f_170',['type_',['../classinviwo_1_1NoiseGenerator2D.html#ab74fa4a5f9386a8755d8d217f151fb3d',1,'inviwo::NoiseGenerator2D']]],
   ['typedlayersubset_171',['typedLayerSubSet',['../namespaceinviwo_1_1util.html#a11440c1b6dc927f82d4ff5fd673d2ea9',1,'inviwo::util']]],
   ['typedmesh_172',['TypedMesh',['../classinviwo_1_1TypedMesh.html',1,'inviwo::TypedMesh&lt; BufferTraits &gt;'],['../group__typedmesh.html',1,'TypedMesh']]],
   ['typedmesh_3c_20buffertraits_3a_3apositionsbuffer_2c_20buffertraits_3a_3acolorsbuffer_20_3e_173',['TypedMesh&lt; buffertraits::PositionsBuffer, buffertraits::ColorsBuffer &gt;',['../classinviwo_1_1TypedMesh.html',1,'inviwo']]],

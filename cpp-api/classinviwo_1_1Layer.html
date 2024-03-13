@@ -183,6 +183,9 @@ Wrapping2D&#160;</td><td class="memItemRight" valign="bottom"><b>getWrapping</b>
 <tr class="memitem:a64ab7ab95627b197b0f0acbc69992c65" id="r_a64ab7ab95627b197b0f0acbc69992c65"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; std::vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">unsigned</a> <a class="el" href="classinviwo_1_1TypedMesh.html">char</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a64ab7ab95627b197b0f0acbc69992c65">getAsCodedBuffer</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> std::string &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">fileExtension</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="memdesc:a64ab7ab95627b197b0f0acbc69992c65"><td class="mdescLeft">&#160;</td><td class="mdescRight">encode the layer contents to a buffer considering the requested image format  <br /></td></tr>
 <tr class="separator:a64ab7ab95627b197b0f0acbc69992c65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b12197b2e2839fd9cddecfa65e9b6a1" id="r_a7b12197b2e2839fd9cddecfa65e9b6a1"><td class="memItemLeft" align="right" valign="top">vec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b12197b2e2839fd9cddecfa65e9b6a1">getWorldSpaceGradientSpacing</a> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="memdesc:a7b12197b2e2839fd9cddecfa65e9b6a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the spacing to be used for gradient computation. Also works for layers with non-orthogonal basis.  <br /></td></tr>
+<tr class="separator:a7b12197b2e2839fd9cddecfa65e9b6a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3342bd3b3d89657d1aa4d0bd26d6976c" id="r_a3342bd3b3d89657d1aa4d0bd26d6976c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1Axis.html">Axis</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3342bd3b3d89657d1aa4d0bd26d6976c">getAxis</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">size_t</a> index) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
 <tr class="separator:a3342bd3b3d89657d1aa4d0bd26d6976c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae89d24eaa2fe90a652cace6e35a948e7" id="r_ae89d24eaa2fe90a652cace6e35a948e7"><td class="memItemLeft" align="right" valign="top"><a id="ae89d24eaa2fe90a652cace6e35a948e7" name="ae89d24eaa2fe90a652cace6e35a948e7"></a>
@@ -460,6 +463,32 @@ glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><b>worldMatrix_</b>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classinviwo_1_1StructuredGridEntity.html">inviwo::StructuredGridEntity&lt; 2 &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a7b12197b2e2839fd9cddecfa65e9b6a1" name="a7b12197b2e2839fd9cddecfa65e9b6a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b12197b2e2839fd9cddecfa65e9b6a1">&#9670;&#160;</a></span>getWorldSpaceGradientSpacing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vec2 inviwo::Layer::getWorldSpaceGradientSpacing </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the spacing to be used for gradient computation. Also works for layers with non-orthogonal basis. </p>
+<p>For orthogonal lattices this will be equal to the world space texel spacing. For non-orthogonal lattices it will be the longer of the axes projected onto the world space axes. </p><pre class="fragment">   World space
+
+    b ^           ^
+     /            |
+</pre><p> y ^ / dy | / texel | | /__________&gt;a \/ | &lt;-&mdash;dx---&gt; |____________&gt; x</p>
+<p>The actual gradient spacing vectors are given by mat2{ gradientSpacing.x, 0, 0, gradientSpacing.y } However, we do not return the zeroes.</p>
+<p>To get the spacing in texture space use: mat3{glm::scale(worldToTextureMatrix, vec3{<a class="el" href="#a7b12197b2e2839fd9cddecfa65e9b6a1" title="Computes the spacing to be used for gradient computation. Also works for layers with non-orthogonal b...">getWorldSpaceGradientSpacing()</a>, 1.0f})}; </p><dl class="section return"><dt>Returns</dt><dd>Step size for gradient computation in world space. </dd></dl>
 
 </div>
 </div>

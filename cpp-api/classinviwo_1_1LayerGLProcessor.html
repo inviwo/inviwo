@@ -126,11 +126,17 @@ $(function(){initNavTree('classinviwo_1_1LayerGLProcessor.html',''); initResizab
 <area href="classinviwo_1_1Observable.html" alt="inviwo::Observable&lt; PropertyOwnerObserver &gt;" shape="rect" coords="0,56,285,80"/>
 <area href="classinviwo_1_1ObservableInterface.html" alt="inviwo::ObservableInterface" shape="rect" coords="885,56,1170,80"/>
 <area href="classinviwo_1_1ObservableInterface.html" alt="inviwo::ObservableInterface" shape="rect" coords="0,0,285,24"/>
-<area href="classinviwo_1_1LayerBinary.html" alt="inviwo::LayerBinary" shape="rect" coords="295,336,580,360"/>
-<area href="classinviwo_1_1LayerGrayscale.html" alt="inviwo::LayerGrayscale" shape="rect" coords="590,336,875,360"/>
-<area href="classinviwo_1_1LayerInvert.html" alt="inviwo::LayerInvert" shape="rect" coords="885,336,1170,360"/>
-<area href="classinviwo_1_1LayerMapping.html" alt="inviwo::LayerMapping" shape="rect" coords="1180,336,1465,360"/>
-<area href="classinviwo_1_1LayerShader.html" alt="inviwo::LayerShader" shape="rect" coords="1475,336,1760,360"/>
+<area href="classinviwo_1_1LIC2D.html" alt="inviwo::LIC2D" shape="rect" coords="1180,336,1465,360"/>
+<area href="classinviwo_1_1LayerBinary.html" alt="inviwo::LayerBinary" shape="rect" coords="1180,392,1465,416"/>
+<area href="classinviwo_1_1LayerColorMapping.html" alt="inviwo::LayerColorMapping" shape="rect" coords="1180,448,1465,472"/>
+<area href="classinviwo_1_1LayerGradient.html" alt="inviwo::LayerGradient" shape="rect" coords="1180,504,1465,528"/>
+<area href="classinviwo_1_1LayerGrayscale.html" alt="inviwo::LayerGrayscale" shape="rect" coords="1180,560,1465,584"/>
+<area href="classinviwo_1_1LayerInvert.html" alt="inviwo::LayerInvert" shape="rect" coords="1180,616,1465,640"/>
+<area href="classinviwo_1_1LayerNormalization.html" alt="inviwo::LayerNormalization" shape="rect" coords="1180,672,1465,696"/>
+<area href="classinviwo_1_1LayerShader.html" alt="inviwo::LayerShader" shape="rect" coords="1180,728,1465,752"/>
+<area href="classinviwo_1_1Vector2DCurl.html" alt="inviwo::Vector2DCurl" shape="rect" coords="1180,784,1465,808"/>
+<area href="classinviwo_1_1Vector2DDivergence.html" alt="inviwo::Vector2DDivergence" shape="rect" coords="1180,840,1465,864"/>
+<area href="classinviwo_1_1Vector2DMagnitude.html" alt="inviwo::Vector2DMagnitude" shape="rect" coords="1180,896,1465,920"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -655,7 +661,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class for layer processing on the GPU using OpenGL. </p>
-<p>The <a class="el" href="classinviwo_1_1LayerGLProcessor.html" title="Base class for layer processing on the GPU using OpenGL.">LayerGLProcessor</a> provides the basic structure for layer processing on the GPU. Derived shaders have to provide a custom fragment shader which is used during rendering. Optionally, derived classes can overwrite <a class="el" href="#a88d03d5c296d07ac07cefcb0a0a69e94" title="this function gets called at the end of the process function">LayerGLProcessor::postProcess()</a> to perform post-processing of the layer data set in the outport. Furthermore, it is possible to be notified of changes in the input layer by overwriting LayerGLProcessor::afterInportChanged().</p>
+<p>The <a class="el" href="classinviwo_1_1LayerGLProcessor.html" title="Base class for layer processing on the GPU using OpenGL.">LayerGLProcessor</a> provides the basic structure for layer processing on the GPU. Derived processors have to provide a custom fragment shader which is used during rendering. Optionally, derived classes can overwrite <a class="el" href="#a214d4ac1c87ea90ab8da61559abab92f" title="this function gets called right before the actual processing but after the shader has been activated">LayerGLProcessor::preProcess()</a> and <a class="el" href="#a88d03d5c296d07ac07cefcb0a0a69e94" title="this function gets called at the end of the process function">LayerGLProcessor::postProcess()</a> to perform pre- and post-processing of the <a class="el" href="classinviwo_1_1Layer.html">Layer</a> directly before and after rendering. Furthermore, it is possible to specify the data format of the output <a class="el" href="classinviwo_1_1Layer.html">Layer</a> by overriding <a class="el" href="#a70b327ac7d0eb87a39ad53949ff02d15" title="Returns the output configuration for the layer.">LayerGLProcessor::outputConfig()</a>.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1ImageGLProcessor.html" title="Base class for image processing on the GPU using OpenGL.">ImageGLProcessor</a> </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a5d212d61ee21645f2b1ad08d47e0e6ba" name="a5d212d61ee21645f2b1ad08d47e0e6ba"></a>
@@ -721,7 +727,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The output configuration for the layer. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classinviwo_1_1LayerShader.html#a575f403b4ad8430b4c1d9a0f411c4f90">inviwo::LayerShader</a>, and <a class="el" href="classinviwo_1_1LayerMapping.html#ab2f231f84958cc8ebbdd700b996d9d20">inviwo::LayerMapping</a>.</p>
+<p>Reimplemented in <a class="el" href="classinviwo_1_1LayerShader.html#a575f403b4ad8430b4c1d9a0f411c4f90">inviwo::LayerShader</a>, and <a class="el" href="classinviwo_1_1LayerColorMapping.html#a281e78e7f09db0e3867bbbf9ce81df6d">inviwo::LayerColorMapping</a>.</p>
 
 </div>
 </div>
@@ -792,7 +798,7 @@ Additional Inherited Members</h2></td></tr>
 <p>this function gets called right before the actual processing but after the shader has been activated </p>
 <p>Overwrite this function in the derived class to perform things like custom shader setup. </p>
 
-<p>Reimplemented in <a class="el" href="classinviwo_1_1LayerShader.html#a24df391d0bcf10abbb11dda7d369b865">inviwo::LayerShader</a>, <a class="el" href="classinviwo_1_1LayerGrayscale.html#ae15320d86f85d3a1f55988b2edf1e458">inviwo::LayerGrayscale</a>, and <a class="el" href="classinviwo_1_1LayerMapping.html#a027425fd7e0a8e8fef5c9bcf20a0a164">inviwo::LayerMapping</a>.</p>
+<p>Reimplemented in <a class="el" href="classinviwo_1_1LayerShader.html#a24df391d0bcf10abbb11dda7d369b865">inviwo::LayerShader</a>, <a class="el" href="classinviwo_1_1LayerColorMapping.html#a76afc0d26642e654c74193bfadedf3f5">inviwo::LayerColorMapping</a>, and <a class="el" href="classinviwo_1_1LayerGrayscale.html#ae15320d86f85d3a1f55988b2edf1e458">inviwo::LayerGrayscale</a>.</p>
 
 </div>
 </div>

@@ -96,6 +96,7 @@ $(function(){initNavTree('namespaceinviwo.html',''); initResizable(); });
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#concepts">Concepts</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a> &#124;
@@ -468,6 +469,8 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1ContainerWrapperItem.html">ContainerWrapperItem</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ContextHolder.html">ContextHolder</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1conversion__tester.html">conversion_tester</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1ConvertableLink.html">ConvertableLink</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -931,15 +934,18 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageChannelSelect.html">ImageChannelSelect</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageColorMapping.html">ImageColorMapping</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps the input image to an output with the help of a transfer function.  <a href="classinviwo_1_1ImageColorMapping.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageCompositeProcessorGL.html">ImageCompositeProcessorGL</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageCompositor.html">ImageCompositor</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageContour.html">ImageContour</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageContourProcessor.html">ImageContourProcessor</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageConvolution.html">ImageConvolution</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageDistanceTransform.html">ImageDistanceTransform</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageEdgeDarken.html">ImageEdgeDarken</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Darken edges in an image.  <a href="classinviwo_1_1ImageEdgeDarken.html#details">More...</a><br /></td></tr>
@@ -956,7 +962,6 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a kernel to the input image.  <a href="classinviwo_1_1ImageFilter.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageGamma.html">ImageGamma</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply gamma correction to an image. Alpha channel is not touched.  <a href="classinviwo_1_1ImageGamma.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageGL.html">ImageGL</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">OpenGL representation of an <a class="el" href="classinviwo_1_1Image.html">Image</a> as a framebuffer.  <a href="classinviwo_1_1ImageGL.html#details">More...</a><br /></td></tr>
@@ -998,14 +1003,10 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageLowPass.html">ImageLowPass</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a low pass filter on the input image using either constant weight or Gaussian weights.  <a href="classinviwo_1_1ImageLowPass.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageMapping.html">ImageMapping</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps the input image to an output with the help of a transfer function.  <a href="classinviwo_1_1ImageMapping.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageMixer.html">ImageMixer</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mixes two input images according to the chosen blend mode.  <a href="classinviwo_1_1ImageMixer.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageNormalizationProcessor.html">ImageNormalizationProcessor</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalizes the rgb channels of an input image given a specific range.  <a href="classinviwo_1_1ImageNormalizationProcessor.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageOpacity.html">ImageOpacity</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Controls an image's opacity.  <a href="classinviwo_1_1ImageOpacity.html#details">More...</a><br /></td></tr>
@@ -1261,15 +1262,19 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerBoundingBox.html">LayerBoundingBox</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerColorMapping.html">LayerColorMapping</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerCombiner.html">LayerCombiner</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1LayerConfig.html">LayerConfig</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerContour.html">LayerContour</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerDisk.html">LayerDisk</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerDisk2RAMConverter.html">LayerDisk2RAMConverter</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerDistanceTransformRAM.html">LayerDistanceTransformRAM</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerDistanceTransform.html">LayerDistanceTransform</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerGL.html">LayerGL</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1279,6 +1284,8 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerGLProcessor.html">LayerGLProcessor</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for layer processing on the GPU using OpenGL.  <a href="classinviwo_1_1LayerGLProcessor.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerGradient.html">LayerGradient</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerGrayscale.html">LayerGrayscale</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1291,7 +1298,7 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerInvert.html">LayerInvert</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerMapping.html">LayerMapping</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerNormalization.html">LayerNormalization</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerPy.html">LayerPy</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1314,6 +1321,8 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1LayerReprConfig.html">LayerReprConfig</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerRepresentation.html">LayerRepresentation</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerResampling.html">LayerResampling</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerShader.html">LayerShader</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1581,10 +1590,10 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1NodeVersionConverter.html">NodeVersionConverter</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1NoiseProcessor.html">NoiseProcessor</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A processor to generate a noise image.  <a href="classinviwo_1_1NoiseProcessor.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1NoiseGenerator2D.html">NoiseGenerator2D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A processor to generate a noise image.  <a href="classinviwo_1_1NoiseGenerator2D.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1NoiseVolumeProcessor.html">NoiseVolumeProcessor</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1NoiseGenerator3D.html">NoiseGenerator3D</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1NormalizedHistogram.html">NormalizedHistogram</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2913,6 +2922,13 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> XML Writer.  <a href="classinviwo_1_1XMLWriter.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
+Concepts</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptinviwo_1_1DataType.html">DataType</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptinviwo_1_1RepresentationOf.html">RepresentationOf</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a38cf9ee60730d055622b0dd27473b551" id="r_a38cf9ee60730d055622b0dd27473b551"><td class="memItemLeft" align="right" valign="top"><a id="a38cf9ee60730d055622b0dd27473b551" name="a38cf9ee60730d055622b0dd27473b551"></a>
@@ -2972,8 +2988,8 @@ Typedefs</h2></td></tr>
 <a class="el" href="classinviwo_1_1TypedMesh.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>SwizzleMask</b> = std::array&lt;ImageChannel, 4&gt;</td></tr>
 <tr class="separator:a30314729abe3429d326be17e5ef1b433"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d1f36ec07e027781e45bd48590f9152" id="r_a0d1f36ec07e027781e45bd48590f9152"><td class="memTemplParams" colspan="2"><a id="a0d1f36ec07e027781e45bd48590f9152" name="a0d1f36ec07e027781e45bd48590f9152"></a>
-template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a> , typename Kind &gt; </td></tr>
-<tr class="memitem:a0d1f36ec07e027781e45bd48590f9152"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">using</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>representation_traits_t</b> = typename <a class="el" href="structinviwo_1_1representation__traits.html">representation_traits</a>&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a>, Kind&gt;::type</td></tr>
+template&lt;typename DataType , typename Kind &gt; </td></tr>
+<tr class="memitem:a0d1f36ec07e027781e45bd48590f9152"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">using</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>representation_traits_t</b> = typename <a class="el" href="structinviwo_1_1representation__traits.html">representation_traits</a>&lt;DataType, Kind&gt;::type</td></tr>
 <tr class="separator:a0d1f36ec07e027781e45bd48590f9152"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae84ff189810fb0e71f9ddd38e8ebd7e9" id="r_ae84ff189810fb0e71f9ddd38e8ebd7e9"><td class="memItemLeft" align="right" valign="top"><a id="ae84ff189810fb0e71f9ddd38e8ebd7e9" name="ae84ff189810fb0e71f9ddd38e8ebd7e9"></a>
 <a class="el" href="classinviwo_1_1TypedMesh.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Unit</b> = units::precise_unit</td></tr>
@@ -5280,6 +5296,9 @@ IVW_SYS_API std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_
 <tr class="memitem:aba45ac50adc557f8fd0dd59ef7431f5c" id="r_aba45ac50adc557f8fd0dd59ef7431f5c"><td class="memItemLeft" align="right" valign="top"><a id="aba45ac50adc557f8fd0dd59ef7431f5c" name="aba45ac50adc557f8fd0dd59ef7431f5c"></a>
 <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (WorkspaceModelType <a class="el" href="classinviwo_1_1TypedMesh.html">t</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">QVariant</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">v</a>)</td></tr>
 <tr class="separator:aba45ac50adc557f8fd0dd59ef7431f5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a721bb75b3ce632b462280e23d567073b" id="r_a721bb75b3ce632b462280e23d567073b"><td class="memItemLeft" align="right" valign="top"><a id="a721bb75b3ce632b462280e23d567073b" name="a721bb75b3ce632b462280e23d567073b"></a>
+IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>computeLayerContour</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1LayerRepresentation.html">LayerRepresentation</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">in</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">size_t</a> <a class="el" href="classinviwo_1_1TypedMesh.html">channel</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">double</a> <a class="el" href="classinviwo_1_1TypedMesh.html">isoValue</a>, vec4 color=vec4(1.0))</td></tr>
+<tr class="separator:a721bb75b3ce632b462280e23d567073b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12e3210d8b960fd77ba1941a96f7e398" id="r_a12e3210d8b960fd77ba1941a96f7e398"><td class="memTemplParams" colspan="2"><a id="a12e3210d8b960fd77ba1941a96f7e398" name="a12e3210d8b960fd77ba1941a96f7e398"></a>
 template&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">unsigned</a> <a class="el" href="classinviwo_1_1TypedMesh.html">char</a> N, typename P  = double&gt; </td></tr>
 <tr class="memitem:a12e3210d8b960fd77ba1941a96f7e398"><td class="memTemplItemLeft" align="right" valign="top">Vector&lt; N, P &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ptrToVec</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> P *<a class="el" href="classinviwo_1_1TypedMesh.html">f</a>)</td></tr>
@@ -5295,9 +5314,6 @@ template&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">unsigned</a> <a c
 <tr class="memitem:a00c82bbdc323b915e3e1e02b4e2fef32" id="r_a00c82bbdc323b915e3e1e02b4e2fef32"><td class="memItemLeft" align="right" valign="top"><a id="a00c82bbdc323b915e3e1e02b4e2fef32" name="a00c82bbdc323b915e3e1e02b4e2fef32"></a>
 IVW_MODULE_BASE_API std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">ss</a>, DistanceTransformRAM::DataRangeMode m)</td></tr>
 <tr class="separator:a00c82bbdc323b915e3e1e02b4e2fef32"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb63928919a09336b4cebc0423d88b7a" id="r_aeb63928919a09336b4cebc0423d88b7a"><td class="memItemLeft" align="right" valign="top"><a id="aeb63928919a09336b4cebc0423d88b7a" name="aeb63928919a09336b4cebc0423d88b7a"></a>
-IVW_MODULE_BASE_API std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">ss</a>, LayerDistanceTransformRAM::DataRangeMode m)</td></tr>
-<tr class="separator:aeb63928919a09336b4cebc0423d88b7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63d50bd2a42b11125408a7baae926cc0" id="r_a63d50bd2a42b11125408a7baae926cc0"><td class="memItemLeft" align="right" valign="top"><a id="a63d50bd2a42b11125408a7baae926cc0" name="a63d50bd2a42b11125408a7baae926cc0"></a>
 IVW_MODULE_BASE_API std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">ss</a>, BoundaryType <a class="el" href="classinviwo_1_1TypedMesh.html">bt</a>)</td></tr>
 <tr class="separator:a63d50bd2a42b11125408a7baae926cc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5539,6 +5555,10 @@ template <a class="el" href="classinviwo_1_1TypedMesh.html">class</a> IVW_CORE_T
 <tr class="memitem:a4d336b430fd46b92331bcdff742c6567" id="r_a4d336b430fd46b92331bcdff742c6567"><td class="memItemLeft" align="right" valign="top"><a id="a4d336b430fd46b92331bcdff742c6567" name="a4d336b430fd46b92331bcdff742c6567"></a>
 template <a class="el" href="classinviwo_1_1TypedMesh.html">class</a> IVW_CORE_TMPL_EXP&#160;</td><td class="memItemRight" valign="bottom"><b>StructuredCameraCoordinateTransformerImpl&lt; 3 &gt;</b></td></tr>
 <tr class="separator:a4d336b430fd46b92331bcdff742c6567"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a585b9242d51f7b33ce1f44813a7b18b9" id="r_a585b9242d51f7b33ce1f44813a7b18b9"><td class="memTemplParams" colspan="2"><a id="a585b9242d51f7b33ce1f44813a7b18b9" name="a585b9242d51f7b33ce1f44813a7b18b9"></a>
+template&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">class</a> <a class="el" href="classinviwo_1_1TypedMesh.html">From</a> , template&lt; typename... &gt; <a class="el" href="classinviwo_1_1TypedMesh.html">class</a> To&gt; </td></tr>
+<tr class="memitem:a585b9242d51f7b33ce1f44813a7b18b9"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">constexpr</a> <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>is_instance_of</b> = std::is_convertible_v&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">From</a>, <a class="el" href="structinviwo_1_1conversion__tester.html">conversion_tester</a>&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">To</a>&gt;&gt;</td></tr>
+<tr class="separator:a585b9242d51f7b33ce1f44813a7b18b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab05b45da604e262a30592f4ff5bc5923" id="r_ab05b45da604e262a30592f4ff5bc5923"><td class="memItemLeft" align="right" valign="top"><a id="ab05b45da604e262a30592f4ff5bc5923" name="ab05b45da604e262a30592f4ff5bc5923"></a>
 template <a class="el" href="classinviwo_1_1TypedMesh.html">class</a> IVW_CORE_TMPL_EXP&#160;</td><td class="memItemRight" valign="bottom"><b>DataReaderType&lt; Mesh &gt;</b></td></tr>
 <tr class="separator:ab05b45da604e262a30592f4ff5bc5923"><td class="memSeparator" colspan="2">&#160;</td></tr>

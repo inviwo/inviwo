@@ -498,7 +498,7 @@ Protected Member Functions</h2></td></tr>
 <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>exportData</b> ()</td></tr>
 <tr class="separator:a6b80babc72953c56597730289d83c5ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d77c50dde1fffe1a1dfcb34c57e0e62" id="r_a9d77c50dde1fffe1a1dfcb34c57e0e62"><td class="memItemLeft" align="right" valign="top"><a id="a9d77c50dde1fffe1a1dfcb34c57e0e62" name="a9d77c50dde1fffe1a1dfcb34c57e0e62"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getData</b> ()=0</td></tr>
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> DataType *&#160;</td><td class="memItemRight" valign="bottom"><b>getData</b> ()=0</td></tr>
 <tr class="separator:a9d77c50dde1fffe1a1dfcb34c57e0e62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Processor')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a8b02d56fdf37b42ec6cfd600990bebc8 inherit pro_methods_classinviwo_1_1Processor" id="r_a8b02d56fdf37b42ec6cfd600990bebc8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a8b02d56fdf37b42ec6cfd600990bebc8">addPortToGroup</a> (<a class="el" href="classinviwo_1_1Port.html">Port</a> *port, std::string_view <a class="el" href="classinviwo_1_1TypedMesh.html">portGroup</a>)</td></tr>
@@ -651,7 +651,7 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:af79dedcc137d212c5d0225dc8cee3380 inherit pro_static_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a>, typename PortType = DataInport&lt;DataType&gt;&gt;<br />
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename DataType, typename PortType = DataInport&lt;DataType&gt;&gt;<br />
 class inviwo::DataExport&lt; DataType, PortType &gt;</div><p>A base class for simple export processors. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a255a7d78b2a8dff0c1f5fed162fcbd56" name="a255a7d78b2a8dff0c1f5fed162fcbd56"></a>
@@ -660,13 +660,13 @@ class inviwo::DataExport&lt; DataType, PortType &gt;</div><p>A base class for si
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a> , typename PortType  = DataInport&lt;DataType&gt;&gt; </div>
+template&lt;typename DataType , typename PortType  = DataInport&lt;DataType&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorInfo</a> <a class="el" href="classinviwo_1_1DataExport.html">inviwo::DataExport</a>&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a>, PortType &gt;::getProcessorInfo </td>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorInfo</a> <a class="el" href="classinviwo_1_1DataExport.html">inviwo::DataExport</a>&lt; DataType, PortType &gt;::getProcessorInfo </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"></span></td><td>)</td>
           <td> const</td>
@@ -689,13 +689,13 @@ template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">DataType
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a> , typename PortType &gt; </div>
+template&lt;typename DataType , typename PortType &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a> <a class="el" href="classinviwo_1_1DataExport.html">inviwo::DataExport</a>&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">DataType</a>, PortType &gt;::process </td>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a> <a class="el" href="classinviwo_1_1DataExport.html">inviwo::DataExport</a>&lt; DataType, PortType &gt;::process </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"></span></td><td>)</td>
           <td></td>

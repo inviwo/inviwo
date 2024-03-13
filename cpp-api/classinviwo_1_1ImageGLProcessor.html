@@ -130,15 +130,15 @@ $(function(){initNavTree('classinviwo_1_1ImageGLProcessor.html',''); initResizab
 <area href="classinviwo_1_1ImageBinary.html" title="computes a binary image of the input image using a threshold." alt="inviwo::ImageBinary" shape="rect" coords="1180,392,1465,416"/>
 <area href="classinviwo_1_1ImageBrightnessContrast.html" title="Controls brightness and contrast of an image." alt="inviwo::ImageBrightnessContrast" shape="rect" coords="1180,448,1465,472"/>
 <area href="classinviwo_1_1ImageChannelSelect.html" alt="inviwo::ImageChannelSelect" shape="rect" coords="1180,504,1465,528"/>
-<area href="classinviwo_1_1ImageEdgeDarken.html" title="Darken edges in an image." alt="inviwo::ImageEdgeDarken" shape="rect" coords="1180,560,1465,584"/>
-<area href="classinviwo_1_1ImageGamma.html" title="Apply gamma correction to an image. Alpha channel is not touched." alt="inviwo::ImageGamma" shape="rect" coords="1180,616,1465,640"/>
-<area href="classinviwo_1_1ImageGradient.html" title="Computes the gradient of one channel of the input image." alt="inviwo::ImageGradient" shape="rect" coords="1180,672,1465,696"/>
-<area href="classinviwo_1_1ImageGrayscale.html" title="Compute a gray-scale image from color input. Alpha channel is not touched." alt="inviwo::ImageGrayscale" shape="rect" coords="1180,728,1465,752"/>
-<area href="classinviwo_1_1ImageHighPass.html" title="Applies a high pass filter on the input image." alt="inviwo::ImageHighPass" shape="rect" coords="1180,784,1465,808"/>
-<area href="classinviwo_1_1ImageHueSaturationLuminance.html" title="Controls hue, saturation and luminance of an image." alt="inviwo::ImageHueSaturationLuminance" shape="rect" coords="1180,840,1465,864"/>
-<area href="classinviwo_1_1ImageInvert.html" title="Create the invert image of an input image. Alpha channel is not touched." alt="inviwo::ImageInvert" shape="rect" coords="1180,896,1465,920"/>
-<area href="classinviwo_1_1ImageMapping.html" title="Maps the input image to an output with the help of a transfer function." alt="inviwo::ImageMapping" shape="rect" coords="1180,952,1465,976"/>
-<area href="classinviwo_1_1ImageNormalizationProcessor.html" title="Normalizes the rgb channels of an input image given a specific range." alt="inviwo::ImageNormalizationProcessor" shape="rect" coords="1180,1008,1465,1032"/>
+<area href="classinviwo_1_1ImageColorMapping.html" title="Maps the input image to an output with the help of a transfer function." alt="inviwo::ImageColorMapping" shape="rect" coords="1180,560,1465,584"/>
+<area href="classinviwo_1_1ImageEdgeDarken.html" title="Darken edges in an image." alt="inviwo::ImageEdgeDarken" shape="rect" coords="1180,616,1465,640"/>
+<area href="classinviwo_1_1ImageGamma.html" alt="inviwo::ImageGamma" shape="rect" coords="1180,672,1465,696"/>
+<area href="classinviwo_1_1ImageGradient.html" title="Computes the gradient of one channel of the input image." alt="inviwo::ImageGradient" shape="rect" coords="1180,728,1465,752"/>
+<area href="classinviwo_1_1ImageGrayscale.html" title="Compute a gray-scale image from color input. Alpha channel is not touched." alt="inviwo::ImageGrayscale" shape="rect" coords="1180,784,1465,808"/>
+<area href="classinviwo_1_1ImageHighPass.html" title="Applies a high pass filter on the input image." alt="inviwo::ImageHighPass" shape="rect" coords="1180,840,1465,864"/>
+<area href="classinviwo_1_1ImageHueSaturationLuminance.html" title="Controls hue, saturation and luminance of an image." alt="inviwo::ImageHueSaturationLuminance" shape="rect" coords="1180,896,1465,920"/>
+<area href="classinviwo_1_1ImageInvert.html" title="Create the invert image of an input image. Alpha channel is not touched." alt="inviwo::ImageInvert" shape="rect" coords="1180,952,1465,976"/>
+<area href="classinviwo_1_1ImageNormalizationProcessor.html" alt="inviwo::ImageNormalizationProcessor" shape="rect" coords="1180,1008,1465,1032"/>
 <area href="classinviwo_1_1ImageOpacity.html" title="Controls an image&#39;s opacity." alt="inviwo::ImageOpacity" shape="rect" coords="1180,1064,1465,1088"/>
 <area href="classinviwo_1_1ImageResample.html" title="Resamples the input image, which corresponds to upscaling or downscaling to the respective target res..." alt="inviwo::ImageResample" shape="rect" coords="1180,1120,1465,1144"/>
 <area href="classinviwo_1_1Jacobian2D.html" title="Computes the Jacobian of a two channel image." alt="inviwo::Jacobian2D" shape="rect" coords="1180,1176,1465,1200"/>
@@ -717,7 +717,7 @@ Additional Inherited Members</h2></td></tr>
 <p>this function gets called whenever the inport changes </p>
 <p>overwrite this function in the derived class to be notified of inport onChange events </p>
 
-<p>Reimplemented in <a class="el" href="classinviwo_1_1ImageMapping.html#a14b7cc2271e771f48fc5064074fadd3f">inviwo::ImageMapping</a>.</p>
+<p>Reimplemented in <a class="el" href="classinviwo_1_1ImageColorMapping.html#aa92d65d8d271b2962ba44cfc900f097e">inviwo::ImageColorMapping</a>.</p>
 
 </div>
 </div>
@@ -747,7 +747,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1Processor.html#a9ca0ca1407ee6e9f0c5e3a9b1a453dd1">inviwo::Processor</a>.</p>
 
-<p>Reimplemented in <a class="el" href="classinviwo_1_1ImageResample.html#aa46d7c26062d2c41dd73d6f4df93308f">inviwo::ImageResample</a>, <a class="el" href="classinviwo_1_1Jacobian2D.html#ad17ea29b33938a7e4d436160cef5b54f">inviwo::Jacobian2D</a>, and <a class="el" href="classinviwo_1_1Tonemapping.html#a95755ec11910c461e427f332c0733aaa">inviwo::Tonemapping</a>.</p>
+<p>Reimplemented in <a class="el" href="classinviwo_1_1ImageBinary.html#ab4bde250ef43192f6dab376a95adbe7b">inviwo::ImageBinary</a>, <a class="el" href="classinviwo_1_1ImageResample.html#aa46d7c26062d2c41dd73d6f4df93308f">inviwo::ImageResample</a>, <a class="el" href="classinviwo_1_1Jacobian2D.html#ad17ea29b33938a7e4d436160cef5b54f">inviwo::Jacobian2D</a>, and <a class="el" href="classinviwo_1_1Tonemapping.html#a95755ec11910c461e427f332c0733aaa">inviwo::Tonemapping</a>.</p>
 
 </div>
 </div>
@@ -807,7 +807,7 @@ Additional Inherited Members</h2></td></tr>
 <p>this function gets called right before the actual processing but after the shader has been activated </p>
 <p>overwrite this function in the derived class to perform things like custom shader setup </p>
 
-<p>Reimplemented in <a class="el" href="classinviwo_1_1FindEdges.html#aaa4bb85abcfcafda13091b91d56af265">inviwo::FindEdges</a>, <a class="el" href="classinviwo_1_1ImageBinary.html#aa9754fee96c513ee98f102495a96d739">inviwo::ImageBinary</a>, <a class="el" href="classinviwo_1_1ImageChannelSelect.html#a535874829a7c27f938a357b9d05b2d1d">inviwo::ImageChannelSelect</a>, <a class="el" href="classinviwo_1_1ImageGamma.html#a18b05b9dd972b5e0f22644d67a189d80">inviwo::ImageGamma</a>, <a class="el" href="classinviwo_1_1ImageGradient.html#acfc8d372244d19e2873d901d3b02506b">inviwo::ImageGradient</a>, <a class="el" href="classinviwo_1_1ImageGrayscale.html#a55b1e262d5ff9f2e1dabf095fc11d046">inviwo::ImageGrayscale</a>, <a class="el" href="classinviwo_1_1ImageHighPass.html#a417a1b489f9119f6dfc6dd21b01a0cf7">inviwo::ImageHighPass</a>, <a class="el" href="classinviwo_1_1ImageMapping.html#a3e72197b76b72256400446b00c199b83">inviwo::ImageMapping</a>, <a class="el" href="classinviwo_1_1ImageNormalizationProcessor.html#acf69646eb26f945433a4c9ce15e257ec">inviwo::ImageNormalizationProcessor</a>, <a class="el" href="classinviwo_1_1Jacobian2D.html#afacc58dd099167184c466215bde9c5a9">inviwo::Jacobian2D</a>, <a class="el" href="classinviwo_1_1ImageBrightnessContrast.html#a77c420d9efcde8b7f60b141a7d4fb717">inviwo::ImageBrightnessContrast</a>, <a class="el" href="classinviwo_1_1ImageEdgeDarken.html#ad94329ea77b10c8290f7b1cfa6bb2d09">inviwo::ImageEdgeDarken</a>, <a class="el" href="classinviwo_1_1ImageHueSaturationLuminance.html#a6409fcd0269626e9cdec7d392c5ab0f7">inviwo::ImageHueSaturationLuminance</a>, <a class="el" href="classinviwo_1_1ImageOpacity.html#a85092597ed7f34ab95da76b20c0d6555">inviwo::ImageOpacity</a>, and <a class="el" href="classinviwo_1_1Tonemapping.html#ac5ae6a47d19d66b3e6b76b24564f8e63">inviwo::Tonemapping</a>.</p>
+<p>Reimplemented in <a class="el" href="classinviwo_1_1FindEdges.html#aaa4bb85abcfcafda13091b91d56af265">inviwo::FindEdges</a>, <a class="el" href="classinviwo_1_1ImageChannelSelect.html#a535874829a7c27f938a357b9d05b2d1d">inviwo::ImageChannelSelect</a>, <a class="el" href="classinviwo_1_1ImageColorMapping.html#a2922a713da446b41127e456321d372a0">inviwo::ImageColorMapping</a>, <a class="el" href="classinviwo_1_1ImageGamma.html#a18b05b9dd972b5e0f22644d67a189d80">inviwo::ImageGamma</a>, <a class="el" href="classinviwo_1_1ImageGradient.html#acfc8d372244d19e2873d901d3b02506b">inviwo::ImageGradient</a>, <a class="el" href="classinviwo_1_1ImageGrayscale.html#a55b1e262d5ff9f2e1dabf095fc11d046">inviwo::ImageGrayscale</a>, <a class="el" href="classinviwo_1_1ImageHighPass.html#a417a1b489f9119f6dfc6dd21b01a0cf7">inviwo::ImageHighPass</a>, <a class="el" href="classinviwo_1_1ImageNormalizationProcessor.html#acf69646eb26f945433a4c9ce15e257ec">inviwo::ImageNormalizationProcessor</a>, <a class="el" href="classinviwo_1_1Jacobian2D.html#afacc58dd099167184c466215bde9c5a9">inviwo::Jacobian2D</a>, <a class="el" href="classinviwo_1_1ImageBrightnessContrast.html#a77c420d9efcde8b7f60b141a7d4fb717">inviwo::ImageBrightnessContrast</a>, <a class="el" href="classinviwo_1_1ImageEdgeDarken.html#ad94329ea77b10c8290f7b1cfa6bb2d09">inviwo::ImageEdgeDarken</a>, <a class="el" href="classinviwo_1_1ImageHueSaturationLuminance.html#a6409fcd0269626e9cdec7d392c5ab0f7">inviwo::ImageHueSaturationLuminance</a>, <a class="el" href="classinviwo_1_1ImageOpacity.html#a85092597ed7f34ab95da76b20c0d6555">inviwo::ImageOpacity</a>, and <a class="el" href="classinviwo_1_1Tonemapping.html#ac5ae6a47d19d66b3e6b76b24564f8e63">inviwo::Tonemapping</a>.</p>
 
 </div>
 </div>
