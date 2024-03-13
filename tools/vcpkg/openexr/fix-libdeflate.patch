@@ -1,0 +1,12 @@
+diff --git forkSrcPrefix/cmake/OpenEXRConfig.cmake.in forkDstPrefix/cmake/OpenEXRConfig.cmake.in
+index fbb98c0ad3cb27f53dc6d0fe3ce5299c82c5c089..601c65c3e6c2b44e134c8dbc6cbd14c5802cb810 100644
+--- forkSrcPrefix/cmake/OpenEXRConfig.cmake.in
++++ forkDstPrefix/cmake/OpenEXRConfig.cmake.in
+@@ -13,6 +13,7 @@ endif()
+ unset(openexr_needthreads)
+ 
+ find_dependency(Imath REQUIRED)
++find_dependency(libdeflate REQUIRED)
+ 
+ include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
+ check_required_components("@PROJECT_NAME@")
