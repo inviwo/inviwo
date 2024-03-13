@@ -90,6 +90,9 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
     connect(this, &QLineEdit::editingFinished, [this]() {
         setCursorToEnd();
         const auto path = utilqt::toPath(text().trimmed());
+
+        // FIXME: handle case where new path is not valid. Should the internal path be updated? Does
+        // the line edit need updating?
         updateIcon(path);
         if (path != path_) {
             path_ = path;
@@ -136,81 +139,60 @@ void FilePathLineEditQt::resizeEvent(QResizeEvent*) {
     warningLabel_->move(width() - warningLabel_->width() - frameWidth, 0);
 }
 
-void FilePathLineEditQt::updateIcon(const std::filesystem::path& path) {
-    // update visibility of warning icon
+bool FilePathLineEditQt::updateIcon(const std::filesystem::path& path) {
+    auto update = [&](bool visible, std::string_view message) {
+        warningLabel_->setVisible(visible);
+        warningLabel_->setToolTip(utilqt::toQString(message));
+        // make sure there is no text flowing into the warning label
+        setStyleSheet(QString("QLineEdit:enabled { padding-right: %1; }")
+                          .arg(visible ? warningLabel_->width() + 2 : 0));
+    };
 
-    bool visible = false;
-    QString tooltip;
+    try {
+        auto status = std::filesystem::status(path);
+        const bool isFile = std::filesystem::is_regular_file(status);
+        const bool isDir = std::filesystem::is_directory(status);
 
-    bool hasWildcard = (path.string().find_first_of("*?#", 0) != std::string::npos);
-
-    auto status = std::filesystem::status(path);
-    const bool isFile = std::filesystem::is_regular_file(status);
-    const bool isDir = std::filesystem::is_directory(status);
-
-    const bool parentDir = std::filesystem::is_directory(path.parent_path());
-
-    switch (acceptMode_) {
-        case AcceptMode::Open: {
-            switch (fileMode_) {
-                case FileMode::AnyFile: {
-                    break;
-                }
-                case FileMode::ExistingFile: {
-                    if (!hasWildcard) {
-                        visible = !isFile;
-                        tooltip = "Could not locate file!";
-                    } else {
-                        visible = !parentDir;
-                        tooltip = "Could not locate parent directory!";
+        switch (acceptMode_) {
+            case AcceptMode::Open:
+                switch (fileMode_) {
+                    case FileMode::ExistingFile:
+                    case FileMode::ExistingFiles: {
+                        const bool hasWildcard =
+                            (path.string().find_first_of("*?#", 0) != std::string::npos);
+                        if (!hasWildcard) {
+                            update(!isFile, "Could not locate file!");
+                        } else {
+                            const bool parentDir =
+                                std::filesystem::is_directory(path.parent_path());
+                            update(!parentDir, "Could not locate parent directory!");
+                        }
+                        return false;
                     }
-                    break;
+                    case FileMode::Directory:
+                        update(!isDir, "Could not locate directory!");
+                        return false;
+                    case FileMode::AnyFile:
+                        update(false, "");
+                        return true;
                 }
-                case FileMode::ExistingFiles: {
-                    if (!hasWildcard) {
-                        visible = !isFile;
-                        tooltip = "Could not locate file!";
-                    } else {
-                        visible = !parentDir;
-                        tooltip = "Could not locate parent directory!";
-                    }
-                    break;
+            case AcceptMode::Save:
+                switch (fileMode_) {
+                    case FileMode::Directory:
+                        update(!isDir, "Could not locate directory!");
+                        return false;
+                    case FileMode::AnyFile:
+                    case FileMode::ExistingFile:
+                    case FileMode::ExistingFiles:
+                        update(false, "");
+                        return true;
                 }
-                case FileMode::Directory: {
-                    visible = !isDir;
-                    tooltip = "Could not locate directory!";
-                    break;
-                }
-            }
-            break;
         }
-        case AcceptMode::Save: {
-            switch (fileMode_) {
-                case FileMode::AnyFile: {
-                    break;
-                }
-                case FileMode::ExistingFile: {
-                    break;
-                }
-                case FileMode::ExistingFiles: {
-                    break;
-                }
-                case FileMode::Directory: {
-                    visible = !isDir;
-                    tooltip = "Could not locate directory!";
-                    break;
-                }
-            }
-
-            break;
-        }
+    } catch (std::filesystem::filesystem_error&) {
+        update(true, "Invalid path!");
+        return false;
     }
-
-    warningLabel_->setVisible(visible);
-    warningLabel_->setToolTip(tooltip);
-    // make sure there is no text flowing into the warning label
-    this->setStyleSheet(QString("QLineEdit:enabled { padding-right: %1; }")
-                            .arg(visible ? warningLabel_->width() + 2 : 0));
+    return false;
 }
 
 }  // namespace inviwo
