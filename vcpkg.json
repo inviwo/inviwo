@@ -23,13 +23,6 @@
     "glfw3",
     "glm",
     "gtest",
-    {
-      "name": "hdf5",
-      "features": [
-        "cpp",
-        "zlib"
-      ]
-    },
     "libjpeg-turbo",
     "libpng",
     "minizip",
@@ -47,11 +40,27 @@
     "zlib",
     "pegtl",
     "inja",
-    "ffmpeg",
     "warn",
     "zlib"
   ],
+  "default-features": [
+    "hdf5",
+    "ffmpeg"
+  ],
   "features": {
+    "hdf5" : {
+      "description": "Get HDF from vcpkg, needed for the hdf module",
+      "dependencies": [
+        {
+          "name": "hdf5",
+          "features": ["cpp","zlib"]
+        }
+      ]
+    },
+    "ffmpeg" : {
+      "description": "Get ffmpeg from vcpkg, needed for the ffmpeg module",
+      "dependencies": ["ffmpeg"]
+    },
     "qt":  {
       "description": "Get Qt from vcpkg",
       "dependencies": [
@@ -74,7 +83,7 @@
     },
     "vtk": {
       "description": "Support VTK modules", 
-      "dependencies": [    
+      "dependencies": [
         { 
           "name": "vtk",
           "features": [
@@ -84,9 +93,13 @@
         }
       ]
     },
+    "dicom" : {
+      "description": "Grassroots DICOM library",
+      "dependencies": ["gdcm"]
+    },
     "dome" : {
       "description": "Inviwo Dome dependencies",
-      "dependencies": [    
+      "dependencies": [
         {
             "name": "tracy",
             "features" : ["gui-tools"]
