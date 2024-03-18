@@ -86,7 +86,6 @@ public:
     virtual void showExportDialog() const = 0;
     virtual void showImportDialog() = 0;
 
-    virtual bool hasData() const = 0;
     [[nodiscard]] virtual DispatcherHandle<void()> onDataChange(std::function<void()>) = 0;
 
     enum class HistogramChange { NoData, Requested, NewData };
@@ -225,14 +224,12 @@ public:
     virtual const DataMapper& getDataMap() const override {
         static const DataMapper default_;
         if (auto* port = data_->getVolumeInport()) {
-            if (port->hasData()) {
-                return port->getData()->dataMap;
+            if (auto volume = port->getData()) {
+                return volume->dataMap;
             }
         }
         return default_;
     }
-
-    virtual bool hasData() const override { return data_->getVolumeInport() != nullptr; }
 
     virtual DispatcherHandle<void()> onDataChange(std::function<void()> callback) override {
         return onDataChangeDispatcher_.add(callback);

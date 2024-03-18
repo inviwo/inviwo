@@ -35,9 +35,7 @@
 
 #include <memory>
 #include <vector>
-#include <any>
 #include <mutex>
-#include <map>
 
 namespace inviwo {
 
@@ -45,29 +43,28 @@ class IVW_CORE_API HistogramCache {
 public:
     using Callback = void(const std::vector<Histogram1D>&);
 
-    HistogramCache(std::function<std::any()> getData,
-                   std::function<std::vector<Histogram1D>(std::any)> calculate);
+    HistogramCache();
     HistogramCache(const HistogramCache& rhs);
     HistogramCache(HistogramCache&& rhs) noexcept;
     HistogramCache& operator=(const HistogramCache& that);
     HistogramCache& operator=(HistogramCache&& that) noexcept;
 
-    DispatcherHandle<Callback> calculateHistograms(std::function<Callback> whenDone) const;
+    DispatcherHandle<Callback> calculateHistograms(
+        std::function<std::vector<Histogram1D>()> calculate,
+        std::function<Callback> whenDone) const;
 
     void forEach(const std::function<void(const Histogram1D&, size_t)>&) const;
-    void discard();
+    void discard(std::function<std::vector<Histogram1D>()> calculate);
 
 private:
     enum class Status { Valid, Calculating, NotSet };
     struct State {
-        std::function<std::vector<Histogram1D>(std::any)> calculate;
         std::mutex mutex;
         std::vector<Histogram1D> histograms;
         Dispatcher<Callback> callbacks;
         Status status = Status::NotSet;
     };
 
-    std::function<std::any()> getData_;
     std::shared_ptr<State> state_;
 };
 

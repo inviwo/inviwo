@@ -181,7 +181,6 @@ protected:
     SwizzleMask defaultSwizzleMask_;
     InterpolationType defaultInterpolation_;
     Wrapping3D defaultWrapping_;
-
     HistogramCache histograms_;
 };
 

@@ -33,38 +33,36 @@
 
 namespace inviwo {
 
-HistogramCache::HistogramCache(std::function<std::any()> getData,
-                               std::function<std::vector<Histogram1D>(std::any)> calculate)
-    : getData_{getData}, state_{std::make_shared<State>()} {
-    state_->calculate = calculate;
-}
-HistogramCache::HistogramCache(const HistogramCache& rhs)
-    : getData_{rhs.getData_}, state_{std::make_shared<State>()} {
-    state_->calculate = rhs.state_->calculate;
+HistogramCache::HistogramCache() : state_{std::make_shared<State>()} {}
+HistogramCache::HistogramCache(const HistogramCache& rhs) : state_{std::make_shared<State>()} {
+    std::scoped_lock lock{rhs.state_->mutex};
     state_->histograms = rhs.state_->histograms;
+    state_->callbacks = rhs.state_->callbacks;
+    state_->status = rhs.state_->status;
 }
-HistogramCache::HistogramCache(HistogramCache&& rhs) noexcept
-    : getData_{std::move(rhs.getData_)}, state_{std::move(rhs.state_)} {}
+HistogramCache::HistogramCache(HistogramCache&& rhs) noexcept : state_{std::move(rhs.state_)} {}
 HistogramCache& HistogramCache::operator=(const HistogramCache& that) {
     if (this != &that) {
-        getData_ = that.getData_;
         state_ = std::make_shared<State>();
-        state_->calculate = that.state_->calculate;
+        std::scoped_lock lock{that.state_->mutex};
         state_->histograms = that.state_->histograms;
+        state_->callbacks = that.state_->callbacks;
+        state_->status = that.state_->status;
     }
     return *this;
 }
 HistogramCache& HistogramCache::operator=(HistogramCache&& that) noexcept {
     if (this != &that) {
-        getData_ = std::move(that.getData_);
         state_ = std::move(that.state_);
     }
     return *this;
 }
 
 DispatcherHandle<HistogramCache::Callback> HistogramCache::calculateHistograms(
+    std::function<std::vector<Histogram1D>()> calculate,
     std::function<void(const std::vector<Histogram1D>&)> whenDone) const {
     std::scoped_lock lock{state_->mutex};
+
     DispatcherHandle<HistogramCache::Callback> handle = nullptr;
 
     if (state_->status == Status::Valid && whenDone) {
@@ -78,9 +76,9 @@ DispatcherHandle<HistogramCache::Callback> HistogramCache::calculateHistograms(
             handle = state_->callbacks.add(whenDone);
         }
         state_->status = Status::Calculating;
-        dispatchPool([data = getData_(), weakState = std::weak_ptr<State>(state_)]() {
+        dispatchPool([calculate, weakState = std::weak_ptr<State>(state_)]() {
             if (auto state = weakState.lock()) {
-                auto newHistograms = state->calculate(data);
+                auto newHistograms = calculate();
                 dispatchFrontAndForget([weakState = std::weak_ptr<State>(state),
                                         newHistograms = std::move(newHistograms)]() {
                     if (auto state = weakState.lock()) {
@@ -105,8 +103,9 @@ void HistogramCache::forEach(
     }
 }
 
-void HistogramCache::discard() {
-    bool recaclulate = false;
+void HistogramCache::discard(std::function<std::vector<Histogram1D>()> calculate) {
+    bool reCalculate = false;
+    std::shared_ptr<State> newState;
     {
         std::scoped_lock lock{state_->mutex};
 
@@ -114,17 +113,18 @@ void HistogramCache::discard() {
             return;
         } else if (state_->status == Status::Valid) {
             state_->status = Status::NotSet;
-            recaclulate = true;
+            reCalculate = true;
         } else if (state_->status == Status::Calculating) {
-            auto newState = std::make_shared<State>();
-            newState->calculate = state_->calculate;
+            newState = std::make_shared<State>();
             newState->callbacks = std::move(state_->callbacks);
-            state_ = std::move(newState);
-            recaclulate = true;
+            reCalculate = true;
         }
     }
-    if (recaclulate) {
-        calculateHistograms(nullptr);
+    if (newState) {
+        state_ = std::move(newState);
+    }
+    if (reCalculate) {
+        calculateHistograms(calculate, nullptr);
     }
 }
 
