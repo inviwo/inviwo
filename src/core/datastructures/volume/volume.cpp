@@ -35,24 +35,6 @@
 
 namespace inviwo {
 
-namespace {
-
-constexpr auto histCalc = [](std::any anyData) {
-    auto data = std::any_cast<std::pair<DataMapper, std::shared_ptr<const VolumeRAM>>>(anyData);
-    return data.second->dispatch<std::vector<Histogram1D>>(
-        [&]<typename T>(const VolumeRAMPrecision<T>* repr) {
-            return util::calculateHistograms(repr->getView(), data.first, 2048);
-        });
-};
-
-auto histData(const Volume& v) {
-    return [&v]() -> std::any {
-        return std::pair{v.dataMap, v.getRepresentationShared<VolumeRAM>()};
-    };
-}
-
-}  // namespace
-
 Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
                const SwizzleMask& defaultSwizzleMask, InterpolationType interpolation,
                const Wrapping3D& wrapping)
@@ -66,7 +48,7 @@ Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
     , defaultSwizzleMask_{defaultSwizzleMask}
     , defaultInterpolation_{interpolation}
     , defaultWrapping_{wrapping}
-    , histograms_{histData(*this), histCalc} {}
+    , histograms_{} {}
 
 Volume::Volume(VolumeConfig config)
     : Data<Volume, VolumeRepresentation>{}
@@ -82,7 +64,7 @@ Volume::Volume(VolumeConfig config)
     , defaultSwizzleMask_{config.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask)}
     , defaultInterpolation_{config.interpolation.value_or(VolumeConfig::defaultInterpolation)}
     , defaultWrapping_{config.wrapping.value_or(VolumeConfig::defaultWrapping)}
-    , histograms_{histData(*this), histCalc} {}
+    , histograms_{} {}
 
 Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     : Data<Volume, VolumeRepresentation>{}
@@ -95,7 +77,7 @@ Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     , defaultSwizzleMask_{in->getSwizzleMask()}
     , defaultInterpolation_{in->getInterpolation()}
     , defaultWrapping_{in->getWrapping()}
-    , histograms_{histData(*this), histCalc} {
+    , histograms_{} {
 
     addRepresentation(in);
 }
@@ -113,7 +95,7 @@ Volume::Volume(const Volume& rhs, NoData, VolumeConfig config)
     , defaultSwizzleMask_{config.swizzleMask.value_or(rhs.getSwizzleMask())}
     , defaultInterpolation_{config.interpolation.value_or(rhs.getInterpolation())}
     , defaultWrapping_{config.wrapping.value_or(rhs.getWrapping())}
-    , histograms_{histData(*this), histCalc} {}
+    , histograms_{} {}
 
 Volume* Volume::clone() const { return new Volume(*this); }
 Volume::~Volume() = default;
@@ -258,11 +240,24 @@ uvec3 Volume::colorCode = uvec3(188, 101, 101);
 const std::string Volume::classIdentifier = "org.inviwo.Volume";
 const std::string Volume::dataName = "Volume";
 
-void Volume::discardHistograms() { histograms_.discard(); }
+namespace {
+
+auto histCalc(const Volume& v) {
+    return [dataMap = v.dataMap, repr = v.getRepresentationShared<VolumeRAM>()]() {
+        return repr->dispatch<std::vector<Histogram1D>>(
+            [&]<typename T>(const VolumeRAMPrecision<T>* rp) {
+                return util::calculateHistograms(rp->getView(), dataMap, 2048);
+            });
+    };
+}
+
+}  // namespace
+
+void Volume::discardHistograms() { histograms_.discard(histCalc(*this)); }
 
 DispatcherHandle<HistogramCache::Callback> Volume::calculateHistograms(
     std::function<void(const std::vector<Histogram1D>&)> whenDone) const {
-    return histograms_.calculateHistograms(std::move(whenDone));
+    return histograms_.calculateHistograms(histCalc(*this), std::move(whenDone));
 }
 
 template class IVW_CORE_TMPL_INST DataReaderType<Volume>;

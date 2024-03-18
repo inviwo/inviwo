@@ -39,12 +39,12 @@ std::vector<double> util::calculatePercentiles(const std::vector<size_t> hist, d
     size_t accumulation{0};
     std::vector<double> percentiles(101, 0.0);
 
+    const double binSize = 1.0 / static_cast<double>(hist.size() - 1) * (range.y - range.x);
+
     for (size_t j = 0; j < hist.size(); ++j) {
         accumulation += hist[j];
         while (accumulation / sum >= static_cast<double>(i) / 100.0) {
-            percentiles[i] = static_cast<double>(j) / static_cast<double>(hist.size() - 1) *
-                                 (range.y - range.x) +
-                             range.x;
+            percentiles[i] = static_cast<double>(j) * binSize + range.x;
             i++;
         }
     }
