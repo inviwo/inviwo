@@ -79,7 +79,8 @@ TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
     , zoomV_("zoomV_", dvec2(0.0, 1.0))
     , histogramMode_("showHistogram_", volumeInport ? HistogramMode::All : HistogramMode::Off)
     , histogramSelection_("histogramSelection", histogramSelectionAll)
-    , volumeInport_(volumeInport) {
+    , volumeInport_(volumeInport)
+    , data_{volumeInport} {
 
     tf_.value.addObserver(this);
 }
@@ -107,7 +108,8 @@ TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionPropert
     , zoomV_(rhs.zoomV_)
     , histogramMode_(rhs.histogramMode_)
     , histogramSelection_(rhs.histogramSelection_)
-    , volumeInport_(rhs.volumeInport_) {
+    , volumeInport_(rhs.volumeInport_)
+    , data_{rhs.data_} {
 
     tf_.value.addObserver(this);
 }

@@ -93,6 +93,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationtraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/spatialdata.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/tfdata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/tfprimitive.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/tfprimitiveset.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/transferfunction.h
@@ -485,6 +486,7 @@ set(SOURCE_FILES
     datastructures/representationmetafactory.cpp
     datastructures/representationutil.cpp
     datastructures/spatialdata.cpp
+    datastructures/tfdata.cpp
     datastructures/tfprimitive.cpp
     datastructures/tfprimitiveset.cpp
     datastructures/transferfunction.cpp

@@ -35,6 +35,9 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/histogram.h>
 #include <inviwo/core/datastructures/histogramtools.h>
+
+#include <inviwo/core/datastructures/tfdata.h>
+
 #include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
@@ -56,73 +59,6 @@ protected:
     void notifyZoomVChange(const dvec2& zoomV);
     void notifyHistogramModeChange(HistogramMode mode);
     void notifyHistogramSelectionChange(HistogramSelection selection);
-};
-
-class IVW_CORE_API TFData {
-public:
-    struct Base {
-        virtual ~Base() = default;
-        virtual std::unique_ptr<Base> clone() const = 0;
-
-        virtual const DataMapper& getDataMap() const = 0;
-
-        virtual DispatcherHandle<HistogramCache::Callback> calculateHistograms(
-            std::function<void(const std::vector<Histogram1D>&)> whenDone) const = 0;
-    };
-
-    template <typename T>
-    struct Implementation : Base {
-        Implementation(T toWrap) : wrapped{toWrap} {}
-
-        virtual std::unique_ptr<Base> clone() const override {
-            return std::make_unique<Implementation<T>>(*this);
-        }
-
-        virtual const DataMapper& getDataMap() const override {
-            static const DataMapper default_;
-            if (auto data = wrapped->getData()) {
-                return data->dataMap;
-            }
-            return default_;
-        }
-
-        virtual DispatcherHandle<HistogramCache::Callback> calculateHistograms(
-            std::function<void(const std::vector<Histogram1D>&)> whenDone) const override {
-            if (auto data = wrapped->getData()) {
-                return data->calculateHistograms(whenDone);
-            }
-        }
-
-        T wrapped;
-    };
-
-    template <typename T>
-    TFData(T data) : base_{std::make_unique<Implementation<T>>(data)} {}
-
-    TFData(const TFData& rhs) : base_{rhs.base_->clone()} {}
-    TFData(TFData&& rhs) : base_{std::exchange(rhs.base_, nullptr)} {}
-    TFData& operator=(const TFData& that) {
-        if (this != &that) {
-            base_ = that.base_->clone();
-        }
-        return *this;
-    }
-    TFData& operator=(TFData&& that) {
-        if (this != &that) {
-            base_ = std::exchange(that.base_, nullptr);
-        }
-        return *this;
-    }
-
-    const DataMapper& getDataMap() const { return base_->getDataMap(); }
-
-    DispatcherHandle<HistogramCache::Callback> calculateHistograms(
-        std::function<void(const std::vector<Histogram1D>&)> whenDone) const {
-        return base_->calculateHistograms(whenDone);
-    }
-
-private:
-    std::unique_ptr<Base> base_;
 };
 
 /**
@@ -206,6 +142,8 @@ public:
 
     VolumeInport* getVolumeInport();
 
+    const TFData& data() const { return data_; }
+
     virtual TransferFunctionProperty& setCurrentStateAsDefault() override;
     TransferFunctionProperty& setDefault(const TransferFunction& tf);
     virtual TransferFunctionProperty& resetToDefaultState() override;
@@ -231,6 +169,7 @@ private:
     ValueWrapper<HistogramSelection> histogramSelection_;
 
     VolumeInport* volumeInport_;
+    TFData data_;
 };
 
 }  // namespace inviwo

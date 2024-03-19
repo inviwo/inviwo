@@ -130,6 +130,8 @@ public:
 
     VolumeInport* getVolumeInport();
 
+    const TFData& data() const { return tf_.data(); }
+
     IsoValueProperty isovalues_;
     TransferFunctionProperty tf_;
 

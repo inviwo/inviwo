@@ -46,7 +46,8 @@ IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view
     , zoomV_("zoomV_", dvec2(0.0, 1.0))
     , histogramMode_("showHistogram_", HistogramMode::All)
     , histogramSelection_("histogramSelection", histogramSelectionAll)
-    , volumeInport_(volumeInport) {
+    , volumeInport_(volumeInport)
+    , data_{volumeInport} {
 
     iso_.value.addObserver(this);
 }
@@ -67,7 +68,8 @@ IsoValueProperty::IsoValueProperty(const IsoValueProperty& rhs)
     , zoomV_(rhs.zoomV_)
     , histogramMode_(rhs.histogramMode_)
     , histogramSelection_(rhs.histogramSelection_)
-    , volumeInport_(rhs.volumeInport_) {
+    , volumeInport_(rhs.volumeInport_)
+    , data_{rhs.data_} {
 
     iso_.value.addObserver(this);
 }
