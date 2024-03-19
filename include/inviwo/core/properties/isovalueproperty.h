@@ -38,6 +38,7 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/histogram.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/datastructures/tfdata.h>
 
 namespace inviwo {
 
@@ -114,6 +115,8 @@ public:
 
     VolumeInport* getVolumeInport();
 
+    const TFData& data() const { return data_; }
+
     virtual IsoValueProperty& setCurrentStateAsDefault() override;
     IsoValueProperty& setDefault(const IsoValueCollection& iso);
     virtual IsoValueProperty& resetToDefaultState() override;
@@ -138,6 +141,7 @@ private:
     ValueWrapper<HistogramSelection> histogramSelection_;
 
     VolumeInport* volumeInport_;
+    TFData data_;
 };
 
 }  // namespace inviwo

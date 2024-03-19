@@ -222,13 +222,7 @@ public:
     }
 
     virtual const DataMapper& getDataMap() const override {
-        static const DataMapper default_;
-        if (auto* port = data_->getVolumeInport()) {
-            if (auto volume = port->getData()) {
-                return volume->dataMap;
-            }
-        }
-        return default_;
+        return data_->data().getDataMap();
     }
 
     virtual DispatcherHandle<void()> onDataChange(std::function<void()> callback) override {
@@ -244,6 +238,13 @@ public:
 
 private:
     void setUpHistogramCallback() {
+        histogramChangeCallbacks_.invoke(HistogramChange::Requested, std::vector<Histogram1D>{});
+        histogramHandle_ = data_->data().calculateHistograms(
+            [this](const std::vector<Histogram1D>& histograms) -> void {
+                histogramChangeCallbacks_.invoke(HistogramChange::NewData, histograms);
+            });
+
+        /*
         if (auto* port = data_->getVolumeInport()) {
             if (auto volume = port->getData()) {
                 histogramChangeCallbacks_.invoke(HistogramChange::Requested,
@@ -255,8 +256,9 @@ private:
                 return;
             }
         }
-        histogramHandle_.reset();
-        histogramChangeCallbacks_.invoke(HistogramChange::NoData, std::vector<Histogram1D>{});
+        */
+        //histogramHandle_.reset();
+        //histogramChangeCallbacks_.invoke(HistogramChange::NoData, std::vector<Histogram1D>{});
     }
 
     U* data_;
