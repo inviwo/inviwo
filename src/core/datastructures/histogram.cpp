@@ -60,11 +60,11 @@ Statistics util::calculateHistogramStats(const std::vector<size_t>& hist) {
 
     std::vector<double> percentiles(101, 0.0);
     for (size_t i = 1; i < percentiles.size(); ++i) {
-        percentiles[i] =
+        percentiles[i] = static_cast<double>(
             sorted.at(static_cast<size_t>(std::ceil(static_cast<double>(i) /
                                                     static_cast<double>(percentiles.size() - 1) *
                                                     static_cast<double>(hist.size()))) -
-                      1);
+                      1));
     }
 
     return {.min = static_cast<double>(sorted.front()),
