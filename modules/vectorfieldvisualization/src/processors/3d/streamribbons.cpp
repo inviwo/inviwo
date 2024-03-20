@@ -178,7 +178,7 @@ void StreamRibbonsDeprecated::process() {
     double maxVelocity = 0;
     double maxVorticity = 0;
     StreamLine3DTracer tracer(sampler, streamLineProperties_);
-    ImageSampler tf(tf_.get().getData());
+    const TransferFunction& tf = tf_.get();
     tracer.addMetaDataSampler("vorticity", vorticitySampler);
     //  mat3 invBasis = glm::inverse(vectorVolume_.getData()->getBasis());
     mat3 invBasis{1};
@@ -230,7 +230,7 @@ void StreamRibbonsDeprecated::process() {
                     case ColoringMethod::Vorticity:
                         d = glm::clamp(static_cast<float>(vortictyMagnitude) / velocityScale_.get(),
                                        0.0f, 1.0f);
-                        c = vec4(tf.sample(dvec2(d, 0.0)));
+                        c = tf.sample(d);
                         break;
                     case ColoringMethod::ColorPort:
                         if (hasColors) {
@@ -246,7 +246,7 @@ void StreamRibbonsDeprecated::process() {
                     case ColoringMethod::Velocity:
                         d = glm::clamp(static_cast<float>(velocityMagnitude) / velocityScale_.get(),
                                        0.0f, 1.0f);
-                        c = vec4(tf.sample(dvec2(d, 0.0)));
+                        c = tf.sample(d);
                         break;
                 }
 

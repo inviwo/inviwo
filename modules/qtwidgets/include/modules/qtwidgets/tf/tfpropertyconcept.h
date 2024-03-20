@@ -32,15 +32,19 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
 #include <inviwo/core/datastructures/histogram.h>  // for HistogramMode, HistogramSelection
-#include <inviwo/core/ports/volumeport.h>          // for VolumeInport
+#include <inviwo/core/datastructures/tfprimitiveset.h>
+#include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
 #include <inviwo/core/properties/transferfunctionproperty.h>  // IWYU pragma: keep
 #include <inviwo/core/properties/isovalueproperty.h>          // IWYU pragma: keep
 #include <inviwo/core/util/glmvec.h>                          // for dvec2
 #include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/detected.h>
 #include <inviwo/core/network/networklock.h>  // for NetworkLock
 #include <modules/qtwidgets/tf/tfutils.h>     // for exportToFile, importFro...
 
 #include <utility>  // for declval
+#include <span>
+#include <array>
 
 namespace inviwo {
 /**
@@ -78,13 +82,15 @@ public:
     virtual void setHistogramSelection(HistogramSelection selection) = 0;
     virtual HistogramSelection getHistogramSelection() const = 0;
 
-    virtual const DataMapper& getDataMap() const = 0;
+    virtual const DataMapper* getDataMap() const = 0;
 
     virtual void addObserver(TFPropertyObserver* observer) = 0;
     virtual void removeObserver(TFPropertyObserver* observer) = 0;
 
     virtual void showExportDialog() const = 0;
     virtual void showImportDialog() = 0;
+
+    virtual std::span<TFPrimitiveSet*> sets() = 0;
 
     [[nodiscard]] virtual DispatcherHandle<void()> onDataChange(std::function<void()>) = 0;
 
@@ -97,43 +103,52 @@ public:
 template <typename U>
 class TFPropertyModel : public TFPropertyConcept {
 public:
-    template <typename T>
-    using hasTFProp = decltype(std::declval<T>().tf_);
-
-    template <typename T>
-    using hasISOProp = decltype(std::declval<T>().isovalues_);
-
-    TFPropertyModel(U* data) : data_(data) {
-        if (auto* port = data_->getVolumeInport()) {
-            auto callback = [this]() {
-                onDataChangeDispatcher_.invoke();
-                setUpHistogramCallback();
-            };
-            portCallbacks_.emplace_back(port->onChangeScoped(callback));
-            portCallbacks_.emplace_back(port->onConnectScoped(callback));
-            portCallbacks_.emplace_back(port->onDisconnectScoped(callback));
-        }
+    TFPropertyModel(U* data)
+        : tfLike_{data}, sets_{[&]() {
+            if constexpr (std::is_same_v<TransferFunctionProperty, U>) {
+                return std::array<TFPrimitiveSet*, 2>{&tfLike_->get(), nullptr};
+            } else if constexpr (std::is_same_v<IsoValueProperty, U>) {
+                return std::array<TFPrimitiveSet*, 2>{&tfLike_->get(), nullptr};
+            } else if constexpr (std::is_same_v<IsoTFProperty, U>) {
+                return std::array<TFPrimitiveSet*, 2>{&tfLike_->tf_.get(),
+                                                      &tfLike_->isovalues_.get()};
+            } else {
+                static_assert(util::alwaysFalse<U>(), "Type not supported");
+            }
+        }()} {
+        dataOnChangeHandle_ = tfLike_->data().onChange([this]() {
+            onDataChangeDispatcher_.invoke();
+            setUpHistogramCallback();
+        });
     }
 
-    virtual Property* getProperty() const override { return data_; }
+    virtual Property* getProperty() const override { return tfLike_; }
+
+    virtual std::span<TFPrimitiveSet*> sets() override {
+        if (sets_[1] != nullptr) {
+            return std::span<TFPrimitiveSet*>{sets_.data(), 2};
+        } else {
+            return std::span<TFPrimitiveSet*>{sets_.data(), 1};
+        }
+    }
 
     virtual bool hasTF() const override { return getTFProperty() != nullptr; }
     virtual bool hasIsovalues() const override { return getIsoValueProperty() != nullptr; }
 
     virtual TransferFunctionProperty* getTFProperty() const override {
         if constexpr (std::is_same_v<TransferFunctionProperty, U>) {
-            return data_;
-        } else if constexpr (util::is_detected_exact_v<TransferFunctionProperty, hasTFProp, U>) {
-            return &data_->tf_;
+            return tfLike_;
+        } else if constexpr (std::is_same_v<IsoTFProperty, U>) {
+            return &tfLike_->tf_;
         } else {
             return nullptr;
         }
     }
     virtual IsoValueProperty* getIsoValueProperty() const override {
         if constexpr (std::is_same_v<IsoValueProperty, U>) {
-            return data_;
-        } else if constexpr (util::is_detected_exact_v<IsoValueProperty, hasISOProp, U>) {
-            return &data_->isovalues_;
+            return tfLike_;
+        } else if constexpr (std::is_same_v<IsoTFProperty, U>) {
+            return &tfLike_->isovalues_;
         } else {
             return nullptr;
         }
@@ -173,30 +188,30 @@ public:
     }
 
     virtual void setZoomH(double zoomHMin, double zoomHMax) override {
-        data_->setZoomH(zoomHMin, zoomHMax);
+        tfLike_->setZoomH(zoomHMin, zoomHMax);
     }
-    virtual const dvec2& getZoomH() const override { return data_->getZoomH(); }
+    virtual const dvec2& getZoomH() const override { return tfLike_->getZoomH(); }
 
     virtual void setZoomV(double zoomVMin, double zoomVMax) override {
-        data_->setZoomV(zoomVMin, zoomVMax);
+        tfLike_->setZoomV(zoomVMin, zoomVMax);
     }
-    virtual const dvec2& getZoomV() const override { return data_->getZoomV(); }
+    virtual const dvec2& getZoomV() const override { return tfLike_->getZoomV(); }
 
-    virtual void setHistogramMode(HistogramMode type) override { data_->setHistogramMode(type); }
-    virtual HistogramMode getHistogramMode() const override { return data_->getHistogramMode(); }
+    virtual void setHistogramMode(HistogramMode type) override { tfLike_->setHistogramMode(type); }
+    virtual HistogramMode getHistogramMode() const override { return tfLike_->getHistogramMode(); }
 
     virtual void setHistogramSelection(HistogramSelection selection) override {
-        data_->setHistogramSelection(selection);
+        tfLike_->setHistogramSelection(selection);
     }
     virtual HistogramSelection getHistogramSelection() const override {
-        return data_->getHistogramSelection();
+        return tfLike_->getHistogramSelection();
     }
 
     virtual void addObserver(TFPropertyObserver* observer) override {
-        data_->TFPropertyObservable::addObserver(observer);
+        tfLike_->TFPropertyObservable::addObserver(observer);
     }
     virtual void removeObserver(TFPropertyObserver* observer) override {
-        data_->TFPropertyObservable::removeObserver(observer);
+        tfLike_->TFPropertyObservable::removeObserver(observer);
     }
 
     virtual void showExportDialog() const override {
@@ -210,20 +225,18 @@ public:
     virtual void showImportDialog() override {
         if (auto* tf = getTransferFunction()) {
             if (auto newTf = util::importTransferFunctionDialog()) {
-                NetworkLock lock{data_};
+                NetworkLock lock{tfLike_};
                 *tf = *newTf;
             }
         } else if (auto* iso = getIsovalues()) {
             if (auto newIso = util::importIsoValueCollectionDialog()) {
-                NetworkLock lock{data_};
+                NetworkLock lock{tfLike_};
                 *iso = *newIso;
             }
         }
     }
 
-    virtual const DataMapper& getDataMap() const override {
-        return data_->data().getDataMap();
-    }
+    virtual const DataMapper* getDataMap() const override { return tfLike_->data().getDataMap(); }
 
     virtual DispatcherHandle<void()> onDataChange(std::function<void()> callback) override {
         return onDataChangeDispatcher_.add(callback);
@@ -239,33 +252,25 @@ public:
 private:
     void setUpHistogramCallback() {
         histogramChangeCallbacks_.invoke(HistogramChange::Requested, std::vector<Histogram1D>{});
-        histogramHandle_ = data_->data().calculateHistograms(
+        histogramResult_ = tfLike_->data().calculateHistograms(
             [this](const std::vector<Histogram1D>& histograms) -> void {
                 histogramChangeCallbacks_.invoke(HistogramChange::NewData, histograms);
             });
 
-        /*
-        if (auto* port = data_->getVolumeInport()) {
-            if (auto volume = port->getData()) {
-                histogramChangeCallbacks_.invoke(HistogramChange::Requested,
-                                                 std::vector<Histogram1D>{});
-                histogramHandle_ = volume->calculateHistograms(
-                    [this](const std::vector<Histogram1D>& histograms) -> void {
-                        histogramChangeCallbacks_.invoke(HistogramChange::NewData, histograms);
-                    });
-                return;
-            }
+        if (histogramResult_.progress == HistogramCache::Progress::NoData) {
+            histogramChangeCallbacks_.invoke(HistogramChange::NoData, std::vector<Histogram1D>{});
+        } else if (histogramResult_.progress == HistogramCache::Progress::Calculating) {
+            histogramChangeCallbacks_.invoke(HistogramChange::Requested,
+                                             std::vector<Histogram1D>{});
         }
-        */
-        //histogramHandle_.reset();
-        //histogramChangeCallbacks_.invoke(HistogramChange::NoData, std::vector<Histogram1D>{});
     }
 
-    U* data_;
+    U* tfLike_;
     Dispatcher<void()> onDataChangeDispatcher_;
     Dispatcher<HistogramCallback> histogramChangeCallbacks_;
-    DispatcherHandle<HistogramCache::Callback> histogramHandle_;
-    std::vector<std::shared_ptr<std::function<void()>>> portCallbacks_;
+    HistogramCache::Result histogramResult_;
+    TFData::OnChangeHandle dataOnChangeHandle_;
+    std::array<TFPrimitiveSet*, 2> sets_;
 };
 
 }  // namespace inviwo

@@ -184,26 +184,22 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         });
 
     py::class_<TransferFunction, TFPrimitiveSet>(m, "TransferFunction")
-        .def(py::init([](size_t textureSize) { return TransferFunction(textureSize); }),
-             py::arg("textureSize") = 1024)
-        .def(py::init([](const std::vector<TFPrimitiveData>& values, size_t textureSize) {
-                 return new TransferFunction(values, textureSize);
+        .def(py::init([]() { return TransferFunction(); }))
+        .def(py::init([](const std::vector<TFPrimitiveData>& values) {
+                 return new TransferFunction(values);
              }),
-             py::arg("values") = std::vector<TFPrimitiveData>{}, py::arg("textureSize") = 1024)
-        .def(py::init([](const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type,
-                         size_t textureSize) {
-                 return new TransferFunction(values, type, textureSize);
+             py::arg("values") = std::vector<TFPrimitiveData>{})
+        .def(py::init([](const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type) {
+                 return new TransferFunction(values, type);
              }),
              py::arg("values") = std::vector<TFPrimitiveData>{},
-             py::arg("type") = TFPrimitiveSetType::Relative, py::arg("textureSize") = 1024)
-        .def(py::init([](py::list values, TFPrimitiveSetType type, size_t textureSize) {
-                 auto tf = new TransferFunction{{}, type, textureSize};
+             py::arg("type") = TFPrimitiveSetType::Relative)
+        .def(py::init([](py::list values, TFPrimitiveSetType type) {
+                 auto tf = new TransferFunction{{}, type};
                  addPoints(tf, values);
                  return tf;
              }),
-             py::arg("values"), py::arg("type") = TFPrimitiveSetType::Relative,
-             py::arg("textureSize") = 1024)
-        .def_property_readonly("textureSize", &TransferFunction::getTextureSize)
+             py::arg("values"), py::arg("type") = TFPrimitiveSetType::Relative)
         .def_property(
             "mask", [](TransferFunction& tf) { return dvec2(tf.getMaskMin(), tf.getMaskMax()); },
             [](TransferFunction& tf, const dvec2& mask) {

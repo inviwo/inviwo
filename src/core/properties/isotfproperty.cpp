@@ -36,11 +36,11 @@ std::string IsoTFProperty::getClassIdentifier() const { return classIdentifier; 
 
 IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName,
                              Document help, const IsoValueCollection& isovalues,
-                             const TransferFunction& tf, VolumeInport* volumeInport,
+                             const TransferFunction& tf, TFData port,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, help, invalidationLevel, semantics)
-    , isovalues_("isovalues", "Iso Values", isovalues, volumeInport)
-    , tf_("transferFunction", "Transfer Function", tf, volumeInport) {
+    , isovalues_("isovalues", "Iso Values", isovalues, port)
+    , tf_("transferFunction", "Transfer Function", tf, port) {
 
     addProperties(isovalues_, tf_);
 
@@ -50,11 +50,11 @@ IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displ
 
 IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName,
                              const IsoValueCollection& isovalues, const TransferFunction& tf,
-                             VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
+                             TFData port, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , isovalues_("isovalues", "Iso Values", isovalues, volumeInport)
-    , tf_("transferFunction", "Transfer Function", tf, volumeInport) {
+    , isovalues_("isovalues", "Iso Values", isovalues, port)
+    , tf_("transferFunction", "Transfer Function", tf, port) {
 
     addProperties(isovalues_, tf_);
 
@@ -63,17 +63,16 @@ IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displ
 }
 
 IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName,
-                             Document help, VolumeInport* volumeInport,
-                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
+                             Document help, TFData port, InvalidationLevel invalidationLevel,
+                             PropertySemantics semantics)
     : IsoTFProperty(identifier, displayName, help, {},
-                    TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}), volumeInport,
+                    TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}), port,
                     invalidationLevel, semantics) {}
 
-IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName,
-                             VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
-                             PropertySemantics semantics)
+IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName, TFData port,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : IsoTFProperty(identifier, displayName, {},
-                    TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}), volumeInport,
+                    TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}), port,
                     invalidationLevel, semantics) {}
 
 IsoTFProperty::IsoTFProperty(const IsoTFProperty& rhs)
@@ -142,10 +141,6 @@ IsoTFProperty& IsoTFProperty::setHistogramSelection(HistogramSelection selection
 HistogramSelection IsoTFProperty::getHistogramSelection() const {
     return tf_.getHistogramSelection();
 }
-
-VolumeInport* IsoTFProperty::getVolumeInport() { return tf_.getVolumeInport(); }
-
-void IsoTFProperty::onMaskChange(const dvec2& mask) { notifyMaskChange(mask); }
 
 void IsoTFProperty::onZoomHChange(const dvec2& zoomH) { notifyZoomHChange(zoomH); }
 

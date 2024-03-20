@@ -511,29 +511,27 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Textur
     cont.push_back(std::move(unit));
 }
 
-void bindTexture(const TransferFunctionProperty& tfp, const TextureUnit& texUnit) {
-    if (auto tfLayer = tfp.get().getData()) {
-        auto transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
-        transferFunctionGL->bindTexture(texUnit.getEnum());
+void bindTexture(TransferFunctionProperty& tfp, const TextureUnit& texUnit) {
+    if (auto* tfLayer = tfp.getRepresentation<LayerGL>()) {
+        tfLayer->bindTexture(texUnit.getEnum());
     }
 }
 
 void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
                         const TransferFunctionProperty& tf) {
-    TextureUnit unit;
+	TextureUnit unit;
     bindTexture(tf, unit);
     shader.setUniform(tf.getIdentifier(), unit);
     cont.push_back(std::move(unit));
 }
 
-void bindTexture(const IsoTFProperty& property, const TextureUnit& texUnit) {
-    if (auto tfLayer = property.tf_.get().getData()) {
-        auto transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
-        transferFunctionGL->bindTexture(texUnit.getEnum());
+void bindTexture(IsoTFProperty& property, const TextureUnit& texUnit) {
+    if (auto* tfLayer = property.tf_.getRepresentation<LayerGL>()) {
+        tfLayer->bindTexture(texUnit.getEnum());
     }
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const IsoTFProperty& property) {
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, IsoTFProperty& property) {
     TextureUnit unit;
     bindTexture(property, unit);
     shader.setUniform(property.tf_.getIdentifier(), unit);

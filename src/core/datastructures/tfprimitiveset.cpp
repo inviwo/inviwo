@@ -38,28 +38,36 @@
 
 namespace inviwo {
 
-void TFPrimitiveSetObserver::onTFPrimitiveAdded(TFPrimitive&) {}
+void TFPrimitiveSetObserver::onTFPrimitiveAdded(const TFPrimitiveSet&, TFPrimitive&) {}
 
-void TFPrimitiveSetObserver::onTFPrimitiveRemoved(TFPrimitive&) {}
+void TFPrimitiveSetObserver::onTFPrimitiveRemoved(const TFPrimitiveSet&, TFPrimitive&) {}
 
-void TFPrimitiveSetObserver::onTFPrimitiveChanged(const TFPrimitive&) {}
+void TFPrimitiveSetObserver::onTFPrimitiveChanged(const TFPrimitiveSet&, const TFPrimitive&) {}
 
-void TFPrimitiveSetObserver::onTFTypeChanged(const TFPrimitiveSet&) {}
+void TFPrimitiveSetObserver::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType type) {}
 
-void TFPrimitiveSetObservable::notifyTFPrimitiveAdded(TFPrimitive& p) {
-    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveAdded(p); });
+void TFPrimitiveSetObserver::onTFMaskChanged(const TFPrimitiveSet&, dvec2 mask) {}
+
+void TFPrimitiveSetObservable::notifyTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) {
+    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveAdded(set, p); });
 }
 
-void TFPrimitiveSetObservable::notifyTFPrimitiveRemoved(TFPrimitive& p) {
-    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveRemoved(p); });
+void TFPrimitiveSetObservable::notifyTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) {
+    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveRemoved(set, p); });
 }
 
-void TFPrimitiveSetObservable::notifyTFPrimitiveChanged(const TFPrimitive& p) {
-    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveChanged(p); });
+void TFPrimitiveSetObservable::notifyTFPrimitiveChanged(const TFPrimitiveSet& set,
+                                                        const TFPrimitive& p) {
+    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveChanged(set, p); });
 }
 
-void TFPrimitiveSetObservable::notifyTFTypeChanged(const TFPrimitiveSet& primitiveSet) {
-    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFTypeChanged(primitiveSet); });
+void TFPrimitiveSetObservable::notifyTFTypeChanged(const TFPrimitiveSet& set,
+                                                   TFPrimitiveSetType type) {
+    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFTypeChanged(set, type); });
+}
+
+void TFPrimitiveSetObservable::notifyTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) {
+    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFMaskChanged(set, mask); });
 }
 
 TFPrimitiveSet::TFPrimitiveSet(const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type)
@@ -85,7 +93,6 @@ TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
         while (values_.size() > rhs.values_.size()) {
             remove(--values_.end());
         }
-        invalidate();
     }
     return *this;
 }
@@ -103,13 +110,12 @@ void TFPrimitiveSet::set(const_iterator sbegin, const_iterator send) {
     while (dbegin != dend) {
         remove(--dend);
     }
-    invalidate();
 }
 
 void TFPrimitiveSet::setType(TFPrimitiveSetType type) {
     if (type_ != type) {
         type_ = type;
-        notifyTFTypeChanged(*this);
+        notifyTFTypeChanged(*this, type_);
     }
 }
 
@@ -231,6 +237,11 @@ void TFPrimitiveSet::add(double pos, const vec4& color) {
     add(std::make_unique<TFPrimitive>(pos, color));
 }
 
+void TFPrimitiveSet::add(double pos, double alpha) {
+    const vec4 color(vec3(interpolateColor(pos)), static_cast<float>(alpha));
+    add(std::make_unique<TFPrimitive>(pos, color));
+}
+
 void TFPrimitiveSet::add(const dvec2& pos) {
     const vec4 color(vec3(interpolateColor(pos.x)), static_cast<float>(pos.y));
     add(std::make_unique<TFPrimitive>(pos.x, color));
@@ -264,8 +275,7 @@ void TFPrimitiveSet::add(std::unique_ptr<TFPrimitive> primitive) {
     sorted_.insert(it, primitive.get());
     values_.push_back(std::move(primitive));
 
-    invalidate();
-    notifyTFPrimitiveAdded(*values_.back());
+    notifyTFPrimitiveAdded(*this, *values_.back());
 }
 
 bool TFPrimitiveSet::remove(std::vector<std::unique_ptr<TFPrimitive>>::iterator it) {
@@ -274,8 +284,7 @@ bool TFPrimitiveSet::remove(std::vector<std::unique_ptr<TFPrimitive>>::iterator 
         auto dp = std::move(*it);
         values_.erase(it);
         std::erase(sorted_, dp.get());
-        invalidate();
-        notifyTFPrimitiveRemoved(*dp);
+        notifyTFPrimitiveRemoved(*this, *dp);
         return true;
     } else {
         return false;
@@ -333,8 +342,7 @@ void TFPrimitiveSet::setColor(const std::vector<TFPrimitive*> primitives, const 
 
 void TFPrimitiveSet::onTFPrimitiveChange(const TFPrimitive& p) {
     sort();
-    invalidate();
-    notifyTFPrimitiveChanged(p);
+    notifyTFPrimitiveChanged(*this, p);
 }
 
 void TFPrimitiveSet::serialize(Serializer& s) const {
@@ -347,7 +355,7 @@ void TFPrimitiveSet::deserialize(Deserializer& d) {
     d.deserialize("type", type);
     if (type_ != type) {
         type_ = type;
-        notifyTFTypeChanged(*this);
+        notifyTFTypeChanged(*this, type_);
     }
 
     util::IndexedDeserializer<std::unique_ptr<TFPrimitive>>(serializationKey(),
@@ -356,13 +364,12 @@ void TFPrimitiveSet::deserialize(Deserializer& d) {
             p->addObserver(this);
             auto it = std::upper_bound(sorted_.begin(), sorted_.end(), p.get(), comparePtr{});
             sorted_.insert(it, p.get());
-            notifyTFPrimitiveAdded(*p);
+            notifyTFPrimitiveAdded(*this, *p);
         })
         .onRemove([&](std::unique_ptr<TFPrimitive>& p) {
             std::erase(sorted_, p.get());
-            notifyTFPrimitiveRemoved(*p);
+            notifyTFPrimitiveRemoved(*this, *p);
         })(d, values_);
-    invalidate();
 }
 
 void TFPrimitiveSet::sort() { std::stable_sort(sorted_.begin(), sorted_.end(), comparePtr{}); }
@@ -431,6 +438,11 @@ bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs) {
 
 bool operator!=(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs) {
     return !operator==(lhs, rhs);
+}
+
+bool TFPrimitiveSet::contains(const TFPrimitive* primitive) const {
+    if (!primitive) return false;
+    return util::contains(sorted_, primitive);
 }
 
 void util::distributeAlphaEvenly(std::vector<TFPrimitive*> selection) {

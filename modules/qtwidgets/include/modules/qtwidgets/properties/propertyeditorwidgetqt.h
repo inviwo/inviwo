@@ -58,7 +58,7 @@ public:
     virtual ~PropertyEditorWidgetQt();
 
     // PropertyEditorWidget overrides
-    virtual Property* getProperty() const override;
+    virtual Property* getProperty() const override = 0;
     virtual bool isVisible() const override;
     virtual void setVisible(bool visible) override;
 
@@ -88,8 +88,6 @@ protected:
     static const std::string sizeKey;
     static const std::string positionKey;
     static const std::string dockareaKey;
-
-    Property* property_;
 };
 
 }  // namespace inviwo
