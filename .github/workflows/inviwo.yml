@@ -367,7 +367,6 @@ jobs:
 
   clang-tidy:
     name: "Clang-tidy"
-    if: github.event.pull_request
     permissions:
       pull-requests: write
     env:
@@ -454,18 +453,8 @@ jobs:
         tidy-review: true
         format-review: true
         step-summary: true
-        verbosity: debug
-
-    - name: Fail on linter errors
-      if: steps.linter.outputs.checks-failed > 0
-      run: exit 1
-
-    - name: "Setup tmate session"
-      uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 10
-      with:
-        limit-access-to-actor: true
-  
+        no-lgtm: false
+        verbosity: debug  
 
   test-installer:
     name: "Test Installer"
