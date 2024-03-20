@@ -105,11 +105,14 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo CameraWidget::processorInfo_{
-    "org.inviwo.CameraWidget",  // Class identifier
-    "Camera Widget",            // Display name
-    "UI",                       // Category
-    CodeState::Experimental,    // Code state
-    "GL, UI"                    // Tags
+    "org.inviwo.CameraWidget",                  // Class identifier
+    "Camera Widget",                            // Display name
+    "UI",                                       // Category
+    CodeState::Experimental,                    // Code state
+    Tags::GL | Tag{"UI"} | Tag{"Interaction"},  // Tags
+    R"(This processor provides a widget for manipulating the camera orientation with a mouse.
+    The widget is rendered on top of the input image. It also provides the current camera
+    rotation in matrix form.)"_unindentHelp,
 };
 const ProcessorInfo CameraWidget::getProcessorInfo() const { return processorInfo_; }
 
@@ -118,40 +121,65 @@ CameraWidget::CameraWidget()
     , inport_("inport")
     , outport_("outport")
 
+    , cameraActions_("actions", "Camera Actions",
+                     "Apply rotate and dolly the camera in discrete steps."_help, buttons(),
+                     InvalidationLevel::Valid)
+    , visible_{"visible", "Visible", "Toggles the visibility of the widget"_help, true}
     , settings_("settings", "Settings")
-    , enabled_("enabled", "Enabled", true)
-    , invertDirections_("invertDirections", "Invert Directions", false, InvalidationLevel::Valid)
+    , enabled_("enabled", "Enable Interactions",
+               "Enables mouse and touch interactions with the widget"_help, true)
+    , invertDirections_("invertDirections", "Invert Directions",
+                        "Inverts the rotation directions"_help, false, InvalidationLevel::Valid)
     , useObjectRotAxis_("useObjectRotationAxis", "Use Vertical Object Axis for Rotation", false)
-    , showRollWidget_("showRollWidget", "Camera Roll", true)
-    , showDollyWidget_("showDolly", "Camera Dolly", false)
-    , speed_("speed", "Speed (deg per pixel)", 0.25f, 0.01f, 5.0f, 0.05f, InvalidationLevel::Valid)
-    , angleIncrement_("angleIncrement", "Angle (deg) per Click", 15.0f, 0.05f, 90.0f, 0.5f,
-                      InvalidationLevel::Valid)
-    , minTouchMovement_("minTouchMovement", "Min Touch Movement (pixel)", 5, 0, 25, 1,
-                        InvalidationLevel::Valid)
+    , showRollWidget_("showRollWidget", "Camera Roll",
+                      "Shows an additional widget for rolling the camera"_help, true)
+    , showDollyWidget_("showDolly", "Camera Dolly",
+                       "Shows an additional widget for camera dolly"_help, false)
+    , speed_("speed", "Speed (deg per pixel)",
+             util::ordinalScale(0.25f, 5.0f)
+                 .set("Scaling factor (sensitivity) for rotation with a mouse drag"_help)
+                 .set(InvalidationLevel::Valid))
+    , angleIncrement_(
+          "angleIncrement", "Angle (deg) per Click",
+          "Rotation angle in degrees when a rotation is triggered by a mouse click"_help, 15.0f,
+          {-90.0f, ConstraintBehavior::Immutable}, {90.0f, ConstraintBehavior::Immutable}, 0.5f,
+          InvalidationLevel::Valid)
+    , minTouchMovement_("minTouchMovement", "Min Touch Movement (pixel)",
+                        util::ordinalLength(5, 25)
+                            .set("Minimum drag distance to recognize touch events"_help)
+                            .set(InvalidationLevel::Valid))
 
     , appearance_("appearance", "Appearance")
-    , scaling_("scaling", "Scaling", 0.4f, 0.01f, 5.0f, 0.01f)
-    , position_("position", "Position", vec2(0.01f, 0.01f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
-    , anchorPos_("Anchor", "Anchor", vec2(-1.0f, 1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
-    , showCube_("showCube", "Show Orientation Cube", true)
+    , scaling_(
+          "scaling", "Scaling",
+          util::ordinalScale(0.4f, 5.0f)
+              .set("Scales the size of the widget (a factor of 1 corresponds to 300 pixel"_help))
+    , position_("position", "Position",
+                "Positioning of the interaction widget within the input image"_help,
+                vec2(0.01f, 0.01f), {vec2(0.0f), ConstraintBehavior::Ignore},
+                {vec2(1.0f), ConstraintBehavior::Ignore}, vec2(0.01f))
+    , anchorPos_("Anchor", "Anchor",
+                 util::ordinalSymmetricVector(vec2(-1.0f, 1.0f), vec2(1.0f))
+                     .set("Anchor position of the widget"_help))
+    , showCube_("showCube", "Show Orientation Cube",
+                "Toggles a cube behind the widget for showing the camera orientation"_help, true)
     , customColorComposite_("enableCustomColor", "Custom Widget Color", false,
                             InvalidationLevel::InvalidResources)
-    , axisColoring_("axisColoring", "RGB Axis Coloring", false, InvalidationLevel::InvalidResources)
-    , userColor_{"userColor", "User Color", util::ordinalColor(0.7f, 0.7f, 0.7f)}
-    , cubeColor_{"cubeColor", "Cube Color", util::ordinalColor(0.11f, 0.42f, 0.63f)}
-
-    , interactions_("interactions", "Interactions")
-
-    , rotateUpBtn_("rotateUpButton", "Rotate Up")
-    , rotateDownBtn_("rotateDownButton", "Rotate Down")
-    , rotateLeftBtn_("rotateLeftButton", "Rotate Left")
-    , rotateRightBtn_("rotateRightButton", "Rotate Right")
+    , axisColoring_(
+          "axisColoring", "RGB Axis Coloring",
+          "Map red, green, and blue to the respective orientation arrows of the widget"_help, false,
+          InvalidationLevel::InvalidResources)
+    , userColor_{"userColor", "User Color",
+                 util::ordinalColor(0.7f, 0.7f, 0.7f)
+                     .set("Apply a custom color onto the entire widget"_help)}
+    , cubeColor_{"cubeColor", "Cube Color",
+                 util::ordinalColor(0.11f, 0.42f, 0.63f).set("Custom color for the cube"_help)}
 
     , outputProps_("outputProperties", "Output")
     , camera_("camera", "Camera")
     , rotMatrix_{"rotMatrix",
                  "Rotation Matrix",
+                 "Matrix representing the camera orientation"_help,
                  mat4(1.0f),
                  {util::filled<mat4>(-10.0f), ConstraintBehavior::Ignore},
                  {util::filled<mat4>(+10.0f), ConstraintBehavior::Ignore}}
@@ -167,52 +195,36 @@ CameraWidget::CameraWidget()
     , overlayShader_("img_identity.vert", "widgettexture.frag")
     , isMouseBeingPressedAndHold_(false)
     , mouseWasMoved_(false)
-    , currentPickingID_(-1) {
+    , currentPickingID_(-1)
+    , widgetImageGL_{nullptr} {
 
     addPort(inport_).setOptional(true);
     addPort(outport_);
-
-    settings_.setCollapsed(true);
-    internalProps_.setCollapsed(true);
 
     // interaction settings
     enabled_.onChange([this]() { picking_.setEnabled(enabled_); });
     settings_.addProperties(enabled_, invertDirections_, useObjectRotAxis_, showRollWidget_,
                             showDollyWidget_, speed_, angleIncrement_, minTouchMovement_);
-
     // widget appearance
     customColorComposite_.addProperties(axisColoring_, userColor_);
     appearance_.addProperties(position_, anchorPos_, scaling_, showCube_, cubeColor_,
                               customColorComposite_);
-
-    // button interactions
-    interactions_.setCollapsed(true);
-
-    rotateUpBtn_.onChange([&]() { singleStepInteraction(Interaction::VerticalRotation, true); });
-    rotateDownBtn_.onChange([&]() { singleStepInteraction(Interaction::VerticalRotation, false); });
-    rotateLeftBtn_.onChange(
-        [&]() { singleStepInteraction(Interaction::HorizontalRotation, true); });
-    rotateRightBtn_.onChange(
-        [&]() { singleStepInteraction(Interaction::HorizontalRotation, false); });
-
-    interactions_.addProperties(rotateUpBtn_, rotateDownBtn_, rotateLeftBtn_, rotateRightBtn_);
-
     // output properties
     camera_.setCollapsed(true);
     outputProps_.addProperties(camera_, rotMatrix_);
 
+    settings_.setCollapsed(true);
+    internalProps_.setCollapsed(true);
     lightingProperty_.setCollapsed(true);
     internalProps_.addProperty(lightingProperty_);
 
-    addProperty(settings_);
-    addProperty(appearance_);
-    addProperty(interactions_);
-    addProperty(outputProps_);
-    addProperty(internalProps_);
+    addProperties(cameraActions_, visible_, settings_, appearance_, outputProps_, internalProps_);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     cubeShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     overlayShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
+    camera_.setHelp("Camera affected by the widget interaction"_help);
 
     lightingProperty_.ambientColor_ = vec3(0.75f);
     lightingProperty_.diffuseColor_ = vec3(0.6f);
@@ -246,17 +258,15 @@ void CameraWidget::process() {
 
     updateWidgetTexture(widgetSize);
 
-    // combine the previously rendered widget image with the input
-    if (inport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, inport_);
-    } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
+    utilgl::activateTargetAndClearOrCopySource(outport_, inport_, ImageType::ColorDepthPicking);
+
+    if (visible_) {
+        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+        utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        drawWidgetTexture();
     }
 
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-    utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    drawWidgetTexture();
     utilgl::deactivateCurrentTarget();
 }
 
@@ -677,6 +687,23 @@ vec3 CameraWidget::getObjectRotationAxis(const vec3& rotAxis) const {
         axis = vec3(0.0f, 0.0f, rotAxis.z);
     }
     return glm::normalize(axis);
+}
+
+std::vector<ButtonGroupProperty::Button> CameraWidget::buttons() {
+    return {{
+        {std::nullopt, ":svgicons/camera-left.svg", "Rotate camera to the left",
+         [this] { singleStepInteraction(Interaction::HorizontalRotation, true); }},
+        {std::nullopt, ":svgicons/camera-up.svg", "Rotate camera upward",
+         [this] { singleStepInteraction(Interaction::VerticalRotation, true); }},
+        {std::nullopt, ":svgicons/camera-down.svg", "Rotate camera downward",
+         [this] { singleStepInteraction(Interaction::VerticalRotation, false); }},
+        {std::nullopt, ":svgicons/camera-right.svg", "Rotate camera to the right",
+         [this] { singleStepInteraction(Interaction::HorizontalRotation, false); }},
+        {std::nullopt, ":svgicons/camera-dolly-closer.svg", "Dolly closer",
+         [this] { singleStepInteraction(Interaction::Zoom, false); }},
+        {std::nullopt, ":svgicons/camera-dolly-away.svg", "Dolly away",
+         [this] { singleStepInteraction(Interaction::Zoom, true); }},
+    }};
 }
 
 }  // namespace inviwo
