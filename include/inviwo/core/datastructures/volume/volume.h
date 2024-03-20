@@ -169,7 +169,7 @@ public:
     template <typename Kind>
     const typename representation_traits<Volume, Kind>::type* getRep() const;
 
-    [[nodiscard]] DispatcherHandle<HistogramCache::Callback> calculateHistograms(
+    [[nodiscard]] HistogramCache::Result calculateHistograms(
         std::function<void(const std::vector<Histogram1D>&)> whenDone) const;
     void discardHistograms();
 

@@ -99,23 +99,17 @@ class QVBoxLayout;
 namespace inviwo {
 
 TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* property)
-    : TFPropertyDialog(std::make_unique<TFPropertyModel<TransferFunctionProperty>>(property),
-                       {&property->get()}) {}
+    : TFPropertyDialog(std::make_unique<TFPropertyModel<TransferFunctionProperty>>(property)) {}
 
 TFPropertyDialog::TFPropertyDialog(IsoValueProperty* property)
-    : TFPropertyDialog(std::make_unique<TFPropertyModel<IsoValueProperty>>(property),
-                       {&property->get()}) {}
+    : TFPropertyDialog(std::make_unique<TFPropertyModel<IsoValueProperty>>(property)) {}
 
 TFPropertyDialog::TFPropertyDialog(IsoTFProperty* property)
-    : TFPropertyDialog(std::make_unique<TFPropertyModel<IsoTFProperty>>(property),
-                       {&property->tf_.get(), &property->isovalues_.get()}) {}
+    : TFPropertyDialog(std::make_unique<TFPropertyModel<IsoTFProperty>>(property)) {}
 
-TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model,
-                                   std::vector<TFPrimitiveSet*> tfSets)
+TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     : PropertyEditorWidgetQt(model->getProperty(), "Transfer Function Editor", "TFEditorWidget")
-    , sliderRange_(1024)
-    , propertyPtr_(std::move(model))
-    , tfSets_(tfSets) {
+    , concept_(std::move(model)) {
 
     if (auto titlebar = dynamic_cast<InviwoDockWidgetTitleBar*>(titleBarWidget())) {
         if (auto layout = dynamic_cast<QHBoxLayout*>(titlebar->layout())) {
@@ -126,27 +120,28 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model,
             helpBtn->setIconSize(iconsize);
             layout->insertWidget(1, helpBtn);
 
-            auto qtModule =
-                util::getInviwoApplication(property_)->getModuleByType<QtWidgetsModule>();
+            auto qtModule = util::getInviwoApplication(concept_->getProperty())
+                                ->getModuleByType<QtWidgetsModule>();
             QObject::connect(helpBtn, &QToolButton::clicked, this,
                              [qtModule]() { qtModule->showTFHelpWindow(); });
         }
     }
 
-    if (auto owner = propertyPtr_->getProperty()->getOwner()) {
+    if (auto owner = concept_->getProperty()->getOwner()) {
         if (auto p = owner->getProcessor()) {
             onNameChange_ = p->onDisplayNameChange(
                 [this](std::string_view, std::string_view) { updateTitleFromProperty(); });
         }
     }
 
-    propertyPtr_->addObserver(this);
-    for (auto& tf : tfSets_) {
-        tf->addObserver(this);
+    concept_->addObserver(this);
+    for (auto* set : concept_->sets()) {
+        set->addObserver(this);
     }
 
-    tfEditor_ = std::make_unique<TFEditor>(propertyPtr_.get(), tfSets_, this);
-    tfSelectionWatcher_ = std::make_unique<TFSelectionWatcher>(property_, tfSets_);
+    tfEditor_ = std::make_unique<TFEditor>(concept_.get(), this);
+    tfSelectionWatcher_ =
+        std::make_unique<TFSelectionWatcher>(concept_->getProperty(), concept_->sets());
 
     connect(tfEditor_.get(), &TFEditor::selectionChanged, this,
             [this]() { tfSelectionWatcher_->updateSelection(tfEditor_->getSelectedPrimitives()); });
@@ -157,7 +152,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model,
         updateTFPreview();
     });
 
-    tfEditorView_ = new TFEditorView(propertyPtr_.get(), tfEditor_.get());
+    tfEditorView_ = new TFEditorView(concept_.get(), tfEditor_.get());
 
     // put origin to bottom left corner
     ivec2 minEditorDims = vec2(255, 100);
@@ -172,7 +167,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model,
     zoomVSlider_->setRange(0, verticalSliderRange_);
     zoomVSlider_->setMinSeparation(5);
     // flip slider values to compensate for vertical slider layout
-    onZoomVChange(propertyPtr_->getZoomV());
+    onZoomVChange(concept_->getZoomV());
     connect(zoomVSlider_, &RangeSliderQt::valuesChanged, this,
             &TFPropertyDialog::changeVerticalZoom);
 
@@ -183,7 +178,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model,
     zoomHSlider_ = new RangeSliderQt(Qt::Horizontal, this, true);
     zoomHSlider_->setRange(0, sliderRange_);
     zoomHSlider_->setMinSeparation(5);
-    onZoomHChange(propertyPtr_->getZoomH());
+    onZoomHChange(concept_->getZoomH());
     connect(zoomHSlider_, &RangeSliderQt::valuesChanged, this,
             &TFPropertyDialog::changeHorizontalZoom);
 
@@ -216,7 +211,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model,
     chkShowHistogram_->addItem("Histogram: 95%");
     chkShowHistogram_->addItem("Histogram: 90%");
     chkShowHistogram_->addItem("Histogram: Log");
-    chkShowHistogram_->setCurrentIndex(static_cast<int>(propertyPtr_->getHistogramMode()));
+    chkShowHistogram_->setCurrentIndex(static_cast<int>(concept_->getHistogramMode()));
     connect(chkShowHistogram_,
             static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
             &TFPropertyDialog::showHistogram);
@@ -233,13 +228,17 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model,
     domainMax_ = new QLabel("1.0");
 
     const auto dataChange = [this]() {
-        const auto& dataMap = propertyPtr_->getDataMap();
-        domainMin_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(0.0)));
-        domainMax_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(1.0)));
+        if (const auto* dataMap = concept_->getDataMap()) {
+            domainMin_->setText(QString("%1").arg(dataMap->mapFromNormalizedToValue(0.0)));
+            domainMax_->setText(QString("%1").arg(dataMap->mapFromNormalizedToValue(1.0)));
+        } else {
+            domainMin_->setText("0.0");
+            domainMax_->setText("1.0");
+        }
         // ensure that the range of primitive scalar is matching value range of volume data
         onTFTypeChangedInternal();
     };
-    dataChangeHandle_ = propertyPtr_->onDataChange(dataChange);
+    dataChangeHandle_ = concept_->onDataChange(dataChange);
 
     // set up TF primitive widgets
     primitivePos_ = new TFLineEdit();
@@ -264,7 +263,6 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model,
             &TFSelectionWatcher::setColor);
 
     dataChange();
-    
 
     QFrame* leftPanel = new QFrame(this);
     QGridLayout* leftLayout = new QGridLayout();
@@ -326,7 +324,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model,
         colorDialog_->setOption(QColorDialog::NoButtons, true);
         colorDialog_->setWindowModality(Qt::NonModal);
         colorDialog_->setWindowTitle(
-            QString("TF Primitive Color - %1").arg(utilqt::toQString(property_->getDisplayName())));
+            QString("TF Primitive Color - %1").arg(utilqt::toQString(concept_->getProperty()->getDisplayName())));
 
         connect(tfEditor_.get(), &TFEditor::showColorDialog, colorDialog_.get(),
                 [dialog = colorDialog_.get()]() {
@@ -364,7 +362,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model,
         if (!settings.contains("shownonce") || !settings.value("shownonce").toBool()) {
             settings.setValue("shownonce", true);
 
-            util::getInviwoApplication(property_)
+            util::getInviwoApplication(concept_->getProperty())
                 ->getModuleByType<QtWidgetsModule>()
                 ->showTFHelpWindow();
         }
@@ -382,6 +380,8 @@ TFPropertyDialog::~TFPropertyDialog() {
     hide();
 }
 
+Property* TFPropertyDialog::getProperty() const { return concept_->getProperty(); }
+
 QSize TFPropertyDialog::minimumSizeHint() const { return TFPropertyDialog::sizeHint(); }
 
 QSize TFPropertyDialog::sizeHint() const { return layout()->sizeHint(); }
@@ -397,7 +397,7 @@ void TFPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax) {
     const auto zoomMaxF = static_cast<float>(verticalSliderRange_ - zoomMin) / verticalSliderRange_;
     const auto zoomMinF = static_cast<float>(verticalSliderRange_ - zoomMax) / verticalSliderRange_;
 
-    propertyPtr_->setZoomV(zoomMinF, zoomMaxF);
+    concept_->setZoomV(zoomMinF, zoomMaxF);
     tfEditor_->setRelativeSceneOffset(getRelativeSceneOffset());
 }
 
@@ -405,12 +405,12 @@ void TFPropertyDialog::changeHorizontalZoom(int zoomMin, int zoomMax) {
     const auto zoomMinF = static_cast<float>(zoomMin) / sliderRange_;
     const auto zoomMaxF = static_cast<float>(zoomMax) / sliderRange_;
 
-    propertyPtr_->setZoomH(zoomMinF, zoomMaxF);
+    concept_->setZoomH(zoomMinF, zoomMaxF);
     tfEditor_->setRelativeSceneOffset(getRelativeSceneOffset());
 }
 
 void TFPropertyDialog::showHistogram(int type) {
-    propertyPtr_->setHistogramMode(static_cast<HistogramMode>(type));
+    concept_->setHistogramMode(static_cast<HistogramMode>(type));
 }
 
 void TFPropertyDialog::resizeEvent(QResizeEvent* event) {
@@ -428,12 +428,12 @@ void TFPropertyDialog::showEvent(QShowEvent* event) {
 }
 
 void TFPropertyDialog::updateTitleFromProperty() {
-    if (!property_->getOwner()) return;
+    if (!getProperty()->getOwner()) return;
 
-    const auto processorName = property_->getOwner()->getProcessor()->getDisplayName();
+    const auto processorName = getProperty()->getOwner()->getProcessor()->getDisplayName();
     const auto windowTitle =
-        fmt::format("Transfer Function Editor - {} ({}){}", property_->getDisplayName(),
-                    processorName, (property_->getReadOnly() ? " - Read Only" : ""));
+        fmt::format("Transfer Function Editor - {} ({}){}", getProperty()->getDisplayName(),
+                    processorName, (getProperty()->getReadOnly() ? " - Read Only" : ""));
     setWindowTitle(utilqt::toQString(windowTitle));
 }
 
@@ -441,37 +441,39 @@ void TFPropertyDialog::onSetDisplayName(Property*, const std::string&) {
     updateTitleFromProperty();
 }
 
-void TFPropertyDialog::onTFPrimitiveAdded(TFPrimitive& p) {
-    tfEditor_->onControlPointAdded(p);
+void TFPropertyDialog::onTFPrimitiveAdded(const TFPrimitiveSet&, TFPrimitive&) {
     updateFromProperty();
 }
 
-void TFPropertyDialog::onTFPrimitiveRemoved(TFPrimitive& p) {
-    tfEditor_->onControlPointRemoved(p);
+void TFPropertyDialog::onTFPrimitiveRemoved(const TFPrimitiveSet&, TFPrimitive&) {
     updateFromProperty();
 }
 
-void TFPropertyDialog::onTFPrimitiveChanged(const TFPrimitive& p) {
-    tfEditor_->onControlPointChanged(p);
+void TFPropertyDialog::onTFPrimitiveChanged(const TFPrimitiveSet&, const TFPrimitive&) {
     updateFromProperty();
 }
 
-void TFPropertyDialog::onTFTypeChanged(const TFPrimitiveSet&) { onTFTypeChangedInternal(); }
+void TFPropertyDialog::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) {
+    onTFTypeChangedInternal();
+}
+
+void TFPropertyDialog::onTFMaskChanged(const TFPrimitiveSet&, dvec2) { updateFromProperty(); }
 
 void TFPropertyDialog::onTFTypeChangedInternal() {
     // adjust value mapping in primitive widget for position
-    dvec2 valueRange = propertyPtr_->getDataMap().valueRange;
+    dvec2 valueRange{0.0, 1.0};
+    if (const auto* dataMap = concept_->getDataMap()) {
+        valueRange = dataMap->valueRange;
+    }
 
     // TODO: how to handle different TF types?
     // perform mapping only, if all TF are of relative type
-    const bool allRelative = std::all_of(tfSets_.begin(), tfSets_.end(), [](TFPrimitiveSet* elem) {
-        return elem->getType() == TFPrimitiveSetType::Relative;
-    });
+    const bool allRelative = true;
 
     // make increment depending on the size of the underlying TF texture
     const double incr =
-        propertyPtr_->hasTF()
-            ? 1.0 / static_cast<double>(propertyPtr_->getTFProperty()->get().getTextureSize())
+        concept_->hasTF()
+            ? 1.0 / static_cast<double>(concept_->getTFProperty()->getLookUpTableSize())
             : 0.01;
 
     primitivePos_->setValueMapping(allRelative, valueRange, incr * (valueRange.y - valueRange.x));
@@ -481,8 +483,6 @@ void TFPropertyDialog::onTFTypeChangedInternal() {
             glm::mix(valueRange.x, valueRange.y, static_cast<double>(val) / sliderRange));
     });
 }
-
-void TFPropertyDialog::onMaskChange(const dvec2&) { updateTFPreview(); }
 
 void TFPropertyDialog::onZoomHChange(const dvec2& zoomH) {
     zoomHSlider_->setValue(static_cast<int>(zoomH.x * sliderRange_),
@@ -508,7 +508,7 @@ void TFPropertyDialog::changeMoveMode(int i) { tfEditor_->setMoveMode(i); }
 void TFPropertyDialog::updateTFPreview() {
     if (ongoingUpdate_) return;
 
-    auto pixmap = utilqt::toQPixmap(*propertyPtr_, QSize(tfPreview_->width(), 20));
+    auto pixmap = utilqt::toQPixmap(*concept_, QSize(tfPreview_->width(), 20));
     tfPreview_->setPixmap(pixmap);
 }
 

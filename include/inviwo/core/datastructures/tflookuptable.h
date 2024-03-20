@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,43 +29,54 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/transferfunction.h>  // For TransferFunction
-#include <inviwo/core/io/datareader.h>                    // for DataReaderType
-#include <inviwo/core/datastructures/image/layer.h>
 
-#include <memory>
+#include <inviwo/core/datastructures/transferfunction.h>
+
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+
+#include <inviwo/core/util/glmvec.h>
 
 namespace inviwo {
 
-class DataReaderFactory;
-
-class IVW_CORE_API TransferFunctionLayerReader : public DataReaderType<TransferFunction> {
+class IVW_CORE_API TFLookupTable : public TFPrimitiveSetObserver {
 public:
-    TransferFunctionLayerReader(std::unique_ptr<DataReaderType<Layer>> layerReader);
-    TransferFunctionLayerReader(const TransferFunctionLayerReader& rhs);
-    TransferFunctionLayerReader(TransferFunctionLayerReader&&) noexcept = default;
-    TransferFunctionLayerReader& operator=(const TransferFunctionLayerReader& that);
-    TransferFunctionLayerReader& operator=(TransferFunctionLayerReader&&) noexcept = default;
+    TFLookupTable(TransferFunction& tf, size_t size = 2048);
+    TFLookupTable(const TFLookupTable&) = delete;
+    TFLookupTable(TFLookupTable&&) = default;
+    TFLookupTable& operator=(const TFLookupTable&) = delete;
+    TFLookupTable& operator=(TFLookupTable&&) = default;
+    virtual ~TFLookupTable() = default;
 
-    virtual TransferFunctionLayerReader* clone() const override;
+    void setSize(size_t size);
+    size_t getSize() const;
 
-    virtual std::shared_ptr<TransferFunction> readData(
-        const std::filesystem::path& filePath) override;
+    const TransferFunction& getTransferFunction() const;
+    void setTransferFunction(TransferFunction& tf);
+
+    template <typename T>
+    const T* getRepresentation() {
+        if (invalid_) {
+            calc();
+        }
+        return data_->getRepresentation<T>();
+    }
+
+protected:
+    virtual void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) override;
+    virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
+    virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
+    virtual void onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) override;
 
 private:
-    std::unique_ptr<DataReaderType<Layer>> layerReader_;
-};
+    void calc();
 
-class IVW_CORE_API TransferFunctionLayerReaderWrapper : public FactoryObserver<DataReader> {
-public:
-    TransferFunctionLayerReaderWrapper(DataReaderFactory* factory);
-    virtual void onRegister(DataReader* reader) override;
-    virtual void onUnRegister(DataReader* reader) override;
-
-private:
-    DataReaderFactory* factory_;
-    std::unordered_map<DataReaderType<Layer>*, std::shared_ptr<TransferFunctionLayerReader>>
-        layerToTFMap_;
+    TransferFunction* tf_;  // Should not be null
+    size_t size_;
+    bool invalid_;
+    std::shared_ptr<LayerRAMPrecision<vec4>> repr_;
+    std::unique_ptr<Layer> data_;
 };
 
 }  // namespace inviwo

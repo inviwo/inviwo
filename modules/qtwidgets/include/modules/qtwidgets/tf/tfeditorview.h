@@ -53,13 +53,11 @@ public:
 
 protected:
     virtual void resizeEvent(QResizeEvent* event) override;
-    virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
 
     void updateZoom();
 
     // TransferFunctionPropertyObserver overloads
-    virtual void onMaskChange(const dvec2& mask) override;
     virtual void onZoomHChange(const dvec2& zoomH) override;
     virtual void onZoomVChange(const dvec2& zoomV) override;
     virtual void onHistogramModeChange(HistogramMode mode) override;
@@ -68,7 +66,7 @@ protected:
     virtual void wheelEvent(QWheelEvent* event) override;
 
 private:
-    TFPropertyConcept* tfPropertyPtr_;
+    TFPropertyConcept* property_;
 
     struct HistogramState {
         TFPropertyConcept::HistogramChange change = TFPropertyConcept::HistogramChange::NoData;
@@ -76,9 +74,9 @@ private:
         HistogramSelection selection = histogramSelectionAll;
         std::vector<Histogram1D> histograms = {};
         std::vector<QPolygonF> polygons = {};
-        void paintHistogram(QPainter* painter, const QPolygonF& histogram,
-                            const QRectF& sceneRect) const;
-        void paintLabel(QPainter* painter, size_t index, size_t count,
+        void paintHistogram(QPainter* painter, const QPolygonF& histogram, size_t channel,
+                            size_t nChannels, const QRectF& sceneRect) const;
+        void paintLabel(QPainter* painter, size_t channel, size_t count, size_t nChannels,
                         const QRect& rect) const;
         void paintState(QPainter* painter, const QRect& rect) const;
         void paintHistograms(QPainter* painter, const QRectF& sceneRect, const QRect& rect) const;
@@ -87,9 +85,6 @@ private:
             const std::vector<Histogram1D>& histograms, HistogramMode mode);
     };
     HistogramState histogramState_;
-
-    dvec2 maskHorizontal_;
-
     DispatcherHandle<TFPropertyConcept::HistogramCallback> histogramChangeHandle_;
 
     std::shared_ptr<std::function<void()>> callbackOnChange = nullptr;

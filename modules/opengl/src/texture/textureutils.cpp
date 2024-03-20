@@ -518,14 +518,14 @@ void multiDrawImagePlaneRect(int instances) {
 }
 
 void bindTexture(const TextureBase& texture, GLenum texUnit) {
-	TRACY_ZONE_SCOPED_C(0x000088);
+    TRACY_ZONE_SCOPED_C(0x000088);
     glActiveTexture(texUnit);
     texture.bind();
     glActiveTexture(GL_TEXTURE0);
 }
 
 void bindTexture(const TextureBase& texture, const TextureUnit& texUnit) {
-	TRACY_ZONE_SCOPED_C(0x000088);
+    TRACY_ZONE_SCOPED_C(0x000088);
     glActiveTexture(texUnit.getEnum());
     texture.bind();
     glActiveTexture(GL_TEXTURE0);
@@ -540,16 +540,15 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Textur
     cont.push_back(std::move(unit));
 }
 
-void bindTexture(const TransferFunctionProperty& tfp, const TextureUnit& texUnit) {
+void bindTexture(TransferFunctionProperty& tfp, const TextureUnit& texUnit) {
     TRACY_ZONE_SCOPED_C(0x000088);
-    if (auto tfLayer = tfp.get().getData()) {
-        auto transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
-        transferFunctionGL->bindTexture(texUnit.getEnum());
+    if (auto* tfLayer = tfp.getRepresentation<LayerGL>()) {
+        tfLayer->bindTexture(texUnit.getEnum());
     }
 }
 
 void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                        const TransferFunctionProperty& tf) {
+                        TransferFunctionProperty& tf) {
     TRACY_ZONE_SCOPED_C(0x000088);
     TextureUnit unit;
     bindTexture(tf, unit);
@@ -557,15 +556,14 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
     cont.push_back(std::move(unit));
 }
 
-void bindTexture(const IsoTFProperty& property, const TextureUnit& texUnit) {
+void bindTexture(IsoTFProperty& property, const TextureUnit& texUnit) {
     TRACY_ZONE_SCOPED_C(0x000088);
-    if (auto tfLayer = property.tf_.get().getData()) {
-        auto transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
-        transferFunctionGL->bindTexture(texUnit.getEnum());
+    if (auto* tfLayer = property.tf_.getRepresentation<LayerGL>()) {
+        tfLayer->bindTexture(texUnit.getEnum());
     }
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const IsoTFProperty& property) {
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, IsoTFProperty& property) {
     TRACY_ZONE_SCOPED_C(0x000088);
     TextureUnit unit;
     bindTexture(property, unit);

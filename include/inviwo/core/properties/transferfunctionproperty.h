@@ -37,6 +37,7 @@
 #include <inviwo/core/datastructures/histogramtools.h>
 
 #include <inviwo/core/datastructures/tfdata.h>
+#include <inviwo/core/datastructures/tflookuptable.h>
 
 #include <inviwo/core/ports/volumeport.h>
 
@@ -46,7 +47,6 @@ class IsoTFProperty;
 
 class IVW_CORE_API TFPropertyObserver : public Observer {
 public:
-    virtual void onMaskChange(const dvec2& mask);
     virtual void onZoomHChange(const dvec2& zoomH);
     virtual void onZoomVChange(const dvec2& zoomV);
     virtual void onHistogramModeChange(HistogramMode mode);
@@ -54,7 +54,6 @@ public:
 };
 class IVW_CORE_API TFPropertyObservable : public Observable<TFPropertyObserver> {
 protected:
-    void notifyMaskChange(const dvec2& mask);
     void notifyZoomHChange(const dvec2& zoomH);
     void notifyZoomVChange(const dvec2& zoomV);
     void notifyHistogramModeChange(HistogramMode mode);
@@ -77,20 +76,17 @@ public:
         std::string_view identifier, std::string_view displayName, Document help,
         const TransferFunction& value = TransferFunction({{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
                                                           {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
-        VolumeInport* volumeInport = nullptr,
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+        TFData port = {}, InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = PropertySemantics::Default);
 
     TransferFunctionProperty(
         std::string_view identifier, std::string_view displayName,
         const TransferFunction& value = TransferFunction({{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
                                                           {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
-        VolumeInport* volumeInport = nullptr,
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+        TFData port = {}, InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = PropertySemantics::Default);
 
-    TransferFunctionProperty(std::string_view identifier, std::string_view displayName,
-                             VolumeInport* volumeInport,
+    TransferFunctionProperty(std::string_view identifier, std::string_view displayName, TFData port,
                              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                              PropertySemantics semantics = PropertySemantics::Default);
 
@@ -108,7 +104,7 @@ public:
     TransferFunction* operator->();
 
     TransferFunctionProperty& setMask(double maskMin, double maskMax);
-    const dvec2 getMask() const;
+    dvec2 getMask() const;
     TransferFunctionProperty& clearMask();
 
     TransferFunctionProperty& setZoomH(double zoomHMin, double zoomHMax);
@@ -140,9 +136,14 @@ public:
     TransferFunctionProperty& setHistogramSelection(HistogramSelection selection);
     HistogramSelection getHistogramSelection() const;
 
-    VolumeInport* getVolumeInport();
-
     const TFData& data() const { return data_; }
+
+    template <typename T>
+    const T* getRepresentation() {
+        return lookup_.getRepresentation<T>();
+    }
+    size_t getLookUpTableSize() const { return lookup_.getSize(); }
+    void setLookUpTableSize(size_t size) { return lookup_.setSize(size); }
 
     virtual TransferFunctionProperty& setCurrentStateAsDefault() override;
     TransferFunctionProperty& setDefault(const TransferFunction& tf);
@@ -156,10 +157,11 @@ public:
     void set(const IsoTFProperty* p);
 
     // Override TFPrimitiveSetObserver
-    virtual void onTFPrimitiveAdded(TFPrimitive& p) override;
-    virtual void onTFPrimitiveRemoved(TFPrimitive& p) override;
-    virtual void onTFPrimitiveChanged(const TFPrimitive& p) override;
-    virtual void onTFTypeChanged(const TFPrimitiveSet& primitiveSet) override;
+    virtual void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) override;
+    virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
+    virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
+    virtual void onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) override;
 
 private:
     ValueWrapper<TransferFunction> tf_;
@@ -168,7 +170,7 @@ private:
     ValueWrapper<HistogramMode> histogramMode_;
     ValueWrapper<HistogramSelection> histogramSelection_;
 
-    VolumeInport* volumeInport_;
+    TFLookupTable lookup_;
     TFData data_;
 };
 
