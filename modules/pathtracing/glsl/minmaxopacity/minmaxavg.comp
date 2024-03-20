@@ -1,0 +1,64 @@
+#include "utils/structs.glsl"
+#include "utils/sampler3d.glsl"
+
+#include "utils/classification.glsl"
+
+// input volume
+uniform sampler3D volumeData;
+uniform VolumeParameters volumeDataParameters;
+
+// output volume
+uniform layout(binding = 0, rgba32f)
+image3D opacityData;
+uniform VolumeParameters opacityDataParameters;
+
+uniform ivec3 cellDim;
+uniform sampler2D tf;
+
+// look at https://github.com/ResearchDaniel/Correlated-Photon-Mapping-for-Interactive-Global-Illumination-of-Time-Varying-Volumetric-Data/blob/8ce15569df62e4cc9cfcb13086dcf8a523fbbdb4/modules/importancesamplingcl/processors/minmaxuniformgrid3dimportanceclprocessor.cpp#L304
+// updateTransferFunctionDifferenceData
+
+// https://github.com/ResearchDaniel/Correlated-Photon-Mapping-for-Interactive-Global-Illumination-of-Time-Varying-Volumetric-Data/blob/8ce15569df62e4cc9cfcb13086dcf8a523fbbdb4/modules/importancesamplingcl/cl/minmaxuniformgrid3dimportance.cl#L186
+// importanForRangeTF, return min max
+
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+void main() {
+
+    ivec3 storePos = ivec3(gl_GlobalInvocationID.xyz);  // == startCoord
+    ivec3 startCoord = storePos * cellDim;
+    ivec3 endCoord = min(startCoord + cellDim, ivec3(volumeDataParameters.dimensions));
+
+    float minOpacity = 1f;
+    float maxOpacity = 0f;
+    float avgOpacity = 0f;
+
+    // Bug fixes: should be loop to less than OR equal to.
+    //            then we sample celldim + v3(1) times, so if celldim is 6, we sample at [0/dim, 6/dim]
+
+    // We do not sample texels, but texel edges in this scenario
+
+    for (int z = startCoord.z; z <= endCoord.z; ++z) {
+        for (int y = startCoord.y; y <= endCoord.y; ++y) {
+            for (int x = startCoord.x; x <= endCoord.x; ++x) {
+                // find texture endpoints of the cell? 
+                vec3 texCoord = (vec3(x, y, z)) / vec3(volumeDataParameters.dimensions);
+                vec4 vn = getNormalizedVoxel(volumeData, volumeDataParameters, texCoord);
+                float opacity = applyTF(tf, vn).a;
+
+                minOpacity = min(minOpacity, opacity);
+                maxOpacity = max(maxOpacity, opacity);
+
+
+
+                avgOpacity += opacity;
+            }
+        }
+    }
+
+    avgOpacity /= float((cellDim.x + 1) * (cellDim.y + 1) * (cellDim.z + 1));
+
+    vec4 result = vec4(minOpacity, maxOpacity, avgOpacity, 0f);
+
+    imageStore(opacityData, storePos, result);
+}

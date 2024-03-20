@@ -22,11 +22,13 @@ set(SHADER_FILES
     glsl/bidirectionalvolumepathtraceruniform.comp
     glsl/distributions.glsl
     glsl/lightestimation.glsl
+    glsl/minmaxopacity/minmaxavg.comp
     glsl/random.glsl
     glsl/transmittance/transmittancemethods.glsl
     glsl/uniformgrid.glsl
     glsl/util/rayboxintersection.glsl
     glsl/util/rayminmax.glsl
+    
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
