@@ -125,6 +125,13 @@
         <file>svgicons/view-flip.svg</file>
         <file>svgicons/view-fit-to-data.svg</file>
 
+        <file>svgicons/camera-down.svg</file>
+        <file>svgicons/camera-left.svg</file>
+        <file>svgicons/camera-right.svg</file>
+        <file>svgicons/camera-up.svg</file>
+        <file>svgicons/camera-dolly-away.svg</file>
+        <file>svgicons/camera-dolly-closer.svg</file>
+
         <file>svgicons/axis-horizontal-bottom.svg</file>
         <file>svgicons/axis-horizontal-top.svg</file>
         <file>svgicons/axis-vertical-left.svg</file>
