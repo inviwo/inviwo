@@ -74,7 +74,6 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
     vec3 rayDir = normalize(ray);
     float t1 = length(ray);
     float t0 = 0.f;
-
     uint hashSeed = getHashSeed();
 
     vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volumeParameters.textureToWorld);
@@ -82,39 +81,51 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
     vec3 samplePosition = entryPoint;
 
     float T = 0.0f;
-    vec2 minMax = vec2(0.f, 1.0f);
+    vec3 minMax = vec3(0.f, 1.0f, 0.0f);
 
-    minMax = rayMinMax(entryPoint, rayDir, t0, t1, minMaxOpacity, minMaxOpacityParameters,
-                       volumeParameters);
+    vec3 cellDim = ceil(volumeParameters.dimensions / minMaxOpacityParameters.dimensions);
+    vec3 errorReturn = vec3(0);
+
+    minMax = rayMinMaxAvgTest(entryPoint, rayDir, t0, t1, minMaxOpacity, minMaxOpacityParameters, cellDim, volume,
+                       volumeParameters, transferFunction, errorReturn);
+    // Avoid case where control extinction == upper bound (causing division by zero)
     minMax.y += 1e-6;
 
-    // this corresponds to an actual distance travelled
+    
+    if(errorReturn != vec3(0)) {
+        return vec4(errorReturn.y, 0, 0, 1.f);  
+    } else {
+        //return vec4(0, 1, 0, 1.f);  
+    }
+    
+    return vec4(minMax, 1f);
+    vec3 auxReturnTracking = vec3(0);
     float meanFreePath = woodcockTracking(samplePosition, rayDir, t0, t1, hashSeed, volume,
-                                          volumeParameters, transferFunction, minMax.y);
+                                          volumeParameters, transferFunction, minMax.y, auxReturnTracking);
 
-    /*
-    // everything else is transmittance, what is returned is not necesarily a random distance to travel
-    float meanFreePath = partitionedTransmittanceTracking(transmittanceMethod, samplePosition, rayDir, t0, t1, hashSeed,
-    volume, volumeParameters, transferFunction, minMaxOpacity, minMaxOpacityParameters);
-    */
+    if(auxReturnTracking != vec3(0)) {
+        return vec4(auxReturnTracking, 1.0f);
+    }
 
     vec4 result = vec4(0.0);
     if (meanFreePath <= t1) {
         samplePosition = entryPoint + meanFreePath * rayDir;
+        
+        // samplePosition being outside of texturespace is a big problem. means meanFreePath has lead samplePosition to be outside texture space =>
+        // which can only happen in this block if mfp is negative, which can only occur if upperbound is less than largest opacity
 
         rayDepth = meanFreePath;
         depth = rayDepth;
 
         result.rgb = estimateDirectLightUniformGrid(
             volume, volumeParameters, transferFunction, minMaxOpacity, minMaxOpacityParameters,
-            samplePosition, cameraDir, light, hashSeed, channel, transmittanceMethod);
+            samplePosition, cameraDir, light, hashSeed, channel, 0);
         result.a = 1f - T;
 
     } else {
         result = bgColor;
     }
-
-    return mix(result, vec4(minMax, 0f, 1f), 0.0);
+    return mix(result, vec4(minMax, 1f), 0.0);
 }
 
 void main() {
@@ -129,6 +140,10 @@ void main() {
 
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
     vec2 texCoord = vec2(0.5 + gl_GlobalInvocationID.xy) / outportParameters.dimensions;
+
+    if(any(greaterThan(storePos, outportParameters.dimensions))) {
+        return;
+    }
 
     vec3 entryPoint = texture(entryColor, texCoord).xyz;
     vec3 exitPoint = texture(exitColor, texCoord).xyz;

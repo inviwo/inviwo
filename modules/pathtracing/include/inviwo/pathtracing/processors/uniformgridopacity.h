@@ -38,6 +38,9 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/volume/volumegl.h>
+#include <modules/opengl/volume/volumeutils.h>
 //#include <inviwo/pathtracing/uniformgrid3d.h>
 
 namespace inviwo {
@@ -58,6 +61,10 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+protected:
+    void processCPU();
+    void processCompute();
+
 private:
     VolumeInport inport_;
     //OpacityMinMaxUniformGrid3DOutport outport_;
@@ -65,7 +72,7 @@ private:
 
     TransferFunctionProperty transferFunction_;
     IntProperty volumeRegionSize_;
-    
+    Shader shader_;
 
 };
 

@@ -297,7 +297,7 @@ void VolumePathTracer::process() {
     utilgl::setUniforms(*activeShader_, camera_, raycasting_, positionIndicator_, light_, channel_);
 
     // Start render
-    glDispatchCompute(outport_.getDimensions().x / 16, outport_.getDimensions().y / 16, 1);
+    glDispatchCompute(glm::ceil(static_cast<float>(outport_.getDimensions().x) / 16.f), glm::ceil(static_cast<float>(outport_.getDimensions().y) / 16.f), 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     activeShader_->deactivate();
