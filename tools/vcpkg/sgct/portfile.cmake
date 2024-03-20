@@ -1,0 +1,56 @@
+
+vcpkg_from_github(
+    OUT_SOURCE_PATH SOURCE_PATH
+    REPO inviwo/sgct
+    REF 7fddb51d8f43dba70016006de6e92aa4d898047b  
+    SHA512 1de278330bc917dd3ea0bdb801a2a51fdb57165ceed47c600c8f9ba73026b3c4b86e4bd98c2fc84c2efe1acfa19364e93cc93abf7ee385afad0531d7f876ce7e
+    HEAD_REF feature/dependency-refactoring
+)
+
+vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
+    FEATURES
+        freetype       SGCT_FREETYPE_SUPPORT
+        openvr         SGCT_OPENVR_SUPPORT
+        spout2         SGCT_SPOUT_SUPPORT
+        tracy          SGCT_TRACY_SUPPORT
+)
+
+vcpkg_cmake_configure(
+    SOURCE_PATH ${SOURCE_PATH}
+    OPTIONS
+        -DSGCT_INSTALL=ON
+        -DSGCT_BUILD_TESTS=OFF
+        -DSGCT_EXAMPLES=OFF
+        -DSGCT_VRPN_SUPPORT=OFF
+        -DSGCT_ENABLE_EDIT_CONTINUE=OFF
+        -DSGCT_MEMORY_PROFILING=OFF
+
+        -DSGCT_DEP_INCLUDE_CATCH2=OFF
+        -DSGCT_DEP_INCLUDE_FMT=OFF
+        -DSGCT_DEP_INCLUDE_FREETYPE=OFF
+        -DSGCT_DEP_INCLUDE_GLAD=OFF
+        -DSGCT_DEP_INCLUDE_GLFW=OFF
+        -DSGCT_DEP_INCLUDE_GLM=OFF
+        -DSGCT_DEP_INCLUDE_JSON=OFF
+        -DSGCT_DEP_INCLUDE_LIBPNG=OFF
+        -DSGCT_DEP_INCLUDE_OPENVR=OFF
+        -DSGCT_DEP_INCLUDE_SCN=OFF
+        -DSGCT_DEP_INCLUDE_STB=OFF
+        -DSGCT_DEP_INCLUDE_TINYXML=OFF
+        -DSGCT_DEP_INCLUDE_TRACY=OFF
+        -DSGCT_DEP_INCLUDE_VRPN=OFF
+        -DSGCT_DEP_INCLUDE_ZLIB=OFF
+
+        ${FEATURE_OPTIONS}
+)
+
+vcpkg_cmake_install()
+vcpkg_copy_pdbs()
+vcpkg_cmake_config_fixup(CONFIG_PATH share/sgct) 
+
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
+file(
+    INSTALL ${SOURCE_PATH}/LICENSE.md 
+    DESTINATION ${CURRENT_PACKAGES_DIR}/share/sgct 
+    RENAME copyright
+)

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2024 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,61 +26,58 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
-#include <modules/glfw/glfwmoduledefine.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/processornetworkobserver.h>
+#include <inviwo/core/util/glm.h>
 
-#include <inviwo/core/interaction/events/keyboardkeys.h>
-#include <inviwo/core/interaction/events/mousebuttons.h>
-#include <inviwo/core/util/glmvec.h>
+#include <sgct/callbackdata.h>
 
 #include <functional>
+#include <vector>
+#include <string>
+#include <optional>
 
-typedef struct GLFWwindow GLFWwindow;
+struct GLFWwindow;
 
 namespace inviwo {
 
+class GLFWUserData;
+class GLFWWindowEventManager;
 class Event;
+class CanvasProcessor;
+class CameraProperty;
+class Shader;
 
-namespace util {
+struct SGCTManager : public ProcessorNetworkObserver {
+    SGCTManager(InviwoApplication& app);
+    ~SGCTManager();
 
-IVW_MODULE_GLFW_API MouseButton mapGLFWMouseButton(int mouseButtonGLFW);
-IVW_MODULE_GLFW_API MouseState mapGLFWMouseState(int mouseStateGLFW);
+    CanvasProcessor* getCanvas() { return canvases.empty() ? nullptr : canvases.front(); }
+    CameraProperty* getCamera() { return cameras.empty() ? nullptr : cameras.front(); }
 
-IVW_MODULE_GLFW_API KeyModifiers mapGLFWModifiers(int modifiersGLFW);
+    void setupInteraction(GLFWwindow* win);
+    void teardownInteraction();
 
-IVW_MODULE_GLFW_API KeyState mapGLFWMKeyState(int actionGLFW);
-IVW_MODULE_GLFW_API IvwKey mapGLFWMKey(int keyGLFW);
+    void evaluate(const ::sgct::RenderData& renderData);
 
-}  // namespace util
+    void createShader();
+    void copy();
 
-/**
- * A helper class to handle GLFW mouse/events
- */
-class IVW_MODULE_GLFW_API GLFWWindowEventManager {
-public:
-    GLFWWindowEventManager(GLFWwindow* glWindow, std::function<void(Event*)> ep,
-                           std::function<double(dvec2)> depth);
-    virtual ~GLFWWindowEventManager();
+    virtual void onProcessorNetworkDidAddProcessor(Processor*) override;
+    virtual void onProcessorNetworkWillRemoveProcessor(Processor*) override;
 
-private:
-    static void keyboard(GLFWwindow*, int, int, int, int);
-    static void character(GLFWwindow*, unsigned int);  ///< UTF32 encoded text input
-    static void mouseButton(GLFWwindow*, int, int, int);
-    static void mouseMotion(GLFWwindow*, double, double);
-    static void scroll(GLFWwindow*, double, double);
+    std::vector<CanvasProcessor*> canvases;
+    std::vector<CameraProperty*> cameras;
+    InviwoApplication& app;
 
-    void propagateEvent(Event* event);
-
-    static dvec2 normalPos(dvec2 pos, ivec2 size);
-
-    MouseButton mouseButton_;
-    MouseState mouseState_;
-    KeyModifiers modifiers_;
-
-    GLFWwindow* glWindow_;
-    std::function<void(Event*)> eventPropagator_;
-    std::function<double(dvec2)> depth_;
+    CanvasProcessor* eventTarget = nullptr;
+    std::vector<std::unique_ptr<GLFWUserData>> userdata;
+    std::vector<std::unique_ptr<GLFWWindowEventManager>> interactionManagers;
+    std::unique_ptr<Shader> copyShader;
+    std::function<void(bool)> onStatChange;
 };
 
 }  // namespace inviwo
