@@ -35,11 +35,6 @@
 
 namespace inviwo {
 
-class Layer;
-
-template <typename T>
-class LayerRAMPrecision;
-
 /**
  * \ingroup datastructures
  * \class TransferFunction
@@ -47,30 +42,21 @@ class LayerRAMPrecision;
  */
 class IVW_CORE_API TransferFunction : public TFPrimitiveSet {
 public:
-    TransferFunction(size_t textureSize = 1024);
-    TransferFunction(const std::vector<TFPrimitiveData>& values, size_t textureSize = 1024);
-    TransferFunction(const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type,
-                     size_t textureSize = 1024);
+    TransferFunction();
+    TransferFunction(const std::vector<TFPrimitiveData>& values);
+    TransferFunction(const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type);
     TransferFunction(const TransferFunction& rhs);
     TransferFunction& operator=(const TransferFunction& rhs);
-
     virtual ~TransferFunction();
 
-    const Layer* getData() const;
-    const LayerRAMPrecision<vec4>* getRamRepresentation() const;
-    size_t getTextureSize() const;
-
+    void setMask(dvec2 mask);
+    dvec2 getMask() const;
     void setMaskMin(double maskMin);
     double getMaskMin() const;
     void setMaskMax(double maskMax);
     double getMaskMax() const;
 
     void clearMask();
-
-    /**
-     * Notify that the layer data (texture) needs to be updated next time it is requested.
-     */
-    virtual void invalidate() override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -106,19 +92,15 @@ public:
     friend IVW_CORE_API bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
     friend IVW_CORE_API bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs);
 
-protected:
-    void calcTransferValues() const;
+    virtual void interpolateAndStoreColors(std::span<vec4> data) const override;
 
+protected:
     virtual std::string_view serializationKey() const override;
     virtual std::string_view serializationItemKey() const override;
 
 private:
     double maskMin_;
     double maskMax_;
-
-    mutable bool invalidData_;
-    std::shared_ptr<LayerRAMPrecision<vec4>> dataRepr_;
-    std::unique_ptr<Layer> data_;
 };
 
 template <>

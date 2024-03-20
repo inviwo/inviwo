@@ -33,6 +33,7 @@
 #include <inviwo/core/util/glmvec.h>                 // for dvec2
 #include <modules/qtwidgets/tf/tfeditor.h>           // for TFEditor
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>  // for TFEditorPrimitive
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <QColor>          // for QColor
 #include <QGraphicsScene>  // for QGraphicsScene
@@ -44,19 +45,13 @@
 #include <QSizeF>          // for QSizeF
 #include <Qt>              // for DashLine, NoBrush, RoundCap
 #include <glm/vec2.hpp>    // for vec<>::(anonymous)
+#include <QGraphicsView>
 
 namespace inviwo {
 
-TFEditorIsovalue::TFEditorIsovalue(TFPrimitive& primitive, QGraphicsScene* scene, double size)
-    : TFEditorPrimitive(primitive, scene, primitive.getPosition(), primitive.getAlpha(), size) {
+TFEditorIsovalue::TFEditorIsovalue(TFPrimitive& primitive) : TFEditorPrimitive(primitive) {
     // ensure that Isovalue primitives are rendered behind TF control points
-    defaultZValue_ = 5;
-    setZValue(defaultZValue_);
-    data_.addObserver(this);
-}
-
-void TFEditorIsovalue::onTFPrimitiveChange(const TFPrimitive& p) {
-    setTFPosition(p.getPosition(), p.getAlpha());
+    setZValue(isoZLevel);
 }
 
 QRectF TFEditorIsovalue::boundingRect() const {
@@ -64,10 +59,12 @@ QRectF TFEditorIsovalue::boundingRect() const {
     auto bRect = QRectF(-bBoxSize / 2.0, -bBoxSize / 2.0, bBoxSize, bBoxSize);
 
     // add box of vertical line
-    double verticalScaling = getVerticalSceneScaling();
-    QRectF rect = scene()->sceneRect();
-    return bRect.united(QRectF(QPointF(-1.0, -rect.height() * verticalScaling),
-                               QPointF(1.0, rect.height() * verticalScaling)));
+    auto view = scene()->views().front();
+    auto trans = deviceTransform(view->viewportTransform()).inverted();
+
+    const auto top = trans.map(view->rect().topLeft()).y();
+    const auto bottom = trans.map(view->rect().bottomLeft()).y();
+    return bRect.united(QRectF(QPointF(-1.0, top), QPointF(1.0, bottom)));
 }
 
 QPainterPath TFEditorIsovalue::shape() const {
@@ -76,66 +73,54 @@ QPainterPath TFEditorIsovalue::shape() const {
     path.addRect(QRectF(QPointF(-0.5 * width, -0.5 * width), QSizeF(width, width)));
 
     // do not add the vertical line to the shape in order to make only the square box selectable
-
     return path;
 }
 
-void TFEditorIsovalue::paintPrimitive(QPainter* painter) {
-    // draw vertical line
-    painter->save();
+void TFEditorIsovalue::paint(QPainter* painter,
+                             [[maybe_unused]] const QStyleOptionGraphicsItem* options,
+                             [[maybe_unused]] QWidget* widget) {
 
-    QPen pen = QPen();
-    pen.setCosmetic(true);
-    pen.setCapStyle(Qt::RoundCap);
+    painter->setRenderHint(QPainter::Antialiasing, true);
 
-    pen.setWidthF(2.0);
-    pen.setColor(QColor(64, 64, 64, 255));
-    pen.setStyle(Qt::DashLine);
-    // ensure line is always covering entire scene
-    QRectF rect = scene()->sceneRect();
-    painter->setPen(pen);
-    painter->setBrush(Qt::NoBrush);
+    {
+        // draw vertical line
+        utilqt::Save saved{painter};
 
-    double verticalScaling = getVerticalSceneScaling();
-    painter->drawLine(QLineF(QPointF(0.0, -rect.height() * verticalScaling),
-                             QPointF(0.0, rect.height() * verticalScaling)));
+        QPen pen = QPen();
+        pen.setCosmetic(true);
+        pen.setCapStyle(Qt::RoundCap);
 
-    painter->restore();
+        pen.setWidthF(2.0);
+        pen.setColor(QColor(64, 64, 64, 255));
+        pen.setStyle(Qt::DashLine);
 
-    // draw square for indicating isovalue
-    const auto width = getSize();
-    painter->drawRect(QRectF(QPointF(-0.5f * width, -0.5f * width), QSizeF(width, width)));
-}
+        painter->setPen(pen);
+        painter->setBrush(Qt::NoBrush);
 
-void TFEditorIsovalue::onItemPositionChange(const dvec2& newPos) { data_.setPositionAlpha(newPos); }
+        auto view = scene()->views().front();
+        auto trans = deviceTransform(view->viewportTransform()).inverted();
+        const auto top = trans.map(view->rect().topLeft()).y();
+        const auto bottom = trans.map(view->rect().bottomLeft()).y();
 
-void TFEditorIsovalue::onItemSceneHasChanged() { onTFPrimitiveChange(data_); }
-
-double TFEditorIsovalue::getVerticalSceneScaling() const {
-    double verticalScaling = 1.0;
-    if (auto tfe = qobject_cast<TFEditor*>(scene())) {
-        verticalScaling = 1.0 / tfe->getZoom().y;
-        ;
+        painter->drawLine(QLineF(QPointF(0.0, top), QPointF(0.0, bottom)));
     }
-    return verticalScaling;
+
+    {
+        // set up pen and brush for drawing the primitive
+        QPen pen = QPen();
+        pen.setCosmetic(true);
+        pen.setCapStyle(Qt::RoundCap);
+        pen.setStyle(Qt::SolidLine);
+        pen.setWidthF(3.0);
+        isSelected() ? pen.setColor(QColor(213, 79, 79)) : pen.setColor(QColor(66, 66, 66));
+        QBrush brush = QBrush(utilqt::toQColor(vec4(vec3(getColor()), 1.0f)));
+
+        painter->setPen(pen);
+        painter->setBrush(brush);
+
+        // draw square for indicating isovalue
+        const auto width = getSize();
+        painter->drawRect(QRectF(QPointF(-0.5f * width, -0.5f * width), QSizeF(width, width)));
+    }
 }
-
-bool operator==(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs) {
-    return lhs.data_ == rhs.data_;
-}
-
-bool operator!=(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs) {
-    return !operator==(lhs, rhs);
-}
-
-bool operator<(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs) {
-    return lhs.currentPos_.x() < rhs.currentPos_.x();
-}
-
-bool operator>(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs) { return rhs < lhs; }
-
-bool operator<=(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs) { return !(rhs < lhs); }
-
-bool operator>=(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs) { return !(lhs < rhs); }
-
 }  // namespace inviwo

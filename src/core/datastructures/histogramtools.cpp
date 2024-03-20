@@ -58,23 +58,26 @@ HistogramCache& HistogramCache::operator=(HistogramCache&& that) noexcept {
     return *this;
 }
 
-DispatcherHandle<HistogramCache::Callback> HistogramCache::calculateHistograms(
+auto HistogramCache::calculateHistograms(
     std::function<std::vector<Histogram1D>()> calculate,
-    std::function<void(const std::vector<Histogram1D>&)> whenDone) const {
+    std::function<void(const std::vector<Histogram1D>&)> whenDone) const -> Result {
     std::scoped_lock lock{state_->mutex};
 
-    DispatcherHandle<HistogramCache::Callback> handle = nullptr;
+    Result result;
 
     if (state_->status == Status::Valid && whenDone) {
         whenDone(state_->histograms);
+        result.progress = Progress::Done;
     } else if (state_->status != Status::Valid && whenDone) {
-        handle = state_->callbacks.add(whenDone);
+        result.handle = state_->callbacks.add(whenDone);
+        result.progress = Progress::Calculating;
     }
 
     if (state_->status == Status::NotSet) {
         if (whenDone) {
-            handle = state_->callbacks.add(whenDone);
+            result.handle = state_->callbacks.add(whenDone);
         }
+        result.progress = Progress::Calculating;
         state_->status = Status::Calculating;
         dispatchPool([calculate, weakState = std::weak_ptr<State>(state_)]() {
             if (auto state = weakState.lock()) {
@@ -92,7 +95,7 @@ DispatcherHandle<HistogramCache::Callback> HistogramCache::calculateHistograms(
         });
     }
 
-    return handle;
+    return result;
 }
 
 void HistogramCache::forEach(

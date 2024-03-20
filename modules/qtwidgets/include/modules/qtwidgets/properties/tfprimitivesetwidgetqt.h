@@ -46,6 +46,7 @@ class MultilineTextEdit;
 class TFPrimitiveSet;
 class TransferFunctionProperty;
 struct TFPrimitiveData;
+class TFData;
 
 /**
  * \class TFPrimitiveSetWidgetQt
@@ -73,7 +74,7 @@ private:
     struct PropertyConcept {
         virtual ~PropertyConcept() = default;
         virtual TFPrimitiveSet& get() = 0;
-        virtual VolumeInport* getVolumePort() = 0;
+        virtual const TFData& data() const = 0;
     };
 
     template <typename U>
@@ -82,7 +83,7 @@ private:
         PropertyModel(U data) : data_(data) {}
 
         virtual TFPrimitiveSet& get() override { return data_->get(); }
-        virtual VolumeInport* getVolumePort() override { return data_->getVolumeInport(); }
+        virtual const TFData& data() const override { return data_->data(); }
 
     private:
         U data_;

@@ -87,16 +87,18 @@ void TFPrimitiveSetWidgetQt::setPropertyValue() {
     bool performMapping = (propertyPtr_->get().getType() == TFPrimitiveSetType::Relative) &&
                           (property_->getSemantics().getString() == "Text");
 
-    auto port = propertyPtr_->getVolumePort();
-    if (performMapping && port && port->hasData()) {
-        const dvec2 range = port->getData()->dataMap.valueRange;
+    if (auto* map = propertyPtr_->data().getDataMap()) {
+        if (performMapping) {
+            const dvec2 range = map->valueRange;
 
-        auto renormalizePos = [range](double pos) { return (pos - range.x) / (range.y - range.x); };
-        for (auto& elem : primitives) {
-            elem.pos = renormalizePos(elem.pos);
+            auto renormalizePos = [range](double pos) {
+                return (pos - range.x) / (range.y - range.x);
+            };
+            for (auto& elem : primitives) {
+                elem.pos = renormalizePos(elem.pos);
+            }
         }
     }
-
     {
         NetworkLock lock(property_);
         propertyPtr_->get().clear();
@@ -111,9 +113,8 @@ void TFPrimitiveSetWidgetQt::updateFromProperty() {
                           (property_->getSemantics().getString() == "Text");
 
     dvec2 range(0.0, 1.0);
-    auto port = propertyPtr_->getVolumePort();
-    if (port && port->hasData()) {
-        range = port->getData()->dataMap.valueRange;
+    if (auto* map = propertyPtr_->data().getDataMap()) {
+        range = map->valueRange;
     } else {
         // no need to perform mapping without a proper value range
         performMapping = false;

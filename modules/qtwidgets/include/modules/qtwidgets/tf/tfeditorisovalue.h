@@ -45,62 +45,21 @@ class QRectF;
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API TFEditorIsovalue : public TFEditorPrimitive,
-                                                  public TFPrimitiveObserver {
+class IVW_MODULE_QTWIDGETS_API TFEditorIsovalue : public TFEditorPrimitive {
 public:
-    TFEditorIsovalue(TFPrimitive& primitive, QGraphicsScene* scene, double size = 14.0);
+    TFEditorIsovalue(TFPrimitive& primitive);
     ~TFEditorIsovalue() = default;
-
-    // override for qgraphicsitem_cast (refer qt documentation)
-    enum {
-        Type =
-            static_cast<int>(UserType) + static_cast<int>(TFEditorPrimitive::TFEditorIsovalueType)
-    };
-    int type() const override { return Type; }
-
-    virtual void onTFPrimitiveChange(const TFPrimitive& p) override;
-
-    friend IVW_MODULE_QTWIDGETS_API bool operator==(const TFEditorIsovalue& lhs,
-                                                    const TFEditorIsovalue& rhs);
-
-    // Compare points by their "x" value
-    friend IVW_MODULE_QTWIDGETS_API bool operator<(const TFEditorIsovalue& lhs,
-                                                   const TFEditorIsovalue& rhs);
 
 protected:
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;
 
+    static constexpr int isoZLevel = 5;
+    virtual int zLevel() const override { return isoZLevel; }
+
 private:
-    /**
-     * draws the primitive. Gets called from within paint()
-     *
-     * @param painter   painter for drawing the object, pen and brush are set up to match
-     *                  primitive color and selection status
-     */
-    virtual void paintPrimitive(QPainter* painter) override;
-
-    /**
-     * gets called in itemChange() after a position change of the item. The position
-     * is already adjusted to lie within the scene bounding box and normalized.
-     *
-     * @param newPos   new, normalized position of the primitive
-     */
-    virtual void onItemPositionChange(const dvec2& newPos) override;
-
-    /**
-     * gets called in itemChange() when a scene change has happend
-     */
-    virtual void onItemSceneHasChanged() override;
-
-    double getVerticalSceneScaling() const;
+    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
+                       QWidget* widget) override;
 };
-
-IVW_MODULE_QTWIDGETS_API bool operator==(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator!=(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<=(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>=(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs);
 
 }  // namespace inviwo

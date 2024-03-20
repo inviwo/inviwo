@@ -37,6 +37,7 @@
 #include <inviwo/core/datastructures/image/layerconfig.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/datastructures/histogramtools.h>
 
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
@@ -161,6 +162,10 @@ public:
 
     DataMapper dataMap;
     std::array<Axis, 2> axes;
+    
+    [[nodiscard]] HistogramCache::Result calculateHistograms(
+        std::function<void(const std::vector<Histogram1D>&)> whenDone) const;
+    void discardHistograms();
 
 private:
     friend class LayerRepresentation;
@@ -171,6 +176,7 @@ private:
     SwizzleMask defaultSwizzleMask_;
     InterpolationType defaultInterpolation_;
     Wrapping2D defaultWrapping_;
+    HistogramCache histograms_;
 };
 
 // https://docs.microsoft.com/en-us/cpp/cpp/general-rules-and-limitations?view=vs-2017

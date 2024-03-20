@@ -462,18 +462,17 @@ void MeshRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTr
 
     const std::array<bool, 2> showFace = {faceSettings_[0].show_, faceSettings_[1].show_};
 
-    const std::array<const Layer*, 2> tfTextures = {
-        faceSettings_[0].transferFunction_->getData(),
+    const std::array<const LayerGL*, 2> tfTextures = {
+        faceSettings_[0].transferFunction_.getRepresentation<LayerGL>(),
         faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : 1]
-            .transferFunction_->getData()};
+            .transferFunction_.getRepresentation<LayerGL>()};
 
     utilgl::Activate activate{&shader_};
 
     // set transfer function textures
     std::array<TextureUnit, 2> transFuncUnit;
     for (size_t j = 0; j < 2; ++j) {
-        const LayerGL* transferFunctionGL = tfTextures[j]->getRepresentation<LayerGL>();
-        transferFunctionGL->bindTexture(transFuncUnit[j].getEnum());
+        tfTextures[j]->bindTexture(transFuncUnit[j].getEnum());
         shader_.setUniform(fmt::format("transferFunction{}", j), transFuncUnit[j].getUnitNumber());
     }
 

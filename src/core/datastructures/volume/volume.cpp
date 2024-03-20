@@ -255,7 +255,7 @@ auto histCalc(const Volume& v) {
 
 void Volume::discardHistograms() { histograms_.discard(histCalc(*this)); }
 
-DispatcherHandle<HistogramCache::Callback> Volume::calculateHistograms(
+HistogramCache::Result Volume::calculateHistograms(
     std::function<void(const std::vector<Histogram1D>&)> whenDone) const {
     return histograms_.calculateHistograms(histCalc(*this), std::move(whenDone));
 }

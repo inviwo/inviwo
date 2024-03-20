@@ -67,6 +67,7 @@ class FileExtension;
 
 TextEditorDockWidget::TextEditorDockWidget(Property* property)
     : PropertyEditorWidgetQt(property, "Edit", "TextEditorDockWidget")
+    , property_{property}
     , fileProperty_{dynamic_cast<FileProperty*>(property)}
     , stringProperty_{dynamic_cast<StringProperty*>(property)}
     , fileObserver_{this, "Text Editor"} {
@@ -166,6 +167,8 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     updateFromProperty();
     loadState();
 }
+
+Property* TextEditorDockWidget::getProperty() const { return property_; }
 
 SyntaxHighlighter& TextEditorDockWidget::getSyntaxHighlighter() {
     return editor_->syntaxHighlighter();

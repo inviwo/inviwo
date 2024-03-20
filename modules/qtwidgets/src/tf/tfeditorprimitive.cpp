@@ -35,6 +35,7 @@
 #include <inviwo/core/util/glmvec.h>                 // for vec4, vec3, dvec2
 #include <modules/qtwidgets/inviwoqtutils.h>         // for clamp, toQColor, toQString
 #include <modules/qtwidgets/tf/tfeditor.h>           // for TFEditor
+#include <modules/qtwidgets/tf/tfcontrolpointconnection.h>
 
 #include <cmath>    // for abs
 #include <cstdlib>  // for abs
@@ -62,19 +63,13 @@ class QWidget;
 
 namespace inviwo {
 
-void TFEditorPrimitiveObserver::onTFPrimitiveDoubleClicked(const TFEditorPrimitive*) {}
-
-TFEditorPrimitive::TFEditorPrimitive(TFPrimitive& primitive, QGraphicsScene* scene, double position,
-                                     float alpha, double size)
-    : size_(size), isEditingPoint_(false), hovered_(false), data_(primitive), mouseDrag_(false) {
+TFEditorPrimitive::TFEditorPrimitive(TFPrimitive& primitive)
+    : data_(primitive), isEditingPoint_(false), hovered_(false), mouseDrag_(false) {
     setFlags(ItemIgnoresTransformations | ItemIsFocusable | ItemIsMovable | ItemIsSelectable |
              ItemSendsGeometryChanges);
-    setZValue(defaultZValue_);
     setAcceptHoverEvents(true);
 
-    if (auto tfe = qobject_cast<TFEditor*>(scene)) {
-        addObserver(tfe);
-    }
+    primitive.addObserver(this);
 
     // create label for annotating TF primitives
     tfPrimitiveLabel_ = std::make_unique<QGraphicsSimpleTextItem>(this);
@@ -82,15 +77,6 @@ TFEditorPrimitive::TFEditorPrimitive(TFPrimitive& primitive, QGraphicsScene* sce
     QFont font(tfPrimitiveLabel_->font());
     font.setPixelSize(14);
     tfPrimitiveLabel_->setFont(font);
-
-    if (scene) {
-        // update position first, then add to scene to avoid calling the virtual
-        // function onItemPositionChange()
-        updatePosition(
-            QPointF(position * scene->sceneRect().width(), alpha * scene->sceneRect().height()));
-
-        scene->addItem(this);
-    }
 }
 
 TFPrimitive& TFEditorPrimitive::getPrimitive() { return data_; }
@@ -109,26 +95,20 @@ void TFEditorPrimitive::setAlpha(float alpha) { data_.setAlpha(alpha); }
 
 const vec4& TFEditorPrimitive::getColor() const { return data_.getColor(); }
 
-void TFEditorPrimitive::setTFPosition(double position, float alpha) {
+void TFEditorPrimitive::onTFPrimitiveChange(const TFPrimitive& p) {
     if (!isEditingPoint_) {
         isEditingPoint_ = true;
-        QRectF rect = scene()->sceneRect();
-        QPointF newpos(position * rect.width(), alpha * rect.height());
-        if (newpos != pos()) updatePosition(newpos);
+        const auto rect = scene()->sceneRect();
+        const QPointF newPos(p.getPosition() * rect.width(), p.getAlpha() * rect.height());
+        if (newPos != pos()) {
+            setPos(newPos);
+        }
         isEditingPoint_ = false;
         update();
     }
 }
 
-const QPointF& TFEditorPrimitive::getCurrentPos() const { return currentPos_; }
-
-void TFEditorPrimitive::setSize(double s) {
-    prepareGeometryChange();
-    size_ = s;
-    update();
-}
-
-double TFEditorPrimitive::getSize() const { return hovered_ ? size_ + 5.0 : size_; }
+double TFEditorPrimitive::getSize() const { return hovered_ ? 14.0 + 5.0 : 14.0; }
 
 void TFEditorPrimitive::setHovered(bool hover) {
     prepareGeometryChange();
@@ -141,78 +121,51 @@ void TFEditorPrimitive::setHovered(bool hover) {
 }
 
 void TFEditorPrimitive::beginMouseDrag() {
-    cachedPosition_ = currentPos_;
+    cachedPosition_ = scenePos();
     mouseDrag_ = true;
 }
 
 void TFEditorPrimitive::stopMouseDrag() { mouseDrag_ = false; }
 
-void TFEditorPrimitive::paint(QPainter* painter,
-                              [[maybe_unused]] const QStyleOptionGraphicsItem* options,
-                              [[maybe_unused]] QWidget* widget) {
-
-    painter->setRenderHint(QPainter::Antialiasing, true);
-
-    // set up pen and brush for drawing the primitive
-    QPen pen = QPen();
-    pen.setCosmetic(true);
-    pen.setCapStyle(Qt::RoundCap);
-    pen.setStyle(Qt::SolidLine);
-    pen.setWidthF(3.0);
-    isSelected() ? pen.setColor(QColor(213, 79, 79)) : pen.setColor(QColor(66, 66, 66));
-    QBrush brush = QBrush(utilqt::toQColor(vec4(vec3(getColor()), 1.0f)));
-
-    painter->setPen(pen);
-    painter->setBrush(brush);
-
-    // call primitive drawing function
-    paintPrimitive(painter);
+QPointF TFEditorPrimitive::constrainPosToXorY(QPointF pos) const {
+    const bool shiftPressed =
+        ((QGuiApplication::queryKeyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier);
+    // restrict movement to either horizontal or vertical direction while shift is pressed
+    if (mouseDrag_ && shiftPressed) {
+        // adjust position of mouse event
+        auto delta = pos - cachedPosition_;
+        if (std::abs(delta.x()) > std::abs(delta.y())) {
+            // horizontal movement is dominating
+            pos.setY(cachedPosition_.y());
+        } else {
+            // vertical movement is dominating
+            pos.setX(cachedPosition_.x());
+        }
+    }
+    return pos;
 }
 
 QVariant TFEditorPrimitive::itemChange(GraphicsItemChange change, const QVariant& value) {
     // check for scene() here in order to avoid callbacks as long as item is not added to scene
     if ((change == QGraphicsItem::ItemPositionChange) && scene()) {
         // constrain positions to valid view positions
-        auto newpos = value.toPointF();
-
-        const bool shiftPressed =
-            ((QGuiApplication::queryKeyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier);
-        // restrict movement to either horizontal or vertical direction while shift is pressed
-        if (mouseDrag_ && shiftPressed) {
-            // adjust position of mouse event
-            auto delta = newpos - cachedPosition_;
-            if (std::abs(delta.x()) > std::abs(delta.y())) {
-                // horizontal movement is dominating
-                newpos.ry() = cachedPosition_.y();
-            } else {
-                // vertical movement is dominating
-                newpos.rx() = cachedPosition_.x();
-            }
-        }
-
-        const QRectF rect = scene()->sceneRect();
-        newpos = utilqt::clamp(newpos, rect);
-
-        // allow for adjusting the position in derived classes
-        currentPos_ = prepareItemPositionChange(newpos);
-
+        return utilqt::clamp(constrainPosToXorY(value.toPointF()), scene()->sceneRect());
+    } else if (change == QGraphicsItem::ItemPositionHasChanged) {
+        const auto sceneRect = scene()->sceneRect();
         if (!isEditingPoint_) {
             isEditingPoint_ = true;
-
             // update the associated transfer function primitive
-            onItemPositionChange(
-                dvec2{currentPos_.x() / rect.width(), currentPos_.y() / rect.height()});
-            // update label
-            updateLabel();
-
+            data_.setPositionAlpha(
+                dvec2{scenePos().x() / sceneRect.width(), scenePos().y() / sceneRect.height()});
             isEditingPoint_ = false;
         }
 
-        // return the constrained position
-        return currentPos_;
+        updateLabel();
+
     } else if (change == QGraphicsItem::ItemSceneHasChanged) {
-        // inform primitive about scene change
-        onItemSceneHasChanged();
+        auto scene = qvariant_cast<QGraphicsScene*>(value);
+        setPos(QPointF(data_.getPosition() * scene->sceneRect().width(),
+                       data_.getAlpha() * scene->sceneRect().height()));
     }
 
     return QGraphicsItem::itemChange(change, value);
@@ -226,17 +179,7 @@ void TFEditorPrimitive::hoverEnterEvent(QGraphicsSceneHoverEvent*) {
 
 void TFEditorPrimitive::hoverLeaveEvent(QGraphicsSceneHoverEvent*) {
     setHovered(false);
-    setZValue(defaultZValue_);
-}
-
-void TFEditorPrimitive::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) {
-    forEachObserver([&](TFEditorPrimitiveObserver* o) { o->onTFPrimitiveDoubleClicked(this); });
-    QGraphicsItem::mouseDoubleClickEvent(event);
-}
-
-void TFEditorPrimitive::updatePosition(const QPointF& pos) {
-    currentPos_ = pos;
-    QGraphicsItem::setPos(pos);
+    setZValue(zLevel());
 }
 
 void TFEditorPrimitive::updateLabel() {
@@ -257,15 +200,15 @@ void TFEditorPrimitive::updateLabel() {
 
     tfPrimitiveLabel_->setText(label);
 
-    const double distFromCenter = size_ * 0.7;
+    const double distFromCenter = getSize() * 0.7;
     QPointF pos(distFromCenter, distFromCenter);
 
     // adjust position based on quadrant the primitive is located in
     auto rect = tfPrimitiveLabel_->boundingRect();
-    if (currentPos_.x() > scene()->sceneRect().width() * 0.5) {
+    if (scenePos().x() > scene()->sceneRect().width() * 0.5) {
         pos.rx() = -rect.width() - distFromCenter;
     }
-    if (currentPos_.y() < scene()->sceneRect().height() * 0.5) {
+    if (scenePos().y() < scene()->sceneRect().height() * 0.5) {
         pos.ry() = -rect.height() - distFromCenter;
     }
 

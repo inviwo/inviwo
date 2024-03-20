@@ -83,10 +83,9 @@ public:
 
     virtual void process(Shader& shader, TextureUnitContainer& cont) override {
         for (auto&& isotf : isotfs) {
-            if (auto tfLayer = isotf.tf_.get().getData()) {
+            if (auto* tfLayer = isotf.tf_.template getRepresentation<LayerGL>()) {
                 TextureUnit& unit = cont.emplace_back();
-                auto transferFunctionGL = tfLayer->template getRepresentation<LayerGL>();
-                transferFunctionGL->bindTexture(unit.getEnum());
+                tfLayer->bindTexture(unit.getEnum());
                 shader.setUniform(isotf.tf_.getIdentifier(), unit);
             }
             {

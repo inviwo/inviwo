@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/histogram.h>
 
 #include <inviwo/core/datastructures/histogramtools.h>
+#include <inviwo/core/util/assertion.h>
 
 #include <memory>
 
@@ -40,52 +41,65 @@ namespace inviwo {
 
 class IVW_CORE_API TFData {
 public:
+    using OnChangeHandle = std::array<std::shared_ptr<std::function<void()>>, 3>;
+
     struct Base {
         virtual ~Base() = default;
         virtual std::unique_ptr<Base> clone() const = 0;
 
-        virtual const DataMapper& getDataMap() const = 0;
+        virtual const DataMapper* getDataMap() const = 0;
 
-        virtual DispatcherHandle<HistogramCache::Callback> calculateHistograms(
+        virtual HistogramCache::Result calculateHistograms(
             std::function<void(const std::vector<Histogram1D>&)> whenDone) const = 0;
+
+        virtual OnChangeHandle onChange(std::function<void()> callback) const = 0;
     };
 
     template <typename T>
     struct Implementation : Base {
-        Implementation(T toWrap) : wrapped{toWrap} {}
+        Implementation(T* toWrap) : port{toWrap} {
+            IVW_ASSERT(port != nullptr, "port should never be null")
+        }
 
         virtual std::unique_ptr<Base> clone() const override {
             return std::make_unique<Implementation<T>>(*this);
         }
 
-        virtual const DataMapper& getDataMap() const override {
-            static const DataMapper default_;
-            if (auto data = wrapped->getData()) {
-                return data->dataMap;
+        virtual const DataMapper* getDataMap() const override {
+            if (auto data = port->getData()) {
+                return &data->dataMap;
+            } else {
+                return nullptr;
             }
-            return default_;
         }
 
-        virtual DispatcherHandle<HistogramCache::Callback> calculateHistograms(
+        virtual HistogramCache::Result calculateHistograms(
             std::function<void(const std::vector<Histogram1D>&)> whenDone) const override {
-            if (auto data = wrapped->getData()) {
+            if (auto data = port->getData()) {
                 return data->calculateHistograms(whenDone);
             } else {
-                whenDone({});
+                return {.progress = HistogramCache::Progress::NoData};
             }
         }
 
-        T wrapped;
+        virtual OnChangeHandle onChange(std::function<void()> callback) const override {
+            return {port->onChangeScoped(callback), port->onConnectScoped(callback),
+                    port->onDisconnectScoped(callback)};
+        }
+
+        T* port;
     };
 
-    template <typename T>
-    TFData(T data) : base_{std::make_unique<Implementation<T>>(data)} {}
+    TFData() : base_{nullptr} {}
 
-    TFData(const TFData& rhs) : base_{rhs.base_->clone()} {}
+    template <typename T>
+    TFData(T* data) : base_{data ? std::make_unique<Implementation<T>>(data) : nullptr} {}
+
+    TFData(const TFData& rhs) : base_{rhs.base_ ? rhs.base_->clone() : nullptr} {}
     TFData(TFData&& rhs) noexcept : base_{std::exchange(rhs.base_, nullptr)} {}
     TFData& operator=(const TFData& that) {
         if (this != &that) {
-            base_ = that.base_->clone();
+            base_ = that.base_ ? that.base_->clone() : nullptr;
         }
         return *this;
     }
@@ -96,12 +110,32 @@ public:
         return *this;
     }
 
-    const DataMapper& getDataMap() const { return base_->getDataMap(); }
-
-    DispatcherHandle<HistogramCache::Callback> calculateHistograms(
-        std::function<void(const std::vector<Histogram1D>&)> whenDone) const {
-        return base_->calculateHistograms(whenDone);
+    const DataMapper* getDataMap() const {
+        if (base_) {
+            return base_->getDataMap();
+        } else {
+            return nullptr;
+        }
     }
+
+    HistogramCache::Result calculateHistograms(
+        std::function<void(const std::vector<Histogram1D>&)> whenDone) const {
+        if (base_) {
+            return base_->calculateHistograms(whenDone);
+        } else {
+            return {};
+        }
+    }
+
+    OnChangeHandle onChange(std::function<void()> callback) const {
+        if (base_) {
+            return base_->onChange(callback);
+        } else {
+            return {};
+        }
+    }
+
+    operator bool() const { return base_ != nullptr; }
 
 private:
     std::unique_ptr<Base> base_;

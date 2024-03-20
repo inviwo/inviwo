@@ -76,10 +76,9 @@ namespace inviwo {
 
 TFEditorView::TFEditorView(TFPropertyConcept* tfProperty, QGraphicsScene* scene, QWidget* parent)
     : QGraphicsView(scene, parent)
-    , tfPropertyPtr_{tfProperty}
+    , property_{tfProperty}
     , histogramState_{.mode = tfProperty->getHistogramMode(),
-                      .selection = tfProperty->getHistogramSelection()}
-    , maskHorizontal_{0.0, 1.0} {
+                      .selection = tfProperty->getHistogramSelection()} {
 
     setMouseTracking(true);
     setRenderHint(QPainter::Antialiasing, true);
@@ -87,11 +86,11 @@ TFEditorView::TFEditorView(TFPropertyConcept* tfProperty, QGraphicsScene* scene,
 
     this->setCacheMode(QGraphicsView::CacheBackground);
 
-    tfPropertyPtr_->addObserver(this);
+    property_->addObserver(this);
 
     histogramChangeHandle_ =
-        tfPropertyPtr_->onHistogramChange([this](TFPropertyConcept::HistogramChange change,
-                                                 const std::vector<Histogram1D>& histograms) {
+        property_->onHistogramChange([this](TFPropertyConcept::HistogramChange change,
+                                            const std::vector<Histogram1D>& histograms) {
             histogramState_.change = change;
             histogramState_.histograms = std::move(histograms);
             histogramState_.polygons = HistogramState::createHistogramPolygons(
@@ -102,13 +101,6 @@ TFEditorView::TFEditorView(TFPropertyConcept* tfProperty, QGraphicsScene* scene,
 }
 
 TFEditorView::~TFEditorView() = default;
-
-void TFEditorView::onMaskChange(const dvec2& mask) {
-    if (maskHorizontal_ != mask) {
-        maskHorizontal_ = mask;
-        update();
-    }
-}
 
 void TFEditorView::onZoomHChange(const dvec2&) { updateZoom(); }
 
@@ -148,13 +140,13 @@ void TFEditorView::wheelEvent(QWheelEvent* event) {
         return;
     }
 
-    NetworkLock lock(tfPropertyPtr_->getProperty());
+    NetworkLock lock(property_->getProperty());
 
     if (event->modifiers() == Qt::ControlModifier) {
         // zoom only horizontally relative to wheel event position
         double zoomFactor = std::pow(1.05, std::max(-15.0, std::min(15.0, -delta.y)));
 
-        dvec2 horizontal = tfPropertyPtr_->getZoomH();
+        dvec2 horizontal = property_->getZoomH();
         double zoomExtent = horizontal.y - horizontal.x;
 
         // off-center zooming
@@ -164,7 +156,7 @@ void TFEditorView::wheelEvent(QWheelEvent* event) {
         double lower = zoomCenter + (horizontal.x - zoomCenter) * zoomFactor;
         double upper = zoomCenter + (horizontal.y - zoomCenter) * zoomFactor;
 
-        tfPropertyPtr_->setZoomH(std::max(0.0, lower), std::min(1.0, upper));
+        property_->setZoomH(std::max(0.0, lower), std::min(1.0, upper));
     } else {
         // vertical scrolling (+ optional horizontal if two-axis wheel)
 
@@ -174,8 +166,8 @@ void TFEditorView::wheelEvent(QWheelEvent* event) {
             delta.y = 0.0;
         }
 
-        dvec2 horizontal = tfPropertyPtr_->getZoomH();
-        dvec2 vertical = tfPropertyPtr_->getZoomV();
+        dvec2 horizontal = property_->getZoomH();
+        dvec2 vertical = property_->getZoomV();
         dvec2 extent(horizontal.y - horizontal.x, vertical.y - vertical.x);
         // scale scroll step with current zoom range
         delta *= scrollStep * extent;
@@ -197,8 +189,8 @@ void TFEditorView::wheelEvent(QWheelEvent* event) {
             vertical.x = vertical.y - extent.y;
         }
 
-        tfPropertyPtr_->setZoomH(horizontal.x, horizontal.y);
-        tfPropertyPtr_->setZoomV(vertical.x, vertical.y);
+        property_->setZoomH(horizontal.x, horizontal.y);
+        property_->setZoomV(vertical.x, vertical.y);
     }
 
     event->accept();
@@ -210,6 +202,7 @@ void TFEditorView::resizeEvent(QResizeEvent* event) {
     updateZoom();
 }
 
+/*
 void TFEditorView::drawForeground(QPainter* painter, const QRectF& rect) {
     QPen pen;
     pen.setCosmetic(true);
@@ -237,6 +230,7 @@ void TFEditorView::drawForeground(QPainter* painter, const QRectF& rect) {
 
     QGraphicsView::drawForeground(painter, rect);
 }
+*/
 
 QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D& histogram,
                                                                HistogramMode mode) {
@@ -305,16 +299,17 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
     double gridOrigin = sRect.left();  // horizontal origin of the grid
 
     // adjust grid origin if there is a data mapper available
-    const auto& datamap = tfPropertyPtr_->getDataMap();
-    if ((datamap.valueRange.x < 0.0) && (datamap.valueRange.y > 0.0)) {
-        gridOrigin = datamap.mapFromValueToNormalized(0.0) * sRect.width() + sRect.left();
+    if (const auto* dataMap = property_->getDataMap()) {
+        if ((dataMap->valueRange.x < 0.0) && (dataMap->valueRange.y > 0.0)) {
+            gridOrigin = dataMap->mapFromValueToNormalized(0.0) * sRect.width() + sRect.left();
 
-        // draw line at zero
-        gridPen.setWidthF(3.0f);
-        gridPen.setColor(colorOrigin);
-        painter->setPen(gridPen);
-        painter->drawLine(
-            QLineF(QPointF(gridOrigin, sRect.bottom()), QPointF(gridOrigin, sRect.top())));
+            // draw line at zero
+            gridPen.setWidthF(3.0f);
+            gridPen.setColor(colorOrigin);
+            painter->setPen(gridPen);
+            painter->drawLine(
+                QLineF(QPointF(gridOrigin, sRect.bottom()), QPointF(gridOrigin, sRect.top())));
+        }
     }
 
     QVector<QLineF> lines;
@@ -341,17 +336,58 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
     histogramState_.paintHistograms(painter, sceneRect(), this->rect());
 }
 
+namespace {
+enum class ColorType { Text = 0, Line, Fill };
+
+QColor getColor(size_t channel, size_t nChannels, ColorType type) {
+    static constexpr std::array<QColor, 4> colors{
+        QColor{170, 68, 68, 255},   // Red
+        QColor{68, 170, 85, 255},   // Green
+        QColor{68, 102, 170, 255},  // Blue
+        QColor{170, 68, 154, 255}   // Purple
+    };
+
+    static constexpr std::array<int, 3> alpha{255, 150, 100};
+
+    auto color = colors[nChannels == 1 ? 2 : channel % colors.size()];
+    color.setAlpha(alpha[static_cast<int>(type)]);
+
+    if (type == ColorType::Text) {
+        color = color.lighter();
+    }
+    return color;
+}
+
+QRect textRect(QRect rect, size_t count = 0) {
+    auto newRect = QRect(0, 0, rect.width(), rect.height()).adjusted(20, 10, -20, -10);
+    newRect.adjust(0, 20 * static_cast<int>(count), 0, 0);
+    return newRect;
+}
+
+void setPenAndFont(QPainter* painter, ColorType type, size_t channel = 0, size_t nChannels = 1) {
+    QPen pen;
+    pen.setColor(getColor(channel, nChannels, type));
+    painter->setPen(pen);
+    auto font = painter->font();
+    font.setPointSize(12);
+    painter->setFont(font);
+}
+
+}  // namespace
+
 void TFEditorView::HistogramState::paintHistogram(QPainter* painter, const QPolygonF& histogram,
+                                                  size_t channel, size_t nChannels,
                                                   const QRectF& sceneRect) const {
     utilqt::Save saved{painter};
+
     QPen pen;
-    pen.setColor(QColor(68, 102, 170, 150));
+    pen.setColor(getColor(channel, nChannels, ColorType::Line));
     pen.setWidthF(2.0f);
     pen.setCosmetic(true);
     painter->setPen(pen);
 
     QBrush brush;
-    brush.setColor(QColor(68, 102, 170, 100));
+    brush.setColor(getColor(channel, nChannels, ColorType::Fill));
     brush.setStyle(Qt::SolidPattern);
     painter->setBrush(brush);
 
@@ -359,37 +395,25 @@ void TFEditorView::HistogramState::paintHistogram(QPainter* painter, const QPoly
     painter->drawPolygon(histogram);
 }
 
-void TFEditorView::HistogramState::paintLabel(QPainter* painter, size_t index, size_t count,
-                                              const QRect& rect) const {
+void TFEditorView::HistogramState::paintLabel(QPainter* painter, size_t channel, size_t count,
+                                              size_t nChannels, const QRect& rect) const {
     utilqt::Save saved{painter};
     painter->resetTransform();
-    QPen pen;
-    pen.setColor(QColor(68, 102, 170, 255).lighter());
-    painter->setPen(pen);
-    auto font = painter->font();
-    font.setPointSize(12);
-    painter->setFont(font);
-    painter->drawText(QRect(0, 0, rect.width(), rect.height())
-                          .adjusted(20, 10, -20, -10 - 10 * static_cast<int>(count)),
-                      Qt::AlignRight | Qt::AlignTop,
-                      utilqt::toQString(fmt::format("Channel: {}", index + 1)));
+    setPenAndFont(painter, ColorType::Text, channel, nChannels);
+    painter->drawText(textRect(rect, count), Qt::AlignRight | Qt::AlignTop,
+                      utilqt::toQString(fmt::format("Channel: {}", channel + 1)));
 }
 
 void TFEditorView::HistogramState::paintState(QPainter* painter, const QRect& rect) const {
     utilqt::Save saved{painter};
     painter->resetTransform();
-    QPen pen;
-    pen.setColor(QColor(68, 102, 170, 255).lighter());
-    painter->setPen(pen);
-    auto font = painter->font();
-    font.setPointSize(12);
-    painter->setFont(font);
+    setPenAndFont(painter, ColorType::Text);
     if (change == TFPropertyConcept::HistogramChange::Requested) {
-        painter->drawText(QRect(0, 0, rect.width(), rect.height()).adjusted(20, 10, -20, -10),
-                          Qt::AlignRight | Qt::AlignTop, QString("Calculating histogram..."));
+        painter->drawText(textRect(rect), Qt::AlignRight | Qt::AlignTop,
+                          QString("Calculating histogram..."));
     } else if (change == TFPropertyConcept::HistogramChange::NoData) {
-        painter->drawText(QRect(0, 0, rect.width(), rect.height()).adjusted(20, 10, -20, -10),
-                          Qt::AlignRight | Qt::AlignTop, QString("Histogram not available"));
+        painter->drawText(textRect(rect), Qt::AlignRight | Qt::AlignTop,
+                          QString("Histogram not available"));
     }
 }
 
@@ -399,19 +423,29 @@ void TFEditorView::HistogramState::paintHistograms(QPainter* painter, const QRec
 
     paintState(painter, rect);
 
+    size_t total = 0;
+    for (auto&& [channel, histogram] : util::enumerate(polygons)) {
+        if (!selection[channel]) continue;
+        ++total;
+    }
+
+    for (auto&& [channel, histogram] : util::enumerate(polygons)) {
+        if (!selection[channel]) continue;
+        paintHistogram(painter, histogram, channel, total, sceneRect);
+    }
+
     size_t count = 0;
-    for (auto&& [i, histogram] : util::enumerate(polygons)) {
-        if (!selection[i]) continue;
-        paintLabel(painter, i, count, rect);
-        paintHistogram(painter, histogram, sceneRect);
+    for (auto&& [channel, histogram] : util::enumerate(polygons)) {
+        if (!selection[channel]) continue;
+        paintLabel(painter, channel, count, total, rect);
         ++count;
     }
 }
 
 void TFEditorView::updateZoom() {
     const auto rect = scene()->sceneRect();
-    const auto zh = tfPropertyPtr_->getZoomH();
-    const auto zv = tfPropertyPtr_->getZoomV();
+    const auto zh = property_->getZoomH();
+    const auto zv = property_->getZoomV();
     fitInView(zh.x * rect.width(), zv.x * rect.height(), (zh.y - zh.x) * rect.width(),
               (zv.y - zv.x) * rect.height(), Qt::IgnoreAspectRatio);
 }

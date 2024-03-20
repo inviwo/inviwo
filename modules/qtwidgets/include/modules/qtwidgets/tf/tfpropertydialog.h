@@ -80,14 +80,16 @@ public:
     void updateFromProperty();
     TFEditorView* getEditorView() const;
 
+    virtual Property* getProperty() const override;
+
 protected:
-    virtual void onTFPrimitiveAdded(TFPrimitive& p) override;
-    virtual void onTFPrimitiveRemoved(TFPrimitive& p) override;
-    virtual void onTFPrimitiveChanged(const TFPrimitive& p) override;
-    virtual void onTFTypeChanged(const TFPrimitiveSet& primitiveSet) override;
+    virtual void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) override;
+    virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
+    virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
+    virtual void onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) override;
     void onTFTypeChangedInternal();
 
-    virtual void onMaskChange(const dvec2& mask) override;
     virtual void onZoomHChange(const dvec2& zoomH) override;
     virtual void onZoomVChange(const dvec2& zoomV) override;
 
@@ -105,8 +107,7 @@ protected:
     virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
 
 private:
-    TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model,
-                     std::vector<TFPrimitiveSet*> tfSets);
+    TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model);
 
     void updateTFPreview();
     /**
@@ -115,12 +116,11 @@ private:
      */
     dvec2 getRelativeSceneOffset() const;
 
-    const int sliderRange_;
+    static constexpr int sliderRange_ = 1024;
     static constexpr int verticalSliderRange_ = 1000;
     const int defaultOffset_ = 5;  //!< offset in pixel
 
-    std::unique_ptr<TFPropertyConcept> propertyPtr_;
-    std::vector<TFPrimitiveSet*> tfSets_;
+    std::unique_ptr<TFPropertyConcept> concept_;
 
     std::unique_ptr<ColorWheel> colorWheel_;
     std::unique_ptr<QColorDialog> colorDialog_;
@@ -149,7 +149,7 @@ private:
 
     bool ongoingUpdate_ = false;
     Processor::NameDispatcherHandle onNameChange_;
-    
+
     DispatcherHandle<void()> dataChangeHandle_;
 };
 

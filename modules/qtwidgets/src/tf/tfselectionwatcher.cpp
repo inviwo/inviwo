@@ -46,8 +46,8 @@
 namespace inviwo {
 
 TFSelectionWatcher::TFSelectionWatcher(Property* property,
-                                       const std::vector<TFPrimitiveSet*>& primitiveSets)
-    : property_(property), tfSets_(primitiveSets) {}
+                                       std::span<TFPrimitiveSet*> sets)
+    : property_(property), tfSets_(sets.begin(), sets.end()) {}
 
 void TFSelectionWatcher::setPosition(double pos) {
     NetworkLock lock(property_);

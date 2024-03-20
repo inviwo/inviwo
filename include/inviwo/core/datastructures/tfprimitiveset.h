@@ -52,17 +52,19 @@ class TFPrimitiveSet;
 
 class IVW_CORE_API TFPrimitiveSetObserver : public Observer {
 public:
-    virtual void onTFPrimitiveAdded(TFPrimitive& p);
-    virtual void onTFPrimitiveRemoved(TFPrimitive& p);
-    virtual void onTFPrimitiveChanged(const TFPrimitive& p);
-    virtual void onTFTypeChanged(const TFPrimitiveSet& primitiveSet);
+    virtual void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p);
+    virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p);
+    virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p);
+    virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type);
+    virtual void onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask);
 };
 class IVW_CORE_API TFPrimitiveSetObservable : public Observable<TFPrimitiveSetObserver> {
 protected:
-    void notifyTFPrimitiveAdded(TFPrimitive& p);
-    void notifyTFPrimitiveRemoved(TFPrimitive& p);
-    void notifyTFPrimitiveChanged(const TFPrimitive& p);
-    void notifyTFTypeChanged(const TFPrimitiveSet& primitiveSet);
+    void notifyTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p);
+    void notifyTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p);
+    void notifyTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p);
+    void notifyTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type);
+    void notifyTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask);
 };
 
 /**
@@ -195,6 +197,17 @@ public:
     void add(double pos, const vec4& color);
 
     /**
+     * Add a TFPrimitive at pos and alpha. The color is
+     * interpolated from existing TFPrimitives before and after the given position
+     *
+     * @param pos     position of the TFPrimitive,
+     * @param alpha   alpha value of the TFPrimitive
+     *
+     * @throws RangeException if TF type is relative and pos is outside [0,1]
+     */
+    void add(double pos, double alpha);
+
+    /**
      * Add a TFPrimitive at pos.x where pos.y is used as alpha and the color is
      * interpolated from existing TFPrimitives before and after the given position
      *
@@ -238,21 +251,17 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
     /**
-     * gets called every time when a primitive is added, removed, or changed before notifying
-     * the observers. Can be used to invalidate the internal state of derived classes.
-     */
-    virtual void invalidate() {}
-
-    /**
      * Interpolate the color between all neighboring pairs of TFPrimitives and write the result to
      * dataArray. The range of all TFPrimitives is [0,1] when TF type is relative
      *
      * @param data   write interpolated colors into data
      */
-    void interpolateAndStoreColors(std::span<vec4> data) const;
+    virtual void interpolateAndStoreColors(std::span<vec4> data) const;
 
     friend IVW_CORE_API bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
     friend IVW_CORE_API bool operator!=(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
+
+    bool contains(const TFPrimitive* primitive) const;
 
 protected:
     void add(std::unique_ptr<TFPrimitive> primitive);

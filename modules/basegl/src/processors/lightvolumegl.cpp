@@ -200,9 +200,8 @@ void LightVolumeGL::process() {
     const VolumeGL* inVolumeGL = inport_.getData()->getRepresentation<VolumeGL>();
     inVolumeGL->bindTexture(volUnit.getEnum());
     TextureUnit transFuncUnit;
-    const Layer* tfLayer = transferFunction_.get().getData();
-    const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
-    transferFunctionGL->bindTexture(transFuncUnit.getEnum());
+    const LayerGL* tfLayer = transferFunction_.getRepresentation<LayerGL>();
+    tfLayer->bindTexture(transFuncUnit.getEnum());
 
     TextureUnit lightVolUnit[2];
     glActiveTexture(lightVolUnit[0].getEnum());

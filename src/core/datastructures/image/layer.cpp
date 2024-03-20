@@ -49,7 +49,8 @@ Layer::Layer(size2_t defaultDimensions, const DataFormatBase* defaultFormat, Lay
     , defaultDataFormat_{defaultFormat}
     , defaultSwizzleMask_{defaultSwizzleMask}
     , defaultInterpolation_{interpolation}
-    , defaultWrapping_{wrapping} {}
+    , defaultWrapping_{wrapping}
+    , histograms_{} {}
 
 Layer::Layer(LayerConfig config)
     : Data<Layer, LayerRepresentation>{}
@@ -63,7 +64,8 @@ Layer::Layer(LayerConfig config)
     , defaultDataFormat_{config.format ? config.format : LayerConfig::defaultFormat}
     , defaultSwizzleMask_{config.swizzleMask.value_or(LayerConfig::defaultSwizzleMask)}
     , defaultInterpolation_{config.interpolation.value_or(LayerConfig::defaultInterpolation)}
-    , defaultWrapping_{config.wrapping.value_or(LayerConfig::defaultWrapping)} {}
+    , defaultWrapping_{config.wrapping.value_or(LayerConfig::defaultWrapping)}
+    , histograms_{} {}
 
 Layer::Layer(std::shared_ptr<LayerRepresentation> in)
     : Data<Layer, LayerRepresentation>{}
@@ -75,7 +77,8 @@ Layer::Layer(std::shared_ptr<LayerRepresentation> in)
     , defaultDataFormat_{in->getDataFormat()}
     , defaultSwizzleMask_{in->getSwizzleMask()}
     , defaultInterpolation_{in->getInterpolation()}
-    , defaultWrapping_{in->getWrapping()} {
+    , defaultWrapping_{in->getWrapping()}
+    , histograms_{} {
 
     addRepresentation(in);
 }
@@ -91,7 +94,8 @@ Layer::Layer(const Layer& rhs, NoData, LayerConfig config)
     , defaultDataFormat_{config.format ? config.format : rhs.getDataFormat()}
     , defaultSwizzleMask_{config.swizzleMask.value_or(rhs.getSwizzleMask())}
     , defaultInterpolation_{config.interpolation.value_or(rhs.getInterpolation())}
-    , defaultWrapping_{config.wrapping.value_or(rhs.getWrapping())} {}
+    , defaultWrapping_{config.wrapping.value_or(rhs.getWrapping())}
+    , histograms_{} {}
 
 Layer* Layer::clone() const { return new Layer(*this); }
 
@@ -229,6 +233,26 @@ LayerConfig Layer::config() const {
             .valueRange = dataMap.valueRange,
             .model = getModelMatrix(),
             .world = getWorldMatrix()};
+}
+
+namespace {
+
+auto histCalc(const Layer& v) {
+    return [dataMap = v.dataMap, repr = v.getRepresentationShared<LayerRAM>()]() {
+        return repr->dispatch<std::vector<Histogram1D>>(
+            [&]<typename T>(const LayerRAMPrecision<T>* rp) {
+                return util::calculateHistograms(rp->getView(), dataMap, 2048);
+            });
+    };
+}
+
+}  // namespace
+
+void Layer::discardHistograms() { histograms_.discard(histCalc(*this)); }
+
+HistogramCache::Result Layer::calculateHistograms(
+    std::function<void(const std::vector<Histogram1D>&)> whenDone) const {
+    return histograms_.calculateHistograms(histCalc(*this), std::move(whenDone));
 }
 
 template class IVW_CORE_TMPL_INST DataReaderType<Layer>;

@@ -33,6 +33,7 @@
 
 #include <inviwo/core/util/glmvec.h>    // for vec4, dvec2, vec3
 #include <inviwo/core/util/observer.h>  // for Observable, Observer
+#include <inviwo/core/datastructures/tfprimitive.h>
 
 #include <memory>  // for unique_ptr
 #include <vector>  // for vector
@@ -52,39 +53,20 @@ class QWidget;
 
 namespace inviwo {
 
-class TFPrimitive;
-class TFEditorPrimitive;
-
-class IVW_MODULE_QTWIDGETS_API TFEditorPrimitiveObserver : public Observer {
-public:
-    virtual void onTFPrimitiveDoubleClicked(const TFEditorPrimitive* p);
-};
+class TFControlPointConnection;
 
 class IVW_MODULE_QTWIDGETS_API TFEditorPrimitive : public QGraphicsItem,
-                                                   public Observable<TFEditorPrimitiveObserver> {
+                                                   public TFPrimitiveObserver {
 public:
-    enum ItemType {
-        TFEditorUnknownPrimitiveType = 30,
-        TFEditorControlPointType,
-        TFControlPointConnectionType,
-        TFEditorIsovalueType,
-        NumberOfItems
-    };
-
     /**
      * Constructs a TransferFunction editor primitive. The graphics item is positioned
      * at the primitive location (scalar value and opacity) within the scene.
      * The graphical representation should thus be centered around (0,0) in local
      * coordinates.
      *
-     * @param primitive pointer to the primitive
-     * @param scene    item will be added to this QGraphicsScene
-     * @param position normalized position of primitive
-     * @param alpha    opacity of primitive
-     * @param size     base size of primitive
+     * @param primitive the primitive
      */
-    TFEditorPrimitive(TFPrimitive& primitive, QGraphicsScene* scene = nullptr,
-                      double position = 0.0, float alpha = 0.0f, double size = 14.0);
+    TFEditorPrimitive(TFPrimitive& primitive);
     virtual ~TFEditorPrimitive() = default;
 
     TFPrimitive& getPrimitive();
@@ -98,24 +80,15 @@ public:
     void setAlpha(float alpha);
     const vec4& getColor() const;
 
-    /**
-     * set the position and alpha of the primitive using normalized coordinates within the transfer
-     * function.
-     *
-     * @param pos normalized position [0,1] corresponding to scalar value
-     * @param alpha opacity
-     */
-    void setTFPosition(double pos, float alpha);
-
-    virtual const QPointF& getCurrentPos() const;
-
-    void setSize(double s);
     double getSize() const;
-
-    void setHovered(bool hover);
 
     void beginMouseDrag();
     void stopMouseDrag();
+
+    virtual TFControlPointConnection* left() const { return nullptr; }
+    virtual TFControlPointConnection* right() const { return nullptr; }
+    virtual void setLeft(TFControlPointConnection*) {}
+    virtual void setRight(TFControlPointConnection*) {}
 
     friend IVW_MODULE_QTWIDGETS_API bool operator==(const TFEditorPrimitive& lhs,
                                                     const TFEditorPrimitive& rhs);
@@ -125,63 +98,24 @@ public:
                                                    const TFEditorPrimitive& rhs);
 
 protected:
-    /**
-     * paints the primitive and the label if visible. Pen and brush are set up prior
-     * calling paintPrimitive() reflecting primitive color and selection.
-     */
-    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
-                       QWidget* widget) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
-    /**
-     * draws the primitive. Gets called from within paint()
-     *
-     * @param painter   painter for drawing the object, pen and brush are set up to match
-     *                  primitive color and selection status
-     */
-    virtual void paintPrimitive(QPainter* painter) = 0;
+    virtual int zLevel() const = 0;
 
-    /**
-     * Allows to adjust the position prior updating the graphicsitem position,
-     * e.g. when the movement of a TF point is restricted ("restrict" or "push").
-     * This function is called in itemChange() before calling onItemPositionChange.
-     *
-     * @param pos   candidate for new position (in scene coords)
-     * @return modified position which is used instead of pos
-     */
-    virtual QPointF prepareItemPositionChange(const QPointF& pos) { return pos; }
-
-    /**
-     * gets called in itemChange() after a position change of the item. The position
-     * is already adjusted to lie within the scene bounding box and normalized.
-     *
-     * @param newPos   new, normalized position of the primitive
-     */
-    virtual void onItemPositionChange([[maybe_unused]] const dvec2& newPos) {}
-
-    /**
-     * gets called in itemChange() when a scene change has happend
-     */
-    virtual void onItemSceneHasChanged() {}
-
-    int defaultZValue_ = 10;
-
-    double size_;
-    bool isEditingPoint_;
-    QPointF currentPos_;  //!< position within scene rect (not normalized)
-    bool hovered_;
+    virtual void onTFPrimitiveChange(const TFPrimitive& p) override;
+    
+    QPointF constrainPosToXorY(QPointF pos) const;
 
     TFPrimitive& data_;
+    bool isEditingPoint_;
+    bool hovered_;
 
-private:
-    void updatePosition(const QPointF& pos);
+    void setHovered(bool hover);
     void updateLabel();
 
     std::unique_ptr<QGraphicsSimpleTextItem> tfPrimitiveLabel_;
-
     QPointF cachedPosition_;  //!< used for restricting to horizontal/vertical movement
     bool mouseDrag_;
 };

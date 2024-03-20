@@ -63,6 +63,8 @@ public:
     virtual ~TextEditorDockWidget();
     void updateFromProperty();
 
+    virtual Property* getProperty() const override;
+
 protected:
     virtual void closeEvent(QCloseEvent*) override;
     virtual void onSetDisplayName(Property*, const std::string& displayName) override;
@@ -75,6 +77,7 @@ protected:
     void save();
     void saveToFile(const std::filesystem::path& filename);
 
+    Property* property_;
     FileProperty* fileProperty_;
     StringProperty* stringProperty_;
     CodeEdit* editor_;

@@ -64,21 +64,18 @@ namespace {
 
 std::unique_ptr<Layer> toUint8Layer(const TransferFunction* tf) {
 
-    // src is vec4
-    auto src = tf->getRamRepresentation();
+    std::vector<vec4> data(2048);
+    tf->interpolateAndStoreColors(data);
 
-    // Convert layer to UINT8
-    auto dst = std::make_shared<LayerRAMPrecision<glm::u8vec4>>(src->getDimensions());
+    // Convert to UINT8
+    auto dst = std::make_shared<LayerRAMPrecision<glm::u8vec4>>(size2_t{data.size(), 1});
     auto layer = std::make_unique<Layer>(dst);
-
-    const auto size = glm::compMul(src->getDimensions());
-    const auto sptr = src->getDataTyped();
-    const auto dptr = dst->getDataTyped();
-
-    for (size_t i = 0; i < size; ++i) {
-        dptr[i] = static_cast<glm::u8vec4>(glm::clamp(sptr[i] * 255.0f, vec4(0.0f), vec4(255.0f)));
+    
+    const auto dstView = dst->getView();
+    for (size_t i = 0; i < data.size(); ++i) {
+        dstView[i] =
+            static_cast<glm::u8vec4>(glm::clamp(data[i] * 255.0f, vec4(0.0f), vec4(255.0f)));
     }
-
     return layer;
 }
 
