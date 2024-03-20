@@ -11,6 +11,8 @@ Checks: >
   -modernize-use-trailing-return-type,
   -readability-redundant-member-init,
   -readability-identifier-length,
+  -readability-duplicate-include,
+  -bugprone-implicit-widening-of-multiplication-result,
 
 CheckOptions: 
   readability-braces-around-statements.ShortStatementLines: '1'
@@ -18,6 +20,7 @@ CheckOptions:
   readability-identifier-length.MinimumLoopCounterNameLength: '1'
   readability-identifier-length.IgnoredVariableNames: '^(it|id)$'
   readability-identifier-length.IgnoredParameterNames: '^(it|id)$'
+  readability-implicit-bool-conversion.AllowPointerConditions: true
 
 FormatStyle: file
 WarningsAsErrors: ''

@@ -2,6 +2,9 @@ name: "Build Inviwo"
 
 on: 
   push:
+    branches:    
+      - master
+  pull_request:
   workflow_dispatch:
     inputs:
       debug_enabled:
@@ -166,10 +169,9 @@ jobs:
     - name: "Brew Install"
       shell: bash
       if: runner.os == 'macOS'
-      # xcode 14.3 is currently default.
       run: |
         brew install ninja pkg-config nasm
-        sudo xcode-select --switch /Applications/Xcode_15.0.app/Contents/Developer
+        sudo xcode-select --switch /Applications/Xcode_15.2.app/Contents/Developer
 
     - name: "Apt Install, switch to gcc-13"
       shell: bash
@@ -350,7 +352,7 @@ jobs:
       shell: bash
       run: >
         cmake --build build --config Release --parallel --target all
-
+        
     - name: "Run"
       shell: bash
       working-directory: "build/bin"
@@ -363,6 +365,96 @@ jobs:
       with:
         limit-access-to-actor: true
 
+  clang-tidy:
+    name: "Clang-tidy"
+    permissions:
+      pull-requests: write
+    env:
+      LLVM_VERSION: 17
+    runs-on: ubuntu-22.04
+    timeout-minutes: 320
+    steps:
+    - name: "Apt Install"
+      shell: bash
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt install --fix-missing libgl-dev libglew-dev libglu1-mesa-dev \
+          libxcursor-dev libxi-dev libxinerama-dev libxinerama-dev \
+          libxmu-dev nasm ninja-build pkg-config xorg-dev
+
+    - name: "Install Qt"
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: 6.6.0
+        dir: ${{ github.workspace }}
+
+    - name: Install LLVM and Clang
+      uses: KyleMayes/install-llvm-action@v1
+      with:
+        version: ${{ env.LLVM_VERSION }}
+        env: true
+           
+    - name: "Setup Python"
+      uses: actions/setup-python@v5
+      with:
+        python-version: '>=3.10'
+        architecture: 'x64'
+    
+    - name: "Install Python Modules" 
+      shell: bash
+      run: pip3 install numpy
+
+    - name: "VCPKG Update"
+      shell: bash
+      run: |
+        echo $VCPKG_INSTALLATION_ROOT
+        cd $VCPKG_INSTALLATION_ROOT
+        git reset --hard
+        git pull
+    
+    - name: "VCPKG Cache config"
+      uses: actions/github-script@v7
+      with:
+        script: |
+          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+    - name: "Clone Inviwo"
+      uses: actions/checkout@v4
+      with: 
+        path: inviwo
+        submodules: recursive
+        
+    - name: "Configure CMake"
+      shell: bash
+      run: >
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ninja-developer
+        --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+        -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+        -DVCPKG_TARGET_TRIPLET=x64-linux-dynamic
+        -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
+        -DBUILD_SHARED_LIBS=ON
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        -DIVW_MODULE_EIGENUTILS=ON
+        -DIVW_MODULE_HDF5=ON
+
+    - uses: cpp-linter/cpp-linter-action@v2.10.0
+      id: linter
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        repo-root: inviwo
+        database: ../build
+        style: 'file'
+        tidy-checks: ''
+        version: ${{ env.LLVM_VERSION }}
+        tidy-review: true
+        format-review: true
+        step-summary: true
+        no-lgtm: false
+        verbosity: debug  
 
   test-installer:
     name: "Test Installer"
@@ -466,7 +558,7 @@ jobs:
   update-api-docs:
     name: "Publish updated API Docs"
     if: github.ref == 'refs/heads/master'
-    needs: [build, test-installer, build-linux-apt]
+    needs: [build, test-installer, build-linux-apt, clang-tidy]
     runs-on: windows-latest
     steps:
       - name: "Clone Inviwo"
@@ -509,7 +601,7 @@ jobs:
   update-latest-release:
     name: "Update latest release"
     if: github.ref == 'refs/heads/master'
-    needs: [build, test-installer, build-linux-apt]
+    needs: [build, test-installer, build-linux-apt, clang-tidy]
     strategy:
       matrix:
         os: [windows-latest] # macos-latest,
