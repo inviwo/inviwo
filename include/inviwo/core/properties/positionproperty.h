@@ -71,14 +71,14 @@ public:
                      InvalidationLevel = InvalidationLevel::InvalidResources,
                      PropertySemantics semantics = PropertySemantics::Default);
     PositionProperty(const PositionProperty& rhs);
-    virtual PositionProperty* clone() const override;
+    [[nodiscard]] virtual PositionProperty* clone() const override;
 
     /**
      * Get the current position in the given coordinate space \p space.
      * @param space    coordinate system of the returned position
      * @return position in \p space
      */
-    vec3 get(CoordinateSpace space = CoordinateSpace::World) const;
+    [[nodiscard]] vec3 get(CoordinateSpace space = CoordinateSpace::World) const;
 
     using CompositeProperty::set;  // Enable calling CompositeProperty::set(...) functions even
                                    // though overriding with set(const vec3& value)
@@ -98,7 +98,7 @@ public:
      */
     void updatePosition(const vec3& pos, CoordinateSpace sourceSpace);
 
-    CoordinateSpace getCoordinateSpace() const;
+    [[nodiscard]] CoordinateSpace getCoordinateSpace() const;
 
     /**
      * Determines the direction between origin and position in the current coordinate space and
@@ -106,7 +106,7 @@ public:
      * position itself.
      * @return directional vector in world coordinates
      */
-    vec3 getWorldSpaceDirection() const;
+    [[nodiscard]] vec3 getWorldSpaceDirection() const;
 
     /**
      * Set the property semantics of the position property to \p semantics
@@ -116,8 +116,8 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    vec3 convertFromWorld(const vec3& pos, CoordinateSpace targetSpace) const;
-    vec3 convertToWorld(const vec3& pos, CoordinateSpace sourceSpace) const;
+    [[nodiscard]] vec3 convertFromWorld(const vec3& pos, CoordinateSpace targetSpace) const;
+    [[nodiscard]] vec3 convertToWorld(const vec3& pos, CoordinateSpace sourceSpace) const;
     void invalidateOutputProperties();
     void referenceSpaceChanged();
 

@@ -91,7 +91,7 @@ struct OrdinalRefPropertyState {
         return *this;
     }
     auto set(Document newHelp) -> OrdinalRefPropertyState {
-        help = newHelp;
+        help = std::move(newHelp);
         return *this;
     }
     auto set(ReadOnly newReadOnly) -> OrdinalRefPropertyState& {
