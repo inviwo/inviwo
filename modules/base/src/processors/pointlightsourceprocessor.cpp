@@ -147,9 +147,7 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     });
 }
 
-PointLightSourceProcessor::~PointLightSourceProcessor() {
-    removeInteractionHandler(&lightInteractionHandler_);
-}
+PointLightSourceProcessor::~PointLightSourceProcessor() = default;
 
 void PointLightSourceProcessor::process() {
     updatePointLightSource(lightSource_.get());
