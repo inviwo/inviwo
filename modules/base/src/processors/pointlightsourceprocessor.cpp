@@ -202,15 +202,13 @@ PointLightInteractionHandler::PointLightInteractionHandler(PositionProperty* pl,
     camera_->onChange([this]() { onCameraChanged(); });
 }
 
-PointLightInteractionHandler::~PointLightInteractionHandler() {}
+PointLightInteractionHandler::~PointLightInteractionHandler() = default;
 
-void PointLightInteractionHandler::serialize(Serializer&) const {}
+vec3 PointLightInteractionHandler::getLookTo() const { return lookTo_; }
 
-void PointLightInteractionHandler::deserialize(Deserializer&) {}
+vec3 PointLightInteractionHandler::getLookFrom() const { return lightPosition_->get(); }
 
-const vec3& PointLightInteractionHandler::getLookFrom() const { return lightPosition_->get(); }
-
-const vec3& PointLightInteractionHandler::getLookUp() const { return lookUp_; }
+vec3 PointLightInteractionHandler::getLookUp() const { return lookUp_; }
 
 PointLightInteractionHandler& PointLightInteractionHandler::setLookTo(vec3 lookTo) {
     lookTo_ = lookTo;
@@ -335,8 +333,6 @@ void PointLightInteractionHandler::onCameraChanged() {
     // of the camera
     setLookUp(camera_->getLookUp());
 }
-
-const vec3& PointLightInteractionHandler::getLookTo() const { return lookTo_; }
 
 PointLightTrackball::PointLightTrackball(PointLightInteractionHandler* p) : Trackball(p) {}
 
