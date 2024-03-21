@@ -443,11 +443,11 @@ void CameraProperty::deserialize(Deserializer& d) {
     CompositeProperty::deserialize(d);
 }
 
-const vec3& CameraProperty::getLookFrom() const { return camera_->getLookFrom(); }
+vec3 CameraProperty::getLookFrom() const { return camera_->getLookFrom(); }
 
-const vec3& CameraProperty::getLookTo() const { return camera_->getLookTo(); }
+vec3 CameraProperty::getLookTo() const { return camera_->getLookTo(); }
 
-const vec3& CameraProperty::getLookUp() const { return camera_->getLookUp(); }
+vec3 CameraProperty::getLookUp() const { return camera_->getLookUp(); }
 
 vec3 CameraProperty::getLookRight() const {
     return glm::cross(glm::normalize(camera_->getDirection()), camera_->getLookUp());

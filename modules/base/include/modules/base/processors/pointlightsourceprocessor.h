@@ -106,9 +106,9 @@ public:
     void onCameraChanged();
 
     // Necessary for trackball
-    virtual const vec3& getLookTo() const override;
-    virtual const vec3& getLookFrom() const override;
-    virtual const vec3& getLookUp() const override;
+    virtual vec3 getLookTo() const override;
+    virtual vec3 getLookFrom() const override;
+    virtual vec3 getLookUp() const override;
 
     virtual PointLightInteractionHandler& setLookTo(vec3 lookTo) override;
     virtual PointLightInteractionHandler& setLookFrom(vec3 lookFrom) override;
@@ -130,9 +130,6 @@ public:
     virtual vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const override;
     virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
         const vec2& normalizedScreenCoord) const override;
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
 
 private:
     PositionProperty* lightPosition_;

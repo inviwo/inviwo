@@ -40,9 +40,9 @@ namespace inviwo {
 class IVW_CORE_API TrackballObject {
 public:
     virtual ~TrackballObject() = default;
-    virtual const vec3& getLookTo() const = 0;
-    virtual const vec3& getLookFrom() const = 0;
-    virtual const vec3& getLookUp() const = 0;
+    virtual vec3 getLookTo() const = 0;
+    virtual vec3 getLookFrom() const = 0;
+    virtual vec3 getLookUp() const = 0;
 
     virtual TrackballObject& setLookTo(vec3 lookTo) = 0;
     virtual TrackballObject& setLookFrom(vec3 lookFrom) = 0;
