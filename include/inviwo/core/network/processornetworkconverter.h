@@ -68,6 +68,7 @@ private:
     void updateCameraPropertyToRefs(TxElement* node);
     void updateLinkAndConnections(TxElement* node);
     void updateFileMode(TxElement* node);
+    void updatePositionProperties(TxElement* node);
 
     void traverseNodes(TxElement* node, updateType update);
 

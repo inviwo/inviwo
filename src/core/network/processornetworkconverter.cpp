@@ -102,7 +102,10 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             [[fallthrough]];
         case 19:
             updateFileMode(root);
-            return true;  // Changes has been made.
+            [[fallthrough]];
+        case 20:
+            updatePositionProperties(root);
+            return true;  // Changes have been made.
         default:
             return false;  // No changes
     }
@@ -865,6 +868,15 @@ void ProcessorNetworkConverter::updateFileMode(TxElement* node) {
     xml::visitMatchingNodesRecursive(
         node, {{"Property", {}}, {"fileMode", {{"content", "4"}}}},
         [](TxElement* matchingNode) { matchingNode->SetAttribute("content", "2"); });
+}
+
+void ProcessorNetworkConverter::updatePositionProperties(TxElement* node) {
+    xml::visitMatchingNodesRecursive(
+        node, {{"Property", {}}, {"referenceFrame", {{"content", "0"}}}},
+        [](TxElement* matchingNode) { matchingNode->SetAttribute("content", "2"); });
+    xml::visitMatchingNodesRecursive(
+        node, {{"Property", {}}, {"referenceFrame", {{"content", "1"}}}},
+        [](TxElement* matchingNode) { matchingNode->SetAttribute("content", "5"); });
 }
 
 }  // namespace inviwo
