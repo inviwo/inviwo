@@ -95,10 +95,8 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     , outport_("PointLightSource")
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), nullptr, InvalidationLevel::Valid)
-    , lightPosition_("lightPosition", "Light Source Position",
-                     FloatVec3Property("position", "Position", vec3(-2.f, -50.f, 90.f),
-                                       vec3(-100.f), vec3(100.f)),
-                     &camera_)
+    , lightPosition_("lightPosition", "Light Source Position", vec3(-2.f, -50.f, 90.f),
+                     CoordinateSpace::World, &camera_)
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightSize_("lightSize", "Light radius", 1.5f, 0.0f, 3.0f)
@@ -109,22 +107,22 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     , interactionEvents_("interactionEvents", "Interaction Events")
     , lightInteractionHandler_(&lightPosition_, &camera_, &lightScreenPosEnabled_, &lightScreenPos_)
     , lightSource_(std::make_shared<PointLight>()) {
+
     addPort(outport_);
-    addProperty(lightPosition_);
-    lighting_.addProperty(lightDiffuse_);
-    lighting_.addProperty(lightPowerProp_);
-    lighting_.addProperty(lightSize_);
-    lighting_.addProperty(lightEnabled_);
-    lighting_.addProperty(lightScreenPosEnabled_);
-    lighting_.addProperty(lightScreenPos_);
-    addProperty(lighting_);
+
+    lighting_.addProperties(lightDiffuse_, lightPowerProp_, lightSize_, lightEnabled_,
+                            lightScreenPosEnabled_, lightScreenPos_);
+
+    addProperties(lightPosition_, lighting_, camera_, interactionEvents_);
 
     lightScreenPos_.setVisible(false);
     lightScreenPosEnabled_.onChange(
         [this]() { lightScreenPos_.setVisible(lightScreenPosEnabled_.get()); });
 
-    addProperty(camera_);
     camera_.setVisible(false);
+
+    lightPosition_.setPositionSemantics(PropertySemantics::LightPosition);
+    lightPosition_.setCurrentStateAsDefault();
 
     lightDiffuse_.setSemantics(PropertySemantics::Color);
     lightDiffuse_.setCurrentStateAsDefault();
@@ -138,7 +136,6 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     interactionEvents_.addOption("onlyscreencorrds", "Handle Light Pos From Screen Coords Only", 3);
     interactionEvents_.setSelectedValue(0);
     interactionEvents_.setCurrentStateAsDefault();
-    addProperty(interactionEvents_);
 
     interactionEvents_.onChange([this]() {
         if (interactionEvents_.get() > 0) {
@@ -160,21 +157,9 @@ void PointLightSourceProcessor::process() {
 }
 
 void PointLightSourceProcessor::updatePointLightSource(PointLight* lightSource) {
-    vec3 lightPos = lightPosition_.get();
-    vec3 dir;
-    switch (
-        static_cast<PositionProperty::Space>(lightPosition_.referenceFrame_.getSelectedValue())) {
-        case PositionProperty::Space::VIEW: {
-            dir = glm::normalize(camera_.getLookTo() - lightPos);
-            break;
-        }
-        case PositionProperty::Space::WORLD:
-            [[fallthrough]];
-        default: {
-            dir = glm::normalize(vec3(0.f) - lightPos);
-            break;
-        }
-    }
+    const vec3 lightPos = lightPosition_.get(CoordinateSpace::World);
+    const vec3 dir = -glm::normalize(lightPosition_.getWorldSpaceDirection());
+
     mat4 transformationMatrix = getLightTransformationMatrix(lightPos, dir);
     // Offset by 0.5 to get to texture coordinates
     lightSource->setModelMatrix(glm::translate(vec3(0.5f)));
@@ -216,7 +201,7 @@ PointLightInteractionHandler& PointLightInteractionHandler::setLookTo(vec3 lookT
 }
 
 PointLightInteractionHandler& PointLightInteractionHandler::setLookFrom(vec3 lookFrom) {
-    lightPosition_->set(lookFrom);
+    lightPosition_->updatePosition(lookFrom, CoordinateSpace::World);
     return *this;
 }
 
@@ -225,25 +210,25 @@ PointLightInteractionHandler& PointLightInteractionHandler::setLookUp(vec3 lookU
     return *this;
 }
 
-inviwo::vec3 PointLightInteractionHandler::getLookFromMinValue() const {
-    return lightPosition_->position_.getMinValue();
+vec3 PointLightInteractionHandler::getLookFromMinValue() const {
+    return camera_->lookFrom_.getMinValue();
 }
 
-inviwo::vec3 PointLightInteractionHandler::getLookFromMaxValue() const {
-    return lightPosition_->position_.getMaxValue();
+vec3 PointLightInteractionHandler::getLookFromMaxValue() const {
+    return camera_->lookFrom_.getMaxValue();
 }
 
-inviwo::vec3 PointLightInteractionHandler::getLookToMinValue() const {
-    return vec3(-std::numeric_limits<float>::max());
+vec3 PointLightInteractionHandler::getLookToMinValue() const {
+    return camera_->lookTo_.getMinValue();
 }
 
-inviwo::vec3 PointLightInteractionHandler::getLookToMaxValue() const {
-    return vec3(std::numeric_limits<float>::max());
+vec3 PointLightInteractionHandler::getLookToMaxValue() const {
+    return camera_->lookTo_.getMaxValue();
 }
 
 PointLightInteractionHandler& PointLightInteractionHandler::setLook(vec3 lookFrom, vec3 lookTo,
                                                                     vec3 lookUp) {
-    lightPosition_->set(lookFrom);
+    lightPosition_->updatePosition(lookFrom, CoordinateSpace::World);
     lookTo_ = lookTo;
     lookUp_ = lookUp;
     return *this;
@@ -314,14 +299,17 @@ void PointLightInteractionHandler::setLightPosFromScreenCoords(const vec2& norma
     auto res = raySphereIntersection(vec3(0.f), sceneRadius, rayOrigin, rayDir, 0.0f,
                                      std::numeric_limits<float>::max());
     if (res.first) {
-        lightPosition_->set(glm::normalize(rayOrigin + res.second * rayDir) * lightRadius);
+        lightPosition_->updatePosition(
+            glm::normalize(rayOrigin + res.second * rayDir) * lightRadius, CoordinateSpace::World);
     } else {
         auto res2 = rayPlaneIntersection(
             camera_->getLookTo(), glm::normalize(camera_->getLookTo() - camera_->getLookFrom()),
             rayOrigin, rayDir, 0.0f, std::numeric_limits<float>::max());
         if (res2.first) {
             // Project it to the edge of the sphere
-            lightPosition_->set(glm::normalize(rayOrigin + res2.second * rayDir) * lightRadius);
+            lightPosition_->updatePosition(
+                glm::normalize(rayOrigin + res2.second * rayDir) * lightRadius,
+                CoordinateSpace::World);
         }
     }
     // Ensure that up vector is same as camera afterwards
