@@ -95,11 +95,11 @@ public:
     CameraProperty& setCamera(const std::string& cameraIdentifier);
     CameraProperty& setCamera(std::unique_ptr<Camera> camera);
 
-    virtual const vec3& getLookFrom() const override;
+    virtual vec3 getLookFrom() const override;
     virtual CameraProperty& setLookFrom(vec3 lookFrom) override;
-    virtual const vec3& getLookTo() const override;
+    virtual vec3 getLookTo() const override;
     virtual CameraProperty& setLookTo(vec3 lookTo) override;
-    virtual const vec3& getLookUp() const override;
+    virtual vec3 getLookUp() const override;
     virtual CameraProperty& setLookUp(vec3 lookUp) override;
 
     vec3 getLookRight() const;

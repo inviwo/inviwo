@@ -60,6 +60,7 @@ struct OrdinalRefPropertyState {
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput;
     PropertySemantics semantics = defaultSemantics();
     Document help = {};
+    ReadOnly readOnly = ReadOnly::No;
 
     auto setMin(T newMin) -> OrdinalRefPropertyState {
         min = newMin;
@@ -90,7 +91,11 @@ struct OrdinalRefPropertyState {
         return *this;
     }
     auto set(Document newHelp) -> OrdinalRefPropertyState {
-        help = newHelp;
+        help = std::move(newHelp);
+        return *this;
+    }
+    auto set(ReadOnly newReadOnly) -> OrdinalRefPropertyState& {
+        readOnly = newReadOnly;
         return *this;
     }
 
@@ -105,8 +110,8 @@ struct OrdinalRefPropertyState {
 
 /**
  * \ingroup properties
- * A property representing a reference to an Ordinal value, for example a int, float, or vec3.
- * The property does not hold or own the value it self. It only contain a set and get callback
+ * A property representing a reference to an ordinal value, for example a int, float, or vec3.
+ * The property does not hold or own the value itself. It only contains a set and get callback
  * function. It does handle min/max/increment for the value.
  */
 template <typename T>
@@ -124,7 +129,8 @@ public:
                                                                      ConstraintBehavior::Editable},
         const T& increment = Defaultvalues<T>::getInc(),
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = OrdinalRefPropertyState<T>::defaultSemantics());
+        PropertySemantics semantics = OrdinalRefPropertyState<T>::defaultSemantics(),
+        ReadOnly readOnly = ReadOnly::No);
 
     OrdinalRefProperty(
         std::string_view identifier, std::string_view displayName, std::function<T()> get,
@@ -135,10 +141,11 @@ public:
                                                                      ConstraintBehavior::Editable},
         const T& increment = Defaultvalues<T>::getInc(),
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = OrdinalRefPropertyState<T>::defaultSemantics());
+        PropertySemantics semantics = OrdinalRefPropertyState<T>::defaultSemantics(),
+        ReadOnly readOnly = ReadOnly::No);
 
     OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
-                       std::function<const T&()> get, std::function<void(const T&)> set,
+                       std::function<T()> get, std::function<void(const T&)> set,
                        OrdinalRefPropertyState<T> state);
 
     OrdinalRefProperty(const OrdinalRefProperty<T>& rhs);
@@ -274,6 +281,45 @@ namespace util {
  */
 IVW_CORE_API OrdinalRefPropertyState<vec4> ordinalRefColor(
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
+
+/**
+ * A factory function for configuring a OrdinalRefProperty representing a generic vector, with a
+ * symmetric range around zero, and Ignored boundary constraints. The invalidation level defaults to
+ * InvalidOutput, and the property semantics to SpinBox.
+ * @param value the default value for the property
+ * @param minMax used to construct the range of the property like min = T{-minMax}, max = T{minMax}.
+ * The constraint behavior will be Ignore.
+ */
+template <typename T = double, typename U = T>
+OrdinalRefPropertyState<T> ordinalRefSymmetricVector(const U& minMax = U{100}) {
+    using V = util::value_type_t<T>;
+    if constexpr (std::is_floating_point_v<util::value_type_t<T>>) {
+        return {T{-minMax},
+                ConstraintBehavior::Ignore,
+                T{minMax},
+                ConstraintBehavior::Ignore,
+                T{static_cast<V>(0.1)},
+                InvalidationLevel::InvalidOutput,
+                PropertySemantics::SpinBox};
+    } else if constexpr (std::is_signed_v<util::value_type_t<T>>) {
+        return {T{-minMax},
+                ConstraintBehavior::Ignore,
+                T{minMax},
+                ConstraintBehavior::Ignore,
+                T{static_cast<V>(1)},
+                InvalidationLevel::InvalidOutput,
+                PropertySemantics::SpinBox};
+    } else {
+        return {T{static_cast<V>(0)},
+                ConstraintBehavior::Ignore,
+                T{minMax},
+                ConstraintBehavior::Ignore,
+                T{static_cast<V>(1)},
+                InvalidationLevel::InvalidOutput,
+                PropertySemantics::SpinBox};
+    }
+}
+
 }  // namespace util
 
 using FloatRefProperty = OrdinalRefProperty<float>;
@@ -317,8 +363,8 @@ OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::stri
                                           const std::pair<T, ConstraintBehavior>& minValue,
                                           const std::pair<T, ConstraintBehavior>& maxValue,
                                           const T& increment, InvalidationLevel invalidationLevel,
-                                          PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
+                                          PropertySemantics semantics, ReadOnly readOnly)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics, readOnly)
     , get_{std::move(get)}
     , set_{std::move(set)}
     , fallbackValue_{}
@@ -357,14 +403,14 @@ OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::stri
                                           const std::pair<T, ConstraintBehavior>& minValue,
                                           const std::pair<T, ConstraintBehavior>& maxValue,
                                           const T& increment, InvalidationLevel invalidationLevel,
-                                          PropertySemantics semantics)
-    : OrdinalRefProperty{identifier, displayName, {},        std::move(get),    std::move(set),
-                         minValue,   maxValue,    increment, invalidationLevel, semantics} {}
+                                          PropertySemantics semantics, ReadOnly readOnly)
+    : OrdinalRefProperty{identifier,        displayName, {},       std::move(get),
+                         std::move(set),    minValue,    maxValue, increment,
+                         invalidationLevel, semantics,   readOnly} {}
 
 template <typename T>
 OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
-                                          std::function<const T&()> get,
-                                          std::function<void(const T&)> set,
+                                          std::function<T()> get, std::function<void(const T&)> set,
                                           OrdinalRefPropertyState<T> state)
     : OrdinalRefProperty{identifier,
                          displayName,
@@ -375,7 +421,8 @@ OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::stri
                          std::pair{state.max, state.maxConstraint},
                          state.increment,
                          state.invalidationLevel,
-                         state.semantics} {}
+                         state.semantics,
+                         state.readOnly} {}
 
 template <typename T>
 OrdinalRefProperty<T>::OrdinalRefProperty(const OrdinalRefProperty<T>& rhs)

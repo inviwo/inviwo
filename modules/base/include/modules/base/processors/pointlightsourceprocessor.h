@@ -106,33 +106,31 @@ public:
     void onCameraChanged();
 
     // Necessary for trackball
-    virtual const vec3& getLookTo() const override;
-    virtual const vec3& getLookFrom() const override;
-    virtual const vec3& getLookUp() const override;
+    [[nodiscard]] virtual vec3 getLookTo() const override;
+    [[nodiscard]] virtual vec3 getLookFrom() const override;
+    [[nodiscard]] virtual vec3 getLookUp() const override;
 
     virtual PointLightInteractionHandler& setLookTo(vec3 lookTo) override;
     virtual PointLightInteractionHandler& setLookFrom(vec3 lookFrom) override;
     virtual PointLightInteractionHandler& setLookUp(vec3 lookUp) override;
 
-    virtual vec3 getLookFromMinValue() const override;
-    virtual vec3 getLookFromMaxValue() const override;
+    [[nodiscard]] virtual vec3 getLookFromMinValue() const override;
+    [[nodiscard]] virtual vec3 getLookFromMaxValue() const override;
 
-    virtual vec3 getLookToMinValue() const override;
-    virtual vec3 getLookToMaxValue() const override;
+    [[nodiscard]] virtual vec3 getLookToMinValue() const override;
+    [[nodiscard]] virtual vec3 getLookToMaxValue() const override;
 
     virtual PointLightInteractionHandler& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;
 
-    virtual float getNearPlaneDist() const override;
-    virtual float getFarPlaneDist() const override;
+    [[nodiscard]] virtual float getNearPlaneDist() const override;
+    [[nodiscard]] virtual float getFarPlaneDist() const override;
 
     virtual void zoom(float factor, Bounded bounded) override;
 
-    virtual vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const override;
-    virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+    [[nodiscard]] virtual vec3 getWorldPosFromNormalizedDeviceCoords(
+        const vec3& ndcCoords) const override;
+    [[nodiscard]] virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
         const vec2& normalizedScreenCoord) const override;
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
 
 private:
     PositionProperty* lightPosition_;

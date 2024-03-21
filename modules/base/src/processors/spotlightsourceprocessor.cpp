@@ -73,10 +73,8 @@ SpotLightSourceProcessor::SpotLightSourceProcessor()
     , outport_("SpotLightSource")
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), nullptr, InvalidationLevel::Valid)
-    , lightPosition_(
-          "lightPosition", "Light Source Position",
-          FloatVec3Property("position", "Position", vec3(100.f), vec3(-100.f), vec3(100.f)),
-          &camera_)
+    , lightPosition_("lightPosition", "Light Source Position", vec3(100.f), CoordinateSpace::World,
+                     &camera_)
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightSize_("lightSize", "Light size", vec2(1.5f, 1.5f), vec2(0.0f, 0.0f), vec2(3.0f, 3.0f))
@@ -87,14 +85,13 @@ SpotLightSourceProcessor::SpotLightSourceProcessor()
 
     addPort(outport_);
 
-    addProperty(lightPosition_);
-    lighting_.addProperty(lightConeRadiusAngle_);
-    lighting_.addProperty(lightFallOffAngle_);
-    lighting_.addProperty(lightDiffuse_);
-    lighting_.addProperty(lightPowerProp_);
-    lighting_.addProperty(lightSize_);
-    addProperty(lighting_);
-    addProperty(camera_);
+    lighting_.addProperties(lightConeRadiusAngle_, lightFallOffAngle_, lightDiffuse_,
+                            lightPowerProp_, lightSize_);
+
+    addProperties(lightPosition_, lighting_, camera_);
+
+    lightPosition_.setPositionSemantics(PropertySemantics::LightPosition);
+    lightPosition_.setCurrentStateAsDefault();
 
     lightDiffuse_.setSemantics(PropertySemantics::Color);
     lightDiffuse_.setCurrentStateAsDefault();
@@ -106,21 +103,9 @@ void SpotLightSourceProcessor::process() {
 }
 
 void SpotLightSourceProcessor::updateSpotLightSource(SpotLight* lightSource) {
-    vec3 lightPos = lightPosition_.get();
-    vec3 dir;
-    switch (
-        static_cast<PositionProperty::Space>(lightPosition_.referenceFrame_.getSelectedValue())) {
-        case PositionProperty::Space::VIEW: {
-            dir = glm::normalize(camera_.getLookTo() - lightPos);
-            break;
-        }
-        case PositionProperty::Space::WORLD:
-            [[fallthrough]];
-        default: {
-            dir = glm::normalize(vec3(0.f) - lightPos);
-            break;
-        }
-    }
+    const vec3 lightPos = lightPosition_.get(CoordinateSpace::World);
+    const vec3 dir = -glm::normalize(lightPosition_.getWorldSpaceDirection());
+
     mat4 transformationMatrix = getLightTransformationMatrix(lightPos, dir);
     // Offset by 0.5 to get to texture coordinates
     lightSource->setModelMatrix(glm::translate(vec3(0.5f)));
