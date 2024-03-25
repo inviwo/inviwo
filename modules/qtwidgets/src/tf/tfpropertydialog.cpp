@@ -110,6 +110,7 @@ TFPropertyDialog::TFPropertyDialog(IsoTFProperty* property)
 
 TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     : PropertyEditorWidgetQt(model->getProperty(), "Transfer Function Editor", "TFEditorWidget")
+    , preview_{new QLabel()}
     , concept_(std::move(model)) {
 
     if (auto titlebar = dynamic_cast<InviwoDockWidgetTitleBar*>(titleBarWidget())) {
@@ -135,34 +136,37 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
         }
     }
 
+    preview_ = new QLabel();
+    preview_->setMinimumSize(1, 20);
+    QSizePolicy sliderPol = preview_->sizePolicy();
+    sliderPol.setHorizontalStretch(3);
+    preview_->setSizePolicy(sliderPol);
+
     concept_->addObserver(this);
     for (auto* set : concept_->sets()) {
         set->addObserver(this);
     }
 
-    tfEditor_ = std::make_unique<TFEditor>(concept_.get(), this);
+    editor_ = std::make_unique<TFEditor>(concept_.get(), this);
     tfSelectionWatcher_ =
         std::make_unique<TFSelectionWatcher>(concept_->getProperty(), concept_->sets());
 
-    connect(tfEditor_.get(), &TFEditor::selectionChanged, this,
-            [this]() { tfSelectionWatcher_->updateSelection(tfEditor_->getSelectedPrimitives()); });
+    connect(editor_.get(), &TFEditor::selectionChanged, this,
+            [this]() { tfSelectionWatcher_->updateSelection(editor_->getSelectedPrimitives()); });
 
-    connect(tfEditor_.get(), &TFEditor::updateBegin, this, [&]() { ongoingUpdate_ = true; });
-    connect(tfEditor_.get(), &TFEditor::updateEnd, this, [&]() {
+    connect(editor_.get(), &TFEditor::updateBegin, this, [&]() { ongoingUpdate_ = true; });
+    connect(editor_.get(), &TFEditor::updateEnd, this, [&]() {
         ongoingUpdate_ = false;
         updateTFPreview();
     });
 
-    tfEditorView_ = new TFEditorView(concept_.get(), tfEditor_.get());
-
-    // put origin to bottom left corner
-    ivec2 minEditorDims = vec2(255, 100);
-    tfEditorView_->setFocusPolicy(Qt::StrongFocus);
-    tfEditorView_->scale(1.0, -1.0);
-    tfEditorView_->setAlignment(Qt::AlignLeft | Qt::AlignBottom);
-    tfEditorView_->setMinimumSize(minEditorDims.x, minEditorDims.y);
-    tfEditorView_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    tfEditorView_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    view_ = new TFEditorView(concept_.get(), editor_.get());
+    view_->setFocusPolicy(Qt::StrongFocus);
+    view_->scale(1.0, -1.0); // put origin to bottom left corner
+    view_->setAlignment(Qt::AlignLeft | Qt::AlignBottom);
+    view_->setMinimumSize(255, 100);
+    view_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    view_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     zoomVSlider_ = new RangeSliderQt(Qt::Vertical, this, true);
     zoomVSlider_->setRange(0, verticalSliderRange_);
@@ -199,12 +203,6 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
                 &TFSelectionWatcher::setColor);
     }
 
-    tfPreview_ = new QLabel();
-    tfPreview_->setMinimumSize(1, 20);
-    QSizePolicy sliderPol = tfPreview_->sizePolicy();
-    sliderPol.setHorizontalStretch(3);
-    tfPreview_->setSizePolicy(sliderPol);
-
     chkShowHistogram_ = new QComboBox();
     chkShowHistogram_->addItem("Histogram: Off");
     chkShowHistogram_->addItem("Histogram: 100%");
@@ -223,8 +221,8 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     pointMoveMode_->addItem("Point Movement: Push");
     pointMoveMode_->setCurrentIndex(0);
     connect(pointMoveMode_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this, [this](int i) { tfEditor_->setMoveMode(static_cast<TFMoveMode>(i)); });
-    connect(tfEditor_.get(), &TFEditor::moveModeChange, this,
+            this, [this](int i) { editor_->setMoveMode(static_cast<TFMoveMode>(i)); });
+    connect(editor_.get(), &TFEditor::moveModeChange, this,
             [this](TFMoveMode m) { pointMoveMode_->setCurrentIndex(static_cast<int>(m)); });
 
     domainMin_ = new QLabel("0.0");
@@ -272,9 +270,9 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     leftLayout->setContentsMargins(0, 0, 0, 0);
     leftLayout->setSpacing(utilqt::refSpacePx(this));
     leftLayout->addWidget(zoomVSlider_, 0, 0);
-    leftLayout->addWidget(tfEditorView_, 0, 1);
+    leftLayout->addWidget(view_, 0, 1);
     leftLayout->addWidget(zoomHSlider_, 1, 1);
-    leftLayout->addWidget(tfPreview_, 2, 1);
+    leftLayout->addWidget(preview_, 2, 1);
     leftPanel->setLayout(leftLayout);
 
     QFrame* rightPanel = new QFrame(this);
@@ -330,7 +328,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
             QString("TF Primitive Color - %1")
                 .arg(utilqt::toQString(concept_->getProperty()->getDisplayName())));
 
-        connect(tfEditor_.get(), &TFEditor::showColorDialog, colorDialog_.get(),
+        connect(editor_.get(), &TFEditor::showColorDialog, colorDialog_.get(),
                 [dialog = colorDialog_.get()]() {
 #ifdef __APPLE__
                     // OSX Bug workaround: hide the dialog, due to some Mac issues
@@ -380,7 +378,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
 }
 
 TFPropertyDialog::~TFPropertyDialog() {
-    tfEditor_->disconnect();
+    editor_->disconnect();
     hide();
 }
 
@@ -392,20 +390,20 @@ QSize TFPropertyDialog::sizeHint() const { return layout()->sizeHint(); }
 
 void TFPropertyDialog::updateFromProperty() { updateTFPreview(); }
 
-TFEditorView* TFPropertyDialog::getEditorView() const { return tfEditorView_; }
+TFEditorView* TFPropertyDialog::getEditorView() const { return view_; }
 
 void TFPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax) {
     // normalize zoom values, as sliders in TFPropertyDialog
     // have the range [0...100]
     // and flip/rescale values to compensate slider layout
-    const auto zoomMaxF = static_cast<float>(verticalSliderRange_ - zoomMin) / verticalSliderRange_;
-    const auto zoomMinF = static_cast<float>(verticalSliderRange_ - zoomMax) / verticalSliderRange_;
+    const auto zoomMaxF = static_cast<double>(verticalSliderRange_ - zoomMin) / verticalSliderRange_;
+    const auto zoomMinF = static_cast<double>(verticalSliderRange_ - zoomMax) / verticalSliderRange_;
     concept_->setZoomV(zoomMinF, zoomMaxF);
 }
 
 void TFPropertyDialog::changeHorizontalZoom(int zoomMin, int zoomMax) {
-    const auto zoomMinF = static_cast<float>(zoomMin) / sliderRange_;
-    const auto zoomMaxF = static_cast<float>(zoomMax) / sliderRange_;
+    const auto zoomMinF = static_cast<double>(zoomMin) / sliderRange_;
+    const auto zoomMaxF = static_cast<double>(zoomMax) / sliderRange_;
     concept_->setZoomH(zoomMinF, zoomMaxF);
 }
 
@@ -416,7 +414,7 @@ void TFPropertyDialog::resizeEvent(QResizeEvent* event) {
 
 void TFPropertyDialog::showEvent(QShowEvent* event) {
     updateTFPreview();
-    tfEditorView_->update();
+    view_->update();
     PropertyEditorWidgetQt::showEvent(event);
 }
 
@@ -493,7 +491,7 @@ void TFPropertyDialog::onHistogramModeChange(HistogramMode mode) {
 
 void TFPropertyDialog::setReadOnly(bool readonly) {
     colorWheel_->setDisabled(readonly);
-    tfEditorView_->setDisabled(readonly);
+    view_->setDisabled(readonly);
     primitivePos_->setDisabled(readonly);
     primitiveAlpha_->setDisabled(readonly);
     primitiveColor_->setDisabled(readonly);
@@ -503,8 +501,8 @@ void TFPropertyDialog::setReadOnly(bool readonly) {
 void TFPropertyDialog::updateTFPreview() {
     if (ongoingUpdate_) return;
 
-    auto pixmap = utilqt::toQPixmap(*concept_, QSize(tfPreview_->width(), 20));
-    tfPreview_->setPixmap(pixmap);
+    auto pixmap = utilqt::toQPixmap(*concept_, QSize(preview_->width(), 20));
+    preview_->setPixmap(pixmap);
 }
 
 }  // namespace inviwo
