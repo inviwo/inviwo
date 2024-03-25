@@ -59,6 +59,7 @@
 #include <modules/qtwidgets/tf/tflineedit.h>                      // for TFLineEdit
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>               // for TFPropertyModel, TFProp...
 #include <modules/qtwidgets/tf/tfselectionwatcher.h>              // for TFSelectionWatcher
+#include <modules/qtwidgets/tf/tfmovemode.h>
 
 #include <algorithm>    // for all_of
 #include <string_view>  // for string_view
@@ -214,7 +215,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     chkShowHistogram_->setCurrentIndex(static_cast<int>(concept_->getHistogramMode()));
     connect(chkShowHistogram_,
             static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
-            &TFPropertyDialog::showHistogram);
+            [this](int i) { concept_->setHistogramMode(static_cast<HistogramMode>(i)); });
 
     pointMoveMode_ = new QComboBox();
     pointMoveMode_->addItem("Point Movement: Free");
@@ -222,7 +223,9 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     pointMoveMode_->addItem("Point Movement: Push");
     pointMoveMode_->setCurrentIndex(0);
     connect(pointMoveMode_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this, &TFPropertyDialog::changeMoveMode);
+            this, [this](int i) { tfEditor_->setMoveMode(static_cast<TFMoveMode>(i)); });
+    connect(tfEditor_.get(), &TFEditor::moveModeChange, this,
+            [this](TFMoveMode m) { pointMoveMode_->setCurrentIndex(static_cast<int>(m)); });
 
     domainMin_ = new QLabel("0.0");
     domainMax_ = new QLabel("1.0");
@@ -324,7 +327,8 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
         colorDialog_->setOption(QColorDialog::NoButtons, true);
         colorDialog_->setWindowModality(Qt::NonModal);
         colorDialog_->setWindowTitle(
-            QString("TF Primitive Color - %1").arg(utilqt::toQString(concept_->getProperty()->getDisplayName())));
+            QString("TF Primitive Color - %1")
+                .arg(utilqt::toQString(concept_->getProperty()->getDisplayName())));
 
         connect(tfEditor_.get(), &TFEditor::showColorDialog, colorDialog_.get(),
                 [dialog = colorDialog_.get()]() {
@@ -396,28 +400,17 @@ void TFPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax) {
     // and flip/rescale values to compensate slider layout
     const auto zoomMaxF = static_cast<float>(verticalSliderRange_ - zoomMin) / verticalSliderRange_;
     const auto zoomMinF = static_cast<float>(verticalSliderRange_ - zoomMax) / verticalSliderRange_;
-
     concept_->setZoomV(zoomMinF, zoomMaxF);
-    tfEditor_->setRelativeSceneOffset(getRelativeSceneOffset());
 }
 
 void TFPropertyDialog::changeHorizontalZoom(int zoomMin, int zoomMax) {
     const auto zoomMinF = static_cast<float>(zoomMin) / sliderRange_;
     const auto zoomMaxF = static_cast<float>(zoomMax) / sliderRange_;
-
     concept_->setZoomH(zoomMinF, zoomMaxF);
-    tfEditor_->setRelativeSceneOffset(getRelativeSceneOffset());
-}
-
-void TFPropertyDialog::showHistogram(int type) {
-    concept_->setHistogramMode(static_cast<HistogramMode>(type));
 }
 
 void TFPropertyDialog::resizeEvent(QResizeEvent* event) {
     PropertyEditorWidgetQt::resizeEvent(event);
-
-    tfEditor_->setRelativeSceneOffset(getRelativeSceneOffset());
-
     updateTFPreview();
 }
 
@@ -494,6 +487,10 @@ void TFPropertyDialog::onZoomVChange(const dvec2& zoomV) {
                            verticalSliderRange_ - static_cast<int>(zoomV.x * verticalSliderRange_));
 }
 
+void TFPropertyDialog::onHistogramModeChange(HistogramMode mode) {
+    chkShowHistogram_->setCurrentIndex(static_cast<int>(mode));
+}
+
 void TFPropertyDialog::setReadOnly(bool readonly) {
     colorWheel_->setDisabled(readonly);
     tfEditorView_->setDisabled(readonly);
@@ -503,24 +500,11 @@ void TFPropertyDialog::setReadOnly(bool readonly) {
     pointMoveMode_->setDisabled(readonly);
 }
 
-void TFPropertyDialog::changeMoveMode(int i) { tfEditor_->setMoveMode(i); }
-
 void TFPropertyDialog::updateTFPreview() {
     if (ongoingUpdate_) return;
 
     auto pixmap = utilqt::toQPixmap(*concept_, QSize(tfPreview_->width(), 20));
     tfPreview_->setPixmap(pixmap);
-}
-
-dvec2 TFPropertyDialog::getRelativeSceneOffset() const {
-    // to determine the offset in scene coords, map a square where each side has length
-    // defaultOffset_ to the scene. We assume that there is no rotation or non-linear
-    // view transformation.
-    auto rect =
-        tfEditorView_->mapToScene(QRect(QPoint(0, 0), QSize(defaultOffset_, defaultOffset_)))
-            .boundingRect();
-
-    return dvec2(rect.width(), rect.height());
 }
 
 }  // namespace inviwo

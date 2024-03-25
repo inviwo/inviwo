@@ -290,11 +290,10 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
     // overlay grid
     const QColor colorGrid(102, 102, 102);
     const QColor colorOrigin(102, 106, 115);
-    const int gridSpacing = 50;
 
     const auto sRect = sceneRect();
-    QPen gridPen;
-    gridPen.setCosmetic(true);
+    const double gridSpacing = sRect.width() / 10.0;
+
 
     double gridOrigin = sRect.left();  // horizontal origin of the grid
 
@@ -304,9 +303,9 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
             gridOrigin = dataMap->mapFromValueToNormalized(0.0) * sRect.width() + sRect.left();
 
             // draw line at zero
-            gridPen.setWidthF(3.0f);
-            gridPen.setColor(colorOrigin);
-            painter->setPen(gridPen);
+            QPen pen{colorOrigin, 3.0f};
+            pen.setCosmetic(true);
+            painter->setPen(pen);
             painter->drawLine(
                 QLineF(QPointF(gridOrigin, sRect.bottom()), QPointF(gridOrigin, sRect.top())));
         }
@@ -328,8 +327,8 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
     }
 
     // draw grid
-    gridPen.setColor(colorGrid);
-    gridPen.setWidthF(1.0);
+    QPen gridPen{colorGrid, 1.0};
+    gridPen.setCosmetic(true);
     painter->setPen(gridPen);
     painter->drawLines(lines);
 
