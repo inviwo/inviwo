@@ -85,11 +85,11 @@ void TFEditorControlPoint::paint(QPainter* painter,
     painter->drawEllipse(QPointF(0.0, 0.0), radius, radius);
 }
 
-int TFEditorControlPoint::moveMode() const {
+TFMoveMode TFEditorControlPoint::moveMode() const {
     if (auto tfe = qobject_cast<TFEditor*>(scene())) {
         return tfe->getMoveMode();
     }
-    return 0;
+    return TFMoveMode::Free;
 }
 
 QVariant TFEditorControlPoint::itemChange(GraphicsItemChange change, const QVariant& value) {
@@ -99,7 +99,7 @@ QVariant TFEditorControlPoint::itemChange(GraphicsItemChange change, const QVari
         auto newPos = utilqt::clamp(constrainPosToXorY(value.toPointF()), sceneRect);
 
         const double d = 2.0 * sceneRect.width() * glm::epsilon<float>();
-        if (moveMode() == 1) {  // Restrict
+        if (moveMode() == TFMoveMode::Restrict) {
             if (left_ && left_->left && left_->left->scenePos().x() > newPos.x()) {
                 newPos.setX(left_->left->scenePos().x() + d);
             }
@@ -109,19 +109,18 @@ QVariant TFEditorControlPoint::itemChange(GraphicsItemChange change, const QVari
         }
         return newPos;  // return the constrained position
     } else if (change == QGraphicsItem::ItemPositionHasChanged) {
-        const auto sceneRect = scene()->sceneRect();
-        if (!isEditingPoint_) {
-            isEditingPoint_ = true;
+
+        if (!isEditing_) {
+            isEditing_ = true;
             // update the associated transfer function primitive
-            data_.setPositionAlpha(
-                dvec2{scenePos().x() / sceneRect.width(), scenePos().y() / sceneRect.height()});
-            isEditingPoint_ = false;
+            data_.setPositionAlpha(dvec2{scenePos().x(), scenePos().y()});
+            isEditing_ = false;
         }
 
         updateLabel();
 
-        const double d = 2.0 * sceneRect.width() * glm::epsilon<float>();
-        if (moveMode() == 0) {  // Free
+        const double d = 2.0 * scene()->sceneRect().width() * glm::epsilon<float>();
+        if (moveMode() == TFMoveMode::Free) {
             if ((left_ && left_->left && *(left_->left) > *this) ||
                 (right_ && right_->right && *(right_->right) < *this)) {
                 if (auto tfe = qobject_cast<TFEditor*>(scene())) {
@@ -129,7 +128,7 @@ QVariant TFEditorControlPoint::itemChange(GraphicsItemChange change, const QVari
                     return {};
                 }
             }
-        } else if (moveMode() == 2) {  // Push
+        } else if (moveMode() == TFMoveMode::Push) {
             if (left_ && left_->left && *(left_->left) > *this) {
                 left_->left->setPos(QPointF(scenePos().x() - d, left_->left->scenePos().y()));
             }

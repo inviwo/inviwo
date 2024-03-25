@@ -44,6 +44,8 @@
 
 namespace inviwo {
 
+class LayerCLGL;
+
 /**
  * \brief Perform volume rendering on the input volume.
  *
@@ -67,7 +69,7 @@ public:
      * @param event
      */
     void volumeRaycast(const Volume* volume, const Layer* entryPoints, const Layer* exitPoints,
-                       const Layer* transferFunction, Layer* outImage,
+                       const LayerCLGL* transferFunction, Layer* outImage,
                        const VECTOR_CLASS<cl::Event>* waitForEvents = nullptr,
                        cl::Event* event = nullptr);
 

@@ -112,7 +112,7 @@ void VolumeRaycasterCLProcessor::process() {
         volumeRaycaster_.outputSize(outport_.getDimensions());
         volumeRaycaster_.volumeRaycast(
             volumePort_.getData().get(), entryPort_.getData()->getColorLayer(),
-            exitPort_.getData()->getColorLayer(), transferFunction_.get().getData(),
+            exitPort_.getData()->getColorLayer(), transferFunction_.getRepresentation<LayerCLGL>(),
             outport_.getEditableData()->getColorLayer(), nullptr, profilingEvent);
     } catch (cl::Error& err) {
         LogError(getCLErrorString(err));

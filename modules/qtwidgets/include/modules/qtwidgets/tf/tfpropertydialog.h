@@ -89,16 +89,15 @@ protected:
     virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
     virtual void onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) override;
     void onTFTypeChangedInternal();
-
+    
     virtual void onZoomHChange(const dvec2& zoomH) override;
     virtual void onZoomVChange(const dvec2& zoomV) override;
+    virtual void onHistogramModeChange(HistogramMode mode) override;
 
     virtual void setReadOnly(bool readonly) override;
 
     void changeVerticalZoom(int zoomMin, int zoomMax);
     void changeHorizontalZoom(int zoomMin, int zoomMax);
-    void showHistogram(int type);
-    void changeMoveMode(int i);
 
     virtual void resizeEvent(QResizeEvent*) override;
     virtual void showEvent(QShowEvent*) override;
@@ -110,28 +109,18 @@ private:
     TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model);
 
     void updateTFPreview();
-    /**
-     * calculate the horizontal and vertical offset in scene coordinates based on the current
-     * viewport size and zoom. The offset then corresponds to defaultOffset pixels on screen.
-     */
-    dvec2 getRelativeSceneOffset() const;
 
     static constexpr int sliderRange_ = 1024;
     static constexpr int verticalSliderRange_ = 1000;
-    const int defaultOffset_ = 5;  //!< offset in pixel
 
     std::unique_ptr<TFPropertyConcept> concept_;
-
     std::unique_ptr<ColorWheel> colorWheel_;
     std::unique_ptr<QColorDialog> colorDialog_;
-
     std::unique_ptr<TFEditor> tfEditor_;  //!< inherited from QGraphicsScene
-
     std::unique_ptr<TFSelectionWatcher> tfSelectionWatcher_;
-
     TFEditorView* tfEditorView_;  //!< View that contains the editor
-    QComboBox* chkShowHistogram_;
 
+    QComboBox* chkShowHistogram_;
     QComboBox* pointMoveMode_;
 
     QLabel* domainMin_;

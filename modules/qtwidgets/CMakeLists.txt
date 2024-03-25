@@ -88,6 +88,7 @@ set(HEADER_FILES
     include/modules/qtwidgets/tf/tfeditorisovalue.h
     include/modules/qtwidgets/tf/tfeditorprimitive.h
     include/modules/qtwidgets/tf/tfeditorview.h
+    include/modules/qtwidgets/tf/tfmovemode.h
     include/modules/qtwidgets/tf/tfpropertyconcept.h
     include/modules/qtwidgets/tf/tfpropertydialog.h
     include/modules/qtwidgets/tf/tfutils.h
@@ -170,6 +171,7 @@ set(SOURCE_FILES
     src/tf/tfeditorprimitive.cpp
     src/tf/tfeditorview.cpp
     src/tf/tflineedit.cpp
+    src/tf/tfmovemode.cpp
     src/tf/tfpropertyconcept.cpp
     src/tf/tfpropertydialog.cpp
     src/tf/tfselectionwatcher.cpp

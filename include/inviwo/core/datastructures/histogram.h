@@ -46,7 +46,8 @@
 #include <span>
 
 namespace inviwo {
-enum class HistogramMode { Off, All, P99, P95, P90, Log };
+enum class HistogramMode : int { Off = 0, All, P99, P95, P90, Log };
+constexpr size_t numberOfHistogramModes = 6;
 
 using HistogramSelection = std::bitset<32>;
 constexpr HistogramSelection histogramSelectionAll{0xffffffff};

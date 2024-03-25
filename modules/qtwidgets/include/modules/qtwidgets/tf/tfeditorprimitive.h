@@ -83,7 +83,6 @@ public:
     double getSize() const;
 
     void beginMouseDrag();
-    void stopMouseDrag();
 
     virtual TFControlPointConnection* left() const { return nullptr; }
     virtual TFControlPointConnection* right() const { return nullptr; }
@@ -101,23 +100,19 @@ protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+    virtual void onTFPrimitiveChange(const TFPrimitive& p) override;
 
     virtual int zLevel() const = 0;
 
-    virtual void onTFPrimitiveChange(const TFPrimitive& p) override;
-    
     QPointF constrainPosToXorY(QPointF pos) const;
-
-    TFPrimitive& data_;
-    bool isEditingPoint_;
-    bool hovered_;
-
     void setHovered(bool hover);
     void updateLabel();
 
-    std::unique_ptr<QGraphicsSimpleTextItem> tfPrimitiveLabel_;
+    TFPrimitive& data_;
+    bool isEditing_;
+    bool hovered_;
+    std::unique_ptr<QGraphicsSimpleTextItem> label_;
     QPointF cachedPosition_;  //!< used for restricting to horizontal/vertical movement
-    bool mouseDrag_;
 };
 
 IVW_MODULE_QTWIDGETS_API bool operator==(const TFEditorPrimitive& lhs,

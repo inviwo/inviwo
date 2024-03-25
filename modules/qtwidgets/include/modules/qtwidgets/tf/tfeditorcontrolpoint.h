@@ -32,8 +32,10 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
 #include <inviwo/core/datastructures/tfprimitive.h>  // for TFPrimitive, TFPrimitiveObserver
-#include <inviwo/core/util/glmvec.h>                 // for dvec2
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>  // for TFEditorPrimitive, TFEditorPrimitiv...
+#include <modules/qtwidgets/tf/tfmovemode.h>
+
+#include <inviwo/core/util/glmvec.h>  // for dvec2
 
 #include <QGraphicsItem>  // for QGraphicsItem::UserType
 #include <QPainterPath>   // for QPainterPath
@@ -64,7 +66,7 @@ protected:
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;
 
-    int moveMode() const;
+    TFMoveMode moveMode() const;
 
     static constexpr int tfZLevel = 10;
     virtual int zLevel() const override { return tfZLevel; }

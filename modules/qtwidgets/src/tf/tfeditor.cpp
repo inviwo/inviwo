@@ -115,12 +115,12 @@ TFEditor::TFEditor(TFPropertyConcept* tfProperty, QWidget* parent)
     , activeSet_{nullptr}
     , mouse_{}
     , groups_(10)
-    , moveMode_(0)
-    , selectNewPrimitives_(false) {
+    , moveMode_{TFMoveMode::Free}
+    , selectNewPrimitives_{false} {
 
     setItemIndexMethod(QGraphicsScene::NoIndex);
 
-    setSceneRect(0.0, 0.0, 512.0, 512.0);
+    setSceneRect(0.0, 0.0, 1.0, 1.0);
 
     for (auto* set : concept_->sets()) {
         auto& items = primitives_[set];
@@ -277,8 +277,6 @@ void TFEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
         if (controlPressed && !mouse_.doubleClick && !mouse_.drag && !mouse_.movedSincePress) {
             clearSelection();
             addPoint(e->scenePos());
-        } else if (mouse_.drag) {
-            std::ranges::for_each(getSelectedPrimitiveItems(), [](auto* p) { p->stopMouseDrag(); });
         } else {
             // disable rubber band selection
             views().front()->setDragMode(QGraphicsView::NoDrag);
@@ -297,8 +295,13 @@ void TFEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
     mouse_.doubleClick = true;
     LogInfo("TFEditor dblclick");
 
-    if (getTFPrimitiveItemAt(e->scenePos())) {
+    if (getTFPrimitiveItemAt(e->scenePos()) != nullptr) {
+        e->accept();
         emit showColorDialog();
+    } else {
+        e->accept();
+        clearSelection();
+        addPoint(e->scenePos());
     }
 
     QGraphicsScene::mouseDoubleClickEvent(e);
@@ -326,6 +329,24 @@ void TFEditor::keyPressEvent(QKeyEvent* keyEvent) {
     } else if (handleModifySelection(keyEvent)) {
         keyEvent->accept();
     } else if (handleGroupSelection(keyEvent)) {
+        keyEvent->accept();
+    } else if (k == Qt::Key_F) {
+        moveMode_ = TFMoveMode::Free;
+        emit moveModeChange(moveMode_);
+        keyEvent->accept();
+    } else if (k == Qt::Key_R) {
+        moveMode_ = TFMoveMode::Restrict;
+        emit moveModeChange(moveMode_);
+        keyEvent->accept();
+    } else if (k == Qt::Key_P) {
+        moveMode_ = TFMoveMode::Push;
+        emit moveModeChange(moveMode_);
+        keyEvent->accept();
+    } else if (k == Qt::Key_H) {
+        const auto mode = concept_->getHistogramMode();
+        const auto newMode =
+            static_cast<HistogramMode>(static_cast<int>(mode) + 1 % numberOfHistogramModes);
+        concept_->setHistogramMode(newMode);
         keyEvent->accept();
     } else {
         QGraphicsScene::keyPressEvent(keyEvent);
@@ -608,7 +629,7 @@ void TFEditor::addPeak(const QPointF& scenePos, TFPrimitiveSet* set) {
 
     set->add(pos, alpha);
 
-    const double normalizedOffset = relativeSceneOffset_.x * 5.0 / width();
+    const double normalizedOffset = viewDependentOffset().x * 5.0 / width();
 
     // add point to the left
     if (pos > 0.0) {
@@ -656,7 +677,11 @@ void TFEditor::removeControlPoint(TFEditorPrimitive* item) {
 }
 
 TFEditorPrimitive* TFEditor::getTFPrimitiveItemAt(const QPointF& pos) const {
-    for (auto& graphicsItem : items(pos)) {
+    auto* view = views().front();
+    const auto deviceTransform = view->viewportTransform();
+
+    for (auto& graphicsItem :
+         items(pos, Qt::IntersectsItemShape, Qt::DescendingOrder, deviceTransform)) {
         if (auto* item = dynamic_cast<TFEditorPrimitive*>(graphicsItem)) {
             return item;
         }
@@ -695,11 +720,9 @@ void TFEditor::updateConnections() {
     }
 }
 
-void TFEditor::setMoveMode(int i) { moveMode_ = i; }
+void TFEditor::setMoveMode(TFMoveMode i) { moveMode_ = i; }
 
-int TFEditor::getMoveMode() const { return moveMode_; }
-
-void TFEditor::setRelativeSceneOffset(const dvec2& offset) { relativeSceneOffset_ = offset; }
+TFMoveMode TFEditor::getMoveMode() const { return moveMode_; }
 
 const DataMapper& TFEditor::getDataMapper() const {
     if (auto* map = concept_->getDataMap()) {
@@ -775,16 +798,11 @@ QPointF TFEditor::calcTransformRef(std::span<TFEditorPrimitive*> primitives,
                              });
 }
 
-dvec2 TFEditor::getZoom() const {
-    const auto zoomH = concept_->getZoomH();
-    const auto zoomV = concept_->getZoomV();
-    return {zoomH.y - zoomH.x, zoomV.y - zoomV.x};
-}
-
 void TFEditor::duplicate(std::span<TFEditorPrimitive*> primitives) {
+    auto offset = viewDependentOffset().x;
     std::ranges::for_each(primitives, [&](auto* item) {
         if (auto* set = findSet(&item->getPrimitive())) {
-            const double newPos = item->pos().x() + relativeSceneOffset_.x * 5.0;
+            const double newPos = item->pos().x() + offset * 5.0;
             const auto newColor = item->getPrimitive().getColor();
             addPoint(newPos, newColor, set);
         }
@@ -795,7 +813,12 @@ bool TFEditor::handleGroupSelection(QKeyEvent* event) {
     static constexpr std::array<std::pair<quint32, int>, 10> macNativeVirtualKeyMap{
         {{18, 1}, {19, 2}, {20, 3}, {21, 4}, {23, 5}, {22, 6}, {26, 7}, {28, 8}, {25, 9}, {29, 0}}};
 
+    static constexpr std::array<std::pair<qint32, int>, 10> winNativeScanCodeMap{
+        {{2, 1}, {3, 2}, {4, 3}, {5, 4}, {6, 5}, {7, 6}, {8, 7}, {9, 8}, {10, 9}, {11, 0}}};
+
+
     const auto nativeKey = event->nativeVirtualKey();
+
     const auto it =
         std::ranges::find_if(macNativeVirtualKeyMap, [&](auto& p) { return p.first == nativeKey; });
     if (it == macNativeVirtualKeyMap.end()) {
@@ -830,19 +853,19 @@ bool TFEditor::handleMoveSelection(QKeyEvent* event) {
     switch (k) {
         case Qt::Key_Left:
         case 'J':
-            delta = QPointF(-relativeSceneOffset_.x, 0.0f);
+            delta = QPointF(-viewDependentOffset().x, 0.0f);
             break;
         case Qt::Key_Right:
         case 'L':
-            delta = QPointF(relativeSceneOffset_.x, 0.0f);
+            delta = QPointF(viewDependentOffset().x, 0.0f);
             break;
         case Qt::Key_Up:
         case 'I':
-            delta = QPointF(0.0f, relativeSceneOffset_.y);
+            delta = QPointF(0.0f, viewDependentOffset().y);
             break;
         case Qt::Key_Down:
         case 'K':
-            delta = QPointF(0.0f, -relativeSceneOffset_.y);
+            delta = QPointF(0.0f, -viewDependentOffset().y);
             break;
     }
 
@@ -924,6 +947,23 @@ bool TFEditor::handleModifySelection(QKeyEvent* event) {
             break;
     }
     return true;
+}
+
+dvec2 TFEditor::viewDependentOffset() const {
+    const int defaultOffset = 5;  //!< offset in pixel
+    if (views().empty()) {
+        return {0.01, 0.01};
+    }
+
+    // to determine the offset in scene coords, map a square where each side has length
+    // defaultOffset to the scene. We assume that there is no rotation or non-linear
+    // view transformation.
+    auto rect = views()
+                    .front()
+                    ->mapToScene(QRect(QPoint(0, 0), QSize(defaultOffset, defaultOffset)))
+                    .boundingRect();
+
+    return dvec2(rect.width(), rect.height());
 }
 
 }  // namespace inviwo
