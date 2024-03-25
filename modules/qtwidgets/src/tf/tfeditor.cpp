@@ -49,6 +49,7 @@
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>         // for TFEditorPrimitive, TFEditorPr...
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>         // for TFPropertyConcept
 #include <modules/qtwidgets/tf/tfutils.h>                   // for addTFColorbrewerPresetsMenu
+#include <modules/qtwidgets/tf/tfeditormask.h>
 
 #include <algorithm>         // for stable_sort, find_if, max
 #include <array>             // for array
@@ -116,6 +117,8 @@ TFEditor::TFEditor(TFPropertyConcept* tfProperty, QWidget* parent)
     , mouse_{}
     , groups_(10)
     , moveMode_{TFMoveMode::Free}
+    , maskMin_{std::make_unique<TFEditorMaskMin>(concept_)}
+    , maskMax_{std::make_unique<TFEditorMaskMax>(concept_)}
     , selectNewPrimitives_{false} {
 
     setItemIndexMethod(QGraphicsScene::NoIndex);
@@ -141,6 +144,11 @@ TFEditor::TFEditor(TFPropertyConcept* tfProperty, QWidget* parent)
     }
     activeSet_ = primitives_.begin()->first;
     updateConnections();
+
+    addItem(maskMin_.get());
+    addItem(maskMax_.get());
+    maskMin_->setPos(QPointF{concept_->getMask().x, 0.5});
+    maskMax_->setPos(QPointF{concept_->getMask().y, 0.5});
 }
 
 TFEditor::~TFEditor() = default;
@@ -175,7 +183,6 @@ void TFEditor::onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) {
 }
 void TFEditor::onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) {}
 void TFEditor::onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) {}
-void TFEditor::onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) {}
 
 void TFEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
     if (e->button() == Qt::LeftButton) {
@@ -188,80 +195,28 @@ void TFEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
             // inform all selected TF primitives about imminent move (need to cache position)
             std::ranges::for_each(selected, [](auto* item) { item->beginMouseDrag(); });
 
-            mouse_.drag = true;
-            mouse_.dragPos = e->scenePos();
             mouse_.dragItem = start;
             mouse_.rigid = calcTransformRef(selected, start);
-
         } else {
+            mouse_.dragItem = nullptr;
             views().front()->setDragMode(QGraphicsView::RubberBandDrag);
         }
     }
-    mouse_.movedSincePress = false;
-
     QGraphicsScene::mousePressEvent(e);
 }
 
 void TFEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
-    mouse_.movedSincePress = true;
-    if (mouse_.drag && ((e->buttons() & Qt::LeftButton) == Qt::LeftButton)) {
+    if (mouse_.dragItem && e->buttons() == Qt::LeftButton) {
         e->accept();
         emit updateBegin();
         // Prevent network evaluations while moving control point
         NetworkLock lock{concept_->getProperty()};
 
-        const bool altPressed =
-            ((QGuiApplication::queryKeyboardModifiers() & Qt::AltModifier) == Qt::AltModifier);
-
-        constexpr auto less = derefOperator(std::less<>{}, &TFEditorPrimitive::getPosition);
-        constexpr auto greater = derefOperator(std::greater<>{}, &TFEditorPrimitive::getPosition);
-
         auto selection = getSelectedPrimitiveItems();
         if (!selection.empty()) {
             activeSet_ = findSet(&selection.front()->getPrimitive());
         }
-
-        if (altPressed) {
-            const auto org = mouse_.dragItem->pos() - mouse_.rigid;
-            const auto pos = e->scenePos() - mouse_.rigid;
-
-            if (!selection.empty()) {
-                const auto translate =
-                    QTransform::fromTranslate(-mouse_.rigid.x(), -mouse_.rigid.y());
-
-                const auto xScale = std::abs(org.x()) > 0.0001 ? pos.x() / org.x() : 1.0;
-                const auto yScale = std::abs(org.y()) > 0.0001 ? pos.y() / org.y() : 1.0;
-
-                const auto scale = QTransform::fromScale(xScale, yScale);
-                const auto trans = translate * scale * translate.inverted();
-
-                if (xScale > 1.0) {
-                    std::stable_sort(selection.begin(), selection.end(), greater);
-                } else {
-                    std::stable_sort(selection.begin(), selection.end(), less);
-                }
-
-                for (auto& item : selection) {
-                    auto oldPos = item->pos();
-                    auto newPos = utilqt::clamp(trans.map(oldPos), sceneRect());
-                    item->setPos(newPos);
-                }
-            }
-        } else {
-            const auto delta = e->scenePos() - mouse_.dragPos;
-            if (delta.x() > 0) {
-                std::stable_sort(selection.begin(), selection.end(), greater);
-            } else {
-                std::stable_sort(selection.begin(), selection.end(), less);
-            }
-
-            for (auto& item : selection) {
-                auto oldPos = item->pos();
-                auto newPos = utilqt::clamp(oldPos + delta, sceneRect());
-                item->setPos(newPos);
-            }
-        }
-        mouse_.dragPos = e->scenePos();
+        move(selection, calcTransform(e->scenePos(), e->lastScenePos()), sceneRect());
         emit updateEnd();
     } else {
         QGraphicsScene::mouseMoveEvent(e);
@@ -269,12 +224,11 @@ void TFEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
 }
 
 void TFEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
-    const bool controlPressed =
-        ((QGuiApplication::queryKeyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier);
     if (e->button() == Qt::LeftButton) {
         // left mouse button and no movement -> add new point if there is no selection
         // add new TF primitive when control is pressed and nothing is below the cursor
-        if (controlPressed && !mouse_.doubleClick && !mouse_.drag && !mouse_.movedSincePress) {
+        if (e->modifiers() == Qt::ControlModifier &&
+            e->scenePos() == e->buttonDownScenePos(Qt::LeftButton)) {
             clearSelection();
             addPoint(e->scenePos());
         } else {
@@ -282,9 +236,7 @@ void TFEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
             views().front()->setDragMode(QGraphicsView::NoDrag);
         }
     }
-    mouse_.drag = false;
-    mouse_.doubleClick = false;
-    mouse_.movedSincePress = false;
+    mouse_.dragItem = nullptr;
 
     if (!e->isAccepted()) {
         QGraphicsScene::mouseReleaseEvent(e);
@@ -292,18 +244,16 @@ void TFEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 }
 
 void TFEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
-    mouse_.doubleClick = true;
-    LogInfo("TFEditor dblclick");
-
-    if (getTFPrimitiveItemAt(e->scenePos()) != nullptr) {
-        e->accept();
-        emit showColorDialog();
-    } else {
-        e->accept();
-        clearSelection();
-        addPoint(e->scenePos());
+    if (e->modifiers() == Qt::NoModifier) {
+        if (getTFPrimitiveItemAt(e->scenePos()) != nullptr) {
+            e->accept();
+            emit showColorDialog();
+        } else {
+            e->accept();
+            clearSelection();
+            addPoint(e->scenePos());
+        }
     }
-
     QGraphicsScene::mouseDoubleClickEvent(e);
 }
 
@@ -776,6 +726,23 @@ void TFEditor::setSelected(std::span<TFEditorPrimitive*> primitives, bool select
     std::ranges::for_each(primitives, [&](TFEditorPrimitive* p) { p->setSelected(selected); });
 }
 
+QTransform TFEditor::calcTransform(QPointF scenePos, QPointF lastScenePos) {
+    const bool altPressed =
+        ((QGuiApplication::queryKeyboardModifiers() & Qt::AltModifier) == Qt::AltModifier);
+    if (altPressed) {
+        const auto org = mouse_.dragItem->pos() - mouse_.rigid;
+        const auto pos = scenePos - mouse_.rigid;
+        const auto xScale = std::abs(org.x()) > 0.0001 ? pos.x() / org.x() : 1.0;
+        const auto yScale = std::abs(org.y()) > 0.0001 ? pos.y() / org.y() : 1.0;
+        const auto scale = QTransform::fromScale(xScale, yScale);
+        const auto translate = QTransform::fromTranslate(-mouse_.rigid.x(), -mouse_.rigid.y());
+        return translate * scale * translate.inverted();
+    } else {
+        const auto delta = scenePos - lastScenePos;
+        return QTransform::fromTranslate(delta.x(), delta.y());
+    }
+}
+
 QPointF TFEditor::calcTransformRef(std::span<TFEditorPrimitive*> primitives,
                                    TFEditorPrimitive* start) {
     const auto xRange = std::ranges::minmax_element(primitives, std::less<>{},
@@ -798,6 +765,21 @@ QPointF TFEditor::calcTransformRef(std::span<TFEditorPrimitive*> primitives,
                              });
 }
 
+void TFEditor::move(std::span<TFEditorPrimitive*> primitives, const QTransform& transform,
+                    const QRectF& rect) {
+    constexpr auto less = derefOperator(std::less<>{}, &TFEditorPrimitive::getPosition);
+    constexpr auto greater = derefOperator(std::greater<>{}, &TFEditorPrimitive::getPosition);
+
+    if (transform.map(QPointF{0, 0}).x() > 0) {
+        std::ranges::stable_sort(primitives, greater);
+    } else {
+        std::ranges::stable_sort(primitives, less);
+    }
+    std::ranges::for_each(primitives, [&](TFEditorPrimitive* p) {
+        p->setPos(utilqt::clamp(transform.map(p->pos()), rect));
+    });
+}
+
 void TFEditor::duplicate(std::span<TFEditorPrimitive*> primitives) {
     auto offset = viewDependentOffset().x;
     std::ranges::for_each(primitives, [&](auto* item) {
@@ -810,18 +792,24 @@ void TFEditor::duplicate(std::span<TFEditorPrimitive*> primitives) {
 }
 
 bool TFEditor::handleGroupSelection(QKeyEvent* event) {
-    static constexpr std::array<std::pair<quint32, int>, 10> macNativeVirtualKeyMap{
-        {{18, 1}, {19, 2}, {20, 3}, {21, 4}, {23, 5}, {22, 6}, {26, 7}, {28, 8}, {25, 9}, {29, 0}}};
-
-    static constexpr std::array<std::pair<qint32, int>, 10> winNativeScanCodeMap{
+#if defined(_WIN32)
+    static constexpr std::array<std::pair<qint32, int>, 10> nativeKeyMap{
         {{2, 1}, {3, 2}, {4, 3}, {5, 4}, {6, 5}, {7, 6}, {8, 7}, {9, 8}, {10, 9}, {11, 0}}};
-
-
-    const auto nativeKey = event->nativeVirtualKey();
+    const quint32 nativeKey = event->nativeScanCode();
+#elif defined(__APPLE__)
+    static constexpr std::array<std::pair<quint32, int>, 10> nativeKeyMap{
+        {{18, 1}, {19, 2}, {20, 3}, {21, 4}, {23, 5}, {22, 6}, {26, 7}, {28, 8}, {25, 9}, {29, 0}}};
+    const quint32 nativeKey = event->nativeVirtualKey();
+#else
+    // TODO update...
+    static constexpr std::array<std::pair<quint32, int>, 10> nativeKeyMap{
+        {{18, 1}, {19, 2}, {20, 3}, {21, 4}, {23, 5}, {22, 6}, {26, 7}, {28, 8}, {25, 9}, {29, 0}}};
+    const quint32 nativeKey = event->nativeVirtualKey();
+#endif
 
     const auto it =
-        std::ranges::find_if(macNativeVirtualKeyMap, [&](auto& p) { return p.first == nativeKey; });
-    if (it == macNativeVirtualKeyMap.end()) {
+        std::ranges::find_if(nativeKeyMap, [&](auto& p) { return p.first == nativeKey; });
+    if (it == nativeKeyMap.end()) {
         return false;
     }
     const int group = it->second;

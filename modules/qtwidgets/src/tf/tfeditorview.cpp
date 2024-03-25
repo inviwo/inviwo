@@ -202,36 +202,6 @@ void TFEditorView::resizeEvent(QResizeEvent* event) {
     updateZoom();
 }
 
-/*
-void TFEditorView::drawForeground(QPainter* painter, const QRectF& rect) {
-    QPen pen;
-    pen.setCosmetic(true);
-    pen.setWidthF(1.5);
-    pen.setColor(Qt::lightGray);
-    painter->setPen(pen);
-
-    QRectF sRect = sceneRect();
-
-    if (maskHorizontal_.x > 0.0) {
-        double leftMaskBorder = maskHorizontal_.x * sRect.width();
-        QRectF r(0.0, rect.top(), leftMaskBorder, rect.height());
-        QLineF line(leftMaskBorder, rect.top(), leftMaskBorder, rect.bottom());
-        painter->fillRect(r, QColor(25, 25, 25, 100));
-        painter->drawLine(line);
-    }
-
-    if (maskHorizontal_.y < 1.0) {
-        double rightMaskBorder = maskHorizontal_.y * sRect.width();
-        QRectF r(rightMaskBorder, rect.top(), sRect.right() - rightMaskBorder, rect.height());
-        QLineF line(rightMaskBorder, rect.top(), rightMaskBorder, rect.bottom());
-        painter->fillRect(r, QColor(25, 25, 25, 100));
-        painter->drawLine(line);
-    }
-
-    QGraphicsView::drawForeground(painter, rect);
-}
-*/
-
 QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D& histogram,
                                                                HistogramMode mode) {
     const auto stepSize = 1.0 / histogram.counts.size();
@@ -294,7 +264,6 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
     const auto sRect = sceneRect();
     const double gridSpacing = sRect.width() / 10.0;
 
-
     double gridOrigin = sRect.left();  // horizontal origin of the grid
 
     // adjust grid origin if there is a data mapper available
@@ -303,9 +272,7 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
             gridOrigin = dataMap->mapFromValueToNormalized(0.0) * sRect.width() + sRect.left();
 
             // draw line at zero
-            QPen pen{colorOrigin, 3.0f};
-            pen.setCosmetic(true);
-            painter->setPen(pen);
+            painter->setPen(utilqt::cosmeticPen(colorOrigin, 3.0f));
             painter->drawLine(
                 QLineF(QPointF(gridOrigin, sRect.bottom()), QPointF(gridOrigin, sRect.top())));
         }
@@ -327,9 +294,7 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
     }
 
     // draw grid
-    QPen gridPen{colorGrid, 1.0};
-    gridPen.setCosmetic(true);
-    painter->setPen(gridPen);
+    painter->setPen(utilqt::cosmeticPen(colorGrid, 1.0));
     painter->drawLines(lines);
 
     histogramState_.paintHistograms(painter, sceneRect(), this->rect());
@@ -364,9 +329,7 @@ QRect textRect(QRect rect, size_t count = 0) {
 }
 
 void setPenAndFont(QPainter* painter, ColorType type, size_t channel = 0, size_t nChannels = 1) {
-    QPen pen;
-    pen.setColor(getColor(channel, nChannels, type));
-    painter->setPen(pen);
+    painter->setPen(QPen{getColor(channel, nChannels, type)});
     auto font = painter->font();
     font.setPointSize(12);
     painter->setFont(font);
@@ -378,18 +341,8 @@ void TFEditorView::HistogramState::paintHistogram(QPainter* painter, const QPoly
                                                   size_t channel, size_t nChannels,
                                                   const QRectF& sceneRect) const {
     utilqt::Save saved{painter};
-
-    QPen pen;
-    pen.setColor(getColor(channel, nChannels, ColorType::Line));
-    pen.setWidthF(2.0f);
-    pen.setCosmetic(true);
-    painter->setPen(pen);
-
-    QBrush brush;
-    brush.setColor(getColor(channel, nChannels, ColorType::Fill));
-    brush.setStyle(Qt::SolidPattern);
-    painter->setBrush(brush);
-
+    painter->setPen(utilqt::cosmeticPen(getColor(channel, nChannels, ColorType::Line), 2.0));
+    painter->setBrush(QBrush{getColor(channel, nChannels, ColorType::Fill), Qt::SolidPattern});
     painter->setTransform(QTransform::fromScale(sceneRect.width(), sceneRect.height()), true);
     painter->drawPolygon(histogram);
 }
@@ -445,8 +398,11 @@ void TFEditorView::updateZoom() {
     const auto rect = scene()->sceneRect();
     const auto zh = property_->getZoomH();
     const auto zv = property_->getZoomV();
-    fitInView(zh.x * rect.width(), zv.x * rect.height(), (zh.y - zh.x) * rect.width(),
-              (zv.y - zv.x) * rect.height(), Qt::IgnoreAspectRatio);
+
+    const QRectF newRect{QPointF{zh.x * rect.width(), zv.x * rect.height()},
+                         QSizeF{(zh.y - zh.x) * rect.width(), (zv.y - zv.x) * rect.height()}};
+
+    fitInView(newRect, Qt::IgnoreAspectRatio);
 }
 
 }  // namespace inviwo

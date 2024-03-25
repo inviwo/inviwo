@@ -58,6 +58,7 @@
 #include <QSize>         // for QSize
 #include <QSizeF>        // for QSizeF
 #include <QString>       // for QString
+#include <QPen>
 #include <glm/vec2.hpp>  // for vec<>::(anonymous)
 #include <glm/vec3.hpp>  // for vec<>::(anonymous), operator*
 #include <glm/vec4.hpp>  // for vec<>::(anonymous), operator*
@@ -161,6 +162,11 @@ constexpr QColor toQColor(const vec3& v) { return toQColor(ivec3(v * 255.0f)); }
 constexpr QColor toQColor(const ivec4& v) { return QColor(v.r, v.g, v.b, v.a); }
 constexpr QColor toQColor(const uvec4& v) { return QColor(v.r, v.g, v.b, v.a); }
 constexpr QColor toQColor(const vec4& v) { return toQColor(ivec4(v * 255.0f)); }
+
+IVW_MODULE_QTWIDGETS_API QPen cosmeticPen(const QBrush& brush, qreal width,
+                                          Qt::PenStyle s = Qt::SolidLine,
+                                          Qt::PenCapStyle c = Qt::SquareCap,
+                                          Qt::PenJoinStyle j = Qt::BevelJoin);
 
 IVW_MODULE_QTWIDGETS_API void paintCheckerBoard(QPainter& painter, const QRectF& rect);
 IVW_MODULE_QTWIDGETS_API void paint(const TransferFunction& tf, QPainter& painter,

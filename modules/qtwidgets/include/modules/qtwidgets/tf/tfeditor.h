@@ -60,6 +60,8 @@ class TFEditorIsovalue;
 class TFPrimitive;
 class TFPrimitiveSet;
 class TFPropertyConcept;
+class TFEditorMaskMin;
+class TFEditorMaskMax;
 
 template <typename T>
 struct PtrHash {
@@ -108,7 +110,6 @@ protected:
     virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
     virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
     virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
-    virtual void onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) override;
 
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* e) override;
@@ -138,8 +139,12 @@ private:
 
     std::vector<TFEditorPrimitive*> getSelectedPrimitiveItems() const;
     static void setSelected(std::span<TFEditorPrimitive*> primitives, bool selected);
+
+    QTransform calcTransform(QPointF scenePos, QPointF lastScenePos);
     static QPointF calcTransformRef(std::span<TFEditorPrimitive*> primitives,
                                     TFEditorPrimitive* start);
+    static void move(std::span<TFEditorPrimitive*> primitives, const QTransform& transform, const QRectF& rect);
+
     void duplicate(std::span<TFEditorPrimitive*> primitives);
 
     bool handleGroupSelection(QKeyEvent* event);
@@ -167,11 +172,7 @@ private:
     Items* activeItem();
 
     struct Mouse {
-        bool drag = false;
-        QPointF dragPos = QPointF{0.0, 0.0};
         TFEditorPrimitive* dragItem = nullptr;
-        bool movedSincePress = false;
-        bool doubleClick = false;
         QPointF rigid = QPointF{0.0, 0.0};
     };
 
@@ -179,6 +180,9 @@ private:
 
     std::vector<std::vector<TFEditorPrimitive*>> groups_;
     TFMoveMode moveMode_;
+
+    std::unique_ptr<TFEditorMaskMin> maskMin_;
+    std::unique_ptr<TFEditorMaskMax> maskMax_;
 
     bool selectNewPrimitives_;
 };

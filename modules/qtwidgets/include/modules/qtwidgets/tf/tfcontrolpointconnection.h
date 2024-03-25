@@ -55,13 +55,6 @@ public:
 
     void updateShape();
 
-    friend IVW_MODULE_QTWIDGETS_API bool operator==(const TFControlPointConnection& lhs,
-                                                    const TFControlPointConnection& rhs);
-
-    // Compare points by their "x" value
-    friend IVW_MODULE_QTWIDGETS_API bool operator<(const TFControlPointConnection& lhs,
-                                                   const TFControlPointConnection& rhs);
-
     TFEditorPrimitive* left;   // Non-owning reference
     TFEditorPrimitive* right;  // Non-owning reference
 
@@ -79,18 +72,5 @@ private:
     QPainterPath shape_;
     QRectF rect_;
 };
-
-IVW_MODULE_QTWIDGETS_API bool operator==(const TFControlPointConnection& lhs,
-                                         const TFControlPointConnection& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator!=(const TFControlPointConnection& lhs,
-                                         const TFControlPointConnection& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<(const TFControlPointConnection& lhs,
-                                        const TFControlPointConnection& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>(const TFControlPointConnection& lhs,
-                                        const TFControlPointConnection& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<=(const TFControlPointConnection& lhs,
-                                         const TFControlPointConnection& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>=(const TFControlPointConnection& lhs,
-                                         const TFControlPointConnection& rhs);
 
 }  // namespace inviwo

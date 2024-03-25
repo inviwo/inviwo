@@ -136,7 +136,7 @@ QPointF TFEditorPrimitive::constrainPosToXorY(QPointF pos) const {
     const bool shiftPressed =
         ((QGuiApplication::queryKeyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier);
     // restrict movement to either horizontal or vertical direction while shift is pressed
-    if (shiftPressed) {
+    if (shiftPressed && QGuiApplication::mouseButtons() == Qt::LeftButton) {
         // adjust position of mouse event
         auto delta = pos - cachedPosition_;
         if (std::abs(delta.x()) > std::abs(delta.y())) {

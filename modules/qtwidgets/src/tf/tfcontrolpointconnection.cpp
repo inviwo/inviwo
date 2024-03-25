@@ -30,6 +30,7 @@
 #include <modules/qtwidgets/tf/tfcontrolpointconnection.h>
 
 #include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>  // for TFEditorControlPoint
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <QColor>               // for QColor
 #include <QGraphicsScene>       // for QGraphicsScene
@@ -54,16 +55,10 @@ TFControlPointConnection::~TFControlPointConnection() = default;
 
 void TFControlPointConnection::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
 
-    p->save();
+    utilqt::Save saved{p};
     p->setRenderHint(QPainter::Antialiasing, true);
-
-    QPen pathPen(QColor(66, 66, 66));
-    pathPen.setWidth(3);
-    pathPen.setCosmetic(true);
-
-    p->setPen(pathPen);
+    p->setPen(utilqt::cosmeticPen(QColor(66, 66, 66), 3.0));
     p->drawPath(path_);
-    p->restore();
 }
 
 void TFControlPointConnection::updateShape() {
@@ -107,30 +102,5 @@ QPointF TFControlPointConnection::getStop() const {
 QRectF TFControlPointConnection::boundingRect() const { return rect_; }
 
 QPainterPath TFControlPointConnection::shape() const { return shape_; }
-
-bool operator==(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
-    return lhs.getStart() == rhs.getStart() && lhs.getStop() == rhs.getStop();
-}
-
-bool operator!=(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
-    return !operator==(lhs, rhs);
-}
-
-bool operator<(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
-    return 0.5f * (lhs.getStart().x() + lhs.getStop().x()) <
-           0.5f * (rhs.getStart().x() + rhs.getStop().x());
-}
-
-bool operator>(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
-    return rhs < lhs;
-}
-
-bool operator<=(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
-    return !(rhs < lhs);
-}
-
-bool operator>=(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
-    return !(lhs < rhs);
-}
 
 }  // namespace inviwo

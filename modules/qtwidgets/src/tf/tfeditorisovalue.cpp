@@ -85,16 +85,8 @@ void TFEditorIsovalue::paint(QPainter* painter,
     {
         // draw vertical line
         utilqt::Save saved{painter};
-
-        QPen pen = QPen();
-        pen.setCosmetic(true);
-        pen.setCapStyle(Qt::RoundCap);
-
-        pen.setWidthF(2.0);
-        pen.setColor(QColor(64, 64, 64, 255));
-        pen.setStyle(Qt::DashLine);
-
-        painter->setPen(pen);
+        painter->setPen(
+            utilqt::cosmeticPen(QColor(64, 64, 64, 255), 2.0, Qt::DashLine, Qt::RoundCap));
         painter->setBrush(Qt::NoBrush);
 
         auto view = scene()->views().front();
@@ -107,14 +99,10 @@ void TFEditorIsovalue::paint(QPainter* painter,
 
     {
         // set up pen and brush for drawing the primitive
-        QPen pen = QPen();
-        pen.setCosmetic(true);
-        pen.setCapStyle(Qt::RoundCap);
-        pen.setStyle(Qt::SolidLine);
-        pen.setWidthF(3.0);
-        isSelected() ? pen.setColor(QColor(213, 79, 79)) : pen.setColor(QColor(66, 66, 66));
-        QBrush brush = QBrush(utilqt::toQColor(vec4(vec3(getColor()), 1.0f)));
-
+        const auto pen =
+            utilqt::cosmeticPen(isSelected() ? QColor{213, 79, 79} : QColor{66, 66, 66}, 3.0,
+                                Qt::SolidLine, Qt::RoundCap);
+        const auto brush = QBrush(utilqt::toQColor(vec4(vec3(getColor()), 1.0f)));
         painter->setPen(pen);
         painter->setBrush(brush);
 

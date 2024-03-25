@@ -113,12 +113,14 @@ private:
     static constexpr int sliderRange_ = 1024;
     static constexpr int verticalSliderRange_ = 1000;
 
+    QLabel* preview_;  ///< View that contains the scene for the painted transfer function
+
     std::unique_ptr<TFPropertyConcept> concept_;
     std::unique_ptr<ColorWheel> colorWheel_;
     std::unique_ptr<QColorDialog> colorDialog_;
-    std::unique_ptr<TFEditor> tfEditor_;  //!< inherited from QGraphicsScene
+    std::unique_ptr<TFEditor> editor_;  //!< inherited from QGraphicsScene
     std::unique_ptr<TFSelectionWatcher> tfSelectionWatcher_;
-    TFEditorView* tfEditorView_;  //!< View that contains the editor
+    TFEditorView* view_;  //!< View that contains the editor
 
     QComboBox* chkShowHistogram_;
     QComboBox* pointMoveMode_;
@@ -131,7 +133,7 @@ private:
     TFLineEdit* primitiveAlpha_;
     TFColorEdit* primitiveColor_;
 
-    QLabel* tfPreview_;  ///< View that contains the scene for the painted transfer function
+
 
     RangeSliderQt* zoomVSlider_;
     RangeSliderQt* zoomHSlider_;
