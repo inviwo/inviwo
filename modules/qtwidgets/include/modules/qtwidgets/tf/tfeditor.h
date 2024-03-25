@@ -35,6 +35,7 @@
 #include <inviwo/core/util/glmvec.h>                 // for dvec2, vec4
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>  // for TFEditorPrimitive, TFEditorPrimitiv...
 #include <inviwo/core/datastructures/tfprimitiveset.h>
+#include <modules/qtwidgets/tf/tfmovemode.h>
 
 #include <functional>  // for function
 #include <memory>      // for shared_ptr
@@ -86,37 +87,13 @@ class IVW_MODULE_QTWIDGETS_API TFEditor : public QGraphicsScene,
 public:
     TFEditor(TFPropertyConcept* tfProperty, QWidget* parent = nullptr);
     virtual ~TFEditor();
-
-    void setMoveMode(int i);
-    int getMoveMode() const;
-
-    /**
-     * \brief Set the display size of the control points.
-     *
-     * @see TransferFunctionEditorControlPoint::setSize
-     * @param val Display size
-     */
-    //void setControlPointSize(double val);
-    /**
-     * \brief Get the display size of the control points.
-     * @see TransferFunctionEditorControlPoint::setSize
-     */
-    //double getControlPointSize() const;
     
-    void setRelativeSceneOffset(const dvec2& offset);
-    const dvec2& getRelativeSceneOffset() const;
+    void setMoveMode(TFMoveMode i);
+    TFMoveMode getMoveMode() const;
 
     const DataMapper& getDataMapper() const;
 
     std::vector<TFPrimitive*> getSelectedPrimitives() const;
-
-    /**
-     * \brief returns both horizontal and vertical zoom given by the property
-     *
-     * @return horizontal and vertical zoom corresponding to properties' zoomH.y - zoomH.x and
-     * zoomV.y - zoomV.x
-     */
-    dvec2 getZoom() const;
 
     void updateConnections();
 
@@ -124,6 +101,7 @@ signals:
     void showColorDialog();
     void updateBegin();
     void updateEnd();
+    void moveModeChange(TFMoveMode);
 
 protected:
     virtual void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) override;
@@ -168,7 +146,11 @@ private:
     bool handleModifySelection(QKeyEvent* event);
     bool handleMoveSelection(QKeyEvent* event);
 
-    dvec2 relativeSceneOffset_ = dvec2(10.0);  //!< offset for duplicating TF primitives
+    /**
+     * calculate the horizontal and vertical offset in scene coordinates based on the current
+     * viewport size and zoom. The offset then corresponds to defaultOffset pixels on screen.
+     */
+    dvec2 viewDependentOffset() const;
 
     TFPropertyConcept* concept_;
 
@@ -196,11 +178,9 @@ private:
     Mouse mouse_;
 
     std::vector<std::vector<TFEditorPrimitive*>> groups_;
-    int moveMode_;
+    TFMoveMode moveMode_;
 
     bool selectNewPrimitives_;
 };
-
-inline const dvec2& TFEditor::getRelativeSceneOffset() const { return relativeSceneOffset_; }
 
 }  // namespace inviwo
