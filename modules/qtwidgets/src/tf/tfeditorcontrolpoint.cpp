@@ -70,13 +70,9 @@ void TFEditorControlPoint::paint(QPainter* painter,
     painter->setRenderHint(QPainter::Antialiasing, true);
 
     // set up pen and brush for drawing the primitive
-    QPen pen = QPen();
-    pen.setCosmetic(true);
-    pen.setCapStyle(Qt::RoundCap);
-    pen.setStyle(Qt::SolidLine);
-    pen.setWidthF(3.0);
-    isSelected() ? pen.setColor(QColor(213, 79, 79)) : pen.setColor(QColor(66, 66, 66));
-    QBrush brush = QBrush(utilqt::toQColor(vec4(vec3(getColor()), 1.0f)));
+    const auto pen = utilqt::cosmeticPen(isSelected() ? QColor{213, 79, 79} : QColor{66, 66, 66},
+                                         3.0, Qt::SolidLine, Qt::RoundCap);
+    const auto brush = QBrush(utilqt::toQColor(vec4(vec3(getColor()), 1.0f)));
 
     painter->setPen(pen);
     painter->setBrush(brush);

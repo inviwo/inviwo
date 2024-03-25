@@ -130,6 +130,13 @@ void paintCheckerBoard(QPainter& painter, const QRectF& rect) {
     painter.fillRect(rect, QBrush(checkerBoard));
 }
 
+QPen cosmeticPen(const QBrush& brush, qreal width, Qt::PenStyle s, Qt::PenCapStyle c,
+                 Qt::PenJoinStyle j) {
+    QPen pen(brush, width, s, c, j);
+    pen.setCosmetic(true);
+    return pen;
+}
+
 void paint(const TransferFunction& tf, QPainter& painter, const QRectF& rect) {
     QLinearGradient gradient;
     for (const auto& point : tf) {
