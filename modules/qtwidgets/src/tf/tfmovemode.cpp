@@ -29,6 +29,4 @@
 
 #include <modules/qtwidgets/tf/tfmovemode.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

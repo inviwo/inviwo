@@ -29,6 +29,4 @@
 
 #include <inviwo/core/datastructures/tfdata.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

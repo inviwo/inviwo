@@ -31,15 +31,15 @@
 
 #include <inviwo/core/datastructures/volume/volume.h>  // for Volume
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/util/exception.h>                // for Exception
-#include <inviwo/core/util/formatdispatching.h>        // for Scalars, PrecisionValueType
-#include <inviwo/core/util/glmconvert.h>               // for glm_convert_normalized
-#include <inviwo/core/util/glmutils.h>                 // for Vector, Matrix
-#include <inviwo/core/util/glmvec.h>                   // for i64vec3, size3_t
-#include <inviwo/core/util/indexmapper.h>              // for IndexMapper
-#include <inviwo/core/util/logcentral.h>               // for LogCentral, LogWarnCustom
-#include <inviwo/core/util/sourcecontext.h>            // for IVW_CONTEXT_CUSTOM
-#include <inviwo/core/util/stringconversion.h>         // for toString
+#include <inviwo/core/util/exception.h>          // for Exception
+#include <inviwo/core/util/formatdispatching.h>  // for Scalars, PrecisionValueType
+#include <inviwo/core/util/glmconvert.h>         // for glm_convert_normalized
+#include <inviwo/core/util/glmutils.h>           // for Vector, Matrix
+#include <inviwo/core/util/glmvec.h>             // for i64vec3, size3_t
+#include <inviwo/core/util/indexmapper.h>        // for IndexMapper
+#include <inviwo/core/util/logcentral.h>         // for LogCentral, LogWarnCustom
+#include <inviwo/core/util/sourcecontext.h>      // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/stringconversion.h>   // for toString
 
 #include <stdlib.h>   // for size_t, abs
 #include <algorithm>  // for min

@@ -89,7 +89,7 @@ protected:
     virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
     virtual void onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) override;
     void onTFTypeChangedInternal();
-    
+
     virtual void onZoomHChange(const dvec2& zoomH) override;
     virtual void onZoomVChange(const dvec2& zoomV) override;
     virtual void onHistogramModeChange(HistogramMode mode) override;
@@ -132,8 +132,6 @@ private:
     TFLineEdit* primitivePos_;
     TFLineEdit* primitiveAlpha_;
     TFColorEdit* primitiveColor_;
-
-
 
     RangeSliderQt* zoomVSlider_;
     RangeSliderQt* zoomHSlider_;

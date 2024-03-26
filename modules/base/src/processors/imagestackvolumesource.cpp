@@ -36,31 +36,31 @@
 #include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
 #include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/io/datareader.h>                                  // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>                         // for DataReaderException
-#include <inviwo/core/io/datareaderfactory.h>                           // for DataReaderFactory
-#include <inviwo/core/ports/volumeport.h>                               // for VolumeOutport
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tags
-#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                      // for ButtonProperty
-#include <inviwo/core/properties/filepatternproperty.h>                 // for FilePatternProperty
-#include <inviwo/core/properties/property.h>                            // for OverwriteState
-#include <inviwo/core/util/exception.h>                                 // for Exception
-#include <inviwo/core/util/fileextension.h>                             // for FileExtension
-#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
-#include <inviwo/core/util/formats.h>                                   // for DataFormat, DataF...
-#include <inviwo/core/util/glmconvert.h>                                // for glm_convert_norma...
-#include <inviwo/core/util/glmvec.h>                                    // for vec3, dvec2, size2_t
-#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogPr...
-#include <inviwo/core/util/raiiutils.h>                                 // for OnScopeExit, OnSc...
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
-#include <inviwo/core/util/statecoordinator.h>                          // for StateCoordinator
-#include <inviwo/core/util/zip.h>                                       // for zipper, enumerate
-#include <modules/base/properties/basisproperty.h>                      // for BasisProperty
-#include <modules/base/properties/volumeinformationproperty.h>          // for VolumeInformation...
+#include <inviwo/core/io/datareader.h>                          // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>                 // for DataReaderException
+#include <inviwo/core/io/datareaderfactory.h>                   // for DataReaderFactory
+#include <inviwo/core/ports/volumeport.h>                       // for VolumeOutport
+#include <inviwo/core/processors/processor.h>                   // for Processor
+#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>              // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>               // for Tags
+#include <inviwo/core/properties/boolproperty.h>                // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>              // for ButtonProperty
+#include <inviwo/core/properties/filepatternproperty.h>         // for FilePatternProperty
+#include <inviwo/core/properties/property.h>                    // for OverwriteState
+#include <inviwo/core/util/exception.h>                         // for Exception
+#include <inviwo/core/util/fileextension.h>                     // for FileExtension
+#include <inviwo/core/util/formatdispatching.h>                 // for PrecisionValueType
+#include <inviwo/core/util/formats.h>                           // for DataFormat, DataF...
+#include <inviwo/core/util/glmconvert.h>                        // for glm_convert_norma...
+#include <inviwo/core/util/glmvec.h>                            // for vec3, dvec2, size2_t
+#include <inviwo/core/util/logcentral.h>                        // for LogCentral, LogPr...
+#include <inviwo/core/util/raiiutils.h>                         // for OnScopeExit, OnSc...
+#include <inviwo/core/util/sourcecontext.h>                     // for IVW_CONTEXT
+#include <inviwo/core/util/statecoordinator.h>                  // for StateCoordinator
+#include <inviwo/core/util/zip.h>                               // for zipper, enumerate
+#include <modules/base/properties/basisproperty.h>              // for BasisProperty
+#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformation...
 
 #include <algorithm>      // for fill, transform
 #include <cstddef>        // for size_t
