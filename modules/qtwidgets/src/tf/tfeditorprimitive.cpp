@@ -64,11 +64,7 @@ class QWidget;
 namespace inviwo {
 
 TFEditorPrimitive::TFEditorPrimitive(TFPrimitive& primitive)
-    : data_(primitive)
-    , isEditing_(false)
-    , hovered_(false)
-    , label_{nullptr}
-    , cachedPosition_{} {
+    : data_(primitive), isEditing_(false), hovered_(false), label_{nullptr}, cachedPosition_{} {
 
     setFlags(ItemIgnoresTransformations | ItemIsFocusable | ItemIsMovable | ItemIsSelectable |
              ItemSendsGeometryChanges);
@@ -127,10 +123,7 @@ void TFEditorPrimitive::setHovered(bool hover) {
     update();
 }
 
-void TFEditorPrimitive::beginMouseDrag() {
-    cachedPosition_ = scenePos();
-}
-
+void TFEditorPrimitive::beginMouseDrag() { cachedPosition_ = scenePos(); }
 
 QPointF TFEditorPrimitive::constrainPosToXorY(QPointF pos) const {
     const bool shiftPressed =

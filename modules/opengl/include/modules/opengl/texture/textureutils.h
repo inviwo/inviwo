@@ -193,8 +193,7 @@ IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContain
                                               const TextureBase& texture,
                                               std::string_view samplerID);
 
-IVW_MODULE_OPENGL_API void bindTexture(TransferFunctionProperty& tf,
-                                       const TextureUnit& texUnit);
+IVW_MODULE_OPENGL_API void bindTexture(TransferFunctionProperty& tf, const TextureUnit& texUnit);
 
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
                                               TransferFunctionProperty& tf);

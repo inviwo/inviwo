@@ -83,13 +83,12 @@ struct PtrEqual {
     constexpr bool operator()(const T& item1, const T& item2) const { return &item1 == item2; }
 };
 
-class IVW_MODULE_QTWIDGETS_API TFEditor : public QGraphicsScene,
-                                          public TFPrimitiveSetObserver {
+class IVW_MODULE_QTWIDGETS_API TFEditor : public QGraphicsScene, public TFPrimitiveSetObserver {
     Q_OBJECT
 public:
     TFEditor(TFPropertyConcept* tfProperty, QWidget* parent = nullptr);
     virtual ~TFEditor();
-    
+
     void setMoveMode(TFMoveMode i);
     TFMoveMode getMoveMode() const;
 
@@ -131,7 +130,7 @@ private:
     void addPeak(const QPointF& scenePos, TFPrimitiveSet* set);
     double sceneToPos(const QPointF& pos) const;
     double sceneToAlpha(const QPointF& pos) const;
-    
+
     TFPrimitiveSet* findSet(TFPrimitive*) const;
 
     std::vector<TFPrimitive*> getAllPrimitives() const;
@@ -143,7 +142,8 @@ private:
     QTransform calcTransform(QPointF scenePos, QPointF lastScenePos);
     static QPointF calcTransformRef(std::span<TFEditorPrimitive*> primitives,
                                     TFEditorPrimitive* start);
-    static void move(std::span<TFEditorPrimitive*> primitives, const QTransform& transform, const QRectF& rect);
+    static void move(std::span<TFEditorPrimitive*> primitives, const QTransform& transform,
+                     const QRectF& rect);
 
     void duplicate(std::span<TFEditorPrimitive*> primitives);
 

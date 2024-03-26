@@ -49,7 +49,7 @@ protected:
     static constexpr double shapeWidth = 12.0;
     static constexpr double penWidth = 1.5;
     static constexpr double width = shapeWidth + penWidth;
-    
+
     virtual void onZoomVChange(const dvec2& zoomV) override;
 
     virtual QRectF maskRect(QPointF topLeft, QPointF bottomRight) const = 0;

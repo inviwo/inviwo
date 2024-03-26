@@ -45,19 +45,19 @@
 #include <vector>       // for vector
 #include <filesystem>
 
-#include <QByteArray>    // for QByteArray
-#include <QColor>        // for QColor
-#include <QIcon>         // for QIcon
-#include <QImage>        // for QImage
-#include <QLocale>       // for QLocale
-#include <QObject>       // for QObject
-#include <QPixmap>       // for QPixmap
-#include <QPoint>        // for QPoint
-#include <QPointF>       // for QPointF
-#include <QRectF>        // for QRectF
-#include <QSize>         // for QSize
-#include <QSizeF>        // for QSizeF
-#include <QString>       // for QString
+#include <QByteArray>  // for QByteArray
+#include <QColor>      // for QColor
+#include <QIcon>       // for QIcon
+#include <QImage>      // for QImage
+#include <QLocale>     // for QLocale
+#include <QObject>     // for QObject
+#include <QPixmap>     // for QPixmap
+#include <QPoint>      // for QPoint
+#include <QPointF>     // for QPointF
+#include <QRectF>      // for QRectF
+#include <QSize>       // for QSize
+#include <QSizeF>      // for QSizeF
+#include <QString>     // for QString
 #include <QPen>
 #include <glm/vec2.hpp>  // for vec<>::(anonymous)
 #include <glm/vec3.hpp>  // for vec<>::(anonymous), operator*

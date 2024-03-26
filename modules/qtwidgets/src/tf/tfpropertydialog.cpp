@@ -162,7 +162,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
 
     view_ = new TFEditorView(concept_.get(), editor_.get());
     view_->setFocusPolicy(Qt::StrongFocus);
-    view_->scale(1.0, -1.0); // put origin to bottom left corner
+    view_->scale(1.0, -1.0);  // put origin to bottom left corner
     view_->setAlignment(Qt::AlignLeft | Qt::AlignBottom);
     view_->setMinimumSize(255, 100);
     view_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -396,8 +396,10 @@ void TFPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax) {
     // normalize zoom values, as sliders in TFPropertyDialog
     // have the range [0...100]
     // and flip/rescale values to compensate slider layout
-    const auto zoomMaxF = static_cast<double>(verticalSliderRange_ - zoomMin) / verticalSliderRange_;
-    const auto zoomMinF = static_cast<double>(verticalSliderRange_ - zoomMax) / verticalSliderRange_;
+    const auto zoomMaxF =
+        static_cast<double>(verticalSliderRange_ - zoomMin) / verticalSliderRange_;
+    const auto zoomMinF =
+        static_cast<double>(verticalSliderRange_ - zoomMax) / verticalSliderRange_;
     concept_->setZoomV(zoomMinF, zoomMaxF);
 }
 

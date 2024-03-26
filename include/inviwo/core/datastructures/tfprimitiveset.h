@@ -87,7 +87,7 @@ public:
                                 typename std::vector<TFPrimitive*>::const_iterator>;
 
     explicit TFPrimitiveSet(const std::vector<TFPrimitiveData>& values = {},
-                   TFPrimitiveSetType type = TFPrimitiveSetType::Relative);
+                            TFPrimitiveSetType type = TFPrimitiveSetType::Relative);
     TFPrimitiveSet(const TFPrimitiveSet& rhs);
     TFPrimitiveSet(TFPrimitiveSet&& rhs) noexcept = default;
     TFPrimitiveSet& operator=(const TFPrimitiveSet& rhs);

@@ -70,7 +70,7 @@ std::unique_ptr<Layer> toUint8Layer(const TransferFunction* tf) {
     // Convert to UINT8
     auto dst = std::make_shared<LayerRAMPrecision<glm::u8vec4>>(size2_t{data.size(), 1});
     auto layer = std::make_unique<Layer>(dst);
-    
+
     const auto dstView = dst->getView();
     for (size_t i = 0; i < data.size(); ++i) {
         dstView[i] =

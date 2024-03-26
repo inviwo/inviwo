@@ -123,7 +123,7 @@ void TFPrimitiveSetWidgetQt::updateFromProperty() {
                                         : p.getPosition();
         ss << pos << " " << p.getAlpha() << " " << color::rgb2hex(p.getColor()) << "\n";
     });
-    
+
     QString newContents(utilqt::toQString(ss.str()));
     if (textEdit_->toPlainText() != newContents) {
         textEdit_->setPlainText(newContents);

@@ -505,10 +505,9 @@ void util::alignPositionToMean(std::vector<TFPrimitive*> selection) {
         return;
     }
 
-    const auto pos =
-        std::transform_reduce(selection.begin(), selection.end(), 0.0f, std::plus<>{},
-                              [](TFPrimitive* p) { return p->getPosition(); }) /
-        static_cast<float>(selection.size());
+    const auto pos = std::transform_reduce(selection.begin(), selection.end(), 0.0f, std::plus<>{},
+                                           [](TFPrimitive* p) { return p->getPosition(); }) /
+                     static_cast<float>(selection.size());
 
     std::stable_sort(selection.begin(), selection.end(),
                      [&](const TFPrimitive* a, const TFPrimitive* b) {

@@ -82,7 +82,7 @@ public:
 private:
     void showEvent(QShowEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
-    
+
     std::variant<TransferFunctionProperty*, IsoValueProperty*, IsoTFProperty*> property_;
 };
 
