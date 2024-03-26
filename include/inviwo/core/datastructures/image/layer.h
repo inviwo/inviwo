@@ -59,9 +59,15 @@ public:
                    const SwizzleMask& defaultSwizzleMask = LayerConfig::defaultSwizzleMask,
                    InterpolationType interpolation = LayerConfig::defaultInterpolation,
                    const Wrapping2D& wrapping = LayerConfig::defaultWrapping);
-    explicit Layer(LayerConfig config);
+    explicit Layer(const LayerConfig& config);
     explicit Layer(std::shared_ptr<LayerRepresentation>);
     Layer(const Layer&) = default;
+    Layer(Layer&&) = default;
+    Layer& operator=(const Layer& that) = default;
+    Layer& operator=(Layer&& that) = default;
+    virtual Layer* clone() const override;
+    virtual ~Layer() override = default;
+
     /**
      * Create a layer based on \p rhs without copying any representations. State from @p rhs can be
      * overridden by the @p config
@@ -71,10 +77,7 @@ public:
      *                        rhs
      * @param config          custom parameters overriding values from @p rhs
      */
-    Layer(const Layer& rhs, NoData noData, LayerConfig config = {});
-    Layer& operator=(const Layer& that) = default;
-    virtual Layer* clone() const override;
-    virtual ~Layer() = default;
+    Layer(const Layer& rhs, NoData noData, const LayerConfig& config = {});
 
     LayerType getLayerType() const;
 
@@ -162,9 +165,9 @@ public:
 
     DataMapper dataMap;
     std::array<Axis, 2> axes;
-    
+
     [[nodiscard]] HistogramCache::Result calculateHistograms(
-        std::function<void(const std::vector<Histogram1D>&)> whenDone) const;
+        const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const;
     void discardHistograms();
 
 private:

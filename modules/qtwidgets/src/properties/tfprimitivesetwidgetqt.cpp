@@ -90,13 +90,9 @@ void TFPrimitiveSetWidgetQt::setPropertyValue() {
     if (auto* map = propertyPtr_->data().getDataMap()) {
         if (performMapping) {
             const dvec2 range = map->valueRange;
-
-            auto renormalizePos = [range](double pos) {
-                return (pos - range.x) / (range.y - range.x);
-            };
-            for (auto& elem : primitives) {
-                elem.pos = renormalizePos(elem.pos);
-            }
+            std::ranges::for_each(
+                primitives, [&](double& x) { x = util::linearMapToNormalized(x, range); },
+                &TFPrimitiveData::pos);
         }
     }
     {
@@ -120,19 +116,14 @@ void TFPrimitiveSetWidgetQt::updateFromProperty() {
         performMapping = false;
     }
 
-    auto mapPos = [range](double pos) { return pos * (range.y - range.x) + range.x; };
-
     // convert TF primitives to "position alpha #RRGGBB"
     std::ostringstream ss;
-    for (const auto& elem : propertyPtr_->get()) {
-        // write color as HTML color code
-        auto pos = elem.getPosition();
-        if (performMapping) {
-            pos = mapPos(pos);
-        }
-        ss << pos << " " << elem.getAlpha() << " " << color::rgb2hex(elem.getColor()) << "\n";
-    }
-
+    std::ranges::for_each(propertyPtr_->get(), [&](const TFPrimitive& p) {
+        const auto pos = performMapping ? util::linearMapFromNormalized(p.getPosition(), range)
+                                        : p.getPosition();
+        ss << pos << " " << p.getAlpha() << " " << color::rgb2hex(p.getColor()) << "\n";
+    });
+    
     QString newContents(utilqt::toQString(ss.str()));
     if (textEdit_->toPlainText() != newContents) {
         textEdit_->setPlainText(newContents);

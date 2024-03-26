@@ -86,11 +86,12 @@ public:
         util::TransformIterator<const_transform_t,
                                 typename std::vector<TFPrimitive*>::const_iterator>;
 
-    TFPrimitiveSet(const std::vector<TFPrimitiveData>& values = {},
+    explicit TFPrimitiveSet(const std::vector<TFPrimitiveData>& values = {},
                    TFPrimitiveSetType type = TFPrimitiveSetType::Relative);
     TFPrimitiveSet(const TFPrimitiveSet& rhs);
-    TFPrimitiveSet(TFPrimitiveSet&& rhs) = default;
+    TFPrimitiveSet(TFPrimitiveSet&& rhs) noexcept = default;
     TFPrimitiveSet& operator=(const TFPrimitiveSet& rhs);
+    TFPrimitiveSet& operator=(TFPrimitiveSet&& rhs) noexcept = default;
     virtual ~TFPrimitiveSet() = default;
 
     void setType(TFPrimitiveSetType type);
@@ -197,7 +198,7 @@ public:
     void add(double pos, const vec4& color);
 
     /**
-     * Add a TFPrimitive at pos and alpha. The color is
+     * Add a TFPrimitive at pos with alpha. The color is
      * interpolated from existing TFPrimitives before and after the given position
      *
      * @param pos     position of the TFPrimitive,
@@ -241,9 +242,7 @@ public:
 
     void clear();
 
-    void setPosition(const std::vector<TFPrimitive*> primitives, double pos);
-    void setAlpha(const std::vector<TFPrimitive*> primitives, double alpha);
-    void setColor(const std::vector<TFPrimitive*> primitives, const vec3& color);
+    void setPosition(std::span<TFPrimitive*> primitives, double pos);
 
     virtual void onTFPrimitiveChange(const TFPrimitive& p) override;
 

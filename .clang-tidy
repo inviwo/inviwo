@@ -1,26 +1,50 @@
 Checks: >
   -*,
+  bugprone-*,
+    -bugprone-implicit-widening-of-multiplication-result,
   clang-diagnostic-*,
   clang-analyzer-*,
   cppcoreguidelines-*,
+    -cppcoreguidelines-pro-type-union-access,
+    -cppcoreguidelines-avoid-magic-numbers,
+    -cppcoreguidelines-non-private-member-variables-in-classes,
+    -cppcoreguidelines-explicit-virtual-functions,
+    -cppcoreguidelines-owning-memory,
+    -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+    -cppcoreguidelines-pro-bounds-constant-array-index,
+  google-*,
+  llvm-*,
+    -llvm-include-order,
+    -llvm-else-after-return,
+    -llvm-header-guard,
+  misc-*,
+    -misc-include-cleaner,
+    -misc-non-private-member-variables-in-classes,
   modernize-*,
+    -modernize-use-nodiscard,
+    -modernize-use-trailing-return-type,
+    -modernize-use-override,
   performance-*,
   portability-*,
   readability-*,
-  bugprone-*,
-  -modernize-use-trailing-return-type,
-  -readability-redundant-member-init,
-  -readability-identifier-length,
-  -readability-duplicate-include,
-  -bugprone-implicit-widening-of-multiplication-result,
+    -readability-else-after-return,
+    -readability-redundant-member-init,
+    -readability-identifier-length,
+    -readability-duplicate-include,
+    -readability-magic-numbers,
+    -readability-uppercase-literal-suffix,
+    -readability-named-parameter
+
 
 CheckOptions: 
+  bugprone-easily-swappable-parameters.MinimumLength: 3
   readability-braces-around-statements.ShortStatementLines: '1'
+  readability-identifier-length.IgnoredParameterNames: '^(it|id)$'
+  readability-identifier-length.IgnoredVariableNames: '^(it|id)$'
   readability-identifier-length.MinimumExceptionNameLength: '1'
   readability-identifier-length.MinimumLoopCounterNameLength: '1'
-  readability-identifier-length.IgnoredVariableNames: '^(it|id)$'
-  readability-identifier-length.IgnoredParameterNames: '^(it|id)$'
   readability-implicit-bool-conversion.AllowPointerConditions: true
+
 
 FormatStyle: file
 WarningsAsErrors: ''

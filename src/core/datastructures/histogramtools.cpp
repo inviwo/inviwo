@@ -31,11 +31,13 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/zip.h>
 
+#include <utility>
+
 namespace inviwo {
 
 HistogramCache::HistogramCache() : state_{std::make_shared<State>()} {}
 HistogramCache::HistogramCache(const HistogramCache& rhs) : state_{std::make_shared<State>()} {
-    std::scoped_lock lock{rhs.state_->mutex};
+    const std::scoped_lock lock{rhs.state_->mutex};
     state_->histograms = rhs.state_->histograms;
     state_->callbacks = rhs.state_->callbacks;
     state_->status = rhs.state_->status;
@@ -44,7 +46,7 @@ HistogramCache::HistogramCache(HistogramCache&& rhs) noexcept : state_{std::move
 HistogramCache& HistogramCache::operator=(const HistogramCache& that) {
     if (this != &that) {
         state_ = std::make_shared<State>();
-        std::scoped_lock lock{that.state_->mutex};
+        const std::scoped_lock lock{that.state_->mutex};
         state_->histograms = that.state_->histograms;
         state_->callbacks = that.state_->callbacks;
         state_->status = that.state_->status;
@@ -59,9 +61,9 @@ HistogramCache& HistogramCache::operator=(HistogramCache&& that) noexcept {
 }
 
 auto HistogramCache::calculateHistograms(
-    std::function<std::vector<Histogram1D>()> calculate,
-    std::function<void(const std::vector<Histogram1D>&)> whenDone) const -> Result {
-    std::scoped_lock lock{state_->mutex};
+    const std::function<std::vector<Histogram1D>()>& calculate,
+    const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const -> Result {
+    const std::scoped_lock lock{state_->mutex};
 
     Result result;
 
@@ -74,18 +76,15 @@ auto HistogramCache::calculateHistograms(
     }
 
     if (state_->status == Status::NotSet) {
-        if (whenDone) {
-            result.handle = state_->callbacks.add(whenDone);
-        }
         result.progress = Progress::Calculating;
         state_->status = Status::Calculating;
         dispatchPool([calculate, weakState = std::weak_ptr<State>(state_)]() {
             if (auto state = weakState.lock()) {
                 auto newHistograms = calculate();
                 dispatchFrontAndForget([weakState = std::weak_ptr<State>(state),
-                                        newHistograms = std::move(newHistograms)]() {
+                                        newHistograms = std::move(newHistograms)]() mutable {
                     if (auto state = weakState.lock()) {
-                        std::scoped_lock lock{state->mutex};
+                        const std::scoped_lock lock{state->mutex};
                         state->histograms = std::move(newHistograms);
                         state->status = Status::Valid;
                         state->callbacks.invoke(state->histograms);
@@ -100,17 +99,17 @@ auto HistogramCache::calculateHistograms(
 
 void HistogramCache::forEach(
     const std::function<void(const Histogram1D&, size_t)>& callback) const {
-    std::scoped_lock lock{state_->mutex};
+    const std::scoped_lock lock{state_->mutex};
     for (auto&& [channel, histogram] : util::enumerate(state_->histograms)) {
         callback(histogram, channel);
     }
 }
 
-void HistogramCache::discard(std::function<std::vector<Histogram1D>()> calculate) {
+void HistogramCache::discard(const std::function<std::vector<Histogram1D>()>& calculate) {
     bool reCalculate = false;
     std::shared_ptr<State> newState;
     {
-        std::scoped_lock lock{state_->mutex};
+        const std::scoped_lock lock{state_->mutex};
 
         if (state_->status == Status::NotSet) {
             return;
