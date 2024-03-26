@@ -51,7 +51,7 @@ struct UniformTraits<Volume> {
     };
 
     static constexpr auto scalingfactor = [](const Volume& volume) {
-        const dvec2 dataRange = volume.dataMap_.dataRange;
+        const dvec2 dataRange = volume.dataMap.dataRange;
         const double invRange = 1.0 / (dataRange.y - dataRange.x);
         switch (GLFormats::get(volume.getDataFormat()->getId()).normalization) {
             default:
@@ -71,7 +71,7 @@ struct UniformTraits<Volume> {
     };
 
     static constexpr auto offset = [](const Volume& volume) {
-        const dvec2 dataRange = volume.dataMap_.dataRange;
+        const dvec2 dataRange = volume.dataMap.dataRange;
         switch (GLFormats::get(volume.getDataFormat()->getId()).normalization) {
             default:
                 [[fallthrough]];
@@ -89,7 +89,7 @@ struct UniformTraits<Volume> {
         }
     };
     static constexpr auto signedScalingFactor = [](const Volume& volume) {
-        const dvec2 dataRange = volume.dataMap_.dataRange;
+        const dvec2 dataRange = volume.dataMap.dataRange;
         const double invRange = 1.0 / (dataRange.y - dataRange.x);
         switch (GLFormats::get(volume.getDataFormat()->getId()).normalization) {
             default:
@@ -109,7 +109,7 @@ struct UniformTraits<Volume> {
     };
 
     static constexpr auto signedOffset = [](const Volume& volume) {
-        const dvec2 dataRange = volume.dataMap_.dataRange;
+        const dvec2 dataRange = volume.dataMap.dataRange;
         switch (GLFormats::get(volume.getDataFormat()->getId()).normalization) {
             default:
                 [[fallthrough]];
