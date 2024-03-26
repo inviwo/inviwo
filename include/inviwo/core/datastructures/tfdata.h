@@ -45,24 +45,35 @@ public:
 
     struct Base {
         virtual ~Base() = default;
+        Base() = default;
+        Base(const Base&) = delete;
+        Base(Base&&) = delete;
+        Base& operator=(const Base&) = delete;
+        Base& operator=(Base&&) = delete;
+
         virtual std::unique_ptr<Base> clone() const = 0;
 
         virtual const DataMapper* getDataMap() const = 0;
 
         virtual HistogramCache::Result calculateHistograms(
-            std::function<void(const std::vector<Histogram1D>&)> whenDone) const = 0;
+            const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const = 0;
 
-        virtual OnChangeHandle onChange(std::function<void()> callback) const = 0;
+        virtual OnChangeHandle onChange(const std::function<void()>& callback) const = 0;
     };
 
     template <typename T>
     struct Implementation : Base {
-        Implementation(T* toWrap) : port{toWrap} {
-            IVW_ASSERT(port != nullptr, "port should never be null")
+        explicit Implementation(T* toWrap) : Base{}, port{toWrap} {
+            IVW_ASSERT(port != nullptr, "port should never be null");
         }
+        Implementation(const Implementation&) = delete;
+        Implementation(Implementation&&) = delete;
+        Implementation& operator=(const Implementation&) = delete;
+        Implementation& operator=(Implementation&&) = delete;
+        virtual ~Implementation() override = default;
 
         virtual std::unique_ptr<Base> clone() const override {
-            return std::make_unique<Implementation<T>>(*this);
+            return std::make_unique<Implementation<T>>(port);
         }
 
         virtual const DataMapper* getDataMap() const override {
@@ -74,7 +85,7 @@ public:
         }
 
         virtual HistogramCache::Result calculateHistograms(
-            std::function<void(const std::vector<Histogram1D>&)> whenDone) const override {
+            const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const override {
             if (auto data = port->getData()) {
                 return data->calculateHistograms(whenDone);
             } else {
@@ -82,7 +93,7 @@ public:
             }
         }
 
-        virtual OnChangeHandle onChange(std::function<void()> callback) const override {
+        virtual OnChangeHandle onChange(const std::function<void()>& callback) const override {
             return {port->onChangeScoped(callback), port->onConnectScoped(callback),
                     port->onDisconnectScoped(callback)};
         }
@@ -92,8 +103,10 @@ public:
 
     TFData() : base_{nullptr} {}
 
+    // NOLINTBEGIN(google-explicit-constructor
     template <typename T>
     TFData(T* data) : base_{data ? std::make_unique<Implementation<T>>(data) : nullptr} {}
+    // NOLINTEND
 
     TFData(const TFData& rhs) : base_{rhs.base_ ? rhs.base_->clone() : nullptr} {}
     TFData(TFData&& rhs) noexcept : base_{std::exchange(rhs.base_, nullptr)} {}
@@ -109,6 +122,7 @@ public:
         }
         return *this;
     }
+    ~TFData() = default;
 
     const DataMapper* getDataMap() const {
         if (base_) {
@@ -119,7 +133,7 @@ public:
     }
 
     HistogramCache::Result calculateHistograms(
-        std::function<void(const std::vector<Histogram1D>&)> whenDone) const {
+        const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const {
         if (base_) {
             return base_->calculateHistograms(whenDone);
         } else {
@@ -127,7 +141,7 @@ public:
         }
     }
 
-    OnChangeHandle onChange(std::function<void()> callback) const {
+    OnChangeHandle onChange(const std::function<void()>& callback) const {
         if (base_) {
             return base_->onChange(callback);
         } else {
@@ -135,7 +149,7 @@ public:
         }
     }
 
-    operator bool() const { return base_ != nullptr; }
+    explicit operator bool() const { return base_ != nullptr; }
 
 private:
     std::unique_ptr<Base> base_;

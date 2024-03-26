@@ -43,7 +43,7 @@ class IVW_CORE_API HistogramCache {
 public:
     using Callback = void(const std::vector<Histogram1D>&);
 
-    enum class Progress {Done, Calculating, NoData};
+    enum class Progress { Done, Calculating, NoData };
     struct Result {
         DispatcherHandle<Callback> handle = nullptr;
         Progress progress = Progress::NoData;
@@ -54,12 +54,13 @@ public:
     HistogramCache(HistogramCache&& rhs) noexcept;
     HistogramCache& operator=(const HistogramCache& that);
     HistogramCache& operator=(HistogramCache&& that) noexcept;
+    ~HistogramCache() = default;
 
-    Result calculateHistograms(std::function<std::vector<Histogram1D>()> calculate,
-                               std::function<Callback> whenDone) const;
+    Result calculateHistograms(const std::function<std::vector<Histogram1D>()>& calculate,
+                               const std::function<Callback>& whenDone) const;
 
     void forEach(const std::function<void(const Histogram1D&, size_t)>&) const;
-    void discard(std::function<std::vector<Histogram1D>()> calculate);
+    void discard(const std::function<std::vector<Histogram1D>()>& calculate);
 
 private:
     enum class Status { Valid, Calculating, NotSet };

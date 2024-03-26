@@ -76,7 +76,7 @@ TFPrimitiveSet::TFPrimitiveSet(const std::vector<TFPrimitiveData>& values, TFPri
 }
 
 TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs) : type_(rhs.type_) {
-    for (auto& v : rhs.values_) {
+    for (const auto& v : rhs.values_) {
         add(*v);
     }
 }
@@ -123,13 +123,13 @@ dvec2 TFPrimitiveSet::getRange() const {
     switch (type_) {
         case TFPrimitiveSetType::Absolute: {
             if (sorted_.empty()) {
-                return dvec2(0.0, 1.0);
+                return {0.0, 1.0};
             }
-            return dvec2(sorted_.front()->getPosition(), sorted_.back()->getPosition());
+            return {sorted_.front()->getPosition(), sorted_.back()->getPosition()};
         }
         case TFPrimitiveSetType::Relative:
         default:
-            return dvec2(0.0, 1.0);
+            return {0.0, 1.0};
     }
 }
 
@@ -250,7 +250,7 @@ void TFPrimitiveSet::add(const dvec2& pos) {
 void TFPrimitiveSet::add(const TFPrimitiveData& data) { add(std::make_unique<TFPrimitive>(data)); }
 
 void TFPrimitiveSet::add(const std::vector<TFPrimitiveData>& primitives) {
-    for (auto& v : primitives) {
+    for (const auto& v : primitives) {
         add(v);
     }
 }
@@ -292,12 +292,12 @@ bool TFPrimitiveSet::remove(std::vector<std::unique_ptr<TFPrimitive>>::iterator 
 }
 
 void TFPrimitiveSet::clear() {
-    while (values_.size() > 0) {
+    while (!values_.empty()) {
         remove(--values_.end());
     }
 }
 
-void TFPrimitiveSet::setPosition(const std::vector<TFPrimitive*> primitives, double pos) {
+void TFPrimitiveSet::setPosition(std::span<TFPrimitive*> primitives, double pos) {
     // selected primitives need to be moved in correct order to maintain overall order of TF
     // That is, TF primitives closest to pos must be moved first
     std::set<TFPrimitive*> primitiveSet(primitives.begin(), primitives.end());
@@ -321,22 +321,6 @@ void TFPrimitiveSet::setPosition(const std::vector<TFPrimitive*> primitives, dou
     std::reverse(sortedSelection.begin(), partition);
     for (auto it = sortedSelection.begin(); it != partition; ++it) {
         (*it)->setPosition(pos);
-    }
-}
-
-void TFPrimitiveSet::setAlpha(const std::vector<TFPrimitive*> primitives, double alpha) {
-    for (auto p : primitives) {
-        if (util::contains(sorted_, p)) {
-            p->setAlpha(static_cast<float>(alpha));
-        }
-    }
-}
-
-void TFPrimitiveSet::setColor(const std::vector<TFPrimitive*> primitives, const vec3& color) {
-    for (auto p : primitives) {
-        if (util::contains(sorted_, p)) {
-            p->setColor(color);
-        }
     }
 }
 
@@ -393,17 +377,18 @@ vec4 TFPrimitiveSet::interpolateColor(double t) const {
 }
 
 void TFPrimitiveSet::interpolateAndStoreColors(std::span<vec4> data) const {
-    const auto toInd = [&](const TFPrimitive& p) {
-        return static_cast<size_t>(ceil(p.getPosition() * (data.size() - 1)));
-    };
-
     if (empty()) {  // in case of 0 points
         std::fill(data.begin(), data.end(), vec4(0.0f));
     } else if (size() == 1) {  // in case of 1 point
         std::fill(data.begin(), data.end(), front().getColor());
     } else {  // in case of more than 1 points
-        const size_t leftX = toInd(front());
-        const size_t rightX = toInd(back());
+        const auto sizeM1 = static_cast<double>(data.size() - 1);
+        const auto toInd = [&](const TFPrimitive& p) {
+            return static_cast<std::ptrdiff_t>(ceil(p.getPosition() * sizeM1));
+        };
+
+        const auto leftX = toInd(front());
+        const auto rightX = toInd(back());
 
         std::fill(data.begin(), data.begin() + leftX + 1, front().getColor());
         std::fill(data.begin() + rightX, data.end(), back().getColor());
@@ -414,11 +399,11 @@ void TFPrimitiveSet::interpolateAndStoreColors(std::span<vec4> data) const {
         while (pRight != end()) {
             const auto lrgba = pLeft->getColor();
             const auto rrgba = pRight->getColor();
-            const auto lx = pLeft->getPosition() * (data.size() - 1);
-            const auto rx = pRight->getPosition() * (data.size() - 1);
+            const auto lx = pLeft->getPosition() * sizeM1;
+            const auto rx = pRight->getPosition() * sizeM1;
 
-            for (size_t n = toInd(*pLeft); n < toInd(*pRight); ++n) {
-                const float x = static_cast<float>((n - lx) / (rx - lx));
+            for (std::ptrdiff_t n = toInd(*pLeft); n < toInd(*pRight); ++n) {
+                const auto x = static_cast<float>((static_cast<double>(n) - lx) / (rx - lx));
                 data[n] = glm::mix(lrgba, rrgba, x);
             }
             ++pLeft;
@@ -459,7 +444,8 @@ void util::distributeAlphaEvenly(std::vector<TFPrimitive*> selection) {
 
     for (auto&& [index, elem] : util::enumerate(selection)) {
         elem->setAlpha(
-            glm::mix(minAlpha, maxAlpha, static_cast<float>(index) / (selection.size() - 1)));
+            glm::mix(minAlpha, maxAlpha,
+                     static_cast<float>(index) / static_cast<double>(selection.size() - 1)));
     }
 }
 
@@ -476,9 +462,9 @@ void util::distributePositionEvenly(std::vector<TFPrimitive*> selection) {
     std::stable_sort(selection.begin(), selection.end(), comparePtr{});
 
     for (auto&& [index, elem] : util::enumerate(selection)) {
-
-        elem->setPosition(glm::mix(minPosition, maxPosition,
-                                   static_cast<double>(index) / (selection.size() - 1)));
+        elem->setPosition(
+            glm::mix(minPosition, maxPosition,
+                     static_cast<double>(index) / static_cast<double>(selection.size() - 1)));
     }
 }
 
@@ -486,14 +472,11 @@ void util::alignAlphaToMean(const std::vector<TFPrimitive*>& selection) {
     if (selection.size() < 2) {
         return;
     }
-
-    const float alpha =
-        std::accumulate(selection.begin(), selection.end(), 0.0f,
-                        [](const float sum, TFPrimitive* p) { return sum + p->getAlpha(); }) /
-        selection.size();
-    for (auto& elem : selection) {
-        elem->setAlpha(alpha);
-    }
+    const auto alpha =
+        std::transform_reduce(selection.begin(), selection.end(), 0.0f, std::plus<>{},
+                              [](TFPrimitive* p) { return p->getAlpha(); }) /
+        static_cast<float>(selection.size());
+    std::ranges::for_each(selection, [&](TFPrimitive* p) { p->setAlpha(alpha); });
 }
 
 void util::alignAlphaToTop(const std::vector<TFPrimitive*>& selection) {
@@ -504,22 +487,17 @@ void util::alignAlphaToTop(const std::vector<TFPrimitive*>& selection) {
     const float alpha = (*std::max_element(selection.begin(), selection.end(), [](auto a, auto b) {
                             return a->getAlpha() < b->getAlpha();
                         }))->getAlpha();
-    for (auto& elem : selection) {
-        elem->setAlpha(alpha);
-    }
+    std::ranges::for_each(selection, [&](TFPrimitive* p) { p->setAlpha(alpha); });
 }
 
 void util::alignAlphaToBottom(const std::vector<TFPrimitive*>& selection) {
     if (selection.size() < 2) {
         return;
     }
-
     const float alpha = (*std::min_element(selection.begin(), selection.end(), [](auto a, auto b) {
                             return a->getAlpha() < b->getAlpha();
                         }))->getAlpha();
-    for (auto& elem : selection) {
-        elem->setAlpha(alpha);
-    }
+    std::ranges::for_each(selection, [&](TFPrimitive* p) { p->setAlpha(alpha); });
 }
 
 void util::alignPositionToMean(std::vector<TFPrimitive*> selection) {
@@ -528,18 +506,15 @@ void util::alignPositionToMean(std::vector<TFPrimitive*> selection) {
     }
 
     const auto pos =
-        std::accumulate(selection.begin(), selection.end(), 0.0,
-                        [](const double sum, TFPrimitive* p) { return sum + p->getPosition(); }) /
-        selection.size();
+        std::transform_reduce(selection.begin(), selection.end(), 0.0f, std::plus<>{},
+                              [](TFPrimitive* p) { return p->getPosition(); }) /
+        static_cast<float>(selection.size());
 
     std::stable_sort(selection.begin(), selection.end(),
                      [&](const TFPrimitive* a, const TFPrimitive* b) {
                          return std::abs(a->getPosition() - pos) < std::abs(b->getPosition() - pos);
                      });
-
-    for (auto& elem : selection) {
-        elem->setPosition(pos);
-    }
+    std::ranges::for_each(selection, [&](TFPrimitive* p) { p->setPosition(pos); });
 }
 
 void util::alignPositionToLeft(std::vector<TFPrimitive*> selection) {
@@ -555,10 +530,7 @@ void util::alignPositionToLeft(std::vector<TFPrimitive*> selection) {
                      [&](const TFPrimitive* a, const TFPrimitive* b) {
                          return std::abs(a->getPosition() - pos) < std::abs(b->getPosition() - pos);
                      });
-
-    for (auto& elem : selection) {
-        elem->setPosition(pos);
-    }
+    std::ranges::for_each(selection, [&](TFPrimitive* p) { p->setPosition(pos); });
 }
 
 void util::alignPositionToRight(std::vector<TFPrimitive*> selection) {
@@ -573,10 +545,7 @@ void util::alignPositionToRight(std::vector<TFPrimitive*> selection) {
     std::sort(selection.begin(), selection.end(), [&](const TFPrimitive* a, const TFPrimitive* b) {
         return std::abs(a->getPosition() - pos) < std::abs(b->getPosition() - pos);
     });
-
-    for (auto& elem : selection) {
-        elem->setPosition(pos);
-    }
+    std::ranges::for_each(selection, [&](TFPrimitive* p) { p->setPosition(pos); });
 }
 
 void util::interpolateAlpha(const std::vector<TFPrimitive*>& selection) {
@@ -591,11 +560,11 @@ void util::interpolateAlpha(const std::vector<TFPrimitive*>& selection) {
     const auto minPosition = (*min)->getPosition();
     const auto maxPosition = (*max)->getPosition();
 
-    for (auto& elem : selection) {
+    std::ranges::for_each(selection, [&](TFPrimitive* p) {
         const auto t = static_cast<std::remove_const_t<decltype(minAlpha)>>(
-            (elem->getPosition() - minPosition) / (maxPosition - minPosition));
-        elem->setAlpha(glm::mix(minAlpha, maxAlpha, t));
-    }
+            (p->getPosition() - minPosition) / (maxPosition - minPosition));
+        p->setAlpha(glm::mix(minAlpha, maxAlpha, t));
+    });
 }
 
 void util::flipPositions(const std::vector<TFPrimitive*>& selection) {
@@ -609,9 +578,9 @@ void util::flipPositions(const std::vector<TFPrimitive*>& selection) {
     const auto minPosition = (*min)->getPosition();
     const auto maxPosition = (*max)->getPosition();
 
-    for (auto& elem : selection) {
-        elem->setPosition(maxPosition - (elem->getPosition() - minPosition));
-    }
+    std::ranges::for_each(selection, [&](TFPrimitive* p) {
+        p->setPosition(maxPosition - (p->getPosition() - minPosition));
+    });
 }
 
 }  // namespace inviwo

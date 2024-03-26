@@ -53,10 +53,10 @@ using HistogramSelection = std::bitset<32>;
 constexpr HistogramSelection histogramSelectionAll{0xffffffff};
 
 struct IVW_CORE_API Statistics {
-    double min;
-    double max;
-    double mean;
-    double standardDeviation;
+    double min{0.0};
+    double max{0.0};
+    double mean{0.0};
+    double standardDeviation{0.0};
     std::vector<double> percentiles;
 };
 
@@ -74,7 +74,7 @@ struct IVW_CORE_API Histogram1D {
 
 namespace util {
 
-IVW_CORE_API std::vector<double> calculatePercentiles(const std::vector<size_t> hist, dvec2 range,
+IVW_CORE_API std::vector<double> calculatePercentiles(const std::vector<size_t>& hist, dvec2 range,
                                                       size_t sum);
 IVW_CORE_API Statistics calculateHistogramStats(const std::vector<size_t>& hist);
 
@@ -83,8 +83,8 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
                                              size_t bins) {
     // a double type with the same extent as T
     using D = typename util::same_extent<T, double>::type;
-    // a ptrdiff_t type with same extent as T
-    using I = typename util::same_extent<T, std::ptrdiff_t>::type;
+    // a size_t type with same extent as T
+    using I = typename util::same_extent<T, size_t>::type;
 
     constexpr size_t extent = util::rank<T>::value > 0 ? util::extent<T>::value : 1;
 
@@ -112,7 +112,7 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
     const D rangeScaleFactor(static_cast<double>(bins - 1) /
                              (dataMap.dataRange.y - dataMap.dataRange.x));
 
-    const std::ptrdiff_t maxBin = bins - 1;
+    const size_t maxBin = bins - 1;
 
     for (const auto& item : data) {
         const auto val = static_cast<D>(item);

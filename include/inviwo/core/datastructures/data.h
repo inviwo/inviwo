@@ -176,7 +176,9 @@ public:
 protected:
     Data() = default;
     Data(const Data<Self, Repr>& rhs);
+    Data(Data<Self, Repr>&& rhs) = default;
     Data<Self, Repr>& operator=(const Data<Self, Repr>& rhs);
+    Data<Self, Repr>& operator=(Data<Self, Repr>&& rhs) = default;
 
     template <typename F, typename T>
     decltype(auto) getLastOr(F&& f, T&& fallback) const {

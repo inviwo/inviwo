@@ -41,11 +41,11 @@ namespace inviwo {
 
 class IVW_CORE_API TFLookupTable : public TFPrimitiveSetObserver {
 public:
-    TFLookupTable(TransferFunction& tf, size_t size = 2048);
+    explicit TFLookupTable(TransferFunction& tf, size_t size = 2048);
     TFLookupTable(const TFLookupTable&) = delete;
-    TFLookupTable(TFLookupTable&&) = default;
+    TFLookupTable(TFLookupTable&&) noexcept = default;
     TFLookupTable& operator=(const TFLookupTable&) = delete;
-    TFLookupTable& operator=(TFLookupTable&&) = default;
+    TFLookupTable& operator=(TFLookupTable&&) noexcept = default;
     virtual ~TFLookupTable() = default;
 
     void setSize(size_t size);

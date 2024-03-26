@@ -52,7 +52,7 @@ Layer::Layer(size2_t defaultDimensions, const DataFormatBase* defaultFormat, Lay
     , defaultWrapping_{wrapping}
     , histograms_{} {}
 
-Layer::Layer(LayerConfig config)
+Layer::Layer(const LayerConfig& config)
     : Data<Layer, LayerRepresentation>{}
     , StructuredGridEntity<2>{config.model.value_or(LayerConfig::defaultModel),
                               config.world.value_or(LayerConfig::defaultWorld)}
@@ -80,10 +80,10 @@ Layer::Layer(std::shared_ptr<LayerRepresentation> in)
     , defaultWrapping_{in->getWrapping()}
     , histograms_{} {
 
-    addRepresentation(in);
+    addRepresentation(std::move(in));
 }
 
-Layer::Layer(const Layer& rhs, NoData, LayerConfig config)
+Layer::Layer(const Layer& rhs, NoData, const LayerConfig& config)
     : Data<Layer, LayerRepresentation>{}
     , StructuredGridEntity<2>{config.model.value_or(rhs.getModelMatrix()),
                               config.world.value_or(rhs.getWorldMatrix())}
@@ -161,11 +161,11 @@ std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(
                                                                                 << "\")");
     }
 
-    return std::unique_ptr<std::vector<unsigned char>>();
+    return {};
 }
 
 vec2 Layer::getWorldSpaceGradientSpacing() const {
-    mat3 textureToWorld = mat3(getCoordinateTransformer().getTextureToWorldMatrix());
+    const auto textureToWorld = mat3(getCoordinateTransformer().getTextureToWorldMatrix());
 
     const vec3 extent{glm::length2(textureToWorld[0]), glm::length2(textureToWorld[1]),
                       glm::length2(textureToWorld[2])};
@@ -203,7 +203,7 @@ vec2 Layer::getWorldSpaceGradientSpacing() const {
         return (std::abs(x1) >= std::abs(x2)) ? x1 : x2;
     };
 
-    vec2 ds{signedMax(a.x, b.x), signedMax(a.y, b.y)};
+    const vec2 ds{signedMax(a.x, b.x), signedMax(a.y, b.y)};
 
     // Return the spacing in world space,
     // actually given by:
@@ -251,8 +251,8 @@ auto histCalc(const Layer& v) {
 void Layer::discardHistograms() { histograms_.discard(histCalc(*this)); }
 
 HistogramCache::Result Layer::calculateHistograms(
-    std::function<void(const std::vector<Histogram1D>&)> whenDone) const {
-    return histograms_.calculateHistograms(histCalc(*this), std::move(whenDone));
+    const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const {
+    return histograms_.calculateHistograms(histCalc(*this), whenDone);
 }
 
 template class IVW_CORE_TMPL_INST DataReaderType<Layer>;

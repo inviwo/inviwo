@@ -517,9 +517,8 @@ void bindTexture(TransferFunctionProperty& tfp, const TextureUnit& texUnit) {
     }
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                        const TransferFunctionProperty& tf) {
-	TextureUnit unit;
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, TransferFunctionProperty& tf) {
+    TextureUnit unit;
     bindTexture(tf, unit);
     shader.setUniform(tf.getIdentifier(), unit);
     cont.push_back(std::move(unit));
