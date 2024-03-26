@@ -259,9 +259,8 @@ void VolumeRaycaster::raycast(const Volume& volume) {
 
         volume.getRepresentation<VolumeGL>()->bindTexture(volumeNum.unit());
 
-        if (const auto tfLayer = isotf_.property.tf_.get().getData()) {
-            const auto transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
-            transferFunctionGL->bindTexture(tfNum.unit());
+        if (const auto tfLayer = isotf_.property.tf_.getRepresentation<LayerGL>()) {
+            tfLayer->bindTexture(tfNum.unit());
         }
 
         utilgl::bindTextures(*entry, entryNums.color().unit(), entryNums.depth().unit(),
