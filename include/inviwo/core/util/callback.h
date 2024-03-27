@@ -37,7 +37,6 @@
 namespace inviwo {
 
 using BaseCallBack = std::function<void()>;
-// clang-format off
 /**
  * Example usage
  * CallBackList list;
@@ -73,9 +72,9 @@ public:
      */
     bool remove(const BaseCallBack* callback) {
         auto it = std::remove_if(callBackList_.begin(), callBackList_.end(),
-                                     [&](const std::shared_ptr<std::function<void()>>& ptr) {
-                                         return ptr.get() == callback;
-                                     });
+                                 [&](const std::shared_ptr<std::function<void()>>& ptr) {
+                                     return ptr.get() == callback;
+                                 });
         auto nelem = std::distance(it, callBackList_.end());
         callBackList_.erase(it, callBackList_.end());
         return nelem > 0;
@@ -84,9 +83,7 @@ public:
     /**
      * \brief Removes all added callbacks.
      */
-    void clear() {
-        callBackList_.clear();
-    }
+    void clear() { callBackList_.clear(); }
 
 private:
     int callbacksBlocked_{0};
@@ -94,5 +91,4 @@ private:
     mutable Dispatcher<void()> dispatcher_;
 };
 
-// clang-format on
 }  // namespace inviwo

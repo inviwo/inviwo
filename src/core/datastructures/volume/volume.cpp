@@ -50,7 +50,7 @@ Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
     , defaultWrapping_{wrapping}
     , histograms_{} {}
 
-Volume::Volume(VolumeConfig config)
+Volume::Volume(const VolumeConfig& config)
     : Data<Volume, VolumeRepresentation>{}
     , StructuredGridEntity<3>{config.model.value_or(VolumeConfig::defaultModel),
                               config.world.value_or(VolumeConfig::defaultWorld)}
@@ -79,10 +79,10 @@ Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     , defaultWrapping_{in->getWrapping()}
     , histograms_{} {
 
-    addRepresentation(in);
+    addRepresentation(std::move(in));
 }
 
-Volume::Volume(const Volume& rhs, NoData, VolumeConfig config)
+Volume::Volume(const Volume& rhs, NoData, const VolumeConfig& config)
     : Data<Volume, VolumeRepresentation>{}
     , StructuredGridEntity<3>{config.model.value_or(rhs.getModelMatrix()),
                               config.world.value_or(rhs.getWorldMatrix())}
@@ -178,13 +178,13 @@ Document Volume::getInfo() const {
 }
 
 vec3 Volume::getWorldSpaceGradientSpacing() const {
-    mat3 textureToWorld = mat3(getCoordinateTransformer().getTextureToWorldMatrix());
+    const auto textureToWorld = mat3(getCoordinateTransformer().getTextureToWorldMatrix());
     // Basis vectors with a length of one voxel.
     // Basis vectors may be non-orthogonal
-    auto dimensions = getDimensions();
-    vec3 a = textureToWorld[0] / static_cast<float>(dimensions[0]);
-    vec3 b = textureToWorld[1] / static_cast<float>(dimensions[1]);
-    vec3 c = textureToWorld[2] / static_cast<float>(dimensions[2]);
+    const auto dimensions = getDimensions();
+    const vec3 a = textureToWorld[0] / static_cast<float>(dimensions[0]);
+    const vec3 b = textureToWorld[1] / static_cast<float>(dimensions[1]);
+    const vec3 c = textureToWorld[2] / static_cast<float>(dimensions[2]);
     // Project the voxel basis vectors
     // onto the world space x/y/z axes,
     // and choose the longest projected vector
@@ -202,8 +202,8 @@ vec3 Volume::getWorldSpaceGradientSpacing() const {
         return (std::abs(x1) >= std::abs(x2)) ? x1 : x2;
     };
 
-    vec3 ds{signedMax(a.x, signedMax(b.x, c.x)), signedMax(a.y, signedMax(b.y, c.y)),
-            signedMax(a.z, signedMax(b.z, c.z))};
+    const vec3 ds{signedMax(a.x, signedMax(b.x, c.x)), signedMax(a.y, signedMax(b.y, c.y)),
+                  signedMax(a.z, signedMax(b.z, c.z))};
 
     // Return the spacing in world space,
     // actually given by:
@@ -236,7 +236,7 @@ VolumeConfig Volume::config() const {
             .world = getWorldMatrix()};
 }
 
-uvec3 Volume::colorCode = uvec3(188, 101, 101);
+const uvec3 Volume::colorCode = uvec3(188, 101, 101);
 const std::string Volume::classIdentifier = "org.inviwo.Volume";
 const std::string Volume::dataName = "Volume";
 
@@ -256,8 +256,8 @@ auto histCalc(const Volume& v) {
 void Volume::discardHistograms() { histograms_.discard(histCalc(*this)); }
 
 HistogramCache::Result Volume::calculateHistograms(
-    std::function<void(const std::vector<Histogram1D>&)> whenDone) const {
-    return histograms_.calculateHistograms(histCalc(*this), std::move(whenDone));
+    const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const {
+    return histograms_.calculateHistograms(histCalc(*this), whenDone);
 }
 
 template class IVW_CORE_TMPL_INST DataReaderType<Volume>;

@@ -101,7 +101,7 @@ public:
         T* port;
     };
 
-    TFData() : base_{nullptr} {}
+    TFData() = default;
 
     // NOLINTBEGIN(google-explicit-constructor
     template <typename T>

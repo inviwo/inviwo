@@ -48,7 +48,10 @@ struct ValueWrapper {
         : value(std::forward<U>(vals)...), defaultValue(value), name(name) {}
 
     ValueWrapper(const ValueWrapper<T>& rhs) = default;
+    ValueWrapper(ValueWrapper<T>&& rhs) = default;
     ValueWrapper<T>& operator=(const ValueWrapper<T>& that) = default;
+    ValueWrapper<T>& operator=(ValueWrapper<T>&& that) = default;
+    ~ValueWrapper() = default;
 
     ValueWrapper<T>& operator=(const T& val) {
         value = val;

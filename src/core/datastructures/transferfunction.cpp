@@ -60,11 +60,6 @@ TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values,
     , maskMin_{type == TFPrimitiveSetType::Relative ? 0.0 : std::numeric_limits<double>::lowest()}
     , maskMax_{type == TFPrimitiveSetType::Relative ? 1.0 : std::numeric_limits<double>::max()} {}
 
-TransferFunction::TransferFunction(const TransferFunction&) = default;
-TransferFunction& TransferFunction::operator=(const TransferFunction& rhs) = default;
-
-TransferFunction::~TransferFunction() = default;
-
 void TransferFunction::setMask(dvec2 mask) {
     if (maskMin_ != mask.x || maskMax_ != mask.y) {
         maskMin_ = mask.x;
@@ -124,7 +119,7 @@ std::vector<TFPrimitiveData> TransferFunction::simplify(const std::vector<TFPrim
 
     // Calculate the error resulting from using a linear interpolation between the prev and next
     // point instead of including the current one
-    const auto error = [&](size_t i) {
+    const auto error = [&](std::ptrdiff_t i) {
         const auto& prev = simple[i - 1];
         const auto& curr = simple[i];
         const auto& next = simple[i + 1];
@@ -135,9 +130,10 @@ std::vector<TFPrimitiveData> TransferFunction::simplify(const std::vector<TFPrim
 
     // Find the point which will result in the smallest error when removed.
     const auto nextToRemove = [&]() {
-        const auto index = util::make_sequence<size_t>(1, simple.size() - 1, 1);
-        return *std::min_element(index.begin(), index.end(),
-                                 [&](size_t a, size_t b) { return error(a) < error(b); });
+        const auto index = util::make_sequence<std::ptrdiff_t>(1, std::ssize(simple) - 1, 1);
+        return *std::min_element(
+            index.begin(), index.end(),
+            [&](std::ptrdiff_t a, std::ptrdiff_t b) { return error(a) < error(b); });
     };
 
     // Iteratively remove the point with the smallest error until the error gets larger then delta
@@ -153,10 +149,11 @@ std::vector<TFPrimitiveData> TransferFunction::simplify(const std::vector<TFPrim
 
 void TransferFunction::interpolateAndStoreColors(std::span<vec4> data) const {
     TFPrimitiveSet::interpolateAndStoreColors(data);
-    for (size_t i = 0; i < size_t(maskMin_ * data.size()); i++) {
+    const auto size = static_cast<double>(data.size());
+    for (auto i = size_t{0}; i < static_cast<size_t>(maskMin_ * size); i++) {
         data[i].a = 0.0;
     }
-    for (size_t i = size_t(maskMax_ * data.size()); i < data.size(); i++) {
+    for (auto i = static_cast<size_t>(maskMax_ * size); i < data.size(); i++) {
         data[i].a = 0.0;
     }
 }
@@ -177,8 +174,7 @@ bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs) {
 }
 
 TransferFunction TransferFunction::load(const std::filesystem::path& path) {
-    auto factory = util::getDataReaderFactory();
-
+    auto* factory = util::getDataReaderFactory();
     if (auto tf = factory->readDataForTypeAndExtension<TransferFunction>(path)) {
         return *tf;
     } else {
@@ -187,8 +183,7 @@ TransferFunction TransferFunction::load(const std::filesystem::path& path) {
     }
 }
 void TransferFunction::save(const TransferFunction& tf, const std::filesystem::path& path) {
-    auto factory = util::getDataWriterFactory();
-
+    auto* factory = util::getDataWriterFactory();
     if (!factory->writeDataForTypeAndExtension(&tf, path)) {
         throw Exception(IVW_CONTEXT_CUSTOM("TransferFunction"),
                         "Unable to save TransferFunction to {}", path);

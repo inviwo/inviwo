@@ -112,9 +112,13 @@ const std::string& dataName() {
 }
 
 template <class T>
-using HasColorCodeUpper = is_detected_exact<uvec3, detail::colorCodeUpperType, T>;
+using HasColorCodeUpper =
+    std::disjunction<is_detected_exact<uvec3, detail::colorCodeUpperType, T>,
+                     is_detected_exact<const uvec3, detail::colorCodeUpperType, T>>;
 template <class T>
-using HasColorCodeLower = is_detected_exact<uvec3, detail::colorCodeLowerType, T>;
+using HasColorCodeLower =
+    std::disjunction<is_detected_exact<uvec3, detail::colorCodeLowerType, T>,
+                     is_detected_exact<const uvec3, detail::colorCodeLowerType, T>>;
 template <class T>
 using HasColorCode = std::disjunction<HasColorCodeUpper<T>, HasColorCodeLower<T>>;
 

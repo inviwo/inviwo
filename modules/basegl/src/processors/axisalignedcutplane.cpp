@@ -87,7 +87,7 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     , applyTF_{"applyTF", "Apply TF", true}
     , tf_{"transferfunction",
           "Transfer function",
-          {{{0.0, vec4{0.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f}}}},
+          TransferFunction{{{0.0, vec4{0.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f}}}},
           &volume_}
     , camera_{"camera", "Camera", util::boundingBox(volume_)}
     , trackball_{&camera_}
