@@ -95,7 +95,7 @@ public:
     void set(const TransferFunctionProperty* p);
 
     void setMask(double maskMin, double maskMax);
-    const dvec2 getMask() const;
+    dvec2 getMask() const;
     void clearMask();
 
     void setZoomH(double zoomHMin, double zoomHMax);

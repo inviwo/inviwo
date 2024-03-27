@@ -13,3 +13,5 @@ KeepEmptyLinesAtTheStartOfBlocks: true
 # AllowShortCaseLabelsOnASingleLine: true
 DerivePointerAlignment: false
 PointerAlignment: Left
+
+QualifierAlignment: QAS_Left;

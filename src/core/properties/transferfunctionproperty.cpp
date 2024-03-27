@@ -66,14 +66,14 @@ TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
                                                    const TransferFunction& value, TFData port,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics))
     , tf_{"TransferFunction", value}
     , zoomH_("zoomH_", dvec2(0.0, 1.0))
     , zoomV_("zoomV_", dvec2(0.0, 1.0))
     , histogramMode_("showHistogram_", port ? HistogramMode::All : HistogramMode::Off)
     , histogramSelection_("histogramSelection", histogramSelectionAll)
     , lookup_{tf_.value}
-    , data_{port} {
+    , data_{std::move(port)} {
 
     tf_.value.addObserver(this);
 }
@@ -83,8 +83,8 @@ TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
                                                    const TransferFunction& value, TFData port,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
-    : TransferFunctionProperty(identifier, displayName, Document{}, value, port, invalidationLevel,
-                               semantics) {}
+    : TransferFunctionProperty(identifier, displayName, Document{}, value, std::move(port),
+                               invalidationLevel, std::move(semantics)) {}
 
 TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
                                                    std::string_view displayName, TFData port,
@@ -93,7 +93,7 @@ TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
     : TransferFunctionProperty(identifier, displayName,
                                TransferFunction({{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
                                                  {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
-                               port, invalidationLevel, semantics) {}
+                               std::move(port), invalidationLevel, std::move(semantics)) {}
 
 TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionProperty& rhs)
     : Property(rhs)
@@ -142,7 +142,7 @@ auto TransferFunctionProperty::getHistogramSelection() const -> HistogramSelecti
 }
 
 TransferFunctionProperty& TransferFunctionProperty::resetToDefaultState() {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
 
     bool modified = false;
     modified |= tf_.reset();
@@ -236,9 +236,9 @@ TransferFunctionProperty& TransferFunctionProperty::setZoomV(double zoomVMin, do
     return *this;
 }
 
-TransferFunctionProperty& TransferFunctionProperty::set(const TransferFunction& value) {
+TransferFunctionProperty& TransferFunctionProperty::set(const TransferFunction& tf) {
     tf_.value.removeObserver(this);
-    if (tf_.update(value)) propertyModified();
+    if (tf_.update(tf)) propertyModified();
     tf_.value.addObserver(this);
     return *this;
 }
@@ -249,10 +249,10 @@ const TransferFunction* TransferFunctionProperty::operator->() const { return &t
 TransferFunction* TransferFunctionProperty::operator->() { return &tf_.value; }
 
 void TransferFunctionProperty::set(const Property* property) {
-    if (auto tfp = dynamic_cast<const TransferFunctionProperty*>(property)) {
-        set(tfp);
-    } else if (auto isotf = dynamic_cast<const IsoTFProperty*>(property)) {
-        set(isotf);
+    if (const auto* tf = dynamic_cast<const TransferFunctionProperty*>(property)) {
+        set(tf);
+    } else if (const auto* isoTF = dynamic_cast<const IsoTFProperty*>(property)) {
+        set(isoTF);
     }
 }
 

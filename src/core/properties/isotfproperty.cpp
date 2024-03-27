@@ -38,9 +38,10 @@ IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displ
                              Document help, const IsoValueCollection& isovalues,
                              const TransferFunction& tf, TFData port,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, help, invalidationLevel, semantics)
-    , isovalues_("isovalues", "Iso Values", isovalues, port)
-    , tf_("transferFunction", "Transfer Function", tf, port) {
+    : CompositeProperty{identifier, displayName, std::move(help), invalidationLevel,
+                        std::move(semantics)}
+    , isovalues_{"isovalues", "Iso Values", isovalues, port}
+    , tf_{"transferFunction", "Transfer Function", tf, std::move(port)} {
 
     addProperties(isovalues_, tf_);
 
@@ -52,9 +53,9 @@ IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displ
                              const IsoValueCollection& isovalues, const TransferFunction& tf,
                              TFData port, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , isovalues_("isovalues", "Iso Values", isovalues, port)
-    , tf_("transferFunction", "Transfer Function", tf, port) {
+    : CompositeProperty{identifier, displayName, invalidationLevel, std::move(semantics)}
+    , isovalues_{"isovalues", "Iso Values", isovalues, port}
+    , tf_{"transferFunction", "Transfer Function", tf, std::move(port)} {
 
     addProperties(isovalues_, tf_);
 
@@ -65,18 +66,27 @@ IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displ
 IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName,
                              Document help, TFData port, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
-    : IsoTFProperty(identifier, displayName, help, {},
-                    TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}), port,
-                    invalidationLevel, semantics) {}
+    : IsoTFProperty{identifier,
+                    displayName,
+                    std::move(help),
+                    {},
+                    TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}),
+                    std::move(port),
+                    invalidationLevel,
+                    std::move(semantics)} {}
 
 IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName, TFData port,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : IsoTFProperty(identifier, displayName, {},
-                    TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}), port,
-                    invalidationLevel, semantics) {}
+    : IsoTFProperty{identifier,
+                    displayName,
+                    {},
+                    TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}),
+                    std::move(port),
+                    invalidationLevel,
+                    std::move(semantics)} {}
 
 IsoTFProperty::IsoTFProperty(const IsoTFProperty& rhs)
-    : CompositeProperty(rhs), isovalues_(rhs.isovalues_), tf_(rhs.tf_) {
+    : CompositeProperty{rhs}, isovalues_{rhs.isovalues_}, tf_{rhs.tf_} {
 
     addProperties(isovalues_, tf_);
 
@@ -91,12 +101,12 @@ std::string IsoTFProperty::getClassIdentifierForWidget() const {
 }
 
 void IsoTFProperty::set(const Property* property) {
-    if (const auto isotfprop = dynamic_cast<const CompositeProperty*>(property)) {
-        CompositeProperty::set(isotfprop);
-    } else if (auto isoprop = dynamic_cast<const IsoValueProperty*>(property)) {
-        isovalues_.set(isoprop);
-    } else if (auto tfprop = dynamic_cast<const TransferFunctionProperty*>(property)) {
-        tf_.set(tfprop);
+    if (const auto* isoTF = dynamic_cast<const CompositeProperty*>(property)) {
+        CompositeProperty::set(isoTF);
+    } else if (const auto* iso = dynamic_cast<const IsoValueProperty*>(property)) {
+        isovalues_.set(iso);
+    } else if (const auto* tf = dynamic_cast<const TransferFunctionProperty*>(property)) {
+        tf_.set(tf);
     }
 }
 
@@ -106,7 +116,7 @@ void IsoTFProperty::set(const TransferFunctionProperty* p) { tf_.set(p); }
 
 void IsoTFProperty::setMask(double maskMin, double maskMax) { tf_.setMask(maskMin, maskMax); }
 
-const dvec2 IsoTFProperty::getMask() const { return tf_.getMask(); }
+dvec2 IsoTFProperty::getMask() const { return tf_.getMask(); }
 
 void IsoTFProperty::clearMask() { tf_.clearMask(); }
 

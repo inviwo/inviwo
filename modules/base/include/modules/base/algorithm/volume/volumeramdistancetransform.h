@@ -41,7 +41,7 @@
 #include <inviwo/core/util/sourcecontext.h>      // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/stringconversion.h>   // for toString
 
-#include <stdlib.h>   // for size_t, abs
+#include <cstdlib>   // for size_t, abs
 #include <algorithm>  // for min
 #include <cmath>      // for sqrt
 #include <string>     // for operator+, basic_string, string
@@ -82,28 +82,28 @@ namespace util {
 template <typename T, typename U, typename Predicate, typename ValueTransform,
           typename ProgressCallback>
 void volumeRAMDistanceTransform(const VolumeRAMPrecision<T>* inVolume,
-                                VolumeRAMPrecision<U>* outDistanceField, const Matrix<3, U> basis,
-                                const size3_t upsample, Predicate predicate,
+                                VolumeRAMPrecision<U>* outDistanceField, const Matrix<3, U>& basis,
+                                const size3_t& upsample, Predicate predicate,
                                 ValueTransform valueTransform, ProgressCallback callback);
 
 template <typename T, typename U>
 void volumeRAMDistanceTransform(const VolumeRAMPrecision<T>* inVolume,
-                                VolumeRAMPrecision<U>* outDistanceField, const Matrix<3, U> basis,
-                                const size3_t upsample);
+                                VolumeRAMPrecision<U>* outDistanceField, const Matrix<3, U>& basis,
+                                const size3_t& upsample);
 
 template <typename U, typename Predicate, typename ValueTransform, typename ProgressCallback>
 void volumeDistanceTransform(const Volume* inVolume, VolumeRAMPrecision<U>* outDistanceField,
-                             const size3_t upsample, Predicate predicate,
+                             const size3_t& upsample, Predicate predicate,
                              ValueTransform valueTransform, ProgressCallback callback);
 
 template <typename U, typename ProgressCallback>
 void volumeDistanceTransform(const Volume* inVolume, VolumeRAMPrecision<U>* outDistanceField,
-                             const size3_t upsample, double threshold, bool normalize, bool flip,
+                             const size3_t& upsample, double threshold, bool normalize, bool flip,
                              bool square, double scale, ProgressCallback callback);
 
 template <typename U>
 void volumeDistanceTransform(const Volume* inVolume, VolumeRAMPrecision<U>* outDistanceField,
-                             const size3_t upsample, double threshold, bool normalize, bool flip,
+                             const size3_t& upsample, double threshold, bool normalize, bool flip,
                              bool square, double scale);
 
 }  // namespace util
@@ -112,7 +112,7 @@ template <typename T, typename U, typename Predicate, typename ValueTransform,
           typename ProgressCallback>
 void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T>* inVolume,
                                       VolumeRAMPrecision<U>* outDistanceField,
-                                      const Matrix<3, U> basis, const size3_t upsample,
+                                      const Matrix<3, U>& basis, const size3_t& upsample,
                                       Predicate predicate, ValueTransform valueTransform,
                                       ProgressCallback callback) {
 
@@ -298,7 +298,7 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T>* inVolume,
 template <typename T, typename U>
 void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T>* inVolume,
                                       VolumeRAMPrecision<U>* outDistanceField,
-                                      const Matrix<3, U> basis, const size3_t upsample) {
+                                      const Matrix<3, U>& basis, const size3_t& upsample) {
 
     util::volumeRAMDistanceTransform(
         inVolume, outDistanceField, basis, upsample,
@@ -311,7 +311,7 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T>* inVolume,
 
 template <typename U, typename Predicate, typename ValueTransform, typename ProgressCallback>
 void util::volumeDistanceTransform(const Volume* inVolume, VolumeRAMPrecision<U>* outDistanceField,
-                                   const size3_t upsample, Predicate predicate,
+                                   const size3_t& upsample, Predicate predicate,
                                    ValueTransform valueTransform, ProgressCallback callback) {
 
     const auto inputVolumeRep = inVolume->getRepresentation<VolumeRAM>();
@@ -323,7 +323,7 @@ void util::volumeDistanceTransform(const Volume* inVolume, VolumeRAMPrecision<U>
 
 template <typename U, typename ProgressCallback>
 void util::volumeDistanceTransform(const Volume* inVolume, VolumeRAMPrecision<U>* outDistanceField,
-                                   const size3_t upsample, double threshold, bool normalize,
+                                   const size3_t& upsample, double threshold, bool normalize,
                                    bool flip, bool square, double scale,
                                    ProgressCallback progress) {
 
@@ -378,7 +378,7 @@ void util::volumeDistanceTransform(const Volume* inVolume, VolumeRAMPrecision<U>
 
 template <typename U>
 void util::volumeDistanceTransform(const Volume* inVolume, VolumeRAMPrecision<U>* outDistanceField,
-                                   const size3_t upsample, double threshold, bool normalize,
+                                   const size3_t& upsample, double threshold, bool normalize,
                                    bool flip, bool square, double scale) {
     util::volumeDistanceTransform(inVolume, outDistanceField, upsample, threshold, normalize, flip,
                                   square, scale, [](double) {});

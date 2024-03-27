@@ -54,7 +54,7 @@ struct IVW_CORE_API TFPrimitiveData {
  */
 class IVW_CORE_API TFPrimitive : public Observable<TFPrimitiveObserver>, public Serializable {
 public:
-    TFPrimitive(double pos = 0.0, const vec4& color = vec4(0.0f));
+    explicit TFPrimitive(double pos = 0.0, const vec4& color = vec4(0.0f));
     // Cannot use default constructors and assignment operator for TFPrimitive!
     //
     // Default constructors would call the base class constructor of Observable and thereby
@@ -64,6 +64,7 @@ public:
     TFPrimitive(const TFPrimitive& rhs);
     TFPrimitive(TFPrimitive&& rhs);
     TFPrimitive& operator=(const TFPrimitive& that);
+    TFPrimitive& operator=(TFPrimitive&& that);
     virtual ~TFPrimitive() = default;
 
     void setData(const TFPrimitiveData& data);

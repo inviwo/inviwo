@@ -38,11 +38,12 @@ namespace inviwo {
 
 class IVW_CORE_API TransferFunctionLayerWriter : public DataWriterType<TransferFunction> {
 public:
-    TransferFunctionLayerWriter(std::unique_ptr<DataWriterType<Layer>> layerWriter);
+    explicit TransferFunctionLayerWriter(std::unique_ptr<DataWriterType<Layer>> layerWriter);
     TransferFunctionLayerWriter(const TransferFunctionLayerWriter& rhs);
     TransferFunctionLayerWriter(TransferFunctionLayerWriter&&) noexcept = default;
     TransferFunctionLayerWriter& operator=(const TransferFunctionLayerWriter& that);
     TransferFunctionLayerWriter& operator=(TransferFunctionLayerWriter&&) noexcept = default;
+    virtual ~TransferFunctionLayerWriter() override = default;
     virtual TransferFunctionLayerWriter* clone() const override;
 
     virtual void writeData(const TransferFunction* data,
@@ -57,7 +58,7 @@ private:
 
 class IVW_CORE_API TransferFunctionLayerWriterWrapper : public FactoryObserver<DataWriter> {
 public:
-    TransferFunctionLayerWriterWrapper(DataWriterFactory* factory);
+    explicit TransferFunctionLayerWriterWrapper(DataWriterFactory* factory);
     virtual void onRegister(DataWriter* Writer) override;
     virtual void onUnRegister(DataWriter* Writer) override;
 

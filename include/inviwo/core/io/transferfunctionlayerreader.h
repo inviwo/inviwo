@@ -46,6 +46,7 @@ public:
     TransferFunctionLayerReader(TransferFunctionLayerReader&&) noexcept = default;
     TransferFunctionLayerReader& operator=(const TransferFunctionLayerReader& that);
     TransferFunctionLayerReader& operator=(TransferFunctionLayerReader&&) noexcept = default;
+    virtual ~TransferFunctionLayerReader() override = default;
 
     virtual TransferFunctionLayerReader* clone() const override;
 

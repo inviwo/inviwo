@@ -125,7 +125,7 @@ public:
      * * Log Apply logarithmic scaling to each bar.
      *
      */
-    TransferFunctionProperty& setHistogramMode(HistogramMode type);
+    TransferFunctionProperty& setHistogramMode(HistogramMode mode);
     HistogramMode getHistogramMode() const;
 
     /**

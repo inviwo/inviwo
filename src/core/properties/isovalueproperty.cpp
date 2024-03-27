@@ -40,13 +40,13 @@ IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view
                                    Document help, const IsoValueCollection& value, TFData port,
                                    PropertySemantics semantics)
     : Property(identifier, displayName, std::move(help), InvalidationLevel::InvalidResources,
-               semantics)
+               std::move(semantics))
     , iso_("IsoValues", value)
     , zoomH_("zoomH_", dvec2(0.0, 1.0))
     , zoomV_("zoomV_", dvec2(0.0, 1.0))
     , histogramMode_("showHistogram_", HistogramMode::All)
     , histogramSelection_("histogramSelection", histogramSelectionAll)
-    , data_{port} {
+    , data_{std::move(port)} {
 
     iso_.value.addObserver(this);
 }
@@ -54,11 +54,12 @@ IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view
 IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
                                    const IsoValueCollection& value, TFData port,
                                    PropertySemantics semantics)
-    : IsoValueProperty(identifier, displayName, Document{}, value, port, semantics) {}
+    : IsoValueProperty(identifier, displayName, Document{}, value, std::move(port),
+                       std::move(semantics)) {}
 
 IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
                                    TFData port, PropertySemantics semantics)
-    : IsoValueProperty(identifier, displayName, {}, port, semantics) {}
+    : IsoValueProperty(identifier, displayName, {}, std::move(port), std::move(semantics)) {}
 
 IsoValueProperty::IsoValueProperty(const IsoValueProperty& rhs)
     : Property(rhs)
@@ -141,7 +142,7 @@ IsoValueProperty& IsoValueProperty::setDefault(const IsoValueCollection& iso) {
 }
 
 IsoValueProperty& IsoValueProperty::resetToDefaultState() {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
 
     bool modified = false;
     modified |= iso_.reset();
@@ -192,9 +193,9 @@ const IsoValueCollection* IsoValueProperty::operator->() const { return &iso_.va
 IsoValueCollection* IsoValueProperty::operator->() { return &iso_.value; }
 
 void IsoValueProperty::set(const Property* property) {
-    if (auto iso = dynamic_cast<const IsoValueProperty*>(property)) {
+    if (const auto* iso = dynamic_cast<const IsoValueProperty*>(property)) {
         set(iso);
-    } else if (auto isotf = dynamic_cast<const IsoTFProperty*>(property)) {
+    } else if (const auto* isotf = dynamic_cast<const IsoTFProperty*>(property)) {
         set(isotf);
     }
 }

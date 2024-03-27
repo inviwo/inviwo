@@ -73,9 +73,9 @@ public:
                     const SwizzleMask& defaultSwizzleMask = VolumeConfig::defaultSwizzleMask,
                     InterpolationType interpolation = VolumeConfig::defaultInterpolation,
                     const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
-    explicit Volume(VolumeConfig config);
+    explicit Volume(const VolumeConfig& config);
     explicit Volume(std::shared_ptr<VolumeRepresentation>);
-    Volume(const Volume&) = default;
+
     /**
      * Create a volume based on @p rhs without copying any data. State from @p rhs can be
      * overridden by the @p config
@@ -85,10 +85,15 @@ public:
      *                        rhs
      * @param config          custom parameters overriding values from @p rhs
      */
-    Volume(const Volume& rhs, NoData noData, VolumeConfig config = {});
+    Volume(const Volume& rhs, NoData noData, const VolumeConfig& config = {});
+
+    Volume(const Volume&) = default;
+    Volume(Volume&&) = default;
     Volume& operator=(const Volume& that) = default;
-    virtual Volume* clone() const override;
+    Volume& operator=(Volume&& that) = default;
     virtual ~Volume();
+    virtual Volume* clone() const override;
+
     Document getInfo() const;
 
     /**
@@ -162,7 +167,7 @@ public:
     DataMapper dataMap;
     std::array<Axis, 3> axes;
 
-    static uvec3 colorCode;
+    static const uvec3 colorCode;
     static const std::string classIdentifier;
     static const std::string dataName;
 
@@ -170,7 +175,7 @@ public:
     const typename representation_traits<Volume, Kind>::type* getRep() const;
 
     [[nodiscard]] HistogramCache::Result calculateHistograms(
-        std::function<void(const std::vector<Histogram1D>&)> whenDone) const;
+        const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const;
     void discardHistograms();
 
     VolumeConfig config() const;
