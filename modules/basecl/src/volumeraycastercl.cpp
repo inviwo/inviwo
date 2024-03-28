@@ -67,7 +67,8 @@ VolumeRaycasterCL::VolumeRaycasterCL()
 VolumeRaycasterCL::~VolumeRaycasterCL() {}
 
 void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Layer* entryPoints,
-                                      const Layer* exitPoints, const TransferFunctionProperty& transferFunction,
+                                      const Layer* exitPoints,
+                                      const TransferFunctionProperty& transferFunction,
                                       Layer* outImage,
                                       const VECTOR_CLASS<cl::Event>* waitForEvents /*= nullptr*/,
                                       cl::Event* event /*= nullptr*/) {
@@ -82,8 +83,8 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Layer* entryPo
         const LayerCLGL* exitCL = exitPoints->getRepresentation<LayerCLGL>();
         LayerCLGL* outImageCL = outImage->getEditableRepresentation<LayerCLGL>();
         const VolumeCLGL* volumeCL = volume->getRepresentation<VolumeCLGL>();
-        const LayerCLGL* transferFunctionCL = transferFunction.getRepresentation<LayerCLGL>()
-        const LayerCLBase* background;
+        const LayerCLGL* transferFunctionCL =
+            transferFunction.getRepresentation<LayerCLGL>() const LayerCLBase * background;
         if (background_) {
             background = background_->getRepresentation<LayerCLGL>();
             glSync.addToAquireGLObjectList(static_cast<const LayerCLGL*>(background));
@@ -108,7 +109,7 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Layer* entryPo
         LayerCL* outImageCL = outImage->getEditableRepresentation<LayerCL>();
         const VolumeCL* volumeCL = volume->getRepresentation<VolumeCL>();
         const LayerCL* transferFunctionCL = transferFunction.getRepresentation<LayerCL>();
-        const LayerCL* background = background_ ? background_->getRepresentation<LayerCL>() 
+        const LayerCL* background = background_ ? background_->getRepresentation<LayerCL>()
                                                 : defaultBackground_.getRepresentation<LayerCL>();
         volumeRaycast(volume, volumeCL, background, entryCL, exitCL, transferFunctionCL, outImageCL,
                       globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
