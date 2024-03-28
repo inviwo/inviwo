@@ -121,8 +121,8 @@ public:
     DataWriterType& operator=(const DataWriterType& that) = default;
     DataWriterType(DataWriterType&& rhs) noexcept = default;
     DataWriterType& operator=(DataWriterType&& that) noexcept = default;
-    virtual DataWriterType* clone() const = 0;
-    virtual ~DataWriterType() = default;
+    virtual DataWriterType* clone() const override = 0;
+    virtual ~DataWriterType() override = default;
 
     /**
      * @brief Write @p data to @p filePath

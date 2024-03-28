@@ -57,6 +57,13 @@ TFPrimitive& TFPrimitive::operator=(const TFPrimitive& rhs) {
     }
     return *this;
 }
+TFPrimitive& TFPrimitive::operator=(TFPrimitive&& rhs) {
+    if ((this != &rhs) && (*this != rhs)) {
+        data_ = rhs.data_;
+        notifyTFPrimitiveObservers();
+    }
+    return *this;
+}
 
 void TFPrimitive::setData(const TFPrimitiveData& data) {
     if ((data.pos != data_.pos) || (data.color != data_.color)) {

@@ -54,7 +54,7 @@ public:
                   const IsoValueCollection& isovalues = {},
                   const TransferFunction& tf = TransferFunction({{0.0f, vec4(0.0f)},
                                                                  {1.0f, vec4(1.0f)}}),
-                  VolumeInport* volumeInport = nullptr,
+                  TFData port = {},
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
 
@@ -62,17 +62,16 @@ public:
                   const IsoValueCollection& isovalues = {},
                   const TransferFunction& tf = TransferFunction({{0.0f, vec4(0.0f)},
                                                                  {1.0f, vec4(1.0f)}}),
-                  VolumeInport* volumeInport = nullptr,
+                  TFData port = {},
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
 
     IsoTFProperty(std::string_view identifier, std::string_view displayName, Document help,
-                  VolumeInport* volumeInport,
+                  TFData port,
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
 
-    IsoTFProperty(std::string_view identifier, std::string_view displayName,
-                  VolumeInport* volumeInport,
+    IsoTFProperty(std::string_view identifier, std::string_view displayName, TFData port,
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
 
@@ -96,7 +95,7 @@ public:
     void set(const TransferFunctionProperty* p);
 
     void setMask(double maskMin, double maskMax);
-    const dvec2 getMask() const;
+    dvec2 getMask() const;
     void clearMask();
 
     void setZoomH(double zoomHMin, double zoomHMax);
@@ -128,13 +127,12 @@ public:
     IsoTFProperty& setHistogramSelection(HistogramSelection selection);
     HistogramSelection getHistogramSelection() const;
 
-    VolumeInport* getVolumeInport();
+    const TFData& data() const { return tf_.data(); }
 
     IsoValueProperty isovalues_;
     TransferFunctionProperty tf_;
 
 protected:
-    virtual void onMaskChange(const dvec2& mask) override;
     virtual void onZoomHChange(const dvec2& zoomH) override;
     virtual void onZoomVChange(const dvec2& zoomV) override;
     virtual void onHistogramModeChange(HistogramMode mode) override;

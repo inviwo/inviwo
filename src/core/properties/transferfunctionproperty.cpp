@@ -37,8 +37,6 @@ namespace inviwo {
 const std::string TransferFunctionProperty::classIdentifier = "org.inviwo.TransferFunctionProperty";
 std::string TransferFunctionProperty::getClassIdentifier() const { return classIdentifier; }
 
-void TFPropertyObserver::onMaskChange(const dvec2&) {}
-
 void TFPropertyObserver::onZoomHChange(const dvec2&) {}
 
 void TFPropertyObserver::onZoomVChange(const dvec2&) {}
@@ -46,10 +44,6 @@ void TFPropertyObserver::onZoomVChange(const dvec2&) {}
 void TFPropertyObserver::onHistogramModeChange(HistogramMode) {}
 
 void TFPropertyObserver::onHistogramSelectionChange(HistogramSelection) {}
-
-void TFPropertyObservable::notifyMaskChange(const dvec2& mask) {
-    forEachObserver([&](TFPropertyObserver* o) { o->onMaskChange(mask); });
-}
 
 void TFPropertyObservable::notifyZoomHChange(const dvec2& zoomH) {
     forEachObserver([&](TFPropertyObserver* o) { o->onZoomHChange(zoomH); });
@@ -69,36 +63,37 @@ void TFPropertyObservable::notifyHistogramSelectionChange(HistogramSelection sel
 
 TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
                                                    std::string_view displayName, Document help,
-                                                   const TransferFunction& value,
-                                                   VolumeInport* volumeInport,
+                                                   const TransferFunction& value, TFData port,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics))
     , tf_{"TransferFunction", value}
     , zoomH_("zoomH_", dvec2(0.0, 1.0))
     , zoomV_("zoomV_", dvec2(0.0, 1.0))
-    , histogramMode_("showHistogram_", HistogramMode::All)
+    , histogramMode_("showHistogram_", port ? HistogramMode::All : HistogramMode::Off)
     , histogramSelection_("histogramSelection", histogramSelectionAll)
-    , volumeInport_(volumeInport) {
+    , lookup_{tf_.value}
+    , data_{std::move(port)} {
 
     tf_.value.addObserver(this);
 }
 
-TransferFunctionProperty::TransferFunctionProperty(
-    std::string_view identifier, std::string_view displayName, const TransferFunction& value,
-    VolumeInport* volumeInport, InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : TransferFunctionProperty(identifier, displayName, Document{}, value, volumeInport,
-                               invalidationLevel, semantics) {}
-
 TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
                                                    std::string_view displayName,
-                                                   VolumeInport* volumeInport,
+                                                   const TransferFunction& value, TFData port,
+                                                   InvalidationLevel invalidationLevel,
+                                                   PropertySemantics semantics)
+    : TransferFunctionProperty(identifier, displayName, Document{}, value, std::move(port),
+                               invalidationLevel, std::move(semantics)) {}
+
+TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
+                                                   std::string_view displayName, TFData port,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
     : TransferFunctionProperty(identifier, displayName,
                                TransferFunction({{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
                                                  {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
-                               volumeInport, invalidationLevel, semantics) {}
+                               std::move(port), invalidationLevel, std::move(semantics)) {}
 
 TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionProperty& rhs)
     : Property(rhs)
@@ -107,7 +102,8 @@ TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionPropert
     , zoomV_(rhs.zoomV_)
     , histogramMode_(rhs.histogramMode_)
     , histogramSelection_(rhs.histogramSelection_)
-    , volumeInport_(rhs.volumeInport_) {
+    , lookup_{tf_.value}
+    , data_{rhs.data_} {
 
     tf_.value.addObserver(this);
 }
@@ -116,7 +112,7 @@ TransferFunctionProperty* TransferFunctionProperty::clone() const {
     return new TransferFunctionProperty(*this);
 }
 
-TransferFunctionProperty::~TransferFunctionProperty() { volumeInport_ = nullptr; }
+TransferFunctionProperty::~TransferFunctionProperty() = default;
 
 TransferFunction& TransferFunctionProperty::get() { return tf_.value; }
 
@@ -145,10 +141,8 @@ auto TransferFunctionProperty::getHistogramSelection() const -> HistogramSelecti
     return histogramSelection_;
 }
 
-VolumeInport* TransferFunctionProperty::getVolumeInport() { return volumeInport_; }
-
 TransferFunctionProperty& TransferFunctionProperty::resetToDefaultState() {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
 
     bool modified = false;
     modified |= tf_.reset();
@@ -201,30 +195,16 @@ TransferFunctionProperty& TransferFunctionProperty::setMask(double maskMin, doub
     if (maskMax < maskMin) {
         maskMax = maskMin;
     }
-
-    if (tf_.value.getMaskMin() != maskMax || tf_.value.getMaskMax() != maskMax) {
-        tf_.value.setMaskMin(maskMin);
-        tf_.value.setMaskMax(maskMax);
-        notifyMaskChange(dvec2(maskMin, maskMax));
-        propertyModified();
-    }
+    tf_.value.setMask(dvec2{maskMin, maskMax});
     return *this;
 }
 
 TransferFunctionProperty& TransferFunctionProperty::clearMask() {
-    auto prevMask = getMask();
-
     tf_.value.clearMask();
-    if (getMask() != prevMask) {
-        notifyMaskChange(getMask());
-    }
-    propertyModified();
     return *this;
 }
 
-const dvec2 TransferFunctionProperty::getMask() const {
-    return dvec2(tf_.value.getMaskMin(), tf_.value.getMaskMax());
-}
+dvec2 TransferFunctionProperty::getMask() const { return tf_.value.getMask(); }
 
 const dvec2& TransferFunctionProperty::getZoomH() const { return zoomH_; }
 
@@ -256,9 +236,9 @@ TransferFunctionProperty& TransferFunctionProperty::setZoomV(double zoomVMin, do
     return *this;
 }
 
-TransferFunctionProperty& TransferFunctionProperty::set(const TransferFunction& value) {
+TransferFunctionProperty& TransferFunctionProperty::set(const TransferFunction& tf) {
     tf_.value.removeObserver(this);
-    if (tf_.update(value)) propertyModified();
+    if (tf_.update(tf)) propertyModified();
     tf_.value.addObserver(this);
     return *this;
 }
@@ -269,10 +249,10 @@ const TransferFunction* TransferFunctionProperty::operator->() const { return &t
 TransferFunction* TransferFunctionProperty::operator->() { return &tf_.value; }
 
 void TransferFunctionProperty::set(const Property* property) {
-    if (auto tfp = dynamic_cast<const TransferFunctionProperty*>(property)) {
-        set(tfp);
-    } else if (auto isotf = dynamic_cast<const IsoTFProperty*>(property)) {
-        set(isotf);
+    if (const auto* tf = dynamic_cast<const TransferFunctionProperty*>(property)) {
+        set(tf);
+    } else if (const auto* isoTF = dynamic_cast<const IsoTFProperty*>(property)) {
+        set(isoTF);
     }
 }
 
@@ -280,12 +260,18 @@ void TransferFunctionProperty::set(const TransferFunctionProperty* p) { set(p->t
 
 void TransferFunctionProperty::set(const IsoTFProperty* p) { set(p->tf_.get()); }
 
-void TransferFunctionProperty::onTFPrimitiveAdded(TFPrimitive&) { propertyModified(); }
-
-void TransferFunctionProperty::onTFPrimitiveRemoved(TFPrimitive&) { propertyModified(); }
-
-void TransferFunctionProperty::onTFPrimitiveChanged(const TFPrimitive&) { propertyModified(); }
-
-void TransferFunctionProperty::onTFTypeChanged(const TFPrimitiveSet&) { propertyModified(); }
+void TransferFunctionProperty::onTFPrimitiveAdded(const TFPrimitiveSet&, TFPrimitive&) {
+    propertyModified();
+}
+void TransferFunctionProperty::onTFPrimitiveRemoved(const TFPrimitiveSet&, TFPrimitive&) {
+    propertyModified();
+}
+void TransferFunctionProperty::onTFPrimitiveChanged(const TFPrimitiveSet&, const TFPrimitive&) {
+    propertyModified();
+}
+void TransferFunctionProperty::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) {
+    propertyModified();
+}
+void TransferFunctionProperty::onTFMaskChanged(const TFPrimitiveSet&, dvec2) { propertyModified(); }
 
 }  // namespace inviwo

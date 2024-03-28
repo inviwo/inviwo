@@ -38,6 +38,7 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/histogram.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/datastructures/tfdata.h>
 
 namespace inviwo {
 
@@ -58,15 +59,14 @@ public:
     static const std::string classIdentifier;
 
     IsoValueProperty(std::string_view identifier, std::string_view displayName, Document help,
-                     const IsoValueCollection& value = {}, VolumeInport* volumeInport = nullptr,
+                     const IsoValueCollection& value = {}, TFData port = {},
                      PropertySemantics semantics = PropertySemantics::Default);
 
     IsoValueProperty(std::string_view identifier, std::string_view displayName,
-                     const IsoValueCollection& value = {}, VolumeInport* volumeInport = nullptr,
+                     const IsoValueCollection& value = {}, TFData port = {},
                      PropertySemantics semantics = PropertySemantics::Default);
 
-    IsoValueProperty(std::string_view identifier, std::string_view displayName,
-                     VolumeInport* volumeInport,
+    IsoValueProperty(std::string_view identifier, std::string_view displayName, TFData port,
                      PropertySemantics semantics = PropertySemantics::Default);
 
     IsoValueProperty(const IsoValueProperty& rhs);
@@ -112,7 +112,7 @@ public:
     IsoValueProperty& setHistogramSelection(HistogramSelection selection);
     HistogramSelection getHistogramSelection() const;
 
-    VolumeInport* getVolumeInport();
+    const TFData& data() const { return data_; }
 
     virtual IsoValueProperty& setCurrentStateAsDefault() override;
     IsoValueProperty& setDefault(const IsoValueCollection& iso);
@@ -126,9 +126,9 @@ public:
     void set(const IsoTFProperty* p);
 
     // Overrides TFPrimitiveSetObserver
-    virtual void onTFPrimitiveAdded(TFPrimitive& p) override;
-    virtual void onTFPrimitiveRemoved(TFPrimitive& p) override;
-    virtual void onTFPrimitiveChanged(const TFPrimitive& p) override;
+    virtual void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) override;
+    virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
 
 private:
     ValueWrapper<IsoValueCollection> iso_;
@@ -137,7 +137,7 @@ private:
     ValueWrapper<HistogramMode> histogramMode_;
     ValueWrapper<HistogramSelection> histogramSelection_;
 
-    VolumeInport* volumeInport_;
+    TFData data_;
 };
 
 }  // namespace inviwo

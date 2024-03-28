@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,51 +26,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
-
-#include <modules/qtwidgets/tf/tfeditorprimitive.h>  // for TFEditorPrimitive, TFEditorPrimitiv...
-
-#include <QGraphicsItem>  // for QGraphicsItem, QGraphicsItem::UserType
-#include <QPointF>        // for QPointF
-#include <QRectF>         // for QRectF
-#include <QPainterPath>   // for QPainterPath
-
-class QPainter;
-class QPointF;
-class QRectF;
-class QStyleOptionGraphicsItem;
-class QWidget;
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
 namespace inviwo {
 
-class TFEditorControlPoint;
-
-class IVW_MODULE_QTWIDGETS_API TFControlPointConnection : public QGraphicsItem {
-public:
-    TFControlPointConnection();
-    virtual ~TFControlPointConnection();
-
-    void updateShape();
-
-    TFEditorPrimitive* left;   // Non-owning reference
-    TFEditorPrimitive* right;  // Non-owning reference
-
-    QPointF getStart() const;
-    QPointF getStop() const;
-
-protected:
-    // Overload
-    void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget);
-    QRectF boundingRect() const;
-    QPainterPath shape() const;
-
-private:
-    QPainterPath path_;
-    QPainterPath shape_;
-    QRectF rect_;
-};
+enum class TFMoveMode : int { Free = 0, Restrict, Push };
 
 }  // namespace inviwo

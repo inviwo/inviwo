@@ -30,90 +30,50 @@
 #include <inviwo/core/datastructures/histogram.h>
 #include <algorithm>
 #include <numeric>
-#include <functional>
 
 namespace inviwo {
 
-NormalizedHistogram::NormalizedHistogram() : stats_{0.0, 0.0, 0.0, 0.0, {}}, dataRange_{0.0, 0.0} {}
+std::vector<double> util::calculatePercentiles(const std::vector<size_t>& hist, dvec2 range,
+                                               const size_t sum) {
+    size_t i{0};
+    size_t accumulation{0};
+    std::vector<double> percentiles(101, 0.0);
 
-NormalizedHistogram::NormalizedHistogram(dvec2 dataRange, std::vector<double> counts, double min,
-                                         double max, double mean, double standardDeviation)
-    : stats_{min, max, mean, standardDeviation, {}}
-    , dataRange_{dataRange}
-    , data_{std::move(counts)} {
+    const double binSize = 1.0 / static_cast<double>(hist.size() - 1) * (range.y - range.x);
+    const auto dSum = static_cast<double>(sum);
 
-    // calculatePercentiles
-    {
-        double sum = std::accumulate(data_.begin(), data_.end(), 0.0);
-        stats_.percentiles.resize(101);
-        double accumulation = 0;
-        size_t i = 0;
-        for (size_t j = 0; j < data_.size(); ++j) {
-            accumulation += data_[j];
-            while (accumulation / sum >= static_cast<double>(i) / 100.0) {
-                stats_.percentiles[i] = static_cast<double>(j) /
-                                            static_cast<double>(data_.size() - 1) *
-                                            (dataRange_.y - dataRange_.x) +
-                                        dataRange_.x;
-                i++;
-            }
+    for (size_t j = 0; j < hist.size(); ++j) {
+        accumulation += hist[j];
+        while (static_cast<double>(accumulation) / dSum >= static_cast<double>(i) / 100.0) {
+            percentiles[i] = static_cast<double>(j) * binSize + range.x;
+            i++;
         }
     }
-
-    // Find bin with largest count
-    maximumBinCount_ = *std::max_element(data_.begin(), data_.end());
-
-    // Normalize all bins with the largest count
-    std::transform(data_.begin(), data_.end(), data_.begin(),
-                   [factor = 1.0 / maximumBinCount_](auto val) { return val * factor; });
-
-    {
-        std::vector<double> temp{data_};
-        std::sort(temp.begin(), temp.end());
-        double sum = std::accumulate(data_.begin(), data_.end(), 0.0);
-        double sum2 = std::accumulate(data_.begin(), data_.end(), 0.0,
-                                      [](double a, double b) { return a + b * b; });
-
-        histStats_.min = *temp.begin();
-        histStats_.max = *(temp.end() - 1);
-        histStats_.mean = sum / static_cast<double>(data_.size());
-        histStats_.standardDeviation =
-            std::sqrt((data_.size() * sum2 - sum * sum) / (data_.size() * (data_.size() - 1)));
-
-        histStats_.percentiles.resize(101, 0.0);
-        for (size_t i = 1; i < histStats_.percentiles.size(); ++i) {
-            histStats_.percentiles[i] =
-                temp.at(static_cast<size_t>(
-                            std::ceil(static_cast<double>(i) /
-                                      static_cast<double>(histStats_.percentiles.size() - 1) *
-                                      static_cast<double>(data_.size()))) -
-                        1);
-        }
-    }
+    return percentiles;
 }
 
-double NormalizedHistogram::getMaximumBinValue() const { return maximumBinCount_; }
+Statistics util::calculateHistogramStats(const std::vector<size_t>& hist) {
+    std::vector<size_t> sorted = hist;
+    std::sort(sorted.begin(), sorted.end());
+    const size_t sum = std::accumulate(hist.begin(), hist.end(), size_t{0});
+    const size_t sum2 =
+        std::accumulate(hist.begin(), hist.end(), 0, [](size_t a, size_t b) { return a + b * b; });
 
-std::vector<double>& NormalizedHistogram::getData() { return data_; }
+    std::vector<double> percentiles(101, 0.0);
+    for (size_t i = 1; i < percentiles.size(); ++i) {
+        percentiles[i] = static_cast<double>(
+            sorted.at(static_cast<size_t>(std::ceil(static_cast<double>(i) /
+                                                    static_cast<double>(percentiles.size() - 1) *
+                                                    static_cast<double>(hist.size()))) -
+                      1));
+    }
 
-const std::vector<double>& NormalizedHistogram::getData() const { return data_; }
-
-double& NormalizedHistogram::operator[](size_t i) { return data_[i]; }
-
-const double& NormalizedHistogram::operator[](size_t i) const { return data_[i]; }
-
-size_t HistogramContainer::size() const { return histograms_.size(); }
-
-bool HistogramContainer::empty() const { return histograms_.empty(); }
-
-const NormalizedHistogram& HistogramContainer::operator[](size_t i) const { return histograms_[i]; }
-
-const NormalizedHistogram& HistogramContainer::get(size_t i) const { return histograms_[i]; }
-
-NormalizedHistogram& HistogramContainer::operator[](size_t i) { return histograms_[i]; }
-
-NormalizedHistogram& HistogramContainer::get(size_t i) { return histograms_[i]; }
-
-void HistogramContainer::clear() { histograms_.clear(); }
+    return {.min = static_cast<double>(sorted.front()),
+            .max = static_cast<double>(sorted.back()),
+            .mean = static_cast<double>(sum) / static_cast<double>(hist.size()),
+            .standardDeviation = std::sqrt(static_cast<double>((hist.size() * sum2 - sum * sum)) /
+                                           static_cast<double>(hist.size() * (hist.size() - 1))),
+            .percentiles = std::move(percentiles)};
+}
 
 }  // namespace inviwo

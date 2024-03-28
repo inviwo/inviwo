@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/tfprimitive.h>  // for TFPrimitive, TFPrimitiveObserver
 
 #include <vector>  // for vector
+#include <span>
 
 #include <QColor>   // for QColor
 #include <QObject>  // for QObject, Q_OBJECT, signals, slots
@@ -51,7 +52,7 @@ class TFPrimitiveSet;
 class IVW_MODULE_QTWIDGETS_API TFSelectionWatcher : public QObject, public TFPrimitiveObserver {
     Q_OBJECT
 public:
-    TFSelectionWatcher(Property* property, const std::vector<TFPrimitiveSet*>& primitiveSets);
+    TFSelectionWatcher(Property* property, std::span<TFPrimitiveSet*> sets);
     virtual ~TFSelectionWatcher() = default;
 
 signals:

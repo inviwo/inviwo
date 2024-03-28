@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/transferfunction.h>  // For TransferFunction
 #include <inviwo/core/io/datareader.h>                    // for DataReaderType
+#include <inviwo/core/datastructures/image/layer.h>
 
 #include <memory>
 
@@ -45,6 +46,7 @@ public:
     TransferFunctionLayerReader(TransferFunctionLayerReader&&) noexcept = default;
     TransferFunctionLayerReader& operator=(const TransferFunctionLayerReader& that);
     TransferFunctionLayerReader& operator=(TransferFunctionLayerReader&&) noexcept = default;
+    virtual ~TransferFunctionLayerReader() override = default;
 
     virtual TransferFunctionLayerReader* clone() const override;
 

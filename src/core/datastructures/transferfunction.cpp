@@ -49,83 +49,52 @@
 
 namespace inviwo {
 
-TransferFunction::TransferFunction(size_t textureSize)
-    : TransferFunction({}, TFPrimitiveSetType::Relative, textureSize) {}
+TransferFunction::TransferFunction() : TransferFunction({}, TFPrimitiveSetType::Relative) {}
 
-TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values, size_t textureSize)
-    : TransferFunction(values, TFPrimitiveSetType::Relative, textureSize) {}
+TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values)
+    : TransferFunction(values, TFPrimitiveSetType::Relative) {}
 
 TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values,
-                                   TFPrimitiveSetType type, size_t textureSize)
+                                   TFPrimitiveSetType type)
     : TFPrimitiveSet(values, type)
-    , maskMin_(0.0)
-    , maskMax_(1.0)
-    , invalidData_(true)
-    , dataRepr_{std::make_shared<LayerRAMPrecision<vec4>>(size2_t(textureSize, 1))}
-    , data_(std::make_unique<Layer>(dataRepr_)) {
-    clearMask();
-}
+    , maskMin_{type == TFPrimitiveSetType::Relative ? 0.0 : std::numeric_limits<double>::lowest()}
+    , maskMax_{type == TFPrimitiveSetType::Relative ? 1.0 : std::numeric_limits<double>::max()} {}
 
-TransferFunction::TransferFunction(const TransferFunction& rhs)
-    : TFPrimitiveSet(rhs)
-    , maskMin_(rhs.maskMin_)
-    , maskMax_(rhs.maskMax_)
-    , invalidData_(true)
-    , dataRepr_(std::shared_ptr<LayerRAMPrecision<vec4>>(rhs.dataRepr_->clone()))
-    , data_(std::make_unique<Layer>(dataRepr_)) {}
-
-TransferFunction& TransferFunction::operator=(const TransferFunction& rhs) {
-    if (this != &rhs) {
-        if (dataRepr_->getDimensions() != rhs.dataRepr_->getDimensions()) {
-            dataRepr_ = std::make_shared<LayerRAMPrecision<vec4>>(rhs.dataRepr_->getDimensions());
-            data_ = std::make_unique<Layer>(dataRepr_);
-        }
-        maskMin_ = rhs.maskMin_;
-        maskMax_ = rhs.maskMax_;
-        invalidData_ = rhs.invalidData_;
-
-        TFPrimitiveSet::operator=(rhs);
+void TransferFunction::setMask(dvec2 mask) {
+    if (maskMin_ != mask.x || maskMax_ != mask.y) {
+        maskMin_ = mask.x;
+        maskMax_ = mask.y;
+        notifyTFMaskChanged(*this, mask);
     }
-    return *this;
 }
 
-TransferFunction::~TransferFunction() = default;
-
-const Layer* TransferFunction::getData() const {
-    if (invalidData_) calcTransferValues();
-    return data_.get();
-}
-
-const LayerRAMPrecision<vec4>* TransferFunction::getRamRepresentation() const {
-    if (invalidData_) calcTransferValues();
-    return dataRepr_.get();
-}
-
-size_t TransferFunction::getTextureSize() const { return dataRepr_->getDimensions().x; }
+dvec2 TransferFunction::getMask() const { return dvec2{maskMin_, maskMax_}; }
 
 void TransferFunction::setMaskMin(double maskMin) {
-    maskMin_ = maskMin;
-    invalidate();
+    if (maskMin_ != maskMin) {
+        maskMin_ = maskMin;
+        notifyTFMaskChanged(*this, dvec2{maskMin_, maskMax_});
+    }
 }
 
 double TransferFunction::getMaskMin() const { return maskMin_; }
 
 void TransferFunction::setMaskMax(double maskMax) {
-    maskMax_ = maskMax;
-    invalidate();
+    if (maskMax_ != maskMax) {
+        maskMax_ = maskMax;
+        notifyTFMaskChanged(*this, dvec2{maskMin_, maskMax_});
+    }
 }
 
 double TransferFunction::getMaskMax() const { return maskMax_; }
 
 void TransferFunction::clearMask() {
-    maskMin_ =
-        (getType() == TFPrimitiveSetType::Relative) ? 0.0 : std::numeric_limits<double>::lowest();
-    maskMax_ =
-        (getType() == TFPrimitiveSetType::Relative) ? 1.0 : std::numeric_limits<double>::max();
-    invalidate();
+    if (getType() == TFPrimitiveSetType::Relative) {
+        setMask(dvec2{0.0, 1.0});
+    } else {
+        setMask(dvec2{std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()});
+    }
 }
-
-void TransferFunction::invalidate() { invalidData_ = true; }
 
 void TransferFunction::serialize(Serializer& s) const {
     s.serialize("maskMin", maskMin_);
@@ -136,7 +105,6 @@ void TransferFunction::serialize(Serializer& s) const {
 void TransferFunction::deserialize(Deserializer& d) {
     d.deserialize("maskMin", maskMin_);
     d.deserialize("maskMax", maskMax_);
-
     TFPrimitiveSet::deserialize(d);
 }
 
@@ -151,7 +119,7 @@ std::vector<TFPrimitiveData> TransferFunction::simplify(const std::vector<TFPrim
 
     // Calculate the error resulting from using a linear interpolation between the prev and next
     // point instead of including the current one
-    const auto error = [&](size_t i) {
+    const auto error = [&](std::ptrdiff_t i) {
         const auto& prev = simple[i - 1];
         const auto& curr = simple[i];
         const auto& next = simple[i + 1];
@@ -162,9 +130,10 @@ std::vector<TFPrimitiveData> TransferFunction::simplify(const std::vector<TFPrim
 
     // Find the point which will result in the smallest error when removed.
     const auto nextToRemove = [&]() {
-        const auto index = util::make_sequence<size_t>(1, simple.size() - 1, 1);
-        return *std::min_element(index.begin(), index.end(),
-                                 [&](size_t a, size_t b) { return error(a) < error(b); });
+        const auto index = util::make_sequence<std::ptrdiff_t>(1, std::ssize(simple) - 1, 1);
+        return *std::min_element(
+            index.begin(), index.end(),
+            [&](std::ptrdiff_t a, std::ptrdiff_t b) { return error(a) < error(b); });
     };
 
     // Iteratively remove the point with the smallest error until the error gets larger then delta
@@ -178,21 +147,15 @@ std::vector<TFPrimitiveData> TransferFunction::simplify(const std::vector<TFPrim
     return simple;
 }
 
-void TransferFunction::calcTransferValues() const {
-    IVW_ASSERT(std::is_sorted(sorted_.begin(), sorted_.end(), comparePtr{}), "Should be sorted");
-
-    // We assume the the points a sorted here.
-    auto dataArray = dataRepr_->getDataTyped();
-    const auto size = dataRepr_->getDimensions().x;
-
-    interpolateAndStoreColors(dataArray, size);
-
-    for (size_t i = 0; i < size_t(maskMin_ * size); i++) dataArray[i].a = 0.0;
-    for (size_t i = size_t(maskMax_ * size); i < size; i++) dataArray[i].a = 0.0;
-
-    data_->invalidateAllOther(dataRepr_.get());
-
-    invalidData_ = false;
+void TransferFunction::interpolateAndStoreColors(std::span<vec4> data) const {
+    TFPrimitiveSet::interpolateAndStoreColors(data);
+    const auto size = static_cast<double>(data.size());
+    for (auto i = size_t{0}; i < static_cast<size_t>(maskMin_ * size); i++) {
+        data[i].a = 0.0;
+    }
+    for (auto i = static_cast<size_t>(maskMax_ * size); i < data.size(); i++) {
+        data[i].a = 0.0;
+    }
 }
 
 std::string_view TransferFunction::serializationKey() const { return "Points"; }
@@ -211,8 +174,7 @@ bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs) {
 }
 
 TransferFunction TransferFunction::load(const std::filesystem::path& path) {
-    auto factory = util::getDataReaderFactory();
-
+    auto* factory = util::getDataReaderFactory();
     if (auto tf = factory->readDataForTypeAndExtension<TransferFunction>(path)) {
         return *tf;
     } else {
@@ -221,8 +183,7 @@ TransferFunction TransferFunction::load(const std::filesystem::path& path) {
     }
 }
 void TransferFunction::save(const TransferFunction& tf, const std::filesystem::path& path) {
-    auto factory = util::getDataWriterFactory();
-
+    auto* factory = util::getDataWriterFactory();
     if (!factory->writeDataForTypeAndExtension(&tf, path)) {
         throw Exception(IVW_CONTEXT_CUSTOM("TransferFunction"),
                         "Unable to save TransferFunction to {}", path);

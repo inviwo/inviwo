@@ -37,28 +37,29 @@ const std::string IsoValueProperty::classIdentifier = "org.inviwo.IsoValueProper
 std::string IsoValueProperty::getClassIdentifier() const { return classIdentifier; }
 
 IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
-                                   Document help, const IsoValueCollection& value,
-                                   VolumeInport* volumeInport, PropertySemantics semantics)
+                                   Document help, const IsoValueCollection& value, TFData port,
+                                   PropertySemantics semantics)
     : Property(identifier, displayName, std::move(help), InvalidationLevel::InvalidResources,
-               semantics)
+               std::move(semantics))
     , iso_("IsoValues", value)
     , zoomH_("zoomH_", dvec2(0.0, 1.0))
     , zoomV_("zoomV_", dvec2(0.0, 1.0))
     , histogramMode_("showHistogram_", HistogramMode::All)
     , histogramSelection_("histogramSelection", histogramSelectionAll)
-    , volumeInport_(volumeInport) {
+    , data_{std::move(port)} {
 
     iso_.value.addObserver(this);
 }
 
 IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
-                                   const IsoValueCollection& value, VolumeInport* volumeInport,
+                                   const IsoValueCollection& value, TFData port,
                                    PropertySemantics semantics)
-    : IsoValueProperty(identifier, displayName, Document{}, value, volumeInport, semantics) {}
+    : IsoValueProperty(identifier, displayName, Document{}, value, std::move(port),
+                       std::move(semantics)) {}
 
 IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
-                                   VolumeInport* volumeInport, PropertySemantics semantics)
-    : IsoValueProperty(identifier, displayName, {}, volumeInport, semantics) {}
+                                   TFData port, PropertySemantics semantics)
+    : IsoValueProperty(identifier, displayName, {}, std::move(port), std::move(semantics)) {}
 
 IsoValueProperty::IsoValueProperty(const IsoValueProperty& rhs)
     : Property(rhs)
@@ -67,7 +68,7 @@ IsoValueProperty::IsoValueProperty(const IsoValueProperty& rhs)
     , zoomV_(rhs.zoomV_)
     , histogramMode_(rhs.histogramMode_)
     , histogramSelection_(rhs.histogramSelection_)
-    , volumeInport_(rhs.volumeInport_) {
+    , data_{rhs.data_} {
 
     iso_.value.addObserver(this);
 }
@@ -125,8 +126,6 @@ auto IsoValueProperty::getHistogramSelection() const -> HistogramSelection {
     return histogramSelection_;
 }
 
-VolumeInport* IsoValueProperty::getVolumeInport() { return volumeInport_; }
-
 IsoValueProperty& IsoValueProperty::setCurrentStateAsDefault() {
     Property::setCurrentStateAsDefault();
     iso_.setAsDefault();
@@ -143,7 +142,7 @@ IsoValueProperty& IsoValueProperty::setDefault(const IsoValueCollection& iso) {
 }
 
 IsoValueProperty& IsoValueProperty::resetToDefaultState() {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
 
     bool modified = false;
     modified |= iso_.reset();
@@ -194,9 +193,9 @@ const IsoValueCollection* IsoValueProperty::operator->() const { return &iso_.va
 IsoValueCollection* IsoValueProperty::operator->() { return &iso_.value; }
 
 void IsoValueProperty::set(const Property* property) {
-    if (auto iso = dynamic_cast<const IsoValueProperty*>(property)) {
+    if (const auto* iso = dynamic_cast<const IsoValueProperty*>(property)) {
         set(iso);
-    } else if (auto isotf = dynamic_cast<const IsoTFProperty*>(property)) {
+    } else if (const auto* isotf = dynamic_cast<const IsoTFProperty*>(property)) {
         set(isotf);
     }
 }
@@ -205,17 +204,17 @@ void IsoValueProperty::set(const IsoTFProperty* p) { set(p->isovalues_.get()); }
 
 void IsoValueProperty::set(const IsoValueProperty* p) { set(p->iso_.value); }
 
-void IsoValueProperty::onTFPrimitiveAdded(TFPrimitive&) {
+void IsoValueProperty::onTFPrimitiveAdded(const TFPrimitiveSet&, TFPrimitive&) {
     setInvalidationLevel(InvalidationLevel::InvalidResources);
     propertyModified();
 }
 
-void IsoValueProperty::onTFPrimitiveRemoved(TFPrimitive&) {
+void IsoValueProperty::onTFPrimitiveRemoved(const TFPrimitiveSet&, TFPrimitive&) {
     setInvalidationLevel(InvalidationLevel::InvalidResources);
     propertyModified();
 }
 
-void IsoValueProperty::onTFPrimitiveChanged(const TFPrimitive&) {
+void IsoValueProperty::onTFPrimitiveChanged(const TFPrimitiveSet&, const TFPrimitive&) {
     setInvalidationLevel(InvalidationLevel::InvalidOutput);
     propertyModified();
 }

@@ -87,16 +87,14 @@ void TFPrimitiveSetWidgetQt::setPropertyValue() {
     bool performMapping = (propertyPtr_->get().getType() == TFPrimitiveSetType::Relative) &&
                           (property_->getSemantics().getString() == "Text");
 
-    auto port = propertyPtr_->getVolumePort();
-    if (performMapping && port && port->hasData()) {
-        const dvec2 range = port->getData()->dataMap.valueRange;
-
-        auto renormalizePos = [range](double pos) { return (pos - range.x) / (range.y - range.x); };
-        for (auto& elem : primitives) {
-            elem.pos = renormalizePos(elem.pos);
+    if (auto* map = propertyPtr_->data().getDataMap()) {
+        if (performMapping) {
+            const dvec2 range = map->valueRange;
+            std::ranges::for_each(
+                primitives, [&](double& x) { x = util::linearMapToNormalized(x, range); },
+                &TFPrimitiveData::pos);
         }
     }
-
     {
         NetworkLock lock(property_);
         propertyPtr_->get().clear();
@@ -111,26 +109,20 @@ void TFPrimitiveSetWidgetQt::updateFromProperty() {
                           (property_->getSemantics().getString() == "Text");
 
     dvec2 range(0.0, 1.0);
-    auto port = propertyPtr_->getVolumePort();
-    if (port && port->hasData()) {
-        range = port->getData()->dataMap.valueRange;
+    if (auto* map = propertyPtr_->data().getDataMap()) {
+        range = map->valueRange;
     } else {
         // no need to perform mapping without a proper value range
         performMapping = false;
     }
 
-    auto mapPos = [range](double pos) { return pos * (range.y - range.x) + range.x; };
-
     // convert TF primitives to "position alpha #RRGGBB"
     std::ostringstream ss;
-    for (const auto& elem : propertyPtr_->get()) {
-        // write color as HTML color code
-        auto pos = elem.getPosition();
-        if (performMapping) {
-            pos = mapPos(pos);
-        }
-        ss << pos << " " << elem.getAlpha() << " " << color::rgb2hex(elem.getColor()) << "\n";
-    }
+    std::ranges::for_each(propertyPtr_->get(), [&](const TFPrimitive& p) {
+        const auto pos = performMapping ? util::linearMapFromNormalized(p.getPosition(), range)
+                                        : p.getPosition();
+        ss << pos << " " << p.getAlpha() << " " << color::rgb2hex(p.getColor()) << "\n";
+    });
 
     QString newContents(utilqt::toQString(ss.str()));
     if (textEdit_->toPlainText() != newContents) {
