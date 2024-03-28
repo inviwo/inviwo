@@ -44,10 +44,24 @@ namespace inviwo {
 /**
  * Dispatches function on a number of callbacks and cleans up callbacks when
  * they are dead.
+ * Copy or assign will clear any callback
+ * Move or move assign will move the callback
  */
 template <typename C>
 class Dispatcher final {
 public:
+    Dispatcher() = default;
+    Dispatcher(const Dispatcher&) : callbacks{}, concurrent_dispatcher_count{0} {}
+    Dispatcher(Dispatcher&&) = default;
+    Dispatcher& operator=(const Dispatcher& that) {
+        if (this != &that) {
+            callbacks.clear();
+        }
+        return *this;
+    }
+    Dispatcher& operator=(Dispatcher&) = default;
+    ~Dispatcher() = default;
+
     using Function = C;
     using Callback = std::function<C>;
     using Handle = std::shared_ptr<std::function<C>>;
