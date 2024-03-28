@@ -76,6 +76,9 @@ public:
                   PropertySemantics semantics = PropertySemantics::Default);
 
     IsoTFProperty(const IsoTFProperty& rhs);
+    IsoTFProperty(IsoTFProperty&& rhs) = delete;
+    IsoTFProperty& operator=(const IsoTFProperty& rhs) = delete;
+    IsoTFProperty& operator=(IsoTFProperty&& rhs) = delete;
     virtual ~IsoTFProperty() = default;
 
     virtual IsoTFProperty* clone() const override;
