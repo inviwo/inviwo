@@ -406,6 +406,7 @@ protected:
      * @see clone
      */
     Property(const Property& rhs);
+    Property(Property&& rhs);
 
     /**
      * Properties do not support copy assignment.
@@ -414,6 +415,7 @@ protected:
      * @see set
      */
     Property& operator=(const Property& that) = delete;
+    Property& operator=(Property&& that);
 
     void notifyAboutChange();
 
