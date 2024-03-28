@@ -193,6 +193,9 @@ public:
                              PropertySemantics semantics = PropertySemantics::Default);
 
     TransferFunctionProperty(const TransferFunctionProperty& rhs);
+    TransferFunctionProperty(TransferFunctionProperty&& rhs) = default;
+    TransferFunctionProperty& operator=(const TransferFunctionProperty& rhs) = delete;
+    TransferFunctionProperty& operator=(TransferFunctionProperty&& rhs) = default;
     virtual TransferFunctionProperty* clone() const override;
     virtual ~TransferFunctionProperty();
 

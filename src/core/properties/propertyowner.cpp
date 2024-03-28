@@ -44,19 +44,54 @@
 namespace inviwo {
 
 PropertyOwner::PropertyOwner()
-    : PropertyOwnerObservable(), invalidationLevel_(InvalidationLevel::Valid) {}
+    : PropertyOwnerObservable()
+    , properties_{}
+    , eventProperties_{}
+    , compositeProperties_{}
+    , ownedProperties_{}
+    , invalidationLevel_{InvalidationLevel::Valid} {}
 
 PropertyOwner::PropertyOwner(const PropertyOwner& rhs)
-    : PropertyOwnerObservable(), invalidationLevel_(rhs.invalidationLevel_) {
+    : PropertyOwnerObservable{rhs}
+    , properties_{}
+    , eventProperties_{}
+    , compositeProperties_{}
+    , ownedProperties_{}
+    , invalidationLevel_{rhs.invalidationLevel_} {
 
-    for (const auto& p : rhs.ownedProperties_) addProperty(p->clone());
-}
-
-PropertyOwner::~PropertyOwner() {
-    while (size() != 0) {
-        removeProperty(begin());
+    for (const auto& p : rhs.ownedProperties_) {
+        addProperty(p->clone());
     }
 }
+
+PropertyOwner::PropertyOwner(PropertyOwner&& rhs)
+    : PropertyOwnerObservable{std::move(rhs)}
+    , properties_{}
+    , eventProperties_{}
+    , compositeProperties_{}
+    , ownedProperties_{}
+    , invalidationLevel_(std::move(rhs.invalidationLevel_)) {
+
+    for (auto& p : rhs.ownedProperties_) {
+        addProperty(std::move(p));
+    }
+    rhs.ownedProperties_.clear();
+}
+
+PropertyOwner& PropertyOwner::operator=(PropertyOwner&& that) {
+    if (this != &that) {
+        PropertyOwnerObservable::operator=(std::move(that));
+        clear();
+
+        for (auto& p : that.ownedProperties_) {
+            addProperty(std::move(p));
+        }
+        that.ownedProperties_.clear();
+    }
+    return *this;
+}
+
+PropertyOwner::~PropertyOwner() { clear(); }
 
 void PropertyOwner::addProperty(Property* property, bool owner) {
     insertProperty(properties_.size(), property, owner);
