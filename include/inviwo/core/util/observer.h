@@ -296,7 +296,7 @@ void Observable<T>::forEachObserver(C callback) {
     if (notificationsBlocked_ > 0) return;
     bool toRemove = false;
     ++invocationCount_;
-    
+
     for (auto* o : observers_) {
         if (o) {
             callback(o);

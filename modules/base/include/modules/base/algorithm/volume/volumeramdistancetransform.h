@@ -41,7 +41,7 @@
 #include <inviwo/core/util/sourcecontext.h>      // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/stringconversion.h>   // for toString
 
-#include <cstdlib>   // for size_t, abs
+#include <cstdlib>    // for size_t, abs
 #include <algorithm>  // for min
 #include <cmath>      // for sqrt
 #include <string>     // for operator+, basic_string, string
