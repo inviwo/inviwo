@@ -45,8 +45,10 @@ Property::Property(std::string_view identifier, std::string_view displayName, Do
                    ReadOnly readOnly)
     : PropertyObservable()
     , MetaDataOwner()
+    , onChangeCallback_{}
     , serializationMode_(PropertySerializationMode::Default)
     , identifier_(identifier)
+    , path_{}
     , displayName_("displayName", std::string(displayName))
     , readOnly_("readonly", readOnly == ReadOnly::Yes)
     , semantics_("semantics", semantics)
@@ -54,7 +56,9 @@ Property::Property(std::string_view identifier, std::string_view displayName, Do
     , propertyModified_(true)
     , invalidationLevel_(invalidationLevel)
     , owner_(nullptr)
+    , propertyWidgets_{}
     , initiatingWidget_(nullptr)
+    , autoLinkTo_{}
     , help_{std::move(help)} {
 
     if (!identifier_.empty()) {
@@ -69,8 +73,10 @@ Property::Property(std::string_view identifier, std::string_view displayName,
 Property::Property(const Property& rhs)
     : PropertyObservable(rhs)
     , MetaDataOwner(rhs)
+    , onChangeCallback_{}
     , serializationMode_(rhs.serializationMode_)
     , identifier_(rhs.identifier_)
+    , path_{}
     , displayName_(rhs.displayName_)
     , readOnly_(rhs.readOnly_)
     , semantics_(rhs.semantics_)
@@ -78,8 +84,52 @@ Property::Property(const Property& rhs)
     , propertyModified_(rhs.propertyModified_)
     , invalidationLevel_(rhs.invalidationLevel_)
     , owner_(nullptr)
-    , initiatingWidget_(rhs.initiatingWidget_)
+    , propertyWidgets_{}
+    , initiatingWidget_(nullptr)
+    , autoLinkTo_{rhs.autoLinkTo_}
     , help_{rhs.help_} {}
+
+Property::Property(Property&& rhs)
+    : PropertyObservable(std::move(rhs))
+    , MetaDataOwner(std::move(rhs))
+    , onChangeCallback_{std::move(rhs.onChangeCallback_)}
+    , serializationMode_(std::move(rhs.serializationMode_))
+    , identifier_(std::move(rhs.identifier_))
+    , path_{}
+    , displayName_(std::move(rhs.displayName_))
+    , readOnly_(std::move(rhs.readOnly_))
+    , semantics_(std::move(rhs.semantics_))
+    , visible_(std::move(rhs.visible_))
+    , propertyModified_(std::move(rhs.propertyModified_))
+    , invalidationLevel_(std::move(rhs.invalidationLevel_))
+    , owner_(nullptr)
+    , propertyWidgets_{}
+    , initiatingWidget_(nullptr)
+    , autoLinkTo_{std::move(rhs.autoLinkTo_)}
+    , help_{std::move(rhs.help_)} {}
+
+Property& Property::operator=(Property&& that) {
+    if (this != &that) {
+        PropertyObservable::operator=(std::move(that));
+        MetaDataOwner::operator=(std::move(that));
+        onChangeCallback_ = std::move(that.onChangeCallback_);
+        serializationMode_ = std::move(that.serializationMode_);
+        identifier_ = std::move(that.identifier_);
+        path_.clear();
+        displayName_ = std::move(that.displayName_);
+        readOnly_ = std::move(that.readOnly_);
+        semantics_ = std::move(that.semantics_);
+        visible_ = std::move(that.visible_);
+        propertyModified_ = std::move(that.propertyModified_);
+        invalidationLevel_ = std::move(that.invalidationLevel_);
+        owner_ = nullptr;
+        propertyWidgets_.clear();
+        initiatingWidget_ = nullptr;
+        autoLinkTo_ = std::move(that.autoLinkTo_);
+        help_ = std::move(that.help_);
+    }
+    return *this;
+}
 
 Property::~Property() {
     if (auto owner = getOwner()) {
