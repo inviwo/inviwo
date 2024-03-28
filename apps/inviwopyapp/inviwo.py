@@ -119,7 +119,7 @@ class Inviwo:
         configureQtNames(self.qtApp)
         inviwopy.qt.configureFileSystemObserver(self.inviwoApp)
         inviwopy.qt.configurePostEnqueueFront(self.inviwoApp)
-        inviwopy.qt.setStyleSheetFile(":/stylesheets/inviwo.qss")
+        inviwopy.qt.setStyleSheetFile(pathlib.Path(":/stylesheets/inviwo.qss"))
 
         self.propertyListWidget = inviwopy.qt.PropertyListWidget(self.inviwoApp)
         self.qplw = shiboken6.wrapInstance(
@@ -152,9 +152,9 @@ class Inviwo:
         :param workspace: Path to workspace to load, defaults load boron.inv
         """
         workspace = (workspace if workspace else
-                     (pathlib.Path(self.inviwoApp.getPath(self.inviwopy.PathType.Workspaces)
-                                   + "/boron.inv")))
-        self.inviwoApp.network.load(workspace.absolute().as_posix())
+                     (self.inviwoApp.getPath(self.inviwopy.PathType.Workspaces)
+                                   / "boron.inv"))
+        self.inviwoApp.network.load(workspace.absolute())
 
     def screenshot(self, filename, canvas="Canvas"):
         """
