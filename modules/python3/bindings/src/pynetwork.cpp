@@ -165,16 +165,16 @@ void exposeNetwork(py::module& m) {
              [](ProcessorNetwork* network, const std::filesystem::path& path) {
                  network->getApplication()->getWorkspaceManager()->save(
                      path, [&](ExceptionContext ec) { throw; });  // is this the correct way of
-                                                                      // re throwing (we just want
-                                                                      // to pass the exception on to
-                                                                      // python)
+                                                                  // re throwing (we just want
+                                                                  // to pass the exception on to
+                                                                  // python)
              })
         .def("load", [](ProcessorNetwork* network, const std::filesystem::path& path) {
             network->clear();
             network->getApplication()->getWorkspaceManager()->load(
                 path, [&](ExceptionContext ec) { throw; });  // is this the correct way of re
-                                                                 // throwing (we just want to pass
-                                                                 // the exception on to python)
+                                                             // throwing (we just want to pass
+                                                             // the exception on to python)
         });
 }
 }  // namespace inviwo
