@@ -33,6 +33,7 @@
 #include <inviwopy/vectoridentifierwrapper.h>
 
 #include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/links/propertylink.h>
@@ -161,17 +162,17 @@ void exposeNetwork(py::module& m) {
         .def("clear",
              [&](ProcessorNetwork* pn) { pn->getApplication()->getWorkspaceManager()->clear(); })
         .def("save",
-             [](ProcessorNetwork* network, std::string filename) {
+             [](ProcessorNetwork* network, const std::filesystem::path& path) {
                  network->getApplication()->getWorkspaceManager()->save(
-                     filename, [&](ExceptionContext ec) { throw; });  // is this the correct way of
+                     path, [&](ExceptionContext ec) { throw; });  // is this the correct way of
                                                                       // re throwing (we just want
                                                                       // to pass the exception on to
                                                                       // python)
              })
-        .def("load", [](ProcessorNetwork* network, std::string filename) {
+        .def("load", [](ProcessorNetwork* network, const std::filesystem::path& path) {
             network->clear();
             network->getApplication()->getWorkspaceManager()->load(
-                filename, [&](ExceptionContext ec) { throw; });  // is this the correct way of re
+                path, [&](ExceptionContext ec) { throw; });  // is this the correct way of re
                                                                  // throwing (we just want to pass
                                                                  // the exception on to python)
         });
