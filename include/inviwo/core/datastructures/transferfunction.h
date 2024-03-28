@@ -46,7 +46,7 @@ public:
     explicit TransferFunction(const std::vector<TFPrimitiveData>& values);
     TransferFunction(const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type);
     TransferFunction(const TransferFunction& rhs) = default;
-    TransferFunction(TransferFunction&& rhs) noexcept  = default;
+    TransferFunction(TransferFunction&& rhs) noexcept = default;
     TransferFunction& operator=(const TransferFunction& rhs) = default;
     TransferFunction& operator=(TransferFunction&& rhs) noexcept = default;
     virtual ~TransferFunction() = default;

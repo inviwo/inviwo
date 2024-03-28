@@ -38,12 +38,12 @@ namespace inviwo {
 
 template <typename T, typename U>
 concept Settable = requires(T item, U value) {
-                       { item.set(value) };
-                   };
+    { item.set(value) };
+};
 template <typename T, typename U>
 concept Gettable = requires(T item) {
-                       { item.get() } -> std::convertible_to<U>;
-                   };
+    { item.get() } -> std::convertible_to<U>;
+};
 
 /** @brief Holds metadata and access functionality for set/get
  *  MetaDataOwner is the base class for all the objects that want to own metadata.
@@ -77,8 +77,8 @@ public:
      * @param key   key of the entry to be removed
      */
     template <typename T>
-        requires std::derived_from<T, MetaData> bool
-    unsetMetaData(std::string_view key);
+        requires std::derived_from<T, MetaData>
+    bool unsetMetaData(std::string_view key);
 
     // param val is required to deduce the template argument
     template <typename T, typename U>
@@ -98,8 +98,8 @@ public:
     bool hasMetaData(std::string_view key) const;
 
     template <typename T>
-        requires std::derived_from<T, MetaData> bool
-    hasMetaData(std::string_view key) const;
+        requires std::derived_from<T, MetaData>
+    bool hasMetaData(std::string_view key) const;
 
     void serialize(Serializer& s) const;
     void deserialize(Deserializer& d);
@@ -131,8 +131,8 @@ void MetaDataOwner::setMetaData(std::string_view key, U value) {
 }
 
 template <typename T>
-    requires std::derived_from<T, MetaData> bool
-MetaDataOwner::unsetMetaData(std::string_view key) {
+    requires std::derived_from<T, MetaData>
+bool MetaDataOwner::unsetMetaData(std::string_view key) {
     return metaData_.remove(key);
 }
 
@@ -164,8 +164,8 @@ inline bool MetaDataOwner::hasMetaData(std::string_view key) const {
 }
 
 template <typename T>
-    requires std::derived_from<T, MetaData> bool
-MetaDataOwner::hasMetaData(std::string_view key) const {
+    requires std::derived_from<T, MetaData>
+bool MetaDataOwner::hasMetaData(std::string_view key) const {
     if (const MetaData* baseMetadata = metaData_.get(key)) {
         if (const T* derivedMetaData = dynamic_cast<const T*>(baseMetadata)) {
             return true;

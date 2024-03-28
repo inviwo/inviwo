@@ -85,10 +85,8 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
                 util::ordinalCount(50).setMin(1).set(PropertySemantics::Default)}}}
 
     , applyTF_{"applyTF", "Apply TF", true}
-    , tf_{"transferfunction",
-          "Transfer function",
-          TransferFunction{{{0.0, vec4{0.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f}}}},
-          &volume_}
+    , tf_{"transferfunction", "Transfer function",
+          TransferFunction{{{0.0, vec4{0.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f}}}}, &volume_}
     , camera_{"camera", "Camera", util::boundingBox(volume_)}
     , trackball_{&camera_}
     , sliceShader_{"axisalignedcutplaneslice.vert", "axisalignedcutplaneslice.frag"} {

@@ -153,7 +153,7 @@ std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(
                 ->getWriterForTypeAndExtension<Layer>(fileExtension))) {
         try {
             return writer->writeDataToBuffer(this, fileExtension);
-        } catch (DataWriterException const& e) {
+        } catch (const DataWriterException& e) {
             LogError(e.getMessage());
         }
     } else {
