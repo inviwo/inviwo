@@ -169,7 +169,12 @@ public:
 protected:
     PropertyOwner();
     PropertyOwner(const PropertyOwner& rhs);
+    PropertyOwner(PropertyOwner&& rhs);
     PropertyOwner& operator=(const PropertyOwner& that) = delete;
+    PropertyOwner& operator=(PropertyOwner&& that);
+
+    void forEachProperty(std::function<void(Property&)> callback,
+                         bool recursiveSearch = false) const;
 
     // Add the properties belonging the property owner
     // PropertyOwner do not assume owner ship here since in the most common case these are
@@ -184,9 +189,6 @@ protected:
     // I.e. PropertyOwner will take care of deleting them. Usually used for dynamic properties
     // allocated on the heap.
     std::vector<std::unique_ptr<Property>> ownedProperties_;
-
-    void forEachProperty(std::function<void(Property&)> callback,
-                         bool recursiveSearch = false) const;
 
 private:
     Property* removeProperty(std::vector<Property*>::iterator it);
