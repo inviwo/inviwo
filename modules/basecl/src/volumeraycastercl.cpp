@@ -84,7 +84,7 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Layer* entryPo
         LayerCLGL* outImageCL = outImage->getEditableRepresentation<LayerCLGL>();
         const VolumeCLGL* volumeCL = volume->getRepresentation<VolumeCLGL>();
         const LayerCLGL* transferFunctionCL = transferFunction.getRepresentation<LayerCLGL>();
-        const LayerCLBase * background;
+        const LayerCLBase* background;
         if (background_) {
             background = background_->getRepresentation<LayerCLGL>();
             glSync.addToAquireGLObjectList(static_cast<const LayerCLGL*>(background));
