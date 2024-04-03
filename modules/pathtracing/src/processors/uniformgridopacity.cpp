@@ -30,18 +30,16 @@
 #include <inviwo/pathtracing/processors/uniformgridopacity.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo UniformGridOpacity::processorInfo_{
     "org.inviwo.uniformgridopacity",  // Class identifier
-    "Uniform Grid Opacity MinMax",    // Display name
+    "Uniform Grid Opacity",           // Display name
     "Volume",                         // Category
     CodeState::Experimental,          // Code state
-    Tags::GL,                         // Tags
+    Tags::CPU,                        // Tags
 };
 
 const ProcessorInfo UniformGridOpacity::getProcessorInfo() const { return processorInfo_; }
@@ -51,8 +49,7 @@ UniformGridOpacity::UniformGridOpacity()
     , inport_{"data"}
     , outportVolume_{"MinMaxOpacityVolume"}
     , transferFunction_("transferFunction", "Transfer function")
-    , volumeRegionSize_("region", "Region size", 8, 1, 100)
-    , shader_({{ShaderType::Compute, "minmaxopacity/minmaxavg.comp"}}) {
+    , volumeRegionSize_("region", "Region size", 8, 1, 100) {
 
     addPort(inport_);
     // addPort(outport_);
@@ -61,21 +58,10 @@ UniformGridOpacity::UniformGridOpacity()
     addProperty(transferFunction_);
     addProperty(volumeRegionSize_);
 
-    shader_.onReload([this](){
-        invalidate(InvalidationLevel::InvalidOutput);
-        shader_.build();
-    });
-    volumeRegionSize_.onChange([this]() {
-        invalidate(InvalidationLevel::InvalidOutput);
-        shader_.build();
-    });
+    volumeRegionSize_.onChange([this]() { invalidate(InvalidationLevel::InvalidOutput); });
 }
 
 void UniformGridOpacity::process() {
-    processCompute();
-};
-
-void UniformGridOpacity::processCPU() {
     auto curVolume = inport_.getData();
 
     const VolumeRAM* curRAMVolume = curVolume->getRepresentation<VolumeRAM>();
@@ -99,7 +85,6 @@ void UniformGridOpacity::processCPU() {
     stats->setWorldMatrix(curVolume->getWorldMatrix());
     stats->setDimensions(outDim);
 
-    
     curRAMVolume->dispatch<void, dispatching::filter::Scalars>([&]<typename VR>(VR* vr) {
         using T = typename VR::type;
         using P = typename util::same_extent<T, double>::type;
@@ -147,82 +132,12 @@ void UniformGridOpacity::processCPU() {
                                    static_cast<float>(avgOpacity), 0.f);
 
                     data[VolumeRAM::posToIndex(size3_t(x_cell, y_cell, z_cell), outDim)] =
-    minMaxVal;
+                        minMaxVal;
                 }
             }
         }
     });
 
-    outportVolume_.setData(stats); 
-}; 
-
-void UniformGridOpacity::processCompute() {
-    auto curVolume = inport_.getData();
-
-    auto dim = curVolume->getDimensions();
-    auto region = inviwo::ivec3(volumeRegionSize_.get());
-    const size3_t outDim{glm::ceil(vec3(dim) / static_cast<float>(volumeRegionSize_.get()))};
-
-    auto statsRAMRep = std::make_shared<VolumeRAMPrecision<vec4>>(
-        outDim, swizzlemasks::rgba, InterpolationType::Nearest, curVolume->getWrapping());
-
-    // GL rep construction. TODO: Do we need to add a dataformat id (see formats.h /.cpp)?
-    auto statsGLRep = std::make_shared<VolumeGL>(
-        outDim, DataVec4Float32::get(), swizzlemasks::rgba, InterpolationType::Nearest, curVolume->getWrapping());
-
-    auto stats = std::make_shared<Volume>(statsGLRep);
-    //auto stats = std::make_shared<Volume>(statsGLRep);
-
-    stats->dataMap_.dataRange.x = 0;  // should map from 0,1
-    stats->dataMap_.dataRange.y = 1;  // should map from 0,1
-    stats->dataMap_.valueRange.x = 0;
-    stats->dataMap_.valueRange.y = 1;
-
-    stats->setModelMatrix(curVolume->getModelMatrix());
-    stats->setWorldMatrix(curVolume->getWorldMatrix());
-    stats->setDimensions(outDim);
-    std::cout << "stats outDim " << stats->getDimensions().x << ", " << stats->getDimensions().y << ", " << stats->getDimensions().z << std::endl; 
-    std::cout << "region " << region.x << ", " << region.y << ", " << region.z << std::endl; 
-    std::cout << "region size " << volumeRegionSize_.get() << std::endl; 
-    
-    // Compute Shader set up
-    shader_.activate();
-
-    TextureUnitContainer units;
-
-    shader_.setUniform("cellDim", region);
-    // shader_.setUniform("offset", static_cast<inviwo::ivec3>(region));
-
-    utilgl::bindAndSetUniforms(shader_, units, *inport_.getData(), "volumeData");
-    // I need to write to it, and i dont think bindandset lets me do that
-
-    /*utilgl::bindAndSetUniforms(shader_, units, *stats, "opacityData"); // with write capabilites*/
-    {
-        TextureUnit unit;
-        auto statsGL = stats->getEditableRepresentation<VolumeGL>();
-        statsGL->bindImageTexture(unit.getEnum(), unit.getUnitNumber(), GL_WRITE_ONLY);
-        
-        shader_.setUniform("opacityData", unit);
-
-        units.push_back(std::move(unit));
-
-        StrBuffer buff;
-
-        utilgl::setShaderUniforms(shader_, *stats,
-                                  buff.replace("{}Parameters", outportVolume_.getIdentifier()));
-    }
-
-    utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
-
-    // dispatch size? The workload can be anything from 1 to 150^3
-    // 150/regionsize in all dimensions? We can start with a 'naive' (stupid) implementation and let
-    // the dispatch be for stats.dim. Each compute shader will do the inner 3loops work.
-
-    glDispatchCompute(outDim.x, outDim.y, outDim.z);
-    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-
-    shader_.deactivate();
-    
     outportVolume_.setData(stats);
 };
 

@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #pragma once
-
 #include <inviwo/pathtracing/pathtracingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
@@ -38,21 +37,16 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/volume/volumeutils.h>
 //#include <inviwo/pathtracing/uniformgrid3d.h>
 
 namespace inviwo {
-/*
-using OpacityMinMaxVolumeDataType = DataVec4Float32::type;
-using OpacityMinMaxUniformGrid3D = UniformGrid3D<OpacityMinMaxVolumeDataType>;
-using OpacityMinMaxUniformGrid3DVector = std::vector<std::shared_ptr<OpacityMinMaxUniformGrid3D>>;
-using OpacityMinMaxUniformGrid3DInport = DataInport<OpacityMinMaxUniformGrid3D>;
-using OpacityMinMaxUniformGrid3DOutport = DataOutport<OpacityMinMaxUniformGrid3D>;
-*/
-class IVW_MODULE_PATHTRACING_API UniformGridOpacity : public Processor {
+
+class IVW_MODULE_PATHTRACING_API UniformGridOpacityGL : public Processor {
 public:
-    UniformGridOpacity();
-    // virtual ~UniformGridOpacity() = default;
+    UniformGridOpacityGL();
 
     virtual void process() override;
 
@@ -66,6 +60,7 @@ private:
 
     TransferFunctionProperty transferFunction_;
     IntProperty volumeRegionSize_;
+    Shader shader_;
 };
 
 }  // namespace inviwo
