@@ -181,8 +181,10 @@ void UniformGridOpacity::processCompute() {
     stats->setModelMatrix(curVolume->getModelMatrix());
     stats->setWorldMatrix(curVolume->getWorldMatrix());
     stats->setDimensions(outDim);
-    std::cout << "stats outDim " << outDim.x << ", " << outDim.y << ", " << outDim.z << std::endl; 
+    std::cout << "stats outDim " << stats->getDimensions().x << ", " << stats->getDimensions().y << ", " << stats->getDimensions().z << std::endl; 
     std::cout << "region " << region.x << ", " << region.y << ", " << region.z << std::endl; 
+    std::cout << "region size " << volumeRegionSize_.get() << std::endl; 
+    
     // Compute Shader set up
     shader_.activate();
 
