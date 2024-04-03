@@ -23,16 +23,28 @@ float woodcockTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd, ino
                        sampler3D volume, VolumeParameters volumeParameters,
                        sampler2D transferFunction, float opacityUpperbound, out vec3 auxReturn) {
 
+    if (opacityUpperbound < 2e-6) {
+        return 1.f;
+    }
+
     float invMaxExtinction = 1.f / opacityToExtinction(opacityUpperbound);
     float invOpacitUpperbound = 1.f / opacityUpperbound;
     float t = tStart;
     float opacity;
-    
+
     auxReturn = vec3(0);
 
     do {
         t += -log(randomize(hashSeed)) * invMaxExtinction;
         vec3 samplePos = raystart + t * raydir;
+
+        // NOTE: Simply to stop samplePos fromo falling outside of relevant opacity voxel, where
+        //       opacityUpperbound no longer is correct. 'Should be' logically equivalent to having
+        //       && (t <= tEnd) in the while clause.
+        if (t > tEnd) {
+            break;
+        }
+
         vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
         opacity = applyTF(transferFunction, volumeSample).a;
 
@@ -40,9 +52,9 @@ float woodcockTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd, ino
             auxReturn.x += opacity - opacityUpperbound;
         }
 
-    } while ((randomize(hashSeed) >= opacity * invOpacitUpperbound) && (t <= tEnd));
+    } while ((randomize(hashSeed) >= opacity * invOpacitUpperbound));
 
-    return min(t, tEnd);
+    return t;
 }
 
 float ratioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
@@ -139,11 +151,11 @@ float poissonTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, flo
     float T = 1.f;  // Transmittance
 
     int k = poisson_uni(hashSeed, d * (opacityToExtinction(opacityUpperbound)));
-
-#ifndef POISSON_SORTED_TRAVERSAL
+    auxReturn = vec3(0);
 
     for (int i = 0; i < k; i++) {
         float t = tStart + randomize(hashSeed) * d;
+
         vec3 samplePos = raystart + t * raydir;
         vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
         float opacity = applyTF(transferFunction, volumeSample).a;
@@ -155,13 +167,13 @@ float poissonTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, flo
         T *= (1.f - opacity * invMaxExtinction);
     }
 
-#else
-
-#endif
-
     return clamp(T, 0.f, 1.f);
 }
 
+// NOTE: We are having a problem here not related to opacityUpperbound
+// Could it be opacityControl? Then why don't we see similar errors with
+// residualRatioTrackingTransmittance? It was k... previous assignment was
+// int k = poisson_uni(hashSeed, d * (opacityToExtinction(opacityUpperbound - opacityControl)));
 float poissonResidualTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
                                            inout uint hashSeed, sampler3D volume,
                                            VolumeParameters volumeParameters,
@@ -177,10 +189,8 @@ float poissonResidualTrackingTransmittance(vec3 raystart, vec3 raydir, float tSt
     float Tc = exp(-opacityToExtinction(opacityControl) * d);
     float Tr = 1.f;  // Transmittance
 
-    int k = poisson_uni(hashSeed, d * (opacityToExtinction(opacityUpperbound)));
-
-    // if not defined.
-#ifndef POISSON_SORTED_TRAVERSAL
+    int k = poisson_uni(hashSeed, d * (opacityToExtinction(opacityUpperbound - opacityControl)));
+    auxReturn = vec3(0);
 
     for (int i = 0; i < k; i++) {
         float t = tStart + randomize(hashSeed) * d;
@@ -195,17 +205,15 @@ float poissonResidualTrackingTransmittance(vec3 raystart, vec3 raydir, float tSt
         Tr *= (1.f - (opacity - opacityControl) * invMaxExtinction);
     }
 
-#else
-    // merge sort and use that for t
-
-#endif
-
     return Tr * Tc;
 }
 
-float independentMultiPoissonTrackingTransmittance(
-    vec3 raystart, vec3 raydir, float tStart, float tEnd, inout uint hashSeed, sampler3D volume,
-    VolumeParameters volumeParameters, sampler2D transferFunction, float opacityUpperbound, out vec3 auxReturn) {
+float independentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart,
+                                                   float tEnd, inout uint hashSeed,
+                                                   sampler3D volume,
+                                                   VolumeParameters volumeParameters,
+                                                   sampler2D transferFunction,
+                                                   float opacityUpperbound, out vec3 auxReturn) {
 
     if (opacityUpperbound < 2e-6) {
         return 1.f;
@@ -219,6 +227,7 @@ float independentMultiPoissonTrackingTransmittance(
 
     float opacityControl = 0;
     float d = (tEnd - tStart);
+    auxReturn = vec3(0);
 
     for (int i = 0; i < N; i++) {
         float t = tStart + randomize(hashSeed) * d;
@@ -232,24 +241,26 @@ float independentMultiPoissonTrackingTransmittance(
                                                 opacityUpperbound, opacityControl, auxReturn);
 }
 
+// NOTE: Not sure why this doesn't work
 float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart,
                                                  float tEnd, inout uint hashSeed, sampler3D volume,
                                                  VolumeParameters volumeParameters,
                                                  sampler2D transferFunction,
                                                  float opacityUpperbound, out vec3 auxReturn) {
+
+                                               
+    
     if (opacityUpperbound < 2e-6) {
         return 1.f;
     }
     float d = (tEnd - tStart);
     int N = poisson_uni(hashSeed, d * opacityToExtinction(opacityUpperbound));
-
     float opacityControl = 0;
-
-#ifndef POISSON_TRACKING_N
+    auxReturn = vec3(0);
+    
+    //auxReturn.z = 1f;
     float extinctions[16];
-#else
-    float extinctions[POISSON_TRACKING_N];
-#endif
+
     for (int i = 0; i < N; i++) {
         float t = tStart + randomize(hashSeed) * d;
         vec3 samplePos = raystart + t * raydir;
@@ -270,7 +281,7 @@ float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, flo
     int k = poisson_uni(hashSeed, d * (opacityToExtinction(opacityUpperbound - opacityControl)));
 
     // why 16? why is POISSON_TRACKING_N = 16? optimal after testing?
-    // 16 is defualt, but the processor can rewrite it when building the shader, if requested.
+    // 16 is default, but the processor can rewrite it when building the shader, if requested.
     int kCached = min(min(k, N), 16);
     int ki = 0;
 
@@ -292,14 +303,15 @@ float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, flo
         Tr *= (1.f - (opacity - opacityControl) * invMaxExtinction);
     }
 
-    return 1.f;
+    return Tc * Tr;
 }
 
 // TODO: Rename to residual, since it bases itself of the poisson residual tracker
 float geometricTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
                                      inout uint hashSeed, sampler3D volume,
                                      VolumeParameters volumeParameters, sampler2D transferFunction,
-                                     float opacityUpperbound, float opacityControl, out vec3 auxReturn) {
+                                     float opacityUpperbound, float opacityControl,
+                                     out vec3 auxReturn) {
     if (opacityUpperbound < 2e-6) {
         return 1.f;
     }
