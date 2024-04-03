@@ -11,6 +11,7 @@
 #include "utils/raycasting.glsl"
 
 #include "random.glsl"
+#include "transmittance/transmittance.glsl"
 #include "transmittance/transmittancemethods.glsl"
 #include "lightestimation.glsl"
 #include "util/rayminmax.glsl"
@@ -69,7 +70,8 @@ uint getHashSeed() {
 
 vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth, float rayDepth,
                inout float depth, vec4 bgColor) {
-
+    
+    // All coords are texture space unless specified otherwise
     vec3 ray = exitPoint - entryPoint;
     vec3 rayDir = normalize(ray);
     float t1 = length(ray);
@@ -83,7 +85,17 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
     float T = 0.0f;
     vec3 minMax = vec3(0.f, 1.0f, 0.0f);
 
-    vec3 cellDim = ceil(volumeParameters.dimensions / minMaxOpacityParameters.dimensions);
+    vec3 cellDim = volumeParameters.dimensions / minMaxOpacityParameters.dimensions;
+    
+    // We need to be careful to not always call ceil().
+    // Even if opacityDim evenly divides volDim, we can still get a fractional part due to floating point precision error.
+    if(fract(cellDim.x) > 0.01) {
+        cellDim = ceil(cellDim);
+    }
+
+
+    
+    //cellDim = vec3(10);
     vec3 errorReturn = vec3(0);
 
     minMax = rayMinMaxAvgTest(entryPoint, rayDir, t0, t1, minMaxOpacity, minMaxOpacityParameters, cellDim, volume,
@@ -91,20 +103,19 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
     // Avoid case where control extinction == upper bound (causing division by zero)
     minMax.y += 1e-6;
 
-    
     if(errorReturn != vec3(0)) {
         return vec4(errorReturn.y, 0, 0, 1.f);  
     } else {
         //return vec4(0, 1, 0, 1.f);  
     }
     
-    return vec4(minMax, 1f);
+    //return vec4(minMax, 1f);
     vec3 auxReturnTracking = vec3(0);
     float meanFreePath = woodcockTracking(samplePosition, rayDir, t0, t1, hashSeed, volume,
                                           volumeParameters, transferFunction, minMax.y, auxReturnTracking);
 
     if(auxReturnTracking != vec3(0)) {
-        return vec4(auxReturnTracking, 1.0f);
+        return vec4(0, auxReturnTracking.x, auxReturnTracking.x, 1.0f);
     }
 
     vec4 result = vec4(0.0);
