@@ -31,6 +31,8 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/foreach.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/datastructures/spatialdata.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>
 
 namespace inviwo {
 
@@ -49,11 +51,6 @@ PositionProperty::PositionProperty(std::string_view identifier, std::string_view
                       {{"world", "World coordinates", CoordinateSpace::World},
                        {"view", "View coordinates", CoordinateSpace::View},
                        {"clip", "Clip coordinates", CoordinateSpace::Clip}})
-    , transformPosition_{"transformPosition", "Transform Position to Reference Space",
-                         "When the coordinate space is changed and this property is checked, the "
-                         "position will be transformed to the new space keeping it in the same "
-                         "spatial position."_help,
-                         true, InvalidationLevel::Valid}
     , position_{"position", "Position", util::ordinalSymmetricVector(position, 10.0f)}
 
     , output_{"output", "Output"}
@@ -94,10 +91,7 @@ PositionProperty::PositionProperty(std::string_view identifier, std::string_view
 
     output_.addProperties(worldPos_, viewPos_, clipPos_, screenPos_);
     output_.setCollapsed(true);
-    addProperties(referenceSpace_, transformPosition_, position_, output_);
-
-    util::for_each_argument([&](auto& p) { outputProperties_.push_back(&p); }, worldPos_, viewPos_,
-                            clipPos_, screenPos_);
+    addProperties(referenceSpace_, position_, output_);
 
     referenceSpace_.onChange([this]() { referenceSpaceChanged(); });
     position_.onChange([this]() { invalidateOutputProperties(); });
@@ -118,7 +112,6 @@ PositionProperty::PositionProperty(const PositionProperty& rhs)
     , camera_{rhs.camera_}
     , previousReferenceSpace_{rhs.previousReferenceSpace_}
     , referenceSpace_{rhs.referenceSpace_}
-    , transformPosition_{rhs.transformPosition_}
     , position_{rhs.position_}
 
     , output_{rhs.output_}
@@ -129,9 +122,6 @@ PositionProperty::PositionProperty(const PositionProperty& rhs)
 
     output_.addProperties(worldPos_, viewPos_, clipPos_, screenPos_);
     addProperties(referenceSpace_, position_, output_);
-
-    util::for_each_argument([&](auto& p) { outputProperties_.push_back(&p); }, worldPos_, viewPos_,
-                            clipPos_, screenPos_);
 
     referenceSpace_.onChange([this]() { referenceSpaceChanged(); });
     position_.onChange([this]() { invalidateOutputProperties(); });
@@ -172,15 +162,18 @@ vec3 PositionProperty::convertFromWorld(const vec3& pos, CoordinateSpace targetS
             return pos;
         case CoordinateSpace::View:
             if (camera_) {
-                return vec3{camera_->viewMatrix() * vec4{pos, 1.0f}};
+                SpatialIdentity identity;
+                SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
+                return vec3{transformer.getWorldToViewMatrix() * vec4{pos, 1.0f}};
             } else {
                 return pos;
             }
             break;
         case CoordinateSpace::Clip:
             if (camera_) {
-                vec4 clipCoords =
-                    camera_->projectionMatrix() * camera_->viewMatrix() * vec4{pos, 1.0f};
+                SpatialIdentity identity;
+                SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
+                vec4 clipCoords = transformer.getWorldToClipMatrix() * vec4{pos, 1.0f};
                 clipCoords /= clipCoords.w;
                 return vec3{clipCoords};
             } else {
@@ -200,14 +193,18 @@ vec3 PositionProperty::convertToWorld(const vec3& pos, CoordinateSpace sourceSpa
             return pos;
         case CoordinateSpace::View:
             if (camera_) {
-                return vec3{camera_->inverseViewMatrix() * vec4{pos, 1.0f}};
+                SpatialIdentity identity;
+                SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
+                return vec3{transformer.getViewToWorldMatrix() * vec4{pos, 1.0f}};
             } else {
                 return pos;
             }
             break;
         case CoordinateSpace::Clip:
             if (camera_) {
-                return camera_->getWorldPosFromNormalizedDeviceCoords(pos);
+                SpatialIdentity identity;
+                SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
+                return vec3{transformer.getClipToWorldMatrix() * vec4{pos, 1.0f}};
             } else {
                 return pos;
             }
@@ -230,14 +227,14 @@ void PositionProperty::deserialize(Deserializer& d) {
 }
 
 void PositionProperty::invalidateOutputProperties() {
-    for (auto p : outputProperties_) {
+    for (auto* p : std::array<Property*, 4>{&worldPos_, &viewPos_, &clipPos_, &screenPos_}) {
         p->propertyModified();
     }
 }
 
 void PositionProperty::referenceSpaceChanged() {
     NetworkLock lock(this);
-    if (transformPosition_ && previousReferenceSpace_.has_value()) {
+    if (previousReferenceSpace_.has_value()) {
         position_.set(
             convertFromWorld(convertToWorld(position_, *previousReferenceSpace_), referenceSpace_));
     } else {

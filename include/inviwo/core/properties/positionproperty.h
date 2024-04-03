@@ -35,7 +35,6 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 
 #include <optional>
@@ -125,7 +124,6 @@ private:
     std::optional<CoordinateSpace> previousReferenceSpace_;
 
     OptionProperty<CoordinateSpace> referenceSpace_;
-    BoolProperty transformPosition_;
     FloatVec3Property position_;
 
     CompositeProperty output_;
@@ -133,8 +131,6 @@ private:
     FloatVec3RefProperty viewPos_;
     FloatVec3RefProperty clipPos_;
     FloatVec3RefProperty screenPos_;
-
-    std::vector<Property*> outputProperties_;
 };
 
 }  // namespace inviwo
