@@ -112,6 +112,28 @@ const SpatialCameraCoordinateTransformer& SpatialEntity::getCoordinateTransforme
     return *cameraTransformer_;
 }
 
+SpatialIdentity::SpatialIdentity() : SpatialEntity{mat4(1.0f), mat4(1.0f)} {}
+
+SpatialIdentity::SpatialIdentity(const glm::mat4& modelMatrix)
+    : SpatialIdentity{modelMatrix, mat4(1.0f)} {}
+
+SpatialIdentity::SpatialIdentity(const glm::mat4& modelMatrix, const glm::mat4& worldMatrix)
+    : SpatialEntity{modelMatrix, worldMatrix} {}
+
+SpatialIdentity::SpatialIdentity(const SpatialIdentity& rhs) : SpatialEntity{rhs} {}
+
+SpatialIdentity& SpatialIdentity::operator=(const SpatialIdentity& that) {
+    if (this != &that) {
+        modelMatrix_ = that.modelMatrix_;
+        worldMatrix_ = that.worldMatrix_;
+    }
+    return *this;
+}
+
+SpatialIdentity* SpatialIdentity::clone() const { return new SpatialIdentity(*this); }
+
+SpatialIdentity::~SpatialIdentity() = default;
+
 template class IVW_CORE_TMPL_INST StructuredGridEntity<2>;
 template class IVW_CORE_TMPL_INST StructuredGridEntity<3>;
 

@@ -135,6 +135,19 @@ protected:
     glm::mat4 worldMatrix_;
 };
 
+class IVW_CORE_API SpatialIdentity : public SpatialEntity {
+public:
+    SpatialIdentity();
+    SpatialIdentity(const glm::mat4& modelMatrix);
+    SpatialIdentity(const glm::mat4& modelMatrix, const glm::mat4& worldMatrix);
+    SpatialIdentity(const SpatialIdentity& rhs);
+    SpatialIdentity& operator=(const SpatialIdentity& that);
+    virtual SpatialIdentity* clone() const override;
+    virtual ~SpatialIdentity();
+
+    virtual const Axis* getAxis([[maybe_unused]] size_t index) const override { return nullptr; }
+};
+
 template <unsigned int N>
 class StructuredGridEntity : public SpatialEntity {
 public:
