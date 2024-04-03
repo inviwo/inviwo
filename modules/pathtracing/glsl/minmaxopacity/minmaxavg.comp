@@ -45,7 +45,7 @@ void main() {
         for (int y = startCoord.y; y <= endCoord.y; ++y) {
             for (int x = startCoord.x; x <= endCoord.x; ++x) {
                 // find texture endpoints of the cell? 
-                vec3 texCoord = (vec3(x, y, z) + 0.5) / vec3(volumeDataParameters.dimensions);
+                vec3 texCoord = (vec3(x, y, z)) / vec3(volumeDataParameters.dimensions);
                 //ivec3 texCoord = ivec3(x,y,z);
                 vec4 vn = getNormalizedVoxel(volumeData, volumeDataParameters, texCoord);
                 float opacity = applyTF(tf, vn).a;

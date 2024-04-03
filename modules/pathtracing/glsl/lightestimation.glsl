@@ -45,7 +45,9 @@ vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam,
     
     //Tl = 1.0f;
     if(auxReturn != vec3(0)) {
-        return auxReturn;
+        //return auxReturn;
+    } else {
+        //return vec3(0f);
     }
 
     if (Tl == 0.0f) {

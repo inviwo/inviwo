@@ -70,7 +70,7 @@ uint getHashSeed() {
 
 vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth, float rayDepth,
                inout float depth, vec4 bgColor) {
-    
+
     // All coords are texture space unless specified otherwise
     vec3 ray = exitPoint - entryPoint;
     vec3 rayDir = normalize(ray);
@@ -86,51 +86,49 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
     vec3 minMax = vec3(0.f, 1.0f, 0.0f);
 
     vec3 cellDim = volumeParameters.dimensions / minMaxOpacityParameters.dimensions;
-    
+
     // We need to be careful to not always call ceil().
-    // Even if opacityDim evenly divides volDim, we can still get a fractional part due to floating point precision error.
-    if(fract(cellDim.x) > 0.01) {
+    // Even if opacityDim evenly divides volDim, we can still get a fractional part due to floating
+    // point precision error.
+    if (fract(cellDim.x) > 0.01) {
         cellDim = ceil(cellDim);
     }
 
-
-    
-    //cellDim = vec3(10);
+    // cellDim = vec3(10);
     vec3 errorReturn = vec3(0);
 
-    minMax = rayMinMaxAvgTest(entryPoint, rayDir, t0, t1, minMaxOpacity, minMaxOpacityParameters, cellDim, volume,
-                       volumeParameters, transferFunction, errorReturn);
+    minMax = rayMinMaxAvgTest(entryPoint, rayDir, t0, t1, minMaxOpacity, minMaxOpacityParameters,
+                              cellDim, volume, volumeParameters, transferFunction, errorReturn);
     // Avoid case where control extinction == upper bound (causing division by zero)
     minMax.y += 1e-6;
 
-    if(errorReturn != vec3(0)) {
-        return vec4(errorReturn.y, 0, 0, 1.f);  
+    if (errorReturn != vec3(0)) {
+        return vec4(errorReturn.y, 0, 0, 1.f);
     } else {
-        //return vec4(0, 1, 0, 1.f);  
+        // return vec4(0, 1, 0, 1.f);
     }
-    
-    //return vec4(minMax, 1f);
-    vec3 auxReturnTracking = vec3(0);
-    float meanFreePath = woodcockTracking(samplePosition, rayDir, t0, t1, hashSeed, volume,
-                                          volumeParameters, transferFunction, minMax.y, auxReturnTracking);
 
-    if(auxReturnTracking != vec3(0)) {
+    // return vec4(minMax, 1f);
+    vec3 auxReturnTracking = vec3(0);
+    float meanFreePath =
+        woodcockTracking(samplePosition, rayDir, t0, t1, hashSeed, volume, volumeParameters,
+                         transferFunction, minMax.y, auxReturnTracking);
+
+    // NOTE: When using, POISSONRATIO tracking method and tf sample 0 has value 0, this creates and
+    // error return value
+    if (auxReturnTracking != vec3(0)) {
         return vec4(0, auxReturnTracking.x, auxReturnTracking.x, 1.0f);
     }
 
     vec4 result = vec4(0.0);
     if (meanFreePath <= t1) {
         samplePosition = entryPoint + meanFreePath * rayDir;
-        
-        // samplePosition being outside of texturespace is a big problem. means meanFreePath has lead samplePosition to be outside texture space =>
-        // which can only happen in this block if mfp is negative, which can only occur if upperbound is less than largest opacity
-
         rayDepth = meanFreePath;
         depth = rayDepth;
 
         result.rgb = estimateDirectLightUniformGrid(
             volume, volumeParameters, transferFunction, minMaxOpacity, minMaxOpacityParameters,
-            samplePosition, cameraDir, light, hashSeed, channel, 0);
+            samplePosition, cameraDir, light, hashSeed, channel, 6);
         result.a = 1f - T;
 
     } else {
@@ -152,7 +150,7 @@ void main() {
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
     vec2 texCoord = vec2(0.5 + gl_GlobalInvocationID.xy) / outportParameters.dimensions;
 
-    if(any(greaterThan(storePos, outportParameters.dimensions))) {
+    if (any(greaterThan(storePos, outportParameters.dimensions))) {
         return;
     }
 
@@ -162,7 +160,7 @@ void main() {
     float entryPointDepth = texture(entryDepth, texCoord).x;
     float exitPointDepth = texture(exitDepth, texCoord).x;
 
-    vec4 bgColor = vec4(0.0f);
+    vec4 bgColor = vec4(0.f);
 
     if (entryPoint == exitPoint) {
         imageStore(outportColor, storePos, bgColor);
