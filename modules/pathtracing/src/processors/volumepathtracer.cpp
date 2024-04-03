@@ -243,7 +243,6 @@ void VolumePathTracer::process() {
         ImageGL* outImageGL = outImage->getEditableRepresentation<ImageGL>();
         entryPort_.getData()->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
     }
-
     activeShader_->activate();
     activeShader_->setUniform("time_ms", MSSinceStart_);
     activeShader_->setUniform("iteration", iteration_);
