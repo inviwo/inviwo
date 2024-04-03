@@ -24,6 +24,7 @@ set(SHADER_FILES
     glsl/lightestimation.glsl
     glsl/minmaxopacity/minmaxavg.comp
     glsl/random.glsl
+    glsl/transmittance/transmittance.glsl
     glsl/transmittance/transmittancemethods.glsl
     glsl/uniformgrid.glsl
     glsl/util/rayboxintersection.glsl
