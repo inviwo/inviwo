@@ -42,30 +42,14 @@ float partitionedTransmittanceTracking(int METHOD, vec3 raystart, vec3 raydir, f
 
         continueTraversal = stepToNextCellHit(deltatx, di, cellCoordEnd, dt, cellCoord, t);
         if (minMax.y <= 0) {
-            //continue;
+            continue;
         }
 
         float t0 = tStart + dirLen * tPrev;
         float t1 = tStart + dirLen * min(1.f, t);
 
-        vec4 volumeSamplet0 =
-            getNormalizedVoxel(volume, volumeParameters, raystart + raydir * t0);
-
-        vec4 volumeSamplet1 =
-            getNormalizedVoxel(volume, volumeParameters, raystart + raydir * t1);
-
-
         minMax.y += 1e-6;
         float avg = minMax.z;
-
-        float op = applyTF(transferFunction, volumeSamplet1).a;
-
-        // We seemingly get this clause when sampling close to the edge of a cell in opacity
-        if (op > minMax.y) {
-
-            auxReturn += vec3(0,0,abs(op - minMax.y));
-        }
-
         // Should be METHOD, but the uniform is not behaving
         // Check that sampled opacity
         float T_ = 0;
@@ -75,12 +59,10 @@ float partitionedTransmittanceTracking(int METHOD, vec3 raystart, vec3 raydir, f
             float meanFreePath = woodcockTracking(raystart, raydir, t0, t1, hashSeed, volume,
                                                   volumeParameters, transferFunction, minMax.y, auxReturnSub);
 
-            if(auxReturnSub.x > 0) {
+            if(auxReturnSub != vec3(0f)) {
                 auxReturn += vec3(auxReturnSub.x,0,0);
                 
-            } else {
-                
-            }
+            } 
             T *= meanFreePath >= t1 ? 1f : 0f;       
             
             break;
@@ -88,79 +70,59 @@ float partitionedTransmittanceTracking(int METHOD, vec3 raystart, vec3 raydir, f
             T_ = ratioTrackingTransmittance(raystart, raydir, t0, t1, hashSeed, volume,
                                             volumeParameters, transferFunction, minMax.y, auxReturnSub);
 
-            if(T_ < 0) {
+            if(auxReturnSub != vec3(0f)) {
                 auxReturn += vec3(auxReturnSub.x,0,0);
-            } else {
-                T *= T_;
-            }
+            } 
+            T *= T_;
             
             break;
             case 2:
             T_ = residualRatioTrackingTransmittance(raystart, raydir, t0, t1, hashSeed, volume,
                                                     volumeParameters, transferFunction, minMax.y,
                                                     avg, auxReturnSub);
-            if(T_ < 0) {
+            if(auxReturnSub != vec3(0f)) {
                 auxReturn += vec3(auxReturnSub.x,0,0);
-            } else {
-                T *= T_;
-            }
-
+            } 
+            T *= T_;
             break;
             case 3:
-            T_ = poissonTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed, volume,
+            T_ = poissonTrackingTransmittance(raystart, raydir, t0, t1, hashSeed, volume,
                                               volumeParameters, transferFunction, minMax.y, auxReturnSub);
 
-            if(T_ < 0) {
+            if(auxReturnSub != vec3(0f)) {
                 auxReturn += vec3(auxReturnSub.x,0,0);
-            } else {
-                T *= T_;
-            }
-
+            } 
+            T *= T_;
             break;
             case 4:
-            T_ = poissonResidualTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed,
+            T_ = poissonResidualTrackingTransmittance(raystart, raydir, t0, t1, hashSeed,
                                                       volume, volumeParameters, transferFunction,
                                                       minMax.y, avg, auxReturnSub);
 
-            if(T_ < 0) {
+            if(auxReturnSub != vec3(0f)) {
                 auxReturn += vec3(auxReturnSub.x,0,0);
-            } else {
-                T *= T_;
-            }
-
+            } 
+            T *= T_;
+            break;
             case 5:
-            T_ = independentMultiPoissonTrackingTransmittance(raystart, raydir, tStart, tEnd,
+            T_ = independentMultiPoissonTrackingTransmittance(raystart, raydir, t0, t1,
                                                               hashSeed, volume, volumeParameters,
                                                               transferFunction, minMax.y, auxReturnSub);
 
-            if(T_ < 0) {
-                auxReturn += vec3(auxReturnSub.x,0,0);
-            } else {
-                T *= T_;
-            }
-            
+            if(auxReturnSub != vec3(0f)) {
+                auxReturn += auxReturnSub;
+            } 
+            T *= T_;
             break;
             case 6:
-            T *= dependentMultiPoissonTrackingTransmittance(raystart, raydir, tStart, tEnd,
+            T_ = dependentMultiPoissonTrackingTransmittance(raystart, raydir, t0, t1,
                                                             hashSeed, volume, volumeParameters,
                                                             transferFunction, minMax.y, auxReturnSub);
 
-            if(T_ < 0) {
-                auxReturn += vec3(auxReturnSub.x,0,0);
-            } else {
-                T *= T_;
+            if(auxReturnSub != vec3(0f)) {
+                auxReturn += auxReturnSub;
             }
-
-            break;
-            case 7:
-            T *= geometricTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed, volume,
-                                                volumeParameters, transferFunction, minMax.y, avg, auxReturnSub);
-
-            if(T_ < 0) {
-                auxReturn += vec3(auxReturnSub.x,0,0);
-            } else {
-                T *= T_;
-            }
+            T *= T_;
             break;
         }
     }
@@ -208,11 +170,6 @@ float transmittance(int METHOD, vec3 raystart, vec3 raydir, float tStart, float 
             return dependentMultiPoissonTrackingTransmittance(raystart, raydir, tStart, tEnd,
                                                               hashSeed, volume, volumeParameters,
                                                               transferFunction, opacityUpperbound, auxReturn2);
-
-        case GEOMETRICRESIDUAL:
-            return geometricTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed, volume,
-                                                  volumeParameters, transferFunction,
-                                                  opacityUpperbound, opacityControl, auxReturn2);
     }
 
     return 0f;
@@ -288,6 +245,7 @@ float partitionedTransmittanceTesting(int METHOD, vec3 raystart, vec3 raydir, fl
         float T_ = 0;
         vec3 auxReturnSub = vec3(0);
         switch (METHOD) {
+            
             case 0 :
             // woodcock tracking is weird. like it almost jumps 'too' far forward if the max opacity is low enough
             float meanFreePath = woodcockTracking(raystart, raydir, t0, t1, hashSeed, volume,
@@ -295,8 +253,6 @@ float partitionedTransmittanceTesting(int METHOD, vec3 raystart, vec3 raydir, fl
 
             if(auxReturnSub != vec3(0)) {
                 auxReturn += vec3(auxReturnSub.x,0,0);
-                
-            } else {
                 
             }
             T *= meanFreePath >= t1 ? 1f : 0f;
@@ -308,10 +264,8 @@ float partitionedTransmittanceTesting(int METHOD, vec3 raystart, vec3 raydir, fl
 
             if(auxReturnSub != vec3(0)) {
                 auxReturn += vec3(0,0,0);
-            } else {
-                
             }
-                T *= T_;
+            T *= T_;
             
             break;
             case 2:
@@ -320,66 +274,50 @@ float partitionedTransmittanceTesting(int METHOD, vec3 raystart, vec3 raydir, fl
                                                     avg, auxReturnSub);
             if(auxReturnSub != vec3(0)) {
                 auxReturn += vec3(auxReturnSub.x,0,0);
-            } else {
-                T *= T_;
             }
+            T *= T_;
 
             break;
             case 3:
-            T_ = poissonTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed, volume,
+            T_ = poissonTrackingTransmittance(raystart, raydir, t0, t1, hashSeed, volume,
                                               volumeParameters, transferFunction, minMax.y, auxReturnSub);
 
             if(auxReturnSub != vec3(0)) {
                 auxReturn += vec3(auxReturnSub.x,0,0);
-            } else {
-                T *= T_;
             }
+            T *= T_;
 
             break;
             case 4:
-            T_ = poissonResidualTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed,
+            T_ = poissonResidualTrackingTransmittance(raystart, raydir, t0, t1, hashSeed,
                                                       volume, volumeParameters, transferFunction,
                                                       minMax.y, avg, auxReturnSub);
 
             if(auxReturnSub != vec3(0)) {
                 auxReturn += vec3(auxReturnSub.x,0,0);
-            } else {
-                T *= T_;
             }
-
+            T *= T_;
+            break;
             case 5:
-            T_ = independentMultiPoissonTrackingTransmittance(raystart, raydir, tStart, tEnd,
+            T_ = independentMultiPoissonTrackingTransmittance(raystart, raydir, t0, t1,
                                                               hashSeed, volume, volumeParameters,
                                                               transferFunction, minMax.y, auxReturnSub);
 
             if(auxReturnSub != vec3(0)) {
                 auxReturn += vec3(auxReturnSub.x,0,0);
-            } else {
-                T *= T_;
-            }
-            
+            } 
+            T *= T_;
             break;
             case 6:
-            T *= dependentMultiPoissonTrackingTransmittance(raystart, raydir, tStart, tEnd,
+            T_ = dependentMultiPoissonTrackingTransmittance(raystart, raydir, t0, t1,
                                                             hashSeed, volume, volumeParameters,
                                                             transferFunction, minMax.y, auxReturnSub);
 
             if(auxReturnSub != vec3(0)) {
-                auxReturn += vec3(auxReturnSub.x,0,0);
-            } else {
-                T *= T_;
-            }
+                auxReturn += vec3(auxReturnSub.x,auxReturnSub.y,auxReturnSub.z);
+            } 
+            T *= T_;
 
-            break;
-            case 7:
-            T *= geometricTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed, volume,
-                                                volumeParameters, transferFunction, minMax.y, avg, auxReturnSub);
-
-            if(auxReturnSub != vec3(0)) {
-                auxReturn += vec3(auxReturnSub.x,0,0);
-            } else {
-                T *= T_;
-            }
             break;
         }
     }
