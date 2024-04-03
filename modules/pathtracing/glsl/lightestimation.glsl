@@ -1,5 +1,5 @@
 #include "random.glsl"
-#include "transmittance/transmittancemethods.glsl"
+#include "transmittance/transmittance.glsl"
 #include "util/rayboxintersection.glsl"
 
 vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam, sampler2D tf,

@@ -103,7 +103,8 @@ vec3 rayMinMaxAvgTest(vec3 pos, vec3 dir, float t0, float t1, sampler3D opacity,
     mat4 m = volumeParameters.textureToIndex;
 
     // Compare entry exit to x1 x2
-
+    // pos + t0*dir is expected to be between 0, and 1
+    // x1, and x2 lie between [0, dataDim], dataDim := 150 when using boron
     vec3 x1 = transformPoint(m, pos + t0*dir) + 0.5f;
     vec3 x2 = transformPoint(m, pos + t1*dir) + 0.5f;
 
