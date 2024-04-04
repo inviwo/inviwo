@@ -44,7 +44,8 @@
 #include <inviwo/core/util/glmmat.h>                    // for mat3
 #include <inviwo/core/util/glmvec.h>                    // for vec3, vec2, vec4
 #include <inviwo/core/util/staticstring.h>              // for operator+
-#include <modules/base/algorithm/meshutils.h>           // for arrow, sphere
+#include <inviwo/core/util/stdextensions.h>
+#include <modules/base/algorithm/meshutils.h>  // for arrow, sphere
 
 #include <type_traits>  // for remove_extent_t
 
@@ -74,18 +75,17 @@ OrientationIndicator::OrientationIndicator()
     : Processor()
     , outport_{"mesh", "The generated indicator mesh"_help}
     , baseColor_{"baseColor", "Base Color",
-                 util::ordinalColor(vec4(1.0f)).set("Color of the central sphere"_help)}
+                 util::ordinalColor(vec4(1.0f)).set("Color of the origin"_help)}
     , xColor_{"xColor", "X axis Color",
-              util::ordinalColor(vec4(1.0f, 0.0f, 0.0f, 1.0f)).set("Color of the first arrow"_help)}
+              util::ordinalColor(vec4(0.8f, 0.0f, 0.0f, 1.0f)).set("Color of the x axis"_help)}
     , yColor_{"yColor", "Y axis Color",
-              util::ordinalColor(vec4(0.0f, 1.0f, 0.0f, 1.0f))
-                  .set("Color of the second arrow"_help)}
+              util::ordinalColor(vec4(0.0f, 0.8f, 0.0f, 1.0f)).set("Color of the y axis"_help)}
     , zColor_{"zColor", "Z axis Color",
-              util::ordinalColor(vec4(0.0f, 0.0f, 1.0f, 1.0f)).set("Color of the third arrow"_help)}
+              util::ordinalColor(vec4(0.0f, 0.0f, 0.8f, 1.0f)).set("Color of the z axis"_help)}
     , scale_{"scale", "Scale",
              util::ordinalScale(.05f, 1.f).set("Overall scaling factor for the widget"_help)}
     , axisScale_{"axisScale", "Axis scale",
-                 util::ordinalScale(vec3(1.0f), 10.f).set("scaling factors for each arrow"_help)}
+                 util::ordinalScale(vec3(1.0f), 10.f).set("Scaling factors for each arrow"_help)}
     , radius_{"radius", "Radius", util::ordinalScale(1.0f, 10.f).set("Radius of arrows"_help)}
 
     , location_{"location", "Location"}
@@ -124,7 +124,8 @@ OrientationIndicator::OrientationIndicator()
 }
 
 void OrientationIndicator::process() {
-    if (!mesh_ || axisScale_.isModified() || radius_.isModified()) {
+    if (!mesh_ || util::any_of(util::ref<Property>(axisScale_, radius_, xColor_, yColor_, zColor_),
+                               &Property::isModified)) {
         updateMesh();
     }
 
