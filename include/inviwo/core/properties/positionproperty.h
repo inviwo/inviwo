@@ -54,21 +54,22 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    enum class Space : int { WORLD, VIEW };
+    enum class CoordinateOffset { None, CameraLookAt, Custom };
+    enum class ApplyOffset { No, Yes };
 
     PositionProperty(std::string_view identifier, std::string_view displayName, Document help,
                      const vec3& position = vec3{0.0f},
                      CoordinateSpace coordinateSpace = CoordinateSpace::World,
                      CameraProperty* camera = nullptr,
-                     InvalidationLevel = InvalidationLevel::InvalidResources,
-                     PropertySemantics semantics = PropertySemantics::Default);
+                     PropertySemantics positionSemantics = PropertySemantics::Default,
+                     InvalidationLevel = InvalidationLevel::InvalidResources);
 
     PositionProperty(std::string_view identifier, std::string_view displayName,
                      const vec3& position = vec3{0.0f},
                      CoordinateSpace coordinateSpace = CoordinateSpace::World,
                      CameraProperty* camera = nullptr,
-                     InvalidationLevel = InvalidationLevel::InvalidResources,
-                     PropertySemantics semantics = PropertySemantics::Default);
+                     PropertySemantics positionSemantics = PropertySemantics::Default,
+                     InvalidationLevel = InvalidationLevel::InvalidResources);
     PositionProperty(const PositionProperty& rhs);
     [[nodiscard]] virtual PositionProperty* clone() const override;
 
@@ -85,8 +86,10 @@ public:
      * Set both position \p pos given in the coordinate space \p space and the coordinate space.
      * @param pos    position in \p space coordinates
      * @param space  reference coordinate system of \p pos
+     * @param applyOffset   determines whether the current offset is applied to \p pos or \p pos is
+     *               considered absolute
      */
-    void set(const vec3& pos, CoordinateSpace space);
+    void set(const vec3& pos, CoordinateSpace space, ApplyOffset applyOffset = ApplyOffset::No);
 
     /**
      * Update the position given \p pos in coordinate space \p sourceSpace. The position will be
@@ -117,6 +120,7 @@ public:
 private:
     [[nodiscard]] vec3 convertFromWorld(const vec3& pos, CoordinateSpace targetSpace) const;
     [[nodiscard]] vec3 convertToWorld(const vec3& pos, CoordinateSpace sourceSpace) const;
+    vec3 getOffset() const;
     void invalidateOutputProperties();
     void referenceSpaceChanged();
 
@@ -125,6 +129,9 @@ private:
 
     OptionProperty<CoordinateSpace> referenceSpace_;
     FloatVec3Property position_;
+
+    OptionProperty<CoordinateOffset> coordinateOffsetMode_;
+    FloatVec3Property coordinateOffset_;
 
     CompositeProperty output_;
     FloatVec3RefProperty worldPos_;

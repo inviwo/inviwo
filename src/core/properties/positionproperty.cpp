@@ -42,8 +42,9 @@ std::string PositionProperty::getClassIdentifier() const { return classIdentifie
 PositionProperty::PositionProperty(std::string_view identifier, std::string_view displayName,
                                    Document help, const vec3& position,
                                    CoordinateSpace coordinateSpace, CameraProperty* camera,
-                                   InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CompositeProperty{identifier, displayName, std::move(help), invalidationLevel, semantics}
+                                   PropertySemantics positionSemantics,
+                                   InvalidationLevel invalidationLevel)
+    : CompositeProperty{identifier, displayName, std::move(help), invalidationLevel}
     , camera_{camera}
     , previousReferenceSpace_{coordinateSpace}
     , referenceSpace_("referenceFrame", "Space",
@@ -51,7 +52,22 @@ PositionProperty::PositionProperty(std::string_view identifier, std::string_view
                       {{"world", "World coordinates", CoordinateSpace::World},
                        {"view", "View coordinates", CoordinateSpace::View},
                        {"clip", "Clip coordinates", CoordinateSpace::Clip}})
-    , position_{"position", "Position", util::ordinalSymmetricVector(position, 10.0f)}
+    , position_{"position", "Position",
+                util::ordinalSymmetricVector(position, 10.0f)
+                    .set("Spatial position in the reference coordinate space"_help)
+                    .set(positionSemantics)}
+    , coordinateOffsetMode_("coordinateOffsetMode", "Offset",
+                            "Preset for the positional offset below."_help,
+                            {{"none", "No offset", CoordinateOffset::None},
+                             {"cameraLookAt", "Camera look-at", CoordinateOffset::CameraLookAt},
+                             {"custom", "Custom", CoordinateOffset::Custom}})
+    , coordinateOffset_{"coordinateOffset", "Offset",
+                        util::ordinalSymmetricVector(vec3{0.0f}, 10.0f)
+                            .set("The offset is applied to the position in the same reference "
+                                 "space. This "
+                                 "allows for example to move a light source around a volume or "
+                                 "mesh while "
+                                 "being centered in the middle of the volume."_help)}
 
     , output_{"output", "Output"}
     , worldPos_{"worldPosition", "World Position",
@@ -91,10 +107,14 @@ PositionProperty::PositionProperty(std::string_view identifier, std::string_view
 
     output_.addProperties(worldPos_, viewPos_, clipPos_, screenPos_);
     output_.setCollapsed(true);
-    addProperties(referenceSpace_, position_, output_);
+    addProperties(referenceSpace_, position_, coordinateOffsetMode_, coordinateOffset_, output_);
 
     referenceSpace_.onChange([this]() { referenceSpaceChanged(); });
     position_.onChange([this]() { invalidateOutputProperties(); });
+    coordinateOffsetMode_.onChange([this]() { invalidateOutputProperties(); });
+    coordinateOffset_.onChange([this]() { invalidateOutputProperties(); });
+    coordinateOffset_.readonlyDependsOn(
+        coordinateOffsetMode_, [](auto& prop) { return prop.get() != CoordinateOffset::Custom; });
     if (camera_) {
         camera_->onChange([this]() { invalidateOutputProperties(); });
     }
@@ -102,10 +122,10 @@ PositionProperty::PositionProperty(std::string_view identifier, std::string_view
 
 PositionProperty::PositionProperty(std::string_view identifier, std::string_view displayName,
                                    const vec3& position, CoordinateSpace coordinateSpace,
-                                   CameraProperty* camera, InvalidationLevel invalidationLevel,
-                                   PropertySemantics semantics)
+                                   CameraProperty* camera, PropertySemantics positionSemantics,
+                                   InvalidationLevel invalidationLevel)
     : PositionProperty(identifier, displayName, Document{}, position, coordinateSpace, camera,
-                       invalidationLevel, semantics) {}
+                       positionSemantics, invalidationLevel) {}
 
 PositionProperty::PositionProperty(const PositionProperty& rhs)
     : CompositeProperty{rhs}
@@ -113,6 +133,8 @@ PositionProperty::PositionProperty(const PositionProperty& rhs)
     , previousReferenceSpace_{rhs.previousReferenceSpace_}
     , referenceSpace_{rhs.referenceSpace_}
     , position_{rhs.position_}
+    , coordinateOffsetMode_{rhs.coordinateOffsetMode_}
+    , coordinateOffset_{rhs.coordinateOffset_}
 
     , output_{rhs.output_}
     , worldPos_{rhs.worldPos_}
@@ -121,10 +143,15 @@ PositionProperty::PositionProperty(const PositionProperty& rhs)
     , screenPos_{rhs.screenPos_} {
 
     output_.addProperties(worldPos_, viewPos_, clipPos_, screenPos_);
-    addProperties(referenceSpace_, position_, output_);
+    addProperties(referenceSpace_, position_, coordinateOffsetMode_, coordinateOffset_, output_);
 
     referenceSpace_.onChange([this]() { referenceSpaceChanged(); });
     position_.onChange([this]() { invalidateOutputProperties(); });
+    coordinateOffsetMode_.onChange([this]() { invalidateOutputProperties(); });
+    coordinateOffset_.onChange([this]() { invalidateOutputProperties(); });
+    coordinateOffset_.setReadOnly(coordinateOffsetMode_.get() != CoordinateOffset::Custom);
+    coordinateOffset_.readonlyDependsOn(
+        coordinateOffsetMode_, [](auto& prop) { return prop.get() != CoordinateOffset::Custom; });
     if (camera_) {
         camera_->onChange([this]() { invalidateOutputProperties(); });
     }
@@ -133,13 +160,14 @@ PositionProperty::PositionProperty(const PositionProperty& rhs)
 PositionProperty* PositionProperty::clone() const { return new PositionProperty(*this); }
 
 vec3 PositionProperty::get(CoordinateSpace space) const {
-    return convertFromWorld(convertToWorld(position_, referenceSpace_), space);
+    return convertFromWorld(convertToWorld(position_.get() + getOffset(), referenceSpace_), space);
 }
 
-void PositionProperty::set(const vec3& pos, CoordinateSpace space) {
+void PositionProperty::set(const vec3& pos, CoordinateSpace space, ApplyOffset applyOffset) {
     NetworkLock lock(this);
     referenceSpace_.set(space);
-    position_.set(pos);
+    const vec3 offset{applyOffset == ApplyOffset::Yes ? getOffset() : vec3{0.0f}};
+    position_.set(pos + offset);
 }
 
 void PositionProperty::updatePosition(const vec3& pos, CoordinateSpace sourceSpace) {
@@ -168,7 +196,6 @@ vec3 PositionProperty::convertFromWorld(const vec3& pos, CoordinateSpace targetS
             } else {
                 return pos;
             }
-            break;
         case CoordinateSpace::Clip:
             if (camera_) {
                 SpatialIdentity identity;
@@ -179,7 +206,6 @@ vec3 PositionProperty::convertFromWorld(const vec3& pos, CoordinateSpace targetS
             } else {
                 return pos;
             }
-            break;
         default:
             throw Exception(IVW_CONTEXT, "Unsupported coordinate space '{}'", targetSpace);
             break;
@@ -199,7 +225,6 @@ vec3 PositionProperty::convertToWorld(const vec3& pos, CoordinateSpace sourceSpa
             } else {
                 return pos;
             }
-            break;
         case CoordinateSpace::Clip:
             if (camera_) {
                 SpatialIdentity identity;
@@ -208,7 +233,6 @@ vec3 PositionProperty::convertToWorld(const vec3& pos, CoordinateSpace sourceSpa
             } else {
                 return pos;
             }
-            break;
         default:
             throw Exception(IVW_CONTEXT, "Unsupported coordinate space '{}'", sourceSpace);
             break;
@@ -224,6 +248,23 @@ void PositionProperty::deserialize(Deserializer& d) {
     previousReferenceSpace_.reset();
     CompositeProperty::deserialize(d);
     previousReferenceSpace_ = referenceSpace_;
+}
+
+vec3 PositionProperty::getOffset() const {
+    switch (coordinateOffsetMode_) {
+        case CoordinateOffset::None:
+            return vec3{0.0f};
+        case CoordinateOffset::CameraLookAt:
+            if (camera_) {
+                return convertFromWorld(camera_->getLookTo(), referenceSpace_);
+            } else {
+                return vec3{0.0f};
+            }
+        case CoordinateOffset::Custom:
+            return coordinateOffset_;
+        default:
+            return vec3{0.0f};
+    }
 }
 
 void PositionProperty::invalidateOutputProperties() {
