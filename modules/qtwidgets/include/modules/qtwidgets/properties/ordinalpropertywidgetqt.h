@@ -283,6 +283,12 @@ void OrdinalLikePropertyWidgetQt<Prop, Sem>::setPropertyValue(size_t editorId) {
     if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::SphericalSpinBox ||
                   Sem == OrdinalPropertyWidgetQtSemantics::Spherical) {
         val = util::spherical(val);
+
+        if (editorId == 1) {
+            // necessary to prevent ambiguous cases at the poles where phi is set to 0 or phi gets
+            // flipped
+            util::glmcomp(val, 2) = editors_[2]->getValue();
+        }
     }
 
     util::glmcomp(val, editorId) = editors_[editorId]->getValue();
