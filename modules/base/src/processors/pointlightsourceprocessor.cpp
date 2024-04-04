@@ -96,7 +96,7 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), nullptr, InvalidationLevel::Valid)
     , lightPosition_("lightPosition", "Light Source Position", vec3(-2.f, -50.f, 90.f),
-                     CoordinateSpace::World, &camera_)
+                     CoordinateSpace::World, &camera_, PropertySemantics::LightPosition)
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightSize_("lightSize", "Light radius", 1.5f, 0.0f, 3.0f)
@@ -120,9 +120,6 @@ PointLightSourceProcessor::PointLightSourceProcessor()
         [this]() { lightScreenPos_.setVisible(lightScreenPosEnabled_.get()); });
 
     camera_.setVisible(false);
-
-    lightPosition_.setPositionSemantics(PropertySemantics::LightPosition);
-    lightPosition_.setCurrentStateAsDefault();
 
     lightDiffuse_.setSemantics(PropertySemantics::Color);
     lightDiffuse_.setCurrentStateAsDefault();

@@ -83,7 +83,8 @@ DirectionalLightSourceProcessor::DirectionalLightSourceProcessor()
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), nullptr, InvalidationLevel::Valid)
     , lightPosition_("lightPosition", "Light Source Position", "Origin of the light source"_help,
-                     vec3(100.f), CoordinateSpace::World, &camera_)
+                     vec3(100.f), CoordinateSpace::World, &camera_,
+                     PropertySemantics::LightPosition)
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", "Increases/decreases light strength"_help,
                       50.f, {0.f, ConstraintBehavior::Immutable},
@@ -97,9 +98,6 @@ DirectionalLightSourceProcessor::DirectionalLightSourceProcessor()
 
     lighting_.addProperties(lightDiffuse_, lightPowerProp_, lightEnabled_);
     addProperties(lightPosition_, lighting_, camera_);
-
-    lightPosition_.setPositionSemantics(PropertySemantics::LightPosition);
-    lightPosition_.setCurrentStateAsDefault();
 
     lightDiffuse_.setSemantics(PropertySemantics::Color);
     lightDiffuse_.setCurrentStateAsDefault();

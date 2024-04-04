@@ -81,7 +81,8 @@ DiffuseLightSourceProcessor::DiffuseLightSourceProcessor()
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), nullptr, InvalidationLevel::Valid)
     , lightPosition_("lightPosition", "Light Source Position", "Center point of the plane"_help,
-                     vec3(100.0f, 65.0f, 65.0f), CoordinateSpace::World, &camera_)
+                     vec3(100.0f, 65.0f, 65.0f), CoordinateSpace::World, &camera_,
+                     PropertySemantics::LightPosition)
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", "Increases/decreases light strength"_help,
                       50.f, {0.f, ConstraintBehavior::Immutable},
@@ -95,9 +96,6 @@ DiffuseLightSourceProcessor::DiffuseLightSourceProcessor()
     addPort(outport_);
     lighting_.addProperties(lightDiffuse_, lightPowerProp_, lightSize_);
     addProperties(lightPosition_, lighting_, camera_);
-
-    lightPosition_.setPositionSemantics(PropertySemantics::LightPosition);
-    lightPosition_.setCurrentStateAsDefault();
 
     lightDiffuse_.setSemantics(PropertySemantics::Color);
     lightSource_ = std::make_shared<DiffuseLight>();
