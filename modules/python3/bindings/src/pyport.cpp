@@ -40,6 +40,8 @@
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -56,6 +58,7 @@ void exposePort(pybind11::module& m) {
 
     py::class_<Inport, Port>(m, "Inport")
         .def_property("optional", &Inport::isOptional, &Inport::setOptional)
+        .def("isChanged", &Inport::isChanged)
         .def("canConnectTo", &Inport::canConnectTo)
         .def("connectTo", &Inport::connectTo)
         .def("disconnectFrom", &Inport::disconnectFrom)
@@ -66,7 +69,14 @@ void exposePort(pybind11::module& m) {
              py::return_value_policy::reference)
         .def("getMaxNumberOfConnections", &Inport::getMaxNumberOfConnections)
         .def("getNumberOfConnections", &Inport::getNumberOfConnections)
-        .def("getChangedOutports", &Inport::getChangedOutports, py::return_value_policy::reference);
+        .def("getChangedOutports", &Inport::getChangedOutports, py::return_value_policy::reference)
+        .def("onChangeScoped", &Inport::onChangeScoped)
+        .def("onInvalidScoped", &Inport::onInvalidScoped)
+        .def("onConnectScoped",
+             [](Inport* p, std::function<void(Outport*)> func) { return p->onConnectScoped(func); })
+        .def("onDisconnectScoped", [](Inport* p, std::function<void(Outport*)> func) {
+            return p->onDisconnectScoped(func);
+        });
 
     py::class_<Outport, Port>(m, "Outport")
         .def("isConnectedTo", &Outport::isConnectedTo)
