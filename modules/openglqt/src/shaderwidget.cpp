@@ -94,6 +94,7 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
     QMainWindow* mainWindow = new QMainWindow();
     mainWindow->setContextMenuPolicy(Qt::NoContextMenu);
     QToolBar* toolBar = new QToolBar();
+    toolBar->setObjectName("ShaderWidgetToolBar");
     mainWindow->addToolBar(toolBar);
     toolBar->setFloatable(false);
     toolBar->setMovable(false);

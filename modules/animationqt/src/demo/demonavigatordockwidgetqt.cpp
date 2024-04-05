@@ -98,6 +98,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
     }
 
     QToolBar* toolBar = new QToolBar();
+    toolBar->setObjectName("DemoNavigatorToolBar");
     {
         toolWidget->setContextMenuPolicy(Qt::NoContextMenu);
         toolWidget->addToolBar(toolBar);
