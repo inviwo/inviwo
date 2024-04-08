@@ -102,7 +102,7 @@ private:
 
     ImageOutport outport_;
 
-    // Properties and Internals
+    // Properties
     Shader shader_;
     Shader shaderUniform_;
     OptionPropertyInt channel_;
@@ -123,7 +123,7 @@ private:
     ButtonProperty invalidateRendering_;
     BoolProperty enableProgressiveRefinement_;
 
-    // Timer
+    // Internals
     Timer progressiveTimer_;
     int iteration_ = 0;
 
