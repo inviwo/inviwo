@@ -139,7 +139,7 @@ VolumePathTracer::VolumePathTracer()
         }
     });
 
-    // NOTE: This will be set to false, 0
+    // NOTE: This will be set to false, 0, in ctor regardless.
     partitionedTransmittance_ = minMaxOpacity_.isConnected();
     minMaxOpacity_.onConnect([this]() {
         partitionedTransmittance_ = true;
@@ -179,16 +179,10 @@ VolumePathTracer::VolumePathTracer()
     addProperty(invalidateRendering_);
     addProperty(enableProgressiveRefinement_);
 
-    
-
-    
-
     transferFunction_.onChange([this]() { invalidateProgressiveRendering(); });
     light_.onChange([this]() { invalidateProgressiveRendering(); });
 
     enableProgressiveRefinement_.onChange([this]() { progressiveRefinementChanged(); });
-
-    
 
     progressiveRefinementChanged();
 }
@@ -202,28 +196,17 @@ void VolumePathTracer::initializeResources() {
         activeShader_ = &shader_;
     }
 
-    // moved from construction due to activeShader_ being uninitializable before
+    // moved from construction due to activeShader_ being uninitializable in ctor
     activeShader_->onReload([this]() {
         invalidate(InvalidationLevel::InvalidOutput);
         invalidateProgressiveRendering();
     });
-    // moved from construction due to activeShader_ being uninitializable before
+    // moved from construction due to activeShader_ being uninitializable in ctor
     transmittanceMethod_.onChange([this]() {
         invalidate(InvalidationLevel::InvalidOutput);
         invalidateProgressiveRendering();
-        
-        std::cout << "onChange transmittanceMethod index " << transmittanceMethod_.getSelectedIndex() << ", shader name " << activeShader_->getComputeShaderObject()->getFileName() << std::endl;
-
-        activeShader_->setUniform("transmittanceMethod",
-                                  static_cast<int>(transmittanceMethod_.getSelectedIndex()));
-        
-        //activeShader_->getShaderObject(ShaderType::Compute)->addShaderDefine("METHOD", transmittanceMethod_.getSelectedValue());
     });
 
-    // Test to see if this works for compute shaders. I see no reason why it wouldnt
-    // TODO: Make use of defines in shaders were applicable, e.g. transmittanceMethods.
-    // ShaderObject::addShaderDefine
-    
     utilgl::addShaderDefines(*activeShader_, raycasting_);
     utilgl::addShaderDefines(*activeShader_, camera_);
     utilgl::addShaderDefines(*activeShader_, light_);
@@ -246,11 +229,12 @@ void VolumePathTracer::process() {
     activeShader_->activate();
     activeShader_->setUniform("time_ms", MSSinceStart_);
     activeShader_->setUniform("iteration", iteration_);
-
+    activeShader_->setUniform("transmittanceMethod",
+                              static_cast<int>(transmittanceMethod_.getSelectedIndex()));
     TextureUnitContainer units;
     /*
-    Stand in for:
-    utilgl::bindAndSetUniforms(shader_, units, outport_, ImageType::ColorDepthPicking);
+    Compute Shader specific impl to read and/or write to textures using GLSL imageND() function
+    call: utilgl::bindAndSetUniforms(shader_, units, outport_, ImageType::ColorDepthPicking);
     */
     {
         TextureUnit unit1, unit2, unit3;
@@ -296,7 +280,8 @@ void VolumePathTracer::process() {
     utilgl::setUniforms(*activeShader_, camera_, raycasting_, positionIndicator_, light_, channel_);
 
     // Start render
-    glDispatchCompute(glm::ceil(static_cast<float>(outport_.getDimensions().x) / 16.f), glm::ceil(static_cast<float>(outport_.getDimensions().y) / 16.f), 1);
+    glDispatchCompute(glm::ceil(static_cast<float>(outport_.getDimensions().x) / 16.f),
+                      glm::ceil(static_cast<float>(outport_.getDimensions().y) / 16.f), 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     activeShader_->deactivate();
