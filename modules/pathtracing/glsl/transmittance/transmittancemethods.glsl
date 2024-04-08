@@ -39,7 +39,8 @@ float woodcockTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd, ino
         vec3 samplePos = raystart + t * raydir;
 
         // NOTE: Simply to stop samplePos fromo falling outside of relevant opacity voxel, where
-        //       opacityUpperbound no longer is correct. 'Should be' logically equivalent to having
+        //       opacityUpperbound no longer is correct when doing opacity testing. 'Should be'
+        //       logically equivalent to having
         //       && (t <= tEnd) in the while clause.
         if (t > tEnd) {
             break;
@@ -170,10 +171,6 @@ float poissonTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, flo
     return clamp(T, 0.f, 1.f);
 }
 
-// NOTE: We are having a problem here not related to opacityUpperbound
-// Could it be opacityControl? Then why don't we see similar errors with
-// residualRatioTrackingTransmittance? It was k... previous assignment was
-// int k = poisson_uni(hashSeed, d * (opacityToExtinction(opacityUpperbound - opacityControl)));
 float poissonResidualTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
                                            inout uint hashSeed, sampler3D volume,
                                            VolumeParameters volumeParameters,
@@ -183,7 +180,6 @@ float poissonResidualTrackingTransmittance(vec3 raystart, vec3 raydir, float tSt
     if (opacityUpperbound < 2e-6) {
         return 1.f;
     }
-    // was 1 / upperbound
     float invMaxExtinction = 1.f / (opacityUpperbound - opacityControl);
     float d = (tEnd - tStart);
     float Tc = exp(-opacityToExtinction(opacityControl) * d);
@@ -241,15 +237,13 @@ float independentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, f
                                                 opacityUpperbound, opacityControl, auxReturn);
 }
 
-// NOTE: Not sure why this doesn't work
+
 float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart,
                                                  float tEnd, inout uint hashSeed, sampler3D volume,
                                                  VolumeParameters volumeParameters,
                                                  sampler2D transferFunction,
                                                  float opacityUpperbound, out vec3 auxReturn) {
 
-                                               
-    
     if (opacityUpperbound < 2e-6) {
         return 1.f;
     }
@@ -257,8 +251,7 @@ float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, flo
     int N = poisson_uni(hashSeed, d * opacityToExtinction(opacityUpperbound));
     float opacityControl = 0;
     auxReturn = vec3(0);
-    
-    //auxReturn.z = 1f;
+
     float extinctions[16];
 
     for (int i = 0; i < N; i++) {
@@ -267,7 +260,6 @@ float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, flo
         vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
         float extinction = applyTF(transferFunction, volumeSample).a;
         opacityControl += extinction;
-        // and if POISSON_TRACKING_N isnt defined?
 
         if (i < 16) extinctions[i] = extinction;
     }
@@ -280,8 +272,6 @@ float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, flo
 
     int k = poisson_uni(hashSeed, d * (opacityToExtinction(opacityUpperbound - opacityControl)));
 
-    // why 16? why is POISSON_TRACKING_N = 16? optimal after testing?
-    // 16 is default, but the processor can rewrite it when building the shader, if requested.
     int kCached = min(min(k, N), 16);
     int ki = 0;
 
@@ -306,7 +296,7 @@ float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, flo
     return Tc * Tr;
 }
 
-// TODO: Rename to residual, since it bases itself of the poisson residual tracker
+// NOTE: Non functioning
 float geometricTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
                                      inout uint hashSeed, sampler3D volume,
                                      VolumeParameters volumeParameters, sampler2D transferFunction,

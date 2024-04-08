@@ -33,9 +33,6 @@ float partitionedTransmittanceTracking(int METHOD, vec3 raystart, vec3 raydir, f
     float T = 1.f;
 
     while (continueTraversal) {
-        // TODO: CHECK THAT ALL INSTANCES OF MINMAXOPACITY ACCESS USED getVoxel! NOT
-        // getNormalizedVoxel
-        //  We want the raw data. Normalizing the min max can be destructive
         vec3 minMax = getVoxel(opacity, opacityParameters, cellCoord).xyz;
 
         float tPrev = t;
@@ -50,29 +47,28 @@ float partitionedTransmittanceTracking(int METHOD, vec3 raystart, vec3 raydir, f
 
         minMax.y += 1e-6;
         float avg = minMax.z;
-        // Should be METHOD, but the uniform is not behaving
-        // Check that sampled opacity
         float T_ = 0;
         vec3 auxReturnSub = vec3(0);
         switch (METHOD) {
+    
             case 0 :
             float meanFreePath = woodcockTracking(raystart, raydir, t0, t1, hashSeed, volume,
                                                   volumeParameters, transferFunction, minMax.y, auxReturnSub);
 
-            if(auxReturnSub != vec3(0f)) {
+            if(auxReturnSub != vec3(0)) {
                 auxReturn += vec3(auxReturnSub.x,0,0);
                 
-            } 
-            T *= meanFreePath >= t1 ? 1f : 0f;       
+            }
+            T *= meanFreePath >= t1 ? 1f : 0f;
             
             break;
             case 1:
             T_ = ratioTrackingTransmittance(raystart, raydir, t0, t1, hashSeed, volume,
                                             volumeParameters, transferFunction, minMax.y, auxReturnSub);
 
-            if(auxReturnSub != vec3(0f)) {
-                auxReturn += vec3(auxReturnSub.x,0,0);
-            } 
+            if(auxReturnSub != vec3(0)) {
+                auxReturn += auxReturnSub;
+            }
             T *= T_;
             
             break;
@@ -80,28 +76,30 @@ float partitionedTransmittanceTracking(int METHOD, vec3 raystart, vec3 raydir, f
             T_ = residualRatioTrackingTransmittance(raystart, raydir, t0, t1, hashSeed, volume,
                                                     volumeParameters, transferFunction, minMax.y,
                                                     avg, auxReturnSub);
-            if(auxReturnSub != vec3(0f)) {
-                auxReturn += vec3(auxReturnSub.x,0,0);
-            } 
+            if(auxReturnSub != vec3(0)) {
+                auxReturn += auxReturnSub;
+            }
             T *= T_;
+
             break;
             case 3:
             T_ = poissonTrackingTransmittance(raystart, raydir, t0, t1, hashSeed, volume,
                                               volumeParameters, transferFunction, minMax.y, auxReturnSub);
 
-            if(auxReturnSub != vec3(0f)) {
-                auxReturn += vec3(auxReturnSub.x,0,0);
-            } 
+            if(auxReturnSub != vec3(0)) {
+                auxReturn += auxReturnSub;
+            }
             T *= T_;
+
             break;
             case 4:
             T_ = poissonResidualTrackingTransmittance(raystart, raydir, t0, t1, hashSeed,
                                                       volume, volumeParameters, transferFunction,
                                                       minMax.y, avg, auxReturnSub);
 
-            if(auxReturnSub != vec3(0f)) {
-                auxReturn += vec3(auxReturnSub.x,0,0);
-            } 
+            if(auxReturnSub != vec3(0)) {
+                auxReturn += auxReturnSub;
+            }
             T *= T_;
             break;
             case 5:
@@ -109,7 +107,7 @@ float partitionedTransmittanceTracking(int METHOD, vec3 raystart, vec3 raydir, f
                                                               hashSeed, volume, volumeParameters,
                                                               transferFunction, minMax.y, auxReturnSub);
 
-            if(auxReturnSub != vec3(0f)) {
+            if(auxReturnSub != vec3(0)) {
                 auxReturn += auxReturnSub;
             } 
             T *= T_;
@@ -119,10 +117,11 @@ float partitionedTransmittanceTracking(int METHOD, vec3 raystart, vec3 raydir, f
                                                             hashSeed, volume, volumeParameters,
                                                             transferFunction, minMax.y, auxReturnSub);
 
-            if(auxReturnSub != vec3(0f)) {
+            if(auxReturnSub != vec3(0)) {
                 auxReturn += auxReturnSub;
-            }
+            } 
             T *= T_;
+
             break;
         }
     }
@@ -204,9 +203,6 @@ float partitionedTransmittanceTesting(int METHOD, vec3 raystart, vec3 raydir, fl
     float T = 1.f;
 
     while (continueTraversal) {
-        // TODO: CHECK THAT ALL INSTANCES OF MINMAXOPACITY ACCESS USED getVoxel! NOT
-        // getNormalizedVoxel
-        //  We want the raw data. Normalizing the min max can be destructive
         vec3 minMax = getVoxel(opacity, opacityParameters, cellCoord).xyz;
 
         float tPrev = t;
@@ -239,15 +235,11 @@ float partitionedTransmittanceTesting(int METHOD, vec3 raystart, vec3 raydir, fl
 
             auxReturn += vec3(0,0,abs(op - minMax.y));
         }
-
-        // Should be METHOD, but the uniform is not behaving
-        // Check that sampled opacity
         float T_ = 0;
         vec3 auxReturnSub = vec3(0);
         switch (METHOD) {
             
             case 0 :
-            // woodcock tracking is weird. like it almost jumps 'too' far forward if the max opacity is low enough
             float meanFreePath = woodcockTracking(raystart, raydir, t0, t1, hashSeed, volume,
                                                   volumeParameters, transferFunction, minMax.y, auxReturnSub);
 

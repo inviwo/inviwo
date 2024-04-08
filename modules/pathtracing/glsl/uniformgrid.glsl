@@ -1,6 +1,4 @@
-
-
-//#define OPTIMIZE_STEP_FOR_SIMD
+#define OPTIMIZE_STEP_FOR_SIMD
 
 // this is based on fast vortex traversal
 // https://github.com/cgyurgyik/fast-voxel-traversal-algorithm/blob/master/overview/FastVoxelTraversalOverview.md
