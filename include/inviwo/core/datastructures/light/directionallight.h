@@ -50,7 +50,7 @@ public:
      */
     virtual vec3 getPower() const override { return getIntensity() * getArea() * glm::pi<float>(); }
 
-    LightSourceType getLightSourceType() const override { return LightSourceType::directional; }
+    LightSourceType getLightSourceType() const override { return LightSourceType::Directional; }
 
     /**
      * Get normalized general direction of light source.
@@ -63,6 +63,8 @@ public:
      * @param direction Normalized direction of light source.
      */
     void setDirection(const vec3& direction) { direction_ = direction; }
+
+    virtual Document getInfo() const override;
 
 protected:
     vec3 direction_{1.0f, 0.0f, 0.0f};

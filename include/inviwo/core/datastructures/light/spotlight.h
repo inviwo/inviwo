@@ -56,7 +56,7 @@ public:
                              std::cos(glm::radians(coneFallOffAngle_))));
     }
 
-    LightSourceType getLightSourceType() const override { return LightSourceType::cone; }
+    LightSourceType getLightSourceType() const override { return LightSourceType::SpotLight; }
 
     /**
      * Get world position of light source.
@@ -135,6 +135,8 @@ public:
     float getPartialVisbilityValue() const {
         return std::cos(glm::radians(coneRadiusAngle_ + coneFallOffAngle_));
     }
+
+    virtual Document getInfo() const override;
 
 protected:
     vec3 position_{0.0f};

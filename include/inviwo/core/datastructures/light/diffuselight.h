@@ -48,7 +48,7 @@ public:
      */
     virtual vec3 getPower() const override;
 
-    LightSourceType getLightSourceType() const override { return LightSourceType::area; }
+    LightSourceType getLightSourceType() const override { return LightSourceType::Area; }
 
     /**
      * Get normal of area light.

@@ -236,7 +236,7 @@ void LightVolumeGL::process() {
             propagationShader_.setUniform("lightVolume_", lightVolUnit[i].getUnitNumber());
             propagationShader_.setUniform("permutationMatrix_", propParams_[i].axisPermutation);
 
-            if (lightSource_.getData()->getLightSourceType() == LightSourceType::point) {
+            if (lightSource_.getData()->getLightSourceType() == LightSourceType::Point) {
                 propagationShader_.setUniform("lightPos_", lightPos_);
                 propagationShader_.setUniform("permutedLightMatrix_",
                                               propParams_[i].axisPermutationLight);
@@ -282,9 +282,9 @@ bool LightVolumeGL::lightSourceChanged() {
     vec3 lightDirection = vec3(0.f);
 
     switch (lightSource_.getData()->getLightSourceType()) {
-        case LightSourceType::directional: {
-            if (lightType_ != LightSourceType::directional) {
-                lightType_ = LightSourceType::directional;
+        case LightSourceType::Directional: {
+            if (lightType_ != LightSourceType::Directional) {
+                lightType_ = LightSourceType::Directional;
                 propagationShader_.getFragmentShaderObject()->removeShaderDefine("POINT_LIGHT");
                 propagationShader_.getFragmentShaderObject()->build();
                 propagationShader_.link();
@@ -309,9 +309,9 @@ bool LightVolumeGL::lightSourceChanged() {
             break;
         }
 
-        case LightSourceType::point: {
-            if (lightType_ != LightSourceType::point) {
-                lightType_ = LightSourceType::point;
+        case LightSourceType::Point: {
+            if (lightType_ != LightSourceType::Point) {
+                lightType_ = LightSourceType::Point;
                 propagationShader_.getFragmentShaderObject()->addShaderDefine("POINT_LIGHT");
                 propagationShader_.getFragmentShaderObject()->build();
                 propagationShader_.link();
@@ -334,8 +334,8 @@ bool LightVolumeGL::lightSourceChanged() {
             break;
         }
 
-        case LightSourceType::cone:
-        case LightSourceType::area:
+        case LightSourceType::SpotLight:
+        case LightSourceType::Area:
         default:
             LogWarn("Light source not supported, can only handle Directional or Point Light");
             break;

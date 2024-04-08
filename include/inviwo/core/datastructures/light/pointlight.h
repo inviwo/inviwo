@@ -49,7 +49,7 @@ public:
      */
     virtual vec3 getPower() const override { return getIntensity() * getArea(); }
 
-    LightSourceType getLightSourceType() const override { return LightSourceType::point; }
+    LightSourceType getLightSourceType() const override { return LightSourceType::Point; }
 
     /**
      * Get world position of light source.
@@ -68,6 +68,8 @@ public:
         worldMatrix_[3][1] = position[1];
         worldMatrix_[3][2] = position[2];
     }
+
+    virtual Document getInfo() const override;
 
 protected:
     vec3 position_{0.0f};
