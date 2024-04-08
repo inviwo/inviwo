@@ -100,15 +100,21 @@ public:
      */
     void updatePosition(const vec3& pos, CoordinateSpace sourceSpace);
 
+    /**
+     * Get the offset currently applied to the position in the given coordinate space \p space.
+     * @param space    coordinate system of the returned offset
+     * @return offset in \p space
+     */
+    vec3 getOffset(CoordinateSpace space) const;
+
     [[nodiscard]] CoordinateSpace getCoordinateSpace() const;
 
     /**
-     * Determines the direction between origin and position in the current coordinate space and
-     * transforms it to world coordinates. In case of world coordinates, this is equivalent to the
-     * position itself.
-     * @return directional vector in world coordinates
+     * Determines the normalized direction from offset to the current position, that is
+     * <tt>pos - offset</tt>, in the given coordinate space \p space.
+     * @return normalized, directional vector in \p space coordinates
      */
-    [[nodiscard]] vec3 getWorldSpaceDirection() const;
+    [[nodiscard]] vec3 getDirection(CoordinateSpace space) const;
 
     /**
      * Set the property semantics of the position property to \p semantics
@@ -118,9 +124,10 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
+    [[nodiscard]] vec3 convert(const vec3& pos, CoordinateSpace sourceSpace,
+                               CoordinateSpace targetSpace) const;
     [[nodiscard]] vec3 convertFromWorld(const vec3& pos, CoordinateSpace targetSpace) const;
     [[nodiscard]] vec3 convertToWorld(const vec3& pos, CoordinateSpace sourceSpace) const;
-    vec3 getOffset() const;
     void invalidateOutputProperties();
     void referenceSpaceChanged();
 

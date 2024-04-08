@@ -160,28 +160,50 @@ PositionProperty::PositionProperty(const PositionProperty& rhs)
 PositionProperty* PositionProperty::clone() const { return new PositionProperty(*this); }
 
 vec3 PositionProperty::get(CoordinateSpace space) const {
-    return convertFromWorld(convertToWorld(position_.get() + getOffset(), referenceSpace_), space);
+    return convert(position_.get() + getOffset(referenceSpace_), referenceSpace_, space);
 }
 
 void PositionProperty::set(const vec3& pos, CoordinateSpace space, ApplyOffset applyOffset) {
     NetworkLock lock(this);
     referenceSpace_.set(space);
-    const vec3 offset{applyOffset == ApplyOffset::Yes ? getOffset() : vec3{0.0f}};
+    const vec3 offset{applyOffset == ApplyOffset::Yes ? getOffset(space) : vec3{0.0f}};
     position_.set(pos + offset);
 }
 
 void PositionProperty::updatePosition(const vec3& pos, CoordinateSpace sourceSpace) {
-    position_.set(convertFromWorld(convertToWorld(pos, sourceSpace), referenceSpace_));
+    position_.set(convert(pos, sourceSpace, referenceSpace_));
+}
+
+vec3 PositionProperty::getOffset(CoordinateSpace space) const {
+    switch (coordinateOffsetMode_) {
+        case CoordinateOffset::None:
+            return convert(vec3{0.0f}, referenceSpace_, space);
+        case CoordinateOffset::CameraLookAt:
+            if (camera_) {
+                return convertFromWorld(camera_->getLookTo(), space);
+            } else {
+                return convert(vec3{0.0f}, referenceSpace_, space);
+            }
+        case CoordinateOffset::Custom:
+            return convert(coordinateOffset_, referenceSpace_, space);
+        default:
+            return convert(vec3{0.0f}, referenceSpace_, space);
+    }
 }
 
 CoordinateSpace PositionProperty::getCoordinateSpace() const { return referenceSpace_; }
 
-vec3 PositionProperty::getWorldSpaceDirection() const {
-    if (camera_ &&
-        (referenceSpace_ == CoordinateSpace::View || referenceSpace_ == CoordinateSpace::Clip)) {
-        return convertToWorld(position_, referenceSpace_) - camera_->getLookTo();
+vec3 PositionProperty::getDirection(CoordinateSpace space) const {
+    const vec3 v = get(space) - getOffset(space);
+    return glm::normalize(v);
+}
+
+vec3 PositionProperty::convert(const vec3& pos, CoordinateSpace sourceSpace,
+                               CoordinateSpace targetSpace) const {
+    if (sourceSpace == targetSpace) {
+        return pos;
     }
-    return position_;
+    return convertFromWorld(convertToWorld(pos, sourceSpace), targetSpace);
 }
 
 vec3 PositionProperty::convertFromWorld(const vec3& pos, CoordinateSpace targetSpace) const {
@@ -250,34 +272,16 @@ void PositionProperty::deserialize(Deserializer& d) {
     previousReferenceSpace_ = referenceSpace_;
 }
 
-vec3 PositionProperty::getOffset() const {
-    switch (coordinateOffsetMode_) {
-        case CoordinateOffset::None:
-            return vec3{0.0f};
-        case CoordinateOffset::CameraLookAt:
-            if (camera_) {
-                return convertFromWorld(camera_->getLookTo(), referenceSpace_);
-            } else {
-                return vec3{0.0f};
-            }
-        case CoordinateOffset::Custom:
-            return coordinateOffset_;
-        default:
-            return vec3{0.0f};
-    }
-}
-
 void PositionProperty::invalidateOutputProperties() {
-    for (auto* p : std::array<Property*, 4>{&worldPos_, &viewPos_, &clipPos_, &screenPos_}) {
-        p->propertyModified();
+    for (auto& p : util::ref<Property>(worldPos_, viewPos_, clipPos_, screenPos_)) {
+        p.get().propertyModified();
     }
 }
 
 void PositionProperty::referenceSpaceChanged() {
     NetworkLock lock(this);
     if (previousReferenceSpace_.has_value()) {
-        position_.set(
-            convertFromWorld(convertToWorld(position_, *previousReferenceSpace_), referenceSpace_));
+        position_.set(convert(position_, *previousReferenceSpace_, referenceSpace_));
     } else {
         invalidateOutputProperties();
     }

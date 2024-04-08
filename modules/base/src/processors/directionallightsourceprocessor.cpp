@@ -110,7 +110,7 @@ void DirectionalLightSourceProcessor::process() {
 
 void DirectionalLightSourceProcessor::updateDirectionalLightSource(DirectionalLight* lightSource) {
     const vec3 lightPos = lightPosition_.get(CoordinateSpace::World);
-    const vec3 dir = -glm::normalize(lightPosition_.getWorldSpaceDirection());
+    const vec3 dir = -lightPosition_.getDirection(CoordinateSpace::World);
 
     mat4 transformationMatrix = getLightTransformationMatrix(lightPos, dir);
 
