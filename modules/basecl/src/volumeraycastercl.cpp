@@ -68,7 +68,7 @@ VolumeRaycasterCL::~VolumeRaycasterCL() {}
 
 void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Layer* entryPoints,
                                       const Layer* exitPoints,
-                                      const TransferFunctionProperty& transferFunction,
+                                      TransferFunctionProperty& transferFunction,
                                       Layer* outImage,
                                       const VECTOR_CLASS<cl::Event>* waitForEvents /*= nullptr*/,
                                       cl::Event* event /*= nullptr*/) {

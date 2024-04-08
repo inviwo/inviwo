@@ -70,7 +70,7 @@ public:
      * @param event
      */
     void volumeRaycast(const Volume* volume, const Layer* entryPoints, const Layer* exitPoints,
-                       const TransferFunctionProperty& transferFunction, Layer* outImage,
+                       TransferFunctionProperty& transferFunction, Layer* outImage,
                        const VECTOR_CLASS<cl::Event>* waitForEvents = nullptr,
                        cl::Event* event = nullptr);
 
