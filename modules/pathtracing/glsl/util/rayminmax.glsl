@@ -116,20 +116,18 @@ vec3 rayMinMaxAvgTest(vec3 pos, vec3 dir, float t0, float t1, sampler3D opacity,
     bool continueTraversal = true;
 
     //Debugging
-    vec3 volTex = vec3(cellCoord)/(opacityParameters.dimensions);
+    vec3 volTex = (vec3(cellCoord))/(opacityParameters.dimensions);
+    vec3 volTex05 = (vec3(cellCoord) + 0.5f)/(opacityParameters.dimensions);
     ivec3 volCoord = ivec3(transformPoint(volumeParameters.textureToIndex, volTex) + 0.5f);
 
-    // does volCoord cellCoord correspond?
-
-    vec4 volSample = getNormalizedVoxel(volumeData, volumeParameters, volTex);
+    vec4 volSample = getNormalizedVoxel(volumeData, volumeParameters, volTex05);
 
     float opacityTest = applyTF(tf, volSample).a;
     vec3 minMax = getVoxel(opacity, opacityParameters, cellCoord).xyz;
     
-    //Debugging
+    // Test minMax validity
     if(opacityTest > minMax.y) {
-        
-        auxReturn.y += abs(opacityTest - minMax.y);
+        auxReturn.x += abs(opacityTest - minMax.y);
     }
     
     int c = 0;
@@ -138,18 +136,17 @@ vec3 rayMinMaxAvgTest(vec3 pos, vec3 dir, float t0, float t1, sampler3D opacity,
 
     while (continueTraversal) {
         //Debugging
-        volTex = vec3(cellCoord)/(opacityParameters.dimensions);
+        volTex = (vec3(cellCoord))/(opacityParameters.dimensions);
+        volTex05 = (vec3(cellCoord) + 0.5f)/(opacityParameters.dimensions);
         volCoord = ivec3(transformPoint(volumeParameters.textureToIndex, volTex) + 0.5f);
-        volSample = getNormalizedVoxel(volumeData, volumeParameters, volTex);
+        volSample = getNormalizedVoxel(volumeData, volumeParameters, volTex05);
         opacityTest = applyTF(tf, volSample).a;
 
         vec3 gridMinMaxVal = getNormalizedVoxel(opacity, opacityParameters, cellCoord).xyz;
 
-        //Debugging
+        // Test minMax validity
         if(opacityTest > gridMinMaxVal.y) {
-
-
-            auxReturn.y += abs(opacityTest - gridMinMaxVal.y);
+            auxReturn.x += abs(opacityTest - gridMinMaxVal.y);
         }
         
 
