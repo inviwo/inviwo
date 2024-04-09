@@ -38,9 +38,10 @@ image2D outportDepth;
 writeonly uniform image2D outportPicking;
 uniform ImageParameters outportParameters;
 
-// volume
+// Grid
 uniform sampler3D minMaxOpacity;
 uniform VolumeParameters minMaxOpacityParameters;
+uniform ivec3 cellDim;
 
 // Uniform properties
 uniform CameraParameters camera;
@@ -85,16 +86,6 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
     float T = 0.0f;
     vec3 minMax = vec3(0.f, 1.0f, 0.0f);
 
-    vec3 cellDim = volumeParameters.dimensions / minMaxOpacityParameters.dimensions;
-
-    // We need to be careful to not always call ceil().
-    // Even if opacityDim evenly divides volDim, we can still get a fractional part due to floating
-    // point precision error.
-    if (fract(cellDim.x) > 0.01) {
-        cellDim = ceil(cellDim);
-    }
-
-    // cellDim = vec3(10);
     vec3 errorReturn = vec3(0);
 
     minMax =
@@ -151,12 +142,6 @@ vec4 rayOpacityTextureTesting(vec3 entryPoint, vec3 exitPoint, int stepcount) {
 
     vec3 x1 = transformPoint(m, entryPoint + t0 * rayDir) + 0.5f;
     vec3 x2 = transformPoint(m, entryPoint + t1 * rayDir) + 0.5f;
-
-    vec3 cellDim = volumeParameters.dimensions / minMaxOpacityParameters.dimensions;
-
-    if (fract(cellDim.x) > 0.01) {
-        cellDim = ceil(cellDim);
-    }
 
     ivec3 cellCoord, cellCoordEnd, di;
     vec3 dt, deltatx;
