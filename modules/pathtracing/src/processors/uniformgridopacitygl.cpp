@@ -76,7 +76,8 @@ void UniformGridOpacityGL::process() {
 
     auto dim = curVolume->getDimensions();
     auto region = inviwo::ivec3(volumeRegionSize_.get());
-    const size3_t outDim{glm::ceil(vec3(dim) / static_cast<float>(volumeRegionSize_.get()))};
+    const size3_t outDim{glm::ceil(vec3(dim + size3_t(1, 1, 1)) / static_cast<float>(volumeRegionSize_.get()))};
+
 
     auto statsRAMRep = std::make_shared<VolumeRAMPrecision<vec4>>(
         outDim, swizzlemasks::rgba, InterpolationType::Nearest, curVolume->getWrapping());
