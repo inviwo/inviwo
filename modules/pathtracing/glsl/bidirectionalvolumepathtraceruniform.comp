@@ -129,8 +129,8 @@ vec4 rayOpacityTextureTesting(vec3 entryPoint, vec3 exitPoint, int stepcount) {
 
     // Init values
     vec3 ray = exitPoint - entryPoint;
-    vec3 rayDir = normalize(ray);
     float t1 = length(ray);
+    vec3 rayDir = normalize(ray);
     float t0 = 0.f;
     vec4 result = vec4(0);
 
@@ -164,8 +164,8 @@ vec4 rayOpacityTextureTesting(vec3 entryPoint, vec3 exitPoint, int stepcount) {
         
         // Get parameters t such that samplePosition = entryPoint + t*rayDir correspond to the point
         // where the ray enters the opacity voxel (tEntry) and exits the opacity voxel (tExit)
-        float tEntry = dirLen * tPrev;
-        float tExit = dirLen * min(t1, t);
+        float tEntry = t0 + dirLen * tPrev;
+        float tExit = t0 + dirLen * min(t1, t);
 
         // Each step to sample in the voxel.
         float tstep = (tExit - tEntry) / float(stepcount);
@@ -187,7 +187,11 @@ vec4 rayOpacityTextureTesting(vec3 entryPoint, vec3 exitPoint, int stepcount) {
             }
         }
     }
-
+    if (result.x > 0) {
+        //return vec4(1);
+    } else {
+        return vec4(0);
+    }
     // Visualize difference between erroneous and error free rays.
     result.y = testCount - result.x;
     result /= float(testCount);
