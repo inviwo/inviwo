@@ -48,6 +48,55 @@ void setupUniformGridTraversal(vec3 x1, vec3 x2, vec3 cellDim, ivec3 maxCells, o
     deltatx = cellDim * invAbsDir;
 }
 
+
+bool stepToNextCell(vec3 deltatx, ivec3 di, ivec3 cellCoordEnd, inout vec3 dt,
+                       inout ivec3 cellCoord, out float tHit) {
+
+#ifdef OPTIMIZE_STEP_FOR_SIMD
+
+    bvec3 advance = bvec3((dt.x <= dt.y && dt.x <= dt.z), (dt.x > dt.y && dt.y <= dt.z),
+                          (dt.x > dt.z && dt.y > dt.z));
+
+    
+
+    bvec3 cellCoordsEqual = equal(cellCoord, cellCoordEnd);
+    if (any(mix(bvec3(false), advance, cellCoordsEqual))) {
+        return false;
+    }
+
+    tHit = advance.x != false ? dt.x : (advance.y != false ? dt.y : dt.z);
+    dt += mix(vec3(0), deltatx, advance);
+    cellCoord += ivec3(mix(ivec3(0), di, advance));
+
+#else
+    if(dt.x <= dt.y && dt.x <= dt.z) {
+        tHit = dt.x;
+        if(cellCoord.x == cellCoordEnd.x) {
+            return false;
+        }
+        dt.x += deltatx.x;
+        cellCoord.x += di.x;
+
+    } else if(dt.y <= dt.x && dt.y <= dt.z) {
+        tHit = dt.y;
+        if(cellCoord.y == cellCoordEnd.y) {
+            return false;
+        }
+        dt.y += deltatx.y;
+        cellCoord.y += di.y;
+    } else {
+        tHit = dt.z;
+        if(cellCoord.z == cellCoordEnd.z) {
+            return false;
+        }
+        dt.z += deltatx.z;
+        cellCoord.z += di.z;
+    }
+#endif
+
+    return true;
+}
+
 bool stepToNextCellHit(vec3 deltatx, ivec3 di, ivec3 cellCoordEnd, inout vec3 dt,
                        inout ivec3 cellCoord, out float tHit) {
 
