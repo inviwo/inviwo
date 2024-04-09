@@ -47,11 +47,13 @@ PositionProperty::PositionProperty(std::string_view identifier, std::string_view
     : CompositeProperty{identifier, displayName, std::move(help), invalidationLevel}
     , camera_{camera}
     , previousReferenceSpace_{coordinateSpace}
-    , referenceSpace_("referenceFrame", "Space",
-                      "Reference coordinate space for the position below."_help,
-                      {{"world", "World coordinates", CoordinateSpace::World},
-                       {"view", "View coordinates", CoordinateSpace::View},
-                       {"clip", "Clip coordinates", CoordinateSpace::Clip}})
+    , referenceSpace_{"referenceFrame", "Space",
+                      OptionPropertyState<CoordinateSpace>{
+                          .options = {{"world", "World coordinates", CoordinateSpace::World},
+                                      {"view", "View coordinates", CoordinateSpace::View},
+                                      {"clip", "Clip coordinates", CoordinateSpace::Clip}}}
+                          .set("Reference coordinate space for the position below."_help)
+                          .setSelectedValue(coordinateSpace)}
     , position_{"position", "Position",
                 util::ordinalSymmetricVector(position, 10.0f)
                     .set("Spatial position in the reference coordinate space"_help)
@@ -71,29 +73,26 @@ PositionProperty::PositionProperty(std::string_view identifier, std::string_view
 
     , output_{"output", "Output"}
     , worldPos_{"worldPosition", "World Position",
-                [&]() -> vec3 { return get(CoordinateSpace::World); },
-                [&](const vec3& pos) { set(pos, CoordinateSpace::World); },
+                [&]() -> vec3 { return get(CoordinateSpace::World); }, [&](const vec3&) {},
                 util::ordinalRefSymmetricVector<vec3>(100.0f)
                     .set("Position in world space coordinates"_help)
                     .set(PropertySemantics::Text)
                     .set(ReadOnly::Yes)}
     , viewPos_{"viewPosition", "View Position",
-               [&]() -> vec3 { return get(CoordinateSpace::View); },
-               [&](const vec3& pos) { set(pos, CoordinateSpace::View); },
+               [&]() -> vec3 { return get(CoordinateSpace::View); }, [&](const vec3&) {},
                util::ordinalRefSymmetricVector<vec3>(100.0f)
                    .set("Position in view space coordinates of the camera"_help)
                    .set(PropertySemantics::Text)
                    .set(ReadOnly::Yes)}
     , clipPos_{"clipPosition", "Clip Position",
-               [&]() -> vec3 { return get(CoordinateSpace::Clip); },
-               [&](const vec3& pos) { set(pos, CoordinateSpace::Clip); },
+               [&]() -> vec3 { return get(CoordinateSpace::Clip); }, [&](const vec3&) {},
                util::ordinalRefSymmetricVector<vec3>(1.0f)
                    .set("Position in clip space coordinates [-1,1]"_help)
                    .set(PropertySemantics::Text)
                    .set(ReadOnly::Yes)}
     , screenPos_{"screenPosition", "Screen Position (normalized)",
                  [&]() -> vec3 { return get(CoordinateSpace::Clip) * 0.5f + 0.5f; },
-                 [&](const vec3& pos) { set(pos * 2.0f - 1.0f, CoordinateSpace::Clip); },
+                 [&](const vec3&) {},
                  OrdinalRefPropertyState<vec3>{.min = vec3{0.0f},
                                                .minConstraint = ConstraintBehavior::Ignore,
                                                .max = vec3{1.0f},
@@ -102,11 +101,9 @@ PositionProperty::PositionProperty(std::string_view identifier, std::string_view
                      .set(PropertySemantics::Text)
                      .set(ReadOnly::Yes)} {
 
-    referenceSpace_.setSelectedValue(coordinateSpace);
-    referenceSpace_.setCurrentStateAsDefault();
-
     output_.addProperties(worldPos_, viewPos_, clipPos_, screenPos_);
     output_.setCollapsed(true);
+    output_.setCurrentStateAsDefault();
     addProperties(referenceSpace_, position_, coordinateOffsetMode_, coordinateOffset_, output_);
 
     referenceSpace_.onChange([this]() { referenceSpaceChanged(); });
@@ -207,59 +204,21 @@ vec3 PositionProperty::convert(const vec3& pos, CoordinateSpace sourceSpace,
 }
 
 vec3 PositionProperty::convertFromWorld(const vec3& pos, CoordinateSpace targetSpace) const {
-    switch (targetSpace) {
-        case CoordinateSpace::World:
-            return pos;
-        case CoordinateSpace::View:
-            if (camera_) {
-                SpatialIdentity identity;
-                SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
-                return vec3{transformer.getWorldToViewMatrix() * vec4{pos, 1.0f}};
-            } else {
-                return pos;
-            }
-        case CoordinateSpace::Clip:
-            if (camera_) {
-                SpatialIdentity identity;
-                SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
-                vec4 clipCoords = transformer.getWorldToClipMatrix() * vec4{pos, 1.0f};
-                clipCoords /= clipCoords.w;
-                return vec3{clipCoords};
-            } else {
-                return pos;
-            }
-        default:
-            throw Exception(IVW_CONTEXT, "Unsupported coordinate space '{}'", targetSpace);
-            break;
+    if (!camera_) {
+        return pos;
     }
-    return vec3{0.0f};
+    SpatialIdentity identity;
+    SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
+    return transformer.transformPosition(pos, CoordinateSpace::World, targetSpace);
 }
 
 vec3 PositionProperty::convertToWorld(const vec3& pos, CoordinateSpace sourceSpace) const {
-    switch (sourceSpace) {
-        case CoordinateSpace::World:
-            return pos;
-        case CoordinateSpace::View:
-            if (camera_) {
-                SpatialIdentity identity;
-                SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
-                return vec3{transformer.getViewToWorldMatrix() * vec4{pos, 1.0f}};
-            } else {
-                return pos;
-            }
-        case CoordinateSpace::Clip:
-            if (camera_) {
-                SpatialIdentity identity;
-                SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
-                return vec3{transformer.getClipToWorldMatrix() * vec4{pos, 1.0f}};
-            } else {
-                return pos;
-            }
-        default:
-            throw Exception(IVW_CONTEXT, "Unsupported coordinate space '{}'", sourceSpace);
-            break;
+    if (!camera_) {
+        return pos;
     }
-    return vec3{0.0f};
+    SpatialIdentity identity;
+    SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
+    return transformer.transformPosition(pos, sourceSpace, CoordinateSpace::World);
 }
 
 void PositionProperty::setPositionSemantics(PropertySemantics semantics) {

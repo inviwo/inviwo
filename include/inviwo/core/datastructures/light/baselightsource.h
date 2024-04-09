@@ -41,7 +41,6 @@ class Document;
 
 enum class LightSourceType { Area = 0, SpotLight, Point, Directional };
 
-
 IVW_CORE_API std::string_view enumToStr(LightSourceType lt);
 
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, LightSourceType lt);
