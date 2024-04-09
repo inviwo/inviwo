@@ -97,13 +97,14 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
     // cellDim = vec3(10);
     vec3 errorReturn = vec3(0);
 
-    minMax = rayMinMaxAvgTest(entryPoint, rayDir, t0, t1, minMaxOpacity, minMaxOpacityParameters,
-                              cellDim, volume, volumeParameters, transferFunction, errorReturn);
+    minMax =
+        rayMinMaxAvgTest(samplePosition, rayDir, t0, t1, minMaxOpacity, minMaxOpacityParameters,
+                         cellDim, volume, volumeParameters, transferFunction, errorReturn);
     // Avoid case where control extinction == upper bound (causing division by zero)
     minMax.y += 1e-6;
 
-    //return mix(vec4(minMax, 1f), vec4(errorReturn, 1.f), 0.0);
-    
+    //return mix(vec4(minMax, 1f), vec4(errorReturn, 1.f), 0.5);
+
     vec3 auxReturnTracking = vec3(0);
     float meanFreePath =
         woodcockTracking(samplePosition, rayDir, t0, t1, hashSeed, volume, volumeParameters,
@@ -129,7 +130,83 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
     } else {
         result = bgColor;
     }
-    return mix(result, vec4(minMax, 1f), 0.0);
+    return result;
+}
+
+// Testing function to compare MinMaxOpacity validity against Volume texture data.
+vec4 rayOpacityTextureTesting(vec3 entryPoint, vec3 exitPoint, int stepcount) {
+
+    // Init values
+    vec3 ray = exitPoint - entryPoint;
+    vec3 rayDir = normalize(ray);
+    float t1 = length(ray);
+    float t0 = 0.f;
+    vec4 result = vec4(0);
+
+    vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volumeParameters.textureToWorld);
+    vec3 samplePosition = entryPoint;
+
+    // Set up grid traversal
+    mat4 m = volumeParameters.textureToIndex;
+
+    vec3 x1 = transformPoint(m, entryPoint + t0 * rayDir) + 0.5f;
+    vec3 x2 = transformPoint(m, entryPoint + t1 * rayDir) + 0.5f;
+
+    vec3 cellDim = volumeParameters.dimensions / minMaxOpacityParameters.dimensions;
+
+    if (fract(cellDim.x) > 0.01) {
+        cellDim = ceil(cellDim);
+    }
+
+    ivec3 cellCoord, cellCoordEnd, di;
+    vec3 dt, deltatx;
+    setupUniformGridTraversal(x1, x2, cellDim, ivec3(minMaxOpacityParameters.dimensions), cellCoord,
+                              cellCoordEnd, di, dt, deltatx);
+
+    // Begin grid traversal
+    float dirLen = length(ray);
+    float t = 0.f;
+
+    bool continueTraversal = true;
+
+    int testCount = 0;
+
+    while (continueTraversal) {
+        float tPrev = t;
+
+        continueTraversal = stepToNextCell(deltatx, di, cellCoordEnd, dt, cellCoord, t);
+
+        // Get parameters t such that samplePosition = entryPoint + t*rayDir correspond to the point
+        // where the ray enters the opacity voxel (tEntry) and exits the opacity voxel (tExit)
+        float tEntry = dirLen * tPrev;
+        float tExit = dirLen * min(t1, t);
+
+        // Each step to sample in the voxel.
+        float tstep = (tExit - tEntry) / float(stepcount);
+
+        // Uniformly step and compare through the voxel
+        for (int step = 0; step < stepcount; step++) {
+            // Sample positions
+            samplePosition = entryPoint + rayDir * (tEntry + float(step) * tstep);
+            float max = getVoxel(minMaxOpacity, minMaxOpacityParameters, cellCoord).y;
+            float sampleOpacity =
+                applyTF(transferFunction,
+                        getNormalizedVoxel(volume, volumeParameters, samplePosition))
+                    .a;
+
+            testCount += 1;
+            // Compare to MinMaxOpacity data to Volume data
+            if (max < sampleOpacity) {
+                result.x += 1;
+            }
+        }
+    }
+
+    // Visualize difference between erroneous and error free rays.
+    result.y = testCount - result.x;
+    result /= float(testCount);
+
+    return result;
 }
 
 void main() {
@@ -164,8 +241,11 @@ void main() {
         return;
     }
 
-    vec4 color =
-        pathtrace(entryPoint, exitPoint, entryPointDepth, exitPointDepth, rayDepth, depth, bgColor);
+     vec4 color =
+         pathtrace(entryPoint, exitPoint, entryPointDepth, exitPointDepth, rayDepth, depth,
+         bgColor);
+
+    //vec4 color = rayOpacityTextureTesting(entryPoint, exitPoint, 250);
 
     vec4 colorPrev = imageLoad(outportColor, storePos);
 
