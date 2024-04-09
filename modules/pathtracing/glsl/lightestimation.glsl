@@ -57,7 +57,7 @@ vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam,
     // vec3 color = shadeBlinnPhong(light, sampleAmbient, sampleDiffuse, sampleSpecular,
     //                             sampleWorldPos, -gradient, cameraDir);
 
-    return mix(color * Tl, auxReturn, 0);
+    return mix(color * Tl, auxReturn, 1);
 }
 
 vec3 estimateDirectLight(sampler3D volume, VolumeParameters volParam, sampler2D tf, vec3 samplePos,
