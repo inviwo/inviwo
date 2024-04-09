@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,40 +28,68 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>                      // for ImageInport
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent
+#include <inviwo/core/datastructures/light/baselightsource.h>
+#include <inviwo/core/datastructures/light/lightingstate.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <tuple>        // for tuple
-#include <vector>       // for vector
+#include <vector>
+#include <tuple>
+#include <string_view>
 
 namespace inviwo {
+
 class Inport;
 class Processor;
+class Property;
 class Shader;
 class TextureUnitContainer;
 
 /**
- * Adds an optional background inport, binds it and composites it into the result at when the ray
- * passed the background depth.
+ * \brief Raycaster component for considering a light volume
+ * Adds a volume inport for a light volume. The light volume is bound as texture and used for
+ * volumetric illumination.
  */
-class IVW_MODULE_BASEGL_API BackgroundComponent : public ShaderComponent {
+class IVW_MODULE_BASEGL_API LightVolumeComponent : public ShaderComponent {
 public:
-    BackgroundComponent(Processor& processor);
+    LightVolumeComponent(Processor& processor, std::string_view volumeName,
+                         std::string_view gradientName);
 
     virtual std::string_view getName() const override;
 
     virtual void process(Shader& shader, TextureUnitContainer& cont) override;
 
+    virtual void initializeResources(Shader& shader) override;
+
     virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
+
+    virtual std::vector<Property*> getProperties() override;
 
     virtual std::vector<Segment> getSegments() override;
 
+    bool setUsedChannels(size_t channels);
+
 private:
-    ImageInport background_;
+    VolumeInport lightVolume_;
+    DataInport<LightSource> lightSource_;
+
+    FloatProperty scaling_;
+    OptionProperty<ShadingMode> shadingMode_;
+    CompositeProperty material_;
+    FloatVec3Property ambientColor_;
+    FloatVec3Property diffuseColor_;
+    FloatVec3Property specularColor_;
+    FloatProperty specularExponent_;
+
+    std::string volumeVarName_;
+    std::string gradientVarName_;
+    size_t usedChannels_;
 };
 
 }  // namespace inviwo

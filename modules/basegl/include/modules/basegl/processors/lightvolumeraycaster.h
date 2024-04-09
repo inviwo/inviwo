@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,42 +26,42 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>                      // for ImageInport
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent
-
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <tuple>        // for tuple
-#include <vector>       // for vector
+#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>
+#include <modules/basegl/shadercomponents/backgroundcomponent.h>
+#include <modules/basegl/shadercomponents/cameracomponent.h>
+#include <modules/basegl/shadercomponents/entryexitcomponent.h>
+#include <modules/basegl/shadercomponents/isotfcomponent.h>
+#include <modules/basegl/shadercomponents/positionindicatorcomponent.h>
+#include <modules/basegl/shadercomponents/raycastingcomponent.h>
+#include <modules/basegl/shadercomponents/sampletransformcomponent.h>
+#include <modules/basegl/shadercomponents/volumecomponent.h>
+#include <modules/basegl/shadercomponents/lightvolumecomponent.h>
 
 namespace inviwo {
-class Inport;
-class Processor;
-class Shader;
-class TextureUnitContainer;
 
-/**
- * Adds an optional background inport, binds it and composites it into the result at when the ray
- * passed the background depth.
- */
-class IVW_MODULE_BASEGL_API BackgroundComponent : public ShaderComponent {
+class IVW_MODULE_BASEGL_API LightVolumeRaycaster : public VolumeRaycasterBase {
 public:
-    BackgroundComponent(Processor& processor);
+    LightVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
+    virtual ~LightVolumeRaycaster() = default;
 
-    virtual std::string_view getName() const override;
-
-    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
-
-    virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
-
-    virtual std::vector<Segment> getSegments() override;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 private:
-    ImageInport background_;
+    VolumeComponent volume_;
+    EntryExitComponent entryExit_;
+    LightVolumeComponent lightVolume_;
+    BackgroundComponent background_;
+    IsoTFComponent<1> isoTF_;
+    RaycastingComponent raycasting_;
+    CameraComponent camera_;
+    PositionIndicatorComponent positionIndicator_;
+    SampleTransformComponent sampleTransform_;
 };
 
 }  // namespace inviwo

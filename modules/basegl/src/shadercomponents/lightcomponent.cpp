@@ -29,20 +29,20 @@
 
 #include <modules/basegl/shadercomponents/lightcomponent.h>
 
-#include <inviwo/core/datastructures/light/lightingstate.h>   // for ShadingMode, ShadingMode::None
-#include <inviwo/core/properties/optionproperty.h>            // for operator!=, OptionProperty
-#include <inviwo/core/properties/simplelightingproperty.h>    // for SimpleLightingProperty
+#include <inviwo/core/datastructures/light/lightingstate.h>  // for ShadingMode, ShadingMode::None
+#include <inviwo/core/properties/optionproperty.h>           // for operator!=, OptionProperty
+#include <inviwo/core/properties/simplelightingproperty.h>   // for SimpleLightingProperty
+#include <inviwo/core/util/stringconversion.h>
 #include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
 #include <modules/opengl/shader/shaderutils.h>                // for addShaderDefines, setUniforms
 
 #include <string>       // for string
 #include <string_view>  // for string_view
+#include <ranges>
+#include <fmt/core.h>
+#include <fmt/format.h>
 
 namespace inviwo {
-class CameraProperty;
-class Property;
-class Shader;
-class TextureUnitContainer;
 
 LightComponent::LightComponent(CameraProperty* camera)
     : ShaderComponent(), lighting_("lighting", "Lighting", camera) {}
@@ -62,8 +62,10 @@ void LightComponent::process(Shader& shader, TextureUnitContainer&) {
 std::vector<Property*> LightComponent::getProperties() { return {&lighting_}; }
 
 auto LightComponent::getSegments() -> std::vector<Segment> {
-    return {{"uniform LightParameters lighting;", placeholder::uniform, 500},
-            {R"(#include "utils/shading.glsl")", placeholder::include, 500}};
+    return {
+        {"uniform LightParameters lighting;", placeholder::uniform, 500},
+        {R"(#include "utils/shading.glsl")", placeholder::include, 500},
+    };
 }
 
 }  // namespace inviwo

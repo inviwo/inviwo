@@ -44,9 +44,6 @@
 #include <fmt/format.h>  // for operator""_a, udl_arg, lite...
 
 namespace inviwo {
-class Inport;
-class Shader;
-class TextureUnitContainer;
 
 BackgroundComponent::BackgroundComponent(Processor& processor)
     : ShaderComponent(), background_("bg") {

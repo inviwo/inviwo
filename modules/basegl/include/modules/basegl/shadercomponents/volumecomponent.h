@@ -64,6 +64,8 @@ public:
     virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
     virtual std::vector<Segment> getSegments() override;
 
+    std::string getGradientString() const;
+
     VolumeInport volumePort;
     Gradients gradients;
 };

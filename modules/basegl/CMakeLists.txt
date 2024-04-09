@@ -66,6 +66,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/layerrenderer.h
     include/modules/basegl/processors/lightingraycaster.h
     include/modules/basegl/processors/lightvolumegl.h
+    include/modules/basegl/processors/lightvolumeraycaster.h
     include/modules/basegl/processors/linerendererprocessor.h
     include/modules/basegl/processors/mesh2drenderprocessorgl.h
     include/modules/basegl/processors/meshpicking.h
@@ -111,6 +112,7 @@ set(HEADER_FILES
     include/modules/basegl/shadercomponents/isocomponent.h
     include/modules/basegl/shadercomponents/isotfcomponent.h
     include/modules/basegl/shadercomponents/lightcomponent.h
+    include/modules/basegl/shadercomponents/lightvolumecomponent.h
     include/modules/basegl/shadercomponents/positionindicatorcomponent.h
     include/modules/basegl/shadercomponents/raycastingcomponent.h
     include/modules/basegl/shadercomponents/sampletransformcomponent.h
@@ -193,6 +195,7 @@ set(SOURCE_FILES
     src/processors/layerrenderer.cpp
     src/processors/lightingraycaster.cpp
     src/processors/lightvolumegl.cpp
+    src/processors/lightvolumeraycaster.cpp
     src/processors/linerendererprocessor.cpp
     src/processors/mesh2drenderprocessorgl.cpp
     src/processors/meshpicking.cpp
@@ -238,6 +241,7 @@ set(SOURCE_FILES
     src/shadercomponents/isocomponent.cpp
     src/shadercomponents/isotfcomponent.cpp
     src/shadercomponents/lightcomponent.cpp
+    src/shadercomponents/lightvolumecomponent.cpp
     src/shadercomponents/positionindicatorcomponent.cpp
     src/shadercomponents/raycastingcomponent.cpp
     src/shadercomponents/sampletransformcomponent.cpp
