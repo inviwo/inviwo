@@ -62,12 +62,13 @@ UniformGridOpacityGL::UniformGridOpacityGL()
     addProperty(volumeRegionSize_);
 
     shader_.onReload([this]() {
-        invalidate(InvalidationLevel::InvalidOutput);
         shader_.build();
+        invalidate(InvalidationLevel::InvalidOutput);
+        
     });
     volumeRegionSize_.onChange([this]() {
-        invalidate(InvalidationLevel::InvalidOutput);
         shader_.build();
+        invalidate(InvalidationLevel::InvalidOutput);
     });
 }
 
@@ -76,7 +77,7 @@ void UniformGridOpacityGL::process() {
 
     auto dim = curVolume->getDimensions();
     auto region = inviwo::ivec3(volumeRegionSize_.get());
-    const size3_t outDim{glm::ceil(vec3(dim + size3_t(1, 1, 1)) / static_cast<float>(volumeRegionSize_.get()))};
+    const size3_t outDim{glm::ceil(vec3(dim) / static_cast<float>(volumeRegionSize_.get()))};
 
 
     auto statsRAMRep = std::make_shared<VolumeRAMPrecision<vec4>>(
@@ -90,10 +91,10 @@ void UniformGridOpacityGL::process() {
     auto stats = std::make_shared<Volume>(statsGLRep);
     // auto stats = std::make_shared<Volume>(statsGLRep);
 
-    stats->dataMap_.dataRange.x = 0;  // should map from 0,1
-    stats->dataMap_.dataRange.y = 1;  // should map from 0,1
-    stats->dataMap_.valueRange.x = 0;
-    stats->dataMap_.valueRange.y = 1;
+    stats->dataMap.dataRange.x = 0;  // should map from 0,1
+    stats->dataMap.dataRange.y = 1;  // should map from 0,1
+    stats->dataMap.valueRange.x = 0;
+    stats->dataMap.valueRange.y = 1;
 
     stats->setModelMatrix(curVolume->getModelMatrix());
     stats->setWorldMatrix(curVolume->getWorldMatrix());

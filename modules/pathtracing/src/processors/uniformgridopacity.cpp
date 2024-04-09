@@ -74,10 +74,10 @@ void UniformGridOpacity::process() {
 
     auto stats = std::make_shared<Volume>(statsRAMRep);
 
-    stats->dataMap_.dataRange.x = 0;  // should map from 0,1
-    stats->dataMap_.dataRange.y = 1;  // should map from 0,1
-    stats->dataMap_.valueRange.x = 0;
-    stats->dataMap_.valueRange.y = 1;
+    stats->dataMap.dataRange.x = 0;  // should map from 0,1
+    stats->dataMap.dataRange.y = 1;  // should map from 0,1
+    stats->dataMap.valueRange.x = 0;
+    stats->dataMap.valueRange.y = 1;
 
     vec4* data = statsRAMRep->getDataTyped();
 
@@ -96,7 +96,7 @@ void UniformGridOpacity::process() {
         // determine parameters
         const size3_t dataDims{volume->getDimensions()};
 
-        const auto& dataMapper = vr->getOwner()->dataMap_;
+        const auto& dataMapper = vr->getOwner()->dataMap;
         const T* src = static_cast<const T*>(volume->getData());
 
         for (size_t z_cell = 0; z_cell < outDim.z; ++z_cell) {
