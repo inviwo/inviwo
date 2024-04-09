@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2024-04-09 Updated `PositionProperty`
+The `PositionProperty`, formerly a `FloatVec3Property`, is now a self-contained composite property that supports a position in world, view, and clip coordinates. Multiple read-only properties provide the transformed position in various coordinate systems. Optionally, the position can be offset to the look-to point of the camera or a custom position. This enables the use of spherical coordinates in a "local" coordinate system, for example a light source circling around a volume that is not centered at (0,0,0).
+
 ## 2024-03-01 `LayerGLProcessor` and changes to `VectorFieldVisualizationGL` module
 Recently, `Layer` ports and connections were added to handle individual layers instead of an `Image` consisting of one or more color layers, a picking layer, and a depth layer. Thus, a `Layer` can now be considered a two-dimensional dataset with up to four components. Similar to a volume, a layer is a spatial entity with a basis and offset embedded in 3D. This allows for rendering a layer for example in relation to a mesh or volume, or use the camera for zooming and panning, which is not possible for images in the regular canvas.
 
