@@ -77,9 +77,9 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
     vec3 samplePosition = entryPoint;
 
     float T = 0.0f;
-
+    vec3 auxReturnTracking = vec3(0);
     float meanFreePath = woodcockTracking(samplePosition, rayDir, t0, t1, hashSeed, volume,
-                                          volumeParameters, transferFunction, 1.0f);
+                                          volumeParameters, transferFunction, 1.0f, auxReturnTracking);
 
     vec4 result = vec4(0.0);
     if (meanFreePath <= t1) {
