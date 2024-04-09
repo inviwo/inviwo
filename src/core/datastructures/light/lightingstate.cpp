@@ -28,5 +28,32 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/light/lightingstate.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glmfmt.h>
 
-namespace inviwo {}  // namespace inviwo
+#include <fmt/format.h>
+
+namespace inviwo {
+
+std::string_view enumToStr(ShadingMode sm) {
+    switch (sm) {
+        case ShadingMode::None:
+            return "None";
+        case ShadingMode::Ambient:
+            return "Ambient";
+        case ShadingMode::Diffuse:
+            return "Diffuse";
+        case ShadingMode::Specular:
+            return "Specular";
+        case ShadingMode::BlinnPhong:
+            return "BlinnPhong";
+        case ShadingMode::Phong:
+            return "Phong";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid ShadingMode enum value '{}'",
+                    static_cast<int>(sm));
+}
+
+std::ostream& operator<<(std::ostream& ss, ShadingMode sm) { return ss << enumToStr(sm); }
+
+}  // namespace inviwo

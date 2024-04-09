@@ -187,7 +187,15 @@ CameraWidget::CameraWidget()
     , internalProps_("internalProperties", "Internal Properties")
     , internalCamera_(vec3(0.0f, 0.0f, 14.6f), vec3(0.0f), vec3(0.0f, 1.0f, 0.0f), 1.0f, 30.0f,
                       38.0f, 1.0f)
-    , lightingProperty_("internalLighting", "Lighting", nullptr)
+    , lightingProperty_("internalLighting", "Lighting",
+                        "Lighting setup for shading the widget"_help,
+                        LightingConfig{
+                            .position = vec3(2.5f, 5.6f, 20.0f),
+                            .ambient = vec3{0.75f},
+                            .diffuse = vec3{0.6f},
+                            .specular = vec3{0.12f},
+                        },
+                        nullptr)
 
     , picking_(this, numInteractionWidgets, [&](PickingEvent* p) { objectPicked(p); })
     , shader_("widgetrenderer.vert", "geometryrendering.frag", Shader::Build::No)
@@ -225,13 +233,6 @@ CameraWidget::CameraWidget()
     overlayShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     camera_.setHelp("Camera affected by the widget interaction"_help);
-
-    lightingProperty_.ambientColor_ = vec3(0.75f);
-    lightingProperty_.diffuseColor_ = vec3(0.6f);
-    lightingProperty_.specularColor_ = vec3(0.12f);
-    lightingProperty_.lightPosition_.set(vec3(2.5f, 5.6f, 20.0f), vec3(-100.0f), vec3(100.0f),
-                                         vec3(1.0f));
-    lightingProperty_.setCurrentStateAsDefault();
 
     // update internal picking IDs. The mesh consists of 5 elements, each of them has a clockwise
     // and a counter clockwise / zoom in and zoom out part.

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,41 +26,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/fmtutils.h>
-
-#include <iosfwd>
+#include <inviwo/core/datastructures/light/lightingconfig.h>
 
 namespace inviwo {
 
-enum class ShadingMode : int {
-    None,
-    Ambient,
-    Diffuse,
-    Specular,
-    BlinnPhong,
-    Phong,
-};
+LightingConfig& LightingConfig::updateFrom(const LightingConfig& config) {
+    static constexpr auto update = [](auto& dest, const auto& src) {
+        if (src) {
+            dest = src.value();
+        }
+    };
+    update(shadingMode, config.shadingMode);
+    update(position, config.position);
+    update(ambient, config.ambient);
+    update(diffuse, config.diffuse);
+    update(specular, config.specular);
+    update(specularExponent, config.specularExponent);
 
-IVW_CORE_API std::string_view enumToStr(ShadingMode sm);
-
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, ShadingMode sm);
-
-struct IVW_CORE_API LightingState {
-    ShadingMode shadingMode;
-    vec3 position;
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-    float exponent;
-};
+    return *this;
+}
 
 }  // namespace inviwo
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-template <>
-struct fmt::formatter<inviwo::ShadingMode> : inviwo::FlagFormatter<inviwo::ShadingMode> {};
-#endif

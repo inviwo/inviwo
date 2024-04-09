@@ -872,11 +872,21 @@ void ProcessorNetworkConverter::updateFileMode(TxElement* node) {
 
 void ProcessorNetworkConverter::updatePositionProperties(TxElement* node) {
     xml::visitMatchingNodesRecursive(
-        node, {{"Property", {}}, {"referenceFrame", {{"content", "0"}}}},
-        [](TxElement* matchingNode) { matchingNode->SetAttribute("content", "2"); });
-    xml::visitMatchingNodesRecursive(
-        node, {{"Property", {}}, {"referenceFrame", {{"content", "1"}}}},
-        [](TxElement* matchingNode) { matchingNode->SetAttribute("content", "5"); });
+        node, {"Property", {{"type", "org.inviwo.SimpleLightingProperty"}}}, [&](TxElement* prop) {
+            if (auto lightPosition =
+                    xml::getElement(prop, "Properties/Property&identifier=lightPosition")) {
+
+                auto pos = lightPosition->Clone();
+                TxElement propNode{"Properties"};
+                propNode.InsertEndChild(*pos);
+
+                lightPosition->SetAttribute("type", "org.inviwo.PositionProperty");
+                lightPosition->InsertEndChild(propNode);
+                if (auto semantics = xml::getElement(lightPosition, "semantics")) {
+                    lightPosition->RemoveChild(semantics);
+                }
+            }
+        });
 }
 
 }  // namespace inviwo

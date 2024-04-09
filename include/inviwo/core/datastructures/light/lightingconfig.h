@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,38 +29,31 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/fmtutils.h>
+#include <inviwo/core/datastructures/light/lightingstate.h>
 
-#include <iosfwd>
+#include <optional>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 
-enum class ShadingMode : int {
-    None,
-    Ambient,
-    Diffuse,
-    Specular,
-    BlinnPhong,
-    Phong,
-};
+struct IVW_CORE_API LightingConfig {
+    std::optional<ShadingMode> shadingMode = std::nullopt;
+    std::optional<glm::vec3> position = std::nullopt;
+    std::optional<glm::vec3> ambient = std::nullopt;
+    std::optional<glm::vec3> diffuse = std::nullopt;
+    std::optional<glm::vec3> specular = std::nullopt;
+    std::optional<float> specularExponent = std::nullopt;
 
-IVW_CORE_API std::string_view enumToStr(ShadingMode sm);
+    static constexpr ShadingMode defaultShadingMode{ShadingMode::BlinnPhong};
+    static constexpr glm::vec3 defaultPosition{0.0f, 5.0f, 5.0f};
+    static constexpr glm::vec3 defaultAmbient{0.15f};
+    static constexpr glm::vec3 defaultDiffuse{0.6f};
+    static constexpr glm::vec3 defaultSpecular{0.4f};
+    static constexpr float defaultSpecularExponent{60.0f};
 
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, ShadingMode sm);
+    LightingConfig& updateFrom(const LightingConfig& config);
 
-struct IVW_CORE_API LightingState {
-    ShadingMode shadingMode;
-    vec3 position;
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-    float exponent;
+    friend bool operator==(const LightingConfig&, const LightingConfig&) = default;
 };
 
 }  // namespace inviwo
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-template <>
-struct fmt::formatter<inviwo::ShadingMode> : inviwo::FlagFormatter<inviwo::ShadingMode> {};
-#endif

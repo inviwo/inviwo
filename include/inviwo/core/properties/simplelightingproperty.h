@@ -35,7 +35,9 @@
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/positionproperty.h>
 #include <inviwo/core/datastructures/light/lightingstate.h>
+#include <inviwo/core/datastructures/light/lightingconfig.h>
 
 namespace inviwo {
 
@@ -50,7 +52,15 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    enum class Space : int { WORLD, VIEW };
+    SimpleLightingProperty(std::string_view identifier, std::string_view displayName, Document help,
+                           const vec3& position, CameraProperty* camera = nullptr,
+                           InvalidationLevel = InvalidationLevel::InvalidResources,
+                           PropertySemantics semantics = PropertySemantics::Default);
+
+    SimpleLightingProperty(std::string_view identifier, std::string_view displayName, Document help,
+                           const LightingConfig& config, CameraProperty* camera = nullptr,
+                           InvalidationLevel = InvalidationLevel::InvalidResources,
+                           PropertySemantics semantics = PropertySemantics::Default);
 
     SimpleLightingProperty(std::string_view identifier, std::string_view displayName,
                            CameraProperty* camera = nullptr,
@@ -63,10 +73,11 @@ public:
 
     LightingState getState() const;
 
+    LightingConfig config() const;
+
     // Light properties
     OptionProperty<ShadingMode> shadingMode_;
-    OptionPropertyInt referenceFrame_;
-    FloatVec3Property lightPosition_;
+    PositionProperty lightPosition_;
 
     // Material properties
     // Diffuse color often come from the object
@@ -75,8 +86,6 @@ public:
     FloatVec3Property diffuseColor_;
     FloatVec3Property specularColor_;
     FloatProperty specularExponent_;
-
-    vec3 getTransformedPosition() const;
 
 private:
     CameraProperty* camera_;  //< Non-owning reference.
