@@ -158,9 +158,10 @@ vec4 rayOpacityTextureTesting(vec3 entryPoint, vec3 exitPoint, int stepcount) {
 
     while (continueTraversal) {
         float tPrev = t;
+        float max = getVoxel(minMaxOpacity, minMaxOpacityParameters, cellCoord).y;
 
-        continueTraversal = stepToNextCell(deltatx, di, cellCoordEnd, dt, cellCoord, t);
-
+        continueTraversal = stepToNextCellHit(deltatx, di, cellCoordEnd, dt, cellCoord, t);
+        
         // Get parameters t such that samplePosition = entryPoint + t*rayDir correspond to the point
         // where the ray enters the opacity voxel (tEntry) and exits the opacity voxel (tExit)
         float tEntry = dirLen * tPrev;
@@ -173,7 +174,7 @@ vec4 rayOpacityTextureTesting(vec3 entryPoint, vec3 exitPoint, int stepcount) {
         for (int step = 0; step < stepcount; step++) {
             // Sample positions
             samplePosition = entryPoint + rayDir * (tEntry + float(step) * tstep);
-            float max = getVoxel(minMaxOpacity, minMaxOpacityParameters, cellCoord).y;
+            
             float sampleOpacity =
                 applyTF(transferFunction,
                         getNormalizedVoxel(volume, volumeParameters, samplePosition))
