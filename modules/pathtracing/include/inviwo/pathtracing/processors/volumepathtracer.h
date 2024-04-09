@@ -123,6 +123,8 @@ private:
     ButtonProperty invalidateRendering_;
     BoolProperty enableProgressiveRefinement_;
 
+    IntProperty volumeRegionSize_;
+
     // Internals
     Timer progressiveTimer_;
     int iteration_ = 0;

@@ -80,6 +80,7 @@ VolumePathTracer::VolumePathTracer()
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , positionIndicator_("positionindicator", "Position Indicator")
     , light_("light", "Light", &camera_)
+    , volumeRegionSize_("region", "Region size", 8, 1, 100)
     , transmittanceMethod_(
           "transmittanceMethod", "Transmittance method",
           {
@@ -144,13 +145,13 @@ VolumePathTracer::VolumePathTracer()
     minMaxOpacity_.onConnect([this]() {
         partitionedTransmittance_ = true;
         invalidateProgressiveRendering();
-        invalidate(InvalidationLevel::InvalidOutput);
+        invalidate(InvalidationLevel::InvalidResources);
     });
 
     minMaxOpacity_.onDisconnect([this]() {
         partitionedTransmittance_ = false;
         invalidateProgressiveRendering();
-        invalidate(InvalidationLevel::InvalidOutput);
+        invalidate(InvalidationLevel::InvalidResources);
     });
 
     raycasting_.gradientComputation_.onChange([this]() {
@@ -168,16 +169,9 @@ VolumePathTracer::VolumePathTracer()
     // Used for determining uniform float t_ms
     timeStart_ = std::chrono::high_resolution_clock::now();
 
-    addProperty(channel_);
-    addProperty(raycasting_);
-    addProperty(transferFunction_);
-
-    addProperty(camera_);
-    addProperty(positionIndicator_);
-    addProperty(light_);
-    addProperty(transmittanceMethod_);
-    addProperty(invalidateRendering_);
-    addProperty(enableProgressiveRefinement_);
+    addProperties(channel_, raycasting_, transferFunction_, camera_, positionIndicator_, light_,
+                  volumeRegionSize_, transmittanceMethod_, invalidateRendering_,
+                  enableProgressiveRefinement_);
 
     transferFunction_.onChange([this]() { invalidateProgressiveRendering(); });
     light_.onChange([this]() { invalidateProgressiveRendering(); });
@@ -278,6 +272,8 @@ void VolumePathTracer::process() {
     utilgl::bindAndSetUniforms(*activeShader_, units, transferFunction_);
 
     utilgl::setUniforms(*activeShader_, camera_, raycasting_, positionIndicator_, light_, channel_);
+
+    activeShader_->setUniform("cellDim", ivec3(volumeRegionSize_));
 
     // Start render
     glDispatchCompute(glm::ceil(static_cast<float>(outport_.getDimensions().x) / 16.f),
