@@ -16,7 +16,7 @@ vec3 transformPoint(mat4 m, vec3 x) {
 void setupUniformGridTraversal(vec3 x1, vec3 x2, vec3 cellDim, ivec3 maxCells, out ivec3 cellCoord,
                                out ivec3 cellCoordEnd, out ivec3 di, out vec3 dt,
                                out vec3 deltatx) {
-    vec3 cellCoordf = clamp(vec3(floor((x1) / cellDim)), vec3(0.f), vec3(maxCells - ivec3(1)));
+    vec3 cellCoordf = clamp(vec3(floor(x1 / cellDim)), vec3(0.f), vec3(maxCells - ivec3(1)));
 
     cellCoord = ivec3(cellCoordf);
 
@@ -44,11 +44,20 @@ void setupUniformGridTraversal(vec3 x1, vec3 x2, vec3 cellDim, ivec3 maxCells, o
     // horizontal/vertical/depth movement to equal
     // the width/height/depth of a cell
     // t is parameterized as [0 1] along the ray.
-
     deltatx = cellDim * invAbsDir;
 }
 
-
+/*
+ * Step to next grid cell using parameters calculated in setupUniformGridTraversal.
+ *        _____________
+ *       |      |      |
+ *       |      |      |
+ *       |______|______|
+ *       |      |      |
+ * ray-> x      x      |
+ *       |______|______|
+ * @return True if succesfully stepped to the next cell, otherwise false (reached final cell coordinate).
+ */
 bool stepToNextCell(vec3 deltatx, ivec3 di, ivec3 cellCoordEnd, inout vec3 dt,
                        inout ivec3 cellCoord, out float tHit) {
 
@@ -70,25 +79,26 @@ bool stepToNextCell(vec3 deltatx, ivec3 di, ivec3 cellCoordEnd, inout vec3 dt,
 
 #else
     if(dt.x <= dt.y && dt.x <= dt.z) {
-        tHit = dt.x;
         if(cellCoord.x == cellCoordEnd.x) {
             return false;
         }
+        tHit = dt.x;
         dt.x += deltatx.x;
         cellCoord.x += di.x;
 
     } else if(dt.y <= dt.x && dt.y <= dt.z) {
-        tHit = dt.y;
+        
         if(cellCoord.y == cellCoordEnd.y) {
             return false;
         }
+        tHit = dt.y;
         dt.y += deltatx.y;
         cellCoord.y += di.y;
     } else {
-        tHit = dt.z;
         if(cellCoord.z == cellCoordEnd.z) {
             return false;
         }
+        tHit = dt.z;
         dt.z += deltatx.z;
         cellCoord.z += di.z;
     }
@@ -97,6 +107,22 @@ bool stepToNextCell(vec3 deltatx, ivec3 di, ivec3 cellCoordEnd, inout vec3 dt,
     return true;
 }
 
+/*
+ * Step to next grid cell using parameters calculated in setupUniformGridTraversal.
+ * In difference to the function stepToNextCell this function returns the hit point  
+ * of the next cell.
+ *
+ *        _____________
+ *       |      |      |
+ *       |      |      |
+ *       |______|______|
+ *       |      |      |
+ * ray-> |      x      x
+ *       |______|______|
+ *
+ * Calculates the next hit point along the ray
+ * @return True if succesfully stepped to the next cell, otherwise false (reached final cell coordinate).
+ */
 bool stepToNextCellHit(vec3 deltatx, ivec3 di, ivec3 cellCoordEnd, inout vec3 dt,
                        inout ivec3 cellCoord, out float tHit) {
 
@@ -145,6 +171,17 @@ bool stepToNextCellHit(vec3 deltatx, ivec3 di, ivec3 cellCoordEnd, inout vec3 dt
     return true;
 }
 
+/*
+ * Step to next grid cell using parameters calculated in setupUniformGridTraversal.
+ *        _____________
+ *       |      |      |
+ *       |      |      |
+ *       |______|______|
+ *       |      |      |
+ * ray-> x      x      |
+ *       |______|______|
+ * @return True if succesfully stepped to the next cell, otherwise false (reached final cell coordinate).
+ */
 bool stepToNextCellNoHit(vec3 deltatx, ivec3 di, ivec3 cellCoordEnd, inout vec3 dt,
                          inout ivec3 cellCoord) {
     
