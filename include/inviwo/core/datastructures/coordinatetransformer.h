@@ -128,8 +128,8 @@ public:
     virtual ~SpatialCoordinateTransformer() = default;
     virtual SpatialCoordinateTransformer* clone() const = 0;
     /**
-     * Returns the matrix transformation mapping from "from" coordinates
-     * to "to" coordinates
+     * Returns the matrix transformation mapping from \p from coordinates
+     * to \p to coordinates
      */
     virtual glm::mat4 getMatrix(CoordinateSpace from, CoordinateSpace to) const;
     /**
@@ -162,6 +162,22 @@ public:
      * to raw data numbers, i.e. from (-inf, inf) to generally (-inf, inf), ([0,1] for textures)
      */
     virtual glm::mat4 getWorldToDataMatrix() const = 0;
+    /**
+     * Transforms the given position \p pos from \p from coordinates to \p to coordinates. The
+     * resulting position is divided by w.
+     */
+    virtual glm::vec3 transformPosition(const vec3& pos, CoordinateSpace from, CoordinateSpace to) const;
+    /**
+     * Transforms the given position \p pos from \p from coordinates to \p to coordinates using homogeneous coordinates
+     */
+    virtual glm::vec4 transformPositionHomogeneous(const vec4& pos, CoordinateSpace from, CoordinateSpace to) const;
+    /**
+     * Transforms the given \p normal from \p from coordinates to \p to coordinates. Only considers
+     * transformations between supported by this SpatialCoordinateTransformer. That is Data to
+     * Model, Model to World, Data to World and their inverse, camera or index coordinates are
+     * not supported.
+     */
+    virtual glm::vec3 transformNormal(const vec3& normal, CoordinateSpace from, CoordinateSpace to) const;
 
 protected:
     SpatialCoordinateTransformer(const SpatialCoordinateTransformer&) = default;
