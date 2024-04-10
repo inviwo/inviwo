@@ -292,17 +292,19 @@ bool LightVolumeGL::lightSourceChanged() {
 
             if (auto directionLight =
                     dynamic_cast<const DirectionalLight*>(lightSource_.getData().get())) {
-                mat4 worldToTexture =
-                    inport_.getData()->getCoordinateTransformer().getWorldToTextureMatrix();
-                vec4 lightPositionTexture =
-                    worldToTexture * vec4(-directionLight->getDirection(), 1.f);
-                lightPos_ = vec3(lightPositionTexture);
-                lightDirection = lightPos_ - vec3(0.5f);
+
+                const auto& transformer = inport_.getData()->getCoordinateTransformer();
+                lightDirection =
+                    transformer.transformPosition(vec3{0.0f}, CoordinateSpace::World,
+                                                  CoordinateSpace::Data) -
+                    transformer.transformPosition(directionLight->getDirection(),
+                                                  CoordinateSpace::World, CoordinateSpace::Data);
                 if (glm::length(lightDirection) == 0) {
-                    lightDirection = vec3(1, 0, 0);
+                    lightDirection = vec3{1, 0, 0};
                 } else {
                     lightDirection = glm::normalize(lightDirection);
                 }
+                lightPos_ = lightDirection + vec3{0.5f};
                 color = directionLight->getIntensity();
             }
 
@@ -318,10 +320,9 @@ bool LightVolumeGL::lightSourceChanged() {
             }
 
             if (auto pointLight = dynamic_cast<const PointLight*>(lightSource_.getData().get())) {
-                mat4 worldToTexture =
-                    inport_.getData()->getCoordinateTransformer().getWorldToTextureMatrix();
-                vec4 lightPositionTexture = worldToTexture * vec4(pointLight->getPosition(), 1.f);
-                lightPos_ = vec3(lightPositionTexture);
+                const auto& transformer = inport_.getData()->getCoordinateTransformer();
+                lightPos_ = transformer.transformPosition(
+                    pointLight->getPosition(), CoordinateSpace::World, CoordinateSpace::Data);
                 lightDirection = lightPos_ - vec3(0.5f);
                 if (glm::length(lightDirection) == 0) {
                     lightDirection = vec3(1, 0, 0);
@@ -417,8 +418,8 @@ void LightVolumeGL::supportColoredLightChanged() {
     propagationShader_.getFragmentShaderObject()->build();
     propagationShader_.link();
 
-    if (outport_.hasData()) {
-        std::size_t components = outport_.getData()->getDataFormat()->getComponents();
+    if (volume_) {
+        const std::size_t components = volume_->getDataFormat()->getComponents();
 
         if ((components < 3 && supportColoredLight_.get()) ||
             (components > 1 && !supportColoredLight_.get())) {
