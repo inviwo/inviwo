@@ -66,10 +66,6 @@ UniformGridOpacityGL::UniformGridOpacityGL()
         invalidate(InvalidationLevel::InvalidOutput);
         
     });
-    volumeRegionSize_.onChange([this]() {
-        shader_.build();
-        invalidate(InvalidationLevel::InvalidOutput);
-    });
 }
 
 void UniformGridOpacityGL::process() {
@@ -89,7 +85,6 @@ void UniformGridOpacityGL::process() {
                                    InterpolationType::Nearest, curVolume->getWrapping());
 
     auto stats = std::make_shared<Volume>(statsGLRep);
-    // auto stats = std::make_shared<Volume>(statsGLRep);
 
     stats->dataMap.dataRange.x = 0;  // should map from 0,1
     stats->dataMap.dataRange.y = 1;  // should map from 0,1
@@ -110,7 +105,6 @@ void UniformGridOpacityGL::process() {
     TextureUnitContainer units;
 
     shader_.setUniform("cellDim", region);
-    // shader_.setUniform("offset", static_cast<inviwo::ivec3>(region));
 
     utilgl::bindAndSetUniforms(shader_, units, *inport_.getData(), "volumeData");
     // I need to write to it, and i dont think bindandset lets me do that
