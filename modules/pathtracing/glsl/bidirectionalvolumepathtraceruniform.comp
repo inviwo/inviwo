@@ -15,6 +15,7 @@
 #include "transmittance/transmittancemethods.glsl"
 #include "lightestimation.glsl"
 #include "util/rayminmax.glsl"
+#include "uniformgrid.glsl"
 
 // volume
 uniform sampler3D volume;
@@ -123,7 +124,11 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
     }
     return result;
 }
-
+float calcStep(in float rayLength, in vec3 direction, in float samplingRate, in vec3 dimensions) {
+    float incr = min(rayLength, rayLength / (samplingRate * length(direction * dimensions)));
+    float samples = ceil(rayLength / incr);
+    return rayLength / samples;
+}
 // Testing function to compare MinMaxOpacity validity against Volume texture data.
 vec4 rayOpacityTextureTesting(vec3 entryPoint, vec3 exitPoint, int stepcount) {
 
@@ -165,15 +170,15 @@ vec4 rayOpacityTextureTesting(vec3 entryPoint, vec3 exitPoint, int stepcount) {
         // Get parameters t such that samplePosition = entryPoint + t*rayDir correspond to the point
         // where the ray enters the opacity voxel (tEntry) and exits the opacity voxel (tExit)
         float tEntry = t0 + dirLen * tPrev;
-        float tExit = t0 + dirLen * min(t1, t);
+        float tExit = t0 + dirLen * min(t1, float(t));
 
-        // Each step to sample in the voxel.
-        float tstep = (tExit - tEntry) / float(stepcount);
-
-        // Uniformly step and compare through the voxel
-        for (int step = 0; step < stepcount; step++) {
+        // The step size in texture space
+        float rayStep = calcStep(t1, rayDir, stepcount, volumeParameters.dimensions);
+        float rayPosition = tEntry;
+        // Uniformly step and compare through the grid cell
+        while (rayPosition <= tExit) {
             // Sample positions
-            samplePosition = entryPoint + rayDir * (tEntry + float(step) * tstep);
+            samplePosition = vec3(entryPoint + rayPosition*rayDir);
             
             float sampleOpacity =
                 applyTF(transferFunction,
@@ -185,6 +190,7 @@ vec4 rayOpacityTextureTesting(vec3 entryPoint, vec3 exitPoint, int stepcount) {
             if (max < sampleOpacity) {
                 result.x += 1;
             }
+            rayPosition += rayStep;
         }
     }
     if (result.x > 0) {
@@ -231,11 +237,11 @@ void main() {
         return;
     }
 
-     vec4 color =
-         pathtrace(entryPoint, exitPoint, entryPointDepth, exitPointDepth, rayDepth, depth,
-         bgColor);
+     //vec4 color =
+     //    pathtrace(entryPoint, exitPoint, entryPointDepth, exitPointDepth, rayDepth, depth,
+     //    bgColor);
 
-    //vec4 color = rayOpacityTextureTesting(entryPoint, exitPoint, 250);
+    vec4 color = rayOpacityTextureTesting(entryPoint, exitPoint, 4);
 
     vec4 colorPrev = imageLoad(outportColor, storePos);
 
