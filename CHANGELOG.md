@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2024-04-12 `Light Volume Raycaster`
+Based on the raycasting components and the `Standard Volume Raycaster`, the `Light Volume Raycaster` provides the same volume rendering capabilities while also considering a light volume for volumetric shading. The light volume can be generated with the processor of the same name (`Light Volume`).
+
 ## 2024-04-09 Updated `PositionProperty`
 The `PositionProperty`, formerly a `FloatVec3Property`, is now a self-contained composite property that supports a position in world, view, and clip coordinates. Multiple read-only properties provide the transformed position in various coordinate systems. Optionally, the position can be offset to the look-to point of the camera or a custom position. This enables the use of spherical coordinates in a "local" coordinate system, for example a light source circling around a volume that is not centered at (0,0,0).
 
