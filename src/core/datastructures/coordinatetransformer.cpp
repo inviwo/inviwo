@@ -74,7 +74,8 @@ glm::vec4 SpatialCoordinateTransformer::transformPositionHomogeneous(const vec4&
 
 glm::vec3 SpatialCoordinateTransformer::transformNormal(const vec3& normal, CoordinateSpace from,
                                                         CoordinateSpace to) const {
-    const mat3 m{glm::transpose(glm::inverse(SpatialCoordinateTransformer::getMatrix(from, to)))};
+    const mat3 m{
+        glm::transpose(glm::inverse(mat3{SpatialCoordinateTransformer::getMatrix(from, to)}))};
     return m * normal;
 }
 
