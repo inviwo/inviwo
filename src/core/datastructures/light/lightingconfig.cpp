@@ -39,6 +39,7 @@ LightingConfig& LightingConfig::updateFrom(const LightingConfig& config) {
     };
     update(shadingMode, config.shadingMode);
     update(position, config.position);
+    update(referenceSpace, config.referenceSpace);
     update(ambient, config.ambient);
     update(diffuse, config.diffuse);
     update(specular, config.specular);

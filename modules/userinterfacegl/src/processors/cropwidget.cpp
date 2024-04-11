@@ -152,7 +152,14 @@ CropWidget::CropWidget()
     , outputProps_("outputProperties", "Output")
     , camera_("camera", "Camera")
 
-    , lightingProperty_("internalLighting", "Lighting", &camera_)
+    , lightingProperty_("internalLighting", "Lighting",
+                        "Lighting parameters used for shading the handles"_help,
+                        LightingConfig{
+                            .position = vec3{4.0f, 6.6f, 18.0f},
+                            .referenceSpace = CoordinateSpace::View,
+                            .ambient = vec3{0.6f},
+                        },
+                        &camera_)
     , trackball_(&camera_)
     , picking_(this, 3 * numInteractionWidgets, [&](PickingEvent* p) { objectPicked(p); })
     , shader_("geometrycustompicking.vert", "geometryrendering.frag", Shader::Build::No)

@@ -30,6 +30,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/light/lightingstate.h>
+#include <inviwo/core/datastructures/spatialdata.h>
 
 #include <optional>
 #include <glm/vec3.hpp>
@@ -39,13 +40,16 @@ namespace inviwo {
 struct IVW_CORE_API LightingConfig {
     std::optional<ShadingMode> shadingMode = std::nullopt;
     std::optional<glm::vec3> position = std::nullopt;
+    std::optional<CoordinateSpace> referenceSpace = std::nullopt;
     std::optional<glm::vec3> ambient = std::nullopt;
     std::optional<glm::vec3> diffuse = std::nullopt;
     std::optional<glm::vec3> specular = std::nullopt;
     std::optional<float> specularExponent = std::nullopt;
 
     static constexpr ShadingMode defaultShadingMode{ShadingMode::BlinnPhong};
-    static constexpr glm::vec3 defaultPosition{0.0f, 5.0f, 5.0f};
+    // default position top right of the camera origin (xy plane in view coords, looking toward -z)
+    static constexpr glm::vec3 defaultPosition{10.0f, 10.0f, 10.0f};
+    static constexpr CoordinateSpace defaultReferenceSpace{CoordinateSpace::View};
     static constexpr glm::vec3 defaultAmbient{0.15f};
     static constexpr glm::vec3 defaultDiffuse{0.6f};
     static constexpr glm::vec3 defaultSpecular{0.4f};

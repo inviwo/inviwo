@@ -50,17 +50,21 @@ SimpleLightingProperty::SimpleLightingProperty(std::string_view identifier,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, help, invalidationLevel, semantics)
-    , shadingMode_("shadingMode", "Shading",
-                   {{"none", "No Shading", ShadingMode::None},
-                    {"ambient", "Ambient", ShadingMode::Ambient},
-                    {"diffuse", "Diffuse", ShadingMode::Diffuse},
-                    {"specular", "Specular", ShadingMode::Specular},
-                    {"blinnphong", "Blinn Phong", ShadingMode::BlinnPhong},
-                    {"phong", "Phong", ShadingMode::Phong}},
-                   4, InvalidationLevel::InvalidResources)
+    , shadingMode_(
+          "shadingMode", "Shading",
+          OptionPropertyState<ShadingMode>{
+              .options = {{"none", "No Shading", ShadingMode::None},
+                          {"ambient", "Ambient", ShadingMode::Ambient},
+                          {"diffuse", "Diffuse", ShadingMode::Diffuse},
+                          {"specular", "Specular", ShadingMode::Specular},
+                          {"blinnphong", "Blinn Phong", ShadingMode::BlinnPhong},
+                          {"phong", "Phong", ShadingMode::Phong}}}
+              .setSelectedValue(ShadingMode::BlinnPhong)
+              .set(InvalidationLevel::InvalidResources))
     , lightPosition_("lightPosition", "Position", "Position of the light source"_help,
                      config.position.value_or(LightingConfig::defaultPosition),
-                     CoordinateSpace::World, camera, PropertySemantics::LightPosition)
+                     config.referenceSpace.value_or(LightingConfig::defaultReferenceSpace), camera,
+                     PropertySemantics::LightPosition)
     , ambientColor_{"lightColorAmbient", "Ambient color",
                     util::ordinalColor(config.ambient.value_or(LightingConfig::defaultAmbient))}
     , diffuseColor_{"lightColorDiffuse", "Diffuse color",
@@ -111,6 +115,7 @@ LightingConfig SimpleLightingProperty::config() const {
     return LightingConfig{
         .shadingMode = shadingMode_,
         .position = lightPosition_.get(CoordinateSpace::World),
+        .referenceSpace = CoordinateSpace::World,
         .ambient = ambientColor_,
         .diffuse = diffuseColor_,
         .specular = specularColor_,
