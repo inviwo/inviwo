@@ -80,8 +80,6 @@ public:
     PositionProperty lightPosition_;
 
     // Material properties
-    // Diffuse color often come from the object
-    // so we neglect it here
     FloatVec3Property ambientColor_;
     FloatVec3Property diffuseColor_;
     FloatVec3Property specularColor_;

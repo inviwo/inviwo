@@ -58,7 +58,7 @@ SimpleLightingProperty::SimpleLightingProperty(std::string_view identifier,
                                    {"specular", "Specular", ShadingMode::Specular},
                                    {"blinnphong", "Blinn Phong", ShadingMode::BlinnPhong},
                                    {"phong", "Phong", ShadingMode::Phong}}}
-                       .setSelectedValue(ShadingMode::BlinnPhong)
+                       .setSelectedValue(LightingConfig::defaultShadingMode)
                        .set(InvalidationLevel::InvalidResources))
     , lightPosition_("lightPosition", "Position", "Position of the light source"_help,
                      config.position.value_or(LightingConfig::defaultPosition),
