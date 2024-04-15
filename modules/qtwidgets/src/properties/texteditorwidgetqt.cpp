@@ -74,6 +74,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     QMainWindow* mainWindow = new QMainWindow();
     mainWindow->setContextMenuPolicy(Qt::NoContextMenu);
     QToolBar* toolBar = new QToolBar();
+    toolBar->setObjectName("TextEditorWidgetToolBar");
     mainWindow->addToolBar(toolBar);
     toolBar->setFloatable(false);
     toolBar->setMovable(false);

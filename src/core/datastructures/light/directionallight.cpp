@@ -28,7 +28,27 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/light/directionallight.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/glmfmt.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
+
 DirectionalLight* DirectionalLight::clone() const { return new DirectionalLight(*this); }
+
+Document DirectionalLight::getInfo() const {
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+    Document doc;
+    doc.append("b", "LightSource", {{"style", "color:white;"}});
+    utildoc::TableBuilder tb(doc.handle(), P::end());
+    tb(H("Type"), getLightSourceType());
+    tb(H("Enabled"), isEnabled());
+    tb(H("Intensity [Ws/rad]"), getIntensity());
+    tb(H("Radiant Flux [W]"), getPower());
+    tb(H("Direction"), getDirection());
+    return doc;
+}
+
 }  // namespace inviwo

@@ -60,6 +60,25 @@ std::string_view enumToStr(CoordinateSpace s) {
 
 std::ostream& operator<<(std::ostream& ss, CoordinateSpace s) { return ss << enumToStr(s); }
 
+glm::vec3 SpatialCoordinateTransformer::transformPosition(const vec3& pos, CoordinateSpace from,
+                                                          CoordinateSpace to) const {
+    const vec4 result = getMatrix(from, to) * vec4{pos, 1.0f};
+    return vec3{result} / result.w;
+}
+
+glm::vec4 SpatialCoordinateTransformer::transformPositionHomogeneous(const vec4& pos,
+                                                                     CoordinateSpace from,
+                                                                     CoordinateSpace to) const {
+    return getMatrix(from, to) * pos;
+}
+
+glm::vec3 SpatialCoordinateTransformer::transformNormal(const vec3& normal, CoordinateSpace from,
+                                                        CoordinateSpace to) const {
+    const mat3 m{
+        glm::transpose(glm::inverse(mat3{SpatialCoordinateTransformer::getMatrix(from, to)}))};
+    return m * normal;
+}
+
 #include <warn/push>
 #include <warn/ignore/switch-enum>
 glm::mat4 SpatialCoordinateTransformer::getMatrix(CoordinateSpace from, CoordinateSpace to) const {

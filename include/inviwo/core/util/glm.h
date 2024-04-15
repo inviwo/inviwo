@@ -271,6 +271,18 @@ bool almostEqual(const T& x, const T& y, int ulp = 2) {
     return detail::almostEqual<T>::value(x, y, ulp);
 }
 
+template <typename T>
+glm::vec<3, T> transformPos(const glm::mat<4, 4, T>& m, const glm::vec<3, T>& pos) {
+    const glm::vec<4, T> result{m * glm::vec<4, T>{pos, T{1}}};
+    return glm::vec<3, T>{result} / result.w;
+}
+
+template <typename T>
+glm::vec<3, T> transformNormal(const glm::mat<4, 4, T>& modelViewMatrix,
+                               const glm::vec<3, T>& normal) {
+    return glm::transpose(glm::inverse(Matrix<3, T>{modelViewMatrix})) * normal;
+}
+
 }  // namespace util
 
 }  // namespace inviwo

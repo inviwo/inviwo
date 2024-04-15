@@ -29,27 +29,28 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 
-#include <inviwo/core/datastructures/camera/perspectivecamera.h>  // for PerspectiveCamera
-#include <inviwo/core/interaction/pickingmapper.h>                // for PickingMapper
-#include <inviwo/core/ports/imageport.h>                          // for ImageInport, ImageOutport
-#include <inviwo/core/processors/processor.h>                     // for Processor
-#include <inviwo/core/processors/processorinfo.h>                 // for ProcessorInfo
-#include <inviwo/core/properties/boolcompositeproperty.h>         // for BoolCompositeProperty
-#include <inviwo/core/properties/boolproperty.h>                  // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                // for ButtonProperty
-#include <inviwo/core/properties/cameraproperty.h>                // for CameraProperty
-#include <inviwo/core/properties/compositeproperty.h>             // for CompositeProperty
-#include <inviwo/core/properties/ordinalproperty.h>               // for FloatProperty, FloatVec...
-#include <inviwo/core/properties/simplelightingproperty.h>        // for SimpleLightingProperty
-#include <inviwo/core/util/glmmat.h>                              // for mat4
-#include <inviwo/core/util/glmvec.h>                              // for vec3, dvec2, ivec2
-#include <modules/opengl/shader/shader.h>                         // for Shader
+#include <inviwo/core/datastructures/camera/perspectivecamera.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttongroupproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <array>    // for array
-#include <cstddef>  // for size_t
-#include <memory>   // for unique_ptr, shared_ptr
+#include <array>
+#include <cstddef>
+#include <memory>
 
 namespace inviwo {
 
@@ -58,39 +59,6 @@ class ImageGL;
 class Mesh;
 class MeshDrawerGL;
 class PickingEvent;
-
-/** \docpage{org.inviwo.CameraWidget, Camera Interaction Processor}
- * ![](org.inviwo.CameraWidget.png?classIdentifier=org.inviwo.CameraWidget)
- * This processor provides a widget for manipulating the camera orientation with a mouse. The widget
- * is rendered on top of the input image. It also provides the rotation in matrix form.
- *
- * ### Inports
- *   * __ImageInport__ Input image
- *
- * ### Outports
- *   * __ImageOutport__ Output image
- *
- * ### Properties
- *   * __Enabled (settings)__ Enables interactions with the widget
- *   * __Invert Directions (settings)__ Inverts the rotation directions
- *   * __Camera Roll (settings)__ Shows an additional widget for rolling the camera
- *   * __Camera Dolly (settings)__ Shows an additional widget for camera dolly
- *   * __Speed Scaling (settings)__ Scaling factor (sensitivity) for rotation with a mouse drag
- *   * __Angle per click (settings)__  Rotation angle in degrees when a rotation is triggered by a
- * mouse click
- *   * __Scaling (appearance)__ Scales the size of the widget (a factor of 1 corresponds to 300
- * pixel)
- *   * __Position (appearance)__  Positioning of the interaction widget within the input image
- *   * __Anchor (appearance)__ Anchor position of the widget
- *   * __Show Cube (appearance)__ Toggles a cube behind the widget for showing the camera
- * orientation
- *   * __Cube Color (appearance)__ Custom color for the cube
- *   * __RGB Axis Coloring (appearance)__ Map red, green, and blue to the respective orientation
- * arrows of the widget
- *   * __User Color (appearance)__ Apply a custom color onto the entire widget
- *   * __Camera (output)__  Camera affected by the widget interaction
- *   * __Rotation Matrix (output)__  Matrix representing the camera orientation
- */
 
 /**
  * \class CameraWidget
@@ -101,7 +69,7 @@ public:
     enum class Interaction { HorizontalRotation, VerticalRotation, FreeRotation, Roll, Zoom, None };
 
     CameraWidget();
-    virtual ~CameraWidget();
+    ~CameraWidget();
 
     virtual void process() override;
 
@@ -132,9 +100,13 @@ private:
     static Interaction intToInteractionDirection(int dir);
     vec3 getObjectRotationAxis(const vec3& rotAxis) const;
 
+    std::vector<ButtonGroupProperty::Button> buttons();
+
     ImageInport inport_;
     ImageOutport outport_;
 
+    ButtonGroupProperty cameraActions_;
+    BoolProperty visible_;
     CompositeProperty settings_;
     BoolProperty enabled_;
     BoolProperty invertDirections_;
@@ -154,12 +126,6 @@ private:
     BoolProperty axisColoring_;
     FloatVec4Property userColor_;
     FloatVec4Property cubeColor_;
-
-    CompositeProperty interactions_;
-    ButtonProperty rotateUpBtn_;
-    ButtonProperty rotateDownBtn_;
-    ButtonProperty rotateLeftBtn_;
-    ButtonProperty rotateRightBtn_;
 
     CompositeProperty outputProps_;
     CameraProperty camera_;

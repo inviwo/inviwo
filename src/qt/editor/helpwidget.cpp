@@ -99,6 +99,7 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
 
     auto* centralWidget = new QMainWindow();
     QToolBar* toolBar = new QToolBar();
+    toolBar->setObjectName("HelpWidgetToolBar");
     centralWidget->addToolBar(toolBar);
     toolBar->setFloatable(false);
     toolBar->setMovable(false);

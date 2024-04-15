@@ -40,9 +40,9 @@ namespace inviwo {
 class IVW_CORE_API TrackballObject {
 public:
     virtual ~TrackballObject() = default;
-    virtual const vec3& getLookTo() const = 0;
-    virtual const vec3& getLookFrom() const = 0;
-    virtual const vec3& getLookUp() const = 0;
+    [[nodiscard]] virtual vec3 getLookTo() const = 0;
+    [[nodiscard]] virtual vec3 getLookFrom() const = 0;
+    [[nodiscard]] virtual vec3 getLookUp() const = 0;
 
     virtual TrackballObject& setLookTo(vec3 lookTo) = 0;
     virtual TrackballObject& setLookFrom(vec3 lookFrom) = 0;
@@ -50,17 +50,18 @@ public:
 
     virtual TrackballObject& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) = 0;
 
-    virtual vec3 getLookFromMinValue() const = 0;
-    virtual vec3 getLookFromMaxValue() const = 0;
+    [[nodiscard]] virtual vec3 getLookFromMinValue() const = 0;
+    [[nodiscard]] virtual vec3 getLookFromMaxValue() const = 0;
 
-    virtual vec3 getLookToMinValue() const = 0;
-    virtual vec3 getLookToMaxValue() const = 0;
+    [[nodiscard]] virtual vec3 getLookToMinValue() const = 0;
+    [[nodiscard]] virtual vec3 getLookToMaxValue() const = 0;
 
-    virtual float getNearPlaneDist() const = 0;
-    virtual float getFarPlaneDist() const = 0;
+    [[nodiscard]] virtual float getNearPlaneDist() const = 0;
+    [[nodiscard]] virtual float getFarPlaneDist() const = 0;
 
-    virtual vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const = 0;
-    virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+    [[nodiscard]] virtual vec3 getWorldPosFromNormalizedDeviceCoords(
+        const vec3& ndcCoords) const = 0;
+    [[nodiscard]] virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
         const vec2& normalizedScreenCoord) const = 0;
 
     enum class Bounded { Yes, No };

@@ -31,12 +31,19 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/spatialdata.h>
+#include <inviwo/core/util/fmtutils.h>
+
+#include <iosfwd>
 
 namespace inviwo {
 
 class Document;
 
-enum class LightSourceType { area = 0, cone, point, directional };
+enum class LightSourceType { Area = 0, SpotLight, Point, Directional };
+
+IVW_CORE_API std::string_view enumToStr(LightSourceType lt);
+
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, LightSourceType lt);
 
 class IVW_CORE_API LightSource : public SpatialEntity {
 public:
@@ -125,3 +132,8 @@ protected:
 IVW_CORE_API mat4 getLightTransformationMatrix(vec3 pos, vec3 dir);
 
 }  // namespace inviwo
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+template <>
+struct fmt::formatter<inviwo::LightSourceType> : inviwo::FlagFormatter<inviwo::LightSourceType> {};
+#endif

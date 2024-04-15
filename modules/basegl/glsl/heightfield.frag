@@ -58,14 +58,14 @@ void main() {
     // normal mapping
     vec3 normal;
     if (normalMapping == 1) {
-        normal = texture(inportNormalMap, texCoord_.xy).rgb;
+        normal = texture(inportNormalMap, texCoord_.xy).rgb * 2.0 - 1.0;
         normal = normalize(geometry.modelToWorldNormalMatrix * normal);
     } else {
         normal = normalize(normal_);
     }
 
     vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
-    fragColor.rgb = APPLY_LIGHTING(lighting, fragColor.rgb, fragColor.rgb, fragColor.rgb,
+    fragColor.rgb = APPLY_LIGHTING(lighting, fragColor.rgb, fragColor.rgb, vec3(1),
                                    worldPosition_.xyz, normal, normalize(toCameraDir_));
 
     FragData0 = fragColor;

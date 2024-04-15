@@ -34,6 +34,10 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>
+
+#include <optional>
 
 namespace inviwo {
 
@@ -50,57 +54,97 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    enum class Space : int { WORLD, VIEW };
+    enum class CoordinateOffset { None, CameraLookAt, Custom };
+    enum class ApplyOffset { No, Yes };
 
     PositionProperty(std::string_view identifier, std::string_view displayName, Document help,
-                     FloatVec3Property position = FloatVec3Property("position", "Position",
-                                                                    vec3(0.0f, 0.0f, 0.0f),
-                                                                    vec3(-10, -10, -10),
-                                                                    vec3(10, 10, 10)),
+                     const vec3& position = vec3{0.0f},
+                     CoordinateSpace coordinateSpace = CoordinateSpace::World,
                      CameraProperty* camera = nullptr,
-                     InvalidationLevel = InvalidationLevel::InvalidResources,
-                     PropertySemantics semantics = PropertySemantics::Default);
+                     PropertySemantics positionSemantics = PropertySemantics::Default,
+                     InvalidationLevel = InvalidationLevel::InvalidResources);
 
     PositionProperty(std::string_view identifier, std::string_view displayName,
-                     FloatVec3Property position = FloatVec3Property("position", "Position",
-                                                                    vec3(0.0f, 0.0f, 0.0f),
-                                                                    vec3(-10, -10, -10),
-                                                                    vec3(10, 10, 10)),
+                     const vec3& position = vec3{0.0f},
+                     CoordinateSpace coordinateSpace = CoordinateSpace::World,
                      CameraProperty* camera = nullptr,
-                     InvalidationLevel = InvalidationLevel::InvalidResources,
-                     PropertySemantics semantics = PropertySemantics::Default);
+                     PropertySemantics positionSemantics = PropertySemantics::Default,
+                     InvalidationLevel = InvalidationLevel::InvalidResources);
     PositionProperty(const PositionProperty& rhs);
-    virtual PositionProperty* clone() const override;
-    virtual ~PositionProperty() {}
+    [[nodiscard]] virtual PositionProperty* clone() const override;
 
     /**
-     * \brief Get position in world space.
-     * @return vec3 World space position.
+     * Get the current position in the given coordinate space \p space.
+     * @param space    coordinate system of the returned position
+     * @return position in \p space
      */
-    const vec3& get() const;
+    [[nodiscard]] vec3 get(CoordinateSpace space = CoordinateSpace::World) const;
 
     using CompositeProperty::set;  // Enable calling CompositeProperty::set(...) functions even
                                    // though overriding with set(const vec3& value)
     /**
-     * \brief Set coordinate in world space.
-     * @param worldSpacePos Position in world space.
+     * Set both position \p pos given in the coordinate space \p space and the coordinate space.
+     * @param pos    position in \p space coordinates
+     * @param space  reference coordinate system of \p pos
+     * @param applyOffset   determines whether the current offset is applied to \p pos or \p pos is
+     *               considered absolute
      */
-    void set(const vec3& worldSpacePos);
+    void set(const vec3& pos, CoordinateSpace space, ApplyOffset applyOffset = ApplyOffset::No);
 
-    virtual void serialize(Serializer& s) const override;
+    /**
+     * Update the position given \p pos in coordinate space \p sourceSpace. The position will be
+     * transformed from \p sourceSpace to the currently set reference coordinate space of the
+     * property.
+     * @param pos    position in \p space coordinates
+     * @param sourceSpace  coordinate space of \p pos
+     */
+    void updatePosition(const vec3& pos, CoordinateSpace sourceSpace);
+
+    /**
+     * Get the offset currently applied to the position in the given coordinate space \p space.
+     * @param space    coordinate system of the returned offset
+     * @return offset in \p space
+     */
+    vec3 getOffset(CoordinateSpace space) const;
+
+    [[nodiscard]] CoordinateSpace getCoordinateSpace() const;
+
+    /**
+     * Determines the normalized direction from offset to the current position, that is
+     * <tt>pos - offset</tt>, in the given coordinate space \p space.
+     * @return normalized, directional vector in \p space coordinates
+     */
+    [[nodiscard]] vec3 getDirection(CoordinateSpace space) const;
+
+    /**
+     * Set the property semantics of the position property to \p semantics
+     */
+    void setPositionSemantics(PropertySemantics semantics);
+
     virtual void deserialize(Deserializer& d) override;
 
-    OptionPropertyInt
-        referenceFrame_;          //< The space in which the position is specified (world or view).
-    FloatVec3Property position_;  //< Position in specified space (world or view).
 private:
-    void referenceFrameChanged();
-    void positionChanged();
-    void cameraChanged();
+    [[nodiscard]] vec3 convert(const vec3& pos, CoordinateSpace sourceSpace,
+                               CoordinateSpace targetSpace) const;
+    [[nodiscard]] vec3 convertFromWorld(const vec3& pos, CoordinateSpace targetSpace) const;
+    [[nodiscard]] vec3 convertToWorld(const vec3& pos, CoordinateSpace sourceSpace) const;
+    void invalidateOutputProperties();
+    void referenceSpaceChanged();
 
-    vec3 positionWorldSpace_;  //< Used for always keeping track of the current position in world
-                               // space.
-    CameraProperty* camera_;   //< Non-owning reference.
+    CameraProperty* camera_;  //< Non-owning reference.
+    std::optional<CoordinateSpace> previousReferenceSpace_;
+
+    OptionProperty<CoordinateSpace> referenceSpace_;
+    FloatVec3Property position_;
+
+    OptionProperty<CoordinateOffset> coordinateOffsetMode_;
+    FloatVec3Property coordinateOffset_;
+
+    CompositeProperty output_;
+    FloatVec3RefProperty worldPos_;
+    FloatVec3RefProperty viewPos_;
+    FloatVec3RefProperty clipPos_;
+    FloatVec3RefProperty screenPos_;
 };
 
 }  // namespace inviwo

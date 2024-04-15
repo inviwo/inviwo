@@ -103,6 +103,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     mainWindow_ = new QMainWindow();
     mainWindow_->setContextMenuPolicy(Qt::NoContextMenu);
     QToolBar* toolBar = new QToolBar();
+    toolBar->setObjectName("PythonEditorWidgetToolBar");
     mainWindow_->addToolBar(toolBar);
     toolBar->setFloatable(false);
     toolBar->setMovable(false);

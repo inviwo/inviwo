@@ -30,6 +30,9 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/fmtutils.h>
+
+#include <iosfwd>
 
 namespace inviwo {
 
@@ -42,6 +45,10 @@ enum class ShadingMode : int {
     Phong,
 };
 
+IVW_CORE_API std::string_view enumToStr(ShadingMode sm);
+
+IVW_CORE_API std::ostream& operator<<(std::ostream& ss, ShadingMode sm);
+
 struct IVW_CORE_API LightingState {
     ShadingMode shadingMode;
     vec3 position;
@@ -52,3 +59,8 @@ struct IVW_CORE_API LightingState {
 };
 
 }  // namespace inviwo
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+template <>
+struct fmt::formatter<inviwo::ShadingMode> : inviwo::FlagFormatter<inviwo::ShadingMode> {};
+#endif

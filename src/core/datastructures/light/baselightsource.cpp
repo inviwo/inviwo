@@ -30,6 +30,10 @@
 #include <inviwo/core/datastructures/light/baselightsource.h>
 
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glmfmt.h>
+
+#include <fmt/format.h>
 
 #include <glm/trigonometric.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -37,6 +41,23 @@
 #include <glm/gtc/constants.hpp>
 
 namespace inviwo {
+
+std::string_view enumToStr(LightSourceType lt) {
+    switch (lt) {
+        case LightSourceType::Area:
+            return "Area";
+        case LightSourceType::SpotLight:
+            return "SpotLight";
+        case LightSourceType::Point:
+            return "Point";
+        case LightSourceType::Directional:
+            return "Directional";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid LightSourceType enum value '{}'",
+                    static_cast<int>(lt));
+}
+
+std::ostream& operator<<(std::ostream& ss, LightSourceType lt) { return ss << enumToStr(lt); }
 
 mat4 getLightTransformationMatrix(vec3 pos, vec3 dir) {
     vec3 A = vec3(0, 0, 1);
@@ -63,7 +84,7 @@ mat4 getLightTransformationMatrix(vec3 pos, vec3 dir) {
 LightSource::LightSource()
     : intensity_{1.0f}, fieldOfView_{glm::half_pi<float>()}, size_{0.0f}, enabled_{true} {}
 
-const inviwo::vec3 LightSource::getIntensity() const { return intensity_; }
+const vec3 LightSource::getIntensity() const { return intensity_; }
 
 void LightSource::setIntensity(const vec3& intensity) { intensity_ = intensity; }
 
@@ -71,7 +92,7 @@ float LightSource::getFieldOfView() const { return fieldOfView_; }
 
 void LightSource::setFieldOfView(float FOVInRadians) { fieldOfView_ = FOVInRadians; }
 
-const inviwo::vec2& LightSource::getSize() const { return size_; }
+const vec2& LightSource::getSize() const { return size_; }
 
 void LightSource::setSize(const vec2& newSize) { size_ = newSize; }
 
@@ -80,8 +101,15 @@ bool LightSource::isEnabled() const { return enabled_; }
 void LightSource::setEnabled(bool enable) { enabled_ = enable; }
 
 Document LightSource::getInfo() const {
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
     Document doc;
-    doc.append("p", "LightSource");
+    doc.append("b", "LightSource", {{"style", "color:white;"}});
+    utildoc::TableBuilder tb(doc.handle(), P::end());
+    tb(H("Type"), getLightSourceType());
+    tb(H("Enabled"), isEnabled());
+    tb(H("Intensity [Ws/rad]"), getIntensity());
+    tb(H("Radiant Flux [W]"), getPower());
     return doc;
 }
 

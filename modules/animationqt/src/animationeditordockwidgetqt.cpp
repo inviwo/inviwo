@@ -211,6 +211,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     }
 
     auto toolBar = new QToolBar();
+    toolBar->setObjectName("AnimationToolBar");
     toolBar->setFloatable(false);
     toolBar->setMovable(false);
     mainWindow_->addToolBar(toolBar);

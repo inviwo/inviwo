@@ -36,9 +36,11 @@
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/enumtraits.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/exception.h>
 
 #include <type_traits>
 #include <iterator>
+#include <algorithm>
 
 namespace inviwo {
 
@@ -127,6 +129,14 @@ struct OptionPropertyState {
     }
     auto set(size_t newSelectedIndex) -> OptionPropertyState {
         selectedIndex = newSelectedIndex;
+        return *this;
+    }
+    auto setSelectedValue(const T& newSelectedValue) -> OptionPropertyState {
+        auto it = std::ranges::find(options, newSelectedValue,
+                                    [](auto& option) { return option.value_; });
+        if (it != std::end(options)) {
+            selectedIndex = std::distance(std::begin(options), it);
+        }
         return *this;
     }
     auto set(InvalidationLevel newInvalidationLevel) -> OptionPropertyState {

@@ -28,6 +28,11 @@
  *********************************************************************************/
 
 #include <inviwo/core/properties/positionproperty.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/foreach.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/datastructures/spatialdata.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>
 
 namespace inviwo {
 
@@ -35,108 +40,211 @@ const std::string PositionProperty::classIdentifier = "org.inviwo.PositionProper
 std::string PositionProperty::getClassIdentifier() const { return classIdentifier; }
 
 PositionProperty::PositionProperty(std::string_view identifier, std::string_view displayName,
-                                   Document help, FloatVec3Property position,
-                                   CameraProperty* camera, InvalidationLevel invalidationLevel,
-                                   PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel, semantics)
-    , referenceFrame_("referenceFrame", "Space")
-    , position_(position)
-    , positionWorldSpace_(position_.get())
-    , camera_(camera) {
-    referenceFrame_.addOption("world", "World", static_cast<int>(Space::WORLD));
+                                   Document help, const vec3& position,
+                                   CoordinateSpace coordinateSpace, CameraProperty* camera,
+                                   PropertySemantics positionSemantics,
+                                   InvalidationLevel invalidationLevel)
+    : CompositeProperty{identifier, displayName, std::move(help), invalidationLevel}
+    , camera_{camera}
+    , previousReferenceSpace_{coordinateSpace}
+    , referenceSpace_{"referenceFrame", "Space",
+                      OptionPropertyState<CoordinateSpace>{
+                          .options = {{"world", "World coordinates", CoordinateSpace::World},
+                                      {"view", "View coordinates", CoordinateSpace::View},
+                                      {"clip", "Clip coordinates", CoordinateSpace::Clip}}}
+                          .set("Reference coordinate space for the position below."_help)
+                          .setSelectedValue(coordinateSpace)}
+    , position_{"position", "Position",
+                util::ordinalSymmetricVector(position, 10.0f)
+                    .set("Spatial position in the reference coordinate space"_help)
+                    .set(positionSemantics)}
+    , coordinateOffsetMode_("coordinateOffsetMode", "Offset",
+                            "Preset for the positional offset below."_help,
+                            {{"none", "No offset", CoordinateOffset::None},
+                             {"cameraLookAt", "Camera look-at", CoordinateOffset::CameraLookAt},
+                             {"custom", "Custom", CoordinateOffset::Custom}})
+    , coordinateOffset_{"coordinateOffset", "Offset",
+                        util::ordinalSymmetricVector(vec3{0.0f}, 10.0f)
+                            .set("The offset is applied to the position in the same reference "
+                                 "space. This "
+                                 "allows for example to move a light source around a volume or "
+                                 "mesh while "
+                                 "being centered in the middle of the volume."_help)}
+
+    , output_{"output", "Output"}
+    , worldPos_{"worldPosition", "World Position",
+                [&]() -> vec3 { return get(CoordinateSpace::World); }, [&](const vec3&) {},
+                util::ordinalRefSymmetricVector<vec3>(100.0f)
+                    .set("Position in world space coordinates"_help)
+                    .set(PropertySemantics::Text)
+                    .set(ReadOnly::Yes)}
+    , viewPos_{"viewPosition", "View Position",
+               [&]() -> vec3 { return get(CoordinateSpace::View); }, [&](const vec3&) {},
+               util::ordinalRefSymmetricVector<vec3>(100.0f)
+                   .set("Position in view space coordinates of the camera"_help)
+                   .set(PropertySemantics::Text)
+                   .set(ReadOnly::Yes)}
+    , clipPos_{"clipPosition", "Clip Position",
+               [&]() -> vec3 { return get(CoordinateSpace::Clip); }, [&](const vec3&) {},
+               util::ordinalRefSymmetricVector<vec3>(1.0f)
+                   .set("Position in clip space coordinates [-1,1]"_help)
+                   .set(PropertySemantics::Text)
+                   .set(ReadOnly::Yes)}
+    , screenPos_{"screenPosition", "Screen Position (normalized)",
+                 [&]() -> vec3 { return get(CoordinateSpace::Clip) * 0.5f + 0.5f; },
+                 [&](const vec3&) {},
+                 OrdinalRefPropertyState<vec3>{.min = vec3{0.0f},
+                                               .minConstraint = ConstraintBehavior::Ignore,
+                                               .max = vec3{1.0f},
+                                               .maxConstraint = ConstraintBehavior::Ignore}
+                     .set("Position in clip space coordinates [-1,1]"_help)
+                     .set(PropertySemantics::Text)
+                     .set(ReadOnly::Yes)} {
+
+    output_.addProperties(worldPos_, viewPos_, clipPos_, screenPos_);
+    output_.setCollapsed(true);
+    output_.setCurrentStateAsDefault();
+    addProperties(referenceSpace_, position_, coordinateOffsetMode_, coordinateOffset_, output_);
+
+    referenceSpace_.onChange([this]() { referenceSpaceChanged(); });
+    position_.onChange([this]() { invalidateOutputProperties(); });
+    coordinateOffsetMode_.onChange([this]() { invalidateOutputProperties(); });
+    coordinateOffset_.onChange([this]() { invalidateOutputProperties(); });
+    coordinateOffset_.readonlyDependsOn(
+        coordinateOffsetMode_, [](auto& prop) { return prop.get() != CoordinateOffset::Custom; });
     if (camera_) {
-        referenceFrame_.addOption("view", "View", static_cast<int>(Space::VIEW));
-    }
-    referenceFrame_.setSelectedValue(static_cast<int>(Space::WORLD));
-    referenceFrame_.setCurrentStateAsDefault();
-
-    position_.setSemantics(PropertySemantics::LightPosition);
-    position_.setCurrentStateAsDefault();
-
-    // Add properties
-    addProperty(referenceFrame_);
-    addProperty(position_);
-
-    referenceFrame_.onChange([this]() { referenceFrameChanged(); });
-    position_.onChange([this]() { positionChanged(); });
-    if (camera_) {
-        camera_->onChange([this]() { cameraChanged(); });
+        camera_->onChange([this]() { invalidateOutputProperties(); });
     }
 }
 
 PositionProperty::PositionProperty(std::string_view identifier, std::string_view displayName,
-                                   FloatVec3Property position, CameraProperty* camera,
-                                   InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : PositionProperty(identifier, displayName, Document{}, std::move(position), camera,
-                       invalidationLevel, semantics) {}
+                                   const vec3& position, CoordinateSpace coordinateSpace,
+                                   CameraProperty* camera, PropertySemantics positionSemantics,
+                                   InvalidationLevel invalidationLevel)
+    : PositionProperty(identifier, displayName, Document{}, position, coordinateSpace, camera,
+                       positionSemantics, invalidationLevel) {}
 
 PositionProperty::PositionProperty(const PositionProperty& rhs)
-    : CompositeProperty(rhs)
-    , referenceFrame_(rhs.referenceFrame_)
-    , position_(rhs.position_)
-    , positionWorldSpace_(rhs.positionWorldSpace_)
-    , camera_(rhs.camera_) {
-    // Add properties
-    addProperty(referenceFrame_);
-    addProperty(position_);
+    : CompositeProperty{rhs}
+    , camera_{rhs.camera_}
+    , previousReferenceSpace_{rhs.previousReferenceSpace_}
+    , referenceSpace_{rhs.referenceSpace_}
+    , position_{rhs.position_}
+    , coordinateOffsetMode_{rhs.coordinateOffsetMode_}
+    , coordinateOffset_{rhs.coordinateOffset_}
 
-    referenceFrame_.onChange([this]() { referenceFrameChanged(); });
-    position_.onChange([this]() { positionChanged(); });
+    , output_{rhs.output_}
+    , worldPos_{rhs.worldPos_}
+    , viewPos_{rhs.viewPos_}
+    , clipPos_{rhs.clipPos_}
+    , screenPos_{rhs.screenPos_} {
+
+    output_.addProperties(worldPos_, viewPos_, clipPos_, screenPos_);
+    addProperties(referenceSpace_, position_, coordinateOffsetMode_, coordinateOffset_, output_);
+
+    referenceSpace_.onChange([this]() { referenceSpaceChanged(); });
+    position_.onChange([this]() { invalidateOutputProperties(); });
+    coordinateOffsetMode_.onChange([this]() { invalidateOutputProperties(); });
+    coordinateOffset_.onChange([this]() { invalidateOutputProperties(); });
+    coordinateOffset_.setReadOnly(coordinateOffsetMode_.get() != CoordinateOffset::Custom);
+    coordinateOffset_.readonlyDependsOn(
+        coordinateOffsetMode_, [](auto& prop) { return prop.get() != CoordinateOffset::Custom; });
     if (camera_) {
-        camera_->onChange([this]() { cameraChanged(); });
+        camera_->onChange([this]() { invalidateOutputProperties(); });
     }
 }
 
 PositionProperty* PositionProperty::clone() const { return new PositionProperty(*this); }
 
-const vec3& PositionProperty::get() const { return positionWorldSpace_; }
+vec3 PositionProperty::get(CoordinateSpace space) const {
+    return convert(position_.get() + getOffset(referenceSpace_), referenceSpace_, space);
+}
 
-void PositionProperty::set(const vec3& worldSpacePos) {
-    // The onChange callback positionChanged() will update positionWorldSpace_,
-    // so there is no need to update that here
-    switch (static_cast<Space>(referenceFrame_.getSelectedValue())) {
-        case Space::VIEW:
-            position_.set(camera_ ? vec3(camera_->viewMatrix() * vec4(worldSpacePos, 1.0f))
-                                  : worldSpacePos);
-            break;
-        case Space::WORLD:
+void PositionProperty::set(const vec3& pos, CoordinateSpace space, ApplyOffset applyOffset) {
+    NetworkLock lock(this);
+    referenceSpace_.set(space);
+    const vec3 offset{applyOffset == ApplyOffset::Yes ? getOffset(space) : vec3{0.0f}};
+    position_.set(pos + offset);
+}
+
+void PositionProperty::updatePosition(const vec3& pos, CoordinateSpace sourceSpace) {
+    position_.set(convert(pos, sourceSpace, referenceSpace_));
+}
+
+vec3 PositionProperty::getOffset(CoordinateSpace space) const {
+    switch (coordinateOffsetMode_) {
+        case CoordinateOffset::None:
+            return convert(vec3{0.0f}, referenceSpace_, space);
+        case CoordinateOffset::CameraLookAt:
+            if (camera_) {
+                return convertFromWorld(camera_->getLookTo(), space);
+            } else {
+                return convert(vec3{0.0f}, referenceSpace_, space);
+            }
+        case CoordinateOffset::Custom:
+            return convert(coordinateOffset_, referenceSpace_, space);
         default:
-            position_.set(worldSpacePos);
+            return convert(vec3{0.0f}, referenceSpace_, space);
     }
 }
 
-void PositionProperty::serialize(Serializer& s) const {
-    CompositeProperty::serialize(s);
-    if (this->serializationMode_ == PropertySerializationMode::None) return;
-    s.serialize("positionWorldSpace", positionWorldSpace_);
+CoordinateSpace PositionProperty::getCoordinateSpace() const { return referenceSpace_; }
+
+vec3 PositionProperty::getDirection(CoordinateSpace space) const {
+    const vec3 v = get(space) - getOffset(space);
+    return glm::normalize(v);
+}
+
+vec3 PositionProperty::convert(const vec3& pos, CoordinateSpace sourceSpace,
+                               CoordinateSpace targetSpace) const {
+    if (sourceSpace == targetSpace) {
+        return pos;
+    }
+    return convertFromWorld(convertToWorld(pos, sourceSpace), targetSpace);
+}
+
+vec3 PositionProperty::convertFromWorld(const vec3& pos, CoordinateSpace targetSpace) const {
+    if (!camera_) {
+        return pos;
+    }
+    SpatialIdentity identity;
+    SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
+    return transformer.transformPosition(pos, CoordinateSpace::World, targetSpace);
+}
+
+vec3 PositionProperty::convertToWorld(const vec3& pos, CoordinateSpace sourceSpace) const {
+    if (!camera_) {
+        return pos;
+    }
+    SpatialIdentity identity;
+    SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
+    return transformer.transformPosition(pos, sourceSpace, CoordinateSpace::World);
+}
+
+void PositionProperty::setPositionSemantics(PropertySemantics semantics) {
+    position_.setSemantics(semantics);
 }
 
 void PositionProperty::deserialize(Deserializer& d) {
+    previousReferenceSpace_.reset();
     CompositeProperty::deserialize(d);
-    d.deserialize("positionWorldSpace", positionWorldSpace_);
-
-    // After deserialization, we restore position_ from positionWorldSpace_
-    set(positionWorldSpace_);
+    previousReferenceSpace_ = referenceSpace_;
 }
 
-void PositionProperty::referenceFrameChanged() { set(positionWorldSpace_); }
-
-void PositionProperty::positionChanged() {
-    if (camera_ && static_cast<Space>(referenceFrame_.getSelectedValue()) == Space::VIEW)
-        positionWorldSpace_ = vec3(camera_->inverseViewMatrix() * vec4(position_.get(), 1.0f));
-    else
-        positionWorldSpace_ = position_.get();
-}
-
-void PositionProperty::cameraChanged() {
-    // If the camera changes and the position is in view space, we update the position
-    // given the currently known world space position. We disable the invalidation since
-    // the position (in world space) does not really change
-    if (static_cast<Space>(referenceFrame_.getSelectedValue()) == Space::VIEW) {
-        position_.setInvalidationLevel(InvalidationLevel::Valid);
-        position_.set(vec3(camera_->viewMatrix() * vec4(positionWorldSpace_, 1.0f)));
-        position_.setInvalidationLevel(InvalidationLevel::InvalidOutput);
+void PositionProperty::invalidateOutputProperties() {
+    for (auto& p : util::ref<Property>(worldPos_, viewPos_, clipPos_, screenPos_)) {
+        p.get().propertyModified();
     }
+}
+
+void PositionProperty::referenceSpaceChanged() {
+    NetworkLock lock(this);
+    if (previousReferenceSpace_.has_value()) {
+        position_.set(convert(position_, *previousReferenceSpace_, referenceSpace_));
+    } else {
+        invalidateOutputProperties();
+    }
+    previousReferenceSpace_ = referenceSpace_;
 }
 
 }  // namespace inviwo

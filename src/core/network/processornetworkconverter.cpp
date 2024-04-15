@@ -102,7 +102,10 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             [[fallthrough]];
         case 19:
             updateFileMode(root);
-            return true;  // Changes has been made.
+            [[fallthrough]];
+        case 20:
+            updatePositionProperties(root);
+            return true;  // Changes have been made.
         default:
             return false;  // No changes
     }
@@ -865,6 +868,25 @@ void ProcessorNetworkConverter::updateFileMode(TxElement* node) {
     xml::visitMatchingNodesRecursive(
         node, {{"Property", {}}, {"fileMode", {{"content", "4"}}}},
         [](TxElement* matchingNode) { matchingNode->SetAttribute("content", "2"); });
+}
+
+void ProcessorNetworkConverter::updatePositionProperties(TxElement* node) {
+    xml::visitMatchingNodesRecursive(
+        node, {"Property", {{"type", "org.inviwo.SimpleLightingProperty"}}}, [&](TxElement* prop) {
+            if (auto lightPosition =
+                    xml::getElement(prop, "Properties/Property&identifier=lightPosition")) {
+
+                auto pos = lightPosition->Clone();
+                TxElement propNode{"Properties"};
+                propNode.InsertEndChild(*pos);
+
+                lightPosition->SetAttribute("type", "org.inviwo.PositionProperty");
+                lightPosition->InsertEndChild(propNode);
+                if (auto semantics = xml::getElement(lightPosition, "semantics")) {
+                    lightPosition->RemoveChild(semantics);
+                }
+            }
+        });
 }
 
 }  // namespace inviwo
