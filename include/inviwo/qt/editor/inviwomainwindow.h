@@ -275,6 +275,7 @@ private:
     TCLAP::SwitchArg updateExampleWorkspaces_;
     TCLAP::SwitchArg updateRegressionWorkspaces_;
     TCLAP::ValueArg<std::string> updateWorkspacesInPath_;
+    TCLAP::SwitchArg resetWindowState_;
 
     UndoManager undoManager_;
 
