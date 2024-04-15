@@ -96,7 +96,6 @@ $(function(){initNavTree('classinviwo_1_1PositionProperty.html',''); initResizab
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classinviwo_1_1PositionProperty-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::PositionProperty Class Reference<div class="ingroups"><a class="el" href="group__properties.html">Properties</a></div></div></div>
@@ -136,10 +135,15 @@ $(function(){initNavTree('classinviwo_1_1PositionProperty.html',''); initResizab
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ac3ea872a7b7a56f79c2f56dac3f91232" id="r_ac3ea872a7b7a56f79c2f56dac3f91232"><td class="memItemLeft" align="right" valign="top"><a id="ac3ea872a7b7a56f79c2f56dac3f91232" name="ac3ea872a7b7a56f79c2f56dac3f91232"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Space</b> : int { <b>WORLD</b>
-, <b>VIEW</b>
+<tr class="memitem:ac6056cd6dbd382f44f82f89693487478" id="r_ac6056cd6dbd382f44f82f89693487478"><td class="memItemLeft" align="right" valign="top"><a id="ac6056cd6dbd382f44f82f89693487478" name="ac6056cd6dbd382f44f82f89693487478"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>CoordinateOffset</b> { <b>None</b>
+, <b>CameraLookAt</b>
+, <b>Custom</b>
  }</td></tr>
-<tr class="separator:ac3ea872a7b7a56f79c2f56dac3f91232"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:ac6056cd6dbd382f44f82f89693487478"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a605528ea5f90525c2de7812cd6e608f6" id="r_a605528ea5f90525c2de7812cd6e608f6"><td class="memItemLeft" align="right" valign="top"><a id="a605528ea5f90525c2de7812cd6e608f6" name="a605528ea5f90525c2de7812cd6e608f6"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>ApplyOffset</b> { <b>No</b>
+, <b>Yes</b>
+ }</td></tr>
+<tr class="separator:a605528ea5f90525c2de7812cd6e608f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_types_classinviwo_1_1CompositeProperty"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classinviwo_1_1CompositeProperty')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classinviwo_1_1CompositeProperty.html">inviwo::CompositeProperty</a></td></tr>
 <tr class="memitem:af969c54600194d9bf10655ffdf61c723 inherit pub_types_classinviwo_1_1CompositeProperty" id="r_af969c54600194d9bf10655ffdf61c723"><td class="memItemLeft" align="right" valign="top"><a id="af969c54600194d9bf10655ffdf61c723" name="af969c54600194d9bf10655ffdf61c723"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>CollapseAction</b> { <b>Collapse</b>
 , <b>Expand</b>
@@ -163,25 +167,32 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a265bc40dde0dbb7494e49f7be5e70406" id="r_a265bc40dde0dbb7494e49f7be5e70406"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a265bc40dde0dbb7494e49f7be5e70406">getClassIdentifier</a> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
 <tr class="separator:a265bc40dde0dbb7494e49f7be5e70406"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae01fb12050c9e2de5d42c2490cbda323" id="r_ae01fb12050c9e2de5d42c2490cbda323"><td class="memItemLeft" align="right" valign="top"><a id="ae01fb12050c9e2de5d42c2490cbda323" name="ae01fb12050c9e2de5d42c2490cbda323"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>PositionProperty</b> (std::string_view identifier, std::string_view displayName, <a class="el" href="classinviwo_1_1Document.html">Document</a> help, <a class="el" href="classinviwo_1_1OrdinalProperty.html">FloatVec3Property</a> position=<a class="el" href="classinviwo_1_1OrdinalProperty.html">FloatVec3Property</a>(&quot;position&quot;, &quot;Position&quot;, vec3(0.0f, 0.0f, 0.0f), vec3(-10, -10, -10), vec3(10, 10, 10)), <a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> *camera=<a class="el" href="classinviwo_1_1TypedMesh.html">nullptr</a>, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a>=InvalidationLevel::InvalidResources, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
-<tr class="separator:ae01fb12050c9e2de5d42c2490cbda323"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6c07ca56515a5bb363c3bcbf5b2f2fb" id="r_af6c07ca56515a5bb363c3bcbf5b2f2fb"><td class="memItemLeft" align="right" valign="top"><a id="af6c07ca56515a5bb363c3bcbf5b2f2fb" name="af6c07ca56515a5bb363c3bcbf5b2f2fb"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>PositionProperty</b> (std::string_view identifier, std::string_view displayName, <a class="el" href="classinviwo_1_1OrdinalProperty.html">FloatVec3Property</a> position=<a class="el" href="classinviwo_1_1OrdinalProperty.html">FloatVec3Property</a>(&quot;position&quot;, &quot;Position&quot;, vec3(0.0f, 0.0f, 0.0f), vec3(-10, -10, -10), vec3(10, 10, 10)), <a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> *camera=<a class="el" href="classinviwo_1_1TypedMesh.html">nullptr</a>, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a>=InvalidationLevel::InvalidResources, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
-<tr class="separator:af6c07ca56515a5bb363c3bcbf5b2f2fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a248a0fa056846b3ec60394fc00969ac2" id="r_a248a0fa056846b3ec60394fc00969ac2"><td class="memItemLeft" align="right" valign="top"><a id="a248a0fa056846b3ec60394fc00969ac2" name="a248a0fa056846b3ec60394fc00969ac2"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>PositionProperty</b> (std::string_view identifier, std::string_view displayName, <a class="el" href="classinviwo_1_1Document.html">Document</a> help, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;position=vec3{0.0f}, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> <a class="el" href="classinviwo_1_1TypedMesh.html">coordinateSpace</a>=CoordinateSpace::World, <a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> *camera=<a class="el" href="classinviwo_1_1TypedMesh.html">nullptr</a>, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> <a class="el" href="classinviwo_1_1TypedMesh.html">positionSemantics</a>=PropertySemantics::Default, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a>=InvalidationLevel::InvalidResources)</td></tr>
+<tr class="separator:a248a0fa056846b3ec60394fc00969ac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a429e7e7e1d69b1f5a39caf5167fdf2fe" id="r_a429e7e7e1d69b1f5a39caf5167fdf2fe"><td class="memItemLeft" align="right" valign="top"><a id="a429e7e7e1d69b1f5a39caf5167fdf2fe" name="a429e7e7e1d69b1f5a39caf5167fdf2fe"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>PositionProperty</b> (std::string_view identifier, std::string_view displayName, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;position=vec3{0.0f}, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> <a class="el" href="classinviwo_1_1TypedMesh.html">coordinateSpace</a>=CoordinateSpace::World, <a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> *camera=<a class="el" href="classinviwo_1_1TypedMesh.html">nullptr</a>, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> <a class="el" href="classinviwo_1_1TypedMesh.html">positionSemantics</a>=PropertySemantics::Default, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a>=InvalidationLevel::InvalidResources)</td></tr>
+<tr class="separator:a429e7e7e1d69b1f5a39caf5167fdf2fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a410c25ee30cb344d8793ed07eb6693c5" id="r_a410c25ee30cb344d8793ed07eb6693c5"><td class="memItemLeft" align="right" valign="top"><a id="a410c25ee30cb344d8793ed07eb6693c5" name="a410c25ee30cb344d8793ed07eb6693c5"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>PositionProperty</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1PositionProperty.html">PositionProperty</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)</td></tr>
 <tr class="separator:a410c25ee30cb344d8793ed07eb6693c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a960d4eac8c4bf3ab1ceadab5aab7b7f3" id="r_a960d4eac8c4bf3ab1ceadab5aab7b7f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1PositionProperty.html">PositionProperty</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a960d4eac8c4bf3ab1ceadab5aab7b7f3">clone</a> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
 <tr class="separator:a960d4eac8c4bf3ab1ceadab5aab7b7f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7559e494d6be158bf0d77d9b676c7d7" id="r_af7559e494d6be158bf0d77d9b676c7d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af7559e494d6be158bf0d77d9b676c7d7">get</a> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="memdesc:af7559e494d6be158bf0d77d9b676c7d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get position in world space.  <br /></td></tr>
-<tr class="separator:af7559e494d6be158bf0d77d9b676c7d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e877bde4f0a94f7d2af593f173eff1c" id="r_a9e877bde4f0a94f7d2af593f173eff1c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e877bde4f0a94f7d2af593f173eff1c">set</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">worldSpacePos</a>)</td></tr>
-<tr class="memdesc:a9e877bde4f0a94f7d2af593f173eff1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set coordinate in world space.  <br /></td></tr>
-<tr class="separator:a9e877bde4f0a94f7d2af593f173eff1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78c88c9a0b69b670b158b48c6ccec25f" id="r_a78c88c9a0b69b670b158b48c6ccec25f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a78c88c9a0b69b670b158b48c6ccec25f">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">s</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
-<tr class="separator:a78c88c9a0b69b670b158b48c6ccec25f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fd8428eef4be23cb826a0717f0cbacc" id="r_a7fd8428eef4be23cb826a0717f0cbacc"><td class="memItemLeft" align="right" valign="top">vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7fd8428eef4be23cb826a0717f0cbacc">get</a> (<a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>=CoordinateSpace::World) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a7fd8428eef4be23cb826a0717f0cbacc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa03c07aba9c351324d45afc15405f1d6" id="r_aa03c07aba9c351324d45afc15405f1d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa03c07aba9c351324d45afc15405f1d6">set</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>, ApplyOffset <a class="el" href="classinviwo_1_1TypedMesh.html">applyOffset</a>=ApplyOffset::No)</td></tr>
+<tr class="separator:aa03c07aba9c351324d45afc15405f1d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06b8ec0b92f96688e882d426a2d1c2e8" id="r_a06b8ec0b92f96688e882d426a2d1c2e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a06b8ec0b92f96688e882d426a2d1c2e8">updatePosition</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> <a class="el" href="classinviwo_1_1TypedMesh.html">sourceSpace</a>)</td></tr>
+<tr class="separator:a06b8ec0b92f96688e882d426a2d1c2e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a444a62b25bbf1e8d66f0191a3c301def" id="r_a444a62b25bbf1e8d66f0191a3c301def"><td class="memItemLeft" align="right" valign="top">vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a444a62b25bbf1e8d66f0191a3c301def">getOffset</a> (<a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a444a62b25bbf1e8d66f0191a3c301def"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1231d4b08551c69bedbd575706fe705b" id="r_a1231d4b08551c69bedbd575706fe705b"><td class="memItemLeft" align="right" valign="top"><a id="a1231d4b08551c69bedbd575706fe705b" name="a1231d4b08551c69bedbd575706fe705b"></a>
+<a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getCoordinateSpace</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a1231d4b08551c69bedbd575706fe705b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7719067b2d8d719e3b8c8a00bf9dac6a" id="r_a7719067b2d8d719e3b8c8a00bf9dac6a"><td class="memItemLeft" align="right" valign="top">vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7719067b2d8d719e3b8c8a00bf9dac6a">getDirection</a> (<a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> <a class="el" href="classinviwo_1_1TypedMesh.html">space</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a7719067b2d8d719e3b8c8a00bf9dac6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30bff98a7269e0b7c8527d0fac282402" id="r_a30bff98a7269e0b7c8527d0fac282402"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a30bff98a7269e0b7c8527d0fac282402">setPositionSemantics</a> (<a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics)</td></tr>
+<tr class="separator:a30bff98a7269e0b7c8527d0fac282402"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae2d3dd062cbf2f66f85038cc63e4480" id="r_aae2d3dd062cbf2f66f85038cc63e4480"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aae2d3dd062cbf2f66f85038cc63e4480">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">d</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
 <tr class="separator:aae2d3dd062cbf2f66f85038cc63e4480"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c125ccc65d07d1559c59e8e0ebb7f7a" id="r_a8c125ccc65d07d1559c59e8e0ebb7f7a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8c125ccc65d07d1559c59e8e0ebb7f7a">set</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Property.html">Property</a> *src) <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
@@ -248,6 +259,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2a08ae47c1464cddec0a932ba95da711 inherit pub_methods_classinviwo_1_1CompositeProperty" id="r_a2a08ae47c1464cddec0a932ba95da711"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CompositeProperty.html#a2a08ae47c1464cddec0a932ba95da711">accept</a> (<a class="el" href="classinviwo_1_1NetworkVisitor.html">NetworkVisitor</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">visitor</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
 <tr class="memdesc:a2a08ae47c1464cddec0a932ba95da711 inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept a <a class="el" href="classinviwo_1_1NetworkVisitor.html" title="Visitor pattern base for visiting an Inviwo ProcessorNetwork.">NetworkVisitor</a>, the visitor will visit this and then each <a class="el" href="classinviwo_1_1Property.html" title="A Property represents a parameter to a processor.">Property</a> of the <a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a> in an undefined order. The Visitor will then visit each Properties's properties and so on.  <br /></td></tr>
 <tr class="separator:a2a08ae47c1464cddec0a932ba95da711 inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbb2fda6fa72060acc28694c0b0bfca3 inherit pub_methods_classinviwo_1_1CompositeProperty" id="r_adbb2fda6fa72060acc28694c0b0bfca3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CompositeProperty.html#adbb2fda6fa72060acc28694c0b0bfca3">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">s</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
+<tr class="separator:adbb2fda6fa72060acc28694c0b0bfca3 inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Property"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Property')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Property.html">inviwo::Property</a></td></tr>
 <tr class="memitem:a71ce11e054cde83197b7115f14c373d6 inherit pub_methods_classinviwo_1_1Property" id="r_a71ce11e054cde83197b7115f14c373d6"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>Property</b> (std::string_view identifier=&quot;&quot;, std::string_view displayName=&quot;&quot;, <a class="el" href="classinviwo_1_1Document.html">Document</a> help={}, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidOutput, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default, ReadOnly readOnly=ReadOnly::No)</td></tr>
@@ -585,15 +598,6 @@ const_iterator&#160;</td><td class="memItemRight" valign="bottom"><b>cend</b> ()
 <tr class="memitem:a4abfbec3338d1ca97e9c1177337f824f inherit pub_methods_classinviwo_1_1Observable" id="r_a4abfbec3338d1ca97e9c1177337f824f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a4abfbec3338d1ca97e9c1177337f824f">stopBlockingNotifications</a> () <a class="el" href="classinviwo_1_1TypedMesh.html">override</a> <a class="el" href="classinviwo_1_1TypedMesh.html">final</a></td></tr>
 <tr class="separator:a4abfbec3338d1ca97e9c1177337f824f inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:a620be86b39fdcc70e56f52ef2c01daa0" id="r_a620be86b39fdcc70e56f52ef2c01daa0"><td class="memItemLeft" align="right" valign="top"><a id="a620be86b39fdcc70e56f52ef2c01daa0" name="a620be86b39fdcc70e56f52ef2c01daa0"></a>
-<a class="el" href="classinviwo_1_1OptionProperty.html">OptionPropertyInt</a>&#160;</td><td class="memItemRight" valign="bottom"><b>referenceFrame_</b></td></tr>
-<tr class="separator:a620be86b39fdcc70e56f52ef2c01daa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade612b4fc0f7a46342ade0df3cb8f8a3" id="r_ade612b4fc0f7a46342ade0df3cb8f8a3"><td class="memItemLeft" align="right" valign="top"><a id="ade612b4fc0f7a46342ade0df3cb8f8a3" name="ade612b4fc0f7a46342ade0df3cb8f8a3"></a>
-<a class="el" href="classinviwo_1_1OrdinalProperty.html">FloatVec3Property</a>&#160;</td><td class="memItemRight" valign="bottom"><b>position_</b></td></tr>
-<tr class="separator:ade612b4fc0f7a46342ade0df3cb8f8a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:a762b81b74a27daf20e931a20ab5d64a9" id="r_a762b81b74a27daf20e931a20ab5d64a9"><td class="memItemLeft" align="right" valign="top"><a id="a762b81b74a27daf20e931a20ab5d64a9" name="a762b81b74a27daf20e931a20ab5d64a9"></a>
@@ -752,23 +756,27 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
 
 </div>
 </div>
-<a id="af7559e494d6be158bf0d77d9b676c7d7" name="af7559e494d6be158bf0d77d9b676c7d7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af7559e494d6be158bf0d77d9b676c7d7">&#9670;&#160;</a></span>get()</h2>
+<a id="a7fd8428eef4be23cb826a0717f0cbacc" name="a7fd8428eef4be23cb826a0717f0cbacc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fd8428eef4be23cb826a0717f0cbacc">&#9670;&#160;</a></span>get()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp; inviwo::PositionProperty::get </td>
+          <td class="memname">vec3 inviwo::PositionProperty::get </td>
           <td>(</td>
-          <td class="paramname"><span class="paramname"></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a></td>          <td class="paramname"><span class="paramname"><em>space</em><span class="paramdefsep"> = </span><span class="paramdefval">CoordinateSpace::World</span></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Get position in world space. </p>
-<dl class="section return"><dt>Returns</dt><dd>vec3 World space position. </dd></dl>
+<p>Get the current position in the given coordinate space <code>space</code>. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">space</td><td>coordinate system of the returned position </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>position in <code>space</code> </dd></dl>
 
 </div>
 </div>
@@ -799,30 +807,45 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
 
 </div>
 </div>
-<a id="a78c88c9a0b69b670b158b48c6ccec25f" name="a78c88c9a0b69b670b158b48c6ccec25f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a78c88c9a0b69b670b158b48c6ccec25f">&#9670;&#160;</a></span>serialize()</h2>
+<a id="a7719067b2d8d719e3b8c8a00bf9dac6a" name="a7719067b2d8d719e3b8c8a00bf9dac6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7719067b2d8d719e3b8c8a00bf9dac6a">&#9670;&#160;</a></span>getDirection()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a> inviwo::PositionProperty::serialize </td>
+          <td class="memname">vec3 inviwo::PositionProperty::getDirection </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>s</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a></td>          <td class="paramname"><span class="paramname"><em>space</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
+<p>Determines the normalized direction from offset to the current position, that is <code>pos - offset</code>, in the given coordinate space <code>space</code>. </p><dl class="section return"><dt>Returns</dt><dd>normalized, directional vector in <code>space</code> coordinates </dd></dl>
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1CompositeProperty.html">inviwo::CompositeProperty</a>.</p>
+</div>
+</div>
+<a id="a444a62b25bbf1e8d66f0191a3c301def" name="a444a62b25bbf1e8d66f0191a3c301def"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a444a62b25bbf1e8d66f0191a3c301def">&#9670;&#160;</a></span>getOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vec3 inviwo::PositionProperty::getOffset </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a></td>          <td class="paramname"><span class="paramname"><em>space</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the offset currently applied to the position in the given coordinate space <code>space</code>. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">space</td><td>coordinate system of the returned offset </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>offset in <code>space</code> </dd></dl>
 
 </div>
 </div>
@@ -854,8 +877,8 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
 
 </div>
 </div>
-<a id="a9e877bde4f0a94f7d2af593f173eff1c" name="a9e877bde4f0a94f7d2af593f173eff1c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9e877bde4f0a94f7d2af593f173eff1c">&#9670;&#160;</a></span>set() <span class="overload">[2/2]</span></h2>
+<a id="aa03c07aba9c351324d45afc15405f1d6" name="aa03c07aba9c351324d45afc15405f1d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa03c07aba9c351324d45afc15405f1d6">&#9670;&#160;</a></span>set() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -863,16 +886,71 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
         <tr>
           <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a> inviwo::PositionProperty::set </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>worldSpacePos</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a></td>          <td class="paramname"><span class="paramname"><em>space</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ApplyOffset</td>          <td class="paramname"><span class="paramname"><em>applyOffset</em><span class="paramdefsep"> = </span><span class="paramdefval">ApplyOffset::No</span></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set both position <code>pos</code> given in the coordinate space <code>space</code> and the coordinate space. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pos</td><td>position in <code>space</code> coordinates </td></tr>
+    <tr><td class="paramname">space</td><td>reference coordinate system of <code>pos</code> </td></tr>
+    <tr><td class="paramname">applyOffset</td><td>determines whether the current offset is applied to <code>pos</code> or <code>pos</code> is considered absolute </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a30bff98a7269e0b7c8527d0fac282402" name="a30bff98a7269e0b7c8527d0fac282402"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30bff98a7269e0b7c8527d0fac282402">&#9670;&#160;</a></span>setPositionSemantics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a> inviwo::PositionProperty::setPositionSemantics </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a></td>          <td class="paramname"><span class="paramname"><em>semantics</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Set the property semantics of the position property to <code>semantics</code> </p>
 
-<p>Set coordinate in world space. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+</div>
+</div>
+<a id="a06b8ec0b92f96688e882d426a2d1c2e8" name="a06b8ec0b92f96688e882d426a2d1c2e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06b8ec0b92f96688e882d426a2d1c2e8">&#9670;&#160;</a></span>updatePosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a> inviwo::PositionProperty::updatePosition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a></td>          <td class="paramname"><span class="paramname"><em>sourceSpace</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Update the position given <code>pos</code> in coordinate space <code>sourceSpace</code>. The position will be transformed from <code>sourceSpace</code> to the currently set reference coordinate space of the property. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">worldSpacePos</td><td>Position in world space. </td></tr>
+    <tr><td class="paramname">pos</td><td>position in <code>space</code> coordinates </td></tr>
+    <tr><td class="paramname">sourceSpace</td><td>coordinate space of <code>pos</code> </td></tr>
   </table>
   </dd>
 </dl>

@@ -17,9 +17,12 @@ var searchData=
   ['tovector_14',['toVector',['../classinviwo_1_1BitSet.html#aac535e3fef3945d45afbe9eb8e200d2f',1,'inviwo::BitSet']]],
   ['towstring_15',['toWstring',['../namespaceinviwo_1_1util.html#ac562f60680204dda73a7d29d9c9ddb24',1,'inviwo::util']]],
   ['trackball_16',['Trackball',['../classinviwo_1_1Trackball.html#a479cfd8accd782b387a1c4fc23a88997',1,'inviwo::Trackball']]],
-  ['triggeraction_17',['triggerAction',['../classinviwo_1_1glui_1_1Element.html#a8e02d83395898ee8f9c561463b1250ec',1,'inviwo::glui::Element']]],
-  ['trim_18',['trim',['../namespaceinviwo_1_1util.html#aeb3562b94700f15c08e99b826745258a',1,'inviwo::util']]],
-  ['tripledispatch_19',['tripleDispatch',['../namespaceinviwo_1_1dispatching.html#ad62b9b33e37d1ad85aab5a936bd3b29d',1,'inviwo::dispatching']]],
-  ['trysetproperty_20',['trySetProperty',['../namespaceinviwo_1_1util.html#a9bb4e1d0a952f2a8216385f68ac32178',1,'inviwo::util']]],
-  ['typedlayersubset_21',['typedLayerSubSet',['../namespaceinviwo_1_1util.html#a11440c1b6dc927f82d4ff5fd673d2ea9',1,'inviwo::util']]]
+  ['transformnormal_17',['transformNormal',['../classinviwo_1_1SpatialCoordinateTransformer.html#a26e9398c87df3cb23eba881af89ca5c6',1,'inviwo::SpatialCoordinateTransformer']]],
+  ['transformposition_18',['transformPosition',['../classinviwo_1_1SpatialCoordinateTransformer.html#a541d5f2a2077016727e05a789e8190d6',1,'inviwo::SpatialCoordinateTransformer']]],
+  ['transformpositionhomogeneous_19',['transformPositionHomogeneous',['../classinviwo_1_1SpatialCoordinateTransformer.html#a57b586843c79f3e08bc86883d26fae56',1,'inviwo::SpatialCoordinateTransformer']]],
+  ['triggeraction_20',['triggerAction',['../classinviwo_1_1glui_1_1Element.html#a8e02d83395898ee8f9c561463b1250ec',1,'inviwo::glui::Element']]],
+  ['trim_21',['trim',['../namespaceinviwo_1_1util.html#aeb3562b94700f15c08e99b826745258a',1,'inviwo::util']]],
+  ['tripledispatch_22',['tripleDispatch',['../namespaceinviwo_1_1dispatching.html#ad62b9b33e37d1ad85aab5a936bd3b29d',1,'inviwo::dispatching']]],
+  ['trysetproperty_23',['trySetProperty',['../namespaceinviwo_1_1util.html#a9bb4e1d0a952f2a8216385f68ac32178',1,'inviwo::util']]],
+  ['typedlayersubset_24',['typedLayerSubSet',['../namespaceinviwo_1_1util.html#a11440c1b6dc927f82d4ff5fd673d2ea9',1,'inviwo::util']]]
 ];

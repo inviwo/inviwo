@@ -1346,6 +1346,8 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LightComponent.html">LightComponent</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1LightingConfig.html">LightingConfig</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LightingRaycaster.html">LightingRaycaster</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1LightingState.html">LightingState</a></td></tr>
@@ -2334,6 +2336,8 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A convenience class to generate transformation matrices between the different coordinate systems in use.  <a href="classinviwo_1_1SpatialEntity.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1SpatialIdentity.html">SpatialIdentity</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1SpatialSampler.html">SpatialSampler</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3978,10 +3982,10 @@ Enumerations</h2></td></tr>
 <br />
  }</td></tr>
 <tr class="separator:a22db4347a4407d2b62f0efeb81a90133"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaffaf5e4b97bda35b63c747ba5bff43a" id="r_aaffaf5e4b97bda35b63c747ba5bff43a"><td class="memItemLeft" align="right" valign="top"><a id="aaffaf5e4b97bda35b63c747ba5bff43a" name="aaffaf5e4b97bda35b63c747ba5bff43a"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>LightSourceType</b> { <b>area</b> = 0
-, <b>cone</b>
-, <b>point</b>
-, <b>directional</b>
+<tr class="memitem:aaffaf5e4b97bda35b63c747ba5bff43a" id="r_aaffaf5e4b97bda35b63c747ba5bff43a"><td class="memItemLeft" align="right" valign="top"><a id="aaffaf5e4b97bda35b63c747ba5bff43a" name="aaffaf5e4b97bda35b63c747ba5bff43a"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>LightSourceType</b> { <b>Area</b> = 0
+, <b>SpotLight</b>
+, <b>Point</b>
+, <b>Directional</b>
  }</td></tr>
 <tr class="separator:aaffaf5e4b97bda35b63c747ba5bff43a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a885c442799d2b171aa1be3a25b9e2bc8" id="r_a885c442799d2b171aa1be3a25b9e2bc8"><td class="memItemLeft" align="right" valign="top"><a id="a885c442799d2b171aa1be3a25b9e2bc8" name="a885c442799d2b171aa1be3a25b9e2bc8"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>ShadingMode</b> : int { <br />
@@ -4770,9 +4774,21 @@ template&lt;<a class="el" href="classinviwo_1_1TypedMesh.html">size_t</a> N&gt; 
 <tr class="memitem:a6376157a59b8aec497253bb1ec056607" id="r_a6376157a59b8aec497253bb1ec056607"><td class="memItemLeft" align="right" valign="top"><a id="a6376157a59b8aec497253bb1ec056607" name="a6376157a59b8aec497253bb1ec056607"></a>
 IVW_CORE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createLayerRAM</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1LayerReprConfig.html">LayerReprConfig</a> &amp;config)</td></tr>
 <tr class="separator:a6376157a59b8aec497253bb1ec056607"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefbd77f377d5871110af421ffc1943bc" id="r_aefbd77f377d5871110af421ffc1943bc"><td class="memItemLeft" align="right" valign="top"><a id="aefbd77f377d5871110af421ffc1943bc" name="aefbd77f377d5871110af421ffc1943bc"></a>
+IVW_CORE_API std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>enumToStr</b> (LightSourceType <a class="el" href="classinviwo_1_1TypedMesh.html">lt</a>)</td></tr>
+<tr class="separator:aefbd77f377d5871110af421ffc1943bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec91e0cf0ebf74c2f667c12f7f2f441b" id="r_aec91e0cf0ebf74c2f667c12f7f2f441b"><td class="memItemLeft" align="right" valign="top"><a id="aec91e0cf0ebf74c2f667c12f7f2f441b" name="aec91e0cf0ebf74c2f667c12f7f2f441b"></a>
+IVW_CORE_API std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">ss</a>, LightSourceType <a class="el" href="classinviwo_1_1TypedMesh.html">lt</a>)</td></tr>
+<tr class="separator:aec91e0cf0ebf74c2f667c12f7f2f441b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a739215c2443025e10bd3f7b4a27d85e5" id="r_a739215c2443025e10bd3f7b4a27d85e5"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a739215c2443025e10bd3f7b4a27d85e5">getLightTransformationMatrix</a> (vec3 pos, vec3 dir)</td></tr>
 <tr class="memdesc:a739215c2443025e10bd3f7b4a27d85e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes the position and direction in a matrix.  <br /></td></tr>
 <tr class="separator:a739215c2443025e10bd3f7b4a27d85e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad29346d88205091b4045b476d4b36ce2" id="r_ad29346d88205091b4045b476d4b36ce2"><td class="memItemLeft" align="right" valign="top"><a id="ad29346d88205091b4045b476d4b36ce2" name="ad29346d88205091b4045b476d4b36ce2"></a>
+IVW_CORE_API std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>enumToStr</b> (ShadingMode <a class="el" href="classinviwo_1_1TypedMesh.html">sm</a>)</td></tr>
+<tr class="separator:ad29346d88205091b4045b476d4b36ce2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d95344d5ebbfdcc95de8ff5b618e8a8" id="r_a4d95344d5ebbfdcc95de8ff5b618e8a8"><td class="memItemLeft" align="right" valign="top"><a id="a4d95344d5ebbfdcc95de8ff5b618e8a8" name="a4d95344d5ebbfdcc95de8ff5b618e8a8"></a>
+IVW_CORE_API std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">ss</a>, ShadingMode <a class="el" href="classinviwo_1_1TypedMesh.html">sm</a>)</td></tr>
+<tr class="separator:a4d95344d5ebbfdcc95de8ff5b618e8a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ae0929c8ec1a5f36e46bbe4811a6a77" id="r_a5ae0929c8ec1a5f36e46bbe4811a6a77"><td class="memItemLeft" align="right" valign="top"><a id="a5ae0929c8ec1a5f36e46bbe4811a6a77" name="a5ae0929c8ec1a5f36e46bbe4811a6a77"></a>
 IVW_CORE_API <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrimitiveData</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">lhs</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrimitiveData</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)</td></tr>
 <tr class="separator:a5ae0929c8ec1a5f36e46bbe4811a6a77"><td class="memSeparator" colspan="2">&#160;</td></tr>

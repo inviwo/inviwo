@@ -255,6 +255,7 @@ var namespaceinviwo_1_1util =
     [ "ordinalCount", "namespaceinviwo_1_1util.html#ae6c3c7230deaaaa556873e2684e4303f", null ],
     [ "ordinalLength", "namespaceinviwo_1_1util.html#aec0d6260ee968193442da41efb8fff79", null ],
     [ "ordinalRefColor", "namespaceinviwo_1_1util.html#a78fe508315d93a69417c6ee9614303d6", null ],
+    [ "ordinalRefSymmetricVector", "namespaceinviwo_1_1util.html#a6f57559577f5aec3ec856e38b2b4d58c", null ],
     [ "ordinalScale", "namespaceinviwo_1_1util.html#ae10672d3ce62a8142941c05a182ca335", null ],
     [ "ordinalSymmetricVector", "namespaceinviwo_1_1util.html#aa58b65316e88fa13b51e3f2a3093b066", null ],
     [ "parseTypeIdName", "namespaceinviwo_1_1util.html#a17cede42366cbed152e45d50fb16d062", null ],

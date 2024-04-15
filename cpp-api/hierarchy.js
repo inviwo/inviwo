@@ -1520,6 +1520,7 @@ var hierarchy =
       ] ]
     ] ],
     [ "inviwo::LicenseInfo", "classinviwo_1_1LicenseInfo.html", null ],
+    [ "inviwo::LightingConfig", "structinviwo_1_1LightingConfig.html", null ],
     [ "inviwo::LightingState", "structinviwo_1_1LightingState.html", null ],
     [ "inviwo::LineNumberResolver", "structinviwo_1_1LineNumberResolver.html", null ],
     [ "inviwo::algorithm::LineRenderer", "classinviwo_1_1algorithm_1_1LineRenderer.html", null ],
@@ -1677,6 +1678,7 @@ var hierarchy =
           [ "inviwo::OptionProperty< Location >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Positioning >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< ColoringMethod >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< CoordinateOffset >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< RenderingType >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Classification >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< CompositingType >", "classinviwo_1_1OptionProperty.html", null ],
@@ -2943,6 +2945,7 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< Location >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Positioning >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< ColoringMethod >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< CoordinateOffset >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< RenderingType >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Classification >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< CompositingType >", "classinviwo_1_1OptionPropertyOption.html", null ],
@@ -3195,6 +3198,7 @@ var hierarchy =
         [ "inviwo::SpotLight", "classinviwo_1_1SpotLight.html", null ]
       ] ],
       [ "inviwo::Mesh", "classinviwo_1_1Mesh.html", null ],
+      [ "inviwo::SpatialIdentity", "classinviwo_1_1SpatialIdentity.html", null ],
       [ "inviwo::StructuredGridEntity< N >", "classinviwo_1_1StructuredGridEntity.html", null ]
     ] ],
     [ "inviwo::SpatialSampler< ReturnType >", "classinviwo_1_1SpatialSampler.html", [

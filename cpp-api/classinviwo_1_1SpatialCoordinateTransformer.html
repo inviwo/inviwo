@@ -137,6 +137,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4addce4e16e56f465ef9924600004d9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b2b93e03f3ed49288d6c3572056414a" id="r_a1b2b93e03f3ed49288d6c3572056414a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b2b93e03f3ed49288d6c3572056414a">getWorldToDataMatrix</a> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> =0</td></tr>
 <tr class="separator:a1b2b93e03f3ed49288d6c3572056414a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a541d5f2a2077016727e05a789e8190d6" id="r_a541d5f2a2077016727e05a789e8190d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a541d5f2a2077016727e05a789e8190d6">transformPosition</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> <a class="el" href="classinviwo_1_1TypedMesh.html">from</a>, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> <a class="el" href="classinviwo_1_1TypedMesh.html">to</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a541d5f2a2077016727e05a789e8190d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57b586843c79f3e08bc86883d26fae56" id="r_a57b586843c79f3e08bc86883d26fae56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57b586843c79f3e08bc86883d26fae56">transformPositionHomogeneous</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec4 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> <a class="el" href="classinviwo_1_1TypedMesh.html">from</a>, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> <a class="el" href="classinviwo_1_1TypedMesh.html">to</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a57b586843c79f3e08bc86883d26fae56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26e9398c87df3cb23eba881af89ca5c6" id="r_a26e9398c87df3cb23eba881af89ca5c6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a26e9398c87df3cb23eba881af89ca5c6">transformNormal</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">normal</a>, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> <a class="el" href="classinviwo_1_1TypedMesh.html">from</a>, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> <a class="el" href="classinviwo_1_1TypedMesh.html">to</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a26e9398c87df3cb23eba881af89ca5c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -236,7 +242,7 @@ Protected Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Returns the matrix transformation mapping from "from" coordinates to "to" coordinates </p>
+<p>Returns the matrix transformation mapping from <code>from</code> coordinates to <code>to</code> coordinates </p>
 
 <p>Reimplemented in <a class="el" href="classinviwo_1_1StructuredCoordinateTransformer.html#a3e142ba85ad9ecc01953202e4a747628">inviwo::StructuredCoordinateTransformer</a>, <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformer.html#adab0692795077a8204e98c2dae13aaea">inviwo::SpatialCameraCoordinateTransformer</a>, and <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformer.html#ac7106182a8701621ad79c2f380cd2894">inviwo::StructuredCameraCoordinateTransformer</a>.</p>
 
@@ -351,6 +357,111 @@ Protected Member Functions</h2></td></tr>
 <p>Returns the matrix transformation mapping from world space coordinates to model space coordinates, i.e. from (-inf, inf) to (data min, data max) </p>
 
 <p>Implemented in <a class="el" href="classinviwo_1_1SpatialCoordinateTransformerImpl.html#a73b99d887dcfc44ee664ec73ffa40ac3">inviwo::SpatialCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1StructuredCoordinateTransformerImpl.html#aebf0c3d58f322206956d4caeb65fdd24">inviwo::StructuredCoordinateTransformerImpl&lt; N &gt;</a>, <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a7ebc27bce1582dd9ea360e08a5969f71">inviwo::SpatialCameraCoordinateTransformerImpl</a>, and <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ab61261462563635f2a6d8beb14c9c879">inviwo::StructuredCameraCoordinateTransformerImpl&lt; N &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a26e9398c87df3cb23eba881af89ca5c6" name="a26e9398c87df3cb23eba881af89ca5c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26e9398c87df3cb23eba881af89ca5c6">&#9670;&#160;</a></span>transformNormal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> glm::vec3 inviwo::SpatialCoordinateTransformer::transformNormal </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>normal</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a></td>          <td class="paramname"><span class="paramname"><em>from</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a></td>          <td class="paramname"><span class="paramname"><em>to</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Transforms the given <code>normal</code> from <code>from</code> coordinates to <code>to</code> coordinates. Only considers transformations between supported by this <a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html">SpatialCoordinateTransformer</a>. That is <a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> to Model, Model to World, <a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> to World and their inverse, camera or index coordinates are not supported. </p>
+
+</div>
+</div>
+<a id="a541d5f2a2077016727e05a789e8190d6" name="a541d5f2a2077016727e05a789e8190d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a541d5f2a2077016727e05a789e8190d6">&#9670;&#160;</a></span>transformPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> glm::vec3 inviwo::SpatialCoordinateTransformer::transformPosition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a></td>          <td class="paramname"><span class="paramname"><em>from</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a></td>          <td class="paramname"><span class="paramname"><em>to</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Transforms the given position <code>pos</code> from <code>from</code> coordinates to <code>to</code> coordinates. The resulting position is divided by w. </p>
+
+</div>
+</div>
+<a id="a57b586843c79f3e08bc86883d26fae56" name="a57b586843c79f3e08bc86883d26fae56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57b586843c79f3e08bc86883d26fae56">&#9670;&#160;</a></span>transformPositionHomogeneous()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> glm::vec4 inviwo::SpatialCoordinateTransformer::transformPositionHomogeneous </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec4 &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a></td>          <td class="paramname"><span class="paramname"><em>from</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a></td>          <td class="paramname"><span class="paramname"><em>to</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Transforms the given position <code>pos</code> from <code>from</code> coordinates to <code>to</code> coordinates using homogeneous coordinates </p>
 
 </div>
 </div>

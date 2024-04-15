@@ -768,6 +768,9 @@ IVW_CORE_API <a class="el" href="structinviwo_1_1OrdinalPropertyState.html">Ordi
 <tr class="separator:ae10672d3ce62a8142941c05a182ca335"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78fe508315d93a69417c6ee9614303d6" id="r_a78fe508315d93a69417c6ee9614303d6"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API <a class="el" href="structinviwo_1_1OrdinalRefPropertyState.html">OrdinalRefPropertyState</a>&lt; vec4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a78fe508315d93a69417c6ee9614303d6">ordinalRefColor</a> (<a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidOutput)</td></tr>
 <tr class="separator:a78fe508315d93a69417c6ee9614303d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f57559577f5aec3ec856e38b2b4d58c" id="r_a6f57559577f5aec3ec856e38b2b4d58c"><td class="memTemplParams" colspan="2">template&lt;typename T  = double, typename U  = T&gt; </td></tr>
+<tr class="memitem:a6f57559577f5aec3ec856e38b2b4d58c"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structinviwo_1_1OrdinalRefPropertyState.html">OrdinalRefPropertyState</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a6f57559577f5aec3ec856e38b2b4d58c">ordinalRefSymmetricVector</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> U &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">minMax</a>=U{100})</td></tr>
+<tr class="separator:a6f57559577f5aec3ec856e38b2b4d58c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47927175e2344c3b515b14d86e5c508e" id="r_a47927175e2344c3b515b14d86e5c508e"><td class="memTemplParams" colspan="2">template&lt;typename T , typename U &gt; </td></tr>
 <tr class="memitem:a47927175e2344c3b515b14d86e5c508e"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a47927175e2344c3b515b14d86e5c508e">updateDefaultState</a> (T &amp;property, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> U &amp;state, OverwriteState <a class="el" href="classinviwo_1_1TypedMesh.html">overwrite</a>)</td></tr>
 <tr class="separator:a47927175e2344c3b515b14d86e5c508e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -916,6 +919,14 @@ template&lt;typename T &gt; </td></tr>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a5743b44930aa236ce672a2a8d90075b5"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>almostEqual</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T &amp;x, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T &amp;y, <a class="el" href="classinviwo_1_1TypedMesh.html">int</a> <a class="el" href="classinviwo_1_1TypedMesh.html">ulp</a>=2)</td></tr>
 <tr class="separator:a5743b44930aa236ce672a2a8d90075b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60c1f79e8a30e77236196866d6aeb76b" id="r_a60c1f79e8a30e77236196866d6aeb76b"><td class="memTemplParams" colspan="2"><a id="a60c1f79e8a30e77236196866d6aeb76b" name="a60c1f79e8a30e77236196866d6aeb76b"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a60c1f79e8a30e77236196866d6aeb76b"><td class="memTemplItemLeft" align="right" valign="top">glm::vec&lt; 3, T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>transformPos</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> glm::mat&lt; 4, 4, T &gt; &amp;m, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> glm::vec&lt; 3, T &gt; &amp;pos)</td></tr>
+<tr class="separator:a60c1f79e8a30e77236196866d6aeb76b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6526ab9d0876b578cfdccf0b1db7cbdc" id="r_a6526ab9d0876b578cfdccf0b1db7cbdc"><td class="memTemplParams" colspan="2"><a id="a6526ab9d0876b578cfdccf0b1db7cbdc" name="a6526ab9d0876b578cfdccf0b1db7cbdc"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a6526ab9d0876b578cfdccf0b1db7cbdc"><td class="memTemplItemLeft" align="right" valign="top">glm::vec&lt; 3, T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>transformNormal</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> glm::mat&lt; 4, 4, T &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">modelViewMatrix</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> glm::vec&lt; 3, T &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">normal</a>)</td></tr>
+<tr class="separator:a6526ab9d0876b578cfdccf0b1db7cbdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad141644d95fac699b26e542dd8e9a06a" id="r_ad141644d95fac699b26e542dd8e9a06a"><td class="memTemplParams" colspan="2"><a id="ad141644d95fac699b26e542dd8e9a06a" name="ad141644d95fac699b26e542dd8e9a06a"></a>
 template&lt;typename T , typename std::enable_if&lt; <a class="el" href="structinviwo_1_1util_1_1rank.html">util::rank</a>&lt; T &gt;::value==0, <a class="el" href="classinviwo_1_1TypedMesh.html">int</a> &gt;::type  = 0&gt; </td></tr>
 <tr class="memitem:ad141644d95fac699b26e542dd8e9a06a"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">constexpr</a> <a class="el" href="classinviwo_1_1TypedMesh.html">auto</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>glmcomp</b> (T &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">elem</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">size_t</a>) -&gt; T &amp;</td></tr>
@@ -6519,6 +6530,32 @@ template&lt;typename T  = double, typename U  = T&gt; </div>
 <div class="line">     InvalidationLevel::InvalidOutput, PropertySemantics::Color)</div>
 </div><!-- fragment --><p> by using the helper function most of the boilerplate can be removed: </p><div class="fragment"><div class="line">color{<span class="stringliteral">&quot;cubeColor&quot;</span>, <span class="stringliteral">&quot;Cube Color&quot;</span>, <a class="code hl_function" href="#ada3f90c8cfa64a0898b021cca551de05">util::ordinalColor</a>()}</div>
 </div><!-- fragment --> 
+</div>
+</div>
+<a id="a6f57559577f5aec3ec856e38b2b4d58c" name="a6f57559577f5aec3ec856e38b2b4d58c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f57559577f5aec3ec856e38b2b4d58c">&#9670;&#160;</a></span>ordinalRefSymmetricVector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T  = double, typename U  = T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structinviwo_1_1OrdinalRefPropertyState.html">OrdinalRefPropertyState</a>&lt; T &gt; inviwo::util::ordinalRefSymmetricVector </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> U &amp;</td>          <td class="paramname"><span class="paramname"><em>minMax</em><span class="paramdefsep"> = </span><span class="paramdefval">U{100}</span></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>A factory function for configuring a <a class="el" href="classinviwo_1_1OrdinalRefProperty.html">OrdinalRefProperty</a> representing a generic vector, with a symmetric range around zero, and Ignored boundary constraints. The invalidation level defaults to InvalidOutput, and the property semantics to SpinBox. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>the default value for the property </td></tr>
+    <tr><td class="paramname">minMax</td><td>used to construct the range of the property like min = T{-minMax}, max = T{minMax}. The constraint behavior will be Ignore. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="ae10672d3ce62a8142941c05a182ca335" name="ae10672d3ce62a8142941c05a182ca335"></a>

@@ -422,10 +422,6 @@ var group__processors =
       [ "initializeResources", "classinviwo_1_1SSAO.html#a5c064716bebc60b676f028f2737d87ac", null ],
       [ "process", "classinviwo_1_1SSAO.html#aa5ffd58f317ea3d3dd5e0c4856569eb6", null ]
     ] ],
-    [ "inviwo::CameraWidget", "classinviwo_1_1CameraWidget.html", [
-      [ "initializeResources", "classinviwo_1_1CameraWidget.html#a6cb5058686ea119e4370536234b4f700", null ],
-      [ "process", "classinviwo_1_1CameraWidget.html#a62a6d798f9696665bc020cfd06fb5565", null ]
-    ] ],
     [ "inviwo::GLUITestProcessor", "classinviwo_1_1GLUITestProcessor.html", [
       [ "process", "classinviwo_1_1GLUITestProcessor.html#ae411a05292457f257f9517b50bc1cdcb", null ]
     ] ],
