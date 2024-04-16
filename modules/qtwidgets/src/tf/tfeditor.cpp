@@ -181,8 +181,8 @@ void TFEditor::onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) {
         updateConnections();
     }
 }
-void TFEditor::onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) {}
-void TFEditor::onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) {}
+void TFEditor::onTFPrimitiveChanged(const TFPrimitiveSet&, const TFPrimitive&) {}
+void TFEditor::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) {}
 
 void TFEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
     if (e->button() == Qt::LeftButton) {
@@ -807,7 +807,7 @@ bool TFEditor::handleGroupSelection(QKeyEvent* event) {
     const quint32 nativeKey = event->nativeVirtualKey();
 #endif
 
-    const auto* const it =
+    const auto it =
         std::ranges::find_if(nativeKeyMap, [&](auto& p) { return p.first == nativeKey; });
     if (it == nativeKeyMap.end()) {
         return false;
