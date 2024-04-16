@@ -55,11 +55,11 @@ TFEditorIsovalue::TFEditorIsovalue(TFPrimitive& primitive) : TFEditorPrimitive(p
 }
 
 QRectF TFEditorIsovalue::boundingRect() const {
-    double bBoxSize = getSize() + 5.0;  //<! consider size of pen
+    const double bBoxSize = getSize() + 5.0;  //<! consider size of pen
     auto bRect = QRectF(-bBoxSize / 2.0, -bBoxSize / 2.0, bBoxSize, bBoxSize);
 
     // add box of vertical line
-    auto view = scene()->views().front();
+    auto* view = scene()->views().front();
     auto trans = deviceTransform(view->viewportTransform()).inverted();
 
     const auto top = trans.map(view->rect().topLeft()).y();
@@ -84,12 +84,12 @@ void TFEditorIsovalue::paint(QPainter* painter,
 
     {
         // draw vertical line
-        utilqt::Save saved{painter};
+        const utilqt::Save saved{painter};
         painter->setPen(
             utilqt::cosmeticPen(QColor(64, 64, 64, 255), 2.0, Qt::DashLine, Qt::RoundCap));
         painter->setBrush(Qt::NoBrush);
 
-        auto view = scene()->views().front();
+        auto* view = scene()->views().front();
         auto trans = deviceTransform(view->viewportTransform()).inverted();
         const auto top = trans.map(view->rect().topLeft()).y();
         const auto bottom = trans.map(view->rect().bottomLeft()).y();

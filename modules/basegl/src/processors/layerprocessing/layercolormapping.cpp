@@ -64,8 +64,8 @@ void LayerColorMapping::preProcess(TextureUnitContainer& container, const Layer&
 }
 
 LayerConfig LayerColorMapping::outputConfig([[maybe_unused]] const Layer& input) const {
-    auto inputFormat = input.getDataFormat();
-    auto outputFormat =
+    const auto* inputFormat = input.getDataFormat();
+    const auto* outputFormat =
         DataFormatBase::get(inputFormat->getNumericType(), 4, inputFormat->getPrecision());
     return input.config().updateFrom({.format = outputFormat,
                                       .swizzleMask = swizzlemasks::rgba,

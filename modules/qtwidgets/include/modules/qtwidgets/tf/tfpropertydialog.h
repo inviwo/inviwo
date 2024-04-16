@@ -69,9 +69,9 @@ class IVW_MODULE_QTWIDGETS_API TFPropertyDialog : public PropertyEditorWidgetQt,
                                                   public TFPrimitiveSetObserver,
                                                   public TFPropertyObserver {
 public:
-    TFPropertyDialog(TransferFunctionProperty* tfProperty);
-    TFPropertyDialog(IsoValueProperty* isoProperty);
-    TFPropertyDialog(IsoTFProperty* isotfProperty);
+    explicit TFPropertyDialog(TransferFunctionProperty* tfProperty);
+    explicit TFPropertyDialog(IsoValueProperty* isoProperty);
+    explicit TFPropertyDialog(IsoTFProperty* isotfProperty);
     virtual ~TFPropertyDialog();
 
     virtual QSize sizeHint() const override;
@@ -106,7 +106,7 @@ protected:
     virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
 
 private:
-    TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model);
+    explicit TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model);
 
     void updateTFPreview();
 

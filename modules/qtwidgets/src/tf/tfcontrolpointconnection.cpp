@@ -55,7 +55,7 @@ TFControlPointConnection::~TFControlPointConnection() = default;
 
 void TFControlPointConnection::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
 
-    utilqt::Save saved{p};
+    const utilqt::Save saved{p};
     p->setRenderHint(QPainter::Antialiasing, true);
     p->setPen(utilqt::cosmeticPen(QColor(66, 66, 66), 3.0));
     p->drawPath(path_);

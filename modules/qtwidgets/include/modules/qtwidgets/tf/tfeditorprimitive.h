@@ -66,7 +66,7 @@ public:
      *
      * @param primitive the primitive
      */
-    TFEditorPrimitive(TFPrimitive& primitive);
+    explicit TFEditorPrimitive(TFPrimitive& primitive);
     virtual ~TFEditorPrimitive() = default;
 
     TFPrimitive& getPrimitive();

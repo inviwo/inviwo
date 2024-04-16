@@ -186,7 +186,7 @@ void TFEditor::onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType typ
 
 void TFEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
     if (e->button() == Qt::LeftButton) {
-        if (auto start = getTFPrimitiveItemAt(e->scenePos())) {
+        if (auto* start = getTFPrimitiveItemAt(e->scenePos())) {
             auto selected = getSelectedPrimitiveItems();
             selected.push_back(start);  // start might not have been selected yet
 
@@ -210,7 +210,7 @@ void TFEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
         e->accept();
         emit updateBegin();
         // Prevent network evaluations while moving control point
-        NetworkLock lock{concept_->getProperty()};
+        const NetworkLock lock{concept_->getProperty()};
 
         auto selection = getSelectedPrimitiveItems();
         if (!selection.empty()) {
@@ -258,7 +258,7 @@ void TFEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
 }
 
 void TFEditor::keyPressEvent(QKeyEvent* keyEvent) {
-    NetworkLock lock(concept_->getProperty());
+    const NetworkLock lock(concept_->getProperty());
 
     const auto k = keyEvent->key();
     const auto m = keyEvent->modifiers();
@@ -305,7 +305,7 @@ void TFEditor::keyPressEvent(QKeyEvent* keyEvent) {
 
 void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     const auto pos(e->scenePos());
-    const auto primitiveUnderMouse = getTFPrimitiveItemAt(pos);
+    auto* const primitiveUnderMouse = getTFPrimitiveItemAt(pos);
 
     // change selection if primitive under the mouse is not yet in selection
     if (primitiveUnderMouse && !primitiveUnderMouse->isSelected()) {
@@ -320,14 +320,14 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     for (auto&& [setTmp, item] : primitives_) {
         auto* set = setTmp;
         if (item.connected) {
-            auto addTFPoint = menu.addAction("Add TF &Point");
-            auto addTFPeak = menu.addAction("Add TF P&eak");
+            auto* addTFPoint = menu.addAction("Add TF &Point");
+            auto* addTFPeak = menu.addAction("Add TF P&eak");
             connect(addTFPoint, &QAction::triggered, this,
                     [this, pos, set]() { addPoint(pos, set); });
             connect(addTFPeak, &QAction::triggered, this,
                     [this, pos, set]() { addPeak(pos, set); });
         } else {
-            auto addIsovalue = menu.addAction("Add &Isovalue");
+            auto* addIsovalue = menu.addAction("Add &Isovalue");
             connect(addIsovalue, &QAction::triggered, this,
                     [this, pos, set]() { addPoint(pos, set); });
         }
@@ -336,11 +336,11 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     menu.addSeparator();
 
     {
-        auto editColor = menu.addAction("Edit &Color");
-        auto duplicatePrimitive = menu.addAction("D&uplicate");
-        auto deletePrimitive = menu.addAction("&Delete");
-        auto clearTF = menu.addAction("&Clear");
-        auto resetTF = menu.addAction("&Reset");
+        auto* editColor = menu.addAction("Edit &Color");
+        auto* duplicatePrimitive = menu.addAction("D&uplicate");
+        auto* deletePrimitive = menu.addAction("&Delete");
+        auto* clearTF = menu.addAction("&Clear");
+        auto* resetTF = menu.addAction("&Reset");
 
         editColor->setEnabled(!selection.empty());
         connect(editColor, &QAction::triggered, this, &TFEditor::showColorDialog);
@@ -348,24 +348,24 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         duplicatePrimitive->setEnabled(!selection.empty());
         connect(duplicatePrimitive, &QAction::triggered, this, [this, selection]() mutable {
             setSelected(selection, false);
-            NetworkLock lock(concept_->getProperty());
-            util::KeepTrueWhileInScope k(&selectNewPrimitives_);
+            NetworkLock const lock(concept_->getProperty());
+            util::KeepTrueWhileInScope const k(&selectNewPrimitives_);
             duplicate(selection);
         });
 
         deletePrimitive->setEnabled(!selection.empty());
         connect(deletePrimitive, &QAction::triggered, this, [this, selection]() mutable {
-            NetworkLock lock(concept_->getProperty());
+            NetworkLock const lock(concept_->getProperty());
             setSelected(selection, false);
             std::ranges::for_each(selection, [this](auto* item) { removeControlPoint(item); });
         });
 
         connect(clearTF, &QAction::triggered, this, [this]() {
-            NetworkLock lock(concept_->getProperty());
+            NetworkLock const lock(concept_->getProperty());
             std::ranges::for_each(concept_->sets(), [](auto* set) { set->clear(); });
         });
         connect(resetTF, &QAction::triggered, this, [this]() {
-            NetworkLock lock(concept_->getProperty());
+            NetworkLock const lock(concept_->getProperty());
             concept_->getProperty()->resetToDefaultState();
         });
     }
@@ -373,69 +373,69 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     menu.addSeparator();
 
     {
-        auto transformMenu = menu.addMenu("Trans&form");
+        auto* transformMenu = menu.addMenu("Trans&form");
 
-        auto distributeAlphaEvenly = transformMenu->addAction("&Distribute Alpha Evenly");
-        auto distributePositionEvenly = transformMenu->addAction("&Distribute Position Evenly");
+        auto* distributeAlphaEvenly = transformMenu->addAction("&Distribute Alpha Evenly");
+        auto* distributePositionEvenly = transformMenu->addAction("&Distribute Position Evenly");
         transformMenu->addSeparator();
-        auto alignAlphaToMean = transformMenu->addAction("&Align Alpha to Mean");
-        auto alignAlphaToTop = transformMenu->addAction("&Align Alpha to Top");
-        auto alignAlphaToBottom = transformMenu->addAction("&Align Alpha to Bottom");
+        auto* alignAlphaToMean = transformMenu->addAction("&Align Alpha to Mean");
+        auto* alignAlphaToTop = transformMenu->addAction("&Align Alpha to Top");
+        auto* alignAlphaToBottom = transformMenu->addAction("&Align Alpha to Bottom");
         transformMenu->addSeparator();
-        auto alignPositionToMean = transformMenu->addAction("&Align Position to Mean");
-        auto alignPositionToLeft = transformMenu->addAction("&Align Position to Left");
-        auto alignPositionToRight = transformMenu->addAction("&Align Position to Right");
+        auto* alignPositionToMean = transformMenu->addAction("&Align Position to Mean");
+        auto* alignPositionToLeft = transformMenu->addAction("&Align Position to Left");
+        auto* alignPositionToRight = transformMenu->addAction("&Align Position to Right");
         transformMenu->addSeparator();
-        auto flipPositions = transformMenu->addAction("&Horizontal Flip");
-        auto interpolateAlpha = transformMenu->addAction("&Interpolate Alpha");
+        auto* flipPositions = transformMenu->addAction("&Horizontal Flip");
+        auto* interpolateAlpha = transformMenu->addAction("&Interpolate Alpha");
 
         connect(distributeAlphaEvenly, &QAction::triggered, this, [this]() {
-            NetworkLock lock(concept_->getProperty());
+            NetworkLock const lock(concept_->getProperty());
             util::distributeAlphaEvenly(getAllOrSelectedPrimitives());
         });
 
         connect(distributePositionEvenly, &QAction::triggered, this, [this]() {
-            NetworkLock lock(concept_->getProperty());
+            NetworkLock const lock(concept_->getProperty());
             util::distributePositionEvenly(getAllOrSelectedPrimitives());
         });
 
         connect(alignAlphaToMean, &QAction::triggered, this, [this]() {
-            NetworkLock lock(concept_->getProperty());
+            NetworkLock const lock(concept_->getProperty());
             util::alignAlphaToMean(getAllOrSelectedPrimitives());
         });
 
         connect(alignAlphaToTop, &QAction::triggered, this, [this]() {
-            NetworkLock lock(concept_->getProperty());
+            NetworkLock const lock(concept_->getProperty());
             util::alignAlphaToTop(getAllOrSelectedPrimitives());
         });
 
         connect(alignAlphaToBottom, &QAction::triggered, this, [this]() {
-            NetworkLock lock(concept_->getProperty());
+            NetworkLock const lock(concept_->getProperty());
             util::alignAlphaToBottom(getAllOrSelectedPrimitives());
         });
 
         connect(alignPositionToMean, &QAction::triggered, this, [this]() {
-            NetworkLock lock(concept_->getProperty());
+            NetworkLock const lock(concept_->getProperty());
             util::alignPositionToMean(getAllOrSelectedPrimitives());
         });
 
         connect(alignPositionToLeft, &QAction::triggered, this, [this]() {
-            NetworkLock lock(concept_->getProperty());
+            NetworkLock const lock(concept_->getProperty());
             util::alignPositionToLeft(getAllOrSelectedPrimitives());
         });
 
         connect(alignPositionToRight, &QAction::triggered, this, [this]() {
-            NetworkLock lock(concept_->getProperty());
+            NetworkLock const lock(concept_->getProperty());
             util::alignPositionToRight(getAllOrSelectedPrimitives());
         });
 
         connect(flipPositions, &QAction::triggered, this, [this]() {
-            NetworkLock lock(concept_->getProperty());
+            NetworkLock const lock(concept_->getProperty());
             util::flipPositions(getAllOrSelectedPrimitives());
         });
 
         connect(interpolateAlpha, &QAction::triggered, this, [this]() {
-            NetworkLock lock(concept_->getProperty());
+            NetworkLock const lock(concept_->getProperty());
             util::interpolateAlpha(getAllOrSelectedPrimitives());
         });
     }
@@ -444,13 +444,13 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
     if (concept_->hasTF()) {
 
-        auto simplify = menu.addMenu("Simplify");
+        auto* simplify = menu.addMenu("Simplify");
         menu.addSeparator();
 
         auto makeSimple = [this](double delta) {
             return [this, delta]() {
-                NetworkLock lock(concept_->getProperty());
-                auto tf = concept_->getTransferFunction();
+                NetworkLock const lock(concept_->getProperty());
+                auto* tf = concept_->getTransferFunction();
                 auto simple = TransferFunction::simplify(tf->get(), delta);
                 tf->clear();
                 tf->add(simple);
@@ -458,18 +458,18 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         };
 
         for (double delta : {0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.10, 0.20}) {
-            auto action = simplify->addAction(utilqt::toQString(fmt::format("{:05.3f}", delta)));
+            auto* action = simplify->addAction(utilqt::toQString(fmt::format("{:05.3f}", delta)));
             connect(action, &QAction::triggered, this, makeSimple(delta));
         }
     }
 
     if (concept_->supportsMask()) {
-        auto maskMenu = menu.addMenu("&Mask");
+        auto* maskMenu = menu.addMenu("&Mask");
         // TF masking
-        auto maskBegin = maskMenu->addAction("Set &Begin");
-        auto maskEnd = maskMenu->addAction("Set &End");
+        auto* maskBegin = maskMenu->addAction("Set &Begin");
+        auto* maskEnd = maskMenu->addAction("Set &End");
         maskMenu->addSeparator();
-        auto clearAction = maskMenu->addAction("&Clear");
+        auto* clearAction = maskMenu->addAction("&Clear");
 
         connect(maskBegin, &QAction::triggered, this,
                 [this, pos]() { concept_->setMask(pos.x() / width(), concept_->getMask().y); });
@@ -483,12 +483,12 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
     {
         // group selection / assignment
-        auto groupSelectMenu = menu.addMenu("&Select Group");
-        auto groupAssignMenu = menu.addMenu("Assign &Group");
+        auto* groupSelectMenu = menu.addMenu("&Select Group");
+        auto* groupAssignMenu = menu.addMenu("Assign &Group");
 
         // select TF primitives which were stored as group
         for (auto&& i : util::make_sequence(1, 11)) {
-            QString str = (i < 10 ? QString("Group &%1").arg(i) : "Group 1&0");
+            const QString str = (i < 10 ? QString("Group &%1").arg(i) : "Group 1&0");
             auto* action = groupSelectMenu->addAction(str);
             const auto group = i % 10;
             action->setEnabled(!groups_[group].empty());
@@ -504,7 +504,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
         // assign current selection to a group
         for (auto&& i : util::make_sequence(1, 11, 1)) {
-            QString str = (i < 10 ? QString("Group &%1").arg(i) : "Group 1&0");
+            const QString str = (i < 10 ? QString("Group &%1").arg(i) : "Group 1&0");
             auto* action = groupAssignMenu->addAction(str);
             const auto group = i % 10;
             connect(action, &QAction::triggered, this,
@@ -521,8 +521,8 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         }
 
         if (concept_->hasTF()) {
-            auto importTF = menu.addAction("&Import TF...");
-            auto exportTF = menu.addAction("&Export TF...");
+            auto* importTF = menu.addAction("&Import TF...");
+            auto* exportTF = menu.addAction("&Export TF...");
             connect(importTF, &QAction::triggered, this,
                     [this]() { concept_->showImportDialog(); });
             connect(exportTF, &QAction::triggered, this,
@@ -530,8 +530,8 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             menu.addSeparator();
         }
         if (concept_->hasIsovalues()) {
-            auto importTF = menu.addAction("&Import Isovalues...");
-            auto exportTF = menu.addAction("&Export Isovalues...");
+            auto* importTF = menu.addAction("&Import Isovalues...");
+            auto* exportTF = menu.addAction("&Export Isovalues...");
             connect(importTF, &QAction::triggered, this,
                     [this]() { concept_->showImportDialog(); });
             connect(exportTF, &QAction::triggered, this,
@@ -553,17 +553,17 @@ double TFEditor::sceneToAlpha(const QPointF& pos) const {
 
 void TFEditor::addPoint(double pos, const vec4& color, TFPrimitiveSet* set) {
     if (!set) return;
-    NetworkLock lock(concept_->getProperty());
+    const NetworkLock lock(concept_->getProperty());
     set->add(pos, color);
 }
 void TFEditor::addPoint(double pos, double alpha, TFPrimitiveSet* set) {
     if (!set) return;
-    NetworkLock lock(concept_->getProperty());
+    const NetworkLock lock(concept_->getProperty());
     set->add(pos, alpha);
 }
 
 void TFEditor::addPoint(const QPointF& scenePos, TFPrimitiveSet* set) {
-    util::KeepTrueWhileInScope k(&selectNewPrimitives_);
+    const util::KeepTrueWhileInScope k(&selectNewPrimitives_);
     addPoint(sceneToPos(scenePos), sceneToAlpha(scenePos), set);
 }
 void TFEditor::addPoint(const QPointF& scenePos) { addPoint(scenePos, activeSet()); }
@@ -571,8 +571,8 @@ void TFEditor::addPoint(const QPointF& scenePos) { addPoint(scenePos, activeSet(
 void TFEditor::addPeak(const QPointF& scenePos, TFPrimitiveSet* set) {
     if (!set) return;
 
-    util::KeepTrueWhileInScope k(&selectNewPrimitives_);
-    NetworkLock lock(concept_->getProperty());
+    const util::KeepTrueWhileInScope k(&selectNewPrimitives_);
+    const NetworkLock lock(concept_->getProperty());
 
     const double pos = sceneToPos(scenePos);
     const double alpha = sceneToAlpha(scenePos);
@@ -584,14 +584,14 @@ void TFEditor::addPeak(const QPointF& scenePos, TFPrimitiveSet* set) {
     // add point to the left
     if (pos > 0.0) {
         // compute intercept on alpha by using alpha - alpha / offset * pos
-        double leftAlpha = std::max(0.0, alpha * (1.0 - pos / normalizedOffset));
+        const double leftAlpha = std::max(0.0, alpha * (1.0 - pos / normalizedOffset));
         set->add(std::max(pos - normalizedOffset, 0.0), leftAlpha);
     }
 
     // add point to the right
     if (pos < 1.0) {
         // compute intercept on alpha by using alpha + alpha / offset * (pos - 1.0)
-        double rightAlpha = std::max(0.0, alpha * (1.0 + (pos - 1.0) / normalizedOffset));
+        const double rightAlpha = std::max(0.0, alpha * (1.0 + (pos - 1.0) / normalizedOffset));
         set->add(std::min(pos + normalizedOffset, 1.0), rightAlpha);
     }
 }
@@ -620,7 +620,7 @@ TFPrimitiveSet* TFEditor::findSet(TFPrimitive* primitive) const {
 }
 
 void TFEditor::removeControlPoint(TFEditorPrimitive* item) {
-    NetworkLock lock(concept_->getProperty());
+    const NetworkLock lock(concept_->getProperty());
     for (auto* set : concept_->sets()) {
         if (set->remove(item->getPrimitive())) break;
     }
@@ -675,7 +675,7 @@ void TFEditor::setMoveMode(TFMoveMode i) { moveMode_ = i; }
 TFMoveMode TFEditor::getMoveMode() const { return moveMode_; }
 
 const DataMapper& TFEditor::getDataMapper() const {
-    if (auto* map = concept_->getDataMap()) {
+    if (const auto* map = concept_->getDataMap()) {
         return *map;
     } else {
         static const DataMapper dataMap{};
@@ -726,7 +726,7 @@ void TFEditor::setSelected(std::span<TFEditorPrimitive*> primitives, bool select
     std::ranges::for_each(primitives, [&](TFEditorPrimitive* p) { p->setSelected(selected); });
 }
 
-QTransform TFEditor::calcTransform(QPointF scenePos, QPointF lastScenePos) {
+QTransform TFEditor::calcTransform(QPointF scenePos, QPointF lastScenePos) const {
     const bool altPressed =
         ((QGuiApplication::queryKeyboardModifiers() & Qt::AltModifier) == Qt::AltModifier);
     if (altPressed) {
@@ -807,16 +807,16 @@ bool TFEditor::handleGroupSelection(QKeyEvent* event) {
     const quint32 nativeKey = event->nativeVirtualKey();
 #endif
 
-    const auto it =
+    const auto* const it =
         std::ranges::find_if(nativeKeyMap, [&](auto& p) { return p.first == nativeKey; });
     if (it == nativeKeyMap.end()) {
         return false;
     }
     const int group = it->second;
 
-    if (event->modifiers() & Qt::ControlModifier) {  // Create group
+    if (event->modifiers() & Qt::ControlModifier != 0u) {  // Create group
         groups_[group] = getSelectedPrimitiveItems();
-    } else if (event->modifiers() & Qt::ShiftModifier) {
+    } else if (event->modifiers() & Qt::ShiftModifier != 0u) {
         setSelected(groups_[group], true);
     } else {
         auto selection = getSelectedPrimitiveItems();
@@ -827,13 +827,13 @@ bool TFEditor::handleGroupSelection(QKeyEvent* event) {
 }
 
 bool TFEditor::handleMoveSelection(QKeyEvent* event) {
-    if (event->modifiers() & Qt::ControlModifier) {
+    if (event->modifiers() & Qt::ControlModifier != 0u) {
         return false;
     }
     const auto k = event->key();
 
-    if (!(k == Qt::Key_Left || k == Qt::Key_Right || k == Qt::Key_Up || k == Qt::Key_Down ||
-          k == 'I' || k == 'J' || k == 'K' || k == 'L')) {
+    if (k != Qt::Key_Left && k != Qt::Key_Right && k != Qt::Key_Up && k != Qt::Key_Down &&
+        k != 'I' && k != 'J' && k != 'K' && k != 'L') {
         return false;
     }
 
@@ -859,9 +859,9 @@ bool TFEditor::handleMoveSelection(QKeyEvent* event) {
 
     constexpr double stepUpScalingFactor = 5.0;
     constexpr double stepDownScalingFactor = 0.2;
-    if (event->modifiers() & Qt::ShiftModifier) {
+    if (event->modifiers() & Qt::ShiftModifier != 0u) {
         delta *= stepUpScalingFactor;
-    } else if (event->modifiers() & Qt::AltModifier) {
+    } else if (event->modifiers() & Qt::AltModifier != 0u) {
         delta *= stepDownScalingFactor;
     }
 
@@ -881,8 +881,8 @@ bool TFEditor::handleModifySelection(QKeyEvent* event) {
     }
 
     const auto k = event->key();
-    if (!(k == Qt::Key_Left || k == Qt::Key_Right || k == Qt::Key_Up || k == Qt::Key_Down ||
-          k == 'I' || k == 'J' || k == 'K' || k == 'L')) {
+    if (k != Qt::Key_Left && k != Qt::Key_Right && k != Qt::Key_Up && k != Qt::Key_Down &&
+        k != 'I' && k != 'J' && k != 'K' && k != 'L') {
         return false;
     }
 
@@ -951,7 +951,7 @@ dvec2 TFEditor::viewDependentOffset() const {
                     ->mapToScene(QRect(QPoint(0, 0), QSize(defaultOffset, defaultOffset)))
                     .boundingRect();
 
-    return dvec2(rect.width(), rect.height());
+    return {rect.width(), rect.height()};
 }
 
 }  // namespace inviwo

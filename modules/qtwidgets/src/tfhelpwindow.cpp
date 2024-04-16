@@ -76,10 +76,11 @@ histogram of the input data. Scalar values are mapped to the horizontal axis
 while the vertical axis corresponds to the opacity.</p>
 
 <h3>Adding TF Points</h3>
-<p>TF points are added by pressing &lt;CTRL&gt; and the left mouse button or via
-the context menu.</p>
+<p>TF points are added by pressing &lt;CTRL&gt; and the left mouse button, double clicking, or via
+the context menu. Points will be added to the most recently active set.</p>
 <p>Points can also be duplicated via the context menu, which will offset the new
 points slightly to the right.</p>
+
 
 <h3>Deleting TF Points</h3>
 <p>To delete a point press &lt;Backspace&gt; or &lt;Delete&gt; or use the
@@ -112,7 +113,12 @@ of the mask as well as clearing it.</p>
 <h3>On Transfer Function Level</h3>
 <p>The entire transfer function can be cleared at once, i.e. all TF points are deleted, 
 or reset to the properties' default state via the context menu. Furthermore, TFs can be 
-exported and imported.</p>)";
+exported and imported.</p>
+
+<p>The backgound can show a histogram if the data if available, pressing &lt;h&gt; will
+toggle the histogram</p>
+
+)";
 
     Document doc;
     auto html = doc.append("html");

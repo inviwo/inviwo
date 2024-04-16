@@ -182,7 +182,7 @@ void TFEditorPrimitive::updateLabel() {
     }
 
     QString label;
-    if (auto tfe = qobject_cast<TFEditor*>(scene())) {
+    if (auto* tfe = qobject_cast<TFEditor*>(scene())) {
         label = utilqt::toQString(
             fmt::format("{:0.3g}{: [} ({:0.3g}) / {:0.3g}",
                         tfe->getDataMapper().mapFromNormalizedToValue(getPosition()),

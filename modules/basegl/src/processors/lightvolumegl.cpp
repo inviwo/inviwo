@@ -127,7 +127,7 @@ inline void definePermutationMatrices(mat4& permMat, mat4& permLightMat, int per
 
     permLightMat = permMat;
     // Permutation of z
-    float closestAxisZ = (faceNormals_[permFaceIndex])[faceAxis_[permFaceIndex]];
+    const float closestAxisZ = (faceNormals_[permFaceIndex])[faceAxis_[permFaceIndex]];
     permMat[2][faceAxis_[permFaceIndex]] = closestAxisZ;
     permLightMat[2][faceAxis_[permFaceIndex]] = glm::abs<float>(closestAxisZ);
 
@@ -195,15 +195,15 @@ void LightVolumeGL::process() {
         reattach = volumeChanged(lightColorChanged);
     }
 
-    VolumeGL* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
-    TextureUnit volUnit;
-    const VolumeGL* inVolumeGL = inport_.getData()->getRepresentation<VolumeGL>();
+    auto* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
+    const TextureUnit volUnit;
+    const auto* inVolumeGL = inport_.getData()->getRepresentation<VolumeGL>();
     inVolumeGL->bindTexture(volUnit.getEnum());
-    TextureUnit transFuncUnit;
-    const LayerGL* tfLayer = transferFunction_.getRepresentation<LayerGL>();
+    const TextureUnit transFuncUnit;
+    const auto* tfLayer = transferFunction_.getRepresentation<LayerGL>();
     tfLayer->bindTexture(transFuncUnit.getEnum());
 
-    TextureUnit lightVolUnit[2];
+    const TextureUnit lightVolUnit[2];
     glActiveTexture(lightVolUnit[0].getEnum());
     propParams_[0].tex.bind();
     glActiveTexture(lightVolUnit[1].getEnum());
@@ -218,9 +218,9 @@ void LightVolumeGL::process() {
     propagationShader_.setUniform("lightVolumeParameters_.reciprocalDimensions", volumeDimOutFRCP_);
 
     {
-        auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
-        utilgl::Enable<MeshGL> enable(rect);
-        utilgl::DepthFuncState depth(GL_ALWAYS);
+        const auto* rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
+        const utilgl::Enable<MeshGL> enable(rect);
+        const utilgl::DepthFuncState depth(GL_ALWAYS);
 
         // Perform propagation passes
         for (int i = 0; i < 2; ++i) {
@@ -289,7 +289,7 @@ bool LightVolumeGL::lightSourceChanged() {
                 propagationShader_.link();
             }
 
-            if (auto directionLight =
+            if (const auto* directionLight =
                     dynamic_cast<const DirectionalLight*>(lightSource_.getData().get())) {
 
                 const auto& transformer = inport_.getData()->getCoordinateTransformer();
@@ -341,7 +341,7 @@ bool LightVolumeGL::lightSourceChanged() {
             break;
     }
 
-    updatePermuationMatrices(lightDirection, &propParams_[0], &propParams_[1]);
+    updatePermuationMatrices(lightDirection, propParams_.data(), &propParams_[1]);
 
     bool lightColorChanged = false;
     if (glm::any(glm::notEqual(color, vec3(lightColor_)))) {
@@ -354,9 +354,9 @@ bool LightVolumeGL::lightSourceChanged() {
 
 bool LightVolumeGL::volumeChanged(bool lightColorChanged) {
     auto input = inport_.getData();
-    size3_t inDim = input->getDimensions();
-    size3_t outDim{inDim.x / volumeSizeOption_.get(), inDim.y / volumeSizeOption_.get(),
-                   inDim.z / volumeSizeOption_.get()};
+    const size3_t inDim = input->getDimensions();
+    const size3_t outDim{inDim.x / volumeSizeOption_.get(), inDim.y / volumeSizeOption_.get(),
+                         inDim.z / volumeSizeOption_.get()};
 
     if (internalVolumesInvalid_ || (volumeDimOut_ != outDim)) {
         volumeDimOut_ = outDim;
@@ -454,7 +454,7 @@ void LightVolumeGL::updatePermuationMatrices(const vec3& lightDir, PropagationPa
         }
     }
 
-    vec4 tmpLightDir = vec4(-lightDir.x, -lightDir.y, -lightDir.z, 1.f);
+    const vec4 tmpLightDir = vec4(-lightDir.x, -lightDir.y, -lightDir.z, 1.f);
 
     // Perform permutation calculation for closest face
     definePermutationMatrices(closest->axisPermutation, closest->axisPermutationLight, closestFace);

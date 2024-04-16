@@ -179,7 +179,7 @@ MeshRasterizer::MeshRasterizer()
 
     silhouetteColor_.setSemantics(PropertySemantics::Color);
 
-    faceSettings_[1].frontPart_ = &faceSettings_[0];
+    faceSettings_[1].frontPart_ = faceSettings_.data();
 }
 
 MeshRasterizer::AlphaSettings::AlphaSettings()
@@ -226,7 +226,7 @@ MeshRasterizer::AlphaSettings::AlphaSettings()
 }
 
 void MeshRasterizer::AlphaSettings::setUniforms(Shader& shader, std::string_view prefix) const {
-    std::array<std::pair<std::string_view, std::variant<float>>, 7> uniforms{
+    const std::array<std::pair<std::string_view, std::variant<float>>, 7> uniforms{
         {{"minAlpha", minimumAlpha_},
          {"uniformScale", uniformScaling_},
          {"angleExp", angleBasedExponent_},
@@ -364,8 +364,8 @@ MeshRasterizer::FaceSettings::FaceSettings(bool frontFace)
 }
 
 void MeshRasterizer::FaceSettings::copyFrontToBack() {
-    for (auto src : frontPart_->show_) {
-        if (auto dst = show_.getPropertyByIdentifier(src->getIdentifier())) {
+    for (auto* src : frontPart_->show_) {
+        if (auto* dst = show_.getPropertyByIdentifier(src->getIdentifier())) {
             dst->set(src);
         }
     }
@@ -405,24 +405,25 @@ void MeshRasterizer::initializeResources() {
 
 void MeshRasterizer::FaceSettings::setUniforms(Shader& shader, std::string_view prefix) const {
 
-    std::array<std::pair<std::string_view, std::variant<bool, int, float, vec4>>, 15> uniforms{
-        {{"externalColor", vec4{*externalColor_, 1.0f}},
-         {"colorSource", static_cast<int>(*colorSource_)},
-         {"separateUniformAlpha", separateUniformAlpha_},
-         {"uniformAlpha", uniformAlpha_},
-         {"shadingMode", static_cast<int>(*shadingMode_)},
-         {"showEdges", showEdges_},
-         {"edgeColor", vec4{*edgeColor_, *edgeOpacity_}},
-         {"hatchingMode", (hatching_.mode_.get() == HatchingMode::UV)
-                              ? 3 + static_cast<int>(hatching_.modulationMode_.get())
-                              : static_cast<int>(hatching_.mode_.get())},
-         {"hatchingSteepness", hatching_.steepness_.get()},
-         {"hatchingFreqU", hatching_.baseFrequencyU_.getMaxValue() - hatching_.baseFrequencyU_},
-         {"hatchingFreqV", hatching_.baseFrequencyV_.getMaxValue() - hatching_.baseFrequencyV_},
-         {"hatchingModulationAnisotropy", hatching_.modulationAnisotropy_},
-         {"hatchingModulationOffset", hatching_.modulationOffset_},
-         {"hatchingColor", vec4(hatching_.color_.get(), hatching_.strength_.get())},
-         {"hatchingBlending", static_cast<int>(hatching_.blendingMode_.get())}}};
+    const std::array<std::pair<std::string_view, std::variant<bool, int, float, vec4>>, 15>
+        uniforms{
+            {{"externalColor", vec4{*externalColor_, 1.0f}},
+             {"colorSource", static_cast<int>(*colorSource_)},
+             {"separateUniformAlpha", separateUniformAlpha_},
+             {"uniformAlpha", uniformAlpha_},
+             {"shadingMode", static_cast<int>(*shadingMode_)},
+             {"showEdges", showEdges_},
+             {"edgeColor", vec4{*edgeColor_, *edgeOpacity_}},
+             {"hatchingMode", (hatching_.mode_.get() == HatchingMode::UV)
+                                  ? 3 + static_cast<int>(hatching_.modulationMode_.get())
+                                  : static_cast<int>(hatching_.mode_.get())},
+             {"hatchingSteepness", hatching_.steepness_.get()},
+             {"hatchingFreqU", hatching_.baseFrequencyU_.getMaxValue() - hatching_.baseFrequencyU_},
+             {"hatchingFreqV", hatching_.baseFrequencyV_.getMaxValue() - hatching_.baseFrequencyV_},
+             {"hatchingModulationAnisotropy", hatching_.modulationAnisotropy_},
+             {"hatchingModulationOffset", hatching_.modulationOffset_},
+             {"hatchingColor", vec4(hatching_.color_.get(), hatching_.strength_.get())},
+             {"hatchingBlending", static_cast<int>(hatching_.blendingMode_.get())}}};
 
     for (const auto& [key, val] : uniforms) {
         std::visit([&, akey = key](
@@ -467,7 +468,7 @@ void MeshRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTr
         faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : 1]
             .transferFunction_.getRepresentation<LayerGL>()};
 
-    utilgl::Activate activate{&shader_};
+    const utilgl::Activate activate{&shader_};
 
     // set transfer function textures
     std::array<TextureUnit, 2> transFuncUnit;
@@ -480,17 +481,17 @@ void MeshRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTr
     shader_.setUniform("halfScreenSize", imageSize / ivec2(2));
 
     // various OpenGL states: depth, blending, culling
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, forceOpaque_);
-    utilgl::DepthMaskState depthMask(forceOpaque_ ? GL_TRUE : GL_FALSE);
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, forceOpaque_);
+    const utilgl::DepthMaskState depthMask(forceOpaque_ ? GL_TRUE : GL_FALSE);
 
-    utilgl::CullFaceState culling(!showFace[0] && showFace[1]   ? GL_FRONT
-                                  : showFace[0] && !showFace[1] ? GL_BACK
-                                                                : GL_NONE);
-    utilgl::BlendModeState blendModeState(forceOpaque_ ? GL_ONE : GL_SRC_ALPHA,
-                                          forceOpaque_ ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::CullFaceState culling(!showFace[0] && showFace[1]   ? GL_FRONT
+                                        : showFace[0] && !showFace[1] ? GL_BACK
+                                                                      : GL_NONE);
+    const utilgl::BlendModeState blendModeState(forceOpaque_ ? GL_ONE : GL_SRC_ALPHA,
+                                                forceOpaque_ ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
 
     // Finally, draw it
-    for (auto mesh : enhancedMeshes_) {
+    for (const auto& mesh : enhancedMeshes_) {
         MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
                                         mesh->getDefaultMeshInfo()};
         auto transform = CompositeTransform(mesh->getModelMatrix(),

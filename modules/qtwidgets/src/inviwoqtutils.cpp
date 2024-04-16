@@ -97,9 +97,7 @@
 #include <Qt>               // for Tool, WindowFlags, WindowFu...
 #include <fmt/core.h>       // for format
 
-namespace inviwo {
-
-namespace utilqt {
+namespace inviwo::utilqt {
 
 std::ios_base& localizeStream(std::ios_base& stream) {
     stream.imbue(getCurrentStdLocale());
@@ -160,7 +158,7 @@ void paint(const IsoValueCollection& isoValues, QPainter& painter, const QRectF&
     // draw a small hour glass for each iso value
     const double halfWidth = 6.0;
 
-    Save saved(&painter);
+    const Save saved(&painter);
     painter.setPen(QPen(Qt::black, 1.0, Qt::SolidLine));
     painter.setRenderHint(QPainter::Antialiasing);
     // add vertical lines for each iso value
@@ -183,7 +181,7 @@ void paintMask(const dvec2& mask, const dvec2& range, QPainter& painter, const Q
     if (mask.x > range.x) {
         // normalize mask position with respect to TF range
         const double maskPos = (mask.x - range.x) / (range.y - range.x);
-        QRectF rectMask{rect.topLeft(), QSizeF{maskPos * rect.width(), rect.height()}};
+        const QRectF rectMask{rect.topLeft(), QSizeF{maskPos * rect.width(), rect.height()}};
         painter.fillRect(rectMask, maskColor);
         painter.drawLine(rectMask.bottomRight(), rectMask.topRight());
     }
@@ -191,7 +189,8 @@ void paintMask(const dvec2& mask, const dvec2& range, QPainter& painter, const Q
     if (mask.y < range.y) {
         // normalize mask position with respect to TF range
         const double maskPos = (mask.y - range.x) / (range.y - range.x);
-        QRectF rectMask{rect.topLeft() + QPointF{maskPos * rect.width(), 0.0}, rect.bottomRight()};
+        const QRectF rectMask{rect.topLeft() + QPointF{maskPos * rect.width(), 0.0},
+                              rect.bottomRight()};
         painter.fillRect(rectMask, maskColor);
         painter.drawLine(rectMask.bottomLeft(), rectMask.topLeft());
     }
@@ -200,7 +199,7 @@ void paintMask(const dvec2& mask, const dvec2& range, QPainter& painter, const Q
 QPixmap toQPixmap(const TransferFunction& tf, const QSize& size) {
     QPixmap pixmap{size};
     QPainter painter{&pixmap};
-    QRectF rect{QPointF(0, 0), size};
+    const QRectF rect{QPointF(0, 0), size};
     paintCheckerBoard(painter, rect);
     paint(tf, painter, rect);
     return pixmap;
@@ -209,7 +208,7 @@ QPixmap toQPixmap(const TransferFunction& tf, const QSize& size) {
 QPixmap toQPixmap(const TransferFunctionProperty& property, const QSize& size) {
     QPixmap pixmap{size};
     QPainter painter{&pixmap};
-    QRectF rect{QPointF(0, 0), size};
+    const QRectF rect{QPointF(0, 0), size};
     paintCheckerBoard(painter, rect);
     paint(property.get(), painter, rect);
     paintMask(property.getMask(), property.get().getRange(), painter, rect);
@@ -219,7 +218,7 @@ QPixmap toQPixmap(const TransferFunctionProperty& property, const QSize& size) {
 QPixmap toQPixmap(const IsoValueProperty& property, const QSize& size) {
     QPixmap pixmap{size};
     QPainter painter{&pixmap};
-    QRectF rect{QPointF(0, 0), size};
+    const QRectF rect{QPointF(0, 0), size};
     paintCheckerBoard(painter, rect);
     paint(property.get(), painter, rect);
     return pixmap;
@@ -228,7 +227,7 @@ QPixmap toQPixmap(const IsoValueProperty& property, const QSize& size) {
 QPixmap toQPixmap(const IsoTFProperty& property, const QSize& size) {
     QPixmap pixmap{size};
     QPainter painter{&pixmap};
-    QRectF rect{QPointF(0, 0), size};
+    const QRectF rect{QPointF(0, 0), size};
     paintCheckerBoard(painter, rect);
     paint(property.tf_.get(), painter, rect);
     paint(property.isovalues_.get(), painter, rect);
@@ -239,7 +238,7 @@ QPixmap toQPixmap(const IsoTFProperty& property, const QSize& size) {
 QPixmap toQPixmap(const TFPropertyConcept& propertyConcept, const QSize& size) {
     QPixmap pixmap{size};
     QPainter painter{&pixmap};
-    QRectF rect{QPointF(0, 0), size};
+    const QRectF rect{QPointF(0, 0), size};
     paintCheckerBoard(painter, rect);
 
     if (auto* tf = propertyConcept.getTransferFunction()) {
@@ -281,13 +280,13 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,
         return offset;
     }();
 #else
-    static QPoint windowDecorationOffset = QPoint(0, 0);
+    static const QPoint windowDecorationOffset = QPoint(0, 0);
 #endif
 
     QPoint pos(point);
 
     if (decorationOffset) {
-        QPoint offset = windowDecorationOffset;
+        const QPoint offset = windowDecorationOffset;
         pos -= offset;
     }
 
@@ -297,7 +296,7 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,
     static constexpr int rightPadding = 10;
     static constexpr int bottomPadding = 10;
     const bool withinAnyDesktop = [&]() {
-        QList<QScreen*> screens = QGuiApplication::screens();
+        QList<QScreen*> const screens = QGuiApplication::screens();
         for (QScreen* screen : screens) {
             auto geom = screen->geometry().marginsRemoved(
                 {leftPadding, topPadding, rightPadding, bottomPadding});
@@ -310,7 +309,7 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,
 
     if (!withinAnyDesktop) {
         // If the widget is outside visible screen
-        auto mainWindow = getApplicationMainWindow();
+        auto* mainWindow = getApplicationMainWindow();
         QPoint appPos(0, 0);
         if (mainWindow) {
             appPos = mainWindow->pos();
@@ -339,23 +338,23 @@ QPoint offsetWidget() {
             }
         }
     }
-    return QPoint(pos.x, pos.y);
+    return {pos.x, pos.y};
 }
 
-QMenu* addMenu(std::string_view menuName, std::string before) {
+QMenu* addMenu(std::string_view menuName, const std::string& before) {
     return addMenu(menuName, getMenu(before));
 }
 
 QMenu* addMenu(std::string_view menuName, QMenu* before) {
-    if (auto mainwin = utilqt::getApplicationMainWindow()) {
+    if (auto* mainwin = utilqt::getApplicationMainWindow()) {
         if (!before) {
             before = getMenu("&Help", false);
         }
 
-        auto menuBar = mainwin->menuBar();
+        auto* menuBar = mainwin->menuBar();
 
         if (before) {
-            auto menu = new QMenu(utilqt::toQString(menuName), menuBar);
+            auto* menu = new QMenu(utilqt::toQString(menuName), menuBar);
             menuBar->insertMenu(before->menuAction(), menu);
             return menu;
         } else {  // No menu specified or couldn't find a help menu
@@ -366,8 +365,8 @@ QMenu* addMenu(std::string_view menuName, QMenu* before) {
 }
 
 QMenu* getMenu(std::string_view menuName, bool createIfNotFound) {
-    if (auto mainwin = utilqt::getApplicationMainWindow()) {
-        auto menuBar = mainwin->menuBar();
+    if (auto* mainwin = utilqt::getApplicationMainWindow()) {
+        auto* menuBar = mainwin->menuBar();
         auto menus = menuBar->findChildren<QMenu*>();
 
         std::string menuNoAnd{menuName};
@@ -401,15 +400,14 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
     auto addAction = [&copy, &save](const std::string& name, const Layer* layer, bool visible) {
         std::ostringstream oss;
         oss << name << (visible ? " (Visible)" : "");
-        auto copyAction = copy->addAction(oss.str().c_str());
-        copyAction->connect(copyAction, &QAction::triggered, [layer]() {
+        auto* copyAction = copy->addAction(oss.str().c_str());
+        QAction::connect(copyAction, &QAction::triggered, [layer]() {
             rendercontext::activateDefault();
             QApplication::clipboard()->setPixmap(QPixmap::fromImage(utilqt::layerToQImage(*layer)));
         });
 
-        auto saveAction = save->addAction(oss.str().c_str());
-        saveAction->connect(saveAction, &QAction::triggered,
-                            [layer]() { util::saveLayer(*layer); });
+        auto* saveAction = save->addAction(oss.str().c_str());
+        QAction::connect(saveAction, &QAction::triggered, [layer]() { util::saveLayer(*layer); });
     };
 
     const auto nLayers = image.getNumberOfColorLayers();
@@ -429,22 +427,22 @@ void addViewActions(QMenu& menu, EventPropagator* ep) {
             ep->propagateEvent(&e, nullptr);
         };
     };
-    menu.connect(menu.addAction(QIcon(":svgicons/view-fit-to-data.svg"), "Fit to data"),
-                 &QAction::triggered, prop(ViewEvent::FitData{}));
-    menu.connect(menu.addAction(QIcon(":svgicons/view-x-p.svg"), "View from X+"),
-                 &QAction::triggered, prop(camerautil::Side::XPositive));
-    menu.connect(menu.addAction(QIcon(":svgicons/view-x-m.svg"), "View from X-"),
-                 &QAction::triggered, prop(camerautil::Side::XNegative));
-    menu.connect(menu.addAction(QIcon(":svgicons/view-y-p.svg"), "View from Y+"),
-                 &QAction::triggered, prop(camerautil::Side::YPositive));
-    menu.connect(menu.addAction(QIcon(":svgicons/view-y-m.svg"), "View from Y-"),
-                 &QAction::triggered, prop(camerautil::Side::YNegative));
-    menu.connect(menu.addAction(QIcon(":svgicons/view-z-p.svg"), "View from Z+"),
-                 &QAction::triggered, prop(camerautil::Side::ZPositive));
-    menu.connect(menu.addAction(QIcon(":svgicons/view-z-m.svg"), "View from Z-"),
-                 &QAction::triggered, prop(camerautil::Side::ZNegative));
-    menu.connect(menu.addAction(QIcon(":svgicons/view-flip.svg"), "Flip Up Vector"),
-                 &QAction::triggered, prop(ViewEvent::FlipUp{}));
+    QMenu::connect(menu.addAction(QIcon(":svgicons/view-fit-to-data.svg"), "Fit to data"),
+                   &QAction::triggered, prop(ViewEvent::FitData{}));
+    QMenu::connect(menu.addAction(QIcon(":svgicons/view-x-p.svg"), "View from X+"),
+                   &QAction::triggered, prop(camerautil::Side::XPositive));
+    QMenu::connect(menu.addAction(QIcon(":svgicons/view-x-m.svg"), "View from X-"),
+                   &QAction::triggered, prop(camerautil::Side::XNegative));
+    QMenu::connect(menu.addAction(QIcon(":svgicons/view-y-p.svg"), "View from Y+"),
+                   &QAction::triggered, prop(camerautil::Side::YPositive));
+    QMenu::connect(menu.addAction(QIcon(":svgicons/view-y-m.svg"), "View from Y-"),
+                   &QAction::triggered, prop(camerautil::Side::YNegative));
+    QMenu::connect(menu.addAction(QIcon(":svgicons/view-z-p.svg"), "View from Z+"),
+                   &QAction::triggered, prop(camerautil::Side::ZPositive));
+    QMenu::connect(menu.addAction(QIcon(":svgicons/view-z-m.svg"), "View from Z-"),
+                   &QAction::triggered, prop(camerautil::Side::ZNegative));
+    QMenu::connect(menu.addAction(QIcon(":svgicons/view-flip.svg"), "Flip Up Vector"),
+                   &QAction::triggered, prop(ViewEvent::FlipUp{}));
 }
 
 std::string toBase64(const QImage& image, std::string_view format, int quality) {
@@ -456,7 +454,7 @@ std::string toBase64(const QImage& image, std::string_view format, int quality) 
 }
 
 QImage fromBase64(std::string_view base64, std::string_view format) {
-    QByteArray barray =
+    const QByteArray barray =
         QByteArray::fromBase64(QByteArray{base64.data(), static_cast<int>(base64.size())});
     QImage image;
     image.loadFromData(barray, format.empty() ? nullptr : SafeCStr{format}.c_str());
@@ -476,7 +474,7 @@ std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* ne
     for (auto* p : network->getProcessorsByType<CanvasProcessor>()) {
         if (p->isSink() && p->isReady()) {
             auto img = utilqt::layerToQImage(*p->getVisibleLayer()).scaledToHeight(256);
-            images.push_back({p->getDisplayName(), img});
+            images.emplace_back(p->getDisplayName(), img);
         }
     }
 
@@ -511,7 +509,7 @@ QString windowTitleHelper(const QString& title, const QWidget* widget) {
     // implementation based on qt_setWindowTitle_helperHelper() in qwidget.cpp
     QString cap = title;
 
-    QLatin1String placeHolder("[*]");
+    const QLatin1String placeHolder("[*]");
     int index = static_cast<int>(cap.indexOf(placeHolder));
 
     // here the magic begins
@@ -522,13 +520,15 @@ QString windowTitleHelper(const QString& title, const QWidget* widget) {
             ++count;
             index += static_cast<int>(placeHolder.size());
         }
-        if (count % 2) {  // odd number of [*] -> replace last one
-            int lastIndex = static_cast<int>(cap.lastIndexOf(placeHolder, index - 1));
+        if ((count % 2) != 0) {  // odd number of [*] -> replace last one
+            const int lastIndex = static_cast<int>(cap.lastIndexOf(placeHolder, index - 1));
             if (widget->isWindowModified() &&
-                widget->style()->styleHint(QStyle::SH_TitleBar_ModifyNotification, 0, widget))
+                (widget->style()->styleHint(QStyle::SH_TitleBar_ModifyNotification, nullptr,
+                                            widget) != 0)) {
                 cap.replace(lastIndex, 3, QWidget::tr("*"));
-            else
+            } else {
                 cap.remove(lastIndex, 3);
+            }
         }
         index = static_cast<int>(cap.indexOf(placeHolder, index));
     }
@@ -580,7 +580,7 @@ WidgetCloseEventFilter::WidgetCloseEventFilter(QObject* parent) : QObject(parent
 
 bool WidgetCloseEventFilter::eventFilter(QObject* obj, QEvent* ev) {
     if (ev->type() == QEvent::Close) {
-        auto dialog = qobject_cast<QWidget*>(obj);
+        auto* dialog = qobject_cast<QWidget*>(obj);
         dialog->hide();
         ev->ignore();
         return true;
@@ -644,6 +644,4 @@ void setFullScreenAndOnTop(QWidget* widget, bool fullScreen, bool onTop) {
     widget->setVisible(visible);
 }
 
-}  // namespace utilqt
-
-}  // namespace inviwo
+}  // namespace inviwo::utilqt

@@ -84,10 +84,10 @@ void TFPrimitiveSetWidgetQt::setPropertyValue() {
 
     // need to undo value mapping in case of relative TF and PropertySemantics
     // being "Text (normalized)"
-    bool performMapping = (propertyPtr_->get().getType() == TFPrimitiveSetType::Relative) &&
-                          (property_->getSemantics().getString() == "Text");
+    const bool performMapping = (propertyPtr_->get().getType() == TFPrimitiveSetType::Relative) &&
+                                (property_->getSemantics().getString() == "Text");
 
-    if (auto* map = propertyPtr_->data().getDataMap()) {
+    if (const auto* map = propertyPtr_->data().getDataMap()) {
         if (performMapping) {
             const dvec2 range = map->valueRange;
             std::ranges::for_each(
@@ -96,7 +96,7 @@ void TFPrimitiveSetWidgetQt::setPropertyValue() {
         }
     }
     {
-        NetworkLock lock(property_);
+        const NetworkLock lock(property_);
         propertyPtr_->get().clear();
         propertyPtr_->get().add(primitives);
     }
@@ -109,7 +109,7 @@ void TFPrimitiveSetWidgetQt::updateFromProperty() {
                           (property_->getSemantics().getString() == "Text");
 
     dvec2 range(0.0, 1.0);
-    if (auto* map = propertyPtr_->data().getDataMap()) {
+    if (const auto* map = propertyPtr_->data().getDataMap()) {
         range = map->valueRange;
     } else {
         // no need to perform mapping without a proper value range
@@ -124,7 +124,7 @@ void TFPrimitiveSetWidgetQt::updateFromProperty() {
         ss << pos << " " << p.getAlpha() << " " << color::rgb2hex(p.getColor()) << "\n";
     });
 
-    QString newContents(utilqt::toQString(ss.str()));
+    const QString newContents(utilqt::toQString(ss.str()));
     if (textEdit_->toPlainText() != newContents) {
         textEdit_->setPlainText(newContents);
         textEdit_->moveCursor(QTextCursor::Start);
@@ -133,7 +133,7 @@ void TFPrimitiveSetWidgetQt::updateFromProperty() {
 }
 
 void TFPrimitiveSetWidgetQt::initializeWidget() {
-    QHBoxLayout* hLayout = new QHBoxLayout;
+    auto* hLayout = new QHBoxLayout;
     setSpacingAndMargins(hLayout);
 
     label_ = new EditableLabelQt(this, property_);
@@ -161,7 +161,7 @@ std::vector<TFPrimitiveData> TFPrimitiveSetWidgetQt::extractPrimitiveData(
     auto convertToDouble = [&errorMsg](double& retVal, const std::string& str,
                                        const std::string& errSource, size_t line) {
         try {
-            size_t idx;
+            size_t idx = 0;
             retVal = std::stod(str, &idx);
             if (idx != str.size()) {
                 // there was some excess data after the number

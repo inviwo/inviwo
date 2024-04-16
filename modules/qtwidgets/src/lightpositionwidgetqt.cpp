@@ -79,7 +79,7 @@ void LightPositionWidgetQt::mousePressEvent(QMouseEvent* e) {
     }
 }
 void LightPositionWidgetQt::mouseMoveEvent(QMouseEvent* e) {
-    if (e->buttons() & Qt::MouseButton::LeftButton) {
+    if (e->buttons() & Qt::MouseButton::LeftButton != 0u) {
         setNewPosition(e);
     }
 }

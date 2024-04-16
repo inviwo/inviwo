@@ -103,8 +103,13 @@ public:
 template <typename U>
 class TFPropertyModel : public TFPropertyConcept {
 public:
-    TFPropertyModel(U* data)
-        : tfLike_{data}, sets_{[&]() {
+    explicit TFPropertyModel(U* data)
+        : tfLike_{data}
+        , dataOnChangeHandle_(tfLike_->data().onChange([this]() {
+            onDataChangeDispatcher_.invoke();
+            setUpHistogramCallback();
+        }))
+        , sets_{[&]() {
             if constexpr (std::is_same_v<TransferFunctionProperty, U>) {
                 return std::array<TFPrimitiveSet*, 2>{&tfLike_->get(), nullptr};
             } else if constexpr (std::is_same_v<IsoValueProperty, U>) {
@@ -115,12 +120,7 @@ public:
             } else {
                 static_assert(util::alwaysFalse<U>(), "Type not supported");
             }
-        }()} {
-        dataOnChangeHandle_ = tfLike_->data().onChange([this]() {
-            onDataChangeDispatcher_.invoke();
-            setUpHistogramCallback();
-        });
-    }
+        }()} {}
 
     virtual Property* getProperty() const override { return tfLike_; }
 

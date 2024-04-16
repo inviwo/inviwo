@@ -42,7 +42,7 @@ class IVW_MODULE_QTWIDGETS_API TFEditorMask : public QGraphicsItem,
                                               public TFPropertyObserver,
                                               public TFPrimitiveSetObserver {
 public:
-    TFEditorMask(TFPropertyConcept* c);
+    explicit TFEditorMask(TFPropertyConcept* c);
     virtual ~TFEditorMask() = default;
 
 protected:
@@ -65,7 +65,7 @@ protected:
 
 class IVW_MODULE_QTWIDGETS_API TFEditorMaskMin : public TFEditorMask {
 public:
-    TFEditorMaskMin(TFPropertyConcept* c);
+    explicit TFEditorMaskMin(TFPropertyConcept* c);
 
 private:
     virtual void onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) override;
@@ -75,7 +75,7 @@ private:
 
 class IVW_MODULE_QTWIDGETS_API TFEditorMaskMax : public TFEditorMask {
 public:
-    TFEditorMaskMax(TFPropertyConcept* c);
+    explicit TFEditorMaskMax(TFPropertyConcept* c);
 
 private:
     virtual void onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) override;

@@ -160,10 +160,6 @@ void ImageStackVolumeSource::process() {
     guard.release();
 }
 
-bool ImageStackVolumeSource::isValidImageFile(std::string fileName) {
-    return readerFactory_->hasReaderForTypeAndExtension<Layer>(fileName);
-}
-
 std::shared_ptr<Volume> ImageStackVolumeSource::load() {
     const auto files = filePattern_.getFileList();
     if (files.empty()) {
@@ -199,14 +195,14 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
     // Call getRepresentation here to enforce creating a ram representation.
     // Otherwise the default image size, i.e. 256x256, will be reported since the LayerDisk
     // does not provide meta data for all image formats.
-    const auto referenceRAM = referenceLayer->getRepresentation<LayerRAM>();
+    const auto* referenceRAM = referenceLayer->getRepresentation<LayerRAM>();
     if (glm::compMul(referenceRAM->getDimensions()) == 0) {
         throw Exception(
             fmt::format("Could not extract valid image dimensions from {}", first->first),
             IVW_CONTEXT);
     }
 
-    const auto refFormat = referenceRAM->getDataFormat();
+    const auto* refFormat = referenceRAM->getDataFormat();
     if ((refFormat->getNumericType() != NumericType::Float) && (refFormat->getPrecision() > 32)) {
         throw DataReaderException(
             fmt::format("Unsupported integer bit depth ({})", refFormat->getPrecision()),
@@ -214,11 +210,11 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
     }
 
     return referenceRAM->dispatch<std::shared_ptr<Volume>, FloatOrIntMax32>(
-        [&](auto reflayerprecision) {
-            using ValueType = util::PrecisionValueType<decltype(reflayerprecision)>;
+        [&](auto refLayerPrecision) {
+            using ValueType = util::PrecisionValueType<decltype(refLayerPrecision)>;
             using PrimitiveType = typename DataFormat<ValueType>::primitive;
 
-            const size2_t layerDims = reflayerprecision->getDimensions();
+            const size2_t layerDims = refLayerPrecision->getDimensions();
             const size_t sliceOffset = glm::compMul(layerDims);
 
             // create matching volume representation
@@ -230,7 +226,7 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
                 std::fill(volData + s * sliceOffset, volData + (s + 1) * sliceOffset, ValueType{0});
             };
 
-            const auto read = [&](const auto& file, auto reader) -> std::shared_ptr<Layer> {
+            const auto read = [&](const auto& file, auto* reader) -> std::shared_ptr<Layer> {
                 try {
                     return reader->readData(file);
                 } catch (DataReaderException const& e) {
@@ -243,7 +239,7 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
             for (auto&& elem : util::enumerate(slices)) {
                 const auto slice = elem.first();
                 const auto file = elem.second().first;
-                const auto reader = elem.second().second.get();
+                auto* reader = elem.second().second.get();
                 if (!reader) {
                     fill(slice);
                     continue;
@@ -254,9 +250,9 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
                     fill(slice);
                     continue;
                 }
-                const auto layerRAM = layer->template getRepresentation<LayerRAM>();
+                const auto* layerRAM = layer->template getRepresentation<LayerRAM>();
 
-                const auto format = layerRAM->getDataFormat();
+                const auto* format = layerRAM->getDataFormat();
                 if ((format->getNumericType() != NumericType::Float) &&
                     (format->getPrecision() > 32)) {
                     LogProcessorWarn(fmt::format("Unsupported integer bit depth: {}, for image: {}",

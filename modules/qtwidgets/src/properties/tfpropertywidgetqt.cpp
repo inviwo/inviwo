@@ -64,7 +64,7 @@ TFPropertyWidgetQt::TFPropertyWidgetQt(TransferFunctionProperty* property)
     setFocusPolicy(btnOpenTF_->focusPolicy());
     setFocusProxy(btnOpenTF_);
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
 
     hLayout->addWidget(label_);
@@ -80,11 +80,11 @@ TFPropertyWidgetQt::TFPropertyWidgetQt(TransferFunctionProperty* property)
     });
 
     {
-        QWidget* widget = new QWidget(this);
+        auto* widget = new QWidget(this);
         QSizePolicy sliderPol = widget->sizePolicy();
         sliderPol.setHorizontalStretch(3);
         widget->setSizePolicy(sliderPol);
-        QGridLayout* vLayout = new QGridLayout();
+        auto* vLayout = new QGridLayout();
         widget->setLayout(vLayout);
         vLayout->setContentsMargins(0, 0, 0, 0);
         vLayout->setSpacing(0);
@@ -126,7 +126,7 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
 
     menu->addSeparator();
 
-    auto clearTF = menu->addAction("&Clear TF");
+    auto* clearTF = menu->addAction("&Clear TF");
     clearTF->setDisabled(property_->getReadOnly());
 
     connect(clearTF, &QAction::triggered, this, [this]() {
@@ -142,8 +142,8 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
 
     menu->addSeparator();
 
-    auto importTF = menu->addAction("&Import TF...");
-    auto exportTF = menu->addAction("&Export TF...");
+    auto* importTF = menu->addAction("&Import TF...");
+    auto* exportTF = menu->addAction("&Export TF...");
     importTF->setDisabled(property_->getReadOnly());
     connect(importTF, &QAction::triggered, this, [this]() {
         if (auto tf = util::importTransferFunctionDialog(this)) {

@@ -50,7 +50,7 @@ TFEditorControlPoint::TFEditorControlPoint(TFPrimitive& primitive) : TFEditorPri
 }
 
 QRectF TFEditorControlPoint::boundingRect() const {
-    double bBoxSize = getSize() + 5.0;  //<! consider size of pen
+    const double bBoxSize = getSize() + 5.0;  //<! consider size of pen
     auto bRect = QRectF(-bBoxSize / 2.0, -bBoxSize / 2.0, bBoxSize, bBoxSize);
 
     return bRect;
@@ -82,7 +82,7 @@ void TFEditorControlPoint::paint(QPainter* painter,
 }
 
 TFMoveMode TFEditorControlPoint::moveMode() const {
-    if (auto tfe = qobject_cast<TFEditor*>(scene())) {
+    if (auto* tfe = qobject_cast<TFEditor*>(scene())) {
         return tfe->getMoveMode();
     }
     return TFMoveMode::Free;
@@ -119,7 +119,7 @@ QVariant TFEditorControlPoint::itemChange(GraphicsItemChange change, const QVari
         if (moveMode() == TFMoveMode::Free) {
             if ((left_ && left_->left && *(left_->left) > *this) ||
                 (right_ && right_->right && *(right_->right) < *this)) {
-                if (auto tfe = qobject_cast<TFEditor*>(scene())) {
+                if (auto* tfe = qobject_cast<TFEditor*>(scene())) {
                     tfe->updateConnections();
                     return {};
                 }
@@ -132,10 +132,10 @@ QVariant TFEditorControlPoint::itemChange(GraphicsItemChange change, const QVari
                 right_->right->setPos(QPointF(scenePos().x() + d, right_->right->scenePos().y()));
             }
         }
-        if (auto r = right()) {
+        if (auto* r = right()) {
             r->updateShape();
         }
-        if (auto l = left()) {
+        if (auto* l = left()) {
             l->updateShape();
         }
         return {};

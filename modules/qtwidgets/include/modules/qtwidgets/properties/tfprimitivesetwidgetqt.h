@@ -59,8 +59,8 @@ class TFData;
  */
 class IVW_MODULE_QTWIDGETS_API TFPrimitiveSetWidgetQt : public PropertyWidgetQt {
 public:
-    TFPrimitiveSetWidgetQt(IsoValueProperty* property);
-    TFPrimitiveSetWidgetQt(TransferFunctionProperty* property);
+    explicit TFPrimitiveSetWidgetQt(IsoValueProperty* property);
+    explicit TFPrimitiveSetWidgetQt(TransferFunctionProperty* property);
     virtual ~TFPrimitiveSetWidgetQt() = default;
 
     virtual void updateFromProperty() override;
@@ -80,7 +80,7 @@ private:
     template <typename U>
     class PropertyModel : public PropertyConcept {
     public:
-        PropertyModel(U data) : data_(data) {}
+        explicit PropertyModel(U data) : data_(data) {}
 
         virtual TFPrimitiveSet& get() override { return data_->get(); }
         virtual const TFData& data() const override { return data_->data(); }
@@ -91,8 +91,8 @@ private:
 
     std::unique_ptr<PropertyConcept> propertyPtr_;
 
-    MultilineTextEdit* textEdit_;
-    EditableLabelQt* label_;
+    MultilineTextEdit* textEdit_{};
+    EditableLabelQt* label_{};
 };
 
 }  // namespace inviwo

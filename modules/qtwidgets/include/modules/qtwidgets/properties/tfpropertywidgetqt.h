@@ -53,7 +53,7 @@ class TransferFunctionProperty;
 
 class IVW_MODULE_QTWIDGETS_API TFPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    TFPropertyWidgetQt(TransferFunctionProperty* property);
+    explicit TFPropertyWidgetQt(TransferFunctionProperty* property);
     virtual ~TFPropertyWidgetQt();
 
     virtual void updateFromProperty() override;
@@ -73,9 +73,9 @@ private:
 
 class IVW_MODULE_QTWIDGETS_API TFPushButton : public IvwPushButton {
 public:
-    TFPushButton(TransferFunctionProperty* property, QWidget* parent = nullptr);
-    TFPushButton(IsoValueProperty* property, QWidget* parent = nullptr);
-    TFPushButton(IsoTFProperty* property, QWidget* parent = nullptr);
+    explicit TFPushButton(TransferFunctionProperty* property, QWidget* parent = nullptr);
+    explicit TFPushButton(IsoValueProperty* property, QWidget* parent = nullptr);
+    explicit TFPushButton(IsoTFProperty* property, QWidget* parent = nullptr);
     virtual ~TFPushButton() = default;
     void updateFromProperty();
 

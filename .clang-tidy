@@ -12,7 +12,8 @@ Checks: >
     -cppcoreguidelines-owning-memory,
     -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
     -cppcoreguidelines-pro-bounds-constant-array-index,
-    -cppcoreguidelines-use-default-member-init
+    -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+    -cppcoreguidelines-use-default-member-init,
   google-*,
   llvm-*,
     -llvm-include-order,
@@ -35,8 +36,9 @@ Checks: >
     -readability-duplicate-include,
     -readability-magic-numbers,
     -readability-uppercase-literal-suffix,
-    -readability-named-parameter
+    -readability-named-parameter,
 
+  -clang-diagnostic-unknown-pragmas,
 
 CheckOptions: 
   bugprone-easily-swappable-parameters.MinimumLength: 3
@@ -46,7 +48,6 @@ CheckOptions:
   readability-identifier-length.MinimumExceptionNameLength: '1'
   readability-identifier-length.MinimumLoopCounterNameLength: '1'
   readability-implicit-bool-conversion.AllowPointerConditions: true
-
 
 FormatStyle: file
 WarningsAsErrors: ''

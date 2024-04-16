@@ -86,7 +86,7 @@ struct PtrEqual {
 class IVW_MODULE_QTWIDGETS_API TFEditor : public QGraphicsScene, public TFPrimitiveSetObserver {
     Q_OBJECT
 public:
-    TFEditor(TFPropertyConcept* tfProperty, QWidget* parent = nullptr);
+    explicit TFEditor(TFPropertyConcept* tfProperty, QWidget* parent = nullptr);
     virtual ~TFEditor();
 
     void setMoveMode(TFMoveMode i);
@@ -139,7 +139,7 @@ private:
     std::vector<TFEditorPrimitive*> getSelectedPrimitiveItems() const;
     static void setSelected(std::span<TFEditorPrimitive*> primitives, bool selected);
 
-    QTransform calcTransform(QPointF scenePos, QPointF lastScenePos);
+    QTransform calcTransform(QPointF scenePos, QPointF lastScenePos) const;
     static QPointF calcTransformRef(std::span<TFEditorPrimitive*> primitives,
                                     TFEditorPrimitive* start);
     static void move(std::span<TFEditorPrimitive*> primitives, const QTransform& transform,

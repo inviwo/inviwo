@@ -130,7 +130,7 @@ void PropertyEditorWidgetQt::saveState() {
     settings.setValue("floating", isFloating());
     getProperty()->setMetaData<BoolMetaData>(floatingKey, isFloating());
 
-    if (auto mainWindow = utilqt::getApplicationMainWindow()) {
+    if (auto* mainWindow = utilqt::getApplicationMainWindow()) {
         settings.setValue("dockarea", static_cast<int>(mainWindow->dockWidgetArea(this)));
         getProperty()->setMetaData<IntMetaData>(dockareaKey,
                                                 static_cast<int>(mainWindow->dockWidgetArea(this)));
@@ -163,7 +163,7 @@ void PropertyEditorWidgetQt::loadState() {
         setFloating(settings.value("floating").toBool());
     }
 
-    if (auto mainWindow = utilqt::getApplicationMainWindow()) {
+    if (auto* mainWindow = utilqt::getApplicationMainWindow()) {
         if (getProperty()->hasMetaData<IntMetaData>(dockareaKey)) {
             auto dockarea = static_cast<Qt::DockWidgetArea>(getProperty()->getMetaData<IntMetaData>(
                 dockareaKey, static_cast<int>(Qt::NoDockWidgetArea)));
@@ -185,7 +185,7 @@ void PropertyEditorWidgetQt::loadState() {
             utilqt::toQPoint(getProperty()->getMetaData<IntVec2MetaData>(positionKey, ivec2{0}));
         auto newPos = utilqt::movePointOntoDesktop(pos, InviwoDockWidget::size(), false);
         move(newPos);
-    } else if (auto mainWindow = utilqt::getApplicationMainWindow()) {
+    } else if (auto* mainWindow = utilqt::getApplicationMainWindow()) {
         // We assume that this is a new widget and give it a new position
         auto newPos = mainWindow->pos();
         newPos += utilqt::offsetWidget();

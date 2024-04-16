@@ -75,16 +75,17 @@ pybind11::dtype toNumPyFormat(const DataFormatBase* df) {
 const DataFormatBase* getDataFormat(pybind11::ssize_t components, pybind11::array& arr) {
     auto k = arr.dtype().kind();
     auto numType = [&]() {
-        if (k == 'f')
+        if (k == 'f') {
             return NumericType::Float;
-        else if (k == 'i')
+        } else if (k == 'i') {
             return NumericType::SignedInteger;
-        else if (k == 'u')
+        } else if (k == 'u') {
             return NumericType::UnsignedInteger;
+        }
         return NumericType::NotSpecialized;
     }();
-    auto format = DataFormatBase::get(numType, static_cast<size_t>(components),
-                                      static_cast<size_t>(arr.itemsize() * 8));
+    const auto* format = DataFormatBase::get(numType, static_cast<size_t>(components),
+                                             static_cast<size_t>(arr.itemsize() * 8));
     if (!format) {
         throw pybind11::value_error(
             "Could not map the type of the given array to an inviwo format");
@@ -95,7 +96,7 @@ const DataFormatBase* getDataFormat(pybind11::ssize_t components, pybind11::arra
 std::unique_ptr<BufferBase> createBuffer(pybind11::array& arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 1 || ndim == 2, "ndims must be either 1 or 2");
-    auto df = pyutil::getDataFormat(ndim == 1 ? 1 : arr.shape(1), arr);
+    const auto* df = pyutil::getDataFormat(ndim == 1 ? 1 : arr.shape(1), arr);
 
     if (pybind11::array::c_style == (arr.flags() & pybind11::array::c_style)) {
         return dispatching::singleDispatch<std::unique_ptr<BufferBase>, dispatching::filter::All>(
@@ -115,7 +116,7 @@ std::unique_ptr<BufferBase> createBuffer(pybind11::array& arr) {
 std::unique_ptr<Layer> createLayer(pybind11::array& arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 2 || ndim == 3, "Ndims must be either 2 or 3");
-    auto df = pyutil::getDataFormat(ndim == 2 ? 1 : arr.shape(2), arr);
+    const auto* df = pyutil::getDataFormat(ndim == 2 ? 1 : arr.shape(2), arr);
 
     if (pybind11::array::c_style == (arr.flags() & pybind11::array::c_style)) {
         return dispatching::singleDispatch<std::unique_ptr<Layer>, dispatching::filter::All>(
@@ -136,7 +137,7 @@ std::unique_ptr<Layer> createLayer(pybind11::array& arr) {
 std::unique_ptr<Volume> createVolume(pybind11::array& arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 3 || ndim == 4, "Ndims must be either 3 or 4");
-    auto df = pyutil::getDataFormat(ndim == 3 ? 1 : arr.shape(3), arr);
+    const auto* df = pyutil::getDataFormat(ndim == 3 ? 1 : arr.shape(3), arr);
 
     if (pybind11::array::c_style == (arr.flags() & pybind11::array::c_style)) {
         return dispatching::singleDispatch<std::unique_ptr<Volume>, dispatching::filter::All>(

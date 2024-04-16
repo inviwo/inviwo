@@ -65,7 +65,7 @@ QRectF TFEditorMask::boundingRect() const {
     if (scene()->views().empty()) {
         return bRect;
     }
-    auto view = scene()->views().front();
+    auto* view = scene()->views().front();
     auto trans = deviceTransform(view->viewportTransform()).inverted();
     const auto topLeft = trans.map(view->rect().topLeft());
     const auto bottomRight = trans.map(view->rect().bottomRight());
@@ -91,13 +91,13 @@ void TFEditorMask::paint(QPainter* painter,
 
     if (!scene()->views().empty()) {
         // draw vertical line
-        utilqt::Save saved{painter};
+        const utilqt::Save saved{painter};
 
         painter->setPen(
             utilqt::cosmeticPen(QColor(64, 64, 64, 150), penWidth, Qt::SolidLine, Qt::RoundCap));
         painter->setBrush(QColor(64, 64, 64, 100));
 
-        auto view = scene()->views().front();
+        auto* view = scene()->views().front();
         auto trans = deviceTransform(view->viewportTransform()).inverted();
         const auto topLeft = trans.map(view->rect().topLeft());
         const auto bottomRight = trans.map(view->rect().bottomRight());

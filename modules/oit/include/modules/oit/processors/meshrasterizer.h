@@ -207,13 +207,13 @@ protected:
         HatchingSettings hatching_;
 
         // to copy front to back:
-        FaceSettings* frontPart_;
+        FaceSettings* frontPart_{};
 
         void copyFrontToBack();
 
         void setUniforms(Shader& shader, std::string_view prefix) const;
 
-        bool lastOpaque_;
+        bool lastOpaque_{};
     };
 
     std::array<FaceSettings, 2> faceSettings_;
@@ -224,8 +224,8 @@ protected:
     /**
      * \brief This flag is set to true if adjacency information is available in the shader.
      */
-    bool meshHasAdjacency_;
-    bool supportsFragmentLists_;
+    bool meshHasAdjacency_{};
+    bool supportsFragmentLists_{};
 };
 
 }  // namespace inviwo

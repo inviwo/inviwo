@@ -85,7 +85,7 @@ public slots:
      * In case, multiple primitives are selected, the values are considered ambiguous unless
      * they all have the same value. The position, alpha, and color are considered separately.
      */
-    void updateSelection(const std::vector<TFPrimitive*> selection);
+    void updateSelection(std::vector<TFPrimitive*> selection);
 
 private:
     virtual void onTFPrimitiveChange(const TFPrimitive& p) override;

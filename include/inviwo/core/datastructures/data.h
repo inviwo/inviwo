@@ -261,9 +261,10 @@ std::shared_ptr<T> Data<Self, Repr>::getReprInternal(D& data) {
                     data.lastValidRepresentation_->setValid(true);
                 } else {  // No representation found, create it
                     dstRepr = converter->createFrom(srcRepr);
-                    if (!dstRepr)
+                    if (!dstRepr) {
                         throw ConverterException("Converter failed to create",
                                                  IVW_CONTEXT_CUSTOM("Data"));
+                    }
                     data.lastValidRepresentation_ = data.addRepresentationInternal(dstRepr);
                 }
             }

@@ -142,14 +142,14 @@ private:
     std::array<PropagationParameters, 2> propParams_;
 
     FrameBufferObject mergeFBO_;
-    float blendingFactor_;
+    float blendingFactor_{};
 
     bool internalVolumesInvalid_;
     size3_t volumeDimOut_;
-    vec3 volumeDimOutF_;
-    vec3 volumeDimOutFRCP_;
-    vec3 volumeDimInF_;
-    vec3 volumeDimInFRCP_;
+    vec3 volumeDimOutF_{};
+    vec3 volumeDimOutFRCP_{};
+    vec3 volumeDimInF_{};
+    vec3 volumeDimInFRCP_{};
     vec3 lightDir_;
     vec3 lightPos_;
     LightSourceType lightType_;

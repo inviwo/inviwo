@@ -106,7 +106,7 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
         if (!volume_.hasData()) return;
         const auto volume = volume_.getData();
 
-        NetworkLock lock(this);
+        NetworkLock const lock(this);
 
         const ivec3 dims{volume->getDimensions()};
         for (size_t i = 0; i < 3; ++i) {
@@ -159,7 +159,7 @@ void AxisAlignedCutPlane::process() {
         return trafos;
     }();
 
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
     TextureUnitContainer cont;
 
     sliceShader_.activate();

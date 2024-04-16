@@ -47,8 +47,8 @@ class VolumeRAM;
 
 class IVW_MODULE_QTWIDGETS_API TFEditorView : public QGraphicsView, public TFPropertyObserver {
 public:
-    TFEditorView(TFPropertyConcept* tfProperty, QGraphicsScene* scene = nullptr,
-                 QWidget* parent = nullptr);
+    explicit TFEditorView(TFPropertyConcept* tfProperty, QGraphicsScene* scene = nullptr,
+                          QWidget* parent = nullptr);
     ~TFEditorView();
 
 protected:
@@ -74,10 +74,10 @@ private:
         HistogramSelection selection = histogramSelectionAll;
         std::vector<Histogram1D> histograms = {};
         std::vector<QPolygonF> polygons = {};
-        void paintHistogram(QPainter* painter, const QPolygonF& histogram, size_t channel,
-                            size_t nChannels, const QRectF& sceneRect) const;
-        void paintLabel(QPainter* painter, size_t channel, size_t count, size_t nChannels,
-                        const QRect& rect) const;
+        static void paintHistogram(QPainter* painter, const QPolygonF& histogram, size_t channel,
+                                   size_t nChannels, const QRectF& sceneRect);
+        static void paintLabel(QPainter* painter, size_t channel, size_t count, size_t nChannels,
+                               const QRect& rect);
         void paintState(QPainter* painter, const QRect& rect) const;
         void paintHistograms(QPainter* painter, const QRectF& sceneRect, const QRect& rect) const;
         static QPolygonF createHistogramPolygon(const Histogram1D& histogram, HistogramMode mode);
