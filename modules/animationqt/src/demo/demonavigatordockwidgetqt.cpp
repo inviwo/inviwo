@@ -73,9 +73,9 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
     setWindowIcon(
         QIcon(":/animation/icons/arrow_next_player_previous_recording_right_icon_128.png"));
 
-    QWidget* mainWidget = new QWidget();
-    QVBoxLayout* boxLayout = new QVBoxLayout();
-    QMainWindow* toolWidget = new QMainWindow();
+    auto* mainWidget = new QWidget();
+    auto* boxLayout = new QVBoxLayout();
+    auto* toolWidget = new QMainWindow();
 
     mainWidget->setLayout(boxLayout);
     setWidget(mainWidget);
@@ -89,15 +89,15 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
     }
 
     // Add all properties of DemoController
-    auto factory = util::getPropertyWidgetFactory();
-    for (auto property : controller_.getProperties()) {
+    auto* factory = util::getPropertyWidgetFactory();
+    for (auto* property : controller_.getProperties()) {
         auto propWidget = factory->create(property);
         auto propWidgetQt = static_cast<PropertyWidgetQt*>(propWidget.release());
         boxLayout->addWidget(propWidgetQt);
         propWidgetQt->initState();
     }
 
-    QToolBar* toolBar = new QToolBar();
+    auto* toolBar = new QToolBar();
     toolBar->setObjectName("DemoNavigatorToolBar");
     {
         toolWidget->setContextMenuPolicy(Qt::NoContextMenu);
@@ -113,7 +113,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
     }
 
     {
-        auto begin = toolBar->addAction(
+        auto* begin = toolBar->addAction(
             QIcon(":/animation/icons/arrow_media_next_player_previous_song_icon_128.svg"),
             "To Beginning");
         begin->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -124,7 +124,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
     }
 
     {
-        auto prev = toolBar->addAction(
+        auto* prev = toolBar->addAction(
             QIcon(":/animation/icons/arrow_direction_left_next_previous_return_icon_128.svg"),
             "Prev Key");
         prev->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -135,7 +135,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
     }
 
     {
-        auto reset = toolBar->addAction(
+        auto* reset = toolBar->addAction(
             QIcon(":/animation/icons/arrow_direction_refresh_repeat_restart_icon_128.svg"),
             "Reset Workspace");
         reset->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -145,7 +145,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
                 [&]() { controller_.onChangeSelection(DemoController::Offset::Reload); });
     }
     {
-        auto next = toolBar->addAction(
+        auto* next = toolBar->addAction(
             QIcon(":/animation/icons/arrow_direction_previous_right_icon_128.svg"), "Next Demo");
         next->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         next->setToolTip("Next Demo");
@@ -155,7 +155,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
     }
 
     {
-        auto end = toolBar->addAction(
+        auto* end = toolBar->addAction(
             QIcon(":/animation/icons/arrow_next_player_previous_icon_128.svg"), "To End");
         end->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         end->setToolTip("To End");

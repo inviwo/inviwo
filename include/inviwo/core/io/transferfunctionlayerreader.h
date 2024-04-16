@@ -41,7 +41,7 @@ class DataReaderFactory;
 
 class IVW_CORE_API TransferFunctionLayerReader : public DataReaderType<TransferFunction> {
 public:
-    TransferFunctionLayerReader(std::unique_ptr<DataReaderType<Layer>> layerReader);
+    explicit TransferFunctionLayerReader(std::unique_ptr<DataReaderType<Layer>> layerReader);
     TransferFunctionLayerReader(const TransferFunctionLayerReader& rhs);
     TransferFunctionLayerReader(TransferFunctionLayerReader&&) noexcept = default;
     TransferFunctionLayerReader& operator=(const TransferFunctionLayerReader& that);
@@ -59,7 +59,7 @@ private:
 
 class IVW_CORE_API TransferFunctionLayerReaderWrapper : public FactoryObserver<DataReader> {
 public:
-    TransferFunctionLayerReaderWrapper(DataReaderFactory* factory);
+    explicit TransferFunctionLayerReaderWrapper(DataReaderFactory* factory);
     virtual void onRegister(DataReader* reader) override;
     virtual void onUnRegister(DataReader* reader) override;
 

@@ -102,8 +102,9 @@ U accumulate(T x, U init, BinaryOperation op) {
 
 template <glm::length_t L, class U, glm::qualifier Q,
           template <glm::length_t, typename, glm::qualifier> class vecType, class BinaryOperation>
-typename std::enable_if<util::rank<vecType<L, U, Q>>::value == 1, U>::type accumulate(
-    vecType<L, U, Q> const& x, U init, BinaryOperation op) {
+std::enable_if_t<util::rank<vecType<L, U, Q>>::value == 1, U> accumulate(const vecType<L, U, Q>& x,
+                                                                         U init,
+                                                                         BinaryOperation op) {
     for (glm::length_t i = 0; i < L; ++i) init = op(init, x[i]);
     return init;
 }
@@ -111,10 +112,11 @@ typename std::enable_if<util::rank<vecType<L, U, Q>>::value == 1, U>::type accum
 template <glm::length_t C, glm::length_t R, class U, glm::qualifier Q,
           template <glm::length_t, glm::length_t, typename, glm::qualifier> class vecType,
           class BinaryOperation>
-typename std::enable_if<util::rank<vecType<C, R, U, Q>>::value == 2, U>::type accumulate(
-    vecType<C, R, U, Q> const& x, U init, BinaryOperation op) {
-    for (size_t i = 0; i < C; ++i)
+std::enable_if_t<util::rank<vecType<C, R, U, Q>>::value == 2, U> accumulate(
+    const vecType<C, R, U, Q>& x, U init, BinaryOperation op) {
+    for (size_t i = 0; i < C; ++i) {
         for (size_t j = 0; j < R; ++j) init = op(init, x[i][j]);
+    }
 
     return init;
 }
@@ -201,14 +203,12 @@ struct min<glm::mat<C, R, T, Q>> {
 
 template <typename T>
 struct almostEqual {
-    template <typename U = T,
-              typename std::enable_if<std::is_floating_point<U>::value, int>::type = 0>
+    template <typename U = T, std::enable_if_t<std::is_floating_point_v<U>, int> = 0>
     static bool value(const T& x, const T& y, int ulp) {
         return glm::equal(x, y, ulp);
     }
 
-    template <typename U = T,
-              typename std::enable_if<!std::is_floating_point<U>::value, int>::type = 0>
+    template <typename U = T, std::enable_if_t<!std::is_floating_point_v<U>, int> = 0>
     static bool value(const T& x, const T& y, int) {
         return x == y;
     }
@@ -216,14 +216,12 @@ struct almostEqual {
 
 template <glm::length_t L, typename T, glm::qualifier Q>
 struct almostEqual<glm::vec<L, T, Q>> {
-    template <typename U = T,
-              typename std::enable_if<std::is_floating_point<U>::value, int>::type = 0>
+    template <typename U = T, std::enable_if_t<std::is_floating_point_v<U>, int> = 0>
     static bool value(const glm::vec<L, T, Q>& x, const glm::vec<L, T, Q>& y, int ulp) {
         return glm::all(glm::equal(x, y, ulp));
     }
 
-    template <typename U = T,
-              typename std::enable_if<!std::is_floating_point<U>::value, int>::type = 0>
+    template <typename U = T, std::enable_if_t<!std::is_floating_point_v<U>, int> = 0>
     static bool value(const glm::vec<L, T, Q>& x, const glm::vec<L, T, Q>& y, int) {
         return x == y;
     }
@@ -231,15 +229,13 @@ struct almostEqual<glm::vec<L, T, Q>> {
 
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 struct almostEqual<glm::mat<C, R, T, Q>> {
-    template <typename U = T,
-              typename std::enable_if<std::is_floating_point<U>::value, int>::type = 0>
+    template <typename U = T, std::enable_if_t<std::is_floating_point_v<U>, int> = 0>
     static bool value(const glm::mat<C, R, T, Q>& x, const glm::mat<C, R, T, Q>& y, int ulp) {
         return glm::all(glm::equal(x, y, ulp));
     }
 
-    template <typename U = T,
-              typename std::enable_if<!std::is_floating_point<U>::value, int>::type = 0>
-    static bool value(const glm::mat<C, R, T, Q>& x, const glm::mat<C, R, T, Q>& y, int ulp) {
+    template <typename U = T, std::enable_if_t<!std::is_floating_point_v<U>, int> = 0>
+    static bool value(const glm::mat<C, R, T, Q>& x, const glm::mat<C, R, T, Q>& y, int /*ulp*/) {
         return x == y;
     }
 };

@@ -60,11 +60,11 @@ public:
     // Default constructors would call the base class constructor of Observable and thereby
     // copy all observers. This must be avoided since TFPrimitives are a part of a property
     // and when setting/assigning a property, no observers must be copied!
-    TFPrimitive(const TFPrimitiveData& data);
+    explicit TFPrimitive(const TFPrimitiveData& data);
     TFPrimitive(const TFPrimitive& rhs);
-    TFPrimitive(TFPrimitive&& rhs);
+    TFPrimitive(TFPrimitive&& rhs) noexcept;
     TFPrimitive& operator=(const TFPrimitive& that);
-    TFPrimitive& operator=(TFPrimitive&& that);
+    TFPrimitive& operator=(TFPrimitive&& that) noexcept;
     virtual ~TFPrimitive() = default;
 
     void setData(const TFPrimitiveData& data);

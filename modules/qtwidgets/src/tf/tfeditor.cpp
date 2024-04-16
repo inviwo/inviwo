@@ -814,9 +814,9 @@ bool TFEditor::handleGroupSelection(QKeyEvent* event) {
     }
     const int group = it->second;
 
-    if (event->modifiers() & Qt::ControlModifier != 0u) {  // Create group
+    if (event->modifiers() & Qt::ControlModifier) {  // Create group
         groups_[group] = getSelectedPrimitiveItems();
-    } else if (event->modifiers() & Qt::ShiftModifier != 0u) {
+    } else if (event->modifiers() & Qt::ShiftModifier) {
         setSelected(groups_[group], true);
     } else {
         auto selection = getSelectedPrimitiveItems();
@@ -827,7 +827,7 @@ bool TFEditor::handleGroupSelection(QKeyEvent* event) {
 }
 
 bool TFEditor::handleMoveSelection(QKeyEvent* event) {
-    if (event->modifiers() & Qt::ControlModifier != 0u) {
+    if (event->modifiers() & Qt::ControlModifier) {
         return false;
     }
     const auto k = event->key();
@@ -859,9 +859,9 @@ bool TFEditor::handleMoveSelection(QKeyEvent* event) {
 
     constexpr double stepUpScalingFactor = 5.0;
     constexpr double stepDownScalingFactor = 0.2;
-    if (event->modifiers() & Qt::ShiftModifier != 0u) {
+    if (event->modifiers() & Qt::ShiftModifier) {
         delta *= stepUpScalingFactor;
-    } else if (event->modifiers() & Qt::AltModifier != 0u) {
+    } else if (event->modifiers() & Qt::AltModifier) {
         delta *= stepDownScalingFactor;
     }
 

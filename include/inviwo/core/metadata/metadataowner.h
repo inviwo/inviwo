@@ -141,8 +141,9 @@ template <typename T, typename U>
     requires std::derived_from<T, MetaData> && Gettable<T, U>
 U MetaDataOwner::getMetaData(std::string_view key, U val) const {
     if (const MetaData* baseMetadata = metaData_.get(key)) {
-        if (auto derivedMetaData = dynamic_cast<const T*>(baseMetadata))
+        if (auto derivedMetaData = dynamic_cast<const T*>(baseMetadata)) {
             return derivedMetaData->get();
+        }
     }
     return val;
 }

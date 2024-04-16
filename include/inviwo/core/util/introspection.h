@@ -42,9 +42,7 @@
 #include <string>
 #include <warn/pop>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 namespace detail {
 
@@ -89,7 +87,7 @@ const std::string& classIdentifier() {
         return T::classIdentifier;
     } else {
         static_assert(util::alwaysFalse<T>(), "ClassIdentifier is missing for type");
-        static std::string unknown{"Unknown"};
+        static const std::string unknown{"Unknown"};
         return unknown;
     }
 }
@@ -106,7 +104,7 @@ const std::string& dataName() {
     } else if constexpr (HasClassIdentifierLower<T>::value) {
         return T::classIdentifier;
     } else {
-        static std::string unknown{"Unknown"};
+        static const std::string unknown{"Unknown"};
         return unknown;
     }
 }
@@ -163,6 +161,4 @@ Document info(const T& data) {
     }
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

@@ -47,7 +47,7 @@ TFPrimitive::TFPrimitive(const TFPrimitiveData& data)
 TFPrimitive::TFPrimitive(const TFPrimitive& rhs)
     : Observable<TFPrimitiveObserver>(), data_(rhs.data_) {}
 
-TFPrimitive::TFPrimitive(TFPrimitive&& rhs)
+TFPrimitive::TFPrimitive(TFPrimitive&& rhs) noexcept
     : Observable<TFPrimitiveObserver>(), data_(std::move(rhs.data_)) {}
 
 TFPrimitive& TFPrimitive::operator=(const TFPrimitive& rhs) {
@@ -57,7 +57,7 @@ TFPrimitive& TFPrimitive::operator=(const TFPrimitive& rhs) {
     }
     return *this;
 }
-TFPrimitive& TFPrimitive::operator=(TFPrimitive&& rhs) {
+TFPrimitive& TFPrimitive::operator=(TFPrimitive&& rhs) noexcept {
     if ((this != &rhs) && (*this != rhs)) {
         data_ = rhs.data_;
         notifyTFPrimitiveObservers();

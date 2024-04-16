@@ -362,7 +362,7 @@ bool Observable<T>::removeObserverInternal(Observer* aObserver) {
 namespace util {
 class IVW_CORE_API NotificationBlocker {
 public:
-    NotificationBlocker(ObservableInterface& observable);
+    explicit NotificationBlocker(ObservableInterface& observable);
     NotificationBlocker() = delete;
     NotificationBlocker(const NotificationBlocker&) = delete;
     NotificationBlocker(NotificationBlocker&&) = delete;

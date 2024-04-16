@@ -132,11 +132,11 @@ class IVW_CORE_API Property : public PropertyObservable,
 public:
     virtual std::string getClassIdentifier() const = 0;
 
-    Property(std::string_view identifier = "", std::string_view displayName = "",
-             Document help = {},
-             InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-             PropertySemantics semantics = PropertySemantics::Default,
-             ReadOnly readOnly = ReadOnly::No);
+    explicit Property(std::string_view identifier = "", std::string_view displayName = "",
+                      Document help = {},
+                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                      PropertySemantics semantics = PropertySemantics::Default,
+                      ReadOnly readOnly = ReadOnly::No);
 
     Property(std::string_view identifier, std::string_view displayName,
              InvalidationLevel invalidationLevel,
@@ -396,7 +396,7 @@ public:
 
     class IVW_CORE_API OnChangeBlocker {
     public:
-        OnChangeBlocker(Property& property);
+        explicit OnChangeBlocker(Property& property);
         OnChangeBlocker() = delete;
         OnChangeBlocker(const OnChangeBlocker&) = delete;
         OnChangeBlocker(OnChangeBlocker&&) = delete;

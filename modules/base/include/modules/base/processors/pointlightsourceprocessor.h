@@ -65,7 +65,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    PointLightTrackball(PointLightInteractionHandler* p);
+    explicit PointLightTrackball(PointLightInteractionHandler* p);
     virtual ~PointLightTrackball() = default;
 };
 

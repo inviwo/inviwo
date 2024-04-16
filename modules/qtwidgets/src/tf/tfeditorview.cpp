@@ -160,7 +160,7 @@ void TFEditorView::wheelEvent(QWheelEvent* event) {
     } else {
         // vertical scrolling (+ optional horizontal if two-axis wheel)
 
-        if (event->modifiers() & Qt::ShiftModifier != 0u) {
+        if (event->modifiers() & Qt::ShiftModifier) {
             // horizontal scrolling: map vertical wheel movement to horizontal direction
             delta.x = -delta.y;
             delta.y = 0.0;

@@ -43,7 +43,7 @@ namespace inviwo {
 class IVW_CORE_API ProcessorNetworkConverter : public VersionConverter {
 public:
     using updateType = void (ProcessorNetworkConverter::*)(TxElement*);
-    ProcessorNetworkConverter(int from);
+    explicit ProcessorNetworkConverter(int from);
     virtual bool convert(TxElement* root);
     int from_;
 

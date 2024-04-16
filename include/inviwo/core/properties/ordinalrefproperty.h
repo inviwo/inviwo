@@ -44,6 +44,7 @@
 
 #include <fmt/core.h>
 #include <ostream>
+#include <utility>
 
 namespace inviwo {
 
@@ -87,7 +88,7 @@ struct OrdinalRefPropertyState {
         return *this;
     }
     auto set(PropertySemantics newSemantics) -> OrdinalRefPropertyState {
-        semantics = newSemantics;
+        semantics = std::move(newSemantics);
         return *this;
     }
     auto set(Document newHelp) -> OrdinalRefPropertyState {
