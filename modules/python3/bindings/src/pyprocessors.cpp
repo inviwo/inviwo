@@ -136,6 +136,8 @@ void exposeProcessors(pybind11::module& m) {
         .def_readonly_static("CL", &Tags::CL)
         .def_readonly_static("PY", &Tags::PY);
 
+    py::implicitly_convertible<Tag, Tags>();
+
     py::class_<ProcessorInfo>(m, "ProcessorInfo")
         .def(py::init<std::string, std::string, std::string, CodeState, Tags, Document>(),
              py::arg("classIdentifier"), py::arg("displayName"), py::arg("category") = "Python",
