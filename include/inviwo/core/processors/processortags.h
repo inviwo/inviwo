@@ -30,9 +30,12 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/exception.h>
 
 #include <string>
 #include <vector>
+#include <array>
+#include <string_view>
 
 namespace inviwo {
 
@@ -40,32 +43,39 @@ class Tags;
 
 class IVW_CORE_API Tag {
 public:
-    Tag() = default;
-    Tag(std::string_view tag);
-    const std::string& getString() const;
+    constexpr Tag() = default;
+    constexpr Tag(std::string_view tag) : tag_{0} {
+        if (tag.size() >= tag_.size()) {
+            throw Exception(IVW_CONTEXT, "Tag can only have {} chars. Found {} in {}",
+                            tag_.size() - 1, tag.size(), tag);
+        }
+        std::copy(tag.begin(), tag.end(), tag_.begin());
+    }
+    constexpr std::string_view getString() const { return std::string_view(tag_.data()); }
 
     IVW_CORE_API friend std::ostream& operator<<(std::ostream& os, const inviwo::Tag& obj);
+
     Tags operator|(const Tag& rhs) const;
 
-    friend inline bool operator==(const Tag& lhs, const Tag& rhs) {
+    friend constexpr bool operator==(const Tag& lhs, const Tag& rhs) {
         return lhs.getString() == rhs.getString();
     }
-    friend inline bool operator<(const Tag& lhs, const Tag& rhs) {
+    friend constexpr bool operator<(const Tag& lhs, const Tag& rhs) {
         return lhs.getString() < rhs.getString();
     }
-    friend inline bool operator!=(const Tag& lhs, const Tag& rhs) { return !operator==(lhs, rhs); }
-    friend inline bool operator>(const Tag& lhs, const Tag& rhs) { return operator<(rhs, lhs); }
-    friend inline bool operator<=(const Tag& lhs, const Tag& rhs) { return !operator>(lhs, rhs); }
-    friend inline bool operator>=(const Tag& lhs, const Tag& rhs) { return !operator<(lhs, rhs); }
-
-    // pre-defined platform tags
-    static const Tag GL;
-    static const Tag CL;
-    static const Tag CPU;
-    static const Tag PY;
+    friend constexpr bool operator!=(const Tag& lhs, const Tag& rhs) {
+        return !operator==(lhs, rhs);
+    }
+    friend constexpr bool operator>(const Tag& lhs, const Tag& rhs) { return operator<(rhs, lhs); }
+    friend constexpr bool operator<=(const Tag& lhs, const Tag& rhs) {
+        return !operator>(lhs, rhs);
+    }
+    friend constexpr bool operator>=(const Tag& lhs, const Tag& rhs) {
+        return !operator<(lhs, rhs);
+    }
 
 private:
-    std::string tag_;
+    std::array<char, 32> tag_;
 };
 
 class IVW_CORE_API Tags {
@@ -117,11 +127,11 @@ public:
     std::vector<Tag> tags_;
 
     // pre-defined platform tags
-    static const Tags None;
-    static const Tags GL;
-    static const Tags CL;
-    static const Tags CPU;
-    static const Tags PY;
+    static constexpr Tag None{};
+    static constexpr Tag GL{"GL"};
+    static constexpr Tag CL{"CL"};
+    static constexpr Tag CPU{"CPU"};
+    static constexpr Tag PY{"PY"};
 
     friend inline bool operator==(const Tags& lhs, const Tags& rhs) {
         return lhs.tags_ == rhs.tags_;

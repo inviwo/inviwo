@@ -61,7 +61,7 @@ const ProcessorInfo AtlasVolumeRaycaster::processorInfo_{
     "Atlas Volume Raycaster",                                  // Display name
     "Volume Rendering",                                        // Category
     CodeState::Experimental,                                   // Code state
-    Tag::GL | Tag{"Volume"} | Tag{"Raycaster"} | Tag{"Atlas"}  // Tags
+    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"} | Tag{"Atlas"}  // Tags
 };
 
 const ProcessorInfo AtlasVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }

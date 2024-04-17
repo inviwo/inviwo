@@ -53,7 +53,7 @@ const ProcessorInfo VolumeRegionStatistics::processorInfo_{
     "Volume Region Statistics",                                  // Display name
     "Volume Operation",                                          // Category
     CodeState::Stable,                                           // Code state
-    Tag::CPU | Tag{"Volume"} | Tag{"Atlas"} | Tag{"DataFrame"},  // Tags
+    Tags::CPU | Tag{"Volume"} | Tag{"Atlas"} | Tag{"DataFrame"},  // Tags
 };
 const ProcessorInfo VolumeRegionStatistics::getProcessorInfo() const { return processorInfo_; }
 

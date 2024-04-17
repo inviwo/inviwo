@@ -62,7 +62,7 @@ const ProcessorInfo MultiChannelVolumeRaycaster::processorInfo_{
     "Multichannel Volume Raycaster",            // Display name
     "Volume Rendering",                         // Category
     CodeState::Experimental,                    // Code state
-    Tag::GL | Tag{"Volume"} | Tag{"Raycaster"}  // Tags
+    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"}  // Tags
 };
 const ProcessorInfo MultiChannelVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 

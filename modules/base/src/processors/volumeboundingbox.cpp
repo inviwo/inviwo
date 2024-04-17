@@ -52,7 +52,7 @@ const ProcessorInfo VolumeBoundingBox::processorInfo_{
     "Volume Bounding Box",           // Display name
     "Volume Operation",              // Category
     CodeState::Stable,               // Code state
-    Tag::CPU,                        // Tags
+    Tags::CPU,                       // Tags
     "Creates a mesh containing the bounding box of the volume, that is lines with adjacency "
     "information."_help};
 const ProcessorInfo VolumeBoundingBox::getProcessorInfo() const { return processorInfo_; }

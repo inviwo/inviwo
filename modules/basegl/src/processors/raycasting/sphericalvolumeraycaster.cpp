@@ -59,7 +59,7 @@ const ProcessorInfo SphericalVolumeRaycaster::processorInfo_{
     "Spherical Volume Raycaster",               // Display name
     "Volume Rendering",                         // Category
     CodeState::Experimental,                    // Code state
-    Tag::GL | Tag{"Volume"} | Tag{"Raycaster"}  // Tags
+    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"}  // Tags
 };
 const ProcessorInfo SphericalVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 

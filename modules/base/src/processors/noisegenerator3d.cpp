@@ -60,7 +60,7 @@ const ProcessorInfo NoiseGenerator3D::processorInfo_{
     "Noise Generator 3D",           // Display name
     "Data Creation",                // Category
     CodeState::Experimental,        // Code state
-    Tag::CPU | Tag("Volume"),       // Tags
+    Tags::CPU | Tag("Volume"),      // Tags
     R"(
     A processor that generates noise volumes using the Mersenne Twister 19937 generator
     for random number generation.

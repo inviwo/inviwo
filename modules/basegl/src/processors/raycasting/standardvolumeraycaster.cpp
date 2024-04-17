@@ -59,7 +59,7 @@ const ProcessorInfo StandardVolumeRaycaster::processorInfo_{
     "Standard Volume Raycaster",                // Display name
     "Volume Rendering",                         // Category
     CodeState::Experimental,                    // Code state
-    Tag::GL | Tag{"Volume"} | Tag{"Raycaster"}  // Tags
+    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"}  // Tags
 };
 const ProcessorInfo StandardVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 

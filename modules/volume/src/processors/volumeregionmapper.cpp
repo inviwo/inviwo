@@ -39,7 +39,7 @@ const ProcessorInfo VolumeRegionMapper::processorInfo_{
     "Volume Region Mapper",                                     // Display name
     "Volume Operation",                                         // Category
     CodeState::Stable,                                          // Code state
-    Tag::CPU | Tag{"Volume"} | Tag{"Atlas"} | Tag{"DataFrame"}  // Tags
+    Tags::CPU | Tag{"Volume"} | Tag{"Atlas"} | Tag{"DataFrame"}  // Tags
 };
 const ProcessorInfo VolumeRegionMapper::getProcessorInfo() const { return processorInfo_; }
 
