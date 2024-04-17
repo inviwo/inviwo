@@ -64,12 +64,7 @@ void TFLookupTable::calc() {
     if (!data_) {
         data_ = std::make_unique<Layer>(repr_);
     }
-
-    // We assume the the points a sorted here.
-    auto data = repr_->getView();
-
-    tf_->interpolateAndStoreColors(data);
-
+    tf_->interpolateAndStoreColors(repr_->getView());
     data_->invalidateAllOther(repr_.get());
     invalid_ = false;
 }

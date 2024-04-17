@@ -488,7 +488,7 @@ set(SOURCE_FILES
     datastructures/representationutil.cpp
     datastructures/spatialdata.cpp
     datastructures/tfdata.cpp
-	datastructures/tflookuptable.cpp
+    datastructures/tflookuptable.cpp
     datastructures/tfprimitive.cpp
     datastructures/tfprimitiveset.cpp
     datastructures/transferfunction.cpp

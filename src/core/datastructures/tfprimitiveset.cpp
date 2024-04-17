@@ -445,7 +445,7 @@ void util::distributeAlphaEvenly(std::vector<TFPrimitive*> selection) {
     for (auto&& [index, elem] : util::enumerate(selection)) {
         elem->setAlpha(
             glm::mix(minAlpha, maxAlpha,
-                     static_cast<float>(index) / static_cast<double>(selection.size() - 1)));
+                     static_cast<float>(index) / static_cast<float>(selection.size() - 1)));
     }
 }
 
