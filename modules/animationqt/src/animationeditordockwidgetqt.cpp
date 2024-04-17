@@ -94,6 +94,63 @@ class Property;
 
 namespace animation {
 
+namespace {
+
+TextLabelOverlay* createTextLabelOverlay(QWidget* parent) {
+    auto* overlay = new TextLabelOverlay(parent);
+    auto* grid = new QGridLayout(parent);
+    const auto space = utilqt::refSpacePx(parent);
+    grid->setContentsMargins(space, space, space, space);
+    grid->addWidget(overlay, 0, 0, Qt::AlignTop | Qt::AlignLeft);
+    auto sp = overlay->sizePolicy();
+    sp.setHorizontalStretch(10);
+    sp.setHorizontalPolicy(QSizePolicy::Expanding);
+    overlay->setSizePolicy(sp);
+    return overlay;
+}
+
+QComboBox* createAnimationsList(WorkspaceAnimations& animations, QWidget* parent) {
+    auto list = new QComboBox(parent);
+    list->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    list->setInsertPolicy(QComboBox::InsertAtCurrent);
+    list->setEditable(true);
+    list->setModel(new AnimationsModel(animations, list));
+
+    QObject::connect(list, QOverload<int>::of(&QComboBox::currentIndexChanged),
+                     [ani = &animations](int index) {
+                         if (index >= 0 && index < static_cast<int>(ani->size())) {
+                             ani->setMainAnimation((*ani)[index]);
+                         }
+                     });
+
+    return list;
+}
+
+QAction* createPlayPause(AnimationController& controller) {
+    QIcon icon;
+    icon.addFile(":/animation/icons/arrow_play_player_record_right_start_icon_128.svg", QSize(),
+                 QIcon::Normal, QIcon::Off);
+    icon.addFile(":/animation/icons/film_movie_pause_player_sound_icon_128.svg", QSize(),
+                 QIcon::Normal, QIcon::On);
+    auto action = new QAction(icon, "Play/Pause");
+    action->setShortcut(Qt::Key_P);
+    action->setCheckable(true);
+    action->setChecked(controller.getState() == AnimationState::Playing);
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    action->setToolTip("Play/Pause");
+
+    QObject::connect(action, &QAction::triggered, [ctrl = &controller]() {
+        if (ctrl->getState() == AnimationState::Playing) {
+            ctrl->pause();
+        } else if (ctrl->getState() == AnimationState::Paused) {
+            ctrl->play();
+        }
+    });
+    return action;
+}
+
+}  // namespace
+
 AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     WorkspaceAnimations& animations, AnimationManager& manager, const std::string& widgetName,
     TrackWidgetQtFactory& widgetFactory, SequenceEditorFactory& editorFactory, QWidget* parent)
@@ -101,9 +158,15 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     , animations_(animations)
     , controller_{animations_.getMainAnimation().getController()}
     , manager_{manager}
-    , mainWindow_(new QMainWindow())
-    , sequenceEditorView_(new SequenceEditorPanel(controller_, manager, editorFactory, this))
-    , animationView_(new AnimationViewQt(controller_, animationEditor_.get())) {
+    , animationsList_{createAnimationsList(animations_, this)}
+    , playPause_{createPlayPause(controller_)}
+    , animationEditor_{std::make_unique<AnimationEditorQt>(
+          controller_, widgetFactory,
+          [this](std::string_view text, std::chrono::milliseconds fade) { overlay_->setText(text, fade); })}
+    , animationView_{new AnimationViewQt(controller_, animationEditor_.get())}
+    , overlay_{createTextLabelOverlay(animationView_->viewport())}
+    , sequenceEditorView_{new SequenceEditorPanel(controller_, manager, editorFactory, this)}
+    , mainWindow_{new QMainWindow()} {
 
     resize(utilqt::emToPx(this, QSizeF(100, 40)));  // default size
     setAllowedAreas(Qt::BottomDockWidgetArea);
@@ -129,28 +192,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
         propWidgetQt->initState();
     }
 
-    // Entire mid part
-    auto* overlay = new TextLabelOverlay(nullptr);
-    animationEditor_ = std::make_unique<AnimationEditorQt>(controller_, widgetFactory, *overlay);
-
-    animationView_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    {
-        overlay->setParent(animationView_->viewport());
-        auto* grid = new QGridLayout(animationView_->viewport());
-        auto const space = utilqt::refSpacePx(this);
-        grid->setContentsMargins(space, space, space, space);
-        grid->addWidget(overlay, 0, 0, Qt::AlignTop | Qt::AlignLeft);
-        auto sp = overlay->sizePolicy();
-        sp.setHorizontalStretch(10);
-        sp.setHorizontalPolicy(QSizePolicy::Expanding);
-        overlay->setSizePolicy(sp);
-    }
-
     // left part List widget of track labels
     auto* animationLabelView = new AnimationLabelViewQt(controller_);
-    animationLabelView->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
-    animationLabelView->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOn);
-    animationLabelView->verticalScrollBar()->setTracking(true);
 
     auto* splitter = new QSplitter();
     splitter->setMidLineWidth(0);
@@ -248,20 +291,9 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     }
 
     {
-        animationsList_ = new QComboBox(toolBar);
-        animationsList_->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-        animationsList_->setInsertPolicy(QComboBox::InsertAtCurrent);
-        animationsList_->setEditable(true);
-        animationsList_->setModel(new AnimationsModel(animations_, animationsList_));
         // Update currently selected index
         onAnimationChanged(&controller_, &animations_.getMainAnimation().get(),
                            &animations_.getMainAnimation().get());
-        connect(animationsList_, QOverload<int>::of(&QComboBox::currentIndexChanged),
-                [this](int index) {
-                    if (index >= 0 && index < static_cast<int>(animations_.size())) {
-                        animations_.setMainAnimation(animations_[index]);
-                    }
-                });
         toolBar->addWidget(animationsList_);
     }
 
@@ -293,28 +325,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
         });
     }
 
-    {
-        QIcon icon;
-        icon.addFile(":/animation/icons/arrow_play_player_record_right_start_icon_128.svg", QSize(),
-                     QIcon::Normal, QIcon::Off);
-        icon.addFile(":/animation/icons/film_movie_pause_player_sound_icon_128.svg", QSize(),
-                     QIcon::Normal, QIcon::On);
-        btnPlayPause_ = toolBar->addAction(icon, "Play/Pause");
-        btnPlayPause_->setShortcut(Qt::Key_P);
-        btnPlayPause_->setCheckable(true);
-        btnPlayPause_->setChecked(controller_.getState() == AnimationState::Playing);
-        btnPlayPause_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        btnPlayPause_->setToolTip("Play/Pause");
-        mainWindow_->addAction(btnPlayPause_);
-
-        connect(btnPlayPause_, &QAction::triggered, [&]() {
-            if (controller_.getState() == AnimationState::Playing) {
-                controller_.pause();
-            } else if (controller_.getState() == AnimationState::Paused) {
-                controller_.play();
-            }
-        });
-    }
+    toolBar->addAction(playPause_);
+    mainWindow_->addAction(playPause_);
 
     {
         auto* next = toolBar->addAction(
@@ -385,11 +397,11 @@ void AnimationEditorDockWidgetQt::closeEvent(QCloseEvent*) { controller_.pause()
 void AnimationEditorDockWidgetQt::onStateChanged(AnimationController*, AnimationState,
                                                  AnimationState newState) {
     if (newState == AnimationState::Playing) {
-        const QSignalBlocker block(btnPlayPause_);
-        btnPlayPause_->setChecked(true);
+        const QSignalBlocker block(playPause_);
+        playPause_->setChecked(true);
     } else if (newState == AnimationState::Paused) {
-        const QSignalBlocker block(btnPlayPause_);
-        btnPlayPause_->setChecked(false);
+        const QSignalBlocker block(playPause_);
+        playPause_->setChecked(false);
     }
 }
 

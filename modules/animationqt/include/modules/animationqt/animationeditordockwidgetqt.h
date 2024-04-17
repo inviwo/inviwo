@@ -44,6 +44,8 @@ class QWidget;
 
 namespace inviwo {
 
+class TextLabelOverlay;
+
 namespace animation {
 
 class Animation;
@@ -55,6 +57,7 @@ class SequenceEditorFactory;
 class SequenceEditorPanel;
 class TrackWidgetQtFactory;
 class WorkspaceAnimations;
+
 
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget,
                                                                public AnimationControllerObserver {
@@ -89,9 +92,10 @@ protected:
 
     // GUI-stuff
     QComboBox* animationsList_;
-    QAction* btnPlayPause_;
+    QAction* playPause_;
     std::unique_ptr<AnimationEditorQt> animationEditor_;
     AnimationViewQt* animationView_;
+    TextLabelOverlay* overlay_;
     SequenceEditorPanel* sequenceEditorView_;
     QMainWindow* mainWindow_;
     bool vScrolling_ = false;

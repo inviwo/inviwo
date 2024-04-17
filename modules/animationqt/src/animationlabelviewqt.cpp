@@ -60,6 +60,7 @@
 #include <QString>              // for QString
 #include <QVariant>             // for QVariant
 #include <Qt>                   // for operator|, DisplayRole, Item...
+#include <QScrollBar>
 
 class QModelIndex;
 class QObject;
@@ -106,6 +107,10 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
     setDragDropMode(InternalMove);
     setDragDropOverwriteMode(false);
     setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+    setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOn);
+    verticalScrollBar()->setTracking(true);
 
     setViewportMargins(0, timelineHeight, 0, 0);
 

@@ -60,7 +60,8 @@ void TFSelectionWatcher::setPosition(double pos) {
 void TFSelectionWatcher::setAlpha(double alpha) {
     NetworkLock lock(property_);
     util::KeepTrueWhileInScope b(&updateInProgress_);
-    std::ranges::for_each(selectedPrimitives_, [&](TFPrimitive* p) { p->setAlpha(alpha); });
+    std::ranges::for_each(selectedPrimitives_,
+                          [&](TFPrimitive* p) { p->setAlpha(static_cast<float>(alpha)); });
     emit updateWidgetAlpha(alpha, false);
 }
 

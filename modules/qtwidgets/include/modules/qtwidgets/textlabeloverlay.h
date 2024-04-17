@@ -36,6 +36,7 @@
 #include <chrono>  // for milliseconds
 #include <memory>  // for unique_ptr
 #include <string>  // for string
+#include <string_view>
 
 class QTimer;
 class QWidget;
@@ -50,7 +51,7 @@ public:
     TextLabelOverlay(QWidget* parent);
     virtual ~TextLabelOverlay();
 
-    void setText(const std::string& text,
+    void setText(std::string_view text,
                  std::chrono::milliseconds fade = std::chrono::milliseconds{0});
 
     void clear();
@@ -58,7 +59,6 @@ public:
     virtual QSize sizeHint() const override;
 
 private:
-    std::string text_;
     std::unique_ptr<QTimer> timer_;
 };
 

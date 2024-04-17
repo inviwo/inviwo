@@ -188,6 +188,8 @@ AnimationViewQt::AnimationViewQt(AnimationController& controller, AnimationEdito
 
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
+    setAlignment(Qt::AlignLeft | Qt::AlignTop);
+
     horizontalScrollBar()->setTracking(true);
     verticalScrollBar()->setTracking(true);
 
