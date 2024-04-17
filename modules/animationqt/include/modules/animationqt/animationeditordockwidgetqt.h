@@ -58,7 +58,6 @@ class SequenceEditorPanel;
 class TrackWidgetQtFactory;
 class WorkspaceAnimations;
 
-
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget,
                                                                public AnimationControllerObserver {
 public:

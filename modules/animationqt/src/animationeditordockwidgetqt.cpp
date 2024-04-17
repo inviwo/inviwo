@@ -162,7 +162,9 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     , playPause_{createPlayPause(controller_)}
     , animationEditor_{std::make_unique<AnimationEditorQt>(
           controller_, widgetFactory,
-          [this](std::string_view text, std::chrono::milliseconds fade) { overlay_->setText(text, fade); })}
+          [this](std::string_view text, std::chrono::milliseconds fade) {
+              overlay_->setText(text, fade);
+          })}
     , animationView_{new AnimationViewQt(controller_, animationEditor_.get())}
     , overlay_{createTextLabelOverlay(animationView_->viewport())}
     , sequenceEditorView_{new SequenceEditorPanel(controller_, manager, editorFactory, this)}

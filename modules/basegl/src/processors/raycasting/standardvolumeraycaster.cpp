@@ -55,10 +55,10 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo StandardVolumeRaycaster::processorInfo_{
-    "org.inviwo.StandardVolumeRaycaster",       // Class identifier
-    "Standard Volume Raycaster",                // Display name
-    "Volume Rendering",                         // Category
-    CodeState::Experimental,                    // Code state
+    "org.inviwo.StandardVolumeRaycaster",        // Class identifier
+    "Standard Volume Raycaster",                 // Display name
+    "Volume Rendering",                          // Category
+    CodeState::Experimental,                     // Code state
     Tags::GL | Tag{"Volume"} | Tag{"Raycaster"}  // Tags
 };
 const ProcessorInfo StandardVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }

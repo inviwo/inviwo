@@ -291,7 +291,7 @@ namespace detail {
 // when size_t is a unsigned long
 template <>
 struct prefix<size_t> {
-    GLM_FUNC_QUALIFIER static char const* value() { return "u64"; };
+    GLM_FUNC_QUALIFIER static const char* value() { return "u64"; };
 };
 #endif
 }  // namespace detail

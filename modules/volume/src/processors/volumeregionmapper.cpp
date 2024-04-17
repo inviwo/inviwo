@@ -35,10 +35,10 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeRegionMapper::processorInfo_{
-    "org.inviwo.VolumeRegionMapper",                            // Class identifier
-    "Volume Region Mapper",                                     // Display name
-    "Volume Operation",                                         // Category
-    CodeState::Stable,                                          // Code state
+    "org.inviwo.VolumeRegionMapper",                             // Class identifier
+    "Volume Region Mapper",                                      // Display name
+    "Volume Operation",                                          // Category
+    CodeState::Stable,                                           // Code state
     Tags::CPU | Tag{"Volume"} | Tag{"Atlas"} | Tag{"DataFrame"}  // Tags
 };
 const ProcessorInfo VolumeRegionMapper::getProcessorInfo() const { return processorInfo_; }
