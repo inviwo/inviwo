@@ -134,11 +134,11 @@ public:
     void debugFragmentLists(std::ostream& oss);
     void debugIllustrationBuffer(std::ostream& oss);
 
-private:
-    void buildShaders(bool hasBackground = false);
+protected:
+    virtual void buildShaders(bool hasBackground = false, bool useIllustration = false);
 
-    void setUniforms(Shader& shader, const TextureUnit& abuffUnit) const;
-    void resizeBuffers(const size2_t& screenSize);
+    virtual void setUniforms(Shader& shader, const TextureUnit& abuffUnit) const;
+    virtual void resizeBuffers(const size2_t& screenSize);
 
     void fillIllustration(TextureUnit& abuffUnit, TextureUnit& idxUnit, TextureUnit& countUnit,
                           const Image* background);
@@ -150,12 +150,13 @@ private:
     Texture2D abufferIdxTex_;
     TextureUnitContainer textureUnits_;
     bool builtWithBackground_ = false;
+    bool useIllustration_ = false;
 
     BufferObject atomicCounter_;
     BufferObject pixelBuffer_;
 
     GLuint totalFragmentQuery_;
-
+    
     Shader clear_;
     Shader display_;
 

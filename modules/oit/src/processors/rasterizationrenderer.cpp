@@ -88,7 +88,7 @@ void RasterizationRenderer::initializeResources() { initializeShader_.invoke(); 
 
 RasterizationRenderer::RasterizationRenderer()
     : Processor{}
-    , rasterizations_{"rastarizations",
+    , rasterizations_{"rasterizations",
                       "Input rasterizations filling the fragment lists/render target"_help}
     , background_{"imageInport", "Optional background image"_help}
     , outport_{"image",
@@ -98,12 +98,9 @@ RasterizationRenderer::RasterizationRenderer()
     , lighting_{"lighting", "Lighting", &camera_}
     , trackball_{&camera_}
     , illustrationSettings_{}
-    , flr_{[]() -> std::optional<FragmentListRenderer> {
+    , flr_{[]() -> std::unique_ptr<FragmentListRenderer> {
         if (FragmentListRenderer::supportsFragmentLists())
-            return std::optional<FragmentListRenderer>{std::in_place};
-        else {
-            return std::nullopt;
-        }
+            return std::make_unique<FragmentListRenderer>();
     }()} {
 
     if (!FragmentListRenderer::supportsFragmentLists()) {

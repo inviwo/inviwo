@@ -100,7 +100,7 @@ protected:
     };
     IllustrationSettings illustrationSettings_;
 
-    std::optional<FragmentListRenderer> flr_;
+    std::unique_ptr<FragmentListRenderer> flr_;
     DispatcherHandle<void()> flrReload_;
     DispatcherHandle<void(Outport*)> onConnect_;
 
