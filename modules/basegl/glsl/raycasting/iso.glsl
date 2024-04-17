@@ -81,16 +81,18 @@ vec4 drawISO(in vec4 result, in float isovalue, in vec4 isocolor, in float value
 
         vec3 isopos = rayPosition - tIncr * a * rayDirection;
 
+        ShadingParameters shadingParams = defaultShadingParameters(isocolor.rgb);
+        
         #if defined(SHADING_ENABLED) && defined(GRADIENTS_ENABLED)
         vec3 isoGradient = mix(gradient, previousGradient, a);
         if (dot(isoGradient, rayDirection) < 0.0) {  // two-sided lighting
             isoGradient = -isoGradient;
         }
-
-        vec3 isoposWorld = (textureToWorld * vec4(isopos, 1.0)).xyz;
-        isocolor.rgb = APPLY_LIGHTING(lighting, isocolor.rgb, isocolor.rgb, vec3(1.0), isoposWorld,
-                                      -isoGradient, toCameraDir);
+        shadingParams.normal = -isoGradient;
+        shadingParams.worldPosition = (textureToWorld * vec4(isopos, 1.0)).xyz;
         #endif
+
+        isocolor.rgb = applyLighting(lighting, shadingParams, toCameraDir);
 
         if (tDepth < 0.0) {  // blend isosurface color and adjust first-hit depth if necessary
             tDepth = t - a * tIncr;  // store depth of first hit, i.e. voxel with non-zero alpha

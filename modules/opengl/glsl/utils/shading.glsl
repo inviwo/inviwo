@@ -31,6 +31,26 @@
 
 #include "utils/structs.glsl" //! #include "./structs.glsl"
 
+// default material based only on a diffuse color as used for volume rendering 
+// and mesh rendering.
+Material defaultMaterial(in vec3 diffuseColor) {
+    return Material(diffuseColor, diffuseColor, vec3(1.0));
+}
+
+ShadingParameters defaultShadingParameters(in Material material) {
+    ShadingParameters p;
+    p.material = material;
+    p.normal = vec3(0);
+    p.worldPosition = vec3(0);
+    p.lightIntensity = vec3(0);
+
+    return p;
+}
+
+ShadingParameters defaultShadingParameters(in vec3 diffuseColor=vec3(0)) {
+    return defaultShadingParameters(defaultMaterial(diffuseColor));
+}
+
 // Helper functions to calculate the shading
 vec3 shadeDiffuseCalculation(LightParameters light_, vec3 materialDiffuseColor, vec3 normal,
                              vec3 toLightDir) {
@@ -101,6 +121,11 @@ vec3 shadePhong(LightParameters light_, vec3 materialAmbientColor, vec3 material
     vec3 resSpec = shadeSpecularPhongCalculation(light_, materialSpecularColor, normal, toLightDir,
                                                  toCameraDir);
     return resAmb + resDiff + resSpec;
+}
+
+vec3 applyLighting(in LightParameters lightsource, in ShadingParameters shading, in vec3 viewDir) {
+    return APPLY_LIGHTING(lightsource, shading.material.ambient, shading.material.diffuse,
+                          shading.material.specular, shading.worldPosition, shading.normal, viewDir);
 }
 
 #endif

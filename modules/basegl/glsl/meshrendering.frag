@@ -53,8 +53,12 @@ void main() {
     vec4 fragColor = color_;
     vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
 
-    fragColor.rgb = APPLY_LIGHTING(lighting, color_.rgb, color_.rgb, vec3(1.0f), worldPosition_.xyz,
-                                   normalize(normal_), normalize(toCameraDir_));
+    ShadingParameters shadingParams;
+    shadingParams.material = defaultMaterial(color_.rgb);
+    shadingParams.normal = normalize(normal_);
+    shadingParams.worldPosition = worldPosition_.xyz;
+
+    fragColor.rgb = applyLighting(lighting, shadingParams, normalize(toCameraDir_));
 
 #ifdef COLOR_LAYER
     FragData0 = fragColor;

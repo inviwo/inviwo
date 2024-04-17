@@ -120,6 +120,19 @@ struct LightParameters {
     float specularExponent;
 };
 
+struct Material {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+struct ShadingParameters {
+    Material material;
+    vec3 normal;
+    vec3 worldPosition;
+    vec3 lightIntensity; // incident light intensity sampled from a light volume at current position
+};
+
 struct RaycastingParameters {
     float samplingRate;
     float isoValue;
