@@ -40,7 +40,7 @@ TransferFunctionLayerWriter::TransferFunctionLayerWriter(
     std::unique_ptr<DataWriterType<Layer>> layerWriter)
     : layerWriter_{std::move(layerWriter)} {
 
-    for (auto& ext : layerWriter_->getExtensions()) {
+    for (const auto& ext : layerWriter_->getExtensions()) {
         addExtension({ext.extension_, fmt::format("TransferFunction to {}", ext.description_)});
     }
 }
@@ -102,7 +102,7 @@ TransferFunctionLayerWriterWrapper::TransferFunctionLayerWriterWrapper(DataWrite
 }
 
 void TransferFunctionLayerWriterWrapper::onRegister(DataWriter* writer) {
-    if (auto layerWriter = dynamic_cast<DataWriterType<Layer>*>(writer)) {
+    if (auto* layerWriter = dynamic_cast<DataWriterType<Layer>*>(writer)) {
         if (auto [it, inserted] = layerToTFMap_.try_emplace(
                 layerWriter, std::make_unique<TransferFunctionLayerWriter>(
                                  std::unique_ptr<DataWriterType<Layer>>(layerWriter->clone())));
@@ -112,7 +112,7 @@ void TransferFunctionLayerWriterWrapper::onRegister(DataWriter* writer) {
     }
 }
 void TransferFunctionLayerWriterWrapper::onUnRegister(DataWriter* writer) {
-    if (auto layerWriter = dynamic_cast<DataWriterType<Layer>*>(writer)) {
+    if (auto* layerWriter = dynamic_cast<DataWriterType<Layer>*>(writer)) {
         if (auto it = layerToTFMap_.find(layerWriter); it != layerToTFMap_.end()) {
             factory_->unRegisterObject(it->second.get());
             layerToTFMap_.erase(it);

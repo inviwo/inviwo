@@ -207,7 +207,7 @@ void ProcessorNetworkConverter::updatePropertType(TxElement* node) {
 
     if (key == "Property") {
         const auto& type = node->GetAttribute("type");
-        int size = sizeof(renamed) / sizeof(std::string);
+        const int size = sizeof(renamed) / sizeof(std::string);
         if (std::find(renamed, renamed + size, type) != renamed + size) {
             node->SetAttribute("type", "org.inviwo." + type);
         }
@@ -260,7 +260,7 @@ void ProcessorNetworkConverter::updateMetaDataType(TxElement* node) {
 
     if (key == "MetaDataItem") {
         const auto& type = node->GetAttribute("type");
-        int size = sizeof(renamed) / sizeof(std::string);
+        const int size = sizeof(renamed) / sizeof(std::string);
         if (std::find(renamed, renamed + size, type) != renamed + size) {
             node->SetAttribute("type", "org.inviwo." + type);
         }
@@ -340,7 +340,7 @@ void ProcessorNetworkConverter::updateMetaDataKeys(TxElement* node) {
 
     if (key == "MetaDataItem") {
         const auto keyname = node->GetAttribute("key");
-        int size = sizeof(renamed) / sizeof(std::string);
+        const int size = sizeof(renamed) / sizeof(std::string);
         if (std::find(renamed, renamed + size, keyname) != renamed + size) {
             node->SetAttribute("key", "org.inviwo." + keyname);
         }
@@ -411,11 +411,11 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
     for (child = child.begin(processorlist); child != child.end(); child++) {
         // create
 
-        TxElement* outports = new TxElement("OutPorts");
+        auto* outports = new TxElement("OutPorts");
         child->LinkEndChild(outports);
         processorsOutports[child->GetAttribute("identifier")] = outports;
 
-        TxElement* inports = new TxElement("InPorts");
+        auto* inports = new TxElement("InPorts");
         child->LinkEndChild(inports);
         processorsInports[child->GetAttribute("identifier")] = inports;
     }
@@ -499,9 +499,9 @@ void ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifers(TxElemen
 
     if (key == "Processor") {
         const auto& type = node->GetAttribute("type");
-        int size = sizeof(renamed) / sizeof(std::string);
+        const int size = sizeof(renamed) / sizeof(std::string);
         if (std::find(renamed, renamed + size, type) != renamed + size) {
-            std::string newtype = removeFromString(type, ' ');
+            const std::string newtype = removeFromString(type, ' ');
             if (util::splitStringView(type, '.').size() < 3) {
                 node->SetAttribute("type", "org.inviwo." + newtype);
             } else {
@@ -570,7 +570,7 @@ void ProcessorNetworkConverter::updateProcessorIdentifiersStriped(TxElement* nod
 
     if (key == "Processor") {
         const auto& identifier = node->GetAttribute("identifier");
-        if (identifier != "") {
+        if (!identifier.empty()) {
 
             std::string baseIdentifier = identifier;
             std::string newIdentifier = identifier;
@@ -651,7 +651,7 @@ void ProcessorNetworkConverter::updatePropertyEditorMetadata(TxElement* parent) 
                 const auto& nodeKey = node->GetAttribute("key");
                 if (nodeKey == "org.inviwo.PropertyEditorWidgetMetaData") {
                     for (const auto& item : replacements) {
-                        if (auto n = node->FirstChild(std::get<0>(item), false)) {
+                        if (auto* n = node->FirstChild(std::get<0>(item), false)) {
                             TxElement newNode;
                             newNode.SetValue("MetaDataItem");
                             newNode.SetAttribute("type", std::get<1>(item));
@@ -666,7 +666,7 @@ void ProcessorNetworkConverter::updatePropertyEditorMetadata(TxElement* parent) 
                 }
             }
         }
-        for (auto item : toRemove) {
+        for (auto* item : toRemove) {
             parent->RemoveChild(item);
         }
     }
@@ -693,7 +693,7 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
 
                         if (name == "lookFrom" || name == "lookTo" || name == "lookUp") {
                             subNode->SetAttribute("type", "org.inviwo.FloatVec3RefProperty");
-                            if (auto value = subNode->FirstChild("value", false)) {
+                            if (auto* value = subNode->FirstChild("value", false)) {
                                 auto val = value->Clone();
                                 val->SetValue(name);
                                 cam.InsertEndChild(*val);
@@ -702,14 +702,14 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
                         } else if (name == "fov" || name == "aspectRatio" || name == "near" ||
                                    name == "far" || name == "width") {
                             subNode->SetAttribute("type", "org.inviwo.FloatRefProperty");
-                            if (auto value = subNode->FirstChild("value", false)) {
+                            if (auto* value = subNode->FirstChild("value", false)) {
                                 auto val = value->Clone();
                                 val->SetValue(name);
                                 cam.InsertEndChild(*val);
                             }
                         } else if (name == "offset") {
                             subNode->SetAttribute("type", "org.inviwo.FloatVec2RefProperty");
-                            if (auto value = subNode->FirstChild("value", false)) {
+                            if (auto* value = subNode->FirstChild("value", false)) {
                                 auto val = value->Clone();
                                 val->SetValue(name);
                                 cam.InsertEndChild(*val);
@@ -723,11 +723,11 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
                         // Fix min and max of aspectRatio. some networks have a max of 1 which
                         // breaks a lot of stuff
                         if (name == "aspectRatio") {
-                            if (auto max = subNode->FirstChild("maxvalue", false)) {
+                            if (auto* max = subNode->FirstChild("maxvalue", false)) {
                                 max->ToElement()->SetAttribute(
                                     "content", detail::toStr(std::numeric_limits<float>::max()));
                             }
-                            if (auto min = subNode->FirstChild("minvalue", false)) {
+                            if (auto* min = subNode->FirstChild("minvalue", false)) {
                                 min->ToElement()->SetAttribute("content", detail::toStr(0.0f));
                             }
                         }
@@ -736,7 +736,7 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
                 // insert new node
                 node->InsertEndChild(cam);
 
-                if (auto owned = node->FirstChild("OwnedPropertyIdentifiers", false)) {
+                if (auto* owned = node->FirstChild("OwnedPropertyIdentifiers", false)) {
                     node->RemoveChild(owned);
                 }
             }
@@ -781,7 +781,7 @@ void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
     std::unordered_map<std::string, std::string> ports;
     std::unordered_map<std::string, std::string> properties;
 
-    if (auto processorsNode = xml::getElement(root, "Processors")) {
+    if (auto* processorsNode = xml::getElement(root, "Processors")) {
         visit(processorsNode, "InPort", [&](TxElement* node) {
             const auto& xmlId = node->GetAttribute("id");
             if (xmlId.empty()) return;
@@ -838,7 +838,7 @@ void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
         });
     }
 
-    if (auto connectionsNode = xml::getElement(root, "Connections")) {
+    if (auto* connectionsNode = xml::getElement(root, "Connections")) {
 
         ticpp::Iterator<ticpp::Element> child;
         for (child = child.begin(connectionsNode); child != child.end(); child++) {
@@ -849,7 +849,7 @@ void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
             child->SetAttribute("dst", ports[dst]);
         }
     }
-    if (auto propertyLinksNode = xml::getElement(root, "PropertyLinks")) {
+    if (auto* propertyLinksNode = xml::getElement(root, "PropertyLinks")) {
 
         ticpp::Iterator<ticpp::Element> child;
         for (child = child.begin(propertyLinksNode); child != child.end(); child++) {
@@ -873,7 +873,7 @@ void ProcessorNetworkConverter::updateFileMode(TxElement* node) {
 void ProcessorNetworkConverter::updatePositionProperties(TxElement* node) {
     xml::visitMatchingNodesRecursive(
         node, {"Property", {{"type", "org.inviwo.SimpleLightingProperty"}}}, [&](TxElement* prop) {
-            if (auto lightPosition =
+            if (auto* lightPosition =
                     xml::getElement(prop, "Properties/Property&identifier=lightPosition")) {
 
                 auto pos = lightPosition->Clone();
@@ -882,7 +882,7 @@ void ProcessorNetworkConverter::updatePositionProperties(TxElement* node) {
 
                 lightPosition->SetAttribute("type", "org.inviwo.PositionProperty");
                 lightPosition->InsertEndChild(propNode);
-                if (auto semantics = xml::getElement(lightPosition, "semantics")) {
+                if (auto* semantics = xml::getElement(lightPosition, "semantics")) {
                     lightPosition->RemoveChild(semantics);
                 }
             }

@@ -63,7 +63,7 @@ public:
      * solid angle, W*s*r^-1).
      * @return Flux density per solid angle, W*s*r^-1
      */
-    const vec3 getIntensity() const;
+    vec3 getIntensity() const;
 
     /**
      * Set the intensity (color) from the light source given in watt per steradian (flux density per

@@ -60,7 +60,7 @@ namespace inviwo {
 template <size_t N>
 class IsoTFComponent : public ShaderComponent {
 public:
-    IsoTFComponent(VolumeInport& volumeInport)
+    explicit IsoTFComponent(VolumeInport& volumeInport)
         : ShaderComponent(), isotfs{util::make_array<N>([&]([[maybe_unused]] size_t i) {
             if constexpr (N > 1) {
                 auto prop =
