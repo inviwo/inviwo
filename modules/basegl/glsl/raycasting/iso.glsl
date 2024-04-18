@@ -81,7 +81,7 @@ vec4 drawISO(in vec4 result, in float isovalue, in vec4 isocolor, in float value
 
         vec3 isopos = rayPosition - tIncr * a * rayDirection;
 
-        ShadingParameters shadingParams = defaultShadingParameters(isocolor.rgb);
+        ShadingParameters shadingParams = shading(isocolor.rgb);
         
         #if defined(SHADING_ENABLED) && defined(GRADIENTS_ENABLED)
         vec3 isoGradient = mix(gradient, previousGradient, a);

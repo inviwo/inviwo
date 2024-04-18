@@ -153,9 +153,8 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
                 gradient *= sign(voxel[channel] / (1.0 - volumeParameters.formatScaling) - volumeParameters.formatOffset);
             }
 
-            shadingParams.material = defaultMaterial(color.rgb);
-            shadingParams.normal = -gradient;
-            shadingParams.worldPosition = (volumeParameters.textureToWorld * vec4(samplePos, 1.0)).xyz;
+            shadingParams = shading(color.rgb, -gradient, 
+                                    (volumeParameters.textureToWorld * vec4(samplePos, 1.0)).xyz);
 
             // Note that the gradient is reversed since we define the normal of a surface as
             // the direction towards a lower intensity medium (gradient points in the increasing

@@ -142,10 +142,7 @@ void main() {
     }
 #endif
 
-    ShadingParameters shadingParams;
-    shadingParams.material = defaultMaterial(glyphColor.rgb);
-    shadingParams.normal = normal;
-    shadingParams.worldPosition = intersection;
+    ShadingParameters shadingParams = shading(glyphColor.rgb, normal, intersection);
 
     glyphColor.rgb = applyLighting(lighting, shadingParams, 
                                    normalize(sphere.camPos - intersection));

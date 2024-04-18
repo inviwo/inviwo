@@ -141,7 +141,7 @@ color{color} = texture({tf}, vec2({volume}Voxel[{channel}], 0.5));
 
 constexpr std::string_view shadeAndComposite = util::trim(R"(
 if (color{color}.a > 0) {{
-    shadingParams.material = defaultMaterial(color{color}.rgb);
+    shadingParams.colors = defaultMaterialColors(color{color}.rgb);
     #if (defined(SHADING_ENABLED) && defined(GRADIENTS_ENABLED))
     shadingParams.normal = -{gradient};
     shadingParams.worldPosition = ({volume}Parameters.textureToWorld * vec4(samplePosition, 1.0)).xyz;
@@ -186,10 +186,10 @@ auto RaycastingComponent::getSegments() -> std::vector<Segment> {
          placeholder::first, 600},
         {fmt::format(classify, "volume"_a = volume_, "tf"_a = tf, "channel"_a = "channel",
                      "color"_a = ""),
-         placeholder::first, 1050},
+         placeholder::first, 700},
         {fmt::format(classify, "volume"_a = volume_, "tf"_a = tf, "channel"_a = "channel",
                      "color"_a = ""),
-         placeholder::loop, 1050},
+         placeholder::loop, 700},
 
         {fmt::format(shadeAndComposite, "volume"_a = volume_, "gradient"_a = gradient,
                      "channel"_a = "channel", "color"_a = ""),
@@ -284,11 +284,11 @@ auto MultiRaycastingComponent::getSegments() -> std::vector<Segment> {
             {fmt::format(iso, "volume"_a = volume_, "gradient"_a = gradient,
                          "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
                          "channel"_a = i),
-             placeholder::first, 1050 + i},
+             placeholder::first, 700 + i},
             {fmt::format(iso, "volume"_a = volume_, "gradient"_a = gradient,
                          "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
                          "channel"_a = i),
-             placeholder::loop, 1050 + i}};
+             placeholder::loop, 700 + i}};
 
         std::vector<Segment> dvrSegments{
             {fmt::format(colorInit, "volume"_a = volume_, "tf"_a = tf, "channel"_a = i,
@@ -296,10 +296,10 @@ auto MultiRaycastingComponent::getSegments() -> std::vector<Segment> {
              placeholder::first, 600 + i},
             {fmt::format(classify, "volume"_a = volume_, "tf"_a = tf, "channel"_a = i,
                          "color"_a = i),
-             placeholder::first, 1050 + 1},
+             placeholder::first, 700 + 1},
             {fmt::format(classify, "volume"_a = volume_, "tf"_a = tf, "channel"_a = i,
                          "color"_a = i),
-             placeholder::loop, 1050 + 1},
+             placeholder::loop, 700 + 1},
 
             {fmt::format(shadeAndComposite, "volume"_a = volume_, "gradient"_a = gradient,
                          "tf"_a = tf, "channel"_a = i, "color"_a = i),

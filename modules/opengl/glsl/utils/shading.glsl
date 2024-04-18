@@ -29,17 +29,24 @@
 #ifndef IVW_SHADING_GLSL
 #define IVW_SHADING_GLSL
 
+// #if !defined(APPLY_LIGHTING)
+// fall-back to no shading in case APPLY_LIGHTING is not defined
+// #  define APPLY_LIGHTING(lighting, materialAmbientColor, materialDiffuseColor, \
+//     materialSpecularColor, position, normal, toCameraDir) \
+//     materialAmbientColor
+// #endif
+
 #include "utils/structs.glsl" //! #include "./structs.glsl"
 
 // default material based only on a diffuse color as used for volume rendering 
 // and mesh rendering.
-Material defaultMaterial(in vec3 diffuseColor) {
-    return Material(diffuseColor, diffuseColor, vec3(1.0));
+MaterialColors defaultMaterialColors(in vec3 diffuseColor) {
+    return MaterialColors(diffuseColor, diffuseColor, vec3(1.0));
 }
 
-ShadingParameters defaultShadingParameters(in Material material) {
+ShadingParameters defaultShadingParameters(in MaterialColors materialColors=defaultMaterialColors(vec3(0))) {
     ShadingParameters p;
-    p.material = material;
+    p.colors = materialColors;
     p.normal = vec3(0);
     p.worldPosition = vec3(0);
     p.lightIntensity = vec3(0);
@@ -47,8 +54,8 @@ ShadingParameters defaultShadingParameters(in Material material) {
     return p;
 }
 
-ShadingParameters defaultShadingParameters(in vec3 diffuseColor=vec3(0)) {
-    return defaultShadingParameters(defaultMaterial(diffuseColor));
+ShadingParameters shading(in vec3 diffuseColor, in vec3 normal=vec3(0), in vec3 worldPosition=vec3(0)) {
+    return ShadingParameters(defaultMaterialColors(diffuseColor), normal, worldPosition, vec3(0));
 }
 
 // Helper functions to calculate the shading
@@ -124,8 +131,8 @@ vec3 shadePhong(LightParameters light_, vec3 materialAmbientColor, vec3 material
 }
 
 vec3 applyLighting(in LightParameters lightsource, in ShadingParameters shading, in vec3 viewDir) {
-    return APPLY_LIGHTING(lightsource, shading.material.ambient, shading.material.diffuse,
-                          shading.material.specular, shading.worldPosition, shading.normal, viewDir);
+    return APPLY_LIGHTING(lightsource, shading.colors.ambient, shading.colors.diffuse,
+                          shading.colors.specular, shading.worldPosition, shading.normal, viewDir);
 }
 
 #endif
