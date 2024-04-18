@@ -189,12 +189,11 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .def(py::init([](const std::vector<TFPrimitiveData>& values) {
                  return new TransferFunction(values);
              }),
-             py::arg("values") = std::vector<TFPrimitiveData>{})
+             py::arg("values"))
         .def(py::init([](const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type) {
                  return new TransferFunction(values, type);
              }),
-             py::arg("values") = std::vector<TFPrimitiveData>{},
-             py::arg("type") = TFPrimitiveSetType::Relative)
+             py::arg("values"), py::arg("type"))
         .def(py::init([](py::list values, TFPrimitiveSetType type) {
                  auto* tf = new TransferFunction{{}, type};
                  addPoints(tf, values);

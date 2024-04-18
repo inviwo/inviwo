@@ -58,6 +58,10 @@ QRectF TFEditorIsovalue::boundingRect() const {
     const double bBoxSize = getSize() + 5.0;  //<! consider size of pen
     auto bRect = QRectF(-bBoxSize / 2.0, -bBoxSize / 2.0, bBoxSize, bBoxSize);
 
+    if (!scene() || scene()->views().empty()) {
+        return bRect;
+    }
+
     // add box of vertical line
     auto* view = scene()->views().front();
     auto trans = deviceTransform(view->viewportTransform()).inverted();

@@ -74,7 +74,7 @@ Processor* ProcessorNetwork::addProcessor(std::shared_ptr<Processor> processor) 
     processor->ProcessorObservable::addObserver(this);
     onIdChange_[processor.get()] =
         processor->onIdentifierChange([this](std::string_view newID, std::string_view oldID) {
-            std::string const old{oldID};
+            const std::string old{oldID};
             processors_[std::string{newID}] = processors_[old];
             processors_.erase(old);
         });

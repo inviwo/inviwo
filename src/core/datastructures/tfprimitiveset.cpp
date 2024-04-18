@@ -44,9 +44,9 @@ void TFPrimitiveSetObserver::onTFPrimitiveRemoved(const TFPrimitiveSet&, TFPrimi
 
 void TFPrimitiveSetObserver::onTFPrimitiveChanged(const TFPrimitiveSet&, const TFPrimitive&) {}
 
-void TFPrimitiveSetObserver::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType type) {}
+void TFPrimitiveSetObserver::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) {}
 
-void TFPrimitiveSetObserver::onTFMaskChanged(const TFPrimitiveSet&, dvec2 mask) {}
+void TFPrimitiveSetObserver::onTFMaskChanged(const TFPrimitiveSet&, dvec2) {}
 
 void TFPrimitiveSetObservable::notifyTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) {
     forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveAdded(set, p); });
