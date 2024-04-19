@@ -50,6 +50,9 @@ var hierarchy =
       [ "inviwo::plot::PCPAxisSettings", "classinviwo_1_1plot_1_1PCPAxisSettings.html", null ]
     ] ],
     [ "inviwo::kind::Base", "structinviwo_1_1kind_1_1Base.html", null ],
+    [ "inviwo::TFData::Base", "structinviwo_1_1TFData_1_1Base.html", [
+      [ "inviwo::TFData::Implementation< T >", "structinviwo_1_1TFData_1_1Implementation.html", null ]
+    ] ],
     [ "inviwo::animation::BasePropertyTrack", "classinviwo_1_1animation_1_1BasePropertyTrack.html", [
       [ "inviwo::animation::PropertyTrack< Prop, Key, Seq >", "classinviwo_1_1animation_1_1PropertyTrack.html", null ]
     ] ],
@@ -479,8 +482,10 @@ var hierarchy =
       [ "inviwo::TIFFStackVolumeRAMLoader", "classinviwo_1_1TIFFStackVolumeRAMLoader.html", null ]
     ] ],
     [ "inviwo::Dispatcher< C >", "classinviwo_1_1Dispatcher.html", null ],
+    [ "inviwo::Dispatcher< Callback >", "classinviwo_1_1Dispatcher.html", null ],
     [ "inviwo::Dispatcher< CallbackFunc >", "classinviwo_1_1Dispatcher.html", null ],
     [ "inviwo::Dispatcher< HighlightFunc >", "classinviwo_1_1Dispatcher.html", null ],
+    [ "inviwo::Dispatcher< HistogramCallback >", "classinviwo_1_1Dispatcher.html", null ],
     [ "inviwo::Dispatcher< SelectionFunc >", "classinviwo_1_1Dispatcher.html", null ],
     [ "inviwo::Dispatcher< ToolTipFunc >", "classinviwo_1_1Dispatcher.html", null ],
     [ "inviwo::Dispatcher< void()>", "classinviwo_1_1Dispatcher.html", null ],
@@ -1265,11 +1270,8 @@ var hierarchy =
     [ "inviwo::help::HelpProcessor", "structinviwo_1_1help_1_1HelpProcessor.html", null ],
     [ "inviwo::help::HelpProperty", "structinviwo_1_1help_1_1HelpProperty.html", null ],
     [ "inviwo::util::detail::Hideer", "structinviwo_1_1util_1_1detail_1_1Hideer.html", null ],
-    [ "inviwo::HistogramCalculationState", "classinviwo_1_1HistogramCalculationState.html", null ],
-    [ "inviwo::HistogramContainer", "classinviwo_1_1HistogramContainer.html", null ],
-    [ "inviwo::HistogramSupplier", "classinviwo_1_1HistogramSupplier.html", [
-      [ "inviwo::Volume", "classinviwo_1_1Volume.html", null ]
-    ] ],
+    [ "inviwo::Histogram1D", "structinviwo_1_1Histogram1D.html", null ],
+    [ "inviwo::HistogramCache", "classinviwo_1_1HistogramCache.html", null ],
     [ "inviwo::util::IdentifiedDeserializer< K, T >", "classinviwo_1_1util_1_1IdentifiedDeserializer.html", null ],
     [ "inviwo::util::identifier", "structinviwo_1_1util_1_1identifier.html", null ],
     [ "inviwo::xml::IdentifierReplacement", "structinviwo_1_1xml_1_1IdentifierReplacement.html", null ],
@@ -1569,6 +1571,7 @@ var hierarchy =
     [ "inviwo::MeshShaderCache", "classinviwo_1_1MeshShaderCache.html", null ],
     [ "inviwo::MeshTexturing", "classinviwo_1_1MeshTexturing.html", null ],
     [ "inviwo::hdf5::MetaData", "structinviwo_1_1hdf5_1_1MetaData.html", null ],
+    [ "inviwo::MetaDataMap", "classinviwo_1_1MetaDataMap.html", null ],
     [ "inviwo::MetaDataOwner", "classinviwo_1_1MetaDataOwner.html", [
       [ "inviwo::Column", "classinviwo_1_1Column.html", [
         [ "inviwo::TemplateColumn< std::uint32_t >", "classinviwo_1_1TemplateColumn.html", [
@@ -1770,7 +1773,6 @@ var hierarchy =
       [ "inviwo::ffmpeg::SwScale", "classinviwo_1_1ffmpeg_1_1SwScale.html", null ]
     ] ],
     [ "inviwo::util::nonesuch", "structinviwo_1_1util_1_1nonesuch.html", null ],
-    [ "inviwo::NormalizedHistogram", "classinviwo_1_1NormalizedHistogram.html", null ],
     [ "inviwo::util::NotificationBlocker", "classinviwo_1_1util_1_1NotificationBlocker.html", null ],
     [ "inviwo::ObservableInterface", "classinviwo_1_1ObservableInterface.html", [
       [ "inviwo::Observable< ActivityIndicatorObserver >", "classinviwo_1_1Observable.html", [
@@ -1878,12 +1880,6 @@ var hierarchy =
       [ "inviwo::Observable< ResourceManagerObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::ResourceManagerObservable", "classinviwo_1_1ResourceManagerObservable.html", [
           [ "inviwo::ResourceManager", "classinviwo_1_1ResourceManager.html", null ]
-        ] ]
-      ] ],
-      [ "inviwo::Observable< TFEditorPrimitiveObserver >", "classinviwo_1_1Observable.html", [
-        [ "inviwo::TFEditorPrimitive", "classinviwo_1_1TFEditorPrimitive.html", [
-          [ "inviwo::TFEditorControlPoint", "classinviwo_1_1TFEditorControlPoint.html", null ],
-          [ "inviwo::TFEditorIsovalue", "classinviwo_1_1TFEditorIsovalue.html", null ]
         ] ]
       ] ],
       [ "inviwo::Observable< TFPrimitiveObserver >", "classinviwo_1_1Observable.html", [
@@ -2219,22 +2215,28 @@ var hierarchy =
       [ "inviwo::ResourceManagerObserver", "classinviwo_1_1ResourceManagerObserver.html", [
         [ "inviwo::ResourceManagerDockWidget", "classinviwo_1_1ResourceManagerDockWidget.html", null ]
       ] ],
-      [ "inviwo::TFEditorPrimitiveObserver", "classinviwo_1_1TFEditorPrimitiveObserver.html", [
-        [ "inviwo::TFEditor", "classinviwo_1_1TFEditor.html", null ]
-      ] ],
       [ "inviwo::TFPrimitiveObserver", "classinviwo_1_1TFPrimitiveObserver.html", [
-        [ "inviwo::TFEditorControlPoint", "classinviwo_1_1TFEditorControlPoint.html", null ],
-        [ "inviwo::TFEditorIsovalue", "classinviwo_1_1TFEditorIsovalue.html", null ],
+        [ "inviwo::TFEditorPrimitive", "classinviwo_1_1TFEditorPrimitive.html", [
+          [ "inviwo::TFEditorControlPoint", "classinviwo_1_1TFEditorControlPoint.html", null ],
+          [ "inviwo::TFEditorIsovalue", "classinviwo_1_1TFEditorIsovalue.html", null ]
+        ] ],
         [ "inviwo::TFPrimitiveSet", "classinviwo_1_1TFPrimitiveSet.html", null ],
         [ "inviwo::TFSelectionWatcher", "classinviwo_1_1TFSelectionWatcher.html", null ]
       ] ],
       [ "inviwo::TFPrimitiveSetObserver", "classinviwo_1_1TFPrimitiveSetObserver.html", [
         [ "inviwo::IsoValueProperty", "classinviwo_1_1IsoValueProperty.html", null ],
+        [ "inviwo::TFEditor", "classinviwo_1_1TFEditor.html", null ],
+        [ "inviwo::TFEditorMask", "classinviwo_1_1TFEditorMask.html", [
+          [ "inviwo::TFEditorMaskMax", "classinviwo_1_1TFEditorMaskMax.html", null ],
+          [ "inviwo::TFEditorMaskMin", "classinviwo_1_1TFEditorMaskMin.html", null ]
+        ] ],
+        [ "inviwo::TFLookupTable", "classinviwo_1_1TFLookupTable.html", null ],
         [ "inviwo::TFPropertyDialog", "classinviwo_1_1TFPropertyDialog.html", null ],
         [ "inviwo::TransferFunctionProperty", "classinviwo_1_1TransferFunctionProperty.html", null ]
       ] ],
       [ "inviwo::TFPropertyObserver", "classinviwo_1_1TFPropertyObserver.html", [
         [ "inviwo::IsoTFProperty", "classinviwo_1_1IsoTFProperty.html", null ],
+        [ "inviwo::TFEditorMask", "classinviwo_1_1TFEditorMask.html", null ],
         [ "inviwo::TFEditorView", "classinviwo_1_1TFEditorView.html", null ],
         [ "inviwo::TFPropertyDialog", "classinviwo_1_1TFPropertyDialog.html", null ]
       ] ],
@@ -2590,6 +2592,8 @@ var hierarchy =
       [ "inviwo::PropertyWidgetFactoryObjectTemplate< T, P >", "classinviwo_1_1PropertyWidgetFactoryObjectTemplate.html", null ]
     ] ],
     [ "inviwo::util::detailzip::proxy< Ts >", "structinviwo_1_1util_1_1detailzip_1_1proxy.html", null ],
+    [ "inviwo::PtrEqual< T >", "structinviwo_1_1PtrEqual.html", null ],
+    [ "inviwo::PtrHash< T >", "structinviwo_1_1PtrHash.html", null ],
     [ "inviwo::PythonMenu", "classinviwo_1_1PythonMenu.html", null ],
     [ "inviwo::PythonProcessorFactoryObjectData", "structinviwo_1_1PythonProcessorFactoryObjectData.html", null ],
     [ "inviwo::PythonScript", "classinviwo_1_1PythonScript.html", [
@@ -2656,6 +2660,7 @@ var hierarchy =
     [ "QGraphicsItem", null, [
       [ "inviwo::ProcessorLinkGraphicsItem", "classinviwo_1_1ProcessorLinkGraphicsItem.html", null ],
       [ "inviwo::TFControlPointConnection", "classinviwo_1_1TFControlPointConnection.html", null ],
+      [ "inviwo::TFEditorMask", "classinviwo_1_1TFEditorMask.html", null ],
       [ "inviwo::TFEditorPrimitive", "classinviwo_1_1TFEditorPrimitive.html", null ],
       [ "inviwo::animation::KeyframeSequenceWidgetQt", "classinviwo_1_1animation_1_1KeyframeSequenceWidgetQt.html", null ],
       [ "inviwo::animation::KeyframeWidgetQt", "classinviwo_1_1animation_1_1KeyframeWidgetQt.html", null ],
@@ -2867,11 +2872,13 @@ var hierarchy =
     [ "inviwo::Resource", "classinviwo_1_1Resource.html", [
       [ "inviwo::TypedResource< T >", "classinviwo_1_1TypedResource.html", null ]
     ] ],
+    [ "inviwo::HistogramCache::Result", "structinviwo_1_1HistogramCache_1_1Result.html", null ],
     [ "inviwo::IntegralLineTracer< SpatialSampler, TimeDependent >::Result", "structinviwo_1_1IntegralLineTracer_1_1Result.html", null ],
     [ "inviwo::csvfilters::RowFilter", "structinviwo_1_1csvfilters_1_1RowFilter.html", null ],
     [ "inviwo::RuntimeModuleLoading", "structinviwo_1_1RuntimeModuleLoading.html", null ],
     [ "inviwo::SafeCStr< N >", "classinviwo_1_1SafeCStr.html", null ],
     [ "inviwo::util::same_extent< T, U >", "structinviwo_1_1util_1_1same__extent.html", null ],
+    [ "inviwo::utilqt::Save< T >", "structinviwo_1_1utilqt_1_1Save.html", null ],
     [ "inviwo::utilgl::ScissorBox", "structinviwo_1_1utilgl_1_1ScissorBox.html", null ],
     [ "inviwo::utilgl::ScissorState", "structinviwo_1_1utilgl_1_1ScissorState.html", null ],
     [ "inviwo::SearchDSL< Ts >", "classinviwo_1_1SearchDSL.html", null ],
@@ -3007,7 +3014,6 @@ var hierarchy =
         [ "inviwo::StdUnorderedMapMetaData< K, T >", "classinviwo_1_1StdUnorderedMapMetaData.html", null ],
         [ "inviwo::StdVectorMetaData< T >", "classinviwo_1_1StdVectorMetaData.html", null ]
       ] ],
-      [ "inviwo::MetaDataMap", "classinviwo_1_1MetaDataMap.html", null ],
       [ "inviwo::OptionPropertyOption< T >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::Port", "classinviwo_1_1Port.html", [
         [ "inviwo::Inport", "classinviwo_1_1Inport.html", [
@@ -3228,7 +3234,7 @@ var hierarchy =
     [ "inviwo::detail::static_size_t< char[N]>", "structinviwo_1_1detail_1_1static__size__t_3_01char_0fN_0e_4.html", null ],
     [ "inviwo::detail::static_size_t< StaticString< N > >", "structinviwo_1_1detail_1_1static__size__t_3_01StaticString_3_01N_01_4_01_4.html", null ],
     [ "inviwo::StaticString< N >", "structinviwo_1_1StaticString.html", null ],
-    [ "inviwo::NormalizedHistogram::Stats", "structinviwo_1_1NormalizedHistogram_1_1Stats.html", null ],
+    [ "inviwo::Statistics", "structinviwo_1_1Statistics.html", null ],
     [ "inviwo::StipplingSettingsInterface", "classinviwo_1_1StipplingSettingsInterface.html", [
       [ "inviwo::StipplingProperty", "classinviwo_1_1StipplingProperty.html", null ],
       [ "inviwo::StipplingSettings", "classinviwo_1_1StipplingSettings.html", null ]
@@ -3263,9 +3269,10 @@ var hierarchy =
     [ "inviwo::TextureQuadRenderer", "classinviwo_1_1TextureQuadRenderer.html", null ],
     [ "inviwo::TextureUnit", "classinviwo_1_1TextureUnit.html", null ],
     [ "inviwo::TextureUnitContainer", "classinviwo_1_1TextureUnitContainer.html", null ],
+    [ "inviwo::TFData", "classinviwo_1_1TFData.html", null ],
     [ "inviwo::TFPrimitiveData", "structinviwo_1_1TFPrimitiveData.html", null ],
-    [ "inviwo::util::TFPropertyConcept", "structinviwo_1_1util_1_1TFPropertyConcept.html", [
-      [ "inviwo::util::TFPropertyModel< U >", "classinviwo_1_1util_1_1TFPropertyModel.html", null ]
+    [ "inviwo::TFPropertyConcept", "classinviwo_1_1TFPropertyConcept.html", [
+      [ "inviwo::TFPropertyModel< U >", "classinviwo_1_1TFPropertyModel.html", null ]
     ] ],
     [ "inviwo::ThreadPool", "classinviwo_1_1ThreadPool.html", null ],
     [ "inviwo::cimgutil::TIFFHeader", "structinviwo_1_1cimgutil_1_1TIFFHeader.html", null ],
@@ -3377,7 +3384,6 @@ var hierarchy =
     [ "inviwo::ValueWrapper< std::filesystem::path >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< std::string >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< std::vector< std::filesystem::path > >", "structinviwo_1_1ValueWrapper.html", null ],
-    [ "inviwo::ValueWrapper< TFPrimitiveSetType >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< value_type >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< vec2 >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< vec3 >", "structinviwo_1_1ValueWrapper.html", null ],

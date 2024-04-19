@@ -6,7 +6,7 @@ var searchData=
   ['labelgraphicsitemobservable_3',['LabelGraphicsItemObservable',['../classinviwo_1_1LabelGraphicsItemObservable.html',1,'inviwo']]],
   ['labelgraphicsitemobserver_4',['LabelGraphicsItemObserver',['../classinviwo_1_1LabelGraphicsItemObserver.html',1,'inviwo']]],
   ['lambdanetworkvisitor_5',['LambdaNetworkVisitor',['../structinviwo_1_1LambdaNetworkVisitor.html',1,'inviwo']]],
-  ['layer_6',['Layer',['../classinviwo_1_1Layer.html',1,'inviwo::Layer'],['../classinviwo_1_1Layer.html#a5d6413493cc39af83d9c963208fadbac',1,'inviwo::Layer::Layer()']]],
+  ['layer_6',['Layer',['../classinviwo_1_1Layer.html',1,'inviwo::Layer'],['../classinviwo_1_1Layer.html#ad5ee1f525279756f20d93d14f5ff45f1',1,'inviwo::Layer::Layer()']]],
   ['layeraxis_7',['LayerAxis',['../classinviwo_1_1plot_1_1LayerAxis.html',1,'inviwo::plot']]],
   ['layerbinary_8',['LayerBinary',['../classinviwo_1_1LayerBinary.html',1,'inviwo']]],
   ['layerboundingbox_9',['LayerBoundingBox',['../classinviwo_1_1LayerBoundingBox.html',1,'inviwo']]],

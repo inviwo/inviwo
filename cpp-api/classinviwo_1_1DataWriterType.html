@@ -130,8 +130,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4bc3105cf69cc8da0f52649aba477e7a" id="r_a4bc3105cf69cc8da0f52649aba477e7a"><td class="memItemLeft" align="right" valign="top"><a id="a4bc3105cf69cc8da0f52649aba477e7a" name="a4bc3105cf69cc8da0f52649aba477e7a"></a>
 <a class="el" href="classinviwo_1_1DataWriterType.html">DataWriterType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1DataWriterType.html">DataWriterType</a> &amp;&amp;<a class="el" href="classinviwo_1_1TypedMesh.html">that</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">noexcept</a>=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
 <tr class="separator:a4bc3105cf69cc8da0f52649aba477e7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d4342605f12c543f543f8b55c806d19" id="r_a1d4342605f12c543f543f8b55c806d19"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1DataWriterType.html">DataWriterType</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d4342605f12c543f543f8b55c806d19">clone</a> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> =0</td></tr>
-<tr class="separator:a1d4342605f12c543f543f8b55c806d19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8debc668400c1d8772c037d74b819d08" id="r_a8debc668400c1d8772c037d74b819d08"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1DataWriterType.html">DataWriterType</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8debc668400c1d8772c037d74b819d08">clone</a> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">override</a>=0</td></tr>
+<tr class="separator:a8debc668400c1d8772c037d74b819d08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4b83251ea40195bb115873327cbc7e3e" id="r_a4b83251ea40195bb115873327cbc7e3e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b83251ea40195bb115873327cbc7e3e">writeData</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T *data, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> std::filesystem::path &amp;filePath) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> =0</td></tr>
 <tr class="memdesc:a4b83251ea40195bb115873327cbc7e3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write <code>data</code> to <code>filePath</code>.  <br /></td></tr>
 <tr class="separator:a4b83251ea40195bb115873327cbc7e3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -192,8 +192,8 @@ std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExten
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename T&gt;<br />
 class inviwo::DataWriterType&lt; T &gt;</div><p>Template base class for file writers designating what type of data object the writer writes. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a1d4342605f12c543f543f8b55c806d19" name="a1d4342605f12c543f543f8b55c806d19"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d4342605f12c543f543f8b55c806d19">&#9670;&#160;</a></span>clone()</h2>
+<a id="a8debc668400c1d8772c037d74b819d08" name="a8debc668400c1d8772c037d74b819d08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8debc668400c1d8772c037d74b819d08">&#9670;&#160;</a></span>clone()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -212,7 +212,7 @@ template&lt;typename T &gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

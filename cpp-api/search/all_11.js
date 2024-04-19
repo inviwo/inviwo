@@ -165,7 +165,7 @@ var searchData=
   ['resourcemanagerdockwidget_162',['ResourceManagerDockWidget',['../classinviwo_1_1ResourceManagerDockWidget.html',1,'inviwo']]],
   ['resourcemanagerobservable_163',['ResourceManagerObservable',['../classinviwo_1_1ResourceManagerObservable.html',1,'inviwo']]],
   ['resourcemanagerobserver_164',['ResourceManagerObserver',['../classinviwo_1_1ResourceManagerObserver.html',1,'inviwo']]],
-  ['result_165',['Result',['../structinviwo_1_1IntegralLineTracer_1_1Result.html',1,'inviwo::IntegralLineTracer']]],
+  ['result_165',['Result',['../structinviwo_1_1HistogramCache_1_1Result.html',1,'inviwo::HistogramCache::Result'],['../structinviwo_1_1IntegralLineTracer_1_1Result.html',1,'inviwo::IntegralLineTracer&lt; SpatialSampler, TimeDependent &gt;::Result']]],
   ['reverse_166',['reverse',['../namespaceinviwo_1_1util.html#ac1a7add893c040adf20aa7bfb32b6aa7',1,'inviwo::util']]],
   ['rgb2hex_167',['rgb2hex',['../namespaceinviwo_1_1color.html#a3edf32e00600dbae36e24c9375d0a45f',1,'inviwo::color']]],
   ['rgb2hsv_168',['rgb2hsv',['../namespaceinviwo_1_1color.html#a445466c9787883cb85c13cb5ddb8b98d',1,'inviwo::color']]],

@@ -88,7 +88,7 @@ var group__datastructures =
       [ "readPixel", "classinviwo_1_1ImageRepresentation.html#a362870b0305d5a2b1185259751a8acc3", null ]
     ] ],
     [ "inviwo::Layer", "classinviwo_1_1Layer.html", [
-      [ "Layer", "classinviwo_1_1Layer.html#a5d6413493cc39af83d9c963208fadbac", null ],
+      [ "Layer", "classinviwo_1_1Layer.html#ad5ee1f525279756f20d93d14f5ff45f1", null ],
       [ "getAsCodedBuffer", "classinviwo_1_1Layer.html#a64ab7ab95627b197b0f0acbc69992c65", null ],
       [ "getAxis", "classinviwo_1_1Layer.html#a3342bd3b3d89657d1aa4d0bd26d6976c", null ],
       [ "getWorldSpaceGradientSpacing", "classinviwo_1_1Layer.html#a7b12197b2e2839fd9cddecfa65e9b6a1", null ],
@@ -244,25 +244,25 @@ var group__datastructures =
       [ "add", "classinviwo_1_1TFPrimitiveSet.html#af9d27f0156aece21fba325a934497b45", null ],
       [ "add", "classinviwo_1_1TFPrimitiveSet.html#a73ac9d8db554d51258c7140cb2edafbc", null ],
       [ "add", "classinviwo_1_1TFPrimitiveSet.html#afab56ebf792e1183356932d9a4b0c22f", null ],
+      [ "add", "classinviwo_1_1TFPrimitiveSet.html#a6ff02a91ac1c2a5aa88df9afe2d1c77e", null ],
       [ "getColors", "classinviwo_1_1TFPrimitiveSet.html#ae923fb0245b9c6edddb67c2c8ddc5ae2", null ],
       [ "getPositions", "classinviwo_1_1TFPrimitiveSet.html#a79ea519b4a0998583909c55d070b500d", null ],
       [ "getPositionsf", "classinviwo_1_1TFPrimitiveSet.html#a223b4b3337a598541d98c8b024709630", null ],
       [ "getRange", "classinviwo_1_1TFPrimitiveSet.html#a7f8f02f10bed7f4f684076a4e9c6a410", null ],
       [ "getVectors", "classinviwo_1_1TFPrimitiveSet.html#a7ed0cda7d6ce78bfd0f2b16f51cce302", null ],
       [ "getVectorsf", "classinviwo_1_1TFPrimitiveSet.html#aa574064c052f636d15790edd9e4de8a1", null ],
-      [ "interpolateAndStoreColors", "classinviwo_1_1TFPrimitiveSet.html#a21efe6e8778007e5fe82d6592fda90fe", null ],
+      [ "interpolateAndStoreColors", "classinviwo_1_1TFPrimitiveSet.html#a3d78aa8a6608afb18eaa65ef054db2d0", null ],
       [ "interpolateColor", "classinviwo_1_1TFPrimitiveSet.html#a6b1a58ebb0ef802d036dacb3916b4b12", null ],
-      [ "invalidate", "classinviwo_1_1TFPrimitiveSet.html#aa81d479278c21303e9dedbcfc24447fe", null ],
       [ "remove", "classinviwo_1_1TFPrimitiveSet.html#a521813e5a2d71f1ddd87cda9031cb29c", null ],
       [ "set", "classinviwo_1_1TFPrimitiveSet.html#af3cab856b285f90eea11c388ef6704d9", null ]
     ] ],
     [ "inviwo::TransferFunction", "classinviwo_1_1TransferFunction.html", [
-      [ "invalidate", "classinviwo_1_1TransferFunction.html#a4d1bd3f9bb9214612bce04e7897a0d0a", null ],
+      [ "interpolateAndStoreColors", "classinviwo_1_1TransferFunction.html#ab547a36f7dac37fe1ca702673aab042b", null ],
       [ "sample", "classinviwo_1_1TransferFunction.html#a6aaddd89f896f50c183ca555e5e32ec9", null ],
       [ "sample", "classinviwo_1_1TransferFunction.html#aa52a0aa0e806e39476707bb9aafab91d", null ]
     ] ],
     [ "inviwo::Volume", "classinviwo_1_1Volume.html", [
-      [ "Volume", "classinviwo_1_1Volume.html#ada49c08873408b170c8b761505edd7cb", null ],
+      [ "Volume", "classinviwo_1_1Volume.html#a9b4f6c0253fbef968715478ff006346d", null ],
       [ "getAxis", "classinviwo_1_1Volume.html#ae35f92051c747d90698af086b553db0d", null ],
       [ "getWorldSpaceGradientSpacing", "classinviwo_1_1Volume.html#aafefe072dff4ed87f4a77046a9305b20", null ],
       [ "setDataFormat", "classinviwo_1_1Volume.html#a971717c1d60d35828f36214ee028132f", null ],

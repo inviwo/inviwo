@@ -116,7 +116,6 @@ $(function(){initNavTree('classinviwo_1_1Volume.html',''); initResizable(); });
 <area href="classinviwo_1_1Data.html" alt="inviwo::Data&lt; Volume, VolumeRepresentation &gt;" shape="rect" coords="0,56,281,80"/>
 <area href="classinviwo_1_1StructuredGridEntity.html" alt="inviwo::StructuredGridEntity&lt; 3 &gt;" shape="rect" coords="291,56,572,80"/>
 <area href="classinviwo_1_1MetaDataOwner.html" title="Holds metadata and access functionality for set/get MetaDataOwner is the base class for all the objec..." alt="inviwo::MetaDataOwner" shape="rect" coords="582,56,863,80"/>
-<area href="classinviwo_1_1HistogramSupplier.html" alt="inviwo::HistogramSupplier" shape="rect" coords="873,56,1154,80"/>
 <area href="classinviwo_1_1SpatialEntity.html" title="A convenience class to generate transformation matrices between the different coordinate systems in u..." alt="inviwo::SpatialEntity" shape="rect" coords="291,0,572,24"/>
   </map>
 </div></div>
@@ -139,20 +138,26 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8dabfde78703fb2f89735bcd8a89c46b" id="r_a8dabfde78703fb2f89735bcd8a89c46b"><td class="memItemLeft" align="right" valign="top"><a id="a8dabfde78703fb2f89735bcd8a89c46b" name="a8dabfde78703fb2f89735bcd8a89c46b"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Volume</b> (size3_t defaultDimensions=VolumeConfig::defaultDimensions, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *defaultFormat=VolumeConfig::defaultFormat, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> SwizzleMask &amp;defaultSwizzleMask=VolumeConfig::defaultSwizzleMask, InterpolationType interpolation=VolumeConfig::defaultInterpolation, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> Wrapping3D &amp;wrapping=VolumeConfig::defaultWrapping)</td></tr>
 <tr class="separator:a8dabfde78703fb2f89735bcd8a89c46b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50afd0c69cc378eb761a8af8f5251ace" id="r_a50afd0c69cc378eb761a8af8f5251ace"><td class="memItemLeft" align="right" valign="top"><a id="a50afd0c69cc378eb761a8af8f5251ace" name="a50afd0c69cc378eb761a8af8f5251ace"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Volume</b> (<a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> config)</td></tr>
-<tr class="separator:a50afd0c69cc378eb761a8af8f5251ace"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27846ada6a89519f45c8a80a6c19088b" id="r_a27846ada6a89519f45c8a80a6c19088b"><td class="memItemLeft" align="right" valign="top"><a id="a27846ada6a89519f45c8a80a6c19088b" name="a27846ada6a89519f45c8a80a6c19088b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Volume</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;config)</td></tr>
+<tr class="separator:a27846ada6a89519f45c8a80a6c19088b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada8eae74ea924f2bf3fde83c2580fc08" id="r_ada8eae74ea924f2bf3fde83c2580fc08"><td class="memItemLeft" align="right" valign="top"><a id="ada8eae74ea924f2bf3fde83c2580fc08" name="ada8eae74ea924f2bf3fde83c2580fc08"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Volume</b> (std::shared_ptr&lt; <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &gt;)</td></tr>
 <tr class="separator:ada8eae74ea924f2bf3fde83c2580fc08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b4f6c0253fbef968715478ff006346d" id="r_a9b4f6c0253fbef968715478ff006346d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9b4f6c0253fbef968715478ff006346d">Volume</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>, <a class="el" href="structinviwo_1_1NoData.html">NoData</a> noData, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;config={})</td></tr>
+<tr class="separator:a9b4f6c0253fbef968715478ff006346d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9ff297918411eb706a865d24eb61cbc" id="r_ad9ff297918411eb706a865d24eb61cbc"><td class="memItemLeft" align="right" valign="top"><a id="ad9ff297918411eb706a865d24eb61cbc" name="ad9ff297918411eb706a865d24eb61cbc"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Volume</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;)=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
 <tr class="separator:ad9ff297918411eb706a865d24eb61cbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada49c08873408b170c8b761505edd7cb" id="r_ada49c08873408b170c8b761505edd7cb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ada49c08873408b170c8b761505edd7cb">Volume</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>, <a class="el" href="structinviwo_1_1NoData.html">NoData</a> noData, <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> config={})</td></tr>
-<tr class="separator:ada49c08873408b170c8b761505edd7cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a659cd70451dd11d6bfea7590fd1ba5c4" id="r_a659cd70451dd11d6bfea7590fd1ba5c4"><td class="memItemLeft" align="right" valign="top"><a id="a659cd70451dd11d6bfea7590fd1ba5c4" name="a659cd70451dd11d6bfea7590fd1ba5c4"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Volume</b> (<a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;&amp;)=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
+<tr class="separator:a659cd70451dd11d6bfea7590fd1ba5c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0669b74e720449bf52ac421d36242d04" id="r_a0669b74e720449bf52ac421d36242d04"><td class="memItemLeft" align="right" valign="top"><a id="a0669b74e720449bf52ac421d36242d04" name="a0669b74e720449bf52ac421d36242d04"></a>
 <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">that</a>)=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
 <tr class="separator:a0669b74e720449bf52ac421d36242d04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91b27efa39b56f664d2d3bebcdd3adf7" id="r_a91b27efa39b56f664d2d3bebcdd3adf7"><td class="memItemLeft" align="right" valign="top"><a id="a91b27efa39b56f664d2d3bebcdd3adf7" name="a91b27efa39b56f664d2d3bebcdd3adf7"></a>
+<a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;&amp;<a class="el" href="classinviwo_1_1TypedMesh.html">that</a>)=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
+<tr class="separator:a91b27efa39b56f664d2d3bebcdd3adf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22d094f8090fcc13551cd3118feb0b9a" id="r_a22d094f8090fcc13551cd3118feb0b9a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1Volume.html">Volume</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a22d094f8090fcc13551cd3118feb0b9a">clone</a> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
 <tr class="separator:a22d094f8090fcc13551cd3118feb0b9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a600276b11d15544b25ce0723efaba33e" id="r_a600276b11d15544b25ce0723efaba33e"><td class="memItemLeft" align="right" valign="top"><a id="a600276b11d15544b25ce0723efaba33e" name="a600276b11d15544b25ce0723efaba33e"></a>
@@ -194,9 +199,12 @@ Wrapping3D&#160;</td><td class="memItemRight" valign="bottom"><b>getWrapping</b>
 template&lt;typename Kind &gt; </td></tr>
 <tr class="memitem:ada2b9ab77f3bceefd528802c730b4245"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1representation__traits.html">representation_traits</a>&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a>, Kind &gt;::type *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getRep</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="separator:ada2b9ab77f3bceefd528802c730b4245"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af556bd33261a55f02a8586dc988bcf4b" id="r_af556bd33261a55f02a8586dc988bcf4b"><td class="memItemLeft" align="right" valign="top"><a id="af556bd33261a55f02a8586dc988bcf4b" name="af556bd33261a55f02a8586dc988bcf4b"></a>
-std::shared_ptr&lt; <a class="el" href="classinviwo_1_1HistogramCalculationState.html">HistogramCalculationState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>calculateHistograms</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">size_t</a> <a class="el" href="classinviwo_1_1TypedMesh.html">bins</a>=2048) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:af556bd33261a55f02a8586dc988bcf4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e97604698db81c3f0f1f5035e911b41" id="r_a6e97604698db81c3f0f1f5035e911b41"><td class="memItemLeft" align="right" valign="top"><a id="a6e97604698db81c3f0f1f5035e911b41" name="a6e97604698db81c3f0f1f5035e911b41"></a>
+<a class="el" href="structinviwo_1_1HistogramCache_1_1Result.html">HistogramCache::Result</a>&#160;</td><td class="memItemRight" valign="bottom"><b>calculateHistograms</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> std::function&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>(<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> std::vector&lt; <a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a> &gt; &amp;)&gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">whenDone</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a6e97604698db81c3f0f1f5035e911b41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a577019e11addc07f46909164dc541baa" id="r_a577019e11addc07f46909164dc541baa"><td class="memItemLeft" align="right" valign="top"><a id="a577019e11addc07f46909164dc541baa" name="a577019e11addc07f46909164dc541baa"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>discardHistograms</b> ()</td></tr>
+<tr class="separator:a577019e11addc07f46909164dc541baa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0797d62a81e8b94414ac91bdb01ad25f" id="r_a0797d62a81e8b94414ac91bdb01ad25f"><td class="memItemLeft" align="right" valign="top"><a id="a0797d62a81e8b94414ac91bdb01ad25f" name="a0797d62a81e8b94414ac91bdb01ad25f"></a>
 <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><b>config</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="separator:a0797d62a81e8b94414ac91bdb01ad25f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -285,39 +293,51 @@ glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><b>getWorldMatrix</
 <tr class="memitem:a4f12e6cd72de9cd307f35224b2554744 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a4f12e6cd72de9cd307f35224b2554744"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>MetaDataOwner</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
 <tr class="separator:a4f12e6cd72de9cd307f35224b2554744 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7aada3794e05c567f84a254adb294786 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a7aada3794e05c567f84a254adb294786"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>MetaDataOwner</b> (<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
+<tr class="separator:a7aada3794e05c567f84a254adb294786 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7cbb6806abd7ed53ae01a93738c02270 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a7cbb6806abd7ed53ae01a93738c02270"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
 <tr class="separator:a7cbb6806abd7ed53ae01a93738c02270 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c5eb2d764f8389461840736d209be82 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a1c5eb2d764f8389461840736d209be82"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;)=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
+<tr class="separator:a1c5eb2d764f8389461840736d209be82 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f5200da468902134faaa84b20b03b7c inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a8f5200da468902134faaa84b20b03b7c"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>copyMetaDataFrom</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;src)</td></tr>
 <tr class="separator:a8f5200da468902134faaa84b20b03b7c inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ccbe65641711bae4f4314da0df9024a inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a7ccbe65641711bae4f4314da0df9024a"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>copyMetaDataTo</b> (<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;dst)</td></tr>
 <tr class="separator:a7ccbe65641711bae4f4314da0df9024a inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29440e20b7c4406c14404e0d259c383b inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a29440e20b7c4406c14404e0d259c383b"><td class="memTemplParams" colspan="2">
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a29440e20b7c4406c14404e0d259c383b inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>createMetaData</b> (std::string_view key)</td></tr>
-<tr class="separator:a29440e20b7c4406c14404e0d259c383b inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6244754fc35189715fa92c57be348591 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a6244754fc35189715fa92c57be348591"><td class="memTemplParams" colspan="2">
-template&lt;typename T , typename U &gt; </td></tr>
-<tr class="memitem:a6244754fc35189715fa92c57be348591 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>setMetaData</b> (std::string_view key, U value)</td></tr>
-<tr class="separator:a6244754fc35189715fa92c57be348591 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a665a120ae6061da24bda2b1e900f7b21 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a665a120ae6061da24bda2b1e900f7b21"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a665a120ae6061da24bda2b1e900f7b21 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classinviwo_1_1MetaDataOwner.html#a665a120ae6061da24bda2b1e900f7b21">unsetMetaData</a> (std::string_view key)</td></tr>
-<tr class="memdesc:a665a120ae6061da24bda2b1e900f7b21 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="mdescLeft">&#160;</td><td class="mdescRight">unset, i.e. remove the metadata entry matching the given key and type  <br /></td></tr>
-<tr class="separator:a665a120ae6061da24bda2b1e900f7b21 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38540240d5bd948cc1760947d4acc1cd inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a38540240d5bd948cc1760947d4acc1cd"><td class="memTemplParams" colspan="2">
-template&lt;typename T , typename U &gt; </td></tr>
-<tr class="memitem:a38540240d5bd948cc1760947d4acc1cd inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memTemplItemLeft" align="right" valign="top">U&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getMetaData</b> (std::string_view key, U val) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:a38540240d5bd948cc1760947d4acc1cd inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad773252ee5a56103b15822ef0ad45b20 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_ad773252ee5a56103b15822ef0ad45b20"><td class="memTemplParams" colspan="2">
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ad773252ee5a56103b15822ef0ad45b20 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getMetaData</b> (std::string_view key)</td></tr>
-<tr class="separator:ad773252ee5a56103b15822ef0ad45b20 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5788a35d13c8bdc04e01224fa520f20 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_ae5788a35d13c8bdc04e01224fa520f20"><td class="memTemplParams" colspan="2">
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ae5788a35d13c8bdc04e01224fa520f20 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getMetaData</b> (std::string_view key) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:ae5788a35d13c8bdc04e01224fa520f20 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dcf366ad19ac0f174792650f7f9f18b inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a5dcf366ad19ac0f174792650f7f9f18b"><td class="memTemplParams" colspan="2">
+template&lt;typename T &gt; <br />
+requires std::derived_from&lt;T, <a class="el" href="classinviwo_1_1MetaData.html">MetaData</a>&gt;</td></tr>
+<tr class="memitem:a5dcf366ad19ac0f174792650f7f9f18b inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>createMetaData</b> (std::string_view key)</td></tr>
+<tr class="separator:a5dcf366ad19ac0f174792650f7f9f18b inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b9a507d364164c80384186c20b920ed inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a9b9a507d364164c80384186c20b920ed"><td class="memTemplParams" colspan="2">
+template&lt;typename T , typename U &gt; <br />
+requires std::derived_from&lt;T, <a class="el" href="classinviwo_1_1MetaData.html">MetaData</a>&gt; &amp;&amp; Settable&lt;T, U&gt;</td></tr>
+<tr class="memitem:a9b9a507d364164c80384186c20b920ed inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>setMetaData</b> (std::string_view key, U value)</td></tr>
+<tr class="separator:a9b9a507d364164c80384186c20b920ed inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cc52ac4aae07fc14df9aa43f9ab1a80 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a0cc52ac4aae07fc14df9aa43f9ab1a80"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; <br />
+requires std::derived_from&lt;T, <a class="el" href="classinviwo_1_1MetaData.html">MetaData</a>&gt;</td></tr>
+<tr class="memitem:a0cc52ac4aae07fc14df9aa43f9ab1a80 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classinviwo_1_1MetaDataOwner.html#a0cc52ac4aae07fc14df9aa43f9ab1a80">unsetMetaData</a> (std::string_view key)</td></tr>
+<tr class="memdesc:a0cc52ac4aae07fc14df9aa43f9ab1a80 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="mdescLeft">&#160;</td><td class="mdescRight">unset, i.e. remove the metadata entry matching the given key and type  <br /></td></tr>
+<tr class="separator:a0cc52ac4aae07fc14df9aa43f9ab1a80 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f5fbaf898613691242b343bf54f8f9e inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a7f5fbaf898613691242b343bf54f8f9e"><td class="memTemplParams" colspan="2">
+template&lt;typename T , typename U &gt; <br />
+requires std::derived_from&lt;T, <a class="el" href="classinviwo_1_1MetaData.html">MetaData</a>&gt; &amp;&amp; Gettable&lt;T, U&gt;</td></tr>
+<tr class="memitem:a7f5fbaf898613691242b343bf54f8f9e inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memTemplItemLeft" align="right" valign="top">U&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getMetaData</b> (std::string_view key, U val) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a7f5fbaf898613691242b343bf54f8f9e inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac22a367b82ee5a763ddd648f833b8a67 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_ac22a367b82ee5a763ddd648f833b8a67"><td class="memTemplParams" colspan="2">
+template&lt;typename T &gt; <br />
+requires std::derived_from&lt;T, <a class="el" href="classinviwo_1_1MetaData.html">MetaData</a>&gt;</td></tr>
+<tr class="memitem:ac22a367b82ee5a763ddd648f833b8a67 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getMetaData</b> (std::string_view key)</td></tr>
+<tr class="separator:ac22a367b82ee5a763ddd648f833b8a67 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a007ab6d1dc45cc00cf9aa9d8fa8345 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a2a007ab6d1dc45cc00cf9aa9d8fa8345"><td class="memTemplParams" colspan="2">
+template&lt;typename T &gt; <br />
+requires std::derived_from&lt;T, <a class="el" href="classinviwo_1_1MetaData.html">MetaData</a>&gt;</td></tr>
+<tr class="memitem:a2a007ab6d1dc45cc00cf9aa9d8fa8345 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getMetaData</b> (std::string_view key) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a2a007ab6d1dc45cc00cf9aa9d8fa8345 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1dacfc9f6df8a2cb7780d63d1f070d60 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a1dacfc9f6df8a2cb7780d63d1f070d60"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1MetaDataMap.html">MetaDataMap</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getMetaDataMap</b> ()</td></tr>
 <tr class="separator:a1dacfc9f6df8a2cb7780d63d1f070d60 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -327,41 +347,17 @@ template&lt;typename T &gt; </td></tr>
 <tr class="memitem:aed68ab80a64a09dd581f8dc51cfa12f5 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_aed68ab80a64a09dd581f8dc51cfa12f5"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hasMetaData</b> (std::string_view key) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="separator:aed68ab80a64a09dd581f8dc51cfa12f5 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76d61c5ecf564ce56f89a8d7b0fd9537 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a76d61c5ecf564ce56f89a8d7b0fd9537"><td class="memTemplParams" colspan="2">
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a76d61c5ecf564ce56f89a8d7b0fd9537 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>hasMetaData</b> (std::string_view key) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:a76d61c5ecf564ce56f89a8d7b0fd9537 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97e4058e81d5d3716a0acad764bada29 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a97e4058e81d5d3716a0acad764bada29"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>serialize</b> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">s</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:a97e4058e81d5d3716a0acad764bada29 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9da0f9ce8056be486d70db3f0f23f66c inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a9da0f9ce8056be486d70db3f0f23f66c"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">d</a>)</td></tr>
-<tr class="separator:a9da0f9ce8056be486d70db3f0f23f66c inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classinviwo_1_1HistogramSupplier"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1HistogramSupplier')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1HistogramSupplier.html">inviwo::HistogramSupplier</a></td></tr>
-<tr class="memitem:a583f6e317edb9782357fe383f48410e7 inherit pub_methods_classinviwo_1_1HistogramSupplier" id="r_a583f6e317edb9782357fe383f48410e7"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>HistogramSupplier</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1HistogramSupplier.html">HistogramSupplier</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)</td></tr>
-<tr class="separator:a583f6e317edb9782357fe383f48410e7 inherit pub_methods_classinviwo_1_1HistogramSupplier"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b3fbd66c93493d39c854a081660eb8a inherit pub_methods_classinviwo_1_1HistogramSupplier" id="r_a3b3fbd66c93493d39c854a081660eb8a"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>HistogramSupplier</b> (<a class="el" href="classinviwo_1_1HistogramSupplier.html">HistogramSupplier</a> &amp;&amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
-<tr class="separator:a3b3fbd66c93493d39c854a081660eb8a inherit pub_methods_classinviwo_1_1HistogramSupplier"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c0469b1f5ab45ee314eb865a8e27e3f inherit pub_methods_classinviwo_1_1HistogramSupplier" id="r_a8c0469b1f5ab45ee314eb865a8e27e3f"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1HistogramSupplier.html">HistogramSupplier</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1HistogramSupplier.html">HistogramSupplier</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">that</a>)</td></tr>
-<tr class="separator:a8c0469b1f5ab45ee314eb865a8e27e3f inherit pub_methods_classinviwo_1_1HistogramSupplier"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a80821cb0c266b85e9a8aba65fc3dd1 inherit pub_methods_classinviwo_1_1HistogramSupplier" id="r_a2a80821cb0c266b85e9a8aba65fc3dd1"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1HistogramSupplier.html">HistogramSupplier</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1HistogramSupplier.html">HistogramSupplier</a> &amp;&amp;<a class="el" href="classinviwo_1_1TypedMesh.html">that</a>)=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
-<tr class="separator:a2a80821cb0c266b85e9a8aba65fc3dd1 inherit pub_methods_classinviwo_1_1HistogramSupplier"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86a5d499b378bc31a46c721ad6c5508b inherit pub_methods_classinviwo_1_1HistogramSupplier" id="r_a86a5d499b378bc31a46c721ad6c5508b"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hasHistograms</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:a86a5d499b378bc31a46c721ad6c5508b inherit pub_methods_classinviwo_1_1HistogramSupplier"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af1213d384267cd851862997b3c3040a0 inherit pub_methods_classinviwo_1_1HistogramSupplier" id="r_af1213d384267cd851862997b3c3040a0"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1HistogramContainer.html">HistogramContainer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getHistograms</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:af1213d384267cd851862997b3c3040a0 inherit pub_methods_classinviwo_1_1HistogramSupplier"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa95e37facdc81da142ee636d6b39a309 inherit pub_methods_classinviwo_1_1HistogramSupplier" id="r_aa95e37facdc81da142ee636d6b39a309"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1HistogramContainer.html">HistogramContainer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getHistograms</b> ()</td></tr>
-<tr class="separator:aa95e37facdc81da142ee636d6b39a309 inherit pub_methods_classinviwo_1_1HistogramSupplier"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2680c7aca74d84b1c1e36a6c10605e3d inherit pub_methods_classinviwo_1_1HistogramSupplier" id="r_a2680c7aca74d84b1c1e36a6c10605e3d"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>invalidateHistogram</b> ()</td></tr>
-<tr class="separator:a2680c7aca74d84b1c1e36a6c10605e3d inherit pub_methods_classinviwo_1_1HistogramSupplier"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04a2e45bec458617b877bcfae517aabd inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a04a2e45bec458617b877bcfae517aabd"><td class="memTemplParams" colspan="2">
+template&lt;typename T &gt; <br />
+requires std::derived_from&lt;T, <a class="el" href="classinviwo_1_1MetaData.html">MetaData</a>&gt;</td></tr>
+<tr class="memitem:a04a2e45bec458617b877bcfae517aabd inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>hasMetaData</b> (std::string_view key) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a04a2e45bec458617b877bcfae517aabd inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48334a3ef25f428f388e675cc9cdca2d inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a48334a3ef25f428f388e675cc9cdca2d"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>serialize</b> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">s</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a48334a3ef25f428f388e675cc9cdca2d inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb9e1a56048d3d22f0ed91727d292c02 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_abb9e1a56048d3d22f0ed91727d292c02"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">d</a>)</td></tr>
+<tr class="separator:abb9e1a56048d3d22f0ed91727d292c02 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -374,9 +370,9 @@ std::array&lt; <a class="el" href="structinviwo_1_1Axis.html">Axis</a>, 3 &gt;&#
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:aa63de87e880bd708590adceec64e5334" id="r_aa63de87e880bd708590adceec64e5334"><td class="memItemLeft" align="right" valign="top"><a id="aa63de87e880bd708590adceec64e5334" name="aa63de87e880bd708590adceec64e5334"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">static</a> uvec3&#160;</td><td class="memItemRight" valign="bottom"><b>colorCode</b></td></tr>
-<tr class="separator:aa63de87e880bd708590adceec64e5334"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d2ccee30705574bc23958883ff1f533" id="r_a8d2ccee30705574bc23958883ff1f533"><td class="memItemLeft" align="right" valign="top"><a id="a8d2ccee30705574bc23958883ff1f533" name="a8d2ccee30705574bc23958883ff1f533"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">static</a> <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> uvec3&#160;</td><td class="memItemRight" valign="bottom"><b>colorCode</b></td></tr>
+<tr class="separator:a8d2ccee30705574bc23958883ff1f533"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3fd441c580b6e00b04f803f90cd001b" id="r_aa3fd441c580b6e00b04f803f90cd001b"><td class="memItemLeft" align="right" valign="top"><a id="aa3fd441c580b6e00b04f803f90cd001b" name="aa3fd441c580b6e00b04f803f90cd001b"></a>
 <a class="el" href="classinviwo_1_1TypedMesh.html">static</a> <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> std::string&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b></td></tr>
 <tr class="separator:aa3fd441c580b6e00b04f803f90cd001b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -401,6 +397,9 @@ InterpolationType&#160;</td><td class="memItemRight" valign="bottom"><b>defaultI
 <tr class="memitem:ac37c4f4d526d5a992c059b5be76002e6" id="r_ac37c4f4d526d5a992c059b5be76002e6"><td class="memItemLeft" align="right" valign="top"><a id="ac37c4f4d526d5a992c059b5be76002e6" name="ac37c4f4d526d5a992c059b5be76002e6"></a>
 Wrapping3D&#160;</td><td class="memItemRight" valign="bottom"><b>defaultWrapping_</b></td></tr>
 <tr class="separator:ac37c4f4d526d5a992c059b5be76002e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4421ba1873f0e34e3fb31d370bbcfe0" id="r_ad4421ba1873f0e34e3fb31d370bbcfe0"><td class="memItemLeft" align="right" valign="top"><a id="ad4421ba1873f0e34e3fb31d370bbcfe0" name="ad4421ba1873f0e34e3fb31d370bbcfe0"></a>
+<a class="el" href="classinviwo_1_1HistogramCache.html">HistogramCache</a>&#160;</td><td class="memItemRight" valign="bottom"><b>histograms_</b></td></tr>
+<tr class="separator:ad4421ba1873f0e34e3fb31d370bbcfe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1SpatialEntity"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1SpatialEntity')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1SpatialEntity.html">inviwo::SpatialEntity</a></td></tr>
 <tr class="memitem:a9def1784134f444b97e7e4badb99b0a0 inherit pro_attribs_classinviwo_1_1SpatialEntity" id="r_a9def1784134f444b97e7e4badb99b0a0"><td class="memItemLeft" align="right" valign="top">
 std::unique_ptr&lt; <a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html">SpatialCoordinateTransformer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>transformer_</b></td></tr>
@@ -425,26 +424,28 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a45d15809984a5c9f1924cf7c0bc2ffbc inherit pro_methods_classinviwo_1_1Data" id="r_a45d15809984a5c9f1924cf7c0bc2ffbc"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>Data</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a>, <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)</td></tr>
 <tr class="separator:a45d15809984a5c9f1924cf7c0bc2ffbc inherit pro_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad55c58966a63a7884b2d90095e742d56 inherit pro_methods_classinviwo_1_1Data" id="r_ad55c58966a63a7884b2d90095e742d56"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a>, <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a>, <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)</td></tr>
-<tr class="separator:ad55c58966a63a7884b2d90095e742d56 inherit pro_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1c38adda1225e58031ceef029f0df8d inherit pro_methods_classinviwo_1_1Data" id="r_af1c38adda1225e58031ceef029f0df8d"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>Data</b> (<a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a>, <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &gt; &amp;&amp;<a class="el" href="classinviwo_1_1TypedMesh.html">rhs</a>)=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
+<tr class="separator:af1c38adda1225e58031ceef029f0df8d inherit pro_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b51b85b700a8f41460f96bb8f904b83 inherit pro_methods_classinviwo_1_1Data" id="r_a2b51b85b700a8f41460f96bb8f904b83"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a>, <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a>, <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">that</a>)</td></tr>
+<tr class="separator:a2b51b85b700a8f41460f96bb8f904b83 inherit pro_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d9a6242c16ead832e0f62525875f35c inherit pro_methods_classinviwo_1_1Data" id="r_a3d9a6242c16ead832e0f62525875f35c"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a>, <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1Data.html">Data</a>&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a>, <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &gt; &amp;&amp;<a class="el" href="classinviwo_1_1TypedMesh.html">that</a>)=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
+<tr class="separator:a3d9a6242c16ead832e0f62525875f35c inherit pro_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33888a68aa7cf9d01f39cd3bf71f79ae inherit pro_methods_classinviwo_1_1Data" id="r_a33888a68aa7cf9d01f39cd3bf71f79ae"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1TypedMesh.html">decltype</a>(<a class="el" href="classinviwo_1_1TypedMesh.html">auto</a>)&#160;</td><td class="memItemRight" valign="bottom"><b>getLastOr</b> (F &amp;&amp;<a class="el" href="classinviwo_1_1TypedMesh.html">f</a>, T &amp;&amp;<a class="el" href="classinviwo_1_1TypedMesh.html">fallback</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="separator:a33888a68aa7cf9d01f39cd3bf71f79ae inherit pro_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc21341b6eeebdc61904883f21b3dce7 inherit pro_methods_classinviwo_1_1Data" id="r_afc21341b6eeebdc61904883f21b3dce7"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>setLastAndInvalidateOther</b> (F &amp;&amp;<a class="el" href="classinviwo_1_1TypedMesh.html">f</a>, T &amp;&amp;value)</td></tr>
 <tr class="separator:afc21341b6eeebdc61904883f21b3dce7 inherit pro_methods_classinviwo_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_classinviwo_1_1HistogramSupplier"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1HistogramSupplier')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1HistogramSupplier.html">inviwo::HistogramSupplier</a></td></tr>
-<tr class="memitem:a30e7f75f8068030d18a9fee514a77159 inherit pro_methods_classinviwo_1_1HistogramSupplier" id="r_a30e7f75f8068030d18a9fee514a77159"><td class="memItemLeft" align="right" valign="top">
-std::shared_ptr&lt; <a class="el" href="classinviwo_1_1HistogramCalculationState.html">HistogramCalculationState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>startCalculation</b> (std::shared_ptr&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> &gt; <a class="el" href="classinviwo_1_1TypedMesh.html">volumeRam</a>, dvec2 dataRange, <a class="el" href="classinviwo_1_1TypedMesh.html">size_t</a> <a class="el" href="classinviwo_1_1TypedMesh.html">bins</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:a30e7f75f8068030d18a9fee514a77159 inherit pro_methods_classinviwo_1_1HistogramSupplier"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> structure for volumetric data in form of a structured three-dimensional grid. Basis and offset determine the position and extent of the volume in model space. Skewed volumes are represented by providing a non-orthogonal basis.</p>
 <p>In case a volume was loaded via <a class="el" href="classinviwo_1_1VolumeSource.html">VolumeSource</a> or <a class="el" href="classinviwo_1_1Volume.html">Volume</a>, the filename of the source data is available via <a class="el" href="classinviwo_1_1MetaData.html">MetaData</a>. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ada49c08873408b170c8b761505edd7cb" name="ada49c08873408b170c8b761505edd7cb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ada49c08873408b170c8b761505edd7cb">&#9670;&#160;</a></span>Volume()</h2>
+<a id="a9b4f6c0253fbef968715478ff006346d" name="a9b4f6c0253fbef968715478ff006346d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b4f6c0253fbef968715478ff006346d">&#9670;&#160;</a></span>Volume()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -462,7 +463,7 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1HistogramCalculationState
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a></td>          <td class="paramname"><span class="paramname"><em>config</em><span class="paramdefsep"> = </span><span class="paramdefval">{}</span></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>config</em><span class="paramdefsep"> = </span><span class="paramdefval">{}</span></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">

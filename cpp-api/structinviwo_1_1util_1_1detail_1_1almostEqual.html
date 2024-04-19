@@ -103,11 +103,11 @@ $(function(){initNavTree('structinviwo_1_1util_1_1detail_1_1almostEqual.html',''
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a157f165c47684caffa79baecf38d5106" id="r_a157f165c47684caffa79baecf38d5106"><td class="memTemplParams" colspan="2"><a id="a157f165c47684caffa79baecf38d5106" name="a157f165c47684caffa79baecf38d5106"></a>
-template&lt;typename U  = T, typename std::enable_if&lt; std::is_floating_point&lt; U &gt;::value, <a class="el" href="classinviwo_1_1TypedMesh.html">int</a> &gt;::type  = 0&gt; </td></tr>
+template&lt;typename U  = T, std::enable_if_t&lt; std::is_floating_point_v&lt; U &gt;, <a class="el" href="classinviwo_1_1TypedMesh.html">int</a> &gt;  = 0&gt; </td></tr>
 <tr class="memitem:a157f165c47684caffa79baecf38d5106"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">static</a> <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>value</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T &amp;x, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T &amp;y, <a class="el" href="classinviwo_1_1TypedMesh.html">int</a> <a class="el" href="classinviwo_1_1TypedMesh.html">ulp</a>)</td></tr>
 <tr class="separator:a157f165c47684caffa79baecf38d5106"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac44d9fccd27519583e387b940a26a977" id="r_ac44d9fccd27519583e387b940a26a977"><td class="memTemplParams" colspan="2"><a id="ac44d9fccd27519583e387b940a26a977" name="ac44d9fccd27519583e387b940a26a977"></a>
-template&lt;typename U  = T, typename std::enable_if&lt;!std::is_floating_point&lt; U &gt;::value, <a class="el" href="classinviwo_1_1TypedMesh.html">int</a> &gt;::type  = 0&gt; </td></tr>
+template&lt;typename U  = T, std::enable_if_t&lt;!std::is_floating_point_v&lt; U &gt;, <a class="el" href="classinviwo_1_1TypedMesh.html">int</a> &gt;  = 0&gt; </td></tr>
 <tr class="memitem:ac44d9fccd27519583e387b940a26a977"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">static</a> <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>value</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T &amp;x, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> T &amp;y, <a class="el" href="classinviwo_1_1TypedMesh.html">int</a>)</td></tr>
 <tr class="separator:ac44d9fccd27519583e387b940a26a977"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>

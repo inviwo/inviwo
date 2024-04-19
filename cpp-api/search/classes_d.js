@@ -23,8 +23,7 @@ var searchData=
   ['nomovecopy_20',['NoMoveCopy',['../structinviwo_1_1ffmpeg_1_1NoMoveCopy.html',1,'inviwo::ffmpeg']]],
   ['nonesuch_21',['nonesuch',['../structinviwo_1_1util_1_1nonesuch.html',1,'inviwo::util']]],
   ['normalbuffer_22',['NormalBuffer',['../classinviwo_1_1buffertraits_1_1NormalBuffer.html',1,'inviwo::buffertraits']]],
-  ['normalizedhistogram_23',['NormalizedHistogram',['../classinviwo_1_1NormalizedHistogram.html',1,'inviwo']]],
-  ['notificationblocker_24',['NotificationBlocker',['../classinviwo_1_1util_1_1NotificationBlocker.html',1,'inviwo::util']]],
-  ['nullpointerexception_25',['NullPointerException',['../classinviwo_1_1NullPointerException.html',1,'inviwo']]],
-  ['numberlineedit_26',['NumberLineEdit',['../classinviwo_1_1NumberLineEdit.html',1,'inviwo']]]
+  ['notificationblocker_23',['NotificationBlocker',['../classinviwo_1_1util_1_1NotificationBlocker.html',1,'inviwo::util']]],
+  ['nullpointerexception_24',['NullPointerException',['../classinviwo_1_1NullPointerException.html',1,'inviwo']]],
+  ['numberlineedit_25',['NumberLineEdit',['../classinviwo_1_1NumberLineEdit.html',1,'inviwo']]]
 ];

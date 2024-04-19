@@ -34,7 +34,6 @@ var searchData=
   ['helpwidget_31',['HelpWidget',['../classinviwo_1_1HelpWidget.html',1,'inviwo']]],
   ['hiddencanvasqt_32',['HiddenCanvasQt',['../classinviwo_1_1HiddenCanvasQt.html',1,'inviwo']]],
   ['hideer_33',['Hideer',['../structinviwo_1_1util_1_1detail_1_1Hideer.html',1,'inviwo::util::detail']]],
-  ['histogramcalculationstate_34',['HistogramCalculationState',['../classinviwo_1_1HistogramCalculationState.html',1,'inviwo']]],
-  ['histogramcontainer_35',['HistogramContainer',['../classinviwo_1_1HistogramContainer.html',1,'inviwo']]],
-  ['histogramsupplier_36',['HistogramSupplier',['../classinviwo_1_1HistogramSupplier.html',1,'inviwo']]]
+  ['histogram1d_34',['Histogram1D',['../structinviwo_1_1Histogram1D.html',1,'inviwo']]],
+  ['histogramcache_35',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]]
 ];

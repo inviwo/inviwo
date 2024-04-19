@@ -80,7 +80,7 @@ var searchData=
   ['resourcemanagerdockwidget_77',['ResourceManagerDockWidget',['../classinviwo_1_1ResourceManagerDockWidget.html',1,'inviwo']]],
   ['resourcemanagerobservable_78',['ResourceManagerObservable',['../classinviwo_1_1ResourceManagerObservable.html',1,'inviwo']]],
   ['resourcemanagerobserver_79',['ResourceManagerObserver',['../classinviwo_1_1ResourceManagerObserver.html',1,'inviwo']]],
-  ['result_80',['Result',['../structinviwo_1_1IntegralLineTracer_1_1Result.html',1,'inviwo::IntegralLineTracer']]],
+  ['result_80',['Result',['../structinviwo_1_1HistogramCache_1_1Result.html',1,'inviwo::HistogramCache::Result'],['../structinviwo_1_1IntegralLineTracer_1_1Result.html',1,'inviwo::IntegralLineTracer&lt; SpatialSampler, TimeDependent &gt;::Result']]],
   ['rotateproperty_81',['RotateProperty',['../classinviwo_1_1transform_1_1RotateProperty.html',1,'inviwo::transform']]],
   ['rowfilter_82',['RowFilter',['../structinviwo_1_1csvfilters_1_1RowFilter.html',1,'inviwo::csvfilters']]],
   ['rowlayout_83',['RowLayout',['../classinviwo_1_1RowLayout.html',1,'inviwo']]],

@@ -57,8 +57,7 @@ var searchData=
   ['hidewidget_54',['hideWidget',['../classinviwo_1_1OrdinalLikePropertySettingsWidgetQt.html#ac3b807a9c7d955c98394fffcf586e75a',1,'inviwo::OrdinalLikePropertySettingsWidgetQt::hideWidget()'],['../classinviwo_1_1MinMaxPropertySettingsWidgetQt.html#a792a4b0ee350abd1a3c94b0d34427698',1,'inviwo::MinMaxPropertySettingsWidgetQt::hideWidget()']]],
   ['highlight_55',['highlight',['../classinviwo_1_1BrushingAndLinkingManager.html#a60466f7008bd34b45e2c4d4ac8b79f39',1,'inviwo::BrushingAndLinkingManager']]],
   ['highlight_56',['Highlight',['../namespaceinviwo.html#a0780518930e4f82763044068321c57f4a0b90582f4589d84be89f5b847d4d1ed1',1,'inviwo']]],
-  ['histogramcalculationstate_57',['HistogramCalculationState',['../classinviwo_1_1HistogramCalculationState.html',1,'inviwo']]],
-  ['histogramcontainer_58',['HistogramContainer',['../classinviwo_1_1HistogramContainer.html',1,'inviwo']]],
-  ['histogramsupplier_59',['HistogramSupplier',['../classinviwo_1_1HistogramSupplier.html',1,'inviwo']]],
-  ['hsv2rgb_60',['hsv2rgb',['../namespaceinviwo_1_1color.html#a9690d1d32e192933bee1ea70e06256b6',1,'inviwo::color']]]
+  ['histogram1d_57',['Histogram1D',['../structinviwo_1_1Histogram1D.html',1,'inviwo']]],
+  ['histogramcache_58',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]],
+  ['hsv2rgb_59',['hsv2rgb',['../namespaceinviwo_1_1color.html#a9690d1d32e192933bee1ea70e06256b6',1,'inviwo::color']]]
 ];

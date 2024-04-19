@@ -2,7 +2,7 @@ var searchData=
 [
   ['background_0',['Background',['../classinviwo_1_1Background.html',1,'inviwo']]],
   ['backgroundcomponent_1',['BackgroundComponent',['../classinviwo_1_1BackgroundComponent.html',1,'inviwo']]],
-  ['base_2',['Base',['../structinviwo_1_1kind_1_1Base.html',1,'inviwo::kind']]],
+  ['base_2',['Base',['../structinviwo_1_1kind_1_1Base.html',1,'inviwo::kind::Base'],['../structinviwo_1_1TFData_1_1Base.html',1,'inviwo::TFData::Base']]],
   ['base64image_3',['Base64Image',['../structinviwo_1_1WorkspaceAnnotations_1_1Base64Image.html',1,'inviwo::WorkspaceAnnotations']]],
   ['baseglmodule_4',['BaseGLModule',['../classinviwo_1_1BaseGLModule.html',1,'inviwo']]],
   ['baseimageinport_5',['BaseImageInport',['../classinviwo_1_1BaseImageInport.html',1,'inviwo']]],

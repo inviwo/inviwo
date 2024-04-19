@@ -7,8 +7,8 @@ var searchData=
   ['visit_4',['visit',['../structinviwo_1_1LambdaNetworkVisitor.html#ad63f0c02524dab180510186139a4f1dc',1,'inviwo::LambdaNetworkVisitor::visit()'],['../classinviwo_1_1NetworkVisitor.html#a85c1d33ca1a5e79e2b81c00a94b46de8',1,'inviwo::NetworkVisitor::visit()']]],
   ['visitmatchingnodes_5',['visitMatchingNodes',['../namespaceinviwo_1_1xml.html#a7dc7767440cca4416d9da78677e048f2',1,'inviwo::xml']]],
   ['visitmatchingnodesrecursive_6',['visitMatchingNodesRecursive',['../namespaceinviwo_1_1xml.html#a1355fad8f8813d8f27b8eaee8b4c38a2',1,'inviwo::xml']]],
-  ['volume_7',['Volume',['../classinviwo_1_1Volume.html#ada49c08873408b170c8b761505edd7cb',1,'inviwo::Volume']]],
-  ['volumeramdistancetransform_8',['volumeRAMDistanceTransform',['../namespaceinviwo_1_1util.html#aa893e468e6145d6106135461cd962371',1,'inviwo::util']]],
+  ['volume_7',['Volume',['../classinviwo_1_1Volume.html#a9b4f6c0253fbef968715478ff006346d',1,'inviwo::Volume']]],
+  ['volumeramdistancetransform_8',['volumeRAMDistanceTransform',['../namespaceinviwo_1_1util.html#a21094bd4eae6e9a668b25cf52d70fa2c',1,'inviwo::util']]],
   ['voronoisegmentation_9',['voronoiSegmentation',['../namespaceinviwo_1_1util.html#aa9402f8b933d12f71410d3cc938691e9',1,'inviwo::util']]],
   ['voxelvolume_10',['voxelVolume',['../namespaceinviwo_1_1util.html#a4fde21434664ba9e965614cfdf7890fc',1,'inviwo::util']]]
 ];

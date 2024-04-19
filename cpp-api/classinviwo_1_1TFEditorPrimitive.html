@@ -94,7 +94,6 @@ $(function(){initNavTree('classinviwo_1_1TFEditorPrimitive.html',''); initResiza
 
 <div class="header">
   <div class="summary">
-<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
@@ -111,30 +110,17 @@ $(function(){initNavTree('classinviwo_1_1TFEditorPrimitive.html',''); initResiza
  <div class="center">
   <img src="classinviwo_1_1TFEditorPrimitive.png" usemap="#inviwo::TFEditorPrimitive_map" alt=""/>
   <map id="inviwo::TFEditorPrimitive_map" name="inviwo::TFEditorPrimitive_map">
-<area href="classinviwo_1_1Observable.html" alt="inviwo::Observable&lt; TFEditorPrimitiveObserver &gt;" shape="rect" coords="304,56,598,80"/>
-<area href="classinviwo_1_1ObservableInterface.html" alt="inviwo::ObservableInterface" shape="rect" coords="304,0,598,24"/>
-<area href="classinviwo_1_1TFEditorControlPoint.html" alt="inviwo::TFEditorControlPoint" shape="rect" coords="0,168,294,192"/>
-<area href="classinviwo_1_1TFEditorIsovalue.html" alt="inviwo::TFEditorIsovalue" shape="rect" coords="304,168,598,192"/>
+<area href="classinviwo_1_1TFPrimitiveObserver.html" alt="inviwo::TFPrimitiveObserver" shape="rect" coords="181,56,352,80"/>
+<area href="classinviwo_1_1Observer.html" alt="inviwo::Observer" shape="rect" coords="181,0,352,24"/>
+<area href="classinviwo_1_1TFEditorControlPoint.html" alt="inviwo::TFEditorControlPoint" shape="rect" coords="0,168,171,192"/>
+<area href="classinviwo_1_1TFEditorIsovalue.html" alt="inviwo::TFEditorIsovalue" shape="rect" coords="181,168,352,192"/>
   </map>
 </div></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:a2107199836c33de643a03eaf8a695ff9" id="r_a2107199836c33de643a03eaf8a695ff9"><td class="memItemLeft" align="right" valign="top"><a id="a2107199836c33de643a03eaf8a695ff9" name="a2107199836c33de643a03eaf8a695ff9"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>ItemType</b> { <br />
-&#160;&#160;<b>TFEditorUnknownPrimitiveType</b> = 30
-, <b>TFEditorControlPointType</b>
-, <b>TFControlPointConnectionType</b>
-, <b>TFEditorIsovalueType</b>
-, <br />
-&#160;&#160;<b>NumberOfItems</b>
-<br />
- }</td></tr>
-<tr class="separator:a2107199836c33de643a03eaf8a695ff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:abab878f988878b433308204eff6d2469" id="r_abab878f988878b433308204eff6d2469"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abab878f988878b433308204eff6d2469">TFEditorPrimitive</a> (<a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;primitive, QGraphicsScene *<a class="el" href="classinviwo_1_1TypedMesh.html">scene</a>=<a class="el" href="classinviwo_1_1TypedMesh.html">nullptr</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">double</a> position=0.0, <a class="el" href="classinviwo_1_1TypedMesh.html">float</a> alpha=0.0f, <a class="el" href="classinviwo_1_1TypedMesh.html">double</a> size=14.0)</td></tr>
-<tr class="separator:abab878f988878b433308204eff6d2469"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf47dac0ca87b2deed512b0d652a540c" id="r_acf47dac0ca87b2deed512b0d652a540c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acf47dac0ca87b2deed512b0d652a540c">TFEditorPrimitive</a> (<a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;primitive)</td></tr>
+<tr class="separator:acf47dac0ca87b2deed512b0d652a540c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb6ea290e0d62b14908c2d91d3af52c3" id="r_acb6ea290e0d62b14908c2d91d3af52c3"><td class="memItemLeft" align="right" valign="top"><a id="acb6ea290e0d62b14908c2d91d3af52c3" name="acb6ea290e0d62b14908c2d91d3af52c3"></a>
 <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getPrimitive</b> ()</td></tr>
 <tr class="separator:acb6ea290e0d62b14908c2d91d3af52c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -159,52 +145,49 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5a77c6890a968dfe83de36f1b26cdc72" id="r_a5a77c6890a968dfe83de36f1b26cdc72"><td class="memItemLeft" align="right" valign="top"><a id="a5a77c6890a968dfe83de36f1b26cdc72" name="a5a77c6890a968dfe83de36f1b26cdc72"></a>
 <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> vec4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getColor</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="separator:a5a77c6890a968dfe83de36f1b26cdc72"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a981a225bb037495f462b7287929b9e21" id="r_a981a225bb037495f462b7287929b9e21"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a981a225bb037495f462b7287929b9e21">setTFPosition</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">double</a> pos, <a class="el" href="classinviwo_1_1TypedMesh.html">float</a> alpha)</td></tr>
-<tr class="separator:a981a225bb037495f462b7287929b9e21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af259e17f01573cad3514f9061d17d48d" id="r_af259e17f01573cad3514f9061d17d48d"><td class="memItemLeft" align="right" valign="top"><a id="af259e17f01573cad3514f9061d17d48d" name="af259e17f01573cad3514f9061d17d48d"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">QPointF</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getCurrentPos</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:af259e17f01573cad3514f9061d17d48d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a207dec8d4884357a28e0fb756cb8dce1" id="r_a207dec8d4884357a28e0fb756cb8dce1"><td class="memItemLeft" align="right" valign="top"><a id="a207dec8d4884357a28e0fb756cb8dce1" name="a207dec8d4884357a28e0fb756cb8dce1"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>setSize</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">double</a> <a class="el" href="classinviwo_1_1TypedMesh.html">s</a>)</td></tr>
-<tr class="separator:a207dec8d4884357a28e0fb756cb8dce1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac89dcaead507a2fee7c134ebaa74663a" id="r_ac89dcaead507a2fee7c134ebaa74663a"><td class="memItemLeft" align="right" valign="top"><a id="ac89dcaead507a2fee7c134ebaa74663a" name="ac89dcaead507a2fee7c134ebaa74663a"></a>
 <a class="el" href="classinviwo_1_1TypedMesh.html">double</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getSize</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="separator:ac89dcaead507a2fee7c134ebaa74663a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad70d42a1338e32eb31583c85bcd166d2" id="r_ad70d42a1338e32eb31583c85bcd166d2"><td class="memItemLeft" align="right" valign="top"><a id="ad70d42a1338e32eb31583c85bcd166d2" name="ad70d42a1338e32eb31583c85bcd166d2"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>setHovered</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a> <a class="el" href="classinviwo_1_1TypedMesh.html">hover</a>)</td></tr>
-<tr class="separator:ad70d42a1338e32eb31583c85bcd166d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1e3b473a99c48038be9220578c79a4d" id="r_ad1e3b473a99c48038be9220578c79a4d"><td class="memItemLeft" align="right" valign="top"><a id="ad1e3b473a99c48038be9220578c79a4d" name="ad1e3b473a99c48038be9220578c79a4d"></a>
 <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>beginMouseDrag</b> ()</td></tr>
 <tr class="separator:ad1e3b473a99c48038be9220578c79a4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3ad5ab7556127d70921b5cab64018c6" id="r_ae3ad5ab7556127d70921b5cab64018c6"><td class="memItemLeft" align="right" valign="top"><a id="ae3ad5ab7556127d70921b5cab64018c6" name="ae3ad5ab7556127d70921b5cab64018c6"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>stopMouseDrag</b> ()</td></tr>
-<tr class="separator:ae3ad5ab7556127d70921b5cab64018c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; TFEditorPrimitiveObserver &gt;</a></td></tr>
-<tr class="memitem:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable" id="r_a22a72cba8a707ff5bd0e87fdaefdfab8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a22a72cba8a707ff5bd0e87fdaefdfab8">Observable</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1TFEditorPrimitiveObserver.html">TFEditorPrimitiveObserver</a> &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">other</a>)</td></tr>
-<tr class="separator:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable" id="r_ab7afb68122ba0150f1c7c20eb9086987"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#ab7afb68122ba0150f1c7c20eb9086987">Observable</a> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1TFEditorPrimitiveObserver.html">TFEditorPrimitiveObserver</a> &gt; &amp;&amp;<a class="el" href="classinviwo_1_1TypedMesh.html">other</a>)</td></tr>
-<tr class="separator:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable" id="r_a0ab0efc8a80e36322a1197e8750e036b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1TFEditorPrimitiveObserver.html">TFEditorPrimitiveObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a0ab0efc8a80e36322a1197e8750e036b">operator=</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1TFEditorPrimitiveObserver.html">TFEditorPrimitiveObserver</a> &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">other</a>)</td></tr>
-<tr class="separator:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable" id="r_ae893ae3c28d44f320cd1a2efa704932e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1TFEditorPrimitiveObserver.html">TFEditorPrimitiveObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#ae893ae3c28d44f320cd1a2efa704932e">operator=</a> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1TFEditorPrimitiveObserver.html">TFEditorPrimitiveObserver</a> &gt; &amp;&amp;<a class="el" href="classinviwo_1_1TypedMesh.html">other</a>)</td></tr>
-<tr class="separator:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa342929bb9eb6a886ce783bc59dcf7f6 inherit pub_methods_classinviwo_1_1Observable" id="r_aa342929bb9eb6a886ce783bc59dcf7f6"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>addObserver</b> (<a class="el" href="classinviwo_1_1TFEditorPrimitiveObserver.html">TFEditorPrimitiveObserver</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">observer</a>)</td></tr>
-<tr class="separator:aa342929bb9eb6a886ce783bc59dcf7f6 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acbabbb01670a61065bfb2b58950feea3 inherit pub_methods_classinviwo_1_1Observable" id="r_acbabbb01670a61065bfb2b58950feea3"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>removeObserver</b> (<a class="el" href="classinviwo_1_1TFEditorPrimitiveObserver.html">TFEditorPrimitiveObserver</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">observer</a>)</td></tr>
-<tr class="separator:acbabbb01670a61065bfb2b58950feea3 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aceded27239088ecdeca8e590770614d9 inherit pub_methods_classinviwo_1_1Observable" id="r_aceded27239088ecdeca8e590770614d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#aceded27239088ecdeca8e590770614d9">startBlockingNotifications</a> () <a class="el" href="classinviwo_1_1TypedMesh.html">override</a> <a class="el" href="classinviwo_1_1TypedMesh.html">final</a></td></tr>
-<tr class="separator:aceded27239088ecdeca8e590770614d9 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4abfbec3338d1ca97e9c1177337f824f inherit pub_methods_classinviwo_1_1Observable" id="r_a4abfbec3338d1ca97e9c1177337f824f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a4abfbec3338d1ca97e9c1177337f824f">stopBlockingNotifications</a> () <a class="el" href="classinviwo_1_1TypedMesh.html">override</a> <a class="el" href="classinviwo_1_1TypedMesh.html">final</a></td></tr>
-<tr class="separator:a4abfbec3338d1ca97e9c1177337f824f inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b894d788743184aee01d72cd7cd15b" id="r_ac9b894d788743184aee01d72cd7cd15b"><td class="memItemLeft" align="right" valign="top"><a id="ac9b894d788743184aee01d72cd7cd15b" name="ac9b894d788743184aee01d72cd7cd15b"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TFControlPointConnection.html">TFControlPointConnection</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>left</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:ac9b894d788743184aee01d72cd7cd15b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e5e3358bf673119ce0fd8181e948f39" id="r_a5e5e3358bf673119ce0fd8181e948f39"><td class="memItemLeft" align="right" valign="top"><a id="a5e5e3358bf673119ce0fd8181e948f39" name="a5e5e3358bf673119ce0fd8181e948f39"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TFControlPointConnection.html">TFControlPointConnection</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>right</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a5e5e3358bf673119ce0fd8181e948f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebf6f1e1b8031e9593bbab5141415bdd" id="r_aebf6f1e1b8031e9593bbab5141415bdd"><td class="memItemLeft" align="right" valign="top"><a id="aebf6f1e1b8031e9593bbab5141415bdd" name="aebf6f1e1b8031e9593bbab5141415bdd"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>setLeft</b> (<a class="el" href="classinviwo_1_1TFControlPointConnection.html">TFControlPointConnection</a> *)</td></tr>
+<tr class="separator:aebf6f1e1b8031e9593bbab5141415bdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af32c821ca550621033acab81885449b6" id="r_af32c821ca550621033acab81885449b6"><td class="memItemLeft" align="right" valign="top"><a id="af32c821ca550621033acab81885449b6" name="af32c821ca550621033acab81885449b6"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>setRight</b> (<a class="el" href="classinviwo_1_1TFControlPointConnection.html">TFControlPointConnection</a> *)</td></tr>
+<tr class="separator:af32c821ca550621033acab81885449b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classinviwo_1_1Observer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Observer')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Observer.html">inviwo::Observer</a></td></tr>
+<tr class="memitem:a05c1a5729cb5a4a65d7f3d3b597c24ff inherit pub_methods_classinviwo_1_1Observer" id="r_a05c1a5729cb5a4a65d7f3d3b597c24ff"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>Observer</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Observer.html">Observer</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">other</a>)</td></tr>
+<tr class="separator:a05c1a5729cb5a4a65d7f3d3b597c24ff inherit pub_methods_classinviwo_1_1Observer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a885fe7ea1bb40c91f35fa8a2c6d5f9dc inherit pub_methods_classinviwo_1_1Observer" id="r_a885fe7ea1bb40c91f35fa8a2c6d5f9dc"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>Observer</b> (<a class="el" href="classinviwo_1_1Observer.html">Observer</a> &amp;&amp;<a class="el" href="classinviwo_1_1TypedMesh.html">other</a>)</td></tr>
+<tr class="separator:a885fe7ea1bb40c91f35fa8a2c6d5f9dc inherit pub_methods_classinviwo_1_1Observer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1866aed7a921b73852227f5425caea17 inherit pub_methods_classinviwo_1_1Observer" id="r_a1866aed7a921b73852227f5425caea17"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1Observer.html">Observer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1Observer.html">Observer</a> &amp;&amp;<a class="el" href="classinviwo_1_1TypedMesh.html">other</a>)</td></tr>
+<tr class="separator:a1866aed7a921b73852227f5425caea17 inherit pub_methods_classinviwo_1_1Observer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f424a815b415bfbf2f7000bde2325f7 inherit pub_methods_classinviwo_1_1Observer" id="r_a3f424a815b415bfbf2f7000bde2325f7"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1Observer.html">Observer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Observer.html">Observer</a> &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">other</a>)</td></tr>
+<tr class="separator:a3f424a815b415bfbf2f7000bde2325f7 inherit pub_methods_classinviwo_1_1Observer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af03fb7de020a1084d2aa064206315a9d inherit pub_methods_classinviwo_1_1Observer" id="r_af03fb7de020a1084d2aa064206315a9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observer.html#af03fb7de020a1084d2aa064206315a9d">~Observer</a> ()</td></tr>
+<tr class="separator:af03fb7de020a1084d2aa064206315a9d inherit pub_methods_classinviwo_1_1Observer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89a511d1efc3db5e2ce1fe8fd53043a4 inherit pub_methods_classinviwo_1_1Observer" id="r_a89a511d1efc3db5e2ce1fe8fd53043a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observer.html#a89a511d1efc3db5e2ce1fe8fd53043a4">removeObservation</a> (<a class="el" href="classinviwo_1_1ObservableInterface.html">ObservableInterface</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">observable</a>)</td></tr>
+<tr class="separator:a89a511d1efc3db5e2ce1fe8fd53043a4 inherit pub_methods_classinviwo_1_1Observer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73d692ac9fc055d97af7e7ce6f8f14b1 inherit pub_methods_classinviwo_1_1Observer" id="r_a73d692ac9fc055d97af7e7ce6f8f14b1"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>removeObservations</b> ()</td></tr>
+<tr class="separator:a73d692ac9fc055d97af7e7ce6f8f14b1 inherit pub_methods_classinviwo_1_1Observer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:acf36163c678206fe898cb8442b6a995f" id="r_acf36163c678206fe898cb8442b6a995f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acf36163c678206fe898cb8442b6a995f">paint</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">QPainter</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">painter</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">QStyleOptionGraphicsItem</a> *options, QWidget *<a class="el" href="classinviwo_1_1TypedMesh.html">widget</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
-<tr class="separator:acf36163c678206fe898cb8442b6a995f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1bdae38373ae2c977c1cadde818b872c" id="r_a1bdae38373ae2c977c1cadde818b872c"><td class="memItemLeft" align="right" valign="top"><a id="a1bdae38373ae2c977c1cadde818b872c" name="a1bdae38373ae2c977c1cadde818b872c"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">QVariant</a>&#160;</td><td class="memItemRight" valign="bottom"><b>itemChange</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">GraphicsItemChange</a> <a class="el" href="classinviwo_1_1TypedMesh.html">change</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">QVariant</a> &amp;value) <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">QVariant</a>&#160;</td><td class="memItemRight" valign="bottom"><b>itemChange</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">GraphicsItemChange</a> change, <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">QVariant</a> &amp;value) <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
 <tr class="separator:a1bdae38373ae2c977c1cadde818b872c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a796aa5cbf7938bc8bc57e16b7bafa464" id="r_a796aa5cbf7938bc8bc57e16b7bafa464"><td class="memItemLeft" align="right" valign="top"><a id="a796aa5cbf7938bc8bc57e16b7bafa464" name="a796aa5cbf7938bc8bc57e16b7bafa464"></a>
 <a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hoverEnterEvent</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">QGraphicsSceneHoverEvent</a> *event) <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
@@ -212,50 +195,46 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a7cf7f4050900aac8af424783cfb61e05" id="r_a7cf7f4050900aac8af424783cfb61e05"><td class="memItemLeft" align="right" valign="top"><a id="a7cf7f4050900aac8af424783cfb61e05" name="a7cf7f4050900aac8af424783cfb61e05"></a>
 <a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hoverLeaveEvent</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">QGraphicsSceneHoverEvent</a> *event) <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
 <tr class="separator:a7cf7f4050900aac8af424783cfb61e05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b210afba6b40c154bc4a9e08b362b78" id="r_a2b210afba6b40c154bc4a9e08b362b78"><td class="memItemLeft" align="right" valign="top"><a id="a2b210afba6b40c154bc4a9e08b362b78" name="a2b210afba6b40c154bc4a9e08b362b78"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>mouseDoubleClickEvent</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">QGraphicsSceneMouseEvent</a> *event) <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
-<tr class="separator:a2b210afba6b40c154bc4a9e08b362b78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaaf26855aed919849e57dacf9893ffe8" id="r_aaaf26855aed919849e57dacf9893ffe8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaaf26855aed919849e57dacf9893ffe8">paintPrimitive</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">QPainter</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">painter</a>)=0</td></tr>
-<tr class="separator:aaaf26855aed919849e57dacf9893ffe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1c4ca156f73d6aa147ec63626b648d7" id="r_ab1c4ca156f73d6aa147ec63626b648d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">QPointF</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1c4ca156f73d6aa147ec63626b648d7">prepareItemPositionChange</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">QPointF</a> &amp;pos)</td></tr>
-<tr class="separator:ab1c4ca156f73d6aa147ec63626b648d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae664b319c2b02237780f8665cdbb7f54" id="r_ae664b319c2b02237780f8665cdbb7f54"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae664b319c2b02237780f8665cdbb7f54">onItemPositionChange</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> dvec2 &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">newPos</a>)</td></tr>
-<tr class="separator:ae664b319c2b02237780f8665cdbb7f54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6169dd86ab838891fc7383c3b3697294" id="r_a6169dd86ab838891fc7383c3b3697294"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6169dd86ab838891fc7383c3b3697294">onItemSceneHasChanged</a> ()</td></tr>
-<tr class="separator:a6169dd86ab838891fc7383c3b3697294"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; TFEditorPrimitiveObserver &gt;</a></td></tr>
-<tr class="memitem:a980d804dbfb060d91d5b54161f14dc8f inherit pro_methods_classinviwo_1_1Observable" id="r_a980d804dbfb060d91d5b54161f14dc8f"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>forEachObserver</b> (C callback)</td></tr>
-<tr class="separator:a980d804dbfb060d91d5b54161f14dc8f inherit pro_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_classinviwo_1_1ObservableInterface"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1ObservableInterface')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1ObservableInterface.html">inviwo::ObservableInterface</a></td></tr>
-<tr class="memitem:ab0f4b6d76430be4fb3a2372d5d486fc4 inherit pro_methods_classinviwo_1_1ObservableInterface" id="r_ab0f4b6d76430be4fb3a2372d5d486fc4"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>addObservationHelper</b> (<a class="el" href="classinviwo_1_1Observer.html">Observer</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">observer</a>)</td></tr>
-<tr class="separator:ab0f4b6d76430be4fb3a2372d5d486fc4 inherit pro_methods_classinviwo_1_1ObservableInterface"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac3efb1aaffc402b45b07c2c599b9785e inherit pro_methods_classinviwo_1_1ObservableInterface" id="r_ac3efb1aaffc402b45b07c2c599b9785e"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>removeObservationHelper</b> (<a class="el" href="classinviwo_1_1Observer.html">Observer</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">observer</a>)</td></tr>
-<tr class="separator:ac3efb1aaffc402b45b07c2c599b9785e inherit pro_methods_classinviwo_1_1ObservableInterface"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fef87f4d33475fb40334d77eac8952e" id="r_a1fef87f4d33475fb40334d77eac8952e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1fef87f4d33475fb40334d77eac8952e">onTFPrimitiveChange</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;p) <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
+<tr class="separator:a1fef87f4d33475fb40334d77eac8952e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa20752ebba5dad96bceaa3b335282c76" id="r_aa20752ebba5dad96bceaa3b335282c76"><td class="memItemLeft" align="right" valign="top"><a id="aa20752ebba5dad96bceaa3b335282c76" name="aa20752ebba5dad96bceaa3b335282c76"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><b>zLevel</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> =0</td></tr>
+<tr class="separator:aa20752ebba5dad96bceaa3b335282c76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76af978df6f2d60426a92e45b1689f9b" id="r_a76af978df6f2d60426a92e45b1689f9b"><td class="memItemLeft" align="right" valign="top"><a id="a76af978df6f2d60426a92e45b1689f9b" name="a76af978df6f2d60426a92e45b1689f9b"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">QPointF</a>&#160;</td><td class="memItemRight" valign="bottom"><b>constrainPosToXorY</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">QPointF</a> pos) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a76af978df6f2d60426a92e45b1689f9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad70d42a1338e32eb31583c85bcd166d2" id="r_ad70d42a1338e32eb31583c85bcd166d2"><td class="memItemLeft" align="right" valign="top"><a id="ad70d42a1338e32eb31583c85bcd166d2" name="ad70d42a1338e32eb31583c85bcd166d2"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>setHovered</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a> <a class="el" href="classinviwo_1_1TypedMesh.html">hover</a>)</td></tr>
+<tr class="separator:ad70d42a1338e32eb31583c85bcd166d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4ddeee104cfa37622bcc65d8ace410c" id="r_ae4ddeee104cfa37622bcc65d8ace410c"><td class="memItemLeft" align="right" valign="top"><a id="ae4ddeee104cfa37622bcc65d8ace410c" name="ae4ddeee104cfa37622bcc65d8ace410c"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>updateLabel</b> ()</td></tr>
+<tr class="separator:ae4ddeee104cfa37622bcc65d8ace410c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_classinviwo_1_1Observer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Observer')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Observer.html">inviwo::Observer</a></td></tr>
+<tr class="memitem:aa62add49e9cc4b358f61aa9d38aee991 inherit pro_methods_classinviwo_1_1Observer" id="r_aa62add49e9cc4b358f61aa9d38aee991"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observer.html#aa62add49e9cc4b358f61aa9d38aee991">addObservation</a> (<a class="el" href="classinviwo_1_1ObservableInterface.html">ObservableInterface</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">observable</a>)</td></tr>
+<tr class="separator:aa62add49e9cc4b358f61aa9d38aee991 inherit pro_methods_classinviwo_1_1Observer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:ae2a48b9dddcd94eb2ce07408a9dc48f8" id="r_ae2a48b9dddcd94eb2ce07408a9dc48f8"><td class="memItemLeft" align="right" valign="top"><a id="ae2a48b9dddcd94eb2ce07408a9dc48f8" name="ae2a48b9dddcd94eb2ce07408a9dc48f8"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><b>defaultZValue_</b> = 10</td></tr>
-<tr class="separator:ae2a48b9dddcd94eb2ce07408a9dc48f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20ab918726828273b019c5c6600f9c81" id="r_a20ab918726828273b019c5c6600f9c81"><td class="memItemLeft" align="right" valign="top"><a id="a20ab918726828273b019c5c6600f9c81" name="a20ab918726828273b019c5c6600f9c81"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">double</a>&#160;</td><td class="memItemRight" valign="bottom"><b>size_</b></td></tr>
-<tr class="separator:a20ab918726828273b019c5c6600f9c81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aea15fa78392ccd7a099fa425817d4fe9" id="r_aea15fa78392ccd7a099fa425817d4fe9"><td class="memItemLeft" align="right" valign="top"><a id="aea15fa78392ccd7a099fa425817d4fe9" name="aea15fa78392ccd7a099fa425817d4fe9"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>isEditingPoint_</b></td></tr>
-<tr class="separator:aea15fa78392ccd7a099fa425817d4fe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2462c076accac872aa5abbb3df407d9a" id="r_a2462c076accac872aa5abbb3df407d9a"><td class="memItemLeft" align="right" valign="top"><a id="a2462c076accac872aa5abbb3df407d9a" name="a2462c076accac872aa5abbb3df407d9a"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">QPointF</a>&#160;</td><td class="memItemRight" valign="bottom"><b>currentPos_</b></td></tr>
-<tr class="memdesc:a2462c076accac872aa5abbb3df407d9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">position within scene rect (not normalized) <br /></td></tr>
-<tr class="separator:a2462c076accac872aa5abbb3df407d9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4a25fa74abfd79e4bc4933e9107dcf8" id="r_aa4a25fa74abfd79e4bc4933e9107dcf8"><td class="memItemLeft" align="right" valign="top"><a id="aa4a25fa74abfd79e4bc4933e9107dcf8" name="aa4a25fa74abfd79e4bc4933e9107dcf8"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hovered_</b></td></tr>
-<tr class="separator:aa4a25fa74abfd79e4bc4933e9107dcf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebd974aec4806e046eb521f9525bad5f" id="r_aebd974aec4806e046eb521f9525bad5f"><td class="memItemLeft" align="right" valign="top"><a id="aebd974aec4806e046eb521f9525bad5f" name="aebd974aec4806e046eb521f9525bad5f"></a>
 <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>data_</b></td></tr>
 <tr class="separator:aebd974aec4806e046eb521f9525bad5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26ea1162ae7aebf66d93b23180668fc4" id="r_a26ea1162ae7aebf66d93b23180668fc4"><td class="memItemLeft" align="right" valign="top"><a id="a26ea1162ae7aebf66d93b23180668fc4" name="a26ea1162ae7aebf66d93b23180668fc4"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>isEditing_</b></td></tr>
+<tr class="separator:a26ea1162ae7aebf66d93b23180668fc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4a25fa74abfd79e4bc4933e9107dcf8" id="r_aa4a25fa74abfd79e4bc4933e9107dcf8"><td class="memItemLeft" align="right" valign="top"><a id="aa4a25fa74abfd79e4bc4933e9107dcf8" name="aa4a25fa74abfd79e4bc4933e9107dcf8"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hovered_</b></td></tr>
+<tr class="separator:aa4a25fa74abfd79e4bc4933e9107dcf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab95bc2c3317913a5ace143be1e6f6b9b" id="r_ab95bc2c3317913a5ace143be1e6f6b9b"><td class="memItemLeft" align="right" valign="top"><a id="ab95bc2c3317913a5ace143be1e6f6b9b" name="ab95bc2c3317913a5ace143be1e6f6b9b"></a>
+std::unique_ptr&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">QGraphicsSimpleTextItem</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>label_</b></td></tr>
+<tr class="separator:ab95bc2c3317913a5ace143be1e6f6b9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b050bcde256279bb2602242c21dacab" id="r_a2b050bcde256279bb2602242c21dacab"><td class="memItemLeft" align="right" valign="top"><a id="a2b050bcde256279bb2602242c21dacab" name="a2b050bcde256279bb2602242c21dacab"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">QPointF</a>&#160;</td><td class="memItemRight" valign="bottom"><b>cachedPosition_</b></td></tr>
+<tr class="memdesc:a2b050bcde256279bb2602242c21dacab"><td class="mdescLeft">&#160;</td><td class="mdescRight">used for restricting to horizontal/vertical movement <br /></td></tr>
+<tr class="separator:a2b050bcde256279bb2602242c21dacab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classinviwo_1_1Observer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1Observer')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1Observer.html">inviwo::Observer</a></td></tr>
+<tr class="memitem:a12f32cb9d3e4742b33c347d5aa955b95 inherit pro_attribs_classinviwo_1_1Observer" id="r_a12f32cb9d3e4742b33c347d5aa955b95"><td class="memItemLeft" align="right" valign="top">
+std::unordered_set&lt; <a class="el" href="classinviwo_1_1ObservableInterface.html">ObservableInterface</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>observables_</b></td></tr>
+<tr class="separator:a12f32cb9d3e4742b33c347d5aa955b95 inherit pro_attribs_classinviwo_1_1Observer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -267,47 +246,32 @@ IVW_MODULE_QTWIDGETS_API <a class="el" href="classinviwo_1_1TypedMesh.html">bool
 <tr class="separator:af092908068c5c866939eccba115df9d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="abab878f988878b433308204eff6d2469" name="abab878f988878b433308204eff6d2469"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abab878f988878b433308204eff6d2469">&#9670;&#160;</a></span>TFEditorPrimitive()</h2>
+<a id="acf47dac0ca87b2deed512b0d652a540c" name="acf47dac0ca87b2deed512b0d652a540c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf47dac0ca87b2deed512b0d652a540c">&#9670;&#160;</a></span>TFEditorPrimitive()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">inviwo::TFEditorPrimitive::TFEditorPrimitive </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>primitive</em>, </span></td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>primitive</em></span></td><td>)</td>
           <td></td>
-          <td class="paramtype">QGraphicsScene *</td>          <td class="paramname"><span class="paramname"><em>scene</em><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="classinviwo_1_1TypedMesh.html">nullptr</a></span>, </span></td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">double</a></td>          <td class="paramname"><span class="paramname"><em>position</em><span class="paramdefsep"> = </span><span class="paramdefval">0.0</span>, </span></td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">float</a></td>          <td class="paramname"><span class="paramname"><em>alpha</em><span class="paramdefsep"> = </span><span class="paramdefval">0.0f</span>, </span></td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">double</a></td>          <td class="paramname"><span class="paramname"><em>size</em><span class="paramdefsep"> = </span><span class="paramdefval">14.0</span></span>&#160;)</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>Constructs a <a class="el" href="classinviwo_1_1TransferFunction.html" title="data structure for holding 1D transfer function data">TransferFunction</a> editor primitive. The graphics item is positioned at the primitive location (scalar value and opacity) within the scene. The graphical representation should thus be centered around (0,0) in local coordinates.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">primitive</td><td>pointer to the primitive </td></tr>
-    <tr><td class="paramname">scene</td><td>item will be added to this QGraphicsScene </td></tr>
-    <tr><td class="paramname">position</td><td>normalized position of primitive </td></tr>
-    <tr><td class="paramname">alpha</td><td>opacity of primitive </td></tr>
-    <tr><td class="paramname">size</td><td>base size of primitive </td></tr>
+    <tr><td class="paramname">primitive</td><td>the primitive </td></tr>
   </table>
   </dd>
 </dl>
@@ -315,8 +279,8 @@ IVW_MODULE_QTWIDGETS_API <a class="el" href="classinviwo_1_1TypedMesh.html">bool
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae664b319c2b02237780f8665cdbb7f54" name="ae664b319c2b02237780f8665cdbb7f54"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae664b319c2b02237780f8665cdbb7f54">&#9670;&#160;</a></span>onItemPositionChange()</h2>
+<a id="a1fef87f4d33475fb40334d77eac8952e" name="a1fef87f4d33475fb40334d77eac8952e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fef87f4d33475fb40334d77eac8952e">&#9670;&#160;</a></span>onTFPrimitiveChange()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -325,77 +289,10 @@ IVW_MODULE_QTWIDGETS_API <a class="el" href="classinviwo_1_1TypedMesh.html">bool
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a> inviwo::TFEditorPrimitive::onItemPositionChange </td>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a> inviwo::TFEditorPrimitive::onTFPrimitiveChange </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> dvec2 &amp;</td>          <td class="paramname"><span class="paramname"><em>newPos</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
           <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>gets called in itemChange() after a position change of the item. The position is already adjusted to lie within the scene bounding box and normalized.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">newPos</td><td>new, normalized position of the primitive </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a6169dd86ab838891fc7383c3b3697294" name="a6169dd86ab838891fc7383c3b3697294"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6169dd86ab838891fc7383c3b3697294">&#9670;&#160;</a></span>onItemSceneHasChanged()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a> inviwo::TFEditorPrimitive::onItemSceneHasChanged </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>gets called in itemChange() when a scene change has happend </p>
-
-</div>
-</div>
-<a id="acf36163c678206fe898cb8442b6a995f" name="acf36163c678206fe898cb8442b6a995f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acf36163c678206fe898cb8442b6a995f">&#9670;&#160;</a></span>paint()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a> inviwo::TFEditorPrimitive::paint </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">QPainter</a> *</td>          <td class="paramname"><span class="paramname"><em>painter</em>, </span></td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">QStyleOptionGraphicsItem</a> *</td>          <td class="paramname"><span class="paramname"><em>options</em>, </span></td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">QWidget *</td>          <td class="paramname"><span class="paramname"><em>widget</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -404,101 +301,8 @@ IVW_MODULE_QTWIDGETS_API <a class="el" href="classinviwo_1_1TypedMesh.html">bool
   </tr>
 </table>
 </div><div class="memdoc">
-<p>paints the primitive and the label if visible. Pen and brush are set up prior calling <a class="el" href="#aaaf26855aed919849e57dacf9893ffe8">paintPrimitive()</a> reflecting primitive color and selection. </p>
 
-</div>
-</div>
-<a id="aaaf26855aed919849e57dacf9893ffe8" name="aaaf26855aed919849e57dacf9893ffe8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaaf26855aed919849e57dacf9893ffe8">&#9670;&#160;</a></span>paintPrimitive()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a> inviwo::TFEditorPrimitive::paintPrimitive </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">QPainter</a> *</td>          <td class="paramname"><span class="paramname"><em>painter</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>draws the primitive. Gets called from within <a class="el" href="#acf36163c678206fe898cb8442b6a995f">paint()</a></p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">painter</td><td>painter for drawing the object, pen and brush are set up to match primitive color and selection status </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ab1c4ca156f73d6aa147ec63626b648d7" name="ab1c4ca156f73d6aa147ec63626b648d7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab1c4ca156f73d6aa147ec63626b648d7">&#9670;&#160;</a></span>prepareItemPositionChange()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">QPointF</a> inviwo::TFEditorPrimitive::prepareItemPositionChange </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">QPointF</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Allows to adjust the position prior updating the graphicsitem position, e.g. when the movement of a TF point is restricted ("restrict" or "push"). This function is called in itemChange() before calling onItemPositionChange.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">pos</td><td>candidate for new position (in scene coords) </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>modified position which is used instead of pos </dd></dl>
-
-</div>
-</div>
-<a id="a981a225bb037495f462b7287929b9e21" name="a981a225bb037495f462b7287929b9e21"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a981a225bb037495f462b7287929b9e21">&#9670;&#160;</a></span>setTFPosition()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a> inviwo::TFEditorPrimitive::setTFPosition </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">double</a></td>          <td class="paramname"><span class="paramname"><em>pos</em>, </span></td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TypedMesh.html">float</a></td>          <td class="paramname"><span class="paramname"><em>alpha</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>set the position and alpha of the primitive using normalized coordinates within the transfer function.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">pos</td><td>normalized position [0,1] corresponding to scalar value </td></tr>
-    <tr><td class="paramname">alpha</td><td>opacity </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Reimplemented from <a class="el" href="classinviwo_1_1TFPrimitiveObserver.html">inviwo::TFPrimitiveObserver</a>.</p>
 
 </div>
 </div>

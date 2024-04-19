@@ -1,6 +1,7 @@
 var namespaceinviwo_1_1utilqt =
 [
     [ "EditorFileObserver", "classinviwo_1_1utilqt_1_1EditorFileObserver.html", null ],
+    [ "Save", "structinviwo_1_1utilqt_1_1Save.html", null ],
     [ "WidgetCloseEventFilter", "structinviwo_1_1utilqt_1_1WidgetCloseEventFilter.html", null ],
     [ "configureFileSystemObserver", "namespaceinviwo_1_1utilqt.html#a7740e56d786b88aca6119cdbdd71047a", null ],
     [ "configureInviwoDefaultNames", "namespaceinviwo_1_1utilqt.html#a5786ad672da4f0db7045a7e35eb0f21f", null ],

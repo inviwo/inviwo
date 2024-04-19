@@ -3,7 +3,7 @@ var searchData=
   ['back_0',['back',['../classinviwo_1_1MultiFileProperty.html#a5dcec3adddff882dce7c47160b741f4e',1,'inviwo::MultiFileProperty']]],
   ['background_1',['Background',['../classinviwo_1_1Background.html',1,'inviwo']]],
   ['backgroundcomponent_2',['BackgroundComponent',['../classinviwo_1_1BackgroundComponent.html',1,'inviwo']]],
-  ['base_3',['Base',['../structinviwo_1_1kind_1_1Base.html',1,'inviwo::kind']]],
+  ['base_3',['Base',['../structinviwo_1_1kind_1_1Base.html',1,'inviwo::kind::Base'],['../structinviwo_1_1TFData_1_1Base.html',1,'inviwo::TFData::Base']]],
   ['base64image_4',['Base64Image',['../structinviwo_1_1WorkspaceAnnotations_1_1Base64Image.html',1,'inviwo::WorkspaceAnnotations']]],
   ['baseglmodule_5',['BaseGLModule',['../classinviwo_1_1BaseGLModule.html',1,'inviwo']]],
   ['baseimageinport_6',['BaseImageInport',['../classinviwo_1_1BaseImageInport.html',1,'inviwo']]],
