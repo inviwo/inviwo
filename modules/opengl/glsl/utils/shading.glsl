@@ -29,12 +29,12 @@
 #ifndef IVW_SHADING_GLSL
 #define IVW_SHADING_GLSL
 
-// #if !defined(APPLY_LIGHTING)
-// fall-back to no shading in case APPLY_LIGHTING is not defined
-// #  define APPLY_LIGHTING(lighting, materialAmbientColor, materialDiffuseColor, \
-//     materialSpecularColor, position, normal, toCameraDir) \
-//     materialAmbientColor
-// #endif
+#if !defined(APPLY_LIGHTING)
+fall-back to no shading in case APPLY_LIGHTING is not defined
+#  define APPLY_LIGHTING(lighting, materialAmbientColor, materialDiffuseColor, \
+    materialSpecularColor, position, normal, toCameraDir) \
+    materialAmbientColor
+#endif
 
 #include "utils/structs.glsl" //! #include "./structs.glsl"
 
@@ -44,7 +44,7 @@ MaterialColors defaultMaterialColors(in vec3 diffuseColor) {
     return MaterialColors(diffuseColor, diffuseColor, vec3(1.0));
 }
 
-ShadingParameters defaultShadingParameters(in MaterialColors materialColors=defaultMaterialColors(vec3(0))) {
+ShadingParameters defaultShadingParameters(in MaterialColors materialColors) {
     ShadingParameters p;
     p.colors = materialColors;
     p.normal = vec3(0);
@@ -54,7 +54,16 @@ ShadingParameters defaultShadingParameters(in MaterialColors materialColors=defa
     return p;
 }
 
-ShadingParameters shading(in vec3 diffuseColor, in vec3 normal=vec3(0), in vec3 worldPosition=vec3(0)) {
+ShadingParameters defaultShadingParameters() {
+    return defaultShadingParameters(defaultMaterialColors(vec3(0)));
+}
+ShadingParameters shading(in vec3 diffuseColor) {
+    return ShadingParameters(defaultMaterialColors(diffuseColor), vec3(0), vec3(0), vec3(0));
+}
+ShadingParameters shading(in vec3 diffuseColor, in vec3 normal) {
+    return ShadingParameters(defaultMaterialColors(diffuseColor), normal, vec3(0), vec3(0));
+}
+ShadingParameters shading(in vec3 diffuseColor, in vec3 normal, in vec3 worldPosition) {
     return ShadingParameters(defaultMaterialColors(diffuseColor), normal, worldPosition, vec3(0));
 }
 
