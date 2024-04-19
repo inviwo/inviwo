@@ -30,7 +30,7 @@
 #define IVW_SHADING_GLSL
 
 #if !defined(APPLY_LIGHTING)
-fall-back to no shading in case APPLY_LIGHTING is not defined
+// fall-back to no shading in case APPLY_LIGHTING is not defined
 #  define APPLY_LIGHTING(lighting, materialAmbientColor, materialDiffuseColor, \
     materialSpecularColor, position, normal, toCameraDir) \
     materialAmbientColor
