@@ -65,6 +65,7 @@ set(HEADER_FILES
     include/modules/base/processors/filecache.h
     include/modules/base/processors/gridplanes.h
     include/modules/base/processors/heightfieldmapper.h
+    include/modules/base/processors/histogram2d.h
     include/modules/base/processors/imagecontourprocessor.h
     include/modules/base/processors/imagedistancetransform.h
     include/modules/base/processors/imageexport.h
@@ -215,6 +216,7 @@ set(SOURCE_FILES
     src/processors/filecache.cpp
     src/processors/gridplanes.cpp
     src/processors/heightfieldmapper.cpp
+    src/processors/histogram2d.cpp
     src/processors/imagecontourprocessor.cpp
     src/processors/imagedistancetransform.cpp
     src/processors/imageexport.cpp
