@@ -105,7 +105,7 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
     // NOTE: When using, POISSONRATIO tracking method and tf sample 0 has value 0, this creates and
     // error return value
     if (auxReturnTracking != vec3(0)) {
-        return vec4(0, auxReturnTracking.x, auxReturnTracking.x, 1.0f);
+        //return vec4(0, auxReturnTracking.x, auxReturnTracking.x, 1.0f);
     }
 
     vec4 result = vec4(0.0);
@@ -193,14 +193,14 @@ vec4 rayOpacityTextureTesting(vec3 entryPoint, vec3 exitPoint, int stepcount) {
             rayPosition += rayStep;
         }
     }
-    if (result.x > 0) {
-        //return vec4(1);
-    } else {
-        return vec4(0);
-    }
     // Visualize difference between erroneous and error free rays.
-    result.y = testCount - result.x;
-    result /= float(testCount);
+    if(result.x == 0) {
+        result.y = 1.f;
+    } else {
+        result.x = 1;
+    }
+    //result.y = testCount - result.x;
+    //result /= float(testCount);
 
     return result;
 }
@@ -237,11 +237,11 @@ void main() {
         return;
     }
 
-     //vec4 color =
-     //    pathtrace(entryPoint, exitPoint, entryPointDepth, exitPointDepth, rayDepth, depth,
-     //    bgColor);
+    vec4 color =
+        pathtrace(entryPoint, exitPoint, entryPointDepth, exitPointDepth, rayDepth, depth,
+        bgColor);
 
-    vec4 color = rayOpacityTextureTesting(entryPoint, exitPoint, 4);
+    //vec4 color = rayOpacityTextureTesting(entryPoint, exitPoint, 4);
 
     vec4 colorPrev = imageLoad(outportColor, storePos);
 
