@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/transferfunction.h>  // For TransferFunction
 #include <inviwo/core/io/datareader.h>                    // for DataReaderType
+#include <inviwo/core/datastructures/image/layer.h>
 
 #include <memory>
 
@@ -40,11 +41,12 @@ class DataReaderFactory;
 
 class IVW_CORE_API TransferFunctionLayerReader : public DataReaderType<TransferFunction> {
 public:
-    TransferFunctionLayerReader(std::unique_ptr<DataReaderType<Layer>> layerReader);
+    explicit TransferFunctionLayerReader(std::unique_ptr<DataReaderType<Layer>> layerReader);
     TransferFunctionLayerReader(const TransferFunctionLayerReader& rhs);
     TransferFunctionLayerReader(TransferFunctionLayerReader&&) noexcept = default;
     TransferFunctionLayerReader& operator=(const TransferFunctionLayerReader& that);
     TransferFunctionLayerReader& operator=(TransferFunctionLayerReader&&) noexcept = default;
+    virtual ~TransferFunctionLayerReader() override = default;
 
     virtual TransferFunctionLayerReader* clone() const override;
 
@@ -57,7 +59,7 @@ private:
 
 class IVW_CORE_API TransferFunctionLayerReaderWrapper : public FactoryObserver<DataReader> {
 public:
-    TransferFunctionLayerReaderWrapper(DataReaderFactory* factory);
+    explicit TransferFunctionLayerReaderWrapper(DataReaderFactory* factory);
     virtual void onRegister(DataReader* reader) override;
     virtual void onUnRegister(DataReader* reader) override;
 

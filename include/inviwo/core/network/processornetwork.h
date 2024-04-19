@@ -370,7 +370,7 @@ public:
      * @param[in] destination Property at which link ends
      * @return void
      */
-    bool isLinkedBidirectional(Property* source, Property* destination);
+    bool isLinkedBidirectional(Property* source, Property* destination) const;
 
     std::vector<Property*> getPropertiesLinkedTo(Property* property);
     std::vector<PropertyLink> getLinksBetweenProcessors(Processor* p1, Processor* p2);
@@ -410,7 +410,7 @@ public:
     bool isPropertyInNetwork(Property* prop) const;
 
     InviwoApplication* getApplication() const;
-    int getVersion() const;
+    static int getVersion();
 
     void evaluateLinksFromProperty(Property*);
 
@@ -451,7 +451,7 @@ public:
 
 private:
     // Assign an identifier and display name, if none is set.
-    void assignIdentifierAndName(Processor& p, std::string_view name);
+    static void assignIdentifierAndName(Processor& p, std::string_view name);
     void removeProcessorHelper(Processor* processor);
 
     // PropertyOwnerObserver overrides

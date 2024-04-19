@@ -41,21 +41,20 @@ Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
     : Data<Volume, VolumeRepresentation>{}
     , StructuredGridEntity<3>{}
     , MetaDataOwner{}
-    , HistogramSupplier{}
     , dataMap{defaultFormat}
     , axes{util::defaultAxes<3>()}
     , defaultDimensions_{defaultDimensions}
     , defaultDataFormat_{defaultFormat}
     , defaultSwizzleMask_{defaultSwizzleMask}
     , defaultInterpolation_{interpolation}
-    , defaultWrapping_{wrapping} {}
+    , defaultWrapping_{wrapping}
+    , histograms_{} {}
 
-Volume::Volume(VolumeConfig config)
+Volume::Volume(const VolumeConfig& config)
     : Data<Volume, VolumeRepresentation>{}
     , StructuredGridEntity<3>{config.model.value_or(VolumeConfig::defaultModel),
                               config.world.value_or(VolumeConfig::defaultWorld)}
     , MetaDataOwner{}
-    , HistogramSupplier{}
     , dataMap{config.dataMap()}
     , axes{config.xAxis.value_or(VolumeConfig::defaultXAxis),
            config.yAxis.value_or(VolumeConfig::defaultYAxis),
@@ -64,30 +63,30 @@ Volume::Volume(VolumeConfig config)
     , defaultDataFormat_{config.format ? config.format : VolumeConfig::defaultFormat}
     , defaultSwizzleMask_{config.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask)}
     , defaultInterpolation_{config.interpolation.value_or(VolumeConfig::defaultInterpolation)}
-    , defaultWrapping_{config.wrapping.value_or(VolumeConfig::defaultWrapping)} {}
+    , defaultWrapping_{config.wrapping.value_or(VolumeConfig::defaultWrapping)}
+    , histograms_{} {}
 
 Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     : Data<Volume, VolumeRepresentation>{}
     , StructuredGridEntity<3>{}
     , MetaDataOwner{}
-    , HistogramSupplier{}
     , dataMap{in->getDataFormat()}
     , axes{util::defaultAxes<3>()}
     , defaultDimensions_{in->getDimensions()}
     , defaultDataFormat_{in->getDataFormat()}
     , defaultSwizzleMask_{in->getSwizzleMask()}
     , defaultInterpolation_{in->getInterpolation()}
-    , defaultWrapping_{in->getWrapping()} {
+    , defaultWrapping_{in->getWrapping()}
+    , histograms_{} {
 
-    addRepresentation(in);
+    addRepresentation(std::move(in));
 }
 
-Volume::Volume(const Volume& rhs, NoData, VolumeConfig config)
+Volume::Volume(const Volume& rhs, NoData, const VolumeConfig& config)
     : Data<Volume, VolumeRepresentation>{}
     , StructuredGridEntity<3>{config.model.value_or(rhs.getModelMatrix()),
                               config.world.value_or(rhs.getWorldMatrix())}
     , MetaDataOwner{rhs}
-    , HistogramSupplier{}
     , dataMap{config.dataMap(rhs.dataMap)}
     , axes{config.xAxis.value_or(rhs.axes[0]), config.yAxis.value_or(rhs.axes[1]),
            config.zAxis.value_or(rhs.axes[2])}
@@ -95,7 +94,8 @@ Volume::Volume(const Volume& rhs, NoData, VolumeConfig config)
     , defaultDataFormat_{config.format ? config.format : rhs.getDataFormat()}
     , defaultSwizzleMask_{config.swizzleMask.value_or(rhs.getSwizzleMask())}
     , defaultInterpolation_{config.interpolation.value_or(rhs.getInterpolation())}
-    , defaultWrapping_{config.wrapping.value_or(rhs.getWrapping())} {}
+    , defaultWrapping_{config.wrapping.value_or(rhs.getWrapping())}
+    , histograms_{} {}
 
 Volume* Volume::clone() const { return new Volume(*this); }
 Volume::~Volume() = default;
@@ -164,37 +164,27 @@ Document Volume::getInfo() const {
     tb(H("Basis"), getBasis());
     tb(H("Offset"), getOffset());
 
-    if (hasRepresentation<VolumeRAM>()) {
-        if (hasHistograms()) {
-            const auto& histograms = getHistograms();
-            for (size_t i = 0; i < histograms.size(); ++i) {
-                std::stringstream ss;
-                ss << "Channel " << i << " Min: " << histograms[i].stats_.min
-                   << " Mean: " << histograms[i].stats_.mean << " Max: " << histograms[i].stats_.max
-                   << " Std: " << histograms[i].stats_.standardDeviation;
-                tb(H("Stats"), ss.str());
-
-                std::stringstream ss2;
-                ss2 << "(1: " << histograms[i].stats_.percentiles[1]
-                    << ", 25: " << histograms[i].stats_.percentiles[25]
-                    << ", 50: " << histograms[i].stats_.percentiles[50]
-                    << ", 75: " << histograms[i].stats_.percentiles[75]
-                    << ", 99: " << histograms[i].stats_.percentiles[99] << ")";
-                tb(H("Percentiles"), ss2.str());
-            }
-        }
-    }
+    histograms_.forEach([&](const Histogram1D& histogram, size_t channel) {
+        tb(H("Stats"), fmt::format("Channel {} Min: {}, Mean: {}, Max: {}, Std: {}", channel,
+                                   histogram.dataStats.min, histogram.dataStats.mean,
+                                   histogram.dataStats.max, histogram.dataStats.standardDeviation));
+        tb(H("Percentiles"),
+           fmt::format("(1: {}, 25: {}, 50: {}, 75: {}, 99: {})",
+                       histogram.dataStats.percentiles[1], histogram.dataStats.percentiles[25],
+                       histogram.dataStats.percentiles[50], histogram.dataStats.percentiles[75],
+                       histogram.dataStats.percentiles[99]));
+    });
     return doc;
 }
 
 vec3 Volume::getWorldSpaceGradientSpacing() const {
-    mat3 textureToWorld = mat3(getCoordinateTransformer().getTextureToWorldMatrix());
+    const auto textureToWorld = mat3(getCoordinateTransformer().getTextureToWorldMatrix());
     // Basis vectors with a length of one voxel.
     // Basis vectors may be non-orthogonal
-    auto dimensions = getDimensions();
-    vec3 a = textureToWorld[0] / static_cast<float>(dimensions[0]);
-    vec3 b = textureToWorld[1] / static_cast<float>(dimensions[1]);
-    vec3 c = textureToWorld[2] / static_cast<float>(dimensions[2]);
+    const auto dimensions = getDimensions();
+    const vec3 a = textureToWorld[0] / static_cast<float>(dimensions[0]);
+    const vec3 b = textureToWorld[1] / static_cast<float>(dimensions[1]);
+    const vec3 c = textureToWorld[2] / static_cast<float>(dimensions[2]);
     // Project the voxel basis vectors
     // onto the world space x/y/z axes,
     // and choose the longest projected vector
@@ -212,8 +202,8 @@ vec3 Volume::getWorldSpaceGradientSpacing() const {
         return (std::abs(x1) >= std::abs(x2)) ? x1 : x2;
     };
 
-    vec3 ds{signedMax(a.x, signedMax(b.x, c.x)), signedMax(a.y, signedMax(b.y, c.y)),
-            signedMax(a.z, signedMax(b.z, c.z))};
+    const vec3 ds{signedMax(a.x, signedMax(b.x, c.x)), signedMax(a.y, signedMax(b.y, c.y)),
+                  signedMax(a.z, signedMax(b.z, c.z))};
 
     // Return the spacing in world space,
     // actually given by:
@@ -246,13 +236,28 @@ VolumeConfig Volume::config() const {
             .world = getWorldMatrix()};
 }
 
-uvec3 Volume::colorCode = uvec3(188, 101, 101);
+const uvec3 Volume::colorCode = uvec3(188, 101, 101);
 const std::string Volume::classIdentifier = "org.inviwo.Volume";
 const std::string Volume::dataName = "Volume";
 
-std::shared_ptr<HistogramCalculationState> Volume::calculateHistograms(size_t bins) const {
-    return HistogramSupplier::startCalculation(getRepresentationShared<VolumeRAM>(),
-                                               dataMap.dataRange, bins);
+namespace {
+
+auto histCalc(const Volume& v) {
+    return [dataMap = v.dataMap, repr = v.getRepresentationShared<VolumeRAM>()]() {
+        return repr->dispatch<std::vector<Histogram1D>>(
+            [&]<typename T>(const VolumeRAMPrecision<T>* rp) {
+                return util::calculateHistograms(rp->getView(), dataMap, 2048);
+            });
+    };
+}
+
+}  // namespace
+
+void Volume::discardHistograms() { histograms_.discard(histCalc(*this)); }
+
+HistogramCache::Result Volume::calculateHistograms(
+    const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const {
+    return histograms_.calculateHistograms(histCalc(*this), whenDone);
 }
 
 template class IVW_CORE_TMPL_INST DataReaderType<Volume>;

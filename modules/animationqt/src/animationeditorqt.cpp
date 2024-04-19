@@ -76,9 +76,13 @@ namespace inviwo {
 
 namespace animation {
 
-AnimationEditorQt::AnimationEditorQt(AnimationController& controller,
-                                     TrackWidgetQtFactory& widgetFactory, TextLabelOverlay& overlay)
-    : QGraphicsScene(), controller_(controller), widgetFactory_{widgetFactory}, overlay_{overlay} {
+AnimationEditorQt::AnimationEditorQt(
+    AnimationController& controller, TrackWidgetQtFactory& widgetFactory,
+    std::function<void(std::string_view, std::chrono::milliseconds)> showText)
+    : QGraphicsScene()
+    , controller_(controller)
+    , widgetFactory_{widgetFactory}
+    , showText_{showText} {
     auto& animation = controller_.getAnimation();
     animation.addObserver(this);
     controller_.AnimationControllerObservable::addObserver(this);
@@ -182,7 +186,7 @@ void AnimationEditorQt::dragEnterEvent(QGraphicsSceneDragDropEvent* event) {
 
 void AnimationEditorQt::dragLeaveEvent(QGraphicsSceneDragDropEvent*) {
     if (dropIndicatorLine) dropIndicatorLine->setVisible(false);
-    overlay_.clear();
+    showText_("", std::chrono::milliseconds{0});
 }
 
 void AnimationEditorQt::dragMoveEvent(QGraphicsSceneDragDropEvent* event) {
@@ -198,10 +202,10 @@ void AnimationEditorQt::dragMoveEvent(QGraphicsSceneDragDropEvent* event) {
     }
 
     // Indicate insertion mode: keyframe or keyframe sequence.
-    overlay_.setText((event->modifiers() & Qt::ControlModifier)
-                         ? "Insert new keyframe sequence (Alt for non-snapping time)"
-                         : "Insert new keyframe (Ctrl for sequence, Alt for non-snapping time)",
-                     std::chrono::milliseconds(1000));
+    showText_((event->modifiers() & Qt::ControlModifier)
+                  ? "Insert new keyframe sequence (Alt for non-snapping time)"
+                  : "Insert new keyframe (Ctrl for sequence, Alt for non-snapping time)",
+              std::chrono::milliseconds{1000});
 
     event->accept();
 }

@@ -45,9 +45,8 @@
 
 namespace inviwo {
 
-TFSelectionWatcher::TFSelectionWatcher(Property* property,
-                                       const std::vector<TFPrimitiveSet*>& primitiveSets)
-    : property_(property), tfSets_(primitiveSets) {}
+TFSelectionWatcher::TFSelectionWatcher(Property* property, std::span<TFPrimitiveSet*> sets)
+    : property_(property), tfSets_(sets.begin(), sets.end()) {}
 
 void TFSelectionWatcher::setPosition(double pos) {
     NetworkLock lock(property_);
@@ -61,18 +60,17 @@ void TFSelectionWatcher::setPosition(double pos) {
 void TFSelectionWatcher::setAlpha(double alpha) {
     NetworkLock lock(property_);
     util::KeepTrueWhileInScope b(&updateInProgress_);
-    for (auto& elem : tfSets_) {
-        elem->setAlpha(selectedPrimitives_, alpha);
-    }
+    std::ranges::for_each(selectedPrimitives_,
+                          [&](TFPrimitive* p) { p->setAlpha(static_cast<float>(alpha)); });
     emit updateWidgetAlpha(alpha, false);
 }
 
 void TFSelectionWatcher::setColor(const QColor& c) {
     NetworkLock lock(property_);
     util::KeepTrueWhileInScope b(&updateInProgress_);
-    for (auto& elem : tfSets_) {
-        elem->setColor(selectedPrimitives_, utilqt::tovec3(c));
-    }
+    const auto color = utilqt::tovec3(c);
+    std::ranges::for_each(selectedPrimitives_, [&](TFPrimitive* p) { p->setColor(color); });
+
     emit updateWidgetColor(c, false);
 }
 

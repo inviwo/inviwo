@@ -49,9 +49,10 @@ Layer::Layer(size2_t defaultDimensions, const DataFormatBase* defaultFormat, Lay
     , defaultDataFormat_{defaultFormat}
     , defaultSwizzleMask_{defaultSwizzleMask}
     , defaultInterpolation_{interpolation}
-    , defaultWrapping_{wrapping} {}
+    , defaultWrapping_{wrapping}
+    , histograms_{} {}
 
-Layer::Layer(LayerConfig config)
+Layer::Layer(const LayerConfig& config)
     : Data<Layer, LayerRepresentation>{}
     , StructuredGridEntity<2>{config.model.value_or(LayerConfig::defaultModel),
                               config.world.value_or(LayerConfig::defaultWorld)}
@@ -63,7 +64,8 @@ Layer::Layer(LayerConfig config)
     , defaultDataFormat_{config.format ? config.format : LayerConfig::defaultFormat}
     , defaultSwizzleMask_{config.swizzleMask.value_or(LayerConfig::defaultSwizzleMask)}
     , defaultInterpolation_{config.interpolation.value_or(LayerConfig::defaultInterpolation)}
-    , defaultWrapping_{config.wrapping.value_or(LayerConfig::defaultWrapping)} {}
+    , defaultWrapping_{config.wrapping.value_or(LayerConfig::defaultWrapping)}
+    , histograms_{} {}
 
 Layer::Layer(std::shared_ptr<LayerRepresentation> in)
     : Data<Layer, LayerRepresentation>{}
@@ -75,12 +77,13 @@ Layer::Layer(std::shared_ptr<LayerRepresentation> in)
     , defaultDataFormat_{in->getDataFormat()}
     , defaultSwizzleMask_{in->getSwizzleMask()}
     , defaultInterpolation_{in->getInterpolation()}
-    , defaultWrapping_{in->getWrapping()} {
+    , defaultWrapping_{in->getWrapping()}
+    , histograms_{} {
 
-    addRepresentation(in);
+    addRepresentation(std::move(in));
 }
 
-Layer::Layer(const Layer& rhs, NoData, LayerConfig config)
+Layer::Layer(const Layer& rhs, NoData, const LayerConfig& config)
     : Data<Layer, LayerRepresentation>{}
     , StructuredGridEntity<2>{config.model.value_or(rhs.getModelMatrix()),
                               config.world.value_or(rhs.getWorldMatrix())}
@@ -91,7 +94,8 @@ Layer::Layer(const Layer& rhs, NoData, LayerConfig config)
     , defaultDataFormat_{config.format ? config.format : rhs.getDataFormat()}
     , defaultSwizzleMask_{config.swizzleMask.value_or(rhs.getSwizzleMask())}
     , defaultInterpolation_{config.interpolation.value_or(rhs.getInterpolation())}
-    , defaultWrapping_{config.wrapping.value_or(rhs.getWrapping())} {}
+    , defaultWrapping_{config.wrapping.value_or(rhs.getWrapping())}
+    , histograms_{} {}
 
 Layer* Layer::clone() const { return new Layer(*this); }
 
@@ -149,7 +153,7 @@ std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(
                 ->getWriterForTypeAndExtension<Layer>(fileExtension))) {
         try {
             return writer->writeDataToBuffer(this, fileExtension);
-        } catch (DataWriterException const& e) {
+        } catch (const DataWriterException& e) {
             LogError(e.getMessage());
         }
     } else {
@@ -157,11 +161,11 @@ std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(
                                                                                 << "\")");
     }
 
-    return std::unique_ptr<std::vector<unsigned char>>();
+    return {};
 }
 
 vec2 Layer::getWorldSpaceGradientSpacing() const {
-    mat3 textureToWorld = mat3(getCoordinateTransformer().getTextureToWorldMatrix());
+    const auto textureToWorld = mat3(getCoordinateTransformer().getTextureToWorldMatrix());
 
     const vec3 extent{glm::length2(textureToWorld[0]), glm::length2(textureToWorld[1]),
                       glm::length2(textureToWorld[2])};
@@ -199,7 +203,7 @@ vec2 Layer::getWorldSpaceGradientSpacing() const {
         return (std::abs(x1) >= std::abs(x2)) ? x1 : x2;
     };
 
-    vec2 ds{signedMax(a.x, b.x), signedMax(a.y, b.y)};
+    const vec2 ds{signedMax(a.x, b.x), signedMax(a.y, b.y)};
 
     // Return the spacing in world space,
     // actually given by:
@@ -229,6 +233,26 @@ LayerConfig Layer::config() const {
             .valueRange = dataMap.valueRange,
             .model = getModelMatrix(),
             .world = getWorldMatrix()};
+}
+
+namespace {
+
+auto histCalc(const Layer& v) {
+    return [dataMap = v.dataMap, repr = v.getRepresentationShared<LayerRAM>()]() {
+        return repr->dispatch<std::vector<Histogram1D>>(
+            [&]<typename T>(const LayerRAMPrecision<T>* rp) {
+                return util::calculateHistograms(rp->getView(), dataMap, 2048);
+            });
+    };
+}
+
+}  // namespace
+
+void Layer::discardHistograms() { histograms_.discard(histCalc(*this)); }
+
+HistogramCache::Result Layer::calculateHistograms(
+    const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const {
+    return histograms_.calculateHistograms(histCalc(*this), whenDone);
 }
 
 template class IVW_CORE_TMPL_INST DataReaderType<Layer>;

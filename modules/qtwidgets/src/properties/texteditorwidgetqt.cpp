@@ -67,20 +67,21 @@ class FileExtension;
 
 TextEditorDockWidget::TextEditorDockWidget(Property* property)
     : PropertyEditorWidgetQt(property, "Edit", "TextEditorDockWidget")
+    , property_{property}
     , fileProperty_{dynamic_cast<FileProperty*>(property)}
     , stringProperty_{dynamic_cast<StringProperty*>(property)}
+    , editor_(new CodeEdit{this})
     , fileObserver_{this, "Text Editor"} {
 
-    QMainWindow* mainWindow = new QMainWindow();
+    auto* mainWindow = new QMainWindow();
     mainWindow->setContextMenuPolicy(Qt::NoContextMenu);
-    QToolBar* toolBar = new QToolBar();
+    auto* toolBar = new QToolBar();
     toolBar->setObjectName("TextEditorWidgetToolBar");
     mainWindow->addToolBar(toolBar);
     toolBar->setFloatable(false);
     toolBar->setMovable(false);
     setWidget(mainWindow);
 
-    editor_ = new CodeEdit{this};
     mainWindow->setCentralWidget(editor_);
 
     QObject::connect(editor_, &CodeEdit::modificationChanged, this,
@@ -91,7 +92,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     fileObserver_.setModifiedCallback([this](bool m) { editor_->document()->setModified(m); });
 
     {
-        auto save = toolBar->addAction(QIcon(":/svgicons/save.svg"), tr("&Save"));
+        auto* save = toolBar->addAction(QIcon(":/svgicons/save.svg"), tr("&Save"));
         save->setShortcut(QKeySequence::Save);
         save->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         mainWindow->addAction(save);
@@ -101,7 +102,8 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     if (fileProperty_) {
         propertyCallback_ = fileProperty_->onChangeScoped([this]() { propertyModified(); });
 
-        auto saveas = toolBar->addAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Script As..."));
+        auto* saveas =
+            toolBar->addAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Script As..."));
         saveas->setShortcut(QKeySequence::SaveAs);
         saveas->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         saveas->setToolTip("Save Script As...");
@@ -116,7 +118,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
             for (const auto& filter : fileProperty_->getNameFilters()) {
                 saveFileDialog.addExtension(filter);
             }
-            if (saveFileDialog.exec()) {
+            if (saveFileDialog.exec() != 0) {
                 auto path = utilqt::fromQString(saveFileDialog.selectedFiles().at(0));
 
                 saveToFile(path);
@@ -131,7 +133,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     }
 
     {
-        auto revert = toolBar->addAction(QIcon(":/svgicons/revert.svg"), tr("Revert"));
+        auto* revert = toolBar->addAction(QIcon(":/svgicons/revert.svg"), tr("Revert"));
         revert->setToolTip("Revert changes");
         revert->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         revert->setEnabled(false);
@@ -142,7 +144,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     }
 
     {
-        auto undo = toolBar->addAction(QIcon(":/svgicons/undo.svg"), tr("Undo"));
+        auto* undo = toolBar->addAction(QIcon(":/svgicons/undo.svg"), tr("Undo"));
         undo->setShortcut(QKeySequence::Undo);
         undo->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         undo->setEnabled(false);
@@ -152,7 +154,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     }
 
     {
-        auto redo = toolBar->addAction(QIcon(":/svgicons/redo.svg"), tr("Redo"));
+        auto* redo = toolBar->addAction(QIcon(":/svgicons/redo.svg"), tr("Redo"));
         redo->setShortcut(QKeySequence::Redo);
         redo->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         redo->setEnabled(false);
@@ -166,6 +168,8 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     updateFromProperty();
     loadState();
 }
+
+Property* TextEditorDockWidget::getProperty() const { return property_; }
 
 SyntaxHighlighter& TextEditorDockWidget::getSyntaxHighlighter() {
     return editor_->syntaxHighlighter();
@@ -196,7 +200,7 @@ void TextEditorDockWidget::closeEvent(QCloseEvent* e) {
         QMessageBox msgBox(QMessageBox::Question, "Text Editor",
                            "Do you want to save unsaved changes?",
                            QMessageBox::Save | QMessageBox::Discard, this);
-        int retval = msgBox.exec();
+        const int retval = msgBox.exec();
         if (retval == QMessageBox::Save) {
             save();
         } else if (retval == static_cast<int>(QMessageBox::Cancel)) {

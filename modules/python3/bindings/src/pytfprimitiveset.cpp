@@ -42,6 +42,7 @@
 #include <pybind11/stl/filesystem.h>
 
 #include <sstream>
+#include <utility>
 
 namespace inviwo {
 
@@ -56,7 +57,7 @@ T try_cast(pybind11::handle obj, const std::string& errorMsg) {
     }
 }
 
-void addPoints(TFPrimitiveSet* ps, pybind11::list values) {
+void addPoints(TFPrimitiveSet* ps, const pybind11::list& values) {
     for (auto&& item : values) {
         const auto data = try_cast<pybind11::list>(
             item, "expected a list of [pos, hex color] and/or [pos, alpha, hex color]");
@@ -176,7 +177,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .def("__repr__", [](const TFPrimitiveSet& ps) {
             std::ostringstream oss;
             oss << "<TFPrimitiveSet:  " << ps.size() << " primitives";
-            for (auto& p : ps) {
+            for (const auto& p : ps) {
                 oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";
@@ -184,26 +185,21 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         });
 
     py::class_<TransferFunction, TFPrimitiveSet>(m, "TransferFunction")
-        .def(py::init([](size_t textureSize) { return TransferFunction(textureSize); }),
-             py::arg("textureSize") = 1024)
-        .def(py::init([](const std::vector<TFPrimitiveData>& values, size_t textureSize) {
-                 return new TransferFunction(values, textureSize);
+        .def(py::init([]() { return TransferFunction(); }))
+        .def(py::init([](const std::vector<TFPrimitiveData>& values) {
+                 return new TransferFunction(values);
              }),
-             py::arg("values") = std::vector<TFPrimitiveData>{}, py::arg("textureSize") = 1024)
-        .def(py::init([](const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type,
-                         size_t textureSize) {
-                 return new TransferFunction(values, type, textureSize);
+             py::arg("values"))
+        .def(py::init([](const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type) {
+                 return new TransferFunction(values, type);
              }),
-             py::arg("values") = std::vector<TFPrimitiveData>{},
-             py::arg("type") = TFPrimitiveSetType::Relative, py::arg("textureSize") = 1024)
-        .def(py::init([](py::list values, TFPrimitiveSetType type, size_t textureSize) {
-                 auto tf = new TransferFunction{{}, type, textureSize};
+             py::arg("values"), py::arg("type"))
+        .def(py::init([](py::list values, TFPrimitiveSetType type) {
+                 auto* tf = new TransferFunction{{}, type};
                  addPoints(tf, values);
                  return tf;
              }),
-             py::arg("values"), py::arg("type") = TFPrimitiveSetType::Relative,
-             py::arg("textureSize") = 1024)
-        .def_property_readonly("textureSize", &TransferFunction::getTextureSize)
+             py::arg("values"), py::arg("type") = TFPrimitiveSetType::Relative)
         .def_property(
             "mask", [](TransferFunction& tf) { return dvec2(tf.getMaskMin(), tf.getMaskMax()); },
             [](TransferFunction& tf, const dvec2& mask) {
@@ -217,7 +213,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .def("__repr__", [](const TransferFunction& tf) {
             std::ostringstream oss;
             oss << "<TransferFunction:  " << tf.size() << " points";
-            for (auto& p : tf) {
+            for (const auto& p : tf) {
                 oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";
@@ -231,7 +227,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
              py::arg("values") = std::vector<TFPrimitiveData>{},
              py::arg("type") = TFPrimitiveSetType::Relative)
         .def(py::init([](py::list values, TFPrimitiveSetType type) {
-                 auto tf = new IsoValueCollection{{}, type};
+                 auto* tf = new IsoValueCollection{{}, type};
                  addPoints(tf, values);
                  return tf;
              }),
@@ -241,7 +237,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .def("__repr__", [](const IsoValueCollection& ivc) {
             std::ostringstream oss;
             oss << "<IsoValueCollection:  " << ivc.size() << " isovalues";
-            for (auto& p : ivc) {
+            for (const auto& p : ivc) {
                 oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";

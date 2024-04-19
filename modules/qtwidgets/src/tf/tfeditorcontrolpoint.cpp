@@ -34,6 +34,7 @@
 #include <modules/qtwidgets/tf/tfcontrolpointconnection.h>  // for TFControlPointConnection
 #include <modules/qtwidgets/tf/tfeditor.h>                  // for TFEditor
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>         // for TFEditorPrimitive
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <QGraphicsScene>                // for QGraphicsScene
 #include <QObject>                       // for qobject_cast
@@ -44,18 +45,12 @@ class QPointF;
 
 namespace inviwo {
 
-TFEditorControlPoint::TFEditorControlPoint(TFPrimitive& primitive, QGraphicsScene* scene,
-                                           double size)
-    : TFEditorPrimitive(primitive, scene, primitive.getPosition(), primitive.getAlpha(), size) {
-    data_.addObserver(this);
-}
-
-void TFEditorControlPoint::onTFPrimitiveChange(const TFPrimitive& p) {
-    setTFPosition(p.getPosition(), p.getAlpha());
+TFEditorControlPoint::TFEditorControlPoint(TFPrimitive& primitive) : TFEditorPrimitive(primitive) {
+    setZValue(tfZLevel);
 }
 
 QRectF TFEditorControlPoint::boundingRect() const {
-    double bBoxSize = getSize() + 5.0;  //<! consider size of pen
+    const double bBoxSize = getSize() + 5.0;  //<! consider size of pen
     auto bRect = QRectF(-bBoxSize / 2.0, -bBoxSize / 2.0, bBoxSize, bBoxSize);
 
     return bRect;
@@ -68,99 +63,85 @@ QPainterPath TFEditorControlPoint::shape() const {
     return path;
 }
 
-void TFEditorControlPoint::paintPrimitive(QPainter* painter) {
+void TFEditorControlPoint::paint(QPainter* painter,
+                                 [[maybe_unused]] const QStyleOptionGraphicsItem* options,
+                                 [[maybe_unused]] QWidget* widget) {
+
+    painter->setRenderHint(QPainter::Antialiasing, true);
+
+    // set up pen and brush for drawing the primitive
+    const auto pen = utilqt::cosmeticPen(isSelected() ? QColor{213, 79, 79} : QColor{66, 66, 66},
+                                         3.0, Qt::SolidLine, Qt::RoundCap);
+    const auto brush = QBrush(utilqt::toQColor(vec4(vec3(getColor()), 1.0f)));
+
+    painter->setPen(pen);
+    painter->setBrush(brush);
+
     const auto radius = getSize() * 0.5;
     painter->drawEllipse(QPointF(0.0, 0.0), radius, radius);
 }
 
-QPointF TFEditorControlPoint::prepareItemPositionChange(const QPointF& pos) {
-    QPointF adjustedPos(pos);
+TFMoveMode TFEditorControlPoint::moveMode() const {
+    if (auto* tfe = qobject_cast<TFEditor*>(scene())) {
+        return tfe->getMoveMode();
+    }
+    return TFMoveMode::Free;
+}
 
-    if (auto tfe = qobject_cast<TFEditor*>(scene())) {
-        QRectF rect = scene()->sceneRect();
-        const double d = 2.0 * rect.width() * glm::epsilon<float>();
+QVariant TFEditorControlPoint::itemChange(GraphicsItemChange change, const QVariant& value) {
+    if ((change == QGraphicsItem::ItemPositionChange) && scene()) {
+        // constrain positions to valid view positions
+        const auto sceneRect = scene()->sceneRect();
+        auto newPos = utilqt::clamp(constrainPosToXorY(value.toPointF()), sceneRect);
 
-        const int moveMode = tfe->getMoveMode();
-
-        // need to update position prior to updating connections
-        currentPos_ = adjustedPos;
-
-        if (left_) {
-            if (left_->left_ && *(left_->left_) > *this) {
-                switch (moveMode) {
-                    case 0:  // Free
-                        break;
-                    case 1:  // Restrict
-                        adjustedPos.setX(left_->left_->getCurrentPos().x() + d);
-                        // need to update position prior to updating connections
-                        currentPos_ = adjustedPos;
-                        break;
-                    case 2:  // Push
-                        left_->left_->setPos(
-                            QPointF(adjustedPos.x() - d, left_->left_->getCurrentPos().y()));
-                        break;
-                }
-
-                tfe->updateConnections();
-            } else {
-                currentPos_ = adjustedPos;
-                left_->updateShape();
+        const double d = 2.0 * sceneRect.width() * glm::epsilon<float>();
+        if (moveMode() == TFMoveMode::Restrict) {
+            if (left_ && left_->left && left_->left->scenePos().x() > newPos.x()) {
+                newPos.setX(left_->left->scenePos().x() + d);
+            }
+            if (right_ && right_->right && right_->right->scenePos().x() < newPos.x()) {
+                newPos.setX(right_->right->scenePos().x() - d);
             }
         }
-        if (right_) {
-            if (right_->right_ && *(right_->right_) < *this) {
-                switch (moveMode) {
-                    case 0:  // Free
-                        break;
-                    case 1:  // Restrict
-                        adjustedPos.setX(right_->right_->getCurrentPos().x() - d);
-                        // need to update position prior to updating connections
-                        currentPos_ = adjustedPos;
-                        break;
-                    case 2:  // Push
-                        right_->right_->setPos(
-                            QPointF(adjustedPos.x() + d, right_->right_->getCurrentPos().y()));
-                        break;
-                }
+        return newPos;  // return the constrained position
+    } else if (change == QGraphicsItem::ItemPositionHasChanged) {
 
-                tfe->updateConnections();
-            } else {
-                right_->updateShape();
+        if (!isEditing_) {
+            isEditing_ = true;
+            // update the associated transfer function primitive
+            data_.setPositionAlpha(dvec2{scenePos().x(), scenePos().y()});
+            isEditing_ = false;
+        }
+
+        updateLabel();
+
+        const double d = 2.0 * scene()->sceneRect().width() * glm::epsilon<float>();
+        if (moveMode() == TFMoveMode::Free) {
+            if ((left_ && left_->left && *(left_->left) > *this) ||
+                (right_ && right_->right && *(right_->right) < *this)) {
+                if (auto* tfe = qobject_cast<TFEditor*>(scene())) {
+                    tfe->updateConnections();
+                    return {};
+                }
+            }
+        } else if (moveMode() == TFMoveMode::Push) {
+            if (left_ && left_->left && *(left_->left) > *this) {
+                left_->left->setPos(QPointF(scenePos().x() - d, left_->left->scenePos().y()));
+            }
+            if (right_ && right_->right && *(right_->right) < *this) {
+                right_->right->setPos(QPointF(scenePos().x() + d, right_->right->scenePos().y()));
             }
         }
+        if (auto* r = right()) {
+            r->updateShape();
+        }
+        if (auto* l = left()) {
+            l->updateShape();
+        }
+        return {};
     }
 
-    return adjustedPos;
-}
-
-void TFEditorControlPoint::onItemPositionChange(const dvec2& newPos) {
-    data_.setPositionAlpha(newPos);
-}
-
-void TFEditorControlPoint::onItemSceneHasChanged() { onTFPrimitiveChange(data_); }
-
-bool operator==(const TFEditorControlPoint& lhs, const TFEditorControlPoint& rhs) {
-    return lhs.data_ == rhs.data_;
-}
-
-bool operator!=(const TFEditorControlPoint& lhs, const TFEditorControlPoint& rhs) {
-    return !operator==(lhs, rhs);
-}
-
-bool operator<(const TFEditorControlPoint& lhs, const TFEditorControlPoint& rhs) {
-    return lhs.currentPos_.x() < rhs.currentPos_.x();
-}
-
-bool operator>(const TFEditorControlPoint& lhs, const TFEditorControlPoint& rhs) {
-    return rhs < lhs;
-}
-
-bool operator<=(const TFEditorControlPoint& lhs, const TFEditorControlPoint& rhs) {
-    return !(rhs < lhs);
-}
-
-bool operator>=(const TFEditorControlPoint& lhs, const TFEditorControlPoint& rhs) {
-    return !(lhs < rhs);
+    return TFEditorPrimitive::itemChange(change, value);
 }
 
 }  // namespace inviwo

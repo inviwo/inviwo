@@ -116,7 +116,7 @@ void main() {{
 }}
 )";
 
-}
+}  // namespace
 
 VolumeRegionShrink::VolumeRegionShrink()
     : Processor()
@@ -151,7 +151,6 @@ VolumeRegionShrink::VolumeRegionShrink()
                  1,
                  InvalidationLevel::InvalidOutput,
                  PropertySemantics::Text}
-    , volumeNumericType_{""}
     , fragShader_{std::make_shared<StringShaderResource>("VolumeRegionShrink.frag",
                                                          fmt::format(fragStr, volumeNumericType_))}
     , shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
@@ -182,8 +181,8 @@ void VolumeRegionShrink::process() {
         return;
     }
 
-    auto* vf = volume->getDataFormat();
-    std::string volumeNumericType = "";
+    const auto* vf = volume->getDataFormat();
+    std::string volumeNumericType;
     if (vf->getPrecision() == 32 && vf->getNumericType() == NumericType::SignedInteger) {
         volumeNumericType = "i";
     } else if (vf->getPrecision() == 32 && vf->getNumericType() == NumericType::UnsignedInteger) {
@@ -191,7 +190,7 @@ void VolumeRegionShrink::process() {
     }
     if (volumeNumericType != volumeNumericType_) {
         volumeNumericType_ = volumeNumericType;
-        util::KeepTrueWhileInScope block(&blockShaderReload_);
+        const util::KeepTrueWhileInScope block(&blockShaderReload_);
         initializeResources();
     }
 
@@ -220,11 +219,10 @@ void VolumeRegionShrink::process() {
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
     fbo_.activate();
-    VolumeGL* outGL0 = out_[0]->getEditableRepresentation<VolumeGL>();
+    auto* outGL0 = out_[0]->getEditableRepresentation<VolumeGL>();
     fbo_.attachColorTexture(outGL0->getTexture().get(), 0);
-    out_[0]->invalidateHistogram();
 
-    utilgl::Activate as{&shader_};
+    const utilgl::Activate as{&shader_};
 
     if (volumeNumericType_ == "i") {
         shader_.setUniform("fillValue", ivec4{fillValue_.get()});
@@ -269,9 +267,8 @@ void VolumeRegionShrink::process() {
         std::max(out_[1]->dataMap.dataRange.y, static_cast<double>(fillValue_));
     out_[1]->dataMap.valueRange = out_[1]->dataMap.dataRange;
 
-    VolumeGL* outGL1 = out_[1]->getEditableRepresentation<VolumeGL>();
+    auto* outGL1 = out_[1]->getEditableRepresentation<VolumeGL>();
     fbo_.attachColorTexture(outGL1->getTexture().get(), 1);
-    out_[1]->invalidateHistogram();
 
     size_t src = 1;
     size_t dst = 0;
@@ -285,6 +282,7 @@ void VolumeRegionShrink::process() {
     }
 
     FrameBufferObject::deactivateFBO();
+    out_[dst]->discardHistograms();
     outport_.setData(out_[dst]);
 }
 

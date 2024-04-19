@@ -46,6 +46,7 @@ class MultilineTextEdit;
 class TFPrimitiveSet;
 class TransferFunctionProperty;
 struct TFPrimitiveData;
+class TFData;
 
 /**
  * \class TFPrimitiveSetWidgetQt
@@ -58,8 +59,8 @@ struct TFPrimitiveData;
  */
 class IVW_MODULE_QTWIDGETS_API TFPrimitiveSetWidgetQt : public PropertyWidgetQt {
 public:
-    TFPrimitiveSetWidgetQt(IsoValueProperty* property);
-    TFPrimitiveSetWidgetQt(TransferFunctionProperty* property);
+    explicit TFPrimitiveSetWidgetQt(IsoValueProperty* property);
+    explicit TFPrimitiveSetWidgetQt(TransferFunctionProperty* property);
     virtual ~TFPrimitiveSetWidgetQt() = default;
 
     virtual void updateFromProperty() override;
@@ -73,16 +74,16 @@ private:
     struct PropertyConcept {
         virtual ~PropertyConcept() = default;
         virtual TFPrimitiveSet& get() = 0;
-        virtual VolumeInport* getVolumePort() = 0;
+        virtual const TFData& data() const = 0;
     };
 
     template <typename U>
     class PropertyModel : public PropertyConcept {
     public:
-        PropertyModel(U data) : data_(data) {}
+        explicit PropertyModel(U data) : data_(data) {}
 
         virtual TFPrimitiveSet& get() override { return data_->get(); }
-        virtual VolumeInport* getVolumePort() override { return data_->getVolumeInport(); }
+        virtual const TFData& data() const override { return data_->data(); }
 
     private:
         U data_;
@@ -90,8 +91,8 @@ private:
 
     std::unique_ptr<PropertyConcept> propertyPtr_;
 
-    MultilineTextEdit* textEdit_;
-    EditableLabelQt* label_;
+    MultilineTextEdit* textEdit_{};
+    EditableLabelQt* label_{};
 };
 
 }  // namespace inviwo

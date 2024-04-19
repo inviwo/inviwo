@@ -44,11 +44,11 @@ class Image;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo NoiseGenerator2D::processorInfo_{
-    "org.inviwo.NoiseGenerator2D",           // Class identifier
-    "Noise Generator 2D",                    // Display name
-    "Data Creation",                         // Category
-    CodeState::Stable,                       // Code state
-    Tag::CPU | Tag("Layer") | Tag("Noise"),  // Tags
+    "org.inviwo.NoiseGenerator2D",            // Class identifier
+    "Noise Generator 2D",                     // Display name
+    "Data Creation",                          // Category
+    CodeState::Stable,                        // Code state
+    Tags::CPU | Tag("Layer") | Tag("Noise"),  // Tags
     R"(
     A processor to generate a noise layer.
     Using the Mersenne Twister 19937 generator to generate random numbers.

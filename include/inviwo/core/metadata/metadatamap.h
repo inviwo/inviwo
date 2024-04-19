@@ -32,18 +32,22 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/metadata/metadatafactory.h>
+#include <concepts>
 
 namespace inviwo {
 
-class IVW_CORE_API MetaDataMap : public Serializable {
+class IVW_CORE_API MetaDataMap {
 public:
     MetaDataMap() = default;
     MetaDataMap(const MetaDataMap&);
+    MetaDataMap(MetaDataMap&&) = default;
     MetaDataMap& operator=(const MetaDataMap& map);
-    virtual ~MetaDataMap() = default;
+    MetaDataMap& operator=(MetaDataMap&& map) = default;
+    ~MetaDataMap() = default;
 
     MetaData* add(std::string_view key, MetaData* metaData);
-    template <typename T>  // T Should derive from MetaData
+    template <typename T>
+        requires std::derived_from<T, MetaData>
     T* add(std::string_view key, std::unique_ptr<T> metaData);
 
     bool remove(std::string_view key);
@@ -59,8 +63,8 @@ public:
 
     bool empty() const;
 
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
+    void serialize(Serializer& s) const;
+    void deserialize(Deserializer& d);
 
     friend bool IVW_CORE_API operator==(const MetaDataMap& lhs, const MetaDataMap& rhs);
     friend bool IVW_CORE_API operator!=(const MetaDataMap& lhs, const MetaDataMap& rhs);
@@ -70,6 +74,7 @@ private:
 };
 
 template <typename T>
+    requires std::derived_from<T, MetaData>
 T* MetaDataMap::add(std::string_view key, std::unique_ptr<T> metaData) {
     auto ptr = metaData.get();
     metaData_[std::string{key}] = std::move(metaData);

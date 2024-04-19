@@ -57,22 +57,17 @@ OpenGLSettings::OpenGLSettings()
                            {"throw", "Throw error", Shader::OnError::Throw}},
                           0)
     , debugMessages_("debugMessages", "Debug",
-                     {{utilgl::debug::Mode::Off},
-                      {utilgl::debug::Mode::Debug},
-                      {utilgl::debug::Mode::DebugSynchronous}},
+                     {utilgl::debug::Mode::Off, utilgl::debug::Mode::Debug,
+                      utilgl::debug::Mode::DebugSynchronous},
                      0)
     , debugSeverity_("debugSeverity", "Severity",
-                     {{utilgl::debug::Severity::Notification},
-                      {utilgl::debug::Severity::Low},
-                      {utilgl::debug::Severity::Medium},
-                      {utilgl::debug::Severity::High}},
+                     {utilgl::debug::Severity::Notification, utilgl::debug::Severity::Low,
+                      utilgl::debug::Severity::Medium, utilgl::debug::Severity::High},
                      2)
     , breakOnMessage_("breakOnMessage", "Break on Message",
-                      {{utilgl::debug::BreakLevel::Off},
-                       {utilgl::debug::BreakLevel::High},
-                       {utilgl::debug::BreakLevel::Medium},
-                       {utilgl::debug::BreakLevel::Low},
-                       {utilgl::debug::BreakLevel::Notification}},
+                      {utilgl::debug::BreakLevel::Off, utilgl::debug::BreakLevel::High,
+                       utilgl::debug::BreakLevel::Medium, utilgl::debug::BreakLevel::Low,
+                       utilgl::debug::BreakLevel::Notification},
                       0) {
 
     addProperty(shaderReloadingProperty_);

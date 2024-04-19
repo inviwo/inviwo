@@ -56,10 +56,10 @@ protected:
     DemoController& controller_;
     InviwoApplication* app_;
 
-    QAction* btnLast_;
-    QAction* btnNext_;
-    QAction* btnBegin_;
-    QAction* btnEnd_;
+    QAction* btnLast_{};
+    QAction* btnNext_{};
+    QAction* btnBegin_{};
+    QAction* btnEnd_{};
 };
 
 }  // namespace animation

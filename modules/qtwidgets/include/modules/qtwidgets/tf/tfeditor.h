@@ -34,10 +34,13 @@
 #include <inviwo/core/datastructures/datamapper.h>   // for DataMapper
 #include <inviwo/core/util/glmvec.h>                 // for dvec2, vec4
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>  // for TFEditorPrimitive, TFEditorPrimitiv...
+#include <inviwo/core/datastructures/tfprimitiveset.h>
+#include <modules/qtwidgets/tf/tfmovemode.h>
 
 #include <functional>  // for function
 #include <memory>      // for shared_ptr
 #include <vector>      // for vector
+#include <span>
 
 #include <QGraphicsScene>  // for QGraphicsScene
 #include <QObject>         // for Q_OBJECT, signals
@@ -56,61 +59,57 @@ class TFEditorControlPoint;
 class TFEditorIsovalue;
 class TFPrimitive;
 class TFPrimitiveSet;
+class TFPropertyConcept;
+class TFEditorMaskMin;
+class TFEditorMaskMax;
 
-namespace util {
-struct TFPropertyConcept;
-}
+template <typename T>
+struct PtrHash {
+    using hash_type = std::hash<const T*>;
+    using is_transparent = void;
 
-class IVW_MODULE_QTWIDGETS_API TFEditor : public QGraphicsScene, public TFEditorPrimitiveObserver {
+    constexpr std::size_t operator()(const T* ptr) const { return hash_type{}(ptr); }
+    constexpr std::size_t operator()(T* ptr) const { return hash_type{}(ptr); }
+    constexpr std::size_t operator()(const T& item) const { return hash_type{}(&item); }
+    constexpr std::size_t operator()(T& item) const { return hash_type{}(&item); }
+};
+template <typename T>
+struct PtrEqual {
+    using is_transparent = void;
+
+    constexpr bool operator()(const T* ptr1, const T* ptr2) const { return ptr1 == ptr2; }
+    constexpr bool operator()(const T& item1, const T* ptr2) const { return &item1 == ptr2; }
+    constexpr bool operator()(const T* ptr1, const T& item2) const { return ptr1 == &item2; }
+    constexpr bool operator()(const T& item1, const T& item2) const { return &item1 == item2; }
+};
+
+class IVW_MODULE_QTWIDGETS_API TFEditor : public QGraphicsScene, public TFPrimitiveSetObserver {
     Q_OBJECT
 public:
-    TFEditor(util::TFPropertyConcept* tfProperty, const std::vector<TFPrimitiveSet*>& primitiveSets,
-             QWidget* parent = nullptr);
+    explicit TFEditor(TFPropertyConcept* tfProperty, QWidget* parent = nullptr);
     virtual ~TFEditor();
 
-    virtual void onControlPointAdded(TFPrimitive& p);
-    virtual void onControlPointRemoved(TFPrimitive& p);
-    virtual void onControlPointChanged(const TFPrimitive& p);
-
-    void updateConnections();
-
-    void setMoveMode(int i);
-    int getMoveMode() const;
-
-    /**
-     * \brief Set the display size of the control points.
-     *
-     * @see TransferFunctionEditorControlPoint::setSize
-     * @param val Display size
-     */
-    void setControlPointSize(double val);
-    /**
-     * \brief Get the display size of the control points.
-     * @see TransferFunctionEditorControlPoint::setSize
-     */
-    double getControlPointSize() const;
-
-    void setRelativeSceneOffset(const dvec2& offset);
-    const dvec2& getRelativeSceneOffset() const;
+    void setMoveMode(TFMoveMode i);
+    TFMoveMode getMoveMode() const;
 
     const DataMapper& getDataMapper() const;
 
     std::vector<TFPrimitive*> getSelectedPrimitives() const;
 
-    /**
-     * \brief returns both horizontal and vertical zoom given by the property
-     *
-     * @return horizontal and vertical zoom corresponding to properties' zoomH.y - zoomH.x and
-     * zoomV.y - zoomV.x
-     */
-    dvec2 getZoom() const;
+    void updateConnections();
 
 signals:
     void showColorDialog();
     void updateBegin();
     void updateEnd();
+    void moveModeChange(TFMoveMode);
 
 protected:
+    virtual void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) override;
+    virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
+    virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
+
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* e) override;
@@ -119,75 +118,73 @@ protected:
 
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
 
-    /**
-     * \brief adds a new control point at the given position
-     *
-     * Adds a new control point the the points_ array, adds a new line item to the lines_ array,
-     * sorts the points_ array and updates the line items to go to and from the correct points.
-     * Runs CalcTransferValues to update the TransferFunction data Image
-     */
-    void addControlPoint(const QPointF& pos);
-    void addControlPoint(double pos, const vec4& color);
-
-    /**
-     * \brief adds a new TF Peak at the given position
-     *
-     * Adds a control point as well as two more points with 0 alpha, one point to the left and the
-     * second to the right using the current primitive offset.
-     */
-    void addControlPointPeak(const QPointF& pos);
-
-    /**
-     * \brief adds a new isovalue at the given position
-     */
-    void addIsovalue(const QPointF& pos);
-
     void removeControlPoint(TFEditorPrimitive* p);
 
     TFEditorPrimitive* getTFPrimitiveItemAt(const QPointF& pos) const;
 
-    virtual void onTFPrimitiveDoubleClicked(const TFEditorPrimitive* p) override;
-
 private:
+    void addPoint(double pos, const vec4& color, TFPrimitiveSet* set);
+    void addPoint(double pos, double alpha, TFPrimitiveSet* set);
+    void addPoint(const QPointF& scenePos, TFPrimitiveSet* set);
+    void addPoint(const QPointF& scenePos);
+    void addPeak(const QPointF& scenePos, TFPrimitiveSet* set);
+    double sceneToPos(const QPointF& pos) const;
+    double sceneToAlpha(const QPointF& pos) const;
+
+    TFPrimitiveSet* findSet(TFPrimitive*) const;
+
     std::vector<TFPrimitive*> getAllPrimitives() const;
     std::vector<TFPrimitive*> getAllOrSelectedPrimitives() const;
 
     std::vector<TFEditorPrimitive*> getSelectedPrimitiveItems() const;
+    static void setSelected(std::span<TFEditorPrimitive*> primitives, bool selected);
 
-    void createControlPointItem(TFPrimitive& p);
-    void createIsovalueItem(TFPrimitive& p);
+    QTransform calcTransform(QPointF scenePos, QPointF lastScenePos) const;
+    static QPointF calcTransformRef(std::span<TFEditorPrimitive*> primitives,
+                                    TFEditorPrimitive* start);
+    static void move(std::span<TFEditorPrimitive*> primitives, const QTransform& transform,
+                     const QRectF& rect);
 
-    double controlPointSize_ = 15.0;           //!< size of TF primitives
-    dvec2 relativeSceneOffset_ = dvec2(10.0);  //!< offset for duplicating TF primitives
+    void duplicate(std::span<TFEditorPrimitive*> primitives);
 
-    util::TFPropertyConcept* tfPropertyPtr_;
-    std::vector<TFPrimitiveSet*> tfSets_;
+    bool handleGroupSelection(QKeyEvent* event);
+    bool handleModifySelection(QKeyEvent* event);
+    bool handleMoveSelection(QKeyEvent* event);
 
-    using PointVec = std::vector<TFEditorControlPoint*>;
-    using ConnectionVec = std::vector<TFControlPointConnection*>;
-    PointVec points_;
-    ConnectionVec connections_;
-    std::vector<TFEditorIsovalue*> isovalueItems_;
+    /**
+     * calculate the horizontal and vertical offset in scene coordinates based on the current
+     * viewport size and zoom. The offset then corresponds to defaultOffset pixels on screen.
+     */
+    dvec2 viewDependentOffset() const;
 
-    bool mouseDrag_;
-    QPointF rigidTransRef_;
-    QPointF dragPos_;
-    TFEditorPrimitive* dragItem_ = nullptr;
-    bool mouseMovedSincePress_ = false;
-    bool mouseDoubleClick_ = false;
-    DataMapper dataMap_;
+    TFPropertyConcept* concept_;
+
+    struct Items {
+        std::vector<std::unique_ptr<TFEditorPrimitive>> points;
+        std::vector<std::unique_ptr<TFControlPointConnection>> connections;
+        bool connected = false;
+    };
+    std::unordered_map<TFPrimitiveSet*, Items, PtrHash<TFPrimitiveSet>, PtrEqual<TFPrimitiveSet>>
+        primitives_;
+    TFPrimitiveSet* activeSet_;
+
+    TFPrimitiveSet* activeSet();
+    Items* activeItem();
+
+    struct Mouse {
+        TFEditorPrimitive* dragItem = nullptr;
+        QPointF rigid = QPointF{0.0, 0.0};
+    };
+
+    Mouse mouse_;
 
     std::vector<std::vector<TFEditorPrimitive*>> groups_;
-    int moveMode_;
+    TFMoveMode moveMode_;
+
+    std::unique_ptr<TFEditorMaskMin> maskMin_;
+    std::unique_ptr<TFEditorMaskMax> maskMax_;
 
     bool selectNewPrimitives_;
-    TFEditorPrimitive::ItemType lastInsertedPrimitiveType_ =
-        TFEditorPrimitive::TFEditorUnknownPrimitiveType;
-
-    std::vector<std::shared_ptr<std::function<void()>>> portCallBacks_;
 };
-
-inline double TFEditor::getControlPointSize() const { return controlPointSize_; }
-inline const dvec2& TFEditor::getRelativeSceneOffset() const { return relativeSceneOffset_; }
 
 }  // namespace inviwo

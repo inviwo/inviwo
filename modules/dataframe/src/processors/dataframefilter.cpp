@@ -66,11 +66,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameFilter::processorInfo_{
-    "org.inviwo.DataFrameFilter",                 // Class identifier
-    "DataFrame Filter",                           // Display name
-    "DataFrame",                                  // Category
-    CodeState::Experimental,                      // Code state
-    Tag::CPU | Tag("DataFrame") | Tag("Filter"),  // Tags
+    "org.inviwo.DataFrameFilter",                  // Class identifier
+    "DataFrame Filter",                            // Display name
+    "DataFrame",                                   // Category
+    CodeState::Experimental,                       // Code state
+    Tags::CPU | Tag("DataFrame") | Tag("Filter"),  // Tags
 };
 const ProcessorInfo DataFrameFilter::getProcessorInfo() const { return processorInfo_; }
 

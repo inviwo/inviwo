@@ -58,10 +58,12 @@ public:
      * @brief Create a text editor for @p property
      * @pre Property has to be of type FileProperty or StringProperty
      */
-    TextEditorDockWidget(Property* property);
+    explicit TextEditorDockWidget(Property* property);
     SyntaxHighlighter& getSyntaxHighlighter();
     virtual ~TextEditorDockWidget();
     void updateFromProperty();
+
+    virtual Property* getProperty() const override;
 
 protected:
     virtual void closeEvent(QCloseEvent*) override;
@@ -75,6 +77,7 @@ protected:
     void save();
     void saveToFile(const std::filesystem::path& filename);
 
+    Property* property_;
     FileProperty* fileProperty_;
     StringProperty* stringProperty_;
     CodeEdit* editor_;

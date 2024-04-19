@@ -475,7 +475,7 @@ class SpatialEntity;
 
 class IVW_CORE_API SpatialCoordinateTransformerImpl : public SpatialCoordinateTransformer {
 public:
-    SpatialCoordinateTransformerImpl(const SpatialEntity& entity);
+    explicit SpatialCoordinateTransformerImpl(const SpatialEntity& entity);
 
     virtual SpatialCoordinateTransformerImpl* clone() const;
     virtual ~SpatialCoordinateTransformerImpl() = default;
@@ -508,7 +508,7 @@ class StructuredGridEntity;
 template <unsigned int N>
 class StructuredCoordinateTransformerImpl : public StructuredCoordinateTransformer {
 public:
-    StructuredCoordinateTransformerImpl(const StructuredGridEntity<N>& entity);
+    explicit StructuredCoordinateTransformerImpl(const StructuredGridEntity<N>& entity);
     virtual StructuredCoordinateTransformerImpl* clone() const override;
     virtual ~StructuredCoordinateTransformerImpl() = default;
 

@@ -32,6 +32,7 @@
 #include <modules/basecl/baseclmoduledefine.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/datastructures/light/lightingstate.h>
 
 #include <modules/opencl/inviwoopencl.h>
@@ -43,6 +44,8 @@
 #include <inviwo/core/datastructures/image/layer.h>
 
 namespace inviwo {
+
+class LayerCLGL;
 
 /**
  * \brief Perform volume rendering on the input volume.
@@ -67,7 +70,7 @@ public:
      * @param event
      */
     void volumeRaycast(const Volume* volume, const Layer* entryPoints, const Layer* exitPoints,
-                       const Layer* transferFunction, Layer* outImage,
+                       TransferFunctionProperty& transferFunction, Layer* outImage,
                        const VECTOR_CLASS<cl::Event>* waitForEvents = nullptr,
                        cl::Event* event = nullptr);
 

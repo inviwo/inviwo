@@ -63,18 +63,16 @@ class TFEditor;
 class TFEditorView;
 class TFLineEdit;
 class TFSelectionWatcher;
-namespace util {
-struct TFPropertyConcept;
-}  // namespace util
+class TFPropertyConcept;
 
 class IVW_MODULE_QTWIDGETS_API TFPropertyDialog : public PropertyEditorWidgetQt,
                                                   public TFPrimitiveSetObserver,
                                                   public TFPropertyObserver {
 public:
-    TFPropertyDialog(TransferFunctionProperty* tfProperty);
-    TFPropertyDialog(IsoValueProperty* isoProperty);
-    TFPropertyDialog(IsoTFProperty* isotfProperty);
-    ~TFPropertyDialog();
+    explicit TFPropertyDialog(TransferFunctionProperty* tfProperty);
+    explicit TFPropertyDialog(IsoValueProperty* isoProperty);
+    explicit TFPropertyDialog(IsoTFProperty* isotfProperty);
+    virtual ~TFPropertyDialog();
 
     virtual QSize sizeHint() const override;
     virtual QSize minimumSizeHint() const override;
@@ -82,23 +80,24 @@ public:
     void updateFromProperty();
     TFEditorView* getEditorView() const;
 
+    virtual Property* getProperty() const override;
+
 protected:
-    virtual void onTFPrimitiveAdded(TFPrimitive& p) override;
-    virtual void onTFPrimitiveRemoved(TFPrimitive& p) override;
-    virtual void onTFPrimitiveChanged(const TFPrimitive& p) override;
-    virtual void onTFTypeChanged(const TFPrimitiveSet& primitiveSet) override;
+    virtual void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) override;
+    virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
+    virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
+    virtual void onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) override;
     void onTFTypeChangedInternal();
 
-    virtual void onMaskChange(const dvec2& mask) override;
     virtual void onZoomHChange(const dvec2& zoomH) override;
     virtual void onZoomVChange(const dvec2& zoomV) override;
+    virtual void onHistogramModeChange(HistogramMode mode) override;
 
     virtual void setReadOnly(bool readonly) override;
 
     void changeVerticalZoom(int zoomMin, int zoomMax);
     void changeHorizontalZoom(int zoomMin, int zoomMax);
-    void showHistogram(int type);
-    void changeMoveMode(int i);
 
     virtual void resizeEvent(QResizeEvent*) override;
     virtual void showEvent(QShowEvent*) override;
@@ -107,33 +106,23 @@ protected:
     virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
 
 private:
-    TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> model,
-                     std::vector<TFPrimitiveSet*> tfSets);
+    explicit TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model);
 
     void updateTFPreview();
-    /**
-     * calculate the horizontal and vertical offset in scene coordinates based on the current
-     * viewport size and zoom. The offset then corresponds to defaultOffset pixels on screen.
-     */
-    dvec2 getRelativeSceneOffset() const;
 
-    const int sliderRange_;
+    static constexpr int sliderRange_ = 1024;
     static constexpr int verticalSliderRange_ = 1000;
-    const int defaultOffset_ = 5;  //!< offset in pixel
 
-    std::unique_ptr<util::TFPropertyConcept> propertyPtr_;
-    std::vector<TFPrimitiveSet*> tfSets_;
+    QLabel* preview_;  ///< View that contains the scene for the painted transfer function
 
+    std::unique_ptr<TFPropertyConcept> concept_;
     std::unique_ptr<ColorWheel> colorWheel_;
     std::unique_ptr<QColorDialog> colorDialog_;
-
-    std::unique_ptr<TFEditor> tfEditor_;  //!< inherited from QGraphicsScene
-
+    std::unique_ptr<TFEditor> editor_;  //!< inherited from QGraphicsScene
     std::unique_ptr<TFSelectionWatcher> tfSelectionWatcher_;
+    TFEditorView* view_;  //!< View that contains the editor
 
-    TFEditorView* tfEditorView_;  //!< View that contains the editor
     QComboBox* chkShowHistogram_;
-
     QComboBox* pointMoveMode_;
 
     QLabel* domainMin_;
@@ -144,14 +133,13 @@ private:
     TFLineEdit* primitiveAlpha_;
     TFColorEdit* primitiveColor_;
 
-    QLabel* tfPreview_;  ///< View that contains the scene for the painted transfer function
-
     RangeSliderQt* zoomVSlider_;
     RangeSliderQt* zoomHSlider_;
 
     bool ongoingUpdate_ = false;
     Processor::NameDispatcherHandle onNameChange_;
-    std::vector<std::shared_ptr<std::function<void()>>> portCallbacks_;
+
+    DispatcherHandle<void()> dataChangeHandle_;
 };
 
 }  // namespace inviwo

@@ -59,7 +59,7 @@ class IVW_MODULE_ANIMATIONQT_API AnimationEditorQt : public QGraphicsScene,
                                                      public AnimationControllerObserver {
 public:
     AnimationEditorQt(AnimationController& controller, TrackWidgetQtFactory& widgetFactory,
-                      TextLabelOverlay& overlay);
+                      std::function<void(std::string_view, std::chrono::milliseconds)> showText);
     virtual ~AnimationEditorQt();
 
     // AnimationControllerObserver overload
@@ -90,7 +90,7 @@ protected:
     /// Manipulated in the drag* and drop* functions.
     QGraphicsLineItem* dropIndicatorLine;
 
-    TextLabelOverlay& overlay_;
+    std::function<void(std::string_view, std::chrono::milliseconds)> showText_;
     std::unique_ptr<TrackWidgetQt> createTrackWidget(Track& track) const;
 };
 

@@ -60,19 +60,19 @@ std::string_view enumToStr(LightSourceType lt) {
 std::ostream& operator<<(std::ostream& ss, LightSourceType lt) { return ss << enumToStr(lt); }
 
 mat4 getLightTransformationMatrix(vec3 pos, vec3 dir) {
-    vec3 A = vec3(0, 0, 1);
-    vec3 B = dir;
+    const vec3 A = vec3(0, 0, 1);
+    const vec3 B = dir;
     mat4 transformationMatrix;
     // Check if the direction is parallel to the z-axis
     // to avoid division by zero in glm::normalize(glm::cross(A, B)).
     if (glm::all(glm::lessThan(glm::abs(glm::cross(A, B)), vec3(glm::epsilon<float>())))) {
         // Direction is parallel to z-axis.
         // Apply rotation by 180 degrees if the direction is along negative z-axis
-        float angle = dir.z < 0 ? -glm::pi<float>() : 0;
+        const float angle = dir.z < 0 ? -glm::pi<float>() : 0;
         transformationMatrix = glm::translate(pos) * glm::rotate(angle, vec3(0.f, 1.f, 0.f));
     } else {
         float angle = std::acos(glm::dot(A, B));
-        vec3 rotationAxis = glm::normalize(glm::cross(A, B));
+        const vec3 rotationAxis = glm::normalize(glm::cross(A, B));
 #ifndef GLM_FORCE_RADIANS
         angle = glm::degrees(angle);
 #endif  // GLM_FORCE_RADIANS
@@ -84,7 +84,7 @@ mat4 getLightTransformationMatrix(vec3 pos, vec3 dir) {
 LightSource::LightSource()
     : intensity_{1.0f}, fieldOfView_{glm::half_pi<float>()}, size_{0.0f}, enabled_{true} {}
 
-const vec3 LightSource::getIntensity() const { return intensity_; }
+vec3 LightSource::getIntensity() const { return intensity_; }
 
 void LightSource::setIntensity(const vec3& intensity) { intensity_ = intensity; }
 

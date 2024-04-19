@@ -60,7 +60,7 @@ namespace inviwo {
 template <size_t N>
 class IsoTFComponent : public ShaderComponent {
 public:
-    IsoTFComponent(VolumeInport& volumeInport)
+    explicit IsoTFComponent(VolumeInport& volumeInport)
         : ShaderComponent(), isotfs{util::make_array<N>([&]([[maybe_unused]] size_t i) {
             if constexpr (N > 1) {
                 auto prop =
@@ -83,10 +83,9 @@ public:
 
     virtual void process(Shader& shader, TextureUnitContainer& cont) override {
         for (auto&& isotf : isotfs) {
-            if (auto tfLayer = isotf.tf_.get().getData()) {
+            if (auto* tfLayer = isotf.tf_.template getRepresentation<LayerGL>()) {
                 TextureUnit& unit = cont.emplace_back();
-                auto transferFunctionGL = tfLayer->template getRepresentation<LayerGL>();
-                transferFunctionGL->bindTexture(unit.getEnum());
+                tfLayer->bindTexture(unit.getEnum());
                 shader.setUniform(isotf.tf_.getIdentifier(), unit);
             }
             {

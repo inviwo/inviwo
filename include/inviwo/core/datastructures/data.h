@@ -176,7 +176,9 @@ public:
 protected:
     Data() = default;
     Data(const Data<Self, Repr>& rhs);
-    Data<Self, Repr>& operator=(const Data<Self, Repr>& rhs);
+    Data(Data<Self, Repr>&& rhs) = default;
+    Data<Self, Repr>& operator=(const Data<Self, Repr>& that);
+    Data<Self, Repr>& operator=(Data<Self, Repr>&& that) = default;
 
     template <typename F, typename T>
     decltype(auto) getLastOr(F&& f, T&& fallback) const {
@@ -215,7 +217,8 @@ private:
 };
 
 template <typename Self, typename Repr>
-Data<Self, Repr>::Data(const Data<Self, Repr>& rhs) : lastValidRepresentation_{nullptr} {
+Data<Self, Repr>::Data(const Data<Self, Repr>& rhs)
+    : mutex_{}, representations_{}, lastValidRepresentation_{nullptr} {
     rhs.copyRepresentationsTo(this);
 }
 
@@ -230,7 +233,7 @@ Data<Self, Repr>& Data<Self, Repr>::operator=(const Data<Self, Repr>& that) {
 template <typename Self, typename Repr>
 template <typename T, typename D>
 std::shared_ptr<T> Data<Self, Repr>::getReprInternal(D& data) {
-    const auto requestedType = std::type_index(typeid(T));
+    const auto requestedType = std::type_index{typeid(T)};
     if (data.representations_.empty()) {
         auto factory = RepresentationFactoryManager::getRepresentationFactory<Repr>();
         auto repr = std::shared_ptr<Repr>{factory->createOrDefault(requestedType, &data)};
@@ -258,9 +261,10 @@ std::shared_ptr<T> Data<Self, Repr>::getReprInternal(D& data) {
                     data.lastValidRepresentation_->setValid(true);
                 } else {  // No representation found, create it
                     dstRepr = converter->createFrom(srcRepr);
-                    if (!dstRepr)
+                    if (!dstRepr) {
                         throw ConverterException("Converter failed to create",
                                                  IVW_CONTEXT_CUSTOM("Data"));
+                    }
                     data.lastValidRepresentation_ = data.addRepresentationInternal(dstRepr);
                 }
             }
@@ -278,7 +282,7 @@ std::shared_ptr<T> Data<Self, Repr>::getReprInternal(D& data) {
                 "Found no converters, Source {}({}),  Destination {}({})\nConverters:\n{}",
                 util::demangle(data.lastValidRepresentation_->getTypeIndex().name()),
                 data.lastValidRepresentation_->getTypeIndex().hash_code(),
-                util::demangle(typeid(T).name()), std::type_index(typeid(T)).hash_code(),
+                util::demangle(typeid(T).name()), std::type_index{typeid(T)}.hash_code(),
                 fmt::string_view(buff.data(), buff.size()));
         }
     }
@@ -311,7 +315,7 @@ template <typename Self, typename Repr>
 template <typename T>
 bool Data<Self, Repr>::hasRepresentation() const {
     std::scoped_lock lock(mutex_);
-    return util::has_key(representations_, std::type_index(typeid(T)));
+    return util::has_key(representations_, std::type_index{typeid(T)});
 }
 
 template <typename Self, typename Repr>
@@ -363,7 +367,7 @@ std::shared_ptr<Repr> Data<Self, Repr>::addRepresentationInternal(
 template <typename Self, typename Repr>
 void Data<Self, Repr>::addRepresentation(std::shared_ptr<Repr> representation) {
     std::scoped_lock lock(mutex_);
-    lastValidRepresentation_ = addRepresentationInternal(representation);
+    lastValidRepresentation_ = addRepresentationInternal(std::move(representation));
 }
 
 template <typename Self, typename Repr>
@@ -419,7 +423,7 @@ bool Data<Self, Repr>::hasRepresentations() const {
 template <template <typename...> class F>
 struct conversion_tester {
     template <typename... Ts>
-    conversion_tester(const F<Ts...>&);
+    conversion_tester(const F<Ts...>&);  // NOLINT(google-explicit-constructor)
 };
 
 template <class From, template <typename...> class To>

@@ -41,6 +41,7 @@
 #include <type_traits>
 #include <iterator>
 #include <algorithm>
+#include <utility>
 
 namespace inviwo {
 
@@ -93,12 +94,10 @@ public:
     OptionPropertyOption& operator=(OptionPropertyOption&& that) noexcept;
 
     OptionPropertyOption(std::string_view id, std::string_view name, T value);
-    template <typename U = T,
-              class = typename std::enable_if<std::is_same<U, std::string>::value, void>::type>
+    template <typename U = T, class = std::enable_if_t<std::is_same_v<U, std::string>, void>>
     OptionPropertyOption(std::string_view id, std::string_view name);
 
-    template <typename U = T,
-              class = typename std::enable_if<util::is_stream_insertable<U>::value, void>::type>
+    template <typename U = T, class = std::enable_if_t<util::is_stream_insertable<U>::value, void>>
     OptionPropertyOption(const T& val);
 
     std::string id_;
@@ -144,11 +143,11 @@ struct OptionPropertyState {
         return *this;
     }
     auto set(PropertySemantics newSemantics) -> OptionPropertyState {
-        semantics = newSemantics;
+        semantics = std::move(newSemantics);
         return *this;
     }
     auto set(Document newHelp) -> OptionPropertyState {
-        help = newHelp;
+        help = std::move(newHelp);
         return *this;
     }
 };
@@ -216,15 +215,13 @@ public:
     OptionProperty(std::string_view identifier, std::string_view displayName,
                    OptionPropertyState<T> state);
 
-    template <typename U = T,
-              class = typename std::enable_if<util::is_stream_insertable<U>::value, void>::type>
+    template <typename U = T, class = std::enable_if_t<util::is_stream_insertable<U>::value, void>>
     OptionProperty(std::string_view identifier, std::string_view displayName,
                    const std::vector<T>& options, size_t selectedIndex = 0,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
 
-    template <typename U = T,
-              class = typename std::enable_if<util::is_stream_insertable<U>::value, void>::type>
+    template <typename U = T, class = std::enable_if_t<util::is_stream_insertable<U>::value, void>>
     OptionProperty(std::string_view identifier, std::string_view displayName, Document help,
                    const std::vector<T>& options, size_t selectedIndex = 0,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
@@ -243,8 +240,7 @@ public:
      */
     operator const T&() const;
 
-    template <typename U = T,
-              class = typename std::enable_if<std::is_same_v<U, std::string>, void>::type>
+    template <typename U = T, class = std::enable_if_t<std::is_same_v<U, std::string>, void>>
     operator std::string_view() const;
 
     /**
@@ -256,12 +252,10 @@ public:
     OptionProperty& addOption(std::string_view identifier, std::string_view displayName,
                               const T& value);
 
-    template <typename U = T,
-              class = typename std::enable_if<std::is_same_v<U, std::string>, void>::type>
+    template <typename U = T, class = std::enable_if_t<std::is_same_v<U, std::string>, void>>
     OptionProperty& addOption(std::string_view identifier, std::string_view displayName);
 
-    template <typename U = T,
-              class = typename std::enable_if<std::is_same_v<U, std::string>, void>::type>
+    template <typename U = T, class = std::enable_if_t<std::is_same_v<U, std::string>, void>>
     OptionProperty& addOption(std::string_view identifier, std::string_view displayName,
                               std::string_view value);
 
@@ -300,8 +294,7 @@ public:
      * @param value to set
      * @return True if the value was found in the list of options else false.
      */
-    template <typename U = T,
-              class = typename std::enable_if<std::is_same_v<U, std::string>, void>::type>
+    template <typename U = T, class = std::enable_if_t<std::is_same_v<U, std::string>, void>>
     bool setSelectedValue(std::string_view value);
 
     virtual OptionProperty& replaceOptions(const std::vector<std::string>& ids,
@@ -309,8 +302,7 @@ public:
                                            const std::vector<T>& values);
     virtual OptionProperty& replaceOptions(std::vector<OptionPropertyOption<T>> options);
 
-    template <typename U = T,
-              class = typename std::enable_if<util::is_stream_insertable<U>::value, void>::type>
+    template <typename U = T, class = std::enable_if_t<util::is_stream_insertable<U>::value, void>>
     OptionProperty& replaceOptions(const std::vector<T>& options);
 
     virtual bool isSelectedIndex(size_t index) const override;
@@ -334,8 +326,7 @@ public:
      * @param value to set
      * @return True if the value was found in the list of options else false.
      */
-    template <typename U = T,
-              class = typename std::enable_if<std::is_same_v<U, std::string>, void>::type>
+    template <typename U = T, class = std::enable_if_t<std::is_same_v<U, std::string>, void>>
     bool set(std::string_view value);
 
     void set(const OptionProperty* srcProperty);
@@ -359,11 +350,11 @@ public:
     virtual Document getDescription() const override;
 
 protected:
-    size_t selectedIndex_;
+    size_t selectedIndex_{};
     std::vector<OptionPropertyOption<T>> options_;
 
 private:
-    size_t defaultSelectedIndex_;
+    size_t defaultSelectedIndex_{};
     std::vector<OptionPropertyOption<T>> defaultOptions_;
 };
 

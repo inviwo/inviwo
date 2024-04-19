@@ -296,7 +296,8 @@ void Observable<T>::forEachObserver(C callback) {
     if (notificationsBlocked_ > 0) return;
     bool toRemove = false;
     ++invocationCount_;
-    for (auto& o : observers_) {
+
+    for (auto* o : observers_) {
         if (o) {
             callback(o);
         } else {
@@ -361,7 +362,7 @@ bool Observable<T>::removeObserverInternal(Observer* aObserver) {
 namespace util {
 class IVW_CORE_API NotificationBlocker {
 public:
-    NotificationBlocker(ObservableInterface& observable);
+    explicit NotificationBlocker(ObservableInterface& observable);
     NotificationBlocker() = delete;
     NotificationBlocker(const NotificationBlocker&) = delete;
     NotificationBlocker(NotificationBlocker&&) = delete;

@@ -97,7 +97,7 @@ namespace inviwo {
 class IVW_CORE_API SpatialEntity {
 public:
     SpatialEntity();
-    SpatialEntity(const glm::mat4& modelMatrix);
+    explicit SpatialEntity(const glm::mat4& modelMatrix);
     SpatialEntity(const glm::mat4& modelMatrix, const glm::mat4& worldMatrix);
     SpatialEntity(const SpatialEntity& rhs);
     SpatialEntity& operator=(const SpatialEntity& that);
@@ -138,7 +138,7 @@ protected:
 class IVW_CORE_API SpatialIdentity : public SpatialEntity {
 public:
     SpatialIdentity();
-    SpatialIdentity(const glm::mat4& modelMatrix);
+    explicit SpatialIdentity(const glm::mat4& modelMatrix);
     SpatialIdentity(const glm::mat4& modelMatrix, const glm::mat4& worldMatrix);
     SpatialIdentity(const SpatialIdentity& rhs);
     SpatialIdentity& operator=(const SpatialIdentity& that);
@@ -154,7 +154,7 @@ public:
     StructuredGridEntity() = default;
     StructuredGridEntity(const StructuredGridEntity<N>& rhs) = default;
     StructuredGridEntity(const glm::vec<N, size_t>& dimensions, const glm::vec<N, float>& spacing);
-    StructuredGridEntity(const mat4& modelMatrix);
+    explicit StructuredGridEntity(const mat4& modelMatrix);
     StructuredGridEntity(const mat4& modelMatrix, const mat4& worldMatrix);
 
     StructuredGridEntity<N>& operator=(const StructuredGridEntity<N>& that) = default;

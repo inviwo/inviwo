@@ -67,7 +67,9 @@ TFHelpWindow::TFHelpWindow(QWidget* parent)
     textedit->setUndoRedoEnabled(false);
     textedit->setAcceptRichText(true);
 
-    const std::string contents = R"(<h1 style='color:white;'>Transfer Function Editor</h1>
+    const std::string contents = R"(
+<h1 style='color:white;'>Transfer Function Editor</h1>
+<div><img src=':images/tf.png'></div>
 <p>The Transfer Function Editor allows to create and modify a 1D transfer
 function (TF) for mapping scalar values to color and opacity. A TF consists of
 multiple TF points each associated with a scalar value, i.e. its position, a rgb
@@ -76,8 +78,8 @@ histogram of the input data. Scalar values are mapped to the horizontal axis
 while the vertical axis corresponds to the opacity.</p>
 
 <h3>Adding TF Points</h3>
-<p>TF points are added by pressing &lt;CTRL&gt; and the left mouse button or via
-the context menu.</p>
+<p>TF points are added by pressing &lt;CTRL&gt; and the left mouse button, double clicking, or via
+the context menu. Points will be added to the most recently active set.</p>
 <p>Points can also be duplicated via the context menu, which will offset the new
 points slightly to the right.</p>
 
@@ -89,11 +91,30 @@ context menu.</p>
 <p>Points can be adjusted using the left mouse button or using the Scalar and
 Alpha fields on the right-hand side. When using the mouse to move TF points,
 &lt;SHIFT&gt; can be used to restrict the movement to either horizontal or
-vertical. If &lt;ALT&gt; is pressed while dragging a selection, instead of 
+vertical. If &lt;ALT&gt; is pressed while dragging a selection, instead of
 moving the selected points, a scaling of the bounding box of the selected points
 is applied</p>
 <p>Alternatively, the arrow keys move TF points left/right or up/down.
 &lt;SHIFT&gt; increases the step size while &lt;ALT&gt; reduces it.</p>
+
+<h3>Point Movement</h3>
+<ul>
+    <li>
+        <b>Free</b>
+        Points can be moved freely regardless of other points.
+        Shortcut: &lt;f&gt;
+    </li>
+    <li>
+        <b>Restrict</b>
+        Points can not be moved passed other points.
+        Shortcut: &lt;r&gt;
+    </li>
+    <li>
+        <b>Push</b>
+        Points will push other points in front.
+        Shortcut: &lt;p&gt;
+    </li>
+</ul>
 
 <h3>Selecting Multiple Points</h3>
 <p>Multiple points are selected by a rubber band selection or holding
@@ -105,14 +126,20 @@ selecting the respective group. Pressing &lt;SHIFT&gt; while selecting a group
 will add the elements of the group to the current selection.</p>
 
 <h3>Masking the TF</h3>
-<p>Parts of the TF can be masked out, i.e. alpha is implicitly set to zero outside 
-the mask. The context menu provides functionality for setting the begin and end points 
-of the mask as well as clearing it.</p>
+<p>Parts of the TF can be masked out, i.e. alpha is implicitly set to zero outside
+the mask. The context menu provides functionality for setting the begin and end points
+of the mask as well as clearing it. The mask can also be adjusted by dragging the back
+rhombus at either side of the editor</p>
+
+<h3>Histogram</h3>
+<p>The background can show a histogram if the data if available, pressing &lt;h&gt; will
+toggle the histogram</p>
 
 <h3>On Transfer Function Level</h3>
-<p>The entire transfer function can be cleared at once, i.e. all TF points are deleted, 
-or reset to the properties' default state via the context menu. Furthermore, TFs can be 
-exported and imported.</p>)";
+<p>The entire transfer function can be cleared at once, i.e. all TF points are deleted,
+or reset to the properties' default state via the context menu. Furthermore, TFs can be
+exported and imported.</p>
+)";
 
     Document doc;
     auto html = doc.append("html");

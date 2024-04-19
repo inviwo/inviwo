@@ -85,10 +85,8 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
                 util::ordinalCount(50).setMin(1).set(PropertySemantics::Default)}}}
 
     , applyTF_{"applyTF", "Apply TF", true}
-    , tf_{"transferfunction",
-          "Transfer function",
-          {{{0.0, vec4{0.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f}}}},
-          &volume_}
+    , tf_{"transferfunction", "Transfer function",
+          TransferFunction{{{0.0, vec4{0.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f}}}}, &volume_}
     , camera_{"camera", "Camera", util::boundingBox(volume_)}
     , trackball_{&camera_}
     , sliceShader_{"axisalignedcutplaneslice.vert", "axisalignedcutplaneslice.frag"} {
@@ -108,7 +106,7 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
         if (!volume_.hasData()) return;
         const auto volume = volume_.getData();
 
-        NetworkLock lock(this);
+        NetworkLock const lock(this);
 
         const ivec3 dims{volume->getDimensions()};
         for (size_t i = 0; i < 3; ++i) {
@@ -161,7 +159,7 @@ void AxisAlignedCutPlane::process() {
         return trafos;
     }();
 
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
     TextureUnitContainer cont;
 
     sliceShader_.activate();

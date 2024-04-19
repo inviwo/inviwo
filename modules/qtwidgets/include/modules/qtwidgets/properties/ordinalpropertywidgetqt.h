@@ -105,7 +105,7 @@ public:
     using T = typename Prop::value_type;
     using BT = typename util::value_type<T>::type;
 
-    OrdinalLikePropertyWidgetQt(Prop* property);
+    explicit OrdinalLikePropertyWidgetQt(Prop* property);
     virtual ~OrdinalLikePropertyWidgetQt() = default;
     virtual void updateFromProperty() override;
     virtual std::unique_ptr<QMenu> getContextMenu() override;
@@ -135,17 +135,17 @@ OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* proper
     , label_{new EditableLabelQt(this, property)}
     , settings_(nullptr) {
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(getSpacing());
     hLayout->addWidget(label_);
 
-    auto centralWidget = new QWidget();
+    auto* centralWidget = new QWidget();
     auto policy = centralWidget->sizePolicy();
     policy.setHorizontalStretch(3);
     centralWidget->setSizePolicy(policy);
 
-    auto gridLayout = new QGridLayout();
+    auto* gridLayout = new QGridLayout();
     centralWidget->setLayout(gridLayout);
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->setSpacing(0);
@@ -184,8 +184,8 @@ OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* proper
                       Sem == OrdinalPropertyWidgetQtSemantics::Spherical) {
             constexpr std::array<const char*, 3> sphericalLabels{"r", "<html>&theta;</html>",
                                                                  "<html>&phi;</html>"};
-            auto widget = new QWidget(this);
-            auto layout = new QHBoxLayout();
+            auto* widget = new QWidget(this);
+            auto* layout = new QHBoxLayout();
             layout->setContentsMargins(0, 0, 0, 0);
             layout->setSpacing(7);
             widget->setLayout(layout);

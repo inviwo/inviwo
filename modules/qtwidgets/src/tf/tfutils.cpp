@@ -363,7 +363,7 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
                 dialog.middle->setDisabled(true);
             }
 
-            if (property->getVolumeInport()) {
+            if (property->data().getDataMap() != nullptr) {
                 dialog.normalized->setEnabled(true);
             }
 
@@ -374,12 +374,10 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
                 auto steps = dialog.steps->value();
 
                 if (!dialog.normalized->isChecked()) {
-                    if (auto port = property->getVolumeInport()) {
-                        const auto dataMap =
-                            port->hasData() ? port->getData()->dataMap : DataMapper{};
-                        start = dataMap.mapFromValueToNormalized(start);
-                        middle = dataMap.mapFromValueToNormalized(middle);
-                        stop = dataMap.mapFromValueToNormalized(stop);
+                    if (auto dataMap = property->data().getDataMap()) {
+                        start = dataMap->mapFromValueToNormalized(start);
+                        middle = dataMap->mapFromValueToNormalized(middle);
+                        stop = dataMap->mapFromValueToNormalized(stop);
                     }
                 }
 

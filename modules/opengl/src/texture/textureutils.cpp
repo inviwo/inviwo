@@ -73,12 +73,10 @@
 #include <glm/mat3x3.hpp>  // for mat
 #include <glm/vec2.hpp>    // for vec, operator/
 
-namespace inviwo {
-
-namespace utilgl {
+namespace inviwo::utilgl {
 
 void activateTarget(Image& targetImage, ImageType type) {
-    auto outImageGL = targetImage.getEditableRepresentation<ImageGL>();
+    auto* outImageGL = targetImage.getEditableRepresentation<ImageGL>();
     outImageGL->activateBuffer(type);
 }
 
@@ -102,7 +100,7 @@ void activateAndClearTarget(ImageOutport& targetOutport, ImageType type) {
 }
 
 void activateTargetAndCopySource(Image& targetImage, const Image& sourceImage, ImageType type) {
-    auto outImageGL = targetImage.getEditableRepresentation<ImageGL>();
+    auto* outImageGL = targetImage.getEditableRepresentation<ImageGL>();
     sourceImage.getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
     outImageGL->activateBuffer(type);
 }
@@ -119,7 +117,7 @@ void activateTargetAndCopySource(ImageOutport& targetOutport, const Image& sourc
 
 void activateTargetAndCopySource(Image& targetImage, const ImageInport& sourceInport,
                                  ImageType type) {
-    auto outImageGL = targetImage.getEditableRepresentation<ImageGL>();
+    auto* outImageGL = targetImage.getEditableRepresentation<ImageGL>();
 
     if (auto inImage = sourceInport.getData()) {
         inImage->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
@@ -170,7 +168,7 @@ void updateAndActivateTarget(ImageOutport& targetOutport, ImageInport& sourceInp
             std::make_shared<Image>(targetOutport.getDimensions(), targetOutport.getDataFormat()));
     }
     auto outImage = targetOutport.getEditableData();
-    auto outImageGL = outImage->getEditableRepresentation<ImageGL>();
+    auto* outImageGL = outImage->getEditableRepresentation<ImageGL>();
     outImageGL->updateFrom(sourceInport.getData()->getRepresentation<ImageGL>());
     outImageGL->activateBuffer();
 }
@@ -189,17 +187,17 @@ void bindTexture(const LayerOutport& outport, GLenum texUnit) {
 void bindTextures(const Image& image, bool color, bool depth, bool picking, GLenum colorTexUnit,
                   GLenum depthTexUnit, GLenum pickingTexUnit) {
     if (color) {
-        if (auto layer = image.getColorLayer()) {
+        if (const auto* layer = image.getColorLayer()) {
             layer->getRepresentation<LayerGL>()->bindTexture(colorTexUnit);
         }
     }
     if (depth) {
-        if (auto layer = image.getDepthLayer()) {
+        if (const auto* layer = image.getDepthLayer()) {
             layer->getRepresentation<LayerGL>()->bindTexture(depthTexUnit);
         }
     }
     if (picking) {
-        if (auto layer = image.getPickingLayer()) {
+        if (const auto* layer = image.getPickingLayer()) {
             layer->getRepresentation<LayerGL>()->bindTexture(pickingTexUnit);
         }
     }
@@ -344,17 +342,17 @@ void unbindTexture(const LayerOutport& outport) { unbindTexture(*outport.getData
 
 void unbindTextures(const Image& image, bool color, bool depth, bool picking) {
     if (color) {
-        if (auto layer = image.getColorLayer()) {
+        if (const auto* layer = image.getColorLayer()) {
             layer->getRepresentation<LayerGL>()->unbindTexture();
         }
     }
     if (depth) {
-        if (auto layer = image.getDepthLayer()) {
+        if (const auto* layer = image.getDepthLayer()) {
             layer->getRepresentation<LayerGL>()->unbindTexture();
         }
     }
     if (picking) {
-        if (auto layer = image.getPickingLayer()) {
+        if (const auto* layer = image.getPickingLayer()) {
             layer->getRepresentation<LayerGL>()->unbindTexture();
         }
     }
@@ -478,16 +476,16 @@ std::unique_ptr<Mesh> planeRect() {
 }
 
 void singleDrawImagePlaneRect() {
-    auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
-    utilgl::Enable<MeshGL> enable(rect);
-    utilgl::DepthFuncState depth(GL_ALWAYS);
+    const auto* rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
+    const utilgl::Enable<MeshGL> enable(rect);
+    const utilgl::DepthFuncState depth(GL_ALWAYS);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
 void multiDrawImagePlaneRect(int instances) {
-    auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
-    utilgl::Enable<MeshGL> enable(rect);
-    utilgl::DepthFuncState depth(GL_ALWAYS);
+    const auto* rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
+    const utilgl::Enable<MeshGL> enable(rect);
+    const utilgl::DepthFuncState depth(GL_ALWAYS);
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, instances);
 }
 
@@ -511,29 +509,26 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Textur
     cont.push_back(std::move(unit));
 }
 
-void bindTexture(const TransferFunctionProperty& tfp, const TextureUnit& texUnit) {
-    if (auto tfLayer = tfp.get().getData()) {
-        auto transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
-        transferFunctionGL->bindTexture(texUnit.getEnum());
+void bindTexture(TransferFunctionProperty& tfp, const TextureUnit& texUnit) {
+    if (const auto* tfLayer = tfp.getRepresentation<LayerGL>()) {
+        tfLayer->bindTexture(texUnit.getEnum());
     }
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                        const TransferFunctionProperty& tf) {
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, TransferFunctionProperty& tf) {
     TextureUnit unit;
     bindTexture(tf, unit);
     shader.setUniform(tf.getIdentifier(), unit);
     cont.push_back(std::move(unit));
 }
 
-void bindTexture(const IsoTFProperty& property, const TextureUnit& texUnit) {
-    if (auto tfLayer = property.tf_.get().getData()) {
-        auto transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
-        transferFunctionGL->bindTexture(texUnit.getEnum());
+void bindTexture(IsoTFProperty& property, const TextureUnit& texUnit) {
+    if (const auto* tfLayer = property.tf_.getRepresentation<LayerGL>()) {
+        tfLayer->bindTexture(texUnit.getEnum());
     }
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const IsoTFProperty& property) {
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, IsoTFProperty& property) {
     TextureUnit unit;
     bindTexture(property, unit);
     shader.setUniform(property.tf_.getIdentifier(), unit);
@@ -541,7 +536,7 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const IsoTFP
 }
 
 void bindTexture(const Volume& volume, const TextureUnit& texUnit) {
-    if (auto volumeGL = volume.getRepresentation<VolumeGL>()) {
+    if (const auto* volumeGL = volume.getRepresentation<VolumeGL>()) {
         volumeGL->bindTexture(texUnit.getEnum());
     } else {
         LogErrorCustom("TextureUtils", "Could not get a GL representation from volume");
@@ -586,7 +581,8 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image&
             break;
         }
         case ImageType::ColorDepth: {
-            TextureUnit unit1, unit2;
+            TextureUnit unit1;
+            TextureUnit unit2;
             bindTextures(image, unit1, unit2);
             utilgl::setShaderUniforms(shader, image, buff.replace("{}Parameters", id));
             shader.setUniform(buff.replace("{}Color", id), unit1);
@@ -596,7 +592,8 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image&
             break;
         }
         case ImageType::ColorPicking: {
-            TextureUnit unit1, unit2;
+            TextureUnit unit1;
+            TextureUnit unit2;
             bindColorTexture(image, unit1);
             bindPickingTexture(image, unit2);
             utilgl::setShaderUniforms(shader, image, buff.replace("{}Parameters", id));
@@ -607,7 +604,9 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image&
             break;
         }
         case ImageType::ColorDepthPicking: {
-            TextureUnit unit1, unit2, unit3;
+            TextureUnit unit1;
+            TextureUnit unit2;
+            TextureUnit unit3;
             bindTextures(image, unit1, unit2, unit3);
             utilgl::setShaderUniforms(shader, image, buff.replace("{}Parameters", id));
             shader.setUniform(buff.replace("{}Color", id), unit1);
@@ -631,6 +630,4 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const ImageO
     bindAndSetUniforms(shader, cont, *port.getData(), port.getIdentifier(), type);
 }
 
-}  // namespace utilgl
-
-}  // namespace inviwo
+}  // namespace inviwo::utilgl

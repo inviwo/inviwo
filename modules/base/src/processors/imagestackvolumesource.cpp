@@ -35,31 +35,32 @@
 #include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
 #include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
 #include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
-#include <inviwo/core/io/datareader.h>                                  // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>                         // for DataReaderException
-#include <inviwo/core/io/datareaderfactory.h>                           // for DataReaderFactory
-#include <inviwo/core/ports/volumeport.h>                               // for VolumeOutport
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tags
-#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                      // for ButtonProperty
-#include <inviwo/core/properties/filepatternproperty.h>                 // for FilePatternProperty
-#include <inviwo/core/properties/property.h>                            // for OverwriteState
-#include <inviwo/core/util/exception.h>                                 // for Exception
-#include <inviwo/core/util/fileextension.h>                             // for FileExtension
-#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
-#include <inviwo/core/util/formats.h>                                   // for DataFormat, DataF...
-#include <inviwo/core/util/glmconvert.h>                                // for glm_convert_norma...
-#include <inviwo/core/util/glmvec.h>                                    // for vec3, dvec2, size2_t
-#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogPr...
-#include <inviwo/core/util/raiiutils.h>                                 // for OnScopeExit, OnSc...
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
-#include <inviwo/core/util/statecoordinator.h>                          // for StateCoordinator
-#include <inviwo/core/util/zip.h>                                       // for zipper, enumerate
-#include <modules/base/properties/basisproperty.h>                      // for BasisProperty
-#include <modules/base/properties/volumeinformationproperty.h>          // for VolumeInformation...
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/io/datareader.h>                          // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>                 // for DataReaderException
+#include <inviwo/core/io/datareaderfactory.h>                   // for DataReaderFactory
+#include <inviwo/core/ports/volumeport.h>                       // for VolumeOutport
+#include <inviwo/core/processors/processor.h>                   // for Processor
+#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>              // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>               // for Tags
+#include <inviwo/core/properties/boolproperty.h>                // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>              // for ButtonProperty
+#include <inviwo/core/properties/filepatternproperty.h>         // for FilePatternProperty
+#include <inviwo/core/properties/property.h>                    // for OverwriteState
+#include <inviwo/core/util/exception.h>                         // for Exception
+#include <inviwo/core/util/fileextension.h>                     // for FileExtension
+#include <inviwo/core/util/formatdispatching.h>                 // for PrecisionValueType
+#include <inviwo/core/util/formats.h>                           // for DataFormat, DataF...
+#include <inviwo/core/util/glmconvert.h>                        // for glm_convert_norma...
+#include <inviwo/core/util/glmvec.h>                            // for vec3, dvec2, size2_t
+#include <inviwo/core/util/logcentral.h>                        // for LogCentral, LogPr...
+#include <inviwo/core/util/raiiutils.h>                         // for OnScopeExit, OnSc...
+#include <inviwo/core/util/sourcecontext.h>                     // for IVW_CONTEXT
+#include <inviwo/core/util/statecoordinator.h>                  // for StateCoordinator
+#include <inviwo/core/util/zip.h>                               // for zipper, enumerate
+#include <modules/base/properties/basisproperty.h>              // for BasisProperty
+#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformation...
 
 #include <algorithm>      // for fill, transform
 #include <cstddef>        // for size_t
@@ -159,10 +160,6 @@ void ImageStackVolumeSource::process() {
     guard.release();
 }
 
-bool ImageStackVolumeSource::isValidImageFile(std::string fileName) {
-    return readerFactory_->hasReaderForTypeAndExtension<Layer>(fileName);
-}
-
 std::shared_ptr<Volume> ImageStackVolumeSource::load() {
     const auto files = filePattern_.getFileList();
     if (files.empty()) {
@@ -198,14 +195,14 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
     // Call getRepresentation here to enforce creating a ram representation.
     // Otherwise the default image size, i.e. 256x256, will be reported since the LayerDisk
     // does not provide meta data for all image formats.
-    const auto referenceRAM = referenceLayer->getRepresentation<LayerRAM>();
+    const auto* referenceRAM = referenceLayer->getRepresentation<LayerRAM>();
     if (glm::compMul(referenceRAM->getDimensions()) == 0) {
         throw Exception(
             fmt::format("Could not extract valid image dimensions from {}", first->first),
             IVW_CONTEXT);
     }
 
-    const auto refFormat = referenceRAM->getDataFormat();
+    const auto* refFormat = referenceRAM->getDataFormat();
     if ((refFormat->getNumericType() != NumericType::Float) && (refFormat->getPrecision() > 32)) {
         throw DataReaderException(
             fmt::format("Unsupported integer bit depth ({})", refFormat->getPrecision()),
@@ -213,11 +210,11 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
     }
 
     return referenceRAM->dispatch<std::shared_ptr<Volume>, FloatOrIntMax32>(
-        [&](auto reflayerprecision) {
-            using ValueType = util::PrecisionValueType<decltype(reflayerprecision)>;
+        [&](auto refLayerPrecision) {
+            using ValueType = util::PrecisionValueType<decltype(refLayerPrecision)>;
             using PrimitiveType = typename DataFormat<ValueType>::primitive;
 
-            const size2_t layerDims = reflayerprecision->getDimensions();
+            const size2_t layerDims = refLayerPrecision->getDimensions();
             const size_t sliceOffset = glm::compMul(layerDims);
 
             // create matching volume representation
@@ -229,7 +226,7 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
                 std::fill(volData + s * sliceOffset, volData + (s + 1) * sliceOffset, ValueType{0});
             };
 
-            const auto read = [&](const auto& file, auto reader) -> std::shared_ptr<Layer> {
+            const auto read = [&](const auto& file, auto* reader) -> std::shared_ptr<Layer> {
                 try {
                     return reader->readData(file);
                 } catch (DataReaderException const& e) {
@@ -242,7 +239,7 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
             for (auto&& elem : util::enumerate(slices)) {
                 const auto slice = elem.first();
                 const auto file = elem.second().first;
-                const auto reader = elem.second().second.get();
+                auto* reader = elem.second().second.get();
                 if (!reader) {
                     fill(slice);
                     continue;
@@ -253,9 +250,9 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
                     fill(slice);
                     continue;
                 }
-                const auto layerRAM = layer->template getRepresentation<LayerRAM>();
+                const auto* layerRAM = layer->template getRepresentation<LayerRAM>();
 
-                const auto format = layerRAM->getDataFormat();
+                const auto* format = layerRAM->getDataFormat();
                 if ((format->getNumericType() != NumericType::Float) &&
                     (format->getPrecision() > 32)) {
                     LogProcessorWarn(fmt::format("Unsupported integer bit depth: {}, for image: {}",

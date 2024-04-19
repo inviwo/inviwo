@@ -88,7 +88,6 @@ public:
 
 protected:
     std::shared_ptr<Volume> load();
-    bool isValidImageFile(std::string);
 
     virtual void deserialize(Deserializer& d) override;
 

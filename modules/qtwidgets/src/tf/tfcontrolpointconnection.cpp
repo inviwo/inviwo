@@ -30,6 +30,7 @@
 #include <modules/qtwidgets/tf/tfcontrolpointconnection.h>
 
 #include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>  // for TFEditorControlPoint
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <QColor>               // for QColor
 #include <QGraphicsScene>       // for QGraphicsScene
@@ -45,8 +46,8 @@ class QWidget;
 namespace inviwo {
 
 TFControlPointConnection::TFControlPointConnection()
-    : QGraphicsItem(), left_(nullptr), right_(nullptr), path_(), shape_(), rect_() {
-    setZValue(8.0);
+    : QGraphicsItem(), left(nullptr), right(nullptr), path_(), shape_(), rect_() {
+    setZValue(2.0);
     updateShape();
 }
 
@@ -54,20 +55,14 @@ TFControlPointConnection::~TFControlPointConnection() = default;
 
 void TFControlPointConnection::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
 
-    p->save();
+    const utilqt::Save saved{p};
     p->setRenderHint(QPainter::Antialiasing, true);
-
-    QPen pathPen(QColor(66, 66, 66));
-    pathPen.setWidth(3);
-    pathPen.setCosmetic(true);
-
-    p->setPen(pathPen);
+    p->setPen(utilqt::cosmeticPen(QColor(66, 66, 66), 3.0));
     p->drawPath(path_);
-    p->restore();
 }
 
 void TFControlPointConnection::updateShape() {
-    if (left_ == nullptr && right_ == nullptr) {
+    if (left == nullptr && right == nullptr) {
         path_ = QPainterPath();
     }
 
@@ -76,9 +71,9 @@ void TFControlPointConnection::updateShape() {
 
     rect_ = path_.boundingRect();
 
-    QPainterPathStroker pathStrocker;
-    pathStrocker.setWidth(10.0);
-    shape_ = pathStrocker.createStroke(path_);
+    QPainterPathStroker pathStroker;
+    pathStroker.setWidth(10.0);
+    shape_ = pathStroker.createStroke(path_);
 
     prepareGeometryChange();
     update();
@@ -86,20 +81,20 @@ void TFControlPointConnection::updateShape() {
 
 QPointF TFControlPointConnection::getStart() const {
     QPointF start;
-    if (left_) {
-        start = left_->getCurrentPos();
-    } else if (right_ && scene()) {
-        start = QPointF(scene()->sceneRect().left(), right_->getCurrentPos().y());
+    if (left) {
+        start = left->scenePos();
+    } else if (right && scene()) {
+        start = QPointF(scene()->sceneRect().left(), right->scenePos().y());
     }
     return start;
 }
 
 QPointF TFControlPointConnection::getStop() const {
     QPointF stop;
-    if (right_) {
-        stop = right_->getCurrentPos();
-    } else if (left_ && scene()) {
-        stop = QPointF(scene()->sceneRect().right(), left_->getCurrentPos().y());
+    if (right) {
+        stop = right->scenePos();
+    } else if (left && scene()) {
+        stop = QPointF(scene()->sceneRect().right(), left->scenePos().y());
     }
     return stop;
 }
@@ -107,30 +102,5 @@ QPointF TFControlPointConnection::getStop() const {
 QRectF TFControlPointConnection::boundingRect() const { return rect_; }
 
 QPainterPath TFControlPointConnection::shape() const { return shape_; }
-
-bool operator==(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
-    return lhs.getStart() == rhs.getStart() && lhs.getStop() == rhs.getStop();
-}
-
-bool operator!=(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
-    return !operator==(lhs, rhs);
-}
-
-bool operator<(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
-    return 0.5f * (lhs.getStart().x() + lhs.getStop().x()) <
-           0.5f * (rhs.getStart().x() + rhs.getStop().x());
-}
-
-bool operator>(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
-    return rhs < lhs;
-}
-
-bool operator<=(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
-    return !(rhs < lhs);
-}
-
-bool operator>=(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
-    return !(lhs < rhs);
-}
 
 }  // namespace inviwo

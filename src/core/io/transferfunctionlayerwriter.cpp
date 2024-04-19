@@ -40,7 +40,7 @@ TransferFunctionLayerWriter::TransferFunctionLayerWriter(
     std::unique_ptr<DataWriterType<Layer>> layerWriter)
     : layerWriter_{std::move(layerWriter)} {
 
-    for (auto& ext : layerWriter_->getExtensions()) {
+    for (const auto& ext : layerWriter_->getExtensions()) {
         addExtension({ext.extension_, fmt::format("TransferFunction to {}", ext.description_)});
     }
 }
@@ -64,21 +64,18 @@ namespace {
 
 std::unique_ptr<Layer> toUint8Layer(const TransferFunction* tf) {
 
-    // src is vec4
-    auto src = tf->getRamRepresentation();
+    std::vector<vec4> data(2048);
+    tf->interpolateAndStoreColors(data);
 
-    // Convert layer to UINT8
-    auto dst = std::make_shared<LayerRAMPrecision<glm::u8vec4>>(src->getDimensions());
+    // Convert to UINT8
+    auto dst = std::make_shared<LayerRAMPrecision<glm::u8vec4>>(size2_t{data.size(), 1});
     auto layer = std::make_unique<Layer>(dst);
 
-    const auto size = glm::compMul(src->getDimensions());
-    const auto sptr = src->getDataTyped();
-    const auto dptr = dst->getDataTyped();
-
-    for (size_t i = 0; i < size; ++i) {
-        dptr[i] = static_cast<glm::u8vec4>(glm::clamp(sptr[i] * 255.0f, vec4(0.0f), vec4(255.0f)));
+    const auto dstView = dst->getView();
+    for (size_t i = 0; i < data.size(); ++i) {
+        dstView[i] =
+            static_cast<glm::u8vec4>(glm::clamp(data[i] * 255.0f, vec4(0.0f), vec4(255.0f)));
     }
-
     return layer;
 }
 
@@ -105,7 +102,7 @@ TransferFunctionLayerWriterWrapper::TransferFunctionLayerWriterWrapper(DataWrite
 }
 
 void TransferFunctionLayerWriterWrapper::onRegister(DataWriter* writer) {
-    if (auto layerWriter = dynamic_cast<DataWriterType<Layer>*>(writer)) {
+    if (auto* layerWriter = dynamic_cast<DataWriterType<Layer>*>(writer)) {
         if (auto [it, inserted] = layerToTFMap_.try_emplace(
                 layerWriter, std::make_unique<TransferFunctionLayerWriter>(
                                  std::unique_ptr<DataWriterType<Layer>>(layerWriter->clone())));
@@ -115,7 +112,7 @@ void TransferFunctionLayerWriterWrapper::onRegister(DataWriter* writer) {
     }
 }
 void TransferFunctionLayerWriterWrapper::onUnRegister(DataWriter* writer) {
-    if (auto layerWriter = dynamic_cast<DataWriterType<Layer>*>(writer)) {
+    if (auto* layerWriter = dynamic_cast<DataWriterType<Layer>*>(writer)) {
         if (auto it = layerToTFMap_.find(layerWriter); it != layerToTFMap_.end()) {
             factory_->unRegisterObject(it->second.get());
             layerToTFMap_.erase(it);

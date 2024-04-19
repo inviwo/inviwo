@@ -33,22 +33,12 @@
 
 namespace inviwo {
 
-Tag::Tag(std::string_view tag) : tag_(tag) {}
-
 Tags Tag::operator|(const Tag& rhs) const { return Tags{std::vector<Tag>{*this, rhs}}; }
 
-const std::string& Tag::getString() const { return tag_; }
-
 std::ostream& operator<<(std::ostream& os, const Tag& obj) {
-    os << obj.tag_;
+    os << obj.getString();
     return os;
 }
-
-const Tag Tag::GL("GL");
-const Tag Tag::CL("CL");
-const Tag Tag::CPU("CPU");
-const Tag Tag::PY("PY");
-
 Tags::Tags(const Tag& tag) : tags_{tag} {}
 
 Tags::Tags(std::vector<Tag> tags) : tags_{std::move(tags)} {}
@@ -119,27 +109,18 @@ std::ostream& operator<<(std::ostream& os, const Tags& obj) {
     return os;
 }
 
-const Tags Tags::None{};
-const Tags Tags::GL{Tag::GL};
-const Tags Tags::CL{Tag::CL};
-const Tags Tags::CPU{Tag::CPU};
-const Tags Tags::PY{Tag::PY};
-
 namespace util {
 
 Tags getPlatformTags(const Tags& t) {
     Tags result;
     for (auto& tag : t.tags_) {
-        if (util::contains(Tags::GL.tags_, tag)) {
+        if (Tags::GL == tag) {
             result.addTag(tag);
-        }
-        if (util::contains(Tags::CL.tags_, tag)) {
+        } else if (Tags::CL == tag) {
             result.addTag(tag);
-        }
-        if (util::contains(Tags::CPU.tags_, tag)) {
+        } else if (Tags::CPU == tag) {
             result.addTag(tag);
-        }
-        if (util::contains(Tags::PY.tags_, tag)) {
+        } else if (Tags::PY == tag) {
             result.addTag(tag);
         }
     }

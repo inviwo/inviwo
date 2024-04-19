@@ -53,7 +53,8 @@ LayerColorMapping::LayerColorMapping()
     , transferFunction_(
           "transferFunction", "Transfer Function",
           "The transfer function used for mapping input to output values including the "
-          "alpha channel."_help) {
+          "alpha channel."_help,
+          TransferFunction{}, &inport_) {
     addProperties(channel_, transferFunction_);
 }
 
@@ -63,8 +64,8 @@ void LayerColorMapping::preProcess(TextureUnitContainer& container, const Layer&
 }
 
 LayerConfig LayerColorMapping::outputConfig([[maybe_unused]] const Layer& input) const {
-    auto inputFormat = input.getDataFormat();
-    auto outputFormat =
+    const auto* inputFormat = input.getDataFormat();
+    const auto* outputFormat =
         DataFormatBase::get(inputFormat->getNumericType(), 4, inputFormat->getPrecision());
     return input.config().updateFrom({.format = outputFormat,
                                       .swizzleMask = swizzlemasks::rgba,

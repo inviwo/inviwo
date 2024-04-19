@@ -53,7 +53,7 @@ TextLabelOverlay::TextLabelOverlay(QWidget* parent)
 
 TextLabelOverlay::~TextLabelOverlay() = default;
 
-void TextLabelOverlay::setText(const std::string& text, std::chrono::milliseconds fade) {
+void TextLabelOverlay::setText(std::string_view text, std::chrono::milliseconds fade) {
     QLabel::setText(utilqt::toQString(text));
     if (fade != std::chrono::milliseconds{0}) {
         timer_->start(static_cast<int>(fade.count()));

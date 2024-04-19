@@ -45,19 +45,20 @@
 #include <vector>       // for vector
 #include <filesystem>
 
-#include <QByteArray>    // for QByteArray
-#include <QColor>        // for QColor
-#include <QIcon>         // for QIcon
-#include <QImage>        // for QImage
-#include <QLocale>       // for QLocale
-#include <QObject>       // for QObject
-#include <QPixmap>       // for QPixmap
-#include <QPoint>        // for QPoint
-#include <QPointF>       // for QPointF
-#include <QRectF>        // for QRectF
-#include <QSize>         // for QSize
-#include <QSizeF>        // for QSizeF
-#include <QString>       // for QString
+#include <QByteArray>  // for QByteArray
+#include <QColor>      // for QColor
+#include <QIcon>       // for QIcon
+#include <QImage>      // for QImage
+#include <QLocale>     // for QLocale
+#include <QObject>     // for QObject
+#include <QPixmap>     // for QPixmap
+#include <QPoint>      // for QPoint
+#include <QPointF>     // for QPointF
+#include <QRectF>      // for QRectF
+#include <QSize>       // for QSize
+#include <QSizeF>      // for QSizeF
+#include <QString>     // for QString
+#include <QPen>
 #include <glm/vec2.hpp>  // for vec<>::(anonymous)
 #include <glm/vec3.hpp>  // for vec<>::(anonymous), operator*
 #include <glm/vec4.hpp>  // for vec<>::(anonymous), operator*
@@ -74,14 +75,13 @@ namespace inviwo {
 class EventPropagator;
 class Image;
 class IsoValueProperty;
+class IsoValueCollection;
 class Layer;
 class ProcessorNetwork;
 class TransferFunction;
 class TransferFunctionProperty;
-
-namespace util {
-struct TFPropertyConcept;
-}
+class TFPropertyConcept;
+class IsoTFProperty;
 
 namespace utilqt {
 
@@ -109,9 +109,7 @@ inline QString toLocalQString(const std::string& str) {
 /**
  * \brief convert a QString to a localized 8bit std::string
  */
-inline std::string fromLocalQString(const QString& str) {
-    return std::string(str.toLocal8Bit().constData());
-}
+inline std::string fromLocalQString(const QString& str) { return {str.toLocal8Bit().constData()}; }
 
 /**
  * \brief create a QString from a UTF8-encoded std::string
@@ -130,30 +128,30 @@ inline QString toQString(const std::filesystem::path& path) {
 /**
  * \brief create a UTF8-encoded std::string from a QString
  */
-inline std::string fromQString(const QString& str) { return std::string(str.toUtf8().constData()); }
+inline std::string fromQString(const QString& str) { return {str.toUtf8().constData()}; }
 
 inline std::filesystem::path toPath(const QString& str) {
     auto buffer = str.toUtf8();
-    std::u8string_view u8str{reinterpret_cast<const char8_t*>(buffer.constData()),
-                             static_cast<size_t>(buffer.size())};
+    const std::u8string_view u8str{reinterpret_cast<const char8_t*>(buffer.constData()),
+                                   static_cast<size_t>(buffer.size())};
     return std::filesystem::path{u8str};
 }
 
-constexpr QPointF toQPoint(dvec2 v) { return QPointF(v.x, v.y); }
-constexpr QPoint toQPoint(ivec2 v) { return QPoint(v.x, v.y); }
+constexpr QPointF toQPoint(dvec2 v) { return {v.x, v.y}; }
+constexpr QPoint toQPoint(ivec2 v) { return {v.x, v.y}; }
 
-constexpr dvec2 toGLM(QPointF v) { return dvec2(v.x(), v.y()); }
-constexpr ivec2 toGLM(QPoint v) { return ivec2(v.x(), v.y()); }
-constexpr dvec2 toGLM(QSizeF v) { return dvec2(v.width(), v.height()); }
-constexpr ivec2 toGLM(QSize v) { return ivec2(v.width(), v.height()); }
+constexpr dvec2 toGLM(QPointF v) { return {v.x(), v.y()}; }
+constexpr ivec2 toGLM(QPoint v) { return {v.x(), v.y()}; }
+constexpr dvec2 toGLM(QSizeF v) { return {v.width(), v.height()}; }
+constexpr ivec2 toGLM(QSize v) { return {v.width(), v.height()}; }
 
-constexpr QSizeF toQSize(dvec2 v) { return QSizeF(v.x, v.y); }
-constexpr QSize toQSize(ivec2 v) { return QSize(v.x, v.y); }
+constexpr QSizeF toQSize(dvec2 v) { return {v.x, v.y}; }
+constexpr QSize toQSize(ivec2 v) { return {v.x, v.y}; }
 
-inline vec3 tovec3(const QColor& c) { return vec3(c.redF(), c.greenF(), c.blueF()); }
-inline ivec3 toivec3(const QColor& c) { return ivec3(c.red(), c.green(), c.blue()); }
-inline vec4 tovec4(const QColor& c) { return vec4(c.redF(), c.greenF(), c.blueF(), c.alphaF()); }
-inline ivec4 toivec4(const QColor& c) { return ivec4(c.red(), c.green(), c.blue(), c.alpha()); }
+inline vec3 tovec3(const QColor& c) { return {c.redF(), c.greenF(), c.blueF()}; }
+inline ivec3 toivec3(const QColor& c) { return {c.red(), c.green(), c.blue()}; }
+inline vec4 tovec4(const QColor& c) { return {c.redF(), c.greenF(), c.blueF(), c.alphaF()}; }
+inline ivec4 toivec4(const QColor& c) { return {c.red(), c.green(), c.blue(), c.alpha()}; }
 
 constexpr QColor toQColor(const ivec3& v) { return QColor(v.r, v.g, v.b); }
 constexpr QColor toQColor(const uvec3& v) { return QColor(v.r, v.g, v.b); }
@@ -163,6 +161,19 @@ constexpr QColor toQColor(const ivec4& v) { return QColor(v.r, v.g, v.b, v.a); }
 constexpr QColor toQColor(const uvec4& v) { return QColor(v.r, v.g, v.b, v.a); }
 constexpr QColor toQColor(const vec4& v) { return toQColor(ivec4(v * 255.0f)); }
 
+IVW_MODULE_QTWIDGETS_API QPen cosmeticPen(const QBrush& brush, qreal width,
+                                          Qt::PenStyle s = Qt::SolidLine,
+                                          Qt::PenCapStyle c = Qt::SquareCap,
+                                          Qt::PenJoinStyle j = Qt::BevelJoin);
+
+IVW_MODULE_QTWIDGETS_API void paintCheckerBoard(QPainter& painter, const QRectF& rect);
+IVW_MODULE_QTWIDGETS_API void paint(const TransferFunction& tf, QPainter& painter,
+                                    const QRectF& rect);
+IVW_MODULE_QTWIDGETS_API void paint(const IsoValueCollection& isoValues, QPainter& painter,
+                                    const QRectF& rect);
+IVW_MODULE_QTWIDGETS_API void paintMask(const dvec2& mask, const dvec2& range, QPainter& painter,
+                                        const QRectF& rect);
+
 IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TransferFunction& tf, const QSize& size);
 
 IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TransferFunctionProperty& tfproperty,
@@ -170,7 +181,9 @@ IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TransferFunctionProperty& tfpro
 
 IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const IsoValueProperty& property, const QSize& size);
 
-IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept,
+IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const IsoTFProperty& property, const QSize& size);
+
+IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TFPropertyConcept& propertyConcept,
                                            const QSize& size);
 
 IVW_MODULE_QTWIDGETS_API QPointF clamp(const QPointF& pos, const QRectF& rect);
@@ -203,7 +216,7 @@ IVW_MODULE_QTWIDGETS_API QPoint movePointOntoDesktop(const QPoint& point, const 
  */
 IVW_MODULE_QTWIDGETS_API QPoint offsetWidget();
 
-IVW_MODULE_QTWIDGETS_API QMenu* addMenu(std::string_view menuName, std::string before);
+IVW_MODULE_QTWIDGETS_API QMenu* addMenu(std::string_view menuName, const std::string& before);
 IVW_MODULE_QTWIDGETS_API QMenu* addMenu(std::string_view menuName, QMenu* before = nullptr);
 IVW_MODULE_QTWIDGETS_API QMenu* getMenu(std::string_view menuName, bool createIfNotFound = false);
 
@@ -287,7 +300,7 @@ IVW_MODULE_QTWIDGETS_API int emToPx(const QFontMetrics& m, double em);
  * This filter intercepts the CloseEvent and ignores it, and then hides the widget
  */
 struct IVW_MODULE_QTWIDGETS_API WidgetCloseEventFilter : QObject {
-    WidgetCloseEventFilter(QObject* parent);
+    explicit WidgetCloseEventFilter(QObject* parent);
     virtual bool eventFilter(QObject* obj, QEvent* ev) override;
 };
 
@@ -327,6 +340,30 @@ IVW_MODULE_QTWIDGETS_API std::vector<std::string> getMonoSpaceFonts();
  * @return the index or 0 if the default font was not found
  */
 IVW_MODULE_QTWIDGETS_API size_t getDefaultMonoSpaceFontIndex();
+
+template <typename T>
+struct Save {
+    explicit Save(T* item) : item_(item) { item->save(); }
+    Save(const Save&) = delete;
+    Save(Save&& rhs) noexcept : item_{rhs.item_} { rhs.item_ = nullptr; };
+    Save& operator=(const Save&) = delete;
+    Save& operator=(Save&& that) noexcept {
+        if (this != &that) {
+            std::swap(item_, that.item_);
+            if (that.item_) {
+                that.item_->disable();
+                that.item_ = nullptr;
+            }
+        }
+        return *this;
+    };
+    ~Save() {
+        if (item_) item_->restore();
+    }
+
+private:
+    T* item_;
+};
 
 }  // namespace utilqt
 

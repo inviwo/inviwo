@@ -32,8 +32,10 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
 #include <inviwo/core/datastructures/tfprimitive.h>  // for TFPrimitive, TFPrimitiveObserver
-#include <inviwo/core/util/glmvec.h>                 // for dvec2
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>  // for TFEditorPrimitive, TFEditorPrimitiv...
+#include <modules/qtwidgets/tf/tfmovemode.h>
+
+#include <inviwo/core/util/glmvec.h>  // for dvec2
 
 #include <QGraphicsItem>  // for QGraphicsItem::UserType
 #include <QPainterPath>   // for QPainterPath
@@ -49,81 +51,32 @@ namespace inviwo {
 
 class TFControlPointConnection;
 
-class IVW_MODULE_QTWIDGETS_API TFEditorControlPoint : public TFEditorPrimitive,
-                                                      public TFPrimitiveObserver {
+class IVW_MODULE_QTWIDGETS_API TFEditorControlPoint : public TFEditorPrimitive {
 public:
-    TFEditorControlPoint(TFPrimitive& primitive, QGraphicsScene* scene, double size = 14.0);
+    explicit TFEditorControlPoint(TFPrimitive& primitive);
     ~TFEditorControlPoint() = default;
 
-    // override for qgraphicsitem_cast (refer qt documentation)
-    enum {
-        Type = static_cast<int>(UserType) +
-               static_cast<int>(TFEditorPrimitive::TFEditorControlPointType)
-    };
-    int type() const override { return Type; }
-
-    virtual void onTFPrimitiveChange(const TFPrimitive& p) override;
-
-    friend IVW_MODULE_QTWIDGETS_API bool operator==(const TFEditorControlPoint& lhs,
-                                                    const TFEditorControlPoint& rhs);
-
-    // Compare points by their "x" value
-    friend IVW_MODULE_QTWIDGETS_API bool operator<(const TFEditorControlPoint& lhs,
-                                                   const TFEditorControlPoint& rhs);
-
-    TFControlPointConnection* left_ = nullptr;   // Non-owning reference
-    TFControlPointConnection* right_ = nullptr;  // Non-owning reference
+    virtual TFControlPointConnection* left() const override { return left_; }
+    virtual TFControlPointConnection* right() const override { return right_; }
+    virtual void setLeft(TFControlPointConnection* left) override { left_ = left; }
+    virtual void setRight(TFControlPointConnection* right) override { right_ = right; }
 
 protected:
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;
 
+    TFMoveMode moveMode() const;
+
+    static constexpr int tfZLevel = 10;
+    virtual int zLevel() const override { return tfZLevel; }
+
 private:
-    /**
-     * draws the primitive. Gets called from within paint()
-     *
-     * @param painter   painter for drawing the object, pen and brush are set up to match
-     *                  primitive color and selection status
-     */
-    virtual void paintPrimitive(QPainter* painter) override;
+    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
+                       QWidget* widget) override;
 
-    /**
-     * Adjust the position prior updating the graphicsitem position considering
-     * movement restrictions of the TF point ("restrict" or "push").
-     * This function is called in itemChange() before calling onItemPositionChange.
-     *
-     * Side effects: Neighboring control points will be adjusted in turn.
-     *
-     * @param pos   candidate for new position (in scene coords)
-     * @return modified position which is used instead of pos
-     */
-    virtual QPointF prepareItemPositionChange(const QPointF& pos) override;
-
-    /**
-     * gets called in itemChange() after a position change of the item. The position
-     * is already adjusted to lie within the scene bounding box and normalized.
-     *
-     * @param newPos   new, normalized position of the primitive
-     */
-    virtual void onItemPositionChange(const dvec2& newPos) override;
-
-    /**
-     * gets called in itemChange() when a scene change has happend
-     */
-    virtual void onItemSceneHasChanged() override;
+    TFControlPointConnection* left_ = nullptr;   // Non-owning reference
+    TFControlPointConnection* right_ = nullptr;  // Non-owning reference
 };
-
-IVW_MODULE_QTWIDGETS_API bool operator==(const TFEditorControlPoint& lhs,
-                                         const TFEditorControlPoint& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator!=(const TFEditorControlPoint& lhs,
-                                         const TFEditorControlPoint& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<(const TFEditorControlPoint& lhs,
-                                        const TFEditorControlPoint& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>(const TFEditorControlPoint& lhs,
-                                        const TFEditorControlPoint& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<=(const TFEditorControlPoint& lhs,
-                                         const TFEditorControlPoint& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>=(const TFEditorControlPoint& lhs,
-                                         const TFEditorControlPoint& rhs);
 
 }  // namespace inviwo

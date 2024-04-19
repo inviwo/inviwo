@@ -33,10 +33,10 @@
 
 #include <modules/qtwidgets/inviwowidgetsqt.h>              // for IvwPushButton
 #include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
-#include <modules/qtwidgets/tf/tfpropertyconcept.h>         // for TFPropertyConcept
 #include <modules/qtwidgets/tf/tfpropertydialog.h>          // for TFPropertyDialog
 
 #include <memory>  // for unique_ptr
+#include <variant>
 
 class QMenu;
 class QResizeEvent;
@@ -53,7 +53,7 @@ class TransferFunctionProperty;
 
 class IVW_MODULE_QTWIDGETS_API TFPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    TFPropertyWidgetQt(TransferFunctionProperty* property);
+    explicit TFPropertyWidgetQt(TransferFunctionProperty* property);
     virtual ~TFPropertyWidgetQt();
 
     virtual void updateFromProperty() override;
@@ -73,9 +73,9 @@ private:
 
 class IVW_MODULE_QTWIDGETS_API TFPushButton : public IvwPushButton {
 public:
-    TFPushButton(TransferFunctionProperty* property, QWidget* parent = nullptr);
-    TFPushButton(IsoValueProperty* property, QWidget* parent = nullptr);
-    TFPushButton(IsoTFProperty* property, QWidget* parent = nullptr);
+    explicit TFPushButton(TransferFunctionProperty* property, QWidget* parent = nullptr);
+    explicit TFPushButton(IsoValueProperty* property, QWidget* parent = nullptr);
+    explicit TFPushButton(IsoTFProperty* property, QWidget* parent = nullptr);
     virtual ~TFPushButton() = default;
     void updateFromProperty();
 
@@ -83,7 +83,7 @@ private:
     void showEvent(QShowEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
 
-    std::unique_ptr<util::TFPropertyConcept> propertyPtr_ = nullptr;
+    std::variant<TransferFunctionProperty*, IsoValueProperty*, IsoTFProperty*> property_;
 };
 
 }  // namespace inviwo

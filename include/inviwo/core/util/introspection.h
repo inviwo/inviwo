@@ -42,9 +42,7 @@
 #include <string>
 #include <warn/pop>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 namespace detail {
 
@@ -89,7 +87,7 @@ const std::string& classIdentifier() {
         return T::classIdentifier;
     } else {
         static_assert(util::alwaysFalse<T>(), "ClassIdentifier is missing for type");
-        static std::string unknown{"Unknown"};
+        static const std::string unknown{"Unknown"};
         return unknown;
     }
 }
@@ -106,15 +104,19 @@ const std::string& dataName() {
     } else if constexpr (HasClassIdentifierLower<T>::value) {
         return T::classIdentifier;
     } else {
-        static std::string unknown{"Unknown"};
+        static const std::string unknown{"Unknown"};
         return unknown;
     }
 }
 
 template <class T>
-using HasColorCodeUpper = is_detected_exact<uvec3, detail::colorCodeUpperType, T>;
+using HasColorCodeUpper =
+    std::disjunction<is_detected_exact<uvec3, detail::colorCodeUpperType, T>,
+                     is_detected_exact<const uvec3, detail::colorCodeUpperType, T>>;
 template <class T>
-using HasColorCodeLower = is_detected_exact<uvec3, detail::colorCodeLowerType, T>;
+using HasColorCodeLower =
+    std::disjunction<is_detected_exact<uvec3, detail::colorCodeLowerType, T>,
+                     is_detected_exact<const uvec3, detail::colorCodeLowerType, T>>;
 template <class T>
 using HasColorCode = std::disjunction<HasColorCodeUpper<T>, HasColorCodeLower<T>>;
 
@@ -159,6 +161,4 @@ Document info(const T& data) {
     }
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

@@ -59,6 +59,7 @@
 #include <fmt/format.h>  // for to_string
 #include <glm/vec2.hpp>  // for operator!=, operator==, vec
 #include <glm/vec3.hpp>  // for vec, vec<>::(anonymous)
+#include <utility>
 
 namespace inviwo {
 
@@ -84,7 +85,7 @@ VolumeInformationProperty::VolumeInformationProperty(std::string_view identifier
                                                      PropertySemantics semantics)
     : BoolCompositeProperty(identifier, displayName,
                             "Various information and statistics about a volume"_help, false,
-                            invalidationLevel, semantics)
+                            invalidationLevel, std::move(semantics))
     , dimensions{"dimensions", "Dimensions",
                  util::ordinalCount(size3_t{0})
                      .set(InvalidationLevel::Valid)
@@ -202,11 +203,7 @@ void VolumeInformationProperty::updateForNewVolume(const Volume& volume,
 }
 
 void VolumeInformationProperty::updateVolume(Volume& volume) {
-    if (volume.dataMap.dataRange != dataRange.get()) {
-        if (volume.hasHistograms()) {
-            volume.getHistograms().clear();
-        }
-    }
+    const bool discardHistograms = volume.dataMap.dataRange != dataRange.get();
 
     volume.dataMap.dataRange = dataRange.get();
     volume.dataMap.valueRange = valueRange.get();
@@ -221,6 +218,10 @@ void VolumeInformationProperty::updateVolume(Volume& volume) {
     }
     volume.setWrapping({wrapping[0].getSelectedValue(), wrapping[1].getSelectedValue(),
                         wrapping[2].getSelectedValue()});
+
+    if (discardHistograms) {
+        volume.discardHistograms();
+    }
 }
 
 }  // namespace inviwo
