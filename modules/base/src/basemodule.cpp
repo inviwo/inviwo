@@ -78,6 +78,7 @@
 #include <modules/base/processors/filecache.h>
 #include <modules/base/processors/gridplanes.h>                             // for GridPlanes
 #include <modules/base/processors/heightfieldmapper.h>                      // for HeightFieldM...
+#include <modules/base/processors/histogram2d.h>
 #include <modules/base/processors/imagecontourprocessor.h>                  // for ImageContour...
 #include <modules/base/processors/imageexport.h>                            // for ImageExport
 #include <modules/base/processors/imageinformation.h>                       // for ImageInforma...
@@ -211,6 +212,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<DistanceTransformRAM>();
     registerProcessor<GridPlanes>();
     registerProcessor<HeightFieldMapper>();
+    registerProcessor<Histogram2D>();
     registerProcessor<ImageContourProcessor>();
     registerProcessor<ImageDistanceTransform>();
     registerProcessor<ImageExport>();
