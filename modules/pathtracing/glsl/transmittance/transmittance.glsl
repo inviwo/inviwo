@@ -134,6 +134,7 @@ float transmittance(int METHOD, vec3 raystart, vec3 raydir, float tStart, float 
                     sampler2D transferFunction) {
 
     float opacityUpperbound = 1.0f;
+    opacityUpperbound += 1e-6;
     float opacityControl = 0.5f;
 
     vec3 auxReturn2 = vec3(0);

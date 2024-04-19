@@ -12,11 +12,11 @@ uniform layout(binding = 0, rgba32f)
 image3D opacityData;
 uniform VolumeParameters opacityDataParameters;
 
-// TODO: change name to regionSize
-uniform ivec3 cellDim;
+uniform ivec3 regionSize;
 uniform sampler2D tf;
 
-// look at https://github.com/ResearchDaniel/Correlated-Photon-Mapping-for-Interactive-Global-Illumination-of-Time-Varying-Volumetric-Data/blob/8ce15569df62e4cc9cfcb13086dcf8a523fbbdb4/modules/importancesamplingcl/processors/minmaxuniformgrid3dimportanceclprocessor.cpp#L304
+// look at
+// https://github.com/ResearchDaniel/Correlated-Photon-Mapping-for-Interactive-Global-Illumination-of-Time-Varying-Volumetric-Data/blob/8ce15569df62e4cc9cfcb13086dcf8a523fbbdb4/modules/importancesamplingcl/processors/minmaxuniformgrid3dimportanceclprocessor.cpp#L304
 // updateTransferFunctionDifferenceData
 
 // https://github.com/ResearchDaniel/Correlated-Photon-Mapping-for-Interactive-Global-Illumination-of-Time-Varying-Volumetric-Data/blob/8ce15569df62e4cc9cfcb13086dcf8a523fbbdb4/modules/importancesamplingcl/cl/minmaxuniformgrid3dimportance.cl#L186
@@ -24,15 +24,15 @@ uniform sampler2D tf;
 
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-
-vec4 calcMinMaxAvg(ivec3 pos) {
+vec4 calcMinMaxAvg_OutsideVoxel(ivec3 pos) {
 
     // Enlarge the neighborhood by 1 voxel to deal with the edges of the grid cell.
     // The edges of the grid cell will be between two voxels.
-    
-    ivec3 startCoord = pos * cellDim-1; 
-    ivec3 endCoord = clamp(startCoord + cellDim+1, ivec3(0), ivec3(volumeDataParameters.dimensions));
-    
+
+    ivec3 startCoord = pos * regionSize - 1;
+    ivec3 endCoord =
+        clamp(startCoord + regionSize + 1, ivec3(0), ivec3(volumeDataParameters.dimensions));
+
     float minOpacity = 1f;
     float maxOpacity = 0f;
     float avgOpacity = 0f;
@@ -41,58 +41,135 @@ vec4 calcMinMaxAvg(ivec3 pos) {
     for (int z = startCoord.z; z < endCoord.z; ++z) {
         for (int y = startCoord.y; y < endCoord.y; ++y) {
             for (int x = startCoord.x; x < endCoord.x; ++x) {
-                
-                ivec3 texCoord = ivec3(x,y,z);
+                ivec3 texCoord = ivec3(x, y, z);
                 vec4 vn = getNormalizedVoxel(volumeData, volumeDataParameters, texCoord);
                 float opacity = applyTF(tf, vn).a;
 
                 minOpacity = min(minOpacity, opacity);
                 maxOpacity = max(maxOpacity, opacity);
 
-
-
                 avgOpacity += opacity;
                 sampleCount += 1f;
             }
         }
     }
-    // TODO: Sample edges of the grid cell instead of the neighboring voxel to create tighter bounds.
-    // The code below samples the edges, but also all voxels inside. We need to divide it into loops that
-    // covers the 6 edges of the grid cell.
-    /*
-    
-    startCoord = pos * cellDim-1; 
-    endCoord = clamp(startCoord + cellDim+1, ivec3(0), ivec3(volumeDataParameters.dimensions+1));
 
-    for (int z = startCoord.z; z < endCoord.z; ++z) {
-        for (int y = startCoord.y; y < endCoord.y; ++y) {
-            for (int x = startCoord.x; x < endCoord.x; ++x) {
-                
-                vec3 texCoord = (vec3(x, y, z)) / vec3(volumeDataParameters.dimensions);
-                vec4 vn = getNormalizedVoxel(volumeData, volumeDataParameters, texCoord);
-                float opacity = applyTF(tf, vn).a;
+    // TODO: Sample edge planes of the grid cell instead of the neighboring voxel to create tighter
+    // bounds. The code below samples the edges, but also all voxels inside. We need to divide it
+    // into loops that covers the 6 edge planes of the grid cell. This checks the absolute edge of
+    // voxel, but we need to check the center edge
 
-                minOpacity = min(minOpacity, opacity);
-                maxOpacity = max(maxOpacity, opacity);
-
-
-
-                avgOpacity += opacity;
-                sampleCount += 1f;
-            }
-        }
-    }
-    */
     avgOpacity /= sampleCount;
 
     return vec4(minOpacity, maxOpacity, avgOpacity, 0f);
 }
 
+vec4 calcMinMaxAvg_EdgePlanes(ivec3 pos) {
 
+    // Check all texel centers inside the cell
+
+    ivec3 startCoord = pos * regionSize;
+    ivec3 endCoord =
+        clamp(startCoord + regionSize, ivec3(0), ivec3(volumeDataParameters.dimensions));
+
+    float minOpacity = 1f;
+    float maxOpacity = 0f;
+    float avgOpacity = 0f;
+    float sampleCount = 0f;
+
+    for (int z = startCoord.z; z < endCoord.z; ++z) {
+        for (int y = startCoord.y; y < endCoord.y; ++y) {
+            for (int x = startCoord.x; x < endCoord.x; ++x) {
+                ivec3 texCoord = ivec3(x, y, z);
+                vec4 vn = getNormalizedVoxel(volumeData, volumeDataParameters, texCoord);
+                float opacity = applyTF(tf, vn).a;
+
+                minOpacity = min(minOpacity, opacity);
+                maxOpacity = max(maxOpacity, opacity);
+
+                avgOpacity += opacity;
+                sampleCount += 1f;
+            }
+        }
+    }
+
+    // TODO: Sample edge planes of the grid cell instead of the neighboring voxel to create tighter
+    // bounds. The code below samples the edges, but also all voxels inside. We need to divide it
+    // into loops that covers the 6 edge planes of the grid cell. This checks the absolute edge of
+    // voxel, but we need to check the center edge
+    
+
+    // xy start edge
+    //for()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /*
+    startCoord = pos * regionSize;
+    endCoord = clamp(startCoord + regionSize, ivec3(0), ivec3(volumeDataParameters.dimensions + 1));
+    for (int z = startCoord.z; z <= endCoord.z; ++z) {
+        for (int y = startCoord.y; y <= endCoord.y; ++y) {
+            for (int x = startCoord.x; x <= endCoord.x; ++x) {
+
+                // are we inside the volume?
+                // we check this by confirming we are on one of the edge planes.
+                // the only time we aren't is if z y x are all NOT startCoord or endCord
+                // (essentially)
+
+                // if equal(texPos, startCoord) + equal(texPos, endCoord) are all true, then we are
+                // at a corner, and should not add any offset to edge. this isnt quite it
+                ivec3 texPos = ivec3(x, y, z);
+                bvec3 startEdgeCheck = equal(texPos, startCoord);
+                bvec3 edgeCheck = startEdgeCheck || equal(texPos, endCoord);
+                if (any(edgeCheck)) {
+                    vec3 texEdge = vec3(texPos);
+                    if (startEdgeCheck.x == false) {
+                        texEdge.x += 0.5;
+                    }
+                    if (startEdgeCheck.y == false) {
+                        texEdge.y += 0.5;
+                    }
+                    if (startEdgeCheck.z == false) {
+                        texEdge.z += 0.5;
+                    }
+
+                    vec3 texCoord = (texEdge) / vec3(volumeDataParameters.dimensions);
+                    vec4 vn = getNormalizedVoxel(volumeData, volumeDataParameters, texCoord);
+                    float opacity = applyTF(tf, vn).a;
+
+                    minOpacity = min(minOpacity, opacity);
+                    maxOpacity = max(maxOpacity, opacity);
+
+                    avgOpacity += opacity;
+                    sampleCount += 1f;
+                } else {
+                    continue;
+                }
+            }
+        }
+    }
+    */
+
+    avgOpacity /= sampleCount;
+
+    return vec4(minOpacity, maxOpacity, avgOpacity, 0f);
+}
 
 void main() {
     ivec3 storePos = ivec3(gl_GlobalInvocationID.xyz);
-    vec4 result = calcMinMaxAvg(storePos);
+    vec4 result = calcMinMaxAvg_OutsideVoxel(storePos);
 
     imageStore(opacityData, storePos, result);
 }
