@@ -801,10 +801,9 @@ bool TFEditor::handleGroupSelection(QKeyEvent* event) {
         {{18, 1}, {19, 2}, {20, 3}, {21, 4}, {23, 5}, {22, 6}, {26, 7}, {28, 8}, {25, 9}, {29, 0}}};
     const quint32 nativeKey = event->nativeVirtualKey();
 #else
-    // TODO update...
     static constexpr std::array<std::pair<quint32, int>, 10> nativeKeyMap{
-        {{18, 1}, {19, 2}, {20, 3}, {21, 4}, {23, 5}, {22, 6}, {26, 7}, {28, 8}, {25, 9}, {29, 0}}};
-    const quint32 nativeKey = event->nativeVirtualKey();
+        {{10, 1}, {11, 2}, {12, 3}, {13, 4}, {14, 5}, {15, 6}, {16, 7}, {17, 8}, {18, 9}, {19, 0}}};
+    const quint32 nativeKey = event->nativeScanCode();
 #endif
 
     const auto it =
