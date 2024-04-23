@@ -100,6 +100,11 @@ jobs:
             configuration: Release
             targets: 'ALL_BUILD package DOXY-Inviwo DOXY-Python'
 
+          - system: 'macos'
+            linkage: 'dynamic'
+            configuration: Release
+            targets: 'all package
+
         exclude:
           # Windows debug build are to big, they run out of diskspace
           - system: windows
