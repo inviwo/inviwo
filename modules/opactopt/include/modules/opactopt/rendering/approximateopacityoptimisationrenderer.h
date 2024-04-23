@@ -47,23 +47,35 @@ namespace inviwo {
 class IVW_MODULE_OPACTOPT_API ApproximateOpacityOptimisationRenderer
     : public OpacityOptimisationRenderer {
 public:
-    ApproximateOpacityOptimisationRenderer(const Approximations::ApproximationProperties& p, int N,
-                                           int gaussianRadius = 3, float sigma = 1.0f);
-    ~ApproximateOpacityOptimisationRenderer();
+    ApproximateOpacityOptimisationRenderer(const Approximations::ApproximationProperties* p,
+                                           int isc, int odc, int gaussianRadius = 3,
+                                           float sigma = 1.0f);
 
-    void updateDescriptor(const Approximations::ApproximationProperties& p, int N);
+    virtual void setShaderUniforms(Shader& shader) const override;
+
+    virtual void prePass(const size2_t& screenSize) override;
+    virtual bool postPass(bool useIllustration, const Image* background) override;
+
+    void setDescriptor(const Approximations::ApproximationProperties* const p);
+    void setImportanceSumCoeffs(int isc);
+    void setOpticalDepthCoeffs(int odc);
     void generateAndUploadGaussianKernel(int radius, float sigma, bool force = false);
 
     bool smoothing;
     float znear, zfar;
 
 private:
-    virtual void buildShaders(bool hasBackground = false, bool useIllustration = false) override;
+    virtual void buildShaders(bool hasBackground = false) override;
     virtual void setUniforms(Shader& shader, const TextureUnit& abuffUnit) const override;
     virtual void resizeBuffers(const size2_t& screenSize) override;
+    virtual void process();
+    virtual void render(const Image* background);
 
-    Approximations::ApproximationProperties ap_;
-    int nCoefficients_;
+    Shader project_, smoothH_, smoothV_, blend_, clearaoo_;
+
+    const Approximations::ApproximationProperties* ap_;
+    int nImportanceSumCoefficients_;
+    int nOpticalDepthCoefficients_;
 
     Texture2DArray importanceSumCoeffs_[2];
     Texture2DArray opticalDepthCoeffs_;

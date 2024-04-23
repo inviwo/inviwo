@@ -74,12 +74,13 @@ OpacityOptimiser::OpacityOptimiser()
                                     {"decoupled", "Decoupled", 1}}}
     , approximationProperties_{"approximationProperties", "Approximation Properties"}
     , approximationMethod_{"approximationMethod", "Approximation Method"}
-    , approximationCoefficients_{"approximationCoefficients", "Approximation coefficients"}
+    , importanceSumCoefficients_{"importanceSumCoefficients", "Importance sum coefficients"}
+    , opticalDepthCoefficients_{"opticalDepthCoefficients", "Optical depth coefficients"}
     , smoothing_{"smoothing", "Smoothing", false}
     , gaussianKernelRadius_{"gaussianKernelRadius", "Gaussian kernel radius", 3, 1, 50}
     , gaussianKernelSigma_{"gaussianKernelSigma", "Gaussian kernel sigma", 1, 0.001, 50} {
 
-    illustrationSettings_.enabled_.clear();
+    illustrationSettings_.enabled_.setChecked(false);
     removeProperty(illustrationSettings_.enabled_);
 
     addProperties(q_, r_, lambda_);
@@ -107,19 +108,23 @@ OpacityOptimiser::OpacityOptimiser()
     approximationMethod_.setDefault("fourier");
     approximationMethod_.set("fourier");
 
-    approximationProperties_.addProperties(approximationMethod_, approximationCoefficients_,
-                                           smoothing_);
+    approximationProperties_.addProperties(approximationMethod_, importanceSumCoefficients_,
+                                           opticalDepthCoefficients_, smoothing_);
     smoothing_.addProperties(gaussianKernelRadius_, gaussianKernelSigma_);
+
     opacityOptimisationRenderer_.onChange([this]() {
         if (opacityOptimisationRenderer_ == 0) {
             addProperty(approximationProperties_);
 
-            auto& p = Approximations::approximations.at(approximationMethod_);
-            approximationCoefficients_.setMinValue(p.minCoefficients);
-            approximationCoefficients_.setMaxValue(p.maxCoefficients);
+            const auto* p = &Approximations::approximations.at(approximationMethod_);
+            importanceSumCoefficients_.setMinValue(p->minCoefficients);
+            importanceSumCoefficients_.setMaxValue(p->maxCoefficients);
+            opticalDepthCoefficients_.setMinValue(p->minCoefficients);
+            opticalDepthCoefficients_.setMaxValue(p->maxCoefficients);
 
             flr_ = std::make_unique<ApproximateOpacityOptimisationRenderer>(
-                p, approximationCoefficients_, gaussianKernelRadius_, gaussianKernelSigma_);
+                p, importanceSumCoefficients_, opticalDepthCoefficients_, gaussianKernelRadius_,
+                gaussianKernelSigma_);
         } else {
             removeProperty(approximationProperties_);
             flr_ = std::make_unique<DecoupledOpacityOptimisationRenderer>();
@@ -136,43 +141,59 @@ OpacityOptimiser::OpacityOptimiser()
 
     approximationMethod_.onChange([this]() {
         if (opacityOptimisationRenderer_ == 0) {
-            auto& p = Approximations::approximations.at(approximationMethod_);
-            approximationCoefficients_.setMinValue(p.minCoefficients);
-            approximationCoefficients_.setMaxValue(p.maxCoefficients);
+            const auto* p = &Approximations::approximations.at(approximationMethod_);
+            importanceSumCoefficients_.setMinValue(p->minCoefficients);
+            importanceSumCoefficients_.setMaxValue(p->maxCoefficients);
+            opticalDepthCoefficients_.setMinValue(p->minCoefficients);
+            opticalDepthCoefficients_.setMaxValue(p->maxCoefficients);
 
             auto aoor = dynamic_cast<ApproximateOpacityOptimisationRenderer*>(flr_.get());
-            aoor->updateDescriptor(p, approximationCoefficients_);
+            if (aoor) {
+                aoor->setDescriptor(p);
+            }
         }
     });
 
-    approximationCoefficients_.onChange([this]() {
+    importanceSumCoefficients_.onChange([this]() {
         if (opacityOptimisationRenderer_ == 0) {
             auto aoor = dynamic_cast<ApproximateOpacityOptimisationRenderer*>(flr_.get());
-            aoor->updateDescriptor(Approximations::approximations.at(approximationMethod_),
-                                   approximationCoefficients_);
+            if (aoor) aoor->setImportanceSumCoeffs(importanceSumCoefficients_);
+        }
+    });
+
+    opticalDepthCoefficients_.onChange([this]() {
+        if (opacityOptimisationRenderer_ == 0) {
+            auto aoor = dynamic_cast<ApproximateOpacityOptimisationRenderer*>(flr_.get());
+            if (aoor) aoor->setOpticalDepthCoeffs(opticalDepthCoefficients_);
         }
     });
 
     smoothing_.onChange([this]() {
         if (opacityOptimisationRenderer_ == 0) {
             auto aoor = dynamic_cast<ApproximateOpacityOptimisationRenderer*>(flr_.get());
-            aoor->smoothing = smoothing_;
-            if (smoothing_)
-                aoor->generateAndUploadGaussianKernel(gaussianKernelRadius_, gaussianKernelSigma_);
+            if (aoor) {
+                aoor->smoothing = smoothing_;
+                if (smoothing_)
+                    aoor->generateAndUploadGaussianKernel(gaussianKernelRadius_,
+                                                          gaussianKernelSigma_);
+            }
         }
     });
+    smoothing_.propertyModified();
 
     gaussianKernelRadius_.onChange([this]() {
         if (opacityOptimisationRenderer_ == 0) {
             auto aoor = dynamic_cast<ApproximateOpacityOptimisationRenderer*>(flr_.get());
-            aoor->generateAndUploadGaussianKernel(gaussianKernelRadius_, gaussianKernelSigma_);
+            if (aoor)
+                aoor->generateAndUploadGaussianKernel(gaussianKernelRadius_, gaussianKernelSigma_);
         }
     });
 
     gaussianKernelSigma_.onChange([this]() {
         if (opacityOptimisationRenderer_ == 0) {
             auto aoor = dynamic_cast<ApproximateOpacityOptimisationRenderer*>(flr_.get());
-            aoor->generateAndUploadGaussianKernel(gaussianKernelRadius_, gaussianKernelSigma_);
+            if (aoor)
+                aoor->generateAndUploadGaussianKernel(gaussianKernelRadius_, gaussianKernelSigma_);
         }
     });
 }
