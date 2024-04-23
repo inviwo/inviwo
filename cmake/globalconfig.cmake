@@ -234,3 +234,11 @@ endif()
 if(IVW_ENABLE_OPENMP AND NOT OpenMP_CXX_FOUND)
     message(FATAL_ERROR "OpenMP not available, Uncheck IVW_ENABLE_OPENMP to disable using OpenMP")
 endif()
+
+if(APPLE)
+    # Fix for CPack Error on MacOS 13
+    # Error generating temporary disk image.
+    # hdiutil: create failed - Resource busy
+    # https://github.com/actions/runner-images/issues/7522#issuecomment-1564467252
+    set(CPACK_COMMAND_HDIUTIL "/usr/bin/sudo /usr/bin/hdiutil")
+endif()
