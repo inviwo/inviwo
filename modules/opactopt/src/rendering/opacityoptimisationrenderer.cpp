@@ -28,14 +28,19 @@
  *********************************************************************************/
 
 #include <modules/opactopt/rendering/opacityoptimisationrenderer.h>
+#include <modules/opengl/openglutils.h>
+#include <inviwo/core/util/logcentral.h>
 
 namespace inviwo {
 
-OpacityOptimisationRenderer::OpacityOptimisationRenderer() { useIllustration_ = false; }
+OpacityOptimisationRenderer::OpacityOptimisationRenderer() {
+    if (!supportsFragmentLists())
+        LogError("Fragment lists are required for opacity optimisation rendering");
+}
 
 void OpacityOptimisationRenderer::setUniforms(Shader& shader, const TextureUnit& abuffUnit) const {
     FragmentListRenderer::setUniforms(shader, abuffUnit);
-    
+
     shader.setUniform("q", q);
     shader.setUniform("r", r);
     shader.setUniform("lambda", lambda);

@@ -22,13 +22,14 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 set(SHADER_FILES
-    glsl/opactopt/approximate/display.frag
+    glsl/opactopt/approximate/project.frag
+    glsl/opactopt/approximate/smooth.frag
+    glsl/opactopt/approximate/blend.frag
     glsl/opactopt/approximate/clear.frag
     glsl/opactopt/approximate/fourier.glsl
     glsl/opactopt/approximate/legendre.glsl
     glsl/opactopt/approximate/chebyshev.glsl
     glsl/opactopt/approximate/piecewise.glsl
-    glsl/opactopt/approximate/filter.glsl
     glsl/opactopt/decoupled/display.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
