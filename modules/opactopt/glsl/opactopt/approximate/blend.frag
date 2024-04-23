@@ -40,6 +40,7 @@
 // GL_EXT_bindable_uniform
 
 #include "oit/abufferlinkedlist.glsl"
+#include "oit/sort.glsl"
 #include "utils/structs.glsl"
 
 // How should the stuff be rendered? (Debugging options)
@@ -53,17 +54,13 @@ uniform sampler2D bgDepth;
 uniform vec2 reciprocalDimensions;
 #endif  // BACKGROUND_AVAILABLE
 
-uniform bool smoothing;
-uniform float znear;
-uniform float zfar;
-
 // Opacity optimisation settings
 uniform float q;
 uniform float r;
 uniform float lambda;
 
-uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // ping pong buffering for gaussian filtering
-uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+coherent uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+coherent uniform layout(size1x32) image2DArray opticalDepthCoeffs;
 
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;
@@ -71,7 +68,6 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 // Input interpolated fragment position
 smooth in vec4 fragPos;
 
-#include "opactopt/approximate/filter.glsl"
 #ifdef FOURIER
     #include "opactopt/approximate/fourier.glsl"
 #endif
@@ -84,15 +80,6 @@ smooth in vec4 fragPos;
 #ifdef PIECEWISE
     #include "opactopt/approximate/piecewise.glsl"
 #endif
-
-// Converts depths from screen space to clip space
-void lineariseDepths(uint pixelIdx);
-
-// Computes only the number of fragments
-int getFragmentCount(uint pixelIdx);
-
-// Keeps only closest fragment
-vec4 resolveClosest(uint idx);
 
 // Resolve A-Buffer and blend sorted fragments
 void main() {
@@ -117,37 +104,18 @@ void main() {
         gl_FragDepth = p.depth;
 #else
         float backgroundDepth = 1.0;
-        lineariseDepths(pixelIdx);
-
-        // Clear coefficient buffers
-        for (int i = 0; i < N_APPROXIMATION_COEFFICIENTS; i++) {
-            imageStore(importanceSumCoeffs[0], ivec3(coords, i), vec4(0.0));
-            imageStore(importanceSumCoeffs[1], ivec3(coords, i), vec4(0.0));
-            imageStore(opticalDepthCoeffs, ivec3(coords, i), vec4(0.0));
-        }
-
         // Perform opacity optimisation and compositing
         uint idx = pixelIdx;
 
-        // Project importance sum coefficients
-        while (idx != 0) {
-            projectImportanceSum(idx);
-            memoryBarrierImage();
-            idx = floatBitsToUint(readPixelStorage(idx - 1).x);
-        }
-
-        if (smoothing)
-            filterImportanceSum();
-
         // Optimise opacities and project optical depth coefficients
+        float totalImportanceSum = imageLoad(importanceSumCoeffs[0], ivec3(coords, 0)).x;
         idx = pixelIdx;
-        float totalImportanceSum = imageLoad(importanceSumCoeffs[int(smoothing)], ivec3(coords, 0)).x;
         while (idx != 0) {
-            abufferPixel pixel = uncompressPixelData(readPixelStorage(idx - 1));
+            vec4 data = readPixelStorage(idx - 1);
+            abufferPixel pixel = uncompressPixelData(data);
             vec4 c = pixel.color;
             float importanceSq = c.a * c.a;
             float importanceAtDepth = approxImportanceSum(pixel.depth) + 0.5 * importanceSq; // correct for importance sum approximation at discontinuity
-
             float alpha = clamp(1 /
                             (1 + pow(1 - c.a, 2 * lambda)
                             * (r * (importanceAtDepth - importanceSq)
@@ -157,22 +125,20 @@ void main() {
             writePixelStorage(idx - 1, compressPixelData(pixel)); // replace importance g_i in alpha channel with actual alpha
 
             projectOpticalDepth(idx);
-            memoryBarrierImage();
             idx = pixel.previous;
         }
+
 
         // Composite
         vec3 numerator = vec3(0);
         float denominator = 0.0;
         idx = pixelIdx;
         float totalOpticalDepth = imageLoad(opticalDepthCoeffs, ivec3(coords, 0)).x;
-        float minDepth = backgroundDepth;
 
         while (idx != 0) {
             abufferPixel pixel = uncompressPixelData(readPixelStorage(idx - 1));
-            minDepth = min(pixel.depth, minDepth);
             vec4 c = pixel.color;
-            float opticalDepth = approxOpticalDepth(pixel.depth) - 0.5 * log(1 - c.a); // correct for optical depth approximation at discontinuity
+            float opticalDepth = approxOpticalDepth(pixel.depth); // correct for optical depth approximation at discontinuity
 
             float weight = c.a / (1 - c.a) * exp(-opticalDepth);
             numerator += c.rgb * weight;
@@ -183,7 +149,6 @@ void main() {
         vec4 color = vec4(0);
         color.rgb = numerator / denominator;
         color.a = 1.0 - exp(-totalOpticalDepth);
-        gl_FragDepth = minDepth;
 
         FragData0 = color;
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
@@ -198,47 +163,4 @@ void main() {
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
 #endif
     }
-}
-
-void lineariseDepths(uint pixelIdx) {
-    int counter = 0;
-    while (pixelIdx != 0 && counter < ABUFFER_SIZE) {
-        vec4 val = readPixelStorage(pixelIdx - 1);
-        float z_w = znear * zfar / (zfar + val.y * (znear - zfar)); // world space depth
-        val.y = (z_w - znear) / (zfar - znear); // linear normalised depth;
-        writePixelStorage(pixelIdx - 1, val); 
-        counter++;
-        pixelIdx = floatBitsToUint(val.x);
-    }
-}
-
-int getFragmentCount(uint pixelIdx) {
-    int counter = 0;
-    while (pixelIdx != 0 && counter < ABUFFER_SIZE) {
-        vec4 val = readPixelStorage(pixelIdx - 1);
-        counter++;
-        pixelIdx = floatBitsToUint(val.x);
-    }
-    return counter;
-}
-
-vec4 resolveClosest(uint pixelIdx) {
-
-    // Search smallest z
-    vec4 minFrag = vec4(0.0f, 1000000.0f, 1.0f, uintBitsToFloat(1024 * 1023));
-    int ip = 0;
-
-    while (pixelIdx != 0 && ip < ABUFFER_SIZE) {
-        vec4 val = readPixelStorage(pixelIdx - 1);
-
-        if (val.y < minFrag.y) {
-            minFrag = val;
-        }
-
-        pixelIdx = floatBitsToUint(val.x);
-
-        ip++;
-    }
-    // Output final color for the frame buffer
-    return minFrag;
 }
