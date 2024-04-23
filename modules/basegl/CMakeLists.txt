@@ -84,6 +84,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/shadercomponentprocessorbase.h
     include/modules/basegl/processors/sphererenderer.h
     include/modules/basegl/processors/splitimage.h
+    include/modules/basegl/processors/transferfunction2dtolayer.h
     include/modules/basegl/processors/tuberendering.h
     include/modules/basegl/processors/volumemasker.h
     include/modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h
@@ -215,6 +216,7 @@ set(SOURCE_FILES
     src/processors/shadercomponentprocessorbase.cpp
     src/processors/sphererenderer.cpp
     src/processors/splitimage.cpp
+    src/processors/transferfunction2dtolayer.cpp
     src/processors/tuberendering.cpp
     src/processors/volumemasker.cpp
     src/processors/volumeprocessing/vectormagnitudeprocessor.cpp
