@@ -31,17 +31,33 @@
 #define MAX_ORDER_Q 6
 
 
-void FillPowers(float depth, out float[N_APPROXIMATION_COEFFICIENTS] x) {
+void FillPowers(float depth, out float[N_IMPORTANCE_SUM_COEFFICIENTS] x) {
     x[0] = 1.0;
-    for (int i = 1; i < N_APPROXIMATION_COEFFICIENTS; i++)
+    for (int i = 1; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++)
         x[i] = depth * x[i - 1];
 }
 
-void FillPowers(float depth, out float[N_APPROXIMATION_COEFFICIENTS + 1] x) {
+void FillPowers(float depth, out float[N_IMPORTANCE_SUM_COEFFICIENTS + 1] x) {
     x[0] = 1.0;
-    for (int i = 1; i < N_APPROXIMATION_COEFFICIENTS + 1; i++)
+    for (int i = 1; i < N_IMPORTANCE_SUM_COEFFICIENTS + 1; i++)
         x[i] = depth * x[i - 1];
 }
+
+#if N_IMPORTANCE_SUM_COEFFICIENTS != N_OPTICAL_DEPTH_COEFFICIENTS && \
+    N_IMPORTANCE_SUM_COEFFICIENTS + 1 != N_OPTICAL_DEPTH_COEFFICIENTS
+void FillPowers(float depth, out float[N_OPTICAL_DEPTH_COEFFICIENTS] x) {
+    x[0] = 1.0;
+    for (int i = 1; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++)
+        x[i] = depth * x[i - 1];
+}
+#endif
+#if N_IMPORTANCE_SUM_COEFFICIENTS != N_OPTICAL_DEPTH_COEFFICIENTS + 1 && \
+    N_IMPORTANCE_SUM_COEFFICIENTS + 1 != N_OPTICAL_DEPTH_COEFFICIENTS + 1
+void FillPowers(float depth, out float[N_OPTICAL_DEPTH_COEFFICIENTS + 1] x) {
+    x[0] = 1.0;
+    for (int i = 1; i < N_OPTICAL_DEPTH_COEFFICIENTS + 1; i++) x[i] = depth * x[i - 1];
+}
+#endif
 
 // Legendre polynomial coefficients
 const float pcoeffs[MAX_ORDER_P * MAX_ORDER_P] = float[MAX_ORDER_P * MAX_ORDER_P](
@@ -61,7 +77,7 @@ const float qcoeffs[MAX_ORDER_P * MAX_ORDER_Q] = float[MAX_ORDER_P * MAX_ORDER_Q
     0,    1,    -10,     30,    -35,    14
 );
 
-float P(int order, float[N_APPROXIMATION_COEFFICIENTS] x) {
+float P(int order, float[N_IMPORTANCE_SUM_COEFFICIENTS] x) {
     float res = 0.0;
     for (int i = 0; i < order + 1; i++) {
         res += pcoeffs[MAX_ORDER_P * order + i] * x[i];
@@ -69,7 +85,17 @@ float P(int order, float[N_APPROXIMATION_COEFFICIENTS] x) {
     return res;
 }
 
-float Q(int order, float[N_APPROXIMATION_COEFFICIENTS + 1] x) {
+#if N_IMPORTANCE_SUM_COEFFICIENTS != N_OPTICAL_DEPTH_COEFFICIENTS
+float P(int order, float[N_OPTICAL_DEPTH_COEFFICIENTS] x) {
+    float res = 0.0;
+    for (int i = 0; i < order + 1; i++) {
+        res += pcoeffs[MAX_ORDER_P * order + i] * x[i];
+    }
+    return res;
+}
+#endif
+
+float Q(int order, float[N_IMPORTANCE_SUM_COEFFICIENTS + 1] x) {
     float res = 0.0;
     for (int i = 1; i < order + 2; i++) {
         res += qcoeffs[MAX_ORDER_Q * order + i] * x[i];
@@ -77,12 +103,22 @@ float Q(int order, float[N_APPROXIMATION_COEFFICIENTS + 1] x) {
     return res;
 }
 
+#if N_IMPORTANCE_SUM_COEFFICIENTS != N_OPTICAL_DEPTH_COEFFICIENTS
+float Q(int order, float[N_OPTICAL_DEPTH_COEFFICIENTS + 1] x) {
+    float res = 0.0;
+    for (int i = 1; i < order + 2; i++) {
+        res += qcoeffs[MAX_ORDER_Q * order + i] * x[i];
+    }
+    return res;
+}
+#endif
+
 void projectImportanceSum(uint idx) {
     abufferPixel p = uncompressPixelData(readPixelStorage(idx - 1));
-    float x[N_APPROXIMATION_COEFFICIENTS];
+    float x[N_IMPORTANCE_SUM_COEFFICIENTS];
     FillPowers(p.depth, x);
 
-    for (int i = 0; i < N_APPROXIMATION_COEFFICIENTS; i++) {
+    for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
         float val = 0.0;
         val = (2 * i + 1) * p.color.a * p.color.a * P(i, x);
 
@@ -94,10 +130,10 @@ void projectImportanceSum(uint idx) {
 
 void projectOpticalDepth(uint idx) {
     abufferPixel p = uncompressPixelData(readPixelStorage(idx - 1));
-    float x[N_APPROXIMATION_COEFFICIENTS];
+    float x[N_OPTICAL_DEPTH_COEFFICIENTS];
     FillPowers(p.depth, x);
 
-    for (int i = 0; i < N_APPROXIMATION_COEFFICIENTS; i++) {
+    for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++) {
         float val = 0.0;
         val = (2 * i + 1) * -log(1 - p.color.a) * P(i, x);
 
@@ -109,12 +145,12 @@ void projectOpticalDepth(uint idx) {
 
 float approxImportanceSum(float depth) {
     float sum = 0.0;
-    float x[N_APPROXIMATION_COEFFICIENTS + 1];
+    float x[N_IMPORTANCE_SUM_COEFFICIENTS + 1];
     FillPowers(depth, x);
 
-    for (int i = 0; i < N_APPROXIMATION_COEFFICIENTS; i++) {
+    for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-        float coeff = imageLoad(importanceSumCoeffs[int(smoothing)], coord).x;
+        float coeff = imageLoad(importanceSumCoeffs[0], coord).x;
         sum += coeff * Q(i, x);
     }
 
@@ -123,10 +159,10 @@ float approxImportanceSum(float depth) {
 
 float approxOpticalDepth(float depth) {
     float sum = 0.0;
-    float x[N_APPROXIMATION_COEFFICIENTS + 1];
+    float x[N_OPTICAL_DEPTH_COEFFICIENTS + 1];
     FillPowers(depth, x);
 
-    for (int i = 0; i < N_APPROXIMATION_COEFFICIENTS; i++) {
+    for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++) {
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
         float coeff = imageLoad(opticalDepthCoeffs, coord).x;
         sum += coeff * Q(i, x);
