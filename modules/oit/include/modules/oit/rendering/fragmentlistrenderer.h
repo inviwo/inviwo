@@ -80,14 +80,14 @@ public:
      * This has to be called each frame before objects can be rendered with the fragment lists.
      * \param screenSize the current screen size
      */
-    void prePass(const size2_t& screenSize);
+    virtual void prePass(const size2_t& screenSize);
 
     /**
      * \brief Sets the shader uniforms required by the fragment list renderer.
      * The uniforms are defined in <code>oit/abufferlinkedlist.glsl</code>
      * \param shader the shader of the object to be rendered
      */
-    void setShaderUniforms(Shader& shader) const;
+    virtual void setShaderUniforms(Shader& shader) const;
 
     /**
      * \brief Finishes the fragment list pass and renders the final result.
@@ -98,7 +98,7 @@ public:
      * \return <code>true</code> if successfull, <code>false</code> if not enough
      * space for all fragments was available and the procedure should be repeated.
      */
-    bool postPass(bool useIllustration, const Image* background);
+    virtual bool postPass(bool useIllustration, const Image* background);
 
     void beginCount();
     void endCount();
@@ -111,6 +111,7 @@ public:
         float edgeSmoothing_;
         float haloSmoothing_;
     };
+
     void setIllustrationSettings(const IllustrationSettings& settings) {
         illustration_.settings = settings;
     }
@@ -135,7 +136,7 @@ public:
     void debugIllustrationBuffer(std::ostream& oss);
 
 protected:
-    virtual void buildShaders(bool hasBackground = false, bool useIllustration = false);
+    virtual void buildShaders(bool hasBackground = false);
 
     virtual void setUniforms(Shader& shader, const TextureUnit& abuffUnit) const;
     virtual void resizeBuffers(const size2_t& screenSize);
@@ -150,7 +151,6 @@ protected:
     Texture2D abufferIdxTex_;
     TextureUnitContainer textureUnits_;
     bool builtWithBackground_ = false;
-    bool useIllustration_ = false;
 
     BufferObject atomicCounter_;
     BufferObject pixelBuffer_;

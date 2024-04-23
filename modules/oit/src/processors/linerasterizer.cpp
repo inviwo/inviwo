@@ -189,7 +189,8 @@ void LineRasterizer::setUniforms(Shader& shader) {
 void LineRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
 
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    utilgl::DepthMaskState depthMask(true);
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, forceOpaque_);
+    utilgl::DepthMaskState depthMask(forceOpaque_ ? GL_TRUE : GL_FALSE);
     utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
     auto setup = [&](Shader& shader, const auto& transform) {

@@ -27,33 +27,62 @@
  *
  *********************************************************************************/
 
- uniform int radius;
- layout(std430, binding = 8) buffer gaussianKernelBuffer {
+/**
+ * Fast Single-pass A-Buffer using OpenGL 4.0 V2.0
+ * Copyright Cyril Crassin, July 2010
+ *
+ * Edited by the Inviwo Foundation.
+ * Edited by Aritra Bhakat
+ **/
+
+// need extensions added from C++
+// GL_NV_gpu_shader5, GL_EXT_shader_image_load_store, GL_NV_shader_buffer_load,
+// GL_EXT_bindable_uniform
+
+#include "oit/abufferlinkedlist.glsl"
+
+uniform int radius;
+layout(std430, binding = 8) buffer gaussianKernelBuffer {
     float kernel[];
 };
 
-void filterImportanceSum() {
+coherent uniform layout(size1x32) image2DArray importanceSumCoeffs[2];
+
+// Whole number pixel offsets (not necessary just to test the layout keyword !)
+layout(pixel_center_integer) in vec4 gl_FragCoord;
+
+// Input interpolated fragment position
+smooth in vec4 fragPos;
+
+// Resolve A-Buffer and blend sorted fragments
+void main() {
     ivec2 coords = ivec2(gl_FragCoord.xy);
     if (getPixelLink(coords) == 0) return;
 
-    memoryBarrierImage();
-    for (int i = 0; i < N_APPROXIMATION_COEFFICIENTS; i++) {
+    #if HORIZONTAL == 1
+        ivec2 dir = ivec2(1, 0);
+    #else
+        ivec2 dir = ivec2(0, 1);
+    #endif
+
+    for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
         ivec3 layer_coord = ivec3(coords, i);
 
         float val = 0.0;
         float kernel_sum = 0.0;
         for (int j = -radius; j <= radius; j++) {
-            for (int k = -radius; k <= radius; k++) {
-                if (coords.x + j < 0 || coords.x + j >= AbufferParams.screenWidth ) continue;
-                if (coords.y + k < 0 || coords.y + k >= AbufferParams.screenHeight) continue;
-                val += kernel[radius + j] * kernel[radius + k] * imageLoad(importanceSumCoeffs[0], layer_coord + ivec3(j, k, 0)).x;
-                kernel_sum += kernel[radius + j] * kernel[radius + k];
-            }
+        #if HORIZONTAL == 1
+            if (coords.x + j < 0 || coords.x + j >= AbufferParams.screenWidth) continue;
+        #else
+            if (coords.y + j < 0 || coords.y + j >= AbufferParams.screenHeight) continue;
+        #endif
+
+            val += kernel[radius + j] * imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x;
+            kernel_sum += kernel[radius + j];
         }
         val /= kernel_sum;
-        memoryBarrierImage();
-        imageStore(importanceSumCoeffs[1], layer_coord, vec4(val));
-        memoryBarrierImage();
+        imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, vec4(val));
     }
-    memoryBarrierImage();
+
+    discard;
 }

@@ -55,7 +55,7 @@ uniform AbufferParameters AbufferParams;
 #if ABUFFER_USE_TEXTURES
 // A-Buffer fragments storage
 // coherent uniform layout(binding=5, size1x32) uimage2D abufferIdxImg;
-coherent uniform layout(size1x32) uimage2D abufferIdxImg;
+coherent uniform layout(r32ui) uimage2D abufferIdxImg;
 #else
 #error Buffer access not supported
 // coherent uniform uint *d_abufferPageIdx;
