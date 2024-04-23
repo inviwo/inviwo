@@ -251,6 +251,9 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
                               false,
                               "",
                               "path"}
+    , resetWindowState_{"", "reset-window-state",
+                        "Reset the window state of the Qt user interface including dock widgets. "
+                        "Use to fix a broken toolbar."}
     , undoManager_(
           app->getWorkspaceManager(), app->getProcessorNetwork(),
           [&]() -> int { return app_->getSettingsByType<EditorSettings>()->numRestoreFiles.get(); },
@@ -350,6 +353,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
             util::updateWorkspaces(app_, updateWorkspacesInPath_.getValue(), util::DryRun::No);
         },
         1250);
+    app->getCommandLineParser().add(&resetWindowState_);
 
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());
@@ -429,7 +433,13 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     });
 
     // load settings and restore window state
-    loadWindowState();
+
+    // prevent loading of the window and geometry states when the reset-window-state command line
+    // argument is present. This is necessary to fix a broken internal state, which is
+    // for example visible in form of a mangled toolbar.
+    if (!resetWindowState_.isSet()) {
+        loadWindowState();
+    }
 
     QSettings settings;
     settings.beginGroup(objectName());
