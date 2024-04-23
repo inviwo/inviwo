@@ -17,7 +17,7 @@ permissions:
   contents: write  # Enable vcpkg to write to the dependency graph
 
 env:
-  VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'   # recognized by vcpkg
+  VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite;http,https://jenkins.inviwo.org/cache/{sha},readwrite,Authorization: Bearer ${{ secrets.VCPKG_CACHE_TOKEN }}'
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
   # QT_DEBUG_PLUGINS: 1                           # print qt plugin debug info
@@ -432,6 +432,7 @@ jobs:
         VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ninja-developer
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+        -DCMAKE_CXX_FLAGS='-stdlib=libc++'
         -DVCPKG_TARGET_TRIPLET=x64-linux-dynamic
         -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
         -DBUILD_SHARED_LIBS=ON
