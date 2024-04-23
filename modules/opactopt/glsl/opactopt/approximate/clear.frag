@@ -42,8 +42,8 @@
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 
-uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // ping pong buffering for gaussian filtering
-uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+coherent uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+coherent uniform layout(size1x32) image2DArray opticalDepthCoeffs;
 
 
 void main(void) {
@@ -51,13 +51,16 @@ void main(void) {
 
     if (coords.x >= 0 && coords.y >= 0 && coords.x < AbufferParams.screenWidth &&
         coords.y < AbufferParams.screenHeight) {
-        imageStore(abufferIdxImg, coords, ivec4(0));
+        imageStore(abufferIdxImg, coords, uvec4(0));
+
         // clear coefficient buffers
-//        for (int i = 0; i < N_APPROXIMATION_COEFFICIENTS; i++) {
-//            imageStore(importanceSumCoeffs[0], ivec3(coords, i), vec4(0.0));
-//            imageStore(importanceSumCoeffs[1], ivec3(coords, i), vec4(0.0));
-//            imageStore(opticalDepthCoeffs, ivec3(coords, i), vec4(0.0));
-//        }
+        for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
+            imageStore(importanceSumCoeffs[0], ivec3(coords, i), vec4(0));
+            imageStore(importanceSumCoeffs[1], ivec3(coords, i), vec4(0));
+        }
+        for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++) {
+            imageStore(opticalDepthCoeffs, ivec3(coords, i), vec4(0));
+        }
     }
 
     discard;

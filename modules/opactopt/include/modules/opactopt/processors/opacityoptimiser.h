@@ -59,7 +59,7 @@ private:
     OptionPropertyInt opacityOptimisationRenderer_;
     CompositeProperty approximationProperties_;
     OptionProperty<std::string> approximationMethod_;
-    IntProperty approximationCoefficients_;
+    IntProperty importanceSumCoefficients_, opticalDepthCoefficients_;
     BoolCompositeProperty smoothing_;
     IntProperty gaussianKernelRadius_;
     FloatProperty gaussianKernelSigma_;    

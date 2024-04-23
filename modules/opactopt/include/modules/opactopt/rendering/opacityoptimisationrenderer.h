@@ -41,7 +41,7 @@ namespace inviwo {
 class IVW_MODULE_OPACTOPT_API OpacityOptimisationRenderer : public FragmentListRenderer {
 public:
     OpacityOptimisationRenderer();
-    float q, r, lambda;
+    float q = 50, r = 50, lambda = 50;
     
 protected:
     virtual void setUniforms(Shader& shader, const TextureUnit& abuffUnit) const override;
