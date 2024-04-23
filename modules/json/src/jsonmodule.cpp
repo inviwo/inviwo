@@ -53,6 +53,7 @@
 #include <modules/json/io/json/ordinalrefpropertyjsonconverter.h>     // for to_json
 #include <modules/json/io/json/propertyjsonconverterfactory.h>        // for PropertyJSONConvert...
 #include <modules/json/io/json/propertyjsonconverterfactoryobject.h>  // for PropertyJSONConvert...
+#include <modules/json/io/json/stringpropertyjsonconverter.h>         // for to_json
 #include <modules/json/io/json/templatepropertyjsonconverter.h>       // for to_json
 
 #include <cstddef>      // for size_t
