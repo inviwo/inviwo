@@ -38,8 +38,9 @@
 
 #include "utils/structs.glsl" //! #include "./structs.glsl"
 
-// default material based only on a diffuse color as used for volume rendering 
-// and mesh rendering.
+
+// default material uses the supplied color for the diffuse and ambient material terms
+// as well as white for the specular term (as used for volume and mesh rendering).
 MaterialColors defaultMaterialColors(in vec3 diffuseColor) {
     return MaterialColors(diffuseColor, diffuseColor, vec3(1.0));
 }

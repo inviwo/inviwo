@@ -35,11 +35,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo LightVolumeRaycaster::processorInfo_{
-    "org.inviwo.LightVolumeRaycaster",                                 // Class identifier
-    "Light Volume Raycaster",                                          // Display name
-    "Volume Rendering",                                                // Category
-    CodeState::Experimental,                                           // Code state
-    Tag::GL | Tag{"Volume"} | Tag{"Raycaster"} | Tag{"Light Volume"},  // Tags
+    "org.inviwo.LightVolumeRaycaster",                                  // Class identifier
+    "Light Volume Raycaster",                                           // Display name
+    "Volume Rendering",                                                 // Category
+    CodeState::Experimental,                                            // Code state
+    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"} | Tag{"Light Volume"},  // Tags
     R"(
 Processor for visualizing volumetric data by means of volume raycasting in combination with a
 light volume. Only one channel of the volume will be used. Besides the volume data, entry and

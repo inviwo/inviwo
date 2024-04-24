@@ -47,7 +47,7 @@ LightVolumeComponent::LightVolumeComponent(Processor& processor, std::string_vie
     : ShaderComponent{}
     , lightVolume_{"lightVolume"}
     , lightSource_{"lightSource"}
-    , scaling_{"lightVolumeScaling", "Light Volume Scaling", util::ordinalScale(1.0f, 2.0f)}
+    , scaling_{"lightIntensityScaling", "Light Intensity Scaling", util::ordinalScale(1.0f, 2.0f)}
     , shadingMode_("shadingMode", "Shading",
                    OptionPropertyState<ShadingMode>{
                        .options =

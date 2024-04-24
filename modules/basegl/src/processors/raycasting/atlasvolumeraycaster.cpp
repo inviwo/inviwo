@@ -35,7 +35,7 @@
 #include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
 #include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
 #include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tag, Tags, Tag::GL
+#include <inviwo/core/processors/processortags.h>                       // for Tag, Tags, Tags::GL
 #include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
 #include <inviwo/core/properties/isotfproperty.h>                       // for IsoTFProperty
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
