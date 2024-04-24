@@ -28,6 +28,9 @@
  *********************************************************************************/
 
 #include "utils/structs.glsl"
+#include "utils/pickingutils.glsl"
+
+layout(location = 7) in uint in_PickId;
 
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
@@ -35,9 +38,12 @@ uniform CameraParameters camera;
 uniform float pointSize = 5.0; // [pixel]
 uniform float borderWidth = 1.0; // [pixel]
 
+uniform bool pickingEnabled = true;
+
 out vec4 worldPosition_;
 out vec3 normal_;
 out vec4 color_;
+flat out vec4 pickColor_;
 
 void main() {
     worldPosition_ = geometry.dataToWorld * in_Vertex;
@@ -48,4 +54,5 @@ void main() {
     gl_Position = camera.worldToClip * worldPosition_;
 
     gl_PointSize = pointSize + 2 * borderWidth;
+    pickColor_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
 }  

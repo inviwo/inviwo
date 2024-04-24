@@ -115,6 +115,7 @@ void PointRenderer::drawMeshes() {
         MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
                                         elem->getDefaultMeshInfo());
         utilgl::setShaderUniforms(shader_, *elem, "geometry");
+        shader_.setUniform("pickingEnabled", elem->hasBuffer(BufferType::PickingAttrib));
         drawer.draw(MeshDrawerGL::DrawMode::Points);
     }
 }
