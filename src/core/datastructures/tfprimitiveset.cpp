@@ -505,7 +505,7 @@ void util::alignPositionToMean(std::vector<TFPrimitive*> selection) {
         return;
     }
 
-    const auto pos = std::transform_reduce(selection.begin(), selection.end(), 0.0f, std::plus<>{},
+    const auto pos = std::transform_reduce(selection.begin(), selection.end(), 0.0, std::plus<>{},
                                            [](TFPrimitive* p) { return p->getPosition(); }) /
                      static_cast<float>(selection.size());
 
