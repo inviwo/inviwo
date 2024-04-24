@@ -18,7 +18,7 @@
     "cimg",
     "eigen3",
     "fmt",
-    "freetype",
+    "freetype[core,bzip2,png,zlib]",
     "glew",
     "glfw3",
     "glm",
