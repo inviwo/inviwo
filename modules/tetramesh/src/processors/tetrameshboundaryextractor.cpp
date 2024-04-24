@@ -41,7 +41,7 @@ const ProcessorInfo TetraMeshBoundaryExtractor::processorInfo_{
     "TetraMesh Boundary Extractor",           // Display name
     "Unstructured Grids",                     // Category
     CodeState::Stable,                        // Code state
-    Tag::CPU | Tag{"Unstructured"},           // Tags
+    Tags::CPU | Tag{"Unstructured"},          // Tags
     R"(Extracts the boundary faces of a tetrahedral mesh)"_unindentHelp};
 
 const ProcessorInfo TetraMeshBoundaryExtractor::getProcessorInfo() const { return processorInfo_; }

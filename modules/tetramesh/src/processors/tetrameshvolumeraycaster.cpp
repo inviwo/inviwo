@@ -66,7 +66,7 @@ const ProcessorInfo TetraMeshVolumeRaycaster::processorInfo_{
     "TetraMesh Volume Raycaster",           // Display name
     "Unstructured Grids",                   // Category
     CodeState::Stable,                      // Code state
-    Tag::GL | Tag{"Unstructured"},          // Tags
+    Tags::GL | Tag{"Unstructured"},         // Tags
     R"(
 Creates an OpenGL representation of a tetrahedral grid and renders it using volume rendering. This 
 processor requires OpenGL 4.3 since it relies on Shader Storage Buffer Objects.)"_unindentHelp};

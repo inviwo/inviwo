@@ -39,7 +39,7 @@ const ProcessorInfo TetraMeshBoundingBox::processorInfo_{
     "TetraMesh Bounding Box",           // Display name
     "Unstructured Grids",               // Category
     CodeState::Stable,                  // Code state
-    Tag::CPU | Tag{"Unstructured"},     // Tags
+    Tags::CPU | Tag{"Unstructured"},    // Tags
     R"(Creates a mesh containing the bounding box of the tetra mesh, that is lines with adjacency "
     "information.)"_unindentHelp};
 
