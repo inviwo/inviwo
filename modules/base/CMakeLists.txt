@@ -117,6 +117,7 @@ set(HEADER_FILES
     include/modules/base/processors/stereocamerasyncer.h
     include/modules/base/processors/surfaceextractionprocessor.h
     include/modules/base/processors/tfselector.h
+    include/modules/base/processors/transferfunction2dmesh.h
     include/modules/base/processors/transform.h
     include/modules/base/processors/trianglestowireframe.h
     include/modules/base/processors/vectorelementselectorprocessor.h
@@ -272,6 +273,7 @@ set(SOURCE_FILES
     src/processors/stereocamerasyncer.cpp
     src/processors/surfaceextractionprocessor.cpp
     src/processors/tfselector.cpp
+    src/processors/transferfunction2dmesh.cpp
     src/processors/transform.cpp
     src/processors/trianglestowireframe.cpp
     src/processors/vectortobuffer.cpp

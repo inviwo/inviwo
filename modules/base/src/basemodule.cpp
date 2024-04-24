@@ -129,6 +129,7 @@
 #include <modules/base/processors/stereocamerasyncer.h>                    // for StereoCamera...
 #include <modules/base/processors/surfaceextractionprocessor.h>            // for SurfaceExtra...
 #include <modules/base/processors/tfselector.h>                            // for TFSelector
+#include <modules/base/processors/transferfunction2dmesh.h>
 #include <modules/base/processors/transform.h>                             // for Transform
 #include <modules/base/processors/trianglestowireframe.h>                  // for TrianglesToW...
 #include <modules/base/processors/vectortobuffer.h>                        // for VectorToBuffer
@@ -264,6 +265,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<StereoCameraSyncer>();
     registerProcessor<SurfaceExtraction>();
     registerProcessor<TFSelector>();
+    registerProcessor<TransferFunction2DMesh>();
     registerProcessor<TransformLayer>();
     registerProcessor<TransformMesh>();
     registerProcessor<TransformVolume>();
