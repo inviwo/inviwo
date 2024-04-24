@@ -20,6 +20,7 @@
     "fmt",
     {
       "name": "freetype",
+      "default-features": false,
       "features": ["bzip2","png","zlib"]
     },
     "glew",
