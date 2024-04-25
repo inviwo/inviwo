@@ -74,6 +74,9 @@ private:
     FloatProperty opacityScaling_;
     IntProperty maxSteps_;
     StringProperty pickingOutput_;
+    BoolProperty enableIsoSurface_;
+    FloatProperty isoValue_;
+    FloatVec4Property isoColor_;
 
     Shader shader_;
     TetraMeshBuffers buffers_;
@@ -84,6 +87,8 @@ private:
     std::vector<ivec4> tetraNodeIds_;
 
     FloatVec3Property cutplane_;
+
+    dvec2 prevDataRange_;
 };
 
 }  // namespace inviwo

@@ -103,8 +103,13 @@ TetraMeshVolumeRaycaster::TetraMeshVolumeRaycaster()
           "Cuts the tetramesh volume along the x, y, and z axis"_help,
           vec3(1.0f),
           {vec3(-1.0f), ConstraintBehavior::Ignore},
-          {vec3(1.0f), ConstraintBehavior::Ignore}} {
+          {vec3(1.0f), ConstraintBehavior::Ignore}}
+    , enableIsoSurface_{"enableIsoSurface", "Enable ISO Surface", false}
+    , isoValue_{"isoValue", "ISO Value", 0.5f, 0.f, 1.f}
+    , prevDataRange_{0.0, 1.0}
+    , isoColor_{"isoColor", "ISO Color", vec4(1.0, 1.0, 0.6, 1.0)} {
 
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     addPorts(inport_, imageInport_, outport_);
 
     imageInport_.setOptional(true);
@@ -116,7 +121,7 @@ TetraMeshVolumeRaycaster::TetraMeshVolumeRaycaster()
     lighting_.shadingMode_.setSelectedValue(ShadingMode::None);
     lighting_.shadingMode_.setCurrentStateAsDefault();
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    isoColor_.setSemantics(PropertySemantics::Color);
 
     if (OpenGLCapabilities::getOpenGLVersion() < 430 &&
         !OpenGLCapabilities::isExtensionSupported("ARB_shader_storage_buffer_object")) {
@@ -127,8 +132,7 @@ TetraMeshVolumeRaycaster::TetraMeshVolumeRaycaster()
         isReady_.setUpdate([]() { return false; });
     }
 
-    addProperty(cutplane_);
-    addProperty(pickingOutput_);
+    addProperties(enableIsoSurface_, isoValue_, isoColor_, cutplane_, pickingOutput_);
 }
 
 void TetraMeshVolumeRaycaster::handlePickingEvent(PickingEvent* p) {
@@ -189,6 +193,14 @@ void TetraMeshVolumeRaycaster::process() {
         buffers_.upload(tetraNodes_, tetraNodeIds_, opposingFaces);
         mesh_ = utiltetra::createBoundaryMesh(tetraMesh, tetraNodes_, tetraNodeIds_,
                                               utiltetra::getBoundaryFaces(opposingFaces));
+
+        // Update the isoValue min/max range to the new data, keeps the slider at the same % as prev
+        const dvec2 dataRange{inport_.getData()->getDataRange()};
+        const float percent = (isoValue_ - prevDataRange_.x) / (prevDataRange_.y - prevDataRange_.x);
+        const float newValue = percent * (dataRange.y - dataRange.x) + dataRange.x;
+
+        isoValue_.set(newValue, dataRange.x, dataRange.y, Defaultvalues<float>::getInc());
+        prevDataRange_ = dataRange;
     }
 
     {
@@ -212,6 +224,9 @@ void TetraMeshVolumeRaycaster::process() {
     utilgl::setUniforms(shader_, camera_, lighting_, opacityScaling_, maxSteps_);
     utilgl::setShaderUniforms(shader_, *mesh_, "geometry");
     utilgl::setShaderUniforms(shader_, cutplane_, "cutplane");
+    utilgl::setShaderUniforms(shader_, enableIsoSurface_, "enableIsoSurface");
+    utilgl::setShaderUniforms(shader_, isoValue_, "isoValue");
+    utilgl::setShaderUniforms(shader_, isoColor_, "isoColor");
     shader_.setUniform("pickingID", static_cast<int>(picking_.getPickingId(0)));
     utilgl::bindAndSetUniforms(shader_, texContainer, tf_);
     if (imageInport_.hasData()) {
