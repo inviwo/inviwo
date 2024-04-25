@@ -75,7 +75,7 @@ void EditorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent*) {}
 
 void EditorGraphicsItem::showToolTipHelper(QGraphicsSceneHelpEvent* e, QString string) const {
     if (!scene() || scene()->views().empty()) return;
-    
+
     QGraphicsView* v = scene()->views().first();
     QRectF rect = this->mapRectToScene(this->rect());
     QRect viewRect = v->mapFromScene(rect).boundingRect();
