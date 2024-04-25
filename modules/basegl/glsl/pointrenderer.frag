@@ -38,6 +38,7 @@ uniform vec4 borderColor = vec4(1.0, 0.0, 0.0, 1.0);
 in vec4 worldPosition_;
 in vec3 normal_;
 in vec4 color_;
+flat in vec4 pickColor_;
 
 void main() {
     // calculate normal from texture coordinates
@@ -62,4 +63,5 @@ void main() {
 
     vec4 color = mix(color_, borderColor, borderValue);
     FragData0 = vec4(color.rgb, color.a * borderAlpha);
+    PickingData = pickColor_;
 }
