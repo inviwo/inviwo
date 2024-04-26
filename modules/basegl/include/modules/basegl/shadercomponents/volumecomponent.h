@@ -66,6 +66,8 @@ public:
 
     std::string getGradientString() const;
 
+    size_t channelsForVolume(size_t index = 0) const;
+
     VolumeInport volumePort;
     Gradients gradients;
 };

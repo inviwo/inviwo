@@ -166,4 +166,14 @@ std::string VolumeComponent::getGradientString() const {
     }
 }
 
+size_t VolumeComponent::channelsForVolume(size_t index) const {
+    if (index != 0) {
+        return 0;
+    }
+    if (auto data = volumePort.getData()) {
+        return data->getDataFormat()->getComponents();
+    }
+    return 0;
+}
+
 }  // namespace inviwo
