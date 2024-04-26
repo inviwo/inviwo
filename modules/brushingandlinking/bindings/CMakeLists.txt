@@ -10,8 +10,20 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-ivw_add_py_wrapper(ivwbnl ${SOURCE_FILES} ${HEADER_FILES})
+ivw_add_py_wrapper(ivwbnl)
+target_sources(ivwbnl
+    PUBLIC
+    FILE_SET HEADERS
+    TYPE HEADERS
+    BASE_DIRS include
+    FILES
+        ${HEADER_FILES}
+    PRIVATE
+        ${SOURCE_FILES}
+)
 target_link_libraries(ivwbnl PUBLIC inviwo::module::brushingandlinking inviwo::module::python3)
-target_include_directories(ivwbnl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-ivw_default_install_targets(ivwbnl)
+ivw_install_helper(TARGET ivwbnl
+    NAMESPACE inviwo
+    DESTINATION inviwo
+)

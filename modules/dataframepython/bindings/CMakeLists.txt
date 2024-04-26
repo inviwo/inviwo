@@ -11,8 +11,21 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-ivw_add_py_wrapper(ivwdataframe ${SOURCE_FILES} ${HEADER_FILES})
-target_link_libraries(ivwdataframe PUBLIC inviwo::module::dataframe inviwo::module::python3)
-target_include_directories(ivwdataframe PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+ivw_add_py_wrapper(ivwdataframe)
+target_sources(ivwdataframe
+    PUBLIC
+    FILE_SET HEADERS
+    TYPE HEADERS
+    BASE_DIRS include
+    FILES
+        ${HEADER_FILES}
+    PRIVATE
+        ${SOURCE_FILES}
+)
 
-ivw_default_install_targets(ivwdataframe)
+target_link_libraries(ivwdataframe PUBLIC inviwo::module::dataframe inviwo::module::python3)
+
+ivw_install_helper(TARGET ivwdataframe
+    NAMESPACE inviwo
+    DESTINATION inviwo
+)
