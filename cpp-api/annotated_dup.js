@@ -327,8 +327,7 @@ var annotated_dup =
         [ "detail", "namespaceinviwo_1_1pool_1_1detail.html", [
           [ "JobTraits", "structinviwo_1_1pool_1_1detail_1_1JobTraits.html", null ],
           [ "State", "structinviwo_1_1pool_1_1detail_1_1State.html", null ],
-          [ "StateTemplate", "structinviwo_1_1pool_1_1detail_1_1StateTemplate.html", null ],
-          [ "Wrapper", "structinviwo_1_1pool_1_1detail_1_1Wrapper.html", null ]
+          [ "StateTemplate", "structinviwo_1_1pool_1_1detail_1_1StateTemplate.html", null ]
         ] ],
         [ "Progress", "classinviwo_1_1pool_1_1Progress.html", null ],
         [ "Stop", "classinviwo_1_1pool_1_1Stop.html", null ]
@@ -1267,7 +1266,7 @@ var annotated_dup =
       [ "ProcessorDragHelper", "classinviwo_1_1ProcessorDragHelper.html", null ],
       [ "ProcessorDragObject", "classinviwo_1_1ProcessorDragObject.html", null ],
       [ "ProcessorErrorItem", "classinviwo_1_1ProcessorErrorItem.html", null ],
-      [ "ProcessorFactory", "classinviwo_1_1ProcessorFactory.html", null ],
+      [ "ProcessorFactory", "classinviwo_1_1ProcessorFactory.html", "classinviwo_1_1ProcessorFactory" ],
       [ "ProcessorFactoryObject", "classinviwo_1_1ProcessorFactoryObject.html", "classinviwo_1_1ProcessorFactoryObject" ],
       [ "ProcessorFactoryObjectTemplate", "classinviwo_1_1ProcessorFactoryObjectTemplate.html", null ],
       [ "ProcessorGraphicsItem", "classinviwo_1_1ProcessorGraphicsItem.html", "classinviwo_1_1ProcessorGraphicsItem" ],

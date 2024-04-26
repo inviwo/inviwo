@@ -879,7 +879,7 @@ var namespaceinviwo =
     [ "ProcessorDragHelper", "classinviwo_1_1ProcessorDragHelper.html", null ],
     [ "ProcessorDragObject", "classinviwo_1_1ProcessorDragObject.html", null ],
     [ "ProcessorErrorItem", "classinviwo_1_1ProcessorErrorItem.html", null ],
-    [ "ProcessorFactory", "classinviwo_1_1ProcessorFactory.html", null ],
+    [ "ProcessorFactory", "classinviwo_1_1ProcessorFactory.html", "classinviwo_1_1ProcessorFactory" ],
     [ "ProcessorFactoryObject", "classinviwo_1_1ProcessorFactoryObject.html", "classinviwo_1_1ProcessorFactoryObject" ],
     [ "ProcessorFactoryObjectTemplate", "classinviwo_1_1ProcessorFactoryObjectTemplate.html", null ],
     [ "ProcessorGraphicsItem", "classinviwo_1_1ProcessorGraphicsItem.html", "classinviwo_1_1ProcessorGraphicsItem" ],

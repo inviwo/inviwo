@@ -107,13 +107,12 @@ $(function(){initNavTree('classinviwo_1_1ProcessorFactory.html',''); initResizab
  <div class="center">
   <img src="classinviwo_1_1ProcessorFactory.png" usemap="#inviwo::ProcessorFactory_map" alt=""/>
   <map id="inviwo::ProcessorFactory_map" name="inviwo::ProcessorFactory_map">
-<area href="classinviwo_1_1Factory.html" alt="inviwo::Factory&lt; Processor &gt;" shape="rect" coords="0,224,611,248"/>
-<area href="classinviwo_1_1StandardFactory.html" alt="inviwo::StandardFactory&lt; Processor, ProcessorFactoryObject, std::string_view, InviwoApplication * &gt;" shape="rect" coords="621,224,1232,248"/>
-<area href="classinviwo_1_1Factory.html" alt="inviwo::Factory&lt; T, K, Args &gt;" shape="rect" coords="310,168,921,192"/>
-<area href="classinviwo_1_1FactoryRegister.html" alt="inviwo::FactoryRegister&lt; FactoryObject, Key, LookUpKey &gt;" shape="rect" coords="931,168,1542,192"/>
-<area href="classinviwo_1_1FactoryObservable.html" alt="inviwo::FactoryObservable&lt; FactoryObject &gt;" shape="rect" coords="931,112,1542,136"/>
-<area href="classinviwo_1_1Observable.html" alt="inviwo::Observable&lt; T &gt;" shape="rect" coords="931,56,1542,80"/>
-<area href="classinviwo_1_1ObservableInterface.html" alt="inviwo::ObservableInterface" shape="rect" coords="931,0,1542,24"/>
+<area href="classinviwo_1_1Factory.html" alt="inviwo::Factory&lt; Processor, std::string_view &gt;" shape="rect" coords="0,168,464,192"/>
+<area href="classinviwo_1_1Factory.html" alt="inviwo::Factory&lt; Processor, std::string_view, InviwoApplication * &gt;" shape="rect" coords="474,168,938,192"/>
+<area href="classinviwo_1_1FactoryRegister.html" alt="inviwo::FactoryRegister&lt; ProcessorFactoryObject, std::string, std::string_view &gt;" shape="rect" coords="948,168,1412,192"/>
+<area href="classinviwo_1_1FactoryObservable.html" alt="inviwo::FactoryObservable&lt; T &gt;" shape="rect" coords="948,112,1412,136"/>
+<area href="classinviwo_1_1Observable.html" alt="inviwo::Observable&lt; FactoryObserver&lt; T &gt; &gt;" shape="rect" coords="948,56,1412,80"/>
+<area href="classinviwo_1_1ObservableInterface.html" alt="inviwo::ObservableInterface" shape="rect" coords="948,0,1412,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -122,15 +121,23 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a180c8922cb5da5008371866ef2585e67" id="r_a180c8922cb5da5008371866ef2585e67"><td class="memItemLeft" align="right" valign="top"><a id="a180c8922cb5da5008371866ef2585e67" name="a180c8922cb5da5008371866ef2585e67"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ProcessorFactory</b> (<a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">app</a>)</td></tr>
 <tr class="separator:a180c8922cb5da5008371866ef2585e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63339cab9eec845cfe2012ac26ee1efc" id="r_a63339cab9eec845cfe2012ac26ee1efc"><td class="memItemLeft" align="right" valign="top"><a id="a63339cab9eec845cfe2012ac26ee1efc" name="a63339cab9eec845cfe2012ac26ee1efc"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>registerObject</b> (<a class="el" href="classinviwo_1_1ProcessorFactoryObject.html">ProcessorFactoryObject</a> *processor) <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
+<tr class="memitem:a63339cab9eec845cfe2012ac26ee1efc" id="r_a63339cab9eec845cfe2012ac26ee1efc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a63339cab9eec845cfe2012ac26ee1efc">registerObject</a> (<a class="el" href="classinviwo_1_1ProcessorFactoryObject.html">ProcessorFactoryObject</a> *processor) <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
 <tr class="separator:a63339cab9eec845cfe2012ac26ee1efc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a838ade68ecbd90343801c5987be237e6" id="r_a838ade68ecbd90343801c5987be237e6"><td class="memItemLeft" align="right" valign="top"><a id="a838ade68ecbd90343801c5987be237e6" name="a838ade68ecbd90343801c5987be237e6"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (std::string_view key, <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
+<tr class="separator:a838ade68ecbd90343801c5987be237e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b6893140ad96a685464474450407fcb" id="r_a1b6893140ad96a685464474450407fcb"><td class="memItemLeft" align="right" valign="top"><a id="a1b6893140ad96a685464474450407fcb" name="a1b6893140ad96a685464474450407fcb"></a>
 <a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (std::string_view key) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
 <tr class="separator:a1b6893140ad96a685464474450407fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac80e20e6c95d1089223d56c3e3b810ff" id="r_ac80e20e6c95d1089223d56c3e3b810ff"><td class="memItemLeft" align="right" valign="top"><a id="ac80e20e6c95d1089223d56c3e3b810ff" name="ac80e20e6c95d1089223d56c3e3b810ff"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createShared</b> (std::string_view key) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
+<tr class="separator:ac80e20e6c95d1089223d56c3e3b810ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a669c8c6e404cee42508cfdaf34c05f0a" id="r_a669c8c6e404cee42508cfdaf34c05f0a"><td class="memItemLeft" align="right" valign="top"><a id="a669c8c6e404cee42508cfdaf34c05f0a" name="a669c8c6e404cee42508cfdaf34c05f0a"></a>
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createShared</b> (std::string_view key, <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
+<tr class="separator:a669c8c6e404cee42508cfdaf34c05f0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad16d5d299a23505a91c7ffd350e956c6" id="r_ad16d5d299a23505a91c7ffd350e956c6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad16d5d299a23505a91c7ffd350e956c6">hasKey</a> (std::string_view key) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
 <tr class="separator:ad16d5d299a23505a91c7ffd350e956c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classinviwo_1_1Factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Factory')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Factory.html">inviwo::Factory&lt; Processor &gt;</a></td></tr>
+<tr class="inherit_header pub_methods_classinviwo_1_1Factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Factory')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Factory.html">inviwo::Factory&lt; Processor, std::string_view &gt;</a></td></tr>
 <tr class="memitem:ac68d271c0cdf775582d28550f458736c inherit pub_methods_classinviwo_1_1Factory" id="r_ac68d271c0cdf775582d28550f458736c"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>Factory</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Factory.html">Factory</a> &amp;)=<a class="el" href="classinviwo_1_1TypedMesh.html">delete</a></td></tr>
 <tr class="separator:ac68d271c0cdf775582d28550f458736c inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,45 +153,45 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa60830c46245ac6a6fa70496a300cae7 inherit pub_methods_classinviwo_1_1Factory" id="r_aa60830c46245ac6a6fa70496a300cae7"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (std::string_view key, Args... <a class="el" href="classinviwo_1_1TypedMesh.html">args</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a>=0</td></tr>
 <tr class="separator:aa60830c46245ac6a6fa70496a300cae7 inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classinviwo_1_1StandardFactory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1StandardFactory')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1StandardFactory.html">inviwo::StandardFactory&lt; Processor, ProcessorFactoryObject, std::string_view, InviwoApplication * &gt;</a></td></tr>
-<tr class="memitem:a1487107f85700c411503c758e114c60a inherit pub_methods_classinviwo_1_1StandardFactory" id="r_a1487107f85700c411503c758e114c60a"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (std::string_view key, Args... <a class="el" href="classinviwo_1_1TypedMesh.html">args</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
-<tr class="separator:a1487107f85700c411503c758e114c60a inherit pub_methods_classinviwo_1_1StandardFactory"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classinviwo_1_1Factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Factory')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Factory.html">inviwo::Factory&lt; T, K, Args &gt;</a></td></tr>
+<tr class="memitem:a0285b382d1387e7445d5d082e2c11a78 inherit pub_methods_classinviwo_1_1Factory" id="r_a0285b382d1387e7445d5d082e2c11a78"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createShared</b> (std::string_view key, Args... <a class="el" href="classinviwo_1_1TypedMesh.html">args</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a0285b382d1387e7445d5d082e2c11a78 inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classinviwo_1_1Factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Factory')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Factory.html">inviwo::Factory&lt; Processor, std::string_view, InviwoApplication * &gt;</a></td></tr>
 <tr class="memitem:ac68d271c0cdf775582d28550f458736c inherit pub_methods_classinviwo_1_1Factory" id="r_ac68d271c0cdf775582d28550f458736c"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>Factory</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Factory.html">Factory</a> &amp;)=<a class="el" href="classinviwo_1_1TypedMesh.html">delete</a></td></tr>
 <tr class="separator:ac68d271c0cdf775582d28550f458736c inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c4d0a52fe5899c4614a798f45d91df2 inherit pub_methods_classinviwo_1_1Factory" id="r_a7c4d0a52fe5899c4614a798f45d91df2"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1Factory.html">Factory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Factory.html">Factory</a> &amp;)=<a class="el" href="classinviwo_1_1TypedMesh.html">delete</a></td></tr>
-<tr class="separator:a7c4d0a52fe5899c4614a798f45d91df2 inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30e37a599a42e5c2876c45611d482ffa inherit pub_methods_classinviwo_1_1Factory" id="r_a30e37a599a42e5c2876c45611d482ffa"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>Factory</b> (<a class="el" href="classinviwo_1_1Factory.html">Factory</a> &amp;&amp;)=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
 <tr class="separator:a30e37a599a42e5c2876c45611d482ffa inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c4d0a52fe5899c4614a798f45d91df2 inherit pub_methods_classinviwo_1_1Factory" id="r_a7c4d0a52fe5899c4614a798f45d91df2"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1Factory.html">Factory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Factory.html">Factory</a> &amp;)=<a class="el" href="classinviwo_1_1TypedMesh.html">delete</a></td></tr>
+<tr class="separator:a7c4d0a52fe5899c4614a798f45d91df2 inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5533ff4eb8c68fad94d9a5757835b060 inherit pub_methods_classinviwo_1_1Factory" id="r_a5533ff4eb8c68fad94d9a5757835b060"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1Factory.html">Factory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1Factory.html">Factory</a> &amp;&amp;)=<a class="el" href="classinviwo_1_1TypedMesh.html">default</a></td></tr>
 <tr class="separator:a5533ff4eb8c68fad94d9a5757835b060 inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa60830c46245ac6a6fa70496a300cae7 inherit pub_methods_classinviwo_1_1Factory" id="r_aa60830c46245ac6a6fa70496a300cae7"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> std::unique_ptr&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (K key, Args... <a class="el" href="classinviwo_1_1TypedMesh.html">args</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> =0</td></tr>
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (std::string_view key, Args... <a class="el" href="classinviwo_1_1TypedMesh.html">args</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a>=0</td></tr>
 <tr class="separator:aa60830c46245ac6a6fa70496a300cae7 inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classinviwo_1_1FactoryRegister"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1FactoryRegister')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1FactoryRegister.html">inviwo::FactoryRegister&lt; FactoryObject, Key, LookUpKey &gt;</a></td></tr>
-<tr class="memitem:a0b244528108edd1f87507df782b7bf4e inherit pub_methods_classinviwo_1_1FactoryRegister" id="r_a0b244528108edd1f87507df782b7bf4e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1FactoryRegister.html#a0b244528108edd1f87507df782b7bf4e">registerObject</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">FactoryObject</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">obj</a>)</td></tr>
-<tr class="separator:a0b244528108edd1f87507df782b7bf4e inherit pub_methods_classinviwo_1_1FactoryRegister"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0285b382d1387e7445d5d082e2c11a78 inherit pub_methods_classinviwo_1_1Factory" id="r_a0285b382d1387e7445d5d082e2c11a78"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createShared</b> (std::string_view key, Args... <a class="el" href="classinviwo_1_1TypedMesh.html">args</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="separator:a0285b382d1387e7445d5d082e2c11a78 inherit pub_methods_classinviwo_1_1Factory"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classinviwo_1_1FactoryRegister"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1FactoryRegister')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1FactoryRegister.html">inviwo::FactoryRegister&lt; ProcessorFactoryObject, std::string, std::string_view &gt;</a></td></tr>
 <tr class="memitem:a2e4f4fb99c4820e004d6e11d14e3c7a2 inherit pub_methods_classinviwo_1_1FactoryRegister" id="r_a2e4f4fb99c4820e004d6e11d14e3c7a2"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>unRegisterObject</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">FactoryObject</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">obj</a>)</td></tr>
+<a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>unRegisterObject</b> (<a class="el" href="classinviwo_1_1ProcessorFactoryObject.html">ProcessorFactoryObject</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">obj</a>)</td></tr>
 <tr class="separator:a2e4f4fb99c4820e004d6e11d14e3c7a2 inherit pub_methods_classinviwo_1_1FactoryRegister"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af03b130c4592cf73675d25bc8321e6a8 inherit pub_methods_classinviwo_1_1FactoryRegister" id="r_af03b130c4592cf73675d25bc8321e6a8"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hasKey</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">LookUpKey</a> key) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<a class="el" href="classinviwo_1_1TypedMesh.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hasKey</b> (std::string_view key) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="separator:af03b130c4592cf73675d25bc8321e6a8 inherit pub_methods_classinviwo_1_1FactoryRegister"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cc4205f630c4c9f6a4961846d9013db inherit pub_methods_classinviwo_1_1FactoryRegister" id="r_a3cc4205f630c4c9f6a4961846d9013db"><td class="memItemLeft" align="right" valign="top">
-std::vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">Key</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getKeys</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getKeys</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="separator:a3cc4205f630c4c9f6a4961846d9013db inherit pub_methods_classinviwo_1_1FactoryRegister"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f8e67dae66d07556ecfaa1c3ec4d33e inherit pub_methods_classinviwo_1_1FactoryRegister" id="r_a3f8e67dae66d07556ecfaa1c3ec4d33e"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1TypedMesh.html">auto</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getKeyView</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="separator:a3f8e67dae66d07556ecfaa1c3ec4d33e inherit pub_methods_classinviwo_1_1FactoryRegister"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ab16d0630e3c34ab17e68fbd5112abd inherit pub_methods_classinviwo_1_1FactoryRegister" id="r_a7ab16d0630e3c34ab17e68fbd5112abd"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">FactoryObject</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getFactoryObject</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">LookUpKey</a> key) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<a class="el" href="classinviwo_1_1ProcessorFactoryObject.html">ProcessorFactoryObject</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getFactoryObject</b> (std::string_view key) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="separator:a7ab16d0630e3c34ab17e68fbd5112abd inherit pub_methods_classinviwo_1_1FactoryRegister"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; T &gt;</a></td></tr>
+<tr class="inherit_header pub_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; FactoryObserver&lt; T &gt; &gt;</a></td></tr>
 <tr class="memitem:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable" id="r_a22a72cba8a707ff5bd0e87fdaefdfab8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a22a72cba8a707ff5bd0e87fdaefdfab8">Observable</a> (<a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; T &gt; &amp;<a class="el" href="classinviwo_1_1TypedMesh.html">other</a>)</td></tr>
 <tr class="separator:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable" id="r_ab7afb68122ba0150f1c7c20eb9086987"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#ab7afb68122ba0150f1c7c20eb9086987">Observable</a> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; T &gt; &amp;&amp;<a class="el" href="classinviwo_1_1TypedMesh.html">other</a>)</td></tr>
@@ -206,17 +213,16 @@ std::vector&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">Key</a> &gt;&
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pro_methods_classinviwo_1_1FactoryObservable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1FactoryObservable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1FactoryObservable.html">inviwo::FactoryObservable&lt; FactoryObject &gt;</a></td></tr>
+<tr class="inherit_header pro_methods_classinviwo_1_1FactoryObservable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1FactoryObservable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1FactoryObservable.html">inviwo::FactoryObservable&lt; T &gt;</a></td></tr>
 <tr class="memitem:a921a6b802936fa22fd507e58cdbc2571 inherit pro_methods_classinviwo_1_1FactoryObservable" id="r_a921a6b802936fa22fd507e58cdbc2571"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>notifyObserversOnRegister</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">FactoryObject</a> *p)</td></tr>
+<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>notifyObserversOnRegister</b> (T *p)</td></tr>
 <tr class="separator:a921a6b802936fa22fd507e58cdbc2571 inherit pro_methods_classinviwo_1_1FactoryObservable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a051b1133be0bcfe51c5322ce6032c266 inherit pro_methods_classinviwo_1_1FactoryObservable" id="r_a051b1133be0bcfe51c5322ce6032c266"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>notifyObserversOnUnRegister</b> (<a class="el" href="classinviwo_1_1TypedMesh.html">FactoryObject</a> *p)</td></tr>
+<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>notifyObserversOnUnRegister</b> (T *p)</td></tr>
 <tr class="separator:a051b1133be0bcfe51c5322ce6032c266 inherit pro_methods_classinviwo_1_1FactoryObservable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; T &gt;</a></td></tr>
-<tr class="memitem:a980d804dbfb060d91d5b54161f14dc8f inherit pro_methods_classinviwo_1_1Observable" id="r_a980d804dbfb060d91d5b54161f14dc8f"><td class="memTemplParams" colspan="2">
-template&lt;typename C &gt; </td></tr>
-<tr class="memitem:a980d804dbfb060d91d5b54161f14dc8f inherit pro_methods_classinviwo_1_1Observable"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>forEachObserver</b> (C callback)</td></tr>
+<tr class="inherit_header pro_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; FactoryObserver&lt; T &gt; &gt;</a></td></tr>
+<tr class="memitem:a980d804dbfb060d91d5b54161f14dc8f inherit pro_methods_classinviwo_1_1Observable" id="r_a980d804dbfb060d91d5b54161f14dc8f"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>forEachObserver</b> (C callback)</td></tr>
 <tr class="separator:a980d804dbfb060d91d5b54161f14dc8f inherit pro_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1ObservableInterface"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1ObservableInterface')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1ObservableInterface.html">inviwo::ObservableInterface</a></td></tr>
 <tr class="memitem:ab0f4b6d76430be4fb3a2372d5d486fc4 inherit pro_methods_classinviwo_1_1ObservableInterface" id="r_ab0f4b6d76430be4fb3a2372d5d486fc4"><td class="memItemLeft" align="right" valign="top">
@@ -225,9 +231,9 @@ template&lt;typename C &gt; </td></tr>
 <tr class="memitem:ac3efb1aaffc402b45b07c2c599b9785e inherit pro_methods_classinviwo_1_1ObservableInterface" id="r_ac3efb1aaffc402b45b07c2c599b9785e"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>removeObservationHelper</b> (<a class="el" href="classinviwo_1_1Observer.html">Observer</a> *<a class="el" href="classinviwo_1_1TypedMesh.html">observer</a>)</td></tr>
 <tr class="separator:ac3efb1aaffc402b45b07c2c599b9785e inherit pro_methods_classinviwo_1_1ObservableInterface"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_attribs_classinviwo_1_1FactoryRegister"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1FactoryRegister')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1FactoryRegister.html">inviwo::FactoryRegister&lt; FactoryObject, Key, LookUpKey &gt;</a></td></tr>
+<tr class="inherit_header pro_attribs_classinviwo_1_1FactoryRegister"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1FactoryRegister')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1FactoryRegister.html">inviwo::FactoryRegister&lt; ProcessorFactoryObject, std::string, std::string_view &gt;</a></td></tr>
 <tr class="memitem:ad7d4fcb0bc59e3b9313f0f57fbf48b3c inherit pro_attribs_classinviwo_1_1FactoryRegister" id="r_ad7d4fcb0bc59e3b9313f0f57fbf48b3c"><td class="memItemLeft" align="right" valign="top">
-std::map&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">Key</a>, <a class="el" href="classinviwo_1_1TypedMesh.html">FactoryObject</a> *, std::less&lt;&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>map_</b></td></tr>
+std::map&lt; std::string, <a class="el" href="classinviwo_1_1ProcessorFactoryObject.html">ProcessorFactoryObject</a> *, std::less&lt;&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>map_</b></td></tr>
 <tr class="separator:ad7d4fcb0bc59e3b9313f0f57fbf48b3c inherit pro_attribs_classinviwo_1_1FactoryRegister"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -254,7 +260,35 @@ std::map&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">Key</a>, <a clas
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classinviwo_1_1Factory.html">inviwo::Factory&lt; Processor &gt;</a>.</p>
+<p>Implements <a class="el" href="classinviwo_1_1Factory.html">inviwo::Factory&lt; Processor, std::string_view &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a63339cab9eec845cfe2012ac26ee1efc" name="a63339cab9eec845cfe2012ac26ee1efc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63339cab9eec845cfe2012ac26ee1efc">&#9670;&#160;</a></span>registerObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">bool</a> inviwo::ProcessorFactory::registerObject </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1ProcessorFactoryObject.html">ProcessorFactoryObject</a> *</td>          <td class="paramname"><span class="paramname"><em>obj</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The factory will not assume ownership over obj, although is assumes that obj will be valid for the lifetime of the factory </p>
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1FactoryRegister.html#a0b244528108edd1f87507df782b7bf4e">inviwo::FactoryRegister&lt; ProcessorFactoryObject, std::string, std::string_view &gt;</a>.</p>
 
 </div>
 </div>

@@ -1033,9 +1033,6 @@ var hierarchy =
       [ "inviwo::StandardFactory< PortInspector, PortInspectorFactoryObject >", "classinviwo_1_1StandardFactory.html", [
         [ "inviwo::PortInspectorFactory", "classinviwo_1_1PortInspectorFactory.html", null ]
       ] ],
-      [ "inviwo::StandardFactory< Processor, ProcessorFactoryObject, std::string_view, InviwoApplication * >", "classinviwo_1_1StandardFactory.html", [
-        [ "inviwo::ProcessorFactory", "classinviwo_1_1ProcessorFactory.html", null ]
-      ] ],
       [ "inviwo::StandardFactory< ProcessorWidget, ProcessorWidgetFactoryObject, std::string_view, Processor * >", "classinviwo_1_1StandardFactory.html", [
         [ "inviwo::ProcessorWidgetFactory", "classinviwo_1_1ProcessorWidgetFactory.html", null ]
       ] ],
@@ -1100,10 +1097,12 @@ var hierarchy =
       [ "inviwo::OutportFactory", "classinviwo_1_1OutportFactory.html", null ]
     ] ],
     [ "inviwo::Factory< PortInspector, std::string_view, Args... >", "classinviwo_1_1Factory.html", null ],
-    [ "inviwo::Factory< Processor >", "classinviwo_1_1Factory.html", [
+    [ "inviwo::Factory< Processor, std::string_view >", "classinviwo_1_1Factory.html", [
       [ "inviwo::ProcessorFactory", "classinviwo_1_1ProcessorFactory.html", null ]
     ] ],
-    [ "inviwo::Factory< Processor, std::string_view, Args... >", "classinviwo_1_1Factory.html", null ],
+    [ "inviwo::Factory< Processor, std::string_view, InviwoApplication * >", "classinviwo_1_1Factory.html", [
+      [ "inviwo::ProcessorFactory", "classinviwo_1_1ProcessorFactory.html", null ]
+    ] ],
     [ "inviwo::Factory< ProcessorWidget, Processor * >", "classinviwo_1_1Factory.html", [
       [ "inviwo::ProcessorWidgetFactory", "classinviwo_1_1ProcessorWidgetFactory.html", null ]
     ] ],
@@ -1804,7 +1803,9 @@ var hierarchy =
           [ "inviwo::FactoryRegister< MetaData, std::string, std::string_view >", "classinviwo_1_1FactoryRegister.html", null ],
           [ "inviwo::FactoryRegister< OutportFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", null ],
           [ "inviwo::FactoryRegister< PortInspectorFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", null ],
-          [ "inviwo::FactoryRegister< ProcessorFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", null ],
+          [ "inviwo::FactoryRegister< ProcessorFactoryObject, std::string, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::ProcessorFactory", "classinviwo_1_1ProcessorFactory.html", null ]
+          ] ],
           [ "inviwo::FactoryRegister< ProcessorWidgetFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", null ],
           [ "inviwo::FactoryRegister< PropertyFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", null ],
           [ "inviwo::FactoryRegister< PropertyJSONConverterFactoryObject, factoryKeyType< const std::string & >, const std::string & >", "classinviwo_1_1FactoryRegister.html", null ],
@@ -2009,7 +2010,6 @@ var hierarchy =
             [ "inviwo::StandardFactory< Inport, InportFactoryObject >", "classinviwo_1_1StandardFactory.html", null ],
             [ "inviwo::StandardFactory< Outport, OutportFactoryObject >", "classinviwo_1_1StandardFactory.html", null ],
             [ "inviwo::StandardFactory< PortInspector, PortInspectorFactoryObject >", "classinviwo_1_1StandardFactory.html", null ],
-            [ "inviwo::StandardFactory< Processor, ProcessorFactoryObject, std::string_view, InviwoApplication * >", "classinviwo_1_1StandardFactory.html", null ],
             [ "inviwo::StandardFactory< ProcessorWidget, ProcessorWidgetFactoryObject, std::string_view, Processor * >", "classinviwo_1_1StandardFactory.html", null ],
             [ "inviwo::StandardFactory< Property, PropertyFactoryObject, std::string_view, std::string_view, std::string_view >", "classinviwo_1_1StandardFactory.html", null ],
             [ "inviwo::StandardFactory< PropertyJSONConverter, PropertyJSONConverterFactoryObject, const std::string &, Property * >", "classinviwo_1_1StandardFactory.html", null ],
@@ -3416,7 +3416,6 @@ var hierarchy =
     [ "inviwo::WorkspaceManager", "classinviwo_1_1WorkspaceManager.html", null ],
     [ "inviwo::util::detail::wrap< Wrapper, List >", "structinviwo_1_1util_1_1detail_1_1wrap.html", null ],
     [ "inviwo::util::detail::wrap< Wrapper, List< Ts... > >", "structinviwo_1_1util_1_1detail_1_1wrap_3_01Wrapper_00_01List_3_01Ts_8_8_8_01_4_01_4.html", null ],
-    [ "inviwo::pool::detail::Wrapper", "structinviwo_1_1pool_1_1detail_1_1Wrapper.html", null ],
     [ "inviwo::utildoc::TableBuilder::Wrapper", "structinviwo_1_1utildoc_1_1TableBuilder_1_1Wrapper.html", [
       [ "inviwo::utildoc::TableBuilder::ArrributeWrapper", "structinviwo_1_1utildoc_1_1TableBuilder_1_1ArrributeWrapper.html", null ],
       [ "inviwo::utildoc::TableBuilder::Header", "structinviwo_1_1utildoc_1_1TableBuilder_1_1Header.html", null ]
