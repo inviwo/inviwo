@@ -199,7 +199,7 @@ auto getFloatingDockWidgets(InviwoMainWindow* win) {
     auto dockWidgets = util::copy_if(win->findChildren<InviwoDockWidget*>(),
                                      [](const auto p) { return p->isFloating(); });
     std::sort(dockWidgets.begin(), dockWidgets.end(), [](auto a, auto b) {
-        return QString::compare(a->windowTitle(), b->windowTitle(), Qt::CaseInsensitive);
+        return QString::compare(a->windowTitle(), b->windowTitle(), Qt::CaseInsensitive) < 0;
     });
 
     return dockWidgets;
