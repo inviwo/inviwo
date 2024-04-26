@@ -27,7 +27,7 @@ find_package(Tracy CONFIG REQUIRED)
 target_link_libraries(inviwo-dome 
     PRIVATE
         inviwo::core
-        inviwo::sys
+        inviwo::module-system
         Tracy::TracyClient
         sgct::sgct
         glfw

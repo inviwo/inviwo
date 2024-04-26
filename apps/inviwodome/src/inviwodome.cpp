@@ -40,10 +40,12 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/moduleregistration.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/lambdanetworkvisitor.h>
+
+#include <inviwo/sys/moduleloading.h>
 
 #include <modules/opengl/openglutils.h>
 
@@ -132,7 +134,9 @@ public:
         inviwo::SGCTModule::startServer = false;
 
         // Initialize all modules
-        app.registerModules(inviwo::getModuleList());
+        auto filter = [](const inviwo::ModuleContainer& m) { return false; };
+        inviwo::util::registerModulesFiltered(app.getModuleManager(), filter,
+                                              app.getSystemSettings().moduleSearchPaths_.get());
 
         // Uncomment to debug frame timing issues.
         // app.getModuleByType<inviwo::GLFWModule>()->setWaitForOpenGL(false);
@@ -151,7 +155,7 @@ public:
         if (sgct::Engine::instance().isMaster()) {
             app.getWorkspaceManager()->load(
                 app.getPath(inviwo::PathType::Workspaces, "/boron.inv"));
-            setCamerasToSgct(*app.getProcessorNetwork());
+            setCamerasToSGCT(*app.getProcessorNetwork());
         } else {
             // Only the master node needs to have any widgets.
             auto* wf = app.getProcessorWidgetFactory();
@@ -236,12 +240,12 @@ public:
         glDepthFunc(GL_LEQUAL);
     };
 
-    void drop(int nfiles, const char** files) {
-        if (sgct::Engine::instance().isMaster() && nfiles > 0) {
-            auto path = inviwo::filesystem::cleanupPath(std::string_view(files[0]));
+    void drop(const std::vector<std::string_view>& files) {
+        if (sgct::Engine::instance().isMaster() && !files.empty()) {
+            auto path = inviwo::filesystem::cleanupPath(files[0]);
             app.getWorkspaceManager()->clear();
             app.getWorkspaceManager()->load(path);
-            setCamerasToSgct(*app.getProcessorNetwork());
+            setCamerasToSGCT(*app.getProcessorNetwork());
         }
     };
 
@@ -286,7 +290,8 @@ public:
         callbacks.draw =
             tryWrapper([this](const sgct::RenderData& renderData) { draw(renderData); });
         callbacks.postDraw = tryWrapper([this]() { postDraw(); });
-        callbacks.drop = tryWrapper([&](int nfiles, const char** files) { drop(nfiles, files); });
+        callbacks.drop =
+            tryWrapper([&](const std::vector<std::string_view>& files) { drop(files); });
     }
 };
 
@@ -317,7 +322,7 @@ int main(int argc, char** argv) {
         }};
         inviwo::InviwoApplication app("Inviwo");
         app.printApplicationInfo();
-        app.setProgressCallback([&logger](std::string m) {
+        app.setProgressCallback([&logger](std::string_view m) {
             logger.log("InviwoApplication", inviwo::LogLevel::Info, inviwo::LogAudience::User, "",
                        "", 0, m);
         });
