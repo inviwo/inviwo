@@ -160,6 +160,7 @@ void AxisAlignedCutPlane::process() {
     }();
 
     const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+    const utilgl::BlendModeState blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     TextureUnitContainer cont;
 
     sliceShader_.activate();

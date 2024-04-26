@@ -81,7 +81,7 @@ Example processor in python demonstrating the use of `inviwopy.data.Image`,
         pass
 
     def process(self):
-        if len(self.filepath.value) == 0:
+        if not self.filepath.value.is_file():
             return
 
         with PIL.Image.open(self.filepath.value) as im:
