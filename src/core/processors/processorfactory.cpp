@@ -37,7 +37,7 @@
 
 namespace inviwo {
 
-ProcessorFactory::ProcessorFactory(InviwoApplication* app) : Parent(), app_{app} {}
+ProcessorFactory::ProcessorFactory(InviwoApplication* app) : app_{app} {}
 
 bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
     auto moduleId = [&]() {
@@ -45,7 +45,7 @@ bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
         return optId ? *optId : std::string("Unknown");
     };
 
-    if (!Parent::registerObject(processor)) {
+    if (!Register::registerObject(processor)) {
         LogWarn(fmt::format(
             "Processor with class name: '{}' is already registered by module '{}'. This "
             "processor will be ignored",
@@ -74,10 +74,26 @@ bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
     return true;
 }
 
-std::unique_ptr<Processor> ProcessorFactory::create(std::string_view key) const {
-    return Parent::create(key, app_);
+std::unique_ptr<Processor> ProcessorFactory::create(std::string_view, InviwoApplication*) const {
+    throw Exception(IVW_CONTEXT, "Processors can only be created using createShared");
+}
+std::unique_ptr<Processor> ProcessorFactory::create(std::string_view) const {
+    throw Exception(IVW_CONTEXT, "Processors can only be created using createShared");
 }
 
-bool ProcessorFactory::hasKey(std::string_view key) const { return Parent::hasKey(key); }
+std::shared_ptr<Processor> ProcessorFactory::createShared(std::string_view key) const {
+    return createShared(key, app_);
+};
+std::shared_ptr<Processor> ProcessorFactory::createShared(std::string_view key,
+                                                          InviwoApplication* app) const {
+    auto it = this->map_.find(key);
+    if (it != end(this->map_)) {
+        return it->second->create(app);
+    } else {
+        return nullptr;
+    }
+};
+
+bool ProcessorFactory::hasKey(std::string_view key) const { return Register::hasKey(key); }
 
 }  // namespace inviwo

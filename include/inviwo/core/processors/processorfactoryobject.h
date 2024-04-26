@@ -51,7 +51,7 @@ public:
         : info_(std::move(info)), typeName_{typeName} {}
     virtual ~ProcessorFactoryObject() = default;
 
-    virtual std::unique_ptr<Processor> create(InviwoApplication* app) = 0;
+    virtual std::shared_ptr<Processor> create(InviwoApplication* app) const = 0;
 
     const ProcessorInfo& getProcessorInfo() const { return info_; }
     const std::string& getClassIdentifier() const { return info_.classIdentifier; }
@@ -83,22 +83,23 @@ public:
                                  util::demangle(typeid(T).name())) {}
     virtual ~ProcessorFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Processor> create([[maybe_unused]] InviwoApplication* app) {
-        std::unique_ptr<Processor> p;
+    virtual std::shared_ptr<Processor> create(
+        [[maybe_unused]] InviwoApplication* app) const override {
+        std::shared_ptr<Processor> p;
 
         if constexpr (std::is_constructible_v<T, const std::string&, const std::string&,
                                               InviwoApplication*>) {
-            p = std::make_unique<T>(util::stripIdentifier(getDisplayName()), getDisplayName(), app);
+            p = std::make_shared<T>(util::stripIdentifier(getDisplayName()), getDisplayName(), app);
         } else if constexpr (std::is_constructible_v<T, const std::string&, const std::string&>) {
-            p = std::make_unique<T>(util::stripIdentifier(getDisplayName()), getDisplayName());
+            p = std::make_shared<T>(util::stripIdentifier(getDisplayName()), getDisplayName());
         } else if constexpr (std::is_constructible_v<T, const std::string&, InviwoApplication*>) {
-            p = std::make_unique<T>(util::stripIdentifier(getDisplayName()), app);
+            p = std::make_shared<T>(util::stripIdentifier(getDisplayName()), app);
         } else if constexpr (std::is_constructible_v<T, const std::string&>) {
-            p = std::make_unique<T>(util::stripIdentifier(getDisplayName()));
+            p = std::make_shared<T>(util::stripIdentifier(getDisplayName()));
         } else if constexpr (std::is_constructible_v<T, InviwoApplication*>) {
-            p = std::make_unique<T>(app);
+            p = std::make_shared<T>(app);
         } else {
-            p = std::make_unique<T>();
+            p = std::make_shared<T>();
         }
 
         if (p->getIdentifier().empty()) p->setIdentifier(util::stripIdentifier(getDisplayName()));

@@ -72,13 +72,13 @@ class ProcessorFactoryObjectTrampoline : public ProcessorFactoryObject,
 public:
     using ProcessorFactoryObject::ProcessorFactoryObject;
 
-    virtual pybind11::object createProcessor(InviwoApplication* app) {
+    virtual pybind11::object createProcessor(InviwoApplication* app) const {
         PYBIND11_OVERLOAD(pybind11::object, ProcessorFactoryObjectTrampoline, createProcessor, app);
     }
 
-    virtual std::unique_ptr<Processor> create(InviwoApplication* app) override {
+    virtual std::shared_ptr<Processor> create(InviwoApplication* app) const override {
         auto proc = createProcessor(app);
-        auto p = proc.cast<std::unique_ptr<Processor>>();
+        auto p = proc.cast<std::shared_ptr<Processor>>();
         return p;
     }
 };
@@ -158,10 +158,10 @@ void exposeProcessors(pybind11::module& m) {
     py::class_<ProcessorFactory>(m, "ProcessorFactory")
         .def("hasKey", &ProcessorFactory::hasKey)
         .def_property_readonly("keys", &ProcessorFactory::getKeys)
-        .def("create", [](ProcessorFactory* pf, std::string key) { return pf->create(key); })
+        .def("create", [](ProcessorFactory* pf, std::string key) { return pf->createShared(key); })
         .def("create",
              [](ProcessorFactory* pf, std::string key, ivec2 pos) {
-                 auto p = pf->create(key);
+                 auto p = pf->createShared(key);
                  if (!p) {
                      throw py::key_error("failed to create processor of type '" + key + "'");
                  }

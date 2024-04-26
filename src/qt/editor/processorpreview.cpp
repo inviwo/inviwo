@@ -56,7 +56,7 @@ namespace inviwo {
 
 QImage utilqt::generatePreview(std::string_view classIdentifier, ProcessorFactory* factory) {
     try {
-        if (auto processor = factory->create(classIdentifier)) {
+        if (auto processor = factory->createShared(classIdentifier)) {
             return utilqt::generatePreview(*processor);
         } else {
             return QImage();
@@ -151,7 +151,7 @@ QImage utilqt::generatePreview(Processor& processor) {
 
 QImage utilqt::generateProcessorPreview(const QString& classIdentifier, double opacity) {
     std::string cid = utilqt::fromQString(classIdentifier);
-    if (auto processor = InviwoApplication::getPtr()->getProcessorFactory()->create(cid)) {
+    if (auto processor = InviwoApplication::getPtr()->getProcessorFactory()->createShared(cid)) {
         return generateProcessorPreview(*processor, opacity);
     } else {
         return QImage{};

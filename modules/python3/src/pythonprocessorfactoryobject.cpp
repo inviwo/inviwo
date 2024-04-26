@@ -66,15 +66,15 @@ PythonProcessorFactoryObject::PythonProcessorFactoryObject(InviwoApplication* ap
     startFileObservation(file);
 }
 
-std::unique_ptr<Processor> PythonProcessorFactoryObject::create(InviwoApplication*) {
+std::shared_ptr<Processor> PythonProcessorFactoryObject::create(InviwoApplication*) const {
     namespace py = pybind11;
     const auto& pi = getProcessorInfo();
 
     try {
+        auto main = py::module::import("__main__");
         py::object proc =
-            py::module::import("__main__")
-                .attr(name_.c_str())(util::stripIdentifier(pi.displayName), pi.displayName);
-        return proc.cast<std::unique_ptr<Processor>>();
+            main.attr(name_.c_str())(util::stripIdentifier(pi.displayName), pi.displayName);
+        return proc.cast<std::shared_ptr<Processor>>();
 
     } catch (std::exception& e) {
         throw Exception(IVW_CONTEXT_CUSTOM("Python"),

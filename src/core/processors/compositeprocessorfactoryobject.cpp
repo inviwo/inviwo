@@ -37,9 +37,9 @@ namespace inviwo {
 CompositeProcessorFactoryObject::CompositeProcessorFactoryObject(const std::filesystem::path& file)
     : ProcessorFactoryObject(makeProcessorInfo(file), "inviwo::CompositeProcessor"), file_{file} {}
 
-std::unique_ptr<Processor> CompositeProcessorFactoryObject::create(InviwoApplication* app) {
+std::shared_ptr<Processor> CompositeProcessorFactoryObject::create(InviwoApplication* app) const {
     auto pi = getProcessorInfo();
-    return std::make_unique<CompositeProcessor>(pi.displayName, pi.displayName, app, file_);
+    return std::make_shared<CompositeProcessor>(pi.displayName, pi.displayName, app, file_);
 }
 
 Document CompositeProcessorFactoryObject::getMetaInformation() const {

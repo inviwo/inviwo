@@ -96,6 +96,9 @@ public:
     Factory& operator=(Factory&&) = default;
 
     virtual std::unique_ptr<T> create(K key, Args... args) const = 0;
+    virtual std::shared_ptr<T> createShared(K key, Args... args) const {
+        return std::shared_ptr<T>(create(key, args...));
+    }
     virtual bool hasKey(K key) const = 0;
 };
 
@@ -108,7 +111,9 @@ class Factory<T, std::string_view, Args...> : public virtual FactoryBase {
 public:
     Factory() = default;
     virtual std::unique_ptr<T> create(std::string_view key, Args... args) const = 0;
-    virtual bool hasKey(std::string_view key) const = 0;
+    virtual std::shared_ptr<T> createShared(std::string_view key, Args... args) const {
+        return std::shared_ptr<T>(create(key, args...));
+    }
 };
 
 /**
