@@ -127,21 +127,27 @@ result = drawISO(result, {isoparams}, {volume}Voxel[{channel}], {volume}VoxelPre
                  lighting, samplePosition, rayDirection,
                  cameraDir, rayPosition, rayStep, rayDepth);)");
 
-constexpr std::string_view classify1 = util::trim(R"(
-vec4 color{color} = texture({tf}, vec2({volume}Voxel[{channel}], 0.5));
+constexpr std::string_view init = util::trim(R"(
+ShadingParameters shadingParams = defaultShadingParameters();
+)");
+
+constexpr std::string_view colorInit = util::trim(R"(
+vec4 color{color} = vec4(0);
 )");
 
 constexpr std::string_view classify = util::trim(R"(
 color{color} = texture({tf}, vec2({volume}Voxel[{channel}], 0.5));
 )");
 
-constexpr std::string_view composite = util::trim(R"(
+constexpr std::string_view shadeAndComposite = util::trim(R"(
 if (color{color}.a > 0) {{
-    #if defined(SHADING_ENABLED) && defined(GRADIENTS_ENABLED)
-    vec3 worldSpacePosition = ({volume}Parameters.textureToWorld * vec4(samplePosition, 1.0)).xyz;
-    color{color}.rgb = APPLY_LIGHTING(lighting, color{color}.rgb, color{color}.rgb, vec3(1.0),
-                                      worldSpacePosition, -{gradient}, cameraDir);
+    shadingParams.colors = defaultMaterialColors(color{color}.rgb);
+    #if (defined(SHADING_ENABLED) && defined(GRADIENTS_ENABLED))
+    shadingParams.normal = -{gradient};
+    shadingParams.worldPosition = ({volume}Parameters.textureToWorld * vec4(samplePosition, 1.0)).xyz;
     #endif
+    color{color}.rgb = APPLY_LIGHTING_FUNC(lighting, shadingParams, cameraDir);
+
     result = compositeDVR(result, color{color}, rayPosition, rayDepth, rayStep);
 }}
 )");
@@ -157,7 +163,9 @@ auto RaycastingComponent::getSegments() -> std::vector<Segment> {
     std::vector<Segment> segments{
         {std::string(R"(#include "raycasting/iso.glsl")"), placeholder::include, 1100},
         {std::string(R"(#include "utils/compositing.glsl")"), placeholder::include, 1100},
-        {std::string(R"(uniform int channel = 0;)"), placeholder::uniform, 1100}};
+        {std::string(R"(uniform int channel = 0;)"), placeholder::uniform, 1100},
+        {std::string{init}, placeholder::first, 600},
+    };
 
     const auto gradient = fmt::format("{}Gradient", volume_);
     const auto gradientPrev = fmt::format("{}GradientPrev", volume_);
@@ -166,24 +174,27 @@ auto RaycastingComponent::getSegments() -> std::vector<Segment> {
         {fmt::format(iso, "volume"_a = volume_, "gradient"_a = gradient,
                      "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
                      "channel"_a = "channel"),
-         placeholder::first, 1050},
+         placeholder::first, 1000},
         {fmt::format(iso, "volume"_a = volume_, "gradient"_a = gradient,
                      "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
                      "channel"_a = "channel"),
-         placeholder::loop, 1050}};
+         placeholder::loop, 1000}};
 
     std::vector<Segment> dvrSegments{
-        {fmt::format(classify1, "volume"_a = volume_, "tf"_a = tf, "channel"_a = "channel",
+        {fmt::format(colorInit, "volume"_a = volume_, "tf"_a = tf, "channel"_a = "channel",
                      "color"_a = ""),
          placeholder::first, 600},
         {fmt::format(classify, "volume"_a = volume_, "tf"_a = tf, "channel"_a = "channel",
                      "color"_a = ""),
-         placeholder::loop, 600},
+         placeholder::first, 700},
+        {fmt::format(classify, "volume"_a = volume_, "tf"_a = tf, "channel"_a = "channel",
+                     "color"_a = ""),
+         placeholder::loop, 700},
 
-        {fmt::format(composite, "volume"_a = volume_, "gradient"_a = gradient,
+        {fmt::format(shadeAndComposite, "volume"_a = volume_, "gradient"_a = gradient,
                      "channel"_a = "channel", "color"_a = ""),
          placeholder::first, 1100},
-        {fmt::format(composite, "volume"_a = volume_, "gradient"_a = gradient,
+        {fmt::format(shadeAndComposite, "volume"_a = volume_, "gradient"_a = gradient,
                      "channel"_a = "channel", "color"_a = ""),
          placeholder::loop, 1100}};
 
@@ -259,6 +270,7 @@ auto MultiRaycastingComponent::getSegments() -> std::vector<Segment> {
     std::vector<Segment> segments{
         {std::string(R"(#include "raycasting/iso.glsl")"), placeholder::include, 1100},
         {std::string(R"(#include "utils/compositing.glsl")"), placeholder::include, 1100},
+        {std::string{init}, placeholder::first, 600},
     };
 
     for (auto&& [i, isotf] : util::enumerate(isotfs_)) {
@@ -272,25 +284,28 @@ auto MultiRaycastingComponent::getSegments() -> std::vector<Segment> {
             {fmt::format(iso, "volume"_a = volume_, "gradient"_a = gradient,
                          "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
                          "channel"_a = i),
-             placeholder::first, 1050 + i},
+             placeholder::first, 700 + i},
             {fmt::format(iso, "volume"_a = volume_, "gradient"_a = gradient,
                          "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
                          "channel"_a = i),
-             placeholder::loop, 1050 + i}};
+             placeholder::loop, 700 + i}};
 
         std::vector<Segment> dvrSegments{
-            {fmt::format(classify1, "volume"_a = volume_, "tf"_a = tf, "channel"_a = i,
+            {fmt::format(colorInit, "volume"_a = volume_, "tf"_a = tf, "channel"_a = i,
                          "color"_a = i),
              placeholder::first, 600 + i},
             {fmt::format(classify, "volume"_a = volume_, "tf"_a = tf, "channel"_a = i,
                          "color"_a = i),
-             placeholder::loop, 600 + 1},
+             placeholder::first, 700 + 1},
+            {fmt::format(classify, "volume"_a = volume_, "tf"_a = tf, "channel"_a = i,
+                         "color"_a = i),
+             placeholder::loop, 700 + 1},
 
-            {fmt::format(composite, "volume"_a = volume_, "gradient"_a = gradient, "tf"_a = tf,
-                         "channel"_a = i, "color"_a = i),
+            {fmt::format(shadeAndComposite, "volume"_a = volume_, "gradient"_a = gradient,
+                         "tf"_a = tf, "channel"_a = i, "color"_a = i),
              placeholder::first, 1100 + i},
-            {fmt::format(composite, "volume"_a = volume_, "gradient"_a = gradient, "tf"_a = tf,
-                         "channel"_a = i, "color"_a = i),
+            {fmt::format(shadeAndComposite, "volume"_a = volume_, "gradient"_a = gradient,
+                         "tf"_a = tf, "channel"_a = i, "color"_a = i),
              placeholder::loop, 1100 + i}};
 
         if (raycasting_.renderingType_ == RaycastingProperty::RenderingType::DvrIsosurface ||

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,51 +24,44 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-// Owned by the MeshRenderProcessorGL Processor
+#pragma once
 
-#include "utils/shading.glsl"
+#include <modules/basegl/baseglmoduledefine.h>
 
-#if !defined(TEXCOORD_LAYER) && !defined(NORMALS_LAYER) \
-    && !defined(VIEW_NORMALS_LAYER) && !defined(COLOR_LAYER)
-#  define COLOR_LAYER
-#endif
+#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>
+#include <modules/basegl/shadercomponents/backgroundcomponent.h>
+#include <modules/basegl/shadercomponents/cameracomponent.h>
+#include <modules/basegl/shadercomponents/entryexitcomponent.h>
+#include <modules/basegl/shadercomponents/isotfcomponent.h>
+#include <modules/basegl/shadercomponents/positionindicatorcomponent.h>
+#include <modules/basegl/shadercomponents/raycastingcomponent.h>
+#include <modules/basegl/shadercomponents/sampletransformcomponent.h>
+#include <modules/basegl/shadercomponents/volumecomponent.h>
+#include <modules/basegl/shadercomponents/lightvolumecomponent.h>
 
-uniform LightParameters lighting;
-uniform CameraParameters camera;
+namespace inviwo {
 
-in vec4 worldPosition_;
-in vec3 normal_;
-in vec3 viewNormal_;
-in vec3 texCoord_;
-in vec4 color_;
-flat in vec4 pickColor_;
+class IVW_MODULE_BASEGL_API LightVolumeRaycaster : public VolumeRaycasterBase {
+public:
+    LightVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
+    virtual ~LightVolumeRaycaster() = default;
 
-void main() {
-    // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if(color_.a == 0) { discard; }
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-    vec4 fragColor = color_;
-    vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
+private:
+    VolumeComponent volume_;
+    EntryExitComponent entryExit_;
+    LightVolumeComponent lightVolume_;
+    BackgroundComponent background_;
+    IsoTFComponent<1> isoTF_;
+    RaycastingComponent raycasting_;
+    CameraComponent camera_;
+    PositionIndicatorComponent positionIndicator_;
+    SampleTransformComponent sampleTransform_;
+};
 
-    ShadingParameters shadingParams = shading(color_.rgb, normalize(normal_), worldPosition_.xyz);
-
-    fragColor.rgb = applyLighting(lighting, shadingParams, normalize(toCameraDir_));
-
-#ifdef COLOR_LAYER
-    FragData0 = fragColor;
-#endif
-#ifdef TEXCOORD_LAYER
-    tex_coord_out = vec4(texCoord_,1.0f);
-#endif
-#ifdef NORMALS_LAYER
-    normals_out = vec4((normalize(normal_)+1.0)*0.5,1.0f);
-#endif
-#ifdef VIEW_NORMALS_LAYER
-    view_normals_out = vec4((normalize(viewNormal_)+1.0)*0.5,1.0f);
-#endif
-
-    PickingData = pickColor_;
-}
+}  // namespace inviwo

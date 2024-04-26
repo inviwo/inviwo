@@ -33,6 +33,10 @@
 
 #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_INCLUDE
 
+#if !defined APPLY_LIGHTING_FUNC
+#  define APPLY_LIGHTING_FUNC applyLighting
+#endif // APPLY_LIGHTING_FUNC
+
 float calcStep(in float rayLength, in vec3 direction, in float samplingRate, in vec3 dimensions) {
     float incr = min(rayLength, rayLength / (samplingRate * length(direction * dimensions)));
     float samples = ceil(rayLength / incr);

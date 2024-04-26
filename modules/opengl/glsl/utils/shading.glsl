@@ -29,7 +29,44 @@
 #ifndef IVW_SHADING_GLSL
 #define IVW_SHADING_GLSL
 
+#if !defined(APPLY_LIGHTING)
+// fall-back to no shading in case APPLY_LIGHTING is not defined
+#  define APPLY_LIGHTING(lighting, materialAmbientColor, materialDiffuseColor, \
+    materialSpecularColor, position, normal, toCameraDir) \
+    materialAmbientColor
+#endif
+
 #include "utils/structs.glsl" //! #include "./structs.glsl"
+
+
+// default material uses the supplied color for the diffuse and ambient material terms
+// as well as white for the specular term (as used for volume and mesh rendering).
+MaterialColors defaultMaterialColors(in vec3 diffuseColor) {
+    return MaterialColors(diffuseColor, diffuseColor, vec3(1.0));
+}
+
+ShadingParameters defaultShadingParameters(in MaterialColors materialColors) {
+    ShadingParameters p;
+    p.colors = materialColors;
+    p.normal = vec3(0);
+    p.worldPosition = vec3(0);
+    p.lightIntensity = vec3(0);
+
+    return p;
+}
+
+ShadingParameters defaultShadingParameters() {
+    return defaultShadingParameters(defaultMaterialColors(vec3(0)));
+}
+ShadingParameters shading(in vec3 diffuseColor) {
+    return ShadingParameters(defaultMaterialColors(diffuseColor), vec3(0), vec3(0), vec3(0));
+}
+ShadingParameters shading(in vec3 diffuseColor, in vec3 normal) {
+    return ShadingParameters(defaultMaterialColors(diffuseColor), normal, vec3(0), vec3(0));
+}
+ShadingParameters shading(in vec3 diffuseColor, in vec3 normal, in vec3 worldPosition) {
+    return ShadingParameters(defaultMaterialColors(diffuseColor), normal, worldPosition, vec3(0));
+}
 
 // Helper functions to calculate the shading
 vec3 shadeDiffuseCalculation(LightParameters light_, vec3 materialDiffuseColor, vec3 normal,
@@ -101,6 +138,11 @@ vec3 shadePhong(LightParameters light_, vec3 materialAmbientColor, vec3 material
     vec3 resSpec = shadeSpecularPhongCalculation(light_, materialSpecularColor, normal, toLightDir,
                                                  toCameraDir);
     return resAmb + resDiff + resSpec;
+}
+
+vec3 applyLighting(in LightParameters lightsource, in ShadingParameters shading, in vec3 viewDir) {
+    return APPLY_LIGHTING(lightsource, shading.colors.ambient, shading.colors.diffuse,
+                          shading.colors.specular, shading.worldPosition, shading.normal, viewDir);
 }
 
 #endif

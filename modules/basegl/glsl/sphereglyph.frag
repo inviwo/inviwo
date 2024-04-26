@@ -142,8 +142,10 @@ void main() {
     }
 #endif
 
-    glyphColor.rgb = APPLY_LIGHTING(lighting, glyphColor.rgb, glyphColor.rgb, vec3(1.0f),
-                                    intersection, normal, normalize(sphere.camPos - intersection));
+    ShadingParameters shadingParams = shading(glyphColor.rgb, normal, intersection);
+
+    glyphColor.rgb = applyLighting(lighting, shadingParams, 
+                                   normalize(sphere.camPos - intersection));
 
     // depth correction for glyph
     float depth = glyphDepth(intersection + sphere.center.xyz, camera.worldToClip);

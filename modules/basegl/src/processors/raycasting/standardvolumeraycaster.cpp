@@ -35,7 +35,7 @@
 #include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
 #include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
 #include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tag, Tag::GL, Tags
+#include <inviwo/core/processors/processortags.h>                       // for Tag, Tags::GL, Tags
 #include <inviwo/core/properties/isotfproperty.h>                       // for IsoTFProperty
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
 #include <inviwo/core/util/zip.h>                                       // for zipper
@@ -55,11 +55,17 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo StandardVolumeRaycaster::processorInfo_{
-    "org.inviwo.StandardVolumeRaycaster",        // Class identifier
-    "Standard Volume Raycaster",                 // Display name
-    "Volume Rendering",                          // Category
-    CodeState::Experimental,                     // Code state
-    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"}  // Tags
+    "org.inviwo.StandardVolumeRaycaster",         // Class identifier
+    "Standard Volume Raycaster",                  // Display name
+    "Volume Rendering",                           // Category
+    CodeState::Experimental,                      // Code state
+    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"},  // Tags
+    R"(
+Processor for visualizing volumetric data by means of volume raycasting. Only one channel of the
+volume will be used. Besides the volume data, entry and exit point locations of the bounding box
+are required. These can be created with the EntryExitPoints processor. The camera properties
+ between these two processors need to be linked.
+)"_unindentHelp,
 };
 const ProcessorInfo StandardVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 

@@ -77,9 +77,10 @@ constexpr std::string_view voxel = util::trim(R"(
 )");
 
 constexpr std::string_view gradientFirst = util::trim(R"(
-#if defined(GRADIENTS_ENABLED)
 vec3 {0}GradientPrev = vec3(0);
-vec3 {0}Gradient = useSurfaceNormals ? -texture(surfaceNormal, texCoords).xyz :
+vec3 {0}Gradient = vec3(0);
+#if defined(GRADIENTS_ENABLED)
+{0}Gradient = useSurfaceNormals ? -texture(surfaceNormal, texCoords).xyz :
     normalize(COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters,
                                            samplePosition, channel));
 if (!useSurfaceNormals) {{
@@ -98,10 +99,11 @@ constexpr std::string_view gradient = util::trim(R"(
 )");
 
 constexpr std::string_view allGradientsFirst = util::trim(R"(
-#if defined(GRADIENTS_ENABLED)
 mat4x3 {0}AllGradientsPrev = mat4x3(0);
+mat4x3 {0}AllGradients = mat4x3(0);
+#if defined(GRADIENTS_ENABLED)
 vec3 surfaceNormal = useSurfaceNormals ? -texture(surfaceNormal, texCoords).xyz : vec3(0);
-mat4x3 {0}AllGradients = useSurfaceNormals ?
+{0}AllGradients = useSurfaceNormals ?
     mat4x3(surfaceNormal, surfaceNormal, surfaceNormal, surfaceNormal) :
     COMPUTE_ALL_GRADIENTS({0}Voxel, {0}, {0}Parameters, samplePosition);
 {0}AllGradients[0] = normalize({0}AllGradients[0]);
@@ -150,6 +152,18 @@ auto VolumeComponent::getSegments() -> std::vector<Segment> {
     }
 
     return segments;
+}
+
+std::string VolumeComponent::getGradientString() const {
+    switch (gradients) {
+        case Gradients::None:
+        case Gradients::Single:
+            return fmt::format("{0}Gradient", getName());
+        case Gradients::All:
+            return fmt::format("{0}AllGradients", getName());
+        default:
+            return {};
+    }
 }
 
 }  // namespace inviwo
