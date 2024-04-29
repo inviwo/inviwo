@@ -299,7 +299,7 @@ void Observable<T>::forEachObserver(C callback) {
     if (notificationsBlocked_ > 0) return;
     bool toRemove = false;
     ++invocationCount_;
-    
+
     const util::OnScopeExit decreaseCount{[&]() {
         --invocationCount_;
         // Add and Remove any observers that was added/removed while we invoked the callbacks.
