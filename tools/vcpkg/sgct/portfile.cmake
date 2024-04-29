@@ -2,9 +2,9 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO inviwo/sgct
-    REF d61cadc43e0460e7bba45330a3ecf12a9ecd96ec
-    SHA512 b6521fcd26ab42c1f92ba9a87bf39510621ef2b45c05f30dda09a43d7877715255e1a440351e5dc82aaf9bc5d18ac4f216a00e01f29cda50b13e596910cdec09
-    HEAD_REF feature/dependency-refactoring
+    REF 2a7c9319dc8aba97a433cb64f4cded689f36348d
+    SHA512 fd12b6b1ed846d60b2914276c94b4355a4c3f21ce1125daeff2b362d993b6252b49a749b1c5b0683fc5fafac0273707c27269716b6254bfe07b0ff10f5211824
+    HEAD_REF master
 )
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
