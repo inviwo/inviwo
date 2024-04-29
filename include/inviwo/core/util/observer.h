@@ -30,6 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <unordered_set>
 #include <functional>
 #include <algorithm>
@@ -237,7 +238,7 @@ Observable<T>::Observable(const Observable<T>&) {}
 
 template <typename T>
 Observable<T>::Observable(Observable<T>&& rhs) {
-    for (auto& elem : rhs.observers_) addObserver(elem);
+    for (auto* o : rhs.observers_) addObserver(o);
     rhs.removeObservers();
 }
 
@@ -250,7 +251,7 @@ template <typename T>
 Observable<T>& Observable<T>::operator=(Observable<T>&& that) {
     if (this != &that) {
         removeObservers();
-        for (auto& elem : that.observers_) addObserver(elem);
+        for (auto* o : that.observers_) addObserver(o);
         that.removeObservers();
     }
     return *this;
@@ -263,7 +264,9 @@ Observable<T>::~Observable() {
 
 template <typename T>
 void Observable<T>::removeObservers() {
-    for (auto o : observers_) removeObservationHelper(o);
+    for (auto o : observers_) {
+        if (o) removeObservationHelper(o);
+    }
     observers_.clear();
 }
 
@@ -296,6 +299,19 @@ void Observable<T>::forEachObserver(C callback) {
     if (notificationsBlocked_ > 0) return;
     bool toRemove = false;
     ++invocationCount_;
+    
+    const util::OnScopeExit decreaseCount{[&]() {
+        --invocationCount_;
+        // Add and Remove any observers that was added/removed while we invoked the callbacks.
+        if (invocationCount_ == 0) {
+            if (toRemove) {
+                observers_.erase(std::remove(observers_.begin(), observers_.end(), nullptr),
+                                 observers_.end());
+            }
+            observers_.insert(observers_.end(), toAdd_.begin(), toAdd_.end());
+            toAdd_.clear();
+        }
+    }};
 
     for (auto* o : observers_) {
         if (o) {
@@ -303,17 +319,6 @@ void Observable<T>::forEachObserver(C callback) {
         } else {
             toRemove = true;
         }
-    }
-    --invocationCount_;
-
-    // Add and Remove any observers that was added/removed while we invoked the callbacks.
-    if (invocationCount_ == 0) {
-        if (toRemove) {
-            observers_.erase(std::remove(observers_.begin(), observers_.end(), nullptr),
-                             observers_.end());
-        }
-        observers_.insert(observers_.end(), toAdd_.begin(), toAdd_.end());
-        toAdd_.clear();
     }
 }
 

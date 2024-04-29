@@ -112,8 +112,8 @@ bool VectorFieldVisualizationGLModule::Converter::convert(TxElement* root) {
     switch (version_) {
         case 0: {
             res |= xml::changeIdentifiers(root, repl);
-        }
             return res;
+        }
 
         default:
             return false;  // No changes

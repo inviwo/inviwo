@@ -313,6 +313,26 @@ bool xml::changeAttribute(TxElement* node, const std::vector<Kind>& path,
     return res;
 }
 
+bool xml::changeAttributeRecursive(TxElement* node, const std::vector<Kind>& path,
+                                   const std::string& attribute, const std::string& oldValue,
+                                   const std::string& newValue) {
+
+    if (path.empty()) return false;
+
+    std::vector<xml::ElementMatcher> selector;
+    for (const auto& kind : path) {
+        selector.insert(selector.end(), kind.getMatchers().begin(), kind.getMatchers().end());
+    }
+    selector.back().attributes.push_back({attribute, oldValue});
+
+    bool res = false;
+    xml::visitMatchingNodesRecursive(node, selector, [&res, &attribute, &newValue](TxElement* n) {
+        n->SetAttribute(attribute, newValue);
+        res |= true;
+    });
+    return res;
+}
+
 xml::Kind::Kind(const std::string& name, const std::string& list, const std::string& type)
     : name_(name), list_(list), type_(type) {
 

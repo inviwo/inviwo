@@ -158,6 +158,8 @@ private:
     struct PropertyHandler {
         PropertyHandler(CompositeProcessor& composite, Property* subProperty);
         ~PropertyHandler();
+        
+        Property* findSubProperty(Property* superProp);
 
         CompositeProcessor& comp;
         Property* subProperty;

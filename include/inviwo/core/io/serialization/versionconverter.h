@@ -296,6 +296,11 @@ IVW_CORE_API bool changeAttribute(TxElement* root, const std::vector<Kind>& path
                                   const std::string& attribute, const std::string& oldValue,
                                   const std::string& newValue);
 
+IVW_CORE_API bool changeAttributeRecursive(TxElement* root, const std::vector<Kind>& path,
+                                           const std::string& attribute,
+                                           const std::string& oldValue,
+                                           const std::string& newValue);
+
 /**
  *	Change identifier attribute. @see changeAttribute
  */

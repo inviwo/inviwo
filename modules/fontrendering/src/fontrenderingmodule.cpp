@@ -113,17 +113,17 @@ bool FontRenderingModule::Converter::convert(TxElement* root) {
                                   }},
                                   "selectedIdentifier", "value");
 
-            res |= xml::changeAttribute(root,
-                                        {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
-                                          xml::Kind::property("org.inviwo.FontProperty"),
-                                          xml::Kind::property("org.inviwo.OptionPropertyInt")}},
-                                        "type", "org.inviwo.OptionPropertyInt",
-                                        "org.inviwo.IntProperty");
+            res |= xml::changeAttributeRecursive(
+                root,
+                {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
+                  xml::Kind::property("org.inviwo.FontProperty"),
+                  xml::Kind::property("org.inviwo.OptionPropertyInt")}},
+                "type", "org.inviwo.OptionPropertyInt", "org.inviwo.IntProperty");
 
-            res |= xml::changeAttribute(
+            res |= xml::changeAttributeRecursive(
                 root, {{xml::Kind::propertyLinkSource("org.inviwo.OptionPropertyInt", "fontSize")}},
                 "type", "org.inviwo.OptionPropertyInt", "org.inviwo.IntProperty");
-            res |= xml::changeAttribute(
+            res |= xml::changeAttributeRecursive(
                 root,
                 {{xml::Kind::propertyLinkDestination("org.inviwo.OptionPropertyInt", "fontSize")}},
                 "type", "org.inviwo.OptionPropertyInt", "org.inviwo.IntProperty");

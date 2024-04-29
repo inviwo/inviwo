@@ -311,22 +311,10 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
 
     comp.insertProperty(std::distance(comp.begin(), it), superProperty, false);
 
-    auto findSub = [this](Property* superProp) {
-        auto imp = [&](auto self, Property* superProp) -> Property* {
-            if (superProp == superProperty) {
-                return subProperty;
-            } else {
-                auto superOwner = dynamic_cast<CompositeProperty*>(superProp->getOwner());
-                auto subOwner = dynamic_cast<CompositeProperty*>(self(self, superOwner));
-                auto pos = std::distance(superOwner->cbegin(), superOwner->find(superProp));
-                return (*subOwner)[pos];
-            }
-        };
-        return imp(imp, superProp);
-    };
-
     LambdaNetworkVisitor visitor{[&](Property& superProp) {
-        auto subProp = findSub(&superProp);
+        auto subProp = findSubProperty(&superProp);
+        if (!subProp) return;
+
         if (auto meta = subProp->getMetaData<StringMetaData>(meta::displayName)) {
             superProp.setDisplayName(meta->get());
         }
@@ -340,18 +328,56 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
     }};
     superProperty->accept(visitor);
 
-    superObserver.onDisplayNameChange = [findSub](Property* superProp, std::string_view name) {
-        auto subProp = findSub(superProp);
-        subProp->setMetaData<StringMetaData>(meta::displayName, std::string{name});
+    superObserver.onDisplayNameChange = [this](Property* superProp, std::string_view name) {
+        if (auto subProp = findSubProperty(superProp)) {
+            subProp->setMetaData<StringMetaData>(meta::displayName, std::string{name});
+        }
     };
-    superObserver.onVisibleChange = [findSub](Property* superProp, bool visible) {
-        auto subProp = findSub(superProp);
-        subProp->setMetaData<BoolMetaData>(meta::visible, visible);
+    superObserver.onVisibleChange = [this](Property* superProp, bool visible) {
+        if (auto subProp = findSubProperty(superProp)) {
+            subProp->setMetaData<BoolMetaData>(meta::visible, visible);
+        }
     };
-    superObserver.onReadOnlyChange = [findSub](Property* superProp, bool readOnly) {
-        auto subProp = findSub(superProp);
-        subProp->setMetaData<BoolMetaData>(meta::readOnly, readOnly);
+    superObserver.onReadOnlyChange = [this](Property* superProp, bool readOnly) {
+        if (auto subProp = findSubProperty(superProp)) {
+            subProp->setMetaData<BoolMetaData>(meta::readOnly, readOnly);
+        }
     };
+}
+
+Property* CompositeProcessor::PropertyHandler::findSubProperty(Property* superProp) {
+    auto imp = [&](auto self, Property* superProp) -> Property* {
+        if (superProp == superProperty) {
+            return subProperty;
+        } else {
+            auto superOwner = dynamic_cast<CompositeProperty*>(superProp->getOwner());
+            if (!superOwner) {
+                util::logError(IVW_CONTEXT, "Could not find composite owner of property {}",
+                               superProp->getPath());
+                return nullptr;
+            }
+            auto subOwner = dynamic_cast<CompositeProperty*>(self(self, superOwner));
+            if (!subOwner) {
+                util::logError(IVW_CONTEXT, "Could not find sub Owner {}", superOwner->getPath());
+                return nullptr;
+            }
+            auto it = superOwner->find(superProp);
+            if (it == superOwner->cend()) {
+                util::logError(IVW_CONTEXT, "Could not find superProp {} in  {}",
+                               superProp->getPath(), superOwner->getPath());
+                return nullptr;
+            }
+            auto pos = std::distance(superOwner->cbegin(), superOwner->find(superProp));
+            if (static_cast<size_t>(pos) >= subOwner->size()) {
+                util::logError(IVW_CONTEXT, "Size missmatch {} {} less than {}",
+                               subOwner->getPath(), subOwner->size(), pos);
+                return nullptr;
+            }
+
+            return (*subOwner)[pos];
+        }
+    };
+    return imp(imp, superProp);
 }
 
 CompositeProcessor::PropertyHandler::~PropertyHandler() {
