@@ -1,12 +1,12 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO pybind/pybind11
-    REF b8cf16143e7261a48863e02604546a5a2ef43072   # v2.11 + - smart_holder
-    SHA512 f7731d83e109442f36dc939851a52363ac3bfff8f6587b4793ee924b0fb1da16decce1737961630784d2669efa01a150657c64b4d3280c57d4af02b30e7d0679
+    REF cfe73560a252a4a0362f0bfe883c31c67770e266 # v2.12 + - smart_holder
+    SHA512 1cdf24fe48710e2f568d966670f7929c421a0ffe513498e2cd38bb80486502373fe8c93dbf9a0983d6a858d8494c179344575f6925030f6c4bbfc2751c590ff6
     HEAD_REF master
-#    PATCHES
-#        fix-debug-link.patch
-)   
+    #PATCHES
+    #    fix-debug-link.patch
+)
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
