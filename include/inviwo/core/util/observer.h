@@ -190,7 +190,7 @@ public:
     /**
      * This operation will remove all observers from other and add them to this.
      */
-    Observable(Observable<T>&& other);
+    Observable(Observable<T>&& other) noexcept;
 
     /**
      * This operation does nothing. We will not touch the observers of other.
@@ -201,7 +201,7 @@ public:
      * This operation will remove all observers of this, and make all observers of other observe
      * this instead.
      */
-    Observable<T>& operator=(Observable<T>&& other);
+    Observable<T>& operator=(Observable<T>&& other) noexcept;
     virtual ~Observable();
 
     void addObserver(T* observer);
@@ -234,10 +234,10 @@ private:
 };
 
 template <typename T>
-Observable<T>::Observable(const Observable<T>&) {}
+Observable<T>::Observable(const Observable<T>&) : observers_{}, toAdd_{} {}
 
 template <typename T>
-Observable<T>::Observable(Observable<T>&& rhs) {
+Observable<T>::Observable(Observable<T>&& rhs) noexcept : observers_{}, toAdd_{} {
     for (auto* o : rhs.observers_) addObserver(o);
     rhs.removeObservers();
 }
@@ -248,7 +248,7 @@ Observable<T>& Observable<T>::operator=(const Observable<T>&) {
 }
 
 template <typename T>
-Observable<T>& Observable<T>::operator=(Observable<T>&& that) {
+Observable<T>& Observable<T>::operator=(Observable<T>&& that) noexcept {
     if (this != &that) {
         removeObservers();
         for (auto* o : that.observers_) addObserver(o);

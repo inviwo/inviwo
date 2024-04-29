@@ -157,15 +157,19 @@ private:
     // Keeps track of the sup/super property pairs.
     struct PropertyHandler {
         PropertyHandler(CompositeProcessor& composite, Property* subProperty);
+        PropertyHandler(const PropertyHandler&) = delete;
+        PropertyHandler(PropertyHandler&&) = delete;
+        PropertyHandler& operator=(const PropertyHandler&) = delete;
+        PropertyHandler& operator=(PropertyHandler&&) = delete;
         ~PropertyHandler();
 
-        Property* findSubProperty(Property* superProp);
+        Property* findSubProperty(Property* superProp) const;
 
         CompositeProcessor& comp;
         Property* subProperty;
-        Property* superProperty = nullptr;
-        const BaseCallBack* subCallback = nullptr;
-        const BaseCallBack* superCallback = nullptr;
+        std::unique_ptr<Property> superProperty;
+        std::shared_ptr<std::function<void()>> subCallback;
+        std::shared_ptr<std::function<void()>> superCallback;
         bool onChangeActive = false;
         PropertyObserverDelegate superObserver;
     };

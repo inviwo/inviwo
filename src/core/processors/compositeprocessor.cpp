@@ -168,11 +168,11 @@ void CompositeProcessor::unregisterProperty(Property* orgProp) {
 Property* CompositeProcessor::addSuperProperty(Property* orgProp) {
     auto it = handlers_.find(orgProp);
     if (it != handlers_.end()) {
-        return it->second->superProperty;
+        return it->second->superProperty.get();
     } else {
         if (orgProp->getOwner()->getProcessor()->getNetwork() == subNetwork_.get()) {
             handlers_[orgProp] = std::make_unique<PropertyHandler>(*this, orgProp);
-            return handlers_[orgProp]->superProperty;
+            return handlers_[orgProp]->superProperty.get();
         } else {
             throw Exception("Could not find property " + orgProp->getPath(), IVW_CONTEXT);
         }
@@ -193,15 +193,16 @@ void CompositeProcessor::removeSuperProperty(Property* orgProp) {
 Property* CompositeProcessor::getSuperProperty(Property* orgProp) {
     auto it = handlers_.find(orgProp);
     if (it != handlers_.end()) {
-        return it->second->superProperty;
+        return it->second->superProperty.get();
     } else {
         return nullptr;
     }
 }
 
 Property* CompositeProcessor::getSubProperty(Property* superProperty) {
-    auto it = util::find_if(
-        handlers_, [&](auto& handler) { return handler.second->superProperty == superProperty; });
+    auto it = util::find_if(handlers_, [&](auto& handler) {
+        return handler.second->superProperty.get() == superProperty;
+    });
     if (it != handlers_.end()) {
         return it->second->subProperty;
     } else {
@@ -276,15 +277,15 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
     : comp{composite}
     , subProperty{aSubProperty}
     , superProperty{subProperty->clone()}
-    , subCallback{subProperty->onChange([this]() {
+    , subCallback{subProperty->onChangeScoped([this]() {
         if (onChangeActive) return;
         util::KeepTrueWhileInScope active{&onChangeActive};
         superProperty->set(subProperty);
     })}
-    , superCallback{superProperty->onChange([this]() {
+    , superCallback{superProperty->onChangeScoped([this]() {
         if (onChangeActive) return;
         util::KeepTrueWhileInScope active{&onChangeActive};
-        subProperty->set(superProperty);
+        subProperty->set(superProperty.get());
     })} {
 
     subProperty->setMetaData<BoolMetaData>(meta::exposed, true);
@@ -308,8 +309,7 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
         const auto a = prop->getMetaData<IntMetaData>(meta::index, 0);
         return a < b;
     });
-
-    comp.insertProperty(std::distance(comp.begin(), it), superProperty, false);
+    comp.insertProperty(std::distance(comp.begin(), it), superProperty.get(), false);
 
     LambdaNetworkVisitor visitor{[&](Property& superProp) {
         auto subProp = findSubProperty(&superProp);
@@ -345,18 +345,18 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
     };
 }
 
-Property* CompositeProcessor::PropertyHandler::findSubProperty(Property* superProp) {
+Property* CompositeProcessor::PropertyHandler::findSubProperty(Property* superProp) const {
     auto imp = [&](auto self, Property* superProp) -> Property* {
-        if (superProp == superProperty) {
+        if (superProp == superProperty.get()) {
             return subProperty;
         } else {
-            auto superOwner = dynamic_cast<CompositeProperty*>(superProp->getOwner());
+            auto* superOwner = dynamic_cast<CompositeProperty*>(superProp->getOwner());
             if (!superOwner) {
                 util::logError(IVW_CONTEXT, "Could not find composite owner of property {}",
                                superProp->getPath());
                 return nullptr;
             }
-            auto subOwner = dynamic_cast<CompositeProperty*>(self(self, superOwner));
+            auto* subOwner = dynamic_cast<CompositeProperty*>(self(self, superOwner));
             if (!subOwner) {
                 util::logError(IVW_CONTEXT, "Could not find sub Owner {}", superOwner->getPath());
                 return nullptr;
@@ -381,9 +381,7 @@ Property* CompositeProcessor::PropertyHandler::findSubProperty(Property* superPr
 }
 
 CompositeProcessor::PropertyHandler::~PropertyHandler() {
-    superProperty->removeOnChange(superCallback);
-    subProperty->removeOnChange(subCallback);
-    delete comp.removeProperty(superProperty);
+    comp.removeProperty(superProperty.get());
 }
 
 void CompositeProcessor::onSetIdentifier(Property* orgProp, const std::string&) {

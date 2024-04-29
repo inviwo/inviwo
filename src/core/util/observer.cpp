@@ -31,11 +31,11 @@
 
 namespace inviwo {
 
-Observer::Observer(const Observer& rhs) {
+Observer::Observer(const Observer& rhs) : observables_{} {
     for (auto* observable : rhs.observables_) addObservation(observable);
 }
 
-Observer::Observer(Observer&& rhs) {
+Observer::Observer(Observer&& rhs) : observables_{} {
     for (auto* observable : rhs.observables_) addObservation(observable);
     rhs.removeObservations();
 }
