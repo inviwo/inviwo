@@ -100,7 +100,7 @@ public:
     /*
      * Creates tags from a string. Multiple tags are delimited by ','.
      */
-    Tags(std::string tags);
+    Tags(const std::string& tags);
 
     /*
      * Creates tags from a string. Multiple tags are delimited by ','.
@@ -112,7 +112,7 @@ public:
      */
     Tags& operator=(std::string_view that);
 
-    Tags& addTag(Tag);
+    Tags& addTag(const Tag& t);
     Tags& addTags(const Tags& t);
 
     size_t size() const;
@@ -144,8 +144,18 @@ public:
     friend inline bool operator<=(const Tags& lhs, const Tags& rhs) { return !operator>(lhs, rhs); }
     friend inline bool operator>=(const Tags& lhs, const Tags& rhs) { return !operator<(lhs, rhs); }
 
-    Tags operator|(const Tag& rhs) const;
-    Tags operator|(const Tags& rhs) const;
+    Tags& operator|=(const Tag& rhs) {
+        this->addTag(rhs);
+        return *this;
+    }
+    Tags& operator|=(const Tags& rhs) {
+        this->addTags(rhs);
+        return *this;
+    }
+
+    friend Tags operator|(const Tags& lhs, const Tag& rhs) { return Tags{lhs}.addTag(rhs); }
+    friend Tags operator|(const Tag& lhs, const Tags& rhs) { return Tags{lhs}.addTags(rhs); }
+    friend Tags operator|(const Tags& lhs, const Tags& rhs) { return Tags{lhs}.addTags(rhs); }
 };
 
 namespace util {

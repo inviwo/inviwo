@@ -48,7 +48,7 @@ Tags::Tags(std::string_view tags) {
                             [&](std::string_view part) { addTag(Tag(util::trim(part))); });
 }
 
-Tags::Tags(std::string tags) : Tags{std::string_view{tags}} {}
+Tags::Tags(const std::string& tags) : Tags{std::string_view{tags}} {}
 
 Tags::Tags(const char* tags) : Tags{std::string_view{tags}} {}
 
@@ -59,11 +59,7 @@ Tags& Tags::operator=(std::string_view that) {
     return *this;
 }
 
-Tags Tags::operator|(const Tag& rhs) const { return Tags{*this}.addTag(rhs); }
-
-Tags Tags::operator|(const Tags& rhs) const { return Tags{*this}.addTags(rhs); }
-
-Tags& Tags::addTag(Tag t) {
+Tags& Tags::addTag(const Tag& t) {
     if (!util::contains(tags_, t)) {
         tags_.push_back(t);
     }

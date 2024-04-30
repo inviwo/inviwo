@@ -113,7 +113,8 @@ void exposeProcessors(pybind11::module& m) {
         .def(py::init())
         .def(py::init<std::string_view>())
         .def(py::init<Tag>())
-        .def("getString", &Tag::getString);
+        .def("getString", &Tag::getString)
+        .def(py::self | py::self);
 
     py::class_<Tags>(m, "Tags")
         .def(py::init())
@@ -134,7 +135,12 @@ void exposeProcessors(pybind11::module& m) {
         .def_readonly_static("CPU", &Tags::CPU)
         .def_readonly_static("GL", &Tags::GL)
         .def_readonly_static("CL", &Tags::CL)
-        .def_readonly_static("PY", &Tags::PY);
+        .def_readonly_static("PY", &Tags::PY)
+        .def(py::self | py::self)
+        .def(Tag() | py::self)
+        .def(py::self | Tag())
+        .def(py::self |= Tag())
+        .def(py::self |= Tags());
 
     py::implicitly_convertible<Tag, Tags>();
 
