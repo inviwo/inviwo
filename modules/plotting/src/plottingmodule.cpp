@@ -70,7 +70,7 @@ bool PlottingModule::Converter::convert(TxElement* root) {
     bool res = false;
     switch (version_) {
         case 0: {
-            res |= xml::changeAttribute(
+            res |= xml::changeAttributeRecursive(
                 root, {{xml::Kind::processor("org.inviwo.VolumToDataFrame")}}, "type",
                 "org.inviwo.VolumeToDataFrame", "org.inviwo.VolumeSequenceToDataFrame");
 

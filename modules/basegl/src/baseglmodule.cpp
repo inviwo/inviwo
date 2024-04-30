@@ -447,16 +447,17 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
             [[fallthrough]];
         }
         case 4: {
-            res |= xml::changeIdentifier(root,
-                                         {xml::Kind::processor("org.inviwo.SplitImage"),
-                                          xml::Kind::property("org.inviwo.BoolCompositeProperty"),
-                                          xml::Kind::property("org.inviwo.FloatVec4Property")},
-                                         "triColor", "hoverColor");
-            res |= xml::changeAttribute(root,
-                                        {{xml::Kind::processor("org.inviwo.SplitImage"),
-                                          xml::Kind::property("org.inviwo.BoolCompositeProperty")}},
-                                        "type", "org.inviwo.BoolCompositeProperty",
-                                        "org.inviwo.SplitterProperty");
+            res |= xml::changeAttributeRecursive(
+                root,
+                {xml::Kind::processor("org.inviwo.SplitImage"),
+                 xml::Kind::property("org.inviwo.BoolCompositeProperty"),
+                 xml::Kind::property("org.inviwo.FloatVec4Property")},
+                "identifier", "triColor", "hoverColor");
+            res |= xml::changeAttributeRecursive(
+                root,
+                {{xml::Kind::processor("org.inviwo.SplitImage"),
+                  xml::Kind::property("org.inviwo.BoolCompositeProperty")}},
+                "type", "org.inviwo.BoolCompositeProperty", "org.inviwo.SplitterProperty");
             [[fallthrough]];
         }
         case 5: {
@@ -547,12 +548,12 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
             [[fallthrough]];
         }
         case 7: {
-            res |= xml::changeAttribute(root, {{xml::Kind::processor("org.inviwo.ImageMapping")}},
-                                        "type", "org.inviwo.ImageMapping",
-                                        "org.inviwo.ImageColorMapping");
-            res |= xml::changeAttribute(root, {{xml::Kind::processor("org.inviwo.LayerMapping")}},
-                                        "type", "org.inviwo.LayerMapping",
-                                        "org.inviwo.LayerColorMapping");
+            res |= xml::changeAttributeRecursive(
+                root, {{xml::Kind::processor("org.inviwo.ImageMapping")}}, "type",
+                "org.inviwo.ImageMapping", "org.inviwo.ImageColorMapping");
+            res |= xml::changeAttributeRecursive(
+                root, {{xml::Kind::processor("org.inviwo.LayerMapping")}}, "type",
+                "org.inviwo.LayerMapping", "org.inviwo.LayerColorMapping");
             return res;
         }
 

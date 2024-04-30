@@ -438,7 +438,7 @@ bool BaseModule::Converter::convert(TxElement* root) {
             [[fallthrough]];
         }
         case 1: {
-            res |= xml::changeAttribute(
+            res |= xml::changeAttributeRecursive(
                 root, {{xml::Kind::processor("org.inviwo.GeometeryGenerator")}}, "type",
                 "org.inviwo.GeometeryGenerator", "org.inviwo.RandomMeshGenerator");
             [[fallthrough]];
@@ -475,10 +475,10 @@ bool BaseModule::Converter::convert(TxElement* root) {
             [[fallthrough]];
         }
         case 3: {
-            res |= xml::changeAttribute(
+            res |= xml::changeAttributeRecursive(
                 root, {{xml::Kind::processor("org.inviwo.WorldTransformGeometry")}}, "type",
                 "org.inviwo.WorldTransformGeometry", "org.inviwo.WorldTransformMeshDeprecated");
-            res |= xml::changeAttribute(
+            res |= xml::changeAttributeRecursive(
                 root, {{xml::Kind::processor("org.inviwo.WorldTransformVolume")}}, "type",
                 "org.inviwo.WorldTransformVolume", "org.inviwo.WorldTransformVolumeDeprecated");
             res |= xml::changeIdentifiers(root, replV3);
@@ -486,28 +486,28 @@ bool BaseModule::Converter::convert(TxElement* root) {
             [[fallthrough]];
         }
         case 4: {
-            res |=
-                xml::changeAttribute(root, {xml::Kind::processor("org.inviwo.VolumeSlice")}, "type",
-                                     "org.inviwo.VolumeSlice", "org.inviwo.VolumeSliceExtractor");
+            res |= xml::changeAttributeRecursive(
+                root, {xml::Kind::processor("org.inviwo.VolumeSlice")}, "type",
+                "org.inviwo.VolumeSlice", "org.inviwo.VolumeSliceExtractor");
 
             [[fallthrough]];
         }
         case 5: {
-            res |= xml::changeAttribute(root,
-                                        {{xml::Kind::processor("org.inviwo.VolumeSubset"),
-                                          xml::Kind::property("org.inviwo.Size_tMinMaxProperty")}},
-                                        "type", "org.inviwo.Size_tMinMaxProperty",
-                                        "org.inviwo.IntMinMaxProperty");
+            res |= xml::changeAttributeRecursive(
+                root,
+                {{xml::Kind::processor("org.inviwo.VolumeSubset"),
+                  xml::Kind::property("org.inviwo.Size_tMinMaxProperty")}},
+                "type", "org.inviwo.Size_tMinMaxProperty", "org.inviwo.IntMinMaxProperty");
             [[fallthrough]];
         }
         case 6: {
-            res |= xml::changeAttribute(
+            res |= xml::changeAttributeRecursive(
                 root, {{xml::Kind::processor("org.inviwo.LayerDistanceTransformRAM")}}, "type",
                 "org.inviwo.LayerDistanceTransformRAM", "org.inviwo.ImageDistanceTransform");
-            res |= xml::changeAttribute(root, {{xml::Kind::processor("org.inviwo.NoiseProcessor")}},
-                                        "type", "org.inviwo.NoiseProcessor",
-                                        "org.inviwo.NoiseGenerator2D");
-            res |= xml::changeAttribute(
+            res |= xml::changeAttributeRecursive(
+                root, {{xml::Kind::processor("org.inviwo.NoiseProcessor")}}, "type",
+                "org.inviwo.NoiseProcessor", "org.inviwo.NoiseGenerator2D");
+            res |= xml::changeAttributeRecursive(
                 root, {{xml::Kind::processor("org.inviwo.NoiseVolumeProcessor")}}, "type",
                 "org.inviwo.NoiseVolumeProcessor", "org.inviwo.NoiseGenerator3D");
             return res;

@@ -31,19 +31,19 @@
 
 namespace inviwo {
 
-Observer::Observer(const Observer& rhs) {
-    for (auto observable : rhs.observables_) addObservation(observable);
+Observer::Observer(const Observer& rhs) : observables_{} {
+    for (auto* observable : rhs.observables_) addObservation(observable);
 }
 
-Observer::Observer(Observer&& rhs) {
-    for (auto observable : rhs.observables_) addObservation(observable);
+Observer::Observer(Observer&& rhs) : observables_{} {
+    for (auto* observable : rhs.observables_) addObservation(observable);
     rhs.removeObservations();
 }
 
 Observer& Observer::operator=(const Observer& that) {
     if (this != &that) {
         removeObservations();
-        for (auto observable : that.observables_) addObservation(observable);
+        for (auto* observable : that.observables_) addObservation(observable);
     }
     return *this;
 }
@@ -66,13 +66,12 @@ void Observer::removeObservation(ObservableInterface* observable) {
 }
 
 void Observer::removeObservations() {
-    for (auto o : observables_) o->removeObserverInternal(this);
+    for (auto* o : observables_) o->removeObserverInternal(this);
     observables_.clear();
 }
 
 void Observer::addObservation(ObservableInterface* observed) {
-    std::pair<std::unordered_set<ObservableInterface*>::iterator, bool> inserted =
-        observables_.insert(observed);
+    const auto inserted = observables_.insert(observed);
     if (inserted.second) observed->addObserverInternal(this);
 }
 

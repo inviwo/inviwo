@@ -238,7 +238,7 @@ bool VectorFieldVisualizationModule::Converter::convert(TxElement* root) {
                      {"StreamLines2", "StreamLines3D"},
                      {"PathLines2", "PathLines3D"},
                      {"SeedPointGenerator", "SeedPointGenerator3D"}}) {
-                res |= xml::changeAttribute(
+                res |= xml::changeAttributeRecursive(
                     root, {{xml::Kind::processor("org.inviwo." + fromTO.first)}}, "type",
                     "org.inviwo." + fromTO.first, "org.inviwo." + fromTO.second);
             }
@@ -253,7 +253,7 @@ bool VectorFieldVisualizationModule::Converter::convert(TxElement* root) {
                      {"StreamLinesDepricated", "StreamLinesDeprecated"},
                      {"StreamRibbonsDepricated", "StreamRibbonsDeprecated"},
                      {"PathLinesDepricated", "PathLinesDeprecated"}}) {
-                res |= xml::changeAttribute(
+                res |= xml::changeAttributeRecursive(
                     root, {{xml::Kind::processor("org.inviwo." + fromTO.first)}}, "type",
                     "org.inviwo." + fromTO.first, "org.inviwo." + fromTO.second);
             }
