@@ -120,8 +120,9 @@ private:
     // Progressive Refinement
     OptionProperty<TransmittanceMethod> transmittanceMethod_; 
 
-    ButtonProperty invalidateRendering_;
+    ButtonProperty iterateRender_;
     BoolProperty enableProgressiveRefinement_;
+    ButtonProperty invalidateRender_;
 
     IntProperty volumeRegionSize_;
 
@@ -131,6 +132,9 @@ private:
 
     bool partitionedTransmittance_;
     Shader* activeShader_;
+
+    // Render to this image, and copy results to outport
+    Image renderResult_;
 };
 
 }  // namespace inviwo
