@@ -95,7 +95,8 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
     // Avoid case where control extinction == upper bound (causing division by zero)
     minMax.y += 1e-6;
 
-    //return mix(vec4(minMax, 1f), vec4(errorReturn, 1.f), 0.5);
+    //return mix(vec4(minMax, 1f), vec4(errorReturn, 1.f), 1.0);
+
 
     vec3 auxReturnTracking = vec3(0);
     float meanFreePath =
@@ -228,7 +229,7 @@ void main() {
     float entryPointDepth = texture(entryDepth, texCoord).x;
     float exitPointDepth = texture(exitDepth, texCoord).x;
 
-    vec4 bgColor = vec4(0.f);
+    vec4 bgColor = vec4(0.f, 0.f, 0.0f, 0.0f);
 
     if (entryPoint == exitPoint) {
         imageStore(outportColor, storePos, bgColor);
