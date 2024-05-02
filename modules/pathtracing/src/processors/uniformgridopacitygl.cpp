@@ -48,9 +48,10 @@ const ProcessorInfo UniformGridOpacityGL::getProcessorInfo() const { return proc
 
 UniformGridOpacityGL::UniformGridOpacityGL()
     : Processor{}
-    , inport_{"data"}
-    , outportVolume_{"MinMaxOpacityVolume"}
-    , transferFunction_("transferFunction", "Transfer function")
+    , inport_("data")
+    , outportVolume_("MinMaxOpacityVolume")
+    , channel_("channel", "Render Channel", {{"Channel 1", "Channel 1", 0}}, 0)
+    , transferFunction_("transferFunction", "Transfer function", &inport_)
     , volumeRegionSize_("region", "Region size", 8, 1, 100)
     , shader_({{ShaderType::Compute, "minmaxopacity/minmaxavg.comp"}}) {
 
@@ -58,26 +59,54 @@ UniformGridOpacityGL::UniformGridOpacityGL()
     // addPort(outport_);
     addPort(outportVolume_);
 
+    channel_.setSerializationMode(PropertySerializationMode::All);
+
+    auto updateTFHistSel = [this]() {
+        HistogramSelection selection{};
+        selection[channel_] = true;
+        transferFunction_.setHistogramSelection(selection);
+    };
+    updateTFHistSel();
+    channel_.onChange(updateTFHistSel);
+
+    inport_.onChange([this]() {
+        if (inport_.hasData()) {
+            size_t channels = inport_.getData()->getDataFormat()->getComponents();
+
+            if (channels == channel_.size()) return;
+
+            std::vector<OptionPropertyIntOption> channelOptions;
+            for (size_t i = 0; i < channels; i++) {
+                channelOptions.emplace_back("Channel " + toString(i + 1),
+                                            "Channel " + toString(i + 1), static_cast<int>(i));
+            }
+            channel_.replaceOptions(channelOptions);
+            channel_.setCurrentStateAsDefault();
+        }
+    });
+
+    addProperty(channel_);
     addProperty(transferFunction_);
     addProperty(volumeRegionSize_);
 
     shader_.onReload([this]() {
-        shader_.build();
+        //shader_.build();
         invalidate(InvalidationLevel::InvalidOutput);
-        
     });
-}
 
+    volumeRegionSize_.onChange([this](){ invalidate(InvalidationLevel::InvalidOutput); });
+}
+/*
+    Sometimes breaks, and fails to generate
+*/
 void UniformGridOpacityGL::process() {
     auto curVolume = inport_.getData();
 
+    //std::cout << "Is the input volume broken?\n" << curVolume->getInfo() << std::endl;
+    
     auto dim = curVolume->getDimensions();
     auto region = inviwo::ivec3(volumeRegionSize_.get());
     const size3_t outDim{glm::ceil(vec3(dim) / static_cast<float>(volumeRegionSize_.get()))};
-
-
-    auto statsRAMRep = std::make_shared<VolumeRAMPrecision<vec4>>(
-        outDim, swizzlemasks::rgba, InterpolationType::Nearest, curVolume->getWrapping());
 
     // GL rep construction. TODO: Do we need to add a dataformat id (see formats.h /.cpp)?
     auto statsGLRep =
@@ -131,6 +160,8 @@ void UniformGridOpacityGL::process() {
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     shader_.deactivate();
+
+    //std::cout << "And what about mine?\n" << stats->getInfo() << std::endl;
 
     outportVolume_.setData(stats);
 }

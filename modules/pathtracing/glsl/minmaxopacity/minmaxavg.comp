@@ -31,7 +31,7 @@ vec4 calcMinMaxAvg_OutsideVoxel(ivec3 pos) {
 
     ivec3 startCoord = pos * regionSize - 1;
     ivec3 endCoord =
-        clamp(startCoord + regionSize + 1, ivec3(0), ivec3(volumeDataParameters.dimensions));
+        clamp(startCoord + regionSize + 2, ivec3(0), ivec3(volumeDataParameters.dimensions));
 
     float minOpacity = 1f;
     float maxOpacity = 0f;
@@ -101,21 +101,7 @@ vec4 calcMinMaxAvg_EdgePlanes(ivec3 pos) {
 
     // xy start edge
     //for()
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     /*
     startCoord = pos * regionSize;
     endCoord = clamp(startCoord + regionSize, ivec3(0), ivec3(volumeDataParameters.dimensions + 1));

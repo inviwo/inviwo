@@ -36,6 +36,7 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>             // for OptionPropertyInt
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/volume/volumegl.h>
@@ -57,6 +58,7 @@ private:
     VolumeInport inport_;
     // OpacityMinMaxUniformGrid3DOutport outport_;
     VolumeOutport outportVolume_;
+    OptionPropertyInt channel_;
 
     TransferFunctionProperty transferFunction_;
     IntProperty volumeRegionSize_;

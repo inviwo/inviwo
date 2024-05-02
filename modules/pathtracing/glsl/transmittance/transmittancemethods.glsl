@@ -17,15 +17,18 @@ const int GEOMETRICRESIDUAL = 7;
 
 #define REFSAMPLINGINTERVAL 150.0
 
+/*
+    Note: The Residual methods fail when using opacity control directly from the uniform grid for a 'high frequency' transmittance function.
+    Independent Multiple poisson tracking, while using poisson residual ratio tracking, does not suffer from the obvious artifacts of the acceleration grid.  
+*/
+/*
+    In a perfect world, clamps on the return would not exist, but this is not a perfect world.
+*/
 float opacityToExtinction(float s_max) { return s_max * REFSAMPLINGINTERVAL; }
 
 float woodcockTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd, inout uint hashSeed,
                        sampler3D volume, VolumeParameters volumeParameters,
                        sampler2D transferFunction, float opacityUpperbound, out vec3 auxReturn) {
-
-    if (opacityUpperbound < 2e-6) {
-        return 1.f;
-    }
 
     float invMaxExtinction = 1.f / opacityToExtinction(opacityUpperbound);
     float invOpacitUpperbound = 1.f / opacityUpperbound;
@@ -92,7 +95,7 @@ float ratioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float
 
     } while (true);
 
-    return T;
+    return clamp(T, 0.f, 1.f);
 }
 
 float residualRatioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
@@ -107,31 +110,30 @@ float residualRatioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStar
     float invMaxExtinction = 1.f / opacityToExtinction(opacityUpperbound);
     float invOpacitUpperbound = 1.f / opacityUpperbound;
     float t = tStart;
-    float opacity;
-    vec3 samplePos = vec3(0);
+
     float Tc = exp(-opacityToExtinction(opacityControl) * (tEnd - tStart));
     float Tr = 1.f;  // transmittance
     auxReturn = vec3(0);
 
     do {
-        t += -log(randomize(hashSeed)) * invMaxExtinction;
-        if (t >= tEnd) {
+        t = t - log(randomize(hashSeed)) * invMaxExtinction;
+        if (t > tEnd) {
             break;
         }
-        samplePos = raystart + t * raydir;
-        vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
-        opacity = applyTF(transferFunction, volumeSample).a;
+        vec3 samplePos = raystart + t * raydir;
+        float volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos).x;
+        float opacity = applyTF(transferFunction, volumeSample).a;
 
         if (opacity > opacityUpperbound) {
             auxReturn.x += opacity - opacityUpperbound;
         }
 
-        Tr *= (1 - (opacity - opacityControl) * invOpacitUpperbound);
+        Tr *= (1.f - (opacity - opacityControl) * invOpacitUpperbound);
 
     } while (true);
 
     return clamp(Tr * Tc, 0.f, 1.f);
-    return Tr * Tc;
+    //return Tr * Tc;
 }
 
 // Poisson Transmittance Trackers
@@ -181,6 +183,7 @@ float poissonResidualTrackingTransmittance(vec3 raystart, vec3 raydir, float tSt
         return 1.f;
     }
     float invMaxExtinction = 1.f / (opacityUpperbound - opacityControl);
+    float invOpacitUpperbound = 1.f / opacityUpperbound;
     float d = (tEnd - tStart);
     float Tc = exp(-opacityToExtinction(opacityControl) * d);
     float Tr = 1.f;  // Transmittance
@@ -198,10 +201,10 @@ float poissonResidualTrackingTransmittance(vec3 raystart, vec3 raydir, float tSt
             auxReturn.x += opacity - opacityUpperbound;
         }
 
-        Tr *= (1.f - (opacity - opacityControl) * invMaxExtinction);
+        Tr *= (1.f - (opacity - opacityControl) * invOpacitUpperbound);
     }
 
-    return Tr * Tc;
+    return clamp(Tr * Tc, 0.f, 1.f);
 }
 
 float independentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart,
@@ -293,7 +296,7 @@ float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, flo
         Tr *= (1.f - (opacity - opacityControl) * invMaxExtinction);
     }
 
-    return Tc * Tr;
+    return clamp(Tc * Tr, 0.f, 1.f);
 }
 
 // NOTE: Non functioning
