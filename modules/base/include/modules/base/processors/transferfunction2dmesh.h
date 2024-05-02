@@ -45,6 +45,8 @@ class PickingEvent;
 
 class IVW_MODULE_BASE_API TransferFunction2DMesh : public Processor {
 public:
+    enum class PrimitiveFunc { Box, Linear, Smooth, Gaussian };
+
     TransferFunction2DMesh();
 
     virtual void process() override;
@@ -58,7 +60,7 @@ private:
     MeshOutport outport_;
 
     ListProperty primitives_;
-    StringProperty tfPrimitivesText_;    
+    StringProperty tfPrimitivesText_;
     BoolProperty enablePicking_;
     PickingMapper tfPicking_;
 };

@@ -38,6 +38,7 @@ out TFVertex {
     smooth vec2 center;
     smooth vec4 color;
     flat float radius;
+    flat int primitive;
     flat uint pickID;
 } out_vert;
 
@@ -49,7 +50,17 @@ void main() {
     vec4 pos = geometry.dataToWorld * vec4(in_Position, 1.0);
     out_vert.center = pos.xy;
     out_vert.radius = in_Radii;
-    out_vert.color = in_Color;
+#if defined(HAS_SCALARMETA)
+    out_vert.color = in_ScalarMeta;
+#else
+    out_vert.color = in_Color;    
+#endif // HAS_SCALARMETA
+
+#if defined(HAS_INDEX)
+    out_vert.primitive = in_Index;
+#else
+    out_vert.primitive = 1;
+#endif // HAS_INDEX
 
 #if defined(HAS_PICKING)
     out_vert.pickID = in_Picking;

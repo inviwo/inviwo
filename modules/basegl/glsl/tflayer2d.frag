@@ -44,8 +44,11 @@ in TFGeom {
     flat vec4 color;
     flat vec4 pickColor;
     flat float radius;
+    flat int primitive;
     smooth vec2 pos;
 } in_frag;
+
+// enum PrimitiveFunc { Box = 0, Linear, Smooth, Gaussian };
 
 
 float evalBoxFunc(in vec2 pos) {
@@ -102,7 +105,26 @@ vec4 blendPremultiplied(in vec4 color, in float weight) {
 }
 
 void main() {
-    float weight = WEIGHTING_FUNC(in_frag.pos);
+    //float weight = WEIGHTING_FUNC(in_frag.pos);
+    float weight = 0.0f;
+
+    switch (in_frag.primitive) {
+        case 0:
+            weight = evalBoxFunc(in_frag.pos);
+            break;
+        case 1:
+            weight = evalLinearFunc(in_frag.pos);
+            break;
+        case 2:
+            weight = evalSmoothFunc(in_frag.pos);
+            break;
+        case 3:
+            weight = evalGaussianFunc(in_frag.pos);
+            break;
+        default:
+            weight = evalLinearFunc(in_frag.pos);
+            break;
+    }
 
     // float alpha = weight;
     // alpha *= in_frag.color.a;

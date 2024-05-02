@@ -41,6 +41,7 @@ in TFVertex {
     flat vec2 center;
     flat vec4 color;
     flat float radius;
+    flat int primitive;
     flat uint pickID;
 } in_vert[];
 
@@ -49,6 +50,7 @@ out TFGeom {
     flat vec4 color;
     flat vec4 pickColor;
     flat float radius;
+    flat int primitive;
     smooth vec2 pos;
 } out_vert;
 
@@ -58,6 +60,7 @@ struct TFPrimitive {
     vec4 color;
     vec4 pickColor;
     float radius;
+    int primitive;
 };
 
 void emit(in vec4 pos, in TFPrimitive point) {
@@ -67,6 +70,7 @@ void emit(in vec4 pos, in TFPrimitive point) {
     out_vert.color = point.color;
     out_vert.pickColor = point.pickColor;
     out_vert.radius = point.radius;
+    out_vert.primitive = point.primitive;
     out_vert.pos = pos.xy;
     EmitVertex();
 }
@@ -95,7 +99,7 @@ void main(void) {
     pickColor.rgb = pickingIndexToColor(in_vert[0].pickID);
     pickColor.w = in_vert[0].pickID == 0 ? 0.0 : 1.0;
 
-    TFPrimitive tfprimitive = TFPrimitive(in_vert[0].center, in_vert[0].color, pickColor, r);
+    TFPrimitive tfprimitive = TFPrimitive(in_vert[0].center, in_vert[0].color, pickColor, r, in_vert[0].primitive);
 
     emit(vec4(topLeft, posndc.z, 1.0), tfprimitive);
     emit(vec4(bottomLeft, posndc.z, 1.0), tfprimitive);

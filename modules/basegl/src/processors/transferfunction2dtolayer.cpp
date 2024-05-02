@@ -80,7 +80,7 @@ OptionPropertyState<PrimitiveFunc> primitiveOptionState() {
                     {"linear", "Linear", PrimitiveFunc::Linear},
                     {"smooth", "Smooth (cubic)", PrimitiveFunc::Smooth},
                     {"gaussian", "Gaussian", PrimitiveFunc::Gaussian}},
-        .help = "Weighting function for TF primtives based on the Euclidean distance."_help,
+        .help = "Weighting function for TF primitives based on the Euclidean distance."_help,
     };
 }
 
@@ -113,7 +113,9 @@ TransferFunction2DToLayer::TransferFunction2DToLayer()
                {
                    {BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
                    {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
+                   {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "vec4"},
                    {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
+                   {BufferType::IndexAttrib, MeshShaderCache::Optional, "int"},
                    {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
                },
 
@@ -145,6 +147,7 @@ void TransferFunction2DToLayer::configureShader(Shader& shader) {
             case PrimitiveFunc::Gaussian:
                 return "evalGaussianFunc";
             case PrimitiveFunc::Linear:
+                [[fallthrough]];
             default:
                 return "evalLinearFunc";
         }
@@ -181,7 +184,7 @@ void TransferFunction2DToLayer::process() {
             return *unusedIt;
         } else {
             auto& item = cache_.emplace_back(FrameBufferObject{}, std::make_shared<Layer>(config_));
-            auto* layerGL = item.second->getEditableRepresentation<LayerGL>();
+            const auto* layerGL = item.second->getEditableRepresentation<LayerGL>();
             utilgl::Activate activateFbo{&item.first};
             item.first.attachColorTexture(layerGL->getTexture().get(), 0);
             return item;
@@ -213,6 +216,7 @@ void TransferFunction2DToLayer::process() {
             case BlendMode::Additive:
                 return utilgl::BlendModeEquationState(GL_ONE, GL_ONE, GL_FUNC_ADD);
             case BlendMode::PreMultiplied:
+                [[fallthrough]];
             default:
                 return utilgl::BlendModeEquationState(GL_ONE, GL_ONE_MINUS_SRC_ALPHA, GL_FUNC_ADD);
         }

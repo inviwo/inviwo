@@ -30,6 +30,7 @@
 #include <modules/base/processors/transferfunction2dmesh.h>
 #include <inviwo/core/algorithm/markdown.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
@@ -52,16 +53,26 @@ const ProcessorInfo TransferFunction2DMesh::processorInfo_{
 const ProcessorInfo& TransferFunction2DMesh::getProcessorInfo() const { return processorInfo_; }
 
 constexpr std::string_view tfHelp =
-    R"(Text-based description of point-based TF primitives. Each primitive has
-the form of
+    R"(2D transfer function using point-based TF primitives. Each primitive has
+a position and radius as well as color and opacity. In addition, different types of fall-off
+functions are available.
 
-```
-<x>, <y> #rrggbbaa <radius>
-```
-where `x` and `y` refer to a normalized position [0,1].
+The resulting TF is output as a point Mesh.
 )";
 
 namespace detail {
+
+using PrimitiveFunc = TransferFunction2DMesh::PrimitiveFunc;
+
+OptionPropertyState<int> primitiveOptionState() {
+    return OptionPropertyState<int>{
+        .options = {{"box", "Box (const)", static_cast<int>(PrimitiveFunc::Box)},
+                    {"linear", "Linear", static_cast<int>(PrimitiveFunc::Linear)},
+                    {"smooth", "Smooth (cubic)", static_cast<int>(PrimitiveFunc::Smooth)},
+                    {"gaussian", "Gaussian", static_cast<int>(PrimitiveFunc::Gaussian)}},
+        .help = "Weighting function for TF primitives based on the Euclidean distance."_help,
+    };
+}
 
 std::unique_ptr<BoolCompositeProperty> propertyTemplate() {
     auto prop = std::make_unique<BoolCompositeProperty>("tfPrimitive", "TF Point", false);
@@ -76,10 +87,56 @@ std::unique_ptr<BoolCompositeProperty> propertyTemplate() {
                                    .maxConstraint = ConstraintBehavior::Immutable});
     prop->addProperty(std::move(pos));
     prop->addProperty(
-        std::make_unique<FloatVec4Property>("color", "Color", util::ordinalColor(vec4{1.0f})));
+        std::make_unique<FloatVec3Property>("color", "Color", util::ordinalColor(vec3{1.0f})));
+    prop->addProperty(std::make_unique<FloatProperty>(
+        "alpha", "Alpha",
+        OrdinalPropertyState<float>{1.0f, 0.0f, ConstraintBehavior::Immutable, 1.0f,
+                                    ConstraintBehavior::Immutable, 0.01f}));
     prop->addProperty(std::make_unique<FloatProperty>(
         "radius", "Radius", util::ordinalLength(0.1f, 1.0f).set(PropertySemantics::Default)));
+    prop->addProperty(std::make_unique<OptionPropertyInt>(
+        "primitiveFunc", "Primitive Function",
+        primitiveOptionState()
+            .set(InvalidationLevel::InvalidResources)
+            .setSelectedValue(static_cast<int>(PrimitiveFunc::Linear))));
     return prop;
+}
+
+vec2 getPosition(const BoolCompositeProperty* parent) {
+    if (const auto* pos =
+            dynamic_cast<const FloatVec2Property*>(parent->getPropertyByIdentifier("position"))) {
+        return pos->get();
+    }
+    return vec2{-1.0f, -1.0f};
+}
+
+vec4 getColor(const BoolCompositeProperty* parent) {
+    vec4 c{0.0f};
+    if (const auto* color =
+            dynamic_cast<const FloatVec3Property*>(parent->getPropertyByIdentifier("color"))) {
+        c = vec4{color->get(), c.a};
+    }
+    if (const auto* alpha =
+            dynamic_cast<const FloatProperty*>(parent->getPropertyByIdentifier("alpha"))) {
+        c.a = alpha->get();
+    }
+    return c;
+}
+
+float getRadius(const BoolCompositeProperty* parent) {
+    if (const auto* radius =
+            dynamic_cast<const FloatProperty*>(parent->getPropertyByIdentifier("radius"))) {
+        return radius->get();
+    }
+    return 0.0f;
+}
+
+int getPrimitiveFunc(const BoolCompositeProperty* parent) {
+    if (const auto* primitiveFunc = dynamic_cast<const OptionPropertyInt*>(
+            parent->getPropertyByIdentifier("primitiveFunc"))) {
+        return primitiveFunc->get();
+    }
+    return static_cast<int>(PrimitiveFunc::Linear);
 }
 
 }  // namespace detail
@@ -103,28 +160,28 @@ TransferFunction2DMesh::TransferFunction2DMesh()
 
 void TransferFunction2DMesh::process() {
     const size_t numPrimitives = primitives_.size();
+    tfPicking_.resize(std::max<size_t>(numPrimitives, 1));
 
     std::vector<vec2> positions;
     std::vector<vec4> colors;
+    std::vector<vec4> tfColors;
     std::vector<float> radii;
+    std::vector<int> primitiveFuncs;
     std::vector<std::uint32_t> pickingIDs;
 
-    std::uint32_t pickingID = static_cast<std::uint32_t>(tfPicking_.getPickingId(0));
+    auto pickingID = static_cast<std::uint32_t>(tfPicking_.getPickingId(0));
     for (const auto* p : primitives_) {
         const auto* compositeProp = dynamic_cast<const BoolCompositeProperty*>(p);
         if (compositeProp && compositeProp->isChecked()) {
-            if (const auto* pos = dynamic_cast<const FloatVec2Property*>(
-                    compositeProp->getPropertyByIdentifier("position"))) {
-                positions.push_back(pos->get());
-            }
-            if (const auto* color = dynamic_cast<const FloatVec4Property*>(
-                    compositeProp->getPropertyByIdentifier("color"))) {
-                colors.push_back(color->get());
-            }
-            if (const auto* radius = dynamic_cast<const FloatProperty*>(
-                    compositeProp->getPropertyByIdentifier("radius"))) {
-                radii.push_back(radius->get());
-            }
+            positions.push_back(detail::getPosition(compositeProp));
+
+            const vec4 color{detail::getColor(compositeProp)};
+            colors.push_back(vec4{vec3{color}, 1.0f});
+            tfColors.push_back(color);
+
+            radii.push_back(detail::getRadius(compositeProp));
+            primitiveFuncs.push_back(detail::getPrimitiveFunc(compositeProp));
+
             pickingIDs.push_back(pickingID);
         }
         ++pickingID;
@@ -134,7 +191,11 @@ void TransferFunction2DMesh::process() {
     mesh->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
                     util::makeBuffer(std::move(positions)));
     mesh->addBuffer(Mesh::BufferInfo(BufferType::ColorAttrib), util::makeBuffer(std::move(colors)));
+    mesh->addBuffer(Mesh::BufferInfo(BufferType::ScalarMetaAttrib),
+                    util::makeBuffer(std::move(tfColors)));
     mesh->addBuffer(Mesh::BufferInfo(BufferType::RadiiAttrib), util::makeBuffer(std::move(radii)));
+    mesh->addBuffer(Mesh::BufferInfo(BufferType::IndexAttrib),
+                    util::makeBuffer(std::move(primitiveFuncs)));
     mesh->addBuffer(Mesh::BufferInfo(BufferType::PickingAttrib),
                     util::makeBuffer(std::move(pickingIDs)));
 
@@ -142,7 +203,6 @@ void TransferFunction2DMesh::process() {
         glm::scale(vec3{2.0f, 2.0f, 1.0f}) * glm::translate(vec3{-0.5f, -0.5f, 0.0f});
     mesh->setModelMatrix(modelTrafo);
 
-    tfPicking_.resize(numPrimitives);
 
     outport_.setData(mesh);
 }
