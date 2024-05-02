@@ -80,7 +80,7 @@ VolumePathTracer::VolumePathTracer()
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , positionIndicator_("positionindicator", "Position Indicator")
     , light_("light", "Light", &camera_)
-    , volumeRegionSize_("region", "Region size", 8, 1, 100)
+    
     , transmittanceMethod_(
           "transmittanceMethod", "Transmittance method",
           {
@@ -99,9 +99,12 @@ VolumePathTracer::VolumePathTracer()
               {"GeometricResidualTracking", "Geometric Residual Ratio Tracking",
                TransmittanceMethod::GeometricResidualTracking},
           })
-    , invalidateRendering_("iterate", "Invalidate rendering")
+    , iterateRender_("iterate", "Iterate render")
     , enableProgressiveRefinement_("enableRefinement", "Enable progressive refinement", false)
-    , progressiveTimer_(Timer::Milliseconds(0), std::bind(&VolumePathTracer::onTimerEvent, this)) {
+    , invalidateRender_("invalidate", "Invalidate render", [this]() { invalidateProgressiveRendering(); }) 
+    , volumeRegionSize_("region", "Region size", 8, 1, 100)
+    , progressiveTimer_(Timer::Milliseconds(0), std::bind(&VolumePathTracer::onTimerEvent, this))
+    , renderResult_(size2_t(512, 512), DataVec4UInt8::get()) {
 
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
@@ -170,13 +173,15 @@ VolumePathTracer::VolumePathTracer()
     timeStart_ = std::chrono::high_resolution_clock::now();
 
     addProperties(channel_, raycasting_, transferFunction_, camera_, positionIndicator_, light_,
-                  volumeRegionSize_, transmittanceMethod_, invalidateRendering_,
-                  enableProgressiveRefinement_);
+                  volumeRegionSize_, transmittanceMethod_, iterateRender_,
+                  enableProgressiveRefinement_, invalidateRender_);
 
     transferFunction_.onChange([this]() { invalidateProgressiveRendering(); });
     light_.onChange([this]() { invalidateProgressiveRendering(); });
 
     enableProgressiveRefinement_.onChange([this]() { progressiveRefinementChanged(); });
+
+    //invalidateRender_.onChange([this]() { invalidateProgressiveRendering(); });
 
     progressiveRefinementChanged();
 }
@@ -219,6 +224,10 @@ void VolumePathTracer::process() {
         Image* outImage = outport_.getEditableData().get();
         ImageGL* outImageGL = outImage->getEditableRepresentation<ImageGL>();
         entryPort_.getData()->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
+        
+        // 
+        //outport_.getEditableData().get()->copyRepresentationsTo(renderResult_);
+        //ImageGL* outImageGL = renderResult_.getEditableRepresentation<ImageGL>();
     }
     activeShader_->activate();
     activeShader_->setUniform("time_ms", MSSinceStart_);
@@ -302,6 +311,6 @@ void VolumePathTracer::progressiveRefinementChanged() {
     }
 }
 
-void VolumePathTracer::onTimerEvent() { invalidateRendering_.pressButton(); }
+void VolumePathTracer::onTimerEvent() { iterateRender_.pressButton(); }
 
 }  // namespace inviwo

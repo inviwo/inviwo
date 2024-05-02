@@ -47,6 +47,8 @@ float partitionedTransmittanceTracking(int METHOD, vec3 raystart, vec3 raydir, f
 
         minMax.y += 1e-6;
         float avg = minMax.z;
+        //avg = (minMax.y + minMax.x)*0.5f;
+        //avg = 0.5;
         float T_ = 0;
         vec3 auxReturnSub = vec3(0);
         switch (METHOD) {
@@ -215,12 +217,6 @@ float partitionedTransmittanceTesting(int METHOD, vec3 raystart, vec3 raydir, fl
 
         float t0 = tStart + dirLen * tPrev;
         float t1 = tStart + dirLen * min(1.f, t);
-
-        vec4 volumeSamplet0 =
-            getNormalizedVoxel(volume, volumeParameters, raystart + raydir * t0);
-
-        vec4 volumeSamplet1 =
-            getNormalizedVoxel(volume, volumeParameters, raystart + raydir * t1);
 
         vec4 volumeSamplet05 =
             getNormalizedVoxel(volume, volumeParameters, raystart + raydir * ((t1 + t0) * 0.5));
