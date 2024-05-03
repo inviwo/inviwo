@@ -378,12 +378,15 @@ void main() {
         const vec3 gradient = getTetraGradient(tetra);
         const vec3 gradientWorld = geometry.dataToWorldNormalMatrix * gradient;
 
+        // Compute ISO-surface
         if (enableIsoSurface) {
             float isoValue_ = normalizeScalar(isoValue);
             if ((isoValue_ - scalar) * (isoValue_ - prevScalar) <= 0) {
                 float a = (scalar - isoValue_) / (scalar - prevScalar);
                 vec3 worldPos = (geometry.dataToWorld * vec4(pos + rayDirection * exitFace.segmentLength * a, 1.0)).xyz;
                 vec4 isoColor_ = isoColor;
+                isoColor_ = applyTF(transferFunction, isoValue_);
+                isoColor_.a = 1.0;
                 vec3 s1 = shadeBlinnPhong(lighting, isoColor_.rgb, isoColor_.rgb, vec3(0.5), worldPos, gradientWorld, -rayDirWorld);
                 vec3 s2 = shadeBlinnPhong(lighting, isoColor_.rgb, isoColor_.rgb, vec3(0.5), worldPos, -gradientWorld, -rayDirWorld);
 
@@ -395,7 +398,7 @@ void main() {
 
         float tDelta = exitFace.segmentLength * tetraSamplingDelta;
 
-        // If all vertices were rejected we step forward along the ray
+        // If all vertices were rejected we step forward along the ray without computing any color
         if (status != REJECT) {
             for (int i = 1; i <= numTetraSamples; ++i) {
                 float s = mix(prevScalar, scalar, i * tetraSamplingDelta);
