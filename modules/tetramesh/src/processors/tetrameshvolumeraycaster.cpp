@@ -142,20 +142,37 @@ void TetraMeshVolumeRaycaster::handlePickingEvent(PickingEvent* p) {
         if ((me->buttonState() & MouseButton::Left) &&
             me->state() & (MouseState::Press | MouseState::Move)) {
             // Get the normalized screen space coordinates (0,1)
-            auto pos = p->getPosition();
+            const dvec2 pos = p->getPosition();
             auto img = outport_.getData();
             const size2_t size = img->getDimensions();
             // Map screen space coordinate to integer texture coordinates
             size2_t cords = size2_t(std::lround(pos.x * size.x), std::lround(pos.y * size.y));
-            auto v = img->readPixel(cords, LayerType::Color, 1);
+            const dvec4 v = img->readPixel(cords, LayerType::Color, 1);
+
+            dvec3 radarOrigin = dvec3(-143.65316218500305, -1673.6645787018295, 6153.016403143832);
+            dmat4 translation = glm::translate(dmat4(1.0), radarOrigin);
+            dvec4 pointPos = dvec4(v.y, v.z, v.w, 1.0);
+            dvec3 worldPos = dvec3(translation * pointPos);
+
+            double r = std::sqrt(glm::dot(worldPos, worldPos));
+            double theta = std::acos(worldPos.z / r);
+            double phi = std::atan2(worldPos.y, worldPos.x);
+            double earthRadius = 6371;
+            r -= earthRadius;
+            phi = glm::degrees(phi);
+            phi = std::fmod(phi + 360.0, 360);
+            theta = 90.0 - glm::degrees(theta);
 
             pickingOutput_.set(
                 fmt::format(
-                    "Value:  {:.2f}\n"
-                    "X:      {:.2f}\n"
-                    "Y:      {:.2f}\n"
-                    "Z:      {:.2f}",
-                    v.x, v.y, v.z, v.w
+                    "Value:      {:.2f}\n"
+                    "Latitude:   {:.4f}\n"
+                    "Longitude:  {:.4f}\n"
+                    "Height:     {:.2f}\n"
+                    "x: {:.f}\n"
+                    "y: {:.f}\n"
+                    "z: {:.f}",
+                    v.x, theta, phi, r, v.y, v.z, v.w
             ));
         }
     }
