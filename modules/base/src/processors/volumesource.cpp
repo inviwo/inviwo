@@ -168,7 +168,7 @@ void VolumeSource::load(bool deserialize) {
                 isReady_.update();
                 LogProcessorError(error_);
             }
-        } catch (DataReaderException const& e) {
+        } catch (const DataReaderException& e) {
             volumes_.reset();
             error_ = e.getMessage();
             isReady_.update();

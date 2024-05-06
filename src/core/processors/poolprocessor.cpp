@@ -77,7 +77,19 @@ PoolProcessor::PoolProcessor(pool::Options options, const std::string& identifie
     }}
     , queue_{}
     , delay_{}
-    , delayBackgroundJobReset_{nullptr} {}
+    , delayBackgroundJobReset_{nullptr} {
+
+    isReady_.setUpdate([this]() -> ProcessorStatus {
+        if (error_) {
+            return {ProcessorStatus::Error, error_.value()};
+        } else if (allInportsAreReady()) {
+            return ProcessorStatus::Ready;
+        } else {
+            static constexpr std::string_view reason{"Inports are not ready"};
+            return {ProcessorStatus::NotReady, reason};
+        }
+    });
+}
 
 PoolProcessor::~PoolProcessor() { stopJobs(); }
 
@@ -99,6 +111,9 @@ void PoolProcessor::submit(Submission& job) {
 }
 
 void PoolProcessor::invalidate(InvalidationLevel invalidationLevel, Property* source) {
+    error_.reset();
+    isReady_.update();
+
     if (delayInvalidation()) {
         notifyObserversInvalidationBegin(this);
         PropertyOwner::invalidate(invalidationLevel, source);
@@ -108,26 +123,33 @@ void PoolProcessor::invalidate(InvalidationLevel invalidationLevel, Property* so
     }
 }
 
-void PoolProcessor::handleError() {
+std::string PoolProcessor::handleError() {
     LogError(
         fmt::format("An error occurred while processing background jobs of {}", getIdentifier()));
+
+    std::string message;
     try {
         throw;
     } catch (const Exception& e) {
-        util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+        message = e.getMessage();
+        util::log(e.getContext(), message, LogLevel::Error);
     } catch (const fmt::format_error& e) {
-        util::log(IVW_CONTEXT,
-                  fmt::format("fmt format error: {}\n{}", e.what(), util::fmtHelp.view()),
-                  LogLevel::Error);
+        message = fmt::format("fmt format error: {}\n{}", e.what(), util::fmtHelp.view());
+        util::log(IVW_CONTEXT, message, LogLevel::Error);
     } catch (const std::exception& e) {
-        util::log(IVW_CONTEXT, std::string(e.what()), LogLevel::Error);
+        message = e.what();
+        util::log(IVW_CONTEXT, message, LogLevel::Error);
     } catch (...) {
-        util::log(IVW_CONTEXT, "Unknown error", LogLevel::Error);
+        message = "Unknown error";
+        util::log(IVW_CONTEXT, message, LogLevel::Error);
     }
     for (auto port : getOutports()) {
         port->clear();
     }
+    return message;
 }
+
+const std::optional<std::string>& PoolProcessor::error() const { return error_; }
 
 void PoolProcessor::newResults() { newResults(getOutports()); }
 
