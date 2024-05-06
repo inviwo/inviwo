@@ -133,11 +133,11 @@ void ModuleManager::registerModules(std::vector<ModuleContainer> inviwoModules) 
             const auto err = dereg.empty() ? ""
                                            : fmt::format("\nUnregistered dependent modules: {}",
                                                          fmt::join(dereg, ", "));
-            util::logError(IVW_CONTEXT, "Failed to register module: {}. Reason:\n {}{}",
+            util::logError(e.getContext(), "Failed to register module: {}. Reason:\n {}{}",
                            cont.name(), e.getMessage(), err);
         } catch (const Exception& e) {
-            util::logError(IVW_CONTEXT, "Failed to register module: {}. Reason:\n{}", cont.name(),
-                           e.getMessage());
+            util::logError(e.getContext(), "Failed to register module: {}. Reason:\n{}",
+                           cont.name(), e.getMessage());
         } catch (const std::exception& e) {
             util::logError(IVW_CONTEXT, "Failed to register module: {}. Reason:\n{}", cont.name(),
                            e.what());

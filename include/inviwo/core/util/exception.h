@@ -100,9 +100,10 @@ public:
 
 class IVW_CORE_API ModuleInitException : public Exception {
 public:
-    ModuleInitException(std::string_view message = "",
-                        ExceptionContext context = ExceptionContext(),
-                        std::vector<std::string> modulesToDeregister = {});
+    using Exception::Exception;
+    ModuleInitException(std::string_view message,
+                        ExceptionContext context,
+                        std::vector<std::string> modulesToDeregister);
     virtual ~ModuleInitException() noexcept = default;
 
     /**
