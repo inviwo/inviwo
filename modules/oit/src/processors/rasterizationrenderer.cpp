@@ -77,7 +77,7 @@ const ProcessorInfo RasterizationRenderer::processorInfo_{
     "Rasterization Renderer",            // Display name
     "Mesh Rendering",                    // Category
     CodeState::Stable,                   // Code state
-    Tags::GL,                            // Tags
+    Tags::GL | Tag{"Rasterization"},     // Tags
     R"(Renderer bringing together several kinds of rasterizations objects.
        Fragment lists are used to render the transparent pixels with correct alpha blending.
        Illustration effects can be applied as a post-process.)"_unindentHelp};

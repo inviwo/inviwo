@@ -40,7 +40,6 @@
 #include <inviwo/core/properties/compositeproperty.h>         // for CompositeProperty
 #include <inviwo/core/properties/optionproperty.h>            // for OptionProperty
 #include <inviwo/core/properties/ordinalproperty.h>           // for FloatProperty, Float...
-#include <inviwo/core/properties/simplelightingproperty.h>    // for SimpleLightingProperty
 #include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProp...
 #include <inviwo/core/util/document.h>                        // for Document
 #include <inviwo/core/util/glmmat.h>                          // for mat4
@@ -73,8 +72,6 @@ class Shader;
  * even selected individually for the front- and back face.
  */
 class IVW_MODULE_OIT_API MeshRasterizer : public Rasterizer {
-    friend class MeshRasterization;
-
 public:
     MeshRasterizer();
     virtual ~MeshRasterizer() = default;
