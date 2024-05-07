@@ -72,7 +72,7 @@ layout(std430, binding = 7) buffer abufferStorage {
     // w: color, 10/10/10 rgb
     vec4 abufferPixelData[];
 };
-struct abufferPixel {
+struct abufferMeshPixel {
     uint previous;
     float depth;
     vec4 color;
@@ -102,8 +102,8 @@ vec4 readPixelStorage(uint idx) { return abufferPixelData[int(idx)]; }
 
 void writePixelStorage(uint idx, vec4 value) { abufferPixelData[int(idx)] = value; }
 
-abufferPixel uncompressPixelData(vec4 data) {
-    abufferPixel p;
+abufferMeshPixel uncompressMeshPixelData(vec4 data) {
+    abufferMeshPixel p;
     p.previous = floatBitsToUint(data.x);
     p.depth = data.y;
     p.color.a = data.z;
@@ -111,7 +111,7 @@ abufferPixel uncompressPixelData(vec4 data) {
     return p;
 }
 
-vec4 compressPixelData(abufferPixel p) {
+vec4 compressMeshPixelData(abufferMeshPixel p) {
     vec4 data;
     data.x = uintBitsToFloat(p.previous);
     data.y = p.depth;
@@ -124,7 +124,7 @@ vec4 compressPixelData(abufferPixel p) {
 // Rendering function
 
 // The central function for the user-code
-uint abufferRender(ivec2 coords, float depth, vec4 color) {
+uint abufferMeshRender(ivec2 coords, float depth, vec4 color) {
     // coords.x=0; coords.y=0;
     // reserve space for pixel
     uint pixelIdx = dataCounterAtomicInc();
@@ -135,11 +135,11 @@ uint abufferRender(ivec2 coords, float depth, vec4 color) {
     // write index
     uint prevIdx = setPixelLink(coords, pixelIdx + 1);
     // assemble and write pixel
-    abufferPixel p;
+    abufferMeshPixel p;
     p.previous = prevIdx;
     p.depth = depth;
     p.color = color;
-    writePixelStorage(pixelIdx, compressPixelData(p));
+    writePixelStorage(pixelIdx, compressMeshPixelData(p));
     return pixelIdx;
 }
 
