@@ -19,6 +19,7 @@ set(HEADER_FILES
     include/modules/oit/processors/transformrasterization.h
     include/modules/oit/rasterizeevent.h
     include/modules/oit/rendering/fragmentlistrenderer.h
+    include/modules/oit/rendering/rasterizationrendererbase.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -39,6 +40,7 @@ set(SOURCE_FILES
     src/processors/transformrasterization.cpp
     src/rasterizeevent.cpp
     src/rendering/fragmentlistrenderer.cpp
+    src/rendering/rasterizationrendererbase.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

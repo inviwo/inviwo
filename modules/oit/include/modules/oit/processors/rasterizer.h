@@ -81,6 +81,7 @@ public:
 
 private:
     RasterizeHandle handle_;
+    std::shared_ptr<Rasterization> rasterization_;
 };
 
 }  // namespace inviwo

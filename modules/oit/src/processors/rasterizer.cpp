@@ -56,7 +56,9 @@ void Rasterizer::configureShader(Shader& shader) {
     handle_.configureShader(shader);
 }
 
-void Rasterizer::setUniforms(Shader& shader) { handle_.setUniforms(shader, usesFragmentLists()); }
+void Rasterizer::setUniforms(Shader& shader) {
+    handle_.setUniforms(shader, usesFragmentLists(), rasterization_.get());
+}
 
 void Rasterizer::propagateEvent(Event* event, Outport* source) {
     if (event->hash() == RasterizeEvent::chash()) {
@@ -68,9 +70,9 @@ void Rasterizer::propagateEvent(Event* event, Outport* source) {
 }
 
 void Rasterizer::process() {
-    auto rasterization =
+    rasterization_ =
         std::make_shared<Rasterization>(std::dynamic_pointer_cast<Rasterizer>(shared_from_this()));
-    outport_.setData(rasterization);
+    outport_.setData(rasterization_);
 }
 
 }  // namespace inviwo

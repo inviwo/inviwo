@@ -27,41 +27,6 @@
  *
  *********************************************************************************/
 
-#include <modules/oit/rasterizeevent.h>
-#include <modules/oit/ports/rasterizationport.h>
+#include <modules/oit/rendering/rasterizationrendererbase.h>
 
-namespace inviwo {
-
-void RasterizeHandle::configureShader(Shader& shader) const {
-    if (auto renderer = rasterizationRenderer_.lock()) {
-        renderer->configureShader(shader);
-    }
-}
-
-void RasterizeHandle::setUniforms(Shader& shader, UseFragmentList useFragmentList,
-                                  const Rasterization* rasterizer) const {
-    if (auto renderer = rasterizationRenderer_.lock()) {
-        renderer->setUniforms(shader, useFragmentList, rasterizer);
-    }
-}
-
-RasterizeEvent::RasterizeEvent(std::shared_ptr<RasterizationRendererBase> renderer)
-    : Event(), rasterizationRenderer_{renderer} {}
-
-RasterizeEvent* RasterizeEvent::clone() const { return new RasterizeEvent(*this); }
-
-bool RasterizeEvent::shouldPropagateTo(Inport* inport, Processor*, Outport*) {
-    return dynamic_cast<RasterizationInport*>(inport) != nullptr;
-}
-
-RasterizeHandle RasterizeEvent::addInitializeShaderCallback(std::function<void()> callback) const {
-    if (auto renderer = rasterizationRenderer_.lock()) {
-        return RasterizeHandle(renderer->addInitializeShaderCallback(callback), renderer);
-    } else {
-        return {};
-    }
-}
-
-uint64_t RasterizeEvent::hash() const { return chash(); }
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

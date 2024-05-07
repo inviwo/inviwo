@@ -43,6 +43,7 @@
 #include <inviwo/core/util/dispatcher.h>                 // for Dispatcher, Dispatch...
 #include <modules/oit/ports/rasterizationport.h>         // for RasterizationInport
 #include <modules/oit/rendering/fragmentlistrenderer.h>  // for FragmentListRenderer
+#include <modules/oit/rendering/rasterizationrendererbase.h>
 
 #include <optional>
 
@@ -50,7 +51,8 @@ namespace inviwo {
 class RasterizeEvent;
 class RasterizeHandle;
 
-class IVW_MODULE_OIT_API RasterizationRenderer : public Processor {
+class IVW_MODULE_OIT_API RasterizationRenderer : public Processor,
+                                                 public RasterizationRendererBase {
 public:
     RasterizationRenderer();
     virtual ~RasterizationRenderer() = default;
@@ -66,8 +68,11 @@ protected:
     friend RasterizeHandle;
     friend RasterizeEvent;
 
-    void configureShader(Shader& shader) const;
-    void setUniforms(Shader& shader, UseFragmentList useFragmentList) const;
+    virtual void configureShader(Shader& shader) const override;
+    virtual void setUniforms(Shader& shader, UseFragmentList useFragmentList,
+                             const Rasterization* rasterizer) const override;
+    virtual DispatcherHandle<void()> addInitializeShaderCallback(
+        std::function<void()> callback) override;
 
     std::optional<mat4> boundingBox() const;
 

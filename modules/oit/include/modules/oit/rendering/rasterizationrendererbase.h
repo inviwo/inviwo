@@ -30,56 +30,41 @@
 
 #include <modules/oit/oitmoduledefine.h>
 
-#include <inviwo/core/interaction/events/event.h>
-#include <inviwo/core/util/constexprhash.h>
-#include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/util/fmtutils.h>
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/sourcecontext.h>
-#include <modules/oit/rendering/rasterizationrendererbase.h>
+#include <inviwo/core/util/dispatcher.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
-class Rasterizer;
 class Rasterization;
 class Shader;
 
-class IVW_MODULE_OIT_API RasterizeHandle {
-public:
-    RasterizeHandle() = default;
-    RasterizeHandle(DispatcherHandle<void()> handle,
-                    std::weak_ptr<RasterizationRendererBase> renderer)
-        : handle_{handle}, rasterizationRenderer_{renderer} {}
-    void configureShader(Shader&) const;
-    void setUniforms(Shader&, UseFragmentList useFragmentList,
-                     const Rasterization* rasterizer) const;
+enum class UseFragmentList { Yes, No };
 
-private:
-    DispatcherHandle<void()> handle_;
-    std::weak_ptr<RasterizationRendererBase> rasterizationRenderer_;
-};
-
-class IVW_MODULE_OIT_API RasterizeEvent : public Event {
-public:
-    RasterizeEvent(std::shared_ptr<RasterizationRendererBase> renderer);
-    virtual ~RasterizeEvent() = default;
-
-    virtual RasterizeEvent* clone() const override;
-
-    virtual bool shouldPropagateTo(Inport* inport, Processor* processor, Outport* source) override;
-
-    virtual uint64_t hash() const override;
-    static constexpr uint64_t chash();
-
-    RasterizeHandle addInitializeShaderCallback(std::function<void()> callback) const;
-
-private:
-    RasterizeEvent(const RasterizeEvent& rhs) = default;
-    RasterizeEvent& operator=(const RasterizeEvent& that) = default;
-    std::weak_ptr<RasterizationRendererBase> rasterizationRenderer_;
-};
-
-constexpr uint64_t RasterizeEvent::chash() {
-    return util::constexpr_hash("org.inviwo.RasterizeEvent");
+constexpr std::string_view enumToStr(UseFragmentList val) {
+    switch (val) {
+        case UseFragmentList::Yes:
+            return "Yes";
+        case UseFragmentList::No:
+            return "No";
+    }
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Invalid UseFragmentList found: {}",
+                    static_cast<int>(val));
 }
 
+class RasterizationRendererBase {
+public:
+    virtual void configureShader(Shader&) const = 0;
+    virtual void setUniforms(Shader&, UseFragmentList useFragmentList,
+                             const Rasterization* rasterizer) const = 0;
+    virtual DispatcherHandle<void()> addInitializeShaderCallback(
+        std::function<void()> callback) = 0;
+};
+
 }  // namespace inviwo
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+template <>
+struct fmt::formatter<inviwo::UseFragmentList> : inviwo::FlagFormatter<inviwo::UseFragmentList> {};
+#endif
