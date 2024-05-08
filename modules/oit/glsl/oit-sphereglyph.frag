@@ -160,7 +160,7 @@ void main() {
 
     // depth correction for glyph
     float depth = glyphDepth(intersection + sphere.center.xyz, camera.worldToClip);
-    if (clipGlypNearPlane(coord, sphere.camPos - coord.xyz, camera.viewToWorld[2].xyz, lighting,
+    if (clipGlypNearPlane(coord, camera.viewToWorld[2].xyz, lighting,
                           sphere.color.rgb * clipShadingFactor, glyphColor, depth)) {
         discard;
     }
