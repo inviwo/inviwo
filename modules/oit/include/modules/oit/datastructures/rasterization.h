@@ -61,6 +61,7 @@ public:
     Rasterization(Rasterization&&) = delete;
     Rasterization& operator=(const Rasterization&) = delete;
     Rasterization& operator=(Rasterization&&) = delete;
+    virtual ~Rasterization() = default;
 
     std::shared_ptr<Rasterizer> getProcessor() const;
 
