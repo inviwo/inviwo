@@ -229,25 +229,27 @@ std::vector<vec4> TFPrimitiveSet::getColors() const {
     return result;
 }
 
-void TFPrimitiveSet::add(const TFPrimitive& primitive) {
-    add(std::make_unique<TFPrimitive>(primitive));
+TFPrimitive& TFPrimitiveSet::add(const TFPrimitive& primitive) {
+    return add(std::make_unique<TFPrimitive>(primitive));
 }
 
-void TFPrimitiveSet::add(double pos, const vec4& color) {
-    add(std::make_unique<TFPrimitive>(pos, color));
+TFPrimitive& TFPrimitiveSet::add(double pos, const vec4& color) {
+    return add(std::make_unique<TFPrimitive>(pos, color));
 }
 
-void TFPrimitiveSet::add(double pos, double alpha) {
+TFPrimitive& TFPrimitiveSet::add(double pos, double alpha) {
     const vec4 color(vec3(interpolateColor(pos)), static_cast<float>(alpha));
-    add(std::make_unique<TFPrimitive>(pos, color));
+    return add(std::make_unique<TFPrimitive>(pos, color));
 }
 
-void TFPrimitiveSet::add(const dvec2& pos) {
+TFPrimitive& TFPrimitiveSet::add(const dvec2& pos) {
     const vec4 color(vec3(interpolateColor(pos.x)), static_cast<float>(pos.y));
-    add(std::make_unique<TFPrimitive>(pos.x, color));
+    return add(std::make_unique<TFPrimitive>(pos.x, color));
 }
 
-void TFPrimitiveSet::add(const TFPrimitiveData& data) { add(std::make_unique<TFPrimitive>(data)); }
+TFPrimitive& TFPrimitiveSet::add(const TFPrimitiveData& data) {
+    return add(std::make_unique<TFPrimitive>(data));
+}
 
 void TFPrimitiveSet::add(const std::vector<TFPrimitiveData>& primitives) {
     for (const auto& v : primitives) {
@@ -262,7 +264,7 @@ bool TFPrimitiveSet::remove(const TFPrimitive& primitive) {
     return remove(it);
 }
 
-void TFPrimitiveSet::add(std::unique_ptr<TFPrimitive> primitive) {
+TFPrimitive& TFPrimitiveSet::add(std::unique_ptr<TFPrimitive> primitive) {
     if ((type_ == TFPrimitiveSetType::Relative) &&
         ((primitive->getPosition() < 0.0f) || (primitive->getPosition() > 1.0f))) {
         throw RangeException("Adding TFPrimitive at " + std::to_string(primitive->getPosition()) +
@@ -276,6 +278,8 @@ void TFPrimitiveSet::add(std::unique_ptr<TFPrimitive> primitive) {
     values_.push_back(std::move(primitive));
 
     notifyTFPrimitiveAdded(*this, *values_.back());
+
+    return *values_.back();
 }
 
 bool TFPrimitiveSet::remove(std::vector<std::unique_ptr<TFPrimitive>>::iterator it) {

@@ -150,7 +150,7 @@ private:
     bool handleGroupSelection(QKeyEvent* event);
     bool handleModifySelection(QKeyEvent* event);
     bool handleMoveSelection(QKeyEvent* event);
-
+    void handleMirroring();
     /**
      * calculate the horizontal and vertical offset in scene coordinates based on the current
      * viewport size and zoom. The offset then corresponds to defaultOffset pixels on screen.
@@ -170,6 +170,12 @@ private:
 
     TFPrimitiveSet* activeSet();
     Items* activeItem();
+
+    std::unordered_map<TFPrimitive*, TFPrimitive*, PtrHash<TFPrimitive>, PtrEqual<TFPrimitive>>
+        mirrors_;
+    
+    static double mirror(double dos, const DataMapper& dm);
+
 
     struct Mouse {
         TFEditorPrimitive* dragItem = nullptr;

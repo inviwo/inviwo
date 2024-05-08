@@ -186,7 +186,7 @@ public:
      * @param primitive   TFPrimitive to be added
      * @throws RangeException if TF type is relative and the primitive position is outside [0,1]
      */
-    void add(const TFPrimitive& primitive);
+    TFPrimitive& add(const TFPrimitive& primitive);
 
     /**
      * Add a TFPrimitive
@@ -195,7 +195,7 @@ public:
      * @param color   color of the TFPrimitive including alpha
      * @throws RangeException if TF type is relative and pos is outside [0,1]
      */
-    void add(double pos, const vec4& color);
+    TFPrimitive& add(double pos, const vec4& color);
 
     /**
      * Add a TFPrimitive at pos with alpha. The color is
@@ -206,7 +206,7 @@ public:
      *
      * @throws RangeException if TF type is relative and pos is outside [0,1]
      */
-    void add(double pos, double alpha);
+    TFPrimitive& add(double pos, double alpha);
 
     /**
      * Add a TFPrimitive at pos.x where pos.y is used as alpha and the color is
@@ -216,7 +216,7 @@ public:
      *                to alpha
      * @throws RangeException if TF type is relative and pos.x is outside [0,1]
      */
-    void add(const dvec2& pos);
+    TFPrimitive& add(const dvec2& pos);
 
     /**
      * Add a TFPrimitive
@@ -224,7 +224,7 @@ public:
      * @param data   Primitive to be added
      * @throws RangeException if TF type is relative and position of point is outside [0,1]
      */
-    void add(const TFPrimitiveData& data);
+    TFPrimitive& add(const TFPrimitiveData& data);
 
     /**
      * Add multiple TFPrimitives
@@ -263,7 +263,7 @@ public:
     bool contains(const TFPrimitive* primitive) const;
 
 protected:
-    void add(std::unique_ptr<TFPrimitive> primitive);
+    TFPrimitive& add(std::unique_ptr<TFPrimitive> primitive);
     bool remove(std::vector<std::unique_ptr<TFPrimitive>>::iterator it);
     void sort();
 

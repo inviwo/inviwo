@@ -173,6 +173,13 @@ void TFEditor::onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) {
         std::erase_if(group, [&](auto& e) { return &e->getPrimitive() == &p; });
     }
 
+    // remove from mirrors
+    if (auto it = mirrors_.find(p); it != mirrors_.end()) {
+        auto* dst = it->second;
+        mirrors_.erase(it);
+        mirrors_.erase(dst);
+    }
+
     auto it = primitives_.find(&set);
     if (it == primitives_.end()) return;
     auto& items = it->second;
@@ -181,7 +188,17 @@ void TFEditor::onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) {
         updateConnections();
     }
 }
-void TFEditor::onTFPrimitiveChanged(const TFPrimitiveSet&, const TFPrimitive&) {}
+void TFEditor::onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& primitive) {
+    if (const auto* dm = concept_->getDataMap()) {
+        if (auto it = mirrors_.find(primitive); it != mirrors_.end()) {
+            auto mirrorPos = mirror(primitive.getPosition(), *dm);
+            if (set.getType() == TFPrimitiveSetType::Relative) {
+                mirrorPos = std::clamp(mirrorPos, 0.0, 1.0);
+            }
+            it->second->setPositionAlpha(mirrorPos, primitive.getAlpha());
+        }
+    }
+}
 void TFEditor::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) {}
 
 void TFEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
@@ -283,6 +300,9 @@ void TFEditor::keyPressEvent(QKeyEvent* keyEvent) {
     } else if (k == Qt::Key_F) {
         moveMode_ = TFMoveMode::Free;
         emit moveModeChange(moveMode_);
+        keyEvent->accept();
+    } else if (k == Qt::Key_M) {
+        handleMirroring();
         keyEvent->accept();
     } else if (k == Qt::Key_R) {
         moveMode_ = TFMoveMode::Restrict;
@@ -936,6 +956,39 @@ bool TFEditor::handleModifySelection(QKeyEvent* event) {
     return true;
 }
 
+void TFEditor::handleMirroring() {
+    if (const auto* dm = concept_->getDataMap()) {
+        const auto selection = getSelectedPrimitiveItems();
+        const auto primitives = getAllPrimitives();
+
+        std::ranges::for_each(selection, [&](TFEditorPrimitive* item) {
+            auto* primitive = &item->getPrimitive();
+            if (auto it = mirrors_.find(primitive); it != mirrors_.end()) {
+                auto* dst = it->second;
+                mirrors_.erase(it);
+                mirrors_.erase(dst);
+            } else {
+                auto mirrorPos = mirror(primitive->getPosition(), *dm);
+                auto pIt = std::ranges::find_if(primitives, [&](TFPrimitive* p) {
+                    return std::abs(p->getPosition() - mirrorPos) < 0.001;
+                });
+
+                if (pIt != primitives.end()) {
+                    mirrors_[primitive] = *pIt;
+                    mirrors_[*pIt] = primitive;
+                } else if (auto* set = findSet(primitive)) {
+                    if (set->getType() == TFPrimitiveSetType::Relative) {
+                        mirrorPos = std::clamp(mirrorPos, 0.0, 1.0);
+                    }
+                    auto& dst = set->add(mirrorPos, primitive->getColor());
+                    mirrors_[primitive] = &dst;
+                    mirrors_[&dst] = primitive;
+                }
+            }
+        });
+    }
+}
+
 dvec2 TFEditor::viewDependentOffset() const {
     const int defaultOffset = 5;  //!< offset in pixel
     if (views().empty()) {
@@ -951,6 +1004,13 @@ dvec2 TFEditor::viewDependentOffset() const {
                     .boundingRect();
 
     return {rect.width(), rect.height()};
+}
+
+double TFEditor::mirror(double normalizedPos, const DataMapper& dm) {
+    const auto pos = dm.mapFromNormalizedToValue(normalizedPos);
+    const auto mirrored = -pos;
+    const auto normalizedMirrored = dm.mapFromValueToNormalized(mirrored);
+    return normalizedMirrored;
 }
 
 }  // namespace inviwo
