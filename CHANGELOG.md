@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2024-05-08 Order-independent rendering support for multiple volumes and meshes
+The OIT module now contains functionality for volume rendering in combination with transparent meshes. Two processors, `Volume Rasterizer` and `Mesh Volume Renderer`, have been added. The former creating a rasterization object for a volume and transfer function and the latter being able to render multiple volumes and meshes at the same time.
+
 ## 2024-04-12 `Light Volume Raycaster`
 Based on the raycasting components and the `Standard Volume Raycaster`, the `Light Volume Raycaster` provides the same volume rendering capabilities while also considering a light volume for volumetric shading. The light volume can be generated with the processor of the same name (`Light Volume`).
 
