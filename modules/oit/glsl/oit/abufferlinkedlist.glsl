@@ -72,12 +72,34 @@ layout(std430, binding = 7) buffer abufferStorage {
     // w: color, 10/10/10 rgb
     vec4 abufferPixelData[];
 };
+
 struct abufferMeshPixel {
     uint previous;
     float depth;
     vec4 color;
 };
 
+struct abufferVolumePixel {
+    uint previous;
+    float depth;
+    vec3 position;
+    uint id;
+};
+
+/*
+MESH:
+data.x: uint prev;
+data.y: float depth;
+data.z: float alpha;
+data.w: float RGB (10bits each) + 1 bit unused + 1 bit type
+
+VOLUME:
+data.x: uint prev;
+data.y: float depth;
+data.z: R(20bits) + G(12bits)
+data.w: G(8bits) + B(20bits) + id(3bits) + type(1bit)
+
+*/
 // Fragment linked list
 
 #if ABUFFER_USE_TEXTURES
@@ -102,12 +124,13 @@ vec4 readPixelStorage(uint idx) { return abufferPixelData[int(idx)]; }
 
 void writePixelStorage(uint idx, vec4 value) { abufferPixelData[int(idx)] = value; }
 
+// MESH
 abufferMeshPixel uncompressMeshPixelData(vec4 data) {
     abufferMeshPixel p;
     p.previous = floatBitsToUint(data.x);
     p.depth = data.y;
     p.color.a = data.z;
-    p.color.rgb = uncompressColor(floatBitsToUint(data.w));
+    p.color.rgb = uncompressColor10bits(floatBitsToUint(data.w));
     return p;
 }
 
@@ -117,15 +140,43 @@ vec4 compressMeshPixelData(abufferMeshPixel p) {
     data.y = p.depth;
     p.color = clamp(p.color, 0, 1);
     data.z = p.color.a;
-    data.w = uintBitsToFloat(compressColor(p.color.rgb));
+    data.w = uintBitsToFloat(compressColor10bits(p.color.rgb)); // 10bit rgb + type
     return data;
+}
+
+// VOLUME
+abufferVolumePixel uncompressVolumePixelData(vec4 data) {
+    abufferVolumePixel p;
+    p.previous = floatBitsToUint(data.x);
+    p.depth = data.y;
+    uvec2 res = uvec2(floatBitsToUint(data.z), floatBitsToUint(data.w));
+    p.position.rgb = uncompressColor20bits(res);
+    p.id = (res.y >> 1) & 0x7;
+   return p;
+}
+
+vec4 compressVolumePixelData(abufferVolumePixel p) {
+    vec4 data;
+    data.x = uintBitsToFloat(p.previous);
+    data.y = p.depth;
+    p.position = clamp(p.position, 0, 1);
+    uvec2 res = compressColor20bits(p.position.xyz);
+    data.z = uintBitsToFloat(res.x);
+    res.y |= (p.id & 0x7u) << 1u;
+    res.y |= 0x1u;
+    data.w = uintBitsToFloat(res.y);
+    return data;
+}
+
+int getPixelDataType(vec4 data) {
+    int iData = floatBitsToInt(data.w);
+    return (iData & 0x01);
 }
 
 // Rendering function
 
 // The central function for the user-code
 uint abufferMeshRender(ivec2 coords, float depth, vec4 color) {
-    // coords.x=0; coords.y=0;
     // reserve space for pixel
     uint pixelIdx = dataCounterAtomicInc();
     if (pixelIdx >= AbufferParams.storageSize) {
@@ -140,6 +191,26 @@ uint abufferMeshRender(ivec2 coords, float depth, vec4 color) {
     p.depth = depth;
     p.color = color;
     writePixelStorage(pixelIdx, compressMeshPixelData(p));
+    return pixelIdx;
+}
+
+uint abufferVolumeRender(ivec2 coords, float depth, vec3 position, uint volumeId) {
+    // reserve space for pixel
+    uint pixelIdx = dataCounterAtomicInc();
+    if (pixelIdx >= AbufferParams.storageSize) {
+        // we are out of space
+        return uint(-1);
+    }
+    // write index
+    uint prevIdx = setPixelLink(coords, pixelIdx + 1);
+    // assemble and write pixel
+    abufferVolumePixel p;
+    p.previous = prevIdx;
+    p.depth = depth;
+    p.id = volumeId;
+    p.position = position;
+    
+    writePixelStorage(pixelIdx, compressVolumePixelData(p));
     return pixelIdx;
 }
 

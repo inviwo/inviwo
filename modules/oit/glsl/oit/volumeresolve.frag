@@ -38,8 +38,8 @@
 // GL_NV_gpu_shader5, GL_EXT_shader_image_load_store, GL_NV_shader_buffer_load,
 // GL_EXT_bindable_uniform
 
-#include "oit/myabufferlinkedlist.glsl"
-#include "oit/mysort.glsl"
+#include "oit/abufferlinkedlist.glsl"
+#include "oit/sort.glsl"
 #include "utils/structs.glsl"
 #include "utils/classification.glsl"
 #include "utils/depth.glsl"

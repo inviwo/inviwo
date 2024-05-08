@@ -57,11 +57,14 @@ set(SHADER_FILES
     glsl/oit/display.frag
     glsl/oit/simplequad.vert
     glsl/oit/sort.glsl
+    glsl/oit/volumeresolve.frag
     glsl/fancymeshrenderer.frag
     glsl/fancymeshrenderer.geom
     glsl/fancymeshrenderer.vert
     glsl/oit-linerenderer.frag
     glsl/oit-sphereglyph.frag
+    glsl/volumerasterizer.vert
+    glsl/volumerasterizer.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
