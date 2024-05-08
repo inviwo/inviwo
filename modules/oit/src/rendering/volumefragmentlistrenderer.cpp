@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/meshandvolume/rendering/myfragmentlistrenderer.h>
+#include <modules/oit/rendering/volumefragmentlistrenderer.h>
 
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/sharedopenglresources.h>
@@ -46,7 +46,7 @@
 
 namespace inviwo {
 
-MyFragmentListRenderer::MyFragmentListRenderer()
+VolumeFragmentListRenderer::VolumeFragmentListRenderer()
     : screenSize_{0, 0}
     , fragmentSize_{1024}
     , abufferIdxTex_{screenSize_, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST}
@@ -56,8 +56,8 @@ MyFragmentListRenderer::MyFragmentListRenderer()
     , pixelBuffer_{fragmentSize_ * 4 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 4),
                    GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER}
     , totalFragmentQuery_{0}
-    , clear_("oit/simplequad.vert", "oit/myclear.frag", Shader::Build::No)
-    , display_("oit/simplequad.vert", "oit/mydisplay.frag", Shader::Build::No) {
+    , clear_("oit/simplequad.vert", "oit/clear.frag", Shader::Build::No)
+    , display_("oit/simplequad.vert", "oit/volumeresolve.frag", Shader::Build::No) {
 
     LGL_ERROR_CLASS;
 
@@ -74,11 +74,11 @@ MyFragmentListRenderer::MyFragmentListRenderer()
     LGL_ERROR_CLASS;
 }
 
-MyFragmentListRenderer::~MyFragmentListRenderer() {
+VolumeFragmentListRenderer::~VolumeFragmentListRenderer() {
     if (totalFragmentQuery_) glDeleteQueries(1, &totalFragmentQuery_);
 }
 
-void MyFragmentListRenderer::prePass(const size2_t& screenSize) {
+void VolumeFragmentListRenderer::prePass(const size2_t& screenSize) {
     resizeBuffers(screenSize);
 
     // reset counter
@@ -105,16 +105,16 @@ void MyFragmentListRenderer::prePass(const size2_t& screenSize) {
     LGL_ERROR;
 }
 
-void MyFragmentListRenderer::beginCount() {
+void VolumeFragmentListRenderer::beginCount() {
     // start query
     // The query is used to determinate the size needed for the shader storage buffer
     // to store all the fragments.
     glBeginQuery(GL_SAMPLES_PASSED, totalFragmentQuery_);
     LGL_ERROR;
 }
-void MyFragmentListRenderer::endCount() { glEndQuery(GL_SAMPLES_PASSED); }
+void VolumeFragmentListRenderer::endCount() { glEndQuery(GL_SAMPLES_PASSED); }
 
-bool MyFragmentListRenderer::postPass(
+bool VolumeFragmentListRenderer::postPass(
     bool useIllustration, const Image* background,
     std::function<void(Shader&, TextureUnitContainer&)> setUniformsCallback) {
     // memory barrier
@@ -172,11 +172,11 @@ bool MyFragmentListRenderer::postPass(
     return true;  // success, enough storage available
 }
 
-void MyFragmentListRenderer::setShaderUniforms(Shader& shader) const {
+void VolumeFragmentListRenderer::setShaderUniforms(Shader& shader) const {
     setUniforms(shader, textureUnits_[0]);
 }
 
-void MyFragmentListRenderer::setUniforms(Shader& shader, const TextureUnit& abuffUnit) const {
+void VolumeFragmentListRenderer::setUniforms(Shader& shader, const TextureUnit& abuffUnit) const {
     LGL_ERROR;
     // screen size textures
 
@@ -201,7 +201,7 @@ void MyFragmentListRenderer::setUniforms(Shader& shader, const TextureUnit& abuf
     LGL_ERROR;
 }
 
-bool MyFragmentListRenderer::supportsFragmentLists() {
+bool VolumeFragmentListRenderer::supportsFragmentLists() {
     static const bool support =
         OpenGLCapabilities::getOpenGLVersion() >= 430 &&
         OpenGLCapabilities::isExtensionSupported("GL_NV_gpu_shader5") &&
@@ -212,11 +212,11 @@ bool MyFragmentListRenderer::supportsFragmentLists() {
     return support;
 }
 
-DispatcherHandle<void()> MyFragmentListRenderer::onReload(std::function<void()> callback) {
+DispatcherHandle<void()> VolumeFragmentListRenderer::onReload(std::function<void()> callback) {
     return onReload_.add(callback);
 }
 
-void MyFragmentListRenderer::buildShaders(bool hasBackground) {
+void VolumeFragmentListRenderer::buildShaders(bool hasBackground) {
     builtWithBackground_ = hasBackground;
     auto* dfs = display_.getFragmentShaderObject();
     dfs->clearShaderExtensions();
@@ -241,7 +241,7 @@ void MyFragmentListRenderer::buildShaders(bool hasBackground) {
     }
 }
 
-void MyFragmentListRenderer::resizeBuffers(const size2_t& screenSize) {
+void VolumeFragmentListRenderer::resizeBuffers(const size2_t& screenSize) {
     if (screenSize != screenSize_) {
         screenSize_ = screenSize;
         // reallocate screen size texture that holds the pointer to the end of the fragment list at

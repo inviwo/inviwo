@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/meshandvolume/processors/volumerasterizer.h>
+#include <modules/oit/processors/volumerasterizer.h>
 
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/algorithm/boundingbox.h>
@@ -70,7 +70,7 @@ VolumeRasterizer::VolumeRasterizer()
     , volumeInport_{"volume", "Input volume"_help}
     , meshInport_{"geometry",
                   "Input mesh used for entry and exit points during ray casting. The mesh needs to be closed."_help}
-    , shader_{"myvolumerasterizer.vert", "myvolumerasterizer.frag", Shader::Build::No}
+    , shader_{"volumerasterizer.vert", "volumerasterizer.frag", Shader::Build::No}
     , tf_{"tf", "TF & Isovalues", &volumeInport_, InvalidationLevel::InvalidResources}
     , channel_{"channel",
                "Render Channel",

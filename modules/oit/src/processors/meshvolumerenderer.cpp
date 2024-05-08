@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/meshandvolume/processors/mvrenderer.h>
+#include <modules/oit/processors/meshvolumerenderer.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/volume/volumeutils.h>
@@ -44,22 +44,25 @@ namespace inviwo {
 /**
  * Limits the number of volume rasterizers that can be rasterized at the same time.
  * This number should also match the number of array elements in the display shader of
- * MyFragmentListRenderer. In particular for the volume and tf samplers as well as volume
+ * VolumeFragmentListRenderer. In particular for the volume and tf samplers as well as volume
  * parameters and the switch-case statement selecting the array samplers.
  */
 constexpr int maxSupportedVolumeRasterizers = 4;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo MVRenderer::processorInfo_{
-    "org.inviwo.MVRenderer",     // Class identifier
-    "Mesh and Volume Renderer",  // Display name
-    "Volume Rendering",          // Category
-    CodeState::Experimental,     // Code state
-    Tags::GL,                    // Tags
+const ProcessorInfo MeshVolumeRenderer::processorInfo_{
+    "org.inviwo.MeshVolumeRenderer",  // Class identifier
+    "Mesh Volume Renderer",           // Display name
+    "Volume Rendering",               // Category
+    CodeState::Experimental,          // Code state
+    Tags::GL | Tag{"Rasterization"},  // Tags
+    R"(Renderer bringing together several kinds of rasterizations objects.
+       Volume rendering is performed for volume rasterization objects.
+       Fragment lists are used to render the transparent pixels with correct alpha blending.)"_unindentHelp,
 };
-const ProcessorInfo MVRenderer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo MeshVolumeRenderer::getProcessorInfo() const { return processorInfo_; }
 
-MVRenderer::MVRenderer()
+MeshVolumeRenderer::MeshVolumeRenderer()
     : rasterizations_("raster")
     , background_{"imageInport", "Optional background image"_help}
     , outport_("image")
@@ -71,15 +74,15 @@ MVRenderer::MVRenderer()
     , camera_("camera", "Camera")
     , lighting_{"lighting", "Lighting", &camera_}
     , trackball_(&camera_)
-    , flr_{[]() -> std::optional<MyFragmentListRenderer> {
-        if (MyFragmentListRenderer::supportsFragmentLists())
-            return std::optional<MyFragmentListRenderer>{std::in_place};
+    , flr_{[]() -> std::optional<VolumeFragmentListRenderer> {
+        if (VolumeFragmentListRenderer::supportsFragmentLists())
+            return std::optional<VolumeFragmentListRenderer>{std::in_place};
         else {
             return std::nullopt;
         }
     }()} {
 
-    if (!MyFragmentListRenderer::supportsFragmentLists()) {
+    if (!VolumeFragmentListRenderer::supportsFragmentLists()) {
         LogProcessorWarn(
             "Fragment lists are not supported by the hardware -> volume rasterization disabled, "
             "regular meshes rendered without sorting.");
@@ -99,12 +102,12 @@ MVRenderer::MVRenderer()
     }
 
     onConnect_ = rasterizations_.onConnectScoped([&](Outport* outport) {
-        RasterizeEvent e{std::dynamic_pointer_cast<MVRenderer>(shared_from_this())};
+        RasterizeEvent e{std::dynamic_pointer_cast<MeshVolumeRenderer>(shared_from_this())};
         rasterizations_.propagateEvent(&e, outport);
     });
 }
 
-void MVRenderer::process() {
+void MeshVolumeRenderer::process() {
     if (!flr_) {
         utilgl::activateTargetAndClearOrCopySource(outport_, background_);
         for (const auto& rasterization : rasterizations_) {
@@ -213,10 +216,12 @@ void MVRenderer::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-void MVRenderer::configureShader(Shader& shader) const { utilgl::addDefines(shader, lighting_); }
+void MeshVolumeRenderer::configureShader(Shader& shader) const {
+    utilgl::addDefines(shader, lighting_);
+}
 
-void MVRenderer::setUniforms(Shader& shader, UseFragmentList useFragmentList,
-                             const Rasterization* rasterizer) const {
+void MeshVolumeRenderer::setUniforms(Shader& shader, UseFragmentList useFragmentList,
+                                     const Rasterization* rasterizer) const {
     utilgl::setUniforms(shader, camera_, lighting_);
     if (flr_ && useFragmentList == UseFragmentList::Yes) {
         flr_->setShaderUniforms(shader);
@@ -227,7 +232,8 @@ void MVRenderer::setUniforms(Shader& shader, UseFragmentList useFragmentList,
     }
 }
 
-DispatcherHandle<void()> MVRenderer::addInitializeShaderCallback(std::function<void()> callback) {
+DispatcherHandle<void()> MeshVolumeRenderer::addInitializeShaderCallback(
+    std::function<void()> callback) {
     return initializeShader_.add(callback);
 }
 

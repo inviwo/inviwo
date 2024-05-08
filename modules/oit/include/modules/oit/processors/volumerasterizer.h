@@ -26,64 +26,59 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
-#include <inviwo/meshandvolume/meshandvolumemoduledefine.h>
+#include <modules/oit/oitmoduledefine.h>
 
-#include <inviwo/core/util/dispatcher.h>
-#include <inviwo/core/util/glmvec.h>
-#include <modules/opengl/inviwoopengl.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/shader/shader.h>
-#include <modules/opengl/buffer/bufferobject.h>
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/texture/textureunit.h>
+#include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/oit/ports/rasterizationport.h>
+#include <modules/oit/processors/rasterizer.h>
+#include <modules/oit/rendering/volumefragmentlistrenderer.h>
 
 namespace inviwo {
 
-class Image;
-
-class IVW_MODULE_MESHANDVOLUME_API MyFragmentListRenderer {
+class IVW_MODULE_OIT_API VolumeRasterizer : public Rasterizer {
 public:
-    MyFragmentListRenderer();
-    ~MyFragmentListRenderer();
+    VolumeRasterizer();
+    virtual ~VolumeRasterizer() override = default;
 
-    void prePass(const size2_t& screenSize);
+    virtual void initializeResources() override;
 
-    void setShaderUniforms(Shader& shader) const;
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) override;
 
-    bool postPass(bool useIllustration, const Image* background,
-                  std::function<void(Shader&, TextureUnitContainer&)> setUniformsCallback);
+    virtual UseFragmentList usesFragmentLists() const override {
+        return VolumeFragmentListRenderer::supportsFragmentLists() ? UseFragmentList::Yes
+                                                                   : UseFragmentList::No;
+    }
 
-    void beginCount();
-    void endCount();
+    virtual std::optional<mat4> boundingBox() const override;
 
-    static bool supportsFragmentLists();
+    virtual std::optional<Rasterization::RaycastingState> getRaycastingState() const override;
 
-    DispatcherHandle<void()> onReload(std::function<void()> callback);
+    virtual Document getInfo() const override;
 
-private:
-    void buildShaders(bool hasBackground = false);
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-    void setUniforms(Shader& shader, const TextureUnit& abuffUnit) const;
-    void resizeBuffers(const size2_t& screenSize);
+protected:
+    virtual void setUniforms(Shader& shader) override;
 
-    size2_t screenSize_;
-    size_t fragmentSize_;
+    VolumeInport volumeInport_;
+    MeshInport meshInport_;
 
-    // basic fragment lists
-    Texture2D abufferIdxTex_;
-    TextureUnitContainer textureUnits_;
-    bool builtWithBackground_ = false;
+    Shader shader_;
+    IsoTFProperty tf_;
+    OptionPropertyInt channel_;
+    FloatProperty opacityScaling_;
 
-    BufferObject atomicCounter_;
-    BufferObject pixelBuffer_;
-
-    GLuint totalFragmentQuery_;
-
-    Shader clear_;
-    Shader display_;
-
-    Dispatcher<void()> onReload_;
+    std::shared_ptr<TFLookupTable> tfLookup_;
 };
 
 }  // namespace inviwo
