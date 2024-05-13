@@ -140,6 +140,24 @@ vec3 shadePhong(LightParameters light_, vec3 materialAmbientColor, vec3 material
     return resAmb + resDiff + resSpec;
 }
 
+vec3 shadeBlinnPhongTwoSided(LightParameters light_, vec3 materialAmbientColor, vec3 materialDiffuseColor,
+                     vec3 materialSpecularColor, vec3 position, vec3 normal, vec3 toCameraDir) {
+    if (dot(toCameraDir, normal) < 0) {
+        normal = -normal;
+    }
+    return shadeBlinnPhong(light_, materialAmbientColor, materialDiffuseColor, materialSpecularColor, 
+                           position, normal, toCameraDir);
+}
+
+vec3 shadePhongTwoSided(LightParameters light_, vec3 materialAmbientColor, vec3 materialDiffuseColor,
+                vec3 materialSpecularColor, vec3 position, vec3 normal, vec3 toCameraDir) {
+    if (dot(toCameraDir, normal) < 0) {
+        normal = -normal;
+    }
+    return shadePhong(light_, materialAmbientColor, materialDiffuseColor, materialSpecularColor, 
+                      position, normal, toCameraDir);
+}
+
 vec3 applyLighting(in LightParameters lightsource, in ShadingParameters shading, in vec3 viewDir) {
     return APPLY_LIGHTING(lightsource, shading.colors.ambient, shading.colors.diffuse,
                           shading.colors.specular, shading.worldPosition, shading.normal, viewDir);

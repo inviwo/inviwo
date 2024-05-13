@@ -144,11 +144,24 @@ void addShaderDefines(Shader& shader, const ShadingMode& mode) {
                 return "shadeSpecular(lighting, materialSpecularColor, position, normal, "
                        "toCameraDir)";
             case ShadingMode::BlinnPhong:
-                return "shadeBlinnPhong(lighting, materialAmbientColor, materialDiffuseColor, "
+                return "shadeBlinnPhongTwoSided(lighting, materialAmbientColor, "
+                       "materialDiffuseColor, "
                        "materialSpecularColor, position, normal, toCameraDir)";
             case ShadingMode::Phong:
+                return "shadePhongTwoSided(lighting, materialAmbientColor, materialDiffuseColor, "
+                       "materialSpecularColor, position, normal, toCameraDir)";
+            case ShadingMode::BlinnPhongFront:
+                return "shadeBlinnPhong(lighting, materialAmbientColor, materialDiffuseColor, "
+                       "materialSpecularColor, position, normal, toCameraDir)";
+            case ShadingMode::BlinnPhongBack:
+                return "shadeBlinnPhong(lighting, materialAmbientColor, materialDiffuseColor, "
+                       "materialSpecularColor, position, -(normal), toCameraDir)";
+            case ShadingMode::PhongFront:
                 return "shadePhong(lighting, materialAmbientColor, materialDiffuseColor, "
                        "materialSpecularColor, position, normal, toCameraDir)";
+            case ShadingMode::PhongBack:
+                return "shadePhong(lighting, materialAmbientColor, materialDiffuseColor, "
+                       "materialSpecularColor, position, -(normal), toCameraDir)";
             case ShadingMode::None:
             default:
                 return "materialAmbientColor";
