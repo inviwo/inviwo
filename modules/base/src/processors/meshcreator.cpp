@@ -266,9 +266,11 @@ MeshCreator::~MeshCreator() {}
 
 std::shared_ptr<Mesh> MeshCreator::createMesh() {
     switch (meshType_.get()) {
-        case MeshType::Sphere:
-            return SimpleMeshCreator::sphere(0.5f * meshScale_.get(), meshRes_.get().y,
-                                             meshRes_.get().x);
+        case MeshType::Sphere: {
+            auto mesh = SimpleMeshCreator::sphere(1.0f, meshRes_.get().y, meshRes_.get().x);
+            mesh->setModelMatrix(glm::scale(vec3{meshScale_.get()}));
+            return mesh;
+        }
         case MeshType::ColorSphere:
             return meshutil::colorsphere(position1_, meshScale_.get());
         case MeshType::CubeBasicMesh: {

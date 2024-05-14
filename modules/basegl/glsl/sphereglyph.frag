@@ -142,14 +142,15 @@ void main() {
     }
 #endif
 
-    ShadingParameters shadingParams = shading(glyphColor.rgb, normal, intersection);
+    vec3 intersectionWorld = intersection + sphere.center.xyz;
+    ShadingParameters shadingParams = shading(glyphColor.rgb, normal, intersectionWorld);
 
     glyphColor.rgb = applyLighting(lighting, shadingParams, 
-                                   normalize(sphere.camPos - intersection));
+                                   normalize(camera.position - intersectionWorld));
 
     // depth correction for glyph
     float depth = glyphDepth(intersection + sphere.center.xyz, camera.worldToClip);
-    if (clipGlypNearPlane(coord, sphere.camPos - coord.xyz, camera.viewToWorld[2].xyz, lighting,
+    if (clipGlypNearPlane(coord, camera.viewToWorld[2].xyz, lighting,
                           sphere.color.rgb * clipShadingFactor, glyphColor, depth)) {
         discard;
     }

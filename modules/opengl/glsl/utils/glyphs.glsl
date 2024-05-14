@@ -31,11 +31,11 @@
 #define IVW_GLYPHS_GLSL
 
 #include "utils/structs.glsl" //! #include "./structs.glsl"
+#include "utils/shading.glsl"
 
 // shade the visible cut surface of a glyph when it gets clipped by the near clip plane
 //
 // @param glyphCenter     center of the glyph in object space
-// @param viewDir         view direction of the camera
 // @param lighting        lighting params
 // @param srcColor        glyph color (non-shaded)
 // @param dstColor        color of the clipped surface (shading depends on `DISCARD_CLIPPED_GLYPHS`
@@ -43,7 +43,7 @@
 // @param depth           depth in normalized device coords [0,1]
 // @return true if the fragment should be discarded (clipped surface not visible)
 //
-bool clipGlypNearPlane(in vec4 glyphCenter, in vec3 viewDir, in vec3 camDir,
+bool clipGlypNearPlane(in vec4 glyphCenter, in vec3 camDir,
                        in LightParameters lighting, in vec3 srcColor, 
                        inout vec4 dstColor, inout float depth) {
     // first intersection lies behind the camera
@@ -56,10 +56,10 @@ bool clipGlypNearPlane(in vec4 glyphCenter, in vec3 viewDir, in vec3 camDir,
         // need to compute proper ray-near plane intersection for shading.
         // Use initial glyph coordinate for now since this should be precise enough for smaller glyphs.
 
-        // clip surface is orthogonal to view direction of the camera, use viewDir as normal
-        vec3 normal = normalize(viewDir);
-        dstColor.rgb = APPLY_LIGHTING(lighting, srcColor, srcColor, vec3(1.0f), glyphCenter.xyz,
-                               normal, normalize(camDir));
+        // clip surface is orthogonal to view direction of the camera, use camera direction as normal
+        vec3 normal = normalize(camDir);
+        ShadingParameters shadingParams = shading(srcColor, normal, glyphCenter.xyz);
+        dstColor.rgb = applyLighting(lighting, shadingParams, normal);
         depth += 0.000001;
     }
 #else

@@ -171,7 +171,7 @@ void main(void) {
 
     Cam cam;
     vec3 camDir = normalize((camera.viewToWorld[2]).xyz);
-    vec3 camPosModel = camera.viewToWorld[3].xyz;
+    vec3 camPosWorld = camera.viewToWorld[3].xyz;
     // camera coordinate system in object space
     cam.right = normalize(cross(camDir, camera.viewToWorld[1].xyz));
     cam.up = normalize(cross(camDir, cam.right));
@@ -198,7 +198,7 @@ void main(void) {
                     all(lessThan(newPos, vec3(1.0 + duplicateCutoff)))) {
                     sphere.center = data2World(vec4(newPos, pos.w));
                      // calculate cam position (in model space of the sphere)
-                    cam.pos = camPosModel - sphere.center.xyz;
+                    cam.pos = camPosWorld - sphere.center.xyz;
                     if (!outOfView(cam.pos, camDir, sphere.radius)) {
                         emitQuad(sphere, cam);
                     }
@@ -211,7 +211,7 @@ void main(void) {
 
     sphere.center = data2World(shiftFractional(gl_in[0].gl_Position));
     // calculate cam position (in model space of the sphere)
-    cam.pos = camPosModel - sphere.center.xyz;
+    cam.pos = camPosWorld - sphere.center.xyz;
     if (outOfView(cam.pos, camDir, sphere.radius)) {
         EndPrimitive();
     } else {
