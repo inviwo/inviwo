@@ -96,8 +96,8 @@ data.w: float RGB (10bits each) + 1 bit unused + 1 bit type
 VOLUME:
 data.x: uint prev;
 data.y: float depth;
-data.z: R(20bits) + G(12bits)
-data.w: G(8bits) + B(20bits) + id(3bits) + type(1bit)
+data.z: pos.x(20bits) + pos.y(12bits)
+data.w: pos.y(8bits) + pos.z(20bits) + id(3bits) + type(1bit)
 
 */
 // Fragment linked list

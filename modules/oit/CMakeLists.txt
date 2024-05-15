@@ -20,6 +20,7 @@ set(HEADER_FILES
     include/modules/oit/processors/transformrasterization.h
     include/modules/oit/processors/volumerasterizer.h
     include/modules/oit/rasterizeevent.h
+    include/modules/oit/raycastingstate.h
     include/modules/oit/rendering/fragmentlistrenderer.h
     include/modules/oit/rendering/rasterizationrendererbase.h
     include/modules/oit/rendering/volumefragmentlistrenderer.h
@@ -44,6 +45,7 @@ set(SOURCE_FILES
     src/processors/transformrasterization.cpp
     src/processors/volumerasterizer.cpp
     src/rasterizeevent.cpp
+    src/raycastingstate.cpp
     src/rendering/fragmentlistrenderer.cpp
     src/rendering/rasterizationrendererbase.cpp
     src/rendering/volumefragmentlistrenderer.cpp

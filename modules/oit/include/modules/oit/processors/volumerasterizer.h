@@ -60,7 +60,7 @@ public:
 
     virtual std::optional<mat4> boundingBox() const override;
 
-    virtual std::optional<Rasterization::RaycastingState> getRaycastingState() const override;
+    virtual std::optional<RaycastingState> getRaycastingState() const override;
 
     virtual Document getInfo() const override;
 

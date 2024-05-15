@@ -45,6 +45,10 @@
 #include "utils/depth.glsl"
 #include "utils/sampler3d.glsl"
 
+#if !defined(MAX_SUPPORTED_VOLUMES)
+#define MAX_SUPPORTED_VOLUMES 4
+#endif
+
 #if !defined(REF_SAMPLING_INTERVAL)
 #define REF_SAMPLING_INTERVAL 150.0
 #endif
@@ -91,11 +95,11 @@ uniform float samplingDistance; // distance between two volume samples in world 
 // }
 // ```
 
-uniform sampler3D volumeSamplers[4];
-uniform sampler2D tfSamplers[4];
-uniform VolumeParameters volumeParameters[4];
-uniform int volumeChannels[4];
-uniform float opacityScaling[4] = float[4](1, 1, 1, 1);
+uniform sampler3D volumeSamplers[MAX_SUPPORTED_VOLUMES];
+uniform sampler2D tfSamplers[MAX_SUPPORTED_VOLUMES];
+uniform VolumeParameters volumeParameters[MAX_SUPPORTED_VOLUMES];
+uniform int volumeChannels[MAX_SUPPORTED_VOLUMES];
+uniform float opacityScaling[MAX_SUPPORTED_VOLUMES];
 uniform LightParameters lighting;
 
 struct RaycastingInfo {
@@ -104,7 +108,7 @@ struct RaycastingInfo {
     bool isActive;
 };
 
-RaycastingInfo raycastingInfos[4];
+RaycastingInfo raycastingInfos[MAX_SUPPORTED_VOLUMES];
 
 // Computes only the number of fragments
 int getFragmentCount(uint pixelIdx);
@@ -141,7 +145,7 @@ float absorption(in uint volumeIndex, in float opacity, in float tIncr) {
 }
 
 void initRaycastingInfo() {
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < MAX_SUPPORTED_VOLUMES; ++i) {
         // determine the ray direction in data space
         mat4 clipToData = volumeParameters[i].worldToData * camera.clipToWorld;
         vec4 posData = clipToData * vec4(gl_FragCoord.xy, 1.0, 1.0);
@@ -263,22 +267,7 @@ void main() {
                         // depending on volumeIndex. 
                         // Arrays of samplers can only be accessed by compile-time integral constant expressions.
                         // see https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)#Opaque_arrays
-                        switch (volumeIndex) {
-                            case 0:
-                                scalar = sampleVolume(volumeSamplers[0], volumeIndex, samplePosWorld);
-                                break;
-                            case 1:
-                                scalar = sampleVolume(volumeSamplers[1], volumeIndex, samplePosWorld);
-                                break;
-                            case 2:
-                                scalar = sampleVolume(volumeSamplers[2], volumeIndex, samplePosWorld);
-                                break;
-                            case 3:
-                                scalar = sampleVolume(volumeSamplers[3], volumeIndex, samplePosWorld);
-                                break;
-                            default:
-                                break;
-                        }
+                        scalar = sampleVolume(volumeSamplers[volumeIndex], volumeIndex, samplePosWorld);
 
                         vec4 color = applyTF(tfSamplers[volumeIndex], scalar);
 

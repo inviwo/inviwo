@@ -42,7 +42,7 @@
 #include <modules/opengl/rendering/meshdrawergl.h>  // for MeshDrawerG...
 #include <modules/opengl/geometry/meshgl.h>         // for MeshGL
 #include <modules/oit/datastructures/transformedrasterization.h>
-#include <modules/oit/datastructures/rasterization.h>
+#include <modules/oit/raycastingstate.h>
 
 #include <fmt/core.h>  // for format
 
@@ -79,12 +79,13 @@ VolumeRasterizer::VolumeRasterizer()
                 {"channel3", "Channel 3", 2},
                 {"channel4", "Channel 4", 3}},
                0}
-    , opacityScaling_{
-          "opacityScaling", "Opacity Scaling",
-          util::ordinalScale(1.0f, 10.0f)
-              .setInc(0.01f)
-              .set("Scaling factor for the opacity in the transfer function since the sampling "
-                   "distance is given in world coordinate space."_help)} {
+    , opacityScaling_{"opacityScaling", "Opacity Scaling",
+                      util::ordinalScale(1.0f, 10.0f)
+                          .setInc(0.01f)
+                          .set("Scaling factor for the opacity in the transfer function since the "
+                               "sampling "
+                               "distance is given in world coordinate space."_help)}
+    , tfLookup_{std::make_shared<TFLookupTable>(tf_.tf_.get())} {
 
     addPorts(volumeInport_, meshInport_);
     addProperties(channel_, opacityScaling_, tf_);
@@ -131,8 +132,6 @@ void VolumeRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrix
                                         boundingMesh->getDefaultMeshInfo()};
         drawer.draw();
     }
-
-    tfLookup_ = std::make_shared<TFLookupTable>(tf_.tf_.get());
 }
 
 std::optional<mat4> VolumeRasterizer::boundingBox() const {
@@ -151,8 +150,8 @@ void VolumeRasterizer::setUniforms(Shader& shader) {
     shader_.setUniform("externalColor", vec4{1.0f, 0.0f, 1.0f, 1.0f});
 }
 
-std::optional<Rasterization::RaycastingState> VolumeRasterizer::getRaycastingState() const {
-    return Rasterization::RaycastingState{
+std::optional<RaycastingState> VolumeRasterizer::getRaycastingState() const {
+    return RaycastingState{
         .tfLookup = tfLookup_,
         .channel = channel_,
         .opacityScaling = opacityScaling_,

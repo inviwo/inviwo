@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/isotfproperty.h>
 
 #include <modules/oit/rasterizeevent.h>
+#include <modules/oit/raycastingstate.h>
 
 #include <functional>  // for function
 #include <string>      // for string
@@ -61,7 +62,6 @@ public:
     Rasterization(Rasterization&&) = delete;
     Rasterization& operator=(const Rasterization&) = delete;
     Rasterization& operator=(Rasterization&&) = delete;
-    virtual ~Rasterization() = default;
 
     std::shared_ptr<Rasterizer> getProcessor() const;
 
@@ -84,13 +84,7 @@ public:
      */
     std::optional<mat4> boundingBox() const;
 
-    struct RaycastingState {
-        std::shared_ptr<TFLookupTable> tfLookup;
-        int channel;
-        float opacityScaling;
-        std::shared_ptr<const Volume> volume;
-    };
-    virtual std::optional<RaycastingState> getRaycastingState() const;
+    std::optional<RaycastingState> getRaycastingState() const;
 
 private:
     std::weak_ptr<Rasterizer> processor_;

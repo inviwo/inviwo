@@ -41,6 +41,7 @@
 namespace inviwo {
 
 class Shader;
+struct RaycastingState;
 
 class IVW_MODULE_OIT_API Rasterizer : public Processor {
 public:
@@ -77,9 +78,7 @@ public:
      * @brief Query raycasting state used for volume rendering.
      * @return raycasting-specific parameters for volume rendering between volume fragments
      */
-    virtual std::optional<Rasterization::RaycastingState> getRaycastingState() const {
-        return std::nullopt;
-    }
+    virtual std::optional<RaycastingState> getRaycastingState() const { return std::nullopt; }
 
     virtual Document getInfo() const { return Document{}; }
 

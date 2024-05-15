@@ -36,6 +36,7 @@
 
 #include <modules/oit/datastructures/rasterization.h>
 #include <modules/oit/rasterizeevent.h>
+#include <modules/oit/raycastingstate.h>
 
 #include <fmt/core.h>
 
@@ -47,7 +48,7 @@ namespace inviwo {
  * VolumeFragmentListRenderer. In particular for the volume and tf samplers as well as volume
  * parameters and the switch-case statement selecting the array samplers.
  */
-constexpr int maxSupportedVolumeRasterizers = 4;
+constexpr int maxSupportedVolumeRasterizers = 16;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo MeshVolumeRenderer::processorInfo_{
@@ -130,6 +131,7 @@ void MeshVolumeRenderer::process() {
             ++volumeId;
         }
     }
+    const int numVolumes = volumeId;
     if (volumeId > maxSupportedVolumeRasterizers) {
         LogWarn(
             fmt::format("More than {} Volume Rasterizers connected to {} ({}). Omitting "
@@ -168,10 +170,17 @@ void MeshVolumeRenderer::process() {
             utilgl::setUniforms(shader, camera_, lighting_);
             shader.setUniform("samplingDistance", samplingDistance_);
 
+            // NOTE: _All_ texture array samplers must be set (volumeSamplers[], tfSamplers[], ...).
+            // Otherwise, if an unbound array sampler is used (e.g. in a switch-case statement as
+            // compile-time expression), the draw call results in an invalid operation. The same
+            // error is generated when setting the samplers to 0. This is currently guaranteed by
+            // the VolumeFragmentListRenderer recompiling the shader for the number of available
+            // volumes (numVolumes).
+
             StrBuffer buff;
             for (auto&& [volumeRasterizer, id] : volumeIds_) {
                 auto raycastingState = volumeRasterizer->getRaycastingState();
-                if (raycastingState && id < maxSupportedVolumeRasterizers) {
+                if (raycastingState && id < numVolumes) {
                     shader.setUniform(buff.replace("volumeChannels[{}]", id),
                                       raycastingState->channel);
                     shader.setUniform(buff.replace("opacityScaling[{}]", id),
@@ -195,22 +204,9 @@ void MeshVolumeRenderer::process() {
                     }
                 }
             }
-
-            // Duplicate volume and TF texture unit IDs for remaining unused texture array
-            // samplers (up to maxSupportedVolumeRasterizers). Otherwise, if an unbound array
-            // sampler is used (e.g. in the switch-case statement as compile-time expression),
-            // the draw call results in an invalid operation. The same error is generated when
-            // setting the samplers to 0.
-            const GLint volumeSampler = texUnits[texUnits.size() - 2].getUnitNumber();
-            const GLint tfSampler = texUnits[texUnits.size() - 1].getUnitNumber();
-            while (volumeId > 0 && volumeId < maxSupportedVolumeRasterizers) {
-                shader.setUniform(buff.replace("volumeSamplers[{}]", volumeId), volumeSampler);
-                shader.setUniform(buff.replace("tfSamplers[{}]", volumeId), tfSampler);
-                ++volumeId;
-            }
         };
 
-        success = flr_->postPass(false, &intermediateImage_, uniformsCallback);
+        success = flr_->postPass(false, &intermediateImage_, uniformsCallback, numVolumes);
     }
 
     utilgl::deactivateCurrentTarget();

@@ -29,6 +29,7 @@
 
 #include <modules/oit/rendering/volumefragmentlistrenderer.h>
 
+#include <inviwo/core/util/stringconversion.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/sharedopenglresources.h>
 #include <modules/opengl/openglutils.h>
@@ -36,13 +37,11 @@
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/openglcapabilities.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/volume/volumegl.h>
 
 #include <cstdio>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-
-#include <modules/opengl/volume/volumegl.h>
-#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
@@ -51,6 +50,8 @@ VolumeFragmentListRenderer::VolumeFragmentListRenderer()
     , fragmentSize_{1024}
     , abufferIdxTex_{screenSize_, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST}
     , textureUnits_{}
+    , builtWithBackground_{false}
+    , numVolumes_{0}
     , atomicCounter_{sizeof(GLuint), GLFormats::getGLFormat(GL_UNSIGNED_INT, 1), GL_DYNAMIC_DRAW,
                      GL_ATOMIC_COUNTER_BUFFER}
     , pixelBuffer_{fragmentSize_ * 4 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 4),
@@ -116,7 +117,7 @@ void VolumeFragmentListRenderer::endCount() { glEndQuery(GL_SAMPLES_PASSED); }
 
 bool VolumeFragmentListRenderer::postPass(
     bool useIllustration, const Image* background,
-    std::function<void(Shader&, TextureUnitContainer&)> setUniformsCallback) {
+    std::function<void(Shader&, TextureUnitContainer&)> setUniformsCallback, int numVolumes) {
     // memory barrier
     glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
 
@@ -136,8 +137,9 @@ bool VolumeFragmentListRenderer::postPass(
     }
 
     // Build shader depending on inport state.
-    if (supportsFragmentLists() && static_cast<bool>(background) != builtWithBackground_) {
-        buildShaders(background);
+    if (supportsFragmentLists() &&
+        (static_cast<bool>(background) != builtWithBackground_ || numVolumes != numVolumes_)) {
+        buildShaders(background, numVolumes);
     }
 
     if (!useIllustration) {
@@ -216,8 +218,9 @@ DispatcherHandle<void()> VolumeFragmentListRenderer::onReload(std::function<void
     return onReload_.add(callback);
 }
 
-void VolumeFragmentListRenderer::buildShaders(bool hasBackground) {
+void VolumeFragmentListRenderer::buildShaders(bool hasBackground, int numVolumes) {
     builtWithBackground_ = hasBackground;
+    numVolumes_ = numVolumes;
     auto* dfs = display_.getFragmentShaderObject();
     dfs->clearShaderExtensions();
 
@@ -236,6 +239,10 @@ void VolumeFragmentListRenderer::buildShaders(bool hasBackground) {
         cfs->addShaderExtension("GL_EXT_bindable_uniform", true);
 
         dfs->setShaderDefine("BACKGROUND_AVAILABLE", builtWithBackground_);
+
+        StrBuffer buf;
+        dfs->addShaderDefine("MAX_SUPPORTED_VOLUMES", buf.replace("{}", numVolumes_));
+
         display_.build();
         clear_.build();
     }

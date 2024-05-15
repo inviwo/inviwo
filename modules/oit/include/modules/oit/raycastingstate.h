@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,62 +30,17 @@
 
 #include <modules/oit/oitmoduledefine.h>
 
-#include <inviwo/core/util/dispatcher.h>
-#include <inviwo/core/util/glmvec.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/buffer/bufferobject.h>
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/texture/textureunit.h>
+#include <memory>
 
 namespace inviwo {
+class TFLookupTable;
+class Volume;
 
-class Image;
-
-class IVW_MODULE_OIT_API VolumeFragmentListRenderer {
-public:
-    VolumeFragmentListRenderer();
-    ~VolumeFragmentListRenderer();
-
-    void prePass(const size2_t& screenSize);
-
-    void setShaderUniforms(Shader& shader) const;
-
-    bool postPass(bool useIllustration, const Image* background,
-                  std::function<void(Shader&, TextureUnitContainer&)> setUniformsCallback,
-                  int numVolumes);
-
-    void beginCount();
-    void endCount();
-
-    static bool supportsFragmentLists();
-
-    DispatcherHandle<void()> onReload(std::function<void()> callback);
-
-private:
-    void buildShaders(bool hasBackground = false, int numVolumes = 1);
-
-    void setUniforms(Shader& shader, const TextureUnit& abuffUnit) const;
-    void resizeBuffers(const size2_t& screenSize);
-
-    size2_t screenSize_;
-    size_t fragmentSize_;
-
-    // basic fragment lists
-    Texture2D abufferIdxTex_;
-    TextureUnitContainer textureUnits_;
-    bool builtWithBackground_;
-    int numVolumes_;
-
-    BufferObject atomicCounter_;
-    BufferObject pixelBuffer_;
-
-    GLuint totalFragmentQuery_;
-
-    Shader clear_;
-    Shader display_;
-
-    Dispatcher<void()> onReload_;
+struct IVW_MODULE_OIT_API RaycastingState {
+    std::shared_ptr<TFLookupTable> tfLookup;
+    int channel = 0;
+    float opacityScaling = 1.0f;
+    std::shared_ptr<const Volume> volume;
 };
 
 }  // namespace inviwo
