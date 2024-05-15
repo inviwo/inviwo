@@ -50,8 +50,9 @@ void main() {
 
     vec4 fragColor = color_;
     vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
+    vec3 normal = orientedShadingNormal(normalize(normal_), worldPosition_.xyz);
 
-    ShadingParameters shadingParams = shading(color_.rgb, normalize(normal_), worldPosition_.xyz);
+    ShadingParameters shadingParams = shading(fragColor.rgb, normal, worldPosition_.xyz);
 
     fragColor.rgb = applyLighting(lighting, shadingParams, normalize(toCameraDir_));
 

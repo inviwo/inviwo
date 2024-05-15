@@ -156,6 +156,16 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
             shadingParams = shading(color.rgb, -gradient, 
                                     (volumeParameters.textureToWorld * vec4(samplePos, 1.0)).xyz);
 
+#if defined(SHADING_NORMAL) && (SHADING_NORMAL == 1)
+            // backside shading only
+            shadingParams.normal = -shadingParams.normal;
+#elif defined(SHADING_NORMAL) && (SHADING_NORMAL == 2)
+            // two-sided shading
+            if (dot(shadingParams.normal, rayDirection) > 0.0) {
+                shadingParams.normal = -shadingParams.normal;
+            }
+#endif
+
             // Note that the gradient is reversed since we define the normal of a surface as
             // the direction towards a lower intensity medium (gradient points in the increasing
             // direction)

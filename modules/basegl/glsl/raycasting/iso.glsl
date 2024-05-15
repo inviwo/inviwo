@@ -85,10 +85,18 @@ vec4 drawISO(in vec4 result, in float isovalue, in vec4 isocolor, in float value
         
         #if defined(SHADING_ENABLED) && defined(GRADIENTS_ENABLED)
         vec3 isoGradient = mix(gradient, previousGradient, a);
-        if (dot(isoGradient, rayDirection) < 0.0) {  // two-sided lighting
-            isoGradient = -isoGradient;
-        }
         shadingParams.normal = -isoGradient;
+
+#if defined(SHADING_NORMAL) && (SHADING_NORMAL == 1)
+        // backside shading only
+        shadingParams.normal = -shadingParams.normal;
+#elif defined(SHADING_NORMAL) && (SHADING_NORMAL == 2)
+        // two-sided shading
+        if (dot(shadingParams.normal, rayDirection) > 0.0) {
+            shadingParams.normal = -shadingParams.normal;
+        }
+#endif
+
         shadingParams.worldPosition = (textureToWorld * vec4(isopos, 1.0)).xyz;
         #endif
 
