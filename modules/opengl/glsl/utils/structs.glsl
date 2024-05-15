@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_STRUCTS_GLSL
@@ -41,21 +41,11 @@ struct CameraParameters {
    float nearPlane;  // zNear
    float farPlane;   // zFar
 };
-// Convenience functions to retrieve camera parameters
-/* lookAt(vec3 eye, vec3 center, vec3 up) {
-    vec3 cameraDir(normalize(center - eye));
-    vec3 right(normalize(cross(cameraDir, up)));
-    up = (cross(right, cameraDir));
-    vec3 lookFrom(dot(right, eye), dot(up, eye), -dot(cameraDir, eye));
-    [  right[0], up[0], -cameraDir[0], -lookFrom[0] ] 
-    [  right[1], up[1], -cameraDir[1], -lookFrom[1] ] 
-    [  right[2], up[2], -cameraDir[2], -lookFrom[2] ] 
-    [         0,     0,         0,       1     ] */
 
-// Does this work??
-vec3 right(in CameraParameters camera) { return camera.worldToView[0].xyz; }
-vec3 up(in CameraParameters camera) { return camera.worldToView[1].xyz; }
-vec3 direction(in CameraParameters camera) { return -camera.worldToView[2].xyz; }
+// Convenience functions to retrieve camera parameters
+vec3 right(in CameraParameters camera) { return normalize(camera.viewToWorld[0].xyz); }
+vec3 up(in CameraParameters camera) { return normalize(camera.viewToWorld[1].xyz); }
+vec3 direction(in CameraParameters camera) { return normalize(camera.viewToWorld[2].xyz); }
 
 struct GeometryParameters {
     mat4 dataToModel;
@@ -80,12 +70,12 @@ struct VolumeParameters {
     mat4 textureToWorldNormalMatrix;       // Equivalent to the inverse transposed textureToWorld matrix
     mat4 textureToIndex;                   // Transform from [0 1] to [-0.5 dim-0.5]
     mat4 indexToTexture;                   // Transform from [-0.5 dim-0.5] to [0 1]
-    mat3 textureSpaceGradientSpacing;      // Maximum possible distance to go without ending up 
-                                           // outside of a voxel (half of minimum voxel spacing 
+    mat3 textureSpaceGradientSpacing;      // Maximum possible distance to go without ending up
+                                           // outside of a voxel (half of minimum voxel spacing
                                            // for volumes with orthogonal basis)
-    vec3 dimensions;                       // Number of voxels (dim) per axis 
+    vec3 dimensions;                       // Number of voxels (dim) per axis
     vec3 reciprocalDimensions;             // 1 over the number of voxels
-    vec3 worldSpaceGradientSpacing;       // Spacing between gradient samples in world space 
+    vec3 worldSpaceGradientSpacing;       // Spacing between gradient samples in world space
     float formatScaling;                   // This scaling and offset parameters is used to
     float formatOffset;                    // map value from data range [min,max] to [0,1]
     float signedFormatScaling;             // or to [-1,1] for signed data. It is used by
@@ -113,9 +103,9 @@ struct ImageParameters {
 };
 
 struct LightParameters {
-    vec3 position; 
+    vec3 position;
     vec3 ambientColor;
-    vec3 diffuseColor; 
+    vec3 diffuseColor;
     vec3 specularColor;
     float specularExponent;
 };
