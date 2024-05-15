@@ -78,15 +78,17 @@ VolumeCreator::VolumeCreator()
              {"ripple", "Ripple", Type::Ripple},
              {"marchingCube", "Marching Cube", Type::MarchingCube}}}
     , format_{"format", "Format",
-              [&]() {
-                  std::vector<OptionPropertyOption<DataFormatId>> formats;
-                  util::for_each_type<DefaultDataFormats>{}([&]<typename Format>() {
-                      formats.emplace_back(Format::str(), Format::str(), Format::id());
-                  });
-                  return formats;
-              }(),
-              1}
-    , dimensions_("dimensions", "Dimensions", size3_t(10), size3_t(0), size3_t(512))
+              OptionPropertyState<DataFormatId>{
+                  .options =
+                      [&]() {
+                          std::vector<OptionPropertyOption<DataFormatId>> formats;
+                          util::for_each_type<DefaultDataFormats>{}([&]<typename Format>() {
+                              formats.emplace_back(Format::str(), Format::str(), Format::id());
+                          });
+                          return formats;
+                      }()}
+                  .setSelectedValue(DataFloat32::id())}
+    , dimensions_("dims", "Dimensions", size3_t(10), size3_t(0), size3_t(512))
     , index_("index", "Index", 5, 0, 255)
     , information_("Information", "Data information")
     , basis_("Basis", "Basis and offset") {
