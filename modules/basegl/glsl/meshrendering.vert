@@ -24,10 +24,8 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
-
-// Owned by the MeshRenderProcessorGL Processor
 
 #include "utils/structs.glsl"
 #include "utils/pickingutils.glsl"
@@ -47,7 +45,7 @@ out vec3 viewNormal_;
 out vec4 color_;
 out vec3 texCoord_;
 flat out vec4 pickColor_;
- 
+
 void main() {
 #ifdef OVERRIDE_COLOR_BUFFER
     color_ = overrideColor;
@@ -56,8 +54,8 @@ void main() {
 #endif
     texCoord_ = in_TexCoord;
     worldPosition_ = geometry.dataToWorld * in_Vertex;
-    normal_ = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
-    viewNormal_ = (camera.worldToView * vec4(normal_,0)).xyz;
+    normal_ = geometry.dataToWorldNormalMatrix * normalize(in_Normal);
+    viewNormal_ = transpose(mat3(camera.viewToWorld)) * normal_;
     gl_Position = camera.worldToClip * worldPosition_;
     pickColor_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
 }

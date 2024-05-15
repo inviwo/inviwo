@@ -24,10 +24,8 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
-
-// Owned by the MeshRenderProcessorGL Processor
 
 #include "utils/shading.glsl"
 
@@ -48,7 +46,7 @@ flat in vec4 pickColor_;
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if(color_.a == 0) { discard; }
+    if (color_.a == 0) { discard; }
 
     vec4 fragColor = color_;
     vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
@@ -61,13 +59,13 @@ void main() {
     FragData0 = fragColor;
 #endif
 #ifdef TEXCOORD_LAYER
-    tex_coord_out = vec4(texCoord_,1.0f);
+    tex_coord_out = vec4(texCoord_, 1.0f);
 #endif
 #ifdef NORMALS_LAYER
-    normals_out = vec4((normalize(normal_)+1.0)*0.5,1.0f);
+    normals_out = vec4(normalize(normal_) * 0.5 + 0.5, 1.0f);
 #endif
 #ifdef VIEW_NORMALS_LAYER
-    view_normals_out = vec4((normalize(viewNormal_)+1.0)*0.5,1.0f);
+    view_normals_out = vec4(normalize(viewNormal_) * 0.5 + 0.5, 1.0f);
 #endif
 
     PickingData = pickColor_;
