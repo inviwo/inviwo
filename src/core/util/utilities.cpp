@@ -108,7 +108,7 @@ void saveAllCanvases(ProcessorNetwork* network, const std::filesystem::path& dir
 }
 
 bool isValidIdentifierCharacter(char c, std::string_view extra) {
-    return (std::isalnum(c) || c == '_' || c == '-' || util::contains(extra, c));
+    return (std::isalnum(c) || c == '_' || util::contains(extra, c));
 }
 
 void validateIdentifier(std::string_view identifier, std::string_view type,
