@@ -97,18 +97,18 @@ WorkspaceAnnotationsQt& AnnotationsWidget::getAnnotations() { return annotations
 const WorkspaceAnnotationsQt& AnnotationsWidget::getAnnotations() const { return annotations_; }
 
 void AnnotationsWidget::updateWidget() {
-    auto groupbox =
+    auto groupBox =
         new CollapsibleGroupBoxWidgetQt(nullptr, &annotations_, "Workspace Annotations");
-    layout_->addWidget(groupbox);
-    groupbox->initState();
+    layout_->addWidget(groupBox);
+    groupBox->initState();
 
     for (auto p : annotations_.getProperties()) {
-        groupbox->addProperty(p);
         p->onChange([w = mainwindow_]() { w->getNetworkEditor()->setModified(true); });
+        groupBox->addProperty(p);
     }
 
-    if (groupbox->isCollapsed()) {
-        groupbox->toggleCollapsed();
+    if (groupBox->isCollapsed()) {
+        groupBox->toggleCollapsed();
     }
 
     layout_->addStretch();
