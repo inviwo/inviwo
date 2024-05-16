@@ -27,10 +27,11 @@
  *
  *********************************************************************************/
 
+#include <inviwo/qt/editor/networkeditorview.h>
+
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/linksettings.h>
 #include <inviwo/core/util/settings/systemsettings.h>
-#include <inviwo/qt/editor/networkeditorview.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/inviwoeditmenu.h>
@@ -68,7 +69,7 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
     , overlay_{new TextLabelOverlay(viewport())}
     , scrollPos_{0, 0}
     , loadHandle_{mainwindow_->getInviwoApplication()->getWorkspaceManager()->onLoad(
-          [this](Deserializer&) { fitNetwork(); })}
+          [this](Deserializer&) { fitNetwork(); }, ~WorkspaceSaveModes{WorkspaceSaveMode::Undo})}
     , clearHandle_{mainwindow_->getInviwoApplication()->getWorkspaceManager()->onClear(
           [this]() { fitNetwork(); })} {
 
