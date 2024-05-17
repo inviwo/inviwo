@@ -41,7 +41,7 @@ void RasterizeHandle::configureShader(Shader& shader) const {
 void RasterizeHandle::setUniforms(Shader& shader, UseFragmentList useFragmentList,
                                   const Rasterization* rasterizer) const {
     if (auto renderer = rasterizationRenderer_.lock()) {
-        renderer->setUniforms(shader, useFragmentList, rasterizer);
+        renderer->setUniforms(shader, useFragmentList, rasterizer->getIdentifier());
     }
 }
 

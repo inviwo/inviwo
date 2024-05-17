@@ -260,7 +260,7 @@ void main() {
             while (t < tEnd) {
                 const vec3 samplePosWorld = camera.position + rayDir * t;
 
-                for(int volumeIndex = 0; volumeIndex < 2; ++volumeIndex) {
+                for(int volumeIndex = 0; volumeIndex < MAX_SUPPORTED_VOLUMES; ++volumeIndex) {
                     if(raycastingInfos[volumeIndex].isActive) {
                         float scalar = 0.0;
                         // texture sampling cannot be moved into a separate function due to the texture lookup 

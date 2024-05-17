@@ -126,7 +126,7 @@ void MeshVolumeRenderer::process() {
     for (auto rasterization : rasterizations_) {
         if (rasterization->getRaycastingState()) {
             if (volumeId < maxSupportedVolumeRasterizers) {
-                volumeIds_.emplace(rasterization.get(), volumeId);
+                volumeIds_.emplace(rasterization->getIdentifier(), volumeId);
             }
             ++volumeId;
         }
@@ -178,29 +178,34 @@ void MeshVolumeRenderer::process() {
             // volumes (numVolumes).
 
             StrBuffer buff;
-            for (auto&& [volumeRasterizer, id] : volumeIds_) {
-                auto raycastingState = volumeRasterizer->getRaycastingState();
-                if (raycastingState && id < numVolumes) {
-                    shader.setUniform(buff.replace("volumeChannels[{}]", id),
-                                      raycastingState->channel);
-                    shader.setUniform(buff.replace("opacityScaling[{}]", id),
-                                      raycastingState->opacityScaling);
+            for (auto rasterization : rasterizations_) {
+                if (auto it = volumeIds_.find(rasterization->getIdentifier());
+                    it != volumeIds_.end()) {
+                    const int id = it->second;
+                    auto raycastingState = rasterization->getRaycastingState();
 
-                    auto& volUnit = texUnits.emplace_back();
-                    utilgl::bindTexture(*raycastingState->volume, volUnit);
-                    shader.setUniform(buff.replace("volumeSamplers[{}]", id),
-                                      volUnit.getUnitNumber());
-                    utilgl::setShaderUniforms(shader, *raycastingState->volume,
-                                              StrBuffer{"volumeParameters[{}]", id});
+                    if (raycastingState && id < numVolumes) {
+                        shader.setUniform(buff.replace("volumeChannels[{}]", id),
+                                          raycastingState->channel);
+                        shader.setUniform(buff.replace("opacityScaling[{}]", id),
+                                          raycastingState->opacityScaling);
 
-                    if (raycastingState->tfLookup) {
-                        auto& tfUnit = texUnits.emplace_back();
-                        tfUnit.activate();
-                        const auto* layerGL =
-                            raycastingState->tfLookup->getRepresentation<LayerGL>();
-                        layerGL->bindTexture(tfUnit);
-                        shader.setUniform(buff.replace("tfSamplers[{}]", id),
-                                          tfUnit.getUnitNumber());
+                        auto& volUnit = texUnits.emplace_back();
+                        utilgl::bindTexture(*raycastingState->volume, volUnit);
+                        shader.setUniform(buff.replace("volumeSamplers[{}]", id),
+                                          volUnit.getUnitNumber());
+                        utilgl::setShaderUniforms(shader, *raycastingState->volume,
+                                                  StrBuffer{"volumeParameters[{}]", id});
+
+                        if (raycastingState->tfLookup) {
+                            auto& tfUnit = texUnits.emplace_back();
+                            tfUnit.activate();
+                            const auto* layerGL =
+                                raycastingState->tfLookup->getRepresentation<LayerGL>();
+                            layerGL->bindTexture(tfUnit);
+                            shader.setUniform(buff.replace("tfSamplers[{}]", id),
+                                              tfUnit.getUnitNumber());
+                        }
                     }
                 }
             }
@@ -217,12 +222,12 @@ void MeshVolumeRenderer::configureShader(Shader& shader) const {
 }
 
 void MeshVolumeRenderer::setUniforms(Shader& shader, UseFragmentList useFragmentList,
-                                     const Rasterization* rasterizer) const {
+                                     std::string_view rasterizerId) const {
     utilgl::setUniforms(shader, camera_, lighting_);
     if (flr_ && useFragmentList == UseFragmentList::Yes) {
         flr_->setShaderUniforms(shader);
 
-        if (auto it = volumeIds_.find(rasterizer); it != volumeIds_.end()) {
+        if (auto it = volumeIds_.find(rasterizerId); it != volumeIds_.end()) {
             shader.setUniform("volumeId", it->second);
         }
     }

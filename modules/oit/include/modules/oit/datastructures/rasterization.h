@@ -86,6 +86,8 @@ public:
 
     std::optional<RaycastingState> getRaycastingState() const;
 
+    std::string_view getIdentifier() const;
+
 private:
     std::weak_ptr<Rasterizer> processor_;
 };

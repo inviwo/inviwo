@@ -70,7 +70,7 @@ protected:
 
     virtual void configureShader(Shader& shader) const override;
     virtual void setUniforms(Shader& shader, UseFragmentList useFragmentList,
-                             const Rasterization* rasterizer) const override;
+                             std::string_view rasterizerId) const override;
     virtual DispatcherHandle<void()> addInitializeShaderCallback(
         std::function<void()> callback) override;
 

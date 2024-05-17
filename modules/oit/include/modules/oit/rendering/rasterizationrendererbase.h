@@ -57,7 +57,7 @@ class RasterizationRendererBase {
 public:
     virtual void configureShader(Shader&) const = 0;
     virtual void setUniforms(Shader&, UseFragmentList useFragmentList,
-                             const Rasterization* rasterizer) const = 0;
+                             std::string_view rasterizerId) const = 0;
     virtual DispatcherHandle<void()> addInitializeShaderCallback(
         std::function<void()> callback) = 0;
 };

@@ -179,7 +179,7 @@ void RasterizationRenderer::configureShader(Shader& shader) const {
 }
 
 void RasterizationRenderer::setUniforms(Shader& shader, UseFragmentList useFragmentList,
-                                        const Rasterization*) const {
+                                        std::string_view) const {
     utilgl::setUniforms(shader, camera_, lighting_);
     if (flr_ && useFragmentList == UseFragmentList::Yes) {
         flr_->setShaderUniforms(shader);

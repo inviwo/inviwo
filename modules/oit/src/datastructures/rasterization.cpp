@@ -78,4 +78,12 @@ auto Rasterization::getRaycastingState() const -> std::optional<RaycastingState>
     }
 }
 
+std::string_view Rasterization::getIdentifier() const {
+    if (auto p = getProcessor()) {
+        return p->getIdentifier();
+    } else {
+        return {};
+    }
+}
+
 }  // namespace inviwo
