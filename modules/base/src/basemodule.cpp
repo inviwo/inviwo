@@ -330,7 +330,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
 
-int BaseModule::getVersion() const { return 7; }
+int BaseModule::getVersion() const { return 8; }
 
 std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -510,6 +510,25 @@ bool BaseModule::Converter::convert(TxElement* root) {
             res |= xml::changeAttributeRecursive(
                 root, {{xml::Kind::processor("org.inviwo.NoiseVolumeProcessor")}}, "type",
                 "org.inviwo.NoiseVolumeProcessor", "org.inviwo.NoiseGenerator3D");
+            [[fallthrough]];
+        }
+        case 7: {
+            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+                const auto& key = node->Value();
+                if (key != "Processor") return true;
+                if (node->GetAttribute("type") != "org.inviwo.VolumeCreator") {
+                    return true;
+                }
+                if (auto elem =
+                        xml::getElement(node, "Properties/Property&identifier=dimensions")) {
+
+                    elem->SetAttribute("identifier", "dims");
+                    res = true;
+                }
+                return true;
+            }};
+            conv.convert(root);
+
             return res;
         }
 
