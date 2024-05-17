@@ -286,7 +286,7 @@ jobs:
 
   build-linux-apt:
     name: "Build on Linux using Apt"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 720
     
     steps:
@@ -312,17 +312,17 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt install --fix-missing \
-          build-essential git cmake extra-cmake-modules ninja-build g++-13 gcc-13 \
+          build-essential git cmake extra-cmake-modules ninja-build g++-14 gcc-14 \
           freeglut3-dev cimg-dev googletest libassimp-dev libeigen3-dev libfmt-dev \
           libfreetype-dev libglew-dev libglm-dev libgtest-dev libhdf5-dev libjpeg-dev \
           libpng-dev libqt6svg6-dev libtclap-dev libtiff-dev libtirpc-dev \
           libutfcpp-dev libxcursor-dev libxinerama-dev libxrandr-dev libznz-dev \
           nlohmann-json3-dev zlib1g zlib1g-dev python3 python3-numpy python3-pip \
           qt6-base-dev qt6-tools-dev
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 130 \
-                                 --slave /usr/bin/g++ g++ /usr/bin/g++-13 \
-                                 --slave /usr/bin/gcov gcov /usr/bin/gcov-12
-        sudo update-alternatives --set gcc /usr/bin/gcc-13
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 130 \
+                                 --slave /usr/bin/g++ g++ /usr/bin/g++-14 \
+                                 --slave /usr/bin/gcov gcov /usr/bin/gcov-14
+        sudo update-alternatives --set gcc /usr/bin/gcc-14
 
     - name: "Clone Inviwo"
       uses: actions/checkout@v4
