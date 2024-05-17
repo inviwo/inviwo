@@ -65,7 +65,7 @@ jobs:
             run: ''
           
           - system: linux
-            os: 'ubuntu-22.04'
+            os: 'ubuntu-24.04'
             # Disable benchmark for now due to error: 
             # memcpy’ is not a member of ‘std’; did you mean ‘wmemcpy’
             cmake: >
@@ -179,11 +179,11 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt install --fix-missing libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev \
-                         libglew-dev ninja-build gcc-13 g++-13 nasm
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 130 \
-                                 --slave /usr/bin/g++ g++ /usr/bin/g++-13 \
-                                 --slave /usr/bin/gcov gcov /usr/bin/gcov-12
-        sudo update-alternatives --set gcc /usr/bin/gcc-13
+                         libglew-dev ninja-build gcc-14 g++-14 nasm
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 130 \
+                                 --slave /usr/bin/g++ g++ /usr/bin/g++-14 \
+                                 --slave /usr/bin/gcov gcov /usr/bin/gcov-14
+        sudo update-alternatives --set gcc /usr/bin/gcc-14
     
     - name: "Install Qt"
       uses: jurplel/install-qt-action@v3
