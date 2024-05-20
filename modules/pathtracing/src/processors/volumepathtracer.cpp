@@ -1,0 +1,316 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2023 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+#include <inviwo/pathtracing/processors/volumepathtracer.h>
+#include <modules/opengl/openglmodule.h>
+#include <modules/opengl/shader/shadermanager.h>
+#include <modules/opengl/inviwoopengl.h>
+
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <modules/opengl/texture/texture2d.h>
+#include <modules/opengl/image/layergl.h>
+#include <modules/opengl/image/imagegl.h>
+
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/volume/volumegl.h>     // IWYU pragma: keep
+#include <modules/opengl/volume/volumeutils.h>  // for bindAndSetUniforms
+
+#include <inviwo/core/properties/cameraproperty.h>             // for CameraProperty
+#include <inviwo/core/properties/raycastingproperty.h>         // for RaycastingProperty
+#include <inviwo/core/properties/volumeindicatorproperty.h>    // for VolumeIndicatorPr...
+#include <inviwo/core/properties/optionproperty.h>             // for OptionPropertyOption
+#include <inviwo/core/algorithm/boundingbox.h>                 // for boundingBox
+#include <inviwo/core/datastructures/light/baselightsource.h>  // for Lights
+#include <inviwo/core/ports/bufferport.h>                      // for Lights
+
+namespace inviwo {
+
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo VolumePathTracer::processorInfo_{
+    "org.inviwo.VolumePathTracer",  // Class identifier
+    "Volume Path Tracer",           // Display name
+    "Volume Rendering",             // Category
+    CodeState::Experimental,        // Code state
+    Tags::GL,                       // Tags
+};
+
+const ProcessorInfo VolumePathTracer::getProcessorInfo() const { return processorInfo_; }
+
+VolumePathTracer::VolumePathTracer()
+    : Processor()
+    , volumePort_("Volume")
+    , entryPort_("entry")
+    , exitPort_("exit")
+    , minMaxOpacity_("VolumeMinMaxOpacity")
+    , outport_("outport")
+    , shader_({{ShaderType::Compute, "bidirectionalvolumepathtracer.comp"}})
+    , shaderUniform_({{ShaderType::Compute, "bidirectionalvolumepathtraceruniform.comp"}})
+    , channel_("channel", "Render Channel", {{"Channel 1", "Channel 1", 0}}, 0)
+    , raycasting_("raycaster", "Raycasting")
+    , transferFunction_("transferFunction", "Transfer Function", &volumePort_)
+    , camera_("camera", "Camera", util::boundingBox(volumePort_))
+    , positionIndicator_("positionindicator", "Position Indicator")
+    , light_("light", "Light", &camera_)
+    
+    , transmittanceMethod_(
+          "transmittanceMethod", "Transmittance method",
+          {
+              {"Woodcock", "Woodcock", TransmittanceMethod::Woodcock},
+              {"RatioTracking", "Ratio Tracking", TransmittanceMethod::RatioTracking},
+              {"ResidualRatioTracking", "Residual Ratio Tracking",
+               TransmittanceMethod::ResidualRatioTracking},
+              {"PoissonRatioTracking", "Poisson Ratio Tracking",
+               TransmittanceMethod::PoissonRatioTracking},
+              {"PoissonResidualRatioTracking", "Poisson Residual Ratio Tracking",
+               TransmittanceMethod::PoissonResidualRatioTracking},
+              {"IndependentPoissonTracking", "Independent Poisson Tracking",
+               TransmittanceMethod::IndependentPoissonTracking},
+              {"DependentMultiPoissonTracking", "Dependent Multi Poisson Tracking",
+               TransmittanceMethod::IndependentPoissonTracking},
+              {"GeometricResidualTracking", "Geometric Residual Ratio Tracking",
+               TransmittanceMethod::GeometricResidualTracking},
+          })
+    , iterateRender_("iterate", "Iterate render")
+    , enableProgressiveRefinement_("enableRefinement", "Enable progressive refinement", false)
+    , invalidateRender_("invalidate", "Invalidate render", [this]() { invalidateProgressiveRendering(); }) 
+    , volumeRegionSize_("region", "Region size", 8, 1, 100)
+    , progressiveTimer_(Timer::Milliseconds(0), std::bind(&VolumePathTracer::onTimerEvent, this))
+    , renderResult_(size2_t(512, 512), DataVec4UInt8::get()) {
+
+    addPort(volumePort_, "VolumePortGroup");
+    addPort(entryPort_, "ImagePortGroup1");
+    addPort(exitPort_, "ImagePortGroup1");
+    addPort(outport_, "ImagePortGroup1");
+    addPort(minMaxOpacity_, "OpacityPortGroup");
+    minMaxOpacity_.setOptional(true);
+
+    volumePort_.onChange([this]() { invalidateProgressiveRendering(); });
+    entryPort_.onChange([this]() { invalidateProgressiveRendering(); });
+    exitPort_.onChange([this]() { invalidateProgressiveRendering(); });
+
+    channel_.setSerializationMode(PropertySerializationMode::All);
+
+    auto updateTFHistSel = [this]() {
+        HistogramSelection selection{};
+        selection[channel_] = true;
+        transferFunction_.setHistogramSelection(selection);
+    };
+    updateTFHistSel();
+    channel_.onChange(updateTFHistSel);
+
+    volumePort_.onChange([this]() {
+        if (volumePort_.hasData()) {
+            size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
+
+            if (channels == channel_.size()) return;
+
+            std::vector<OptionPropertyIntOption> channelOptions;
+            for (size_t i = 0; i < channels; i++) {
+                channelOptions.emplace_back("Channel " + toString(i + 1),
+                                            "Channel " + toString(i + 1), static_cast<int>(i));
+            }
+            channel_.replaceOptions(channelOptions);
+            channel_.setCurrentStateAsDefault();
+        }
+    });
+
+    // NOTE: This will be set to false, 0, in ctor regardless.
+    partitionedTransmittance_ = minMaxOpacity_.isConnected();
+    minMaxOpacity_.onConnect([this]() {
+        partitionedTransmittance_ = true;
+        invalidateProgressiveRendering();
+        invalidate(InvalidationLevel::InvalidResources);
+    });
+
+    minMaxOpacity_.onDisconnect([this]() {
+        partitionedTransmittance_ = false;
+        invalidateProgressiveRendering();
+        invalidate(InvalidationLevel::InvalidResources);
+    });
+
+    raycasting_.gradientComputation_.onChange([this]() {
+        if (channel_.size() == 4) {
+            if (raycasting_.gradientComputation_.get() ==
+                RaycastingProperty::GradientComputation::PrecomputedXYZ) {
+                channel_.set(3);
+            } else if (raycasting_.gradientComputation_.get() ==
+                       RaycastingProperty::GradientComputation::PrecomputedYZW) {
+                channel_.set(0);
+            }
+        }
+    });
+
+    // Used for determining uniform float t_ms
+    timeStart_ = std::chrono::high_resolution_clock::now();
+
+    addProperties(channel_, raycasting_, transferFunction_, camera_, positionIndicator_, light_,
+                  volumeRegionSize_, transmittanceMethod_, iterateRender_,
+                  enableProgressiveRefinement_, invalidateRender_);
+
+    transferFunction_.onChange([this]() { invalidateProgressiveRendering(); });
+    light_.onChange([this]() { invalidateProgressiveRendering(); });
+
+    enableProgressiveRefinement_.onChange([this]() { progressiveRefinementChanged(); });
+
+    //invalidateRender_.onChange([this]() { invalidateProgressiveRendering(); });
+
+    progressiveRefinementChanged();
+}
+
+void VolumePathTracer::initializeResources() {
+    invalidateProgressiveRendering();
+
+    if (partitionedTransmittance_) {
+        activeShader_ = &shaderUniform_;
+    } else {
+        activeShader_ = &shader_;
+    }
+
+    // moved from construction due to activeShader_ being uninitializable in ctor
+    activeShader_->onReload([this]() {
+        invalidate(InvalidationLevel::InvalidOutput);
+        invalidateProgressiveRendering();
+    });
+    // moved from construction due to activeShader_ being uninitializable in ctor
+    transmittanceMethod_.onChange([this]() {
+        invalidate(InvalidationLevel::InvalidOutput);
+        invalidateProgressiveRendering();
+    });
+
+    utilgl::addShaderDefines(*activeShader_, raycasting_);
+    utilgl::addShaderDefines(*activeShader_, camera_);
+    utilgl::addShaderDefines(*activeShader_, light_);
+    activeShader_->build();
+}
+
+void VolumePathTracer::process() {
+    // Partial seeding for random values
+    timeNow_ = std::chrono::high_resolution_clock::now();
+    using FpMilliseconds = std::chrono::duration<float, std::chrono::milliseconds::period>;
+    float MSSinceStart_ = FpMilliseconds(timeNow_ - timeStart_).count();
+
+    if (iteration_ == 0) {
+        // Copy depth and picking
+        // utilgl::activateAndClearTarget(outport_);
+        Image* outImage = outport_.getEditableData().get();
+        ImageGL* outImageGL = outImage->getEditableRepresentation<ImageGL>();
+        entryPort_.getData()->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
+        
+        // 
+        //outport_.getEditableData().get()->copyRepresentationsTo(renderResult_);
+        //ImageGL* outImageGL = renderResult_.getEditableRepresentation<ImageGL>();
+    }
+    activeShader_->activate();
+    activeShader_->setUniform("time_ms", MSSinceStart_);
+    activeShader_->setUniform("iteration", iteration_);
+    activeShader_->setUniform("transmittanceMethod",
+                              static_cast<int>(transmittanceMethod_.getSelectedIndex()));
+    TextureUnitContainer units;
+    /*
+    Compute Shader specific impl to read and/or write to textures using GLSL imageND() function
+    call: utilgl::bindAndSetUniforms(shader_, units, outport_, ImageType::ColorDepthPicking);
+    */
+    {
+        TextureUnit unit1, unit2, unit3;
+        auto image = outport_.getEditableData();
+        auto colorLayerGL = image->getColorLayer()->getEditableRepresentation<LayerGL>();
+        colorLayerGL->bindImageTexture(unit1, GL_READ_WRITE);
+        auto depthLayerGL = image->getDepthLayer()->getEditableRepresentation<LayerGL>();
+
+        GLenum texUnit_ = unit2.getEnum();
+        glActiveTexture(texUnit_);
+        glBindImageTexture(unit2.getUnitNumber(), depthLayerGL->getTexture()->getID(), 0, GL_FALSE,
+                           0, GL_READ_WRITE,
+                           GL_R32F /*depthLayerGL->getTexture()->getInternalFormat()*/);
+        glActiveTexture(GL_TEXTURE0);
+
+        auto pickingLayerGL = image->getPickingLayer()->getEditableRepresentation<LayerGL>();
+        pickingLayerGL->bindImageTexture(unit3, GL_WRITE_ONLY);
+
+        activeShader_->setUniform("outportColor", unit1);
+        activeShader_->setUniform("outportDepth", unit2);
+        activeShader_->setUniform("outportPicking", unit3);
+
+        units.push_back(std::move(unit1));
+        units.push_back(std::move(unit2));
+        units.push_back(std::move(unit3));
+
+        StrBuffer buff;
+
+        utilgl::setShaderUniforms(*activeShader_, *image,
+                                  buff.replace("{}Parameters", outport_.getIdentifier()));
+    }
+
+    utilgl::bindAndSetUniforms(*activeShader_, units, entryPort_, ImageType::ColorDepthPicking);
+    utilgl::bindAndSetUniforms(*activeShader_, units, exitPort_, ImageType::ColorDepth);
+    utilgl::bindAndSetUniforms(*activeShader_, units, *volumePort_.getData(), "volume");
+    if (partitionedTransmittance_) {
+        utilgl::bindAndSetUniforms(*activeShader_, units, *minMaxOpacity_.getData(),
+                                   "minMaxOpacity");
+    }
+
+    utilgl::bindAndSetUniforms(*activeShader_, units, transferFunction_);
+
+    utilgl::setUniforms(*activeShader_, camera_, raycasting_, positionIndicator_, light_, channel_);
+
+    activeShader_->setUniform("cellDim", ivec3(volumeRegionSize_));
+
+    // Start render
+    glDispatchCompute(glm::ceil(static_cast<float>(outport_.getDimensions().x) / 16.f),
+                      glm::ceil(static_cast<float>(outport_.getDimensions().y) / 16.f), 1);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+    activeShader_->deactivate();
+
+    ++iteration_;
+}
+
+void VolumePathTracer::updateLightSources() {}
+
+// Progressive refinement
+void VolumePathTracer::invalidateProgressiveRendering() { iteration_ = 0; }
+
+void VolumePathTracer::evaluateProgressiveRefinement() {
+    invalidate(InvalidationLevel::InvalidOutput);
+}
+
+void VolumePathTracer::progressiveRefinementChanged() {
+    if (enableProgressiveRefinement_.get()) {
+        progressiveTimer_.start(Timer::Milliseconds(0));
+    } else {
+        progressiveTimer_.stop();
+    }
+}
+
+void VolumePathTracer::onTimerEvent() { iterateRender_.pressButton(); }
+
+}  // namespace inviwo
