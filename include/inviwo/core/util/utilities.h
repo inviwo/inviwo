@@ -50,10 +50,30 @@ IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, const std::filesyst
                                   std::string_view name = "UPN", std::string_view ext = ".png",
                                   bool onlyActiveCanvases = false);
 
-IVW_CORE_API bool isValidIdentifierCharacter(char c, std::string_view extra = "");
+[[deprecated("use util::validateIdentifier")]] IVW_CORE_API bool isValidIdentifierCharacter(
+    char c, std::string_view extra = "");
 
+/**
+ * Validate the given @p identifier.  If @p identifier is invalid, throws an Exception with the
+ * given exception context @p context and identifier @p type for a detailed error message.
+ *
+ * Valid identifiers follow the C++ and Python variable naming rules. That is
+ *   + case sensitive
+ *   + start with letter or underscore
+ *   + contain letters, numbers, and underscores
+ *   + length > 0
+ *
+ * Matching regex: [a-zA-Z_][a-zA-Z0-9_]*
+ *
+ * @param identifier  name to be validated
+ * @param type        identifier type, only used in case of exception
+ * @param context     used when throwing an exception
+ * @throws Exception if identifier is not valid
+ *
+ * @see stripIdentifier
+ */
 IVW_CORE_API void validateIdentifier(std::string_view identifier, std::string_view type,
-                                     ExceptionContext context, std::string_view extra = "");
+                                     ExceptionContext context);
 
 /**
  * Utility to augment an identifier with a number to make it unique. Will add an increasing number
@@ -70,7 +90,8 @@ IVW_CORE_API std::string findUniqueIdentifier(std::string_view identifier,
                                               std::function<bool(std::string_view)> isUnique,
                                               std::string_view sep = " ");
 
-IVW_CORE_API std::string cleanIdentifier(std::string_view identifier, std::string_view extra = "");
+[[deprecated("use util::stripIdentifier")]] IVW_CORE_API std::string cleanIdentifier(
+    std::string_view identifier, std::string_view extra = "");
 
 /**
  * \brief Removes inviwo-module from module library file name.
@@ -82,6 +103,23 @@ IVW_CORE_API std::string cleanIdentifier(std::string_view identifier, std::strin
  */
 IVW_CORE_API std::string stripModuleFileNameDecoration(const std::filesystem::path& filePath);
 
+/**
+ * Strip all invalid characters from the given @p identifier. If the resulting identifier is empty,
+ * a single underscore <tt>_</tt> is returned.
+ *
+ * Valid identifiers follow the C++ and Python variable naming rules. That is
+ *   + case sensitive
+ *   + start with letter or underscore
+ *   + contain letters, numbers, and underscores
+ *   + length > 0
+ *
+ * Matching regex: [a-zA-Z_][a-zA-Z0-9_]*
+ *
+ * @param identifier  name to be stripped and validated
+ * @returns valid identifier
+ *
+ * @see validateIdentifier
+ */
 IVW_CORE_API std::string stripIdentifier(std::string_view identifier);
 
 namespace detail {
