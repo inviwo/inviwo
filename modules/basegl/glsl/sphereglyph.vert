@@ -71,7 +71,7 @@ void main(void) {
 #endif
 
 #if defined(OVERRIDE_COLOR)
-    sphere.color.rbg = config.color;
+    sphere.color.rgb = config.color;
 #endif
 
 #if defined(OVERRIDE_ALPHA)
