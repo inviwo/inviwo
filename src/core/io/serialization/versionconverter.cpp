@@ -469,18 +469,22 @@ bool xml::renamePropertyIdentifier(TxElement* root, std::string_view processorCl
     newPathParts.back() = newIdentifier;
     auto newPath = joinString(newPathParts, ".");
 
+    StrBuffer buf;
     xml::visitMatchingNodes(links, {{"PropertyLink", {}}}, [&](TxElement* elem) {
         auto src = elem->GetAttribute("src");
         auto dst = elem->GetAttribute("dst");
         for (const auto& pid : processorIds) {
-            if (fmt::format("{}.{}", pid, propertyPath) == src) {
-                elem->SetAttribute("src", fmt::format("{}.{}", pid, newPath));
-                res |= true;
+            if (src.starts_with(buf.replace("{}.{}", pid, propertyPath))) {
+                elem->SetAttribute("src",
+                                   buf.replace("{}.{}{}", pid, newPath,
+                                               src.substr(pid.length() + propertyPath.length() + 1))
+                                       .view());
             }
-
-            if (fmt::format("{}.{}", pid, propertyPath) == dst) {
-                elem->SetAttribute("dst", fmt::format("{}.{}", pid, newPath));
-                res |= true;
+            if (dst.starts_with(buf.replace("{}.{}", pid, propertyPath))) {
+                elem->SetAttribute("dst",
+                                   buf.replace("{}.{}{}", pid, newPath,
+                                               dst.substr(pid.length() + propertyPath.length() + 1))
+                                       .view());
             }
         }
     });
