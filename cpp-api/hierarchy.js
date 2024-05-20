@@ -702,6 +702,7 @@ var hierarchy =
         [ "inviwo::MeshPicking", "classinviwo_1_1MeshPicking.html", null ],
         [ "inviwo::MeshPlaneClipping", "classinviwo_1_1MeshPlaneClipping.html", null ],
         [ "inviwo::MeshRenderProcessorGL", "classinviwo_1_1MeshRenderProcessorGL.html", null ],
+        [ "inviwo::MeshVolumeRenderer", "classinviwo_1_1MeshVolumeRenderer.html", null ],
         [ "inviwo::MovieExport", "classinviwo_1_1MovieExport.html", null ],
         [ "inviwo::MultichannelRaycaster", "classinviwo_1_1MultichannelRaycaster.html", null ],
         [ "inviwo::NoiseGenerator2D", "classinviwo_1_1NoiseGenerator2D.html", null ],
@@ -736,7 +737,8 @@ var hierarchy =
           [ "inviwo::LineRasterizer", "classinviwo_1_1LineRasterizer.html", null ],
           [ "inviwo::MeshRasterizer", "classinviwo_1_1MeshRasterizer.html", null ],
           [ "inviwo::SphereRasterizer", "classinviwo_1_1SphereRasterizer.html", null ],
-          [ "inviwo::TransformRasterization", "classinviwo_1_1TransformRasterization.html", null ]
+          [ "inviwo::TransformRasterization", "classinviwo_1_1TransformRasterization.html", null ],
+          [ "inviwo::VolumeRasterizer", "classinviwo_1_1VolumeRasterizer.html", null ]
         ] ],
         [ "inviwo::RedGreenProcessor", "classinviwo_1_1RedGreenProcessor.html", null ],
         [ "inviwo::SSAO", "classinviwo_1_1SSAO.html", null ],
@@ -2848,7 +2850,12 @@ var hierarchy =
       ] ]
     ] ],
     [ "inviwo::Rasterization", "classinviwo_1_1Rasterization.html", null ],
+    [ "inviwo::RasterizationRendererBase", "classinviwo_1_1RasterizationRendererBase.html", [
+      [ "inviwo::MeshVolumeRenderer", "classinviwo_1_1MeshVolumeRenderer.html", null ],
+      [ "inviwo::RasterizationRenderer", "classinviwo_1_1RasterizationRenderer.html", null ]
+    ] ],
     [ "inviwo::RasterizeHandle", "classinviwo_1_1RasterizeHandle.html", null ],
+    [ "inviwo::RaycastingState", "structinviwo_1_1RaycastingState.html", null ],
     [ "inviwo::animation::Recorder", "classinviwo_1_1animation_1_1Recorder.html", null ],
     [ "inviwo::ffmpeg::Recorder", "classinviwo_1_1ffmpeg_1_1Recorder.html", null ],
     [ "inviwo::animation::RecorderFactory", "classinviwo_1_1animation_1_1RecorderFactory.html", [
@@ -3402,6 +3409,7 @@ var hierarchy =
     [ "inviwo::utilgl::ViewportState", "structinviwo_1_1utilgl_1_1ViewportState.html", null ],
     [ "inviwo::VolumeBorders", "classinviwo_1_1VolumeBorders.html", null ],
     [ "inviwo::VolumeConfig", "structinviwo_1_1VolumeConfig.html", null ],
+    [ "inviwo::VolumeFragmentListRenderer", "classinviwo_1_1VolumeFragmentListRenderer.html", null ],
     [ "inviwo::hdf5::VolumeInfo", "structinviwo_1_1hdf5_1_1VolumeInfo.html", null ],
     [ "inviwo::VolumeNormalization", "classinviwo_1_1VolumeNormalization.html", null ],
     [ "inviwo::VolumeRAMSubSet", "classinviwo_1_1VolumeRAMSubSet.html", null ],

@@ -112,6 +112,7 @@ $(function(){initNavTree('classinviwo_1_1RasterizationRenderer.html',''); initRe
   <img src="classinviwo_1_1RasterizationRenderer.png" usemap="#inviwo::RasterizationRenderer_map" alt=""/>
   <map id="inviwo::RasterizationRenderer_map" name="inviwo::RasterizationRenderer_map">
 <area href="classinviwo_1_1Processor.html" title="A processor generally performs operation on input data and outputs the new result." alt="inviwo::Processor" shape="rect" coords="885,224,1170,248"/>
+<area href="classinviwo_1_1RasterizationRendererBase.html" alt="inviwo::RasterizationRendererBase" shape="rect" coords="1180,224,1465,248"/>
 <area href="classinviwo_1_1PropertyOwner.html" alt="inviwo::PropertyOwner" shape="rect" coords="295,168,580,192"/>
 <area href="classinviwo_1_1MetaDataOwner.html" title="Holds metadata and access functionality for set/get MetaDataOwner is the base class for all the objec..." alt="inviwo::MetaDataOwner" shape="rect" coords="590,168,875,192"/>
 <area href="classinviwo_1_1ProcessorObservable.html" alt="inviwo::ProcessorObservable" shape="rect" coords="885,168,1170,192"/>
@@ -518,12 +519,12 @@ Static Public Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ab83c818878c0875ed84ee144bff15960" id="r_ab83c818878c0875ed84ee144bff15960"><td class="memItemLeft" align="right" valign="top"><a id="ab83c818878c0875ed84ee144bff15960" name="ab83c818878c0875ed84ee144bff15960"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>configureShader</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:ab83c818878c0875ed84ee144bff15960"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb6bb465db307dc6d15fbacb6e8b2595" id="r_aeb6bb465db307dc6d15fbacb6e8b2595"><td class="memItemLeft" align="right" valign="top"><a id="aeb6bb465db307dc6d15fbacb6e8b2595" name="aeb6bb465db307dc6d15fbacb6e8b2595"></a>
-<a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>setUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, UseFragmentList <a class="el" href="classinviwo_1_1TypedMesh.html">useFragmentList</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
-<tr class="separator:aeb6bb465db307dc6d15fbacb6e8b2595"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ee15a347a3b871e74c4bd71d2fb7fe8" id="r_a6ee15a347a3b871e74c4bd71d2fb7fe8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6ee15a347a3b871e74c4bd71d2fb7fe8">configureShader</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
+<tr class="separator:a6ee15a347a3b871e74c4bd71d2fb7fe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e73072d95b377d3da451700aa75cc0b" id="r_a6e73072d95b377d3da451700aa75cc0b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e73072d95b377d3da451700aa75cc0b">setUniforms</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, UseFragmentList <a class="el" href="classinviwo_1_1TypedMesh.html">useFragmentList</a>, std::string_view <a class="el" href="classinviwo_1_1TypedMesh.html">rasterizerId</a>) <a class="el" href="classinviwo_1_1TypedMesh.html">const</a> <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
+<tr class="separator:a6e73072d95b377d3da451700aa75cc0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa4263da996e4dbd2f1ee6f83b33bc1c" id="r_afa4263da996e4dbd2f1ee6f83b33bc1c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> DispatcherHandle&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>()&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa4263da996e4dbd2f1ee6f83b33bc1c">addInitializeShaderCallback</a> (std::function&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>()&gt; callback) <a class="el" href="classinviwo_1_1TypedMesh.html">override</a></td></tr>
+<tr class="separator:afa4263da996e4dbd2f1ee6f83b33bc1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6789842187176c3d5502c3d36dc39e79" id="r_a6789842187176c3d5502c3d36dc39e79"><td class="memItemLeft" align="right" valign="top"><a id="a6789842187176c3d5502c3d36dc39e79" name="a6789842187176c3d5502c3d36dc39e79"></a>
 std::optional&lt; mat4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>boundingBox</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="separator:a6789842187176c3d5502c3d36dc39e79"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -702,6 +703,60 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:af79dedcc137d212c5d0225dc8cee3380 inherit pro_static_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="afa4263da996e4dbd2f1ee6f83b33bc1c" name="afa4263da996e4dbd2f1ee6f83b33bc1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa4263da996e4dbd2f1ee6f83b33bc1c">&#9670;&#160;</a></span>addInitializeShaderCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> DispatcherHandle&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>()&gt; inviwo::RasterizationRenderer::addInitializeShaderCallback </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; <a class="el" href="classinviwo_1_1TypedMesh.html">void</a>()&gt;</td>          <td class="paramname"><span class="paramname"><em>callback</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1RasterizationRendererBase.html">inviwo::RasterizationRendererBase</a>.</p>
+
+</div>
+</div>
+<a id="a6ee15a347a3b871e74c4bd71d2fb7fe8" name="a6ee15a347a3b871e74c4bd71d2fb7fe8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ee15a347a3b871e74c4bd71d2fb7fe8">&#9670;&#160;</a></span>configureShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a> inviwo::RasterizationRenderer::configureShader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>shader</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1RasterizationRendererBase.html">inviwo::RasterizationRendererBase</a>.</p>
+
+</div>
+</div>
 <a id="af105f289aa3a7f0981321f386342cae8" name="af105f289aa3a7f0981321f386342cae8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af105f289aa3a7f0981321f386342cae8">&#9670;&#160;</a></span>getProcessorInfo()</h2>
 
@@ -786,6 +841,42 @@ Additional Inherited Members</h2></td></tr>
 <a class="el" href="classinviwo_1_1Property.html" title="A Property represents a parameter to a processor.">Property</a> </dd></dl>
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1Processor.html#a8aec4f59f1cccfa4f37993958f095359">inviwo::Processor</a>.</p>
+
+</div>
+</div>
+<a id="a6e73072d95b377d3da451700aa75cc0b" name="a6e73072d95b377d3da451700aa75cc0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e73072d95b377d3da451700aa75cc0b">&#9670;&#160;</a></span>setUniforms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1TypedMesh.html">void</a> inviwo::RasterizationRenderer::setUniforms </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>shader</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">UseFragmentList</td>          <td class="paramname"><span class="paramname"><em>useFragmentList</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>rasterizerId</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1RasterizationRendererBase.html">inviwo::RasterizationRendererBase</a>.</p>
 
 </div>
 </div>

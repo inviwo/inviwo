@@ -120,10 +120,11 @@ $(function(){initNavTree('classinviwo_1_1Rasterizer.html',''); initResizable(); 
 <area href="classinviwo_1_1Observable.html" alt="inviwo::Observable&lt; PropertyOwnerObserver &gt;" shape="rect" coords="0,56,285,80"/>
 <area href="classinviwo_1_1ObservableInterface.html" alt="inviwo::ObservableInterface" shape="rect" coords="885,56,1170,80"/>
 <area href="classinviwo_1_1ObservableInterface.html" alt="inviwo::ObservableInterface" shape="rect" coords="0,0,285,24"/>
-<area href="classinviwo_1_1LineRasterizer.html" title="Renders input geometry with 2D lines." alt="inviwo::LineRasterizer" shape="rect" coords="442,336,727,360"/>
-<area href="classinviwo_1_1MeshRasterizer.html" title="Mesh Renderer specialized for rendering highly layered and transparent surfaces." alt="inviwo::MeshRasterizer" shape="rect" coords="737,336,1022,360"/>
-<area href="classinviwo_1_1SphereRasterizer.html" alt="inviwo::SphereRasterizer" shape="rect" coords="1032,336,1317,360"/>
-<area href="classinviwo_1_1TransformRasterization.html" title="Applies an additional transform on a given rasterization object." alt="inviwo::TransformRasterization" shape="rect" coords="1327,336,1612,360"/>
+<area href="classinviwo_1_1LineRasterizer.html" title="Renders input geometry with 2D lines." alt="inviwo::LineRasterizer" shape="rect" coords="295,336,580,360"/>
+<area href="classinviwo_1_1MeshRasterizer.html" title="Mesh Renderer specialized for rendering highly layered and transparent surfaces." alt="inviwo::MeshRasterizer" shape="rect" coords="590,336,875,360"/>
+<area href="classinviwo_1_1SphereRasterizer.html" alt="inviwo::SphereRasterizer" shape="rect" coords="885,336,1170,360"/>
+<area href="classinviwo_1_1TransformRasterization.html" title="Applies an additional transform on a given rasterization object." alt="inviwo::TransformRasterization" shape="rect" coords="1180,336,1465,360"/>
+<area href="classinviwo_1_1VolumeRasterizer.html" alt="inviwo::VolumeRasterizer" shape="rect" coords="1475,336,1760,360"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -151,6 +152,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae865e126a3c01ae1041a606acc12acd3" id="r_ae865e126a3c01ae1041a606acc12acd3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> std::optional&lt; mat4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae865e126a3c01ae1041a606acc12acd3">boundingBox</a> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="memdesc:ae865e126a3c01ae1041a606acc12acd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the world space bounding box of the rendered geometry.  <br /></td></tr>
 <tr class="separator:ae865e126a3c01ae1041a606acc12acd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4af2ba8298a68a76229f26f8d0faac6f" id="r_a4af2ba8298a68a76229f26f8d0faac6f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> std::optional&lt; <a class="el" href="structinviwo_1_1RaycastingState.html">RaycastingState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4af2ba8298a68a76229f26f8d0faac6f">getRaycastingState</a> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
+<tr class="memdesc:a4af2ba8298a68a76229f26f8d0faac6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query raycasting state used for volume rendering.  <br /></td></tr>
+<tr class="separator:a4af2ba8298a68a76229f26f8d0faac6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82e2730a034be03f907ab977ff20a13c" id="r_a82e2730a034be03f907ab977ff20a13c"><td class="memItemLeft" align="right" valign="top"><a id="a82e2730a034be03f907ab977ff20a13c" name="a82e2730a034be03f907ab977ff20a13c"></a>
 <a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> <a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getInfo</b> () <a class="el" href="classinviwo_1_1TypedMesh.html">const</a></td></tr>
 <tr class="separator:a82e2730a034be03f907ab977ff20a13c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -688,7 +692,37 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
 
 <p>Return the world space bounding box of the rendered geometry. </p>
 
-<p>Reimplemented in <a class="el" href="classinviwo_1_1LineRasterizer.html#acb41175019193720ac10bc820de4e6ad">inviwo::LineRasterizer</a>, <a class="el" href="classinviwo_1_1MeshRasterizer.html#a04b853858aebf2a809742aa787bd6aed">inviwo::MeshRasterizer</a>, <a class="el" href="classinviwo_1_1SphereRasterizer.html#a3a7d8985cf7add563b08814ba576d030">inviwo::SphereRasterizer</a>, and <a class="el" href="classinviwo_1_1TransformRasterization.html#a6e2d7e44797fa72d63aedcb6e82f8c69">inviwo::TransformRasterization</a>.</p>
+<p>Reimplemented in <a class="el" href="classinviwo_1_1LineRasterizer.html#acb41175019193720ac10bc820de4e6ad">inviwo::LineRasterizer</a>, <a class="el" href="classinviwo_1_1MeshRasterizer.html#a04b853858aebf2a809742aa787bd6aed">inviwo::MeshRasterizer</a>, <a class="el" href="classinviwo_1_1SphereRasterizer.html#a3a7d8985cf7add563b08814ba576d030">inviwo::SphereRasterizer</a>, <a class="el" href="classinviwo_1_1TransformRasterization.html#a6e2d7e44797fa72d63aedcb6e82f8c69">inviwo::TransformRasterization</a>, and <a class="el" href="classinviwo_1_1VolumeRasterizer.html#a18f005cdeada0cd7e1190ff72737ecff">inviwo::VolumeRasterizer</a>.</p>
+
+</div>
+</div>
+<a id="a4af2ba8298a68a76229f26f8d0faac6f" name="a4af2ba8298a68a76229f26f8d0faac6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4af2ba8298a68a76229f26f8d0faac6f">&#9670;&#160;</a></span>getRaycastingState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">virtual</a> std::optional&lt; <a class="el" href="structinviwo_1_1RaycastingState.html">RaycastingState</a> &gt; inviwo::Rasterizer::getRaycastingState </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query raycasting state used for volume rendering. </p>
+<dl class="section return"><dt>Returns</dt><dd>raycasting-specific parameters for volume rendering between volume fragments </dd></dl>
+
+<p>Reimplemented in <a class="el" href="classinviwo_1_1VolumeRasterizer.html#a1edbc3ea428cf2e593b70fde4f08aae7">inviwo::VolumeRasterizer</a>.</p>
 
 </div>
 </div>
@@ -718,7 +752,7 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1Processor.html#a9ca0ca1407ee6e9f0c5e3a9b1a453dd1">inviwo::Processor</a>.</p>
 
-<p>Reimplemented in <a class="el" href="classinviwo_1_1LineRasterizer.html#aea3e88d62e9a97866c79cec04a347f3e">inviwo::LineRasterizer</a>, <a class="el" href="classinviwo_1_1MeshRasterizer.html#a27df5db10d2c2adf21020ede7c0b0558">inviwo::MeshRasterizer</a>, and <a class="el" href="classinviwo_1_1SphereRasterizer.html#a69a2dda1faaf0e296941cb6aa0140e50">inviwo::SphereRasterizer</a>.</p>
+<p>Reimplemented in <a class="el" href="classinviwo_1_1LineRasterizer.html#aea3e88d62e9a97866c79cec04a347f3e">inviwo::LineRasterizer</a>, <a class="el" href="classinviwo_1_1MeshRasterizer.html#a27df5db10d2c2adf21020ede7c0b0558">inviwo::MeshRasterizer</a>, <a class="el" href="classinviwo_1_1SphereRasterizer.html#a69a2dda1faaf0e296941cb6aa0140e50">inviwo::SphereRasterizer</a>, and <a class="el" href="classinviwo_1_1VolumeRasterizer.html#a03e449edf3d040d2c49f0100fe80c360">inviwo::VolumeRasterizer</a>.</p>
 
 </div>
 </div>
@@ -822,7 +856,7 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1LineRasterizer.html#a604be929ba4f22b91fc30d0c58359d5f">inviwo::LineRasterizer</a>, <a class="el" href="classinviwo_1_1MeshRasterizer.html#a9fe14d4e424789447022d6a37a10acc4">inviwo::MeshRasterizer</a>, <a class="el" href="classinviwo_1_1SphereRasterizer.html#ad8fda47900e0dada074b283845ab993e">inviwo::SphereRasterizer</a>, and <a class="el" href="classinviwo_1_1TransformRasterization.html#aa2d1840bb69adde5244e56acaf351dca">inviwo::TransformRasterization</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1LineRasterizer.html#a604be929ba4f22b91fc30d0c58359d5f">inviwo::LineRasterizer</a>, <a class="el" href="classinviwo_1_1MeshRasterizer.html#a9fe14d4e424789447022d6a37a10acc4">inviwo::MeshRasterizer</a>, <a class="el" href="classinviwo_1_1SphereRasterizer.html#ad8fda47900e0dada074b283845ab993e">inviwo::SphereRasterizer</a>, <a class="el" href="classinviwo_1_1TransformRasterization.html#aa2d1840bb69adde5244e56acaf351dca">inviwo::TransformRasterization</a>, and <a class="el" href="classinviwo_1_1VolumeRasterizer.html#af82c24581b38ca8d7a1af67dde71ea11">inviwo::VolumeRasterizer</a>.</p>
 
 </div>
 </div>
@@ -852,7 +886,7 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
 <p>Query whether fragments will be emitted. </p>
 <dl class="section return"><dt>Returns</dt><dd>True for order-independent rendering, false for opaque rasterization. </dd></dl>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1LineRasterizer.html#a8256f960e1d7705c7081d88e6c369419">inviwo::LineRasterizer</a>, <a class="el" href="classinviwo_1_1MeshRasterizer.html#a382ccd7d38f69510f7f58bb6edf65baf">inviwo::MeshRasterizer</a>, <a class="el" href="classinviwo_1_1SphereRasterizer.html#af2245b2402bdbdeefea29b5b797eeebd">inviwo::SphereRasterizer</a>, and <a class="el" href="classinviwo_1_1TransformRasterization.html#af32ca96169b8c9a57c1be4b5354ea107">inviwo::TransformRasterization</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1LineRasterizer.html#a8256f960e1d7705c7081d88e6c369419">inviwo::LineRasterizer</a>, <a class="el" href="classinviwo_1_1MeshRasterizer.html#a382ccd7d38f69510f7f58bb6edf65baf">inviwo::MeshRasterizer</a>, <a class="el" href="classinviwo_1_1SphereRasterizer.html#af2245b2402bdbdeefea29b5b797eeebd">inviwo::SphereRasterizer</a>, <a class="el" href="classinviwo_1_1TransformRasterization.html#af32ca96169b8c9a57c1be4b5354ea107">inviwo::TransformRasterization</a>, and <a class="el" href="classinviwo_1_1VolumeRasterizer.html#ad1e447972485d81f500b78d75a25bc25">inviwo::VolumeRasterizer</a>.</p>
 
 </div>
 </div>
