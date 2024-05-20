@@ -105,8 +105,8 @@ Python3Module::Python3Module(InviwoApplication* app)
                          LogWarn("Could not run script, file does not exist: " << filename);
                          return;
                      }
-                     PythonScriptDisk s(filename);
-                     s.run();
+                     auto script = PythonScript::fromPath(std::filesystem::path{filename});
+                     script.run();
                  },
                  100}
     , pythonLogger_{}

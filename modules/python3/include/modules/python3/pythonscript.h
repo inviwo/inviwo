@@ -33,12 +33,12 @@
 
 #include <pybind11/pybind11.h>  // IWYU pragma: keep
 
-#include <inviwo/core/util/callback.h>      // for BaseCallBack, CallBackList
-#include <inviwo/core/util/fileobserver.h>  // for FileObserver
+#include <inviwo/core/util/callback.h>  // for BaseCallBack, CallBackList
 
 #include <functional>     // for function
 #include <string>         // for string
 #include <unordered_map>  // for unordered_map
+#include <filesystem>
 
 namespace inviwo {
 
@@ -50,24 +50,29 @@ namespace inviwo {
 class IVW_MODULE_PYTHON3_API PythonScript {
 
 public:
-    PythonScript();
+    PythonScript(std::string_view source = "", std::string_view name = "");
+    
+    static PythonScript fromPath(const std::filesystem::path& path);
 
     /**
      * Frees the stored byte code. Make sure that the
      * Python interpreter is still initialized
      * when deleting the script.
      */
-    virtual ~PythonScript();
+    ~PythonScript();
 
     /**
      * Sets the source for the Python (replacing the current source).
      */
-    void setSource(const std::string& source);
+    void setSource(std::string_view source);
 
     /**
      * Returns the script's source.
      */
-    std::string getSource() const;
+    const std::string& getSource() const;
+
+    void setName(std::string_view name);
+    const std::string& getName() const;
 
     /**
      * Runs the script once.
@@ -92,9 +97,6 @@ public:
     bool run(std::function<void(pybind11::dict)> callback);
     bool run(pybind11::dict locals, std::function<void(pybind11::dict)> callback = nullptr);
 
-    virtual void setFilename(const std::filesystem::path& filename);
-    const std::filesystem::path& getFilename() const;
-
 private:
     bool checkCompileError();
     bool checkRuntimeError();
@@ -110,41 +112,9 @@ private:
     bool compile();
 
     std::string source_;
-    std::filesystem::path filename_;
+    std::string name_;
     void* byteCode_;
     bool isCompileNeeded_;
-};
-
-/**
- * Class for handling PythonScripts that exists as files on disk. PythonScriptDisk will observe
- * the file and reload it from disk when it detects it has changed.
- *
- * @see PythonScript
- * @see FileObserver
- */
-class IVW_MODULE_PYTHON3_API PythonScriptDisk : public PythonScript, public FileObserver {
-public:
-    PythonScriptDisk(const std::filesystem::path& filename = "");
-
-    virtual ~PythonScriptDisk() = default;
-
-    virtual void setFilename(const std::filesystem::path& filename) override;
-
-    /**
-     * Register a callback that will be called once the file has changed on disk.
-     */
-    const BaseCallBack* onChange(std::function<void()> callback);
-    /**
-     * Remove a callback from the list of callbacks
-     */
-    void removeOnChange(const BaseCallBack* callback);
-
-private:
-    void readFileAndSetSource();
-
-    virtual void fileChanged(const std::filesystem::path& fileName) override;
-
-    CallBackList onChangeCallbacks_;
 };
 
 }  // namespace inviwo

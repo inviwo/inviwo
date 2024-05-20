@@ -31,11 +31,23 @@
 
 #include <modules/python3qt/python3qtmoduledefine.h>
 
+// make sure we import python first. Qt slot macros can mess with python otherwise
+#include <pybind11/pybind11.h>
+
+#include <inviwo/core/network/workspacemanager.h>
+
 #include <memory>
 #include <vector>
+#include <map>
+#include <string>
+#include <string_view>
+#include <optional>
+
+#include <QObject>
 
 class QMenu;
 class QToolBar;
+class QMainWindow;
 
 namespace inviwo {
 
@@ -43,15 +55,79 @@ class InviwoModule;
 class PythonEditorWidget;
 class InviwoApplication;
 
+template <typename T>
+class QPtr : std::unique_ptr<T> {
+public:
+    QPtr() : std::unique_ptr<T>{} {}
+    QPtr(std::nullptr_t) : std::unique_ptr<T>(std::nullptr_t{}) {}
+    QPtr(T* ptr) : std::unique_ptr<T>{ptr} { connect(); }
+
+    QPtr(QPtr&& rhs) noexcept : std::unique_ptr<T>{std::move(rhs)} { connect(); }
+    QPtr& operator=(QPtr&& that) {
+        if (this != &that) {
+            disconnect();
+            std::unique_ptr<T>::operator=(std::move(that));
+            connect();
+        }
+        return *this;
+    }
+    ~QPtr() { disconnect(); }
+
+    void reset(T* ptr = nullptr) {
+        disconnect();
+        std::unique_ptr<T>::reset(ptr);
+        connect();
+    }
+
+    using std::unique_ptr<T>::get;
+    using std::unique_ptr<T>::release;
+    using std::unique_ptr<T>::operator bool;
+    using std::unique_ptr<T>::operator*;
+    using std::unique_ptr<T>::operator->;
+
+private:
+    void disconnect() {
+        if (connection) QObject::disconnect(connection);
+    }
+    void connect() {
+        if (T* ptr = get()) {
+            connection = QObject::connect(ptr, &T::destroyed, [this](QObject*) { release(); });
+        }
+    }
+    QMetaObject::Connection connection;
+};
+
+template <class T, class... Args>
+inline auto make_qptr(Args&&... args) {
+    return QPtr<T>(new T(std::forward<Args>(args)...));
+}
+
 class IVW_MODULE_PYTHON3QT_API PythonMenu {
 public:
-    PythonMenu(InviwoModule* module, InviwoApplication* app);
+    PythonMenu(const std::filesystem::path& modulePath, InviwoApplication* app, QMainWindow* win);
     virtual ~PythonMenu();
 
 private:
-    std::vector<std::unique_ptr<PythonEditorWidget>> editors_;
-    std::unique_ptr<QToolBar> toolbar_;
-    std::unique_ptr<QMenu> menu_;
+    PythonEditorWidget* newEditor();
+    PythonEditorWidget* newScriptEditor(const std::string& key);
+
+    void updateScriptsMenu();
+    PythonEditorWidget* openEditor(const std::string& key);
+    static std::optional<std::string> getScriptName(std::string_view suggestion);
+
+    InviwoApplication* app_;
+    QMainWindow* win_;
+    std::vector<QPtr<PythonEditorWidget>> editors_;
+    QPtr<QToolBar> toolbar_;
+    QPtr<QMenu> menu_;
+    QPtr<QMenu> scripts_;
+
+    std::map<std::string, std::string, std::less<>> pythonScripts_;
+    std::map<std::string, QPtr<PythonEditorWidget>, std::less<>> scriptEditors_;
+
+    WorkspaceManager::SerializationHandle sHandle_;
+    WorkspaceManager::DeserializationHandle dHandle_;
+    WorkspaceManager::ClearHandle cHandle_;
 };
 
 }  // namespace inviwo

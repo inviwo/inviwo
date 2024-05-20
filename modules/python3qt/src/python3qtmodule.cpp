@@ -97,7 +97,13 @@ pybind11::object prompt(std::string title, std::string message, std::string defa
 Python3QtModule::Python3QtModule(InviwoApplication* app)
     : InviwoModule(app, "Python3Qt")
     , abortPythonEvaluation_{false}
-    , menu_(std::make_unique<PythonMenu>(this, app)) {
+    , menu_([&]() -> std::unique_ptr<PythonMenu> {
+        if (auto win = utilqt::getApplicationMainWindow()) {
+            return std::make_unique<PythonMenu>(getPath(), app, win);
+        } else {
+            return nullptr;
+        }
+    }()) {
     namespace py = pybind11;
 
     try {

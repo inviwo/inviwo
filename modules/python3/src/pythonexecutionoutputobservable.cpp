@@ -33,6 +33,6 @@ namespace inviwo {
 void PythonExecutionOutputObservable::pythonExecutionOutputEvent(const std::string& msg,
                                                                  PythonOutputType outputType) {
     forEachObserver(
-        [&](PythonExecutionOutputObeserver* o) { o->onPyhonExecutionOutput(msg, outputType); });
+        [&](PythonExecutionOutputObserver* o) { o->onPythonExecutionOutput(msg, outputType); });
 }
 }  // namespace inviwo

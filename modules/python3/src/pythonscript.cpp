@@ -50,13 +50,33 @@
 
 namespace inviwo {
 
-PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_(false) {}
+PythonScript::PythonScript(std::string_view source, std::string_view name)
+    : source_{source}, name_{name}, byteCode_(nullptr), isCompileNeeded_(true) {}
+
+PythonScript PythonScript::fromPath(const std::filesystem::path& path) {
+    auto file = std::ifstream(path);
+    const std::string source{std::istreambuf_iterator<char>(), std::istreambuf_iterator<char>()};
+    return {source, path.generic_string()};
+}
 
 PythonScript::~PythonScript() { Py_XDECREF(static_cast<PyObject*>(byteCode_)); }
 
+void PythonScript::setName(std::string_view name) { name_ = name; }
+
+const std::string& PythonScript::getName() const { return name_; }
+
+void PythonScript::setSource(std::string_view source) {
+    source_ = source;
+    isCompileNeeded_ = true;
+    Py_XDECREF(static_cast<PyObject*>(byteCode_));
+    byteCode_ = nullptr;
+}
+
+const std::string& PythonScript::getSource() const { return source_; }
+
 bool PythonScript::compile() {
     Py_XDECREF(static_cast<PyObject*>(byteCode_));
-    byteCode_ = Py_CompileString(source_.c_str(), filename_.string().c_str(), Py_file_input);
+    byteCode_ = Py_CompileString(source_.c_str(), name_.c_str(), Py_file_input);
     isCompileNeeded_ = !checkCompileError();
 
     if (isCompileNeeded_) {
@@ -107,19 +127,6 @@ bool PythonScript::run(pybind11::dict locals, std::function<void(pybind11::dict)
     }
 }
 
-void PythonScript::setFilename(const std::filesystem::path& filename) { filename_ = filename; }
-
-const std::filesystem::path& PythonScript::getFilename() const { return filename_; }
-
-std::string PythonScript::getSource() const { return source_; }
-
-void PythonScript::setSource(const std::string& source) {
-    source_ = source;
-    isCompileNeeded_ = true;
-    Py_XDECREF(static_cast<PyObject*>(byteCode_));
-    byteCode_ = nullptr;
-}
-
 std::string PythonScript::getAndFormatError() {
     namespace py = pybind11;
     py::object type;
@@ -130,19 +137,19 @@ std::string PythonScript::getAndFormatError() {
     PyErr_NormalizeException(&type.ptr(), &value.ptr(), &traceback.ptr());
     PyException_SetTraceback(value.ptr(), traceback.ptr());
 
-    std::stringstream errstr;
+    std::stringstream err;
 
     if (type) {
-        errstr << type.attr("__name__").cast<std::string>() << ": ";
+        err << type.attr("__name__").cast<std::string>() << ": ";
     }
     if (value) {
-        errstr << std::string(py::str(value));
+        err << std::string(py::str(value));
     } else {
-        errstr << "<No data available>";
+        err << "<No data available>";
     }
-    errstr << "\n";
+    err << "\n";
     if (traceback) {
-        errstr << "Stacktrace (most recent call first):\n";
+        err << "Stacktrace (most recent call first):\n";
         PyTracebackObject* tb = (PyTracebackObject*)traceback.ptr();
 
         /* Get the deepest trace possible */
@@ -160,14 +167,14 @@ std::string PythonScript::getAndFormatError() {
                 file = "<script>";
             }
 
-            errstr << file << ":" << line << " in " << name << "\n";
+            err << file << ":" << line << " in " << name << "\n";
             frame = PyFrame_GetBack(frame);
         }
     } else {
-        errstr << "No stacktrace available";
+        err << "No stacktrace available";
     }
 
-    return std::move(errstr).str();
+    return std::move(err).str();
 }
 
 bool PythonScript::checkCompileError() {
@@ -179,7 +186,7 @@ bool PythonScript::checkCompileError() {
         ->getModuleByType<Python3Module>()
         ->getPythonInterpreter()
         ->pythonExecutionOutputEvent(
-            fmt::format("Compile Error occurred when compiling script {}\n{}", filename_, error),
+            fmt::format("Compile Error occurred when compiling script {}\n{}", name_, error),
             PythonOutputType::sysstderr);
 
     return false;
@@ -195,39 +202,6 @@ bool PythonScript::checkRuntimeError() {
         ->getPythonInterpreter()
         ->pythonExecutionOutputEvent(error, PythonOutputType::sysstderr);
     return false;
-}
-
-PythonScriptDisk::PythonScriptDisk(const std::filesystem::path& filename)
-    : PythonScript(), FileObserver(util::getInviwoApplication()) {
-    setFilename(filename);
-}
-
-const inviwo::BaseCallBack* PythonScriptDisk::onChange(std::function<void()> callback) {
-    return onChangeCallbacks_.addLambdaCallback(callback);
-}
-
-void PythonScriptDisk::removeOnChange(const BaseCallBack* callback) {
-    onChangeCallbacks_.remove(callback);
-}
-
-void PythonScriptDisk::readFileAndSetSource() {
-    auto inFile = std::ifstream(getFilename());
-    std::string src((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-    setSource(src);
-}
-
-void PythonScriptDisk::setFilename(const std::filesystem::path& filename) {
-    PythonScript::setFilename(filename);
-    if (!filename.empty()) {
-        stopAllObservation();
-        startFileObservation(filename);
-    }
-    readFileAndSetSource();
-}
-
-void PythonScriptDisk::fileChanged(const std::filesystem::path&) {
-    readFileAndSetSource();
-    onChangeCallbacks_.invokeAll();
 }
 
 }  // namespace inviwo

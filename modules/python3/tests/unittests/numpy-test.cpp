@@ -68,7 +68,7 @@ std::filesystem::path getPath() {
 }  // namespace
 
 TEST(Python3Scripts, SimpleBufferTest) {
-    PythonScriptDisk script(getPath() / "simple_buffer_test.py");
+    auto script = PythonScript::fromPath(getPath() / "simple_buffer_test.py");
 
     const static size_t bufferSize = 10;
     // Test 3: buffer test
