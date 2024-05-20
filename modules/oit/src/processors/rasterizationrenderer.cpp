@@ -77,7 +77,7 @@ const ProcessorInfo RasterizationRenderer::processorInfo_{
     "Rasterization Renderer",            // Display name
     "Mesh Rendering",                    // Category
     CodeState::Stable,                   // Code state
-    Tags::GL,                            // Tags
+    Tags::GL | Tag{"Rasterization"},     // Tags
     R"(Renderer bringing together several kinds of rasterizations objects.
        Fragment lists are used to render the transparent pixels with correct alpha blending.
        Illustration effects can be applied as a post-process.)"_unindentHelp};
@@ -178,11 +178,17 @@ void RasterizationRenderer::configureShader(Shader& shader) const {
     utilgl::addDefines(shader, lighting_);
 }
 
-void RasterizationRenderer::setUniforms(Shader& shader, UseFragmentList useFragmentList) const {
+void RasterizationRenderer::setUniforms(Shader& shader, UseFragmentList useFragmentList,
+                                        std::string_view) const {
     utilgl::setUniforms(shader, camera_, lighting_);
     if (flr_ && useFragmentList == UseFragmentList::Yes) {
         flr_->setShaderUniforms(shader);
     }
+}
+
+DispatcherHandle<void()> RasterizationRenderer::addInitializeShaderCallback(
+    std::function<void()> callback) {
+    return initializeShader_.add(callback);
 }
 
 void RasterizationRenderer::process() {

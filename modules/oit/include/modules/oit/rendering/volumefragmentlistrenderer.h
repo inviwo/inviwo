@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2022-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,64 +26,66 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/oit/datastructures/rasterization.h>
-#include <modules/oit/processors/rasterizer.h>
+#include <modules/oit/oitmoduledefine.h>
 
-#include <inviwo/core/util/document.h>  // for Document
+#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/buffer/bufferobject.h>
+#include <modules/opengl/texture/texture2d.h>
+#include <modules/opengl/texture/textureunit.h>
 
 namespace inviwo {
 
-Document Rasterization::getInfo() const {
-    if (auto p = getProcessor()) {
-        return p->getInfo();
-    } else {
-        Document doc;
-        doc.append("p", "Rasterization functor.");
-        return doc;
-    }
-}
+class Image;
 
-Rasterization::Rasterization(std::shared_ptr<Rasterizer> processor) : processor_{processor} {}
+class IVW_MODULE_OIT_API VolumeFragmentListRenderer {
+public:
+    VolumeFragmentListRenderer();
+    ~VolumeFragmentListRenderer();
 
-std::shared_ptr<Rasterizer> Rasterization::getProcessor() const { return processor_.lock(); }
+    void prePass(const size2_t& screenSize);
 
-void Rasterization::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) const {
-    if (auto rp = getProcessor()) {
-        rp->rasterize(imageSize, worldMatrixTransform);
-    }
-}
+    void setShaderUniforms(Shader& shader) const;
 
-UseFragmentList Rasterization::usesFragmentLists() const {
-    if (auto p = getProcessor()) {
-        return p->usesFragmentLists();
-    } else {
-        return UseFragmentList::No;
-    }
-}
+    bool postPass(bool useIllustration, const Image* background,
+                  std::function<void(Shader&, TextureUnitContainer&)> setUniformsCallback,
+                  int numVolumes);
 
-std::optional<mat4> Rasterization::boundingBox() const {
-    if (auto p = getProcessor()) {
-        return p->boundingBox();
-    } else {
-        return std::nullopt;
-    }
-}
+    void beginCount();
+    void endCount();
 
-auto Rasterization::getRaycastingState() const -> std::optional<RaycastingState> {
-    if (auto p = getProcessor()) {
-        return p->getRaycastingState();
-    } else {
-        return std::nullopt;
-    }
-}
+    static bool supportsFragmentLists();
 
-std::string_view Rasterization::getIdentifier() const {
-    if (auto p = getProcessor()) {
-        return p->getIdentifier();
-    } else {
-        return {};
-    }
-}
+    DispatcherHandle<void()> onReload(std::function<void()> callback);
+
+private:
+    void buildShaders(bool hasBackground = false, int numVolumes = 1);
+
+    void setUniforms(Shader& shader, const TextureUnit& abuffUnit) const;
+    void resizeBuffers(const size2_t& screenSize);
+
+    size2_t screenSize_;
+    size_t fragmentSize_;
+
+    // basic fragment lists
+    Texture2D abufferIdxTex_;
+    TextureUnitContainer textureUnits_;
+    bool builtWithBackground_;
+    int numVolumes_;
+
+    BufferObject atomicCounter_;
+    BufferObject pixelBuffer_;
+
+    GLuint totalFragmentQuery_;
+
+    Shader clear_;
+    Shader display_;
+
+    Dispatcher<void()> onReload_;
+};
 
 }  // namespace inviwo

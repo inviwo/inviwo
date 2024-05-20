@@ -62,7 +62,7 @@ void main(void) {
 
         for (int i = 0; i < index.y; ++i) {
             // fetch properties from the scalar fields
-            vec3 baseColor = uncompressColor(floatBitsToInt(colorIn[index.x + i].y));
+            vec3 baseColor = uncompressColor10bits(floatBitsToInt(colorIn[index.x + i].y));
             float alpha = colorIn[index.x + i].x;
             alpha = clamp(alpha, 0, 1);
             float beta = smoothingIn[index.x + i].x;

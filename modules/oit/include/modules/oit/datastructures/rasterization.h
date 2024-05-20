@@ -35,8 +35,12 @@
 #include <inviwo/core/util/document.h>              // for Document
 #include <inviwo/core/util/glmmat.h>                // for mat4
 #include <inviwo/core/util/glmvec.h>                // for uvec3, ivec2
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/properties/isotfproperty.h>
 
 #include <modules/oit/rasterizeevent.h>
+#include <modules/oit/raycastingstate.h>
 
 #include <functional>  // for function
 #include <string>      // for string
@@ -79,6 +83,10 @@ public:
      * @brief Return the world space bounding box of the rendered geometry.
      */
     std::optional<mat4> boundingBox() const;
+
+    std::optional<RaycastingState> getRaycastingState() const;
+
+    std::string_view getIdentifier() const;
 
 private:
     std::weak_ptr<Rasterizer> processor_;

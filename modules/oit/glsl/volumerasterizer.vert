@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2023-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,23 @@
  *
  *********************************************************************************/
 
-#include <modules/oit/datastructures/transformedrasterization.h>
+#include "utils/structs.glsl"
 
-namespace inviwo {}  // namespace inviwo
+uniform GeometryParameters geometry;
+uniform CameraParameters camera;
+uniform mat4 meshDataToVolData = mat4(1);
+
+out fData {
+    vec4 worldPosition;
+    vec4 position;
+    vec3 normal;
+    vec4 volumeDataPos;
+} vertex;
+
+void main() {
+    vertex.volumeDataPos = meshDataToVolData * in_Vertex;
+    vertex.worldPosition = geometry.dataToWorld * in_Vertex;
+    vertex.normal = in_Normal;
+    vertex.position = camera.worldToClip * vertex.worldPosition;
+    gl_Position = vertex.position;
+}

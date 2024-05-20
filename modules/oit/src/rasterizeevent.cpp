@@ -29,24 +29,24 @@
 
 #include <modules/oit/rasterizeevent.h>
 #include <modules/oit/ports/rasterizationport.h>
-#include <modules/oit/processors/rasterizationrenderer.h>
 
 namespace inviwo {
 
 void RasterizeHandle::configureShader(Shader& shader) const {
-    if (auto proc = processor_.lock()) {
-        proc->configureShader(shader);
+    if (auto renderer = rasterizationRenderer_.lock()) {
+        renderer->configureShader(shader);
     }
 }
 
-void RasterizeHandle::setUniforms(Shader& shader, UseFragmentList useFragmentList) const {
-    if (auto proc = processor_.lock()) {
-        proc->setUniforms(shader, useFragmentList);
+void RasterizeHandle::setUniforms(Shader& shader, UseFragmentList useFragmentList,
+                                  const Rasterization* rasterizer) const {
+    if (auto renderer = rasterizationRenderer_.lock()) {
+        renderer->setUniforms(shader, useFragmentList, rasterizer->getIdentifier());
     }
 }
 
-RasterizeEvent::RasterizeEvent(std::shared_ptr<RasterizationRenderer> processor)
-    : Event(), processor_{processor} {}
+RasterizeEvent::RasterizeEvent(std::shared_ptr<RasterizationRendererBase> renderer)
+    : Event(), rasterizationRenderer_{renderer} {}
 
 RasterizeEvent* RasterizeEvent::clone() const { return new RasterizeEvent(*this); }
 
@@ -55,8 +55,8 @@ bool RasterizeEvent::shouldPropagateTo(Inport* inport, Processor*, Outport*) {
 }
 
 RasterizeHandle RasterizeEvent::addInitializeShaderCallback(std::function<void()> callback) const {
-    if (auto proc = processor_.lock()) {
-        return RasterizeHandle(proc->initializeShader_.add(callback), proc);
+    if (auto renderer = rasterizationRenderer_.lock()) {
+        return RasterizeHandle(renderer->addInitializeShaderCallback(callback), renderer);
     } else {
         return {};
     }

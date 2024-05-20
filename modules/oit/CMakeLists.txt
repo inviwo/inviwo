@@ -13,12 +13,17 @@ set(HEADER_FILES
     include/modules/oit/processors/calcnormalsprocessor.h
     include/modules/oit/processors/linerasterizer.h
     include/modules/oit/processors/meshrasterizer.h
+    include/modules/oit/processors/meshvolumerenderer.h
     include/modules/oit/processors/rasterizationrenderer.h
     include/modules/oit/processors/rasterizer.h
     include/modules/oit/processors/sphererasterizer.h
     include/modules/oit/processors/transformrasterization.h
+    include/modules/oit/processors/volumerasterizer.h
     include/modules/oit/rasterizeevent.h
+    include/modules/oit/raycastingstate.h
     include/modules/oit/rendering/fragmentlistrenderer.h
+    include/modules/oit/rendering/rasterizationrendererbase.h
+    include/modules/oit/rendering/volumefragmentlistrenderer.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -33,12 +38,17 @@ set(SOURCE_FILES
     src/processors/calcnormalsprocessor.cpp
     src/processors/linerasterizer.cpp
     src/processors/meshrasterizer.cpp
+    src/processors/meshvolumerenderer.cpp
     src/processors/rasterizationrenderer.cpp
     src/processors/rasterizer.cpp
     src/processors/sphererasterizer.cpp
     src/processors/transformrasterization.cpp
+    src/processors/volumerasterizer.cpp
     src/rasterizeevent.cpp
+    src/raycastingstate.cpp
     src/rendering/fragmentlistrenderer.cpp
+    src/rendering/rasterizationrendererbase.cpp
+    src/rendering/volumefragmentlistrenderer.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -55,11 +65,14 @@ set(SHADER_FILES
     glsl/oit/display.frag
     glsl/oit/simplequad.vert
     glsl/oit/sort.glsl
+    glsl/oit/volumeresolve.frag
     glsl/fancymeshrenderer.frag
     glsl/fancymeshrenderer.geom
     glsl/fancymeshrenderer.vert
     glsl/oit-linerenderer.frag
     glsl/oit-sphereglyph.frag
+    glsl/volumerasterizer.vert
+    glsl/volumerasterizer.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

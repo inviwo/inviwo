@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/oit/datastructures/transformedrasterization.h>
+#include <modules/oit/oitmoduledefine.h>
 
-namespace inviwo {}  // namespace inviwo
+#include <memory>
+
+namespace inviwo {
+class TFLookupTable;
+class Volume;
+
+struct IVW_MODULE_OIT_API RaycastingState {
+    std::shared_ptr<TFLookupTable> tfLookup;
+    int channel = 0;
+    float opacityScaling = 1.0f;
+    std::shared_ptr<const Volume> volume;
+};
+
+}  // namespace inviwo

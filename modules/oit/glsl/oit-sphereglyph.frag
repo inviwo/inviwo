@@ -166,7 +166,7 @@ void main() {
     }
 
 #if defined(USE_FRAGMENT_LIST)
-    abufferRender(ivec2(gl_FragCoord.xy), depth, glyphColor);
+    abufferMeshRender(ivec2(gl_FragCoord.xy), depth, glyphColor);
     discard;
 #else
     FragData0 = glyphColor;
