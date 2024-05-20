@@ -47,6 +47,7 @@ namespace inviwo {
 
 class FactoryBase;
 class InviwoApplication;
+class NetworkModified;
 
 enum class WorkspaceSaveMode { Disk = 1 << 0, Undo = 1 << 1 };
 ALLOW_FLAGS_FOR_ENUM(WorkspaceSaveMode)
@@ -70,7 +71,11 @@ private:
     using ClearDispatcher = Dispatcher<void()>;
     using SerializationDispatcher =
         Dispatcher<void(Serializer&, const ExceptionHandler&, WorkspaceSaveMode mode)>;
-    using DeserializationDispatcher = Dispatcher<void(Deserializer&, const ExceptionHandler&)>;
+    using DeserializationDispatcher =
+        Dispatcher<void(Deserializer&, const ExceptionHandler&, WorkspaceSaveMode mode)>;
+
+    using ModifiedChangedDispatcher = Dispatcher<void(bool)>;
+    using ModifiedDispatcher = Dispatcher<void(bool)>;
 
 public:
     using ClearCallback = typename ClearDispatcher::Callback;
@@ -81,6 +86,12 @@ public:
 
     using DeserializationCallback = std::function<void(Deserializer&)>;
     using DeserializationHandle = typename DeserializationDispatcher::Handle;
+
+    using ModifiedChangedCallback = typename ModifiedChangedDispatcher::Callback;
+    using ModifiedChangedHandle = typename ModifiedChangedDispatcher::Handle;
+
+    using ModifiedCallback = typename ModifiedDispatcher::Callback;
+    using ModifiedHandle = typename ModifiedDispatcher::Handle;
 
     WorkspaceManager(InviwoApplication* app);
     ~WorkspaceManager();
@@ -122,7 +133,8 @@ public:
      * \param exceptionHandler A callback for handling errors.
      */
     void load(std::istream& stream, const std::filesystem::path& refPath,
-              const ExceptionHandler& exceptionHandler = StandardExceptionHandler());
+              const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
+              WorkspaceSaveMode mode = WorkspaceSaveMode::Disk);
 
     /**
      * Load a workspace from a file
@@ -130,7 +142,8 @@ public:
      * \param exceptionHandler A callback for handling errors.
      */
     void load(const std::filesystem::path& path,
-              const ExceptionHandler& exceptionHandler = StandardExceptionHandler());
+              const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
+              WorkspaceSaveMode mode = WorkspaceSaveMode::Disk);
 
     /**
      * Callback for clearing the workspace.
@@ -146,7 +159,14 @@ public:
     /**
      * Callback for loading the workspace.
      */
-    DeserializationHandle onLoad(const DeserializationCallback& callback);
+    DeserializationHandle onLoad(const DeserializationCallback& callback,
+                                 WorkspaceSaveModes modes = WorkspaceSaveModes{flags::any});
+
+    void setModified();
+    bool isModified() const;
+
+    ModifiedChangedHandle onModifiedChanged(const ModifiedChangedCallback& callback);
+    ModifiedHandle onModified(const ModifiedCallback& callback);
 
     /**
      *	Register a factory that should be used by the workspace loading to create items.
@@ -161,12 +181,18 @@ public:
                                              Logger* logger = LogCentral::getPtr()) const;
 
 private:
+    void setModified(bool modified);
     InviwoApplication* app_;
     std::vector<FactoryBase*> registeredFactories_;
 
     ClearDispatcher clears_;
     SerializationDispatcher serializers_;
     DeserializationDispatcher deserializers_;
+
+    bool modified_;
+    ModifiedChangedDispatcher modifiedChangedDispatcher_;
+    ModifiedDispatcher modifiedDispatcher_;
+    std::unique_ptr<NetworkModified> networkModified_;
 };
 
 }  // namespace inviwo

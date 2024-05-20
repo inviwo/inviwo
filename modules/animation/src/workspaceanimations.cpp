@@ -95,8 +95,7 @@ WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManage
     });
 
     onChanged_.add([app = app_](size_t, Animation&) {
-        // Enable undo/redo
-        app->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+        app->getWorkspaceManager()->setModified();
     });
 }
 
@@ -220,15 +219,6 @@ MainAnimation& WorkspaceAnimations::getMainAnimation() { return mainAnimation_; 
 
 const MainAnimation& WorkspaceAnimations::getMainAnimation() const { return mainAnimation_; }
 
-void WorkspaceAnimations::onAnimationChanged(AnimationController*, Animation*, Animation* newAnim) {
-    if (find(newAnim) == end()) {
-        // WorkspaceAnimations must own the Animation
-        throw Exception("MainAnimation must be set through WorkspaceAnimations");
-    }
-    // Enable undo/redo of currently selected Animation
-    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
-}
-
 WorkspaceAnimations::const_iterator WorkspaceAnimations::find(const Animation* anim) const {
     return std::find_if(begin(), end(), [anim](const auto& a) { return anim == &a; });
 }
@@ -237,67 +227,51 @@ WorkspaceAnimations::iterator WorkspaceAnimations::find(const Animation* anim) {
     return std::find_if(begin(), end(), [anim](const auto& a) { return anim == &a; });
 }
 
+void WorkspaceAnimations::onAnyChange() {
+    app_->getWorkspaceManager()->setModified();
+}
+
+void WorkspaceAnimations::onAnimationChanged(AnimationController*, Animation*, Animation* newAnim) {
+    if (find(newAnim) == end()) {
+        // WorkspaceAnimations must own the Animation
+        throw Exception("MainAnimation must be set through WorkspaceAnimations");
+    }
+
+    onAnyChange();
+}
+
 void WorkspaceAnimations::onTrackAdded(Track* track) {
     track->addObserver(this);
-    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+    onAnyChange();
 }
-
 void WorkspaceAnimations::onTrackRemoved(Track* track) {
     track->removeObserver(this);
-    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+    onAnyChange();
 }
-
-void WorkspaceAnimations::onNameChanged(Animation*) {
-    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
-}
-
+void WorkspaceAnimations::onNameChanged(Animation*) { onAnyChange(); }
 void WorkspaceAnimations::onKeyframeSequenceAdded(Track*, KeyframeSequence* seq) {
     seq->addObserver(this);
-    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+    onAnyChange();
 }
-
 void WorkspaceAnimations::onKeyframeSequenceRemoved(Track*, KeyframeSequence* seq) {
     seq->removeObserver(this);
-    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+    onAnyChange();
 }
-
-void WorkspaceAnimations::onEnabledChanged(Track*) {
-    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
-}
-
-void WorkspaceAnimations::onNameChanged(Track*) {
-    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
-}
-
-void WorkspaceAnimations::onPriorityChanged(Track*) {
-    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
-}
-
+void WorkspaceAnimations::onEnabledChanged(Track*) { onAnyChange(); }
+void WorkspaceAnimations::onNameChanged(Track*) { onAnyChange(); }
+void WorkspaceAnimations::onPriorityChanged(Track*) { onAnyChange(); }
 void WorkspaceAnimations::onKeyframeAdded(Keyframe* key, KeyframeSequence*) {
     key->addObserver(this);
-    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+    onAnyChange();
 }
-
 void WorkspaceAnimations::onKeyframeRemoved(Keyframe* key, KeyframeSequence*) {
     key->removeObserver(this);
-    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+    onAnyChange();
 }
-
-void WorkspaceAnimations::onKeyframeSequenceMoved(KeyframeSequence*) {
-    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
-}
-
-void WorkspaceAnimations::onKeyframeSequenceSelectionChanged(KeyframeSequence*) {
-    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
-}
-
-void WorkspaceAnimations::onKeyframeTimeChanged(Keyframe*, Seconds) {
-    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
-}
-
-void WorkspaceAnimations::onKeyframeSelectionChanged(Keyframe*) {
-    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
-}
+void WorkspaceAnimations::onKeyframeSequenceMoved(KeyframeSequence*) { onAnyChange(); }
+void WorkspaceAnimations::onKeyframeSequenceSelectionChanged(KeyframeSequence*) { onAnyChange(); }
+void WorkspaceAnimations::onKeyframeTimeChanged(Keyframe*, Seconds) { onAnyChange(); }
+void WorkspaceAnimations::onKeyframeSelectionChanged(Keyframe*) { onAnyChange(); }
 
 }  // namespace animation
 

@@ -31,9 +31,11 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/networkeditor.h>
+#include <inviwo/qt/editor/networkeditorview.h>
 
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/editorsettings.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -46,8 +48,9 @@
 
 namespace inviwo {
 
-AnnotationsWidget::AnnotationsWidget(const QString& title, InviwoMainWindow* mainwindow)
-    : InviwoDockWidget{title, mainwindow, "AnnotationsWidget"}, mainwindow_(mainwindow) {
+AnnotationsWidget::AnnotationsWidget(InviwoApplication* app, NetworkEditorView* networkEditorView,
+                                     QWidget* parent)
+    : InviwoDockWidget{"Annotations", parent, "AnnotationsWidget"} {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
@@ -70,19 +73,58 @@ AnnotationsWidget::AnnotationsWidget(const QString& title, InviwoMainWindow* mai
 
     setWidget(scrollArea_);
 
-    onModulesDidRegister_ =
-        mainwindow->getInviwoApplication()->getModuleManager().onModulesDidRegister(
-            [&]() { updateWidget(); });
-    onModulesWillUnregister_ =
-        mainwindow->getInviwoApplication()->getModuleManager().onModulesWillUnregister([&]() {
-            while (auto item = layout_->takeAt(0)) {
-                delete item;
-            }
-        });
-}
+    // Need to delay this until the qtwidgets module is loaded to get access to the qt widgets
+    onModulesDidRegister_ = app->getModuleManager().onModulesDidRegister([&]() { updateWidget(); });
+    onModulesWillUnregister_ = app->getModuleManager().onModulesWillUnregister([&]() {
+        while (auto item = layout_->takeAt(0)) {
+            delete item;
+        }
+    });
 
-AnnotationsWidget::AnnotationsWidget(InviwoMainWindow* mainwindow)
-    : AnnotationsWidget("Annotations", mainwindow) {}
+    // register workspace annotation serialization and deserialization as well as clear callback
+    annotationSerializationHandle_ = app->getWorkspaceManager()->onSave(
+        [this, app, networkEditorView](Serializer& s) {
+            const int fixedHeight = 256;
+            try {
+                auto canvases = utilqt::getCanvasImages(app->getProcessorNetwork(), false);
+                for (auto& img : canvases) {
+                    img.second = img.second.scaledToHeight(fixedHeight);
+                }
+                annotations_.setCanvasImages(canvases);
+
+                annotations_.setNetworkImage(networkEditorView->exportViewToImage(
+                    true, true, QSize(fixedHeight, fixedHeight)));
+            } catch (...) {
+                // something went wrong fetching the canvas images,
+                // continue saving workspace file without any images
+            }
+
+            s.serialize("WorkspaceAnnotations", annotations_);
+        },
+        WorkspaceSaveMode::Disk);
+
+    annotationDeserializationHandle_ =
+        app->getWorkspaceManager()->onLoad([this, app](Deserializer& d) {
+            annotationModifiedHandle_.reset();
+
+            d.deserialize("WorkspaceAnnotations", annotations_);
+
+            annotationModifiedHandle_ =
+                annotations_.onModified([app]() { app->getWorkspaceManager()->setModified(); });
+        });
+
+    annotationClearHandle_ = app->getWorkspaceManager()->onClear([this, app]() {
+        annotationModifiedHandle_.reset();
+
+        annotations_.resetAllProperties();
+        annotations_.setAuthor(app->getSettingsByType<EditorSettings>()->workspaceAuthor);
+
+        annotationModifiedHandle_ =
+            annotations_.onModified([app]() { app->getWorkspaceManager()->setModified(); });
+    });
+    annotationModifiedHandle_ =
+        annotations_.onModified([app]() { app->getWorkspaceManager()->setModified(); });
+}
 
 AnnotationsWidget::~AnnotationsWidget() {
     // manually free scroll area and nested group box widget
@@ -103,7 +145,6 @@ void AnnotationsWidget::updateWidget() {
     groupBox->initState();
 
     for (auto p : annotations_.getProperties()) {
-        p->onChange([w = mainwindow_]() { w->getNetworkEditor()->setModified(true); });
         groupBox->addProperty(p);
     }
 

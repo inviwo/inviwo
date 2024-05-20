@@ -30,6 +30,7 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 
+#include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
 
@@ -43,12 +44,12 @@ class QVBoxLayout;
 
 namespace inviwo {
 
-class InviwoMainWindow;
+class InviwoApplication;
+class NetworkEditorView;
 
 class IVW_QTEDITOR_API AnnotationsWidget : public InviwoDockWidget {
 public:
-    AnnotationsWidget(const QString& title, InviwoMainWindow* parent);
-    AnnotationsWidget(InviwoMainWindow* parent);
+    AnnotationsWidget(InviwoApplication* app, NetworkEditorView* networkEditorView, QWidget* parent);
     virtual ~AnnotationsWidget();
 
     WorkspaceAnnotationsQt& getAnnotations();
@@ -57,7 +58,6 @@ public:
 protected:
     void updateWidget();
 
-    InviwoMainWindow* mainwindow_;
     WorkspaceAnnotationsQt annotations_;
     QVBoxLayout* layout_ = nullptr;
     QWidget* mainWidget_ = nullptr;
@@ -66,6 +66,11 @@ protected:
     std::shared_ptr<std::function<void()>> onModulesDidRegister_;
     ///< Called before modules have been unregistered
     std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
+    
+    WorkspaceManager::SerializationHandle annotationSerializationHandle_;
+    WorkspaceManager::DeserializationHandle annotationDeserializationHandle_;
+    WorkspaceManager::ClearHandle annotationClearHandle_;
+    WorkspaceAnnotations::ModifiedHandle annotationModifiedHandle_;
 };
 
 }  // namespace inviwo

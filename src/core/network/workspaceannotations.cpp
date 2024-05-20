@@ -173,4 +173,14 @@ const std::vector<WorkspaceAnnotations::Base64Image>& WorkspaceAnnotations::getC
     return canvases_;
 }
 
+WorkspaceAnnotations::ModifiedHandle WorkspaceAnnotations::onModified(
+    const ModifiedCallback& callback) {
+    return modified_.add(callback);
+}
+
+void WorkspaceAnnotations::invalidate(InvalidationLevel invalidationLevel,
+                                      Property* modifiedProperty) {
+    modified_.invoke();
+}
+
 }  // namespace inviwo

@@ -34,15 +34,13 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/threadutil.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QAction>
 #include <QEvent>
 #include <QApplication>
 #include <QGuiApplication>
 #include <QMouseEvent>
 #include <QTouchEvent>
-#include <warn/pop>
+#include <QTimer>
 
 #include <thread>
 #include <mutex>
@@ -173,13 +171,9 @@ UndoManager::UndoManager(WorkspaceManager* wm, ProcessorNetwork* network,
     : network_{network}
     , manager_{wm}
     , refPath_{filesystem::findBasePath()}
-    , autoSaver_{std::make_unique<AutoSaver>(numRestoreFiles, restoreFrequency)}
-
-{
+    , autoSaver_{std::make_unique<AutoSaver>(numRestoreFiles, restoreFrequency)} {
 
     QApplication::instance()->installEventFilter(this);
-
-    network_->addObserver(this);
 
     undoAction_ = new QAction(QIcon(":/svgicons/undo.svg"), QAction::tr("&Undo"), this);
     undoAction_->setShortcut(QKeySequence::Undo);
@@ -197,6 +191,12 @@ UndoManager::UndoManager(WorkspaceManager* wm, ProcessorNetwork* network,
         if (isRestoring) return;
         clear();
         pushState();
+    });
+
+    modifiedHandle_ = wm->onModified([this](bool modified) {
+        if (modified) {
+            dirty_ = true;
+        }
     });
 
     updateActions();
@@ -244,7 +244,7 @@ void UndoManager::undoState() {
 
         std::stringstream stream;
         stream << *undoBuffer_[head_];
-        manager_->load(stream, refPath_);
+        manager_->load(stream, refPath_, StandardExceptionHandler{}, WorkspaceSaveMode::Undo);
 
         dirty_ = false;
         updateActions();
@@ -258,7 +258,7 @@ void UndoManager::redoState() {
 
         std::stringstream stream;
         stream << *undoBuffer_[head_];
-        manager_->load(stream, refPath_);
+        manager_->load(stream, refPath_, StandardExceptionHandler{}, WorkspaceSaveMode::Undo);
 
         dirty_ = false;
         updateActions();
@@ -296,44 +296,43 @@ void UndoManager::updateActions() {
     redoAction_->setEnabled(head_ >= -1 && head_ < static_cast<DiffType>(undoBuffer_.size()) - 1);
 }
 
-void UndoManager::onProcessorNetworkChange() { dirty_ = true; }
-void UndoManager::onProcessorNetworkDidAddProcessor(Processor*) { dirty_ = true; }
-void UndoManager::onProcessorNetworkDidRemoveProcessor(Processor*) { dirty_ = true; }
-void UndoManager::onProcessorNetworkDidAddConnection(const PortConnection&) { dirty_ = true; }
-void UndoManager::onProcessorNetworkDidRemoveConnection(const PortConnection&) { dirty_ = true; }
-void UndoManager::onProcessorNetworkDidAddLink(const PropertyLink&) { dirty_ = true; }
-void UndoManager::onProcessorNetworkDidRemoveLink(const PropertyLink&) { dirty_ = true; }
-
 #include <warn/push>
 #include <warn/ignore/switch-enum>
 bool UndoManager::eventFilter(QObject*, QEvent* e) {
-    switch (e->type()) {
-        case QEvent::MouseButtonRelease: {
-            pushStateIfDirty();
-            break;
-        }
-        case QEvent::TouchEnd: {
-            auto te = static_cast<QTouchEvent*>(e);
-            if (util::all_of(te->points(), [](const QTouchEvent::TouchPoint& tp) {
-                    return tp.state() == QEventPoint::Released;
-                })) {
-                pushStateIfDirty();
-                break;
+    const bool triggerPush = [&]() {
+        switch (e->type()) {
+            case QEvent::MouseButtonRelease: {
+                return true;
             }
+            case QEvent::NonClientAreaMouseButtonRelease: {
+                return true;
+            }
+            case QEvent::TouchEnd: {
+                auto te = static_cast<QTouchEvent*>(e);
+                return util::all_of(te->points(), [](const QTouchEvent::TouchPoint& tp) {
+                    return tp.state() == QEventPoint::Released;
+                });
+            }
+            case QEvent::KeyRelease: {
+                return true;
+            }
+            case QEvent::Drop: {
+                return true;
+            }
+            default:
+                return false;
+        }
+    }();
 
-            break;
-        }
-        case QEvent::KeyRelease: {
-            pushStateIfDirty();
-            break;
-        }
-        case QEvent::Drop: {
-            pushStateIfDirty();
-            break;
-        }
-        default:
-            break;
+    if (triggerPush) {
+        ++triggerId_;
+        QTimer::singleShot(100, this, [this, id = triggerId_]() {
+            if (id == triggerId_) {
+                pushStateIfDirty();
+            }
+        });
     }
+
     return false;
 }
 #include <warn/pop>

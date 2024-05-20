@@ -109,9 +109,6 @@ public:
     void removePropertyWidgets(Processor* processor);
     void showProcessorHelp(const std::string& classIdentifier, bool raise = false);
 
-    bool isModified() const;
-    void setModified(const bool modified = true);
-
     static QPointF snapToGrid(QPointF pos);
 
     // Called from ProcessorPortGraphicsItems mouse events.
@@ -186,8 +183,6 @@ private:
     };
 
     // Overrides for ProcessorNetworkObserver
-    virtual void onProcessorNetworkChange() override;
-
     virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
     virtual void onProcessorNetworkWillRemoveProcessor(Processor* processor) override;
 
@@ -243,7 +238,6 @@ private:
     InviwoMainWindow* mainWindow_;
     ProcessorNetwork* network_;
     static const int gridSpacing_;
-    bool modified_;
     bool backgroundVisible_;
 
     bool adjustSceneToChange_;

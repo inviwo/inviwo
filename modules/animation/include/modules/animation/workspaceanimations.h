@@ -149,6 +149,8 @@ public:
     OnChangedDispatcher onChanged_;  // Fired when animations are added/removed
 
 private:
+    void onAnyChange();
+
     size_t getMainAnimationIndex() const;
     // MainAnimation changed
     virtual void onAnimationChanged(AnimationController* controller, Animation* oldAnim,

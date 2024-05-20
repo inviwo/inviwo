@@ -103,7 +103,16 @@ public:
 
     virtual InviwoApplication* getInviwoApplication() override;
 
+    using ModifiedDispatcher = Dispatcher<void()>;
+    using ModifiedCallback = typename ModifiedDispatcher::Callback;
+    using ModifiedHandle = typename ModifiedDispatcher::Handle;
+
+    ModifiedHandle onModified(const ModifiedCallback& callback);
+
 protected:
+    virtual void invalidate(InvalidationLevel invalidationLevel,
+                            Property* modifiedProperty = nullptr) override;
+
     StringProperty title_;
     StringProperty author_;
     StringProperty tags_;
@@ -113,6 +122,8 @@ protected:
 
     std::vector<Base64Image> canvases_;
     InviwoApplication* app_;
+    
+    ModifiedDispatcher modified_;
 };
 
 }  // namespace inviwo

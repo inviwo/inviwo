@@ -34,16 +34,16 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/qt/applicationbase/undomanager.h>
+#include <inviwo/core/network/workspaceannotations.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QMainWindow>
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
-#include <warn/pop>
 
 #include <tclap/CmdLine.h>
+
+#include <optional>
 
 class QDropEvent;
 class QDragEnterEvent;
@@ -71,7 +71,7 @@ class TextLabelOverlay;
 class MenuKeyboardEventFilter;
 class Processor;
 
-class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
+class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow {
 public:
     InviwoMainWindow(InviwoApplication* app);
     virtual ~InviwoMainWindow();
@@ -99,7 +99,6 @@ public:
      * @return true if the workspace was opened, otherwise false.
      */
     bool openWorkspaceAskToSave(const std::filesystem::path& workspaceFileName);
-    const std::filesystem::path& getCurrentWorkspace();
 
     NetworkEditor* getNetworkEditor() const;
     NetworkEditorView& getNetworkEditorView() const;
@@ -181,8 +180,6 @@ protected:
     virtual void dropEvent(QDropEvent* event) override;
 
 private:
-    virtual void onModifiedStatusChanged(const bool& newStatus) override;
-
     /*
      * Access the WelcomeWidget using this function as it does delayed initialization, i.e., creates
      * it if non-existing.
@@ -228,6 +225,7 @@ private:
      */
     void saveRecentWorkspaceList(const QStringList& list);
     void setCurrentWorkspace(const std::filesystem::path& workspaceFileName);
+    void clearCurrentWorkspace();
 
     void updateWindowTitle();
 
@@ -254,18 +252,15 @@ private:
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
     std::unique_ptr<FileAssociations> fileAssociations_;
 
-    WorkspaceManager::SerializationHandle annotationSerializationHandle_;
-    WorkspaceManager::DeserializationHandle annotationDeserializationHandle_;
-    WorkspaceManager::ClearHandle annotationClearHandle_;
+    WorkspaceManager::ModifiedChangedHandle workspaceModifiedHandle_;
 
     // settings
     bool maximized_;
 
     // paths
-    std::filesystem::path untitledWorkspaceName_;
-    std::filesystem::path workspaceFileDir_;
-    std::filesystem::path currentWorkspaceFileName_;
-    std::filesystem::path workspaceOnLastSuccessfulExit_;
+    std::optional<std::filesystem::path> currentWorkspaceFileName_;
+    std::filesystem::path lastWorkspaceFileDir_;
+    std::optional<std::filesystem::path> workspaceOnLastSuccessfulExit_;
 
     // command line switches
     TCLAP::ValueArg<std::string> snapshotArg_;

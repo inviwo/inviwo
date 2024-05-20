@@ -31,7 +31,7 @@
 
 #include <inviwo/qt/applicationbase/qtapplicationbasemoduledefine.h>
 
-#include <inviwo/core/network/processornetworkobserver.h>
+
 #include <inviwo/core/network/workspacemanager.h>
 
 #include <memory>
@@ -51,7 +51,7 @@ class ProcessorNetwork;
 /**
  * \class UndoManager
  */
-class IVW_QTAPPLICATIONBASE_API UndoManager : public QObject, public ProcessorNetworkObserver {
+class IVW_QTAPPLICATIONBASE_API UndoManager : public QObject {
 public:
     UndoManager(
         WorkspaceManager* wm, ProcessorNetwork* network,
@@ -84,20 +84,12 @@ private:
 
     void updateActions();
 
-    // ProcessorNetworkObserver overrides;
-    virtual void onProcessorNetworkChange() override;
-    virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
-    virtual void onProcessorNetworkDidRemoveProcessor(Processor* processor) override;
-    virtual void onProcessorNetworkDidAddConnection(const PortConnection& connection) override;
-    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection& connection) override;
-    virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) override;
-    virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) override;
-
     ProcessorNetwork* network_;
     WorkspaceManager* manager_;
     std::filesystem::path refPath_;
 
     bool dirty_ = true;
+    size_t triggerId_ = 0;
     bool isRestoring = false;
     DiffType head_ = -1;
     std::vector<std::shared_ptr<const std::string>> undoBuffer_;
@@ -107,6 +99,7 @@ private:
 
     WorkspaceManager::ClearHandle clearHandle_;
     WorkspaceManager::DeserializationHandle loadHandle_;
+    WorkspaceManager::ModifiedHandle modifiedHandle_;
 
     std::unique_ptr<AutoSaver> autoSaver_;
 };

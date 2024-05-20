@@ -110,7 +110,6 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
     , processorItem_(nullptr)
     , mainWindow_(mainWindow)
     , network_(mainWindow->getInviwoApplication()->getProcessorNetwork())
-    , modified_(false)
     , backgroundVisible_(true)
     , adjustSceneToChange_(true) {
 
@@ -335,14 +334,6 @@ void NetworkEditor::showLinkDialog(Processor* processor1, Processor* processor2)
 std::shared_ptr<const Image> NetworkEditor::renderPortInspectorImage(Outport* outport) {
     auto pim = mainWindow_->getInviwoApplication()->getPortInspectorManager();
     return pim->renderPortInspectorImage(outport);
-}
-
-bool NetworkEditor::isModified() const { return modified_; }
-void NetworkEditor::setModified(const bool modified) {
-    if (modified != modified_) {
-        modified_ = modified;
-        forEachObserver([&](NetworkEditorObserver* o) { o->onModifiedStatusChanged(modified); });
-    }
 }
 
 ProcessorGraphicsItem* NetworkEditor::getProcessorGraphicsItem(Processor* key) const {
@@ -1166,26 +1157,21 @@ void NetworkEditor::helpEvent(QGraphicsSceneHelpEvent* e) {
 }
 
 void NetworkEditor::onProcessorNetworkDidAddProcessor(Processor* processor) {
-    setModified(true);
     addProcessorRepresentations(processor);
 }
 
 void NetworkEditor::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
-    setModified(true);
     removeProcessorRepresentations(processor);
 }
 
 void NetworkEditor::onProcessorNetworkDidAddConnection(const PortConnection& connection) {
     addConnectionGraphicsItem(connection);
-    setModified(true);
 }
 void NetworkEditor::onProcessorNetworkWillRemoveConnection(const PortConnection& connection) {
     removeConnectionGraphicsItem(connection);
-    setModified(true);
 }
 
 void NetworkEditor::onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) {
-    setModified(true);
     Processor* p1 = propertyLink.getSource()->getOwner()->getProcessor();
     Processor* p2 = propertyLink.getDestination()->getOwner()->getProcessor();
     auto link = getLinkGraphicsItem(p1, p2);
@@ -1195,7 +1181,6 @@ void NetworkEditor::onProcessorNetworkDidAddLink(const PropertyLink& propertyLin
 }
 
 void NetworkEditor::onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) {
-    setModified(true);
     if (network_
             ->getLinksBetweenProcessors(propertyLink.getSource()->getOwner()->getProcessor(),
                                         propertyLink.getDestination()->getOwner()->getProcessor())
@@ -1205,8 +1190,6 @@ void NetworkEditor::onProcessorNetworkDidRemoveLink(const PropertyLink& property
                                 propertyLink.getDestination()->getOwner()->getProcessor()));
     }
 }
-
-void NetworkEditor::onProcessorNetworkChange() { setModified(); }
 
 NetworkEditor::AdjustSceneToChangesBlocker::AdjustSceneToChangesBlocker(NetworkEditor& network)
     : network_(network) {
