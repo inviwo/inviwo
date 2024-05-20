@@ -131,7 +131,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         idChange_ =
             processor_->onIdentifierChange([this](std::string_view newID, std::string_view) {
                 auto newIdentifier = utilqt::toQString(newID);
-                if (newIdentifier != displayNameLabel_->text()) {
+                if (newIdentifier != identifierLabel_->text()) {
                     identifierLabel_->setText(newIdentifier);
                 }
             });
