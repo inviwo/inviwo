@@ -57,7 +57,9 @@ Property::Property(std::string_view identifier, std::string_view displayName, Do
     , initiatingWidget_(nullptr)
     , help_{std::move(help)} {
 
-    util::validateIdentifier(identifier, "Property", IVW_CONTEXT);
+    if (!identifier_.empty()) {
+        util::validateIdentifier(identifier, "Property", IVW_CONTEXT);
+    }
 }
 
 Property::Property(std::string_view identifier, std::string_view displayName,
