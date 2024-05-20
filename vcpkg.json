@@ -41,7 +41,9 @@
     "pegtl",
     "inja",
     "warn",
-    "zlib"
+    "zlib",
+    "bxzstr",
+    "fast-float"
   ],
   "default-features": [
     "hdf5",
