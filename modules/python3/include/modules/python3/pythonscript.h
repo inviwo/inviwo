@@ -99,6 +99,8 @@ private:
     bool checkCompileError();
     bool checkRuntimeError();
 
+    static std::string getAndFormatError();
+
     /**
      * Compiles the script source to byte code, which speeds up script execution. This function
      * is called by run when needed (eg. the source code has changed)

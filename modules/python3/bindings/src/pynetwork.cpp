@@ -36,6 +36,7 @@
 #include <pybind11/stl/filesystem.h>
 
 #include <inviwo/core/network/portconnection.h>
+#include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/links/propertylink.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/ports/port.h>
@@ -45,6 +46,35 @@
 #include <inviwo/core/processors/canvasprocessor.h>
 
 namespace py = pybind11;
+
+// see #include <inviwopy/pypropertytypehook.h>
+template <>
+struct pybind11::polymorphic_type_hook<inviwo::Processor> {
+    static const void* get(const inviwo::Processor* processor, const std::type_info*& type) {
+        if (!processor) {  // default implementation if prop is null
+            type = nullptr;
+            return dynamic_cast<const void*>(processor);
+        }
+
+        // check if the exact type is registered in python, then return that.
+        const auto& id = typeid(*processor);
+        if (detail::get_type_info(id)) {
+            type = &id;
+            return dynamic_cast<const void*>(processor);
+        }
+
+        // else check if we know a more derived base then Processor and return that.
+        if (auto cp = dynamic_cast<const inviwo::CanvasProcessor*>(processor)) {
+            type = &typeid(inviwo::CanvasProcessor);
+            return cp;
+        } else {  // default implementation for prop != null
+            type = &id;
+            return dynamic_cast<const void*>(processor);
+        }
+    }
+};
+
+
 
 namespace inviwo {
 
@@ -79,10 +109,7 @@ void exposeNetwork(py::module& m) {
             "__getattr__",
             [](ProcessorNetwork& po, std::string key) {
                 if (auto p = po.getProcessorByIdentifier(key)) {
-                    if (auto cp = dynamic_cast<CanvasProcessor*>(p)) {
-                        return py::cast(cp);
-                    }
-                    return py::cast(p);
+                    return p;
                 } else {
                     throw py::attribute_error{fmt::format(
                         "ProcessorNetwork does not have a processor with identifier: '{}'", key)};
@@ -175,6 +202,11 @@ void exposeNetwork(py::module& m) {
                 path, [&](ExceptionContext ec) { throw; });  // is this the correct way of re
                                                              // throwing (we just want to pass
                                                              // the exception on to python)
-        });
+             })
+
+        .def("append", [](ProcessorNetwork* network, const std::filesystem::path& path) {
+            return util::appendProcessorNetwork(network, path, network->getApplication());
+         });
+        
 }
 }  // namespace inviwo
