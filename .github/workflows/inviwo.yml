@@ -450,7 +450,7 @@ jobs:
         database: ../build
         style: 'file'
         tidy-checks: ''
-        version: ${{ env.LLVM_PATH }}
+        version: ${{ env.LLVM_PATH }}/bin
         tidy-review: true
         format-review: false
         step-summary: true
