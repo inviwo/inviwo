@@ -559,6 +559,10 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
         case 8: {
             res |= xml::renamePropertyIdentifier(root, "org.inviwo.MultichannelRaycaster",
                                                  "transfer-functions", "transferfunctions");
+            res |= xml::renamePortIdentifier(root, "org.inviwo.LightingRaycaster", "entry-points",
+                                             "entry");
+            res |= xml::renamePortIdentifier(root, "org.inviwo.LightingRaycaster", "exit-points",
+                                             "exit");
             return res;
         }
 
