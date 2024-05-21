@@ -441,6 +441,10 @@ jobs:
         -DIVW_MODULE_EIGENUTILS=ON
         -DIVW_MODULE_HDF5=ON
 
+    - name: "Debug"
+      shell: bash
+      run: ls -al ${{ env.LLVM_PATH }}/bin
+
     - uses: cpp-linter/cpp-linter-action@v2.11.0
       id: linter
       env:
