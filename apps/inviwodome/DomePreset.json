@@ -17,7 +17,7 @@
         "IVW_CFG_PROJECT_NAME":       "inviwo-dome",
         "IVW_MODULE_SGCT":            { "type": "BOOL", "value": "ON" },
         "IVW_APP_INVIWO_DOME":        { "type": "BOOL", "value": "ON" },
-        "IVW_USE_TRACY":              { "type": "BOOL", "value": "ON" },
+        "IVW_USE_TRACY":              { "type": "BOOL", "value": "OFF" },
 
         // Config
         "IVW_CFG_PROFILING":          { "type": "BOOL", "value": "OFF" },

@@ -22,26 +22,29 @@ target_include_directories(inviwo-dome PUBLIC include)
 
 find_package(glfw3 REQUIRED)
 find_package(sgct CONFIG REQUIRED)
-find_package(Tracy CONFIG REQUIRED)
-    
 target_link_libraries(inviwo-dome 
     PRIVATE
         inviwo::core
         inviwo::module-system
         inviwo::python-helper
-        Tracy::TracyClient
         sgct::sgct
         glfw
         inviwo::module::glfw
         inviwo::module::sgct
         Dbghelp.lib
 )
+if(IVW_ENABLE_TRACY)
+    find_package(Tracy CONFIG REQUIRED)
+    target_link_libraries(inviwo-dome PRIVATE Tracy::TracyClient)
+endif()
 
 set_target_properties(inviwo-dome PROPERTIES 
     VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:inviwo-dome>
     SGCT_CONFIG_DIR ${CMAKE_CURRENT_LIST_DIR}/scripts
     TRACY_EXE ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools/tracy/Tracy.exe
 )
+
+ivw_folder(inviwo-dome apps)
 
 ivw_define_standard_definitions(inviwo-dome inviwo-dome)
 ivw_define_standard_properties(inviwo-dome)

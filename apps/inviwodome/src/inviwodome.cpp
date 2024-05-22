@@ -138,7 +138,7 @@ public:
 
         // Initialize all modules non Qt modules
         auto filter = [](const inviwo::ModuleContainer& m) {
-            return m.identifier().ends_with("Qt");
+            return m.identifier().ends_with("qt") || m.identifier().starts_with("qt");
         };
         inviwo::util::registerModulesFiltered(app.getModuleManager(), filter,
                                               app.getSystemSettings().moduleSearchPaths_.get());

@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "masteraddress": "10.245.163.85",
+  "masteraddress": "localhost",
   "nodes": [
     {
-      "address": "10.245.163.85",
+      "address": "localhost",
       "port": 20401,
       "windows": [
         {
@@ -28,7 +28,7 @@
       ]
     },
     {
-      "address": "127.0.0.1",
+      "address": "127.0.0.2",
       "port": 20402,
       "windows": [
         {
@@ -44,7 +44,7 @@
                 "type": "FisheyeProjection",
                 "fov": 180.0,
                 "quality": "medium",
-                "tilt": 0.0,
+                "tilt": 90.0,
                 "background": { "r": 0.1, "g": 0.1, "b": 0.1, "a": 1.0 }
               }
             }
