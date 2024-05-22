@@ -221,7 +221,7 @@ void NetworkSyncClient::applyCommands(const std::vector<SgctCommand>& commands) 
                                         [&](const command::AddProcessor& update) {
                                             std::stringstream is{update.data};
                                             auto d = wm_.createWorkspaceDeserializer(is, "");
-                                            std::unique_ptr<Processor> processor;
+                                            std::shared_ptr<Processor> processor;
                                             d.deserialize("processor", processor);
                                             net_.addProcessor(std::move(processor));
                                         },

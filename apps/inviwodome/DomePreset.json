@@ -30,16 +30,17 @@
 
         // Disable all python (We can't use python in a static build yet)
         "IVW_APP_PYTHON":             { "type": "BOOL", "value": "OFF" },
-        "IVW_MODULE_DATAFRAMEPYTHON": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_DATAFRAMEPYTHON": { "type": "BOOL", "value": "ON" },
         "IVW_MODULE_MOLVISPYTHON":    { "type": "BOOL", "value": "OFF" },
         "IVW_MODULE_NANOVGPY":        { "type": "BOOL", "value": "OFF" },
-        "IVW_MODULE_PYTHON3":         { "type": "BOOL", "value": "OFF" },
-        "IVW_MODULE_PYTHON3QT":       { "type": "BOOL", "value": "OFF" },
-        "IVW_MODULE_PYTHON3GL":       { "type": "BOOL", "value": "OFF" },
-        "IVW_MODULE_PYTHONTOOLS":     { "type": "BOOL", "value": "OFF" },
-        "IVW_PACKAGE_EMBED_PYTHON":   { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_PYTHON3":         { "type": "BOOL", "value": "ON" },
+        "IVW_MODULE_PYTHON3QT":       { "type": "BOOL", "value": "ON" },
+        "IVW_MODULE_PYTHON3GL":       { "type": "BOOL", "value": "ON" },
+        "IVW_MODULE_PYTHONTOOLS":     { "type": "BOOL", "value": "ON" },
+        "IVW_PACKAGE_EMBED_PYTHON":   { "type": "BOOL", "value": "ON" },
 
         // Diable all qt modules
+        "IVW_ENABLE_QT":              { "type": "BOOL", "value": "OFF" },
         "IVW_APP_QTBASE":             { "type": "BOOL", "value": "OFF" },
         "IVW_APP_INVIWO":             { "type": "BOOL", "value": "OFF" },
         "IVW_APP_MINIMAL_QT":         { "type": "BOOL", "value": "OFF" },

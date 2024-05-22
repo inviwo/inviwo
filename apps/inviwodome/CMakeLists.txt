@@ -28,6 +28,7 @@ target_link_libraries(inviwo-dome
     PRIVATE
         inviwo::core
         inviwo::module-system
+        inviwo::python-helper
         Tracy::TracyClient
         sgct::sgct
         glfw

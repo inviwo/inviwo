@@ -46,6 +46,7 @@
 #include <inviwo/core/network/lambdanetworkvisitor.h>
 
 #include <inviwo/sys/moduleloading.h>
+#include <inviwo/py/pythonhelper.h>
 
 #include <modules/opengl/openglutils.h>
 
@@ -133,8 +134,12 @@ public:
         inviwo::CanvasGLFW::provideExternalContext(shared);
         inviwo::SGCTModule::startServer = false;
 
-        // Initialize all modules
-        auto filter = [](const inviwo::ModuleContainer& m) { return false; };
+        inviwo::initializePythonModules();
+
+        // Initialize all modules non Qt modules
+        auto filter = [](const inviwo::ModuleContainer& m) {
+            return m.identifier().ends_with("Qt");
+        };
         inviwo::util::registerModulesFiltered(app.getModuleManager(), filter,
                                               app.getSystemSettings().moduleSearchPaths_.get());
 
