@@ -71,6 +71,7 @@ SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindo
 
     setWidget(scrollArea_);
 
+    // Need to delay this until the qtwidgets module is loaded to get access to the qt widgets
     onModulesDidRegister_ =
         mainwindow->getInviwoApplication()->getModuleManager().onModulesDidRegister(
             [&]() { updateSettingsWidget(); });

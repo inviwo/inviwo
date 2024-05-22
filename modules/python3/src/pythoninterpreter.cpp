@@ -107,22 +107,28 @@ import sysconfig
 
 import traceback
 
-def formatError(e):
+def formatError(e, name):
     pathlist = '\n'.join(f'{i:>2}: {p}' for i, p in enumerate(sys.path))
     config = '\n'.join(f"{k:15}{v}" for k,v in sysconfig.get_config_vars().items())
     tb = ''.join(traceback.format_exception(e))
     helpmsg = 'Note: Inviwo will not access user site-package folders. Make sure to install the packages site-wide or add\n' \
            'your user site-package folder to the environment variable `PYTHONPATH`,\n' \
            'for example "PYTHONPATH=%appdata%\\Python\\Python311\\site-packages".'
-    return f"{e}\n{tb}\n{helpmsg}\n\nsys.path:\n{pathlist}\nconfig:\n{config}"
+    return f"Unexpected error while importing {name}\n{e}{tb}\n{helpmsg}\n\nsys.path:\n{pathlist}\nconfig:\n{config}"
 
 try:
     import numpy
+except ModuleNotFoundError as e:
+    raise ModuleNotFoundError(formatError(e, "numpy"))
+except ImportError as e:
+    raise ImportError(formatError(e, "numpy"))
+
+try:
     import inviwopy
 except ModuleNotFoundError as e:
-    raise ModuleNotFoundError(formatError(e))
+    raise ModuleNotFoundError(formatError(e, "inviwopy"))
 except ImportError as e:
-    raise ImportError(formatError(e))
+    raise ImportError(formatError(e, "inviwopy"))
 
 
 class OutputRedirector:
@@ -148,7 +154,8 @@ sys.stderr = OutputRedirector(1)
 )",
                      py::globals());
         } catch (const py::error_already_set& e) {
-            throw ModuleInitException(e.what(), IVW_CONTEXT);
+            throw ModuleInitException(
+                IVW_CONTEXT, "Error while initializing the Python Interpreter\n{}", e.what());
         }
     }
 }

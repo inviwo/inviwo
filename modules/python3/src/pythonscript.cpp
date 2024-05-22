@@ -45,6 +45,9 @@
 #include <iterator>  // for istreambuf_iterator
 #include <utility>   // for pair
 
+#include <fmt/format.h>
+#include <fmt/std.h>
+
 namespace inviwo {
 
 PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_(false) {}
@@ -117,50 +120,8 @@ void PythonScript::setSource(const std::string& source) {
     byteCode_ = nullptr;
 }
 
-bool PythonScript::checkCompileError() {
+std::string PythonScript::getAndFormatError() {
     namespace py = pybind11;
-    if (!PyErr_Occurred()) return true;
-
-    std::stringstream errstr;
-    errstr << "Compile Error occurred when compiling script " << filename_ << "\n";
-
-    py::object type;
-    py::object value;
-    py::object traceback;
-    PyErr_Fetch(&type.ptr(), &value.ptr(), &traceback.ptr());
-
-    std::stringstream log;
-    char* msg = nullptr;
-    PyObject* obj = nullptr;
-
-    if (PyArg_ParseTuple(value.ptr(), "sO", &msg, &obj)) {
-        int line, col;
-        char* code = nullptr;
-        char* mod = nullptr;
-
-        if (PyArg_ParseTuple(obj, "siis", &mod, &line, &col, &code)) {
-            log << "[" << line << ":" << col << "] " << msg << ": " << code;
-        }
-    }
-
-    // convert error to string, if it could not be parsed
-    if (log.str().empty()) {
-        log << std::string(py::str(value));
-    }
-
-    errstr << log.str();
-    InviwoApplication::getPtr()
-        ->getModuleByType<Python3Module>()
-        ->getPythonInterpreter()
-        ->pythonExecutionOutputEvent(errstr.str(), PythonOutputType::sysstderr);
-
-    return false;
-}
-
-bool PythonScript::checkRuntimeError() {
-    namespace py = pybind11;
-    if (!PyErr_Occurred()) return true;
-
     py::object type;
     py::object value;
     py::object traceback;
@@ -206,10 +167,33 @@ bool PythonScript::checkRuntimeError() {
         errstr << "No stacktrace available";
     }
 
+    return std::move(errstr).str();
+}
+
+bool PythonScript::checkCompileError() {
+    if (!PyErr_Occurred()) return true;
+
+    const auto error = getAndFormatError();
+
     InviwoApplication::getPtr()
         ->getModuleByType<Python3Module>()
         ->getPythonInterpreter()
-        ->pythonExecutionOutputEvent(errstr.str(), PythonOutputType::sysstderr);
+        ->pythonExecutionOutputEvent(
+            fmt::format("Compile Error occurred when compiling script {}\n{}", filename_, error),
+            PythonOutputType::sysstderr);
+
+    return false;
+}
+
+bool PythonScript::checkRuntimeError() {
+    if (!PyErr_Occurred()) return true;
+
+    auto error = getAndFormatError();
+
+    InviwoApplication::getPtr()
+        ->getModuleByType<Python3Module>()
+        ->getPythonInterpreter()
+        ->pythonExecutionOutputEvent(error, PythonOutputType::sysstderr);
     return false;
 }
 

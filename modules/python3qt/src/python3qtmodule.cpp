@@ -115,7 +115,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
                          throw PythonAbortException("Evaluation aborted");
                      }
                  })
-            .def("c", &utilqt::configureInviwoQtApp)
+            .def("configureInviwoQtApp", &utilqt::configureInviwoQtApp)
             .def("logQtMessages",
                  [](QtMsgType type, const QMessageLogContext& context, const QString& msg) {
                      utilqt::logQtMessages(type, context, msg);

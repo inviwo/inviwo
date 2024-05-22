@@ -42,6 +42,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <optional>
 
 namespace inviwo {
 
@@ -235,7 +236,12 @@ public:
      * classes can overload this and rethrow the caught exception to enable custom error handling if
      * needed.
      */
-    virtual void handleError();
+    virtual std::string handleError();
+
+    /**
+     * @retuns the last error return by handleError if any. The error is clear at any invalidation.
+     */
+    const std::optional<std::string>& error() const;
 
     /**
      * Call newResults to let the network know we have new data on our outports.
@@ -250,7 +256,7 @@ public:
     void newResults(const std::vector<Outport*>& outports);
 
     /**
-     * Overrides Processor::invalidate to customize the invalidation behaviour
+     * Overrides Processor::invalidate to customize the invalidation behavior
      * We generally only want to invalidate the dependent processor when we put data on our
      * outports.
      */
@@ -316,6 +322,7 @@ private:
     std::vector<Submission> queue_;
     std::optional<Delay> delay_;
     util::OnScopeExit delayBackgroundJobReset_;
+    std::optional<std::string> error_;
 };
 
 namespace pool::detail {
@@ -394,7 +401,8 @@ inline void PoolProcessor::callDone(
                 state->done(results);
             }
         } catch (...) {
-            p.handleError();
+            p.error_ = p.handleError();
+            p.isReady_.update();
         }
     };
 
