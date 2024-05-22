@@ -74,8 +74,6 @@ struct pybind11::polymorphic_type_hook<inviwo::Processor> {
     }
 };
 
-
-
 namespace inviwo {
 
 void exposeNetwork(py::module& m) {
@@ -196,17 +194,17 @@ void exposeNetwork(py::module& m) {
                                                                   // to pass the exception on to
                                                                   // python)
              })
-        .def("load", [](ProcessorNetwork* network, const std::filesystem::path& path) {
-            network->clear();
-            network->getApplication()->getWorkspaceManager()->load(
-                path, [&](ExceptionContext ec) { throw; });  // is this the correct way of re
-                                                             // throwing (we just want to pass
-                                                             // the exception on to python)
+        .def("load",
+             [](ProcessorNetwork* network, const std::filesystem::path& path) {
+                 network->clear();
+                 network->getApplication()->getWorkspaceManager()->load(
+                     path, [&](ExceptionContext ec) { throw; });  // is this the correct way of re
+                                                                  // throwing (we just want to pass
+                                                                  // the exception on to python)
              })
 
         .def("append", [](ProcessorNetwork* network, const std::filesystem::path& path) {
             return util::appendProcessorNetwork(network, path, network->getApplication());
-         });
-        
+        });
 }
 }  // namespace inviwo
