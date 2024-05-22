@@ -49,4 +49,15 @@ TEST(UtilitiesTests, StripIndentifierTest) {
     EXPECT_EQ("_1abc123", util::stripIdentifier("1abc123&!-=\"#%&/()=?`+@${[]}~*'-.,;:<>|"));
 }
 
+TEST(UtilitiesTests, ValidateIdentifierTest) {
+    auto context = IvwContextCustom("utilities-test");
+
+    EXPECT_THROW(util::validateIdentifier("", "property", context), Exception);
+    EXPECT_THROW(util::validateIdentifier("1foo", "property", context), Exception);
+    EXPECT_THROW(util::validateIdentifier("foo-bar", "property", context), Exception);
+    EXPECT_NO_THROW(util::validateIdentifier("foobar", "property", context));
+    EXPECT_NO_THROW(util::validateIdentifier("f2oobar", "property", context));
+    EXPECT_NO_THROW(util::validateIdentifier("_f2oobar", "property", context));
+}
+
 }  // namespace inviwo

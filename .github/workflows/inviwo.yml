@@ -188,7 +188,7 @@ jobs:
     - name: "Install Qt"
       uses: jurplel/install-qt-action@v3
       with:
-        version: 6.6.0
+        version: 6.7.0
         dir: ${{ github.workspace }}
 
     - name: "Setup Python"
@@ -371,7 +371,7 @@ jobs:
       pull-requests: write
     env:
       LLVM_VERSION: 17
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 320
     steps:
     - name: "Apt Install"
@@ -386,7 +386,7 @@ jobs:
     - name: "Install Qt"
       uses: jurplel/install-qt-action@v3
       with:
-        version: 6.6.0
+        version: 6.7.0
         dir: ${{ github.workspace }}
 
     - name: Install LLVM and Clang
@@ -452,10 +452,13 @@ jobs:
         tidy-checks: ''
         version: ${{ env.LLVM_VERSION }}
         tidy-review: true
-        format-review: true
+        format-review: false
         step-summary: true
         no-lgtm: false
-        verbosity: debug  
+        lines-changed-only: true
+        thread-comments: update
+        file-annotations: false
+        verbosity: debug
 
   test-installer:
     name: "Test Installer"

@@ -48,7 +48,7 @@ BaseCLModule::BaseCLModule(InviwoApplication* app) : InviwoModule(app, "BaseCL")
     OpenCL::getPtr()->addCommonIncludeDirectory(getPath(ModulePath::CL));
 }
 
-int BaseCLModule::getVersion() const { return 1; }
+int BaseCLModule::getVersion() const { return 2; }
 
 std::unique_ptr<VersionConverter> BaseCLModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -68,6 +68,19 @@ bool BaseCLModule::Converter::convert(TxElement* root) {
     switch (version_) {
         case 0: {
             res |= xml::changeIdentifiers(root, repl);
+
+            [[falltrough]];
+        }
+        case 1: {
+            res |= xml::renamePortIdentifier(root, "org.inviwo.VolumeRaycasterCL", "entry-points",
+                                             "entry");
+            res |= xml::renamePortIdentifier(root, "org.inviwo.VolumeRaycasterCL", "exit-points",
+                                             "exit");
+            res |= xml::renamePortIdentifier(root, "org.inviwo.EntryExitPointsCL", "entry-points",
+                                             "entry");
+            res |= xml::renamePortIdentifier(root, "org.inviwo.EntryExitPointsCL", "exit-points",
+                                             "exit");
+
             return res;
         }
         default:

@@ -84,7 +84,7 @@ MultichannelRaycaster::MultichannelRaycaster()
     , exitPort_("exit")
     , backgroundPort_("bg")
     , outport_("outport")
-    , transferFunctions_("transfer-functions", "Transfer functions")
+    , transferFunctions_("transferfunctions", "Transfer functions")
     , tfs_{{{"transferFunction1", "Channel 1", &volumePort_},
             {"transferFunction2", "Channel 2", &volumePort_},
             {"transferFunction3", "Channel 3", &volumePort_},

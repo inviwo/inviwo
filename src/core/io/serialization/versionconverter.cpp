@@ -432,20 +432,83 @@ void xml::logNode(TxElement* node) {
     LogInfoCustom("xml", ss.str());
 }
 
+bool xml::renamePortIdentifier(TxElement* root, std::string_view processorClassId,
+                               std::string_view portIdentifier, std::string_view newIdentifier) {
+    bool res = false;
+    std::vector<std::string> processorIds;
+    xml::visitMatchingNodesRecursive(
+        root,
+        {
+            {"ProcessorNetwork", {}},
+            {"Processors", {}},
+            {"Processor", {{"type", std::string{processorClassId}}}},
+        },
+        [&](TxElement* elem) {
+            processorIds.push_back(elem->GetAttribute("identifier"));
+
+            std::vector<xml::ElementMatcher> portGroupSelector;
+            portGroupSelector.push_back({"PortGroups", {}});
+            portGroupSelector.push_back({"PortGroup", {{"key", std::string(portIdentifier)}}});
+            xml::visitMatchingNodes(elem, portGroupSelector, [&](TxElement* prop) {
+                prop->SetAttribute("key", newIdentifier);
+                res |= true;
+            });
+
+            std::vector<xml::ElementMatcher> inportSelector;
+            inportSelector.push_back({"InPorts", {}});
+            inportSelector.push_back({"InPort", {{"identifier", std::string(portIdentifier)}}});
+            xml::visitMatchingNodes(elem, inportSelector, [&](TxElement* prop) {
+                prop->SetAttribute("identifier", newIdentifier);
+                res |= true;
+            });
+
+            std::vector<xml::ElementMatcher> outportSelector;
+            outportSelector.push_back({"OutPorts", {}});
+            outportSelector.push_back({"OutPort", {{"identifier", std::string(portIdentifier)}}});
+            xml::visitMatchingNodes(elem, outportSelector, [&](TxElement* prop) {
+                prop->SetAttribute("identifier", newIdentifier);
+                res |= true;
+            });
+        });
+
+    // Update any connections
+    StrBuffer buf;
+    xml::visitMatchingNodesRecursive(
+        root,
+        {
+            {"ProcessorNetwork", {}},
+            {"Connections", {}},
+            {"Connection", {}},
+        },
+        [&](TxElement* elem) {
+            auto src = elem->GetAttribute("src");
+            auto dst = elem->GetAttribute("dst");
+            for (const auto& pid : processorIds) {
+                if (src == buf.replace("{}.{}", pid, portIdentifier).view()) {
+                    elem->SetAttribute("src", buf.replace("{}.{}", pid, newIdentifier).view());
+                }
+                if (dst == buf.replace("{}.{}", pid, portIdentifier).view()) {
+                    elem->SetAttribute("dst", buf.replace("{}.{}", pid, newIdentifier).view());
+                }
+            }
+        });
+
+    return res;
+}
+
 bool xml::renamePropertyIdentifier(TxElement* root, std::string_view processorClassId,
                                    std::string_view propertyPath, std::string_view newIdentifier) {
-
     bool res = false;
-    auto processors = xml::getElement(root, "ProcessorNetwork/Processors");
-
-    if (!processors) return res;
 
     std::vector<std::string> processorIds;
-
     auto path = util::splitStringView(propertyPath, '.');
-
-    xml::visitMatchingNodes(
-        processors, {{"Processor", {{"type", std::string{processorClassId}}}}},
+    xml::visitMatchingNodesRecursive(
+        root,
+        {
+            {"ProcessorNetwork", {}},
+            {"Processors", {}},
+            {"Processor", {{"type", std::string{processorClassId}}}},
+        },
         [&](TxElement* elem) {
             processorIds.push_back(elem->GetAttribute("identifier"));
 
@@ -462,28 +525,36 @@ bool xml::renamePropertyIdentifier(TxElement* root, std::string_view processorCl
         });
 
     // Update any links
-    auto links = xml::getElement(root, "ProcessorNetwork/PropertyLinks");
-    if (!links) return res;
-
     auto newPathParts = path;
     newPathParts.back() = newIdentifier;
     auto newPath = joinString(newPathParts, ".");
 
-    xml::visitMatchingNodes(links, {{"PropertyLink", {}}}, [&](TxElement* elem) {
-        auto src = elem->GetAttribute("src");
-        auto dst = elem->GetAttribute("dst");
-        for (const auto& pid : processorIds) {
-            if (fmt::format("{}.{}", pid, propertyPath) == src) {
-                elem->SetAttribute("src", fmt::format("{}.{}", pid, newPath));
-                res |= true;
+    StrBuffer buf;
+    xml::visitMatchingNodesRecursive(
+        root,
+        {
+            {"ProcessorNetwork", {}},
+            {"PropertyLinks", {}},
+            {"PropertyLink", {}},
+        },
+        [&](TxElement* elem) {
+            auto src = elem->GetAttribute("src");
+            auto dst = elem->GetAttribute("dst");
+            for (const auto& pid : processorIds) {
+                if (src.starts_with(buf.replace("{}.{}", pid, propertyPath))) {
+                    elem->SetAttribute(
+                        "src", buf.replace("{}.{}{}", pid, newPath,
+                                           src.substr(pid.length() + propertyPath.length() + 1))
+                                   .view());
+                }
+                if (dst.starts_with(buf.replace("{}.{}", pid, propertyPath))) {
+                    elem->SetAttribute(
+                        "dst", buf.replace("{}.{}{}", pid, newPath,
+                                           dst.substr(pid.length() + propertyPath.length() + 1))
+                                   .view());
+                }
             }
-
-            if (fmt::format("{}.{}", pid, propertyPath) == dst) {
-                elem->SetAttribute("dst", fmt::format("{}.{}", pid, newPath));
-                res |= true;
-            }
-        }
-    });
+        });
 
     return res;
 }

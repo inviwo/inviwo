@@ -72,4 +72,28 @@ PostProcessingModule::PostProcessingModule(InviwoApplication* app)
     registerProcessor<ImageOpacity>();
 }
 
+int PostProcessingModule::getVersion() const { return 1; }
+
+std::unique_ptr<VersionConverter> PostProcessingModule::getConverter(int version) const {
+    return std::make_unique<Converter>(version);
+}
+
+PostProcessingModule::Converter::Converter(int version) : version_(version) {}
+
+bool PostProcessingModule::Converter::convert(TxElement* root) {
+    bool res = false;
+    switch (version_) {
+        case 0: {
+            res |=
+                xml::renamePropertyIdentifier(root, "org.inviwo.SSAO", "enable-blur", "enableBlur");
+            res |= xml::renamePropertyIdentifier(root, "org.inviwo.SSAO", "blur-sharpness",
+                                                 "blurSharpness");
+            return res;
+        }
+
+        default:
+            return false;  // No changes
+    }
+}
+
 }  // namespace inviwo

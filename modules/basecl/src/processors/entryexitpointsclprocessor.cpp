@@ -51,9 +51,9 @@ EntryExitPointsCLProcessor::EntryExitPointsCLProcessor()
     , KernelObserver()
     , geometryPort_("geometry")
     , entryPort_(
-          "entry-points",
+          "entry",
           DataVec4Float32::get())  // Using 8-bits will create artifacts when entering the volume
-    , exitPort_("exit-points", DataVec4Float32::get())
+    , exitPort_("exit", DataVec4Float32::get())
     , camera_("camera", "Camera", util::boundingBox(geometryPort_))
     , workGroupSize_("wgsize", "Work group size", ivec2(8, 8), ivec2(0), ivec2(256))
     , useGLSharing_("glsharing", "Use OpenGL sharing", true)

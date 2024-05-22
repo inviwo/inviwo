@@ -32,6 +32,8 @@
 #include <modules/postprocessing/postprocessingmoduledefine.h>  // for IVW_MODULE_POSTPROCESSING...
 
 #include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+#include <inviwo/core/io/serialization/ticpp.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 
 namespace inviwo {
 class InviwoApplication;
@@ -39,7 +41,19 @@ class InviwoApplication;
 class IVW_MODULE_POSTPROCESSING_API PostProcessingModule : public InviwoModule {
 public:
     PostProcessingModule(InviwoApplication* app);
-    virtual ~PostProcessingModule() = default;
+
+    virtual int getVersion() const override;
+    virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
+
+private:
+    class Converter : public VersionConverter {
+    public:
+        Converter(int version);
+        virtual bool convert(TxElement* root) override;
+
+    private:
+        int version_;
+    };
 };
 
 }  // namespace inviwo

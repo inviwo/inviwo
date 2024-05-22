@@ -226,7 +226,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerDataVisualizer(std::make_unique<MeshVisualizer>(app));
 }
 
-int BaseGLModule::getVersion() const { return 8; }
+int BaseGLModule::getVersion() const { return 9; }
 
 std::unique_ptr<VersionConverter> BaseGLModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -554,6 +554,15 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
             res |= xml::changeAttributeRecursive(
                 root, {{xml::Kind::processor("org.inviwo.LayerMapping")}}, "type",
                 "org.inviwo.LayerMapping", "org.inviwo.LayerColorMapping");
+            [[fallthrough]];
+        }
+        case 8: {
+            res |= xml::renamePropertyIdentifier(root, "org.inviwo.MultichannelRaycaster",
+                                                 "transfer-functions", "transferfunctions");
+            res |= xml::renamePortIdentifier(root, "org.inviwo.LightingRaycaster", "entry-points",
+                                             "entry");
+            res |= xml::renamePortIdentifier(root, "org.inviwo.LightingRaycaster", "exit-points",
+                                             "exit");
             return res;
         }
 

@@ -71,7 +71,9 @@ Processor::Processor(std::string_view identifier, std::string_view displayName)
     , displayName_{displayName}
     , network_(nullptr) {
 
-    util::validateIdentifier(identifier_, "Processor", IVW_CONTEXT);
+    if (!identifier_.empty()) {
+        util::validateIdentifier(identifier_, "Processor", IVW_CONTEXT);
+    }
 
     createMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
 }

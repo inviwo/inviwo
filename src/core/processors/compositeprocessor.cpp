@@ -300,8 +300,10 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
     }();
 
     auto superId = subProperty->getPath();
-    replaceInString(superId, ".", "-");
-    superProperty->setIdentifier(superId);
+    replaceInString(superId, ".", "_");
+    superProperty->setIdentifier(util::findUniqueIdentifier(
+        superId, [&](std::string_view id) { return comp.getPropertyByIdentifier(id) == nullptr; },
+        ""));
     superProperty->setSerializationMode(PropertySerializationMode::All);
     superProperty->setMetaData<IntMetaData>(meta::index, index);
 

@@ -37,6 +37,7 @@
 
 #include <inviwo/core/properties/property.h>
 #include <fmt/format.h>
+#include <ranges>
 
 namespace inviwo {
 namespace util {
@@ -108,19 +109,28 @@ void saveAllCanvases(ProcessorNetwork* network, const std::filesystem::path& dir
 }
 
 bool isValidIdentifierCharacter(char c, std::string_view extra) {
-    return (std::isalnum(c) || c == '_' || c == '-' || util::contains(extra, c));
+    return (std::isalnum(c) || c == '_' || util::contains(extra, c));
 }
 
 void validateIdentifier(std::string_view identifier, std::string_view type,
-                        ExceptionContext context, std::string_view extra) {
-    for (const auto& c : identifier) {
-        if (c == 0) return;
-        if (!(c >= -1) || !isValidIdentifierCharacter(c, extra)) {
-            throw Exception(
-                fmt::format("{} identifiers are not allowed to contain \"{}\". Found in \"{}\"",
-                            type, c, identifier),
-                context);
-        }
+                        ExceptionContext context) {
+    if (identifier.empty()) {
+        throw Exception(fmt::format("{} identifiers must not be empty", type), context);
+    }
+
+    if (!std::isalpha(identifier[0]) && !identifier.starts_with('_')) {
+        throw Exception(fmt::format("{} identifiers must start with a letter or underscore: '{}'",
+                                    type, identifier),
+                        context);
+    }
+
+    auto validChar = [](char c) -> bool { return c == '_' || std::isalnum(c); };
+    auto view = identifier | std::views::drop(1) | std::views::drop_while(validChar);
+    if (view.begin() != view.end()) {
+        throw Exception(
+            fmt::format("{} identifiers are not allowed to contain \"{}\". Found in \"{}\"", type,
+                        view.front(), identifier),
+            context);
     }
 }
 
@@ -148,8 +158,8 @@ std::string findUniqueIdentifier(std::string_view identifier,
 std::string cleanIdentifier(std::string_view identifier, std::string_view extra) {
     std::string str{identifier};
     std::replace_if(
-        str.begin(), str.end(), [&](char c) { return !util::isValidIdentifierCharacter(c, extra); },
-        ' ');
+        str.begin(), str.end(),
+        [&](char c) { return !(util::contains(extra, c) || std::isalnum(c) || c == '_'); }, ' ');
     std::erase_if(str, [s = false](char c) mutable {
         if (s && c == ' ') return true;
         s = c == ' ';
@@ -188,15 +198,14 @@ std::string stripModuleFileNameDecoration(const std::filesystem::path& filePath)
 }
 
 std::string stripIdentifier(std::string_view identifier) {
+    // Valid identifier: [a-zA-Z_][a-zA-Z0-9_]*
+    auto firstCharValid = [](char c) -> bool { return (c == '_' || std::isalpha(c)); };
+    auto invalidChar = [](char c) -> bool { return !(c == '_' || std::isalnum(c)); };
+
     std::string stripped{identifier};
-    // What we allow: [a-zA-Z_][a-zA-Z0-9_]*
-    auto testFirst = [](unsigned char c) -> bool { return !(c == '_' || std::isalpha(c)); };
-
-    auto testRest = [](unsigned char c) -> bool { return !(c == '_' || std::isalnum(c)); };
-
-    while (stripped.size() > 0) {
+    while (!stripped.empty()) {
         const auto& c = stripped[0];
-        if (!testFirst(c)) {
+        if (firstCharValid(c)) {
             break;
         }
         if (std::isdigit(c)) {  // prepend an underscore if first char is a digit
@@ -206,7 +215,10 @@ std::string stripIdentifier(std::string_view identifier) {
         stripped = stripped.substr(1);
     }
 
-    std::erase_if(stripped, testRest);
+    std::erase_if(stripped, invalidChar);
+    if (stripped.empty()) {
+        stripped = "_";
+    }
     return stripped;
 }
 
