@@ -46,9 +46,17 @@ std::string_view enumToStr(ShadingMode sm) {
         case ShadingMode::Specular:
             return "Specular";
         case ShadingMode::BlinnPhong:
-            return "BlinnPhong";
+            return "Blinn-Phong";
         case ShadingMode::Phong:
             return "Phong";
+        case ShadingMode::BlinnPhongFront:
+            return "Blinn-Phong frontside only";
+        case ShadingMode::BlinnPhongBack:
+            return "Blinn-Phong backside only";
+        case ShadingMode::PhongFront:
+            return "Phong frontside only";
+        case ShadingMode::PhongBack:
+            return "Phong backside only";
     }
     throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid ShadingMode enum value '{}'",
                     static_cast<int>(sm));

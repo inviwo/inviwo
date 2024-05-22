@@ -43,6 +43,10 @@ enum class ShadingMode : int {
     Specular,
     BlinnPhong,
     Phong,
+    BlinnPhongFront,
+    BlinnPhongBack,
+    PhongFront,
+    PhongBack,
 };
 
 IVW_CORE_API std::string_view enumToStr(ShadingMode sm);

@@ -144,9 +144,13 @@ void addShaderDefines(Shader& shader, const ShadingMode& mode) {
                 return "shadeSpecular(lighting, materialSpecularColor, position, normal, "
                        "toCameraDir)";
             case ShadingMode::BlinnPhong:
+            case ShadingMode::BlinnPhongFront:
+            case ShadingMode::BlinnPhongBack:
                 return "shadeBlinnPhong(lighting, materialAmbientColor, materialDiffuseColor, "
                        "materialSpecularColor, position, normal, toCameraDir)";
             case ShadingMode::Phong:
+            case ShadingMode::PhongFront:
+            case ShadingMode::PhongBack:
                 return "shadePhong(lighting, materialAmbientColor, materialDiffuseColor, "
                        "materialSpecularColor, position, normal, toCameraDir)";
             case ShadingMode::None:
@@ -155,7 +159,30 @@ void addShaderDefines(Shader& shader, const ShadingMode& mode) {
         }
     }();
 
+    const int shadingNormalValue = [&]() -> int {
+        switch (mode) {
+            case ShadingMode::Ambient:
+            case ShadingMode::Diffuse:
+            case ShadingMode::Specular:
+            case ShadingMode::BlinnPhong:
+            case ShadingMode::Phong:
+                return 2;
+            case ShadingMode::BlinnPhongFront:
+            case ShadingMode::PhongFront:
+                return 0;
+            case ShadingMode::BlinnPhongBack:
+            case ShadingMode::PhongBack:
+                return 1;
+            case ShadingMode::None:
+            default:
+                return 0;
+        }
+    }();
+
+    StrBuffer buff;
     shader.getFragmentShaderObject()->addShaderDefine(shadingKey, shadingValue);
+    shader.getFragmentShaderObject()->addShaderDefine("SHADING_NORMAL",
+                                                      buff.replace("{}", shadingNormalValue));
     shader.getFragmentShaderObject()->setShaderDefine("SHADING_ENABLED", mode != ShadingMode::None);
 }
 

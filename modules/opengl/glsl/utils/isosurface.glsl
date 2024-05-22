@@ -104,15 +104,21 @@ vec4 drawIsosurface(in vec4 curResult, in float isovalue, in vec4 isosurfaceColo
 #if defined(SHADING_ENABLED)
         vec3 gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, isopos, channel);
         gradient = normalize(gradient);
+        vec3 normal = -gradient;
 
-        // two-sided lighting
-        if (dot(gradient, rayDirection) <= 0) {
-            gradient = -gradient;
+#if defined(SHADING_NORMAL) && (SHADING_NORMAL == 1)
+        // backside shading only
+        normal = -normal;
+#elif defined(SHADING_NORMAL) && (SHADING_NORMAL == 2)
+        // two-sided shading
+        if (dot(normal, rayDirection) > 0.0) {
+            normal = -normal;
         }
-
+#endif
         vec3 isoposWorld = (volumeParameters.textureToWorld * vec4(isopos, 1.0)).xyz;
-        isocolor.rgb = APPLY_LIGHTING(lighting, isocolor.rgb, isocolor.rgb, vec3(1.0),
-                           isoposWorld, -gradient, toCameraDir);
+        ShadingParameters shadingParams = shading(isocolor.rgb, normal, isoposWorld);
+
+        isocolor.rgb = applyLighting(lighting, shadingParams, toCameraDir);
 #endif // SHADING_ENABLED
 
 #if defined(INCLUDE_DVR)
@@ -120,8 +126,8 @@ vec4 drawIsosurface(in vec4 curResult, in float isovalue, in vec4 isosurfaceColo
         vec4 voxelColor = APPLY_CHANNEL_CLASSIFICATION(transferFunction, vec4(isovalue), channel);
         if (voxelColor.a > 0) {
 #if defined(SHADING_ENABLED)
-            voxelColor.rgb = APPLY_LIGHTING(lighting, voxelColor.rgb, voxelColor.rgb, vec3(1.0),
-                                       isoposWorld, -gradient, toCameraDir);
+            shadingParams.colors = defaultMaterialColors(voxelColor.rgb);
+            voxelColor.rgb = applyLighting(lighting, shadingParams, toCameraDir);
 #endif // SHADING_ENABLED
 
             result = APPLY_COMPOSITING(result, voxelColor, isopos, vec4(isovalue), gradient, camera,

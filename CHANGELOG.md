@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2024-05-13 Two-sided lighting
+The default lighting model was changed to support two-sided illumination. This should prevent issues with thin meshes like stream ribbons with no distinct front- and backsides. It is possible to select between two-sided and frontside/backside only illumination using the `Shading` property.
+
 ## 2024-05-08 Order-independent rendering support for multiple volumes and meshes
 The OIT module now contains functionality for volume rendering in combination with transparent meshes. Two processors, `Volume Rasterizer` and `Mesh Volume Renderer`, have been added. The former creating a rasterization object for a volume and transfer function and the latter being able to render multiple volumes and meshes at the same time.
 

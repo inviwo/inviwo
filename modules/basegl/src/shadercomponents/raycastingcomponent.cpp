@@ -144,6 +144,15 @@ if (color{color}.a > 0) {{
     shadingParams.colors = defaultMaterialColors(color{color}.rgb);
     #if (defined(SHADING_ENABLED) && defined(GRADIENTS_ENABLED))
     shadingParams.normal = -{gradient};
+    #if defined(SHADING_NORMAL) && (SHADING_NORMAL == 1)
+    // backside shading only
+    shadingParams.normal = -shadingParams.normal;
+    #elif defined(SHADING_NORMAL) && (SHADING_NORMAL == 2)
+    // two-sided shading
+    if (dot(shadingParams.normal, rayDirection) > 0.0) {{
+        shadingParams.normal = -shadingParams.normal;
+    }}
+    #endif
     shadingParams.worldPosition = ({volume}Parameters.textureToWorld * vec4(samplePosition, 1.0)).xyz;
     #endif
     color{color}.rgb = APPLY_LIGHTING_FUNC(lighting, shadingParams, cameraDir);

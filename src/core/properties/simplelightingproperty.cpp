@@ -56,8 +56,14 @@ SimpleLightingProperty::SimpleLightingProperty(std::string_view identifier,
                                    {"ambient", "Ambient", ShadingMode::Ambient},
                                    {"diffuse", "Diffuse", ShadingMode::Diffuse},
                                    {"specular", "Specular", ShadingMode::Specular},
-                                   {"blinnphong", "Blinn Phong", ShadingMode::BlinnPhong},
-                                   {"phong", "Phong", ShadingMode::Phong}}}
+                                   {"blinnphong", "Blinn-Phong", ShadingMode::BlinnPhong},
+                                   {"phong", "Phong", ShadingMode::Phong},
+                                   {"blinnphongfront", "Blinn-Phong frontside only",
+                                    ShadingMode::BlinnPhongFront},
+                                   {"blinnphongback", "Blinn-Phong backside only",
+                                    ShadingMode::BlinnPhongBack},
+                                   {"phongfront", "Phong frontside only", ShadingMode::PhongFront},
+                                   {"phongback", "Phong backside only", ShadingMode::PhongBack}}}
                        .setSelectedValue(LightingConfig::defaultShadingMode)
                        .set(InvalidationLevel::InvalidResources))
     , lightPosition_("lightPosition", "Position", "Position of the light source"_help,
