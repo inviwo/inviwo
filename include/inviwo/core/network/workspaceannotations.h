@@ -122,7 +122,7 @@ protected:
 
     std::vector<Base64Image> canvases_;
     InviwoApplication* app_;
-    
+
     ModifiedDispatcher modified_;
 };
 

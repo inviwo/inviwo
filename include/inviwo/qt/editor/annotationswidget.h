@@ -49,7 +49,8 @@ class NetworkEditorView;
 
 class IVW_QTEDITOR_API AnnotationsWidget : public InviwoDockWidget {
 public:
-    AnnotationsWidget(InviwoApplication* app, NetworkEditorView* networkEditorView, QWidget* parent);
+    AnnotationsWidget(InviwoApplication* app, NetworkEditorView* networkEditorView,
+                      QWidget* parent);
     virtual ~AnnotationsWidget();
 
     WorkspaceAnnotationsQt& getAnnotations();
@@ -66,7 +67,7 @@ protected:
     std::shared_ptr<std::function<void()>> onModulesDidRegister_;
     ///< Called before modules have been unregistered
     std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
-    
+
     WorkspaceManager::SerializationHandle annotationSerializationHandle_;
     WorkspaceManager::DeserializationHandle annotationDeserializationHandle_;
     WorkspaceManager::ClearHandle annotationClearHandle_;

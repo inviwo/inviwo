@@ -31,7 +31,6 @@
 
 #include <inviwo/qt/applicationbase/qtapplicationbasemoduledefine.h>
 
-
 #include <inviwo/core/network/workspacemanager.h>
 
 #include <memory>

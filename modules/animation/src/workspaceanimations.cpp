@@ -94,9 +94,7 @@ WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManage
         setMainAnimation(*animations_[std::min(mainAnimation, size() - 1)]);
     });
 
-    onChanged_.add([app = app_](size_t, Animation&) {
-        app->getWorkspaceManager()->setModified();
-    });
+    onChanged_.add([app = app_](size_t, Animation&) { app->getWorkspaceManager()->setModified(); });
 }
 
 WorkspaceAnimations::~WorkspaceAnimations() = default;
@@ -227,9 +225,7 @@ WorkspaceAnimations::iterator WorkspaceAnimations::find(const Animation* anim) {
     return std::find_if(begin(), end(), [anim](const auto& a) { return anim == &a; });
 }
 
-void WorkspaceAnimations::onAnyChange() {
-    app_->getWorkspaceManager()->setModified();
-}
+void WorkspaceAnimations::onAnyChange() { app_->getWorkspaceManager()->setModified(); }
 
 void WorkspaceAnimations::onAnimationChanged(AnimationController*, Animation*, Animation* newAnim) {
     if (find(newAnim) == end()) {
