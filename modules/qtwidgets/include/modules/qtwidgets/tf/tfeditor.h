@@ -173,9 +173,8 @@ private:
 
     std::unordered_map<TFPrimitive*, TFPrimitive*, PtrHash<TFPrimitive>, PtrEqual<TFPrimitive>>
         mirrors_;
-    
-    static double mirror(double dos, const DataMapper& dm);
 
+    static double mirror(double dos, const DataMapper& dm);
 
     struct Mouse {
         TFEditorPrimitive* dragItem = nullptr;
