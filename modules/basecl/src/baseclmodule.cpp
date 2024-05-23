@@ -69,7 +69,7 @@ bool BaseCLModule::Converter::convert(TxElement* root) {
         case 0: {
             res |= xml::changeIdentifiers(root, repl);
 
-            [[falltrough]];
+            [[fallthrough]];
         }
         case 1: {
             res |= xml::renamePortIdentifier(root, "org.inviwo.VolumeRaycasterCL", "entry-points",
