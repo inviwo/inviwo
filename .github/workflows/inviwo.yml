@@ -367,6 +367,7 @@ jobs:
 
   clang-tidy:
     name: "Clang-tidy"
+    if: github.ref != 'refs/heads/master'
     permissions:
       pull-requests: write
     env:
