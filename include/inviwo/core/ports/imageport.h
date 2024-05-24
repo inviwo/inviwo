@@ -273,6 +273,9 @@ public:
     virtual void disconnectFrom(Inport* port) override;
     virtual void connectTo(Inport* port) override;
 
+    virtual bool isReady() const override;
+    bool isReady(const Inport* port) const;
+
     virtual Document getInfo() const override;
 
 private:
@@ -301,7 +304,19 @@ struct PortTraits<ImageOutport> {
 template <size_t N>
 BaseImageInport<N>::BaseImageInport(std::string_view identifier, Document help,
                                     OutportDeterminesSize value)
-    : DataInport<Image, N>(identifier, help), outportDeterminesSize_(value) {}
+    : DataInport<Image, N>(identifier, help), outportDeterminesSize_(value) {
+
+    this->isReady_.setUpdate([this]() {
+        if (isOutportDeterminingSize()) {
+            return (this->isConnected() && util::all_of(this->connectedOutports_,
+                                                        [](Outport* p) { return p->isReady(); }));
+        } else {
+            return (this->isConnected() && util::all_of(this->connectedOutports_, [&](Outport* p) {
+                        return static_cast<ImageOutport*>(p)->isReady(this);
+                    }));
+        }
+    });
+}
 
 template <size_t N>
 BaseImageInport<N>::BaseImageInport(std::string_view identifier, bool outportDeterminesSize)
