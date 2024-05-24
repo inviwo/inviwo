@@ -143,6 +143,11 @@ void BasisProperty::updateForNewEntity(const StructuredGridEntity<3>& volume, bo
     update(volume, deserialize);
 }
 
+void BasisProperty::updateForNewEntity(const StructuredGridEntity<2>& layer, bool deserialize) {
+    dimensions_ = static_cast<vec3>(size3_t{layer.getDimensions(), 1});
+    update(layer, deserialize);
+}
+
 void BasisProperty::updateForNewEntity(const SpatialEntity& entity, bool deserialize) {
     dimensions_ = vec3(1.0f);
     update(entity, deserialize);

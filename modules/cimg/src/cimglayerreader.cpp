@@ -58,7 +58,24 @@ CImgLayerReader* CImgLayerReader::clone() const { return new CImgLayerReader(*th
 
 std::shared_ptr<Layer> CImgLayerReader::readData(const std::filesystem::path& fileName) {
     checkExists(fileName);
-    return std::make_shared<Layer>(cimgutil::loadLayer(fileName));
+
+    auto ram = cimgutil::loadLayer(fileName);
+    const auto dims = ram->getDimensions();
+
+    auto model = [&]() {
+        glm::mat4 model{1};  
+        if (dims.x < dims.y) {
+            model[0][0] = static_cast<float>(dims.x) / static_cast<float>(dims.y);
+        } else {
+            model[1][1] = static_cast<float>(dims.y) / static_cast<float>(dims.x);
+        }
+        return model;
+    }();
+
+    auto layer = std::make_shared<Layer>(ram);
+    layer->setModelMatrix(model);
+
+    return layer;
 }
 
 }  // namespace inviwo
