@@ -302,7 +302,7 @@ void Observable<T>::forEachObserver(C callback) {
 
     const util::OnScopeExit decreaseCount{[&]() {
         --invocationCount_;
-        // Add and Remove any observers that was added/removed while we invoked the callbacks.
+        // Add and remove any observers that were added/removed while we invoked the callbacks.
         if (invocationCount_ == 0) {
             if (toRemove) {
                 observers_.erase(std::remove(observers_.begin(), observers_.end(), nullptr),

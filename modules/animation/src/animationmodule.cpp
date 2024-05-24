@@ -292,11 +292,11 @@ bool AnimationModule::Converter::convert(TxElement* root) {
         case 2: {
             auto ac = xml::getMatchingElements(root, "AnimationController");
             if (!ac.empty()) {
-                res |= xml::changeAttribute(ac.front(),
-                                            {xml::Kind::property("org.inviwo.CompositeProperty"),
-                                             xml::Kind::property("org.inviwo.DoubleProperty")},
-                                            "type", "org.inviwo.DoubleProperty",
-                                            "org.inviwo.DoubleRefProperty");
+                res |= xml::changeAttributeRecursive(
+                    ac.front(),
+                    {xml::Kind::property("org.inviwo.CompositeProperty"),
+                     xml::Kind::property("org.inviwo.DoubleProperty")},
+                    "type", "org.inviwo.DoubleProperty", "org.inviwo.DoubleRefProperty");
             }
             [[fallthrough]];
         }

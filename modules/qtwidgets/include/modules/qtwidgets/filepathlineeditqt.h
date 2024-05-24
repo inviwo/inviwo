@@ -71,7 +71,12 @@ signals:
 
 protected:
     virtual void resizeEvent(QResizeEvent* event) override;
-    void updateIcon(const std::filesystem::path& path);
+    /**
+     * update the status icon based on the given \p path
+     * @return true if the path is valid given the current accept mode and file mode, otherwise
+     * false
+     */
+    bool updateIcon(const std::filesystem::path& path);
 
 private:
     QLabel* warningLabel_;        //!< warning icon which is visible if the path is invalid
