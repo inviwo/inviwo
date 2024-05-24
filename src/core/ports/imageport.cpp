@@ -222,6 +222,12 @@ std::shared_ptr<const Image> ImageOutport::getDataForPort(const Inport* port) co
     return nullptr;
 }
 
+bool ImageOutport::isReady() const { return DataOutport<Image>::isReady(); }
+
+bool ImageOutport::isReady(const Inport* port) const {
+    return isReady_ && requestedDimensions_.find(port) != requestedDimensions_.end();
+}
+
 void ImageOutport::setDimensions(const size2_t& newDimension) {
     if (image_) {
         if (newDimension != image_->getDimensions()) {
