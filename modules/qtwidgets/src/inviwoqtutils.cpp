@@ -522,9 +522,7 @@ QString windowTitleHelper(const QString& title, const QWidget* widget) {
         }
         if ((count % 2) != 0) {  // odd number of [*] -> replace last one
             const int lastIndex = static_cast<int>(cap.lastIndexOf(placeHolder, index - 1));
-            if (widget->isWindowModified() &&
-                (widget->style()->styleHint(QStyle::SH_TitleBar_ModifyNotification, nullptr,
-                                            widget) != 0)) {
+            if (widget->isWindowModified()) {
                 cap.replace(lastIndex, 3, QWidget::tr("*"));
             } else {
                 cap.remove(lastIndex, 3);

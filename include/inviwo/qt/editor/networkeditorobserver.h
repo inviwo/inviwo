@@ -39,7 +39,6 @@ namespace inviwo {
 class IVW_QTEDITOR_API NetworkEditorObserver : public Observer {
 public:
     virtual void onNetworkEditorFileChanged([[maybe_unused]] const std::string& newFilename){};
-    virtual void onModifiedStatusChanged([[maybe_unused]] const bool& newStatus){};
     virtual void onSceneSizeChanged(){};
 };
 

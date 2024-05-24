@@ -36,12 +36,42 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/network/processornetworkobserver.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <fmt/std.h>
 
 namespace inviwo {
+
+class NetworkModified final : public ProcessorNetworkObserver {
+public:
+    NetworkModified(WorkspaceManager* manager) : manager_{manager} {};
+
+protected:
+    // Overrides for ProcessorNetworkObserver
+    virtual void onProcessorNetworkChange() override { manager_->setModified(); }
+    virtual void onProcessorNetworkDidAddProcessor(Processor*) override { manager_->setModified(); }
+    virtual void onProcessorNetworkDidAddConnection(const PortConnection&) override {
+        manager_->setModified();
+    }
+    virtual void onProcessorNetworkDidAddLink(const PropertyLink&) override {
+        manager_->setModified();
+    }
+    virtual void onProcessorNetworkDidRemoveProcessor(Processor*) override {
+        manager_->setModified();
+    }
+    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection&) override {
+        manager_->setModified();
+    }
+    virtual void onProcessorNetworkDidRemoveLink(const PropertyLink&) override {
+        manager_->setModified();
+    }
+
+private:
+    WorkspaceManager* manager_;
+};
 
 class WorkspaceConverter : public VersionConverter {
 public:
@@ -134,13 +164,19 @@ struct ErrorHandle {
     std::filesystem::path filename_;
 };
 
-WorkspaceManager::WorkspaceManager(InviwoApplication* app) : app_(app) {}
+WorkspaceManager::WorkspaceManager(InviwoApplication* app)
+    : app_(app), modified_{false}, networkModified_{std::make_unique<NetworkModified>(this)} {
+
+    app_->getProcessorNetwork()->addObserver(networkModified_.get());
+}
 
 WorkspaceManager::~WorkspaceManager() = default;
 
 void WorkspaceManager::clear() {
     RenderContext::getPtr()->activateDefaultRenderContext();
     clears_.invoke();
+
+    setModified(false);
 }
 
 void WorkspaceManager::save(std::ostream& stream, const std::filesystem::path& refPath,
@@ -154,20 +190,27 @@ void WorkspaceManager::save(std::ostream& stream, const std::filesystem::path& r
 
     serializers_.invoke(serializer, exceptionHandler, mode);
     serializer.writeFile(stream, true);
+
+    if (mode != WorkspaceSaveMode::Undo) {
+        setModified(false);
+    }
 }
 
 void WorkspaceManager::load(std::istream& stream, const std::filesystem::path& refPath,
-                            const ExceptionHandler& exceptionHandler) {
+                            const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
     RenderContext::getPtr()->activateDefaultRenderContext();
 
     auto deserializer = createWorkspaceDeserializer(stream, refPath);
 
     InviwoSetupInfo info;
     deserializer.deserialize("InviwoSetup", info);
-
     DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
 
-    deserializers_.invoke(deserializer, exceptionHandler);
+    deserializers_.invoke(deserializer, exceptionHandler, mode);
+
+    if (mode != WorkspaceSaveMode::Undo) {
+        setModified(false);
+    }
 }
 
 void WorkspaceManager::save(const std::filesystem::path& path,
@@ -181,10 +224,10 @@ void WorkspaceManager::save(const std::filesystem::path& path,
 }
 
 void WorkspaceManager::load(const std::filesystem::path& path,
-                            const ExceptionHandler& exceptionHandler) {
+                            const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
     auto istream = std::ifstream(path);
     if (istream.is_open()) {
-        load(istream, path, exceptionHandler);
+        load(istream, path, exceptionHandler, mode);
     } else {
         throw AbortException(IVW_CONTEXT, "Could not open workspace file: {}", path);
     }
@@ -252,9 +295,11 @@ WorkspaceManager::SerializationHandle WorkspaceManager::onSave(
 }
 
 WorkspaceManager::DeserializationHandle WorkspaceManager::onLoad(
-    const DeserializationCallback& callback) {
-    return deserializers_.add(
-        [callback](Deserializer& d, const ExceptionHandler& exceptionHandler) {
+    const DeserializationCallback& callback, WorkspaceSaveModes modes) {
+    return deserializers_.add([callback, modes](Deserializer& d,
+                                                const ExceptionHandler& exceptionHandler,
+                                                WorkspaceSaveMode mode) {
+        if (modes.count(mode)) {
             try {
                 callback(d);
             } catch (Exception& e) {
@@ -262,7 +307,30 @@ WorkspaceManager::DeserializationHandle WorkspaceManager::onLoad(
             } catch (...) {
                 exceptionHandler(IVW_CONTEXT_CUSTOM("WorkspaceManager"));
             }
-        });
+        }
+    });
+}
+
+void WorkspaceManager::setModified() { setModified(true); }
+
+void WorkspaceManager::setModified(bool modified) {
+    if (modified_ != modified) {
+        modified_ = modified;
+        modifiedChangedDispatcher_.invoke(modified_);
+        modifiedDispatcher_.invoke(modified_);
+    }
+    modifiedDispatcher_.invoke(modified_);
+}
+
+bool WorkspaceManager::isModified() const { return modified_; }
+
+WorkspaceManager::ModifiedChangedHandle WorkspaceManager::onModifiedChanged(
+    const ModifiedChangedCallback& callback) {
+    return modifiedChangedDispatcher_.add(callback);
+}
+
+WorkspaceManager::ModifiedHandle WorkspaceManager::onModified(const ModifiedCallback& callback) {
+    return modifiedDispatcher_.add(callback);
 }
 
 }  // namespace inviwo
