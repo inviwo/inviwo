@@ -146,6 +146,12 @@ void SGCTManager::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
     }
 }
 
+void SGCTManager::onProcessorNetworkDidAddConnection(const PortConnection&) {
+    for (auto* canvas : canvases) {
+        canvas->setCanvasSize(canvas->getCanvasSize());
+    }
+}
+
 void SGCTManager::setupInteraction(GLFWwindow* win) {
     userdata.push_back(std::make_unique<GLFWUserData>(win));
     interactionManagers.push_back(std::make_unique<GLFWWindowEventManager>(
@@ -171,6 +177,7 @@ void SGCTManager::setupInteraction(GLFWwindow* win) {
         // Todo figure out proper depth.
         [this](dvec2 p) { return -1.0; }));
 }
+
 void SGCTManager::teardownInteraction() {
     interactionManagers.clear();
     userdata.clear();
@@ -231,6 +238,9 @@ void SGCTManager::copy() {  // Copy inviwo output
             copyShader->setUniform("depth", depthUnit.getUnitNumber());
             utilgl::singleDrawImagePlaneRect();
             copyShader->deactivate();
+        } else {
+            auto ready = canvas->isReady();
+            LogInfo("Canvas has no data, ready: " << ready);
         }
     }
 }

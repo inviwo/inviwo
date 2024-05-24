@@ -17,7 +17,10 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-add_executable(inviwo-dome ${HEADER_FILES} ${SOURCE_FILES})
+add_executable(inviwo-dome
+    ${HEADER_FILES} ${SOURCE_FILES}
+    "${IVW_RESOURCES_DIR}/inviwo.manifest")
+
 target_include_directories(inviwo-dome PUBLIC include)
 
 find_package(glfw3 REQUIRED)

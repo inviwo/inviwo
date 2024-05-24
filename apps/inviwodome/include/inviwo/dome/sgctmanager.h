@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetworkobserver.h>
+#include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/util/glm.h>
 
 #include <sgct/callbackdata.h>
@@ -68,6 +69,7 @@ struct SGCTManager : public ProcessorNetworkObserver {
 
     virtual void onProcessorNetworkDidAddProcessor(Processor*) override;
     virtual void onProcessorNetworkWillRemoveProcessor(Processor*) override;
+    virtual void onProcessorNetworkDidAddConnection(const PortConnection&) override;
 
     std::vector<CanvasProcessor*> canvases;
     std::vector<CameraProperty*> cameras;

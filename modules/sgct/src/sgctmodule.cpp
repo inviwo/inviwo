@@ -62,19 +62,21 @@ private:
                                       inviwo::LogAudience::Developer, "", "", 0, message);
         });
 
-        std::vector<std::string> arg{"--config", configFile};
-
-        const auto config = sgct::parseArguments(arg);
+        const sgct::Configuration config{
+            .configFilename = configFile,
+            .logLevel = sgct::Log::Level::Debug,
+        };
         const auto cluster = sgct::loadCluster(config.configFilename);
 
-        sgct::Engine::Callbacks callbacks;
+        const sgct::Engine::Callbacks callbacks{.preSync =
+                                                    [this]() mutable {
+                                                        if (terminate_)
+                                                            sgct::Engine::instance().terminate();
+                                                    },
+                                                .encode = [this]() -> std::vector<std::byte> {
+                                                    return syncServer_.getEncodedCommandsAndClear();
+                                                }
 
-        callbacks.preSync = [this]() mutable {
-            if (terminate_) sgct::Engine::instance().terminate();
-        };
-
-        callbacks.encode = [this]() -> std::vector<std::byte> {
-            return syncServer_.getEncodedCommandsAndClear();
         };
 
         try {
