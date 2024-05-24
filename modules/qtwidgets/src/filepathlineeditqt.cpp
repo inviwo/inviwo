@@ -90,9 +90,6 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
     connect(this, &QLineEdit::editingFinished, [this]() {
         setCursorToEnd();
         const auto path = utilqt::toPath(text().trimmed());
-
-        // FIXME: handle case where new path is not valid. Should the internal path be updated? Does
-        // the line edit need updating?
         updateIcon(path);
         if (path != path_) {
             path_ = path;
