@@ -134,14 +134,13 @@ SphereRasterizer::SphereRasterizer()
     addPort(inport_);
     addPort(texture_.inport, "Textures").setOptional(true);
     addPort(bnl_.inport);
+    addPort(labels_.strings);
 
     addProperties(renderMode_, forceOpaque_, config_.config, labels_.labels, bnl_.highlight,
                   bnl_.select, bnl_.filter, periodic_.periodicity, clip_.clipping);
 }
 
 void SphereRasterizer::initializeResources() {
-    labels_.initializeResources();
-
     for (auto& [state, shader] : shaders_.getShaders()) {
         configureShader(shader);
     }
@@ -167,6 +166,7 @@ UseFragmentList SphereRasterizer::usesFragmentLists() const {
 void SphereRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
 
     bnl_.update();
+    labels_.update();
 
     utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, usesFragmentLists() == UseFragmentList::No);

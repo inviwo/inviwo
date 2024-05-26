@@ -108,7 +108,9 @@ SphereRenderer::SphereRenderer()
     addPort(imageInport_).setOptional(true);
     addPort(texture_.inport, "Textures").setOptional(true);
     addPort(bnl_.inport);
+    addPort(labels_.strings);
     addPort(outport_);
+
 
     addProperties(renderMode_, config_.config, labels_.labels, bnl_.highlight, bnl_.select,
                   bnl_.filter, periodic_.periodicity, clip_.clipping, camera_, lighting_,
@@ -116,8 +118,6 @@ SphereRenderer::SphereRenderer()
 }
 
 void SphereRenderer::initializeResources() {
-    labels_.initializeResources();
-
     for (auto& [state, shader] : shaders_.getShaders()) {
         configureShader(shader);
     }
@@ -133,6 +133,7 @@ void SphereRenderer::process() {
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
     bnl_.update();
+    labels_.update();
 
     TextureUnitContainer cont;
     utilgl::bind(cont, bnl_, labels_, config_, texture_);

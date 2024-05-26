@@ -35,6 +35,8 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/fontrendering/textrenderer.h>
 
+#include <inviwo/core/ports/datainport.h>
+
 namespace inviwo {
 
 class Shader;
@@ -45,22 +47,29 @@ class IVW_MODULE_BASEGL_API UniformLabelAtlasGL {
 public:
     UniformLabelAtlasGL();
 
-    void initializeResources();
-
     void bind(TextureUnitContainer& cont);
 
     void addDefines(Shader& shader) const;
     void setUniforms(Shader& shader) const;
+    void update();
 
+    void fillAltas();
+    bool createAltas();
+
+    size2_t charSize;
+    size2_t atlasSize;
+    DataInport<std::vector<std::string>> strings;
     BoolCompositeProperty labels;
     FontFaceOptionProperty font;
     IntProperty fontSize;
     FloatVec4Property color;
     FloatProperty size;
-    float aspect;
     std::shared_ptr<Texture2D> atlas;
     TextRenderer renderer;
     GLint unitNumber;
+
+    static constexpr size2_t chars = {3, 1};
+    static constexpr size2_t margin = {2, 2};
 };
 
 }  // namespace inviwo
