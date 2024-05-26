@@ -82,6 +82,9 @@ set(HEADER_FILES
     include/modules/base/processors/layercontour.h
     include/modules/base/processors/layerdistancetransform.h
     include/modules/base/processors/layerinformation.h
+    include/modules/base/processors/layersequenceelementselector.h
+    include/modules/base/processors/layersequencesource.h
+    include/modules/base/processors/layerseriessource.h
     include/modules/base/processors/layersource.h
     include/modules/base/processors/layertoimage.h
     include/modules/base/processors/layertospatialsampler.h
@@ -158,7 +161,6 @@ set(SOURCE_FILES
     src/algorithm/convexhullmesh.cpp
     src/algorithm/cubeproxygeometry.cpp
     src/algorithm/dataminmax.cpp
-    src/algorithm/randomutils.cpp
     src/algorithm/image/layercontour.cpp
     src/algorithm/image/layerramdistancetransform.cpp
     src/algorithm/image/layerramsubset.cpp
@@ -168,6 +170,7 @@ set(SOURCE_FILES
     src/algorithm/mesh/meshconverter.cpp
     src/algorithm/meshutils.cpp
     src/algorithm/pointgeneration.cpp
+    src/algorithm/randomutils.cpp
     src/algorithm/volume/marchingcubes.cpp
     src/algorithm/volume/marchingcubesopt.cpp
     src/algorithm/volume/marchingtetrahedron.cpp
@@ -227,6 +230,9 @@ set(SOURCE_FILES
     src/processors/layercontour.cpp
     src/processors/layerdistancetransform.cpp
     src/processors/layerinformation.cpp
+    src/processors/layersequenceelementselector.cpp
+    src/processors/layersequencesource.cpp
+    src/processors/layerseriessource.cpp
     src/processors/layersource.cpp
     src/processors/layertoimage.cpp
     src/processors/layertospatialsampler.cpp
