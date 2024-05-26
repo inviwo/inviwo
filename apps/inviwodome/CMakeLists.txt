@@ -1,32 +1,28 @@
-#--------------------------------------------------------------------
 # Inviwo Dome Application
 project(inviwo-dome)
 
-set(HEADER_FILES
-    include/inviwo/dome/sgctmanager.h
-    include/inviwo/dome/workspacewatcher.h
-    include/inviwo/dome/dumpfiles.h
+add_executable(inviwo-dome)
+target_sources(inviwo-dome
+    PUBLIC
+    FILE_SET HEADERS
+    TYPE HEADERS
+    BASE_DIRS include
+    FILES
+        include/inviwo/dome/sgctmanager.h
+        include/inviwo/dome/workspacewatcher.h
+        include/inviwo/dome/dumpfiles.h
+    PRIVATE
+        src/inviwodome.cpp
+        src/sgctmanager.cpp
+        src/workspacewatcher.cpp
+        src/dumpfiles.cpp
+        "${IVW_RESOURCES_DIR}/inviwo.manifest"
 )
-ivw_group("Header Files" BASE include/inviwo/dome ${HEADER_FILES})
-
-set(SOURCE_FILES
-    src/inviwodome.cpp
-    src/sgctmanager.cpp
-    src/workspacewatcher.cpp
-    src/dumpfiles.cpp
-)
-ivw_group("Source Files" ${SOURCE_FILES})
-
-add_executable(inviwo-dome
-    ${HEADER_FILES} ${SOURCE_FILES}
-    "${IVW_RESOURCES_DIR}/inviwo.manifest")
-
-target_include_directories(inviwo-dome PUBLIC include)
 
 find_package(glfw3 REQUIRED)
 find_package(sgct CONFIG REQUIRED)
 target_link_libraries(inviwo-dome 
-    PRIVATE
+    PUBLIC
         inviwo::core
         inviwo::module-system
         inviwo::python-helper

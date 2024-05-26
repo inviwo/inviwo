@@ -32,7 +32,7 @@ set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT Application)
 set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ${IVW_LIBRARY_INSTALL_DIR})
 include (InstallRequiredSystemLibraries)
 
-set(CPACK_PACKAGE_NAME                "Inviwo Dome")
+set(CPACK_PACKAGE_NAME                "Inviwo-Dome")
 set(CPACK_PACKAGE_VENDOR              "Inviwo Foundation")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Interactive Visualization Workshop")
 set(CPACK_PACKAGE_VERSION_MAJOR       "${IVW_MAJOR_VERSION}")
@@ -41,12 +41,15 @@ set(CPACK_PACKAGE_VERSION_PATCH       "${IVW_PATCH_VERSION}")
 set(CPACK_PACKAGE_DESCRIPTION_FILE    "${IVW_ROOT_DIR}/README.md")
 set(CPACK_RESOURCE_FILE_LICENSE       "${IVW_ROOT_DIR}/LICENSE")
 set(CPACK_PACKAGE_FILE_NAME           "${CPACK_PACKAGE_NAME}-v${IVW_VERSION}")
+set(CPACK_PACKAGE_EXECUTABLES         "inviwo-dome" "inviwo-dome")
 
 set(CPACK_MONOLITHIC_INSTALL OFF)
 set(CPACK_NSIS_MANIFEST_DPI_AWARE ON)
 ivw_get_target_property_recursive(install_list inviwo-dome INTERFACE_IVW_INSTALL_LIST ON)
+
 get_property(install_list_global GLOBAL PROPERTY INTERFACE_IVW_INSTALL_LIST)
 list(APPEND install_list ${install_list_global})
+list(REMOVE_DUPLICATES install_list)
 if(IVW_PACKAGE_HEADERS)
     ivw_filter_install_list(LIST install_list REMOVE_COMPONENTS Testing)
 else()
@@ -95,6 +98,8 @@ set(CPACK_DMG_VOLUME_NAME     "${CPACK_PACKAGE_FILE_NAME}")
 # Debian settings
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.inviwo.org")
 
+install(DIRECTORY ${IVW_ROOT_DIR}/data/  DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}data  COMPONENT Datasets)
+
 option(IVW_PACKAGE_INSTALLER "Create installer instead of a package NSIS/DMG/DEB" OFF)
 if(NOT CPACK_GENERATOR)
     if(WIN32)
@@ -118,7 +123,4 @@ if(NOT CPACK_GENERATOR)
     endif()
 endif()
 
-install(DIRECTORY ${IVW_ROOT_DIR}/data/  DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}data  COMPONENT Datasets)
-
 include(CPack)
-
