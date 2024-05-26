@@ -99,6 +99,7 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
 
     auto print = util::overloaded{
         [&](std::string_view key, const std::string& val) { fmt::print(ss, "{}: {}\n", key, val); },
+        [&](std::string_view key, std::string_view val) { fmt::print(ss, "{}: {}\n", key, val); },
         [&](std::string_view key, InterpolationType val) { fmt::print(ss, "{}: {}\n", key, val); },
         [&](std::string_view key, const SwizzleMask& mask) {
             fmt::print(ss, "{}: {}{}{}{}\n", key, mask[0], mask[1], mask[2], mask[3]);
