@@ -43,6 +43,8 @@ using LayerInport = DataInport<Layer>;
 using LayerMultiInport = DataInport<Layer, 0>;
 using LayerFlatMultiInport = DataInport<Layer, 0, true>;
 
+using LayerSequenceOutport = DataOutport<LayerSequence>;
+
 template <>
 struct DataTraits<Layer> {
     static const std::string& classIdentifier() {

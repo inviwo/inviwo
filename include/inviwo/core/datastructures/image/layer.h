@@ -38,6 +38,7 @@
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/datastructures/histogramtools.h>
+#include <inviwo/core/datastructures/datasequence.h>
 
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
@@ -181,6 +182,8 @@ private:
     Wrapping2D defaultWrapping_;
     HistogramCache histograms_;
 };
+
+using LayerSequence = DataSequence<Layer>;
 
 // https://docs.microsoft.com/en-us/cpp/cpp/general-rules-and-limitations?view=vs-2017
 extern template class IVW_CORE_TMPL_EXP DataReaderType<Layer>;

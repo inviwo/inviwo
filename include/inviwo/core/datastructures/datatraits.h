@@ -221,6 +221,14 @@ static Document vectorInfo(size_t size, const T* first, const T* last) {
 
 }  // namespace detail
 
+template <>
+struct DataTraits<std::string> {
+    static std::string classIdentifier() { return "string"; }
+    static std::string dataName() { return "string"; }
+    static uvec3 colorCode() { return uvec3{126, 210, 90}; }
+    static Document info(const std::string& data) { return Document{data}; }
+};
+
 template <typename T, typename A>
 struct DataTraits<std::vector<T, A>> {
     static std::string classIdentifier() {
