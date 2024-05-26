@@ -20,6 +20,7 @@ set(HEADER_FILES
     include/inviwo/dataframe/processors/dataframejoin.h
     include/inviwo/dataframe/processors/dataframemetadata.h
     include/inviwo/dataframe/processors/dataframesource.h
+    include/inviwo/dataframe/processors/dataframetovector.h
     include/inviwo/dataframe/processors/imagetodataframe.h
     include/inviwo/dataframe/processors/syntheticdataframe.h
     include/inviwo/dataframe/processors/volumesequencetodataframe.h
@@ -54,6 +55,7 @@ set(SOURCE_FILES
     src/processors/dataframejoin.cpp
     src/processors/dataframemetadata.cpp
     src/processors/dataframesource.cpp
+    src/processors/dataframetovector.cpp
     src/processors/imagetodataframe.cpp
     src/processors/syntheticdataframe.cpp
     src/processors/volumesequencetodataframe.cpp
