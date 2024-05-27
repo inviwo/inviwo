@@ -107,7 +107,8 @@ TetraMeshVolumeRaycaster::TetraMeshVolumeRaycaster()
     , enableIsoSurface_{"enableIsoSurface", "Enable ISO Surface", false}
     , isoValue_{"isoValue", "ISO Value", 0.5f, 0.f, 1.f}
     , prevDataRange_{0.0, 1.0}
-    , isoColor_{"isoColor", "ISO Color", vec4(1.0, 1.0, 0.6, 1.0)} {
+    , isoColor_{"isoColor", "ISO Color", vec4(1.0, 1.0, 0.6, 1.0)}
+    , useIsoTF_{"useIsoTF", "Use ISO Transferfunction", true} {
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     addPorts(inport_, imageInport_, outport_);
@@ -132,7 +133,7 @@ TetraMeshVolumeRaycaster::TetraMeshVolumeRaycaster()
         isReady_.setUpdate([]() { return false; });
     }
 
-    addProperties(enableIsoSurface_, isoValue_, isoColor_, cutplane_, pickingOutput_);
+    addProperties(enableIsoSurface_, isoValue_, useIsoTF_, isoColor_, cutplane_, pickingOutput_);
 }
 
 void TetraMeshVolumeRaycaster::handlePickingEvent(PickingEvent* p) {
@@ -244,6 +245,7 @@ void TetraMeshVolumeRaycaster::process() {
     utilgl::setShaderUniforms(shader_, enableIsoSurface_, "enableIsoSurface");
     utilgl::setShaderUniforms(shader_, isoValue_, "isoValue");
     utilgl::setShaderUniforms(shader_, isoColor_, "isoColor");
+    utilgl::setShaderUniforms(shader_, useIsoTF_, "useIsoTF");
     shader_.setUniform("pickingID", static_cast<int>(picking_.getPickingId(0)));
     utilgl::bindAndSetUniforms(shader_, texContainer, tf_);
     if (imageInport_.hasData()) {

@@ -57,6 +57,7 @@ uniform vec3 cutplane;
 uniform bool enableIsoSurface;
 uniform float isoValue;
 uniform vec4 isoColor;
+uniform bool useIsoTF;
 
 // Use (scalar + tfValueOffset) * tfValueScaling to map scalar values from [min,max] to [0,1]
 uniform float tfValueScaling = 1.0;
@@ -385,7 +386,9 @@ void main() {
                 float a = (scalar - isoValue_) / (scalar - prevScalar);
                 vec3 worldPos = (geometry.dataToWorld * vec4(pos + rayDirection * exitFace.segmentLength * a, 1.0)).xyz;
                 vec4 isoColor_ = isoColor;
-                isoColor_ = applyTF(transferFunction, isoValue_);
+                if(useIsoTF) {
+                    isoColor_ = applyTF(transferFunction, isoValue_);
+                }
                 isoColor_.a = 1.0;
                 vec3 s1 = shadeBlinnPhong(lighting, isoColor_.rgb, isoColor_.rgb, vec3(0.5), worldPos, gradientWorld, -rayDirWorld);
                 vec3 s2 = shadeBlinnPhong(lighting, isoColor_.rgb, isoColor_.rgb, vec3(0.5), worldPos, -gradientWorld, -rayDirWorld);

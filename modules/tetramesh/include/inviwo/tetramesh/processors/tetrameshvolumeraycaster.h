@@ -77,6 +77,7 @@ private:
     BoolProperty enableIsoSurface_;
     FloatProperty isoValue_;
     FloatVec4Property isoColor_;
+    BoolProperty useIsoTF_;
 
     Shader shader_;
     TetraMeshBuffers buffers_;
