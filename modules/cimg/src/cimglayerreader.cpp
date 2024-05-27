@@ -63,7 +63,7 @@ std::shared_ptr<Layer> CImgLayerReader::readData(const std::filesystem::path& fi
     const auto dims = ram->getDimensions();
 
     auto model = [&]() {
-        glm::mat4 model{1};  
+        glm::mat4 model{1};
         if (dims.x < dims.y) {
             model[0][0] = static_cast<float>(dims.x) / static_cast<float>(dims.y);
         } else {
