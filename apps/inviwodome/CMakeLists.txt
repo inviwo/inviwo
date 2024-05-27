@@ -60,14 +60,14 @@ if(IVW_PACKAGE_SELECT_APP STREQUAL PROJECT_NAME)
     message(STATUS "Package inviwo dome")
 endif()
 
-# Create a helper sciript to start inviwo-dome with multiple instances
+# Create a helper script to start inviwo-dome with multiple node instances
 file(GENERATE 
     OUTPUT ${CMAKE_BINARY_DIR}/run.$<CONFIG>.ps1
     CONTENT [=[
-param ([int]$nodes=2, $config='???.xml', [bool]$tracy=0)
+param ([int]$nodes=2, $config='???.json', [bool]$tracy=0)
 $scriptdir = '$<TARGET_PROPERTY:inviwo-dome,SGCT_CONFIG_DIR>'
-if ($config -eq '???.xml') {
-     $config = "$scriptdir/${nodes}_nodes.xml"
+if ($config -eq '???.json') {
+     $config = "$scriptdir/${nodes}_nodes.json"
 }
 if (!(Test-Path $config)) {
     if(Test-Path $scriptdir/$config) {
@@ -75,18 +75,20 @@ if (!(Test-Path $config)) {
     }
 }
 
+$domeexe = '$<TARGET_FILE:inviwo-dome>'
 Write-Host "Nodes: $nodes, Config: $config, Tracy: $tracy"
-Write-Host "Run: $<TARGET_FILE:inviwo-dome> --config $config"
-Start-Process -FilePath $<TARGET_FILE:inviwo-dome> -ArgumentList "--config $config" 
+Write-Host "Run: $domeexe --config $config"
+Start-Process -FilePath $domeexe -ArgumentList "--config $config"
 for ( $i = 1; $i -lt $nodes; $i++ ) {
-    Write-Host "Run: $<TARGET_FILE:inviwo-dome> --config $config --local $i --client"
-    Start-Process -FilePath $<TARGET_FILE:inviwo-dome> -ArgumentList "--config $config --local $i --client"
+    Write-Host "Run: $domeexe --config $config --local $i --client"
+    Start-Process -FilePath $domeexe -ArgumentList "--config $config --local $i --client"
 }
 if ($tracy) {
+    $tracyexe = '$<TARGET_PROPERTY:inviwo-dome,TRACY_EXE>'
     for( $i = 0; $i -lt $nodes; $i++ ) {
         $port = $i + 8086
-        Write-Host "Run: $<TARGET_PROPERTY:inviwo-dome,TRACY_EXE> -a localhost -p $port"
-        Start-Process -FilePath $<TARGET_PROPERTY:inviwo-dome,TRACY_EXE> -ArgumentList "-a localhost -p $port" 
+        Write-Host "Run: $tracyexe -a localhost -p $port"
+        Start-Process -FilePath $tracyexe -ArgumentList "-a localhost -p $port"
     }
 }
 ]=]

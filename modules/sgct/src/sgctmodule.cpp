@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2020-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -80,7 +80,7 @@ private:
         };
 
         try {
-            LogInfoCustom("Dome", "Start Engine");
+            LogInfoCustom("SGCTWrapper", "Start Engine");
             inviwo::util::OnScopeExit closeEngine{[]() { sgct::Engine::destroy(); }};
             sgct::Engine::create(cluster, callbacks, config);
 
@@ -102,8 +102,8 @@ private:
 
 SGCTModule::SGCTModule(InviwoApplication* app)
     : InviwoModule(app, "sgct")
-    , configFileArg_{"",    "config", "Path to the sgct configuration file to use",
-                     false, "path",   "sgct json config file"}
+    , configFileArg_{"",    "config", "Path to the SGCT configuration file to use",
+                     false, "path",   "SGCT json config file"}
     , argHolder_{app, configFileArg_,
                  [this, app]() {
                      sgctWrapper_ = std::make_unique<SGCTWrapper>(*app->getProcessorNetwork(),

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2020-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -321,8 +321,8 @@ int main(int argc, char** argv) {
         inviwo::util::OnScopeExit closeEngine{[]() {
             LogInfoCustom("Dome", "Stop Engine");
             // Stop the engine after we clear the inviwo app.
-            // The app will need the glfw to be active to joining
-            // any background thread with a context.
+            // The app will need the glfw context to be active to join
+            // any background threads with a context.
             sgct::Engine::destroy();
         }};
         inviwo::InviwoApplication app("Inviwo");
@@ -345,7 +345,7 @@ int main(int argc, char** argv) {
 
         inviwo::util::OnScopeExit clearNetwork{[&app]() { app.getWorkspaceManager()->clear(); }};
 
-        // Keep the network looked to prevent evaluation all the time, only unlock it in the draw
+        // Keep the network looked to prevent evaluating it all the time, only unlock it in the draw
         // call
         app.getProcessorNetwork()->lock();
 
