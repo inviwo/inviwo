@@ -35,7 +35,6 @@
 
 #include <modules/base/processors/vectorelementselectorprocessor.h>  // for VectorElementSelecto...
 
-
 namespace inviwo {
 
 class IVW_MODULE_BASE_API LayerSequenceElementSelector

@@ -35,9 +35,8 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
-#include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrame
+#include <inviwo/dataframe/datastructures/dataframe.h>         // for DataFrame
 #include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
-
 
 #include <vector>
 #include <string>
@@ -61,7 +60,6 @@ private:
     DataOutport<std::vector<std::string>> stringOutport_;
 
     ColumnOptionProperty selectedColumn_;
-
 };
 
 }  // namespace inviwo
