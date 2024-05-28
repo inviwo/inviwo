@@ -185,6 +185,19 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(FILE* fp, std::string_vi
         png_read_image(png_ptr, rows.data());
     });
 
+    const auto dims = layer->getDimensions();
+
+    auto model = [&]() {
+        glm::mat4 model{1};
+        if (dims.x < dims.y) {
+            model[0][0] = static_cast<float>(dims.x) / static_cast<float>(dims.y);
+        } else {
+            model[1][1] = static_cast<float>(dims.y) / static_cast<float>(dims.x);
+        }
+        return model;
+    }();
+    layer->setModelMatrix(model);
+
     return layer;
 }
 

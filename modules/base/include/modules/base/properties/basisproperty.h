@@ -84,6 +84,7 @@ public:
 
     void updateForNewEntity(const SpatialEntity& volume, bool deserialize);
     void updateForNewEntity(const StructuredGridEntity<3>& volume, bool deserialize);
+    void updateForNewEntity(const StructuredGridEntity<2>& volume, bool deserialize);
 
     void updateEntity(SpatialEntity& volume);
 
