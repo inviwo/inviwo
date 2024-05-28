@@ -141,10 +141,51 @@ std::unique_ptr<Volume> makeMarchingCubeVolume(const size_t& index) {
         {{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}}};
     std::unordered_map<size3_t, T> map;
     for (int i = 0; i < 8; ++i) {
-        map[vertices[i]] = glm_convert_normalized<T>(corners[i] ? 1.0 : 0.0);
+        map[vertices[i]] = glm_convert_normalized<T>(corners[i] ? 1.0 : 0.0);        
     }
     return generateVolume({2, 2, 2}, mat3(1.0), [&](const size3_t& ind) { return map[ind]; });
 }
+
+template <typename T = float>
+std::unique_ptr<Volume> makeGaussianVolume(const size3_t& size,const float& sigma) {
+    return generateVolume(size, mat3(1.0), [&](const size3_t& ind) {
+        dvec3 a{0.1, 0.4, 0.4};
+        dvec3 b{0.5, 0.5, 0.5};
+        dvec3 c{0.8, 0.3, 0.1};
+        std::array<dvec3, 3> points{dvec3(b), dvec3(a), dvec3(c)};
+        dvec3 x = dvec3(ind);
+        
+        x = x/dvec3(size);
+
+        double sum{0.0};
+        //double sigma{0.1};
+        
+        for (auto &p : points) { 
+            sum += 1 / (sigma * sqrt(2 * M_PI)) * exp(-0.5 * glm::length2(p - x)/(sigma*sigma));
+        }
+        return glm_convert_normalized<T>(sum);
+    });
+}
+
+template <typename T = float>
+std::unique_ptr<Volume> makeSingleVoxelSomewhere(const size3_t& size,const int index) {
+    return generateVolume(size, mat3(1.0), [&](const size3_t& ind) {
+        if (ind == ind)
+            return glm_convert_normalized<T>(1.0);
+        else
+            return glm_convert_normalized<T>(0.0);
+        ;
+
+        
+    });
+}
+
+
+
+
+
+
+
 
 }  // namespace util
 
