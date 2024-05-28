@@ -67,6 +67,7 @@ set(HEADER_FILES
     include/modules/base/processors/diffuselightsourceprocessor.h
     include/modules/base/processors/directionallightsourceprocessor.h
     include/modules/base/processors/distancetransformram.h
+    include/modules/base/processors/gaussianvolumecreator.h
     include/modules/base/processors/filecache.h
     include/modules/base/processors/gridplanes.h
     include/modules/base/processors/heightfieldmapper.h
@@ -225,6 +226,7 @@ set(SOURCE_FILES
     src/processors/diffuselightsourceprocessor.cpp
     src/processors/directionallightsourceprocessor.cpp
     src/processors/distancetransformram.cpp
+    src/processors/gaussianvolumecreator.cpp
     src/processors/filecache.cpp
     src/processors/gridplanes.cpp
     src/processors/heightfieldmapper.cpp

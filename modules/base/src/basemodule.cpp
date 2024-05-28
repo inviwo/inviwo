@@ -80,6 +80,7 @@
 #include <modules/base/processors/directionallightsourceprocessor.h>
 #include <modules/base/processors/distancetransformram.h>
 #include <modules/base/processors/filecache.h>
+#include <modules/base/processors/gaussianvolumecreator.h>
 #include <modules/base/processors/gridplanes.h>
 #include <modules/base/processors/heightfieldmapper.h>
 #include <modules/base/processors/imagecontourprocessor.h>
@@ -215,6 +216,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<DiffuseLightSourceProcessor>();
     registerProcessor<DirectionalLightSourceProcessor>();
     registerProcessor<DistanceTransformRAM>();
+    registerProcessor<GaussianVolumeCreator>();
     registerProcessor<GridPlanes>();
     registerProcessor<HeightFieldMapper>();
     registerProcessor<VolumeHistogram2D>();
