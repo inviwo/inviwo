@@ -75,6 +75,8 @@ struct IVW_CORE_API LayerConfig {
     LayerConfig& updateFrom(const LayerConfig& config);
 
     friend bool operator==(const LayerConfig&, const LayerConfig&) = default;
+
+    static glm::mat4 aspectPreservingModelMatrixFromDimensions(size2_t dimensions);
 };
 
 struct IVW_CORE_API LayerReprConfig {
