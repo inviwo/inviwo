@@ -38,7 +38,7 @@ if(IVW_CFG_RUNTIME_MODULE_LOADING)
     # when this project is set as startup project
     add_dependencies(inviwo-module-system ${enabled_modules_targets})
 else()
-    target_link_libraries(inviwo-module-system PRIVATE ${enabled_modules_targets})
+    target_link_libraries(inviwo-module-system PUBLIC ${enabled_modules_targets})
 endif()
 
 ivw_install_helper(TARGET inviwo-module-system

@@ -1103,7 +1103,7 @@ void InviwoMainWindow::addActions() {
 void InviwoMainWindow::updateWindowTitle() {
     setWindowTitle(utilqt::toQString(fmt::format(
         "Inviwo v{} - Interactive Visualization Workshop - {}{}", inviwo::build::version,
-        currentWorkspaceFileName_ ? currentWorkspaceFileName_.value().generic_string() : "untitled",
+        currentWorkspaceFileName_.value_or("untitled").generic_string(),
         app_->getWorkspaceManager()->isModified() ? "*" : "")));
 }
 
