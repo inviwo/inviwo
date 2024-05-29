@@ -49,6 +49,7 @@ Rasterization::Rasterization(std::shared_ptr<Rasterizer> processor) : processor_
 std::shared_ptr<Rasterizer> Rasterization::getProcessor() const { return processor_.lock(); }
 
 void Rasterization::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) const {
+    
     if (auto rp = getProcessor()) {
         rp->rasterize(imageSize, worldMatrixTransform);
     }

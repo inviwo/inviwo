@@ -30,23 +30,37 @@
 
 #include <modules/opactopt/opactoptmoduledefine.h>
 
-#include <modules/opactopt/rendering/opacityoptimisationrenderer.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/io/datareader.h>
+
+#include <any>          // for any
+#include <memory>       // for shared_ptr
+#include <string_view>  // for string_view
 
 namespace inviwo {
 
 /**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ * \ingroup dataio
+ * \brief Inviwo Module OpactOpt
+ *
+ *  A GeometryReader (DataReaderType<Geometry>) using the Assimp Library.
  */
-class IVW_MODULE_OPACTOPT_API DecoupledOpacityOptimisationRenderer : public OpacityOptimisationRenderer {
+class IVW_MODULE_OPACTOPT_API AmiraMeshReader : public DataReaderType<Mesh> {
 public:
-    DecoupledOpacityOptimisationRenderer(CameraProperty* c);
-    virtual bool postPass(bool useIllustration, const Image* background);
+    AmiraMeshReader();
+    AmiraMeshReader(const AmiraMeshReader& rhs) = default;
+    AmiraMeshReader& operator=(const AmiraMeshReader& that) = default;
+    virtual AmiraMeshReader* clone() const override;
+    virtual ~AmiraMeshReader() = default;
+
+    virtual std::shared_ptr<Mesh> readData(const std::filesystem::path& filePath) override;
 
 private:
-    virtual void buildShaders(bool hasBackground = false) override;
+    enum AmiraDataType { Lines, Vertices, Importance };
 
-    Shader displaydoo_;
+    void processLines(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
+    void processVertices(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
+    void processImportance(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
 };
 
-}  // namespace inviwo 
+}  // namespace inviwo

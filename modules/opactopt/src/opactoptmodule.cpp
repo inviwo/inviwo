@@ -29,8 +29,13 @@
 
 #include <modules/opactopt/opactoptmodule.h>
 #include <modules/opactopt/processors/opacityoptimiser.h>
+#include <modules/opactopt/processors/meshmappingvolume.h>
+#include <modules/opactopt/io/amirameshreader.h>
+#include <modules/opactopt/io/amiravolumereader.h>
 
 #include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
+#include <inviwo/core/common/inviwomodule.h>      // for InviwoModule
+
 
 namespace inviwo {
 
@@ -40,6 +45,11 @@ OpactOptModule::OpactOptModule(InviwoApplication* app) : InviwoModule(app, "Opac
 
     // Processors
     registerProcessor<OpacityOptimiser>();
+    registerProcessor<MeshMappingVolume>();
+
+    // Data readers
+    registerDataReader(std::make_unique<AmiraMeshReader>());
+    registerDataReader(std::make_unique<AmiraVolumeReader>());
 }
 
 }  // namespace inviwo

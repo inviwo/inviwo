@@ -43,6 +43,7 @@
 #include <inviwo/core/properties/optionproperty.h>    // for OptionProperty
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <modules/oit/ports/rasterizationport.h>  // for RasterizationInport
+#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 
@@ -55,6 +56,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    VolumeInport importanceVolume_;
+
     FloatProperty q_, r_, lambda_;
     OptionPropertyInt opacityOptimisationRenderer_;
     CompositeProperty approximationProperties_;

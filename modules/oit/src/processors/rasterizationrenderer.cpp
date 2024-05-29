@@ -218,6 +218,7 @@ void RasterizationRenderer::process() {
         flr_->prePass(outport_.getDimensions());
 
         flr_->beginCount();
+
         for (const auto& rasterization : rasterizations_) {
             if (rasterization->usesFragmentLists() == UseFragmentList::Yes) {
                 rasterization->rasterize(outport_.getDimensions(), mat4(1.0));

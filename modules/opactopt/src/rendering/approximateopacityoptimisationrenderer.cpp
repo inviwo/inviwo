@@ -31,13 +31,15 @@
 
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/volume/volumeutils.h>
 
 namespace inviwo {
 
 ApproximateOpacityOptimisationRenderer::ApproximateOpacityOptimisationRenderer(
-    const Approximations::ApproximationProperties* p, int isc, int odc, int gaussianRadius,
-    float gaussianSigma)
-    : ap_(p)
+    const Approximations::ApproximationProperties* p, CameraProperty* c, int isc, int odc,
+    int gaussianRadius, float gaussianSigma)
+    : OpacityOptimisationRenderer(c)
+    , ap_(p)
     , nImportanceSumCoefficients_(isc)
     , nOpticalDepthCoefficients_(odc)
     , project_{"oit/simplequad.vert", "opactopt/approximate/project.frag", Shader::Build::No}
@@ -51,13 +53,13 @@ ApproximateOpacityOptimisationRenderer::ApproximateOpacityOptimisationRenderer(
                             GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST}}
     , opticalDepthCoeffs_{size3_t(screenSize_.x, screenSize_.y, nOpticalDepthCoefficients_), GL_RED,
                           GL_R32F, GL_FLOAT, GL_NEAREST}
-    , gaussianKernel_{21 * sizeof(float),                   // allocate max possible size
-                      GLFormats::getGLFormat(GL_FLOAT, 1),  // dummy format, will not be used
+    , gaussianKernel_{128 * sizeof(float),                  // allocate max possible size
+                      GLFormats::getGLFormat(GL_FLOAT, 1),  // dummy format
                       GL_STATIC_DRAW, GL_SHADER_STORAGE_BUFFER}
     , gaussianRadius_(gaussianRadius)
     , gaussianSigma_(gaussianSigma) {
 
-    for (auto isc : importanceSumCoeffs_) isc.initialize(nullptr);
+    for (auto& isc : importanceSumCoeffs_) isc.initialize(nullptr);
     opticalDepthCoeffs_.initialize(nullptr);
     generateAndUploadGaussianKernel(gaussianRadius, gaussianSigma, true);
 
@@ -80,27 +82,29 @@ void ApproximateOpacityOptimisationRenderer::prePass(const size2_t& screenSize) 
 
     // clear textures
     clearaoo_.activate();
-    auto& texUnit = textureUnits_.emplace_back();
-    auto& importanceSumUnitMain = textureUnits_.emplace_back();
-    auto& importanceSumUnitSmooth = textureUnits_.emplace_back();
-    auto& opticalDepthUnit = textureUnits_.emplace_back();
+    abuffUnit_ = &textureUnits_.emplace_back();
 
-    textureUnits_[1].activate();
+    importanceSumUnitMain_ = &textureUnits_.emplace_back();
+    importanceSumUnitMain_->activate();
     importanceSumCoeffs_[0].bind();
-    glBindImageTexture(textureUnits_[1].getUnitNumber(), importanceSumCoeffs_[0].getID(), 0, true,
-                       0, GL_READ_WRITE, GL_R32F);
+    glBindImageTexture(importanceSumUnitMain_->getUnitNumber(), importanceSumCoeffs_[0].getID(), 0,
+                       true, 0, GL_READ_WRITE, GL_R32F);
 
-    textureUnits_[2].activate();
-    importanceSumCoeffs_[1].bind();
-    glBindImageTexture(textureUnits_[2].getUnitNumber(), importanceSumCoeffs_[1].getID(), 0, true,
-                       0, GL_READ_WRITE, GL_R32F);
+    if (smoothing) {
+        importanceSumUnitSmooth_ = &textureUnits_.emplace_back();
+        importanceSumUnitSmooth_->activate();
+        importanceSumCoeffs_[1].bind();
+        glBindImageTexture(importanceSumUnitSmooth_->getUnitNumber(),
+                           importanceSumCoeffs_[1].getID(), 0, true, 0, GL_READ_WRITE, GL_R32F);
+    }
 
-    textureUnits_[3].activate();
+    opticalDepthUnit_ = &textureUnits_.emplace_back();
+    opticalDepthUnit_->activate();
     opticalDepthCoeffs_.bind();
-    glBindImageTexture(textureUnits_[3].getUnitNumber(), opticalDepthCoeffs_.getID(), 0, true, 0,
+    glBindImageTexture(opticalDepthUnit_->getUnitNumber(), opticalDepthCoeffs_.getID(), 0, true, 0,
                        GL_READ_WRITE, GL_R32F);
 
-    setUniforms(clearaoo_, texUnit);
+    setUniforms(clearaoo_, *abuffUnit_);
 
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
     utilgl::DepthMaskState depthMask(GL_TRUE);
@@ -137,22 +141,27 @@ bool ApproximateOpacityOptimisationRenderer::postPass(bool useIllustration,
     }
 
     // Build shader depending on inport state.
-    if ((supportsFragmentLists() && static_cast<bool>(background) != builtWithBackground_))
+    if ((supportsFragmentLists() && static_cast<bool>(background) != builtWithBackground_) ||
+        importanceVolumeDirty) {
         buildShaders(background);
+        importanceVolumeDirty = false;
+    }
 
-    textureUnits_[1].activate();
+    importanceSumUnitMain_->activate();
     importanceSumCoeffs_[0].bind();
-    glBindImageTexture(textureUnits_[1].getUnitNumber(), importanceSumCoeffs_[0].getID(), 0, true,
-                       0, GL_READ_WRITE, GL_R32F);
+    glBindImageTexture(importanceSumUnitMain_->getUnitNumber(), importanceSumCoeffs_[0].getID(), 0,
+                       true, 0, GL_READ_WRITE, GL_R32F);
 
-    textureUnits_[2].activate();
-    importanceSumCoeffs_[1].bind();
-    glBindImageTexture(textureUnits_[2].getUnitNumber(), importanceSumCoeffs_[1].getID(), 0, true,
-                       0, GL_READ_WRITE, GL_R32F);
+    if (smoothing) {
+        importanceSumUnitSmooth_->activate();
+        importanceSumCoeffs_[1].bind();
+        glBindImageTexture(importanceSumUnitSmooth_->getUnitNumber(),
+                           importanceSumCoeffs_[1].getID(), 0, true, 0, GL_READ_WRITE, GL_R32F);
+    }
 
-    textureUnits_[3].activate();
+    opticalDepthUnit_->activate();
     opticalDepthCoeffs_.bind();
-    glBindImageTexture(textureUnits_[3].getUnitNumber(), opticalDepthCoeffs_.getID(), 0, true, 0,
+    glBindImageTexture(opticalDepthUnit_->getUnitNumber(), opticalDepthCoeffs_.getID(), 0, true, 0,
                        GL_READ_WRITE, GL_R32F);
 
     process();
@@ -172,11 +181,12 @@ void ApproximateOpacityOptimisationRenderer::process() {
 
     // project importance sum
     project_.activate();
-    project_.setUniform("znear", znear);
-    project_.setUniform("zfar", zfar);
-    setUniforms(project_, textureUnits_[0]);
+    setUniforms(project_, *abuffUnit_);
+    if (importanceVolume && importanceVolume->hasData())
+        utilgl::bindAndSetUniforms(project_, textureUnits_, *importanceVolume);
+    project_.setUniform("reciprocalDimensions", vec2(1) / vec2(screenSize_));
     utilgl::singleDrawImagePlaneRect();
-    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
 
     if (smoothing) {
         // smoothing importance
@@ -185,14 +195,14 @@ void ApproximateOpacityOptimisationRenderer::process() {
         // horizontal pass
         smoothH_.activate();
         smoothH_.setUniform("radius", gaussianRadius_);
-        setUniforms(smoothH_, textureUnits_[0]);
+        setUniforms(smoothH_, *abuffUnit_);
         utilgl::singleDrawImagePlaneRect();
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
         // vertical pass
         smoothV_.activate();
         smoothV_.setUniform("radius", gaussianRadius_);
-        setUniforms(smoothV_, textureUnits_[0]);
+        setUniforms(smoothV_, *abuffUnit_);
         utilgl::singleDrawImagePlaneRect();
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     }
@@ -201,7 +211,7 @@ void ApproximateOpacityOptimisationRenderer::process() {
 void ApproximateOpacityOptimisationRenderer::render(const Image* background) {
     // final blending
     blend_.activate();
-    setUniforms(blend_, textureUnits_[0]);
+    setUniforms(blend_, *abuffUnit_);
     if (builtWithBackground_) {
         // Set depth buffer to read from.
         utilgl::bindAndSetUniforms(blend_, textureUnits_, *background, "bg", ImageType::ColorDepth);
@@ -227,7 +237,6 @@ void ApproximateOpacityOptimisationRenderer::buildShaders(bool hasBackground) {
 
     for (auto& fs : {pfs, shfs, svfs, bfs, cfs}) {
         fs->clearShaderExtensions();
-        fs->clearShaderDefines();
         fs->addShaderExtension("GL_NV_gpu_shader5", true);
         fs->addShaderExtension("GL_EXT_shader_image_load_store", true);
         fs->addShaderExtension("GL_NV_shader_buffer_load", true);
@@ -241,6 +250,8 @@ void ApproximateOpacityOptimisationRenderer::buildShaders(bool hasBackground) {
     for (auto& fs : {pfs, bfs}) {
         fs->setShaderDefine(ap_->shaderDefineName.c_str(), true);
     }
+
+    pfs->setShaderDefine("USE_IMPORTANCE_VOLUME", importanceVolume && importanceVolume->hasData());
 
     shfs->setShaderDefine("HORIZONTAL", true, "1");
     svfs->setShaderDefine("HORIZONTAL", true, "0");
@@ -279,18 +290,14 @@ void ApproximateOpacityOptimisationRenderer::setOpticalDepthCoeffs(int odc) {
     buildShaders(builtWithBackground_);
 }
 
-void ApproximateOpacityOptimisationRenderer::setShaderUniforms(Shader& shader) const {
-    OpacityOptimisationRenderer::setUniforms(shader, textureUnits_[0]);
-}
-
 void ApproximateOpacityOptimisationRenderer::setUniforms(Shader& shader,
                                                          const TextureUnit& abuffUnit) const {
     OpacityOptimisationRenderer::setUniforms(shader, abuffUnit);
 
-    shader.setUniform("importanceSumCoeffs[0]", textureUnits_[1].getUnitNumber());
-    shader.setUniform("importanceSumCoeffs[1]", textureUnits_[2].getUnitNumber());
-    shader.setUniform("opticalDepthCoeffs", textureUnits_[3].getUnitNumber());
-
+    shader.setUniform("importanceSumCoeffs[0]", importanceSumUnitMain_->getUnitNumber());
+    if (smoothing)
+        shader.setUniform("importanceSumCoeffs[1]", importanceSumUnitSmooth_->getUnitNumber());
+    shader.setUniform("opticalDepthCoeffs", opticalDepthUnit_->getUnitNumber());
     glActiveTexture(GL_TEXTURE0);
 }
 

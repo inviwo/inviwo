@@ -41,16 +41,20 @@
 
 #include "oit/abufferlinkedlist.glsl"
 #include "utils/structs.glsl"
+#include "utils/depth.glsl"
+#include "oit/commons.glsl"
 
 // How should the stuff be rendered? (Debugging options)
 #define ABUFFER_DISPNUMFRAGMENTS 0
 #define ABUFFER_RESOLVE_USE_SORTING 1
 
-uniform float znear;
-uniform float zfar;
+uniform vec2 reciprocalDimensions;
 
 coherent uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
 coherent uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+uniform sampler3D importanceVolume;
+uniform CameraParameters camera;
+uniform VolumeParameters importanceVolumeParameters;
 
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;
@@ -83,6 +87,8 @@ void main() {
         discard;
     }
 
+    vec2 texCoord = (gl_FragCoord.xy + 0.5) * reciprocalDimensions;
+
     uint pixelIdx = getPixelLink(coords);
     if (pixelIdx > 0) {
         lineariseDepths(pixelIdx);
@@ -90,9 +96,20 @@ void main() {
 
         // Project importance sum coefficients
         while (idx != 0) {
+            vec4 data = readPixelStorage(idx - 1);
+            #ifdef USE_IMPORTANCE_VOLUME
+                float viewDepth = data.y * (camera.farPlane - camera.nearPlane) + camera.nearPlane;
+                float clipDepth = convertDepthViewToClip(camera, viewDepth);
+                vec4 clip = vec4(2.0 * texCoord - 1.0, clipDepth, 1.0);
+                vec4 worldPos = camera.clipToWorld * clip;
+                worldPos /= worldPos.w;
+                vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
+                data.z = texture(importanceVolume, texPos.xyz).x; // sample importance from volume
+                writePixelStorage(idx - 1, data);
+            #endif
             projectImportanceSum(idx);
             memoryBarrierImage();
-            idx = floatBitsToUint(readPixelStorage(idx - 1).x);
+            idx = floatBitsToUint(data.x);
         }
     }
 
@@ -103,8 +120,8 @@ void lineariseDepths(uint pixelIdx) {
     int counter = 0;
     while (pixelIdx != 0 && counter < ABUFFER_SIZE) {
         vec4 val = readPixelStorage(pixelIdx - 1);
-        float z_w = znear * zfar / (zfar + val.y * (znear - zfar)); // world space depth
-        val.y = (z_w - znear) / (zfar - znear); // linear normalised depth;
+        float z_v = convertDepthScreenToView(camera, val.y); // view space depth
+        val.y = (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane); // linear normalised depth;
         writePixelStorage(pixelIdx - 1, val); 
         counter++;
         pixelIdx = floatBitsToUint(val.x);

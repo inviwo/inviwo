@@ -30,23 +30,28 @@
 
 #include <modules/opactopt/opactoptmoduledefine.h>
 
-#include <modules/opactopt/rendering/opacityoptimisationrenderer.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/io/datareader.h>
+
+#include <any>          // for any
+#include <memory>       // for shared_ptr
+#include <string_view>  // for string_view
 
 namespace inviwo {
 
 /**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ * \ingroup dataio
+ * \brief AmiraMesh scalar field (volume) reader
  */
-class IVW_MODULE_OPACTOPT_API DecoupledOpacityOptimisationRenderer : public OpacityOptimisationRenderer {
+class IVW_MODULE_OPACTOPT_API AmiraVolumeReader : public DataReaderType<Volume> {
 public:
-    DecoupledOpacityOptimisationRenderer(CameraProperty* c);
-    virtual bool postPass(bool useIllustration, const Image* background);
+    AmiraVolumeReader();
+    AmiraVolumeReader(const AmiraVolumeReader& rhs) = default;
+    AmiraVolumeReader& operator=(const AmiraVolumeReader& that) = default;
+    virtual AmiraVolumeReader* clone() const override;
+    virtual ~AmiraVolumeReader() = default;
 
-private:
-    virtual void buildShaders(bool hasBackground = false) override;
-
-    Shader displaydoo_;
+    virtual std::shared_ptr<Volume> readData(const std::filesystem::path& filePath) override;
 };
 
-}  // namespace inviwo 
+}  // namespace inviwo

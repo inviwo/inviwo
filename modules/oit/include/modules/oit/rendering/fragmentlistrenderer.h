@@ -72,7 +72,7 @@ class Image;
 class IVW_MODULE_OIT_API FragmentListRenderer {
 public:
     FragmentListRenderer();
-    ~FragmentListRenderer();
+    virtual ~FragmentListRenderer();
 
     /**
      * \brief Starts the rendering of transparent objects using fragment lists.
@@ -130,7 +130,7 @@ public:
      */
     static bool supportsIllustration();
 
-    DispatcherHandle<void()> onReload(std::function<void()> callback);
+    virtual DispatcherHandle<void()> onReload(std::function<void()> callback);
 
     void debugFragmentLists(std::ostream& oss);
     void debugIllustrationBuffer(std::ostream& oss);
