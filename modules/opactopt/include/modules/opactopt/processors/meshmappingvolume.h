@@ -26,27 +26,44 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <modules/opactopt/opactoptmoduledefine.h>
 
-#include <modules/opactopt/rendering/opacityoptimisationrenderer.h>
+#include <inviwo/core/ports/meshport.h>  // for MeshInport, MeshOutport
+#include <inviwo/core/processors/processor.h>                 // for Processor
+#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>              // for BoolProperty
+#include <inviwo/core/properties/minmaxproperty.h>            // for DoubleMinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>            // for OptionPropertyInt
+#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
 
 namespace inviwo {
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_OPACTOPT_API DecoupledOpacityOptimisationRenderer : public OpacityOptimisationRenderer {
+class IVW_MODULE_OPACTOPT_API MeshMappingVolume : public Processor {
 public:
-    DecoupledOpacityOptimisationRenderer(CameraProperty* c);
-    virtual bool postPass(bool useIllustration, const Image* background);
+    MeshMappingVolume();
+    virtual ~MeshMappingVolume() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 private:
-    virtual void buildShaders(bool hasBackground = false) override;
+    MeshInport meshInport_;
+    MeshOutport outport_;
+    VolumeInport volumeInport_;
 
-    Shader displaydoo_;
+    BoolProperty enabled_;
+    TransferFunctionProperty tf_;
+
+    OptionPropertyInt component_;
+
+    BoolProperty useCustomDataRange_;
+    DoubleMinMaxProperty customDataRange_;
+    DoubleMinMaxProperty dataRange_;
 };
 
-}  // namespace inviwo 
+}  // namespace inviwo
