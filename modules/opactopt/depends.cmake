@@ -5,6 +5,7 @@ set(dependencies
     InviwoOpenGLModule
     InviwoBaseModule
     InviwoBaseGLModule
+    InviwoPython3Module
 )
 set(EnableByDefault ON)
 

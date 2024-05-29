@@ -41,6 +41,7 @@
 #include "oit/abufferlinkedlist.glsl"
 #include "oit/sort.glsl"
 #include "utils/structs.glsl"
+#include "utils/depth.glsl"
 
 // How should the stuff be rendered? (Debugging options)
 #define ABUFFER_DISPNUMFRAGMENTS 0
@@ -50,8 +51,13 @@
 uniform ImageParameters bgParameters;
 uniform sampler2D bgColor;
 uniform sampler2D bgDepth;
-uniform vec2 reciprocalDimensions;
 #endif  // BACKGROUND_AVAILABLE
+uniform vec2 reciprocalDimensions;
+
+// Optional importance volume
+uniform sampler3D importanceVolume;
+uniform VolumeParameters importanceVolumeParameters;
+uniform CameraParameters camera;
 
 // Opacity optimisation settings
 uniform float q;
@@ -93,10 +99,10 @@ void main() {
         gl_FragDepth = uncompressPixelData(p).depth;
 #else
         float backgroundDepth = 1.0;
+        vec2 texCoord = (gl_FragCoord.xy + 0.5) * reciprocalDimensions;
 #ifdef BACKGROUND_AVAILABLE
         // Assume the camera used to render the background has the same near and far plane,
         // so we can directly compare depths.
-        vec2 texCoord = (gl_FragCoord.xy + 0.5) * reciprocalDimensions;
         backgroundDepth = texture(bgDepth, texCoord).x;
 #endif  // BACKGROUND_AVAILABLE
 
@@ -107,6 +113,17 @@ void main() {
         float totalImportanceSum = 0.0;
         while (idx != 0 && counter < ABUFFER_SIZE) {
             vec4 data = readPixelStorage(idx - 1);
+            #ifdef USE_IMPORTANCE_VOLUME
+                float viewDepth = convertDepthScreenToView(camera, data.y);
+                float clipDepth = convertDepthViewToClip(camera, viewDepth);
+                vec4 clip = vec4(2.0 * texCoord - 1.0, clipDepth, 1.0);
+                vec4 worldPos = camera.clipToWorld * clip;
+                worldPos /= worldPos.w;
+                vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
+                data.z = texture(importanceVolume, texPos).x; // sample importance from volume
+
+                writePixelStorage(idx - 1, data);
+            #endif
             float importance = data.z;
             if (data.y >= 0 && data.y <= backgroundDepth)
                 totalImportanceSum += importance * importance;
