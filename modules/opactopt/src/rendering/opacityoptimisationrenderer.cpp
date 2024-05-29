@@ -30,10 +30,11 @@
 #include <modules/opactopt/rendering/opacityoptimisationrenderer.h>
 #include <modules/opengl/openglutils.h>
 #include <inviwo/core/util/logcentral.h>
+#include <modules/opengl/shader/shaderutils.h>  // for ImageInport, setUnif...
 
 namespace inviwo {
 
-OpacityOptimisationRenderer::OpacityOptimisationRenderer() {
+OpacityOptimisationRenderer::OpacityOptimisationRenderer(CameraProperty* c) : camera_(c) {
     if (!supportsFragmentLists())
         LogError("Fragment lists are required for opacity optimisation rendering");
 }
@@ -44,6 +45,8 @@ void OpacityOptimisationRenderer::setUniforms(Shader& shader, const TextureUnit&
     shader.setUniform("q", q);
     shader.setUniform("r", r);
     shader.setUniform("lambda", lambda);
+
+    utilgl::setUniforms(shader, (*camera_));
 }
 
 }  // namespace inviwo

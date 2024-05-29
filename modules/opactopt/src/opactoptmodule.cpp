@@ -29,8 +29,11 @@
 
 #include <modules/opactopt/opactoptmodule.h>
 #include <modules/opactopt/processors/opacityoptimiser.h>
+#include <modules/opactopt/processors/meshmappingvolume.h>
 
 #include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
+#include <inviwo/core/common/inviwomodule.h>      // for InviwoModule
+
 
 namespace inviwo {
 
@@ -40,6 +43,8 @@ OpactOptModule::OpactOptModule(InviwoApplication* app) : InviwoModule(app, "Opac
 
     // Processors
     registerProcessor<OpacityOptimiser>();
+    registerProcessor<MeshMappingVolume>();
+
 }
 
 }  // namespace inviwo
