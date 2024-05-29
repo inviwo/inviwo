@@ -3,8 +3,8 @@ ivw_module(OpactOpt)
 set(HEADER_FILES
     include/modules/opactopt/opactoptmodule.h
     include/modules/opactopt/opactoptmoduledefine.h
-
     include/modules/opactopt/processors/opacityoptimiser.h
+    include/modules/opactopt/processors/meshmappingvolume.h
     include/modules/opactopt/rendering/opacityoptimisationrenderer.h
     include/modules/opactopt/rendering/approximateopacityoptimisationrenderer.h
     include/modules/opactopt/rendering/approximation.h
@@ -15,6 +15,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/opactoptmodule.cpp
     src/processors/opacityoptimiser.cpp
+    src/processors/meshmappingvolume.cpp
     src/rendering/opacityoptimisationrenderer.cpp
     src/rendering/approximateopacityoptimisationrenderer.cpp
     src/rendering/decoupledopacityoptimisationrenderer.cpp
