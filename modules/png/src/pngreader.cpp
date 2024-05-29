@@ -165,7 +165,6 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(FILE* fp, std::string_vi
     png_set_interlace_handling(png_ptr);
     png_read_update_info(png_ptr, info_ptr);
 
-
     const auto dimensions = size2_t(width, height);
     auto layer = std::make_shared<Layer>(LayerConfig{
         .dimensions = dimensions,
