@@ -31,10 +31,8 @@
 #include <modules/opactopt/opactoptmoduledefine.h>
 
 #include <modules/opactopt/rendering/opacityoptimisationrenderer.h>
-#include <modules/oit/rendering/fragmentlistrenderer.h>
 #include <modules/opactopt/rendering/approximation.h>
 
-#include <inviwo/core/datastructures/volume/volume.h>
 #include <modules/opengl/texture/texture2darray.h>
 #include <modules/opengl/buffer/bufferobject.h>
 
@@ -48,10 +46,8 @@ class IVW_MODULE_OPACTOPT_API ApproximateOpacityOptimisationRenderer
     : public OpacityOptimisationRenderer {
 public:
     ApproximateOpacityOptimisationRenderer(const Approximations::ApproximationProperties* p,
-                                           int isc, int odc, int gaussianRadius = 3,
-                                           float sigma = 1.0f);
-
-    virtual void setShaderUniforms(Shader& shader) const override;
+                                           CameraProperty* c, int isc, int odc,
+                                           int gaussianRadius = 3, float sigma = 1.0f);
 
     virtual void prePass(const size2_t& screenSize) override;
     virtual bool postPass(bool useIllustration, const Image* background) override;
@@ -62,7 +58,6 @@ public:
     void generateAndUploadGaussianKernel(int radius, float sigma, bool force = false);
 
     bool smoothing;
-    float znear, zfar;
 
 private:
     virtual void buildShaders(bool hasBackground = false) override;
@@ -76,12 +71,11 @@ private:
     const Approximations::ApproximationProperties* ap_;
     int nImportanceSumCoefficients_;
     int nOpticalDepthCoefficients_;
-
     Texture2DArray importanceSumCoeffs_[2];
     Texture2DArray opticalDepthCoeffs_;
 
+    TextureUnit *abuffUnit_, *importanceSumUnitMain_, *importanceSumUnitSmooth_, *opticalDepthUnit_;
     BufferObject gaussianKernel_;
-
     int gaussianRadius_;
     float gaussianSigma_;
 };

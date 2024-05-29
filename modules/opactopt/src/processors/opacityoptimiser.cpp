@@ -54,19 +54,9 @@ const ProcessorInfo OpacityOptimiser::processorInfo_{
 
 const ProcessorInfo OpacityOptimiser::getProcessorInfo() const { return processorInfo_; }
 
-void OpacityOptimiser::process() {
-    if (opacityOptimisationRenderer_ == 0) {
-        auto aoor = dynamic_cast<ApproximateOpacityOptimisationRenderer*>(flr_.get());
-        aoor->znear = camera_.getNearPlaneDist();
-        aoor->zfar = camera_.getFarPlaneDist();
-    }
-
-    RasterizationRenderer::process();
-}
-
 OpacityOptimiser::OpacityOptimiser()
-    : q_{"q", "q", 1.0f, 0.0f, 100.0f, 0.01f}
-    , r_{"r", "r", 1.0f, 0.0f, 100.0f, 0.01f}
+    : q_{"q", "q", 1.0f, 0.0f, 1000.0f, 0.01f}
+    , r_{"r", "r", 1.0f, 0.0f, 1000.0f, 0.01f}
     , lambda_{"lambda", "lambda", 0.5f, 0.001f, 10.0f, 0.01f}
     , opacityOptimisationRenderer_{"opacityOptimisationRenderer",
                                    "Opacity Optimisation Renderer",
@@ -74,15 +64,17 @@ OpacityOptimiser::OpacityOptimiser()
                                     {"decoupled", "Decoupled", 1}}}
     , approximationProperties_{"approximationProperties", "Approximation Properties"}
     , approximationMethod_{"approximationMethod", "Approximation Method"}
+    , importanceVolume_{"importanceVolume", "Optional scalar field with importance data"_help}
     , importanceSumCoefficients_{"importanceSumCoefficients", "Importance sum coefficients"}
     , opticalDepthCoefficients_{"opticalDepthCoefficients", "Optical depth coefficients"}
     , smoothing_{"smoothing", "Smoothing", false}
     , gaussianKernelRadius_{"gaussianKernelRadius", "Gaussian kernel radius", 3, 1, 50}
     , gaussianKernelSigma_{"gaussianKernelSigma", "Gaussian kernel sigma", 1, 0.001, 50} {
 
+    addPort(importanceVolume_).setOptional(true);
+
     illustrationSettings_.enabled_.setChecked(false);
     removeProperty(illustrationSettings_.enabled_);
-
     addProperties(q_, r_, lambda_);
 
     q_.onChange([this]() {
@@ -112,7 +104,20 @@ OpacityOptimiser::OpacityOptimiser()
                                            opticalDepthCoefficients_, smoothing_);
     smoothing_.addProperties(gaussianKernelRadius_, gaussianKernelSigma_);
 
+    importanceVolume_.onChange([this]() {
+        auto oor = dynamic_cast<OpacityOptimisationRenderer*>(flr_.get());
+        if (oor) {
+            if (importanceVolume_.isReady())
+                oor->importanceVolume = &importanceVolume_;
+            else {
+                oor->importanceVolume = nullptr;
+            }
+            oor->importanceVolumeDirty = true;
+        }
+    });
+
     opacityOptimisationRenderer_.onChange([this]() {
+        flr_.reset();
         if (opacityOptimisationRenderer_ == 0) {
             addProperty(approximationProperties_);
 
@@ -123,21 +128,28 @@ OpacityOptimiser::OpacityOptimiser()
             opticalDepthCoefficients_.setMaxValue(p->maxCoefficients);
 
             flr_ = std::make_unique<ApproximateOpacityOptimisationRenderer>(
-                p, importanceSumCoefficients_, opticalDepthCoefficients_, gaussianKernelRadius_,
-                gaussianKernelSigma_);
+                p, &camera_, importanceSumCoefficients_, opticalDepthCoefficients_,
+                gaussianKernelRadius_, gaussianKernelSigma_);
         } else {
             removeProperty(approximationProperties_);
-            flr_ = std::make_unique<DecoupledOpacityOptimisationRenderer>();
+            flr_ = std::make_unique<DecoupledOpacityOptimisationRenderer>(&camera_);
+        }
+        flrReload_ = flr_->onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
+        auto oor = dynamic_cast<OpacityOptimisationRenderer*>(flr_.get());
+        if (oor) {
+            if (importanceVolume_.isReady())
+                oor->importanceVolume = &importanceVolume_;
+            else {
+                oor->importanceVolume = nullptr;
+            }
+            oor->importanceVolumeDirty = true;
         }
 
         q_.propertyModified();
         r_.propertyModified();
         lambda_.propertyModified();
     });
-    opacityOptimisationRenderer_.propertyModified();  // Call to trigger on change and create
-                                                      // opacity optimisation renderer
-
-    std::ofstream approximationsfile;
 
     approximationMethod_.onChange([this]() {
         if (opacityOptimisationRenderer_ == 0) {
@@ -196,6 +208,10 @@ OpacityOptimiser::OpacityOptimiser()
                 aoor->generateAndUploadGaussianKernel(gaussianKernelRadius_, gaussianKernelSigma_);
         }
     });
+
+    opacityOptimisationRenderer_.propertyModified();
 }
+
+void OpacityOptimiser::process() { RasterizationRenderer::process(); }
 
 }  // namespace inviwo
