@@ -73,4 +73,14 @@ LayerConfig& LayerConfig::updateFrom(const LayerConfig& config) {
     return *this;
 }
 
+glm::mat4 LayerConfig::aspectPreservingModelMatrixFromDimensions(size2_t dimensions) {
+    glm::mat4 model{1};
+    if (dimensions.x < dimensions.y) {
+        model[0][0] = static_cast<float>(dimensions.x) / static_cast<float>(dimensions.y);
+    } else {
+        model[1][1] = static_cast<float>(dimensions.y) / static_cast<float>(dimensions.x);
+    }
+    return model;
+}
+
 }  // namespace inviwo

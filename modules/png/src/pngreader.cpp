@@ -165,12 +165,12 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(FILE* fp, std::string_vi
     png_set_interlace_handling(png_ptr);
     png_read_update_info(png_ptr, info_ptr);
 
-    const DataFormatBase* df =
-        DataFormatBase::get(inviwo::NumericType::UnsignedInteger, channels, bit_depth);
-
-    auto layer = std::make_shared<Layer>(size2_t(width, height), df);
-
-    layer->setSwizzleMask(swizzleMask);
+    const auto dimensions = size2_t(width, height);
+    auto layer = std::make_shared<Layer>(LayerConfig{
+        .dimensions = dimensions,
+        .format = DataFormatBase::get(inviwo::NumericType::UnsignedInteger, channels, bit_depth),
+        .swizzleMask = swizzleMask,
+        .model = LayerConfig::aspectPreservingModelMatrixFromDimensions(dimensions)});
 
     layer->getEditableRepresentation<LayerRAM>()->dispatch<void>([&](auto ram) {
         auto data = ram->getDataTyped();
@@ -179,24 +179,11 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(FILE* fp, std::string_vi
 
         for (png_uint_32 rownum = 0; rownum < height; ++rownum) {
             // Need to flip images in Inviwo
-            rows[height - rownum - 1] = (png_bytep)(data + rownum * width);
+            rows[height - rownum - 1] = reinterpret_cast<png_bytep>(data + rownum * width);
         }
 
         png_read_image(png_ptr, rows.data());
     });
-
-    const auto dims = layer->getDimensions();
-
-    auto model = [&]() {
-        glm::mat4 model{1};
-        if (dims.x < dims.y) {
-            model[0][0] = static_cast<float>(dims.x) / static_cast<float>(dims.y);
-        } else {
-            model[1][1] = static_cast<float>(dims.y) / static_cast<float>(dims.x);
-        }
-        return model;
-    }();
-    layer->setModelMatrix(model);
 
     return layer;
 }
