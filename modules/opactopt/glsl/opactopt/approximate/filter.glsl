@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024 Inviwo Foundation
+ * Copyright (c) 2019-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,27 +26,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/opactopt/opactoptmoduledefine.h>
-
-#include <modules/opactopt/rendering/opacityoptimisationrenderer.h>
-
-namespace inviwo {
-
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_OPACTOPT_API DecoupledOpacityOptimisationRenderer : public OpacityOptimisationRenderer {
-public:
-    DecoupledOpacityOptimisationRenderer(CameraProperty* c);
-    virtual bool postPass(bool useIllustration, const Image* background);
-
-private:
-    virtual void buildShaders(bool hasBackground = false) override;
-
-    Shader displaydoo_;
+uniform int radius;
+layout(std430, binding = 8) buffer gaussianKernelBuffer {
+    float kernel[];
 };
 
-}  // namespace inviwo 
+void filterImportanceSum() {
+    ivec2 coords = ivec2(gl_FragCoord.xy);
+    if (getPixelLink(coords) == 0) return;
+
+    memoryBarrierImage();
+    for (int i = 0; i < N_APPROXIMATION_COEFFICIENTS; i++) {
+        ivec3 layer_coord = ivec3(coords, i);
+
+        float val = 0.0;
+        float kernel_sum = 0.0;
+        for (int j = -radius; j <= radius; j++) {
+            for (int k = -radius; k <= radius; k++) {
+                if (coords.x + j < 0 || coords.x + j >= AbufferParams.screenWidth ) continue;
+                if (coords.y + k < 0 || coords.y + k >= AbufferParams.screenHeight) continue;
+                val += kernel[radius + j] * kernel[radius + k] * imageLoad(importanceSumCoeffs[0], layer_coord + ivec3(j, k, 0)).x;
+                kernel_sum += kernel[radius + j] * kernel[radius + k];
+            }
+        }
+        val /= kernel_sum;
+        memoryBarrierImage();
+        imageStore(importanceSumCoeffs[1], layer_coord, vec4(val));
+        memoryBarrierImage();
+    }
+    memoryBarrierImage();
+}

@@ -54,6 +54,10 @@ uniform sampler2D bgDepth;
 uniform vec2 reciprocalDimensions;
 #endif  // BACKGROUND_AVAILABLE
 
+uniform bool smoothing;
+uniform float znear;
+uniform float zfar;
+
 // Opacity optimisation settings
 uniform float q;
 uniform float r;
@@ -68,6 +72,7 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 // Input interpolated fragment position
 smooth in vec4 fragPos;
 
+#include "opactopt/approximate/filter.glsl"
 #ifdef FOURIER
     #include "opactopt/approximate/fourier.glsl"
 #endif
@@ -80,6 +85,15 @@ smooth in vec4 fragPos;
 #ifdef PIECEWISE
     #include "opactopt/approximate/piecewise.glsl"
 #endif
+
+// Converts depths from screen space to clip space
+void lineariseDepths(uint pixelIdx);
+
+// Computes only the number of fragments
+int getFragmentCount(uint pixelIdx);
+
+// Keeps only closest fragment
+vec4 resolveClosest(uint idx);
 
 // Resolve A-Buffer and blend sorted fragments
 void main() {
@@ -104,11 +118,38 @@ void main() {
         gl_FragDepth = p.depth;
 #else
         float backgroundDepth = 1.0;
+//        lineariseDepths(pixelIdx);
+
         // Perform opacity optimisation and compositing
         uint idx = pixelIdx;
 
+        // Project importance sum coefficients
+        while (idx != 0) {
+            projectImportanceSum(idx);
+            memoryBarrierImage();
+            idx = floatBitsToUint(readPixelStorage(idx - 1).x);
+        }
+
+        if (smoothing)
+            filterImportanceSum();
+
+//        // comparison decoupled
+//        uint lastPtr = 0;
+//        vec4 nextFragment = selectionSortNext(pixelIdx, 0.0, lastPtr);
+//        abufferPixel unpackedFragment = uncompressPixelData(nextFragment);
+//        float currentImportanceSum = 0.0;
+//        while (unpackedFragment.depth >= 0 && unpackedFragment.depth <= backgroundDepth) {
+//            currentImportanceSum += nextFragment.z * nextFragment.z;
+//            nextFragment.w = currentImportanceSum;
+//            writePixelStorage(lastPtr - 1, nextFragment); // replace importance g_i in alpha channel with actual alpha
+//
+//            nextFragment = selectionSortNext(pixelIdx, nextFragment.y, lastPtr);
+//            unpackedFragment = uncompressPixelData(nextFragment);
+//        }
+
         // Optimise opacities and project optical depth coefficients
-        float totalImportanceSum = imageLoad(importanceSumCoeffs[0], ivec3(coords, 0)).x;
+        float maxDiff = 0.0;
+        float totalImportanceSum = imageLoad(importanceSumCoeffs[int(smoothing)], ivec3(coords, 0)).x;
         idx = pixelIdx;
         while (idx != 0) {
             vec4 data = readPixelStorage(idx - 1);
@@ -128,7 +169,8 @@ void main() {
             idx = pixel.previous;
         }
 
-        // Composite
+
+//         Composite
         vec3 numerator = vec3(0);
         float denominator = 0.0;
         idx = pixelIdx;
@@ -149,6 +191,20 @@ void main() {
         color.rgb = numerator / denominator;
         color.a = 1.0 - exp(-totalOpticalDepth);
 
+////         front-to-back shading
+//        vec4 color = vec4(0);
+//        uint lastPtr = 0;
+//        vec4 nextFragment = selectionSortNext(pixelIdx, 0.0, lastPtr);
+//        abufferPixel unpackedFragment = uncompressPixelData(nextFragment);
+//        
+//        while (unpackedFragment.depth >= 0 && unpackedFragment.depth <= backgroundDepth) {
+//            vec4 c = unpackedFragment.color;
+//            color.rgb = color.rgb + (1 - color.a) * c.a * c.rgb;
+//            color.a = color.a + (1 - color.a) * c.a;
+//
+//            nextFragment = selectionSortNext(pixelIdx, unpackedFragment.depth, lastPtr);
+//            unpackedFragment = uncompressPixelData(nextFragment);
+//        }
         FragData0 = color;
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
 #endif
@@ -162,4 +218,47 @@ void main() {
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
 #endif
     }
+}
+
+void lineariseDepths(uint pixelIdx) {
+    int counter = 0;
+    while (pixelIdx != 0 && counter < ABUFFER_SIZE) {
+        vec4 val = readPixelStorage(pixelIdx - 1);
+        float z_w = znear * zfar / (zfar + val.y * (znear - zfar)); // world space depth
+        val.y = (z_w - znear) / (zfar - znear); // linear normalised depth;
+        writePixelStorage(pixelIdx - 1, val); 
+        counter++;
+        pixelIdx = floatBitsToUint(val.x);
+    }
+}
+
+int getFragmentCount(uint pixelIdx) {
+    int counter = 0;
+    while (pixelIdx != 0 && counter < ABUFFER_SIZE) {
+        vec4 val = readPixelStorage(pixelIdx - 1);
+        counter++;
+        pixelIdx = floatBitsToUint(val.x);
+    }
+    return counter;
+}
+
+vec4 resolveClosest(uint pixelIdx) {
+
+    // Search smallest z
+    vec4 minFrag = vec4(0.0f, 1000000.0f, 1.0f, uintBitsToFloat(1024 * 1023));
+    int ip = 0;
+
+    while (pixelIdx != 0 && ip < ABUFFER_SIZE) {
+        vec4 val = readPixelStorage(pixelIdx - 1);
+
+        if (val.y < minFrag.y) {
+            minFrag = val;
+        }
+
+        pixelIdx = floatBitsToUint(val.x);
+
+        ip++;
+    }
+    // Output final color for the frame buffer
+    return minFrag;
 }
