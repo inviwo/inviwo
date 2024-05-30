@@ -61,6 +61,8 @@ void DataFrameToVector::process() {
     if (const auto* cat = dynamic_cast<const CategoricalColumn*>(col.get())) {
         stringOutport_.setData(
             std::make_shared<std::vector<std::string>>(cat->values().begin(), cat->values().end()));
+        uintOutport_.clear();
+        floatOutport_.clear();
         return;
     }
 
@@ -68,8 +70,12 @@ void DataFrameToVector::process() {
         [&]<typename T, BufferTarget Target>(const BufferRAMPrecision<T, Target>* buf) {
             if constexpr (std::is_same_v<T, uint32_t>) {
                 uintOutport_.setData(std::make_shared<std::vector<T>>(buf->getDataContainer()));
+                floatOutport_.clear();
+                stringOutport_.clear();
             } else if constexpr (std::is_same_v<T, float>) {
                 floatOutport_.setData(std::make_shared<std::vector<T>>(buf->getDataContainer()));
+                uintOutport_.clear();
+                stringOutport_.clear();
             } else {
                 throw Exception("Column type not supported");
             }
