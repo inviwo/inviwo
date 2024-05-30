@@ -36,11 +36,11 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameToVector::processorInfo_{
     "org.inviwo.DataFrameToVector",  // Class identifier
-    "Data Frame To Vector",          // Display name
-    "Undefined",                     // Category
-    CodeState::Experimental,         // Code state
-    Tags::None,                      // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp};
+    "DataFrame To Vector",           // Display name
+    "DataFrame",                     // Category
+    CodeState::Stable,               // Code state
+    Tags::CPU,                       // Tags
+    R"(Extract a column from a dataframe)"_unindentHelp};
 
 const ProcessorInfo DataFrameToVector::getProcessorInfo() const { return processorInfo_; }
 

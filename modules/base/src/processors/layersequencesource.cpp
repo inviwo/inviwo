@@ -59,10 +59,10 @@ namespace inviwo {
 const ProcessorInfo LayerSequenceSource::processorInfo_{
     "org.inviwo.LayerSequenceSource",  // Class identifier
     "Layer Sequence Source",           // Display name
-    "Undefined",                       // Category
-    CodeState::Experimental,           // Code state
-    Tags::None,                        // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp};
+    "Data Input",                      // Category
+    CodeState::Stable,                 // Code state
+    Tags::CPU,                         // Tags
+    R"(Loads a sequence of layers)"_unindentHelp};
 
 const ProcessorInfo LayerSequenceSource::getProcessorInfo() const { return processorInfo_; }
 
@@ -88,7 +88,7 @@ LayerSequenceSource::LayerSequenceSource(InviwoApplication* app)
     , outport_("data", "A sequence of layers"_help)
     , inputType_(
           "inputType", "Input type",
-          "Select the input type, either select a single file to a 4D dataset or use a folder"_help,
+          "Select the input type, either select a single file to a 3D dataset or use a folder"_help,
           {{"singlefile", "Single File", InputType::SingleFile},
            {"folder", "Folder", InputType::Folder}},
           1)

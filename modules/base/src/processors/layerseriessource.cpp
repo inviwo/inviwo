@@ -41,16 +41,17 @@ namespace inviwo {
 const ProcessorInfo LayerSeriesSource::processorInfo_{
     "org.inviwo.LayerSeriesSource",  // Class identifier
     "Layer Series Source",           // Display name
-    "Undefined",                     // Category
-    CodeState::Experimental,         // Code state
-    Tags::None,                      // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp};
+    "Data Input",                    // Category
+    CodeState::Stable,               // Code state
+    Tags::CPU,                       // Tags
+    R"(Provides functionality to pick a single layer from a list of files
+     matching a pattern or selection)"_unindentHelp};
 
 const ProcessorInfo LayerSeriesSource::getProcessorInfo() const { return processorInfo_; }
 
 LayerSeriesSource::LayerSeriesSource(InviwoApplication* app)
     : Processor{}
-    , outport_{"outport", "<description of the generated outport data>"_help}
+    , outport_{"outport", "Selected image"_help}
     , filePattern_("imageFilePattern", "File Pattern", filesystem::getPath(PathType::Images, "/*"),
                    "")
     , findFilesButton_("findFiles", "Update File List")
