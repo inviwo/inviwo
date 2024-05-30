@@ -68,8 +68,9 @@
 #include <inviwo/dataframe/jsondataframeconversion.h>                 // IWYU pragma: keep
 #include <modules/json/jsonmodule.h>                                  // for JSONModule
 
-#include <cstddef>        // for size_t
-#include <functional>     // for __base, function
+#include <cstddef>     // for size_t
+#include <functional>  // for __base, function
+#include <inviwo/dataframe/processors/dataframetovector.h>
 #include <memory>         // for unique_ptr, make_unique
 #include <string>         // for operator+, operator==
 #include <tuple>          // for tuple
@@ -110,6 +111,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
     registerProcessor<DataFrameExporter>();
     registerProcessor<DataFrameFloat32Converter>();
     registerProcessor<DataFrameMetaData>();
+    registerProcessor<DataFrameToVector>();
     registerProcessor<ImageToDataFrame>();
     registerProcessor<SyntheticDataFrame>();
     registerProcessor<VolumeToDataFrame>();

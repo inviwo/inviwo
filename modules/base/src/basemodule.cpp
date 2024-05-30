@@ -95,6 +95,9 @@
 #include <modules/base/processors/layerdistancetransform.h>
 #include <modules/base/processors/imagedistancetransform.h>
 #include <modules/base/processors/layerinformation.h>
+#include <modules/base/processors/layersequenceelementselector.h>
+#include <modules/base/processors/layersequencesource.h>
+#include <modules/base/processors/layerseriessource.h>
 #include <modules/base/processors/layersource.h>
 #include <modules/base/processors/layertoimage.h>
 #include <modules/base/processors/layertospatialsampler.h>
@@ -222,6 +225,9 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<LayerContour>();
     registerProcessor<LayerDistanceTransform>();
     registerProcessor<LayerInformation>();
+    registerProcessor<LayerSequenceElementSelector>();
+    registerProcessor<LayerSequenceSource>();
+    registerProcessor<LayerSeriesSource>();
     registerProcessor<LayerSource>();
     registerProcessor<LayerToImage>();
     registerProcessor<LayerToSpatialSampler>();
@@ -287,6 +293,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<InputSelector<MultiDataInport<Volume>, VolumeOutport>>();
     registerProcessor<InputSelector<MultiDataInport<Mesh>, MeshOutport>>();
     registerProcessor<InputSelector<ImageMultiInport, ImageOutport>>();
+    registerProcessor<InputSelector<LayerMultiInport, LayerOutport>>();
 
     registerProperty<BasisProperty>();
     registerProperty<BufferInformationProperty>();
