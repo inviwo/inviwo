@@ -21,20 +21,23 @@ target_sources(inviwo-dome
 
 find_package(glfw3 REQUIRED)
 find_package(sgct CONFIG REQUIRED)
-target_link_libraries(inviwo-dome 
+find_package(tracywrap CONFIG REQUIRED)
+target_link_libraries(inviwo-dome
     PUBLIC
         inviwo::core
         inviwo::module-system
         inviwo::python-helper
-        sgct::sgct
-        glfw
+        inviwo::tracywrap
         inviwo::module::glfw
         inviwo::module::sgct
+        sgct::sgct
+        glfw
         Dbghelp.lib
 )
-if(IVW_ENABLE_TRACY)
-    find_package(Tracy CONFIG REQUIRED)
-    target_link_libraries(inviwo-dome PRIVATE Tracy::TracyClient)
+
+option(IVW_CFG_TRACY_MENORY_PROFILING "Enable tracy memory profiling settings" OFF)
+if(IVW_CFG_TRACY_MENORY_PROFILING)
+    target_compile_definitions(inviwo-dome PUBLIC IVW_CFG_TRACY_MENORY_PROFILING)
 endif()
 
 set_target_properties(inviwo-dome PROPERTIES 
@@ -76,9 +79,10 @@ if (!(Test-Path $config)) {
 }
 
 $domeexe = '$<TARGET_FILE:inviwo-dome>'
+$inviwoexe = '$<TARGET_FILE:inviwo>'
 Write-Host "Nodes: $nodes, Config: $config, Tracy: $tracy"
 Write-Host "Run: $domeexe --config $config"
-Start-Process -FilePath $domeexe -ArgumentList "--config $config"
+Start-Process -FilePath $inviwoexe -ArgumentList "-c --config $config"
 for ( $i = 1; $i -lt $nodes; $i++ ) {
     Write-Host "Run: $domeexe --config $config --local $i --client"
     Start-Process -FilePath $domeexe -ArgumentList "--config $config --local $i --client"

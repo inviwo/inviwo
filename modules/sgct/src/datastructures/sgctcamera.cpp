@@ -62,6 +62,10 @@ void SGCTCamera::updateFrom(const Camera& source) {
     if (auto sc = dynamic_cast<const SGCTCamera*>(&source)) {
         bool modified = false;
 
+        #ifdef IVW_CFG_TRACY_PROFILING
+        modified = true;
+        #endif
+
         if (fovy_ != sc->fovy_) {
             fovy_ = sc->fovy_;
             invalidateProjectionMatrix();

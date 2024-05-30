@@ -8,16 +8,20 @@
 
       "cacheVariables": {
         // Config
-        "IVW_CFG_PROFILING":          { "type": "BOOL", "value": "OFF" },
-        "IVW_CFG_FORCE_ASSERTIONS":   { "type": "BOOL", "value": "OFF" },
-        "IVW_CFG_BUILD_CHANGELOG":    { "type": "BOOL", "value": "OFF" },
+        "IVW_CFG_PROFILING":              { "type": "BOOL", "value": "OFF" },
+        "IVW_CFG_FORCE_ASSERTIONS":       { "type": "BOOL", "value": "OFF" },
+        "IVW_CFG_BUILD_CHANGELOG":        { "type": "BOOL", "value": "OFF" },
 
-        "IVW_MODULE_SGCT":            { "type": "BOOL", "value": "ON" },
+        "IVW_MODULE_SGCT":                { "type": "BOOL", "value": "ON" },
 
-        "IVW_ENABLE_TRACY":           { "type": "BOOL", "value": "OFF" },
+        "IVW_ENABLE_TRACY":               { "type": "BOOL", "value": "ON" },
+        "IVW_CFG_TRACY_PROFILING":        { "type": "BOOL", "value": "ON" },
+        "IVW_CFG_TRACY_MENORY_PROFILING": { "type": "BOOL", "value": "ON" },
 
         // Disable targets not needed for the dome application.
         "IVW_APP_META_CLI":           { "type": "BOOL", "value": "OFF" },
+        "IVW_APP_PYTHON":             { "type": "BOOL", "value": "OFF" },
+        "IVW_APP_MINIMAL_QT":         { "type": "BOOL", "value": "OFF" },
         "IVW_APP_MINIMAL_GLFW":       { "type": "BOOL", "value": "OFF" },
         "IVW_TEST_UNIT_TESTS":        { "type": "BOOL", "value": "OFF" },
         "IVW_TEST_INTEGRATION_TESTS": { "type": "BOOL", "value": "OFF" },
@@ -92,6 +96,42 @@
         "IVW_PACKAGE_HEADERS":        { "type": "BOOL", "value": "ON" },
         "IVW_PACKAGE_EMBED_PYTHON":   { "type": "BOOL", "value": "ON" },
         "IVW_PACKAGE_SELECT_APP":     "inviwo"
+      }
+    },
+    {
+      "name": "dome-mixed-config",
+      "hidden" : true,
+      "inherits" : ["dome-config"],
+
+      "cacheVariables": {
+        // We use a static build to make perf testing in tracy easier
+        "VCPKG_TARGET_TRIPLET":          "x64-windows-static-md",
+        "VCPKG_MANIFEST_FEATURES":       "dome-tracy",
+        "BUILD_SHARED_LIBS":             { "type": "BOOL", "value": "OFF" },
+        "IVW_CFG_MSVC_FORCE_SHARED_CRT": { "type": "BOOL", "value": "ON" },
+
+        // Enable inviwo-dome
+        "IVW_CFG_PROJECT_NAME":       "inviwo-dome-node",
+        "IVW_APP_INVIWO_DOME":        { "type": "BOOL", "value": "ON" },
+
+        // Packaging
+        "IVW_PACKAGE_INSTALLER":      { "type": "BOOL", "value": "OFF" },
+        "IVW_PACKAGE_HEADERS":        { "type": "BOOL", "value": "ON" },
+        "IVW_PACKAGE_EMBED_PYTHON":   { "type": "BOOL", "value": "ON" },
+        "IVW_PACKAGE_SELECT_APP":     "inviwo",
+        "X_VCPKG_APPLOCAL_DEPS_INSTALL":   { "type": "BOOL", "value": "ON" },
+
+        // Diable all qt modules
+        "IVW_ENABLE_QT":              { "type": "BOOL", "value": "ON" },
+        "IVW_APP_QTBASE":             { "type": "BOOL", "value": "ON" },
+        "IVW_APP_INVIWO":             { "type": "BOOL", "value": "ON" },
+
+        // OpenCL Needs to use glfw
+        "IVW_MODULE_GLFW":            { "type": "BOOL", "value": "ON" },
+
+        "IVW_MODULE_OPENCL":          { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_BASECL":          { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_OPENCL_OpenGLSupplier": "InviwoGLFWModule"
       }
     }
   ]

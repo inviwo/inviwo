@@ -75,20 +75,19 @@
 #include <inviwo/tracy/tracy.h>
 #include <inviwo/tracy/tracyopengl.h>
 
-// Uncomment to profile allocation in Tracy
-/*
+#ifdef IVW_CFG_TRACY_MENORY_PROFILING
 void* operator new(size_t count) {
     void* ptr = malloc(count);
-    // TracyAllocS(ptr, count, 10);
-    TRACY_ALLOC(ptr, count);
+    TRACY_ALLOC_S(ptr, count, 10);
+    //TRACY_ALLOC(ptr, count);
     return ptr;
 }
 void operator delete(void* ptr) noexcept {
-    // TracyFreeS(ptr, 10);
-    TRACY_FREE(ptr);
+    TRACY_FREE_S(ptr, 10);
+    //TRACY_FREE(ptr);
     free(ptr);
 }
-*/
+#endif
 
 class Conf {
 public:
@@ -136,15 +135,12 @@ public:
 
         inviwo::initializePythonModules();
 
-        // Initialize all modules non Qt modules
+        // Remove the qt opengl module
         auto filter = [](const inviwo::ModuleContainer& m) {
             return m.identifier().ends_with("qt") || m.identifier().starts_with("qt");
         };
         inviwo::util::registerModulesFiltered(app.getModuleManager(), filter,
                                               app.getSystemSettings().moduleSearchPaths_.get());
-
-        // Uncomment to debug frame timing issues.
-        // app.getModuleByType<inviwo::GLFWModule>()->setWaitForOpenGL(false);
 
         state.createShader();
 
@@ -247,7 +243,7 @@ public:
 
     void drop(const std::vector<std::string_view>& files) {
         if (sgct::Engine::instance().isMaster() && !files.empty()) {
-            auto path = inviwo::filesystem::cleanupPath(files[0]);
+            auto path = std::filesystem::canonical(files[0]);
             app.getWorkspaceManager()->clear();
             app.getWorkspaceManager()->load(path);
             setCamerasToSGCT(*app.getProcessorNetwork());
