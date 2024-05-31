@@ -51,7 +51,7 @@ class IVW_MODULE_PYTHON3_API PythonScript {
 
 public:
     PythonScript(std::string_view source = "", std::string_view name = "");
-    
+
     static PythonScript fromPath(const std::filesystem::path& path);
 
     /**

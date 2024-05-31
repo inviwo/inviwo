@@ -46,7 +46,7 @@ public:
     virtual ~PythonLogger() = default;
 
     virtual void onPythonExecutionOutput(const std::string& msg,
-                                        PythonOutputType outputType) override;
+                                         PythonOutputType outputType) override;
 };
 
 }  // namespace inviwo
