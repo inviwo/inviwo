@@ -102,9 +102,8 @@ bool ProcessorDragHelper::eventFilter(QObject*, QEvent* event) {
             return move(e, mime);
         }
     } else if (event->type() == QEvent::GraphicsSceneDragLeave) {
-        auto e = static_cast<QGraphicsSceneDragDropEvent*>(event);
-        if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
-            return leave(e, mime);
+        if (auto e = dynamic_cast<QGraphicsSceneDragDropEvent*>(event)) {
+            return leave(e);
         }
     } else if (event->type() == QEvent::GraphicsSceneDrop) {
         auto e = static_cast<QGraphicsSceneDragDropEvent*>(event);
@@ -274,7 +273,7 @@ void ProcessorDragHelper::updateAutoLinks(QGraphicsSceneDragDropEvent* e) {
     std::swap(links, autoLinks_);
 }
 
-bool ProcessorDragHelper::leave(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData*) {
+bool ProcessorDragHelper::leave(QGraphicsSceneDragDropEvent* e) {
     e->accept();
     editor_.getOverlay().clear();
     resetConnection();

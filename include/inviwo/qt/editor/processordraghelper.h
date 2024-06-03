@@ -72,7 +72,7 @@ public:
 
     bool enter(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime);
     bool move(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime);
-    bool leave(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime);
+    bool leave(QGraphicsSceneDragDropEvent* e);
     bool drop(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime);
 
 private:
