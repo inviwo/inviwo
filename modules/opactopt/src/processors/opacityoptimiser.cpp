@@ -130,6 +130,7 @@ OpacityOptimiser::OpacityOptimiser()
             flr_ = std::make_unique<ApproximateOpacityOptimisationRenderer>(
                 p, &camera_, importanceSumCoefficients_, opticalDepthCoefficients_,
                 gaussianKernelRadius_, gaussianKernelSigma_);
+            smoothing_.propertyModified();
         } else {
             removeProperty(approximationProperties_);
             flr_ = std::make_unique<DecoupledOpacityOptimisationRenderer>(&camera_);
@@ -191,7 +192,6 @@ OpacityOptimiser::OpacityOptimiser()
             }
         }
     });
-    smoothing_.propertyModified();
 
     gaussianKernelRadius_.onChange([this]() {
         if (opacityOptimisationRenderer_ == 0) {
