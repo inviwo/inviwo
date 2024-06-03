@@ -116,6 +116,23 @@ MeshMappingVolume::MeshMappingVolume()
     meshInport_.onChange([this]() { component_.setReadOnly(!meshInport_.hasData()); });
 }
 
+double triInterp(double (&c)[8], vec3 voxelpos) {
+    // interpolate along x direction
+    double cx[4];
+    cx[0] = (1 - voxelpos.x) * c[0] + voxelpos.x * c[4];
+    cx[1] = (1 - voxelpos.x) * c[1] + voxelpos.x * c[5];
+    cx[2] = (1 - voxelpos.x) * c[2] + voxelpos.x * c[6];
+    cx[3] = (1 - voxelpos.x) * c[3] + voxelpos.x * c[7];
+
+    // interpolate along y direction
+    double cy[2];
+    cy[0] = (1 - voxelpos.y) * cx[0] + voxelpos.y * cx[2];
+    cy[1] = (1 - voxelpos.y) * cx[1] + voxelpos.y * cx[3];
+
+    // interpolate along z direction
+    return (1 - voxelpos.z) * cy[0] + voxelpos.z * cy[1];
+}
+
 void MeshMappingVolume::process() {
     if (enabled_.get() && meshInport_.hasData() &&
         (meshInport_.getData()->getNumberOfBuffers() > 0) && volumeInport_.hasData()) {
@@ -128,26 +145,42 @@ void MeshMappingVolume::process() {
 
         // fill color vector);
         std::vector<vec4> colorsOut(srcBuffer->getSize());
+        bool accessOutsideBounds = false;
 
-        srcBuffer->dispatch<void>([comp = component_.getSelectedIndex(),
-                                   range = useCustomDataRange_.get() ? customDataRange_.get()
-                                                                     : dataRange_.get(),
-                                   dst = &colorsOut, tf = &tf_.get(), volume,
-                                   volumeRAM](auto pBuffer) {
-            auto& vec = pBuffer->getDataContainer();
-            std::transform(vec.begin(), vec.end(), dst->begin(), [&](auto& v) {
-                glm::vec4 worldpos = {util::glmcomp(v, 0), util::glmcomp(v, 1), util::glmcomp(v, 2),
-                                      1.0};
-                auto texpos =
-                    size3_t(volume->getCoordinateTransformer().getWorldToDataMatrix() * worldpos);
-                auto scalar = glm::all(glm::greaterThanEqual(texpos, glm::zero<size3_t>())) &&
-                                      glm::all(glm::lessThan(texpos, volume->getDimensions()))
-                                  ? volumeRAM->getAsDouble(texpos)
-                                  : 0.0;
-                double normalized = (static_cast<double>(scalar) - range.x) / (range.y - range.x);
-                return tf->sample(normalized);
+        srcBuffer->dispatch<void>(
+            [comp = component_.getSelectedIndex(),
+             range = useCustomDataRange_.get() ? customDataRange_.get() : dataRange_.get(),
+             dst = &colorsOut, tf = &tf_.get(), volume, volumeRAM,
+             &accessOutsideBounds](auto pBuffer) {
+                auto& vec = pBuffer->getDataContainer();
+                std::transform(vec.begin(), vec.end(), dst->begin(), [&](auto& v) {
+                    glm::vec4 worldpos = {util::glmcomp(v, 0), util::glmcomp(v, 1),
+                                          util::glmcomp(v, 2), 1.0};
+                    const auto texpos =
+                        vec3(volume->getCoordinateTransformer().getWorldToDataMatrix() * worldpos);
+
+                    // trilinear interpolation
+                    double c[8];
+                    for (int i = 0; i < 8; i++) {
+                        size3_t samplepos = size3_t(texpos) + size3_t((i >> 2) & 1, (i >> 1) & 1, i & 1);
+                        if (glm::any(glm::lessThan(samplepos, glm::zero<size3_t>())) ||
+                            glm::any(glm::greaterThanEqual(samplepos, volume->getDimensions())))
+                            accessOutsideBounds = true;
+
+                        c[i] = volumeRAM->getAsDouble(
+                            glm::clamp(samplepos, glm::zero<size3_t>(), volume->getDimensions() - size3_t(1)));
+                    }
+                    vec3 dummy;
+                    double res = triInterp(c, glm::modf(texpos, dummy));
+                    double normalized = (static_cast<double>(res) - range.x) / (range.y - range.x);
+                    return tf->sample(normalized);
+                });
             });
-        });
+        if (accessOutsideBounds)
+            LogProcessorWarn(
+                "The volume is being sampled out of bounds one or more times. The mesh and "
+                "volume "
+                "may not be aligned.");
 
         // create a new mesh containing all buffers of the input mesh
         // The first color buffer, if existing, is replaced with the mapped colors.
