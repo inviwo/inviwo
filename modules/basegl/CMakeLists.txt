@@ -156,7 +156,8 @@ set(SOURCE_FILES
     src/processors/drawpoints.cpp
     src/processors/embeddedvolumeslice.cpp
     src/processors/entryexitpointsprocessor.cpp
-    src/processors/firstivwprocessor.cpp
+    src/processors/firstivwprocessor.cpp    
+    src/processors/gaussianvolumeraycaster.cpp
     src/processors/geometryentryexitpoints.cpp
     src/processors/heightfieldprocessor.cpp
     src/processors/imageprocessing/columnrowlayout.cpp
