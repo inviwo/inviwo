@@ -48,6 +48,7 @@
 #include <modules/basegl/processors/embeddedvolumeslice.h>
 #include <modules/basegl/processors/entryexitpointsprocessor.h>
 #include <modules/basegl/processors/firstivwprocessor.h>
+#include <modules/basegl/processors/gaussianvolumeraycaster.h>
 #include <modules/basegl/processors/geometryentryexitpoints.h>
 #include <modules/basegl/processors/heightfieldprocessor.h>
 #include <modules/basegl/processors/imageprocessing/columnrowlayout.h>
@@ -149,6 +150,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<EmbeddedVolumeSlice>();
     registerProcessor<EntryExitPoints>();
     registerProcessor<FirstIvwProcessor>();
+    registerProcessor<GaussianVolumeRaycaster>();
     registerProcessor<GeometryEntryExitPoints>();
     registerProcessor<HeightFieldProcessor>();
     registerProcessor<ISORaycaster>();
