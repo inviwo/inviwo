@@ -34,6 +34,7 @@
 #include <inviwo/sgct/sgctutil.h>
 #include <inviwo/sgct/io/communication.h>
 #include <inviwo/sgct/networksyncmanager.h>
+#include <inviwo/sgct/sgctsettings.h>
 
 #include <thread>
 #include <atomic>
@@ -42,12 +43,20 @@
 
 namespace inviwo {
 
-bool SGCTModule::startServer = true;
-
 class SGCTWrapper {
 public:
-    SGCTWrapper(ProcessorNetwork& net, std::string configFile)
-        : syncServer_{net}, terminate_{false}, runner_{&SGCTWrapper::run, this, configFile} {}
+    SGCTWrapper(ProcessorNetwork& net, std::string configFile, SGCTSettings* settings)
+        : syncServer_{net, settings}
+        , terminate_{false}
+        , runner_{&SGCTWrapper::run, this, configFile} {
+
+        if (settings) {
+            showSGCTStatisticsOverlayCallbackHandle_ =
+                settings->showSGCTStatisticsOverlay.onChangeScoped([this, settings]() {
+                    syncServer_.showStats(settings->showSGCTStatisticsOverlay.get());
+                });
+        }
+    }
 
     ~SGCTWrapper() {
         terminate_ = true;
@@ -98,20 +107,23 @@ private:
     NetworkSyncServer syncServer_;
     std::atomic<bool> terminate_;
     std::thread runner_;
+    std::shared_ptr<std::function<void()>> showSGCTStatisticsOverlayCallbackHandle_;
 };
 
 SGCTModule::SGCTModule(InviwoApplication* app)
     : InviwoModule(app, "sgct")
+    , settings{}
     , configFileArg_{"",    "config", "Path to the SGCT configuration file to use",
                      false, "path",   "SGCT json config file"}
     , argHolder_{app, configFileArg_,
                  [this, app]() {
-                     sgctWrapper_ = std::make_unique<SGCTWrapper>(*app->getProcessorNetwork(),
-                                                                  configFileArg_.getValue());
+                     sgctWrapper_ = std::make_unique<SGCTWrapper>(
+                         *app->getProcessorNetwork(), configFileArg_.getValue(), &settings);
                  },
                  10} {
 
     registerCamera<SGCTCamera>(SGCTCamera::classIdentifier);
+    registerSettings(&settings);
 }
 
 SGCTModule::~SGCTModule() {}

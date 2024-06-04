@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,28 +29,19 @@
 #pragma once
 
 #include <inviwo/sgct/sgctmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/commandlineparser.h>
 
-#include <inviwo/sgct/sgctsettings.h>
-
-#include <memory>
+#include <inviwo/core/util/settings/settings.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
-class SGCTWrapper;
-
-class IVW_MODULE_SGCT_API SGCTModule : public InviwoModule {
+class IVW_MODULE_SGCT_API SGCTSettings : public Settings {
 public:
-    SGCTModule(InviwoApplication* app);
-    virtual ~SGCTModule();
+    SGCTSettings();
+    virtual ~SGCTSettings() = default;
 
-    SGCTSettings settings;
-
-private:
-    std::unique_ptr<SGCTWrapper> sgctWrapper_;
-    TCLAP::ValueArg<std::string> configFileArg_;
-    CommandLineArgHolder argHolder_;
+    BoolProperty showSGCTStatisticsOverlay;
+    BoolProperty logModifiedProperties;
 };
 
 }  // namespace inviwo

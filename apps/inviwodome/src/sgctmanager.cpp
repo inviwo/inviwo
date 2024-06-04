@@ -96,8 +96,6 @@ void main() {
 }
 )";
 
-#include <inviwo/core/network/networkvisitor.h>
-
 }  // namespace
 
 SGCTManager::SGCTManager(InviwoApplication& app) : app{app} {

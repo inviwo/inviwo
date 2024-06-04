@@ -55,6 +55,7 @@
 #include <inviwo/sgct/networksyncmanager.h>
 #include <inviwo/sgct/sgctmodule.h>
 #include <inviwo/sgct/datastructures/sgctcamera.h>
+#include <inviwo/sgct/sgctsettings.h>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -79,24 +80,23 @@
 void* operator new(size_t count) {
     void* ptr = malloc(count);
     TRACY_ALLOC_S(ptr, count, 10);
-    //TRACY_ALLOC(ptr, count);
+    // TRACY_ALLOC(ptr, count);
     return ptr;
 }
 void operator delete(void* ptr) noexcept {
     TRACY_FREE_S(ptr, 10);
-    //TRACY_FREE(ptr);
+    // TRACY_FREE(ptr);
     free(ptr);
 }
 #endif
 
-class Conf {
-public:
-    Conf(inviwo::SGCTManager& state, inviwo::InviwoApplication& app)
-        : app{app}, state{state}, drawBuffers{} {
+struct SGCTCallbacks {
+    SGCTCallbacks(inviwo::SGCTManager& aManager, inviwo::InviwoApplication& app)
+        : app{app}, manager{aManager}, drawBuffers{} {
 
         {
             syncServer.emplace(*app.getProcessorNetwork());
-            state.onStatChange = [this](bool show) {
+            manager.onStatChange = [this](bool show) {
                 syncServer->showStats(show);
                 sgct::Engine::instance().setStatsGraphVisibility(show);
             };
@@ -110,7 +110,7 @@ public:
     }
 
     inviwo::InviwoApplication& app;
-    inviwo::SGCTManager& state;
+    inviwo::SGCTManager& manager;
     std::vector<GLenum> drawBuffers;
 
     std::optional<inviwo::NetworkSyncServer> syncServer;
@@ -131,7 +131,6 @@ public:
     void initOpenGL(GLFWwindow* shared) {
         // Tell GLFW that we already have a shared context;
         inviwo::CanvasGLFW::provideExternalContext(shared);
-        inviwo::SGCTModule::startServer = false;
 
         inviwo::initializePythonModules();
 
@@ -142,11 +141,15 @@ public:
         inviwo::util::registerModulesFiltered(app.getModuleManager(), filter,
                                               app.getSystemSettings().moduleSearchPaths_.get());
 
-        state.createShader();
+        if (syncServer) {
+            syncServer->setSettings(app.getSettingsByType<inviwo::SGCTSettings>());
+        }
+
+        manager.createShader();
 
         if (sgct::Engine::instance().isMaster()) {
             for (auto& win : sgct::Engine::instance().windows()) {
-                state.setupInteraction(win->windowHandle());
+                manager.setupInteraction(win->windowHandle());
             }
         }
         GLint maxDrawBuffers = 8;
@@ -192,7 +195,7 @@ public:
         TRACY_ZONE_SCOPED_NC("Draw", 0xAAAA00);
         TRACY_GPU_ZONE_C("Draw", 0xAAAA00);
 
-        // Save State that SGCT needs
+        // Save State that SGCT needs since inviwo might mess with this.
         inviwo::utilgl::Viewport view;
         GLint sgctFBO;
         {
@@ -213,7 +216,7 @@ public:
         {
             TRACY_ZONE_SCOPED_NC("Eval", 0xAA66000);
             TRACY_GPU_ZONE_C("Eval", 0xAA66000);
-            state.evaluate(renderData);
+            manager.evaluate(renderData);
         }
         // Restore state
         {
@@ -227,8 +230,8 @@ public:
             glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
         }
 
-        // Copy inviwo output
-        state.copy();
+        // Copy inviwo output to sgct
+        manager.copy();
     };
 
     void postDraw() {
@@ -337,12 +340,12 @@ int main(int argc, char** argv) {
         }
 
         inviwo::SGCTManager state(app);
-        Conf conf(state, app);
+        SGCTCallbacks conf(state, app);
 
         inviwo::util::OnScopeExit clearNetwork{[&app]() { app.getWorkspaceManager()->clear(); }};
 
-        // Keep the network looked to prevent evaluating it all the time, only unlock it in the draw
-        // call
+        // Keep the network locked to prevent evaluating it all the time, only unlock it in the draw
+        // call in SGCTManager::evaluate
         app.getProcessorNetwork()->lock();
 
         sgct::Engine::Callbacks callbacks;

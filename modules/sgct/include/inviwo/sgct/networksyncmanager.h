@@ -34,6 +34,8 @@
 #include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/sgct/io/communication.h>
 
+#include <inviwo/sgct/sgctsettings.h>
+
 #include <iostream>
 #include <vector>
 #include <functional>
@@ -48,7 +50,7 @@ class WorkspaceManager;
 class IVW_MODULE_SGCT_API NetworkSyncServer : public ProcessorNetworkObserver,
                                               public ProcessorObserver {
 public:
-    NetworkSyncServer(ProcessorNetwork& net);
+    NetworkSyncServer(ProcessorNetwork& net, const SGCTSettings* settings = nullptr);
 
     const std::vector<SgctCommand>& getCommands();
     void clearCommands();
@@ -56,6 +58,8 @@ public:
     std::vector<std::byte> getEncodedCommandsAndClear();
 
     void showStats(bool show);
+
+    void setSettings(const SGCTSettings* settings) { settings_ = settings; }
 
 private:
     virtual void onProcessorNetworkDidAddProcessor(Processor*) override;
@@ -75,6 +79,7 @@ private:
     std::mutex commandsMutex_;
     std::vector<SgctCommand> commands_;
     ProcessorNetwork& net_;
+    const SGCTSettings* settings_;
 };
 
 class IVW_MODULE_SGCT_API NetworkSyncClient {

@@ -6,6 +6,7 @@ set(HEADER_FILES
     include/inviwo/sgct/networksyncmanager.h
     include/inviwo/sgct/sgctmodule.h
     include/inviwo/sgct/sgctmoduledefine.h
+    include/inviwo/sgct/sgctsettings.h
     include/inviwo/sgct/sgctutil.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -15,6 +16,7 @@ set(SOURCE_FILES
     src/io/communication.cpp
     src/networksyncmanager.cpp
     src/sgctmodule.cpp
+    src/sgctsettings.cpp
     src/sgctutil.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
