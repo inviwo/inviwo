@@ -11,6 +11,7 @@ set(HEADER_FILES
     include/modules/plottinggl/plottingglmoduledefine.h
     include/modules/plottinggl/processors/axisrenderprocessor.h
     include/modules/plottinggl/processors/colorscalelegend.h
+    include/modules/plottinggl/processors/continuoushistogram.h
     include/modules/plottinggl/processors/imageplotprocessor.h
     include/modules/plottinggl/processors/layeraxis.h
     include/modules/plottinggl/processors/meshaxis.h
@@ -36,6 +37,7 @@ set(SOURCE_FILES
     src/plottingglmodule.cpp
     src/processors/axisrenderprocessor.cpp
     src/processors/colorscalelegend.cpp
+    src/processors/continuoushistogram.cpp
     src/processors/imageplotprocessor.cpp
     src/processors/layeraxis.cpp
     src/processors/meshaxis.cpp
@@ -54,19 +56,21 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add shaders
 set(SHADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/isovaluetri.geom
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/isovaluetri.vert
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/legend.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_common.glsl
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_lines.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_lines.geom
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_lines.vert
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/persistencediagram.vert
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/persistencediagramlines.vert
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/plotting/common.glsl
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/scatterplot.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/scatterplot.geom
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/scatterplot.vert
+    glsl/continuoushistogram.frag
+    glsl/continuoushistogram.vert
+    glsl/isovaluetri.geom
+    glsl/isovaluetri.vert
+    glsl/legend.frag
+    glsl/pcp_common.glsl
+    glsl/pcp_lines.frag
+    glsl/pcp_lines.geom
+    glsl/pcp_lines.vert
+    glsl/persistencediagram.vert
+    glsl/persistencediagramlines.vert
+    glsl/plotting/common.glsl
+    glsl/scatterplot.frag
+    glsl/scatterplot.geom
+    glsl/scatterplot.vert
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
