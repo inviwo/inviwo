@@ -39,6 +39,7 @@
 #include <modules/plottinggl/plotters/scatterplotgl.h>                         // for Scatt...
 #include <modules/plottinggl/processors/axisrenderprocessor.h>                 // for AxisR...
 #include <modules/plottinggl/processors/colorscalelegend.h>                    // for Color...
+#include <modules/plottinggl/processors/continuoushistogram.h>
 #include <modules/plottinggl/processors/imageplotprocessor.h>                  // for Image...
 #include <modules/plottinggl/processors/layeraxis.h>
 #include <modules/plottinggl/processors/meshaxis.h>
@@ -62,6 +63,7 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
 
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
+    registerProcessor<ContinuousHistogram>();
     registerProcessor<plot::AxisRenderProcessor>();
     registerProcessor<plot::ColorScaleLegend>();
     registerProcessor<plot::ImagePlotProcessor>();
