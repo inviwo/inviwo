@@ -27,63 +27,34 @@
  *
  *********************************************************************************/
 
-#define PI      3.141592653
-#define TWOPI   6.283185307
+#define PI 3.141592653
+#define TWOPI 6.283185307
 
-void projectImportanceSum(uint idx) {
-    abufferPixel p = uncompressPixelData(readPixelStorage(idx - 1));
-    float importanceSq = p.color.a * p.color.a;
+void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float val) {
     int k = 0;
-
-    for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
-        float val = 0.0;
-
+    for (int i = 0; i < N; i++) {
+        float projVal = 0.0;
         if (i == 0) {
-            val += importanceSq;
+            projVal = val;
         } else if (i % 2 == 0) {
-            val = importanceSq * cos(TWOPI * k * p.depth);
+            projVal = val * cos(TWOPI * k * depth);
         } else {
-            val = importanceSq * sin(TWOPI * k * p.depth);
+            projVal = val * sin(TWOPI * k * depth);
         }
         if (i % 2 == 0) k++;
 
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-        float currentVal = imageLoad(importanceSumCoeffs[0], coord).x;
-        imageStore(importanceSumCoeffs[0], coord, vec4(currentVal + val));
+        float currVal = imageLoad(coeffTex, coord).x;
+        imageStore(coeffTex, coord, vec4(currVal + projVal));
     }
 }
 
-void projectOpticalDepth(uint idx) {
-    abufferPixel p = uncompressPixelData(readPixelStorage(idx - 1));
-    float log1ma = log(1 - p.color.a);
-    int k = 0;
-
-    for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++) {
-        float val = 0.0;
-
-        if (i == 0) {
-            val += -log1ma;
-        } else if (i % 2 == 0) {
-            val = -log1ma * cos(TWOPI * k * p.depth); 
-        } else {
-            val = -log1ma * sin(TWOPI * k * p.depth);
-        }
-        if (i % 2 == 0) k++;
-
-        ivec3 coord = ivec3(gl_FragCoord.xy, i);
-        float currentVal = imageLoad(opticalDepthCoeffs, coord).x;
-        imageStore(opticalDepthCoeffs, coord, vec4(currentVal + val));
-    }
-}
-
-float approxImportanceSum(float depth) {
+float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth) {
     float sum = 0.0;
     int k = 0;
-
-    for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
+    for (int i = 0; i < N; i++) {
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-
-        float coeff = imageLoad(importanceSumCoeffs[0], coord).x;
+        float coeff = imageLoad(coeffTex, coord).x;
         if (i == 0) {
             sum += coeff * depth;
         } else if (i % 2 == 0) {
@@ -97,23 +68,6 @@ float approxImportanceSum(float depth) {
     return sum;
 }
 
-float approxOpticalDepth(float depth) {
-    float sum = 0.0;
-    int k = 0;
-
-    for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++) {
-        ivec3 coord = ivec3(gl_FragCoord.xy, i);
-
-        float coeff = imageLoad(opticalDepthCoeffs, coord).x;
-        if (i == 0) {
-            sum += coeff * depth;
-        } else if (i % 2 == 0) {
-            sum += (coeff / (PI * k)) * sin(TWOPI * k * depth);
-        } else {
-            sum += (coeff / (PI * k)) * (1 - cos(TWOPI * k * depth));
-        }
-        if (i % 2 == 0) k++;
-    }
-
-    return sum;
+float total(layout(size1x32) image2DArray coeffTex, int N) {
+    return imageLoad(coeffTex, ivec3(gl_FragCoord.xy, 0)).x;
 }

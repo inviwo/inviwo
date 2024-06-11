@@ -46,7 +46,7 @@ layout(std430, binding = 8) buffer gaussianKernelBuffer {
     float kernel[];
 };
 
-coherent uniform layout(size1x32) image2DArray importanceSumCoeffs[2];
+uniform layout(size1x32) image2DArray importanceSumCoeffs[2];
 
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;
