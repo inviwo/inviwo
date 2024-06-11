@@ -123,8 +123,7 @@ void main() {
                             + q * (gtot - Gd))),
                             0.0, 0.9999); // set pixel alpha using opacity optimisation
             pixel.color.a = alpha;
-//            writePixelStorage(idx - 1, compressPixelData(pixel)); // replace importance g_i in alpha channel with actual alpha
-
+            writePixelStorage(idx - 1, compressPixelData(pixel)); 
             project(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, pixel.depth, -log(1 - alpha));
             idx = pixel.previous;
         }
@@ -138,9 +137,9 @@ void main() {
         while (idx != 0) {
             abufferPixel pixel = uncompressPixelData(readPixelStorage(idx - 1));
             vec4 c = pixel.color;
-            float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, pixel.depth) - 0.5 * log(1 - c.a); // correct for optical depth approximation at discontinuity
+            float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, pixel.depth); 
 
-            float weight = c.a / (1 - c.a) * exp(-taud);
+            float weight = c.a / sqrt(1 - c.a) * exp(-taud); // correct for optical depth approximation at discontinuity
             numerator += c.rgb * weight;
             denominator += weight;
             idx = pixel.previous;
