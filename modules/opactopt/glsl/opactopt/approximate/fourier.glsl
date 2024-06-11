@@ -31,17 +31,31 @@
 #define TWOPI 6.283185307
 
 void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float val) {
-    int k = 0;
+    float costheta = cos(TWOPI * depth);
+    float sintheta = sin(TWOPI * depth);
+    float coskm1theta = 1.0;
+    float sinkm1theta = 0.0;
+    float cosktheta = 0.0;
+    float sinktheta = 0.0;
+
     for (int i = 0; i < N; i++) {
         float projVal = 0.0;
         if (i == 0) {
             projVal = val;
         } else if (i % 2 == 0) {
-            projVal = val * cos(TWOPI * k * depth);
+            cosktheta = coskm1theta * costheta - sinkm1theta * sintheta;
+            projVal = val * cosktheta;
         } else {
-            projVal = val * sin(TWOPI * k * depth);
+            sinktheta = sinkm1theta * costheta + coskm1theta * sintheta;
+            projVal = val * sinktheta;
         }
-        if (i % 2 == 0) k++;
+
+        if (i % 2 == 0) {
+            if (i != 0) {
+                coskm1theta = cosktheta;
+                sinkm1theta = sinktheta;
+            }
+        }
 
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
         float currVal = imageLoad(coeffTex, coord).x;
