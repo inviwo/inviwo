@@ -50,8 +50,8 @@
 
 uniform vec2 reciprocalDimensions;
 
-coherent uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-coherent uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(size1x32) image2DArray opticalDepthCoeffs;
 uniform sampler3D importanceVolume;
 uniform CameraParameters camera;
 uniform VolumeParameters importanceVolumeParameters;
@@ -107,7 +107,7 @@ void main() {
                 data.z = texture(importanceVolume, texPos.xyz).x; // sample importance from volume
                 writePixelStorage(idx - 1, data);
             #endif
-            projectImportanceSum(idx);
+            project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, data.y, data.z * data.z);
             memoryBarrierImage();
             idx = floatBitsToUint(data.x);
         }
