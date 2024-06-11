@@ -59,8 +59,8 @@ uniform float q;
 uniform float r;
 uniform float lambda;
 
-coherent uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-coherent uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(size1x32) image2DArray opticalDepthCoeffs;
 
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;
@@ -108,23 +108,24 @@ void main() {
         uint idx = pixelIdx;
 
         // Optimise opacities and project optical depth coefficients
-        float totalImportanceSum = imageLoad(importanceSumCoeffs[0], ivec3(coords, 0)).x;
+        float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
         idx = pixelIdx;
         while (idx != 0) {
             vec4 data = readPixelStorage(idx - 1);
             abufferPixel pixel = uncompressPixelData(data);
             vec4 c = pixel.color;
-            float importanceSq = c.a * c.a;
-            float importanceAtDepth = approxImportanceSum(pixel.depth) + 0.5 * importanceSq; // correct for importance sum approximation at discontinuity
+            float gi = clamp(c.a, 0.001, 0.999);
+            float gisq = gi * gi;
+            float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, pixel.depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
             float alpha = clamp(1 /
-                            (1 + pow(1 - c.a, 2 * lambda)
-                            * (r * (importanceAtDepth - importanceSq)
-                            + q * (totalImportanceSum - importanceAtDepth))),
+                            (1 + pow(1 - gi, 2 * lambda)
+                            * (r * (Gd - gisq)
+                            + q * (gtot - Gd))),
                             0.0, 0.9999); // set pixel alpha using opacity optimisation
             pixel.color.a = alpha;
-            writePixelStorage(idx - 1, compressPixelData(pixel)); // replace importance g_i in alpha channel with actual alpha
+//            writePixelStorage(idx - 1, compressPixelData(pixel)); // replace importance g_i in alpha channel with actual alpha
 
-            projectOpticalDepth(idx);
+            project(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, pixel.depth, -log(1 - alpha));
             idx = pixel.previous;
         }
 
@@ -132,14 +133,14 @@ void main() {
         vec3 numerator = vec3(0);
         float denominator = 0.0;
         idx = pixelIdx;
-        float totalOpticalDepth = imageLoad(opticalDepthCoeffs, ivec3(coords, 0)).x;
+        float tauall = total(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS);
 
         while (idx != 0) {
             abufferPixel pixel = uncompressPixelData(readPixelStorage(idx - 1));
             vec4 c = pixel.color;
-            float opticalDepth = approxOpticalDepth(pixel.depth) - 0.5 * log(1 - c.a); // correct for optical depth approximation at discontinuity
+            float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, pixel.depth) - 0.5 * log(1 - c.a); // correct for optical depth approximation at discontinuity
 
-            float weight = c.a / (1 - c.a) * exp(-opticalDepth);
+            float weight = c.a / (1 - c.a) * exp(-taud);
             numerator += c.rgb * weight;
             denominator += weight;
             idx = pixel.previous;
@@ -147,7 +148,7 @@ void main() {
 
         vec4 color = vec4(0);
         color.rgb = numerator / denominator;
-        color.a = 1.0 - exp(-totalOpticalDepth);
+        color.a = 1.0 - exp(-tauall);
 
         FragData0 = color;
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
