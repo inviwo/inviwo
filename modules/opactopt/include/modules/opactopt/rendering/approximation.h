@@ -53,10 +53,10 @@ struct IVW_MODULE_OPACTOPT_API ApproximationProperties {
 };
 
 const std::map<std::string, const ApproximationProperties> approximations{
-    {"fourier", {"Fourier", "FOURIER", "opactopt/approximate/fourier.glsl", 1, 50}},
+    {"fourier", {"Fourier", "FOURIER", "opactopt/approximate/fourier.glsl", 1, 21}},
     {"legendre", {"Legendre", "LEGENDRE", "opactopt/approximate/legendre.glsl", 1, 5}},
     {"chebyshev", {"Chebyshev", "CHEBYSHEV", "opactopt/approximate/chebyshev.glsl", 1, 5}},
-    {"piecewise", {"Piecewise", "PIECEWISE", "opactopt/approximate/piecewise.glsl", 1, 12}}};
+    {"piecewise", {"Piecewise", "PIECEWISE", "opactopt/approximate/piecewise.glsl", 1, 20}}};
 
 }  // namespace Approximations
 
