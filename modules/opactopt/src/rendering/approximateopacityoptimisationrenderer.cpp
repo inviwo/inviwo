@@ -89,6 +89,7 @@ void ApproximateOpacityOptimisationRenderer::prePass(const size2_t& screenSize) 
     importanceSumCoeffs_[0].bind();
     glBindImageTexture(importanceSumUnitMain_->getUnitNumber(), importanceSumCoeffs_[0].getID(), 0,
                        true, 0, GL_READ_WRITE, GL_R32F);
+    clearaoo_.setUniform("importanceSumCoeffs[0]", importanceSumUnitMain_->getUnitNumber());
 
     if (smoothing) {
         importanceSumUnitSmooth_ = &textureUnits_.emplace_back();
@@ -96,6 +97,7 @@ void ApproximateOpacityOptimisationRenderer::prePass(const size2_t& screenSize) 
         importanceSumCoeffs_[1].bind();
         glBindImageTexture(importanceSumUnitSmooth_->getUnitNumber(),
                            importanceSumCoeffs_[1].getID(), 0, true, 0, GL_READ_WRITE, GL_R32F);
+        clearaoo_.setUniform("importanceSumCoeffs[1]", importanceSumUnitSmooth_->getUnitNumber());
     }
 
     opticalDepthUnit_ = &textureUnits_.emplace_back();
@@ -237,6 +239,7 @@ void ApproximateOpacityOptimisationRenderer::buildShaders(bool hasBackground) {
 
     for (auto& fs : {pfs, shfs, svfs, bfs, cfs}) {
         fs->clearShaderExtensions();
+        fs->clearShaderDefines();
         fs->addShaderExtension("GL_NV_gpu_shader5", true);
         fs->addShaderExtension("GL_EXT_shader_image_load_store", true);
         fs->addShaderExtension("GL_NV_shader_buffer_load", true);

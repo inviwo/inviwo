@@ -54,9 +54,12 @@ uniform sampler2D bgDepth;
 #endif  // BACKGROUND_AVAILABLE
 uniform vec2 reciprocalDimensions;
 
+#ifdef USE_IMPORTANCE_VOLUME
 // Optional importance volume
 uniform sampler3D importanceVolume;
 uniform VolumeParameters importanceVolumeParameters;
+#endif
+
 uniform CameraParameters camera;
 
 // Opacity optimisation settings
@@ -110,7 +113,7 @@ void main() {
         // Calculate total importance sum
         uint idx = pixelIdx;
         int counter = 0;
-        float totalImportanceSum = 0.0;
+        float gall = 0.0;
         while (idx != 0 && counter < ABUFFER_SIZE) {
             vec4 data = readPixelStorage(idx - 1);
             #ifdef USE_IMPORTANCE_VOLUME
@@ -124,9 +127,9 @@ void main() {
 
                 writePixelStorage(idx - 1, data);
             #endif
-            float importance = data.z;
+            float gi = clamp(data.z, 0.001, 0.999);
             if (data.y >= 0 && data.y <= backgroundDepth)
-                totalImportanceSum += importance * importance;
+                gall += gi * gi;
             idx = floatBitsToUint(readPixelStorage(idx - 1).x);
             counter++;
         }
@@ -136,19 +139,24 @@ void main() {
         uint lastPtr = 0;
         vec4 nextFragment = selectionSortNext(pixelIdx, 0.0, lastPtr);
         abufferPixel unpackedFragment = uncompressPixelData(nextFragment);
-        float currentImportanceSum = 0.0;
+        float gf = 0.0;
         
         while (unpackedFragment.depth >= 0 && unpackedFragment.depth <= backgroundDepth) {
             vec4 c = unpackedFragment.color;
-            currentImportanceSum += c.a * c.a;
-            c.a = 1 / (1 + pow(1 - c.a, 2 * lambda) * (r * (currentImportanceSum - c.a * c.a) + q * (totalImportanceSum - currentImportanceSum))); // set alpha by opacity optimisation
-            color.rgb = color.rgb + (1 - color.a) * c.a * c.rgb;
-            color.a = color.a + (1 - color.a) * c.a;
+
+            float gi = clamp(c.a, 0.001, 0.999);
+            float gb = gall - gi * gi - gf;
+
+            c.a = 1 / (1 + pow(1 - gi, 2 * lambda) * (r * gf + q * gb)); // set alpha by opacity optimisation
+            c.a = clamp(c.a, 0.0, 1.0);
+            gf += gi * gi;
+
+            color.rgb += (1 - color.a) * c.a * c.rgb;
+            color.a += (1 - color.a) * c.a;
 
             nextFragment = selectionSortNext(pixelIdx, unpackedFragment.depth, lastPtr);
             unpackedFragment = uncompressPixelData(nextFragment);
         }
-
         FragData0 = vec4(color);
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
 #endif
