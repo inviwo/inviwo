@@ -43,7 +43,7 @@ std::string InteractionEvent::modifierNames() const {
     return ss.str();
 }
 
-void InteractionEvent::setToolTip(const std::string& tooltip) const {
+void InteractionEvent::setToolTip(std::string_view tooltip) const {
     if (tooltip_) tooltip_(tooltip);
 }
 

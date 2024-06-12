@@ -205,7 +205,7 @@ public:
      * The supported formation depends on the used back end, but simple html is usually supported.
      * Calling the function with an empty sting will hide any existing tool tip.
      */
-    void setToolTip(const std::string& tooltip) const;
+    void setToolTip(std::string_view tooltip) const;
 
     const InteractionEvent::ToolTipCallback& getToolTipCallback() const;
 

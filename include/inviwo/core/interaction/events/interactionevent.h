@@ -35,6 +35,7 @@
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 
 #include <functional>
+#include <string_view>
 
 namespace inviwo {
 
@@ -56,9 +57,9 @@ public:
      * The supported formation depends on the used back end, but simple html is usually supported.
      * Calling the function with an empty sting will hide any existing tool tip.
      */
-    void setToolTip(const std::string& tooltip) const;
+    void setToolTip(std::string_view tooltip) const;
 
-    using ToolTipCallback = std::function<void(const std::string&)>;
+    using ToolTipCallback = std::function<void(std::string_view)>;
     /**
      * Set a tool tip call back function. The function should display a tool tip with the given
      * string at the position of the event. This function is usually called by the originating
