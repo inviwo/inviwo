@@ -52,10 +52,9 @@ jobs:
               ./Release/inviwo-cli.exe --logconsole --quit
               if [ $? -nq 0 ]
               then
-                 C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\gflags.exe /i ./Release/inviwo-cli.exe +sls
-                 C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\cdb.exe -g -c q ./Release/inviwo-cli.exe
+                 C:/'Program Files (x86)'/'Windows Kits'/10/Debuggers/x64/gflags.exe /i ./Release/inviwo-cli.exe +sls
+                 C:/'Program Files (x86)'/'Windows Kits'/10/Debuggers/x64/cdb.exe -g -c q ./Release/inviwo-cli.exe
               fi
-            
           
           - system: macos
             os: 'macos-13' # for now macos-latest == macos-12 since macos-13 is still "beta"
@@ -458,7 +457,7 @@ jobs:
         database: ../build
         style: 'file'
         tidy-checks: ''
-        version: ${{ env.LLVM_VERSION }}
+        version: ${{ env.LLVM_PATH }}
         tidy-review: true
         format-review: false
         step-summary: true
