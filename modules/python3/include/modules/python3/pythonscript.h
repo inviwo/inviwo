@@ -50,9 +50,9 @@ namespace inviwo {
 class IVW_MODULE_PYTHON3_API PythonScript {
 
 public:
-    PythonScript(std::string_view source = "", std::string_view name = "");
+    explicit PythonScript(std::string_view source = "", std::string_view name = "");
 
-    static PythonScript fromPath(const std::filesystem::path& path);
+    static PythonScript fromFile(const std::filesystem::path& path);
 
     /**
      * Frees the stored byte code. Make sure that the

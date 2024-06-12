@@ -58,7 +58,7 @@ class InviwoApplication;
 template <typename T>
 class QPtr : std::unique_ptr<T> {
 public:
-    QPtr() : std::unique_ptr<T>{} {}
+    QPtr() = default;
     QPtr(std::nullptr_t) : std::unique_ptr<T>(std::nullptr_t{}) {}
     QPtr(T* ptr) : std::unique_ptr<T>{ptr} { connect(); }
 
@@ -105,7 +105,11 @@ inline auto make_qptr(Args&&... args) {
 class IVW_MODULE_PYTHON3QT_API PythonMenu {
 public:
     PythonMenu(const std::filesystem::path& modulePath, InviwoApplication* app, QMainWindow* win);
-    virtual ~PythonMenu();
+    PythonMenu(const PythonMenu&) = delete;
+    PythonMenu(PythonMenu&&) = delete;
+    PythonMenu& operator=(const PythonMenu&) = delete;
+    PythonMenu& operator=(PythonMenu&&) = delete;
+    ~PythonMenu();
 
 private:
     PythonEditorWidget* newEditor();

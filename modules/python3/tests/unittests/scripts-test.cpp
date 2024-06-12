@@ -54,7 +54,7 @@ std::filesystem::path getPath() {
 }  // namespace
 
 TEST(Python3Scripts, GrabReturnValues) {
-    auto script = PythonScript::fromPath(getPath() / "grabreturnvalue.py");
+    auto script = PythonScript::fromFile(getPath() / "grabreturnvalue.py");
 
     bool status = false;
     script.run([&](pybind11::dict dict) {
@@ -83,7 +83,7 @@ TEST(Python3Scripts, GrabReturnValues) {
 }
 
 TEST(Python3Scripts, PassValues) {
-    auto script = PythonScript::fromPath(getPath() / "passvalues.py");
+    auto script = PythonScript::fromFile(getPath() / "passvalues.py");
 
     bool status = false;
     int a = 1;
@@ -108,7 +108,7 @@ TEST(Python3Scripts, PassValues) {
 }
 
 TEST(Python3Scripts, GLMTest) {
-    auto script = PythonScript::fromPath(getPath() / "glm.py");
+    auto script = PythonScript::fromFile(getPath() / "glm.py");
 
     bool status = false;
     script.run([&](pybind11::dict dict) {
@@ -176,7 +176,7 @@ TEST(Python3Scripts, GLMTest) {
 }
 
 TEST(Python3Scripts, OptionPropertyTest) {
-    auto script = PythonScript::fromPath(getPath() / "option_property.py");
+    auto script = PythonScript::fromFile(getPath() / "option_property.py");
 
     bool status = false;
     script.run([&](pybind11::dict dict) {

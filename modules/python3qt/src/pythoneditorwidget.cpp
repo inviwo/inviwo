@@ -90,7 +90,7 @@ const static std::string defaultSource =
     "#Inviwo Python script \nimport inviwopy\n\n\napp = inviwopy.app\nnetwork = app.network\n";
 
 PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app,
-                                       std::function<void(const std::string&)> callback)
+                                       std::function<void(const std::string&)> onTextChange)
     : InviwoDockWidget(tr("Python Editor"), parent, "PythonEditorWidget")
     , infoTextColor_(153, 153, 153)
     , errorTextColor_(255, 107, 107)
@@ -99,7 +99,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app,
     , app_(app)
     , appendLog_(nullptr)
     , fileObserver_(this, "Python Editor")
-    , onTextChange_{callback} {
+    , onTextChange_{onTextChange} {
     setWindowIcon(QIcon(":/svgicons/python.svg"));
 
     mainWindow_ = new QMainWindow();

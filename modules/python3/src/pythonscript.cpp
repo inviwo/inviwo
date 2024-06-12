@@ -53,10 +53,11 @@ namespace inviwo {
 PythonScript::PythonScript(std::string_view source, std::string_view name)
     : source_{source}, name_{name}, byteCode_(nullptr), isCompileNeeded_(true) {}
 
-PythonScript PythonScript::fromPath(const std::filesystem::path& path) {
+PythonScript PythonScript::fromFile(const std::filesystem::path& path) {
     auto file = std::ifstream(path);
-    const std::string source{std::istreambuf_iterator<char>(), std::istreambuf_iterator<char>()};
-    return {source, path.generic_string()};
+    const std::string source{std::istreambuf_iterator<char>(file),
+                             std::istreambuf_iterator<char>()};
+    return PythonScript{source, path.generic_string()};
 }
 
 PythonScript::~PythonScript() { Py_XDECREF(static_cast<PyObject*>(byteCode_)); }
@@ -149,8 +150,8 @@ std::string PythonScript::getAndFormatError() {
     }
     err << "\n";
     if (traceback) {
+        auto* tb = reinterpret_cast<PyTracebackObject*>(traceback.ptr());
         err << "Stacktrace (most recent call first):\n";
-        PyTracebackObject* tb = (PyTracebackObject*)traceback.ptr();
 
         /* Get the deepest trace possible */
         while (tb->tb_next) tb = tb->tb_next;

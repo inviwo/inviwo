@@ -60,7 +60,7 @@ class IVW_MODULE_PYTHON3QT_API PythonEditorWidget : public InviwoDockWidget,
                                                     public PythonExecutionOutputObserver {
 public:
     PythonEditorWidget(QWidget* parent, InviwoApplication* app,
-                       std::function<void(const std::string&)> callback = nullptr);
+                       std::function<void(const std::string&)> onTextChange = nullptr);
     virtual ~PythonEditorWidget();
 
     void appendToOutput(const std::string& msg, bool error = false);

@@ -174,7 +174,7 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
     QObject::connect(pyProperties, &QAction::triggered, [app]() {
         auto mod = app->getModuleByType<Python3Module>();
         auto script =
-            PythonScript::fromPath(mod->getPath() / "scripts" / "list_not_exposed_properties.py");
+            PythonScript::fromFile(mod->getPath() / "scripts" / "list_not_exposed_properties.py");
         script.run();
     });
 }
@@ -219,7 +219,7 @@ PythonEditorWidget* PythonMenu::openEditor(const std::string& key) {
 }
 
 std::optional<std::string> PythonMenu::getScriptName(std::string_view suggestion) {
-    bool ok;
+    bool ok = false;
     QString qKey = QInputDialog::getText(nullptr, "Script name", "Name:", QLineEdit::Normal,
                                          utilqt::toQString(suggestion), &ok,
                                          Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
