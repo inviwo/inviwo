@@ -63,7 +63,7 @@ const ProcessorInfo ContinuousHistogram::processorInfo_{
 const ProcessorInfo ContinuousHistogram::getProcessorInfo() const { return processorInfo_; }
 
 ContinuousHistogram::ContinuousHistogram()
-    : Processor{}
+    : PoolProcessor{pool::Option::DelayDispatch}
     , inport1_{"inport1", "Volume 1"_help}
     , inport2_{"inport2", "Volume 2"_help}
     , outport_{"outport", "Histogram Layer"_help}
@@ -78,10 +78,6 @@ ContinuousHistogram::ContinuousHistogram()
                           "Error threshold with respect to the resolution of the histogram"_help)}
     , channel1_{"channel1", "Volume 1 Channel", util::enumeratedOptions("Channel", 4), 0}
     , channel2_{"channel2", "Volume 2 Channel", util::enumeratedOptions("Channel", 4), 0}
-    , scaling_{"scaling", "Scaling",
-               OptionPropertyState<Scaling>{.options = {{"linear", "Linear", Scaling::Linear},
-                                                        {"log", "Logarithmic", Scaling::Log}}}
-                   .setSelectedValue(Scaling::Linear)}
     , dataRange_{"dataRange", "Data Range"}
     , shaders_{{{ShaderType::Vertex, std::string{"continuoushistogram.vert"}},
                 {ShaderType::Fragment, std::string{"continuoushistogram.frag"}}},
@@ -104,72 +100,6 @@ void ContinuousHistogram::initializeResources() {
 }
 
 void ContinuousHistogram::configureShader(Shader& shader) { shader.build(); }
-
-void ContinuousHistogram::process() {
-    const LayerConfig newConfig{
-        .dimensions = size2_t{static_cast<size_t>(histogramResolution_.get())},
-        .format = DataFloat32::get(),
-        .swizzleMask = swizzlemasks::luminance,
-        .dataRange = dvec2{0.0, 1.0},
-        .valueRange = dvec2{0.0, 1.0},
-    };
-    if (config_ != newConfig) {
-        cache_.clear();
-        config_ = newConfig;
-    }
-
-    auto&& [fbo, layer] = [&]() -> decltype(auto) {
-        auto unusedIt = std::ranges::find_if(
-            cache_, [](const std::pair<FrameBufferObject, std::shared_ptr<Layer>>& item) {
-                return item.second.use_count() == 1;
-            });
-        if (unusedIt != cache_.end()) {
-            return *unusedIt;
-        } else {
-            auto& item = cache_.emplace_back(FrameBufferObject{}, std::make_shared<Layer>(config_));
-            auto* layerGL = item.second->getEditableRepresentation<LayerGL>();
-            utilgl::Activate activateFbo{&item.first};
-            item.first.attachColorTexture(layerGL->getTexture().get(), 0);
-            return item;
-        }
-    }();
-
-    if (!mesh_ ||
-        util::any_of(
-            util::ref<Property>(channel1_, channel2_, enableSubdivisions_, errorThreshold_),
-            &Property::isModified) ||
-        inport1_.isChanged() || inport2_.isChanged()) {
-        mesh_ = createDensitySubdivMesh();
-    }
-
-    auto& shader = shaders_.getShader(*mesh_);
-
-    utilgl::Activate activateShader{&shader};
-    utilgl::setShaderUniforms(shader, *layer, "outportParameters");
-    utilgl::setShaderUniforms(shader, scalingFactor_);
-
-    TextureUnitContainer cont;
-    // utilgl::bindAndSetUniforms(shader_, cont, *inport1_.getData(), "inport");
-
-    const auto dim = layer->getDimensions();
-    {
-        utilgl::Activate activateFbo{&fbo};
-        utilgl::ViewportState viewport{0, 0, static_cast<GLsizei>(dim.x),
-                                       static_cast<GLsizei>(dim.y)};
-        utilgl::clearCurrentTarget();
-        utilgl::DepthMaskState depthMask{GL_FALSE};
-        utilgl::GlBoolState depthTest{GL_DEPTH_TEST, false};
-        // utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE);
-        utilgl::GlBoolState blend(GL_BLEND, true);
-        utilgl::BlendModeEquationState blenEq(GL_ONE, GL_ONE, GL_FUNC_ADD);
-
-        utilgl::setShaderUniforms(shader, *mesh_, "geometry");
-        MeshDrawerGL::DrawObject drawer{mesh_->getRepresentation<MeshGL>(),
-                                        mesh_->getDefaultMeshInfo()};
-        drawer.draw();
-    }
-    outport_.setData(layer);
-}
 
 namespace detail {
 
@@ -285,31 +215,14 @@ void splitCell(std::array<double, 8> scalars1, std::array<double, 8> scalars2, d
     }
 };
 
-};  // namespace detail
+std::shared_ptr<Mesh> createDensityMesh(pool::Stop stop, pool::Progress progress,
+                                        const size2_t& histogramSize,
+                                        std::shared_ptr<const Volume> volume1, size_t channel1,
+                                        std::shared_ptr<const Volume> volume2, size_t channel2,
+                                        bool enableSubdivs, double errorThreshold) {
+    if (stop) return nullptr;
 
-std::shared_ptr<Mesh> ContinuousHistogram::createDensitySubdivMesh() const {
-    const auto histSize = size2_t{static_cast<size_t>(std::max(histogramResolution_.get(), 1))};
-    const auto histPixelSize = 1.0 / dvec2{histSize};
-
-    auto volume1 = inport1_.getData();
-    auto volume2 = inport2_.getData();
-
-    const auto c1 = channel1_.getSelectedIndex();
-    const auto c2 = channel2_.getSelectedIndex();
-
-    if (volume1->getDimensions() != volume2->getDimensions()) {
-        throw Exception(IVW_CONTEXT, "Volume dimensions must match, got {} and {}",
-                        volume1->getDimensions(), volume2->getDimensions());
-    }
-
-    if (c1 >= volume1->getDataFormat()->getComponents()) {
-        throw Exception(IVW_CONTEXT, "Channel 1 is greater than the available channels {} >= {}",
-                        c1 + 1, volume1->getDataFormat()->getComponents());
-    }
-    if (c2 >= volume2->getDataFormat()->getComponents()) {
-        throw Exception(IVW_CONTEXT, "Channel 2 is greater than the available channels {} >= {}",
-                        c2 + 1, volume2->getDataFormat()->getComponents());
-    }
+    const auto histPixelSize = 1.0 / dvec2{histogramSize};
 
     auto vrep1 = volume1->getRepresentation<VolumeRAM>();
     auto vrep2 = volume2->getRepresentation<VolumeRAM>();
@@ -319,129 +232,252 @@ std::shared_ptr<Mesh> ContinuousHistogram::createDensitySubdivMesh() const {
 
     const util::IndexMapper3D volumeIm{vrep1->getDimensions()};
 
-    auto mesh = std::make_shared<Mesh>(DrawType::Triangles, ConnectivityType::None);
+    std::shared_ptr<Mesh> mesh =
+        dispatching::doubleDispatch<std::shared_ptr<Mesh>, dispatching::filter::All,
+                                    dispatching::filter::All>(
+            vrep1->getDataFormatId(), vrep2->getDataFormatId(),
+            [&]<typename T1, typename T2>() -> std::shared_ptr<Mesh> {
+                auto src1 = static_cast<const VolumeRAMPrecision<T1>*>(vrep1)->getView();
+                auto src2 = static_cast<const VolumeRAMPrecision<T2>*>(vrep2)->getView();
 
-    dispatching::doubleDispatch<void, dispatching::filter::All, dispatching::filter::All>(
-        vrep1->getDataFormatId(), vrep2->getDataFormatId(), [&]<typename T1, typename T2>() {
-            auto src1 = static_cast<const VolumeRAMPrecision<T1>*>(vrep1)->getView();
-            auto src2 = static_cast<const VolumeRAMPrecision<T2>*>(vrep2)->getView();
+                const auto dims = ivec3{vrep1->getDimensions()};
+                const double volumeVoxel = std::abs(glm::determinant(volume1->getBasis()));
 
-            const auto dims = ivec3{vrep1->getDimensions()};
-            const double volumeVoxel = std::abs(glm::determinant(volume1->getBasis()));
-
-            std::vector<vec2> positions;
-            std::vector<float> densities;
-            auto addVertices = [&](const auto& min, const auto& max, float density) {
-                positions.push_back(vec2{min});
-                positions.push_back(vec2{max.x, min.y});
-                positions.push_back(vec2{min.x, max.y});
-                positions.push_back(vec2{min.x, max.y});
-                positions.push_back(vec2{max.x, min.y});
-                positions.push_back(vec2{max.x, max.y});
-                for (size_t i = 0; i < 6; ++i) {
-                    densities.push_back(density);
-                }
-            };
-
-            dvec2 min{std::numeric_limits<double>::max()};
-            dvec2 max{std::numeric_limits<double>::lowest()};
-
-            if (enableSubdivisions_) {
-                auto triangleCallback = [&](const dvec2& p1, const dvec2& p2, int subdivision) {
-                    auto extent = dvec2{p2.x - p1.x, p2.y - p1.y};
-                    // FIXME: how to handle zero-sized rects? Set to size = 1?
-                    extent = glm::max(extent, histPixelSize);
-
-                    const double density =
-                        volumeVoxel * pow(2.0, -3 * subdivision) / (extent.x * extent.y);
-                    addVertices(p1, p2, static_cast<float>(density));
-
-                    min = glm::min(min, p1);
-                    max = glm::max(max, p2);
+                std::vector<vec2> positions;
+                std::vector<float> densities;
+                auto addVertices = [&](const auto& min, const auto& max, float density) {
+                    positions.push_back(vec2{min});
+                    positions.push_back(vec2{max.x, min.y});
+                    positions.push_back(vec2{min.x, max.y});
+                    positions.push_back(vec2{min.x, max.y});
+                    positions.push_back(vec2{max.x, min.y});
+                    positions.push_back(vec2{max.x, max.y});
+                    for (size_t i = 0; i < 6; ++i) {
+                        densities.push_back(density);
+                    }
                 };
 
-                util::IndexMapper<3> indexMapper{dims};
-                std::array<double, 8> scalars1{};
-                std::array<double, 8> scalars2{};
-                ivec3 pos{};
-                for (pos.z = 0; pos.z < dims.z - 1; ++pos.z) {
-                    for (pos.y = 0; pos.y < dims.y - 1; ++pos.y) {
-                        for (pos.x = 0; pos.x < dims.x - 1; ++pos.x) {
-                            for (size_t i = 0; i < 8; ++i) {
-                                const size_t index = volumeIm(pos + detail::offsets[i]);
-                                scalars1[i] = map1.mapFromDataToNormalized(
-                                    detail::getVoxelValue(src1, index, c1));
-                                scalars2[i] = map2.mapFromDataToNormalized(
-                                    detail::getVoxelValue(src2, index, c2));
-                            }
+                dvec2 min{std::numeric_limits<double>::max()};
+                dvec2 max{std::numeric_limits<double>::lowest()};
 
-                            detail::splitCell(scalars1, scalars2, errorThreshold_, triangleCallback,
-                                              0);
-                        }
-                    }
-                }
-            } else {
+                if (enableSubdivs) {
+                    auto triangleCallback = [&](const dvec2& p1, const dvec2& p2, int subdivision) {
+                        auto extent = dvec2{p2.x - p1.x, p2.y - p1.y};
+                        // FIXME: how to handle zero-sized rects? Set to size = 1?
+                        extent = glm::max(extent, histPixelSize);
 
-                auto projectedRectangle = [&, indexMapper = util::IndexMapper<3>{dims}](
-                                              const ivec3& pos) -> std::tuple<dvec2, dvec2> {
-                    dvec2 min{detail::getVoxelValue(src1, volumeIm(pos), c1),
-                              detail::getVoxelValue(src2, volumeIm(pos), c2)};
-                    dvec2 max{min};
-                    for (const ivec3& offset : detail::offsets | std::ranges::views::drop(1)) {
-                        const size_t index = volumeIm(pos + offset);
-                        const dvec2 v{detail::getVoxelValue(src1, index, c1),
-                                      detail::getVoxelValue(src2, index, c2)};
-                        min = glm::min(min, v);
-                        max = glm::max(max, v);
-                    }
-                    auto normalize = [&](const dvec2& coord) -> dvec2 {
-                        return dvec2{map1.mapFromDataToNormalized(coord.x),
-                                     map2.mapFromDataToNormalized(coord.y)};
+                        const double density =
+                            volumeVoxel * pow(2.0, -3 * subdivision) / (extent.x * extent.y);
+                        addVertices(p1, p2, static_cast<float>(density));
+
+                        min = glm::min(min, p1);
+                        max = glm::max(max, p2);
                     };
-                    return {normalize(min), normalize(max)};
-                };
 
-                ivec3 pos{};
-                for (pos.z = 0; pos.z < dims.z - 1; ++pos.z) {
-                    for (pos.y = 0; pos.y < dims.y - 1; ++pos.y) {
-                        for (pos.x = 0; pos.x < dims.x - 1; ++pos.x) {
-                            const auto&& [p1, p2] = projectedRectangle(pos);
-                            auto extent = dvec2{p2.x - p1.x, p2.y - p1.y};
+                    util::IndexMapper<3> indexMapper{dims};
+                    std::array<double, 8> scalars1{};
+                    std::array<double, 8> scalars2{};
+                    ivec3 pos{};
+                    for (pos.z = 0; pos.z < dims.z - 1; ++pos.z) {
+                        if (pos.z & 8) {
+                            if (stop) return nullptr;
+                            progress(pos.z, dims.z - 1);
+                        }
+                        for (pos.y = 0; pos.y < dims.y - 1; ++pos.y) {
+                            for (pos.x = 0; pos.x < dims.x - 1; ++pos.x) {
+                                for (size_t i = 0; i < 8; ++i) {
+                                    const size_t index = volumeIm(pos + detail::offsets[i]);
+                                    scalars1[i] = map1.mapFromDataToNormalized(
+                                        detail::getVoxelValue(src1, index, channel1));
+                                    scalars2[i] = map2.mapFromDataToNormalized(
+                                        detail::getVoxelValue(src2, index, channel2));
+                                }
 
-                            // FIXME: how to handle zero-sized rects? Set to size = 1?
-                            extent = glm::max(extent, histPixelSize);
+                                detail::splitCell(scalars1, scalars2, errorThreshold,
+                                                  triangleCallback, 0);
+                            }
+                        }
+                    }
+                } else {
 
-                            const double density = volumeVoxel / (extent.x * extent.y);
-                            addVertices(p1, p2, static_cast<float>(density));
+                    auto projectedRectangle = [&, indexMapper = util::IndexMapper<3>{dims}](
+                                                  const ivec3& pos) -> std::tuple<dvec2, dvec2> {
+                        dvec2 min{detail::getVoxelValue(src1, volumeIm(pos), channel1),
+                                  detail::getVoxelValue(src2, volumeIm(pos), channel2)};
+                        dvec2 max{min};
+                        for (const ivec3& offset : detail::offsets | std::ranges::views::drop(1)) {
+                            const size_t index = volumeIm(pos + offset);
+                            const dvec2 v{detail::getVoxelValue(src1, index, channel1),
+                                          detail::getVoxelValue(src2, index, channel2)};
+                            min = glm::min(min, v);
+                            max = glm::max(max, v);
+                        }
+                        auto normalize = [&](const dvec2& coord) -> dvec2 {
+                            return dvec2{map1.mapFromDataToNormalized(coord.x),
+                                         map2.mapFromDataToNormalized(coord.y)};
+                        };
+                        return {normalize(min), normalize(max)};
+                    };
 
-                            min = glm::min(min, p1);
-                            max = glm::max(max, p2);
+                    ivec3 pos{};
+                    for (pos.z = 0; pos.z < dims.z - 1; ++pos.z) {
+                        if (pos.z & 8) {
+                            if (stop) return nullptr;
+                            progress(pos.z, dims.z - 1);
+                        }
+                        for (pos.y = 0; pos.y < dims.y - 1; ++pos.y) {
+                            for (pos.x = 0; pos.x < dims.x - 1; ++pos.x) {
+                                const auto&& [p1, p2] = projectedRectangle(pos);
+                                auto extent = dvec2{p2.x - p1.x, p2.y - p1.y};
+
+                                // FIXME: how to handle zero-sized rects? Set to size = 1?
+                                extent = glm::max(extent, histPixelSize);
+
+                                const double density = volumeVoxel / (extent.x * extent.y);
+                                addVertices(p1, p2, static_cast<float>(density));
+
+                                min = glm::min(min, p1);
+                                max = glm::max(max, p2);
+                            }
                         }
                     }
                 }
-            }
 
-            if (!densities.empty()) {
-                LogInfo("Triangles min/max: " << min << ", " << max);
-                const auto [minSigma, maxSigma] = std::ranges::minmax_element(densities);
-                LogInfo("Density min/max: " << *minSigma << ", " << *maxSigma);
-                std::transform(densities.begin(), densities.end(), densities.begin(),
-                               [max = *maxSigma](auto v) { return v / max; });
+                auto mesh = std::make_shared<Mesh>(DrawType::Triangles, ConnectivityType::None);
+                // map [0,1] coords to [-1,1]
+                mat4 m = glm::scale(vec3{2.0f});
+                m[3] = vec4{-1.0f, -1.0f, 0.0, 1.0f};
+                mesh->setModelMatrix(m);
 
-                LogInfo("Num triangles: " << positions.size() / 3);
+                if (!densities.empty()) {
+                    LogInfoCustom("createDensityMesh", "Triangles min/max: " << min << ", " << max);
+                    const auto [minSigma, maxSigma] = std::ranges::minmax_element(densities);
+                    LogInfoCustom("createDensityMesh",
+                                  "Density min/max: " << *minSigma << ", " << *maxSigma);
+                    std::transform(densities.begin(), densities.end(), densities.begin(),
+                                   [max = *maxSigma](auto v) { return v / max; });
 
-                mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
-                mesh->addBuffer(BufferType::ScalarMetaAttrib,
-                                util::makeBuffer(std::move(densities)));
-            }
-        });
+                    LogInfoCustom("createDensityMesh", "Num triangles: " << positions.size() / 3);
 
-    // map [0,1] coords to [-1,1]
-    mat4 m = glm::scale(vec3{2.0f});
-    m[3] = vec4{-1.0f, -1.0f, 0.0, 1.0f};
-    mesh->setModelMatrix(m);
+                    mesh->addBuffer(BufferType::PositionAttrib,
+                                    util::makeBuffer(std::move(positions)));
+                    mesh->addBuffer(BufferType::ScalarMetaAttrib,
+                                    util::makeBuffer(std::move(densities)));
+                }
+                return mesh;
+            });
 
     return mesh;
+}
+
+};  // namespace detail
+
+void ContinuousHistogram::process() {
+    auto volume1 = inport1_.getData();
+    auto volume2 = inport2_.getData();
+
+    if (volume1->getDimensions() != volume2->getDimensions()) {
+        throw Exception(IVW_CONTEXT, "Volume dimensions must match, got {} and {}",
+                        volume1->getDimensions(), volume2->getDimensions());
+    }
+
+    if (channel1_.getSelectedIndex() >= volume1->getDataFormat()->getComponents()) {
+        throw Exception(IVW_CONTEXT, "Channel 1 is greater than the available channels {} >= {}",
+                        channel1_.getSelectedIndex() + 1,
+                        volume1->getDataFormat()->getComponents());
+    }
+    if (channel2_.getSelectedIndex() >= volume2->getDataFormat()->getComponents()) {
+        throw Exception(IVW_CONTEXT, "Channel 2 is greater than the available channels {} >= {}",
+                        channel1_.getSelectedIndex() + 1,
+                        volume2->getDataFormat()->getComponents());
+    }
+
+    const size2_t histogramSize{static_cast<size_t>(std::max(histogramResolution_.get(), 1))};
+
+    if (!mesh_ || inport1_.isChanged() || inport2_.isChanged() ||
+        util::any_of(
+            util::ref<Property>(channel1_, channel2_, enableSubdivisions_, errorThreshold_),
+            &Property::isModified)) {
+
+        const auto calc =
+            [histogramSize, volume1 = inport1_.getData(), channel1 = channel1_.getSelectedIndex(),
+             volume2 = inport2_.getData(), channel2 = channel2_.getSelectedIndex(),
+             subdivs = enableSubdivisions_.get(), threshold = errorThreshold_.get()](
+                pool::Stop stop, pool::Progress progress) -> std::shared_ptr<const Mesh> {
+            return detail::createDensityMesh(stop, progress, histogramSize, volume1, channel1,
+                                             volume2, channel2, subdivs, threshold);
+        };
+
+        dispatchOne(calc, [this](std::shared_ptr<const Mesh> result) {
+            mesh_ = result;
+            auto layer = renderDensityMesh(mesh_);
+            outport_.setData(layer);
+            newResults();
+        });
+    }
+
+    auto layer = renderDensityMesh(mesh_);
+    outport_.setData(layer);
+}
+
+std::shared_ptr<Layer> ContinuousHistogram::renderDensityMesh(std::shared_ptr<const Mesh> mesh) {
+    if (!mesh) return nullptr;
+
+    const LayerConfig newConfig{
+        .dimensions = size2_t{static_cast<size_t>(std::max(histogramResolution_.get(), 1))},
+        .format = DataFloat32::get(),
+        .swizzleMask = swizzlemasks::luminance,
+        .dataRange = dvec2{0.0, 1.0},
+        .valueRange = dvec2{0.0, 1.0},
+    };
+    if (config_ != newConfig) {
+        cache_.clear();
+        config_ = newConfig;
+    }
+
+    auto&& [fbo, layer] = [&]() -> decltype(auto) {
+        auto unusedIt = std::ranges::find_if(
+            cache_, [](const std::pair<FrameBufferObject, std::shared_ptr<Layer>>& item) {
+                return item.second.use_count() == 1;
+            });
+        if (unusedIt != cache_.end()) {
+            return *unusedIt;
+        } else {
+            auto& item = cache_.emplace_back(FrameBufferObject{}, std::make_shared<Layer>(config_));
+            auto* layerGL = item.second->getEditableRepresentation<LayerGL>();
+            utilgl::Activate activateFbo{&item.first};
+            item.first.attachColorTexture(layerGL->getTexture().get(), 0);
+            return item;
+        }
+    }();
+
+    auto& shader = shaders_.getShader(*mesh);
+
+    utilgl::Activate activateShader{&shader};
+    utilgl::setShaderUniforms(shader, *layer, "outportParameters");
+    utilgl::setShaderUniforms(shader, scalingFactor_);
+
+    TextureUnitContainer cont;
+    // utilgl::bindAndSetUniforms(shader_, cont, *inport1_.getData(), "inport");
+
+    const auto dim = layer->getDimensions();
+    {
+        utilgl::Activate activateFbo{&fbo};
+        utilgl::ViewportState viewport{0, 0, static_cast<GLsizei>(dim.x),
+                                       static_cast<GLsizei>(dim.y)};
+        utilgl::clearCurrentTarget();
+        utilgl::DepthMaskState depthMask{GL_FALSE};
+        utilgl::GlBoolState depthTest{GL_DEPTH_TEST, false};
+        // utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE);
+        utilgl::GlBoolState blend(GL_BLEND, true);
+        utilgl::BlendModeEquationState blenEq(GL_ONE, GL_ONE, GL_FUNC_ADD);
+
+        utilgl::setShaderUniforms(shader, *mesh, "geometry");
+        MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
+                                        mesh->getDefaultMeshInfo()};
+        drawer.draw();
+    }
+    return layer;
 }
 
 }  // namespace inviwo
