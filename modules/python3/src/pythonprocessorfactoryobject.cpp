@@ -113,6 +113,31 @@ void PythonProcessorFactoryObject::reloadProcessors() {
     }
 }
 
+namespace {
+
+pybind11::object compileAndRun(const std::string& expr, const std::string& name,
+                               pybind11::object global = pybind11::globals(),
+                               pybind11::object local = pybind11::object()) {
+    if (!local) {
+        local = global;
+    }
+    pybind11::detail::ensure_builtins_in_globals(global);
+
+    PyObject* byteCode = Py_CompileStringObject(expr.c_str(), pybind11::cast(name).ptr(),
+                                                Py_file_input, nullptr, -1);
+    if (!byteCode) {
+        throw pybind11::error_already_set();
+    }
+    PyObject* result = PyEval_EvalCode(byteCode, global.ptr(), local.ptr());
+    Py_XDECREF(byteCode);
+    if (!result) {
+        throw pybind11::error_already_set();
+    }
+    return pybind11::reinterpret_steal<pybind11::object>(result);
+}
+
+}  // namespace
+
 PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
     const std::filesystem::path& file) {
     namespace py = pybind11;
@@ -134,7 +159,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
     }();
 
     try {
-        py::exec(script);
+        compileAndRun(script, file.generic_string());
     } catch (const py::error_already_set& e) {
         if (e.matches(PyExc_ModuleNotFoundError)) {
             const auto missingModule = e.value().attr("name").cast<std::string>();
@@ -159,7 +184,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
             const auto text = e.value().attr("text").cast<std::string>();
 
             if (filename == "<string>") {
-                e.value().attr("filename") = file;
+                e.value().attr("filename") = file.generic_string();
                 // HACK: It seems that when we have a <string> file like this that the
                 // lineno is off by one. At least on mac, and python 3.10. No idea why.
                 lineno -= 1;

@@ -207,14 +207,11 @@ int CommandLineParser::getARGC() const { return argc_; }
 char** CommandLineParser::getARGV() const { return argv_; }
 
 void CommandLineParser::processCallbacks() {
-    std::sort(
-        callbacks_.begin(), callbacks_.end(),
-        [](const decltype(callbacks_)::value_type& a, const decltype(callbacks_)::value_type& b) {
-            return std::get<0>(a) < std::get<0>(b);
-        });
-    for (auto& elem : callbacks_) {
-        if (std::get<1>(elem)->isSet()) {
-            std::get<2>(elem)();
+    std::sort(callbacks_.begin(), callbacks_.end(),
+              [](const auto& a, const auto& b) { return std::get<0>(a) < std::get<0>(b); });
+    for (auto&& [prio, arg, callback] : callbacks_) {
+        if (arg->isSet()) {
+            callback();
         }
     }
 }

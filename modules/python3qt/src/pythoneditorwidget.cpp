@@ -89,7 +89,8 @@ namespace inviwo {
 const static std::string defaultSource =
     "#Inviwo Python script \nimport inviwopy\n\n\napp = inviwopy.app\nnetwork = app.network\n";
 
-PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
+PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app,
+                                       std::function<void(const std::string&)> onTextChange)
     : InviwoDockWidget(tr("Python Editor"), parent, "PythonEditorWidget")
     , infoTextColor_(153, 153, 153)
     , errorTextColor_(255, 107, 107)
@@ -97,7 +98,8 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     , script_()
     , app_(app)
     , appendLog_(nullptr)
-    , fileObserver_(this, "Python Editor") {
+    , fileObserver_(this, "Python Editor")
+    , onTextChange_{onTextChange} {
     setWindowIcon(QIcon(":/svgicons/python.svg"));
 
     mainWindow_ = new QMainWindow();
@@ -141,11 +143,13 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     QObject::connect(pythonCode_, &CodeEdit::textChanged, this, &PythonEditorWidget::onTextChange);
     QObject::connect(pythonCode_, &CodeEdit::modificationChanged, this,
                      [this](bool b) { setWindowModified(b); });
-    pythonCode_->installEventFilter(&fileObserver_);
 
-    fileObserver_.setReloadFileCallback([this]() { readFile(); });
-    fileObserver_.setModifiedCallback([this](bool m) { pythonCode_->document()->setModified(m); });
-
+    if (!onTextChange_) {
+        pythonCode_->installEventFilter(&fileObserver_);
+        fileObserver_.setReloadFileCallback([this]() { readFile(); });
+        fileObserver_.setModifiedCallback(
+            [this](bool m) { pythonCode_->document()->setModified(m); });
+    }
     {
 
         QIcon icon;
@@ -162,52 +166,67 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         mainWindow_->addAction(runAction_);
         connect(runAction_, &QAction::triggered, this, [this](bool run) { runOrStop(run); });
     }
-    {
-        auto action = toolBar->addAction(QIcon(":/svgicons/newfile.svg"), tr("&New Script"));
-        action->setShortcut(QKeySequence::New);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        action->setToolTip("New Script");
-        mainWindow_->addAction(action);
-        connect(action, &QAction::triggered, this, [this]() { setDefaultText(); });
-    }
-    {
-        auto action = toolBar->addAction(QIcon(":/svgicons/open.svg"), tr("&Open Script"));
-        action->setShortcut(QKeySequence::Open);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        action->setToolTip("Open Script");
-        mainWindow_->addAction(action);
-        connect(action, &QAction::triggered, this, [this]() { open(); });
-    }
 
-    {
-        auto action = toolBar->addAction(QIcon(":/svgicons/save.svg"), tr("&Save Script"));
-        action->setShortcut(QKeySequence::Save);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        action->setToolTip("Save Script");
-        mainWindow_->addAction(action);
-        connect(action, &QAction::triggered, this, [this]() { save(); });
-    }
-    {
-        auto action = toolBar->addAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Script As..."));
-        action->setShortcut(QKeySequence::SaveAs);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        action->setToolTip("Save Script As...");
-        mainWindow_->addAction(action);
-        connect(action, &QAction::triggered, this, [this]() { saveAs(); });
-    }
-    {
-        toolBar->addSeparator();
-        auto undo = toolBar->addAction(QIcon(":/svgicons/undo.svg"), "&Undo");
-        undo->setShortcut(QKeySequence::Undo);
-        undo->setEnabled(false);
-        QObject::connect(undo, &QAction::triggered, this, [this]() { pythonCode_->undo(); });
-        QObject::connect(pythonCode_, &QPlainTextEdit::undoAvailable, undo, &QAction::setEnabled);
+    if (!onTextChange_) {
+        {
+            auto action = toolBar->addAction(QIcon(":/svgicons/newfile.svg"), tr("&New Script"));
+            action->setShortcut(QKeySequence::New);
+            action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+            action->setToolTip("New Script");
+            mainWindow_->addAction(action);
+            connect(action, &QAction::triggered, this, [this]() { setDefaultText(); });
+        }
+        {
+            auto action = toolBar->addAction(QIcon(":/svgicons/open.svg"), tr("&Open Script"));
+            action->setShortcut(QKeySequence::Open);
+            action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+            action->setToolTip("Open Script");
+            mainWindow_->addAction(action);
+            connect(action, &QAction::triggered, this, [this]() { open(); });
+        }
 
-        auto redo = toolBar->addAction(QIcon(":/svgicons/redo.svg"), "&Redo");
-        redo->setShortcut(QKeySequence::Redo);
-        redo->setEnabled(false);
-        QObject::connect(redo, &QAction::triggered, this, [this]() { pythonCode_->redo(); });
-        QObject::connect(pythonCode_, &QPlainTextEdit::redoAvailable, redo, &QAction::setEnabled);
+        {
+            auto action = toolBar->addAction(QIcon(":/svgicons/save.svg"), tr("&Save Script"));
+            action->setShortcut(QKeySequence::Save);
+            action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+            action->setToolTip("Save Script");
+            mainWindow_->addAction(action);
+            connect(action, &QAction::triggered, this, [this]() { save(); });
+        }
+        {
+            auto action =
+                toolBar->addAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Script As..."));
+            action->setShortcut(QKeySequence::SaveAs);
+            action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+            action->setToolTip("Save Script As...");
+            mainWindow_->addAction(action);
+            connect(action, &QAction::triggered, this, [this]() { saveAs(); });
+        }
+
+        {
+            auto action =
+                toolBar->addAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Script As..."));
+            action->setToolTip("Save Script In Workspace");
+            mainWindow_->addAction(action);
+            connect(action, &QAction::triggered, this, [this]() { saveAs(); });
+        }
+
+        {
+            toolBar->addSeparator();
+            auto undo = toolBar->addAction(QIcon(":/svgicons/undo.svg"), "&Undo");
+            undo->setShortcut(QKeySequence::Undo);
+            undo->setEnabled(false);
+            QObject::connect(undo, &QAction::triggered, this, [this]() { pythonCode_->undo(); });
+            QObject::connect(pythonCode_, &QPlainTextEdit::undoAvailable, undo,
+                             &QAction::setEnabled);
+
+            auto redo = toolBar->addAction(QIcon(":/svgicons/redo.svg"), "&Redo");
+            redo->setShortcut(QKeySequence::Redo);
+            redo->setEnabled(false);
+            QObject::connect(redo, &QAction::triggered, this, [this]() { pythonCode_->redo(); });
+            QObject::connect(pythonCode_, &QPlainTextEdit::redoAvailable, redo,
+                             &QAction::setEnabled);
+        }
     }
     {
         toolBar->addSeparator();
@@ -246,7 +265,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
 PythonEditorWidget::~PythonEditorWidget() = default;
 
 void PythonEditorWidget::closeEvent(QCloseEvent* event) {
-    if (pythonCode_->document()->isModified()) {
+    if (!onTextChange_ && pythonCode_->document()->isModified()) {
         QMessageBox msgBox(QMessageBox::Question, "Python Editor",
                            "Do you want to save unsaved changes?",
                            QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
@@ -286,8 +305,8 @@ void PythonEditorWidget::loadFile(const std::filesystem::path& fileName, bool as
     readFile();
 }
 
-void PythonEditorWidget::onPyhonExecutionOutput(const std::string& msg,
-                                                PythonOutputType outputType) {
+void PythonEditorWidget::onPythonExecutionOutput(const std::string& msg,
+                                                 PythonOutputType outputType) {
     appendToOutput(msg, outputType != PythonOutputType::sysstdout);
 }
 
@@ -316,7 +335,7 @@ void PythonEditorWidget::readFile() {
     replaceInString(text, "\t", "    ");
     pythonCode_->setPlainText(utilqt::toQString(text));
     script_.setSource(text);
-    script_.setFilename(scriptFileName_);
+    script_.setName(scriptFileName_.generic_string());
 }
 
 void PythonEditorWidget::saveAs() {
@@ -405,9 +424,10 @@ void PythonEditorWidget::setDefaultText() {
         return;
     }
 
-    pythonCode_->setPlainText(utilqt::toQString(defaultSource));
-    script_.setSource(defaultSource);
-    setFileName("");
+    setSource(defaultSource);
+    setName("(unnamed file)");
+    fileObserver_.setFileName("");
+    scriptFileName_.clear();
 }
 
 void PythonEditorWidget::clearOutput() { pythonOutput_->setPlainText(""); }
@@ -415,21 +435,23 @@ void PythonEditorWidget::clearOutput() { pythonOutput_->setPlainText(""); }
 void PythonEditorWidget::onTextChange() {
     std::string source = utilqt::fromQString(pythonCode_->toPlainText());
     script_.setSource(source);
+
+    if (onTextChange_) onTextChange_(source);
 }
 
 void PythonEditorWidget::setFileName(const std::filesystem::path& filename) {
     scriptFileName_ = filename;
-    script_.setFilename(filename);
+    script_.setName(filename.generic_string());
     fileObserver_.setFileName(filename);
     updateWindowTitle();
 }
 
 void PythonEditorWidget::updateWindowTitle() {
     QString str;
-    if (scriptFileName_.empty()) {
+    if (script_.getName().empty()) {
         str = "(unnamed file)";
     } else {
-        str = utilqt::toQString(scriptFileName_);
+        str = utilqt::toQString(script_.getName());
     }
 
     setWindowTitle(QString("Python Editor - %1[*]").arg(str));
@@ -443,12 +465,35 @@ void PythonEditorWidget::saveState() {
     settings.setValue("appendLog", appendLog_->isChecked());
     settings.setValue("lastScript", utilqt::toQString(scriptFileName_));
     settings.setValue("source", pythonCode_->toPlainText());
+    settings.setValue("scriptName", utilqt::toQString(script_.getName()));
     settings.endGroup();
 }
+
+void PythonEditorWidget::setName(std::string_view name) {
+    script_.setName(name);
+    updateWindowTitle();
+}
+
+const std::string& PythonEditorWidget::getName() const { return script_.getName(); }
+
+void PythonEditorWidget::setSource(std::string_view source) {
+    pythonCode_->setPlainText(utilqt::toQString(source));
+    script_.setSource(source);
+}
+
+const std::string& PythonEditorWidget::getSource() const { return script_.getSource(); }
 
 void PythonEditorWidget::loadState() {
     InviwoDockWidget::loadState();
 
+    QSettings settings;
+    settings.beginGroup(objectName());
+    auto append = settings.value("appendLog", appendLog_->isCheckable()).toBool();
+    appendLog_->setChecked(append);
+    settings.endGroup();
+}
+
+void PythonEditorWidget::restore() {
     // Restore state
     QSettings settings;
     settings.beginGroup(objectName());
@@ -459,15 +504,13 @@ void PythonEditorWidget::loadState() {
         loadFile(utilqt::fromQString(lastFile), false);
     } else {
         QString src = settings.value("source", "").toString();
+        QString name = settings.value("scriptName", "").toString();
         if (src.length() != 0) {
             pythonCode_->setPlainText(src);
             script_.setSource(utilqt::fromQString(src));
+            script_.setName(utilqt::fromQString(name));
         }
     }
-
-    auto append = settings.value("appendLog", appendLog_->isCheckable()).toBool();
-    appendLog_->setChecked(append);
-
     settings.endGroup();
 }
 

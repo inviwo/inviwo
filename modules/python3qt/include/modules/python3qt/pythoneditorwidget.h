@@ -57,17 +57,17 @@ class SyntaxHighligther;
 class CodeEdit;
 
 class IVW_MODULE_PYTHON3QT_API PythonEditorWidget : public InviwoDockWidget,
-                                                    public PythonExecutionOutputObeserver {
-
+                                                    public PythonExecutionOutputObserver {
 public:
-    PythonEditorWidget(QWidget* parent, InviwoApplication* app);
+    PythonEditorWidget(QWidget* parent, InviwoApplication* app,
+                       std::function<void(const std::string&)> onTextChange = nullptr);
     virtual ~PythonEditorWidget();
 
     void appendToOutput(const std::string& msg, bool error = false);
     void loadFile(const std::filesystem::path& fileName, bool askForSave = true);
 
-    virtual void onPyhonExecutionOutput(const std::string& msg,
-                                        PythonOutputType outputType) override;
+    virtual void onPythonExecutionOutput(const std::string& msg,
+                                         PythonOutputType outputType) override;
 
     void save();
     void saveAs();
@@ -82,6 +82,13 @@ public:
     void onTextChange();
 
     virtual void loadState() override;
+
+    void restore();
+
+    void setName(std::string_view name);
+    const std::string& getName() const;
+    void setSource(std::string_view source);
+    const std::string& getSource() const;
 
 protected:
     virtual void closeEvent(QCloseEvent* event) override;
@@ -110,11 +117,11 @@ private:
 
     std::shared_ptr<std::function<void()>> syntaxCallback_;
 
-    static PythonEditorWidget* instance_;
-
     InviwoApplication* app_;
     QAction* appendLog_;
     utilqt::EditorFileObserver fileObserver_;
+
+    std::function<void(const std::string&)> onTextChange_;
 };
 
 }  // namespace inviwo
