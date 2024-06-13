@@ -30,7 +30,7 @@ var searchData=
   ['factory_3c_20representation_2c_20std_3a_3atype_5findex_2c_20args_2e_2e_2e_20_3e_27',['Factory&lt; Representation, std::type_index, Args... &gt;',['../classinviwo_1_1Factory.html',1,'inviwo']]],
   ['factory_3c_20sequenceeditorwidget_2c_20std_3a_3astring_5fview_2c_20args_2e_2e_2e_20_3e_28',['Factory&lt; SequenceEditorWidget, std::string_view, Args... &gt;',['../classinviwo_1_1Factory.html',1,'inviwo']]],
   ['factory_3c_20t_2c_20std_3a_3astring_5fview_20_3e_29',['Factory&lt; T, std::string_view &gt;',['../classinviwo_1_1Factory.html',1,'inviwo']]],
-  ['factory_3c_20t_2c_20std_3a_3astring_5fview_2c_20args_2e_2e_2e_20_3e_30',['Factory&lt; T, std::string_view, Args... &gt;',['../classinviwo_1_1Factory.html',1,'inviwo::Factory&lt; T, std::string_view, Args... &gt;'],['../classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4.html',1,'inviwo::Factory&lt; T, std::string_view, Args... &gt;']]],
+  ['factory_3c_20t_2c_20std_3a_3astring_5fview_2c_20args_2e_2e_2e_20_3e_30',['Factory&lt; T, std::string_view, Args... &gt;',['../classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4.html',1,'inviwo']]],
   ['factory_3c_20track_20_3e_31',['Factory&lt; Track &gt;',['../classinviwo_1_1Factory.html',1,'inviwo']]],
   ['factory_3c_20track_2c_20std_3a_3astring_5fview_2c_20args_2e_2e_2e_20_3e_32',['Factory&lt; Track, std::string_view, Args... &gt;',['../classinviwo_1_1Factory.html',1,'inviwo']]],
   ['factory_3c_20trackwidgetqt_2c_20std_3a_3astring_5fview_2c_20args_2e_2e_2e_20_3e_33',['Factory&lt; TrackWidgetQt, std::string_view, Args... &gt;',['../classinviwo_1_1Factory.html',1,'inviwo']]],

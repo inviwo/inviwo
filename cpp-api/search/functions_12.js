@@ -163,7 +163,8 @@ var searchData=
   ['stopjobs_160',['stopJobs',['../classinviwo_1_1PoolProcessor.html#a00454a599d063fe1a0067cf21ad116ba',1,'inviwo::PoolProcessor']]],
   ['strbuffer_161',['StrBuffer',['../structinviwo_1_1StrBuffer.html#a599e74ee3c46ff688c9b7854d33b731a',1,'inviwo::StrBuffer::StrBuffer()=default'],['../structinviwo_1_1StrBuffer.html#a37cf1306d787a4b47e87408ef2a2a2da',1,'inviwo::StrBuffer::StrBuffer(fmt::format_string&lt; Args... &gt; format, Args &amp;&amp;... args)']]],
   ['stringproperty_162',['StringProperty',['../classinviwo_1_1StringProperty.html#a888fcba5c711383de9ab1865609afa90',1,'inviwo::StringProperty::StringProperty(std::string_view identifier, std::string_view displayName, Document help, std::string_view value=&quot;&quot;, InvalidationLevel invalidationLevel=InvalidationLevel::InvalidOutput, PropertySemantics semantics=PropertySemantics::Default)'],['../classinviwo_1_1StringProperty.html#a2dde6dbc8bdcb57db63f17d46413f153',1,'inviwo::StringProperty::StringProperty(std::string_view identifier, std::string_view displayName, std::string_view value=&quot;&quot;, InvalidationLevel invalidationLevel=InvalidationLevel::InvalidOutput, PropertySemantics semantics=PropertySemantics::Default)']]],
-  ['stripmodulefilenamedecoration_163',['stripModuleFileNameDecoration',['../namespaceinviwo_1_1util.html#a9540b524a4db813530dfad0a0e19e883',1,'inviwo::util']]],
-  ['supportsfragmentlists_164',['supportsFragmentLists',['../classinviwo_1_1FragmentListRenderer.html#ac88b1ac6bfa34923db3c9d9901fc0861',1,'inviwo::FragmentListRenderer']]],
-  ['supportsillustration_165',['supportsIllustration',['../classinviwo_1_1FragmentListRenderer.html#a6b134229cd3c79f02feec05c56d7d140',1,'inviwo::FragmentListRenderer']]]
+  ['stripidentifier_163',['stripIdentifier',['../namespaceinviwo_1_1util.html#a7a96dd02792cfa20cef05e9d001b497b',1,'inviwo::util']]],
+  ['stripmodulefilenamedecoration_164',['stripModuleFileNameDecoration',['../namespaceinviwo_1_1util.html#a9540b524a4db813530dfad0a0e19e883',1,'inviwo::util']]],
+  ['supportsfragmentlists_165',['supportsFragmentLists',['../classinviwo_1_1FragmentListRenderer.html#ac88b1ac6bfa34923db3c9d9901fc0861',1,'inviwo::FragmentListRenderer']]],
+  ['supportsillustration_166',['supportsIllustration',['../classinviwo_1_1FragmentListRenderer.html#a6b134229cd3c79f02feec05c56d7d140',1,'inviwo::FragmentListRenderer']]]
 ];

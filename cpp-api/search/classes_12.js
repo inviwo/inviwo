@@ -176,9 +176,9 @@ var searchData=
   ['swscale_173',['SwScale',['../classinviwo_1_1ffmpeg_1_1SwScale.html',1,'inviwo::ffmpeg']]],
   ['syncedlistproperty_174',['SyncedListProperty',['../classinviwo_1_1SyncedListProperty.html',1,'inviwo']]],
   ['syncedlistproperty_3c_20inviwo_3a_3aboolproperty_2c_203_20_3e_175',['SyncedListProperty&lt; inviwo::BoolProperty, 3 &gt;',['../classinviwo_1_1SyncedListProperty.html',1,'inviwo']]],
-  ['syncedlistproperty_3c_20minmaxproperty_3c_20float_20_3e_2c_203_20_3e_176',['SyncedListProperty&lt; MinMaxProperty&lt; float &gt;, 3 &gt;',['../classinviwo_1_1SyncedListProperty.html',1,'inviwo']]],
-  ['syncedlistproperty_3c_20ordinalproperty_3c_20float_20_3e_2c_203_20_3e_177',['SyncedListProperty&lt; OrdinalProperty&lt; float &gt;, 3 &gt;',['../classinviwo_1_1SyncedListProperty.html',1,'inviwo']]],
-  ['syncedlistproperty_3c_20ordinalproperty_3c_20vec4_20_3e_2c_203_20_3e_178',['SyncedListProperty&lt; OrdinalProperty&lt; vec4 &gt;, 3 &gt;',['../classinviwo_1_1SyncedListProperty.html',1,'inviwo']]],
+  ['syncedlistproperty_3c_20inviwo_3a_3aminmaxproperty_3c_20float_20_3e_2c_203_20_3e_176',['SyncedListProperty&lt; inviwo::MinMaxProperty&lt; float &gt;, 3 &gt;',['../classinviwo_1_1SyncedListProperty.html',1,'inviwo']]],
+  ['syncedlistproperty_3c_20inviwo_3a_3aordinalproperty_3c_20float_20_3e_2c_203_20_3e_177',['SyncedListProperty&lt; inviwo::OrdinalProperty&lt; float &gt;, 3 &gt;',['../classinviwo_1_1SyncedListProperty.html',1,'inviwo']]],
+  ['syncedlistproperty_3c_20inviwo_3a_3aordinalproperty_3c_20vec4_20_3e_2c_203_20_3e_178',['SyncedListProperty&lt; inviwo::OrdinalProperty&lt; vec4 &gt;, 3 &gt;',['../classinviwo_1_1SyncedListProperty.html',1,'inviwo']]],
   ['syntaxhighlighter_179',['SyntaxHighlighter',['../classinviwo_1_1SyntaxHighlighter.html',1,'inviwo']]],
   ['syntheticdataframe_180',['SyntheticDataFrame',['../classinviwo_1_1SyntheticDataFrame.html',1,'inviwo']]],
   ['systemsettings_181',['SystemSettings',['../classinviwo_1_1SystemSettings.html',1,'inviwo']]]

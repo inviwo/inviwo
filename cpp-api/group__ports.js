@@ -12,7 +12,7 @@ var group__ports =
       [ "hasData", "classinviwo_1_1DataOutport.html#a17d6355372207f30db10efdbd9f9d00d", null ],
       [ "setData", "classinviwo_1_1DataOutport.html#af65485a3950bbc556365e599638c2ed5", null ]
     ] ],
-    [ "inviwo::BaseImageInport< N >", "classinviwo_1_1BaseImageInport.html", [
+    [ "inviwo::BaseImageInport< size_t >", "classinviwo_1_1BaseImageInport.html", [
       [ "getInfo", "classinviwo_1_1BaseImageInport.html#abdb75ff23df8824effea45e6fee40d3e", null ]
     ] ],
     [ "inviwo::ImageOutport", "classinviwo_1_1ImageOutport.html", [

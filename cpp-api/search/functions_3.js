@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['darker_0',['darker',['../namespaceinviwo_1_1color.html#ad16249430aa9aa51263a618066cf97d8',1,'inviwo::color::darker(const vec3 &amp;rgb, float factor=2.0f)'],['../namespaceinviwo_1_1color.html#abe8ada10e8e8aa5eda6459e63554b9b0',1,'inviwo::color::darker(const vec4 &amp;rgba, float factor=2.0f)'],['../namespaceinviwo_1_1color.html#a4dffeaf0ac165586f0371d23ee3d5e25',1,'inviwo::color::darker(const uvec3 &amp;rgb, float factor=2.0f)']]],
+  ['darker_0',['darker',['../namespaceinviwo_1_1color.html#ad16249430aa9aa51263a618066cf97d8',1,'inviwo::color::darker(const vec3 &amp;rgb, float factor=2.0f)'],['../namespaceinviwo_1_1color.html#ad69620b3fe019d7bfa21052aa0f28dd6',1,'inviwo::color::darker(const vec4 &amp;rgba, float factor=2.0f)'],['../namespaceinviwo_1_1color.html#a08e2baaa81e1d45af73027892eb84a4f',1,'inviwo::color::darker(const uvec3 &amp;rgb, float factor=2.0f)']]],
   ['dataminmax_1',['dataMinMax',['../namespaceinviwo_1_1util.html#ae49e61ebf3b11c94b3497f88bb454634',1,'inviwo::util']]],
   ['dataname_2',['dataName',['../structinviwo_1_1DataTraits.html#a95325f12e7d96e9c5397268ba40de40f',1,'inviwo::DataTraits']]],
   ['datasource_3',['DataSource',['../classinviwo_1_1DataSource.html#ad69e4ef5f21d135c6a367f62ae11175d',1,'inviwo::DataSource']]],
