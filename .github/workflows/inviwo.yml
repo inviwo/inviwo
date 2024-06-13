@@ -48,7 +48,13 @@ jobs:
             targets: 'ALL_BUILD'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
-            run: './Release/inviwo-cli.exe --logconsole --quit'
+            run: | 
+              ./Release/inviwo-cli.exe --logconsole --quit
+              if [ $? -nq 0 ]
+              then
+                 C:/'Program Files (x86)'/'Windows Kits'/10/Debuggers/x64/gflags.exe /i ./Release/inviwo-cli.exe +sls
+                 C:/'Program Files (x86)'/'Windows Kits'/10/Debuggers/x64/cdb.exe -g -c q ./Release/inviwo-cli.exe
+              fi
           
           - system: macos
             os: 'macos-13' # for now macos-latest == macos-12 since macos-13 is still "beta"
@@ -442,7 +448,7 @@ jobs:
         -DIVW_MODULE_EIGENUTILS=ON
         -DIVW_MODULE_HDF5=ON
 
-    - uses: cpp-linter/cpp-linter-action@v2.11.0
+    - uses: cpp-linter/cpp-linter-action@v2.12.0
       id: linter
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -451,7 +457,7 @@ jobs:
         database: ../build
         style: 'file'
         tidy-checks: ''
-        version: ${{ env.LLVM_VERSION }}
+        version: ${{ env.LLVM_PATH }}
         tidy-review: true
         format-review: false
         step-summary: true
@@ -563,7 +569,7 @@ jobs:
   update-api-docs:
     name: "Publish updated API Docs"
     if: github.ref == 'refs/heads/master'
-    needs: [build, test-installer, build-linux-apt, clang-tidy]
+    needs: [build, test-installer, build-linux-apt]
     runs-on: windows-latest
     steps:
       - name: "Clone Inviwo"
@@ -606,7 +612,7 @@ jobs:
   update-latest-release:
     name: "Update latest release"
     if: github.ref == 'refs/heads/master'
-    needs: [build, test-installer, build-linux-apt, clang-tidy]
+    needs: [build, test-installer, build-linux-apt]
     strategy:
       matrix:
         os: [windows-latest] # macos-latest,
