@@ -1,9 +1,5 @@
 var NAVTREEINDEX30 =
 {
-"structinviwo_1_1StandardExceptionHandler.html":[4,0,0,1044],
-"structinviwo_1_1StandardIdentifier.html":[2,0,0,1042],
-"structinviwo_1_1StandardIdentifier.html":[4,0,0,1046],
-"structinviwo_1_1StaticString.html":[2,0,0,1045],
 "structinviwo_1_1StaticString.html":[4,0,0,1049],
 "structinviwo_1_1Statistics.html":[2,0,0,1046],
 "structinviwo_1_1Statistics.html":[4,0,0,1050],
@@ -249,5 +245,9 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1util_1_1BuildInfo.html":[2,0,0,18,3],
 "structinviwo_1_1util_1_1BuildInfo.html":[4,0,0,23,7],
 "structinviwo_1_1util_1_1DefaultColorRepresentation.html":[2,0,0,18,6],
-"structinviwo_1_1util_1_1DefaultColorRepresentation.html":[4,0,0,23,10]
+"structinviwo_1_1util_1_1DefaultColorRepresentation.html":[4,0,0,23,10],
+"structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec3_01_4.html":[2,0,0,18,7],
+"structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec3_01_4.html":[4,0,0,23,11],
+"structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec4_01_4.html":[2,0,0,18,8],
+"structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec4_01_4.html":[4,0,0,23,12]
 };

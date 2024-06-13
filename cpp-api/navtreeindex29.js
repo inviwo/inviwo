@@ -1,9 +1,5 @@
 var NAVTREEINDEX29 =
 {
-"structinviwo_1_1InviwoDefaults_3_01size__t_01_4.html":[2,0,0,462],
-"structinviwo_1_1InviwoDefaults_3_01size__t_01_4.html":[4,0,0,466],
-"structinviwo_1_1InviwoDefaults_3_01std_1_1filesystem_1_1path_01_4.html":[2,0,0,463],
-"structinviwo_1_1InviwoDefaults_3_01std_1_1filesystem_1_1path_01_4.html":[4,0,0,467],
 "structinviwo_1_1InviwoDefaults_3_01std_1_1string_01_4.html":[2,0,0,464],
 "structinviwo_1_1InviwoDefaults_3_01std_1_1string_01_4.html":[4,0,0,468],
 "structinviwo_1_1InviwoDefaults_3_01unsigned_01char_01_4.html":[2,0,0,465],
@@ -249,5 +245,9 @@ var NAVTREEINDEX29 =
 "structinviwo_1_1ShaderSegment_1_1Placeholder.html":[4,0,0,1001,0],
 "structinviwo_1_1StandardEvaluationErrorHandler.html":[2,0,0,1039],
 "structinviwo_1_1StandardEvaluationErrorHandler.html":[4,0,0,1043],
-"structinviwo_1_1StandardExceptionHandler.html":[2,0,0,1040]
+"structinviwo_1_1StandardExceptionHandler.html":[2,0,0,1040],
+"structinviwo_1_1StandardExceptionHandler.html":[4,0,0,1044],
+"structinviwo_1_1StandardIdentifier.html":[2,0,0,1042],
+"structinviwo_1_1StandardIdentifier.html":[4,0,0,1046],
+"structinviwo_1_1StaticString.html":[2,0,0,1045]
 };

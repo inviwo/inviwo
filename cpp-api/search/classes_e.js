@@ -41,7 +41,7 @@ var searchData=
   ['observable_3c_20progressbarobserver_20_3e_38',['Observable&lt; ProgressBarObserver &gt;',['../classinviwo_1_1Observable.html',1,'inviwo']]],
   ['observable_3c_20propertyobserver_20_3e_39',['Observable&lt; PropertyObserver &gt;',['../classinviwo_1_1Observable.html',1,'inviwo']]],
   ['observable_3c_20propertyownerobserver_20_3e_40',['Observable&lt; PropertyOwnerObserver &gt;',['../classinviwo_1_1Observable.html',1,'inviwo']]],
-  ['observable_3c_20pythonexecutionoutputobeserver_20_3e_41',['Observable&lt; PythonExecutionOutputObeserver &gt;',['../classinviwo_1_1Observable.html',1,'inviwo']]],
+  ['observable_3c_20pythonexecutionoutputobserver_20_3e_41',['Observable&lt; PythonExecutionOutputObserver &gt;',['../classinviwo_1_1Observable.html',1,'inviwo']]],
   ['observable_3c_20resourcemanagerobserver_20_3e_42',['Observable&lt; ResourceManagerObserver &gt;',['../classinviwo_1_1Observable.html',1,'inviwo']]],
   ['observable_3c_20textureobserver_20_3e_43',['Observable&lt; TextureObserver &gt;',['../classinviwo_1_1Observable.html',1,'inviwo']]],
   ['observable_3c_20tfprimitiveobserver_20_3e_44',['Observable&lt; TFPrimitiveObserver &gt;',['../classinviwo_1_1Observable.html',1,'inviwo']]],

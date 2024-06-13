@@ -1,9 +1,5 @@
 var NAVTREEINDEX31 =
 {
-"structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec3_01_4.html":[2,0,0,18,7],
-"structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec3_01_4.html":[4,0,0,23,11],
-"structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec4_01_4.html":[2,0,0,18,8],
-"structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec4_01_4.html":[4,0,0,23,12],
 "structinviwo_1_1util_1_1DefaultTraversalFilter.html":[2,0,0,18,9],
 "structinviwo_1_1util_1_1DefaultTraversalFilter.html":[4,0,0,23,13],
 "structinviwo_1_1util_1_1Grid3DPointGeneration.html":[2,0,0,18,21],

@@ -1,9 +1,5 @@
 var NAVTREEINDEX25 =
 {
-"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html":[4,0,0,16,11],
-"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#a039a836e17061e09cb670a56b7e03af7":[2,0,0,13,10,5],
-"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#a039a836e17061e09cb670a56b7e03af7":[4,0,0,16,11,5],
-"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#a1d17f70df7850dbfd64542e1af4904de":[2,0,0,13,10,6],
 "classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#a1d17f70df7850dbfd64542e1af4904de":[4,0,0,16,11,6],
 "classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#a30e4c241ad2f60a88124b4f3bc489d51":[2,0,0,13,10,1],
 "classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#a30e4c241ad2f60a88124b4f3bc489d51":[4,0,0,16,11,1],
@@ -249,5 +245,9 @@ var NAVTREEINDEX25 =
 "conceptinviwo_1_1DataType.html":[3,0,1],
 "conceptinviwo_1_1Gettable.html":[2,0,0,1305],
 "conceptinviwo_1_1Gettable.html":[3,0,4],
-"conceptinviwo_1_1RepresentationOf.html":[2,0,0,1303]
+"conceptinviwo_1_1RepresentationOf.html":[2,0,0,1303],
+"conceptinviwo_1_1RepresentationOf.html":[3,0,2],
+"conceptinviwo_1_1Settable.html":[2,0,0,1304],
+"conceptinviwo_1_1Settable.html":[3,0,3],
+"conceptinviwo_1_1animation_1_1detail_1_1Scalar.html":[3,0,0,0,0]
 };

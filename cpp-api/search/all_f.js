@@ -265,8 +265,8 @@ var searchData=
   ['pythonabortexception_262',['PythonAbortException',['../classinviwo_1_1PythonAbortException.html',1,'inviwo']]],
   ['pythoneditordockwidget_263',['PythonEditorDockWidget',['../classinviwo_1_1PythonEditorDockWidget.html',1,'inviwo::PythonEditorDockWidget'],['../classinviwo_1_1PythonEditorDockWidget.html#ac9888c022350ac016be2851af29ab645',1,'inviwo::PythonEditorDockWidget::PythonEditorDockWidget()']]],
   ['pythoneditorwidget_264',['PythonEditorWidget',['../classinviwo_1_1PythonEditorWidget.html',1,'inviwo']]],
-  ['pythonexecutionoutputobeserver_265',['PythonExecutionOutputObeserver',['../classinviwo_1_1PythonExecutionOutputObeserver.html',1,'inviwo']]],
-  ['pythonexecutionoutputobservable_266',['PythonExecutionOutputObservable',['../classinviwo_1_1PythonExecutionOutputObservable.html',1,'inviwo']]],
+  ['pythonexecutionoutputobservable_265',['PythonExecutionOutputObservable',['../classinviwo_1_1PythonExecutionOutputObservable.html',1,'inviwo']]],
+  ['pythonexecutionoutputobserver_266',['PythonExecutionOutputObserver',['../classinviwo_1_1PythonExecutionOutputObserver.html',1,'inviwo']]],
   ['pythonfilepropertywidgetqt_267',['PythonFilePropertyWidgetQt',['../classinviwo_1_1PythonFilePropertyWidgetQt.html',1,'inviwo']]],
   ['pythoninport_268',['PythonInport',['../classinviwo_1_1PythonInport.html',1,'inviwo']]],
   ['pythoninterpreter_269',['PythonInterpreter',['../classinviwo_1_1PythonInterpreter.html',1,'inviwo']]],
@@ -279,6 +279,5 @@ var searchData=
   ['pythonprocessorfolderobserver_276',['PythonProcessorFolderObserver',['../classinviwo_1_1PythonProcessorFolderObserver.html',1,'inviwo']]],
   ['pythonpropertywidgetqt_277',['PythonPropertyWidgetQt',['../classinviwo_1_1PythonPropertyWidgetQt.html',1,'inviwo']]],
   ['pythonscript_278',['PythonScript',['../classinviwo_1_1PythonScript.html',1,'inviwo']]],
-  ['pythonscriptdisk_279',['PythonScriptDisk',['../classinviwo_1_1PythonScriptDisk.html',1,'inviwo']]],
-  ['pythonsyntaxhighlight_280',['PythonSyntaxHighlight',['../classinviwo_1_1PythonSyntaxHighlight.html',1,'inviwo']]]
+  ['pythonsyntaxhighlight_279',['PythonSyntaxHighlight',['../classinviwo_1_1PythonSyntaxHighlight.html',1,'inviwo']]]
 ];

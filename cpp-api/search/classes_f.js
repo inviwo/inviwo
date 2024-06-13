@@ -210,8 +210,8 @@ var searchData=
   ['pythonabortexception_207',['PythonAbortException',['../classinviwo_1_1PythonAbortException.html',1,'inviwo']]],
   ['pythoneditordockwidget_208',['PythonEditorDockWidget',['../classinviwo_1_1PythonEditorDockWidget.html',1,'inviwo']]],
   ['pythoneditorwidget_209',['PythonEditorWidget',['../classinviwo_1_1PythonEditorWidget.html',1,'inviwo']]],
-  ['pythonexecutionoutputobeserver_210',['PythonExecutionOutputObeserver',['../classinviwo_1_1PythonExecutionOutputObeserver.html',1,'inviwo']]],
-  ['pythonexecutionoutputobservable_211',['PythonExecutionOutputObservable',['../classinviwo_1_1PythonExecutionOutputObservable.html',1,'inviwo']]],
+  ['pythonexecutionoutputobservable_210',['PythonExecutionOutputObservable',['../classinviwo_1_1PythonExecutionOutputObservable.html',1,'inviwo']]],
+  ['pythonexecutionoutputobserver_211',['PythonExecutionOutputObserver',['../classinviwo_1_1PythonExecutionOutputObserver.html',1,'inviwo']]],
   ['pythonfilepropertywidgetqt_212',['PythonFilePropertyWidgetQt',['../classinviwo_1_1PythonFilePropertyWidgetQt.html',1,'inviwo']]],
   ['pythoninport_213',['PythonInport',['../classinviwo_1_1PythonInport.html',1,'inviwo']]],
   ['pythoninterpreter_214',['PythonInterpreter',['../classinviwo_1_1PythonInterpreter.html',1,'inviwo']]],
@@ -224,6 +224,5 @@ var searchData=
   ['pythonprocessorfolderobserver_221',['PythonProcessorFolderObserver',['../classinviwo_1_1PythonProcessorFolderObserver.html',1,'inviwo']]],
   ['pythonpropertywidgetqt_222',['PythonPropertyWidgetQt',['../classinviwo_1_1PythonPropertyWidgetQt.html',1,'inviwo']]],
   ['pythonscript_223',['PythonScript',['../classinviwo_1_1PythonScript.html',1,'inviwo']]],
-  ['pythonscriptdisk_224',['PythonScriptDisk',['../classinviwo_1_1PythonScriptDisk.html',1,'inviwo']]],
-  ['pythonsyntaxhighlight_225',['PythonSyntaxHighlight',['../classinviwo_1_1PythonSyntaxHighlight.html',1,'inviwo']]]
+  ['pythonsyntaxhighlight_224',['PythonSyntaxHighlight',['../classinviwo_1_1PythonSyntaxHighlight.html',1,'inviwo']]]
 ];

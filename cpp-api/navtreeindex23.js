@@ -1,9 +1,5 @@
 var NAVTREEINDEX23 =
 {
-"classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html#a58fc3931004beb89dfc88f31aa68c64a":[4,0,0,0,0,1],
-"classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html#a74db93eeed7dd5332d82c7dd751f0dbc":[4,0,0,0,0,3],
-"classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html#a776bbe370716bb297d98e871d832003e":[4,0,0,0,0,0],
-"classinviwo_1_1algorithm_1_1LineRenderer.html":[4,0,0,0,1],
 "classinviwo_1_1algorithm_1_1LineRenderer.html#a187dbd9571116cf3ee4389723fd9e14b":[4,0,0,0,1,1],
 "classinviwo_1_1algorithm_1_1LineRenderer.html#aa1b1aeb5593b25d8350e2dc93d02293f":[4,0,0,0,1,0],
 "classinviwo_1_1animation_1_1Animation.html":[2,0,0,0,0],
@@ -249,5 +245,9 @@ var NAVTREEINDEX23 =
 "classinviwo_1_1animation_1_1KeyframeWidgetQt.html":[2,0,0,0,58],
 "classinviwo_1_1animation_1_1KeyframeWidgetQt.html":[4,0,0,1,59],
 "classinviwo_1_1animation_1_1KeyframeWidgetQt.html#afb874d0e40deaf50942b270d7a272be2":[2,0,0,0,58,0],
-"classinviwo_1_1animation_1_1KeyframeWidgetQt.html#afb874d0e40deaf50942b270d7a272be2":[4,0,0,1,59,0]
+"classinviwo_1_1animation_1_1KeyframeWidgetQt.html#afb874d0e40deaf50942b270d7a272be2":[4,0,0,1,59,0],
+"classinviwo_1_1animation_1_1LinearInterpolation.html":[2,0,0,0,60],
+"classinviwo_1_1animation_1_1LinearInterpolation.html":[4,0,0,1,61],
+"classinviwo_1_1animation_1_1MainAnimation.html":[2,0,0,0,61],
+"classinviwo_1_1animation_1_1MainAnimation.html":[4,0,0,1,62]
 };

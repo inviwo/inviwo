@@ -7,7 +7,7 @@ var searchData=
   ['onafterbufferinitialization_4',['onAfterBufferInitialization',['../classinviwo_1_1BufferObjectObserver.html#af6095f5dff767b383c0b1245335f0358',1,'inviwo::BufferObjectObserver']]],
   ['onbeforebufferinitialization_5',['onBeforeBufferInitialization',['../classinviwo_1_1BufferObjectObserver.html#ae290ee3ea743c199d87dc5e0810570f5',1,'inviwo::BufferObjectObserver']]],
   ['onbrush_6',['onBrush',['../classinviwo_1_1BrushingAndLinkingManager.html#a6dfc258d62183b1c866da6db276ee401',1,'inviwo::BrushingAndLinkingManager']]],
-  ['onchange_7',['onChange',['../classinviwo_1_1Inport.html#a6c83746820fd3520e02e392ef4ce85b9',1,'inviwo::Inport::onChange()'],['../classinviwo_1_1Property.html#a357c3e31fa6be2eaf62ab8a8b88a0011',1,'inviwo::Property::onChange()'],['../classinviwo_1_1SingleFileObserver.html#a1da13ca3577c87d4b6d7b78c8e71089a',1,'inviwo::SingleFileObserver::onChange()'],['../classinviwo_1_1PythonScriptDisk.html#a35d0df40985aba25326cfadfbe460d1f',1,'inviwo::PythonScriptDisk::onChange()']]],
+  ['onchange_7',['onChange',['../classinviwo_1_1Inport.html#a6c83746820fd3520e02e392ef4ce85b9',1,'inviwo::Inport::onChange()'],['../classinviwo_1_1Property.html#a357c3e31fa6be2eaf62ab8a8b88a0011',1,'inviwo::Property::onChange()'],['../classinviwo_1_1SingleFileObserver.html#a1da13ca3577c87d4b6d7b78c8e71089a',1,'inviwo::SingleFileObserver::onChange()']]],
   ['onchangescoped_8',['onChangeScoped',['../classinviwo_1_1Property.html#a2728d6de489f511a5e59e3fa8a7f079a',1,'inviwo::Property']]],
   ['onclear_9',['onClear',['../classinviwo_1_1WorkspaceManager.html#a008234b62dad6d13e0aaaa7adf6a8f77',1,'inviwo::WorkspaceManager']]],
   ['onconnect_10',['onConnect',['../classinviwo_1_1Outport.html#aff76d718168ee4089bb7c8e27f877c97',1,'inviwo::Outport']]],

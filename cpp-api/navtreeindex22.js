@@ -1,9 +1,5 @@
 var NAVTREEINDEX22 =
 {
-"classinviwo_1_1VolumeInformationVisualizer.html#ac7ce62c019245b81120a6f7ac3d1ebbd":[2,0,0,1238,4],
-"classinviwo_1_1VolumeInformationVisualizer.html#ac7ce62c019245b81120a6f7ac3d1ebbd":[4,0,0,1242,4],
-"classinviwo_1_1VolumeInformationVisualizer.html#acc94e558ac9b146711544a1b3c099b9b":[2,0,0,1238,6],
-"classinviwo_1_1VolumeInformationVisualizer.html#acc94e558ac9b146711544a1b3c099b9b":[4,0,0,1242,6],
 "classinviwo_1_1VolumeInformationVisualizer.html#ad2755edab150045c6fe8459faa21a8aa":[2,0,0,1238,8],
 "classinviwo_1_1VolumeInformationVisualizer.html#ad2755edab150045c6fe8459faa21a8aa":[4,0,0,1242,8],
 "classinviwo_1_1VolumeInformationVisualizer.html#ad5a9e04744017e476b2676eabd3b3020":[2,0,0,1238,0],
@@ -249,5 +245,9 @@ var NAVTREEINDEX22 =
 "classinviwo_1_1XMLWriter.html":[2,0,0,1301],
 "classinviwo_1_1XMLWriter.html":[4,0,0,1305],
 "classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html":[4,0,0,0,0],
-"classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html#a582d3edf92d7b5d4e4af8df0ac81110b":[4,0,0,0,0,2]
+"classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html#a582d3edf92d7b5d4e4af8df0ac81110b":[4,0,0,0,0,2],
+"classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html#a58fc3931004beb89dfc88f31aa68c64a":[4,0,0,0,0,1],
+"classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html#a74db93eeed7dd5332d82c7dd751f0dbc":[4,0,0,0,0,3],
+"classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html#a776bbe370716bb297d98e871d832003e":[4,0,0,0,0,0],
+"classinviwo_1_1algorithm_1_1LineRenderer.html":[4,0,0,0,1]
 };

@@ -1186,7 +1186,6 @@ var hierarchy =
       [ "inviwo::FileShaderResource", "classinviwo_1_1FileShaderResource.html", null ],
       [ "inviwo::PythonProcessorFactoryObject", "classinviwo_1_1PythonProcessorFactoryObject.html", null ],
       [ "inviwo::PythonProcessorFolderObserver", "classinviwo_1_1PythonProcessorFolderObserver.html", null ],
-      [ "inviwo::PythonScriptDisk", "classinviwo_1_1PythonScriptDisk.html", null ],
       [ "inviwo::SingleFileObserver", "classinviwo_1_1SingleFileObserver.html", null ],
       [ "inviwo::utilqt::EditorFileObserver", "classinviwo_1_1utilqt_1_1EditorFileObserver.html", null ]
     ] ],
@@ -2001,7 +2000,7 @@ var hierarchy =
           ] ]
         ] ]
       ] ],
-      [ "inviwo::Observable< PythonExecutionOutputObeserver >", "classinviwo_1_1Observable.html", [
+      [ "inviwo::Observable< PythonExecutionOutputObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::PythonExecutionOutputObservable", "classinviwo_1_1PythonExecutionOutputObservable.html", [
           [ "inviwo::PythonInterpreter", "classinviwo_1_1PythonInterpreter.html", null ]
         ] ]
@@ -2329,7 +2328,7 @@ var hierarchy =
         [ "inviwo::animation::Animation", "classinviwo_1_1animation_1_1Animation.html", null ],
         [ "inviwo::glui::GLUIProcessor", "classinviwo_1_1glui_1_1GLUIProcessor.html", null ]
       ] ],
-      [ "inviwo::PythonExecutionOutputObeserver", "classinviwo_1_1PythonExecutionOutputObeserver.html", [
+      [ "inviwo::PythonExecutionOutputObserver", "classinviwo_1_1PythonExecutionOutputObserver.html", [
         [ "inviwo::PythonEditorWidget", "classinviwo_1_1PythonEditorWidget.html", null ],
         [ "inviwo::PythonLogger", "classinviwo_1_1PythonLogger.html", null ]
       ] ],
@@ -2785,9 +2784,7 @@ var hierarchy =
     [ "inviwo::PtrHash< T >", "structinviwo_1_1PtrHash.html", null ],
     [ "inviwo::PythonMenu", "classinviwo_1_1PythonMenu.html", null ],
     [ "inviwo::PythonProcessorFactoryObjectData", "structinviwo_1_1PythonProcessorFactoryObjectData.html", null ],
-    [ "inviwo::PythonScript", "classinviwo_1_1PythonScript.html", [
-      [ "inviwo::PythonScriptDisk", "classinviwo_1_1PythonScriptDisk.html", null ]
-    ] ],
+    [ "inviwo::PythonScript", "classinviwo_1_1PythonScript.html", null ],
     [ "QAbstractItemModel", null, [
       [ "inviwo::WorkspaceTreeModel", "classinviwo_1_1WorkspaceTreeModel.html", null ]
     ] ],
@@ -3548,6 +3545,12 @@ var hierarchy =
     [ "inviwo::hdf5::TypeMap< unsigned long long >", "structinviwo_1_1hdf5_1_1TypeMap_3_01unsigned_01long_01long_01_4.html", null ],
     [ "inviwo::hdf5::TypeMap< unsigned short >", "structinviwo_1_1hdf5_1_1TypeMap_3_01unsigned_01short_01_4.html", null ],
     [ "inviwo::UniformLabelAtlasGL", "classinviwo_1_1UniformLabelAtlasGL.html", null ],
+    [ "std::unique_ptr< T >", null, [
+      [ "inviwo::QPtr< inviwo::PythonEditorWidget >", "classinviwo_1_1QPtr.html", null ],
+      [ "inviwo::QPtr< QToolBar >", "classinviwo_1_1QPtr.html", null ],
+      [ "inviwo::QPtr< QMenu >", "classinviwo_1_1QPtr.html", null ],
+      [ "inviwo::QPtr< T >", "classinviwo_1_1QPtr.html", null ]
+    ] ],
     [ "inviwo::UnitDesc", "structinviwo_1_1UnitDesc.html", null ],
     [ "inviwo::util::value_type< T >", "structinviwo_1_1util_1_1value__type.html", null ],
     [ "inviwo::ValueWrapper< T >", "structinviwo_1_1ValueWrapper.html", null ],

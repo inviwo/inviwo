@@ -11,6 +11,6 @@ var searchData=
   ['_7epropertyowner_8',['~PropertyOwner',['../classinviwo_1_1PropertyOwner.html#a7ef71a38a3ee39b12f2cbf5bdf991803',1,'inviwo::PropertyOwner']]],
   ['_7epropertytrack_9',['~PropertyTrack',['../classinviwo_1_1animation_1_1PropertyTrack.html#aabc794f4756d0c4ab09618369a72be61',1,'inviwo::animation::PropertyTrack']]],
   ['_7epropertywidget_10',['~PropertyWidget',['../classinviwo_1_1PropertyWidget.html#a512ed2456251670d2418ca4782ec3645',1,'inviwo::PropertyWidget']]],
-  ['_7epythonscript_11',['~PythonScript',['../classinviwo_1_1PythonScript.html#a77778505292cfa4cdc9663b24dd8de0c',1,'inviwo::PythonScript']]],
+  ['_7epythonscript_11',['~PythonScript',['../classinviwo_1_1PythonScript.html#ad15e78b76dca29ab28aaabecba032aa0',1,'inviwo::PythonScript']]],
   ['_7etrack_12',['~Track',['../classinviwo_1_1animation_1_1Track.html#aeb00c3039d67ee3af6591142a0ce3437',1,'inviwo::animation::Track']]]
 ];

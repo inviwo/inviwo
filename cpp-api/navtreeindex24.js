@@ -1,9 +1,5 @@
 var NAVTREEINDEX24 =
 {
-"classinviwo_1_1animation_1_1LinearInterpolation.html":[2,0,0,0,60],
-"classinviwo_1_1animation_1_1LinearInterpolation.html":[4,0,0,1,61],
-"classinviwo_1_1animation_1_1MainAnimation.html":[2,0,0,0,61],
-"classinviwo_1_1animation_1_1MainAnimation.html":[4,0,0,1,62],
 "classinviwo_1_1animation_1_1PropertySequenceEditor.html":[2,0,0,0,62],
 "classinviwo_1_1animation_1_1PropertySequenceEditor.html":[4,0,0,1,63],
 "classinviwo_1_1animation_1_1PropertyTrack.html":[2,0,0,0,63],
@@ -249,5 +245,9 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1plot_1_1AxisStyleProperty.html":[4,0,0,16,10],
 "classinviwo_1_1plot_1_1AxisStyleProperty.html#a42932f355386f4a448560f6f7c2d2b60":[2,0,0,13,9,0],
 "classinviwo_1_1plot_1_1AxisStyleProperty.html#a42932f355386f4a448560f6f7c2d2b60":[4,0,0,16,10,0],
-"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html":[2,0,0,13,10]
+"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html":[2,0,0,13,10],
+"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html":[4,0,0,16,11],
+"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#a039a836e17061e09cb670a56b7e03af7":[2,0,0,13,10,5],
+"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#a039a836e17061e09cb670a56b7e03af7":[4,0,0,16,11,5],
+"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#a1d17f70df7850dbfd64542e1af4904de":[2,0,0,13,10,6]
 };
