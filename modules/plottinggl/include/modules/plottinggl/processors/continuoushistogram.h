@@ -33,6 +33,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/layerport.h>
 #include <modules/base/properties/datarangeproperty.h>
@@ -57,7 +58,7 @@ public:
 
 private:
     void configureShader(Shader& shader);
-    std::shared_ptr<Mesh> createDensityMesh() const;
+    std::shared_ptr<Mesh> createDensitySubdivMesh() const;
 
     enum class Scaling { Linear, Log };
 
@@ -67,7 +68,8 @@ private:
 
     IntProperty histogramResolution_;
     FloatProperty scalingFactor_;
-    FloatProperty errorThreshold_;
+    BoolProperty enableSubdivisions_;
+    DoubleProperty errorThreshold_;
     OptionPropertyInt channel1_;
     OptionPropertyInt channel2_;
     OptionProperty<Scaling> scaling_;
