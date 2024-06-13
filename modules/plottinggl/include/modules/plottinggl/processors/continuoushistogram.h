@@ -30,7 +30,7 @@
 #pragma once
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -46,7 +46,7 @@ namespace inviwo {
 class Mesh;
 class Layer;
 
-class IVW_MODULE_PLOTTINGGL_API ContinuousHistogram : public Processor {
+class IVW_MODULE_PLOTTINGGL_API ContinuousHistogram : public PoolProcessor {
 public:
     ContinuousHistogram();
 
@@ -58,9 +58,7 @@ public:
 
 private:
     void configureShader(Shader& shader);
-    std::shared_ptr<Mesh> createDensitySubdivMesh() const;
-
-    enum class Scaling { Linear, Log };
+    std::shared_ptr<Layer> renderDensityMesh(std::shared_ptr<const Mesh> mesh);
 
     VolumeInport inport1_;
     VolumeInport inport2_;
@@ -72,13 +70,12 @@ private:
     DoubleProperty errorThreshold_;
     OptionPropertyInt channel1_;
     OptionPropertyInt channel2_;
-    OptionProperty<Scaling> scaling_;
     DataRangeProperty dataRange_;
 
     MeshShaderCache shaders_;
     LayerConfig config_;
     std::vector<std::pair<FrameBufferObject, std::shared_ptr<Layer>>> cache_;
-    std::shared_ptr<Mesh> mesh_;
+    std::shared_ptr<const Mesh> mesh_;
 };
 
 }  // namespace inviwo
