@@ -117,70 +117,38 @@ constexpr std::array<ivec3, 8> offsets = {
     ivec3{0, 0, 1}, ivec3{1, 0, 1}, ivec3{0, 1, 1}, ivec3{1, 1, 1},
 };
 
-constexpr std::array<int, 8> getCubeIndices(int first) {
-    return {0 + first, 1 + first,  3 + first,  4 + first,
-            9 + first, 10 + first, 12 + first, 13 + first};
-}
+constexpr std::array<dvec3, 8> offsetsD = {
+    dvec3{0, 0, 0}, dvec3{1, 0, 0}, dvec3{0, 1, 0}, dvec3{1, 1, 0},
+    dvec3{0, 0, 1}, dvec3{1, 0, 1}, dvec3{0, 1, 1}, dvec3{1, 1, 1},
+};
 
-constexpr std::array<std::array<int, 8>, 8> cubeIndices = {{
-    getCubeIndices(0),
-    getCubeIndices(1),
-    getCubeIndices(3),
-    getCubeIndices(4),
-    getCubeIndices(9),
-    getCubeIndices(10),
-    getCubeIndices(12),
-    getCubeIndices(13),
-}};
+class Interpolator {
+public:
+    // explicit Interpolator(std::array<double, 8> values) : values_{std::move(values)} {};
+    explicit Interpolator(std::array<double, 8>&& values) : values_{values} {}
+    Interpolator(const Interpolator&) = default;
+    Interpolator(Interpolator&&) = default;
 
-// subdivide a cube uniformly and interpolate the 8 scalar values at the corners
-// @return all 27 interpolated values, one for each new vertex in x, y, then z
-constexpr std::array<double, 27> subdivide(std::ranges::input_range auto&& voxels) {
-    std::array<double, 27> result{};
+    Interpolator& operator=(const Interpolator&) = default;
+    Interpolator& operator=(Interpolator&&) = default;
 
-    /*
-     *     6           7             24     25    26
-     *      *---------*                *----*----*
-     *     /         /|               /____/____/|
-     *    /         / |            6 /  7 /  8 / |
-     * 2 *---------* 3|             *----*----*  |
-     *   |         |  |      ==>    |    |    | /|
-     *   |         |  * 5         3 |____|4___|5 * 20
-     *   |         | /              |    |    | /
-     *   |         |/               |    |    |/
-     *   *---------*                *----*----*
-     *  0           1              0     1     2
-     */
+    double operator()(const dvec3& interpolant) const {
+        auto linear = [](double a, double b, double t) { return a * (1.0 - t) + b * t; };
 
-    // front side
-    result[0] = voxels[0];
-    result[2] = voxels[1];
-    result[1] = (result[0] + result[2]) * 0.5;
-    result[6] = voxels[2];
-    result[8] = voxels[3];
-    result[7] = (result[6] + result[8]) * 0.5;
-    result[3] = (result[0] + result[6]) * 0.5;
-    result[4] = (result[1] + result[7]) * 0.5;
-    result[5] = (result[2] + result[8]) * 0.5;
+        const double x1 = linear(values_[0], values_[1], interpolant.x);
+        const double x2 = linear(values_[2], values_[3], interpolant.x);
+        const double x3 = linear(values_[4], values_[5], interpolant.x);
+        const double x4 = linear(values_[6], values_[7], interpolant.x);
 
-    // back side
-    result[18] = voxels[4];
-    result[20] = voxels[5];
-    result[19] = (result[18] + result[20]) * 0.5;
-    result[24] = voxels[6];
-    result[26] = voxels[7];
-    result[25] = (result[24] + result[26]) * 0.5;
-    result[21] = (result[18] + result[24]) * 0.5;
-    result[22] = (result[19] + result[25]) * 0.5;
-    result[23] = (result[20] + result[26]) * 0.5;
+        const double y1 = linear(x1, x2, interpolant.y);
+        const double y2 = linear(x3, x4, interpolant.y);
 
-    // center slice, interpolate between front and back
-    for (size_t i = 0; i < 9; ++i) {
-        result[i + 9] = (result[i] + result[i + 18]) * 0.5;
+        return linear(y1, y2, interpolant.z);
     }
 
-    return result;
-}
+private:
+    std::array<double, 8> values_;
+};
 
 auto axisAlignedBoundingRect(std::ranges::input_range auto&& x, std::ranges::input_range auto&& y)
     -> std::tuple<dvec2, dvec2> {
@@ -190,25 +158,39 @@ auto axisAlignedBoundingRect(std::ranges::input_range auto&& x, std::ranges::inp
 };
 
 template <typename CreateTriangleCallback>
-void splitCell(std::array<double, 8> scalars1, std::array<double, 8> scalars2, double threshold,
-               CreateTriangleCallback callback, int subdivision) {
-    const auto&& [p1, p2] = axisAlignedBoundingRect(scalars1, scalars2);
+void splitCell(const Interpolator& scalars1, const Interpolator& scalars2, dvec3 interpolant,
+               double threshold, CreateTriangleCallback callback, int subdivision) {
+    const double currentSize = pow(2.0, -subdivision);
+
+    const auto&& [p1, p2] = axisAlignedBoundingRect(
+        std::array<double, 8>{
+            scalars1(interpolant + offsetsD[0] * currentSize),
+            scalars1(interpolant + offsetsD[1] * currentSize),
+            scalars1(interpolant + offsetsD[2] * currentSize),
+            scalars1(interpolant + offsetsD[3] * currentSize),
+            scalars1(interpolant + offsetsD[4] * currentSize),
+            scalars1(interpolant + offsetsD[5] * currentSize),
+            scalars1(interpolant + offsetsD[6] * currentSize),
+            scalars1(interpolant + offsetsD[7] * currentSize),
+        },
+        std::array<double, 8>{
+            scalars2(interpolant + offsetsD[0] * currentSize),
+            scalars2(interpolant + offsetsD[1] * currentSize),
+            scalars2(interpolant + offsetsD[2] * currentSize),
+            scalars2(interpolant + offsetsD[3] * currentSize),
+            scalars2(interpolant + offsetsD[4] * currentSize),
+            scalars2(interpolant + offsetsD[5] * currentSize),
+            scalars2(interpolant + offsetsD[6] * currentSize),
+            scalars2(interpolant + offsetsD[7] * currentSize),
+        });
     const auto extent = dvec2{p2.x - p1.x, p2.y - p1.y};
 
     constexpr int maxSubdiv = 16;
     if (glm::compMax(extent) > threshold && subdivision < maxSubdiv) {
-        auto values1 = detail::subdivide(scalars1);
-        auto values2 = detail::subdivide(scalars2);
-
-        for (size_t i = 0; i < 8; ++i) {
-            const auto& indices = detail::cubeIndices[i];
-            splitCell({values1[indices[0]], values1[indices[1]], values1[indices[2]],
-                       values1[indices[3]], values1[indices[4]], values1[indices[5]],
-                       values1[indices[6]], values1[indices[7]]},
-                      {values2[indices[0]], values2[indices[1]], values2[indices[2]],
-                       values2[indices[3]], values2[indices[4]], values2[indices[5]],
-                       values2[indices[6]], values2[indices[7]]},
-                      threshold, callback, subdivision + 1);
+        const double nextSize = currentSize * 0.5;
+        for (auto& offset : offsetsD) {
+            splitCell(scalars1, scalars2, interpolant + offset * nextSize, threshold, callback,
+                      subdivision + 1);
         }
     } else {
         callback(p1, p2, subdivision);
@@ -293,8 +275,9 @@ std::shared_ptr<Mesh> createDensityMesh(pool::Stop stop, pool::Progress progress
                                         detail::getVoxelValue(src2, index, channel2));
                                 }
 
-                                detail::splitCell(scalars1, scalars2, errorThreshold,
-                                                  triangleCallback, 0);
+                                detail::splitCell(detail::Interpolator(std::move(scalars1)),
+                                                  detail::Interpolator(std::move(scalars2)),
+                                                  dvec3{0}, errorThreshold, triangleCallback, 0);
                             }
                         }
                     }
@@ -312,11 +295,10 @@ std::shared_ptr<Mesh> createDensityMesh(pool::Stop stop, pool::Progress progress
                             min = glm::min(min, v);
                             max = glm::max(max, v);
                         }
-                        auto normalize = [&](const dvec2& coord) -> dvec2 {
-                            return dvec2{map1.mapFromDataToNormalized(coord.x),
-                                         map2.mapFromDataToNormalized(coord.y)};
-                        };
-                        return {normalize(min), normalize(max)};
+                        return {dvec2{map1.mapFromDataToNormalized(min.x),
+                                      map2.mapFromDataToNormalized(min.y)},
+                                dvec2{map1.mapFromDataToNormalized(max.x),
+                                      map2.mapFromDataToNormalized(max.y)}};
                     };
 
                     ivec3 pos{};
