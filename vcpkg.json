@@ -99,6 +99,10 @@
       "description": "Grassroots DICOM library",
       "dependencies": ["gdcm"]
     },
+    "graphviz": {
+      "description": "Enable graph layout using graphviz",
+      "dependencies": ["graphviz"]
+    },
     "sgct-tracy" : {
       "description": "Inviwo Dome dependencies",
       "dependencies": [
