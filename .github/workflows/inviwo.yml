@@ -239,7 +239,7 @@ jobs:
       uses: actions/checkout@v4
       with: 
         path: inviwo
-        submodules: recursive
+        submodules: false
 
     - name: "Setup Ccache"
       uses: hendrikmuhs/ccache-action@v1.2
@@ -491,6 +491,13 @@ jobs:
         thread-comments: update
         file-annotations: false
         verbosity: debug
+        
+    - name: "Setup tmate session (on failure and debug_enabled)"
+      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 10
+      with:
+        limit-access-to-actor: true
 
   test-installer:
     name: "Test Installer"
