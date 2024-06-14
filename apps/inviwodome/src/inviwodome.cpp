@@ -69,7 +69,6 @@
 
 #include <inviwo/dome/sgctmanager.h>
 #include <inviwo/dome/dumpfiles.h>
-#include <inviwo/dome/workspacewatcher.h>
 
 #include <fmt/format.h>
 
@@ -91,6 +90,8 @@ void operator delete(void* ptr) noexcept {
 #endif
 
 struct SGCTCallbacks {
+
+
     SGCTCallbacks(inviwo::SGCTManager& aManager, inviwo::InviwoApplication& app)
         : app{app}, manager{aManager}, drawBuffers{} {
 
@@ -108,18 +109,22 @@ struct SGCTCallbacks {
             };
         }
     }
+    SGCTCallbacks(SGCTCallbacks&&) = delete;
+    SGCTCallbacks& operator=(SGCTCallbacks&&) = delete;
+    SGCTCallbacks(const SGCTCallbacks&) = delete;
+    SGCTCallbacks& operator=(const SGCTCallbacks&) = delete;
 
     inviwo::InviwoApplication& app;
     inviwo::SGCTManager& manager;
-    std::vector<GLenum> drawBuffers;
+    std::vector<GLenum> drawBuffers{};
 
-    std::optional<inviwo::NetworkSyncServer> syncServer;
-    std::optional<inviwo::NetworkSyncClient> syncClient;
+    std::optional<inviwo::NetworkSyncServer> syncServer{};
+    std::optional<inviwo::NetworkSyncClient> syncClient{};
 
-    std::mutex commandsMutex;
-    std::vector<inviwo::SgctCommand> commands;
+    std::mutex commandsMutex{};
+    std::vector<inviwo::SgctCommand> commands{};
 
-    void setCamerasToSGCT(inviwo::ProcessorNetwork& net) {
+    static void setCamerasToSGCT(inviwo::ProcessorNetwork& net) {
         inviwo::LambdaNetworkVisitor visitor{[](inviwo::Property& p) {
             if (auto camera = dynamic_cast<inviwo::CameraProperty*>(&p)) {
                 camera->setCamera("SGCTCamera");
@@ -197,7 +202,7 @@ struct SGCTCallbacks {
 
         // Save State that SGCT needs since inviwo might mess with this.
         inviwo::utilgl::Viewport view;
-        GLint sgctFBO;
+        GLint sgctFBO = 0;
         {
             TRACY_ZONE_SCOPED_NC("Save State", 0xAA66000);
             TRACY_GPU_ZONE_C("Save State", 0xAA66000);
@@ -263,7 +268,7 @@ struct SGCTCallbacks {
             } catch (const std::exception& e) {
                 LogErrorCustom("main", e.what());
             } catch (...) {
-                LogErrorCustom("main", "some other error");
+                LogErrorCustom("main", "some unkown error");
             }
         };
     }
@@ -279,7 +284,7 @@ struct SGCTCallbacks {
                 LogErrorCustom("main", e.what());
                 return decltype(fun(std::forward<decltype(args)>(args)...)){};
             } catch (...) {
-                LogErrorCustom("main", "some other error");
+                LogErrorCustom("main", "some unkown error");
                 return decltype(fun(std::forward<decltype(args)>(args)...)){};
             }
         };

@@ -33,7 +33,7 @@
 
 namespace sgct {
 struct RenderData;
-}
+}  // namespace sgct
 
 namespace inviwo {
 /**

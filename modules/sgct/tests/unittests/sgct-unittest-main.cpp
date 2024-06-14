@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2020-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,11 +44,10 @@
 #include <warn/pop>
 
 int main(int argc, char** argv) {
-    using namespace inviwo;
-    LogCentral::init();
-    auto logger = std::make_shared<ConsoleLogger>();
-    LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
-    LogCentral::getPtr()->registerLogger(logger);
+    inviwo::LogCentral::init();
+    auto logger = std::make_shared<inviwo::ConsoleLogger>();
+    inviwo::LogCentral::getPtr()->setVerbosity(inviwo::LogVerbosity::Error);
+    inviwo::LogCentral::getPtr()->registerLogger(logger);
 
     int ret = -1;
     {

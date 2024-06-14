@@ -97,7 +97,7 @@
       "description": "Grassroots DICOM library",
       "dependencies": ["gdcm"]
     },
-    "dome-tracy" : {
+    "sgct-tracy" : {
       "description": "Inviwo Dome dependencies",
       "dependencies": [
         {
@@ -110,7 +110,7 @@
         }
       ]
     },
-    "dome" : {
+    "sgct" : {
       "description": "Inviwo Dome dependencies",
       "dependencies": [
         {

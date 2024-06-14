@@ -45,7 +45,7 @@ namespace inviwo {
 
 class SGCTWrapper {
 public:
-    SGCTWrapper(ProcessorNetwork& net, std::string configFile, SGCTSettings* settings)
+    SGCTWrapper(ProcessorNetwork& net, std::string_view configFile, SGCTSettings* settings)
         : syncServer_{net, settings}
         , terminate_{false}
         , runner_{&SGCTWrapper::run, this, configFile} {
@@ -64,7 +64,7 @@ public:
     }
 
 private:
-    void run(std::string configFile) {
+    void run(std::string_view configFile) {
         sgct::Log::instance().setLogToConsole(false);
         sgct::Log::instance().setLogCallback([](sgct::Log::Level level, std::string_view message) {
             LogCentral::getPtr()->log("SGCT", util::sgctToInviwo(level),
@@ -72,7 +72,7 @@ private:
         });
 
         const sgct::Configuration config{
-            .configFilename = configFile,
+            .configFilename = std::string{configFile},
             .logLevel = sgct::Log::Level::Debug,
         };
         const auto cluster = sgct::loadCluster(config.configFilename);
@@ -126,6 +126,6 @@ SGCTModule::SGCTModule(InviwoApplication* app)
     registerSettings(&settings);
 }
 
-SGCTModule::~SGCTModule() {}
+SGCTModule::~SGCTModule() = default;
 
 }  // namespace inviwo

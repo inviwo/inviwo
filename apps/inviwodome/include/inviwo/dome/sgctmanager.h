@@ -53,7 +53,11 @@ class CameraProperty;
 class Shader;
 
 struct SGCTManager : public ProcessorNetworkObserver {
-    SGCTManager(InviwoApplication& app);
+    explicit SGCTManager(InviwoApplication& app);
+    SGCTManager(const SGCTManager&) = delete;
+    SGCTManager(SGCTManager&&) = delete;
+    SGCTManager& operator=(const SGCTManager&) = delete;
+    SGCTManager& operator=(SGCTManager&&) = delete;
     ~SGCTManager();
 
     CanvasProcessor* getCanvas() { return canvases.empty() ? nullptr : canvases.front(); }

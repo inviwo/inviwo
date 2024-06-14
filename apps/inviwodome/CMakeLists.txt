@@ -9,12 +9,10 @@ target_sources(inviwo-dome
     BASE_DIRS include
     FILES
         include/inviwo/dome/sgctmanager.h
-        include/inviwo/dome/workspacewatcher.h
         include/inviwo/dome/dumpfiles.h
     PRIVATE
         src/inviwodome.cpp
         src/sgctmanager.cpp
-        src/workspacewatcher.cpp
         src/dumpfiles.cpp
         "${IVW_RESOURCES_DIR}/inviwo.manifest"
 )

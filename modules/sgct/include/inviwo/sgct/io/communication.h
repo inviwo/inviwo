@@ -46,25 +46,25 @@ namespace inviwo {
 namespace command {
 struct Nop {};
 struct AddProcessor {
-    std::string data;
+    std::string data{};
 };
 struct RemoveProcessor {
-    std::string data;
+    std::string data{};
 };
 struct AddConnection {
-    std::string data;
+    std::string data{};
 };
 struct RemoveConnection {
-    std::string data;
+    std::string data{};
 };
 struct AddLink {
-    std::string data;
+    std::string data{};
 };
 struct RemoveLink {
-    std::string data;
+    std::string data{};
 };
 struct Update {
-    std::string data;
+    std::string data{};
 };
 struct Stats {
     bool show = false;
@@ -163,7 +163,7 @@ inline auto decode(const std::vector<std::byte>& bytes) -> std::vector<SgctComma
                 break;
             }
             case 8: {  // Stats
-                bool show;
+                bool show = false;
                 sgct::deserializeObject(bytes, pos, show);
                 commands.push_back(command::Stats{show});
                 break;
