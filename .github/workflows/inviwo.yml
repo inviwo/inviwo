@@ -21,6 +21,8 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
   # QT_DEBUG_PLUGINS: 1                           # print qt plugin debug info
+  CCACHE_DEBUG: 1 
+  CCACHE_DEBUGDIR: ccache-debug
 
 # Information about the github runners can be found here
 # https://github.com/actions/runner-images
@@ -47,8 +49,6 @@ jobs:
               -DIVW_MODULE_SGCT=ON
               -DIVW_APP_INVIWO_DOME=ON
               -DVCPKG_MANIFEST_FEATURES="sgct"
-              -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT="$<$<CONFIG:Debug,RelWithDebInfo>:Embedded>"
-              -DCMAKE_VS_GLOBALS="TrackFileAccess=false;UseMultiToolTask=true;DebugInformationFormat=OldStyle"
             preset: msvc-developer
             targets: 'ALL_BUILD'
             installer: 'inviwo-installer-win'
@@ -242,16 +242,24 @@ jobs:
       run: pip3 install -r inviwo/requirements.txt
 
     - name: "Setup Ccache"
-      uses: hendrikmuhs/ccache-action@v1.2
+      id: ccache
+      uses: petersteneteg/ccache-action@v1.1.0
       with:
         variant: ccache
-        max-size: "1000M"
+        max-size: "500M"
         verbose: 2
-        key: inviwo-ccache-${{ matrix.triplet }}-${{ matrix.configuration }}-${{ github.ref }}
+        key: inviwo-${{ matrix.triplet }}-${{ matrix.configuration }}-${{ github.ref }}
         restore-keys: |
-          inviwo-ccache-${{ matrix.triplet }}-${{ matrix.configuration }}-${{ github.ref }}
-          inviwo-ccache-${{ matrix.triplet }}-${{ matrix.configuration }}-refs/heads/master
-          inviwo-ccache-${{ matrix.triplet }}-${{ matrix.configuration }}-
+          inviwo-${{ matrix.triplet }}-${{ matrix.configuration }}-${{ github.ref }}
+          inviwo-${{ matrix.triplet }}-${{ matrix.configuration }}-refs/heads/master
+          inviwo-${{ matrix.triplet }}-${{ matrix.configuration }}
+
+    - name: "Copy ccache"
+      shell: bash
+      if: runner.os == 'Windows'
+      run: |
+        mkdir build
+        cp ${{ steps.ccache.outputs.executable }} build/cl.exe
 
     - name: "Configure CMake"
       shell: bash
@@ -259,23 +267,35 @@ jobs:
         VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ${{ matrix.preset }}
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
-        -DCMAKE_C_COMPILER_LAUNCHER=ccache
-        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
         -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
         -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
         -DBUILD_SHARED_LIBS=${{ matrix.cmake_linkage }}
         -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
+        -DCMAKE_C_COMPILER_LAUNCHER=ccache
+        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        -DIVW_CFG_USE_CCACHE_MSVC=ON
         ${{ matrix.cmake }}
         
-    - name: "Setup C++ Log matchers"
-      uses: Trass3r/setup-cpp@master
-
     - name: "Build"
       timeout-minutes: 360
       shell: bash
-      run: >
-        cmake --build build --config ${{ matrix.configuration }} 
-        --parallel --target ${{ matrix.targets }}
+      run: |
+        echo "::add-matcher::inviwo/.github/matchers/${{ matrix.system }}.json"   
+        cmake --build build --config ${{ matrix.configuration }} --parallel --target ${{ matrix.targets }}
+        echo "::remove-matcher owner=compiler::"
+        echo "::remove-matcher owner=linker::"
+
+    - name: "Upload ccache debug"
+      uses: actions/upload-artifact@v4
+      with:
+        name: ccache-debug-${{ matrix.system }}-${{  matrix.linkage }}-${{ matrix.configuration }}
+        path: ${{ env.CCACHE_DEBUGDIR }}
+
+    - name: "Upload ccache debug2"
+      uses: actions/upload-artifact@v4
+      with:
+        name: ccache-debug2-${{ matrix.system }}-${{  matrix.linkage }}-${{ matrix.configuration }}
+        path: build/${{ env.CCACHE_DEBUGDIR }}
 
     - name: "Run"
       shell: bash
@@ -304,9 +324,9 @@ jobs:
         path: build/docs/python-api/*
     
     - name: "Setup tmate session (on failure and debug_enabled)"
-      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
+      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
       uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 10
+      timeout-minutes: 30
       with:
         limit-access-to-actor: true
 
@@ -357,6 +377,19 @@ jobs:
         path: inviwo
         submodules: recursive
 
+    - name: "Setup Ccache"
+      id: ccache
+      uses: petersteneteg/ccache-action@v1.1.0
+      with:
+        variant: ccache
+        max-size: "500M"
+        verbose: 2
+        key: inviwo-apt-x64-linux-dynamic-Release-${{ github.ref }}
+        restore-keys: |
+          inviwo-apt-x64-linux-dynamic-Release-${{ github.ref }}
+          inviwo-apt-x64-linux-dynamic-Release-refs/heads/master
+          inviwo-apt-x64-linux-dynamic-Release
+
     - name: "Configure"
       shell: bash
       run: >
@@ -370,26 +403,29 @@ jobs:
         -DIVW_MODULE_FFMPEG=OFF
         -DIVW_MODULE_WEBBROWSER=ON
         -DIVW_TEST_BENCHMARKS=OFF
+        -DCMAKE_C_COMPILER_LAUNCHER=ccache
+        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
         
-    - name: "Setup C++ Log matchers"
-      uses: Trass3r/setup-cpp@master
 
     - name: "Build"
       timeout-minutes: 720
       shell: bash
-      run: >
+      run: |
+        echo "::add-matcher::inviwo/.github/matchers/linux.json"   
         cmake --build build --config Release --parallel --target all
-        
+        echo "::remove-matcher owner=compiler::"
+        echo "::remove-matcher owner=linker::"
+
     - name: "Run"
       shell: bash
       working-directory: "build/bin"
       run: QT_QPA_PLATFORM=offscreen ./inviwo --logconsole --quit
 
     - name: "Setup tmate session (on failure and debug_enabled)"
-      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
+      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
 
       uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 10
+      timeout-minutes: 30
       with:
         limit-access-to-actor: true
 
@@ -493,9 +529,9 @@ jobs:
         verbosity: debug
         
     - name: "Setup tmate session (on failure and debug_enabled)"
-      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
+      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
       uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 10
+      timeout-minutes: 30
       with:
         limit-access-to-actor: true
 
@@ -566,9 +602,9 @@ jobs:
         ./inviwo --logconsole --quit
 
     - name: "Setup tmate session (on failure and debug_enabled)"
-      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
+      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
       uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 10
+      timeout-minutes: 30
       with:
         limit-access-to-actor: true
  
