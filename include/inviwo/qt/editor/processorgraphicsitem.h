@@ -39,6 +39,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QEvent>
+#include <QPropertyAnimation>
 #include <warn/pop>
 
 class QGraphicsSimpleTextItem;
@@ -56,10 +57,13 @@ class Port;
 class Inport;
 class Outport;
 
-class IVW_QTEDITOR_API ProcessorGraphicsItem : public EditorGraphicsItem,
+class IVW_QTEDITOR_API ProcessorGraphicsItem : public QObject,
+                                               public EditorGraphicsItem,
                                                public ProcessorObserver,
                                                public LabelGraphicsItemObserver,
                                                public ProcessorMetaDataObserver {
+    Q_OBJECT
+    Q_PROPERTY(QPointF pos READ pos WRITE setPos)
 public:
     ProcessorGraphicsItem(Processor* processor);
     virtual ~ProcessorGraphicsItem();
@@ -147,6 +151,7 @@ private:
     LabelGraphicsItem* identifierLabel_;
     LabelGraphicsItem* tagLabel_;
     ProcessorMetaData* processorMeta_;
+    QPropertyAnimation* animation_;
 
     ProcessorProgressGraphicsItem* progressItem_;
     ProcessorStatusGraphicsItem* statusItem_;
