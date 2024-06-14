@@ -210,10 +210,6 @@ jobs:
         cache: 'pip'
         cache-dependency-path: 'inviwo/requirements.txt'
     
-    - name: "Install Python Modules" 
-      shell: bash
-      run: pip3 install -r inviwo/requirements.txt
-
     - name: "Setup MSVC"
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
@@ -240,6 +236,10 @@ jobs:
       with: 
         path: inviwo
         submodules: false
+
+    - name: "Install Python Modules" 
+      shell: bash
+      run: pip3 install -r inviwo/requirements.txt
 
     - name: "Setup Ccache"
       uses: hendrikmuhs/ccache-action@v1.2
