@@ -26,7 +26,7 @@
     "zlib",
     {
        "name": "glad",
-       "features" : ["wgl", "loader", "extensions"]
+       "features" : [{"name": "wgl", "platform": "windows"}, "loader", "extensions"]
     }
   ],
   "features" : {

@@ -286,7 +286,8 @@ jobs:
         path: build/docs/python-api/*
     
     - name: "Setup tmate session (on failure and debug_enabled)"
-      if: ${{ failure() && (github.event_name == 'workflow_dispatch' && inputs.debug_enabled) }}
+      if: ${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled)
+                            || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 10
       with:
@@ -368,7 +369,8 @@ jobs:
       run: QT_QPA_PLATFORM=offscreen ./inviwo --logconsole --quit
 
     - name: "Setup tmate session (on failure and debug_enabled)"
-      if: ${{ failure() && (github.event_name == 'workflow_dispatch' && inputs.debug_enabled) }}
+      if: ${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled)
+                            || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 10
       with:
@@ -540,7 +542,8 @@ jobs:
         ./inviwo --logconsole --quit
 
     - name: "Setup tmate session (on failure and debug_enabled)"
-      if: ${{ failure() && (github.event_name == 'workflow_dispatch' && inputs.debug_enabled) }}
+      if: ${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled)
+                            || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 10
       with:
