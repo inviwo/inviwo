@@ -91,7 +91,6 @@ void operator delete(void* ptr) noexcept {
 
 struct SGCTCallbacks {
 
-
     SGCTCallbacks(inviwo::SGCTManager& aManager, inviwo::InviwoApplication& app)
         : app{app}, manager{aManager}, drawBuffers{} {
 
