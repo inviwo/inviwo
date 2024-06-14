@@ -70,7 +70,26 @@
         "IVW_USE_EXTERNAL_WARN":      { "type": "BOOL", "value": "ON"}
       }
     },
-  
+    {
+      "name" : "vcpkg-cache-read",
+      "hidden": true,
+      "environment": {
+        "VCPKG_BINARY_SOURCES" :"default;http,https://jenkins.inviwo.org/cache/{sha},read"
+      },
+      "cacheVariables": {
+        "VCPKG_FEATURE_FLAGS":   "-compilertracking",
+        "VCPKG_INSTALL_OPTIONS": "--x-abi-tools-use-exact-versions"
+      }
+    },
+    {
+      "name" : "vcpkg-cache-write",
+      "hidden": true,
+      "inherits" : ["vcpkg-cache-read"],
+      "environment": {
+        "VCPKG_BINARY_SOURCES" :"default;http,https://jenkins.inviwo.org/cache/{sha},readwrite,Authorization: Bearer $env{VCPKG_CACHE_TOKEN}"
+      }
+    },
+
     {
       "name": "apt",
       "hidden": true,
@@ -110,6 +129,14 @@
       "hidden": true,
       "cacheVariables": {
         "IVW_EXTERNAL_MODULES" : "${sourceParentDir}/modules/misc;${sourceParentDir}/modules/medvis;${sourceParentDir}/modules/molvis;${sourceParentDir}/modules/tensorvis;${sourceParentDir}/modules/topovis;${sourceParentDir}/modules/vectorvis"
+      }
+    },
+
+    {
+      "name": "modules-vcpkg",
+      "hidden": true,
+      "environment": {
+        "VCPKG_OVERLAY_PORTS" : "${sourceDir}/tools/vcpkg;${sourceParentDir}/modules/tools/vcpkg"
       }
     },
 
