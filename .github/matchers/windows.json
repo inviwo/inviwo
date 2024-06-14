@@ -1,0 +1,29 @@
+{
+	"problemMatcher": [
+		{
+			"owner": "compiler",
+			"severity": "notice",
+			"pattern": [
+				{
+					"regexp": "^(.*)\\((\\d+),?(\\d*)\\)\\s*:\\s*(?:fatal )?(?:(error|warning)|message|note) *(\\w\\d+)?:(.*)$",
+					"file": 1,
+					"line": 2,
+					"column": 3,
+					"severity": 4,
+					"code": 5,
+					"message": 6
+				}
+			]
+		},
+		{
+			"owner": "linker",
+			"pattern": [
+				{
+					"regexp": "^(?:.+error ?: )?(.*): ((?:undefined|error LNK\\d+:) .+)$",
+					"file": 1,
+					"message": 2
+				}
+			]
+		}
+    ]
+}
