@@ -37,20 +37,25 @@
 
 namespace inviwo {
 
-AutoLinker::AutoLinker(ProcessorNetwork* network, Processor* target, Processor* source)
+AutoLinker::AutoLinker(ProcessorNetwork* network, Processor* target, Processor* source,
+                       const std::vector<Processor*>& ignore)
     : network_{network}, target_{target} {
 
     std::vector<Property*> sourceProperties;
     if (source) {
         for (auto& p : util::getPredecessors(source)) {
-            std::vector<Property*> props = p->getPropertiesRecursive();
-            sourceProperties.insert(sourceProperties.end(), props.begin(), props.end());
+            if (auto it = std::ranges::find(ignore, p); it == ignore.end()) {
+                std::vector<Property*> props = p->getPropertiesRecursive();
+                sourceProperties.insert(sourceProperties.end(), props.begin(), props.end());
+            }
         }
     } else {
         network->forEachProcessor([&](Processor* p) {
             if (p != target_) {
-                std::vector<Property*> props = p->getPropertiesRecursive();
-                sourceProperties.insert(sourceProperties.end(), props.begin(), props.end());
+                if (auto it = std::ranges::find(ignore, p); it == ignore.end()) {
+                    std::vector<Property*> props = p->getPropertiesRecursive();
+                    sourceProperties.insert(sourceProperties.end(), props.begin(), props.end());
+                }
             }
         });
     }
@@ -76,7 +81,7 @@ AutoLinker::AutoLinker(ProcessorNetwork* network, Processor* target, Processor* 
                      std::back_inserter(candidates), isAutoLinkAble);
 
         if (!candidates.empty()) {
-            autoLinkCandiates_[targetProperty] = std::move(candidates);
+            autoLinkCandidates_[targetProperty] = std::move(candidates);
         }
     }
 
@@ -92,14 +97,14 @@ AutoLinker::AutoLinker(ProcessorNetwork* network, Processor* target, Processor* 
                          });
         }
         if (!candidates.empty()) {
-            autoLinkCandiates_[targetProperty] = std::move(candidates);
+            autoLinkCandidates_[targetProperty] = std::move(candidates);
         }
     }
 }
 
 void AutoLinker::sortAutoLinkCandidates() {
     util::PropertyDistanceSorter distSorter;
-    for (auto& item : autoLinkCandiates_) {
+    for (auto& item : autoLinkCandidates_) {
         distSorter.setTarget(item.first);
         std::sort(item.second.begin(), item.second.end(), distSorter);
     }
@@ -109,22 +114,26 @@ void AutoLinker::addLinksToClosestCandidates(bool bidirectional) {
     NetworkLock lock(network_);
     sortAutoLinkCandidates();
     for (auto& item : getAutoLinkCandidates()) {
-        network_->addLink(item.second.front(), item.first);
-        // Propagate the link to the new Processor.
-        network_->evaluateLinksFromProperty(item.second.front());
-        if (bidirectional) {
-            network_->addLink(item.first, item.second.front());
+        const auto existingSources = network_->getPropertiesLinkedTo(item.first);
+        if (std::ranges::find(existingSources, item.second.front()) == existingSources.end()) {
+            network_->addLink(item.second.front(), item.first);
+            // Propagate the link to the new Processor.
+            network_->evaluateLinksFromProperty(item.second.front());
+            if (bidirectional) {
+                network_->addLink(item.first, item.second.front());
+            }
         }
     }
 }
 
 const std::unordered_map<Property*, std::vector<Property*>>& AutoLinker::getAutoLinkCandidates()
     const {
-    return autoLinkCandiates_;
+    return autoLinkCandidates_;
 }
 
-void AutoLinker::addLinks(ProcessorNetwork* network, Processor* target, Processor* source) {
-    AutoLinker al(network, target, source);
+void AutoLinker::addLinks(ProcessorNetwork* network, Processor* target, Processor* source,
+                          const std::vector<Processor*>& ignore) {
+    AutoLinker al(network, target, source, ignore);
     al.addLinksToClosestCandidates(true);
 }
 

@@ -40,16 +40,17 @@ namespace inviwo {
 
 class Property;
 class PropertyConverter;
+class PropertyConverterManager;
 class Processor;
 class PropertyLink;
 class ProcessorNetwork;
 
-struct IVW_CORE_API ConvertableLink {
-    ConvertableLink(Property* src, Property* dst, const PropertyConverter* converter)
-        : src_(src), dst_(dst), converter_(converter) {}
-    Property* src_;
-    Property* dst_;
-    const PropertyConverter* converter_;
+struct IVW_CORE_API ConvertibleLink {
+    ConvertibleLink(Property* aSrc, Property* aDst, const PropertyConverter* aConverter)
+        : src(aSrc), dst(aDst), converter(aConverter) {}
+    Property* src;
+    Property* dst;
+    const PropertyConverter* converter;
 };
 
 class IVW_CORE_API LinkEvaluator {
@@ -79,18 +80,19 @@ public:
 
 private:
     // Cache helpers
-    std::vector<ConvertableLink>& addToSecondaryCache(Property* property);
-    void secondaryCacheHelper(std::vector<ConvertableLink>& links, Property* src, Property* dst);
-    std::vector<ConvertableLink>& getTriggerdLinksForProperty(Property* property);
+    std::vector<ConvertibleLink>& addToTransientCache(Property* property);
+    void transientCacheHelper(std::vector<ConvertibleLink>& links, Property* src, Property* dst,
+                              const PropertyConverterManager* manager);
+    std::vector<ConvertibleLink>& getTriggeredLinksForProperty(Property* property);
 
     ProcessorNetwork* network_;
 
-    // The primary link cache is a map with all source properties and a vector of properties that
+    // The direct link cache is a map with all source properties and a vector of properties that
     // they link directly to
-    std::unordered_map<Property*, std::vector<Property*>> propertyLinkPrimaryCache_;
-    // The secondary link cache is a map with all source properties and a vector of ALL the
+    std::unordered_map<Property*, std::vector<Property*>> directLinkCache_;
+    // The transient link cache is a map with all source properties and a vector of ALL the
     // properties that they link to. Directly or indirectly.
-    std::unordered_map<Property*, std::vector<ConvertableLink>> propertyLinkSecondaryCache_;
+    std::unordered_map<Property*, std::vector<ConvertibleLink>> transientLinkCache_;
     // A cache of all links between two processors.
     ProcessorLinkMap processorLinksCache_;
 

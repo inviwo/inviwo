@@ -44,23 +44,23 @@ namespace inviwo {
 namespace {
 
 struct VisitedHelper {
-    VisitedHelper(std::vector<Property*>& visited, std::vector<ConvertableLink>& toVisit)
+    VisitedHelper(std::vector<Property*>& visited, std::vector<ConvertibleLink>& toVisit)
         : visited_(visited), toVisit_(toVisit) {
         for (auto& link : toVisit_) {
-            util::push_back_unique(visited_, link.src_);
-            util::push_back_unique(visited_, link.dst_);
+            util::push_back_unique(visited_, link.src);
+            util::push_back_unique(visited_, link.dst);
         }
     }
     ~VisitedHelper() {
         for (auto& link : toVisit_) {
-            std::erase(visited_, link.src_);
-            std::erase(visited_, link.dst_);
+            std::erase(visited_, link.src);
+            std::erase(visited_, link.dst);
         }
     }
 
 private:
     std::vector<Property*>& visited_;
-    std::vector<ConvertableLink>& toVisit_;
+    std::vector<ConvertibleLink>& toVisit_;
 };
 
 }  // namespace
@@ -77,14 +77,14 @@ void LinkEvaluator::addLink(const PropertyLink& propertyLink) {
     processorLinksCache_[ProcessorPair(p1, p2)].push_back(propertyLink);
 
     // Update primary cache
-    auto& cachelist = propertyLinkPrimaryCache_[src];
-    util::push_back_unique(cachelist, dst);
+    auto& cacheList = directLinkCache_[src];
+    util::push_back_unique(cacheList, dst);
 
-    if (cachelist.empty()) {
-        propertyLinkPrimaryCache_.erase(src);
+    if (cacheList.empty()) {
+        directLinkCache_.erase(src);
     }
 
-    propertyLinkSecondaryCache_.clear();
+    transientLinkCache_.clear();
 }
 
 bool LinkEvaluator::canLink(const Property* src, const Property* dst) const {
@@ -105,25 +105,26 @@ void LinkEvaluator::removeLink(const PropertyLink& propertyLink) {
     Processor* p1 = src->getOwner()->getProcessor();
     Processor* p2 = dst->getOwner()->getProcessor();
 
-    auto it = processorLinksCache_.find(ProcessorPair(p1, p2));
+    const auto it = processorLinksCache_.find(ProcessorPair(p1, p2));
     if (it != processorLinksCache_.end()) {
         std::erase(it->second, propertyLink);
-        if (it->second.empty()) processorLinksCache_.erase(it);
+        if (it->second.empty()) {
+            processorLinksCache_.erase(it);
+        }
     }
 
     // Update primary cache
-    auto& cachelist = propertyLinkPrimaryCache_[src];
-    std::erase(cachelist, dst);
-
-    if (cachelist.empty()) {
-        propertyLinkPrimaryCache_.erase(src);
+    auto& cacheList = directLinkCache_[src];
+    std::erase(cacheList, dst);
+    if (cacheList.empty()) {
+        directLinkCache_.erase(src);
     }
 
-    propertyLinkSecondaryCache_.clear();
+    transientLinkCache_.clear();
 }
 
 std::vector<PropertyLink> LinkEvaluator::getLinksBetweenProcessors(Processor* p1, Processor* p2) {
-    auto it = processorLinksCache_.find(ProcessorPair(p1, p2));
+    const auto it = processorLinksCache_.find(ProcessorPair(p1, p2));
     if (it != processorLinksCache_.end()) {
         return it->second;
     } else {
@@ -131,37 +132,41 @@ std::vector<PropertyLink> LinkEvaluator::getLinksBetweenProcessors(Processor* p1
     }
 }
 
-std::vector<ConvertableLink>& LinkEvaluator::getTriggerdLinksForProperty(Property* property) {
-    if (propertyLinkSecondaryCache_.find(property) != propertyLinkSecondaryCache_.end()) {
-        return propertyLinkSecondaryCache_[property];
+std::vector<ConvertibleLink>& LinkEvaluator::getTriggeredLinksForProperty(Property* property) {
+    if (transientLinkCache_.find(property) != transientLinkCache_.end()) {
+        return transientLinkCache_[property];
     } else {
-        return addToSecondaryCache(property);
+        return addToTransientCache(property);
     }
 }
 
 std::vector<Property*> LinkEvaluator::getPropertiesLinkedTo(Property* property) {
     // check if link connectivity has been computed and cached already
-    auto& list = (propertyLinkSecondaryCache_.find(property) != propertyLinkSecondaryCache_.end())
-                     ? propertyLinkSecondaryCache_[property]
-                     : addToSecondaryCache(property);
+    auto& list = (transientLinkCache_.find(property) != transientLinkCache_.end())
+                     ? transientLinkCache_[property]
+                     : addToTransientCache(property);
 
-    return util::transform(list, [](const ConvertableLink& link) { return link.dst_; });
+    return util::transform(list, [](const ConvertibleLink& link) { return link.dst; });
 }
 
-std::vector<ConvertableLink>& LinkEvaluator::addToSecondaryCache(Property* src) {
-    for (auto& dst : propertyLinkPrimaryCache_[src]) {
-        if (src != dst) secondaryCacheHelper(propertyLinkSecondaryCache_[src], src, dst);
+std::vector<ConvertibleLink>& LinkEvaluator::addToTransientCache(Property* src) {
+    if (const auto it = directLinkCache_.find(src); it != directLinkCache_.end()) {
+        for (auto& dst : it->second) {
+            if (src != dst) {
+                transientCacheHelper(transientLinkCache_[src], src, dst,
+                                     network_->getApplication()->getPropertyConverterManager());
+            }
+        }
     }
-    return propertyLinkSecondaryCache_[src];
+    return transientLinkCache_[src];
 }
 
-void LinkEvaluator::secondaryCacheHelper(std::vector<ConvertableLink>& links, Property* src,
-                                         Property* dst) {
+void LinkEvaluator::transientCacheHelper(std::vector<ConvertibleLink>& links, Property* src,
+                                         Property* dst, const PropertyConverterManager* manager) {
     // Check that we don't use a previous source or destination as the new destination.
-    if (!util::contains_if(links, [dst](const ConvertableLink& link) {
-            return link.src_ == dst || link.dst_ == dst;
+    if (!util::contains_if(links, [dst](const ConvertibleLink& link) {
+            return link.src == dst || link.dst == dst;
         })) {
-        auto manager = network_->getApplication()->getPropertyConverterManager();
         if (auto converter = manager->getConverter(src, dst)) {
             links.emplace_back(src, dst, converter);
         }
@@ -170,8 +175,10 @@ void LinkEvaluator::secondaryCacheHelper(std::vector<ConvertableLink>& links, Pr
         for (Property* newSrc = dst; newSrc != nullptr;
              newSrc = dynamic_cast<Property*>(newSrc->getOwner())) {
             // Recurse over outgoing links.
-            for (auto& elem : propertyLinkPrimaryCache_[newSrc]) {
-                if (newSrc != elem) secondaryCacheHelper(links, newSrc, elem);
+            if (const auto it = directLinkCache_.find(newSrc); it != directLinkCache_.end()) {
+                for (auto* elem : it->second) {
+                    if (newSrc != elem) transientCacheHelper(links, newSrc, elem, manager);
+                }
             }
         }
 
@@ -179,8 +186,10 @@ void LinkEvaluator::secondaryCacheHelper(std::vector<ConvertableLink>& links, Pr
         if (auto cp = dynamic_cast<CompositeProperty*>(dst)) {
             for (auto& srcProp : cp->getProperties()) {
                 // Recurse over outgoing links.
-                for (auto& elem : propertyLinkPrimaryCache_[srcProp]) {
-                    if (srcProp != elem) secondaryCacheHelper(links, srcProp, elem);
+                if (const auto it = directLinkCache_.find(srcProp); it != directLinkCache_.end()) {
+                    for (auto* elem : it->second) {
+                        if (srcProp != elem) transientCacheHelper(links, srcProp, elem, manager);
+                    }
                 }
             }
         }
@@ -194,11 +203,11 @@ void LinkEvaluator::evaluateLinksFromProperty(Property* modifiedProperty) {
 
     NetworkLock lock(network_);
 
-    auto& links = getTriggerdLinksForProperty(modifiedProperty);
+    auto& links = getTriggeredLinksForProperty(modifiedProperty);
     VisitedHelper helper(visited_, links);
 
     for (auto& link : links) {
-        link.converter_->convert(link.src_, link.dst_);
+        link.converter->convert(link.src, link.dst);
     }
 }
 

@@ -47,8 +47,10 @@ public:
      * @param target the processor onto which auto links should be added
      * @param source source of links. If source is not null we consider all predecessors of source
      * as input for linking, if source is null we consider all processor in the network
+     * @param ignore don't consider links from these processors
      */
-    AutoLinker(ProcessorNetwork* network, Processor* target, Processor* source = nullptr);
+    AutoLinker(ProcessorNetwork* network, Processor* target, Processor* source = nullptr,
+               const std::vector<Processor*>& ignore = {});
     virtual ~AutoLinker() = default;
 
     const std::unordered_map<Property*, std::vector<Property*>>& getAutoLinkCandidates() const;
@@ -58,12 +60,13 @@ public:
 
     void addLinksToClosestCandidates(bool bidirectional);
 
-    static void addLinks(ProcessorNetwork* network, Processor* target, Processor* source = nullptr);
+    static void addLinks(ProcessorNetwork* network, Processor* target, Processor* source = nullptr,
+                         const std::vector<Processor*>& ignore = {});
 
 private:
     ProcessorNetwork* network_;
     Processor* target_;
-    std::unordered_map<Property*, std::vector<Property*>> autoLinkCandiates_;
+    std::unordered_map<Property*, std::vector<Property*>> autoLinkCandidates_;
 };
 
 }  // namespace inviwo

@@ -344,8 +344,6 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
             auto orgId = p->getIdentifier();
             network_->addProcessor(p);
             processorIds[orgId] = p->getIdentifier();
-            AutoLinker::addLinks(network_, p.get());
-
             addedProcessors_.push_back(p.get());
         }
 
@@ -394,6 +392,11 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
             } catch (...) {
                 d.handleError(IVW_CONTEXT);
             }
+        }
+
+        // Add auto-links afterwards to avoid creating redundant links
+        for (auto* p : addedProcessors_) {
+            AutoLinker::addLinks(network_, p, nullptr, addedProcessors_);
         }
 
     } catch (Exception& e) {
