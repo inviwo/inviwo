@@ -289,12 +289,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ccache-debug-${{ matrix.system }}-${{  matrix.linkage }}-${{ matrix.configuration }}
-        path: ${{ env.CCACHE_DEBUGDIR }}
-
-    - name: "Upload ccache debug2"
-      uses: actions/upload-artifact@v4
-      with:
-        name: ccache-debug2-${{ matrix.system }}-${{  matrix.linkage }}-${{ matrix.configuration }}
         path: build/${{ env.CCACHE_DEBUGDIR }}
 
     - name: "Run"
