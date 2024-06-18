@@ -125,7 +125,7 @@ struct SGCTCallbacks {
 
     static void setCamerasToSGCT(inviwo::ProcessorNetwork& net) {
         inviwo::LambdaNetworkVisitor visitor{[](inviwo::Property& p) {
-            if (auto camera = dynamic_cast<inviwo::CameraProperty*>(&p)) {
+            if (auto* camera = dynamic_cast<inviwo::CameraProperty*>(&p)) {
                 camera->setCamera("SGCTCamera");
             }
         }};
@@ -152,7 +152,7 @@ struct SGCTCallbacks {
         manager.createShader();
 
         if (sgct::Engine::instance().isMaster()) {
-            for (auto& win : sgct::Engine::instance().windows()) {
+            for (const auto& win : sgct::Engine::instance().windows()) {
                 manager.setupInteraction(win->windowHandle());
             }
         }
@@ -181,18 +181,25 @@ struct SGCTCallbacks {
         app.processFront();
     };
 
-    auto encode() -> std::vector<std::byte> { return syncServer->getEncodedCommandsAndClear(); }
+    auto encode() -> std::vector<std::byte> {
+        if (syncServer) {
+            return syncServer->getEncodedCommandsAndClear();
+        } else {
+            return {};
+        }
+    }
 
     void decode(const std::vector<std::byte>& bytes) {
-        auto tmp = inviwo::util::decode(bytes);
-        std::scoped_lock lock{commandsMutex};
-        commands.insert(commands.end(), tmp.begin(), tmp.end());
+        const std::scoped_lock lock{commandsMutex};
+        inviwo::util::decode(bytes, commands);
     }
 
     void postSyncPreDraw() {
-        std::scoped_lock lock{commandsMutex};
-        syncClient->applyCommands(commands);
-        commands.clear();
+        if (syncClient) {
+            const std::scoped_lock lock{commandsMutex};
+            syncClient->applyCommands(commands);
+            commands.clear();
+        }
     };
 
     void draw(const sgct::RenderData& renderData) {
@@ -210,9 +217,9 @@ struct SGCTCallbacks {
             glGetIntegerv(GL_FRAMEBUFFER_BINDING, &sgctFBO);
 
             std::fill(drawBuffers.begin(), drawBuffers.end(), GL_NONE);
-            for (int i = 0; i < drawBuffers.size(); ++i) {
-                GLint value;
-                glGetIntegerv(GL_DRAW_BUFFER0 + i, &value);
+            for (size_t i = 0; i < drawBuffers.size(); ++i) {
+                GLint value = 0;
+                glGetIntegerv(GL_DRAW_BUFFER0 + static_cast<unsigned int>(i), &value);
                 drawBuffers[i] = static_cast<GLenum>(value);
             }
         }
@@ -226,7 +233,7 @@ struct SGCTCallbacks {
         {
             TRACY_ZONE_SCOPED_NC("Restore State", 0xAA66000);
             TRACY_GPU_ZONE_C("Restore State", 0xAA66000);
-            renderData.window.makeSharedContextCurrent();
+            sgct::Window::makeSharedContextCurrent();
             view.set();
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, 0);
@@ -258,8 +265,8 @@ struct SGCTCallbacks {
     };
 
     template <typename Fun>
-    static auto tryWrapper(Fun&& fun) {
-        return [fun = std::forward<Fun>(fun)](auto&&... args) {
+    static auto tryWrapper(Fun&& function) {
+        return [fun = std::forward<Fun>(function)](auto&&... args) {
             try {
                 fun(std::forward<decltype(args)>(args)...);
             } catch (const inviwo::Exception& e) {
@@ -272,8 +279,8 @@ struct SGCTCallbacks {
         };
     }
     template <typename Fun>
-    static auto tryWrapperRet(Fun&& fun) {
-        return [fun = std::forward<Fun>(fun)](auto&&... args) {
+    static auto tryWrapperRet(Fun&& function) {
+        return [fun = std::forward<Fun>(function)](auto&&... args) {
             try {
                 return fun(std::forward<decltype(args)>(args)...);
             } catch (const inviwo::Exception& e) {
@@ -308,20 +315,20 @@ int main(int argc, char** argv) {
     SetUnhandledExceptionFilter(inviwo::generateMiniDump);
 #endif  // WIN32
 
-    inviwo::LogCentral logger;
-    inviwo::LogCentral::init(&logger);
-    auto consoleLogger = std::make_shared<inviwo::ConsoleLogger>();
-    logger.registerLogger(consoleLogger);
-
-    sgct::Log::instance().setLogToConsole(false);
-    sgct::Log::instance().setLogCallback(
-        [&logger](sgct::Log::Level level, std::string_view message) {
-            logger.log("SGCT", inviwo::util::sgctToInviwo(level), inviwo::LogAudience::Developer,
-                       "", "", 0, message);
-        });
-
     try {
-        inviwo::util::OnScopeExit closeEngine{[]() {
+        inviwo::LogCentral logger;
+        inviwo::LogCentral::init(&logger);
+        auto consoleLogger = std::make_shared<inviwo::ConsoleLogger>();
+        logger.registerLogger(consoleLogger);
+
+        sgct::Log::instance().setLogToConsole(false);
+        sgct::Log::instance().setLogCallback(
+            [&logger](sgct::Log::Level level, std::string_view message) {
+                logger.log("SGCT", inviwo::util::sgctToInviwo(level),
+                           inviwo::LogAudience::Developer, "", "", 0, message);
+            });
+
+        const inviwo::util::OnScopeExit closeEngine{[]() {
             LogInfoCustom("Dome", "Stop Engine");
             // Stop the engine after we clear the inviwo app.
             // The app will need the glfw context to be active to join
@@ -346,7 +353,8 @@ int main(int argc, char** argv) {
         inviwo::SGCTManager state(app);
         SGCTCallbacks conf(state, app);
 
-        inviwo::util::OnScopeExit clearNetwork{[&app]() { app.getWorkspaceManager()->clear(); }};
+        const inviwo::util::OnScopeExit clearNetwork{
+            [&app]() { app.getWorkspaceManager()->clear(); }};
 
         // Keep the network locked to prevent evaluating it all the time, only unlock it in the draw
         // call in SGCTManager::evaluate

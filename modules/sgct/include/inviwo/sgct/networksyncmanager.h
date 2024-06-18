@@ -50,7 +50,11 @@ class WorkspaceManager;
 class IVW_MODULE_SGCT_API NetworkSyncServer : public ProcessorNetworkObserver,
                                               public ProcessorObserver {
 public:
-    NetworkSyncServer(ProcessorNetwork& net, const SGCTSettings* settings = nullptr);
+    explicit NetworkSyncServer(ProcessorNetwork& net, const SGCTSettings* settings = nullptr);
+    NetworkSyncServer(const NetworkSyncServer&) = delete;
+    NetworkSyncServer(NetworkSyncServer&&) = delete;
+    NetworkSyncServer& operator=(const NetworkSyncServer&) = delete;
+    NetworkSyncServer& operator=(NetworkSyncServer&&) = delete;
 
     const std::vector<SgctCommand>& getCommands();
     void clearCommands();
@@ -84,7 +88,11 @@ private:
 
 class IVW_MODULE_SGCT_API NetworkSyncClient {
 public:
-    NetworkSyncClient(ProcessorNetwork& net);
+    explicit NetworkSyncClient(ProcessorNetwork& net);
+    NetworkSyncClient(const NetworkSyncClient&) = delete;
+    NetworkSyncClient(NetworkSyncClient&&) = delete;
+    NetworkSyncClient& operator=(const NetworkSyncClient&) = delete;
+    NetworkSyncClient& operator=(NetworkSyncClient&&) = delete;
 
     void applyCommands(const std::vector<SgctCommand>& commands);
 

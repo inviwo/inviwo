@@ -46,9 +46,8 @@ inline auto sgctToInviwo(sgct::Log::Level level) -> inviwo::LogLevel {
             return inviwo::LogLevel::Info;
         case sgct::Log::Level::Debug:
             return inviwo::LogLevel::Info;
-        default:
-            return inviwo::LogLevel::Info;
     }
+    return inviwo::LogLevel::Info;
 }
 
 }  // namespace inviwo::util

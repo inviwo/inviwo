@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/dome/SGCTManager.h>
+#include <inviwo/dome/sgctmanager.h>
 
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/exception.h>

@@ -108,9 +108,7 @@ inline auto encode(const std::vector<SgctCommand>& commands) -> std::vector<std:
     return bytes;
 };
 
-inline auto decode(const std::vector<std::byte>& bytes) -> std::vector<SgctCommand> {
-    std::vector<SgctCommand> commands;
-
+inline void decode(const std::vector<std::byte>& bytes, std::vector<SgctCommand>& commands) {
     unsigned int pos = 0;
 
     while (pos < bytes.size()) {
@@ -123,49 +121,49 @@ inline auto decode(const std::vector<std::byte>& bytes) -> std::vector<SgctComma
             case 1: {  // AddProcessor
                 std::string data;
                 sgct::deserializeObject(bytes, pos, data);
-                commands.push_back(command::AddProcessor{data});
+                commands.emplace_back(command::AddProcessor{std::move(data)});
                 break;
             }
             case 2: {  // RemoveProcessor
                 std::string data;
                 sgct::deserializeObject(bytes, pos, data);
-                commands.push_back(command::RemoveProcessor{data});
+                commands.emplace_back(command::RemoveProcessor{std::move(data)});
                 break;
             }
             case 3: {  // AddConnection
                 std::string data;
                 sgct::deserializeObject(bytes, pos, data);
-                commands.push_back(command::AddConnection{data});
+                commands.emplace_back(command::AddConnection{std::move(data)});
                 break;
             }
             case 4: {  // RemoveConnection
                 std::string data;
                 sgct::deserializeObject(bytes, pos, data);
-                commands.push_back(command::RemoveConnection{data});
+                commands.emplace_back(command::RemoveConnection{std::move(data)});
                 break;
             }
             case 5: {  // AddLink
                 std::string data;
                 sgct::deserializeObject(bytes, pos, data);
-                commands.push_back(command::AddLink{data});
+                commands.emplace_back(command::AddLink{std::move(data)});
                 break;
             }
             case 6: {  // RemoveLink
                 std::string data;
                 sgct::deserializeObject(bytes, pos, data);
-                commands.push_back(command::RemoveLink{data});
+                commands.emplace_back(command::RemoveLink{std::move(data)});
                 break;
             }
             case 7: {  // Update
                 std::string data;
                 sgct::deserializeObject(bytes, pos, data);
-                commands.push_back(command::Update{data});
+                commands.emplace_back(command::Update{std::move(data)});
                 break;
             }
             case 8: {  // Stats
                 bool show = false;
                 sgct::deserializeObject(bytes, pos, show);
-                commands.push_back(command::Stats{show});
+                commands.emplace_back(command::Stats{show});
                 break;
             }
             default: {
@@ -173,7 +171,6 @@ inline auto decode(const std::vector<std::byte>& bytes) -> std::vector<SgctComma
             }
         }
     }
-    return commands;
 };
 
 }  // namespace util

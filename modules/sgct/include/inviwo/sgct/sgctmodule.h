@@ -42,9 +42,13 @@ class SGCTWrapper;
 
 class IVW_MODULE_SGCT_API SGCTModule : public InviwoModule {
 public:
-    SGCTModule(InviwoApplication* app);
-    virtual ~SGCTModule();
+    explicit SGCTModule(InviwoApplication* app);
+    SGCTModule(const SGCTModule&) = delete;
+    SGCTModule& operator=(const SGCTModule&) = delete;
 
+    SGCTModule(SGCTModule&&) = delete;
+    SGCTModule& operator=(SGCTModule&&) = delete;
+    virtual ~SGCTModule();
     SGCTSettings settings;
 
 private:

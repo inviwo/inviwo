@@ -58,6 +58,12 @@ public:
         }
     }
 
+    SGCTWrapper(const SGCTWrapper&) = delete;
+    SGCTWrapper& operator=(const SGCTWrapper&) = delete;
+
+    SGCTWrapper(SGCTWrapper&&) = delete;
+    SGCTWrapper& operator=(SGCTWrapper&&) = delete;
+
     ~SGCTWrapper() {
         terminate_ = true;
         runner_.join();
@@ -79,8 +85,9 @@ private:
 
         const sgct::Engine::Callbacks callbacks{.preSync =
                                                     [this]() mutable {
-                                                        if (terminate_)
+                                                        if (terminate_) {
                                                             sgct::Engine::instance().terminate();
+                                                        }
                                                     },
                                                 .encode = [this]() -> std::vector<std::byte> {
                                                     return syncServer_.getEncodedCommandsAndClear();
@@ -90,10 +97,10 @@ private:
 
         try {
             LogInfoCustom("SGCTWrapper", "Start Engine");
-            inviwo::util::OnScopeExit closeEngine{[]() { sgct::Engine::destroy(); }};
+            const inviwo::util::OnScopeExit closeEngine{[]() { sgct::Engine::destroy(); }};
             sgct::Engine::create(cluster, callbacks, config);
 
-            for (auto& win : sgct::Engine::instance().windows()) {
+            for (const auto& win : sgct::Engine::instance().windows()) {
                 win->setRenderWhileHidden(true);
                 win->setVisible(false);
             }

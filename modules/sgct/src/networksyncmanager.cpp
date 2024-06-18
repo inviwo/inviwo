@@ -50,17 +50,17 @@ NetworkSyncServer::NetworkSyncServer(ProcessorNetwork& net, const SGCTSettings* 
 }
 
 const std::vector<SgctCommand>& NetworkSyncServer::getCommands() {
-    std::scoped_lock lock{commandsMutex_};
+    const std::scoped_lock lock{commandsMutex_};
     collectPropertyChanges();
     return commands_;
 }
 void NetworkSyncServer::clearCommands() {
-    std::scoped_lock lock{commandsMutex_};
+    const std::scoped_lock lock{commandsMutex_};
     commands_.clear();
 }
 
 std::vector<std::byte> NetworkSyncServer::getEncodedCommandsAndClear() {
-    std::scoped_lock lock{commandsMutex_};
+    const std::scoped_lock lock{commandsMutex_};
     collectPropertyChanges();
     auto bytes = inviwo::util::encode(commands_);
     commands_.clear();
@@ -84,45 +84,45 @@ void NetworkSyncServer::onProcessorNetworkDidAddProcessor(Processor* processor) 
     std::stringstream ss;
     s.writeFile(ss, false);
 
-    std::scoped_lock lock{commandsMutex_};
-    commands_.push_back(command::AddProcessor{std::move(ss).str()});
+    const std::scoped_lock lock{commandsMutex_};
+    commands_.emplace_back(command::AddProcessor{std::move(ss).str()});
 }
 void NetworkSyncServer::onProcessorNetworkDidRemoveProcessor(Processor* processor) {
     processor->ProcessorObservable::removeObserver(this);
     collectPropertyChanges();
 
-    std::scoped_lock lock{commandsMutex_};
-    commands_.push_back(command::RemoveProcessor{processor->getIdentifier()});
+    const std::scoped_lock lock{commandsMutex_};
+    commands_.emplace_back(command::RemoveProcessor{processor->getIdentifier()});
 }
 void NetworkSyncServer::onProcessorNetworkDidAddConnection(const PortConnection& connection) {
     collectPropertyChanges();
-    std::scoped_lock lock{commandsMutex_};
-    commands_.push_back(create<command::AddConnection>(connection));
+    const std::scoped_lock lock{commandsMutex_};
+    commands_.emplace_back(create<command::AddConnection>(connection));
 }
 void NetworkSyncServer::onProcessorNetworkDidRemoveConnection(const PortConnection& connection) {
     collectPropertyChanges();
-    std::scoped_lock lock{commandsMutex_};
-    commands_.push_back(create<command::RemoveConnection>(connection));
+    const std::scoped_lock lock{commandsMutex_};
+    commands_.emplace_back(create<command::RemoveConnection>(connection));
 }
 void NetworkSyncServer::onProcessorNetworkDidAddLink(const PropertyLink& link) {
     collectPropertyChanges();
-    std::scoped_lock lock{commandsMutex_};
-    commands_.push_back(create<command::AddLink>(link));
+    const std::scoped_lock lock{commandsMutex_};
+    commands_.emplace_back(create<command::AddLink>(link));
 }
 void NetworkSyncServer::onProcessorNetworkDidRemoveLink(const PropertyLink& link) {
     collectPropertyChanges();
-    std::scoped_lock lock{commandsMutex_};
-    commands_.push_back(create<command::RemoveLink>(link));
+    const std::scoped_lock lock{commandsMutex_};
+    commands_.emplace_back(create<command::RemoveLink>(link));
 }
 
 void NetworkSyncServer::showStats(bool show) {
-    std::scoped_lock lock{commandsMutex_};
-    commands_.push_back(command::Stats{show});
+    const std::scoped_lock lock{commandsMutex_};
+    commands_.emplace_back(command::Stats{show});
 }
 
 void NetworkSyncServer::onAboutPropertyChange(Property* property) {
     if (property) {
-        std::scoped_lock lock{modifiedMutex_};
+        const std::scoped_lock lock{modifiedMutex_};
         modified_.push_back(property);
     }
 }
@@ -142,7 +142,7 @@ void NetworkSyncServer::collectPropertyChanges() {
     using PathAndProperty = std::pair<std::vector<PropertyOwner*>, Property*>;
     std::vector<PathAndProperty> pathAndProperties;
     {
-        std::scoped_lock lock{modifiedMutex_};
+        const std::scoped_lock lock{modifiedMutex_};
         if (modified_.empty()) return;
 
         std::sort(modified_.begin(), modified_.end());
@@ -170,11 +170,14 @@ void NetworkSyncServer::collectPropertyChanges() {
                                   const auto& pathB = b.first;
                                   const auto& propA = a.second;
                                   const auto& propB = b.second;
-                                  if (pathA.size() > pathB.size()) return false;
-                                  if (pathA.size() == pathB.size())
+                                  if (pathA.size() > pathB.size()) {
+                                      return false;
+                                  } else if (pathA.size() == pathB.size()) {
                                       return pathA == pathB && propA == propB;
-                                  return std::equal(pathA.begin(), pathA.end(), pathB.begin(),
-                                                    pathB.begin() + pathA.size());
+                                  } else {
+                                      return std::equal(pathA.begin(), pathA.end(), pathB.begin(),
+                                                        pathB.begin() + pathA.size());
+                                  }
                               });
 
     std::vector<Property*> unique;
@@ -185,6 +188,7 @@ void NetworkSyncServer::collectPropertyChanges() {
     auto linked = [&](Property* a, Property* b) {
         auto alinks = net_.getPropertiesLinkedTo(a);
         if (!util::contains(alinks, b)) return false;
+
         auto blinks = net_.getPropertiesLinkedTo(b);
         if (!util::contains(blinks, a)) return false;
 
@@ -211,7 +215,7 @@ void NetworkSyncServer::collectPropertyChanges() {
     s.serialize("modified", uniqueAfterLinks);
     std::stringstream ss;
     s.writeFile(ss, false);
-    commands_.push_back(command::Update{std::move(ss).str()});
+    commands_.emplace_back(command::Update{std::move(ss).str()});
 }
 
 NetworkSyncClient::NetworkSyncClient(ProcessorNetwork& net)
@@ -266,9 +270,11 @@ void NetworkSyncClient::applyCommands(const std::vector<SgctCommand>& commands) 
                                             std::stringstream is{update.data};
                                             auto d = wm_.createWorkspaceDeserializer(is, "");
                                             std::vector<std::string> paths;
-                                            std::vector<Property*> modifiedProps;
-
                                             d.deserialize("paths", paths);
+
+                                            std::vector<Property*> modifiedProps;
+                                            modifiedProps.reserve(paths.size());
+
                                             for (auto& path : paths) {
                                                 modifiedProps.push_back(net_.getProperty(path));
                                             }

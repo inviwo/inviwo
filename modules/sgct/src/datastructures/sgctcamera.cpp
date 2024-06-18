@@ -59,7 +59,7 @@ const std::string SGCTCamera::classIdentifier = "SGCTCamera";
 void SGCTCamera::updateFrom(const Camera& source) {
     Camera::updateFrom(source);
 
-    if (auto sc = dynamic_cast<const SGCTCamera*>(&source)) {
+    if (const auto* sc = dynamic_cast<const SGCTCamera*>(&source)) {
         bool modified = false;
 
 #ifdef IVW_CFG_TRACY_PROFILING
@@ -89,11 +89,11 @@ void SGCTCamera::updateFrom(const Camera& source) {
             camprop_->propertyModified();
         }
 
-    } else if (auto pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
+    } else if (const auto* pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
         setFovy(pc->getFovy());
-    } else if (auto spc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
+    } else if (const auto* spc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
         setFovy(spc->getFovy());
-    } else if (auto oc = dynamic_cast<const OrthographicCamera*>(&source)) {
+    } else if (const auto* oc = dynamic_cast<const OrthographicCamera*>(&source)) {
         const auto dist = util::widthToViewDist(oc->getWidth(), getFovy(), getAspectRatio());
         setLookFrom(getLookTo() + dist * glm::normalize(getLookFrom() - getLookTo()));
     }
@@ -104,26 +104,27 @@ void SGCTCamera::setFovy(float val) {
         fovy_ = val;
         invalidateProjectionMatrix();
         if (camprop_) {
-            if (auto p = util::getCameraFovProperty(*camprop_)) {
+            if (auto* p = util::getCameraFovProperty(*camprop_)) {
                 p->propertyModified();
             }
         }
     }
 }
 
-void SGCTCamera::configureProperties(CameraProperty& cp, bool attach) {
-    Camera::configureProperties(cp, attach);
+void SGCTCamera::configureProperties(CameraProperty& cameraProperty, bool attach) {
+    Camera::configureProperties(cameraProperty, attach);
     if (attach) {
         util::updateOrCreateCameraFovProperty(
-            cp, [this]() { return getFovy(); }, [this](const float& val) { setFovy(val); });
+            cameraProperty, [this]() { return getFovy(); },
+            [this](const float& val) { setFovy(val); });
 
-    } else if (auto fov = util::getCameraFovProperty(cp)) {
+    } else if (auto* fov = util::getCameraFovProperty(cameraProperty)) {
         fov->setGetAndSet([val = fov->get()]() { return val; }, [](const float&) {});
     }
 }
 
 bool SGCTCamera::equal(const Camera& other) const {
-    if (auto rhs = dynamic_cast<const SGCTCamera*>(&other)) {
+    if (const auto* rhs = dynamic_cast<const SGCTCamera*>(&other)) {
         return equalTo(other) && fovy_ == rhs->fovy_ && extProj_ == rhs->extProj_ &&
                extModel_ == rhs->extModel_ && extView_ == rhs->extView_;
     } else {
@@ -141,9 +142,9 @@ void SGCTCamera::deserialize(Deserializer& d) {
 }
 
 void SGCTCamera::setExternal(const sgct::RenderData& renderData) {
-    mat4 proj = glm::make_mat4(renderData.projectionMatrix.values);
-    mat4 view = glm::make_mat4(renderData.viewMatrix.values);
-    mat4 model = glm::make_mat4(renderData.modelMatrix.values);
+    const mat4 proj = glm::make_mat4(renderData.projectionMatrix.values);
+    const mat4 view = glm::make_mat4(renderData.viewMatrix.values);
+    const mat4 model = glm::make_mat4(renderData.modelMatrix.values);
 
     bool modified = false;
 
