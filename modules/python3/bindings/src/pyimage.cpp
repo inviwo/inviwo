@@ -144,14 +144,22 @@ void exposeImage(py::module& m) {
         .def(py::init<size2_t, const DataFormatBase*>())
         .def(py::init<size2_t, const DataFormatBase*, LayerType, const SwizzleMask&,
                       InterpolationType, const Wrapping2D&>())
-        .def("clone", [](Layer& self) { return self.clone(); })
         .def(py::init([](py::array data) { return pyutil::createLayer(data).release(); }))
+        .def("clone", [](Layer& self) { return self.clone(); })
+        .def_property("modelMatrix", &Layer::getModelMatrix, &Layer::setModelMatrix)
+        .def_property("worldMatrix", &Layer::getWorldMatrix, &Layer::setWorldMatrix)
+        .def_property("basis", &Layer::getBasis, &Layer::setBasis)
+        .def_property("offset", &Layer::getOffset, &Layer::setOffset)
         .def("setDimensions", &Layer::setDimensions)
         .def_property_readonly("layertype", &Layer::getLayerType)
         .def_property_readonly("dimensions", &Layer::getDimensions)
         .def_property("swizzlemask", &Layer::getSwizzleMask, &Layer::setSwizzleMask)
         .def_property("interpolation", &Layer::getInterpolation, &Layer::setInterpolation)
         .def_property("wrapping", &Layer::getWrapping, &Layer::setWrapping)
+        .def_readwrite("dataMap", &Layer::dataMap)
+        .def_readwrite("axes", &Layer::axes)
+        .def_static("modelMatrixFromDimensions",
+                    &LayerConfig::aspectPreservingModelMatrixFromDimensions)
         .def(
             "getLayerPyRepresentation",
             [](Layer& self) { return self.getRepresentation<LayerPy>(); },
