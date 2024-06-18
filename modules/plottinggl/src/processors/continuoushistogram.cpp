@@ -243,13 +243,25 @@ std::shared_ptr<Mesh> createDensityMesh(pool::Stop stop, pool::Progress progress
                 dvec2 max{std::numeric_limits<double>::lowest()};
 
                 if (enableSubdivs) {
-                    auto triangleCallback = [&](const dvec2& p1, const dvec2& p2, int subdivision) {
+                    auto triangleCallback = [&](dvec2 p1, dvec2 p2, int subdivision) {
                         auto extent = dvec2{p2.x - p1.x, p2.y - p1.y};
+
                         // FIXME: how to handle zero-sized rects? Set to size = 1?
                         extent = glm::max(extent, histPixelSize);
 
                         const double density =
                             volumeVoxel * pow(2.0, -3 * subdivision) / (extent.x * extent.y);
+
+                        if (extent.x < histPixelSize.x) {
+                            double center = (p1.x + p2.x) * 0.5;
+                            p1.x = center + histPixelSize.x * 0.5;
+                            p2.x = center + histPixelSize.x * 0.5;
+                        }
+                        if (extent.y < histPixelSize.y) {
+                            double center = (p1.y + p2.y) * 0.5;
+                            p1.y = center + histPixelSize.y * 0.5;
+                            p2.y = center + histPixelSize.y * 0.5;
+                        }
                         addVertices(p1, p2, static_cast<float>(density));
 
                         min = glm::min(min, p1);
@@ -352,7 +364,7 @@ std::shared_ptr<Mesh> createDensityMesh(pool::Stop stop, pool::Progress progress
     return mesh;
 }
 
-};  // namespace detail
+}  // namespace detail
 
 void ContinuousHistogram::process() {
     auto volume1 = inport1_.getData();
