@@ -42,11 +42,12 @@ namespace inviwo {
  */
 class IVW_MODULE_SGCT_API SGCTCamera final : public Camera {
 public:
-    explicit SGCTCamera(vec3 lookFrom = cameradefaults::lookFrom, vec3 lookTo = cameradefaults::lookTo,
-               vec3 lookUp = cameradefaults::lookUp, float nearPlane = cameradefaults::nearPlane,
-               float farPlane = cameradefaults::farPlane,
-               float fieldOfView = cameradefaults::fieldOfView,
-               float aspectRatio = cameradefaults::aspectRatio);
+    explicit SGCTCamera(vec3 lookFrom = cameradefaults::lookFrom,
+                        vec3 lookTo = cameradefaults::lookTo, vec3 lookUp = cameradefaults::lookUp,
+                        float nearPlane = cameradefaults::nearPlane,
+                        float farPlane = cameradefaults::farPlane,
+                        float fieldOfView = cameradefaults::fieldOfView,
+                        float aspectRatio = cameradefaults::aspectRatio);
     virtual ~SGCTCamera() = default;
     SGCTCamera(const SGCTCamera& other);
     SGCTCamera& operator=(const SGCTCamera& other);
