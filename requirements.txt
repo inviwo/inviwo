@@ -1,0 +1,4 @@
+numpy
+Sphinx
+sphinx-rtd-theme
+recommonmark

@@ -106,6 +106,15 @@ GLFWWindowEventManager::GLFWWindowEventManager(GLFWwindow* glWindow, std::functi
     glfwSetScrollCallback(glWindow_, scroll);
 }
 
+GLFWWindowEventManager::~GLFWWindowEventManager() {
+    glfwSetKeyCallback(glWindow_, nullptr);
+    glfwSetCharCallback(glWindow_, nullptr);
+    glfwSetMouseButtonCallback(glWindow_, nullptr);
+    glfwSetCursorPosCallback(glWindow_, nullptr);
+    glfwSetScrollCallback(glWindow_, nullptr);
+}
+
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters) GLFW API
 void GLFWWindowEventManager::keyboard(GLFWwindow* window, int key, int scancode, int action,
                                       int mods) {
     auto self = GLFWUserData::get<GLFWWindowEventManager>(window, GLFWUserDataId::Interaction);
@@ -128,6 +137,7 @@ void GLFWWindowEventManager::character(GLFWwindow* window, unsigned int characte
     self->propagateEvent(&keyEvent);
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters) GLFW API
 void GLFWWindowEventManager::mouseButton(GLFWwindow* window, int button, int action, int mods) {
     auto self = GLFWUserData::get<GLFWWindowEventManager>(window, GLFWUserDataId::Interaction);
     self->mouseButton_ = util::mapGLFWMouseButton(button);
@@ -146,6 +156,7 @@ void GLFWWindowEventManager::mouseButton(GLFWwindow* window, int button, int act
     self->propagateEvent(&mouseEvent);
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters) GLFW API
 void GLFWWindowEventManager::mouseMotion(GLFWwindow* window, double x, double y) {
     auto self = GLFWUserData::get<GLFWWindowEventManager>(window, GLFWUserDataId::Interaction);
 
@@ -161,6 +172,7 @@ void GLFWWindowEventManager::mouseMotion(GLFWwindow* window, double x, double y)
     self->propagateEvent(&mouseEvent);
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters) GLFW API
 void GLFWWindowEventManager::scroll(GLFWwindow* window, double xoffset, double yoffset) {
     auto self = GLFWUserData::get<GLFWWindowEventManager>(window, GLFWUserDataId::Interaction);
 

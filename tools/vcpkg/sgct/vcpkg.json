@@ -1,0 +1,50 @@
+{
+  "name": "sgct",
+  "version-string" : "3.0.0",
+  "homepage" : "https://github.com/sgct/sgct/",
+  "license": "BSD-3-Clause",
+  "dependencies" :
+  [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    "catch2",
+    "glfw3",
+    "glm",
+    "libpng",
+    "minizip",
+    "nlohmann-json",
+    "json-schema-validator",
+    "scnlib",
+    "stb",
+    "tinyxml2",
+    "zlib",
+    {
+       "name": "glad",
+       "features" : [{"name": "wgl", "platform": "windows"}, "loader", "extensions"]
+    }
+  ],
+  "features" : {
+    "freetype" : {
+      "description": "Build SGCT with Freetype support", 
+      "dependencies": ["freetype"]
+    },
+     "openvr" : {
+      "description": "Build SGCT with OpenVR support", 
+      "dependencies": ["openvr"]
+    },
+     "spout2" : {
+      "description": "Build SGCT with Spout2 support", 
+      "dependencies": ["spout2"]
+    },
+    "tracy": { 
+      "description": "Enable Tracy profiling support", 
+      "dependencies": ["tracy"]
+    }
+  }
+}

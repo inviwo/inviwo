@@ -28,59 +28,33 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/glfw/glfwmoduledefine.h>
+#include <inviwo/sgct/sgctmoduledefine.h>
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/commandlineparser.h>
 
-#include <inviwo/core/interaction/events/keyboardkeys.h>
-#include <inviwo/core/interaction/events/mousebuttons.h>
-#include <inviwo/core/util/glmvec.h>
+#include <inviwo/sgct/sgctsettings.h>
 
-#include <functional>
-
-typedef struct GLFWwindow GLFWwindow;
+#include <memory>
 
 namespace inviwo {
 
-class Event;
+class SGCTWrapper;
 
-namespace util {
-
-IVW_MODULE_GLFW_API MouseButton mapGLFWMouseButton(int mouseButtonGLFW);
-IVW_MODULE_GLFW_API MouseState mapGLFWMouseState(int mouseStateGLFW);
-
-IVW_MODULE_GLFW_API KeyModifiers mapGLFWModifiers(int modifiersGLFW);
-
-IVW_MODULE_GLFW_API KeyState mapGLFWMKeyState(int actionGLFW);
-IVW_MODULE_GLFW_API IvwKey mapGLFWMKey(int keyGLFW);
-
-}  // namespace util
-
-/**
- * A helper class to handle GLFW mouse/events
- */
-class IVW_MODULE_GLFW_API GLFWWindowEventManager {
+class IVW_MODULE_SGCT_API SGCTModule : public InviwoModule {
 public:
-    GLFWWindowEventManager(GLFWwindow* glWindow, std::function<void(Event*)> ep,
-                           std::function<double(dvec2)> depth);
-    virtual ~GLFWWindowEventManager();
+    explicit SGCTModule(InviwoApplication* app);
+    SGCTModule(const SGCTModule&) = delete;
+    SGCTModule& operator=(const SGCTModule&) = delete;
+
+    SGCTModule(SGCTModule&&) = delete;
+    SGCTModule& operator=(SGCTModule&&) = delete;
+    virtual ~SGCTModule();
+    SGCTSettings settings;
 
 private:
-    static void keyboard(GLFWwindow*, int, int, int, int);
-    static void character(GLFWwindow*, unsigned int);  ///< UTF32 encoded text input
-    static void mouseButton(GLFWwindow*, int, int, int);
-    static void mouseMotion(GLFWwindow*, double, double);
-    static void scroll(GLFWwindow*, double, double);
-
-    void propagateEvent(Event* event);
-
-    static dvec2 normalPos(dvec2 pos, ivec2 size);
-
-    MouseButton mouseButton_;
-    MouseState mouseState_;
-    KeyModifiers modifiers_;
-
-    GLFWwindow* glWindow_;
-    std::function<void(Event*)> eventPropagator_;
-    std::function<double(dvec2)> depth_;
+    std::unique_ptr<SGCTWrapper> sgctWrapper_;
+    TCLAP::ValueArg<std::string> configFileArg_;
+    CommandLineArgHolder argHolder_;
 };
 
 }  // namespace inviwo

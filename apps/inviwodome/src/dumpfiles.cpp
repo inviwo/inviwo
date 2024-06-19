@@ -26,61 +26,46 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/glfw/glfwmoduledefine.h>
+#include <inviwo/dome/dumpfiles.h>
 
-#include <inviwo/core/interaction/events/keyboardkeys.h>
-#include <inviwo/core/interaction/events/mousebuttons.h>
-#include <inviwo/core/util/glmvec.h>
+#ifdef WIN32
+#include <Windows.h>
+#include <dbghelp.h>
+#endif
 
-#include <functional>
-
-typedef struct GLFWwindow GLFWwindow;
+#include <fmt/format.h>
 
 namespace inviwo {
 
-class Event;
+#ifdef WIN32
 
-namespace util {
+LONG __stdcall generateMiniDump(EXCEPTION_POINTERS* exceptionPointers) {
+    SYSTEMTIME stLocalTime;
+    GetLocalTime(&stLocalTime);
 
-IVW_MODULE_GLFW_API MouseButton mapGLFWMouseButton(int mouseButtonGLFW);
-IVW_MODULE_GLFW_API MouseState mapGLFWMouseState(int mouseStateGLFW);
+    std::string dumpFile =
+        fmt::format("InviwoDome-{}-{}-{}-{}-{}-{}--{}--{}.dmp", stLocalTime.wYear,
+                    stLocalTime.wMonth, stLocalTime.wDay, stLocalTime.wHour, stLocalTime.wMinute,
+                    stLocalTime.wSecond, GetCurrentProcessId(), GetCurrentThreadId());
 
-IVW_MODULE_GLFW_API KeyModifiers mapGLFWModifiers(int modifiersGLFW);
+    HANDLE hDumpFile =
+        CreateFileA(dumpFile.c_str(), GENERIC_READ | GENERIC_WRITE,
+                    FILE_SHARE_WRITE | FILE_SHARE_READ, nullptr, CREATE_ALWAYS, 0, nullptr);
 
-IVW_MODULE_GLFW_API KeyState mapGLFWMKeyState(int actionGLFW);
-IVW_MODULE_GLFW_API IvwKey mapGLFWMKey(int keyGLFW);
+    MINIDUMP_EXCEPTION_INFORMATION exceptionParameter;
+    exceptionParameter.ThreadId = GetCurrentThreadId();
+    exceptionParameter.ExceptionPointers = exceptionPointers;
+    exceptionParameter.ClientPointers = TRUE;
 
-}  // namespace util
+    BOOL success = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hDumpFile,
+                                     MiniDumpWithDataSegs, &exceptionParameter, nullptr, nullptr);
 
-/**
- * A helper class to handle GLFW mouse/events
- */
-class IVW_MODULE_GLFW_API GLFWWindowEventManager {
-public:
-    GLFWWindowEventManager(GLFWwindow* glWindow, std::function<void(Event*)> ep,
-                           std::function<double(dvec2)> depth);
-    virtual ~GLFWWindowEventManager();
+    CloseHandle(hDumpFile);
 
-private:
-    static void keyboard(GLFWwindow*, int, int, int, int);
-    static void character(GLFWwindow*, unsigned int);  ///< UTF32 encoded text input
-    static void mouseButton(GLFWwindow*, int, int, int);
-    static void mouseMotion(GLFWwindow*, double, double);
-    static void scroll(GLFWwindow*, double, double);
+    return EXCEPTION_EXECUTE_HANDLER;
+}
 
-    void propagateEvent(Event* event);
-
-    static dvec2 normalPos(dvec2 pos, ivec2 size);
-
-    MouseButton mouseButton_;
-    MouseState mouseState_;
-    KeyModifiers modifiers_;
-
-    GLFWwindow* glWindow_;
-    std::function<void(Event*)> eventPropagator_;
-    std::function<double(dvec2)> depth_;
-};
+#endif
 
 }  // namespace inviwo
