@@ -93,24 +93,24 @@ ProcessorDragHelper::~ProcessorDragHelper() = default;
 bool ProcessorDragHelper::eventFilter(QObject*, QEvent* event) {
     if (event->type() == QEvent::GraphicsSceneDragEnter) {
         auto e = static_cast<QGraphicsSceneDragDropEvent*>(event);
-        if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
+        if (const auto* mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
             return enter(e, mime);
         }
     } else if (event->type() == QEvent::GraphicsSceneDragMove) {
         auto e = static_cast<QGraphicsSceneDragDropEvent*>(event);
-        if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
+        if (const auto* mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
             return move(e, mime);
         }
     } else if (event->type() == QEvent::GraphicsSceneDragLeave) {
-        if (auto e = dynamic_cast<QGraphicsSceneDragDropEvent*>(event)) {
+        if (auto* e = dynamic_cast<QGraphicsSceneDragDropEvent*>(event)) {
             return leave(e);
         }
     } else if (event->type() == QEvent::GraphicsSceneDrop) {
-        auto e = static_cast<QGraphicsSceneDragDropEvent*>(event);
+        auto* e = static_cast<QGraphicsSceneDragDropEvent*>(event);
         // for some reason, QGraphicsView accepts the event before it arrives in this event filter
         // @see QGraphicsView::dropEvent(QDropEvent*)
         e->setAccepted(false);
-        if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
+        if (const auto* mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
             return drop(e, mime);
         }
     }
