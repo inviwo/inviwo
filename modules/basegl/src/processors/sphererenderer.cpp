@@ -111,7 +111,6 @@ SphereRenderer::SphereRenderer()
     addPort(labels_.strings);
     addPort(outport_);
 
-
     addProperties(renderMode_, config_.config, labels_.labels, bnl_.highlight, bnl_.select,
                   bnl_.filter, periodic_.periodicity, clip_.clipping, camera_, lighting_,
                   trackball_);
