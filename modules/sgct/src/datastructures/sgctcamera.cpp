@@ -46,14 +46,6 @@ SGCTCamera::SGCTCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
                        float fieldOfView, float aspectRatio)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), fovy_(fieldOfView) {}
 
-SGCTCamera::SGCTCamera(const SGCTCamera& other) = default;
-
-SGCTCamera& SGCTCamera::operator=(const SGCTCamera& other) = default;
-
-SGCTCamera::SGCTCamera(SGCTCamera&& other) = default;
-
-SGCTCamera& SGCTCamera::operator=(SGCTCamera&& other) = default;
-
 SGCTCamera* SGCTCamera::clone() const { return new SGCTCamera(*this); }
 
 std::string SGCTCamera::getClassIdentifier() const { return classIdentifier; }

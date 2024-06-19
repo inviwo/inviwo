@@ -21,8 +21,6 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
   # QT_DEBUG_PLUGINS: 1                           # print qt plugin debug info
-  CCACHE_DEBUG: 1 
-  CCACHE_DEBUGDIR: ccache-debug
 
 # Information about the github runners can be found here
 # https://github.com/actions/runner-images
@@ -285,12 +283,6 @@ jobs:
         cmake --build build --config ${{ matrix.configuration }} --parallel --target ${{ matrix.targets }}
         echo "::remove-matcher owner=compiler::"
         echo "::remove-matcher owner=linker::"
-
-    - name: "Upload ccache debug"
-      uses: actions/upload-artifact@v4
-      with:
-        name: ccache-debug-${{ matrix.system }}-${{  matrix.linkage }}-${{ matrix.configuration }}
-        path: build/${{ env.CCACHE_DEBUGDIR }}
 
     - name: "Run"
       shell: bash
