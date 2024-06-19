@@ -366,7 +366,7 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
 #include <warn/push>
 #include <warn/ignore/switch-enum>
     const auto isAnimating = [this]() {
-        return animation_ && animation_->state() == QAbstractAnimation::Running;
+        return animation_ != nullptr && animation_->state() == QAbstractAnimation::Running;
     };
 
     switch (change) {

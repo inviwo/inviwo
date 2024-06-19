@@ -65,7 +65,11 @@ class IVW_QTEDITOR_API ProcessorGraphicsItem : public QObject,
     Q_OBJECT
     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
 public:
-    ProcessorGraphicsItem(Processor* processor);
+    explicit ProcessorGraphicsItem(Processor* processor);
+    ProcessorGraphicsItem(const ProcessorGraphicsItem&) = delete;
+    ProcessorGraphicsItem(ProcessorGraphicsItem&&) = delete;
+    ProcessorGraphicsItem& operator=(const ProcessorGraphicsItem&) = delete;
+    ProcessorGraphicsItem& operator=(ProcessorGraphicsItem&&) = delete;
     virtual ~ProcessorGraphicsItem();
 
     Processor* getProcessor() const;
