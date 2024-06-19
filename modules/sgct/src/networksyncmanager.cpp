@@ -185,6 +185,7 @@ void NetworkSyncServer::collectPropertyChanges() {
                    [](const PathAndProperty& a) { return a.second; });
 
     // Only send one of the properties in a set of linked properties
+    // NOLINTBEGIN(readability-simplify-boolean-expr) 
     auto linked = [&](Property* a, Property* b) {
         auto alinks = net_.getPropertiesLinkedTo(a);
         if (!util::contains(alinks, b)) return false;
@@ -194,6 +195,7 @@ void NetworkSyncServer::collectPropertyChanges() {
 
         return true;
     };
+    // NOLINTEND(readability-simplify-boolean-expr) 
 
     std::vector<Property*> uniqueAfterLinks;
     for (auto* p : unique) {

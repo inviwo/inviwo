@@ -48,10 +48,14 @@ public:
                         float farPlane = cameradefaults::farPlane,
                         float fieldOfView = cameradefaults::fieldOfView,
                         float aspectRatio = cameradefaults::aspectRatio);
-    virtual ~SGCTCamera() = default;
+
     SGCTCamera(const SGCTCamera& other);
     SGCTCamera& operator=(const SGCTCamera& other);
+    SGCTCamera(SGCTCamera&& other);
+    SGCTCamera& operator=(SGCTCamera&& other);
+    virtual ~SGCTCamera() = default;
     virtual SGCTCamera* clone() const override;
+
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 

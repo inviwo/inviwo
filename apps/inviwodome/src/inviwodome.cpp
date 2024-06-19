@@ -112,6 +112,7 @@ struct SGCTCallbacks {
     SGCTCallbacks& operator=(SGCTCallbacks&&) = delete;
     SGCTCallbacks(const SGCTCallbacks&) = delete;
     SGCTCallbacks& operator=(const SGCTCallbacks&) = delete;
+    ~SGCTCallbacks() = default;
 
     inviwo::InviwoApplication& app;
     inviwo::SGCTManager& manager;
@@ -245,7 +246,8 @@ struct SGCTCallbacks {
         manager.copy();
     };
 
-    void postDraw() {
+    // NOLINTNEXTLINE(readability-convert-member-functions-to-static) be consistent with the other callbacks
+    void postDraw() { 
         TRACY_ZONE_SCOPED_NC("Post Draw", 0xAA0000);
         TRACY_GPU_ZONE_C("Post Draw", 0xAA0000);
 
@@ -264,6 +266,7 @@ struct SGCTCallbacks {
         }
     };
 
+    // NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward)
     template <typename Fun>
     static auto tryWrapper(Fun&& function) {
         return [fun = std::forward<Fun>(function)](auto&&... args) {
@@ -278,6 +281,8 @@ struct SGCTCallbacks {
             }
         };
     }
+
+    // NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward)
     template <typename Fun>
     static auto tryWrapperRet(Fun&& function) {
         return [fun = std::forward<Fun>(function)](auto&&... args) {

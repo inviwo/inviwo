@@ -43,6 +43,7 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
+// NOLINTNEXTLINE(bugprone-exception-escape)
 int main(int argc, char** argv) {
     inviwo::LogCentral::init();
     auto logger = std::make_shared<inviwo::ConsoleLogger>();

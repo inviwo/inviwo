@@ -38,6 +38,10 @@ namespace inviwo {
 class IVW_MODULE_SGCT_API SGCTSettings : public Settings {
 public:
     SGCTSettings();
+    SGCTSettings(const SGCTSettings& other) = delete;
+    SGCTSettings& operator=(const SGCTSettings& other) = delete;
+    SGCTSettings(SGCTSettings&& other) = delete;
+    SGCTSettings& operator=(SGCTSettings&& other) = delete;
     virtual ~SGCTSettings() = default;
 
     BoolProperty showSGCTStatisticsOverlay;

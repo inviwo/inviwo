@@ -82,6 +82,8 @@ public:
     virtual ~Camera() = default;
     Camera(const Camera& other) = default;
     Camera& operator=(const Camera& other) = default;
+    Camera(Camera&& other) = default;
+    Camera& operator=(Camera&& other) = default;
     virtual Camera* clone() const = 0;
     virtual std::string getClassIdentifier() const = 0;
 

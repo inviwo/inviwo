@@ -43,7 +43,7 @@ inline auto sgctToInviwo(sgct::Log::Level level) -> inviwo::LogLevel {
         case sgct::Log::Level::Warning:
             return inviwo::LogLevel::Warn;
         case sgct::Log::Level::Info:
-            return inviwo::LogLevel::Info;
+            [[fallthrough]];
         case sgct::Log::Level::Debug:
             return inviwo::LogLevel::Info;
     }

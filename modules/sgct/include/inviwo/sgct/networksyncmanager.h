@@ -55,6 +55,7 @@ public:
     NetworkSyncServer(NetworkSyncServer&&) = delete;
     NetworkSyncServer& operator=(const NetworkSyncServer&) = delete;
     NetworkSyncServer& operator=(NetworkSyncServer&&) = delete;
+    ~NetworkSyncServer() = default;
 
     const std::vector<SgctCommand>& getCommands();
     void clearCommands();
@@ -93,6 +94,7 @@ public:
     NetworkSyncClient(NetworkSyncClient&&) = delete;
     NetworkSyncClient& operator=(const NetworkSyncClient&) = delete;
     NetworkSyncClient& operator=(NetworkSyncClient&&) = delete;
+    ~NetworkSyncClient() = default;
 
     void applyCommands(const std::vector<SgctCommand>& commands);
 

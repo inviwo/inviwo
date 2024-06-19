@@ -110,11 +110,11 @@ SGCTManager::~SGCTManager() {
 void SGCTManager::onProcessorNetworkDidAddProcessor(Processor* processor) {
     if (!processor) return;
 
-    if (auto cp = dynamic_cast<CanvasProcessor*>(processor)) {
+    if (auto* cp = dynamic_cast<CanvasProcessor*>(processor)) {
         if (canvases.empty()) {
             eventTarget = cp;
             cp->setEvaluateWhenHidden(true);
-            if (auto widget = cp->getProcessorWidget()) {
+            if (auto* widget = cp->getProcessorWidget()) {
                 widget->setVisible(false);
             }
         }
@@ -132,12 +132,12 @@ void SGCTManager::onProcessorNetworkDidAddProcessor(Processor* processor) {
 void SGCTManager::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
     if (!processor) return;
 
-    if (auto cp = dynamic_cast<CanvasProcessor*>(processor)) {
+    if (auto* cp = dynamic_cast<CanvasProcessor*>(processor)) {
         if (auto it = std::find(canvases.begin(), canvases.end(), cp); it != canvases.end()) {
             canvases.erase(it);
         }
     }
-    for (auto camera : processor->getPropertiesByType<CameraProperty>(true)) {
+    for (auto* camera : processor->getPropertiesByType<CameraProperty>(true)) {
         if (auto it = std::find(cameras.begin(), cameras.end(), camera); it != cameras.end()) {
             cameras.erase(it);
         }
@@ -156,7 +156,7 @@ void SGCTManager::setupInteraction(GLFWwindow* win) {
         win,
         [this](Event* e) {
             TRACY_ZONE_SCOPED_NC("Handle Event", 0xAA0000);
-            if (auto ke = e->getAs<KeyboardEvent>()) {
+            if (auto* ke = e->getAs<KeyboardEvent>()) {
                 if (ke->key() == IvwKey::S && ke->state() == KeyState::Release &&
                     ke->modifiers() == KeyModifier::Alt) {
                     if (onStatChange) onStatChange(true);
@@ -173,7 +173,7 @@ void SGCTManager::setupInteraction(GLFWwindow* win) {
             }
         },
         // Todo figure out proper depth.
-        [this](dvec2 p) { return -1.0; }));
+        [](dvec2 /*pois*/) { return -1.0; }));
 }
 
 void SGCTManager::teardownInteraction() {
@@ -189,7 +189,7 @@ void SGCTManager::evaluate(const ::sgct::RenderData& renderData) {
         TRACY_ZONE_SCOPED_NC("Update cameras", 0x770000);
         const auto size = renderData.window.resolution();
         const size2_t newSize{size.x, size.y};
-        if (auto canvas = getCanvas(); canvas && canvas->getCanvasSize() != newSize) {
+        if (auto* canvas = getCanvas(); canvas && canvas->getCanvasSize() != newSize) {
             canvas->setCanvasSize(newSize);
         }
 
@@ -203,7 +203,7 @@ void SGCTManager::evaluate(const ::sgct::RenderData& renderData) {
     {
         TRACY_ZONE_SCOPED_NC("Evaluate Network", 0x770000);
         TRACY_GPU_ZONE_C("Evaluate Network", 0x770000);
-        auto net = app.getProcessorNetwork();
+        auto* net = app.getProcessorNetwork();
         net->unlock();
         // network evaluated
         net->lock();
@@ -226,8 +226,8 @@ void SGCTManager::copy() {  // Copy inviwo output
 
     if (auto* canvas = getCanvas()) {
         if (auto img = canvas->inport_.getData()) {
-            TextureUnit colorUnit;
-            TextureUnit depthUnit;
+            const TextureUnit colorUnit;
+            const TextureUnit depthUnit;
             img->getColorLayer(0)->getRepresentation<LayerGL>()->bindTexture(colorUnit.getEnum());
             img->getDepthLayer()->getRepresentation<LayerGL>()->bindTexture(depthUnit.getEnum());
 
