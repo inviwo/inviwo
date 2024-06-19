@@ -247,7 +247,7 @@ struct SGCTCallbacks {
     };
 
     // be consistent with the other callbacks
-    // NOLINTNEXTLINE(readability-convert-member-functions-to-static) 
+    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
     void postDraw() {
         TRACY_ZONE_SCOPED_NC("Post Draw", 0xAA0000);
         TRACY_GPU_ZONE_C("Post Draw", 0xAA0000);
