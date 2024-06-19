@@ -103,7 +103,7 @@ void UniformLabelAtlasGL::fillAltas() {
     };
 
     const auto labelSize = charSize * chars + margin;
-    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     {
         auto state = renderer.setupRenderState(atlas, vec4{0.0});
         for (size_t i = 0; i < atlasSize.y; ++i) {
@@ -134,7 +134,8 @@ void UniformLabelAtlasGL::addDefines(Shader& shader) const {
 void UniformLabelAtlasGL::setUniforms(Shader& shader) const {
     StrBuffer buff;
     const auto labelSize = charSize * chars + margin;
-    shader.setUniform("label.aspect", float(labelSize.y) / float(labelSize.x));
+    shader.setUniform("label.aspect",
+                      static_cast<float>(labelSize.y) / static_cast<float>(labelSize.x));
     shader.setUniform(buff.replace("label.{}", color.getIdentifier()), color.get());
     shader.setUniform(buff.replace("label.{}", size.getIdentifier()), size.get());
     shader.setUniform("label.tex", unitNumber);
