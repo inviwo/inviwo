@@ -80,7 +80,7 @@ public:
 
 private:
     // Cache helpers
-    std::vector<ConvertibleLink>& addToTransientCache(Property* property);
+    std::vector<ConvertibleLink>& addToTransientCache(Property* src);
     void transientCacheHelper(std::vector<ConvertibleLink>& links, Property* src, Property* dst,
                               const PropertyConverterManager* manager);
     std::vector<ConvertibleLink>& getTriggeredLinksForProperty(Property* property);

@@ -67,15 +67,17 @@ AutoLinker::AutoLinker(ProcessorNetwork* network, Processor* target, Processor* 
     const auto linkSettings = app->getSettingsByType<LinkSettings>();
     const auto linkChecker = [&](const Property* p) { return linkSettings->isLinkable(p); };
 
+    std::vector<Property*> candidates;
+
     for (auto& targetProperty : targetProperties) {
         if (!linkChecker(targetProperty)) continue;
 
-        auto isAutoLinkAble = [&](const Property* p) {
+        const auto isAutoLinkAble = [&](const Property* p) {
             return linkChecker(p) && network->canLink(p, targetProperty) &&
                    p->getClassIdentifier() == targetProperty->getClassIdentifier() &&
                    p->getIdentifier() == targetProperty->getIdentifier();
         };
-        std::vector<Property*> candidates;
+        candidates.clear();
 
         std::copy_if(sourceProperties.begin(), sourceProperties.end(),
                      std::back_inserter(candidates), isAutoLinkAble);
@@ -87,14 +89,17 @@ AutoLinker::AutoLinker(ProcessorNetwork* network, Processor* target, Processor* 
 
     // Auto link based property
     for (const auto& targetProperty : targetProperties) {
-        std::vector<Property*> candidates;
+        candidates.clear();
         for (const auto& item : targetProperty->getAutoLinkToProperty()) {
+
+            const auto isAutoLinkAble = [&](const Property* p) {
+                const auto& [processorClassId, propertyPath] = item;
+                const auto* proc = p->getOwner()->getProcessor();
+                return proc && proc->getClassIdentifier() == processorClassId &&
+                       p->getPath() == propertyPath;
+            };
             std::copy_if(sourceProperties.begin(), sourceProperties.end(),
-                         std::back_inserter(candidates), [&](Property* prop) {
-                             auto proc = prop->getOwner()->getProcessor();
-                             return proc && proc->getClassIdentifier() != item.first &&
-                                    prop->getPath() == item.second;
-                         });
+                         std::back_inserter(candidates), isAutoLinkAble);
         }
         if (!candidates.empty()) {
             autoLinkCandidates_[targetProperty] = std::move(candidates);

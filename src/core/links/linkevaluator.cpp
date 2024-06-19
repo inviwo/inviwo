@@ -51,6 +51,11 @@ struct VisitedHelper {
             util::push_back_unique(visited_, link.dst);
         }
     }
+    VisitedHelper(const VisitedHelper&) = delete;
+    VisitedHelper(VisitedHelper&&) = delete;
+    VisitedHelper& operator=(const VisitedHelper&) = delete;
+    VisitedHelper& operator=(VisitedHelper&&) = delete;
+
     ~VisitedHelper() {
         for (auto& link : toVisit_) {
             std::erase(visited_, link.src);
@@ -152,10 +157,8 @@ std::vector<Property*> LinkEvaluator::getPropertiesLinkedTo(Property* property) 
 std::vector<ConvertibleLink>& LinkEvaluator::addToTransientCache(Property* src) {
     if (const auto it = directLinkCache_.find(src); it != directLinkCache_.end()) {
         for (auto& dst : it->second) {
-            if (src != dst) {
-                transientCacheHelper(transientLinkCache_[src], src, dst,
-                                     network_->getApplication()->getPropertyConverterManager());
-            }
+            transientCacheHelper(transientLinkCache_[src], src, dst,
+                                 network_->getApplication()->getPropertyConverterManager());
         }
     }
     return transientLinkCache_[src];
@@ -163,34 +166,40 @@ std::vector<ConvertibleLink>& LinkEvaluator::addToTransientCache(Property* src) 
 
 void LinkEvaluator::transientCacheHelper(std::vector<ConvertibleLink>& links, Property* src,
                                          Property* dst, const PropertyConverterManager* manager) {
+    if (src == dst) return;
+
     // Check that we don't use a previous source or destination as the new destination.
-    if (!util::contains_if(links, [dst](const ConvertibleLink& link) {
+    if (util::contains_if(links, [dst](const ConvertibleLink& link) {
             return link.src == dst || link.dst == dst;
         })) {
-        if (auto converter = manager->getConverter(src, dst)) {
-            links.emplace_back(src, dst, converter);
-        }
+        return;
+    }
 
-        // Follow the links of destination all links of all owners (CompositeProperties).
-        for (Property* newSrc = dst; newSrc != nullptr;
-             newSrc = dynamic_cast<Property*>(newSrc->getOwner())) {
+    if (auto converter = manager->getConverter(src, dst)) {
+        links.emplace_back(src, dst, converter);
+    }
+
+    // Follow the links of destination all links of all owners (CompositeProperties).
+    for (Property* newSrc = dst; newSrc != nullptr;
+         newSrc = dynamic_cast<Property*>(newSrc->getOwner())) {
+        // Recurse over outgoing links.
+        const auto it = directLinkCache_.find(newSrc);
+        if (it == directLinkCache_.end()) continue;
+
+        for (auto* newDst : it->second) {
+            transientCacheHelper(links, newSrc, newDst, manager);
+        }
+    }
+
+    // If we link to a CompositeProperty, make sure to evaluate sub-links.
+    if (auto cp = dynamic_cast<CompositeProperty*>(dst)) {
+        for (auto& newSrc : cp->getProperties()) {
             // Recurse over outgoing links.
-            if (const auto it = directLinkCache_.find(newSrc); it != directLinkCache_.end()) {
-                for (auto* elem : it->second) {
-                    if (newSrc != elem) transientCacheHelper(links, newSrc, elem, manager);
-                }
-            }
-        }
+            const auto it = directLinkCache_.find(newSrc);
+            if (it == directLinkCache_.end()) continue;
 
-        // If we link to a CompositeProperty, make sure to evaluate sub-links.
-        if (auto cp = dynamic_cast<CompositeProperty*>(dst)) {
-            for (auto& srcProp : cp->getProperties()) {
-                // Recurse over outgoing links.
-                if (const auto it = directLinkCache_.find(srcProp); it != directLinkCache_.end()) {
-                    for (auto* elem : it->second) {
-                        if (srcProp != elem) transientCacheHelper(links, srcProp, elem, manager);
-                    }
-                }
+            for (auto* newDst : it->second) {
+                transientCacheHelper(links, newSrc, newDst, manager);
             }
         }
     }
@@ -201,10 +210,10 @@ bool LinkEvaluator::isLinking() const { return !visited_.empty(); }
 void LinkEvaluator::evaluateLinksFromProperty(Property* modifiedProperty) {
     if (util::contains(visited_, modifiedProperty)) return;
 
-    NetworkLock lock(network_);
+    const NetworkLock lock(network_);
 
     auto& links = getTriggeredLinksForProperty(modifiedProperty);
-    VisitedHelper helper(visited_, links);
+    const VisitedHelper helper(visited_, links);
 
     for (auto& link : links) {
         link.converter->convert(link.src, link.dst);
