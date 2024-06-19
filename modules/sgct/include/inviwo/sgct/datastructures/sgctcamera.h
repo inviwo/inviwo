@@ -51,8 +51,8 @@ public:
 
     SGCTCamera(const SGCTCamera& other);
     SGCTCamera& operator=(const SGCTCamera& other);
-    SGCTCamera(SGCTCamera&& other);
-    SGCTCamera& operator=(SGCTCamera&& other);
+    SGCTCamera(SGCTCamera&& other) noexcept;
+    SGCTCamera& operator=(SGCTCamera&& other) noexcept;
     virtual ~SGCTCamera() = default;
     virtual SGCTCamera* clone() const override;
 

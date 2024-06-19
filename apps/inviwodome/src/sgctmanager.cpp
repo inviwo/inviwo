@@ -189,7 +189,7 @@ void SGCTManager::evaluate(const ::sgct::RenderData& renderData) {
         TRACY_ZONE_SCOPED_NC("Update cameras", 0x770000);
         const auto size = renderData.window.resolution();
         const size2_t newSize{size.x, size.y};
-        if (auto* canvas = getCanvas(); canvas && canvas->getCanvasSize() != newSize) {
+        if (auto* canvas = getCanvas(); canvas != nullptr && canvas->getCanvasSize() != newSize) {
             canvas->setCanvasSize(newSize);
         }
 

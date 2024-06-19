@@ -266,7 +266,7 @@ struct SGCTCallbacks {
         }
     };
 
-    // NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward)
+    // NOLINTBEGIN(cppcoreguidelines-missing-std-forward)
     template <typename Fun>
     static auto tryWrapper(Fun&& function) {
         return [fun = std::forward<Fun>(function)](auto&&... args) {
@@ -282,7 +282,6 @@ struct SGCTCallbacks {
         };
     }
 
-    // NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward)
     template <typename Fun>
     static auto tryWrapperRet(Fun&& function) {
         return [fun = std::forward<Fun>(function)](auto&&... args) {
@@ -300,6 +299,7 @@ struct SGCTCallbacks {
             }
         };
     }
+    // NOLINTEND(cppcoreguidelines-missing-std-forward)
 
     void configureSGCTCallbacks(sgct::Engine::Callbacks& callbacks) {
         callbacks.initOpenGL = tryWrapper([this](GLFWwindow* shared) { initOpenGL(shared); });
