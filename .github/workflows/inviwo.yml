@@ -244,8 +244,7 @@ jobs:
       uses: petersteneteg/ccache-action@v1.1.0
       with:
         variant: ccache
-        max-size: "2500M"
-        append-timestamp: false
+        max-size: "1500M"
         verbose: 2
         key: inviwo-${{ matrix.triplet }}-${{ matrix.configuration }}-${{ github.ref }}
         restore-keys: |
@@ -369,8 +368,7 @@ jobs:
       uses: petersteneteg/ccache-action@v1.1.0
       with:
         variant: ccache
-        max-size: "2500M"
-        append-timestamp: false
+        max-size: "1500M"
         verbose: 2
         key: inviwo-apt-x64-linux-dynamic-Release-${{ github.ref }}
         restore-keys: |
