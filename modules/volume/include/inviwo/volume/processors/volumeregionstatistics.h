@@ -46,33 +46,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeRegionStatistics, Volume Region Statistics}
- * ![](org.inviwo.VolumeRegionStatistics.png?classIdentifier=org.inviwo.VolumeRegionStatistics)
- *
- * Calculate statistics for each volume region/segment in a volume.
- * The following statistics are calculated for each region:
- *   * Volume, given in World space
- *   * Sum for each channel, given in "Value" range
- *   * Mean for each channel, given in "Value" range
- *   * Min for each channel, given in "Value" range
- *   * Max for each channel, given in "Value" range
- *   * Center (x,y,z) mean position in each region, given in `Result Space` coordinates
- *   * Center of Mass for each channel (x, y, z), given in `Result Space` coordinates
- *
- * ### Inports
- *   * __volume__ Segmented input volume
- *   * __atlas__  Index volume, of unsigned integer type, assigning a region index to each voxel.
- *                Has to have the same dimensions as volume. The index range is assumed to
- *                be [0, dataMap.dataRange.y] and without gaps.
- *
- * ### Outports
- *   * __statistics__ Data Frame with the statistics for each region.
- *
- * ### Properties
- *   * __Result Space__ The spatial domain of the resulting statistics. Data, Model, World, or
- *                      Index, defaults to World.
- *
- */
+
 class IVW_MODULE_VOLUME_API VolumeRegionStatistics : public PoolProcessor {
 public:
     VolumeRegionStatistics();
