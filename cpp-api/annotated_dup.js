@@ -127,6 +127,17 @@ var annotated_dup =
         [ "ColorBrewerException", "classinviwo_1_1colorbrewer_1_1ColorBrewerException.html", null ],
         [ "UnsupportedNumberOfColorsException", "classinviwo_1_1colorbrewer_1_1UnsupportedNumberOfColorsException.html", null ]
       ] ],
+      [ "command", null, [
+        [ "AddConnection", "structinviwo_1_1command_1_1AddConnection.html", null ],
+        [ "AddLink", "structinviwo_1_1command_1_1AddLink.html", null ],
+        [ "AddProcessor", "structinviwo_1_1command_1_1AddProcessor.html", null ],
+        [ "Nop", "structinviwo_1_1command_1_1Nop.html", null ],
+        [ "RemoveConnection", "structinviwo_1_1command_1_1RemoveConnection.html", null ],
+        [ "RemoveLink", "structinviwo_1_1command_1_1RemoveLink.html", null ],
+        [ "RemoveProcessor", "structinviwo_1_1command_1_1RemoveProcessor.html", null ],
+        [ "Stats", "structinviwo_1_1command_1_1Stats.html", null ],
+        [ "Update", "structinviwo_1_1command_1_1Update.html", null ]
+      ] ],
       [ "csvfilters", "namespaceinviwo_1_1csvfilters.html", [
         [ "Filters", "structinviwo_1_1csvfilters_1_1Filters.html", null ],
         [ "RowFilter", "structinviwo_1_1csvfilters_1_1RowFilter.html", "structinviwo_1_1csvfilters_1_1RowFilter" ]
@@ -1149,6 +1160,8 @@ var annotated_dup =
       [ "NetworkEditorView", "classinviwo_1_1NetworkEditorView.html", null ],
       [ "NetworkLock", "structinviwo_1_1NetworkLock.html", null ],
       [ "NetworkSearch", "classinviwo_1_1NetworkSearch.html", null ],
+      [ "NetworkSyncClient", "classinviwo_1_1NetworkSyncClient.html", null ],
+      [ "NetworkSyncServer", "classinviwo_1_1NetworkSyncServer.html", null ],
       [ "NetworkVisitor", "classinviwo_1_1NetworkVisitor.html", "classinviwo_1_1NetworkVisitor" ],
       [ "NetworkVisitorEnter", "classinviwo_1_1NetworkVisitorEnter.html", null ],
       [ "NetworkVisitorExit", "classinviwo_1_1NetworkVisitorExit.html", null ],
@@ -1477,6 +1490,9 @@ var annotated_dup =
       [ "Serializer", "classinviwo_1_1Serializer.html", "classinviwo_1_1Serializer" ],
       [ "Settings", "classinviwo_1_1Settings.html", "classinviwo_1_1Settings" ],
       [ "SettingsWidget", "classinviwo_1_1SettingsWidget.html", "classinviwo_1_1SettingsWidget" ],
+      [ "SGCTCamera", "classinviwo_1_1SGCTCamera.html", "classinviwo_1_1SGCTCamera" ],
+      [ "SGCTModule", "classinviwo_1_1SGCTModule.html", null ],
+      [ "SGCTSettings", "classinviwo_1_1SGCTSettings.html", null ],
       [ "Shader", "classinviwo_1_1Shader.html", "classinviwo_1_1Shader" ],
       [ "ShaderComponent", "classinviwo_1_1ShaderComponent.html", "classinviwo_1_1ShaderComponent" ],
       [ "ShaderComponentProcessorBase", "classinviwo_1_1ShaderComponentProcessorBase.html", "classinviwo_1_1ShaderComponentProcessorBase" ],

@@ -9,6 +9,9 @@ var hierarchy =
     [ "inviwo::util::detail_indirect::add_const_to_reference< T >", "structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference.html", null ],
     [ "inviwo::util::detail_indirect::add_const_to_reference< T & >", "structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference_3_01T_01_6_01_4.html", null ],
     [ "inviwo::util::detail_indirect::add_const_to_reference< T && >", "structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference_3_01T_01_6_6_01_4.html", null ],
+    [ "inviwo::command::AddConnection", "structinviwo_1_1command_1_1AddConnection.html", null ],
+    [ "inviwo::command::AddLink", "structinviwo_1_1command_1_1AddLink.html", null ],
+    [ "inviwo::command::AddProcessor", "structinviwo_1_1command_1_1AddProcessor.html", null ],
     [ "inviwo::util::detail::almostEqual< T >", "structinviwo_1_1util_1_1detail_1_1almostEqual.html", null ],
     [ "inviwo::util::alwaysTrue", "structinviwo_1_1util_1_1alwaysTrue.html", null ],
     [ "inviwo::animation::detail::AnimateSequence< Prop, Seq >", "structinviwo_1_1animation_1_1detail_1_1AnimateSequence.html", null ],
@@ -971,6 +974,7 @@ var hierarchy =
           [ "inviwo::LinkSettings", "classinviwo_1_1LinkSettings.html", null ],
           [ "inviwo::OpenGLSettings", "classinviwo_1_1OpenGLSettings.html", null ],
           [ "inviwo::PythonSyntaxHighlight", "classinviwo_1_1PythonSyntaxHighlight.html", null ],
+          [ "inviwo::SGCTSettings", "classinviwo_1_1SGCTSettings.html", null ],
           [ "inviwo::SystemSettings", "classinviwo_1_1SystemSettings.html", null ],
           [ "inviwo::UnitSettings", "classinviwo_1_1UnitSettings.html", null ],
           [ "inviwo::WebBrowserSettings", "classinviwo_1_1WebBrowserSettings.html", null ]
@@ -1540,6 +1544,7 @@ var hierarchy =
       [ "inviwo::Python3Module", "classinviwo_1_1Python3Module.html", null ],
       [ "inviwo::Python3QtModule", "classinviwo_1_1Python3QtModule.html", null ],
       [ "inviwo::QtWidgetsModule", "classinviwo_1_1QtWidgetsModule.html", null ],
+      [ "inviwo::SGCTModule", "classinviwo_1_1SGCTModule.html", null ],
       [ "inviwo::UserInterfaceGLModule", "classinviwo_1_1UserInterfaceGLModule.html", null ],
       [ "inviwo::VectorFieldVisualizationGLModule", "classinviwo_1_1VectorFieldVisualizationGLModule.html", null ],
       [ "inviwo::VectorFieldVisualizationModule", "classinviwo_1_1VectorFieldVisualizationModule.html", null ],
@@ -1822,6 +1827,7 @@ var hierarchy =
     [ "inviwo::MoveOnlyValue< vec4 >", "classinviwo_1_1MoveOnlyValue.html", null ],
     [ "inviwo::NetworkEdge", "structinviwo_1_1NetworkEdge.html", null ],
     [ "inviwo::NetworkLock", "structinviwo_1_1NetworkLock.html", null ],
+    [ "inviwo::NetworkSyncClient", "classinviwo_1_1NetworkSyncClient.html", null ],
     [ "inviwo::NetworkVisitor", "classinviwo_1_1NetworkVisitor.html", [
       [ "inviwo::LambdaNetworkVisitor< Funcs >", "structinviwo_1_1LambdaNetworkVisitor.html", null ]
     ] ],
@@ -1839,6 +1845,7 @@ var hierarchy =
       [ "inviwo::ffmpeg::SwScale", "classinviwo_1_1ffmpeg_1_1SwScale.html", null ]
     ] ],
     [ "inviwo::util::nonesuch", "structinviwo_1_1util_1_1nonesuch.html", null ],
+    [ "inviwo::command::Nop", "structinviwo_1_1command_1_1Nop.html", null ],
     [ "inviwo::util::NotificationBlocker", "classinviwo_1_1util_1_1NotificationBlocker.html", null ],
     [ "inviwo::ObservableInterface", "classinviwo_1_1ObservableInterface.html", [
       [ "inviwo::Observable< ActivityIndicatorObserver >", "classinviwo_1_1Observable.html", [
@@ -2231,6 +2238,7 @@ var hierarchy =
         [ "inviwo::LinkDialogGraphicsScene", "classinviwo_1_1LinkDialogGraphicsScene.html", null ],
         [ "inviwo::NetworkDebugObserver", "structinviwo_1_1NetworkDebugObserver.html", null ],
         [ "inviwo::NetworkEditor", "classinviwo_1_1NetworkEditor.html", null ],
+        [ "inviwo::NetworkSyncServer", "classinviwo_1_1NetworkSyncServer.html", null ],
         [ "inviwo::PortInspectorManager", "classinviwo_1_1PortInspectorManager.html", null ],
         [ "inviwo::ProcessorCefSynchronizer", "classinviwo_1_1ProcessorCefSynchronizer.html", null ],
         [ "inviwo::ProcessorNetworkEvaluator", "classinviwo_1_1ProcessorNetworkEvaluator.html", null ],
@@ -2239,6 +2247,7 @@ var hierarchy =
       ] ],
       [ "inviwo::ProcessorObserver", "classinviwo_1_1ProcessorObserver.html", [
         [ "inviwo::NetworkDebugObserver", "structinviwo_1_1NetworkDebugObserver.html", null ],
+        [ "inviwo::NetworkSyncServer", "classinviwo_1_1NetworkSyncServer.html", null ],
         [ "inviwo::ProcessorGraphicsItem", "classinviwo_1_1ProcessorGraphicsItem.html", null ],
         [ "inviwo::ProcessorNetwork", "classinviwo_1_1ProcessorNetwork.html", null ],
         [ "inviwo::ProcessorNetworkEvaluator", "classinviwo_1_1ProcessorNetworkEvaluator.html", null ]
@@ -3047,6 +3056,9 @@ var hierarchy =
     ] ],
     [ "inviwo::animation::RecorderOptions", "structinviwo_1_1animation_1_1RecorderOptions.html", null ],
     [ "inviwo::statsutil::RegresionResult", "structinviwo_1_1statsutil_1_1RegresionResult.html", null ],
+    [ "inviwo::command::RemoveConnection", "structinviwo_1_1command_1_1RemoveConnection.html", null ],
+    [ "inviwo::command::RemoveLink", "structinviwo_1_1command_1_1RemoveLink.html", null ],
+    [ "inviwo::command::RemoveProcessor", "structinviwo_1_1command_1_1RemoveProcessor.html", null ],
     [ "inviwo::RenderBufferObject", "classinviwo_1_1RenderBufferObject.html", null ],
     [ "inviwo::glui::Renderer", "classinviwo_1_1glui_1_1Renderer.html", null ],
     [ "inviwo::representation_traits< DataType, Kind >", "structinviwo_1_1representation__traits.html", null ],
@@ -3184,6 +3196,7 @@ var hierarchy =
       [ "inviwo::Camera", "classinviwo_1_1Camera.html", [
         [ "inviwo::OrthographicCamera", "classinviwo_1_1OrthographicCamera.html", null ],
         [ "inviwo::PerspectiveCamera", "classinviwo_1_1PerspectiveCamera.html", null ],
+        [ "inviwo::SGCTCamera", "classinviwo_1_1SGCTCamera.html", null ],
         [ "inviwo::SkewedPerspectiveCamera", "classinviwo_1_1SkewedPerspectiveCamera.html", null ]
       ] ],
       [ "inviwo::EventMatcher", "classinviwo_1_1EventMatcher.html", [
@@ -3432,6 +3445,7 @@ var hierarchy =
     [ "inviwo::detail::static_size_t< StaticString< N > >", "structinviwo_1_1detail_1_1static__size__t_3_01StaticString_3_01N_01_4_01_4.html", null ],
     [ "inviwo::StaticString< N >", "structinviwo_1_1StaticString.html", null ],
     [ "inviwo::Statistics", "structinviwo_1_1Statistics.html", null ],
+    [ "inviwo::command::Stats", "structinviwo_1_1command_1_1Stats.html", null ],
     [ "inviwo::StipplingSettingsInterface", "classinviwo_1_1StipplingSettingsInterface.html", [
       [ "inviwo::StipplingProperty", "classinviwo_1_1StipplingProperty.html", null ],
       [ "inviwo::StipplingSettings", "classinviwo_1_1StipplingSettings.html", null ]
@@ -3552,6 +3566,7 @@ var hierarchy =
       [ "inviwo::QPtr< T >", "classinviwo_1_1QPtr.html", null ]
     ] ],
     [ "inviwo::UnitDesc", "structinviwo_1_1UnitDesc.html", null ],
+    [ "inviwo::command::Update", "structinviwo_1_1command_1_1Update.html", null ],
     [ "inviwo::util::value_type< T >", "structinviwo_1_1util_1_1value__type.html", null ],
     [ "inviwo::ValueWrapper< T >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< AcceptMode >", "structinviwo_1_1ValueWrapper.html", null ],

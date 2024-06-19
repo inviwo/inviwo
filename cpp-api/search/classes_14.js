@@ -7,5 +7,6 @@ var searchData=
   ['unsignedintegerscalars_4',['UnsignedIntegerScalars',['../structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerScalars.html',1,'inviwo::dispatching::filter']]],
   ['unsignedintegervecs_5',['UnsignedIntegerVecs',['../structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerVecs.html',1,'inviwo::dispatching::filter']]],
   ['unsupportednumberofcolorsexception_6',['UnsupportedNumberOfColorsException',['../classinviwo_1_1colorbrewer_1_1UnsupportedNumberOfColorsException.html',1,'inviwo::colorbrewer']]],
-  ['userinterfaceglmodule_7',['UserInterfaceGLModule',['../classinviwo_1_1UserInterfaceGLModule.html',1,'inviwo']]]
+  ['update_7',['Update',['../structinviwo_1_1command_1_1Update.html',1,'inviwo::command']]],
+  ['userinterfaceglmodule_8',['UserInterfaceGLModule',['../classinviwo_1_1UserInterfaceGLModule.html',1,'inviwo']]]
 ];
