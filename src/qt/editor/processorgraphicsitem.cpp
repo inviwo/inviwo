@@ -78,6 +78,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     , LabelGraphicsItemObserver()
     , processor_(processor)
     , processorMeta_(nullptr)
+    , animation_{nullptr}
     , progressItem_(nullptr)
     , statusItem_(nullptr)
     , linkItem_(nullptr)
@@ -256,10 +257,27 @@ void ProcessorGraphicsItem::removeOutport(Outport* port) {
 }
 
 void ProcessorGraphicsItem::onProcessorMetaDataPositionChange() {
-    auto ipos = processorMeta_->getPosition();
-    auto qpos = QPointF(ipos.x, ipos.y);
-    if (qpos != pos()) {
-        setPos(qpos);
+    if (!animation_) {
+        animation_ = new QPropertyAnimation{this, "pos", this};
+    }
+
+    const auto iPos = processorMeta_->getPosition();
+    const auto qPos = QPointF(iPos.x, iPos.y);
+
+    if (animation_->state() == QAbstractAnimation::Running) {
+        if (animation_->endValue().toPointF() == qPos) {
+            return;
+        } else {
+            animation_->setCurrentTime(0);
+            animation_->setStartValue(pos());
+            animation_->setEndValue(qPos);
+        }
+    } else if (qPos != pos()) {
+        animation_->setDuration(500);
+        animation_->setStartValue(pos());
+        animation_->setEndValue(qPos);
+        animation_->setEasingCurve(QEasingCurve::InOutQuad);
+        animation_->start();
     }
 }
 
@@ -347,12 +365,17 @@ void ProcessorGraphicsItem::snapToGrid() {
 QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVariant& value) {
 #include <warn/push>
 #include <warn/ignore/switch-enum>
+    const auto isAnimating = [this]() {
+        return animation_ != nullptr && animation_->state() == QAbstractAnimation::Running;
+    };
+
     switch (change) {
         case QGraphicsItem::ItemPositionHasChanged: {
             QPointF newPos = value.toPointF();
             newPos.setX(round(newPos.x()));
             newPos.setY(round(newPos.y()));
-            if (processorMeta_) {
+            if (processorMeta_ && !isAnimating() &&
+                QApplication::mouseButtons() == Qt::MouseButton::NoButton) {
                 processorMeta_->setPosition(ivec2(newPos.x(), newPos.y()));
             }
             if (errorText_) {
