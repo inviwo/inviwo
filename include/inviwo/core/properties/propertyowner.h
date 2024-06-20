@@ -119,6 +119,7 @@ public:
     const std::vector<Property*>& getProperties() const;
     const std::vector<CompositeProperty*>& getCompositeProperties() const;
     std::vector<Property*> getPropertiesRecursive() const;
+    std::vector<Property*>& getPropertiesRecursive(std::vector<Property*>& destination) const;
     Property* getPropertyByIdentifier(std::string_view identifier,
                                       bool recursiveSearch = false) const;
 

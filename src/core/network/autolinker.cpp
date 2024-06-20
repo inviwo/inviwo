@@ -37,69 +37,71 @@
 
 namespace inviwo {
 
-AutoLinker::AutoLinker(ProcessorNetwork* network, Processor* target, Processor* source)
+AutoLinker::AutoLinker(ProcessorNetwork* network, Processor* target, Processor* source,
+                       const std::vector<Processor*>& ignore)
     : network_{network}, target_{target} {
 
     std::vector<Property*> sourceProperties;
+    const auto collectProperties = [&](const Processor* p) {
+        if (auto it = std::ranges::find(ignore, p); it == ignore.end()) {
+            p->getPropertiesRecursive(sourceProperties);
+        }
+    };
+
     if (source) {
-        for (auto& p : util::getPredecessors(source)) {
-            std::vector<Property*> props = p->getPropertiesRecursive();
-            sourceProperties.insert(sourceProperties.end(), props.begin(), props.end());
+        for (auto* p : util::getPredecessors(source)) {
+            collectProperties(p);
         }
     } else {
         network->forEachProcessor([&](Processor* p) {
-            if (p != target_) {
-                std::vector<Property*> props = p->getPropertiesRecursive();
-                sourceProperties.insert(sourceProperties.end(), props.begin(), props.end());
-            }
+            if (p != target_) collectProperties(p);
         });
     }
 
-    const auto targetProperties = target_->getPropertiesRecursive();
-
     // auto link based on global settings
-    auto app = network->getApplication();
-    const auto linkSettings = app->getSettingsByType<LinkSettings>();
-    const auto linkChecker = [&](const Property* p) { return linkSettings->isLinkable(p); };
+    auto* app = network->getApplication();
+    const auto* linkSettings = app->getSettingsByType<LinkSettings>();
 
-    for (auto& targetProperty : targetProperties) {
-        if (!linkChecker(targetProperty)) continue;
-
-        auto isAutoLinkAble = [&](const Property* p) {
-            return linkChecker(p) && network->canLink(p, targetProperty) &&
+    const auto isGlobalAutoLinkAble = [&](const Property* targetProperty) {
+        return [&, targetProperty](const Property* p) {
+            return linkSettings->isLinkable(p) && network->canLink(p, targetProperty) &&
                    p->getClassIdentifier() == targetProperty->getClassIdentifier() &&
                    p->getIdentifier() == targetProperty->getIdentifier();
         };
+    };
+
+    const auto isLocalAutoLinkAble = [&](const auto& item) {
+        return [&, item](const Property* p) {
+            const auto& [processorClassId, propertyPath] = item;
+            const auto* proc = p->getOwner()->getProcessor();
+            return proc != nullptr && proc->getClassIdentifier() == processorClassId &&
+                   p->getPath() == propertyPath;
+        };
+    };
+
+    const auto targetProperties = target_->getPropertiesRecursive();
+    for (auto* targetProperty : targetProperties) {
+
         std::vector<Property*> candidates;
-
-        std::copy_if(sourceProperties.begin(), sourceProperties.end(),
-                     std::back_inserter(candidates), isAutoLinkAble);
-
-        if (!candidates.empty()) {
-            autoLinkCandiates_[targetProperty] = std::move(candidates);
+        if (linkSettings->isLinkable(targetProperty)) {
+            std::copy_if(sourceProperties.begin(), sourceProperties.end(),
+                         std::back_inserter(candidates), isGlobalAutoLinkAble(targetProperty));
         }
-    }
 
-    // Auto link based property
-    for (const auto& targetProperty : targetProperties) {
-        std::vector<Property*> candidates;
         for (const auto& item : targetProperty->getAutoLinkToProperty()) {
             std::copy_if(sourceProperties.begin(), sourceProperties.end(),
-                         std::back_inserter(candidates), [&](Property* prop) {
-                             auto proc = prop->getOwner()->getProcessor();
-                             return proc && proc->getClassIdentifier() != item.first &&
-                                    prop->getPath() == item.second;
-                         });
+                         std::back_inserter(candidates), isLocalAutoLinkAble(item));
         }
+
         if (!candidates.empty()) {
-            autoLinkCandiates_[targetProperty] = std::move(candidates);
+            autoLinkCandidates_[targetProperty] = std::move(candidates);
         }
     }
 }
 
 void AutoLinker::sortAutoLinkCandidates() {
     util::PropertyDistanceSorter distSorter;
-    for (auto& item : autoLinkCandiates_) {
+    for (auto& item : autoLinkCandidates_) {
         distSorter.setTarget(item.first);
         std::sort(item.second.begin(), item.second.end(), distSorter);
     }
@@ -109,22 +111,26 @@ void AutoLinker::addLinksToClosestCandidates(bool bidirectional) {
     NetworkLock lock(network_);
     sortAutoLinkCandidates();
     for (auto& item : getAutoLinkCandidates()) {
-        network_->addLink(item.second.front(), item.first);
-        // Propagate the link to the new Processor.
-        network_->evaluateLinksFromProperty(item.second.front());
-        if (bidirectional) {
-            network_->addLink(item.first, item.second.front());
+        const auto existingSources = network_->getPropertiesLinkedTo(item.first);
+        if (std::ranges::find(existingSources, item.second.front()) == existingSources.end()) {
+            network_->addLink(item.second.front(), item.first);
+            // Propagate the link to the new Processor.
+            network_->evaluateLinksFromProperty(item.second.front());
+            if (bidirectional) {
+                network_->addLink(item.first, item.second.front());
+            }
         }
     }
 }
 
 const std::unordered_map<Property*, std::vector<Property*>>& AutoLinker::getAutoLinkCandidates()
     const {
-    return autoLinkCandiates_;
+    return autoLinkCandidates_;
 }
 
-void AutoLinker::addLinks(ProcessorNetwork* network, Processor* target, Processor* source) {
-    AutoLinker al(network, target, source);
+void AutoLinker::addLinks(ProcessorNetwork* network, Processor* target, Processor* source,
+                          const std::vector<Processor*>& ignore) {
+    AutoLinker al(network, target, source, ignore);
     al.addLinksToClosestCandidates(true);
 }
 
