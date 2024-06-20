@@ -6,7 +6,7 @@
   "vcpkg-configuration": {
     "default-registry": {
       "kind": "builtin",
-      "baseline": "67cc1677c3bf5c23ea14b9d2416c7422fdeac492"
+      "baseline": "f7423ee180c4b7f40d43402c2feb3859161ef625"
     },
     "overlay-ports": [
       "./tools/vcpkg"
@@ -41,7 +41,9 @@
     "pegtl",
     "inja",
     "warn",
-    "zlib"
+    "zlib",
+    "bxzstr",
+    "fast-float"
   ],
   "default-features": [
     "hdf5",
@@ -96,6 +98,10 @@
     "dicom" : {
       "description": "Grassroots DICOM library",
       "dependencies": ["gdcm"]
+    },
+    "graphviz": {
+      "description": "Enable graph layout using graphviz",
+      "dependencies": ["graphviz"]
     },
     "sgct-tracy" : {
       "description": "Inviwo Dome dependencies",
