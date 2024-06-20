@@ -126,9 +126,9 @@ $(function(){initNavTree('classinviwo_1_1InteractionEvent.html',''); initResizab
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a386d71ce7c649016680ef69c2064e350" id="r_a386d71ce7c649016680ef69c2064e350"><td class="memItemLeft" align="right" valign="top"><a id="a386d71ce7c649016680ef69c2064e350" name="a386d71ce7c649016680ef69c2064e350"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>ToolTipCallback</b> = std::function&lt;void(const std::string&amp;)&gt;</td></tr>
-<tr class="separator:a386d71ce7c649016680ef69c2064e350"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1e5b91cc3571062c7424114e21d626d" id="r_af1e5b91cc3571062c7424114e21d626d"><td class="memItemLeft" align="right" valign="top"><a id="af1e5b91cc3571062c7424114e21d626d" name="af1e5b91cc3571062c7424114e21d626d"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ToolTipCallback</b> = std::function&lt;void(std::string_view)&gt;</td></tr>
+<tr class="separator:af1e5b91cc3571062c7424114e21d626d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -152,8 +152,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setModifiers</b> (Key
 <tr class="memitem:a01fb2149e418fc7e3d8390865be2e2de" id="r_a01fb2149e418fc7e3d8390865be2e2de"><td class="memItemLeft" align="right" valign="top"><a id="a01fb2149e418fc7e3d8390865be2e2de" name="a01fb2149e418fc7e3d8390865be2e2de"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>modifierNames</b> () const</td></tr>
 <tr class="separator:a01fb2149e418fc7e3d8390865be2e2de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6877998b38a53d9f53eaebd428ab4e66" id="r_a6877998b38a53d9f53eaebd428ab4e66"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6877998b38a53d9f53eaebd428ab4e66">setToolTip</a> (const std::string &amp;tooltip) const</td></tr>
-<tr class="separator:a6877998b38a53d9f53eaebd428ab4e66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab982c306b09b7d770a31c2a7267dd696" id="r_ab982c306b09b7d770a31c2a7267dd696"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab982c306b09b7d770a31c2a7267dd696">setToolTip</a> (std::string_view tooltip) const</td></tr>
+<tr class="separator:ab982c306b09b7d770a31c2a7267dd696"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66444a39845f8e2dc6a69bcee0b4eaab" id="r_a66444a39845f8e2dc6a69bcee0b4eaab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66444a39845f8e2dc6a69bcee0b4eaab">setToolTipCallback</a> (ToolTipCallback callback)</td></tr>
 <tr class="separator:a66444a39845f8e2dc6a69bcee0b4eaab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5ebd602669c5f13521de091e3592a79" id="r_ad5ebd602669c5f13521de091e3592a79"><td class="memItemLeft" align="right" valign="top"><a id="ad5ebd602669c5f13521de091e3592a79" name="ad5ebd602669c5f13521de091e3592a79"></a>
@@ -244,8 +244,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a6877998b38a53d9f53eaebd428ab4e66" name="a6877998b38a53d9f53eaebd428ab4e66"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6877998b38a53d9f53eaebd428ab4e66">&#9670;&#160;</a></span>setToolTip()</h2>
+<a id="ab982c306b09b7d770a31c2a7267dd696" name="ab982c306b09b7d770a31c2a7267dd696"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab982c306b09b7d770a31c2a7267dd696">&#9670;&#160;</a></span>setToolTip()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -253,7 +253,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">void inviwo::InteractionEvent::setToolTip </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>tooltip</em></span></td><td>)</td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>tooltip</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>

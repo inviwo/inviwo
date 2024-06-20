@@ -164,7 +164,7 @@ var searchData=
   ['settings_161',['Settings',['../classinviwo_1_1Settings.html',1,'inviwo']]],
   ['settings_5f_162',['settings_',['../classinviwo_1_1algorithm_1_1LineRenderer.html#a187dbd9571116cf3ee4389723fd9e14b',1,'inviwo::algorithm::LineRenderer']]],
   ['settingswidget_163',['SettingsWidget',['../classinviwo_1_1SettingsWidget.html',1,'inviwo']]],
-  ['settooltip_164',['setToolTip',['../classinviwo_1_1InteractionEvent.html#a6877998b38a53d9f53eaebd428ab4e66',1,'inviwo::InteractionEvent::setToolTip()'],['../classinviwo_1_1PickingEvent.html#aae80b2cac87cb3778fd08ef298bbd425',1,'inviwo::PickingEvent::setToolTip()']]],
+  ['settooltip_164',['setToolTip',['../classinviwo_1_1InteractionEvent.html#ab982c306b09b7d770a31c2a7267dd696',1,'inviwo::InteractionEvent::setToolTip()'],['../classinviwo_1_1PickingEvent.html#a6d7ed5ef73c155856dc61cfdb99023bb',1,'inviwo::PickingEvent::setToolTip()']]],
   ['settooltipcallback_165',['setToolTipCallback',['../classinviwo_1_1InteractionEvent.html#a66444a39845f8e2dc6a69bcee0b4eaab',1,'inviwo::InteractionEvent']]],
   ['settransformfeedbackvaryings_166',['setTransformFeedbackVaryings',['../classinviwo_1_1Shader.html#a767ff63df739787df98860be45099693',1,'inviwo::Shader']]],
   ['setunitregexp_167',['setUnitRegexp',['../classinviwo_1_1CSVReader.html#a036893742ff73fd0c94ff6048455fedf',1,'inviwo::CSVReader']]],

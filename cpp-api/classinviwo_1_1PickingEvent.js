@@ -22,5 +22,5 @@ var classinviwo_1_1PickingEvent =
     [ "getPreviousLocalPickingId", "classinviwo_1_1PickingEvent.html#a38584d63b8f36b9a7944bf05b4bb52b6", null ],
     [ "getPreviousPosition", "classinviwo_1_1PickingEvent.html#a68ea3a2c7010d98846f467503dcd8a24", null ],
     [ "getWorldSpaceDeltaAtPressDepth", "classinviwo_1_1PickingEvent.html#a7897234e3128d81c9d8523e392024061", null ],
-    [ "setToolTip", "classinviwo_1_1PickingEvent.html#aae80b2cac87cb3778fd08ef298bbd425", null ]
+    [ "setToolTip", "classinviwo_1_1PickingEvent.html#a6d7ed5ef73c155856dc61cfdb99023bb", null ]
 ];

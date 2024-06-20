@@ -2946,6 +2946,7 @@ var hierarchy =
       [ "inviwo::LinkDialogProcessorGraphicsItem", "classinviwo_1_1LinkDialogProcessorGraphicsItem.html", null ],
       [ "inviwo::LinkDragHelper", "classinviwo_1_1LinkDragHelper.html", null ],
       [ "inviwo::ProcessorDragHelper", "classinviwo_1_1ProcessorDragHelper.html", null ],
+      [ "inviwo::ProcessorGraphicsItem", "classinviwo_1_1ProcessorGraphicsItem.html", null ],
       [ "inviwo::TFMenuHelper", "classinviwo_1_1TFMenuHelper.html", null ],
       [ "inviwo::TFSelectionWatcher", "classinviwo_1_1TFSelectionWatcher.html", null ],
       [ "inviwo::UndoManager", "classinviwo_1_1UndoManager.html", null ],
