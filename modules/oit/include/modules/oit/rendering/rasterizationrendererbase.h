@@ -53,7 +53,7 @@ constexpr std::string_view enumToStr(UseFragmentList val) {
                     static_cast<int>(val));
 }
 
-class RasterizationRendererBase {
+class IVW_MODULE_OIT_API RasterizationRendererBase {
 public:
     virtual ~RasterizationRendererBase() = default;
     virtual void configureShader(Shader&) const = 0;
