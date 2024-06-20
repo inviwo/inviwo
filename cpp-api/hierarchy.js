@@ -254,7 +254,7 @@ var hierarchy =
       [ "inviwo::CanvasContextHolder", "classinviwo_1_1CanvasContextHolder.html", null ]
     ] ],
     [ "inviwo::conversion_tester< F >", "structinviwo_1_1conversion__tester.html", null ],
-    [ "inviwo::ConvertableLink", "structinviwo_1_1ConvertableLink.html", null ],
+    [ "inviwo::ConvertibleLink", "structinviwo_1_1ConvertibleLink.html", null ],
     [ "inviwo::Data< Self, Repr >", "classinviwo_1_1Data.html", null ],
     [ "inviwo::Data< BufferBase, BufferRepresentation >", "classinviwo_1_1Data.html", [
       [ "inviwo::BufferBase", "classinviwo_1_1BufferBase.html", [
@@ -1427,6 +1427,9 @@ var hierarchy =
     ] ],
     [ "inviwo::InportIterable< DataInport< std::vector< std::shared_ptr< inviwo::Volume > >, 1, false >, std::vector< std::shared_ptr< inviwo::Volume > >, false >", "classinviwo_1_1InportIterable.html", [
       [ "inviwo::DataInport< std::vector< std::shared_ptr< inviwo::Volume > > >", "classinviwo_1_1DataInport.html", null ]
+    ] ],
+    [ "inviwo::InportIterable< DataInport< std::vector< std::string >, 1, false >, std::vector< std::string >, false >", "classinviwo_1_1InportIterable.html", [
+      [ "inviwo::DataInport< std::vector< std::string > >", "classinviwo_1_1DataInport.html", null ]
     ] ],
     [ "inviwo::InportIterable< DataInport< std::vector< vec4 >, 1, false >, std::vector< vec4 >, false >", "classinviwo_1_1InportIterable.html", [
       [ "inviwo::DataInport< std::vector< vec4 > >", "classinviwo_1_1DataInport.html", null ]
@@ -3253,6 +3256,7 @@ var hierarchy =
           [ "inviwo::DataInport< inviwo::SpatialSampler< dvec3 > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::Volume, 0, true >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< std::vector< std::shared_ptr< inviwo::Volume > > >", "classinviwo_1_1DataInport.html", null ],
+          [ "inviwo::DataInport< std::vector< std::string > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::DataSequence< T > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< std::vector< T > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::Volume >", "classinviwo_1_1DataInport.html", null ],

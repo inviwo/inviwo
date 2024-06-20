@@ -113,8 +113,8 @@ $(function(){initNavTree('classinviwo_1_1AutoLinker.html',''); initResizable(tru
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a0df2026b6d886c3c28eeff4fc62df7fb" id="r_a0df2026b6d886c3c28eeff4fc62df7fb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0df2026b6d886c3c28eeff4fc62df7fb">AutoLinker</a> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *target, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *source=nullptr)</td></tr>
-<tr class="separator:a0df2026b6d886c3c28eeff4fc62df7fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d249efc553fd93bcb3974e7088c98f1" id="r_a1d249efc553fd93bcb3974e7088c98f1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d249efc553fd93bcb3974e7088c98f1">AutoLinker</a> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *target, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *source=nullptr, const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;ignore={})</td></tr>
+<tr class="separator:a1d249efc553fd93bcb3974e7088c98f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d053dbb259b471e6c812914baf17e90" id="r_a2d053dbb259b471e6c812914baf17e90"><td class="memItemLeft" align="right" valign="top"><a id="a2d053dbb259b471e6c812914baf17e90" name="a2d053dbb259b471e6c812914baf17e90"></a>
 const std::unordered_map&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> *, std::vector&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> * &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getAutoLinkCandidates</b> () const</td></tr>
 <tr class="separator:a2d053dbb259b471e6c812914baf17e90"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -130,15 +130,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>addLinksToClosestCand
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ae1658d70819e6fb4490192bed86c6e67" id="r_ae1658d70819e6fb4490192bed86c6e67"><td class="memItemLeft" align="right" valign="top"><a id="ae1658d70819e6fb4490192bed86c6e67" name="ae1658d70819e6fb4490192bed86c6e67"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>addLinks</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *target, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *source=nullptr)</td></tr>
-<tr class="separator:ae1658d70819e6fb4490192bed86c6e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a690fbaf71fda878e12284aa2acccfc95" id="r_a690fbaf71fda878e12284aa2acccfc95"><td class="memItemLeft" align="right" valign="top"><a id="a690fbaf71fda878e12284aa2acccfc95" name="a690fbaf71fda878e12284aa2acccfc95"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>addLinks</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *target, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *source=nullptr, const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;ignore={})</td></tr>
+<tr class="separator:a690fbaf71fda878e12284aa2acccfc95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Utility class to calculate and apply auto linking. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a0df2026b6d886c3c28eeff4fc62df7fb" name="a0df2026b6d886c3c28eeff4fc62df7fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0df2026b6d886c3c28eeff4fc62df7fb">&#9670;&#160;</a></span>AutoLinker()</h2>
+<a id="a1d249efc553fd93bcb3974e7088c98f1" name="a1d249efc553fd93bcb3974e7088c98f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d249efc553fd93bcb3974e7088c98f1">&#9670;&#160;</a></span>AutoLinker()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -156,7 +156,12 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>addLinks</b> (
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1Processor.html">Processor</a> *</td>          <td class="paramname"><span class="paramname"><em>source</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Processor.html">Processor</a> *</td>          <td class="paramname"><span class="paramname"><em>source</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>ignore</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{}</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -165,6 +170,7 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>addLinks</b> (
     <tr><td class="paramname">network</td><td>the processor network in which to add autolinks </td></tr>
     <tr><td class="paramname">target</td><td>the processor onto which auto links should be added </td></tr>
     <tr><td class="paramname">source</td><td>source of links. If source is not null we consider all predecessors of source as input for linking, if source is null we consider all processor in the network </td></tr>
+    <tr><td class="paramname">ignore</td><td>don't consider links from these processors </td></tr>
   </table>
   </dd>
 </dl>
