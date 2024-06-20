@@ -38,6 +38,7 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/assertion.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/textlabeloverlay.h>
@@ -90,29 +91,41 @@ ProcessorDragHelper::ProcessorDragHelper(NetworkEditor& editor)
 
 ProcessorDragHelper::~ProcessorDragHelper() = default;
 
+namespace {
+
+template <QEvent::Type E, typename T>
+auto eventIs(QEvent* event) -> T* {
+    if (event->type() == E) {
+        auto* e = dynamic_cast<QGraphicsSceneDragDropEvent*>(event);
+        IVW_ASSERT(e, "If this is invalid the combination of E and T is wrong");
+        return e;
+    }
+    return nullptr;
+};
+
+}  // namespace
+
 bool ProcessorDragHelper::eventFilter(QObject*, QEvent* event) {
-    if (event->type() == QEvent::GraphicsSceneDragEnter) {
-        auto e = static_cast<QGraphicsSceneDragDropEvent*>(event);
-        if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
-            return enter(e, mime);
+    if (auto* enterEvent =
+            eventIs<QEvent::GraphicsSceneDragEnter, QGraphicsSceneDragDropEvent>(event)) {
+        if (const auto* mime = ProcessorMimeData::toProcessorMimeData(enterEvent->mimeData())) {
+            return enter(enterEvent, mime);
         }
-    } else if (event->type() == QEvent::GraphicsSceneDragMove) {
-        auto e = static_cast<QGraphicsSceneDragDropEvent*>(event);
-        if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
-            return move(e, mime);
+    } else if (auto* moveEvent =
+                   eventIs<QEvent::GraphicsSceneDragMove, QGraphicsSceneDragDropEvent>(event)) {
+        if (const auto* mime = ProcessorMimeData::toProcessorMimeData(moveEvent->mimeData())) {
+            return move(moveEvent, mime);
         }
-    } else if (event->type() == QEvent::GraphicsSceneDragLeave) {
-        auto e = static_cast<QGraphicsSceneDragDropEvent*>(event);
-        if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
-            return leave(e, mime);
-        }
-    } else if (event->type() == QEvent::GraphicsSceneDrop) {
-        auto e = static_cast<QGraphicsSceneDragDropEvent*>(event);
+    } else if (auto* leaveEvent =
+                   eventIs<QEvent::GraphicsSceneDragLeave, QGraphicsSceneDragDropEvent>(event)) {
+        return leave(leaveEvent);
+    } else if (auto* dropEvent =
+                   eventIs<QEvent::GraphicsSceneDrop, QGraphicsSceneDragDropEvent>(event)) {
         // for some reason, QGraphicsView accepts the event before it arrives in this event filter
         // @see QGraphicsView::dropEvent(QDropEvent*)
-        e->setAccepted(false);
-        if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
-            return drop(e, mime);
+        dropEvent->setAccepted(false);
+        if (const auto* mime = ProcessorMimeData::toProcessorMimeData(dropEvent->mimeData())) {
+            return drop(dropEvent, mime);
         }
     }
     event->ignore();
@@ -274,7 +287,7 @@ void ProcessorDragHelper::updateAutoLinks(QGraphicsSceneDragDropEvent* e) {
     std::swap(links, autoLinks_);
 }
 
-bool ProcessorDragHelper::leave(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData*) {
+bool ProcessorDragHelper::leave(QGraphicsSceneDragDropEvent* e) {
     e->accept();
     editor_.getOverlay().clear();
     resetConnection();

@@ -279,7 +279,7 @@ const InteractionEvent::ToolTipCallback& PickingEvent::getToolTipCallback() cons
     return event_->getToolTipCallback();
 }
 
-void PickingEvent::setToolTip(const std::string& tooltip) const { event_->setToolTip(tooltip); }
+void PickingEvent::setToolTip(std::string_view tooltip) const { event_->setToolTip(tooltip); }
 
 const PickingAction* PickingEvent::getPickingAction() const { return pickingAction_; }
 

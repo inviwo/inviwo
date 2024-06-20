@@ -420,7 +420,7 @@ bool InteractionEventMapperQt::mapPinchTriggered(QPinchGesture* gesture) {
 
 void InteractionEventMapperQt::setCallbacks(MouseInteractionEvent* e) {
     // Save tooltip text to be displayed when Qt raises a QHelpEvent (mouse is still for a while)
-    e->setToolTipCallback([this](const std::string& tooltip) -> void { toolTipText_ = tooltip; });
+    e->setToolTipCallback([this](std::string_view tooltip) -> void { toolTipText_ = tooltip; });
     e->setMouseCursorCallback([this](MouseCursor c) -> void {
         if (cursorChange_) cursorChange_(util::toCursorShape(c));
     });

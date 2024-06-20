@@ -95,24 +95,29 @@ public:
                 }
 
                 if (str) {
-                    std::filesystem::create_directories(path_ / "autosaves");
-                    {
-                        // make sure we have closed the file _before_ we copy it.
-                        auto ofstream = std::ofstream(path_ / "autosave.inv.tmp");
-                        ofstream << *str;
+                    try {
+                        std::filesystem::create_directories(path_ / "autosaves");
+                        {
+                            // make sure we have closed the file _before_ we copy it.
+                            auto ofstream = std::ofstream(path_ / "autosave.inv.tmp");
+                            ofstream << *str;
+                        }
+
+                        std::filesystem::copy(path_ / "autosave.inv.tmp", path_ / "autosave.inv",
+                                              std::filesystem::copy_options::overwrite_existing);
+
+                        if (clock_t::now() - sessionStart_ >
+                            std::chrono::minutes(restoreFrequency())) {
+                            sessionStart_ = clock_t::now();
+                        }
+                        std::filesystem::copy(path_ / "autosave.inv.tmp",
+                                              path_ / "autosaves" / sessionName(sessionStart_),
+                                              std::filesystem::copy_options::overwrite_existing);
+
+                        clearOldSaves(path_ / "autosaves", numRestoreFiles());
+                    } catch (const std::exception& e) {
+                        LogInfo("Error saving auto save: " << e.what());
                     }
-
-                    std::filesystem::copy(path_ / "autosave.inv.tmp", path_ / "autosave.inv",
-                                          std::filesystem::copy_options::overwrite_existing);
-
-                    if (clock_t::now() - sessionStart_ > std::chrono::minutes(restoreFrequency())) {
-                        sessionStart_ = clock_t::now();
-                    }
-                    std::filesystem::copy(path_ / "autosave.inv.tmp",
-                                          path_ / "autosaves" / sessionName(sessionStart_),
-                                          std::filesystem::copy_options::overwrite_existing);
-
-                    clearOldSaves(path_ / "autosaves", numRestoreFiles());
                 }
             }
         }} {}

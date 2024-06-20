@@ -55,6 +55,7 @@ constexpr std::string_view enumToStr(UseFragmentList val) {
 
 class RasterizationRendererBase {
 public:
+    virtual ~RasterizationRendererBase() = default;
     virtual void configureShader(Shader&) const = 0;
     virtual void setUniforms(Shader&, UseFragmentList useFragmentList,
                              std::string_view rasterizerId) const = 0;
