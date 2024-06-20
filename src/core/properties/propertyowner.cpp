@@ -190,15 +190,20 @@ const std::vector<CompositeProperty*>& PropertyOwner::getCompositeProperties() c
     return compositeProperties_;
 }
 
-std::vector<Property*> PropertyOwner::getPropertiesRecursive() const {
-    std::vector<Property*> result;
-    result.reserve(properties_.size());
-    result.insert(result.end(), properties_.begin(), properties_.end());
+std::vector<Property*>& PropertyOwner::getPropertiesRecursive(
+    std::vector<Property*>& destination) const {
+    destination.reserve(destination.size() + properties_.size());
+    destination.insert(destination.end(), properties_.begin(), properties_.end());
 
     for (auto comp : compositeProperties_) {
-        std::vector<Property*> subprops = comp->getPropertiesRecursive();
-        result.insert(result.end(), subprops.begin(), subprops.end());
+        comp->getPropertiesRecursive(destination);
     }
+    return destination;
+}
+
+std::vector<Property*> PropertyOwner::getPropertiesRecursive() const {
+    std::vector<Property*> result;
+    getPropertiesRecursive(result);
     return result;
 }
 

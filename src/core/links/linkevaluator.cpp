@@ -175,11 +175,11 @@ void LinkEvaluator::transientCacheHelper(std::vector<ConvertibleLink>& links, Pr
         return;
     }
 
-    if (auto converter = manager->getConverter(src, dst)) {
+    if (const auto* converter = manager->getConverter(src, dst)) {
         links.emplace_back(src, dst, converter);
     }
 
-    // Follow the links of destination all links of all owners (CompositeProperties).
+    // Follow the links of destination to all links of all owners (CompositeProperties).
     for (Property* newSrc = dst; newSrc != nullptr;
          newSrc = dynamic_cast<Property*>(newSrc->getOwner())) {
         // Recurse over outgoing links.
@@ -192,8 +192,8 @@ void LinkEvaluator::transientCacheHelper(std::vector<ConvertibleLink>& links, Pr
     }
 
     // If we link to a CompositeProperty, make sure to evaluate sub-links.
-    if (auto cp = dynamic_cast<CompositeProperty*>(dst)) {
-        for (auto& newSrc : cp->getProperties()) {
+    if (auto* cp = dynamic_cast<CompositeProperty*>(dst)) {
+        for (auto* newSrc : cp->getProperties()) {
             // Recurse over outgoing links.
             const auto it = directLinkCache_.find(newSrc);
             if (it == directLinkCache_.end()) continue;

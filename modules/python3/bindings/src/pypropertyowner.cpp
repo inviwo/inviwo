@@ -110,7 +110,8 @@ void exposePropertyOwner(pybind11::module& m) {
                                    return PropertyVecWrapper(po.getProperties().begin(),
                                                              po.getProperties().end());
                                })
-        .def("getPropertiesRecursive", &PropertyOwner::getPropertiesRecursive)
+        .def("getPropertiesRecursive",
+             [](PropertyOwner& po) { return po.getPropertiesRecursive(); })
         .def(
             "addProperty",
             [](PropertyOwner& po, Property* prop, bool owner) { po.addProperty(prop, owner); },

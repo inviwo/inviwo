@@ -42,65 +42,57 @@ AutoLinker::AutoLinker(ProcessorNetwork* network, Processor* target, Processor* 
     : network_{network}, target_{target} {
 
     std::vector<Property*> sourceProperties;
+    const auto collectProperties = [&](const Processor* p) {
+        if (auto it = std::ranges::find(ignore, p); it == ignore.end()) {
+            p->getPropertiesRecursive(sourceProperties);
+        }
+    };
+
     if (source) {
-        for (auto& p : util::getPredecessors(source)) {
-            if (auto it = std::ranges::find(ignore, p); it == ignore.end()) {
-                std::vector<Property*> props = p->getPropertiesRecursive();
-                sourceProperties.insert(sourceProperties.end(), props.begin(), props.end());
-            }
+        for (auto* p : util::getPredecessors(source)) {
+            collectProperties(p);
         }
     } else {
         network->forEachProcessor([&](Processor* p) {
-            if (p != target_) {
-                if (auto it = std::ranges::find(ignore, p); it == ignore.end()) {
-                    std::vector<Property*> props = p->getPropertiesRecursive();
-                    sourceProperties.insert(sourceProperties.end(), props.begin(), props.end());
-                }
-            }
+            if (p != target_) collectProperties(p);
         });
     }
 
-    const auto targetProperties = target_->getPropertiesRecursive();
-
     // auto link based on global settings
-    auto app = network->getApplication();
-    const auto linkSettings = app->getSettingsByType<LinkSettings>();
-    const auto linkChecker = [&](const Property* p) { return linkSettings->isLinkable(p); };
+    auto* app = network->getApplication();
+    const auto* linkSettings = app->getSettingsByType<LinkSettings>();
 
-    std::vector<Property*> candidates;
-
-    for (auto& targetProperty : targetProperties) {
-        if (!linkChecker(targetProperty)) continue;
-
-        const auto isAutoLinkAble = [&](const Property* p) {
-            return linkChecker(p) && network->canLink(p, targetProperty) &&
+    const auto isGlobalAutoLinkAble = [&](const Property* targetProperty) {
+        return [&, targetProperty](const Property* p) {
+            return linkSettings->isLinkable(p) && network->canLink(p, targetProperty) &&
                    p->getClassIdentifier() == targetProperty->getClassIdentifier() &&
                    p->getIdentifier() == targetProperty->getIdentifier();
         };
-        candidates.clear();
+    };
 
-        std::copy_if(sourceProperties.begin(), sourceProperties.end(),
-                     std::back_inserter(candidates), isAutoLinkAble);
+    const auto isLocalAutoLinkAble = [&](const auto& item) {
+        return [&, item](const Property* p) {
+            const auto& [processorClassId, propertyPath] = item;
+            const auto* proc = p->getOwner()->getProcessor();
+            return proc != nullptr && proc->getClassIdentifier() == processorClassId &&
+                   p->getPath() == propertyPath;
+        };
+    };
 
-        if (!candidates.empty()) {
-            autoLinkCandidates_[targetProperty] = std::move(candidates);
-        }
-    }
+    const auto targetProperties = target_->getPropertiesRecursive();
+    for (auto* targetProperty : targetProperties) {
 
-    // Auto link based property
-    for (const auto& targetProperty : targetProperties) {
-        candidates.clear();
-        for (const auto& item : targetProperty->getAutoLinkToProperty()) {
-
-            const auto isAutoLinkAble = [&](const Property* p) {
-                const auto& [processorClassId, propertyPath] = item;
-                const auto* proc = p->getOwner()->getProcessor();
-                return proc && proc->getClassIdentifier() == processorClassId &&
-                       p->getPath() == propertyPath;
-            };
+        std::vector<Property*> candidates;
+        if (linkSettings->isLinkable(targetProperty)) {
             std::copy_if(sourceProperties.begin(), sourceProperties.end(),
-                         std::back_inserter(candidates), isAutoLinkAble);
+                         std::back_inserter(candidates), isGlobalAutoLinkAble(targetProperty));
         }
+
+        for (const auto& item : targetProperty->getAutoLinkToProperty()) {
+            std::copy_if(sourceProperties.begin(), sourceProperties.end(),
+                         std::back_inserter(candidates), isLocalAutoLinkAble(item));
+        }
+
         if (!candidates.empty()) {
             autoLinkCandidates_[targetProperty] = std::move(candidates);
         }
