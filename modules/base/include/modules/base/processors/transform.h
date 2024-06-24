@@ -59,11 +59,19 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
 
 protected:
+    enum class Mode {
+        WorldModelTransform,
+        World_TransformModel,
+        WorldTransform_Model,
+        TransformWorldModel,
+        WorldTransform,
+        TransformModel
+    };
+
     DataInport<T> inport_;
     DataOutport<T> outport_;
 
-    OptionProperty<CoordinateSpace> space_;
-    BoolProperty replace_;
+    OptionProperty<Mode> space_;
     TransformListProperty transforms_;
 };
 
@@ -82,7 +90,14 @@ struct ProcessorTraits<Transform<Layer>> {
                 "Coordinate Transforms",                      // Category
                 CodeState::Stable,                            // Code state
                 Tags::CPU | Tag{"Transform"} | Tag{"Layer"},  // Tags
-                "Apply a model or world transformation to a layer."_help};
+                R"(Apply a transformation to a Layer.
+    The transform can be applied in a number of different ways:
+    * World * Model * Transform     Apply the transform first, this will update the Model Matrix
+    * World * (Transform * Model)   Apply the transform between model and world, this will update the Model Matrix
+    * (World * Transform) * Model   Apply the transform between model and world, this will update the World Matrix
+    * Transform * World * Model     Apply the transform last, this will update the World Matrix
+    * World * Transform             Replace the existing Model Matrix
+    * Transform * Model             Replace the existing World Matrix)"_unindentHelp};
     }
 };
 
@@ -96,7 +111,14 @@ struct ProcessorTraits<Transform<Mesh>> {
                 "Coordinate Transforms",                     // Category
                 CodeState::Stable,                           // Code state
                 Tags::CPU | Tag{"Transform"} | Tag{"Mesh"},  // Tags
-                "Apply a model or world transformation to a mesh."_help};
+                R"(Apply a transformation to a Mesh.
+    The transform can be applied in a number of different ways:
+    * World * Model * Transform     Apply the transform first, this will update the Model Matrix
+    * World * (Transform * Model)   Apply the transform between model and world, this will update the Model Matrix
+    * (World * Transform) * Model   Apply the transform between model and world, this will update the World Matrix
+    * Transform * World * Model     Apply the transform last, this will update the World Matrix
+    * World * Transform             Replace the existing Model Matrix
+    * Transform * Model             Replace the existing World Matrix)"_unindentHelp};
     }
 };
 
@@ -110,7 +132,14 @@ struct ProcessorTraits<Transform<Volume>> {
                 "Coordinate Transforms",                       // Category
                 CodeState::Stable,                             // Code state
                 Tags::CPU | Tag{"Transform"} | Tag{"Volume"},  // Tags
-                "Apply a model or world transformation to a volume."_help};
+                R"(Apply a transformation to a Volume.
+    The transform can be applied in a number of different ways:
+    * World * Model * Transform     Apply the transform first, this will update the Model Matrix
+    * World * (Transform * Model)   Apply the transform between model and world, this will update the Model Matrix
+    * (World * Transform) * Model   Apply the transform between model and world, this will update the World Matrix
+    * Transform * World * Model     Apply the transform last, this will update the World Matrix
+    * World * Transform             Replace the existing Model Matrix
+    * Transform * Model             Replace the existing World Matrix)"_unindentHelp};
     }
 };
 
@@ -119,17 +148,20 @@ Transform<T>::Transform()
     : Processor()
     , inport_("inport_")
     , outport_("outport_")
-    , space_(
-          "space", "Space",
-          {{"model", "Model", CoordinateSpace::Model}, {"world", "World", CoordinateSpace::World}},
-          1)
-    , replace_("replace", "Replace Input Transformation", false)
+    , space_("space", "Space",
+             {{"worldModelTransform", "World * (Model * Transform)", Mode::WorldModelTransform},
+              {"world_TransformModel", "World * (Transform * Model)", Mode::World_TransformModel},
+              {"worldTransform_Model", "(World * Transform) * Model", Mode::WorldTransform_Model},
+              {"transformWorldModel", "(Transform * World) * Model", Mode::TransformWorldModel},
+              {"worldTransform", "World * Transform", Mode::WorldTransform},
+              {"transformModel", "Transform * Model", Mode::TransformModel}},
+             3)
     , transforms_("transformations", "Transformation Stack") {
 
     addPort(inport_);
     addPort(outport_);
 
-    addProperties(space_, replace_, transforms_);
+    addProperties(space_, transforms_);
 }
 
 template <typename T>
@@ -137,20 +169,26 @@ void Transform<T>::process() {
     std::shared_ptr<T> data(inport_.getData()->clone());
 
     switch (*space_) {
-        case CoordinateSpace::Model:
-            if (replace_) {
-                data->setModelMatrix(transforms_.getMatrix());
-            } else {
-                data->setModelMatrix(transforms_.getMatrix() * data->getModelMatrix());
-            }
+        case Mode::WorldModelTransform:
+            data->setModelMatrix(data->getModelMatrix() * transforms_.getMatrix());
             break;
-        case CoordinateSpace::World:
-        default:
-            if (replace_) {
-                data->setWorldMatrix(transforms_.getMatrix());
-            } else {
-                data->setWorldMatrix(transforms_.getMatrix() * data->getWorldMatrix());
-            }
+
+        case Mode::World_TransformModel:
+            data->setModelMatrix(transforms_.getMatrix() * data->getModelMatrix());
+            break;
+
+        case Mode::WorldTransform_Model:
+            data->setWorldMatrix(data->getWorldMatrix() * transforms_.getMatrix());
+            break;
+
+        case Mode::TransformWorldModel:
+            data->setWorldMatrix(transforms_.getMatrix() * data->getWorldMatrix());
+            break;
+        case Mode::WorldTransform:
+            data->setModelMatrix(transforms_.getMatrix());
+            break;
+        case Mode::TransformModel:
+            data->setWorldMatrix(transforms_.getMatrix());
             break;
     }
 
