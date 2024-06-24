@@ -337,7 +337,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
 
-int BaseModule::getVersion() const { return 8; }
+int BaseModule::getVersion() const { return 9; }
 
 std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -530,6 +530,45 @@ bool BaseModule::Converter::convert(TxElement* root) {
                         xml::getElement(node, "Properties/Property&identifier=dimensions")) {
 
                     elem->SetAttribute("identifier", "dims");
+                    res = true;
+                }
+                return true;
+            }};
+            conv.convert(root);
+            [[fallthrough]];
+        }
+        case 8: {
+            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+                const auto& key = node->Value();
+                if (key != "Processor") return true;
+                std::string_view type = node->GetAttribute("type");
+                if (type != "org.inviwo.TransformLayer" && type != "org.inviwo.TransformMesh" &&
+                    type != "org.inviwo.TransformVolume") {
+                    return true;
+                }
+
+                bool replaceTrafo = false;
+                if (auto value =
+                        xml::getElement(node, "Properties/Property&identifier=replace/value")) {
+                    replaceTrafo = (value->GetAttribute("content") == "1");
+                }
+
+                if (auto elem = xml::getElement(
+                        node, "Properties/Property&identifier=space/selectedIdentifier")) {
+
+                    if (elem->GetAttribute("content") == "model") {
+                        if (replaceTrafo) {
+                            elem->SetAttribute("content", "worldTransform");
+                        } else {
+                            elem->SetAttribute("content", "world_TransformModel");
+                        }
+                    } else {
+                        if (replaceTrafo) {
+                            elem->SetAttribute("content", "TransformModel");
+                        } else {
+                            elem->SetAttribute("content", "worldTransform_Model");
+                        }
+                    }
                     res = true;
                 }
                 return true;
