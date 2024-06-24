@@ -100,6 +100,7 @@ $(function(){initNavTree('classinviwo_1_1Transform.html',''); initResizable(true
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classinviwo_1_1Transform-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::Transform&lt; T &gt; Class Template Reference</div></div>
@@ -510,6 +511,20 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObserver</b> (<
 <tr class="memitem:a4abfbec3338d1ca97e9c1177337f824f inherit pub_methods_classinviwo_1_1Observable" id="r_a4abfbec3338d1ca97e9c1177337f824f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a4abfbec3338d1ca97e9c1177337f824f">stopBlockingNotifications</a> () override final</td></tr>
 <tr class="separator:a4abfbec3338d1ca97e9c1177337f824f inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-types" name="pro-types"></a>
+Protected Types</h2></td></tr>
+<tr class="memitem:a0f9c4a6ee5d6f7bba15a8e7b03e77182" id="r_a0f9c4a6ee5d6f7bba15a8e7b03e77182"><td class="memItemLeft" align="right" valign="top"><a id="a0f9c4a6ee5d6f7bba15a8e7b03e77182" name="a0f9c4a6ee5d6f7bba15a8e7b03e77182"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Mode</b> { <br />
+&#160;&#160;<b>WorldModelTransform</b>
+, <b>World_TransformModel</b>
+, <b>WorldTransform_Model</b>
+, <b>TransformWorldModel</b>
+, <br />
+&#160;&#160;<b>WorldTransform</b>
+, <b>TransformModel</b>
+<br />
+ }</td></tr>
+<tr class="separator:a0f9c4a6ee5d6f7bba15a8e7b03e77182"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a4d12d68cc4a747c2be936c5f5325cac9" id="r_a4d12d68cc4a747c2be936c5f5325cac9"><td class="memItemLeft" align="right" valign="top"><a id="a4d12d68cc4a747c2be936c5f5325cac9" name="a4d12d68cc4a747c2be936c5f5325cac9"></a>
@@ -518,12 +533,9 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a222533e6d4721b9f0c0b809c74c6cb75" id="r_a222533e6d4721b9f0c0b809c74c6cb75"><td class="memItemLeft" align="right" valign="top"><a id="a222533e6d4721b9f0c0b809c74c6cb75" name="a222533e6d4721b9f0c0b809c74c6cb75"></a>
 <a class="el" href="classinviwo_1_1DataOutport.html">DataOutport</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>outport_</b></td></tr>
 <tr class="separator:a222533e6d4721b9f0c0b809c74c6cb75"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a733802e7b1d9e2e7c45c0024ef08c414" id="r_a733802e7b1d9e2e7c45c0024ef08c414"><td class="memItemLeft" align="right" valign="top"><a id="a733802e7b1d9e2e7c45c0024ef08c414" name="a733802e7b1d9e2e7c45c0024ef08c414"></a>
-<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>space_</b></td></tr>
-<tr class="separator:a733802e7b1d9e2e7c45c0024ef08c414"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04c581f97a4427f0cb7b95302a546bb9" id="r_a04c581f97a4427f0cb7b95302a546bb9"><td class="memItemLeft" align="right" valign="top"><a id="a04c581f97a4427f0cb7b95302a546bb9" name="a04c581f97a4427f0cb7b95302a546bb9"></a>
-<a class="el" href="classinviwo_1_1BoolProperty.html">BoolProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>replace_</b></td></tr>
-<tr class="separator:a04c581f97a4427f0cb7b95302a546bb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3cd47f21035b44b9deb107f5e518ba1" id="r_ab3cd47f21035b44b9deb107f5e518ba1"><td class="memItemLeft" align="right" valign="top"><a id="ab3cd47f21035b44b9deb107f5e518ba1" name="ab3cd47f21035b44b9deb107f5e518ba1"></a>
+<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; Mode &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>space_</b></td></tr>
+<tr class="separator:ab3cd47f21035b44b9deb107f5e518ba1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a281c5f95d473339e55698f4cbbf3b506" id="r_a281c5f95d473339e55698f4cbbf3b506"><td class="memItemLeft" align="right" valign="top"><a id="a281c5f95d473339e55698f4cbbf3b506" name="a281c5f95d473339e55698f4cbbf3b506"></a>
 <a class="el" href="classinviwo_1_1TransformListProperty.html">TransformListProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>transforms_</b></td></tr>
 <tr class="separator:a281c5f95d473339e55698f4cbbf3b506"><td class="memSeparator" colspan="2">&#160;</td></tr>
