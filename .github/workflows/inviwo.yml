@@ -61,17 +61,17 @@ jobs:
           
           - system: macos
             os: 'macos-13' # for now macos-latest == macos-12 since macos-13 is still "beta"
+            # Running on mac fails. FFMPEG link issue 
             cmake: >
               -DIVW_MODULE_EIGENUTILS=ON
               -DIVW_MODULE_HDF5=ON
-              -DIVW_MODULE_FFMPEG=ON
+              -DIVW_MODULE_FFMPEG=OFF 
               -DIVW_MODULE_WEBBROWSER=ON
             preset: ninja-developer
             targets: 'all'
             installer: 'inviwo-installer-macos'
             artifact: 'build/inviwo-v*.dmg'
-            # run: './inviwo.app/Contents/MacOS/inviwo --logconsole --quit' Running on mac fails. FFMPEG link issue 
-            run: ''
+            run: './inviwo.app/Contents/MacOS/inviwo --logconsole --quit' 
           
           - system: linux
             os: 'ubuntu-24.04'
@@ -122,10 +122,10 @@ jobs:
             linkage: dynamic
             configuration: Release
             targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
-          #- system: macos  # Disable mac packaging since it probably runs out of diskspace
-          #  linkage: dynamic
-          #  configuration: Release
-          #  targets: 'all package'
+          - system: macos
+            linkage: dynamic
+            configuration: Release
+            targets: 'all package'
           - system: linux
             linkage: dynamic
             configuration: Release
