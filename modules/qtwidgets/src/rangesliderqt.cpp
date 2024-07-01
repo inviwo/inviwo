@@ -155,18 +155,19 @@ void RangeSliderQt::setRange(int minR, int maxR) {
 
 void RangeSliderQt::setMinSeparation(int sep) {
     minSeparation_ = sep;
-    QList<int> sizes = QSplitter::sizes();
-    int range = sizes[0] + sizes[1] + sizes[2];
+    const int totalRange = getTotalRange();
+    const int rangeDelta = range_.y - range_.x;
 
-    int size = range_.y - range_.x;
-    if (size <= 0) {
+    if (rangeDelta <= 0) {
         return;
     }
 
+    const int minWidth = totalRange * minSeparation_ / rangeDelta - handle(1)->width();
+
     if (orientation() == Qt::Horizontal) {
-        widget(1)->setMinimumWidth(range * minSeparation_ / size);
+        widget(1)->setMinimumWidth(minWidth);
     } else {
-        widget(1)->setMinimumHeight(range * minSeparation_ / size);
+        widget(1)->setMinimumHeight(minWidth);
     }
 }
 
@@ -198,36 +199,47 @@ void RangeSliderQt::setMaxRange(int maxR) {
 
 void RangeSliderQt::resizeEvent(QResizeEvent* event) {
     QSplitter::resizeEvent(event);
-    updateSlidersFromState();
     setMinSeparation(minSeparation_);
+    updateSlidersFromState();
+}
+
+int RangeSliderQt::getTotalRange() const {
+    const QList<int> sizes = QSplitter::sizes();
+    return sizes[0] + sizes[1] + sizes[2] + handle(1)->width();
 }
 
 void RangeSliderQt::updateStateFromSliders() {
+    const int totalRange = getTotalRange();
+    const double rangeDelta = range_.y - range_.x;
+
     QList<int> sizes = QSplitter::sizes();
-    int range = sizes[0] + sizes[1] + sizes[2];
-    if (range <= 0) {
+    if (totalRange <= 0) {
         // invisible
         return;
     }
-    int pos1 = sizes[0];
-    int pos2 = sizes[0] + sizes[1];
-    value_.x = range_.x + (range_.y - range_.x) * pos1 / range;
-    value_.y = range_.x + (range_.y - range_.x) * pos2 / range;
+
+    const ivec2 old{value_};
+
+    value_.x = range_.x + static_cast<int>(sizes[0] * rangeDelta / totalRange + 0.5);
+    value_.y =
+        range_.x + static_cast<int>(
+                       (sizes[0] + sizes[1] + handle(1)->width()) * rangeDelta / totalRange + 0.5);
 }
 
 void RangeSliderQt::updateSlidersFromState() {
-    QList<int> sizes = QSplitter::sizes();
-    int range = sizes[0] + sizes[1] + sizes[2];
+    const int totalRange = getTotalRange();
 
-    int size = range_.y - range_.x;
-    if (size <= 0) {
+    const double rangeDelta = range_.y - range_.x;
+    if (rangeDelta <= 0.0) {
         return;
     }
 
-    sizes.clear();
-    sizes.append((range * (value_.x - range_.x)) / size);
-    sizes.append((range * (value_.y - value_.x)) / size);
-    sizes.append((range * (range_.y - value_.y)) / size);
+    QList<int> sizes({
+        static_cast<int>((totalRange * (value_.x - range_.x)) / rangeDelta + 0.5),
+        static_cast<int>((totalRange * (value_.y - value_.x)) / rangeDelta + 0.5) -
+            handle(1)->width(),
+        static_cast<int>((totalRange * (range_.y - value_.y)) / rangeDelta + 0.5),
+    });
 
     QSignalBlocker block(this);
     setSizes(sizes);
@@ -235,6 +247,10 @@ void RangeSliderQt::updateSlidersFromState() {
 
 void RangeSliderQt::updateSplitterPosition(int /*pos*/, int /*idx*/) {
     updateStateFromSliders();
+
+    // snap splitter positions to internal state since the slider resolution might be higher
+    // than the property datatype or increment permits
+    updateSlidersFromState();
 
     // Emit
     emit valuesChanged(value_.x, value_.y);
@@ -260,7 +276,9 @@ void RangeSliderQt::moveMiddle(int delta) {
         QSplitter::setSizes(sizes);
     }
     // update internal state
-    updateSplitterPosition(0, 0);
+    updateStateFromSliders();
+    emit valuesChanged(value_.x, value_.y);
+
     parentWidget()->repaint();
     repaint();
 }
@@ -278,26 +296,34 @@ bool RangeSliderQt::eventFilter(QObject* obj, QEvent* event) {
             return true;
         }
 
-    } else if (obj == widget(1) && event->type() == QEvent::MouseButtonPress && isEnabled()) {
-        QMouseEvent* me = static_cast<QMouseEvent*>(event);
-        if (me->button() == Qt::LeftButton) {
-            lastPos_ = static_cast<int>(orientation() == Qt::Horizontal ? me->globalPosition().x()
-                                                                        : me->globalPosition().y());
-            return true;
-        }
-    } else if (obj == widget(1) && event->type() == QEvent::MouseMove && isEnabled()) {
-        QMouseEvent* me = static_cast<QMouseEvent*>(event);
-        if (me->buttons().testFlag(Qt::LeftButton)) {
-            const int newPos =
-                static_cast<int>(orientation() == Qt::Horizontal ? me->globalPosition().x()
-                                                                 : me->globalPosition().y());
-            const int delta = newPos - lastPos_;
-            lastPos_ = newPos;
-            if (delta != 0) {
-                moveMiddle(delta);
+    } else if (obj == widget(1) && isEnabled()) {
+        if (event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent* me = static_cast<QMouseEvent*>(event);
+            if (me->button() == Qt::LeftButton) {
+                lastPos_ =
+                    static_cast<int>(orientation() == Qt::Horizontal ? me->globalPosition().x()
+                                                                     : me->globalPosition().y());
+                return true;
             }
-            me->accept();
-            return true;
+        } else if (event->type() == QEvent::MouseMove) {
+            QMouseEvent* me = static_cast<QMouseEvent*>(event);
+            if (me->buttons().testFlag(Qt::LeftButton)) {
+                const int newPos =
+                    static_cast<int>(orientation() == Qt::Horizontal ? me->globalPosition().x()
+                                                                     : me->globalPosition().y());
+                const int delta = newPos - lastPos_;
+                lastPos_ = newPos;
+                if (delta != 0) {
+                    moveMiddle(delta);
+                }
+                me->accept();
+                return true;
+            }
+        } else if (event->type() == QEvent::MouseButtonRelease) {
+            // snap splitter positions to internal state since the slider resolution might be higher
+            // than the property datatype or increment permits
+            updateSlidersFromState();
+            event->accept();
         }
     } else if (obj == widget(0) && event->type() == QEvent::MouseButtonRelease && isEnabled()) {
         QMouseEvent* me = static_cast<QMouseEvent*>(event);
@@ -309,7 +335,7 @@ bool RangeSliderQt::eventFilter(QObject* obj, QEvent* event) {
                 QSplitter::setSizes(newSizes);
             }
             // update internal state
-            updateSplitterPosition(0, 0);
+            updateSplitterPosition(0, 1);
             me->accept();
             return true;
         }
@@ -323,7 +349,7 @@ bool RangeSliderQt::eventFilter(QObject* obj, QEvent* event) {
                 QSplitter::setSizes(newSizes);
             }
             // update internal state
-            updateSplitterPosition(0, 0);
+            updateSplitterPosition(0, 2);
             me->accept();
             return true;
         }
