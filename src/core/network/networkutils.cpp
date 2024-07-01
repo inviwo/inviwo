@@ -235,18 +235,20 @@ void serializeSelected(ProcessorNetwork* network, std::ostream& os,
 
 std::vector<Processor*> appendPartialProcessorNetwork(ProcessorNetwork* network, std::istream& is,
                                                       const std::filesystem::path& refPath,
-                                                      InviwoApplication* app) {
-    NetworkLock lock(network);
+                                                      InviwoApplication* app,
+                                                      OffsetCallback callback) {
+    const NetworkLock lock(network);
     auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(is, refPath);
 
-    detail::PartialProcessorNetwork ppc(network);
+    detail::PartialProcessorNetwork ppc(network, std::move(callback));
     deserializer.deserialize("ProcessorNetwork", ppc);
 
     return ppc.getAddedProcessors();
 }
 
-detail::PartialProcessorNetwork::PartialProcessorNetwork(ProcessorNetwork* network)
-    : network_(network) {}
+detail::PartialProcessorNetwork::PartialProcessorNetwork(ProcessorNetwork* network,
+                                                         OffsetCallback callback)
+    : network_(network), callback_{std::move(callback)} {}
 
 std::vector<Processor*> detail::PartialProcessorNetwork::getAddedProcessors() const {
     return addedProcessors_;
@@ -339,12 +341,19 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
             m->setSelected(false);
         }
 
+        for (auto& p : processors) {
+            addedProcessors_.push_back(p.get());
+        }
+        if (callback_) {
+            const ivec2 offset = callback_(addedProcessors_);
+            offsetPosition(addedProcessors_, offset);
+        }
+
         std::map<std::string, std::string, std::less<>> processorIds;
         for (auto& p : processors) {
             auto orgId = p->getIdentifier();
             network_->addProcessor(p);
             processorIds[orgId] = p->getIdentifier();
-            addedProcessors_.push_back(p.get());
         }
 
         for (auto& c : internalConnections) {
@@ -438,11 +447,11 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
                                             std::shared_ptr<Processor> newProcessor,
                                             Processor* oldProcessor) {
 
-    network->addProcessor(newProcessor);
-
     util::setPosition(newProcessor.get(), util::getPosition(oldProcessor));
 
-    NetworkLock lock(network);
+    network->addProcessor(newProcessor);
+
+    const NetworkLock lock(network);
 
     std::vector<PortConnection> newConnections;
     {
