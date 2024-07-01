@@ -237,10 +237,10 @@ std::vector<Processor*> appendPartialProcessorNetwork(ProcessorNetwork* network,
                                                       const std::filesystem::path& refPath,
                                                       InviwoApplication* app,
                                                       OffsetCallback callback) {
-    NetworkLock lock(network);
+    const NetworkLock lock(network);
     auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(is, refPath);
 
-    detail::PartialProcessorNetwork ppc(network, callback);
+    detail::PartialProcessorNetwork ppc(network, std::move(callback));
     deserializer.deserialize("ProcessorNetwork", ppc);
 
     return ppc.getAddedProcessors();
@@ -248,7 +248,7 @@ std::vector<Processor*> appendPartialProcessorNetwork(ProcessorNetwork* network,
 
 detail::PartialProcessorNetwork::PartialProcessorNetwork(ProcessorNetwork* network,
                                                          OffsetCallback callback)
-    : network_(network), callback_{callback} {}
+    : network_(network), callback_{std::move(callback)} {}
 
 std::vector<Processor*> detail::PartialProcessorNetwork::getAddedProcessors() const {
     return addedProcessors_;
@@ -451,7 +451,7 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
 
     network->addProcessor(newProcessor);
 
-    NetworkLock lock(network);
+    const NetworkLock lock(network);
 
     std::vector<PortConnection> newConnections;
     {

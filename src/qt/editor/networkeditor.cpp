@@ -966,7 +966,7 @@ void NetworkEditor::paste(const QMimeData& mimeData) {
     NetworkLock lock(network_);
     try {
         auto offsetCallback = [&, orgBounds = util::getBoundingBox(network_)](
-                                  std::vector<Processor*> added) -> ivec2 {
+                                  const std::vector<Processor*>& added) -> ivec2 {
             auto center = util::getCenterPosition(added);
             auto bounds = util::getBoundingBox(added);
 
@@ -987,7 +987,7 @@ void NetworkEditor::paste(const QMimeData& mimeData) {
                                    ivec2{0, ProcessorGraphicsItem::size_.height()};
                 offset = pastePos_.second - center;
             }
-            QPointF p = snapToGrid(utilqt::toQPoint(offset));
+            const QPointF p = snapToGrid(utilqt::toQPoint(offset));
             return ivec2{static_cast<int>(p.x()), static_cast<int>(p.y())};
         };
 

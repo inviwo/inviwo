@@ -36,9 +36,7 @@
 
 #include <functional>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 using OffsetCallback = std::function<ivec2(std::vector<Processor*>)>;
 
@@ -48,7 +46,7 @@ namespace detail {
  * Helper class for Copy/Pasting a network with sub parts referring to stuff outside of the network.
  */
 struct PartialProcessorNetwork : public Serializable {
-    PartialProcessorNetwork(ProcessorNetwork* network, OffsetCallback callback = nullptr);
+    explicit PartialProcessorNetwork(ProcessorNetwork* network, OffsetCallback callback = nullptr);
 
     std::vector<Processor*> getAddedProcessors() const;
 
@@ -200,6 +198,4 @@ IVW_CORE_API std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* netwo
                                                          std::shared_ptr<Processor> newProcessor,
                                                          Processor* oldProcessor);
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util
