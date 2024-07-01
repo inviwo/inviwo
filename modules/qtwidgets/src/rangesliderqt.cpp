@@ -33,6 +33,7 @@
 #include <inviwo/core/util/stringconversion.h>  // for toString
 
 #include <algorithm>  // for min
+#include <cmath>
 
 #include <QEvent>           // for QEvent, QEvent::MouseButtonRelease, QEven...
 #include <QFrame>           // for QFrame
@@ -218,12 +219,9 @@ void RangeSliderQt::updateStateFromSliders() {
         return;
     }
 
-    const ivec2 old{value_};
-
-    value_.x = range_.x + static_cast<int>(sizes[0] * rangeDelta / totalRange + 0.5);
-    value_.y =
-        range_.x + static_cast<int>(
-                       (sizes[0] + sizes[1] + handle(1)->width()) * rangeDelta / totalRange + 0.5);
+    value_.x = range_.x + static_cast<int>(std::lround(sizes[0] * rangeDelta / totalRange));
+    value_.y = range_.x + static_cast<int>(std::lround((sizes[0] + sizes[1] + handle(1)->width()) *
+                                                       rangeDelta / totalRange));
 }
 
 void RangeSliderQt::updateSlidersFromState() {
@@ -234,11 +232,11 @@ void RangeSliderQt::updateSlidersFromState() {
         return;
     }
 
-    QList<int> sizes({
-        static_cast<int>((totalRange * (value_.x - range_.x)) / rangeDelta + 0.5),
-        static_cast<int>((totalRange * (value_.y - value_.x)) / rangeDelta + 0.5) -
+    const QList<int> sizes({
+        static_cast<int>(std::lround((totalRange * (value_.x - range_.x)) / rangeDelta)),
+        static_cast<int>(std::lround((totalRange * (value_.y - value_.x)) / rangeDelta)) -
             handle(1)->width(),
-        static_cast<int>((totalRange * (range_.y - value_.y)) / rangeDelta + 0.5),
+        static_cast<int>(std::lround((totalRange * (range_.y - value_.y)) / rangeDelta)),
     });
 
     QSignalBlocker block(this);
@@ -298,7 +296,7 @@ bool RangeSliderQt::eventFilter(QObject* obj, QEvent* event) {
 
     } else if (obj == widget(1) && isEnabled()) {
         if (event->type() == QEvent::MouseButtonPress) {
-            QMouseEvent* me = static_cast<QMouseEvent*>(event);
+            auto* me = dynamic_cast<QMouseEvent*>(event);
             if (me->button() == Qt::LeftButton) {
                 lastPos_ =
                     static_cast<int>(orientation() == Qt::Horizontal ? me->globalPosition().x()
@@ -306,7 +304,7 @@ bool RangeSliderQt::eventFilter(QObject* obj, QEvent* event) {
                 return true;
             }
         } else if (event->type() == QEvent::MouseMove) {
-            QMouseEvent* me = static_cast<QMouseEvent*>(event);
+            auto* me = dynamic_cast<QMouseEvent*>(event);
             if (me->buttons().testFlag(Qt::LeftButton)) {
                 const int newPos =
                     static_cast<int>(orientation() == Qt::Horizontal ? me->globalPosition().x()
