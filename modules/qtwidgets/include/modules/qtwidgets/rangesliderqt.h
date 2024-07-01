@@ -84,6 +84,8 @@ protected:
     void updateSplitterPosition(int pos, int idx);
     void moveMiddle(int delta);
 
+    int getTotalRange() const;
+
 private:
     ivec2 range_;
     ivec2 value_;

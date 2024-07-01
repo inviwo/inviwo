@@ -132,7 +132,6 @@ public:
 
     virtual Document getDescription() const override;
 
-protected:
     /**
      * \brief clamp the given value against the set min/max range
      *
@@ -140,6 +139,8 @@ protected:
      * @return returns a valid value within the min max range
      */
     value_type clamp(const value_type& v) const;
+
+protected:
     T limitSeparation(T sep) const;
 
 private:
