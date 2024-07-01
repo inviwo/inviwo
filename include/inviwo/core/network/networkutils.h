@@ -34,9 +34,13 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#include <functional>
+
 namespace inviwo {
 
 namespace util {
+
+using OffsetCallback = std::function<ivec2(std::vector<Processor*>)>;
 
 namespace detail {
 
@@ -44,7 +48,7 @@ namespace detail {
  * Helper class for Copy/Pasting a network with sub parts referring to stuff outside of the network.
  */
 struct PartialProcessorNetwork : public Serializable {
-    PartialProcessorNetwork(ProcessorNetwork* network);
+    PartialProcessorNetwork(ProcessorNetwork* network, OffsetCallback callback = nullptr);
 
     std::vector<Processor*> getAddedProcessors() const;
 
@@ -54,6 +58,7 @@ struct PartialProcessorNetwork : public Serializable {
 private:
     ProcessorNetwork* network_;
     std::vector<Processor*> addedProcessors_;
+    OffsetCallback callback_;
 };
 
 }  // namespace detail
@@ -175,12 +180,13 @@ IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
  * @param refPath a possible path to the original file of the PartialProcessorNetwork, for error
  * reporting
  * @param app The inviwo application
+ * @param offsetCallback  callback for determining an offset, which is applied to all added
+ * processors
+ * @return the appended processors.
  */
-// return the appended processors.
-
 IVW_CORE_API std::vector<Processor*> appendPartialProcessorNetwork(
     ProcessorNetwork* network, std::istream& is, const std::filesystem::path& refPath,
-    InviwoApplication* app);
+    InviwoApplication* app, OffsetCallback offsetCallback = nullptr);
 
 IVW_CORE_API std::vector<Processor*> appendProcessorNetwork(
     ProcessorNetwork* destinationNetwork, const std::filesystem::path& workspaceFile,

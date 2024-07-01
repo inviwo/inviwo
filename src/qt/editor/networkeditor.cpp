@@ -965,34 +965,38 @@ void NetworkEditor::paste(const QMimeData& mimeData) {
 
     NetworkLock lock(network_);
     try {
-        auto orgBounds = util::getBoundingBox(network_);
+        auto offsetCallback = [&, orgBounds = util::getBoundingBox(network_)](
+                                  std::vector<Processor*> added) -> ivec2 {
+            auto center = util::getCenterPosition(added);
+            auto bounds = util::getBoundingBox(added);
+
+            ivec2 offset{0, 0};
+            if (clickedPosition_.first) {  // center on clicked pos
+                offset = clickedPosition_.second - center;
+            } else if (pastePos_.first) {
+                pastePos_.second.x += (bounds.second.x - bounds.first.x) +
+                                      static_cast<int>(ProcessorGraphicsItem::size_.width()) +
+                                      gridSpacing_;
+                offset = pastePos_.second - center;
+            } else {  // add to bottom left
+                pastePos_.first = true;
+                pastePos_.second = ivec2{orgBounds.first.x, orgBounds.second.y} +
+                                   ivec2{(bounds.second.x - bounds.first.x) / 2,
+                                         (bounds.second.y - bounds.first.y) / 2} +
+                                   ivec2{0, gridSpacing_} +
+                                   ivec2{0, ProcessorGraphicsItem::size_.height()};
+                offset = pastePos_.second - center;
+            }
+            QPointF p = snapToGrid(utilqt::toQPoint(offset));
+            return ivec2{static_cast<int>(p.x()), static_cast<int>(p.y())};
+        };
 
         std::stringstream ss;
         for (auto d : data) ss << d;
         // Activate the default context, might be needed in processor constructors.
         RenderContext::getPtr()->activateDefaultRenderContext();
-        auto added = util::appendPartialProcessorNetwork(network_, ss, "",
-                                                         mainWindow_->getInviwoApplication());
-
-        auto center = util::getCenterPosition(added);
-        auto bounds = util::getBoundingBox(added);
-
-        if (clickedPosition_.first) {  // center on clicked pos
-            util::offsetPosition(added, clickedPosition_.second - center);
-        } else if (pastePos_.first) {
-            pastePos_.second.x += (bounds.second.x - bounds.first.x) +
-                                  static_cast<int>(ProcessorGraphicsItem::size_.width()) +
-                                  gridSpacing_;
-            util::offsetPosition(added, pastePos_.second - center);
-        } else {  // add to bottom left
-            pastePos_.first = true;
-            pastePos_.second = ivec2{orgBounds.first.x, orgBounds.second.y} +
-                               ivec2{(bounds.second.x - bounds.first.x) / 2,
-                                     (bounds.second.y - bounds.first.y) / 2} +
-                               ivec2{0, gridSpacing_} +
-                               ivec2{0, ProcessorGraphicsItem::size_.height()};
-            util::offsetPosition(added, pastePos_.second - center);
-        }
+        auto added = util::appendPartialProcessorNetwork(
+            network_, ss, "", mainWindow_->getInviwoApplication(), offsetCallback);
 
         // Make sure the pasted processors are in the view
         auto selection = selectedItems();
