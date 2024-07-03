@@ -33,6 +33,6 @@ ivw_add_unittest(${TEST_FILES})
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
-if(IVW_ENABLE_PYTHON)
+if(IVW_ENABLE_PYTHON AND IVW_MODULE_PYTHON3)
     add_subdirectory(bindings)
 endif()
