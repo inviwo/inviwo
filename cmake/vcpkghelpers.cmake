@@ -109,6 +109,7 @@ endfunction()
 # corresponding folders by globbing the vcpkg package folders. 
 # It will also try and install any transitive dependencies automatically 
 # We also automatically register the license file using the metadata found in vcpkg
+# Requires a Python3 interpreter.
 # Parameters:
 #  * OUT_COPYRIGHT retrieve the path the the COPYRIGHT file
 #  * OUT_VERSION get the package version from the vcpkg metadata
@@ -120,7 +121,15 @@ function(ivw_vcpkg_install name)
     endif()
 
     if(NOT Python3_Interpreter_FOUND)
-        return()
+        find_package(Python3 COMPONENTS Interpreter)
+        if(NOT Python3_FOUND OR 
+           NOT Python3_Interpreter_FOUND)
+            message(ERROR "Python3 not available.\n"
+                "Please install Python3. If you have a Python installation that is not found, consider "
+                "setting Python3_ROOT_DIR to the root directory of your Python 3 installation."
+            )
+            return ()
+        endif()
     endif()
 
     set(options EXT)
