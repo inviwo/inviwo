@@ -91,15 +91,17 @@ std::pair<Processor*, Outport*> ScatterPlotDataFrameVisualizer::addSourceProcess
 
 std::vector<Processor*> ScatterPlotDataFrameVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* network) const {
+    const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto scatter = network->addProcessor(util::makeProcessor<plot::ScatterPlotProcessor>(GP{0, 3}));
+    auto scatter = network->addProcessor(
+        util::makeProcessor<plot::ScatterPlotProcessor>(GP{0, 3} + initialPos));
 
-    auto background = util::makeProcessor<Background>(GP{0, 6});
+    auto background = util::makeProcessor<Background>(GP{0, 6} + initialPos);
     background->backgroundStyle_.setSelectedValue(Background::BackgroundStyle::Uniform);
     background->bgColor1_ = vec4{1.0f, 1.0f, 1.0f, 1.0f};
     auto bg = network->addProcessor(std::move(background));
 
-    auto canvas = util::makeProcessor<CanvasProcessorGL>(GP{0, 9});
+    auto canvas = util::makeProcessor<CanvasProcessorGL>(GP{0, 9} + initialPos);
     canvas->dimensions_ = ivec2{800, 400};
     auto cvs = network->addProcessor(std::move(canvas));
 

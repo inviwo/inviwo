@@ -85,8 +85,9 @@ std::pair<Processor*, Outport*> ImageInformationVisualizer::addSourceProcessor(
 
 std::vector<Processor*> ImageInformationVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* net) const {
+    const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto info = net->addProcessor(util::makeProcessor<ImageInformation>(GP{0, 3}));
+    auto info = net->addProcessor(util::makeProcessor<ImageInformation>(GP{0, 3} + initialPos));
     net->addConnection(outport, info->getInports()[0]);
 
     return {info};

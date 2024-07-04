@@ -71,8 +71,9 @@ std::pair<Processor*, Outport*> LayerToImageVisualizer::addSourceProcessor(
 
 std::vector<Processor*> LayerToImageVisualizer::addVisualizerNetwork(Outport* outport,
                                                                      ProcessorNetwork* net) const {
+    const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto info = net->addProcessor(util::makeProcessor<LayerToImage>(GP{0, 3}));
+    auto info = net->addProcessor(util::makeProcessor<LayerToImage>(GP{0, 3} + initialPos));
     net->addConnection(outport, info->getInports()[0]);
 
     return {info};

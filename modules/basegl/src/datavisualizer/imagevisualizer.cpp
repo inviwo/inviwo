@@ -84,8 +84,9 @@ std::pair<Processor*, Outport*> ImageVisualizer::addSourceProcessor(
 
 std::vector<Processor*> ImageVisualizer::addVisualizerNetwork(Outport* outport,
                                                               ProcessorNetwork* net) const {
+    const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 3}));
+    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 3} + initialPos));
     net->addConnection(outport, cvs->getInports()[0]);
 
     if (auto canvas = dynamic_cast<CanvasProcessor*>(cvs)) {

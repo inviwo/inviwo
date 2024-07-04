@@ -84,10 +84,11 @@ std::pair<Processor*, Outport*> LayerVisualizer::addSourceProcessor(
 
 std::vector<Processor*> LayerVisualizer::addVisualizerNetwork(Outport* outport,
                                                               ProcessorNetwork* net) const {
+    const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto bak = net->addProcessor(util::makeProcessor<Background>(GP{1, 3}));
-    auto mrp = net->addProcessor(util::makeProcessor<LayerRenderer>(GP{0, 6}));
-    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 9}));
+    auto bak = net->addProcessor(util::makeProcessor<Background>(GP{1, 3} + initialPos));
+    auto mrp = net->addProcessor(util::makeProcessor<LayerRenderer>(GP{0, 6} + initialPos));
+    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 9} + initialPos));
 
     net->addConnection(bak->getOutports()[0], mrp->getInports()[1]);
     net->addConnection(mrp->getOutports()[0], cvs->getInports()[0]);

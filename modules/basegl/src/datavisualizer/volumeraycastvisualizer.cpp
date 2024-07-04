@@ -52,8 +52,8 @@
 #include <modules/basegl/processors/background.h>                // for Background
 #include <modules/basegl/processors/entryexitpointsprocessor.h>  // for EntryExitPoints
 #include <modules/basegl/processors/linerendererprocessor.h>     // for LineRendererProcessor
-#include <modules/basegl/processors/volumeraycaster.h>           // for VolumeRaycaster
-#include <modules/opengl/canvasprocessorgl.h>                    // for CanvasProcessorGL
+#include <modules/basegl/processors/raycasting/standardvolumeraycaster.h>  // for StandardVolume...
+#include <modules/opengl/canvasprocessorgl.h>                              // for CanvasProcessorGL
 
 #include <map>  // for map
 
@@ -100,15 +100,17 @@ std::pair<Processor*, Outport*> VolumeRaycastVisualizer::addSourceProcessor(
 
 std::vector<Processor*> VolumeRaycastVisualizer::addVisualizerNetwork(Outport* outport,
                                                                       ProcessorNetwork* net) const {
+    const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto cpg = net->addProcessor(util::makeProcessor<CubeProxyGeometry>(GP{1, 3}));
-    auto eep = net->addProcessor(util::makeProcessor<EntryExitPoints>(GP{1, 6}));
-    auto vrc = net->addProcessor(util::makeProcessor<VolumeRaycaster>(GP{0, 9}));
-    auto bak = net->addProcessor(util::makeProcessor<Background>(GP{0, 12}));
-    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 15}));
+    auto cpg = net->addProcessor(util::makeProcessor<CubeProxyGeometry>(GP{1, 3} + initialPos));
+    auto eep = net->addProcessor(util::makeProcessor<EntryExitPoints>(GP{1, 6} + initialPos));
+    auto vrc =
+        net->addProcessor(util::makeProcessor<StandardVolumeRaycaster>(GP{0, 9} + initialPos));
+    auto bak = net->addProcessor(util::makeProcessor<Background>(GP{0, 12} + initialPos));
+    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 15} + initialPos));
 
-    auto vbb = net->addProcessor(util::makeProcessor<VolumeBoundingBox>(GP{8, 3}));
-    auto lrp = net->addProcessor(util::makeProcessor<LineRendererProcessor>(GP{8, 6}));
+    auto vbb = net->addProcessor(util::makeProcessor<VolumeBoundingBox>(GP{8, 3} + initialPos));
+    auto lrp = net->addProcessor(util::makeProcessor<LineRendererProcessor>(GP{8, 6} + initialPos));
 
     util::trySetProperty<FloatVec4Property>(bak, "bgColor1", vec4(0.443f, 0.482f, 0.600f, 1.0f));
     util::trySetProperty<FloatVec4Property>(bak, "bgColor2", vec4(0.831f, 0.831f, 0.831f, 1.0f));

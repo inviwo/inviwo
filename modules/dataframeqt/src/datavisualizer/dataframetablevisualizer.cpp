@@ -84,8 +84,9 @@ std::pair<Processor*, Outport*> DataFrameTableVisualizer::addSourceProcessor(
 
 std::vector<Processor*> DataFrameTableVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* network) const {
+    const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto table = network->addProcessor(util::makeProcessor<DataFrameTable>(GP{0, 3}));
+    auto table = network->addProcessor(util::makeProcessor<DataFrameTable>(GP{0, 3} + initialPos));
     network->addConnection(outport, table->getInports()[0]);
 
     return {table};

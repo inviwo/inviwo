@@ -88,8 +88,10 @@ std::pair<Processor*, Outport*> VolumeSliceVisualizer::addSourceProcessor(
 
 std::vector<Processor*> VolumeSliceVisualizer::addVisualizerNetwork(Outport* outport,
                                                                     ProcessorNetwork* net) const {
-    auto vsl = net->addProcessor(util::makeProcessor<VolumeSliceGL>(GP{0, 3}));
-    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 6}));
+    const ivec2 initialPos = util::getPosition(outport->getProcessor());
+
+    auto vsl = net->addProcessor(util::makeProcessor<VolumeSliceGL>(GP{0, 3} + initialPos));
+    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 6} + initialPos));
 
     net->addConnection(outport, vsl->getInports()[0]);
     net->addConnection(vsl->getOutports()[0], cvs->getInports()[0]);

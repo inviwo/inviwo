@@ -90,13 +90,14 @@ std::pair<Processor*, Outport*> ImageBackgroundVisualizer::addSourceProcessor(
 
 std::vector<Processor*> ImageBackgroundVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* net) const {
+    const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto proc = util::makeProcessor<Background>(GP{0, 3});
+    auto proc = util::makeProcessor<Background>(GP{0, 3} + initialPos);
     proc->backgroundStyle_.setSelectedValue(Background::BackgroundStyle::Uniform);
     proc->bgColor1_ = vec4{1.0f, 1.0f, 1.0f, 1.0f};
     proc->blendMode_.setSelectedValue(Background::BlendMode::AlphaMixing);
     auto bg = net->addProcessor(std::move(proc));
-    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 6}));
+    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 6} + initialPos));
     net->addConnection(outport, bg->getInports()[0]);
     net->addConnection(bg->getOutports()[0], cvs->getInports()[0]);
 

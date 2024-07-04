@@ -87,7 +87,9 @@ std::pair<Processor*, Outport*> VolumeInformationVisualizer::addSourceProcessor(
 
 std::vector<Processor*> VolumeInformationVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* net) const {
-    auto info = net->addProcessor(util::makeProcessor<VolumeInformation>(GP{0, 3}));
+    const ivec2 initialPos = util::getPosition(outport->getProcessor());
+
+    auto info = net->addProcessor(util::makeProcessor<VolumeInformation>(GP{0, 3} + initialPos));
 
     net->addConnection(outport, info->getInports()[0]);
 
