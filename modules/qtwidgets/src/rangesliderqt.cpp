@@ -232,7 +232,7 @@ void RangeSliderQt::updateSlidersFromState() {
         return;
     }
 
-    const QList<int> sizes({
+    const QList sizes({
         static_cast<int>(std::lround((totalRange * (value_.x - range_.x)) / rangeDelta)),
         static_cast<int>(std::lround((totalRange * (value_.y - value_.x)) / rangeDelta)) -
             handle(1)->width(),
@@ -283,7 +283,7 @@ void RangeSliderQt::moveMiddle(int delta) {
 
 bool RangeSliderQt::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::ToolTip) {
-        QHelpEvent* helpEvent = static_cast<QHelpEvent*>(event);
+        const QHelpEvent* helpEvent = static_cast<QHelpEvent*>(event);
         if (obj == handle(1)) {
             QToolTip::showText(helpEvent->globalPos(),
                                QString::fromStdString(formatTooltip_(0, value_.x)));
@@ -293,20 +293,68 @@ bool RangeSliderQt::eventFilter(QObject* obj, QEvent* event) {
                                QString::fromStdString(formatTooltip_(1, value_.y)));
             return true;
         }
+    } else if (isEnabled()) {
+        if (obj == widget(0)) {
+            handleGrooveEvent(Groove::Left, event);
+        } else if (obj == widget(1)) {
+            handleCenterWidgetEvent(event);
+        } else if (obj == widget(2)) {
+            handleGrooveEvent(Groove::Right, event);
+        }
+        if (event->isAccepted()) {
+            return true;
+        }
+    }
+    return QObject::eventFilter(obj, event);
+}
 
-    } else if (obj == widget(1) && isEnabled()) {
-        if (event->type() == QEvent::MouseButtonPress) {
-            auto* me = dynamic_cast<QMouseEvent*>(event);
-            if (me->button() == Qt::LeftButton) {
+void RangeSliderQt::handleGrooveEvent(Groove groove, QEvent* event) {
+    if (event->type() == QEvent::MouseButtonRelease) {
+        if (const auto* me = static_cast<QMouseEvent*>(event); me->button() == Qt::LeftButton) {
+
+            auto newSizes = [&]() -> QList<int> {
+                const auto sizes = QSplitter::sizes();
+                if (groove == Groove::Left) {
+                    return {me->pos().x(), sizes[1] + (sizes[0] - me->pos().x()), sizes[2]};
+                } else {
+                    return {sizes[0], sizes[1] + me->pos().x(), sizes[2] - me->pos().x()};
+                }
+            }();
+
+            {
+                QSignalBlocker block(this);
+                QSplitter::setSizes(newSizes);
+            }
+            // update internal state
+            updateSplitterPosition(0, static_cast<int>(groove));
+            event->accept();
+        }
+    }
+}
+
+void RangeSliderQt::handleCenterWidgetEvent(QEvent* event) {
+    switch (event->type()) {
+        case QEvent::MouseButtonPress: {
+            if (const auto* me = dynamic_cast<QMouseEvent*>(event);
+                me->button() == Qt::LeftButton) {
                 lastPos_ =
                     static_cast<int>(orientation() == Qt::Horizontal ? me->globalPosition().x()
                                                                      : me->globalPosition().y());
-                return true;
+                event->accept();
             }
-        } else if (event->type() == QEvent::MouseMove) {
-            auto* me = dynamic_cast<QMouseEvent*>(event);
-            if (me->buttons().testFlag(Qt::LeftButton)) {
-                const int newPos =
+            break;
+        }
+        case QEvent::MouseButtonRelease:
+            // snap splitter positions to internal state since the slider resolution might be higher
+            // than the property datatype or increment permits
+            updateSlidersFromState();
+            event->accept();
+            break;
+
+        case QEvent::MouseMove: {
+            if (const auto* me = dynamic_cast<QMouseEvent*>(event);
+                me->buttons().testFlag(Qt::LeftButton)) {
+                const auto newPos =
                     static_cast<int>(orientation() == Qt::Horizontal ? me->globalPosition().x()
                                                                      : me->globalPosition().y());
                 const int delta = newPos - lastPos_;
@@ -314,49 +362,17 @@ bool RangeSliderQt::eventFilter(QObject* obj, QEvent* event) {
                 if (delta != 0) {
                     moveMiddle(delta);
                 }
-                me->accept();
-                return true;
+                event->accept();
             }
-        } else if (event->type() == QEvent::MouseButtonRelease) {
-            // snap splitter positions to internal state since the slider resolution might be higher
-            // than the property datatype or increment permits
-            updateSlidersFromState();
-            event->accept();
+            break;
         }
-    } else if (obj == widget(0) && event->type() == QEvent::MouseButtonRelease && isEnabled()) {
-        QMouseEvent* me = static_cast<QMouseEvent*>(event);
-        if (me->button() == Qt::LeftButton) {
-            QList<int> sizes = QSplitter::sizes();
-            QList<int> newSizes{me->pos().x(), sizes[1] + (sizes[0] - me->pos().x()), sizes[2]};
-            {
-                QSignalBlocker block(this);
-                QSplitter::setSizes(newSizes);
-            }
-            // update internal state
-            updateSplitterPosition(0, 1);
-            me->accept();
-            return true;
-        }
-    } else if (obj == widget(2) && event->type() == QEvent::MouseButtonRelease && isEnabled()) {
-        QMouseEvent* me = static_cast<QMouseEvent*>(event);
-        if (me->button() == Qt::LeftButton) {
-            QList<int> sizes = QSplitter::sizes();
-            QList<int> newSizes{sizes[0], sizes[1] + me->pos().x(), sizes[2] - me->pos().x()};
-            {
-                QSignalBlocker block(this);
-                QSplitter::setSizes(newSizes);
-            }
-            // update internal state
-            updateSplitterPosition(0, 2);
-            me->accept();
-            return true;
-        }
+        default:
+            break;
     }
-    return QObject::eventFilter(obj, event);
 }
 
 void RangeSliderQt::setTooltipFormat(std::function<std::string(int, int)> formater) {
-    formatTooltip_ = formater;
+    formatTooltip_ = std::move(formater);
 }
 
 }  // namespace inviwo

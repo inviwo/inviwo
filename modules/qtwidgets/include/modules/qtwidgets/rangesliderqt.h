@@ -53,7 +53,6 @@ public:
                   bool showTooltip = false);
     virtual ~RangeSliderQt() = default;
 
-public:
     int minValue() const;
     int maxValue() const;
     int minRange() const;
@@ -75,8 +74,13 @@ signals:
     void valuesChanged(int min, int max);
 
 protected:
+    enum class Groove { Left = 1, Right };
+
     virtual bool eventFilter(QObject* obj, QEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
+
+    void handleGrooveEvent(Groove groove, QEvent* event);
+    void handleCenterWidgetEvent(QEvent* event);
 
     void updateStateFromSliders();
     void updateSlidersFromState();
