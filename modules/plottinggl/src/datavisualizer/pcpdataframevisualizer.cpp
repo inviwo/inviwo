@@ -82,10 +82,12 @@ bool PCPDataFrameVisualizer::hasSourceProcessor() const { return true; }
 bool PCPDataFrameVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> PCPDataFrameVisualizer::addSourceProcessor(
-    const std::filesystem::path& filename, ProcessorNetwork* network) const {
+    const std::filesystem::path& filename, ProcessorNetwork* network,
+    const ivec2& initialPos) const {
 
-    auto source = network->addProcessor(util::makeProcessor<CSVSource>(GP{0, 0}, filename));
-    auto outport = source->getOutports().front();
+    auto* source =
+        network->addProcessor(util::makeProcessor<CSVSource>(GP{0, 0} + initialPos, filename));
+    auto* outport = source->getOutports().front();
     return {source, outport};
 }
 
@@ -93,17 +95,17 @@ std::vector<Processor*> PCPDataFrameVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* network) const {
     const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto pcp = network->addProcessor(
+    auto* pcp = network->addProcessor(
         util::makeProcessor<plot::ParallelCoordinates>(GP{0, 3} + initialPos));
 
     auto back = util::makeProcessor<Background>(GP{0, 6} + initialPos);
     back->backgroundStyle_.setSelectedValue(Background::BackgroundStyle::Uniform);
     back->bgColor1_ = vec4{1.0f, 1.0f, 1.0f, 1.0f};
-    auto bak = network->addProcessor(std::move(back));
+    auto* bak = network->addProcessor(std::move(back));
 
     auto canvas = util::makeProcessor<CanvasProcessorGL>(GP{0, 9} + initialPos);
     canvas->dimensions_ = ivec2{800, 400};
-    auto cvs = network->addProcessor(std::move(canvas));
+    auto* cvs = network->addProcessor(std::move(canvas));
 
     network->addConnection(pcp->getOutports()[0], bak->getInports()[0]);
     network->addConnection(bak->getOutports()[0], cvs->getInports()[0]);
@@ -113,9 +115,10 @@ std::vector<Processor*> PCPDataFrameVisualizer::addVisualizerNetwork(
 }
 
 std::vector<Processor*> PCPDataFrameVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* network) const {
+    const std::filesystem::path& filename, ProcessorNetwork* network,
+    const ivec2& initialPos) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, network);
+    auto sourceAndOutport = addSourceProcessor(filename, network, initialPos);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, network);
 
     processors.push_back(sourceAndOutport.first);

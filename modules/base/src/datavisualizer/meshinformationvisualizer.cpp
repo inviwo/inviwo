@@ -76,10 +76,11 @@ bool MeshInformationVisualizer::hasSourceProcessor() const { return true; }
 bool MeshInformationVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> MeshInformationVisualizer::addSourceProcessor(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& initialPos) const {
 
-    auto source = net->addProcessor(util::makeProcessor<MeshSource>(GP{0, 0}, app_, filename));
-    auto outport = source->getOutports().front();
+    auto* source =
+        net->addProcessor(util::makeProcessor<MeshSource>(GP{0, 0} + initialPos, app_, filename));
+    auto* outport = source->getOutports().front();
     return {source, outport};
 }
 
@@ -87,7 +88,7 @@ std::vector<Processor*> MeshInformationVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* net) const {
     const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto info = net->addProcessor(util::makeProcessor<MeshInformation>(GP{0, 3} + initialPos));
+    auto* info = net->addProcessor(util::makeProcessor<MeshInformation>(GP{0, 3} + initialPos));
 
     net->addConnection(outport, info->getInports()[0]);
 
@@ -95,9 +96,9 @@ std::vector<Processor*> MeshInformationVisualizer::addVisualizerNetwork(
 }
 
 std::vector<Processor*> MeshInformationVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& initialPos) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, net);
+    auto sourceAndOutport = addSourceProcessor(filename, net, initialPos);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     processors.push_back(sourceAndOutport.first);

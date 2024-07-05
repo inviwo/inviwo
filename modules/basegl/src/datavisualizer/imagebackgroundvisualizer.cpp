@@ -81,10 +81,11 @@ bool ImageBackgroundVisualizer::hasSourceProcessor() const { return true; }
 bool ImageBackgroundVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> ImageBackgroundVisualizer::addSourceProcessor(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& initialPos) const {
 
-    auto source = net->addProcessor(util::makeProcessor<ImageSource>(GP{0, 0}, app_, filename));
-    auto outport = source->getOutports().front();
+    auto* source =
+        net->addProcessor(util::makeProcessor<ImageSource>(GP{0, 0} + initialPos, app_, filename));
+    auto* outport = source->getOutports().front();
     return {source, outport};
 }
 
@@ -96,12 +97,12 @@ std::vector<Processor*> ImageBackgroundVisualizer::addVisualizerNetwork(
     proc->backgroundStyle_.setSelectedValue(Background::BackgroundStyle::Uniform);
     proc->bgColor1_ = vec4{1.0f, 1.0f, 1.0f, 1.0f};
     proc->blendMode_.setSelectedValue(Background::BlendMode::AlphaMixing);
-    auto bg = net->addProcessor(std::move(proc));
-    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 6} + initialPos));
+    auto* bg = net->addProcessor(std::move(proc));
+    auto* cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 6} + initialPos));
     net->addConnection(outport, bg->getInports()[0]);
     net->addConnection(bg->getOutports()[0], cvs->getInports()[0]);
 
-    if (auto canvas = dynamic_cast<CanvasProcessor*>(cvs)) {
+    if (auto* canvas = dynamic_cast<CanvasProcessor*>(cvs)) {
         canvas->setCanvasSize(size2_t{768, 768});
     }
 
@@ -109,9 +110,9 @@ std::vector<Processor*> ImageBackgroundVisualizer::addVisualizerNetwork(
 }
 
 std::vector<Processor*> ImageBackgroundVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& initialPos) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, net);
+    auto sourceAndOutport = addSourceProcessor(filename, net, initialPos);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     net->addLink(sourceAndOutport.first->getPropertyByIdentifier("imageDimension_"),

@@ -65,7 +65,7 @@ bool ImageToLayerVisualizer::hasSourceProcessor() const { return false; }
 bool ImageToLayerVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> ImageToLayerVisualizer::addSourceProcessor(
-    const std::filesystem::path&, ProcessorNetwork*) const {
+    const std::filesystem::path&, ProcessorNetwork*, const ivec2&) const {
     return {nullptr, nullptr};
 }
 
@@ -73,21 +73,15 @@ std::vector<Processor*> ImageToLayerVisualizer::addVisualizerNetwork(Outport* ou
                                                                      ProcessorNetwork* net) const {
     const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto info = net->addProcessor(util::makeProcessor<ImageToLayer>(GP{0, 3} + initialPos));
+    auto* info = net->addProcessor(util::makeProcessor<ImageToLayer>(GP{0, 3} + initialPos));
     net->addConnection(outport, info->getInports()[0]);
 
     return {info};
 }
 
 std::vector<Processor*> ImageToLayerVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
-
-    auto sourceAndOutport = addSourceProcessor(filename, net);
-    auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
-
-    processors.push_back(sourceAndOutport.first);
-
-    return processors;
+    const std::filesystem::path&, ProcessorNetwork*, const ivec2&) const {
+    return {nullptr};
 }
 
 }  // namespace inviwo

@@ -98,11 +98,13 @@ public:
      * @param filename The file to load in the source processor. The extension of the filename
      *        should be in the list of extensions returned by getSupportedFileExtensions.
      * @param network The network to add the processor to.
+     * @param initialPos the initial position for the processor
      * @return The added source processor and the outport in the source processor
      *         containing data from the given file.
      */
     virtual std::pair<Processor*, Outport*> addSourceProcessor(
-        const std::filesystem::path& filename, ProcessorNetwork* network) const = 0;
+        const std::filesystem::path& filename, ProcessorNetwork* network,
+        const ivec2& initialPos) const = 0;
     /**
      * Adds a set of processors visualizing the data in the given outport.
      * Nothing will be added to the network if outport is not supported (isOutportSupported returns
@@ -122,10 +124,12 @@ public:
      * @param filename The file to load in the source processor. The extension of the filename
      *        should be in the list of extensions returned by getSupportedFileExtensions.
      * @param network The network to add the processor to.
+     * @param initialPos the initial position for the visualizer network
      * @return A list of added processors.
      */
     virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
-        const std::filesystem::path& filename, ProcessorNetwork* network) const = 0;
+        const std::filesystem::path& filename, ProcessorNetwork* network,
+        const ivec2& initialPos) const = 0;
 };
 
 }  // namespace inviwo

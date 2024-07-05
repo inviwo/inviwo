@@ -78,10 +78,11 @@ bool VolumeInformationVisualizer::hasSourceProcessor() const { return true; }
 bool VolumeInformationVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> VolumeInformationVisualizer::addSourceProcessor(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& initialPos) const {
 
-    auto source = net->addProcessor(util::makeProcessor<VolumeSource>(GP{0, 0}, app_, filename));
-    auto outport = source->getOutports().front();
+    auto* source =
+        net->addProcessor(util::makeProcessor<VolumeSource>(GP{0, 0} + initialPos, app_, filename));
+    auto* outport = source->getOutports().front();
     return {source, outport};
 }
 
@@ -89,7 +90,7 @@ std::vector<Processor*> VolumeInformationVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* net) const {
     const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto info = net->addProcessor(util::makeProcessor<VolumeInformation>(GP{0, 3} + initialPos));
+    auto* info = net->addProcessor(util::makeProcessor<VolumeInformation>(GP{0, 3} + initialPos));
 
     net->addConnection(outport, info->getInports()[0]);
 
@@ -97,9 +98,9 @@ std::vector<Processor*> VolumeInformationVisualizer::addVisualizerNetwork(
 }
 
 std::vector<Processor*> VolumeInformationVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& initialPos) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, net);
+    auto sourceAndOutport = addSourceProcessor(filename, net, initialPos);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     processors.push_back(sourceAndOutport.first);

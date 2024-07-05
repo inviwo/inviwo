@@ -75,10 +75,11 @@ bool LayerVisualizer::hasSourceProcessor() const { return true; }
 bool LayerVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> LayerVisualizer::addSourceProcessor(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& initialPos) const {
 
-    auto source = net->addProcessor(util::makeProcessor<LayerSource>(GP{0, 0}, app_, filename));
-    auto outport = source->getOutports().front();
+    auto* source =
+        net->addProcessor(util::makeProcessor<LayerSource>(GP{0, 0} + initialPos, app_, filename));
+    auto* outport = source->getOutports().front();
     return {source, outport};
 }
 
@@ -86,9 +87,9 @@ std::vector<Processor*> LayerVisualizer::addVisualizerNetwork(Outport* outport,
                                                               ProcessorNetwork* net) const {
     const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto bak = net->addProcessor(util::makeProcessor<Background>(GP{1, 3} + initialPos));
-    auto mrp = net->addProcessor(util::makeProcessor<LayerRenderer>(GP{0, 6} + initialPos));
-    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 9} + initialPos));
+    auto* bak = net->addProcessor(util::makeProcessor<Background>(GP{1, 3} + initialPos));
+    auto* mrp = net->addProcessor(util::makeProcessor<LayerRenderer>(GP{0, 6} + initialPos));
+    auto* cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 9} + initialPos));
 
     net->addConnection(bak->getOutports()[0], mrp->getInports()[1]);
     net->addConnection(mrp->getOutports()[0], cvs->getInports()[0]);
@@ -99,9 +100,9 @@ std::vector<Processor*> LayerVisualizer::addVisualizerNetwork(Outport* outport,
 }
 
 std::vector<Processor*> LayerVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& initialPos) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, net);
+    auto sourceAndOutport = addSourceProcessor(filename, net, initialPos);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     processors.push_back(sourceAndOutport.first);

@@ -75,10 +75,11 @@ bool ImageVisualizer::hasSourceProcessor() const { return true; }
 bool ImageVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> ImageVisualizer::addSourceProcessor(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& initialPos) const {
 
-    auto source = net->addProcessor(util::makeProcessor<ImageSource>(GP{0, 0}, app_, filename));
-    auto outport = source->getOutports().front();
+    auto* source =
+        net->addProcessor(util::makeProcessor<ImageSource>(GP{0, 0} + initialPos, app_, filename));
+    auto* outport = source->getOutports().front();
     return {source, outport};
 }
 
@@ -86,10 +87,10 @@ std::vector<Processor*> ImageVisualizer::addVisualizerNetwork(Outport* outport,
                                                               ProcessorNetwork* net) const {
     const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 3} + initialPos));
+    auto* cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 3} + initialPos));
     net->addConnection(outport, cvs->getInports()[0]);
 
-    if (auto canvas = dynamic_cast<CanvasProcessor*>(cvs)) {
+    if (auto* canvas = dynamic_cast<CanvasProcessor*>(cvs)) {
         canvas->setCanvasSize(size2_t{768, 768});
     }
 
@@ -97,9 +98,9 @@ std::vector<Processor*> ImageVisualizer::addVisualizerNetwork(Outport* outport,
 }
 
 std::vector<Processor*> ImageVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& initialPos) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, net);
+    auto sourceAndOutport = addSourceProcessor(filename, net, initialPos);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     net->addLink(sourceAndOutport.first->getPropertyByIdentifier("imageDimension_"),
