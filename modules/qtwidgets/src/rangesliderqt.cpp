@@ -283,7 +283,7 @@ void RangeSliderQt::moveMiddle(int delta) {
 
 bool RangeSliderQt::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::ToolTip) {
-        const QHelpEvent* helpEvent = static_cast<QHelpEvent*>(event);
+        const auto* helpEvent = dynamic_cast<QHelpEvent*>(event);
         if (obj == handle(1)) {
             QToolTip::showText(helpEvent->globalPos(),
                                QString::fromStdString(formatTooltip_(0, value_.x)));
@@ -310,7 +310,7 @@ bool RangeSliderQt::eventFilter(QObject* obj, QEvent* event) {
 
 void RangeSliderQt::handleGrooveEvent(Groove groove, QEvent* event) {
     if (event->type() == QEvent::MouseButtonRelease) {
-        if (const auto* me = static_cast<QMouseEvent*>(event); me->button() == Qt::LeftButton) {
+        if (const auto* me = dynamic_cast<QMouseEvent*>(event); me->button() == Qt::LeftButton) {
 
             auto newSizes = [&]() -> QList<int> {
                 const auto sizes = QSplitter::sizes();
