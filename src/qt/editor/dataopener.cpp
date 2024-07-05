@@ -127,7 +127,7 @@ void util::insertNetworkForData(const std::filesystem::path& dataFile, Processor
             added = visualizer->addSourceAndVisualizerNetwork(dataFile, net, initialPos);
         }
 
-        // offset all added processors 
+        // offset all added processors
         const auto bounds = util::getBoundingBox(added);
         const auto offset = -ivec2{bounds.first.x, bounds.first.y};
         util::offsetPosition(added, offset);
