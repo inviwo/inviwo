@@ -60,7 +60,7 @@ public:
  * values are converted to null.
  * Will write the DataFrame to an JSON object layout:
  * \code{.json}
- * [ {"Col1": * val11, "Col2": val12 },
+ * [ {"Col1": val11, "Col2": val12 },
  *   {"Col1": val21, "Col2": val22 } ]
  * \endcode
  * The example above contains two rows and two columns.
