@@ -229,10 +229,9 @@ CefKeyEvent CEFInteractionHandler::mapKeyEvent(const KeyboardEvent* e) {
     cefEvent.type = e->state() & KeyState::Press ? KEYEVENT_KEYDOWN : KEYEVENT_KEYUP;
 
     // Convert event character from utf-8 to utf-16
-    auto text = utf8::utf8to16(e->text());
-
-    if (text.length() > 0) {
+    if (auto text = utf8::utf8to16(e->text()); text.length() > 0) {
         cefEvent.character = text[0];
+    } else {
         cefEvent.character = 0;
     }
 
