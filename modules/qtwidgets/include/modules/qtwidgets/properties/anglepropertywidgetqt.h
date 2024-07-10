@@ -116,8 +116,8 @@ std::unique_ptr<QMenu> AnglePropertyWidgetQt<T>::getContextMenu() {
     auto menu = PropertyWidgetQt::getContextMenu();
     auto settingsAction = menu->addAction(tr("&Property settings..."));
     settingsAction->setToolTip(
-        tr("&Open the property settings dialog to adjust min bound, start, end, max bound, "
-           "minSepration and increment values"));
+        tr("Open the property settings dialog to adjust min bound, start, end, max bound, "
+           "minSeparation and increment values"));
 
     connect(settingsAction, &QAction::triggered, this, &AnglePropertyWidgetQt::showSettings);
     settingsAction->setEnabled(!property_->getReadOnly());
