@@ -29,108 +29,72 @@
 
 #include <modules/webbrowser/processors/webbrowserprocessor.h>
 
-#include <inviwo/core/common/inviwoapplication.h>                  // for InviwoApplication
-#include <inviwo/core/interaction/pickingmapper.h>                 // for PickingMapper
-#include <inviwo/core/ports/imageport.h>                           // for ImageInport, ImageOutport
-#include <inviwo/core/processors/processor.h>                      // for Processor
-#include <inviwo/core/processors/processorinfo.h>                  // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                 // for CodeState, CodeState::...
-#include <inviwo/core/processors/processortags.h>                  // for Tags
-#include <inviwo/core/properties/boolproperty.h>                   // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                 // for ButtonProperty
-#include <inviwo/core/properties/fileproperty.h>                   // for FileProperty
-#include <inviwo/core/properties/invalidationlevel.h>              // for InvalidationLevel, Inv...
-#include <inviwo/core/properties/optionproperty.h>                 // for OptionPropertyOption
-#include <inviwo/core/properties/ordinalproperty.h>                // for DoubleProperty
-#include <inviwo/core/properties/property.h>                       // for Property
-#include <inviwo/core/properties/stringproperty.h>                 // for StringProperty
-#include <inviwo/core/properties/valuewrapper.h>                   // for PropertySerializationMode
-#include <inviwo/core/util/formats.h>                              // for DataFormat, DataVec4UInt8
-#include <inviwo/core/util/singlefileobserver.h>                   // for SingleFileObserver
-#include <inviwo/core/util/staticstring.h>                         // for operator+
-#include <modules/webbrowser/cefimageconverter.h>                  // for CefImageConverter
-#include <modules/webbrowser/interaction/cefinteractionhandler.h>  // for CEFInteractionHandler
-#include <modules/webbrowser/renderhandlergl.h>                    // for RenderHandlerGL
-#include <modules/webbrowser/webbrowserclient.h>                   // for WebBrowserClient
-#include <modules/webbrowser/webbrowsermodule.h>                   // for WebBrowserModule
-#include <modules/webbrowser/webbrowserutil.h>                     // for getDefaultBrowserSettings
+#include <inviwo/core/util/staticstring.h>
+#include <modules/webbrowser/cefimageconverter.h>
+#include <modules/webbrowser/interaction/cefinteractionhandler.h>
+#include <modules/webbrowser/renderhandlergl.h>
+#include <modules/webbrowser/webbrowserclient.h>
+#include <modules/webbrowser/webbrowsermodule.h>
+#include <modules/webbrowser/webbrowserutil.h>
 
-#include <cmath>  // for log, pow
-
-#include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
-#include <include/cef_base.h>                // for CefRefPtr
-#include <include/cef_browser.h>             // for CefBrowser, CefBrowser...
-#include <include/cef_client.h>              // for CefClient
-#include <include/cef_frame.h>               // for CefFrame
-#include <include/cef_request_context.h>     // for CefRequestContext
-#include <include/cef_values.h>              // for CefDictionaryValue
-
-namespace inviwo {
-class Deserializer;
-class PickingEvent;
-}  // namespace inviwo
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <warn/pop>
+#include <include/base/cef_scoped_refptr.h>
+#include <include/cef_base.h>
+#include <include/cef_browser.h>
+#include <include/cef_client.h>
+#include <include/cef_frame.h>
+#include <include/cef_request_context.h>
+#include <include/cef_values.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo WebBrowserProcessor::processorInfo_{
-    "org.inviwo.webbrowser",  // Class identifier
-    "Web browser",            // Display name
-    "Web",                    // Category
-    CodeState::Stable,        // Code state
-    "GL, Web Browser",        // Tags
+    "org.inviwo.webbrowser",        // Class identifier
+    "Web browser",                  // Display name
+    "Web",                          // Category
+    CodeState::Stable,              // Code state
+    Tags::GL | Tag{"Web Browser"},  // Tags
+    R"(Display webpage, including transparency, on top of optional background and
+       enable synchronization of properties.)"_unindentHelp,
 };
 const ProcessorInfo WebBrowserProcessor::getProcessorInfo() const { return processorInfo_; }
 
 WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
     : Processor()
     // Output from CEF is 8-bits per channel
-    , background_("background")
-    , outport_("webpage", DataVec4UInt8::get())
-    , fileName_("fileName", "HTML file", "")
-    , autoReloadFile_("autoReloadFile", "Auto Reload", true)
-    , url_("URL", "URL", "http://www.inviwo.org")
-    , reload_("reload", "Reload")
-    , zoom_("zoom", "Zoom Factor", 1.0, 0.2, 5.0)
-    , runJS_("runJS", "Run JS")
-    , js_("js", "JavaScript", "", InvalidationLevel::Valid)
-    , sourceType_("sourceType", "Source",
-                  {{"localFile", "Local File", SourceType::LocalFile},
-                   {"webAddress", "Web Address", SourceType::WebAddress}})
-    , isLoading_("isLoading", "Loading", true, InvalidationLevel::Valid)
-    , picking_(this, 1, [&](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); })
-    , cefToInviwoImageConverter_(picking_.getColor())
-    , renderHandler_{static_cast<RenderHandlerGL*>(
-          app->getModuleByType<WebBrowserModule>()->getBrowserClient()->GetRenderHandler().get())} {
-    addPort(background_);
+    , background_{"background"}
+    , outport_{"webpage", DataVec4UInt8::get()}
+    , sourceType_{"sourceType", "Source",
+                  OptionPropertyState<SourceType>{
+                      .options = {{"localFile", "Local File", SourceType::LocalFile},
+                                  {"webAddress", "Web Address", SourceType::WebAddress}},
+                      .invalidationLevel = InvalidationLevel::Valid,
+                  }
+                      .setSelectedValue(SourceType::WebAddress)}
+    , fileName_{"fileName", "HTML file", {}, "html", InvalidationLevel::Valid}
+    , autoReloadFile_{"autoReloadFile", "Auto Reload", true, InvalidationLevel::Valid}
+    , url_{"URL", "URL", "https://www.inviwo.org", InvalidationLevel::Valid}
+    , reload_{"reload", "Reload", InvalidationLevel::Valid}
+    , zoom_{"zoom", "Zoom Factor", 1.0, 0.2, 5.0}
+    , runJS_{"runJS", "Run JS"}
+    , js_{"js", "JavaScript", "", InvalidationLevel::Valid}
+    , browser_{app, this} {
+
+    addPorts(background_, outport_);
     background_.setOptional(true);
-    addPort(outport_);
+    addProperties(sourceType_, fileName_, autoReloadFile_, url_, reload_, zoom_, runJS_, js_);
 
-    auto updateVisibility = [this]() {
-        fileName_.setVisible(sourceType_ == SourceType::LocalFile);
-        autoReloadFile_.setVisible(sourceType_ == SourceType::LocalFile);
-        url_.setVisible(sourceType_ == SourceType::WebAddress);
-    };
-    updateVisibility();
+    fileName_.visibilityDependsOn(sourceType_, [](auto& p) { return p == SourceType::LocalFile; });
+    autoReloadFile_.visibilityDependsOn(sourceType_,
+                                        [](auto& p) { return p == SourceType::LocalFile; });
+    url_.visibilityDependsOn(sourceType_, [](auto& p) { return p == SourceType::WebAddress; });
 
-    auto reload = [this]() {
-        isLoading_ = true;
-        browser_->GetMainFrame()->LoadURL(getSource());
-    };
-
-    sourceType_.onChange([reload, updateVisibility]() {
-        updateVisibility();
-        reload();
-    });
-    fileName_.onChange([this, reload]() {
+    sourceType_.onChange([this]() { updateSource(); });
+    fileName_.onChange([this]() {
         if (autoReloadFile_) {
             fileObserver_.setFilename(fileName_);
         }
-        reload();
+        updateSource();
     });
     autoReloadFile_.onChange([this]() {
         if (autoReloadFile_) {
@@ -139,107 +103,53 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
             fileObserver_.stop();
         }
     });
-    url_.setVisible(false);
-    url_.onChange(reload);
-    reload_.onChange(reload);
-    isLoading_.setReadOnly(true).setSerializationMode(PropertySerializationMode::None);
 
-    addProperties(sourceType_, fileName_, autoReloadFile_, url_, reload_, zoom_, runJS_, js_,
-                  isLoading_);
+    url_.onChange([this]() { updateSource(); });
+    reload_.onChange([this]() { updateSource(); });
 
-    fileObserver_.onChange([this, reload]() {
+    fileObserver_.onChange([this]() {
         if (sourceType_ == SourceType::LocalFile) {
-            reload();
+            updateSource();
         }
     });
 
-    // Setup CEF browser
-    auto [windowInfo, browserSettings] = cefutil::getDefaultBrowserSettings();
-    auto browserClient = app->getModuleByType<WebBrowserModule>()->getBrowserClient();
-    // Note that browserClient_ outlives this class so make sure to remove
-    // renderHandler_ in
-    // destructor
-    browser_ = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient, getSource(),
-                                                 browserSettings, nullptr, nullptr);
-    browserClient->setBrowserParent(browser_, this);
-    // Observe when page has loaded
-    browserClient->addLoadHandler(this);
-    // Inject events into CEF browser_
-    cefInteractionHandler_.setHost(browser_->GetHost());
-    cefInteractionHandler_.setRenderHandler(renderHandler_.get());
-    addInteractionHandler(&cefInteractionHandler_);
+    addInteractionHandler(browser_.getInteractionHandler());
+    updateSource();
 }
 
-std::string WebBrowserProcessor::getSource() {
-    std::string sourceString;
-    if (sourceType_.get() == SourceType::LocalFile) {
-        sourceString = "file://" + fileName_.get().string();
-    } else if (sourceType_.get() == SourceType::WebAddress) {
-        sourceString = url_.get();
+void WebBrowserProcessor::process() {
+    if (browser_.isLoading()) {
+        return;
     }
-#ifndef NDEBUG
-    // CEF does not allow empty urls in debug mode
-    if (sourceString.empty()) {
-        sourceString = "https://www.inviwo.org";
-    }
-#endif
-    return sourceString;
-}
 
-WebBrowserProcessor::~WebBrowserProcessor() {
-    auto client = static_cast<WebBrowserClient*>(browser_->GetHost()->GetClient().get());
-    client->removeLoadHandler(this);
-    // Explicitly remove parent because CloseBrowser may result in WebBrowserClient::OnBeforeClose
-    // after this processor has been destroyed.
-    client->removeBrowserParent(browser_);
-    // Force close browser
-    browser_->GetHost()->CloseBrowser(true);
+    if (js_.isModified() && !js_.get().empty()) {
+        browser_.executeJavaScript(js_, 1);
+    }
+    if (zoom_.isModified()) {
+        browser_.setZoom(zoom_);
+    }
+
+    browser_.render(outport_, &background_);
 }
 
 void WebBrowserProcessor::deserialize(Deserializer& d) {
     Processor::deserialize(d);
     // Must reload page to connect property with Frame, see PropertyCefSynchronizer::OnLoadEnd
-    browser_->GetMainFrame()->LoadURL(getSource());
+    updateSource();
 }
 
-void WebBrowserProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading,
-                                               bool /*canGoBack*/, bool /*canGoForward*/) {
-    if (browser_ && browser->GetIdentifier() == browser_->GetIdentifier()) {
-        isLoading_ = isLoading;
-        // Render new page (content may have been rendered before the state changed)
-        if (!isLoading) {
-            invalidate(InvalidationLevel::InvalidOutput);
-        }
+void WebBrowserProcessor::updateSource() {
+    switch (sourceType_) {
+        case SourceType::LocalFile:
+            browser_.setSource(fileName_);
+            break;
+        case SourceType::WebAddress:
+            browser_.setSource(url_);
+            break;
+        default:
+            browser_.setSource(std::string_view{"https://www.inviwo.org"});
+            break;
     }
-}
-
-namespace detail {
-
-// CEF uses a zoom level which increases/decreases by 20% per level
-//
-// see https://bugs.chromium.org/p/chromium/issues/detail?id=71484
-
-double percentageToZoomLevel(double percent) { return std::log(percent) / std::log(1.2); }
-
-double zoomLevelToPercentage(double level) { return std::pow(1.2, level); }
-
-}  // namespace detail
-
-void WebBrowserProcessor::process() {
-    if (isLoading_) {
-        return;
-    }
-    if (js_.isModified() && !js_.get().empty()) {
-        browser_->GetMainFrame()->ExecuteJavaScript(js_.get(), "", 1);
-    }
-
-    if (zoom_.isModified()) {
-        browser_->GetHost()->SetZoomLevel(detail::percentageToZoomLevel(zoom_));
-    }
-
-    // Vertical flip of CEF output image
-    cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(browser_), outport_,
-                                       &background_);
 }
 
 }  // namespace inviwo

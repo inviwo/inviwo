@@ -51,7 +51,7 @@ class ImageOutport;
  */
 class IVW_MODULE_WEBBROWSER_API CefImageConverter {
 public:
-    CefImageConverter(vec3 pickingColor);
+    explicit CefImageConverter(vec3 pickingColor);
 
     void convert(const Texture2D& fromCefOutput, ImageOutport& toInviwoOutput,
                  const ImageInport* optionalBackground = nullptr);
