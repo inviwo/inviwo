@@ -55,6 +55,7 @@
 #include <include/cef_request_handler.h>           // for CefRequestHandler
 #include <include/cef_resource_request_handler.h>  // for CefResourceRequestHa...
 #include <include/wrapper/cef_resource_manager.h>  // IWYU pragma: keep
+#include <warn/pop>
 
 class CefBrowser;
 class CefFrame;
@@ -62,8 +63,6 @@ class CefMessageRouterBrowserSide;
 class CefRequest;
 class CefRequestCallback;
 class CefResourceHandler;
-
-#include <warn/pop>
 
 namespace inviwo {
 
@@ -149,8 +148,8 @@ public:
                                 CefRefPtr<CefRequest> request, bool user_gesture,
                                 bool is_redirect) override;
 
-    virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
-                                           TerminationStatus status) override;
+    virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser, TerminationStatus status,
+                                           int error_code, const CefString& error_string) override;
 
     // CefLoadHandler methods:
     /*

@@ -53,7 +53,6 @@
 #include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
 #include <include/cef_base.h>                // for CefTouchEvent, CefKeyE...
 #include <include/cef_browser.h>             // for CefBrowserHost, CefBro...
-
 #include <warn/pop>
 
 #include <cctype>       // for iscntrl

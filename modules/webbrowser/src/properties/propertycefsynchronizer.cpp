@@ -51,7 +51,6 @@
 #include <utility>           // for move
 
 #include <fmt/core.h>                        // for format
-#include <include/base/cef_basictypes.h>     // for int64
 #include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
 #include <include/cef_base.h>                // for CefRefPtr, CefString
 #include <include/cef_browser.h>             // for CefBrowser
@@ -90,7 +89,7 @@ void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr
 }
 
 bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                      int64 query_id, const CefString& request, bool persistent,
+                                      int64_t query_id, const CefString& request, bool persistent,
                                       CefRefPtr<Callback> callback) {
     if (browser->GetIdentifier() != browserIdentifier_) {
         return false;
@@ -106,10 +105,10 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
             // Retrieves both system and module settings
             auto settings = InviwoApplication::getPtr()->getModuleSettings();
             const auto [settingsIdentifier, propertyPath] = util::splitByFirst(path, '.');
-            auto it = util::find_if(settings,
-                                    [settingsIdentifier = settingsIdentifier](const auto setting) {
-                                        return setting->getIdentifier() == settingsIdentifier;
-                                    });
+            auto it = std::ranges::find_if(settings,
+                                           [identifier = settingsIdentifier](const auto setting) {
+                                               return setting->getIdentifier() == identifier;
+                                           });
             if (it != settings.end()) {
                 prop = (*it)->getPropertyByPath(propertyPath);
             }
@@ -125,10 +124,9 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
             const auto path = j.at("path").get<std::string_view>();
             if (auto prop = findProperty(path)) {
                 const auto onChange = j.at("onChange").get<std::string_view>();
-                auto widget =
-                    std::find_if(widgets_.begin(), widgets_.end(), [&](const auto& widget) {
-                        return prop == widget->getProperty() && onChange == widget->getOnChange();
-                    });
+                auto widget = std::ranges::find_if(widgets_, [&](const auto& w) {
+                    return prop == w->getProperty() && onChange == w->getOnChange();
+                });
                 if (widget == widgets_.end()) {
                     auto propertyObserver = j.at("propertyObserver").get<std::string_view>();
                     startSynchronize(prop, onChange, propertyObserver);
@@ -150,9 +148,8 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
             }
             // Use synchronized widget if it exists
             // to avoid recursive loop when setting the property
-            auto widget = std::find_if(widgets_.begin(), widgets_.end(), [&](const auto& widget) {
-                return prop == widget->getProperty();
-            });
+            auto widget = std::ranges::find_if(
+                widgets_, [&](const auto& w) { return prop == w->getProperty(); });
             if (widget != widgets_.end()) {
                 return (*widget)->onQuery(browser, frame, query_id, request, persistent, callback);
             } else {

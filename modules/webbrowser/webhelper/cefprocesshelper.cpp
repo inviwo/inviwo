@@ -53,9 +53,6 @@ class CefCommandLine;
 #ifdef WIN32
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine,
                       int nCmdShow) {
-    // Enable High-DPI support on Windows 7 or newer.
-    CefEnableHighDPISupport();
-
     // Provide CEF with command-line arguments.
     CefMainArgs mainArgs(hInstance);
 #elif __APPLE__  // Mac

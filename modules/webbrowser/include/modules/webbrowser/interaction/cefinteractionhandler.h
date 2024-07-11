@@ -37,20 +37,16 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <include/base/cef_basictypes.h>  // for uint32
-#include <include/cef_base.h>             // for CefRefPtr, CefKeyEvent, CefMouse...
-#include <include/cef_browser.h>          // for CefBrowserHost
+#include <include/cef_base.h>     // for CefRefPtr, CefKeyEvent, CefMouse...
+#include <include/cef_browser.h>  // for CefBrowserHost
+#include <warn/pop>
 
 namespace inviwo {
+
 class Event;
 class KeyboardEvent;
 class MouseEvent;
 class MouseInteractionEvent;
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
 class PickingEvent;
 class RenderHandlerGL;
 class TouchDevice;
@@ -94,7 +90,7 @@ private:
 
     void updateMouseStates(MouseEvent* e);
     void updateMouseStates(TouchEvent* e);
-    uint32 modifiers_ = 0;
+    uint32_t modifiers_ = 0;
     CefRefPtr<CefBrowserHost> host_;
     RenderHandlerGL* renderHandler_ = nullptr;  ///< Forward resize event if set
 };

@@ -266,8 +266,6 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 #endif
 
 #ifdef WIN32
-    // Enable High-DPI support on Windows 7 or newer.
-    CefEnableHighDPISupport();
 #if defined(CEF_USE_SANDBOX)
     // Manage the life span of the sandbox information object. This is necessary
     // for sandbox support on Windows. See cef_sandbox_win.h for complete details.
