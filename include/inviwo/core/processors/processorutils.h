@@ -87,7 +87,7 @@ struct IVW_CORE_API GridPos {
     explicit GridPos(ivec2 pos) : pos_{pos} {}
 
     ivec2 operator+(const ivec2& rhs) const { return operator ivec2() + rhs; }
-    explicit operator ivec2() const { return pos_ * ivec2{25, 25}; }
+    operator ivec2() const { return pos_ * ivec2{25, 25}; }
 
 private:
     ivec2 pos_;
