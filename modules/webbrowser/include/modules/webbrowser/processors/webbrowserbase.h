@@ -32,7 +32,7 @@
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/interaction/pickingmapper.h>
-#include <inviwo/core/util/callback.h>
+#include <inviwo/core/util/dispatcher.h>
 #include <modules/webbrowser/cefimageconverter.h>
 #include <modules/webbrowser/interaction/cefinteractionhandler.h>
 
@@ -59,14 +59,23 @@ class RenderHandlerGL;
 #include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
 class IVW_MODULE_WEBBROWSER_API WebBrowserBase : public CefLoadHandler {
 public:
-    WebBrowserBase(InviwoApplication* app, Processor* processor);
+    WebBrowserBase(InviwoApplication* app, Processor* processor, const std::string& url = "");
+    WebBrowserBase(const WebBrowserBase& rhs) = delete;
+    WebBrowserBase(WebBrowserBase&& rhs) = delete;
+    WebBrowserBase& operator=(const WebBrowserBase& rhs) = delete;
+    WebBrowserBase& operator=(WebBrowserBase&& rhs) = delete;
     ~WebBrowserBase();
 
     void reload();
     bool isLoading() const;
 
     void load(const std::filesystem::path& filename);
-    void load(std::string_view uri);
+    void load(std::string_view url);
+
+    /**
+     * Clear the browser frame and load an empty page
+     */
+    void clear();
 
     /**
      * Set the zoom level of the browser to the absolute @p zoom factor.
@@ -89,7 +98,7 @@ public:
     [[nodiscard]] std::shared_ptr<BaseCallBack> addLoadingDoneCallback(std::function<void()> f);
 
 private:
-    std::string_view getSource() const;
+    const std::string& getURL() const;
 
     virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack,
                                       bool canGoForward) override;
@@ -105,10 +114,10 @@ private:
     CefRefPtr<CefBrowser> browser_;
 
     bool isLoading_ = true;
-    std::string source_;
+    std::string url_;
     double zoom_ = 1.0;
 
-    CallBackList loadingDone_;
+    Dispatcher<void()> loadingDone_;
 
     IMPLEMENT_REFCOUNTING(WebBrowserBase);
 };

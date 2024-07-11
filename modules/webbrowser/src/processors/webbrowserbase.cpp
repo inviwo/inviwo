@@ -30,6 +30,7 @@
 #include <modules/webbrowser/processors/webbrowserbase.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/moduleutils.h>
 
 #include <inviwo/core/processors/processor.h>
 #include <modules/webbrowser/webbrowserclient.h>
@@ -38,34 +39,36 @@
 
 #include <fmt/core.h>
 
+#include <utility>
+
 namespace inviwo {
 
-WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor* processor)
+WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor* processor, const std::string& url)
     : parentProcessor_{processor}
     , picking_{processor, 1,
                [this](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); }}
     , cefToInviwoImageConverter_{picking_.getColor()}
-    , renderHandler_{static_cast<RenderHandlerGL*>(
-          app->getModuleByType<WebBrowserModule>()->getBrowserClient()->GetRenderHandler().get())} {
+    , renderHandler_{dynamic_cast<RenderHandlerGL*>(
+          app->getModuleByType<WebBrowserModule>()->getBrowserClient()->GetRenderHandler().get())}
+    , url_{url} {
 
     // Setup CEF browser
     auto [windowInfo, browserSettings] = cefutil::getDefaultBrowserSettings();
     auto browserClient = app->getModuleByType<WebBrowserModule>()->getBrowserClient();
     // Note that browserClient_ outlives this class so make sure to remove
-    // renderHandler_ in
-    // destructor
-    browser_ = CefBrowserHost::CreateBrowserSync(
-        windowInfo, browserClient, std::string{getSource()}, browserSettings, nullptr, nullptr);
+    // this CefLoadHandler in destructor
+    browser_ = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient, getURL(),
+                                                 browserSettings, nullptr, nullptr);
     browserClient->setBrowserParent(browser_, parentProcessor_);
     // Observe when page has loaded
     browserClient->addLoadHandler(this);
-    // Inject events into CEF browser_
+    // Inject events into CEF browser
     cefInteractionHandler_.setHost(browser_->GetHost());
     cefInteractionHandler_.setRenderHandler(renderHandler_.get());
 }
 
 WebBrowserBase::~WebBrowserBase() {
-    auto client = static_cast<WebBrowserClient*>(browser_->GetHost()->GetClient().get());
+    auto* client = dynamic_cast<WebBrowserClient*>(browser_->GetHost()->GetClient().get());
     client->removeLoadHandler(this);
     // Explicitly remove parent because CloseBrowser may result in WebBrowserClient::OnBeforeClose
     // after this processor has been destroyed.
@@ -75,13 +78,9 @@ WebBrowserBase::~WebBrowserBase() {
 }
 
 void WebBrowserBase::render(ImageOutport& outport, ImageInport* background) {
-    // TODO: needed here?
     if (isLoading_) {
         return;
     }
-    // if (js_.isModified() && !js_.get().empty()) {
-    //     browser_->GetMainFrame()->ExecuteJavaScript(js_.get(), "", 1);
-    // }
 
     // Vertical flip of CEF output image
     cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(browser_), outport, background);
@@ -93,26 +92,33 @@ void WebBrowserBase::executeJavaScript(const std::string& javascript, int startL
 
 void WebBrowserBase::reload() {
     isLoading_ = true;
-    browser_->GetMainFrame()->LoadURL(std::string{getSource()});
+    browser_->GetMainFrame()->LoadURL(getURL());
 }
 
 bool WebBrowserBase::isLoading() const { return isLoading_; }
 
 void WebBrowserBase::load(const std::filesystem::path& filename) {
     if (!filename.empty()) {
-        source_ = fmt::format("file://{}", filename.string());
+        url_ = fmt::format("file://{}", filename.string());
         reload();
-    } else if (!source_.empty()) {
-        source_.clear();
+    } else if (!url_.empty()) {
+        url_.clear();
         reload();
     }
 }
 
-void WebBrowserBase::load(std::string_view uri) {
-    if (source_ != uri) {
-        source_ = uri;
+void WebBrowserBase::load(std::string_view url) {
+    if (url_ != url) {
+        url_ = url;
         reload();
     }
+}
+
+void WebBrowserBase::clear() {
+    url_ = fmt::format(
+        "file://{}",
+        (util::getModulePath("WebBrowser", ModulePath::Data) / "html/empty.html").string());
+    reload();
 }
 
 void WebBrowserBase::setZoom(double zoom) {
@@ -120,17 +126,19 @@ void WebBrowserBase::setZoom(double zoom) {
 }
 
 std::shared_ptr<BaseCallBack> WebBrowserBase::addLoadingDoneCallback(std::function<void()> f) {
-    return loadingDone_.addLambdaCallbackRaii(f);
+    return loadingDone_.add(std::move(f));
 }
 
-std::string_view WebBrowserBase::getSource() const {
+const std::string& WebBrowserBase::getURL() const {
 #ifndef NDEBUG
     // CEF does not allow empty urls in debug mode
-    if (source_.empty()) {
-        return "https://www.inviwo.org";
+    if (url_.empty()) {
+        return fmt::format(
+            "file://{}",
+            (util::getModulePath("WebBrowser", ModulePath::Data) / "html/empty.html").string());
     }
 #endif
-    return source_;
+    return url_;
 }
 
 void WebBrowserBase::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading,
@@ -139,7 +147,7 @@ void WebBrowserBase::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool is
         isLoading_ = isLoading;
         // Render new page (content may have been rendered before the state changed)
         if (!isLoading && parentProcessor_) {
-            loadingDone_.invokeAll();
+            loadingDone_.invoke();
             parentProcessor_->invalidate(InvalidationLevel::InvalidOutput);
         }
     }
