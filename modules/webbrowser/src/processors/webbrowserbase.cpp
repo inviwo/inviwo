@@ -133,7 +133,6 @@ std::string_view WebBrowserBase::getSource() const {
     return source_;
 }
 
-
 void WebBrowserBase::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading,
                                           bool /*canGoBack*/, bool /*canGoForward*/) {
     if (browser_ && browser->GetIdentifier() == browser_->GetIdentifier()) {
