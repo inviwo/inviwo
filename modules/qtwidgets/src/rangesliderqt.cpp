@@ -283,7 +283,7 @@ void RangeSliderQt::moveMiddle(int delta) {
 
 bool RangeSliderQt::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::ToolTip) {
-        const auto* helpEvent = dynamic_cast<QHelpEvent*>(event);
+        const auto* helpEvent = static_cast<QHelpEvent*>(event);
         if (obj == handle(1)) {
             QToolTip::showText(helpEvent->globalPos(),
                                QString::fromStdString(formatTooltip_(0, value_.x)));
@@ -310,7 +310,7 @@ bool RangeSliderQt::eventFilter(QObject* obj, QEvent* event) {
 
 void RangeSliderQt::handleGrooveEvent(Groove groove, QEvent* event) {
     if (event->type() == QEvent::MouseButtonRelease) {
-        if (const auto* me = dynamic_cast<QMouseEvent*>(event); me->button() == Qt::LeftButton) {
+        if (const auto* me = static_cast<QMouseEvent*>(event); me->button() == Qt::LeftButton) {
 
             auto newSizes = [&]() -> QList<int> {
                 const auto sizes = QSplitter::sizes();
@@ -335,8 +335,7 @@ void RangeSliderQt::handleGrooveEvent(Groove groove, QEvent* event) {
 void RangeSliderQt::handleCenterWidgetEvent(QEvent* event) {
     switch (event->type()) {
         case QEvent::MouseButtonPress: {
-            if (const auto* me = dynamic_cast<QMouseEvent*>(event);
-                me->button() == Qt::LeftButton) {
+            if (const auto* me = static_cast<QMouseEvent*>(event); me->button() == Qt::LeftButton) {
                 lastPos_ =
                     static_cast<int>(orientation() == Qt::Horizontal ? me->globalPosition().x()
                                                                      : me->globalPosition().y());
@@ -352,7 +351,7 @@ void RangeSliderQt::handleCenterWidgetEvent(QEvent* event) {
             break;
 
         case QEvent::MouseMove: {
-            if (const auto* me = dynamic_cast<QMouseEvent*>(event);
+            if (const auto* me = static_cast<QMouseEvent*>(event);
                 me->buttons().testFlag(Qt::LeftButton)) {
                 const auto newPos =
                     static_cast<int>(orientation() == Qt::Horizontal ? me->globalPosition().x()
