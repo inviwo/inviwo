@@ -104,6 +104,8 @@ function(ivw_private_vcpkg_install_helper)
     endforeach()
 endfunction()
 
+# Reset global variable used to show Python warning in ivw_vcpkg_install only once
+unset(ivwVcpkgInstallPythonWarningShownOnce CACHE)
 
 # A helper function to install vcpkg libraries. Will install dll/so, lib, pdb, etc. into the 
 # corresponding folders by globbing the vcpkg package folders. 
@@ -122,10 +124,14 @@ function(ivw_vcpkg_install name)
 
     find_package(Python3 COMPONENTS Interpreter)
     if(NOT Python3_Interpreter_FOUND)
-        message(WARNING "Python3 not available.\n"
-            "Please install Python3. If you have a Python installation that is not found, consider "
-            "setting Python3_ROOT_DIR to the root directory of your Python 3 installation."
-        )
+        if(NOT ivwVcpkgInstallPythonWarningShownOnce)
+            message(WARNING "Python3 not available.\n"
+                "Python is required to install vcpkg libraries. Please install Python3. If you "
+                "have a Python installation that is not found, consider "
+                "setting Python3_ROOT_DIR to the root directory of your Python 3 installation."
+            )
+            set(ivwVcpkgInstallPythonWarningShownOnce ON CACHE INTERNAL "vcpkg_install Python warning shown once")
+        endif()
         return ()
     endif()
 
