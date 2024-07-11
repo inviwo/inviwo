@@ -75,30 +75,28 @@ bool DataFrameTableVisualizer::hasSourceProcessor() const { return true; }
 bool DataFrameTableVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> DataFrameTableVisualizer::addSourceProcessor(
-    const std::filesystem::path& filename, ProcessorNetwork* network,
-    const ivec2& initialPos) const {
+    const std::filesystem::path& filename, ProcessorNetwork* network, const ivec2& origin) const {
 
     auto* source =
-        network->addProcessor(util::makeProcessor<CSVSource>(GP{0, 0} + initialPos, filename));
+        network->addProcessor(util::makeProcessor<CSVSource>(GP{0, 0} + origin, filename));
     auto* outport = source->getOutports().front();
     return {source, outport};
 }
 
 std::vector<Processor*> DataFrameTableVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* network) const {
-    const ivec2 initialPos = util::getPosition(outport->getProcessor());
+    const ivec2 origin = util::getPosition(outport->getProcessor());
 
-    auto* table = network->addProcessor(util::makeProcessor<DataFrameTable>(GP{0, 3} + initialPos));
+    auto* table = network->addProcessor(util::makeProcessor<DataFrameTable>(GP{0, 3} + origin));
     network->addConnection(outport, table->getInports()[0]);
 
     return {table};
 }
 
 std::vector<Processor*> DataFrameTableVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* network,
-    const ivec2& initialPos) const {
+    const std::filesystem::path& filename, ProcessorNetwork* network, const ivec2& origin) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, network, initialPos);
+    auto sourceAndOutport = addSourceProcessor(filename, network, origin);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, network);
 
     processors.push_back(sourceAndOutport.first);

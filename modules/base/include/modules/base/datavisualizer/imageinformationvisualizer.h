@@ -59,12 +59,12 @@ public:
 
     virtual std::pair<Processor*, Outport*> addSourceProcessor(
         const std::filesystem::path& filename, ProcessorNetwork* network,
-        const ivec2& initialPos) const override;
+        const ivec2& origin) const override;
     virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
                                                          ProcessorNetwork* network) const override;
     virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
         const std::filesystem::path& filename, ProcessorNetwork* network,
-        const ivec2& initialPos) const override;
+        const ivec2& origin) const override;
 
 private:
     InviwoApplication* app_;

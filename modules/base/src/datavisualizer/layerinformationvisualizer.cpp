@@ -72,28 +72,28 @@ bool LayerInformationVisualizer::hasSourceProcessor() const { return true; }
 bool LayerInformationVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> LayerInformationVisualizer::addSourceProcessor(
-    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& initialPos) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
 
     auto* source =
-        net->addProcessor(util::makeProcessor<LayerSource>(GP{0, 0} + initialPos, app_, filename));
+        net->addProcessor(util::makeProcessor<LayerSource>(GP{0, 0} + origin, app_, filename));
     auto* outport = source->getOutports().front();
     return {source, outport};
 }
 
 std::vector<Processor*> LayerInformationVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* net) const {
-    const ivec2 initialPos = util::getPosition(outport->getProcessor());
+    const ivec2 origin = util::getPosition(outport->getProcessor());
 
-    auto* info = net->addProcessor(util::makeProcessor<LayerInformation>(GP{0, 3} + initialPos));
+    auto* info = net->addProcessor(util::makeProcessor<LayerInformation>(GP{0, 3} + origin));
     net->addConnection(outport, info->getInports()[0]);
 
     return {info};
 }
 
 std::vector<Processor*> LayerInformationVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& initialPos) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, net, initialPos);
+    auto sourceAndOutport = addSourceProcessor(filename, net, origin);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     processors.push_back(sourceAndOutport.first);

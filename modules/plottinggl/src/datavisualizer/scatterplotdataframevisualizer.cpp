@@ -82,28 +82,27 @@ bool ScatterPlotDataFrameVisualizer::hasSourceProcessor() const { return true; }
 bool ScatterPlotDataFrameVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> ScatterPlotDataFrameVisualizer::addSourceProcessor(
-    const std::filesystem::path& filename, ProcessorNetwork* network,
-    const ivec2& initialPos) const {
+    const std::filesystem::path& filename, ProcessorNetwork* network, const ivec2& origin) const {
 
     auto* source =
-        network->addProcessor(util::makeProcessor<CSVSource>(GP{0, 0} + initialPos, filename));
+        network->addProcessor(util::makeProcessor<CSVSource>(GP{0, 0} + origin, filename));
     auto* outport = source->getOutports().front();
     return {source, outport};
 }
 
 std::vector<Processor*> ScatterPlotDataFrameVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* network) const {
-    const ivec2 initialPos = util::getPosition(outport->getProcessor());
+    const ivec2 origin = util::getPosition(outport->getProcessor());
 
-    auto* scatter = network->addProcessor(
-        util::makeProcessor<plot::ScatterPlotProcessor>(GP{0, 3} + initialPos));
+    auto* scatter =
+        network->addProcessor(util::makeProcessor<plot::ScatterPlotProcessor>(GP{0, 3} + origin));
 
-    auto background = util::makeProcessor<Background>(GP{0, 6} + initialPos);
+    auto background = util::makeProcessor<Background>(GP{0, 6} + origin);
     background->backgroundStyle_.setSelectedValue(Background::BackgroundStyle::Uniform);
     background->bgColor1_ = vec4{1.0f, 1.0f, 1.0f, 1.0f};
     auto* bg = network->addProcessor(std::move(background));
 
-    auto canvas = util::makeProcessor<CanvasProcessorGL>(GP{0, 9} + initialPos);
+    auto canvas = util::makeProcessor<CanvasProcessorGL>(GP{0, 9} + origin);
     canvas->dimensions_ = ivec2{800, 400};
     auto* cvs = network->addProcessor(std::move(canvas));
 
@@ -115,10 +114,9 @@ std::vector<Processor*> ScatterPlotDataFrameVisualizer::addVisualizerNetwork(
 }
 
 std::vector<Processor*> ScatterPlotDataFrameVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* network,
-    const ivec2& initialPos) const {
+    const std::filesystem::path& filename, ProcessorNetwork* network, const ivec2& origin) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, network, initialPos);
+    auto sourceAndOutport = addSourceProcessor(filename, network, origin);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, network);
 
     processors.push_back(sourceAndOutport.first);

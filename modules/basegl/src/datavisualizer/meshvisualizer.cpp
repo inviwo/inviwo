@@ -77,22 +77,21 @@ bool MeshVisualizer::hasSourceProcessor() const { return true; }
 bool MeshVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> MeshVisualizer::addSourceProcessor(
-    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& initialPos) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
 
     auto* source =
-        net->addProcessor(util::makeProcessor<MeshSource>(GP{0, 0} + initialPos, app_, filename));
+        net->addProcessor(util::makeProcessor<MeshSource>(GP{0, 0} + origin, app_, filename));
     auto* outport = source->getOutports().front();
     return {source, outport};
 }
 
 std::vector<Processor*> MeshVisualizer::addVisualizerNetwork(Outport* outport,
                                                              ProcessorNetwork* net) const {
-    const ivec2 initialPos = util::getPosition(outport->getProcessor());
+    const ivec2 origin = util::getPosition(outport->getProcessor());
 
-    auto* bak = net->addProcessor(util::makeProcessor<Background>(GP{1, 3} + initialPos));
-    auto* mrp =
-        net->addProcessor(util::makeProcessor<MeshRenderProcessorGL>(GP{0, 6} + initialPos));
-    auto* cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 9} + initialPos));
+    auto* bak = net->addProcessor(util::makeProcessor<Background>(GP{1, 3} + origin));
+    auto* mrp = net->addProcessor(util::makeProcessor<MeshRenderProcessorGL>(GP{0, 6} + origin));
+    auto* cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 9} + origin));
 
     net->addConnection(bak->getOutports()[0], mrp->getInports()[1]);
     net->addConnection(mrp->getOutports()[0], cvs->getInports()[0]);
@@ -103,9 +102,9 @@ std::vector<Processor*> MeshVisualizer::addVisualizerNetwork(Outport* outport,
 }
 
 std::vector<Processor*> MeshVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& initialPos) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, net, initialPos);
+    auto sourceAndOutport = addSourceProcessor(filename, net, origin);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     processors.push_back(sourceAndOutport.first);
