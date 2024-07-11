@@ -81,7 +81,7 @@ std::vector<Processor*> ImageToLayerVisualizer::addVisualizerNetwork(Outport* ou
 
 std::vector<Processor*> ImageToLayerVisualizer::addSourceAndVisualizerNetwork(
     const std::filesystem::path&, ProcessorNetwork*, const ivec2&) const {
-    return {nullptr};
+    return {};
 }
 
 }  // namespace inviwo
