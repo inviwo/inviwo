@@ -493,6 +493,7 @@ jobs:
         -DIVW_MODULE_HDF5=ON
         -DIVW_MODULE_SGCT=ON
         -DIVW_APP_INVIWO_DOME=ON
+        -DIVW_MODULE_WEBBROWSER=ON
         -DVCPKG_MANIFEST_FEATURES="sgct"
 
     - uses: cpp-linter/cpp-linter-action@v2.12.0
