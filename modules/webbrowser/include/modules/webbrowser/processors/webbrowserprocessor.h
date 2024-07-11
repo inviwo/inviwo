@@ -108,7 +108,7 @@ private:
     StringProperty js_;
 
     SingleFileObserver fileObserver_;
-    WebBrowserBase browser_;
+    CefRefPtr<WebBrowserBase> browser_;
 };
 
 }  // namespace inviwo

@@ -43,22 +43,28 @@
 
 namespace inviwo {
 
-WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor* processor, const std::string& url)
+WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor* processor, std::string url)
     : parentProcessor_{processor}
     , picking_{processor, 1,
                [this](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); }}
     , cefToInviwoImageConverter_{picking_.getColor()}
     , renderHandler_{dynamic_cast<RenderHandlerGL*>(
           app->getModuleByType<WebBrowserModule>()->getBrowserClient()->GetRenderHandler().get())}
-    , url_{url} {
+    , url_{std::move(url)} {
+
+    if (url_.empty()) {
+        url_ = fmt::format(
+            "file://{}",
+            (util::getModulePath("WebBrowser", ModulePath::Data) / "html/empty.html").string());
+    }
 
     // Setup CEF browser
     auto [windowInfo, browserSettings] = cefutil::getDefaultBrowserSettings();
     auto browserClient = app->getModuleByType<WebBrowserModule>()->getBrowserClient();
     // Note that browserClient_ outlives this class so make sure to remove
     // this CefLoadHandler in destructor
-    browser_ = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient, getURL(),
-                                                 browserSettings, nullptr, nullptr);
+    browser_ = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient, url_, browserSettings,
+                                                 nullptr, nullptr);
     browserClient->setBrowserParent(browser_, parentProcessor_);
     // Observe when page has loaded
     browserClient->addLoadHandler(this);
@@ -68,11 +74,12 @@ WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor* processor, con
 }
 
 WebBrowserBase::~WebBrowserBase() {
-    auto* client = dynamic_cast<WebBrowserClient*>(browser_->GetHost()->GetClient().get());
-    client->removeLoadHandler(this);
-    // Explicitly remove parent because CloseBrowser may result in WebBrowserClient::OnBeforeClose
-    // after this processor has been destroyed.
-    client->removeBrowserParent(browser_);
+    if (auto* client = dynamic_cast<WebBrowserClient*>(browser_->GetHost()->GetClient().get())) {
+        client->removeLoadHandler(this);
+        // Explicitly remove parent because CloseBrowser may result in
+        // WebBrowserClient::OnBeforeClose after this processor has been destroyed.
+        client->removeBrowserParent(browser_);
+    }
     // Force close browser
     browser_->GetHost()->CloseBrowser(true);
 }
@@ -92,7 +99,18 @@ void WebBrowserBase::executeJavaScript(const std::string& javascript, int startL
 
 void WebBrowserBase::reload() {
     isLoading_ = true;
-    browser_->GetMainFrame()->LoadURL(getURL());
+
+#ifndef NDEBUG
+    // CEF does not allow empty urls in debug mode
+    if (url_.empty()) {
+        browser_->GetMainFrame()->LoadURL(fmt::format(
+            "file://{}",
+            (util::getModulePath("WebBrowser", ModulePath::Data) / "html/empty.html").string()));
+        return;
+    }
+#endif
+
+    browser_->GetMainFrame()->LoadURL(url_);
 }
 
 bool WebBrowserBase::isLoading() const { return isLoading_; }
@@ -129,17 +147,7 @@ std::shared_ptr<BaseCallBack> WebBrowserBase::addLoadingDoneCallback(std::functi
     return loadingDone_.add(std::move(f));
 }
 
-const std::string& WebBrowserBase::getURL() const {
-#ifndef NDEBUG
-    // CEF does not allow empty urls in debug mode
-    if (url_.empty()) {
-        return fmt::format(
-            "file://{}",
-            (util::getModulePath("WebBrowser", ModulePath::Data) / "html/empty.html").string());
-    }
-#endif
-    return url_;
-}
+const std::string& WebBrowserBase::getURL() const { return url_; }
 
 void WebBrowserBase::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading,
                                           bool /*canGoBack*/, bool /*canGoForward*/) {

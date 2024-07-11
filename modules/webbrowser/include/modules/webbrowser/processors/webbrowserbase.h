@@ -57,9 +57,22 @@ class RenderHandlerGL;
 #include <warn/push>
 #include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
 #include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
+
+/**
+ * Base class of a CEF based browser that renders webpages into an ImageOutport.
+ * Needs to be wrapped by a CefRefPtr<> due to reference counting.
+ *
+ * Usage:
+ * \code{.cpp}
+ *    CefRefPtr<WebBrowserBase> my_class = new WebBrowserBase(app, processor);
+ * \endcode
+ *
+ * See
+ * https://bitbucket.org/chromiumembedded/cef/wiki/GeneralUsage#markdown-header-reference-counting
+ */
 class IVW_MODULE_WEBBROWSER_API WebBrowserBase : public CefLoadHandler {
 public:
-    WebBrowserBase(InviwoApplication* app, Processor* processor, const std::string& url = "");
+    WebBrowserBase(InviwoApplication* app, Processor* processor, std::string url = "");
     WebBrowserBase(const WebBrowserBase& rhs) = delete;
     WebBrowserBase(WebBrowserBase&& rhs) = delete;
     WebBrowserBase& operator=(const WebBrowserBase& rhs) = delete;
@@ -71,6 +84,7 @@ public:
 
     void load(const std::filesystem::path& filename);
     void load(std::string_view url);
+    const std::string& getURL() const;
 
     /**
      * Clear the browser frame and load an empty page
@@ -98,8 +112,6 @@ public:
     [[nodiscard]] std::shared_ptr<BaseCallBack> addLoadingDoneCallback(std::function<void()> f);
 
 private:
-    const std::string& getURL() const;
-
     virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack,
                                       bool canGoForward) override;
 

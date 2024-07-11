@@ -83,7 +83,7 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
     , zoom_{"zoom", "Zoom Factor", 1.0, 0.2, 5.0}
     , runJS_{"runJS", "Run JS"}
     , js_{"js", "JavaScript", "", InvalidationLevel::Valid}
-    , browser_{app, this} {
+    , browser_{new WebBrowserBase(app, this)} {
 
     addPorts(background_, outport_);
     background_.setOptional(true);
@@ -118,23 +118,23 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
         }
     });
 
-    addInteractionHandler(browser_.getInteractionHandler());
+    addInteractionHandler(browser_->getInteractionHandler());
     updateSource();
 }
 
 void WebBrowserProcessor::process() {
-    if (browser_.isLoading()) {
+    if (browser_->isLoading()) {
         return;
     }
 
     if (js_.isModified() && !js_.get().empty()) {
-        browser_.executeJavaScript(js_, 1);
+        browser_->executeJavaScript(js_, 1);
     }
     if (zoom_.isModified()) {
-        browser_.setZoom(zoom_);
+        browser_->setZoom(zoom_);
     }
 
-    browser_.render(outport_, &background_);
+    browser_->render(outport_, &background_);
 }
 
 void WebBrowserProcessor::deserialize(Deserializer& d) {
@@ -146,13 +146,13 @@ void WebBrowserProcessor::deserialize(Deserializer& d) {
 void WebBrowserProcessor::updateSource() {
     switch (sourceType_) {
         case SourceType::LocalFile:
-            browser_.load(fileName_);
+            browser_->load(fileName_);
             break;
         case SourceType::WebAddress:
-            browser_.load(url_);
+            browser_->load(url_);
             break;
         default:
-            browser_.load(std::string_view{"https://www.inviwo.org"});
+            browser_->load(std::string_view{"https://www.inviwo.org"});
             break;
     }
 }
