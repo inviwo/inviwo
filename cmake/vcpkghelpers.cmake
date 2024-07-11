@@ -120,16 +120,13 @@ function(ivw_vcpkg_install name)
         return()
     endif()
 
+    find_package(Python3 COMPONENTS Interpreter)
     if(NOT Python3_Interpreter_FOUND)
-        find_package(Python3 COMPONENTS Interpreter)
-        if(NOT Python3_FOUND OR 
-           NOT Python3_Interpreter_FOUND)
-            message(ERROR "Python3 not available.\n"
-                "Please install Python3. If you have a Python installation that is not found, consider "
-                "setting Python3_ROOT_DIR to the root directory of your Python 3 installation."
-            )
-            return ()
-        endif()
+        message(WARNING "Python3 not available.\n"
+            "Please install Python3. If you have a Python installation that is not found, consider "
+            "setting Python3_ROOT_DIR to the root directory of your Python 3 installation."
+        )
+        return ()
     endif()
 
     set(options EXT)
