@@ -83,11 +83,11 @@ class IVW_MODULE_WEBBROWSER_API WebBrowserProcessor : public Processor, public P
 public:
     explicit WebBrowserProcessor(InviwoApplication* app);
 
-    void process() override;
+    virtual void process() override;
 
-    void deserialize(Deserializer& d) override;
+    virtual void deserialize(Deserializer& d) override;
 
-    const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:

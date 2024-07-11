@@ -90,8 +90,8 @@ public:
 private:
     std::string_view getSource() const;
 
-    void OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack,
-                              bool canGoForward) override;
+    virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack,
+                                      bool canGoForward) override;
 
     Processor* parentProcessor_;
 
