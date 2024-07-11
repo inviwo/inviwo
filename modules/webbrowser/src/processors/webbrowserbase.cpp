@@ -98,7 +98,7 @@ void WebBrowserBase::reload() {
 
 bool WebBrowserBase::isLoading() const { return isLoading_; }
 
-void WebBrowserBase::setSource(const std::filesystem::path& filename) {
+void WebBrowserBase::load(const std::filesystem::path& filename) {
     if (!filename.empty()) {
         source_ = fmt::format("file://{}", filename.string());
         reload();
@@ -108,7 +108,7 @@ void WebBrowserBase::setSource(const std::filesystem::path& filename) {
     }
 }
 
-void WebBrowserBase::setSource(std::string_view uri) {
+void WebBrowserBase::load(std::string_view uri) {
     if (source_ != uri) {
         source_ = uri;
         reload();
@@ -119,8 +119,8 @@ void WebBrowserBase::setZoom(double zoom) {
     browser_->GetHost()->SetZoomLevel(cefutil::percentageToZoomLevel(zoom));
 }
 
-const BaseCallBack* WebBrowserBase::addLoadingDoneCallback(std::function<void()> f) {
-    return loadingDone_.addLambdaCallback(f);
+std::shared_ptr<BaseCallBack> WebBrowserBase::addLoadingDoneCallback(std::function<void()> f) {
+    return loadingDone_.addLambdaCallbackRaii(f);
 }
 
 std::string_view WebBrowserBase::getSource() const {

@@ -65,8 +65,8 @@ public:
     void reload();
     bool isLoading() const;
 
-    void setSource(const std::filesystem::path& filename);
-    void setSource(std::string_view uri);
+    void load(const std::filesystem::path& filename);
+    void load(std::string_view uri);
 
     /**
      * Set the zoom level of the browser to the absolute @p zoom factor.
@@ -83,9 +83,10 @@ public:
     /**
      * Registers a callback function @p f that will be called whenever the web page has been loaded.
      * @param f   callback function
+     * @return RAII callback
      * \see CefLoadHandler::OnLoadingStateChange
      */
-    const BaseCallBack* addLoadingDoneCallback(std::function<void()> f);
+    [[nodiscard]] std::shared_ptr<BaseCallBack> addLoadingDoneCallback(std::function<void()> f);
 
 private:
     std::string_view getSource() const;
