@@ -55,7 +55,12 @@ const ProcessorInfo WebBrowserProcessor::processorInfo_{
     CodeState::Stable,              // Code state
     Tags::GL | Tag{"Web Browser"},  // Tags
     R"(Display webpage, including transparency, on top of optional background and
-       enable synchronization of properties.)"_unindentHelp,
+enable synchronization of properties.
+
+Example networks:
++ [webbrowser/synchronization.inv](file:~modulePath~/data/workspaces/synchronization.inv)
++ [webbrowser/browser.inv](file:~modulePath~/data/workspaces/browser.inv)
+)"_unindentHelp,
 };
 const ProcessorInfo WebBrowserProcessor::getProcessorInfo() const { return processorInfo_; }
 
