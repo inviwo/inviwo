@@ -208,21 +208,23 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSlider(int valMin, int valMax) 
     const T min = Transformer<T>::sliderToValue(minMaxProperty_, valMin);
     const T max = Transformer<T>::sliderToValue(minMaxProperty_, valMax);
 
+    const V newRange = minMaxProperty_->clamp(V{min, max});
+
     bool modified = false;
     V range = minMaxProperty_->get();
 
-    if (!util::almostEqual(min, range.x)) {
+    if (!util::almostEqual(newRange.x, range.x)) {
         modified = true;
-        range.x = min;
+        range.x = newRange.x;
         QSignalBlocker minBlock(spinBoxMin_);
-        spinBoxMin_->setValue(Transformer<T>::valueToSpinbox(minMaxProperty_, min));
+        spinBoxMin_->setValue(Transformer<T>::valueToSpinbox(minMaxProperty_, newRange.x));
     }
 
-    if (!util::almostEqual(max, range.y)) {
+    if (!util::almostEqual(newRange.y, range.y)) {
         modified = true;
-        range.y = max;
+        range.y = newRange.y;
         QSignalBlocker maxBlock(spinBoxMax_);
-        spinBoxMax_->setValue(Transformer<T>::valueToSpinbox(minMaxProperty_, max));
+        spinBoxMax_->setValue(Transformer<T>::valueToSpinbox(minMaxProperty_, newRange.y));
     }
 
     if (modified) {
