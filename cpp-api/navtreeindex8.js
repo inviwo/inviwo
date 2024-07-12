@@ -243,10 +243,10 @@ var NAVTREEINDEX8 =
 "classinviwo_1_1LayerInformationVisualizer.html":[4,0,0,535],
 "classinviwo_1_1LayerInformationVisualizer.html#a08732f3eaecbccf5042296b4afb682a6":[2,0,0,530,8],
 "classinviwo_1_1LayerInformationVisualizer.html#a08732f3eaecbccf5042296b4afb682a6":[4,0,0,535,8],
+"classinviwo_1_1LayerInformationVisualizer.html#a39e3044c21f7c8ae389b41547abb186d":[2,0,0,530,1],
+"classinviwo_1_1LayerInformationVisualizer.html#a39e3044c21f7c8ae389b41547abb186d":[4,0,0,535,1],
 "classinviwo_1_1LayerInformationVisualizer.html#a3f2179e293a8dbc932b825efc482e788":[2,0,0,530,4],
 "classinviwo_1_1LayerInformationVisualizer.html#a3f2179e293a8dbc932b825efc482e788":[4,0,0,535,4],
-"classinviwo_1_1LayerInformationVisualizer.html#a4abbcd617a752b56b337a8791ed36cdb":[2,0,0,530,0],
-"classinviwo_1_1LayerInformationVisualizer.html#a4abbcd617a752b56b337a8791ed36cdb":[4,0,0,535,0],
 "classinviwo_1_1LayerInformationVisualizer.html#a52265286d87f530fd77eac7d5e2b3406":[2,0,0,530,5],
 "classinviwo_1_1LayerInformationVisualizer.html#a52265286d87f530fd77eac7d5e2b3406":[4,0,0,535,5],
 "classinviwo_1_1LayerInformationVisualizer.html#a57d8c3a5cae04ed32bc0c8537c9cc40f":[2,0,0,530,2]

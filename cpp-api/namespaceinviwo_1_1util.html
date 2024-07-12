@@ -280,6 +280,9 @@ template&lt;typename T &gt; </td></tr>
 template&lt;class T &gt; </td></tr>
 <tr class="memitem:ac037ba47ee8e89eb5e86b66c36e7f3d6"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>HasGetClassIdentifier</b> = is_detected_exact&lt;std::string, classIdentifierType, T&gt;</td></tr>
 <tr class="separator:ac037ba47ee8e89eb5e86b66c36e7f3d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a720b22362c67c273e303d812cb5a7911" id="r_a720b22362c67c273e303d812cb5a7911"><td class="memItemLeft" align="right" valign="top"><a id="a720b22362c67c273e303d812cb5a7911" name="a720b22362c67c273e303d812cb5a7911"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>OffsetCallback</b> = std::function&lt;ivec2(std::vector&lt;<a class="el" href="classinviwo_1_1Processor.html">Processor</a>*&gt;)&gt;</td></tr>
+<tr class="separator:a720b22362c67c273e303d812cb5a7911"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aafe6a29ff71066ec2bd3013b3b5a90b5" id="r_aafe6a29ff71066ec2bd3013b3b5a90b5"><td class="memTemplParams" colspan="2"><a id="aafe6a29ff71066ec2bd3013b3b5a90b5" name="aafe6a29ff71066ec2bd3013b3b5a90b5"></a>
 template&lt;template&lt; class... &gt; class Op, class... Args&gt; </td></tr>
 <tr class="memitem:aafe6a29ff71066ec2bd3013b3b5a90b5"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>is_detected</b> = typename <a class="el" href="structinviwo_1_1util_1_1detail_1_1detector.html">detail::detector</a>&lt;<a class="el" href="structinviwo_1_1util_1_1nonesuch.html">nonesuch</a>, void, Op, Args...&gt;::value_t</td></tr>
@@ -689,8 +692,8 @@ IVW_CORE_API std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">
 <tr class="memitem:a11a34e87ebb373c7632a3308144a1fc8" id="r_a11a34e87ebb373c7632a3308144a1fc8"><td class="memItemLeft" align="right" valign="top"><a id="a11a34e87ebb373c7632a3308144a1fc8" name="a11a34e87ebb373c7632a3308144a1fc8"></a>
 IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>serializeSelected</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, std::ostream &amp;os, const std::filesystem::path &amp;refPath)</td></tr>
 <tr class="separator:a11a34e87ebb373c7632a3308144a1fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f6d00f142c2efd4459e025020ac5005" id="r_a1f6d00f142c2efd4459e025020ac5005"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f6d00f142c2efd4459e025020ac5005">appendPartialProcessorNetwork</a> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, std::istream &amp;is, const std::filesystem::path &amp;refPath, <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *app)</td></tr>
-<tr class="separator:a1f6d00f142c2efd4459e025020ac5005"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c1d35bf328c84cfedc3dfd7976ae43a" id="r_a3c1d35bf328c84cfedc3dfd7976ae43a"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c1d35bf328c84cfedc3dfd7976ae43a">appendPartialProcessorNetwork</a> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, std::istream &amp;is, const std::filesystem::path &amp;refPath, <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *app, OffsetCallback offsetCallback=nullptr)</td></tr>
+<tr class="separator:a3c1d35bf328c84cfedc3dfd7976ae43a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0947636398083de9bd93535fcb73690" id="r_ae0947636398083de9bd93535fcb73690"><td class="memItemLeft" align="right" valign="top"><a id="ae0947636398083de9bd93535fcb73690" name="ae0947636398083de9bd93535fcb73690"></a>
 IVW_CORE_API std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>appendProcessorNetwork</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *destinationNetwork, const std::filesystem::path &amp;workspaceFile, <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *app)</td></tr>
 <tr class="separator:ae0947636398083de9bd93535fcb73690"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2324,8 +2327,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a1f6d00f142c2efd4459e025020ac5005" name="a1f6d00f142c2efd4459e025020ac5005"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1f6d00f142c2efd4459e025020ac5005">&#9670;&#160;</a></span>appendPartialProcessorNetwork()</h2>
+<a id="a3c1d35bf328c84cfedc3dfd7976ae43a" name="a3c1d35bf328c84cfedc3dfd7976ae43a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c1d35bf328c84cfedc3dfd7976ae43a">&#9670;&#160;</a></span>appendPartialProcessorNetwork()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2348,7 +2351,12 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *</td>          <td class="paramname"><span class="paramname"><em>app</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *</td>          <td class="paramname"><span class="paramname"><em>app</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">OffsetCallback</td>          <td class="paramname"><span class="paramname"><em>offsetCallback</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -2358,9 +2366,11 @@ template&lt;typename T &gt; </div>
     <tr><td class="paramname">is</td><td>a stream of a serialized PartialProcessorNetwork </td></tr>
     <tr><td class="paramname">refPath</td><td>a possible path to the original file of the PartialProcessorNetwork, for error reporting </td></tr>
     <tr><td class="paramname">app</td><td>The inviwo application </td></tr>
+    <tr><td class="paramname">offsetCallback</td><td>callback for determining an offset, which is applied to all added processors </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>the appended processors. </dd></dl>
 
 </div>
 </div>

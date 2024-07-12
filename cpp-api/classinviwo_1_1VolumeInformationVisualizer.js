@@ -1,7 +1,7 @@
 var classinviwo_1_1VolumeInformationVisualizer =
 [
-    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1VolumeInformationVisualizer.html#ad5a9e04744017e476b2676eabd3b3020", null ],
-    [ "addSourceProcessor", "classinviwo_1_1VolumeInformationVisualizer.html#a0d5a29635b88077338fe17c8d9541182", null ],
+    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1VolumeInformationVisualizer.html#a95c79007339e76cd6ca067c972eb4315", null ],
+    [ "addSourceProcessor", "classinviwo_1_1VolumeInformationVisualizer.html#a5359ae741b672600ae321cc82c5073ca", null ],
     [ "addVisualizerNetwork", "classinviwo_1_1VolumeInformationVisualizer.html#aa05c556c338c78f79a3a778bfd88e8c3", null ],
     [ "getDescription", "classinviwo_1_1VolumeInformationVisualizer.html#a9e57c3d2192af66cdccfaebf82f5bd5d", null ],
     [ "getName", "classinviwo_1_1VolumeInformationVisualizer.html#ac7ce62c019245b81120a6f7ac3d1ebbd", null ],

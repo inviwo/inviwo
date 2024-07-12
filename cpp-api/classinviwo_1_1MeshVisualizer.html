@@ -133,16 +133,16 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9a622d08f5d3724b684185d67b49e92e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb3dfd7dbbaed57b59d9c4f3c3bf6687" id="r_adb3dfd7dbbaed57b59d9c4f3c3bf6687"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adb3dfd7dbbaed57b59d9c4f3c3bf6687">hasVisualizerNetwork</a> () const override</td></tr>
 <tr class="separator:adb3dfd7dbbaed57b59d9c4f3c3bf6687"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa62f730f11883e3464fa6c922ee3f49c" id="r_aa62f730f11883e3464fa6c922ee3f49c"><td class="memItemLeft" align="right" valign="top">virtual std::pair&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *, <a class="el" href="classinviwo_1_1Outport.html">Outport</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa62f730f11883e3464fa6c922ee3f49c">addSourceProcessor</a> (const std::filesystem::path &amp;filename, <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network) const override</td></tr>
-<tr class="separator:aa62f730f11883e3464fa6c922ee3f49c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ee6a0ca1af2ce1384ac208163c44a6c" id="r_a0ee6a0ca1af2ce1384ac208163c44a6c"><td class="memItemLeft" align="right" valign="top">virtual std::pair&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *, <a class="el" href="classinviwo_1_1Outport.html">Outport</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ee6a0ca1af2ce1384ac208163c44a6c">addSourceProcessor</a> (const std::filesystem::path &amp;filename, <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, const ivec2 &amp;origin) const override</td></tr>
+<tr class="separator:a0ee6a0ca1af2ce1384ac208163c44a6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe8564585657b6d4c86a646313239b4c" id="r_abe8564585657b6d4c86a646313239b4c"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe8564585657b6d4c86a646313239b4c">addVisualizerNetwork</a> (<a class="el" href="classinviwo_1_1Outport.html">Outport</a> *outport, <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network) const override</td></tr>
 <tr class="separator:abe8564585657b6d4c86a646313239b4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07ad554d847196a8a8aa457a4f024663" id="r_a07ad554d847196a8a8aa457a4f024663"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a07ad554d847196a8a8aa457a4f024663">addSourceAndVisualizerNetwork</a> (const std::filesystem::path &amp;filename, <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network) const override</td></tr>
-<tr class="separator:a07ad554d847196a8a8aa457a4f024663"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9f6455740e06c0912efb49db7fb118a" id="r_ac9f6455740e06c0912efb49db7fb118a"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac9f6455740e06c0912efb49db7fb118a">addSourceAndVisualizerNetwork</a> (const std::filesystem::path &amp;filename, <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, const ivec2 &amp;origin) const override</td></tr>
+<tr class="separator:ac9f6455740e06c0912efb49db7fb118a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a07ad554d847196a8a8aa457a4f024663" name="a07ad554d847196a8a8aa457a4f024663"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a07ad554d847196a8a8aa457a4f024663">&#9670;&#160;</a></span>addSourceAndVisualizerNetwork()</h2>
+<a id="ac9f6455740e06c0912efb49db7fb118a" name="ac9f6455740e06c0912efb49db7fb118a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9f6455740e06c0912efb49db7fb118a">&#9670;&#160;</a></span>addSourceAndVisualizerNetwork()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -158,7 +158,12 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *</td>          <td class="paramname"><span class="paramname"><em>network</em></span>&#160;) const</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *</td>          <td class="paramname"><span class="paramname"><em>network</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ivec2 &amp;</td>          <td class="paramname"><span class="paramname"><em>origin</em></span>&#160;) const</td>
         </tr>
       </table>
   </td>
@@ -171,17 +176,18 @@ Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">filename</td><td>The file to load in the source processor. The extension of the filename should be in the list of extensions returned by getSupportedFileExtensions. </td></tr>
     <tr><td class="paramname">network</td><td>The network to add the processor to. </td></tr>
+    <tr><td class="paramname">origin</td><td>the initial position for the visualizer network </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A list of added processors. </dd></dl>
 
-<p>Implements <a class="el" href="classinviwo_1_1DataVisualizer.html#aac73d1c8e15017510989022d08d336fe">inviwo::DataVisualizer</a>.</p>
+<p>Implements <a class="el" href="classinviwo_1_1DataVisualizer.html#a22b601b846c7e5d4c24b7bd07e845104">inviwo::DataVisualizer</a>.</p>
 
 </div>
 </div>
-<a id="aa62f730f11883e3464fa6c922ee3f49c" name="aa62f730f11883e3464fa6c922ee3f49c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa62f730f11883e3464fa6c922ee3f49c">&#9670;&#160;</a></span>addSourceProcessor()</h2>
+<a id="a0ee6a0ca1af2ce1384ac208163c44a6c" name="a0ee6a0ca1af2ce1384ac208163c44a6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ee6a0ca1af2ce1384ac208163c44a6c">&#9670;&#160;</a></span>addSourceProcessor()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -197,7 +203,12 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *</td>          <td class="paramname"><span class="paramname"><em>network</em></span>&#160;) const</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *</td>          <td class="paramname"><span class="paramname"><em>network</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ivec2 &amp;</td>          <td class="paramname"><span class="paramname"><em>origin</em></span>&#160;) const</td>
         </tr>
       </table>
   </td>
@@ -210,12 +221,13 @@ Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">filename</td><td>The file to load in the source processor. The extension of the filename should be in the list of extensions returned by getSupportedFileExtensions. </td></tr>
     <tr><td class="paramname">network</td><td>The network to add the processor to. </td></tr>
+    <tr><td class="paramname">origin</td><td>the initial position for the processor </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The added source processor and the outport in the source processor containing data from the given file. </dd></dl>
 
-<p>Implements <a class="el" href="classinviwo_1_1DataVisualizer.html#a12816235ff14a044355e0f9956d9aff8">inviwo::DataVisualizer</a>.</p>
+<p>Implements <a class="el" href="classinviwo_1_1DataVisualizer.html#ae3ebff02241ba167c634559ae0f2554f">inviwo::DataVisualizer</a>.</p>
 
 </div>
 </div>

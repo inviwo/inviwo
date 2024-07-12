@@ -58,7 +58,7 @@ var NAVTREEINDEX =
 "classinviwo_1_1BrushingAndLinkingManager.html#a7162265eb0688f286bd921c6fd379a9d",
 "classinviwo_1_1CameraProperty.html#a494852cd33696b1cd0994467e8615368",
 "classinviwo_1_1CompositeProperty.html#ac05e59a06cbc593ff2d9b515cb921cc5",
-"classinviwo_1_1DataVisualizer.html#aac73d1c8e15017510989022d08d336fe",
+"classinviwo_1_1DataVisualizer.html#aaf0eb070e15a449d6df18196244afff2",
 "classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4.html",
 "classinviwo_1_1HalfEdges.html#ad97287d8420799a0baede4469c067bed",
 "classinviwo_1_1ImageSourceSeries.html#a5d958521b15c198f5bf3647abae4384b",

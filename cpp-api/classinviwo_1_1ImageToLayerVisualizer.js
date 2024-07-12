@@ -1,7 +1,7 @@
 var classinviwo_1_1ImageToLayerVisualizer =
 [
-    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1ImageToLayerVisualizer.html#a3cfb3e7e5182c8dcc5da0ff5ca264688", null ],
-    [ "addSourceProcessor", "classinviwo_1_1ImageToLayerVisualizer.html#a22205be5477b60ede1f10a77edde260d", null ],
+    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1ImageToLayerVisualizer.html#ab84a9962ad34590f5eb97a1b38ade10f", null ],
+    [ "addSourceProcessor", "classinviwo_1_1ImageToLayerVisualizer.html#a2b3c21738a96098f7fb2ab6bea84ff40", null ],
     [ "addVisualizerNetwork", "classinviwo_1_1ImageToLayerVisualizer.html#a3cf302012c38b9f38e88d0ce5919a6b1", null ],
     [ "getDescription", "classinviwo_1_1ImageToLayerVisualizer.html#a384551344d0fe69999587df92e3ac5d5", null ],
     [ "getName", "classinviwo_1_1ImageToLayerVisualizer.html#afa90eaeac7f798932cef71423111b278", null ],

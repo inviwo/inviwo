@@ -1,7 +1,7 @@
 var classinviwo_1_1DataFrameTableVisualizer =
 [
-    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1DataFrameTableVisualizer.html#a6a3912849d7ca8cb161ee992e30eaf52", null ],
-    [ "addSourceProcessor", "classinviwo_1_1DataFrameTableVisualizer.html#a985b618245a869f9977f5eb645c22ad7", null ],
+    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1DataFrameTableVisualizer.html#a9ff9c0b247817fc936e753dc5334a70f", null ],
+    [ "addSourceProcessor", "classinviwo_1_1DataFrameTableVisualizer.html#a39e7e0d72871ae8572926898fbd1a8b5", null ],
     [ "addVisualizerNetwork", "classinviwo_1_1DataFrameTableVisualizer.html#a494c3a3b09270e0a1f4b3953d5191d48", null ],
     [ "getDescription", "classinviwo_1_1DataFrameTableVisualizer.html#a1cd973e00c17db194a7a89f826912438", null ],
     [ "getName", "classinviwo_1_1DataFrameTableVisualizer.html#ad67620fcbea7e801cf67b0a4a361a507", null ],

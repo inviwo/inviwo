@@ -146,19 +146,19 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ab1b6d3a06caf92225d4459f160e97d8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd4c8a29506f5625e6e2dc539888c6df" id="r_abd4c8a29506f5625e6e2dc539888c6df"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abd4c8a29506f5625e6e2dc539888c6df">hasVisualizerNetwork</a> () const =0</td></tr>
 <tr class="separator:abd4c8a29506f5625e6e2dc539888c6df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12816235ff14a044355e0f9956d9aff8" id="r_a12816235ff14a044355e0f9956d9aff8"><td class="memItemLeft" align="right" valign="top">virtual std::pair&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *, <a class="el" href="classinviwo_1_1Outport.html">Outport</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a12816235ff14a044355e0f9956d9aff8">addSourceProcessor</a> (const std::filesystem::path &amp;filename, <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network) const =0</td></tr>
-<tr class="separator:a12816235ff14a044355e0f9956d9aff8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3ebff02241ba167c634559ae0f2554f" id="r_ae3ebff02241ba167c634559ae0f2554f"><td class="memItemLeft" align="right" valign="top">virtual std::pair&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *, <a class="el" href="classinviwo_1_1Outport.html">Outport</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae3ebff02241ba167c634559ae0f2554f">addSourceProcessor</a> (const std::filesystem::path &amp;filename, <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, const ivec2 &amp;origin) const =0</td></tr>
+<tr class="separator:ae3ebff02241ba167c634559ae0f2554f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea16e6abdd799485a326c761b8fae6a1" id="r_aea16e6abdd799485a326c761b8fae6a1"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aea16e6abdd799485a326c761b8fae6a1">addVisualizerNetwork</a> (<a class="el" href="classinviwo_1_1Outport.html">Outport</a> *outport, <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network) const =0</td></tr>
 <tr class="separator:aea16e6abdd799485a326c761b8fae6a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac73d1c8e15017510989022d08d336fe" id="r_aac73d1c8e15017510989022d08d336fe"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aac73d1c8e15017510989022d08d336fe">addSourceAndVisualizerNetwork</a> (const std::filesystem::path &amp;filename, <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network) const =0</td></tr>
-<tr class="separator:aac73d1c8e15017510989022d08d336fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22b601b846c7e5d4c24b7bd07e845104" id="r_a22b601b846c7e5d4c24b7bd07e845104"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a22b601b846c7e5d4c24b7bd07e845104">addSourceAndVisualizerNetwork</a> (const std::filesystem::path &amp;filename, <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, const ivec2 &amp;origin) const =0</td></tr>
+<tr class="separator:a22b601b846c7e5d4c24b7bd07e845104"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A <a class="el" href="classinviwo_1_1DataVisualizer.html">DataVisualizer</a> can be used to easily add a visualization of a data type. A <a class="el" href="classinviwo_1_1DataVisualizer.html">DataVisualizer</a> has two tasks. The first is to create a "Source Processor" which can be used to load data of the supported type. The second is to create a "Visualizer Network", which gets data (from an <a class="el" href="classinviwo_1_1Outport.html" title="Abstract base class for all outports The Outport can be connected to an arbitrary number of Inports.">Outport</a>) or loads data (from a "Source Processor") and generates some useful visualization. Both parts a optional, and can be used independently or together, like: 1) Adding a source processor that can load the requested file 2) Adding a set of processors that will take input from a existing port to create a visualization 3) Both 1 and 2</p>
 <p>An Inviwo module can add new <a class="el" href="classinviwo_1_1DataVisualizer.html">DataVisualizer</a> by deriving from <a class="el" href="classinviwo_1_1DataVisualizer.html">DataVisualizer</a>, implementing all the virtual functions, and then add register it using DataVisualizerManager::registerDataVisualizer. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1DataVisualizerManager.html">DataVisualizerManager</a> </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="aac73d1c8e15017510989022d08d336fe" name="aac73d1c8e15017510989022d08d336fe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aac73d1c8e15017510989022d08d336fe">&#9670;&#160;</a></span>addSourceAndVisualizerNetwork()</h2>
+<a id="a22b601b846c7e5d4c24b7bd07e845104" name="a22b601b846c7e5d4c24b7bd07e845104"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22b601b846c7e5d4c24b7bd07e845104">&#9670;&#160;</a></span>addSourceAndVisualizerNetwork()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -174,7 +174,12 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *</td>          <td class="paramname"><span class="paramname"><em>network</em></span>&#160;) const</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *</td>          <td class="paramname"><span class="paramname"><em>network</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ivec2 &amp;</td>          <td class="paramname"><span class="paramname"><em>origin</em></span>&#160;) const</td>
         </tr>
       </table>
   </td>
@@ -187,17 +192,18 @@ Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">filename</td><td>The file to load in the source processor. The extension of the filename should be in the list of extensions returned by getSupportedFileExtensions. </td></tr>
     <tr><td class="paramname">network</td><td>The network to add the processor to. </td></tr>
+    <tr><td class="paramname">origin</td><td>the initial position for the visualizer network </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A list of added processors. </dd></dl>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1DataFrameTableVisualizer.html#a6a3912849d7ca8cb161ee992e30eaf52">inviwo::DataFrameTableVisualizer</a>, <a class="el" href="classinviwo_1_1ImageBackgroundVisualizer.html#aaeb83317e34873cc22bf0ec607e112ba">inviwo::ImageBackgroundVisualizer</a>, <a class="el" href="classinviwo_1_1ImageInformationVisualizer.html#afb6466617587bf3d20b47bdcaf9831a3">inviwo::ImageInformationVisualizer</a>, <a class="el" href="classinviwo_1_1ImageToLayerVisualizer.html#a3cfb3e7e5182c8dcc5da0ff5ca264688">inviwo::ImageToLayerVisualizer</a>, <a class="el" href="classinviwo_1_1ImageVisualizer.html#a2458a65d2cdbef47fc2d5ba563fa1e55">inviwo::ImageVisualizer</a>, <a class="el" href="classinviwo_1_1LayerInformationVisualizer.html#a4abbcd617a752b56b337a8791ed36cdb">inviwo::LayerInformationVisualizer</a>, <a class="el" href="classinviwo_1_1LayerToImageVisualizer.html#a3a4b9d94fb65daf58bbd76b51dc65e3c">inviwo::LayerToImageVisualizer</a>, <a class="el" href="classinviwo_1_1LayerVisualizer.html#ade61ed19d1f262fc0716f5b9ad33e592">inviwo::LayerVisualizer</a>, <a class="el" href="classinviwo_1_1MeshInformationVisualizer.html#a4ccbe746d811548c90790c8545bb3f19">inviwo::MeshInformationVisualizer</a>, <a class="el" href="classinviwo_1_1MeshVisualizer.html#a07ad554d847196a8a8aa457a4f024663">inviwo::MeshVisualizer</a>, <a class="el" href="classinviwo_1_1PCPDataFrameVisualizer.html#a90446684861c0c4badfaf5a6a635d142">inviwo::PCPDataFrameVisualizer</a>, <a class="el" href="classinviwo_1_1ScatterPlotDataFrameVisualizer.html#aba4fe54d39faab26807317fcdad96c56">inviwo::ScatterPlotDataFrameVisualizer</a>, <a class="el" href="classinviwo_1_1VolumeInformationVisualizer.html#ad5a9e04744017e476b2676eabd3b3020">inviwo::VolumeInformationVisualizer</a>, <a class="el" href="classinviwo_1_1VolumeRaycastVisualizer.html#a4d27aae23574f22eaf191f7b819bbb25">inviwo::VolumeRaycastVisualizer</a>, and <a class="el" href="classinviwo_1_1VolumeSliceVisualizer.html#ae3ed835ec2dc321135e24f423d8aa99d">inviwo::VolumeSliceVisualizer</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1DataFrameTableVisualizer.html#a9ff9c0b247817fc936e753dc5334a70f">inviwo::DataFrameTableVisualizer</a>, <a class="el" href="classinviwo_1_1ImageBackgroundVisualizer.html#a56affc7db013ff7bdee1cddce550d19f">inviwo::ImageBackgroundVisualizer</a>, <a class="el" href="classinviwo_1_1ImageInformationVisualizer.html#aa34b06c03487dfc68e9e469c211321b6">inviwo::ImageInformationVisualizer</a>, <a class="el" href="classinviwo_1_1ImageToLayerVisualizer.html#ab84a9962ad34590f5eb97a1b38ade10f">inviwo::ImageToLayerVisualizer</a>, <a class="el" href="classinviwo_1_1ImageVisualizer.html#a0715766a7a9dd940874d4b740266a16f">inviwo::ImageVisualizer</a>, <a class="el" href="classinviwo_1_1LayerInformationVisualizer.html#aad8b72992576a87d384851397c78ec28">inviwo::LayerInformationVisualizer</a>, <a class="el" href="classinviwo_1_1LayerToImageVisualizer.html#a5fb8af5064533a7bf5dca62e404e57b5">inviwo::LayerToImageVisualizer</a>, <a class="el" href="classinviwo_1_1LayerVisualizer.html#a6cca90c0c8ff98f7ce1c8c1fc10b8597">inviwo::LayerVisualizer</a>, <a class="el" href="classinviwo_1_1MeshInformationVisualizer.html#a39e524942849bbff78e91aec24971f3a">inviwo::MeshInformationVisualizer</a>, <a class="el" href="classinviwo_1_1MeshVisualizer.html#ac9f6455740e06c0912efb49db7fb118a">inviwo::MeshVisualizer</a>, <a class="el" href="classinviwo_1_1PCPDataFrameVisualizer.html#aebb39c7d09a12f0f198bdade14479c81">inviwo::PCPDataFrameVisualizer</a>, <a class="el" href="classinviwo_1_1ScatterPlotDataFrameVisualizer.html#ae7fb92e0dd7ec069695a90f1cb016d45">inviwo::ScatterPlotDataFrameVisualizer</a>, <a class="el" href="classinviwo_1_1VolumeInformationVisualizer.html#a95c79007339e76cd6ca067c972eb4315">inviwo::VolumeInformationVisualizer</a>, <a class="el" href="classinviwo_1_1VolumeRaycastVisualizer.html#a4e1b40c36b4fc997a06a571934265892">inviwo::VolumeRaycastVisualizer</a>, and <a class="el" href="classinviwo_1_1VolumeSliceVisualizer.html#ae5b4fb7efda1d94a3e61d74480c4e0ea">inviwo::VolumeSliceVisualizer</a>.</p>
 
 </div>
 </div>
-<a id="a12816235ff14a044355e0f9956d9aff8" name="a12816235ff14a044355e0f9956d9aff8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a12816235ff14a044355e0f9956d9aff8">&#9670;&#160;</a></span>addSourceProcessor()</h2>
+<a id="ae3ebff02241ba167c634559ae0f2554f" name="ae3ebff02241ba167c634559ae0f2554f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3ebff02241ba167c634559ae0f2554f">&#9670;&#160;</a></span>addSourceProcessor()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -213,7 +219,12 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *</td>          <td class="paramname"><span class="paramname"><em>network</em></span>&#160;) const</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *</td>          <td class="paramname"><span class="paramname"><em>network</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ivec2 &amp;</td>          <td class="paramname"><span class="paramname"><em>origin</em></span>&#160;) const</td>
         </tr>
       </table>
   </td>
@@ -226,12 +237,13 @@ Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">filename</td><td>The file to load in the source processor. The extension of the filename should be in the list of extensions returned by getSupportedFileExtensions. </td></tr>
     <tr><td class="paramname">network</td><td>The network to add the processor to. </td></tr>
+    <tr><td class="paramname">origin</td><td>the initial position for the processor </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The added source processor and the outport in the source processor containing data from the given file. </dd></dl>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1DataFrameTableVisualizer.html#a985b618245a869f9977f5eb645c22ad7">inviwo::DataFrameTableVisualizer</a>, <a class="el" href="classinviwo_1_1ImageBackgroundVisualizer.html#af37013d80771c0bd44a9bece37205381">inviwo::ImageBackgroundVisualizer</a>, <a class="el" href="classinviwo_1_1ImageInformationVisualizer.html#a25a8d533822f9dfc87dcb3c55de37e62">inviwo::ImageInformationVisualizer</a>, <a class="el" href="classinviwo_1_1ImageToLayerVisualizer.html#a22205be5477b60ede1f10a77edde260d">inviwo::ImageToLayerVisualizer</a>, <a class="el" href="classinviwo_1_1ImageVisualizer.html#a7b176834589cbe2430a5d568d5a65b2a">inviwo::ImageVisualizer</a>, <a class="el" href="classinviwo_1_1LayerInformationVisualizer.html#a7d0ae8a2ac092ab4d7c70c2678e333fe">inviwo::LayerInformationVisualizer</a>, <a class="el" href="classinviwo_1_1LayerToImageVisualizer.html#af61e157366bfc2c5ddc50ae89a2b1b95">inviwo::LayerToImageVisualizer</a>, <a class="el" href="classinviwo_1_1LayerVisualizer.html#a4ee64721366b0088e54fcd6ee786c081">inviwo::LayerVisualizer</a>, <a class="el" href="classinviwo_1_1MeshInformationVisualizer.html#a1f057323a96f41776442f30f1ea823fc">inviwo::MeshInformationVisualizer</a>, <a class="el" href="classinviwo_1_1MeshVisualizer.html#aa62f730f11883e3464fa6c922ee3f49c">inviwo::MeshVisualizer</a>, <a class="el" href="classinviwo_1_1PCPDataFrameVisualizer.html#a32d57886d51eb89813c7f4ce43dac2f7">inviwo::PCPDataFrameVisualizer</a>, <a class="el" href="classinviwo_1_1ScatterPlotDataFrameVisualizer.html#ad66f528bd54632d4a0b274ac32d60f00">inviwo::ScatterPlotDataFrameVisualizer</a>, <a class="el" href="classinviwo_1_1VolumeInformationVisualizer.html#a0d5a29635b88077338fe17c8d9541182">inviwo::VolumeInformationVisualizer</a>, <a class="el" href="classinviwo_1_1VolumeRaycastVisualizer.html#addc69251bddce67ca2cc1bc67c89f162">inviwo::VolumeRaycastVisualizer</a>, and <a class="el" href="classinviwo_1_1VolumeSliceVisualizer.html#ae87a12317a878ea41ccd4be3a5f6ae3b">inviwo::VolumeSliceVisualizer</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1DataFrameTableVisualizer.html#a39e7e0d72871ae8572926898fbd1a8b5">inviwo::DataFrameTableVisualizer</a>, <a class="el" href="classinviwo_1_1ImageBackgroundVisualizer.html#a7203c3f5be0d78057963daa66137b06e">inviwo::ImageBackgroundVisualizer</a>, <a class="el" href="classinviwo_1_1ImageInformationVisualizer.html#a59b64b4dc271608843104941d54d2604">inviwo::ImageInformationVisualizer</a>, <a class="el" href="classinviwo_1_1ImageToLayerVisualizer.html#a2b3c21738a96098f7fb2ab6bea84ff40">inviwo::ImageToLayerVisualizer</a>, <a class="el" href="classinviwo_1_1ImageVisualizer.html#a3e390c2b48ff0d0ecf5d36db359c3043">inviwo::ImageVisualizer</a>, <a class="el" href="classinviwo_1_1LayerInformationVisualizer.html#a39e3044c21f7c8ae389b41547abb186d">inviwo::LayerInformationVisualizer</a>, <a class="el" href="classinviwo_1_1LayerToImageVisualizer.html#a30ad184d425f201f0728170f476f5045">inviwo::LayerToImageVisualizer</a>, <a class="el" href="classinviwo_1_1LayerVisualizer.html#a980c2f58d61984f5439f8ddcadfeff64">inviwo::LayerVisualizer</a>, <a class="el" href="classinviwo_1_1MeshInformationVisualizer.html#ae7ba04aa58db822e38c38485fda6dc19">inviwo::MeshInformationVisualizer</a>, <a class="el" href="classinviwo_1_1MeshVisualizer.html#a0ee6a0ca1af2ce1384ac208163c44a6c">inviwo::MeshVisualizer</a>, <a class="el" href="classinviwo_1_1PCPDataFrameVisualizer.html#a0b8db4fdf755317ab00aea21cccd2dc4">inviwo::PCPDataFrameVisualizer</a>, <a class="el" href="classinviwo_1_1ScatterPlotDataFrameVisualizer.html#a2f95ed0011d3476fca63c919b0e38d7e">inviwo::ScatterPlotDataFrameVisualizer</a>, <a class="el" href="classinviwo_1_1VolumeInformationVisualizer.html#a5359ae741b672600ae321cc82c5073ca">inviwo::VolumeInformationVisualizer</a>, <a class="el" href="classinviwo_1_1VolumeRaycastVisualizer.html#aeb0a531d15de4f6b42d5b5b64511c230">inviwo::VolumeRaycastVisualizer</a>, and <a class="el" href="classinviwo_1_1VolumeSliceVisualizer.html#ad57be72d9d9991315629902e42f881dd">inviwo::VolumeSliceVisualizer</a>.</p>
 
 </div>
 </div>

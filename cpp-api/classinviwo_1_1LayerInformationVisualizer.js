@@ -1,7 +1,7 @@
 var classinviwo_1_1LayerInformationVisualizer =
 [
-    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1LayerInformationVisualizer.html#a4abbcd617a752b56b337a8791ed36cdb", null ],
-    [ "addSourceProcessor", "classinviwo_1_1LayerInformationVisualizer.html#a7d0ae8a2ac092ab4d7c70c2678e333fe", null ],
+    [ "addSourceAndVisualizerNetwork", "classinviwo_1_1LayerInformationVisualizer.html#aad8b72992576a87d384851397c78ec28", null ],
+    [ "addSourceProcessor", "classinviwo_1_1LayerInformationVisualizer.html#a39e3044c21f7c8ae389b41547abb186d", null ],
     [ "addVisualizerNetwork", "classinviwo_1_1LayerInformationVisualizer.html#a57d8c3a5cae04ed32bc0c8537c9cc40f", null ],
     [ "getDescription", "classinviwo_1_1LayerInformationVisualizer.html#ae2e70ee947b3611e8ac03b28c036f727", null ],
     [ "getName", "classinviwo_1_1LayerInformationVisualizer.html#a3f2179e293a8dbc932b825efc482e788", null ],
