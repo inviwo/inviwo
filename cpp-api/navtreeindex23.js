@@ -1,11 +1,17 @@
 var NAVTREEINDEX23 =
 {
-"classinviwo_1_1WorkspaceTreeView.html":[2,0,0,1304],
-"classinviwo_1_1WorkspaceTreeView.html":[4,0,0,1309],
+"classinviwo_1_1WorkspaceManager.html#ac5e78843cabc51f309835afc39277fdf":[2,0,0,1303,0],
+"classinviwo_1_1WorkspaceManager.html#ac5e78843cabc51f309835afc39277fdf":[4,0,0,1308,0],
+"classinviwo_1_1WorkspaceManager.html#add60b03a95b9b5bb52be84c8383a2f2f":[2,0,0,1303,1],
+"classinviwo_1_1WorkspaceManager.html#add60b03a95b9b5bb52be84c8383a2f2f":[4,0,0,1308,1],
+"classinviwo_1_1WorkspaceTreeModel.html":[2,0,0,1304],
+"classinviwo_1_1WorkspaceTreeModel.html":[4,0,0,1309],
+"classinviwo_1_1WorkspaceTreeView.html":[2,0,0,1305],
+"classinviwo_1_1WorkspaceTreeView.html":[4,0,0,1310],
 "classinviwo_1_1WorldTransformDeprecated.html":[1,3,29],
 "classinviwo_1_1WorldTransformDeprecated.html#aebf13cd44926ab6c52fca40fc9be1b84":[1,3,29,0],
-"classinviwo_1_1XMLWriter.html":[2,0,0,1306],
-"classinviwo_1_1XMLWriter.html":[4,0,0,1311],
+"classinviwo_1_1XMLWriter.html":[2,0,0,1307],
+"classinviwo_1_1XMLWriter.html":[4,0,0,1312],
 "classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html":[4,0,0,0,0],
 "classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html#a582d3edf92d7b5d4e4af8df0ac81110b":[4,0,0,0,0,2],
 "classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html#a58fc3931004beb89dfc88f31aa68c64a":[4,0,0,0,0,1],
@@ -243,11 +249,5 @@ var NAVTREEINDEX23 =
 "classinviwo_1_1animation_1_1KeyframeSequence.html#ac6734d134d886fb53d32690699438ebc":[2,0,0,0,53,1],
 "classinviwo_1_1animation_1_1KeyframeSequence.html#ac6734d134d886fb53d32690699438ebc":[4,0,0,1,54,1],
 "classinviwo_1_1animation_1_1KeyframeSequenceObserver.html":[2,0,0,0,54],
-"classinviwo_1_1animation_1_1KeyframeSequenceObserver.html":[4,0,0,1,55],
-"classinviwo_1_1animation_1_1KeyframeSequenceObserverble.html":[2,0,0,0,55],
-"classinviwo_1_1animation_1_1KeyframeSequenceObserverble.html":[4,0,0,1,56],
-"classinviwo_1_1animation_1_1KeyframeSequenceTyped.html":[2,0,0,0,56],
-"classinviwo_1_1animation_1_1KeyframeSequenceTyped.html":[4,0,0,1,57],
-"classinviwo_1_1animation_1_1KeyframeSequenceTyped.html#a0a347144cf3d149e7549af586a0d7129":[2,0,0,0,56,0],
-"classinviwo_1_1animation_1_1KeyframeSequenceTyped.html#a0a347144cf3d149e7549af586a0d7129":[4,0,0,1,57,0]
+"classinviwo_1_1animation_1_1KeyframeSequenceObserver.html":[4,0,0,1,55]
 };

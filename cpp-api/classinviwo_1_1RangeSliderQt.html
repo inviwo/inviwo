@@ -101,6 +101,7 @@ $(function(){initNavTree('classinviwo_1_1RangeSliderQt.html',''); initResizable(
   <div class="summary">
 <a href="#signals">Signals</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classinviwo_1_1RangeSliderQt-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::RangeSliderQt Class Reference</div></div>
@@ -166,6 +167,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setMaxRange</b> (int)
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setTooltipFormat</b> (std::function&lt; std::string(int, int)&gt; formater)</td></tr>
 <tr class="separator:a80df63036fa7f9da1ace33c58ccded54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-types" name="pro-types"></a>
+Protected Types</h2></td></tr>
+<tr class="memitem:adad72a5da4efdd6457f1ecb34b9b8d5c" id="r_adad72a5da4efdd6457f1ecb34b9b8d5c"><td class="memItemLeft" align="right" valign="top"><a id="adad72a5da4efdd6457f1ecb34b9b8d5c" name="adad72a5da4efdd6457f1ecb34b9b8d5c"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Groove</b> { <b>Left</b> = 1
+, <b>Right</b>
+ }</td></tr>
+<tr class="separator:adad72a5da4efdd6457f1ecb34b9b8d5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a1229369298b7006277e307090dd3e10d" id="r_a1229369298b7006277e307090dd3e10d"><td class="memItemLeft" align="right" valign="top"><a id="a1229369298b7006277e307090dd3e10d" name="a1229369298b7006277e307090dd3e10d"></a>
@@ -174,6 +182,12 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>eventFilter</
 <tr class="memitem:a5a3321762cab5716b4c216d9cfb6addf" id="r_a5a3321762cab5716b4c216d9cfb6addf"><td class="memItemLeft" align="right" valign="top"><a id="a5a3321762cab5716b4c216d9cfb6addf" name="a5a3321762cab5716b4c216d9cfb6addf"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>resizeEvent</b> (QResizeEvent *event) override</td></tr>
 <tr class="separator:a5a3321762cab5716b4c216d9cfb6addf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8822f26742984205c5b4f3d3d8440e52" id="r_a8822f26742984205c5b4f3d3d8440e52"><td class="memItemLeft" align="right" valign="top"><a id="a8822f26742984205c5b4f3d3d8440e52" name="a8822f26742984205c5b4f3d3d8440e52"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>handleGrooveEvent</b> (Groove groove, QEvent *event)</td></tr>
+<tr class="separator:a8822f26742984205c5b4f3d3d8440e52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac483c01d291b56c933eb315452acc17c" id="r_ac483c01d291b56c933eb315452acc17c"><td class="memItemLeft" align="right" valign="top"><a id="ac483c01d291b56c933eb315452acc17c" name="ac483c01d291b56c933eb315452acc17c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>handleCenterWidgetEvent</b> (QEvent *event)</td></tr>
+<tr class="separator:ac483c01d291b56c933eb315452acc17c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8cb1fc25d9a009dcb653273f6bfb7eaa" id="r_a8cb1fc25d9a009dcb653273f6bfb7eaa"><td class="memItemLeft" align="right" valign="top"><a id="a8cb1fc25d9a009dcb653273f6bfb7eaa" name="a8cb1fc25d9a009dcb653273f6bfb7eaa"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>updateStateFromSliders</b> ()</td></tr>
 <tr class="separator:a8cb1fc25d9a009dcb653273f6bfb7eaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -186,6 +200,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>updateSplitterPositio
 <tr class="memitem:a5268fcca8cd2bf22b88bcb27480c2691" id="r_a5268fcca8cd2bf22b88bcb27480c2691"><td class="memItemLeft" align="right" valign="top"><a id="a5268fcca8cd2bf22b88bcb27480c2691" name="a5268fcca8cd2bf22b88bcb27480c2691"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>moveMiddle</b> (int delta)</td></tr>
 <tr class="separator:a5268fcca8cd2bf22b88bcb27480c2691"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36e4b04049854ba5052c830228379022" id="r_a36e4b04049854ba5052c830228379022"><td class="memItemLeft" align="right" valign="top"><a id="a36e4b04049854ba5052c830228379022" name="a36e4b04049854ba5052c830228379022"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>getTotalRange</b> () const</td></tr>
+<tr class="separator:a36e4b04049854ba5052c830228379022"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li><b>rangesliderqt.h</b></li>

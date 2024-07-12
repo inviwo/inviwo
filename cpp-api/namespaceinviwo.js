@@ -1388,6 +1388,7 @@ var namespaceinviwo =
     [ "VolumeVoronoiSegmentation", "classinviwo_1_1VolumeVoronoiSegmentation.html", "classinviwo_1_1VolumeVoronoiSegmentation" ],
     [ "WaveFrontWriter", "classinviwo_1_1WaveFrontWriter.html", null ],
     [ "WebBrowserApp", "classinviwo_1_1WebBrowserApp.html", null ],
+    [ "WebBrowserBase", "classinviwo_1_1WebBrowserBase.html", "classinviwo_1_1WebBrowserBase" ],
     [ "WebBrowserClient", "classinviwo_1_1WebBrowserClient.html", "classinviwo_1_1WebBrowserClient" ],
     [ "WebBrowserModule", "classinviwo_1_1WebBrowserModule.html", null ],
     [ "WebBrowserProcessor", "classinviwo_1_1WebBrowserProcessor.html", "classinviwo_1_1WebBrowserProcessor" ],

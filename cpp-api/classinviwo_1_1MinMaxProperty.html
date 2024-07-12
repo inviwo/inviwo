@@ -247,6 +247,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>removeOnRangeChange</
 <tr class="separator:aafaa865a562c4202763927b47d6cb333"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53c0183756381225422269a77927839e" id="r_a53c0183756381225422269a77927839e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a53c0183756381225422269a77927839e">getDescription</a> () const override</td></tr>
 <tr class="separator:a53c0183756381225422269a77927839e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac85c324e213f12ec51adbaab241d1ab6" id="r_ac85c324e213f12ec51adbaab241d1ab6"><td class="memItemLeft" align="right" valign="top">value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac85c324e213f12ec51adbaab241d1ab6">clamp</a> (const value_type &amp;v) const</td></tr>
+<tr class="memdesc:ac85c324e213f12ec51adbaab241d1ab6"><td class="mdescLeft">&#160;</td><td class="mdescRight">clamp the given value against the set min/max range  <br /></td></tr>
+<tr class="separator:ac85c324e213f12ec51adbaab241d1ab6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Property"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Property')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Property.html">inviwo::Property</a></td></tr>
 <tr class="memitem:a71ce11e054cde83197b7115f14c373d6 inherit pub_methods_classinviwo_1_1Property" id="r_a71ce11e054cde83197b7115f14c373d6"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>Property</b> (std::string_view identifier=&quot;&quot;, std::string_view displayName=&quot;&quot;, <a class="el" href="classinviwo_1_1Document.html">Document</a> help={}, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidOutput, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default, ReadOnly readOnly=ReadOnly::No)</td></tr>
@@ -483,9 +486,6 @@ static const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>c
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ac85c324e213f12ec51adbaab241d1ab6" id="r_ac85c324e213f12ec51adbaab241d1ab6"><td class="memItemLeft" align="right" valign="top">value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac85c324e213f12ec51adbaab241d1ab6">clamp</a> (const value_type &amp;v) const</td></tr>
-<tr class="memdesc:ac85c324e213f12ec51adbaab241d1ab6"><td class="mdescLeft">&#160;</td><td class="mdescRight">clamp the given value against the set min/max range  <br /></td></tr>
-<tr class="separator:ac85c324e213f12ec51adbaab241d1ab6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a612b01f60c98b106f68fd57eb40f33c5" id="r_a612b01f60c98b106f68fd57eb40f33c5"><td class="memItemLeft" align="right" valign="top"><a id="a612b01f60c98b106f68fd57eb40f33c5" name="a612b01f60c98b106f68fd57eb40f33c5"></a>
 T&#160;</td><td class="memItemRight" valign="bottom"><b>limitSeparation</b> (T sep) const</td></tr>
 <tr class="separator:a612b01f60c98b106f68fd57eb40f33c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -550,9 +550,6 @@ class inviwo::MinMaxProperty&lt; T &gt;</div><p>A property representing a range.
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename T &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">auto <a class="el" href="classinviwo_1_1MinMaxProperty.html">inviwo::MinMaxProperty</a>&lt; T &gt;::clamp </td>
@@ -561,11 +558,6 @@ template&lt;typename T &gt; </div>
           <td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>clamp the given value against the set min/max range </p>

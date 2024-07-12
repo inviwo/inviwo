@@ -194,8 +194,8 @@ var hierarchy =
     [ "CefLoadHandler", null, [
       [ "inviwo::ProcessorCefSynchronizer", "classinviwo_1_1ProcessorCefSynchronizer.html", null ],
       [ "inviwo::PropertyCefSynchronizer", "classinviwo_1_1PropertyCefSynchronizer.html", null ],
-      [ "inviwo::WebBrowserClient", "classinviwo_1_1WebBrowserClient.html", null ],
-      [ "inviwo::WebBrowserProcessor", "classinviwo_1_1WebBrowserProcessor.html", null ]
+      [ "inviwo::WebBrowserBase", "classinviwo_1_1WebBrowserBase.html", null ],
+      [ "inviwo::WebBrowserClient", "classinviwo_1_1WebBrowserClient.html", null ]
     ] ],
     [ "CefRenderHandler", null, [
       [ "inviwo::RenderHandlerGL", "classinviwo_1_1RenderHandlerGL.html", null ]
@@ -2690,7 +2690,8 @@ var hierarchy =
     [ "inviwo::pool::Progress", "classinviwo_1_1pool_1_1Progress.html", null ],
     [ "inviwo::ProgressBarOwner", "classinviwo_1_1ProgressBarOwner.html", [
       [ "inviwo::CompositeProcessor", "classinviwo_1_1CompositeProcessor.html", null ],
-      [ "inviwo::PoolProcessor", "classinviwo_1_1PoolProcessor.html", null ]
+      [ "inviwo::PoolProcessor", "classinviwo_1_1PoolProcessor.html", null ],
+      [ "inviwo::WebBrowserProcessor", "classinviwo_1_1WebBrowserProcessor.html", null ]
     ] ],
     [ "inviwo::LightVolumeGL::PropagationParameters", "structinviwo_1_1LightVolumeGL_1_1PropagationParameters.html", null ],
     [ "inviwo::PropertyConverter", "classinviwo_1_1PropertyConverter.html", [

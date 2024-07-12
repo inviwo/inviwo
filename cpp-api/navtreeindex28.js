@@ -1,5 +1,11 @@
 var NAVTREEINDEX28 =
 {
+"namespaceinviwo_1_1util.html#acd81fc6f5826cfebaae57f83c333f28d":[2,0,0,18,200],
+"namespaceinviwo_1_1util.html#ace64aafb2b90aff39a7de052c44c6fd6":[2,0,0,18,148],
+"namespaceinviwo_1_1util.html#acf49cedd9ee71ada8b2e5c822dce8fd4":[2,0,0,18,107],
+"namespaceinviwo_1_1util.html#ad05c658162fd0c9fb67eb70cfd537e52":[2,0,0,18,245],
+"namespaceinviwo_1_1util.html#ad10f29c6754fa85df59d5733cc2fe575":[2,0,0,18,139],
+"namespaceinviwo_1_1util.html#ad1562123df97b5129796b73f231e1bd5":[2,0,0,18,97],
 "namespaceinviwo_1_1util.html#ad2b594a5638571d9e20783d8843f3c38":[2,0,0,18,112],
 "namespaceinviwo_1_1util.html#ad37abc25e96c99f34aac8f37606c7df4":[2,0,0,18,130],
 "namespaceinviwo_1_1util.html#ad833fb2a28acd35e6be134baa81331fa":[2,0,0,18,67],
@@ -243,11 +249,5 @@ var NAVTREEINDEX28 =
 "structinviwo_1_1InviwoApplication_1_1Queue.html":[2,0,0,452,0],
 "structinviwo_1_1InviwoApplication_1_1Queue.html":[4,0,0,457,0],
 "structinviwo_1_1InviwoDefaultData.html":[2,0,0,454],
-"structinviwo_1_1InviwoDefaultData.html":[4,0,0,459],
-"structinviwo_1_1InviwoDefaults.html":[2,0,0,455],
-"structinviwo_1_1InviwoDefaults.html":[4,0,0,460],
-"structinviwo_1_1InviwoDefaults_3_01bool_01_4.html":[2,0,0,456],
-"structinviwo_1_1InviwoDefaults_3_01bool_01_4.html":[4,0,0,461],
-"structinviwo_1_1InviwoDefaults_3_01char_01_4.html":[2,0,0,457],
-"structinviwo_1_1InviwoDefaults_3_01char_01_4.html":[4,0,0,462]
+"structinviwo_1_1InviwoDefaultData.html":[4,0,0,459]
 };

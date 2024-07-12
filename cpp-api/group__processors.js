@@ -287,9 +287,7 @@ var group__processors =
       [ "process", "classinviwo_1_1VolumeRegionStatistics.html#a0fe0c128ba62cddddbdb91b23de3133d", null ]
     ] ],
     [ "inviwo::WebBrowserProcessor", "classinviwo_1_1WebBrowserProcessor.html", [
-      [ "process", "classinviwo_1_1WebBrowserProcessor.html#a5e35b2e6683ba0d959273b4c03d9738e", null ],
-      [ "reload_", "classinviwo_1_1WebBrowserProcessor.html#aff6dada17dee97f347d750c2ac9c2605", null ],
-      [ "url_", "classinviwo_1_1WebBrowserProcessor.html#ad85667748eed3e826db2f2066d23f938", null ]
+      [ "process", "classinviwo_1_1WebBrowserProcessor.html#a5e35b2e6683ba0d959273b4c03d9738e", null ]
     ] ],
     [ "inviwo::MeshMapping", "classinviwo_1_1MeshMapping.html", [
       [ "process", "classinviwo_1_1MeshMapping.html#a57c1b30d307db1bbb1bc477fe443b6eb", null ]

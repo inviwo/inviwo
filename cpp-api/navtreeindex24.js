@@ -1,5 +1,11 @@
 var NAVTREEINDEX24 =
 {
+"classinviwo_1_1animation_1_1KeyframeSequenceObserverble.html":[2,0,0,0,55],
+"classinviwo_1_1animation_1_1KeyframeSequenceObserverble.html":[4,0,0,1,56],
+"classinviwo_1_1animation_1_1KeyframeSequenceTyped.html":[2,0,0,0,56],
+"classinviwo_1_1animation_1_1KeyframeSequenceTyped.html":[4,0,0,1,57],
+"classinviwo_1_1animation_1_1KeyframeSequenceTyped.html#a0a347144cf3d149e7549af586a0d7129":[2,0,0,0,56,0],
+"classinviwo_1_1animation_1_1KeyframeSequenceTyped.html#a0a347144cf3d149e7549af586a0d7129":[4,0,0,1,57,0],
 "classinviwo_1_1animation_1_1KeyframeSequenceWidgetQt.html":[2,0,0,0,57],
 "classinviwo_1_1animation_1_1KeyframeSequenceWidgetQt.html":[4,0,0,1,58],
 "classinviwo_1_1animation_1_1KeyframeSequenceWidgetQt.html#ab6122d3c32bc7d89a060bc510db24eb5":[2,0,0,0,57,0],
@@ -243,11 +249,5 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1plot_1_1AxisRenderer.html":[4,0,0,17,5],
 "classinviwo_1_1plot_1_1AxisRenderer.html#a1fcc2ed0b7a321a5553a2bb775a6f093":[2,0,0,13,4,0],
 "classinviwo_1_1plot_1_1AxisRenderer.html#a1fcc2ed0b7a321a5553a2bb775a6f093":[4,0,0,17,5,0],
-"classinviwo_1_1plot_1_1AxisRenderer.html#af160296a42a0b6c91c861a649966ea10":[2,0,0,13,4,1],
-"classinviwo_1_1plot_1_1AxisRenderer.html#af160296a42a0b6c91c861a649966ea10":[4,0,0,17,5,1],
-"classinviwo_1_1plot_1_1AxisRenderer3D.html":[2,0,0,13,5],
-"classinviwo_1_1plot_1_1AxisRenderer3D.html":[4,0,0,17,6],
-"classinviwo_1_1plot_1_1AxisRenderer3D.html#a93ab15cc7b41f5c278ce6db8b965f380":[2,0,0,13,5,0],
-"classinviwo_1_1plot_1_1AxisRenderer3D.html#a93ab15cc7b41f5c278ce6db8b965f380":[4,0,0,17,6,0],
-"classinviwo_1_1plot_1_1AxisRendererBase.html":[2,0,0,13,6]
+"classinviwo_1_1plot_1_1AxisRenderer.html#af160296a42a0b6c91c861a649966ea10":[2,0,0,13,4,1]
 };

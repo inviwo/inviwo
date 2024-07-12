@@ -77,15 +77,15 @@ var NAVTREEINDEX =
 "classinviwo_1_1TextOverlayProperty.html#a0ee1816270dc30ea3ba4eebe04c60a35",
 "classinviwo_1_1TransformationList.html",
 "classinviwo_1_1VolumeInformationVisualizer.html#a03a51d7c4c575d675b502f96f0453d0b",
-"classinviwo_1_1WorkspaceTreeView.html",
-"classinviwo_1_1animation_1_1KeyframeSequenceWidgetQt.html",
-"classinviwo_1_1plot_1_1AxisRendererBase.html",
-"classinviwo_1_1utilqt_1_1detail_1_1QtProcessFrontHelper.html",
-"namespaceinviwo_1_1filesystem.html#a82fc1ac1c3117ace56b5f9a7b6044578",
-"namespaceinviwo_1_1util.html#ad2b594a5638571d9e20783d8843f3c38",
-"structinviwo_1_1InviwoDefaults_3_01double_01_4.html",
-"structinviwo_1_1ShaderSegment.html#acd66d7f1d9d02fa81434d6af24a779e4",
-"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1GL_01_4.html"
+"classinviwo_1_1WorkspaceManager.html#ac5e78843cabc51f309835afc39277fdf",
+"classinviwo_1_1animation_1_1KeyframeSequenceObserverble.html",
+"classinviwo_1_1plot_1_1AxisRenderer.html#af160296a42a0b6c91c861a649966ea10",
+"classinviwo_1_1utildoc_1_1TableBuilder.html",
+"namespaceinviwo_1_1filesystem.html#a5039752575c9aff24aa9c1b752e7b3f4",
+"namespaceinviwo_1_1util.html#acd81fc6f5826cfebaae57f83c333f28d",
+"structinviwo_1_1InviwoDefaults.html",
+"structinviwo_1_1ShaderSegment.html",
+"structinviwo_1_1representation__traits.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

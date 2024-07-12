@@ -1,5 +1,11 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1plot_1_1AxisRenderer.html#af160296a42a0b6c91c861a649966ea10":[4,0,0,17,5,1],
+"classinviwo_1_1plot_1_1AxisRenderer3D.html":[2,0,0,13,5],
+"classinviwo_1_1plot_1_1AxisRenderer3D.html":[4,0,0,17,6],
+"classinviwo_1_1plot_1_1AxisRenderer3D.html#a93ab15cc7b41f5c278ce6db8b965f380":[2,0,0,13,5,0],
+"classinviwo_1_1plot_1_1AxisRenderer3D.html#a93ab15cc7b41f5c278ce6db8b965f380":[4,0,0,17,6,0],
+"classinviwo_1_1plot_1_1AxisRendererBase.html":[2,0,0,13,6],
 "classinviwo_1_1plot_1_1AxisRendererBase.html":[4,0,0,17,7],
 "classinviwo_1_1plot_1_1AxisSettings.html":[2,0,0,13,8],
 "classinviwo_1_1plot_1_1AxisSettings.html":[4,0,0,17,9],
@@ -243,11 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1util_1_1is__stream__insertable.html":[2,0,0,18,38],
 "classinviwo_1_1util_1_1is__stream__insertable.html":[4,0,0,24,42],
 "classinviwo_1_1util_1_1ostream__joiner.html":[2,0,0,18,49],
-"classinviwo_1_1util_1_1ostream__joiner.html":[4,0,0,24,53],
-"classinviwo_1_1utildoc_1_1TableBuilder.html":[2,0,0,20,0],
-"classinviwo_1_1utildoc_1_1TableBuilder.html":[4,0,0,25,0],
-"classinviwo_1_1utilgl_1_1ActivateFBO.html":[2,0,0,21,1],
-"classinviwo_1_1utilgl_1_1ActivateFBO.html":[4,0,0,26,1],
-"classinviwo_1_1utilqt_1_1EditorFileObserver.html":[2,0,0,22,0],
-"classinviwo_1_1utilqt_1_1EditorFileObserver.html":[4,0,0,27,1]
+"classinviwo_1_1util_1_1ostream__joiner.html":[4,0,0,24,53]
 };
