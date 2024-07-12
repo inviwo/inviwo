@@ -30,12 +30,11 @@
 #include <modules/webbrowser/webbrowserutil.h>
 
 #include <tuple>  // for tuple
+#include <cmath>
 
 #include <include/cef_base.h>  // for CefBrowserSettings, CefWindowInfo, STATE_ENABLED
 
-namespace inviwo {
-
-namespace cefutil {
+namespace inviwo::cefutil {
 
 std::tuple<CefWindowInfo, CefBrowserSettings> getDefaultBrowserSettings() {
     CefWindowInfo windowInfo;
@@ -51,6 +50,8 @@ std::tuple<CefWindowInfo, CefBrowserSettings> getDefaultBrowserSettings() {
     return std::tuple<CefWindowInfo, CefBrowserSettings>{windowInfo, browserSettings};
 }
 
-}  // namespace cefutil
+double percentageToZoomLevel(double percent) { return std::log(percent) / std::log(1.2); }
 
-}  // namespace inviwo
+double zoomLevelToPercentage(double level) { return std::pow(1.2, level); }
+
+}  // namespace inviwo::cefutil

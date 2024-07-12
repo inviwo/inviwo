@@ -38,9 +38,7 @@
 
 #include <warn/pop>
 
-namespace inviwo {
-
-namespace cefutil {
+namespace inviwo::cefutil {
 
 /**
  * Get default settings for CefBrowserHost::CreateBrowserSync
@@ -52,6 +50,12 @@ namespace cefutil {
  */
 IVW_MODULE_WEBBROWSER_API std::tuple<CefWindowInfo, CefBrowserSettings> getDefaultBrowserSettings();
 
-}  // namespace cefutil
+// CEF uses a zoom level which increases/decreases by 20% per level
+//
+// see https://bugs.chromium.org/p/chromium/issues/detail?id=71484
 
-}  // namespace inviwo
+IVW_MODULE_WEBBROWSER_API double percentageToZoomLevel(double percent);
+
+IVW_MODULE_WEBBROWSER_API double zoomLevelToPercentage(double level);
+
+}  // namespace inviwo::cefutil

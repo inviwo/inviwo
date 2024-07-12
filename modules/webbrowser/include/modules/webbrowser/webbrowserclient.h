@@ -131,17 +131,17 @@ public:
         CefRefPtr<CefBrowser> browser, const std::string& name,
         std::function<ProcessorCefSynchronizer::CallbackFunc> callback);
 
-    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                  CefProcessId source_process,
-                                  CefRefPtr<CefProcessMessage> message) override;
+    virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                          CefProcessId source_process,
+                                          CefRefPtr<CefProcessMessage> message) override;
 
     // CefLifeSpanHandler methods:
-    void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
-    bool DoClose(CefRefPtr<CefBrowser> browser) override;
-    void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
+    virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
+    virtual bool DoClose(CefRefPtr<CefBrowser> browser) override;
+    virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
 
     // CefRequestHandler methods:
-    CefRefPtr<CefResourceRequestHandler> GetResourceRequestHandler(
+    virtual CefRefPtr<CefResourceRequestHandler> GetResourceRequestHandler(
         CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefRequest> request,
         bool is_navigation, bool is_download, const CefString& request_initiator,
         bool& disable_default_handling) override;
@@ -149,8 +149,8 @@ public:
                                 CefRefPtr<CefRequest> request, bool user_gesture,
                                 bool is_redirect) override;
 
-    void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
-                                   TerminationStatus status) override;
+    virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
+                                           TerminationStatus status) override;
 
     // CefLoadHandler methods:
     /*

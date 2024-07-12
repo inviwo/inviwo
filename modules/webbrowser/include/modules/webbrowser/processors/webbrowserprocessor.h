@@ -29,43 +29,23 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSER_API
+#include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/progressbarowner.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/singlefileobserver.h>
 
-#include <inviwo/core/interaction/pickingmapper.h>                 // for PickingMapper
-#include <inviwo/core/ports/imageport.h>                           // for ImageInport, ImageOutport
-#include <inviwo/core/processors/processor.h>                      // for Processor
-#include <inviwo/core/processors/processorinfo.h>                  // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>                   // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                 // for ButtonProperty
-#include <inviwo/core/properties/fileproperty.h>                   // for FileProperty
-#include <inviwo/core/properties/optionproperty.h>                 // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                // for DoubleProperty
-#include <inviwo/core/properties/stringproperty.h>                 // for StringProperty
-#include <inviwo/core/util/singlefileobserver.h>                   // for SingleFileObserver
-#include <inviwo/core/util/staticstring.h>                         // for operator+
-#include <modules/webbrowser/cefimageconverter.h>                  // for CefImageConverter
-#include <modules/webbrowser/interaction/cefinteractionhandler.h>  // for CEFInteractionHandler
+#include <modules/webbrowser/processors/webbrowserbase.h>
 
-#include <functional>   // for __base
-#include <string>       // for operator==, operator+
-#include <string_view>  // for operator==
-#include <vector>       // for operator!=, vector
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <include/cef_base.h>          // for CefRefPtr, IMPLEMENT_R...
-#include <include/cef_load_handler.h>  // for CefLoadHandler
-
-class CefBrowser;
 namespace inviwo {
-class Deserializer;
+
 class InviwoApplication;
-class RenderHandlerGL;
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
 
 /** \docpage{org.inviwo.WebBrowser, Chromium Processor}
  * ![](org.inviwo.WebBrowser.png?classIdentifier=org.inviwo.WebBrowser)
@@ -94,75 +74,41 @@ namespace inviwo {
  * </script>
  * \endcode
  *
- * ### Inports
- *   * __background__ Background to render web page ontop of.
- *
- * ### Outports
- *   * __webpage__ GUI elements rendered by web browser.
- *
- * ### Properties
- *   * __URL__ Link to webpage, online or file path.
- *   * __Reload__ Fetch page again.
- *   * __Property__ Type of property to add.
- *   * __Html id__ Identifier of html element to synchronize. Not allowed to contain dots, spaces
- * etc.
- *   * __Add property__ Create a property of selected type and identifier. Start to synchronize
- * against loaded webpage.
  */
 
 /**
  * \brief Render webpage into the color and picking layers (OpenGL).
  */
-#include <warn/push>
-#include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
-#include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
-class IVW_MODULE_WEBBROWSER_API WebBrowserProcessor : public Processor, public CefLoadHandler {
+class IVW_MODULE_WEBBROWSER_API WebBrowserProcessor : public Processor, public ProgressBarOwner {
 public:
-    WebBrowserProcessor(InviwoApplication* app);
-    virtual ~WebBrowserProcessor();
+    explicit WebBrowserProcessor(InviwoApplication* app);
 
     virtual void process() override;
+
+    virtual void deserialize(Deserializer& d) override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    void deserialize(Deserializer& d) override;
+private:
+    enum class SourceType { LocalFile, WebAddress };
 
-    // Detect when page has loaded
-    virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack,
-                                      bool canGoForward) override;
+    void updateSource();
 
     ImageInport background_;
     ImageOutport outport_;
 
+    OptionProperty<SourceType> sourceType_;
     FileProperty fileName_;
     BoolProperty autoReloadFile_;
-    StringProperty url_;     ///< Web page to show
-    ButtonProperty reload_;  ///< Force reload url
-
+    StringProperty url_;
+    ButtonProperty reload_;
     DoubleProperty zoom_;
-
     ButtonProperty runJS_;
     StringProperty js_;
 
-protected:
-    std::string getSource();
-
-    enum class SourceType { LocalFile, WebAddress };
-
-    OptionProperty<SourceType> sourceType_;
-    BoolProperty isLoading_;
-
-    CEFInteractionHandler cefInteractionHandler_;
-    PickingMapper picking_;
-    CefImageConverter cefToInviwoImageConverter_;
-    // create browser-window
-    CefRefPtr<RenderHandlerGL> renderHandler_;
-    CefRefPtr<CefBrowser> browser_;
-
     SingleFileObserver fileObserver_;
-
-    IMPLEMENT_REFCOUNTING(WebBrowserProcessor);
+    CefRefPtr<WebBrowserBase> browser_;
 };
-#include <warn/pop>
+
 }  // namespace inviwo

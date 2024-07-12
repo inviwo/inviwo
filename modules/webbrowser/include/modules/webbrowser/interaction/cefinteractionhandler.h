@@ -67,7 +67,7 @@ public:
      * host must be provided before invokeEvent is called.
      * @param host The browser to inject events into.
      */
-    CEFInteractionHandler(CefRefPtr<CefBrowserHost> host = nullptr);
+    explicit CEFInteractionHandler(CefRefPtr<CefBrowserHost> host = nullptr);
     virtual ~CEFInteractionHandler() = default;
 
     virtual std::string getClassIdentifier() const override {

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Inviwo property syncing example</title>
+  
+  <!-- inviwo://yourmodulename will be rediredcted to the module directory on the harddrive -->
+  <!-- inviwo://app will be rediredcted to the application (InviwoApplication::getBasePath()) directory on the harddrive -->
+  <script src="inviwo://webbrowser/data/js/inviwoapi.js"></script>
+
+  <script language="JavaScript">
+    // Initialize Inviwo API so that we can use it to synchronize properties
+    var inviwo = new InviwoAPI();
+  </script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+    h1 {
+      font-size: 130%;
+      font-weight: 600;
+    }
+    select {
+      background-color: white;
+    }
+
+    .container {
+      width: 80%;
+      max-width: 450px;
+      margin: 0 0;
+
+      align-content: center;
+    }
+    .flex-outer {
+      list-style-type: none;
+      padding: 0;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .flex-outer li {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .flex-outer li label,
+    .flex-outer li p {
+      padding: 8px;
+      font-weight: 300;      
+    }
+    .flex-outer > li > label,
+    .flex-outer li p {
+      flex: 1 0 120px;
+      max-width: 220px;
+    }
+    .flex-outer > li > label + * {
+      flex: 1 0 220px;
+    }
+    .flex-outer li p {
+      margin: 0;
+    }
+    input[readonly] {
+      border-width: 0;
+    }
+    input {
+    }
+    .item {
+      margin: 0.5rem;
+    }
+  </style>
+</head>
+
+<body>
+  <h3>HTML ⇔ Inviwo synchronization (JavaScript & JSON)</h3>
+
+  <div class="container">
+    <form>
+      <ul class="flex-outer">
+        <li>
+          <label for="processorID">Processor Identifier</label>
+          <input type="text" readonly id="processorID">
+        </li>
+        <li>
+          <label for="ordinalProperty">OrdinalProperty (line width)</label>
+          <input type="range" id="ordinalProperty" min="1" max="100" value="50" class="slider">
+        </li>
+        <li>
+          <label for="ordinalPropertyValue">Value (line width)</label>
+          <span id="ordinalPropertyValue"></span>
+        </li>
+        <li>
+          <label for="boolProperty">CheckBox (text overlay)</label>
+          <span><input type="checkbox" checked id="boolProperty"> Show text overlay</span>
+        </li>
+        <li>
+          <label for="stringProperty">StringProperty (text overlay)</label>
+          <input type="text" id="stringProperty" value="not changed">
+        </li>
+        <li>
+          <label for="ordinalColorProperty">OrdinalProperty (color)</label>
+          <span><input type="color" id="ordinalColorProperty" value="#171819"> Text overlay color</span>
+        </li>
+        <li>
+          <label for="buttonProperty">ButtonProperty</label>
+          <input type="button" id="buttonProperty" value="Toggle Background">
+        </li>
+        <li>
+          <label for="optionProperty">OptionProperty (shading)</label>
+          <select id="optionProperty"></select>
+        </li>
+      </ul>
+    </form>
+  </div>
+</body>
+
+
+<script>
+
+// Get the processor identifier of the parent web processor and show it
+inviwo.getParentWebBrowserProcessor(function(processor) {
+  document.getElementById("processorID").value = processor.path;
+});
+
+
+
+// If you only need one-way synchronization, e.g. always changing values from the 
+// webpage:
+// 1. Use inviwo.getProperty to retrieve and set the initial value in the webpage
+// 2. Use inviwo.setProperty to set the property from the webpage 
+//
+// If a property may change from other sources than your webpage (e.g. the Inviwo network editor):
+// 1. Use inviwo.subscribe to receive callbacks when the property changes in Inviwo
+// 2. Use inviwo.setProperty to set the property from the webpage
+
+
+// Use inviwo.getProperty() to retrieve any property from within the network.
+//
+// The first argument is the path to the property (for example "Background.bgColor1"), 
+// the second one a callback when retrieving the property was successful. 
+// The property path is accessible via the context menu of the corresponding property.
+//
+// see getProperty() in inviwoapi.js
+inviwo.getProperty("CubeProxyGeometry.clipX", function(prop) {
+  var args = "Hello MinMaxProperty: \n";
+    for (var key in prop) {
+        var attrName = key;
+        var attrValue = prop[key];
+        args += attrName + ": " + attrValue + "\n";
+    }
+    console.log(args);
+});
+
+inviwo.getProperty("EntryExitPoints.camera.lookFrom", function(prop) {
+  var args = "Hello Camera lookFrom: \n";
+    for (var key in prop) {
+        var attrName = key;
+        var attrValue = prop[key];
+    args += attrName + ": " + attrValue + "\n";
+    }
+    console.log(args);
+});
+
+
+
+// set up callbacks for setting properties from the HTML form
+document.getElementById("boolProperty").onchange = function() { inviwo.setProperty('TextOverlay.enable', {value: this.checked}); };
+document.getElementById("stringProperty").oninput = function() { inviwo.setProperty('TextOverlay.args.arg0', {value: this.value}); };
+document.getElementById("buttonProperty").onclick = function() { inviwo.setProperty('Background.switchColors', {pressButton: true}); };
+
+var ordinalProperty = document.getElementById("ordinalProperty");
+var ordinalPropertyValue = document.getElementById("ordinalPropertyValue");
+ordinalProperty.oninput = function() {
+  inviwo.setProperty("LineRenderer.lineSettings.lineWidth", {value: Number(this.value)});
+  ordinalPropertyValue.innerHTML = Number(this.value).toFixed(1);
+}
+
+// Update HTML inputs when the corresponding Inviwo properties change.
+// The supplied callbacks must be declared in global scope. 
+// The callbacks will be called whenever a property changes.
+function syncOrdinal(prop) { 
+  inviwo.syncRange("ordinalProperty", prop); 
+  ordinalPropertyValue.innerHTML = Number(prop.value).toFixed(1);
+} 
+function syncCheckbox(prop) { inviwo.syncCheckbox("boolProperty", prop); } 
+function syncString(prop) { inviwo.syncStringInput("stringProperty", prop); }
+
+inviwo.subscribe("LineRenderer.lineSettings.lineWidth", syncOrdinal); 
+inviwo.subscribe("TextOverlay.enable", syncCheckbox);
+inviwo.subscribe("TextOverlay.args.arg0", syncString);
+
+
+
+// Convert a normalized vec3/vec4 color [0,1] to an RGB hex code
+function vec4ToRGBHex(rgba) {
+  return "#" + [0, 1, 2].map(idx => {
+    return ('0' + Math.trunc(rgba[idx] * 255).toString(16)).slice(-2);
+  }).join('');
+}
+
+// Cannot sync colors directly since the HTML input of type "color" only uses RGB hex codes while Inviwo uses vec3/vec4 [0,1]
+document.getElementById("ordinalColorProperty").onchange = function() { 
+  const hexToRGBArray = hex => hex.match(/[A-Za-z0-9]{2}/g).map(v => parseInt(v, 16) / 255.0);
+  inviwo.setProperty("TextOverlay.font.color", {value: hexToRGBArray(this.value).slice(0, 3).concat(1) }); 
+};
+function syncColor(prop) {
+  var property = document.getElementById("ordinalColorProperty");
+  if (property != null) {
+    property.value = vec4ToRGBHex(prop['value']);
+  }
+}
+inviwo.subscribe("TextOverlay.font.color", syncColor);
+
+
+
+// Example of one-way only changes from HTML to Inviwo. We assume that that the property will not 
+// change from the network editor.
+// Here, it is enough to synchronize the shading mode once since the number of items will not change after startup.
+inviwo.getProperty("StandardVolumeRaycaster.lighting.shadingMode", function(prop) {
+  inviwo.syncOption("optionProperty", prop);
+});
+// Set up callback to inform the network editor about changes
+document.getElementById("optionProperty").onchange = function() {
+  if (this.selectedIndex >= 0) { 
+    inviwo.setProperty('StandardVolumeRaycaster.lighting.shadingMode', {selectedIndex: Number(this.selectedIndex)}); 
+  }
+}
+
+</script>
