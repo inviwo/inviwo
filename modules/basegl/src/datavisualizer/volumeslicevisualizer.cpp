@@ -79,17 +79,20 @@ bool VolumeSliceVisualizer::hasSourceProcessor() const { return true; }
 bool VolumeSliceVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> VolumeSliceVisualizer::addSourceProcessor(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
 
-    auto source = net->addProcessor(util::makeProcessor<VolumeSource>(GP{0, 0}, app_, filename));
-    auto outport = source->getOutports().front();
+    auto* source =
+        net->addProcessor(util::makeProcessor<VolumeSource>(GP{0, 0} + origin, app_, filename));
+    auto* outport = source->getOutports().front();
     return {source, outport};
 }
 
 std::vector<Processor*> VolumeSliceVisualizer::addVisualizerNetwork(Outport* outport,
                                                                     ProcessorNetwork* net) const {
-    auto vsl = net->addProcessor(util::makeProcessor<VolumeSliceGL>(GP{0, 3}));
-    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 6}));
+    const ivec2 origin = util::getPosition(outport->getProcessor());
+
+    auto* vsl = net->addProcessor(util::makeProcessor<VolumeSliceGL>(GP{0, 3} + origin));
+    auto* cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 6} + origin));
 
     net->addConnection(outport, vsl->getInports()[0]);
     net->addConnection(vsl->getOutports()[0], cvs->getInports()[0]);
@@ -102,9 +105,9 @@ std::vector<Processor*> VolumeSliceVisualizer::addVisualizerNetwork(Outport* out
 }
 
 std::vector<Processor*> VolumeSliceVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, net);
+    auto sourceAndOutport = addSourceProcessor(filename, net, origin);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     processors.push_back(sourceAndOutport.first);

@@ -115,18 +115,21 @@ void util::insertNetworkForData(const std::filesystem::path& dataFile, Processor
     auto addVisualizer = [&](DataVisualizer* visualizer, bool onlySource) {
         const auto orgBounds = util::getBoundingBox(net);
 
+        // position visualizer to the top right, add spacing of one grid cell
+        const ivec2 initialPos{ivec2{orgBounds.second.x, orgBounds.first.y} + ivec2{25, 0} +
+                               ivec2{150, 0}};
+
         std::vector<Processor*> added;
         if (onlySource || !visualizer->hasVisualizerNetwork()) {
-            auto addedAndSource = visualizer->addSourceProcessor(dataFile, net);
+            auto addedAndSource = visualizer->addSourceProcessor(dataFile, net, initialPos);
             added.push_back(addedAndSource.first);
         } else {
-            added = visualizer->addSourceAndVisualizerNetwork(dataFile, net);
+            added = visualizer->addSourceAndVisualizerNetwork(dataFile, net, initialPos);
         }
 
-        // add to top right
+        // offset all added processors
         const auto bounds = util::getBoundingBox(added);
-        const auto offset = ivec2{orgBounds.second.x, orgBounds.first.y} + ivec2{25, 0} +
-                            ivec2{150, 0} - ivec2{bounds.first.x, bounds.first.y};
+        const auto offset = -ivec2{bounds.first.x, bounds.first.y};
         util::offsetPosition(added, offset);
     };
 

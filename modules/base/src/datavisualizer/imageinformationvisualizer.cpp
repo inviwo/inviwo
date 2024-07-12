@@ -76,26 +76,28 @@ bool ImageInformationVisualizer::hasSourceProcessor() const { return true; }
 bool ImageInformationVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> ImageInformationVisualizer::addSourceProcessor(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
 
-    auto source = net->addProcessor(util::makeProcessor<ImageSource>(GP{0, 0}, app_, filename));
-    auto outport = source->getOutports().front();
+    auto* source =
+        net->addProcessor(util::makeProcessor<ImageSource>(GP{0, 0} + origin, app_, filename));
+    auto* outport = source->getOutports().front();
     return {source, outport};
 }
 
 std::vector<Processor*> ImageInformationVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* net) const {
+    const ivec2 origin = util::getPosition(outport->getProcessor());
 
-    auto info = net->addProcessor(util::makeProcessor<ImageInformation>(GP{0, 3}));
+    auto* info = net->addProcessor(util::makeProcessor<ImageInformation>(GP{0, 3} + origin));
     net->addConnection(outport, info->getInports()[0]);
 
     return {info};
 }
 
 std::vector<Processor*> ImageInformationVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, net);
+    auto sourceAndOutport = addSourceProcessor(filename, net, origin);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     processors.push_back(sourceAndOutport.first);

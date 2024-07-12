@@ -52,8 +52,8 @@
 #include <modules/basegl/processors/background.h>                // for Background
 #include <modules/basegl/processors/entryexitpointsprocessor.h>  // for EntryExitPoints
 #include <modules/basegl/processors/linerendererprocessor.h>     // for LineRendererProcessor
-#include <modules/basegl/processors/volumeraycaster.h>           // for VolumeRaycaster
-#include <modules/opengl/canvasprocessorgl.h>                    // for CanvasProcessorGL
+#include <modules/basegl/processors/raycasting/standardvolumeraycaster.h>  // for StandardVolume...
+#include <modules/opengl/canvasprocessorgl.h>                              // for CanvasProcessorGL
 
 #include <map>  // for map
 
@@ -91,24 +91,26 @@ bool VolumeRaycastVisualizer::hasSourceProcessor() const { return true; }
 bool VolumeRaycastVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> VolumeRaycastVisualizer::addSourceProcessor(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
 
-    auto source = net->addProcessor(util::makeProcessor<VolumeSource>(GP{0, 0}, app_, filename));
-    auto outport = source->getOutports().front();
+    auto* source =
+        net->addProcessor(util::makeProcessor<VolumeSource>(GP{0, 0} + origin, app_, filename));
+    auto* outport = source->getOutports().front();
     return {source, outport};
 }
 
 std::vector<Processor*> VolumeRaycastVisualizer::addVisualizerNetwork(Outport* outport,
                                                                       ProcessorNetwork* net) const {
+    const ivec2 origin = util::getPosition(outport->getProcessor());
 
-    auto cpg = net->addProcessor(util::makeProcessor<CubeProxyGeometry>(GP{1, 3}));
-    auto eep = net->addProcessor(util::makeProcessor<EntryExitPoints>(GP{1, 6}));
-    auto vrc = net->addProcessor(util::makeProcessor<VolumeRaycaster>(GP{0, 9}));
-    auto bak = net->addProcessor(util::makeProcessor<Background>(GP{0, 12}));
-    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 15}));
+    auto* cpg = net->addProcessor(util::makeProcessor<CubeProxyGeometry>(GP{1, 3} + origin));
+    auto* eep = net->addProcessor(util::makeProcessor<EntryExitPoints>(GP{1, 6} + origin));
+    auto* vrc = net->addProcessor(util::makeProcessor<StandardVolumeRaycaster>(GP{0, 9} + origin));
+    auto* bak = net->addProcessor(util::makeProcessor<Background>(GP{0, 12} + origin));
+    auto* cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 15} + origin));
 
-    auto vbb = net->addProcessor(util::makeProcessor<VolumeBoundingBox>(GP{8, 3}));
-    auto lrp = net->addProcessor(util::makeProcessor<LineRendererProcessor>(GP{8, 6}));
+    auto* vbb = net->addProcessor(util::makeProcessor<VolumeBoundingBox>(GP{8, 3} + origin));
+    auto* lrp = net->addProcessor(util::makeProcessor<LineRendererProcessor>(GP{8, 6} + origin));
 
     util::trySetProperty<FloatVec4Property>(bak, "bgColor1", vec4(0.443f, 0.482f, 0.600f, 1.0f));
     util::trySetProperty<FloatVec4Property>(bak, "bgColor2", vec4(0.831f, 0.831f, 0.831f, 1.0f));
@@ -150,9 +152,9 @@ std::vector<Processor*> VolumeRaycastVisualizer::addVisualizerNetwork(Outport* o
 }
 
 std::vector<Processor*> VolumeRaycastVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, net);
+    auto sourceAndOutport = addSourceProcessor(filename, net, origin);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     processors.push_back(sourceAndOutport.first);

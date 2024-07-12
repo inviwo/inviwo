@@ -55,11 +55,13 @@ public:
     virtual bool hasVisualizerNetwork() const override;
 
     virtual std::pair<Processor*, Outport*> addSourceProcessor(
-        const std::filesystem::path& filename, ProcessorNetwork* network) const override;
+        const std::filesystem::path& filename, ProcessorNetwork* network,
+        const ivec2& origin) const override;
     virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
                                                          ProcessorNetwork* network) const override;
     virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
-        const std::filesystem::path& filename, ProcessorNetwork* network) const override;
+        const std::filesystem::path& filename, ProcessorNetwork* network,
+        const ivec2& origin) const override;
 };
 
 }  // namespace inviwo
