@@ -76,6 +76,8 @@ function(ivw_add_py_wrapper target)
         )
 
         set_property(GLOBAL APPEND PROPERTY IVW_PYMODULE_LIST ${target})
+    else()
+        message(FATAL_ERROR "Error: Adding Python wrapper for ${target} failed. Python3 module not enabled.")
     endif()
 endfunction()
 
