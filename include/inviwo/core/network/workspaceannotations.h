@@ -111,7 +111,7 @@ public:
 
 protected:
     virtual void invalidate(InvalidationLevel invalidationLevel,
-                            Property* modifiedProperty = nullptr) override;
+                            Property* modifiedProperty) override;
 
     StringProperty title_;
     StringProperty author_;

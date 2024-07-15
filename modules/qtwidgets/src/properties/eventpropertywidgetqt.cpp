@@ -180,7 +180,7 @@ void EventPropertyWidgetQt::mousePressEvent(QMouseEvent* event) {
 
 std::unique_ptr<QMenu> EventPropertyWidgetQt::getContextMenu() {
     auto menu = PropertyWidgetQt::getContextMenu();
-    auto unsetAction = menu->addAction(tr("&Unset shortcut"));
+    auto* unsetAction = menu->addAction(tr("&Unset shortcut"));
     unsetAction->setToolTip(tr("Remove the currently set shortcut."));
 
     QObject::connect(unsetAction, &QAction::triggered, this, [this]() {
