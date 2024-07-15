@@ -44,19 +44,16 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include "include/wrapper/cef_message_router.h"
-#include <include/base/cef_basictypes.h>  // for int64
-#include <include/cef_base.h>             // for CefRefPtr, CefString
-#include <include/cef_load_handler.h>     // for CefLoadHandler
+#include <include/cef_base.h>          // for CefRefPtr, CefString
+#include <include/cef_load_handler.h>  // for CefLoadHandler
+#include <warn/pop>
 
 class CefBrowser;
 class CefFrame;
+
 namespace inviwo {
+
 class Processor;
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
 
 /** \class ProcessorCefSynchronizer
  * Handles "processor.subscribe.progress" and "parentwebbrowserprocessor" commands sent
@@ -119,7 +116,7 @@ public:
      * {"command": "callback", "callback": "name", "data" : "string payload"}
      * \endcode
      */
-    virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
+    virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64_t query_id,
                          const CefString& request, bool persistent,
                          CefRefPtr<Callback> callback) override;
 

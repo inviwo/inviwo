@@ -38,23 +38,20 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include "include/wrapper/cef_message_router.h"
-#include <include/base/cef_basictypes.h>  // for int64
-#include <include/cef_base.h>             // for CefRefPtr, CefString
-#include <include/cef_frame.h>            // for CefFrame
-
-class CefBrowser;
-namespace inviwo {
-class Property;
-class PropertySemantics;
-}  // namespace inviwo
-
+#include <include/cef_base.h>   // for CefRefPtr, CefString
+#include <include/cef_frame.h>  // for CefFrame
 #include <warn/pop>
 
 #include <memory>       // for unique_ptr
 #include <string>       // for string
 #include <string_view>  // for string_view
 
+class CefBrowser;
+
 namespace inviwo {
+
+class Property;
+class PropertySemantics;
 
 /**
  * \class PropertyWidgetCEF
@@ -117,7 +114,7 @@ public:
      * Callback method must be executed either in this method or asynchronously
      * to complete the query.
      */
-    virtual bool onQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
+    virtual bool onQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64_t query_id,
                          const CefString& request, bool persistent,
                          CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback);
 

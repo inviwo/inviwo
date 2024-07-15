@@ -42,20 +42,17 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include "include/wrapper/cef_message_router.h"
-#include <include/base/cef_basictypes.h>  // for int64
-#include <include/cef_base.h>             // for CefRefPtr, CefString, IMPLE...
-#include <include/cef_load_handler.h>     // for CefLoadHandler, CefLoadHand...
+#include <include/cef_base.h>          // for CefRefPtr, CefString, IMPLE...
+#include <include/cef_load_handler.h>  // for CefLoadHandler, CefLoadHand...
+#include <warn/pop>
 
 class CefBrowser;
 class CefFrame;
+
 namespace inviwo {
+
 class Property;
 class PropertyWidgetCEFFactory;
-}  // namespace inviwo
-
-#include <warn/pop>
-
-namespace inviwo {
 
 /** \class PropertyCefSynchronizer
  * Handles "property.set", "property.get" and "property.subscribe" commands sent
@@ -121,7 +118,7 @@ public:
      * Currently only supports a single property in the request.
      * @see PropertyWidgetCEF
      */
-    virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
+    virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64_t query_id,
                          const CefString& request, bool persistent,
                          CefRefPtr<Callback> callback) override;
 
