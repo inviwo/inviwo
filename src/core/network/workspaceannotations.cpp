@@ -178,9 +178,6 @@ WorkspaceAnnotations::ModifiedHandle WorkspaceAnnotations::onModified(
     return modified_.add(callback);
 }
 
-void WorkspaceAnnotations::invalidate(InvalidationLevel invalidationLevel,
-                                      Property* modifiedProperty) {
-    modified_.invoke();
-}
+void WorkspaceAnnotations::invalidate(InvalidationLevel, Property*) { modified_.invoke(); }
 
 }  // namespace inviwo

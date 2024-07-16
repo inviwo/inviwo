@@ -115,7 +115,7 @@ void SyntheticDataFrame::process() {
 
     for (auto& dist : rdists) {
         std::ostringstream oss;
-        oss << "Column " << (dataframe->getNumberOfColumns() + 1);
+        oss << "Column " << (dataframe->getNumberOfColumns());
         auto col = dataframe->addColumn<float>(oss.str());
         auto& data = col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer();
         data.reserve(numRow_);

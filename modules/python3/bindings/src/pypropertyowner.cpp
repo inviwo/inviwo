@@ -150,7 +150,7 @@ void exposePropertyOwner(pybind11::module& m) {
         .def("setValid", &PropertyOwner::setValid)
         .def("getInvalidationLevel", &PropertyOwner::getInvalidationLevel)
         .def("invalidate",
-             [](PropertyOwner* po) { po->invalidate(InvalidationLevel::InvalidOutput); })
+             [](PropertyOwner* po) { po->invalidate(InvalidationLevel::InvalidOutput, nullptr); })
         .def_property_readonly(
             "processor", [](PropertyOwner& p) { return p.getProcessor(); },
             py::return_value_policy::reference)

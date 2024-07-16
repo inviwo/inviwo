@@ -261,7 +261,10 @@ QValidator::State NumberLineEdit::validate(QString& text, int& pos) const {
     return validator_->validate(text, pos);
 }
 
-void NumberLineEdit::setDecimals(int decimals) { visibleDecimals_ = decimals; }
+void NumberLineEdit::setDecimals(int decimals) {
+    visibleDecimals_ = decimals;
+    QDoubleSpinBox::setDecimals(decimals);
+}
 
 void NumberLineEdit::setMinimum(double min) { QDoubleSpinBox::setMinimum(min); }
 

@@ -50,6 +50,7 @@
 #include <QWidget>        // for QWidget
 #include <Qt>             // for Key_Enter, Key_Escape, Key_Re...
 #include <flags/flags.h>  // for operator!=, none
+#include <QMenu>
 
 class QHBoxLayout;
 
@@ -175,6 +176,31 @@ void EventPropertyWidgetQt::mousePressEvent(QMouseEvent* event) {
     setButtonText();
     button_->setEnabled(true);
     releaseMouse();
+}
+
+std::unique_ptr<QMenu> EventPropertyWidgetQt::getContextMenu() {
+    auto menu = PropertyWidgetQt::getContextMenu();
+    auto* unsetAction = menu->addAction(tr("&Unset shortcut"));
+    unsetAction->setToolTip(tr("Remove the currently set shortcut."));
+
+    QObject::connect(unsetAction, &QAction::triggered, this, [this]() {
+        if (!matcher_) {
+            matcher_ = std::unique_ptr<EventMatcher>(eventproperty_->getEventMatcher()->clone());
+        }
+        keyMatcher_ = dynamic_cast<KeyboardEventMatcher*>(matcher_.get());
+        mouseMatcher_ = dynamic_cast<MouseEventMatcher*>(matcher_.get());
+        if (keyMatcher_) {
+            keyMatcher_->setKey(IvwKey::Undefined);
+            keyMatcher_->setModifiers(KeyModifier::None);
+            eventproperty_->setEventMatcher(std::unique_ptr<EventMatcher>(keyMatcher_->clone()));
+        } else if (mouseMatcher_) {
+            mouseMatcher_->setButtons(MouseButton::None);
+            mouseMatcher_->setModifiers(KeyModifier::None);
+            eventproperty_->setEventMatcher(std::unique_ptr<EventMatcher>(mouseMatcher_->clone()));
+        }
+        setButtonText();
+    });
+    return menu;
 }
 
 }  // namespace inviwo

@@ -39,24 +39,6 @@ namespace inviwo {
  * Class to support processors owning a ProgressBar.
  * This class allows a progress bar contained within a processor to be visible in the network.
  *
- * \section example Example
- * Example of how to apply it to a processor.
- * @code
- *    class IVW_XXX_API MyProcessor: public Processor, public ProgressBarOwner {
- *    public:
- *        MyProcessor(): Processor(), ProgressBarOwner() {};
- *        // Need to overload serialize/deseralize
- *        virtual void serialize(Serializer& s) const {
- *           Processor::serialize(s);
- *           s.serialize("ProgressBar", getProgressBar());
- *        }
- *        virtual void deserialize(Deserializer& d) {
- *           Processor::deserialize(d);
- *           d.deserialize("ProgressBar", getProgressBar());
- *        }
- *    };
- *
- * @endcode
  * @see ProgressBar
  * @see ProgressBarObservable
  */
@@ -69,7 +51,7 @@ public:
     const ProgressBar& getProgressBar() const;
 
     // Helper function
-    inline void updateProgress(float progress);
+    void updateProgress(float progress);
 
 protected:
     ProgressBar progressBar_;

@@ -145,8 +145,7 @@ public:
     virtual bool isValid() const;
     virtual void setValid();
     InvalidationLevel getInvalidationLevel() const;
-    virtual void invalidate(InvalidationLevel invalidationLevel,
-                            Property* modifiedProperty = nullptr);
+    virtual void invalidate(InvalidationLevel invalidationLevel, Property* modifiedProperty);
 
     // Should return the processor that the owner belongs or is.
     // This should be overridden by all subclasses.
