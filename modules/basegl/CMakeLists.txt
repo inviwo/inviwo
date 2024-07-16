@@ -112,6 +112,7 @@ set(HEADER_FILES
     include/modules/basegl/shadercomponents/backgroundcomponent.h
     include/modules/basegl/shadercomponents/cameracomponent.h
     include/modules/basegl/shadercomponents/entryexitcomponent.h
+    include/modules/basegl/shadercomponents/highlightcomponent.h
     include/modules/basegl/shadercomponents/isocomponent.h
     include/modules/basegl/shadercomponents/isotfcomponent.h
     include/modules/basegl/shadercomponents/lightcomponent.h
@@ -244,6 +245,7 @@ set(SOURCE_FILES
     src/shadercomponents/backgroundcomponent.cpp
     src/shadercomponents/cameracomponent.cpp
     src/shadercomponents/entryexitcomponent.cpp
+    src/shadercomponents/highlightcomponent.cpp
     src/shadercomponents/isocomponent.cpp
     src/shadercomponents/isotfcomponent.cpp
     src/shadercomponents/lightcomponent.cpp
