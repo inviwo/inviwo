@@ -66,29 +66,38 @@ const ProcessorInfo PointRenderer::processorInfo_{
     "Mesh Rendering",            // Category
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
+    R"(This processor renders a set of meshes as 2D points using OpenGL.)"_unindentHelp,
 };
 const ProcessorInfo PointRenderer::getProcessorInfo() const { return processorInfo_; }
 
 PointRenderer::PointRenderer()
-    : Processor()
-    , inport_("geometry")
-    , imageInport_("imageInport")
-    , outport_("image")
-    , pointSize_("pointSize", "Point Size (pixel)", 1.0f, 0.00001f, 50.0f, 0.1f)
-    , borderWidth_("borderWidth", "Border Width (pixel)", 2.0f, 0.0f, 50.0f, 0.1f)
-    , borderColor_("borderColor", "Border Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f),
-                   vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
-                   PropertySemantics::Color)
-    , antialising_("antialising", "Antialising (pixel)", 1.5f, 0.0f, 10.0f, 0.1f)
-    , camera_("camera", "Camera", util::boundingBox(inport_))
-    , trackball_(&camera_)
-    , shader_("pointrenderer.vert", "pointrenderer.frag") {
+    : Processor{}
+    , inport_{"geometry"}
+    , imageInport_{"imageInport"}
+    , outport_{"image"}
+    , pointSize_{"pointSize", "Point Size (pixel)", 1.0f, 0.00001f, 50.0f, 0.1f}
+    , borderWidth_{"borderWidth", "Border Width (pixel)", 2.0f, 0.0f, 50.0f, 0.1f}
+    , borderColor_{"borderColor",
+                   "Border Color",
+                   vec4{0.0f, 0.0f, 0.0f, 1.0f},
+                   vec4{0.0f},
+                   vec4{1.0f},
+                   vec4{0.01f},
+                   InvalidationLevel::InvalidOutput,
+                   PropertySemantics::Color}
+    , antialising_{"antialising", "Antialising (pixel)", 1.5f, 0.0f, 10.0f, 0.1f}
+    , depthTest_{"depthTest", "Enable Depth Test", "Toggles the depth test during rendering"_help,
+                 true}
+    , camera_{"camera", "Camera", util::boundingBox(inport_)}
+    , trackball_{&camera_}
+    , shader_{"pointrenderer.vert", "pointrenderer.frag"} {
 
     addPort(inport_);
     addPort(imageInport_).setOptional(true);
     addPort(outport_);
 
-    addProperties(pointSize_, borderWidth_, borderColor_, antialising_, camera_, trackball_);
+    addProperties(pointSize_, borderWidth_, borderColor_, antialising_, depthTest_, camera_,
+                  trackball_);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
@@ -100,6 +109,7 @@ void PointRenderer::process() {
 
     utilgl::PolygonModeState polygon(GL_POINT, 1.0f, pointSize_.get());
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, depthTest_);
     shader_.activate();
 
     utilgl::setUniforms(shader_, camera_, pointSize_, borderWidth_, borderColor_, antialising_);
@@ -111,7 +121,7 @@ void PointRenderer::process() {
 }
 
 void PointRenderer::drawMeshes() {
-    for (auto& elem : inport_.getVectorData()) {
+    for (const auto& elem : inport_.getVectorData()) {
         MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
                                         elem->getDefaultMeshInfo());
         utilgl::setShaderUniforms(shader_, *elem, "geometry");
