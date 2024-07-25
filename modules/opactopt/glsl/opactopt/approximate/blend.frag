@@ -43,16 +43,14 @@
 #include "oit/sort.glsl"
 #include "utils/structs.glsl"
 
-// How should the stuff be rendered? (Debugging options)
-#define ABUFFER_DISPNUMFRAGMENTS 0
-#define ABUFFER_RESOLVE_USE_SORTING 1
-
 #ifdef BACKGROUND_AVAILABLE
 uniform ImageParameters bgParameters;
 uniform sampler2D bgColor;
 uniform sampler2D bgDepth;
 uniform vec2 reciprocalDimensions;
 #endif  // BACKGROUND_AVAILABLE
+
+uniform ivec2 screenSize;
 
 // Opacity optimisation settings
 uniform float q;
@@ -82,24 +80,14 @@ smooth in vec4 fragPos;
 void main() {
     ivec2 coords = ivec2(gl_FragCoord.xy);
 
-    if (coords.x < 0 || coords.y < 0 || coords.x >= AbufferParams.screenWidth ||
-        coords.y >= AbufferParams.screenHeight) {
+    if (coords.x < 0 || coords.y < 0 || coords.x >= screenSize.x ||
+        coords.y >= screenSize.y) {
         discard;
     }
 
     uint pixelIdx = getPixelLink(coords);
 
     if (pixelIdx > 0) {
-#if ABUFFER_DISPNUMFRAGMENTS == 1
-        FragData0 = vec4(getFragmentCount(pixelIdx) / float(ABUFFER_SIZE));
-        PickingData = vec4(0.0, 0.0, 0.0, 1.0);
-#elif ABUFFER_RESOLVE_USE_SORTING == 0
-        // If we only want the closest fragment
-        vec4 p = resolveClosest(pixelIdx);
-        FragData0 = uncompressPixelData(p).color;
-        PickingData = vec4(0.0, 0.0, 0.0, 1.0);
-        gl_FragDepth = p.depth;
-#else
         float backgroundDepth = 1.0;
         // Perform opacity optimisation and compositing
         uint idx = pixelIdx;
@@ -107,7 +95,8 @@ void main() {
         // Optimise opacities and project optical depth coefficients
         float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
         idx = pixelIdx;
-        while (idx != 0) {
+        int counter = 0;
+        while (idx != 0 && counter < ABUFFER_SIZE) {
             vec4 data = readPixelStorage(idx - 1);
             abufferPixel pixel = uncompressPixelData(data);
             vec4 c = pixel.color;
@@ -123,6 +112,7 @@ void main() {
             writePixelStorage(idx - 1, compressPixelData(pixel)); 
             project(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, pixel.depth, -log(1 - alpha));
             idx = pixel.previous;
+            counter++;
         }
 
         // Composite
@@ -131,7 +121,8 @@ void main() {
         idx = pixelIdx;
         float tauall = total(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS);
 
-        while (idx != 0) {
+        counter = 0;
+        while (idx != 0 && counter < ABUFFER_SIZE) {
             abufferPixel pixel = uncompressPixelData(readPixelStorage(idx - 1));
             vec4 c = pixel.color;
             float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, pixel.depth); 
@@ -140,6 +131,7 @@ void main() {
             numerator += c.rgb * weight;
             denominator += weight;
             idx = pixel.previous;
+            counter++;
         }
 
         vec4 color = vec4(0);
@@ -148,15 +140,8 @@ void main() {
 
         FragData0 = color;
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
-#endif
-
     } else {  // no pixel found
-#if ABUFFER_DISPNUMFRAGMENTS == 0
-        // If no fragment, write nothing
-        discard;
-#else
         FragData0 = vec4(0.0f);
-        PickingData = vec4(0.0, 0.0, 0.0, 1.0);
-#endif
+        PickingData = vec4(0.0, 0.0, 0.0, 0.0);
     }
 }

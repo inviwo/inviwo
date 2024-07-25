@@ -39,14 +39,17 @@
 // GL_NV_gpu_shader5, GL_EXT_shader_image_load_store, GL_NV_shader_buffer_load,
 // GL_EXT_bindable_uniform
 
-#include "oit/abufferlinkedlist.glsl"
-
+uniform ivec2 screenSize;
 uniform int radius;
 layout(std430, binding = 8) buffer gaussianKernelBuffer {
     float kernel[];
 };
 
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+uniform layout(r32i) iimage2DArray importanceSumCoeffs[2];
+#else
 uniform layout(size1x32) image2DArray importanceSumCoeffs[2];
+#endif
 
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;
@@ -57,7 +60,7 @@ smooth in vec4 fragPos;
 // Resolve A-Buffer and blend sorted fragments
 void main() {
     ivec2 coords = ivec2(gl_FragCoord.xy);
-    if (getPixelLink(coords) == 0) return;
+    if (imageLoad(importanceSumCoeffs[0], ivec3(coords, 0)).x == 0) return;
 
     #if HORIZONTAL == 1
         ivec2 dir = ivec2(1, 0);
@@ -72,16 +75,29 @@ void main() {
         float kernel_sum = 0.0;
         for (int j = -radius; j <= radius; j++) {
         #if HORIZONTAL == 1
-            if (coords.x + j < 0 || coords.x + j >= AbufferParams.screenWidth) continue;
+            if (coords.x + j < 0 || coords.x + j >= screenSize.x) continue;
         #else
-            if (coords.y + j < 0 || coords.y + j >= AbufferParams.screenHeight) continue;
+            if (coords.y + j < 0 || coords.y + j >= screenSize.y) continue;
         #endif
 
-            val += kernel[radius + j] * imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x;
-            kernel_sum += kernel[radius + j];
+        if (imageLoad(importanceSumCoeffs[0], ivec3(coords + j * dir, 0)).x == 0) continue;
+
+        #ifdef COEFF_TEX_FIXED_POINT_FACTOR
+            float coeff = imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x / COEFF_TEX_FIXED_POINT_FACTOR;
+        #else
+            float coeff = imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x;
+        #endif
+
+        val += kernel[radius + j] * coeff;
+        kernel_sum += kernel[radius + j];
         }
         val /= kernel_sum;
-        imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, vec4(val));
+
+        #ifdef COEFF_TEX_FIXED_POINT_FACTOR
+            imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, ivec4(val * COEFF_TEX_FIXED_POINT_FACTOR));       
+        #else
+            imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, vec4(val));
+        #endif
     }
 
     discard;
