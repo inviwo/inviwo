@@ -32,8 +32,8 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 
 uniform ivec2 screenSize;
 
-uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+uniform layout(r32i) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
 
 
 void main(void) {
@@ -43,11 +43,11 @@ void main(void) {
         coords.y < screenSize.y) {
         // clear coefficient buffers
         for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
-            imageStore(importanceSumCoeffs[0], ivec3(coords, i), vec4(0));
-            imageStore(importanceSumCoeffs[1], ivec3(coords, i), vec4(0));
+            imageStore(importanceSumCoeffs[0], ivec3(coords, i), ivec4(0));
+            imageStore(importanceSumCoeffs[1], ivec3(coords, i), ivec4(0));
         }
         for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++) {
-            imageStore(opticalDepthCoeffs, ivec3(coords, i), vec4(0));
+            imageStore(opticalDepthCoeffs, ivec3(coords, i), ivec4(0));
         }
     }
 

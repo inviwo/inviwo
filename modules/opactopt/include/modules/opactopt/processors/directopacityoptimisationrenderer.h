@@ -76,6 +76,7 @@ protected:
     void setUniforms(Shader& shader);
     void renderGeometry(int pass);
     void resizeBuffers(size2_t screenSize);
+    void generateAndUploadGaussianKernel();
 
     size2_t screenSize_;
 
@@ -130,6 +131,7 @@ protected:
     OptionProperty<std::string> approximationMethod_;
     const Approximations::ApproximationProperties* ap_;
     IntProperty importanceSumCoefficients_, opticalDepthCoefficients_;
+    const float coeffTexFixedPointFactor = 10000.0f;
 
     TextureUnitContainer textureUnits_;
     Texture2DArray importanceSumCoeffs_[2];

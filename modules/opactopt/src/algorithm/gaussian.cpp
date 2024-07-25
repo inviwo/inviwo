@@ -27,34 +27,36 @@
  *
  *********************************************************************************/
 
-#include "utils/structs.glsl"
+#include <modules/opactopt/algorithm/gaussian.h>
 
-// Whole number pixel offsets (not necessary just to test the layout keyword !)
-layout(pixel_center_integer) in vec4 gl_FragCoord;
+namespace inviwo {
+namespace util {
 
-uniform ImageParameters imageParameters;
-uniform sampler2D imageColor;
-uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
+std::vector<float> generateGaussianKernel(int radius, float sigma) {
+    std::vector<float> res(2 * radius + 1, 0.0f);
+    float kernel_sum = 0.0f;
 
-#ifdef FOURIER
-    #include "opactopt/approximate/fourier.glsl"
-#endif
-#ifdef LEGENDRE
-    #include "opactopt/approximate/legendre.glsl"
-#endif
-#ifdef PIECEWISE
-    #include "opactopt/approximate/piecewise.glsl"
-#endif
+    // Calculate kernel
+    for (int i = 0; i <= radius; i++) {
+        float val = std::exp(-((float)(i * i)) / (2 * (sigma * sigma)));
+        if (i == 0) {
+            res[radius] = val;
+            kernel_sum += val;
+        } else {
+            res[radius + i] = val;
+            res[radius - i] = val;
+            kernel_sum += 2 * val;
+        }
+    }
 
-void main(void) {
-    // normalise colour
-    vec4 color = texelFetch(imageColor, ivec2(gl_FragCoord.xy), 0);
-    color.rgb /= color.a;
+    // Don't normalise since kernel will take care of it
+    //
+    // for (int i = -radius; i <= radius; i++) {
+    //    res[radius + i] /= kernel_sum;
+    //}
 
-    // set alpha using optical depth
-    float tauall = total(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS);
-    color.a = 1.0 - exp(-tauall);
-
-    FragData0 = color;
-    if (color.a != 0) PickingData = vec4(0.0, 0.0, 0.0, 1.0);
+    return res;
 }
+
+}  // namespace util
+}  // namespace inviwo

@@ -56,6 +56,8 @@ uniform sampler3D importanceVolume;
 uniform CameraParameters camera;
 uniform VolumeParameters importanceVolumeParameters;
 
+uniform ivec2 screenSize;
+
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 
@@ -79,8 +81,8 @@ void lineariseDepths(uint pixelIdx);
 void main() {
     ivec2 coords = ivec2(gl_FragCoord.xy);
 
-    if (coords.x < 0 || coords.y < 0 || coords.x >= AbufferParams.screenWidth ||
-        coords.y >= AbufferParams.screenHeight) {
+    if (coords.x < 0 || coords.y < 0 || coords.x >= screenSize.x ||
+        coords.y >= screenSize.y) {
         discard;
     }
 
@@ -92,7 +94,8 @@ void main() {
         uint idx = pixelIdx;
 
         // Project importance sum coefficients
-        while (idx != 0) {
+        int counter = 0;
+        while (idx != 0 && counter < ABUFFER_SIZE) {
             vec4 data = readPixelStorage(idx - 1);
             #ifdef USE_IMPORTANCE_VOLUME
                 float viewDepth = data.y * (camera.farPlane - camera.nearPlane) + camera.nearPlane;
