@@ -57,6 +57,7 @@
 #include <modules/opengl/shader/shaderobject.h>        // for ShaderObject
 #include <modules/opengl/shader/shaderutils.h>         // for addShaderDefines, setShaderUniforms
 #include <modules/opengl/texture/textureutils.h>       // for activateTargetAndClearOrCopySource
+#include <modules/opactopt/algorithm/gaussian.h>
 
 #include <cstddef>      // for size_t
 #include <functional>   // for __base
@@ -85,7 +86,7 @@ DirectOpacityOptimisationRenderer::DirectOpacityOptimisationRenderer()
     , imageInport_("imageInport", "Background image (optional)"_help)
     , outport_("image",
                "Output image containing the rendered mesh and the optional input image"_help)
-    , intermediateImage_({0, 0}, inviwo::DataFormat<glm::fvec4>::get())
+    , intermediateImage_({0, 0}, inviwo::DataVec4Float32::get())
     , screenSize_{0, 0}
     , camera_("camera", "Camera", util::boundingBox(inport_))
     , meshProperties_("geometry", "Mesh Rendering Properties")
@@ -192,6 +193,9 @@ DirectOpacityOptimisationRenderer::DirectOpacityOptimisationRenderer()
 
     smoothing_.addProperties(gaussianRadius_, gaussianSigma_);
 
+    gaussianRadius_.onChange([this]() { generateAndUploadGaussianKernel(); });
+    gaussianSigma_.onChange([this]() { generateAndUploadGaussianKernel(); });
+
     meshProperties_.addProperties(overrideColorBuffer_, overrideColor_);
     pointProperties_.addProperties(pointSize_, borderWidth_, borderColor_, antialising_);
 
@@ -231,7 +235,8 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
         frag->setShaderDefine("N_OPTICAL_DEPTH_COEFFICIENTS", true,
                               std::to_string(opticalDepthCoefficients_).c_str());
         frag->setShaderDefine(ap_->shaderDefineName.c_str(), true);
-        frag->setShaderDefine("INTEGER_COEFF_TEX", true);
+        frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
+                              std::to_string(coeffTexFixedPointFactor));
 
         // account for background
         frag->setShaderDefine("BACKGROUND_AVAILABLE", imageInport_.hasData());
@@ -277,7 +282,6 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
                               std::to_string(importanceSumCoefficients_).c_str());
         frag->setShaderDefine("N_OPTICAL_DEPTH_COEFFICIENTS", true,
                               std::to_string(opticalDepthCoefficients_).c_str());
-        frag->setShaderDefine("INTEGER_COEFF_TEX", true);
 
         shader.build();
     }
@@ -295,13 +299,37 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
         frag->setShaderDefine("N_OPTICAL_DEPTH_COEFFICIENTS", true,
                               std::to_string(opticalDepthCoefficients_).c_str());
         frag->setShaderDefine(ap_->shaderDefineName.c_str(), true);
-        frag->setShaderDefine("INTEGER_COEFF_TEX", true);
+        frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
+                              std::to_string(coeffTexFixedPointFactor));
         shader.build();
     }
 
     {
         Shader& shader = background_;
         shader.build();
+    }
+
+    bool horizontal = true;
+    for (auto& shader : {&smoothH_, &smoothV_}) {
+
+        auto vert = shader->getVertexShaderObject();
+        auto frag = shader->getFragmentShaderObject();
+
+        // add image load store extension
+        frag->addShaderExtension("GL_EXT_shader_image_load_store", true);
+
+        // set approximation defines¨
+        frag->setShaderDefine("N_IMPORTANCE_SUM_COEFFICIENTS", true,
+                              std::to_string(importanceSumCoefficients_).c_str());
+        frag->setShaderDefine("N_OPTICAL_DEPTH_COEFFICIENTS", true,
+                              std::to_string(opticalDepthCoefficients_).c_str());
+        frag->setShaderDefine(ap_->shaderDefineName.c_str(), true);
+        frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
+                              std::to_string(coeffTexFixedPointFactor));
+        frag->setShaderDefine("HORIZONTAL", true, std::to_string(int(horizontal)));
+        shader->build();
+
+        horizontal = !horizontal;
     }
 }
 
@@ -347,22 +375,22 @@ void DirectOpacityOptimisationRenderer::process() {
 
     // Optional smoothing of importance coefficients
     if (smoothing_) {
-        //// smoothing importance
-        // gaussianKernel_.bindBase(8);
+        // smoothing importance
+        gaussianKernel_.bindBase(8);
 
-        //// horizontal pass
-        // smoothH_.activate();
-        // smoothH_.setUniform("radius", gaussianRadius_);
-        // setUniforms(smoothH_);
-        // utilgl::singleDrawImagePlaneRect();
-        // glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        // horizontal pass
+        smoothH_.activate();
+        smoothH_.setUniform("radius", gaussianRadius_);
+        setUniforms(smoothH_);
+        utilgl::singleDrawImagePlaneRect();
+        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-        //// vertical pass
-        // smoothV_.activate();
-        // smoothV_.setUniform("radius", gaussianRadius_);
-        // setUniforms(smoothV_);
-        // utilgl::singleDrawImagePlaneRect();
-        // glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        // vertical pass
+        smoothV_.activate();
+        smoothV_.setUniform("radius", gaussianRadius_);
+        setUniforms(smoothV_);
+        utilgl::singleDrawImagePlaneRect();
+        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     }
 
     // Pass 2: Approximate importance and project opacities
@@ -468,6 +496,12 @@ void DirectOpacityOptimisationRenderer::resizeBuffers(size2_t screenSize) {
         opticalDepthCoeffs_.uploadAndResize(
             nullptr, size3_t(screenSize.x, screenSize.y, opticalDepthCoefficients_));
     }
+}
+
+void DirectOpacityOptimisationRenderer::generateAndUploadGaussianKernel() {
+    std::vector<float> k = util::generateGaussianKernel(gaussianRadius_, gaussianSigma_);
+    gaussianKernel_.upload(&k[0], k.size() * sizeof(float));
+    gaussianKernel_.unbind();
 }
 
 }  // namespace inviwo
