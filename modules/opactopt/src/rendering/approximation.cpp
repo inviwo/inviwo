@@ -26,32 +26,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#include <modules/opactopt/rendering/approximation.h>
 
-#include <modules/opactopt/opactoptmodule.h>
-#include <modules/opactopt/processors/opacityoptimiser.h>
-#include <modules/opactopt/processors/directopacityoptimisationrenderer.h>
-#include <modules/opactopt/processors/meshmappingvolume.h>
-#include <modules/opactopt/io/amirameshreader.h>
-#include <modules/opactopt/io/amiravolumereader.h>
-
-#include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
-#include <inviwo/core/common/inviwomodule.h>      // for InviwoModule
-
-
-namespace inviwo {
-
-OpactOptModule::OpactOptModule(InviwoApplication* app) : InviwoModule(app, "OpactOpt") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-
-    // Processors
-    registerProcessor<OpacityOptimiser>();
-    registerProcessor<DirectOpacityOptimisationRenderer>();
-    registerProcessor<MeshMappingVolume>();
-
-    // Data readers
-    registerDataReader(std::make_unique<AmiraMeshReader>());
-    registerDataReader(std::make_unique<AmiraVolumeReader>());
+double inviwo::Approximations::choose(double n, double k) {
+    if (k == 0.0) return 1.0;
+    return (n * choose(n - 1, k - 1)) / k;
 }
 
-}  // namespace inviwo
+std::vector<float> inviwo::Approximations::generateLegendreCoefficients() {
+    double maxDegree = Approximations::approximations.at("legendre").maxCoefficients - 1;
+    std::vector<float> coeffs;
+    coeffs.reserve((maxDegree + 1) * (maxDegree + 2) / 2);
+
+    for (double n = 0; n <= maxDegree; n += 1.0f) {
+        for (double k = 0; k <= n; k += 1.0f) {
+            double res = choose(n, k) * choose(n + k, k);
+            res *= (int)(n + k) % 2 == 0 ? 1.0f : -1.0f;
+            coeffs.push_back((double) res);
+        }
+    }
+
+    return coeffs;
+}

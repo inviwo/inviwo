@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024 Inviwo Foundation
+ * Copyright (c) 2019-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,31 +27,33 @@
  *
  *********************************************************************************/
 
-#include <modules/opactopt/opactoptmodule.h>
-#include <modules/opactopt/processors/opacityoptimiser.h>
-#include <modules/opactopt/processors/directopacityoptimisationrenderer.h>
-#include <modules/opactopt/processors/meshmappingvolume.h>
-#include <modules/opactopt/io/amirameshreader.h>
-#include <modules/opactopt/io/amiravolumereader.h>
+#include "utils/structs.glsl"
 
-#include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
-#include <inviwo/core/common/inviwomodule.h>      // for InviwoModule
+// Whole number pixel offsets (not necessary just to test the layout keyword !)
+layout(pixel_center_integer) in vec4 gl_FragCoord;
 
+uniform ImageParameters imageParameters;
+uniform sampler2D imageColor;
+uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
 
-namespace inviwo {
+#ifdef FOURIER
+    #include "opactopt/approximate/fourier.glsl"
+#endif
+#ifdef LEGENDRE
+    #include "opactopt/approximate/legendre.glsl"
+#endif
+#ifdef PIECEWISE
+    #include "opactopt/approximate/piecewise.glsl"
+#endif
 
-OpactOptModule::OpactOptModule(InviwoApplication* app) : InviwoModule(app, "OpactOpt") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+void main(void) {
+    // normalise colour
+    vec4 color = texelFetch(imageColor, ivec2(gl_FragCoord.xy), 0);
+    color.rgb /= color.a;
 
-    // Processors
-    registerProcessor<OpacityOptimiser>();
-    registerProcessor<DirectOpacityOptimisationRenderer>();
-    registerProcessor<MeshMappingVolume>();
+    // set alpha using optical depth
+    float tauall = total(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS);
+    color.a = 1 - exp(-tauall);
 
-    // Data readers
-    registerDataReader(std::make_unique<AmiraMeshReader>());
-    registerDataReader(std::make_unique<AmiraVolumeReader>());
+    FragData0 = color;
 }
-
-}  // namespace inviwo

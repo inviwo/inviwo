@@ -30,7 +30,12 @@
 #define PI 3.141592653
 #define TWOPI 6.283185307
 
-void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float val) {
+#ifdef INTEGER_COEFF_TEX
+void project(layout(r32i) iimage2DArray coeffTex, int N, float depth, float val)
+#else
+void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float val)
+#endif
+{
     float costheta = cos(TWOPI * depth);
     float sintheta = sin(TWOPI * depth);
     float coskm1theta = 1.0;
@@ -58,17 +63,30 @@ void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float v
         }
 
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-        float currVal = imageLoad(coeffTex, coord).x;
-        imageStore(coeffTex, coord, vec4(currVal + projVal));
+        #ifdef INTEGER_COEFF_TEX
+            imageAtomicAdd(coeffTex, coord, int(projVal * 10000.0));
+        #else
+            float currVal = imageLoad(coeffTex, coord).x;
+            imageStore(coeffTex, coord, vec4(currVal + projVal));
+        #endif
     }
 }
 
-float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth) {
+#ifdef INTEGER_COEFF_TEX
+float approximate(layout(r32i) iimage2DArray coeffTex, int N, float depth)
+#else
+float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
+#endif
+{
     float sum = 0.0;
     int k = 0;
     for (int i = 0; i < N; i++) {
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-        float coeff = imageLoad(coeffTex, coord).x;
+        #ifdef INTEGER_COEFF_TEX
+            float coeff = float(imageLoad(coeffTex, coord).x) / 10000.0;
+        #else
+            float coeff = imageLoad(coeffTex, coord).x;
+        #endif
         if (i == 0) {
             sum += coeff * depth;
         } else if (i % 2 == 0) {
@@ -82,6 +100,15 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth) {
     return sum;
 }
 
-float total(layout(size1x32) image2DArray coeffTex, int N) {
-    return imageLoad(coeffTex, ivec3(gl_FragCoord.xy, 0)).x;
+#ifdef INTEGER_COEFF_TEX
+float total(layout(r32i) iimage2DArray coeffTex, int N)
+#else
+float total(layout(size1x32) image2DArray coeffTex, int N)
+#endif
+{
+    #ifdef INTEGER_COEFF_TEX
+        return float(imageLoad(coeffTex, ivec3(gl_FragCoord.xy, 0)).x) / 10000.0;
+    #else
+        return imageLoad(coeffTex, ivec3(gl_FragCoord.xy, 0)).x;
+    #endif
 }

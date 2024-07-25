@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024 Inviwo Foundation
+ * Copyright (c) 2019-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,31 +27,29 @@
  *
  *********************************************************************************/
 
-#include <modules/opactopt/opactoptmodule.h>
-#include <modules/opactopt/processors/opacityoptimiser.h>
-#include <modules/opactopt/processors/directopacityoptimisationrenderer.h>
-#include <modules/opactopt/processors/meshmappingvolume.h>
-#include <modules/opactopt/io/amirameshreader.h>
-#include <modules/opactopt/io/amiravolumereader.h>
+// Whole number pixel offsets (not necessary just to test the layout keyword !)
+layout(pixel_center_integer) in vec4 gl_FragCoord;
 
-#include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
-#include <inviwo/core/common/inviwomodule.h>      // for InviwoModule
+uniform ivec2 screenSize;
+
+uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(size1x32) image2DArray opticalDepthCoeffs;
 
 
-namespace inviwo {
+void main(void) {
+    const ivec2 coords = ivec2(gl_FragCoord.xy);
 
-OpactOptModule::OpactOptModule(InviwoApplication* app) : InviwoModule(app, "OpactOpt") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+    if (coords.x >= 0 && coords.y >= 0 && coords.x < screenSize.x &&
+        coords.y < screenSize.y) {
+        // clear coefficient buffers
+        for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
+            imageStore(importanceSumCoeffs[0], ivec3(coords, i), vec4(0));
+            imageStore(importanceSumCoeffs[1], ivec3(coords, i), vec4(0));
+        }
+        for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++) {
+            imageStore(opticalDepthCoeffs, ivec3(coords, i), vec4(0));
+        }
+    }
 
-    // Processors
-    registerProcessor<OpacityOptimiser>();
-    registerProcessor<DirectOpacityOptimisationRenderer>();
-    registerProcessor<MeshMappingVolume>();
-
-    // Data readers
-    registerDataReader(std::make_unique<AmiraMeshReader>());
-    registerDataReader(std::make_unique<AmiraVolumeReader>());
+    discard;
 }
-
-}  // namespace inviwo

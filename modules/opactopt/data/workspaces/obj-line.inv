@@ -77,11 +77,6 @@
                             <Property type="org.inviwo.OptionPropertyString" identifier="approximationMethod">
                                 <options>
                                     <option>
-                                        <id content="chebyshev" />
-                                        <name content="Chebyshev" />
-                                        <value content="chebyshev" />
-                                    </option>
-                                    <option>
                                         <id content="fourier" />
                                         <name content="Fourier" />
                                         <value content="fourier" />

@@ -56,6 +56,7 @@ public:
     void setImportanceSumCoeffs(int isc);
     void setOpticalDepthCoeffs(int odc);
     void generateAndUploadGaussianKernel(int radius, float sigma, bool force = false);
+    void generateAndUploadLegendreCoefficients(bool force = false);
 
     bool smoothing;
 
@@ -78,6 +79,9 @@ private:
     BufferObject gaussianKernel_;
     int gaussianRadius_;
     float gaussianSigma_;
+
+    BufferObject legendreCoefficients_;
+    bool legendreCoefficientsGenerated_ = false;
 };
 
 }  // namespace inviwo

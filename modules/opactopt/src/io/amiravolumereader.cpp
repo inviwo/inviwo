@@ -43,11 +43,6 @@
 #include <type_traits>  // for remove_extent_t
 #include <vector>       // for vector
 
-#include <pybind11/pybind11.h>
-#include <pybind11/embed.h>  // python interpreter
-#include <pybind11/stl.h>    // type conversion
-namespace py = pybind11;
-
 namespace inviwo {
 
 AmiraVolumeReader::AmiraVolumeReader() : DataReaderType<Volume>() {

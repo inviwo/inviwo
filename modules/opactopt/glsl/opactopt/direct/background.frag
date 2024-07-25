@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024 Inviwo Foundation
+ * Copyright (c) 2019-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,31 +27,20 @@
  *
  *********************************************************************************/
 
-#include <modules/opactopt/opactoptmodule.h>
-#include <modules/opactopt/processors/opacityoptimiser.h>
-#include <modules/opactopt/processors/directopacityoptimisationrenderer.h>
-#include <modules/opactopt/processors/meshmappingvolume.h>
-#include <modules/opactopt/io/amirameshreader.h>
-#include <modules/opactopt/io/amiravolumereader.h>
+#include "utils/structs.glsl"
 
-#include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
-#include <inviwo/core/common/inviwomodule.h>      // for InviwoModule
+// Whole number pixel offsets (not necessary just to test the layout keyword !)
+layout(pixel_center_integer) in vec4 gl_FragCoord;
+
+uniform ImageParameters bgParameters;
+uniform sampler2D bgColor;
+uniform sampler2D bgDepth;
+uniform vec2 reciprocalDimensions;
 
 
-namespace inviwo {
-
-OpactOptModule::OpactOptModule(InviwoApplication* app) : InviwoModule(app, "OpactOpt") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-
-    // Processors
-    registerProcessor<OpacityOptimiser>();
-    registerProcessor<DirectOpacityOptimisationRenderer>();
-    registerProcessor<MeshMappingVolume>();
-
-    // Data readers
-    registerDataReader(std::make_unique<AmiraMeshReader>());
-    registerDataReader(std::make_unique<AmiraVolumeReader>());
+void main(void) {
+    vec2 texCoord = (gl_FragCoord.xy + 0.5) * reciprocalDimensions;
+    float backgroundDepth = texture(bgDepth, texCoord).x;
+    FragData0 = texture(bgColor, texCoord);
+    gl_FragDepth = backgroundDepth;
 }
-
-}  // namespace inviwo
