@@ -26,40 +26,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
+#include <modules/opactopt/rendering/approximation.h>
 
-#include <modules/opactopt/opactoptmoduledefine.h>
+double inviwo::Approximations::choose(double n, double k) {
+    if (k == 0.0) return 1.0;
+    return (n * choose(n - 1, k - 1)) / k;
+}
 
-#include <string>
-#include <map>
-#include <tuple>
+std::vector<float> inviwo::Approximations::generateLegendreCoefficients() {
+    double maxDegree = Approximations::approximations.at("legendre").maxCoefficients - 1;
+    std::vector<float> coeffs;
+    coeffs.reserve((maxDegree + 1) * (maxDegree + 2) / 2);
 
-#include <inviwo/core/properties/optionproperty.h>  // for OptionProperty
-#include <inviwo/core/properties/optionpropertytraits.h>  // for OptionPropertyTraits
+    for (double n = 0; n <= maxDegree; n += 1.0f) {
+        for (double k = 0; k <= n; k += 1.0f) {
+            double res = choose(n, k) * choose(n + k, k);
+            res *= (int)(n + k) % 2 == 0 ? 1.0f : -1.0f;
+            coeffs.push_back((double) res);
+        }
+    }
 
-namespace inviwo {
-
-namespace Approximations {
-
-/**
- * \brief Describes the approximation properties
- */
-struct IVW_MODULE_OPACTOPT_API ApproximationProperties {
-    std::string name;
-    std::string shaderDefineName;
-    std::string shaderFile;
-    int minCoefficients;
-    int maxCoefficients;
-};
-
-const std::map<std::string, const ApproximationProperties> approximations{
-    {"fourier", {"Fourier", "FOURIER", "opactopt/approximate/fourier.glsl", 1, 31}},
-    {"legendre", {"Legendre", "LEGENDRE", "opactopt/approximate/legendre.glsl", 1, 31}},
-    {"piecewise", {"Piecewise", "PIECEWISE", "opactopt/approximate/piecewise.glsl", 1, 30}}};
-
-double choose(double n, double k);
-std::vector<float> generateLegendreCoefficients();
-
-}  // namespace Approximations
-
-}  // namespace inviwo
+    return coeffs;
+}

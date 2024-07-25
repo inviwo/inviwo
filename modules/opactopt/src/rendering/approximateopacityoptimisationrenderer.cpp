@@ -57,7 +57,11 @@ ApproximateOpacityOptimisationRenderer::ApproximateOpacityOptimisationRenderer(
                       GLFormats::getGLFormat(GL_FLOAT, 1),  // dummy format
                       GL_STATIC_DRAW, GL_SHADER_STORAGE_BUFFER}
     , gaussianRadius_(gaussianRadius)
-    , gaussianSigma_(gaussianSigma) {
+    , gaussianSigma_(gaussianSigma)
+    , legendreCoefficients_{
+          Approximations::approximations.at("legendre").maxCoefficients * sizeof(int),
+          GLFormats::getGLFormat(GL_INT, 1),  // dummy format
+          GL_STATIC_DRAW, GL_SHADER_STORAGE_BUFFER} {
 
     for (auto& isc : importanceSumCoeffs_) isc.initialize(nullptr);
     opticalDepthCoeffs_.initialize(nullptr);
@@ -182,6 +186,10 @@ void ApproximateOpacityOptimisationRenderer::process() {
     utilgl::CullFaceState culling(GL_NONE);
 
     // project importance sum
+    if (ap_->name == "Legendre") {
+        if (!legendreCoefficientsGenerated_) generateAndUploadLegendreCoefficients();
+        legendreCoefficients_.bindBase(9);
+    }
     project_.activate();
     setUniforms(project_, *abuffUnit_);
     if (importanceVolume && importanceVolume->hasData())
@@ -301,7 +309,6 @@ void ApproximateOpacityOptimisationRenderer::setUniforms(Shader& shader,
     if (smoothing)
         shader.setUniform("importanceSumCoeffs[1]", importanceSumUnitSmooth_->getUnitNumber());
     shader.setUniform("opticalDepthCoeffs", opticalDepthUnit_->getUnitNumber());
-    glActiveTexture(GL_TEXTURE0);
 }
 
 void ApproximateOpacityOptimisationRenderer::resizeBuffers(const size2_t& screenSize) {
@@ -350,8 +357,17 @@ void ApproximateOpacityOptimisationRenderer::generateAndUploadGaussianKernel(int
         gaussianSigma_ = sigma;
 
         std::vector<float> k = generateGaussianKernel(radius, sigma);
-        gaussianKernel_.upload(&k[0], (2 * radius + 1) * sizeof(float));
+        gaussianKernel_.upload(&k[0], k.size() * sizeof(float));
         gaussianKernel_.unbind();
+    }
+}
+
+void ApproximateOpacityOptimisationRenderer::generateAndUploadLegendreCoefficients(bool force) {
+    legendreCoefficientsGenerated_ = true;
+    if (force || ap_->name == "Legendre") {
+        std::vector<float> coeffs = Approximations::generateLegendreCoefficients();
+        legendreCoefficients_.upload(&coeffs[0], coeffs.size() * sizeof(int));
+        legendreCoefficients_.unbind();
     }
 }
 

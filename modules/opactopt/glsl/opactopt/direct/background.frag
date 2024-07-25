@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024 Inviwo Foundation
+ * Copyright (c) 2019-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,40 +26,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/opactopt/opactoptmoduledefine.h>
+#include "utils/structs.glsl"
 
-#include <string>
-#include <map>
-#include <tuple>
+// Whole number pixel offsets (not necessary just to test the layout keyword !)
+layout(pixel_center_integer) in vec4 gl_FragCoord;
 
-#include <inviwo/core/properties/optionproperty.h>  // for OptionProperty
-#include <inviwo/core/properties/optionpropertytraits.h>  // for OptionPropertyTraits
+uniform ImageParameters bgParameters;
+uniform sampler2D bgColor;
+uniform sampler2D bgDepth;
+uniform vec2 reciprocalDimensions;
 
-namespace inviwo {
 
-namespace Approximations {
-
-/**
- * \brief Describes the approximation properties
- */
-struct IVW_MODULE_OPACTOPT_API ApproximationProperties {
-    std::string name;
-    std::string shaderDefineName;
-    std::string shaderFile;
-    int minCoefficients;
-    int maxCoefficients;
-};
-
-const std::map<std::string, const ApproximationProperties> approximations{
-    {"fourier", {"Fourier", "FOURIER", "opactopt/approximate/fourier.glsl", 1, 31}},
-    {"legendre", {"Legendre", "LEGENDRE", "opactopt/approximate/legendre.glsl", 1, 31}},
-    {"piecewise", {"Piecewise", "PIECEWISE", "opactopt/approximate/piecewise.glsl", 1, 30}}};
-
-double choose(double n, double k);
-std::vector<float> generateLegendreCoefficients();
-
-}  // namespace Approximations
-
-}  // namespace inviwo
+void main(void) {
+    vec2 texCoord = (gl_FragCoord.xy + 0.5) * reciprocalDimensions;
+    float backgroundDepth = texture(bgDepth, texCoord).x;
+    FragData0 = texture(bgColor, texCoord);
+    gl_FragDepth = backgroundDepth;
+}
