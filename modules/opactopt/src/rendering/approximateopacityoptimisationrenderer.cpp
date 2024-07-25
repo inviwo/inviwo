@@ -32,6 +32,7 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/volume/volumeutils.h>
+#include <modules/opactopt/algorithm/gaussian.h>
 
 namespace inviwo {
 
@@ -305,6 +306,7 @@ void ApproximateOpacityOptimisationRenderer::setUniforms(Shader& shader,
                                                          const TextureUnit& abuffUnit) const {
     OpacityOptimisationRenderer::setUniforms(shader, abuffUnit);
 
+    shader.setUniform("screenSize", ivec2(screenSize_));
     shader.setUniform("importanceSumCoeffs[0]", importanceSumUnitMain_->getUnitNumber());
     if (smoothing)
         shader.setUniform("importanceSumCoeffs[1]", importanceSumUnitSmooth_->getUnitNumber());
@@ -323,32 +325,6 @@ void ApproximateOpacityOptimisationRenderer::resizeBuffers(const size2_t& screen
     FragmentListRenderer::resizeBuffers(screenSize);
 }
 
-std::vector<float> generateGaussianKernel(int radius, float sigma) {
-    std::vector<float> res(2 * radius + 1, 0.0f);
-    float kernel_sum = 0.0f;
-
-    // Calculate kernel
-    for (int i = 0; i <= radius; i++) {
-        float val = std::exp(-((float)(i * i)) / (2 * (sigma * sigma)));
-        if (i == 0) {
-            res[radius] = val;
-            kernel_sum += val;
-        } else {
-            res[radius + i] = val;
-            res[radius - i] = val;
-            kernel_sum += 2 * val;
-        }
-    }
-
-    // Don't normalise since kernel will take care of it
-    //
-    // for (int i = -radius; i <= radius; i++) {
-    //    res[radius + i] /= kernel_sum;
-    //}
-
-    return res;
-}
-
 void ApproximateOpacityOptimisationRenderer::generateAndUploadGaussianKernel(int radius,
                                                                              float sigma,
                                                                              bool force) {
@@ -356,7 +332,7 @@ void ApproximateOpacityOptimisationRenderer::generateAndUploadGaussianKernel(int
         gaussianRadius_ = radius;
         gaussianSigma_ = sigma;
 
-        std::vector<float> k = generateGaussianKernel(radius, sigma);
+        std::vector<float> k = util::generateGaussianKernel(radius, sigma);
         gaussianKernel_.upload(&k[0], k.size() * sizeof(float));
         gaussianKernel_.unbind();
     }

@@ -27,34 +27,13 @@
  *
  *********************************************************************************/
 
-#include "utils/structs.glsl"
+#include <vector>
+#include <cmath>
 
-// Whole number pixel offsets (not necessary just to test the layout keyword !)
-layout(pixel_center_integer) in vec4 gl_FragCoord;
+namespace inviwo {
+namespace util {
 
-uniform ImageParameters imageParameters;
-uniform sampler2D imageColor;
-uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
+std::vector<float> generateGaussianKernel(int radius, float sigma);
 
-#ifdef FOURIER
-    #include "opactopt/approximate/fourier.glsl"
-#endif
-#ifdef LEGENDRE
-    #include "opactopt/approximate/legendre.glsl"
-#endif
-#ifdef PIECEWISE
-    #include "opactopt/approximate/piecewise.glsl"
-#endif
-
-void main(void) {
-    // normalise colour
-    vec4 color = texelFetch(imageColor, ivec2(gl_FragCoord.xy), 0);
-    color.rgb /= color.a;
-
-    // set alpha using optical depth
-    float tauall = total(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS);
-    color.a = 1.0 - exp(-tauall);
-
-    FragData0 = color;
-    if (color.a != 0) PickingData = vec4(0.0, 0.0, 0.0, 1.0);
 }
+}  // namespace inviwo

@@ -42,5 +42,4 @@ void main(void) {
     vec2 texCoord = (gl_FragCoord.xy + 0.5) * reciprocalDimensions;
     float backgroundDepth = texture(bgDepth, texCoord).x;
     FragData0 = texture(bgColor, texCoord);
-    gl_FragDepth = backgroundDepth;
 }

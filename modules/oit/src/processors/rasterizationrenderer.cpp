@@ -92,7 +92,7 @@ RasterizationRenderer::RasterizationRenderer()
                       "Input rasterizations filling the fragment lists/render target"_help}
     , background_{"imageInport", "Optional background image"_help}
     , outport_{"image",
-               "output image containing the rendered objects and the optional input image"_help}
+               "output image containing the rendered objects and the optional input image"_help, inviwo::DataVec4Float32::get()}
     , intermediateImage_{}
     , camera_{"camera", "Camera", [this]() { return boundingBox(); }}
     , lighting_{"lighting", "Lighting", &camera_}
