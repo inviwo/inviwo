@@ -68,9 +68,6 @@ smooth in vec4 fragPos;
 #ifdef LEGENDRE
     #include "opactopt/approximate/legendre.glsl"
 #endif
-#ifdef CHEBYSHEV
-    #include "opactopt/approximate/chebyshev.glsl"
-#endif
 #ifdef PIECEWISE
     #include "opactopt/approximate/piecewise.glsl"
 #endif
