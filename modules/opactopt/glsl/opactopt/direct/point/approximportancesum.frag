@@ -38,8 +38,8 @@ uniform vec4 borderColor = vec4(1.0, 0.0, 0.0, 1.0);
 
 uniform CameraParameters camera;
 
-uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+uniform layout(size1x32) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(size1x32) iimage2DArray opticalDepthCoeffs;
 
 uniform sampler3D importanceVolume;
 uniform VolumeParameters importanceVolumeParameters;
@@ -101,6 +101,19 @@ void main() {
                     * (r * (Gd - gisq)
                     + q * (gtot - Gd))),
                     0.0, 0.9999); // set pixel alpha using opacity optimisation
+
+
+    float glyphRadius = pointSize * 0.5;    
+    r *= pointSize * 0.5 + borderWidth;
+
+    // pseudo antialiasing with the help of the alpha channel
+    // i.e. smooth transition between center and border, and smooth alpha fall-off at the outer rim
+    float outerglyphRadius = glyphRadius + borderWidth - antialising; // used for adjusting the alpha value of the outer rim
+
+    float borderValue = clamp(mix(0.0, 1.0, (r - glyphRadius + 1) / 2), 0.0, 1.0);
+    float borderAlpha = clamp(mix(1.0, 0.0, (r - outerglyphRadius) / (glyphRadius + borderWidth - outerglyphRadius)), 0.0, alpha);
+    alpha *= borderAlpha;
+
     project(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth, -log(1 - alpha));
 
     discard;
