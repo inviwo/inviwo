@@ -38,8 +38,8 @@ uniform vec4 borderColor = vec4(1.0, 0.0, 0.0, 1.0);
 
 uniform CameraParameters camera;
 
-uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+uniform layout(size1x32) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(size1x32) iimage2DArray opticalDepthCoeffs;
 
 uniform sampler3D importanceVolume;
 uniform VolumeParameters importanceVolumeParameters;
