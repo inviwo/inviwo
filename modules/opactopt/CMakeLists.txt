@@ -6,7 +6,6 @@ set(HEADER_FILES
     include/modules/opactopt/processors/opacityoptimiser.h
     include/modules/opactopt/processors/meshmappingvolume.h
     include/modules/opactopt/processors/directopacityoptimisationrenderer.h
-    include/modules/opactopt/rendering/opacityoptimisationlinerenderer.h
     include/modules/opactopt/rendering/opacityoptimisationrenderer.h
     include/modules/opactopt/rendering/approximateopacityoptimisationrenderer.h
     include/modules/opactopt/rendering/approximation.h
@@ -20,7 +19,6 @@ set(SOURCE_FILES
     src/processors/opacityoptimiser.cpp
     src/processors/meshmappingvolume.cpp
     src/processors/directopacityoptimisationrenderer.cpp
-    src/rendering/opacityoptimisationlinerenderer.cpp
     src/rendering/opacityoptimisationrenderer.cpp
     src/rendering/approximateopacityoptimisationrenderer.cpp
     src/rendering/approximation.cpp
@@ -41,6 +39,7 @@ set(SHADER_FILES
     glsl/opactopt/direct/clear.frag
     glsl/opactopt/direct/normalise.frag
     glsl/opactopt/direct/background.frag
+    glsl/opactopt/direct/line/linerenderer.vert
     glsl/opactopt/direct/line/projectimportance.frag
     glsl/opactopt/direct/line/approximportancesum.frag
     glsl/opactopt/direct/line/approxblending.frag

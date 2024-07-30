@@ -121,13 +121,18 @@ DirectOpacityOptimisationRenderer::DirectOpacityOptimisationRenderer()
                     Shader::Build::No},
                    {"meshrendering.vert", "opactopt/direct/mesh/approxblending.frag",
                     Shader::Build::No}}
+    , lineShaders_{{"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
+                    "opactopt/direct/line/projectimportance.frag", Shader::Build::No},
+                   {"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
+                    "opactopt/direct/line/approximportancesum.frag", Shader::Build::No},
+                   {"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
+                    "opactopt/direct/line/approxblending.frag", Shader::Build::No}}
     , pointShaders_{{"pointrenderer.vert", "opactopt/direct/point/projectimportance.frag",
                      Shader::Build::No},
                     {"pointrenderer.vert", "opactopt/direct/point/approximportancesum.frag",
                      Shader::Build::No},
                     {"pointrenderer.vert", "opactopt/direct/point/approxblending.frag",
                      Shader::Build::No}}
-    , lineRenderer_(&lineSettings_)
     , smoothH_{"oit/simplequad.vert", "opactopt/approximate/smooth.frag", Shader::Build::No}
     , smoothV_{"oit/simplequad.vert", "opactopt/approximate/smooth.frag", Shader::Build::No}
     , clear_{"oit/simplequad.vert", "opactopt/direct/clear.frag", Shader::Build::No}
@@ -207,6 +212,9 @@ DirectOpacityOptimisationRenderer::DirectOpacityOptimisationRenderer()
     for (auto& shader : meshShaders_) {
         shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     }
+    for (auto& shader : lineShaders_) {
+        shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    }
     for (auto& shader : pointShaders_) {
         shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     }
@@ -244,29 +252,64 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
         shader.build();
     }
 
-    // for (auto& shader : pointShaders_) {
-    //     auto vert = shader.getVertexShaderObject();
-    //     auto frag = shader.getFragmentShaderObject();
+    for (auto& shader : lineShaders_) {
+        auto vert = shader.getVertexShaderObject();
+        auto frag = shader.getFragmentShaderObject();
 
-    //    // add image load store extension
-    //    frag->addShaderExtension("GL_EXT_shader_image_load_store", true);
+        shader[ShaderType::Fragment]->setShaderDefine("ENABLE_PSEUDO_LIGHTING",
+                                                      lineSettings_.getPseudoLighting());
+        shader[ShaderType::Fragment]->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE",
+                                                      lineSettings_.getRoundDepthProfile());
 
-    //    // set opacity optimisation defines
-    //    frag->setShaderDefine("USE_IMPORTANCE_VOLUME", importanceVolume_.hasData());
+        utilgl::addShaderDefines(shader, lineSettings_.getStippling().getMode());
 
-    //    // set approximation defines
-    //    frag->setShaderDefine("N_IMPORTANCE_SUM_COEFFICIENTS", true,
-    //                          std::to_string(importanceSumCoefficients_).c_str());
-    //    frag->setShaderDefine("N_OPTICAL_DEPTH_COEFFICIENTS", true,
-    //                          std::to_string(opticalDepthCoefficients_).c_str());
-    //    frag->setShaderDefine(ap_->shaderDefineName.c_str(), true);
-    //    frag->setShaderDefine("INTEGER_COEFF_TEX", true);
+        vert->setShaderDefine("HAS_COLOR", true);
 
-    //    // account for background
-    //    frag->setShaderDefine("BACKGROUND_AVAILABLE", imageInport_.hasData());
+        // add image load store extension
+        frag->addShaderExtension("GL_EXT_shader_image_load_store", true);
 
-    //    shader.build();
-    //}
+        // set opacity optimisation defines
+        frag->setShaderDefine("USE_IMPORTANCE_VOLUME", importanceVolume_.hasData());
+
+        // set approximation defines
+        frag->setShaderDefine("N_IMPORTANCE_SUM_COEFFICIENTS", true,
+                              std::to_string(importanceSumCoefficients_).c_str());
+        frag->setShaderDefine("N_OPTICAL_DEPTH_COEFFICIENTS", true,
+                              std::to_string(opticalDepthCoefficients_).c_str());
+        frag->setShaderDefine(ap_->shaderDefineName.c_str(), true);
+        frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
+                              std::to_string(coeffTexFixedPointFactor));
+
+        // account for background
+        frag->setShaderDefine("BACKGROUND_AVAILABLE", imageInport_.hasData());
+
+        shader.build();
+    }
+
+    for (auto& shader : pointShaders_) {
+        auto vert = shader.getVertexShaderObject();
+        auto frag = shader.getFragmentShaderObject();
+
+        // add image load store extension
+        frag->addShaderExtension("GL_EXT_shader_image_load_store", true);
+
+        // set opacity optimisation defines
+        frag->setShaderDefine("USE_IMPORTANCE_VOLUME", importanceVolume_.hasData());
+
+        // set approximation defines
+        frag->setShaderDefine("N_IMPORTANCE_SUM_COEFFICIENTS", true,
+                              std::to_string(importanceSumCoefficients_).c_str());
+        frag->setShaderDefine("N_OPTICAL_DEPTH_COEFFICIENTS", true,
+                              std::to_string(opticalDepthCoefficients_).c_str());
+        frag->setShaderDefine(ap_->shaderDefineName.c_str(), true);
+        frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
+                              std::to_string(coeffTexFixedPointFactor));
+
+        // account for background
+        frag->setShaderDefine("BACKGROUND_AVAILABLE", imageInport_.hasData());
+
+        shader.build();
+    }
 
     {
         Shader& shader = clear_;
@@ -371,7 +414,6 @@ void DirectOpacityOptimisationRenderer::process() {
 
     // Pass 1: Project importance
     renderGeometry(0);
-    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     // Optional smoothing of importance coefficients
     if (smoothing_) {
@@ -395,7 +437,6 @@ void DirectOpacityOptimisationRenderer::process() {
 
     // Pass 2: Approximate importance and project opacities
     renderGeometry(1);
-    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     // Pass 3: Approximate blending, render to target
     utilgl::BlendModeState blending(GL_ONE, GL_ONE, GL_ONE, GL_ONE);
@@ -407,7 +448,7 @@ void DirectOpacityOptimisationRenderer::process() {
     normalise_.activate();
     utilgl::bindAndSetUniforms(normalise_, textureUnits_, intermediateImage_, "image",
                                ImageType::ColorOnly);
-    normalise_.setUniform("opticalDepthCoeffs", opticalDepthUnit_->getUnitNumber());
+    setUniforms(normalise_);
     utilgl::singleDrawImagePlaneRect();
 
     // Add background if it exists
@@ -447,43 +488,69 @@ void DirectOpacityOptimisationRenderer::renderGeometry(int pass) {
     utilgl::setUniforms(meshShaders_[pass], camera_, lightingProperty_, overrideColor_);
     setUniforms(meshShaders_[pass]);
     for (auto mesh : inport_) {
-        // if (mesh->getDefaultMeshInfo().dt == DrawType::Triangles) {
-        utilgl::setShaderUniforms(meshShaders_[pass], *mesh, "geometry");
-        meshShaders_[pass].setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
-        MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
-                                        mesh->getDefaultMeshInfo()};
-        drawer.draw();
-        if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-        //}
+        if (mesh->getIndexBuffers().size() != 0 &&
+            mesh->getIndexMeshInfo(0).dt == DrawType::Triangles) {
+            utilgl::setShaderUniforms(meshShaders_[pass], *mesh, "geometry");
+            meshShaders_[pass].setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
+            MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
+                                            mesh->getDefaultMeshInfo()};
+            drawer.draw();
+            if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        }
     }
 
-    //    // Lines
-    //    for (const auto& mesh : inport_) {
-    //        lineRenderer_.render(*mesh, camera_.get(), outport_.getDimensions(), &lineSettings_,
-    //        pass);
-    //        if (pass < 2)
-    //            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-    //    }
-    //
-    //    // Points
-    //    utilgl::GlBoolState pointSprite(GL_PROGRAM_POINT_SIZE, true);
-    //    utilgl::PolygonModeState polygon(GL_POINT, 1.0f, pointSize_.get());
-    //    pointShaders_[pass].activate();
-    //
-    //    utilgl::setUniforms(pointShaders_[pass], camera_, lightingProperty_, pointSize_,
-    //    borderWidth_,
-    //                        borderColor_, antialising_);
-    //    setUniforms(pointShaders_[pass]);
-    //    for (auto elem : inport_) {
-    //        if (elem->getDefaultMeshInfo().dt == DrawType::Points) {
-    //            MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
-    //                                            elem->getDefaultMeshInfo());
-    //            utilgl::setShaderUniforms(pointShaders_[pass], *elem, "geometry");
-    //            drawer.draw(MeshDrawerGL::DrawMode::Points);
-    //        if (pass < 2)
-    //            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-    //        }
-    //    }
+    // Lines
+    for (const auto& mesh : inport_) {
+        lineShaders_[pass].activate();
+
+        lineShaders_[pass].setUniform("screenDim", vec2(screenSize_));
+        utilgl::setShaderUniforms(lineShaders_[pass], camera_, "camera");
+        utilgl::setUniforms(lineShaders_[pass], lineSettings_.lineWidth_,
+                            lineSettings_.antialiasing_, lineSettings_.miterLimit_,
+                            lineSettings_.roundCaps_, lineSettings_.defaultColor_);
+
+        // Stippling settings
+        lineShaders_[pass].setUniform("stippling.length", lineSettings_.getStippling().getLength());
+        lineShaders_[pass].setUniform("stippling.spacing",
+                                      lineSettings_.getStippling().getSpacing());
+        lineShaders_[pass].setUniform("stippling.offset", lineSettings_.getStippling().getOffset());
+        lineShaders_[pass].setUniform("stippling.worldScale",
+                                      lineSettings_.getStippling().getWorldScale());
+
+        utilgl::setShaderUniforms(lineShaders_[pass], *mesh, "geometry");
+
+        setUniforms(lineShaders_[pass]);
+        for (auto mesh : inport_) {
+            if (mesh->getIndexBuffers().size() != 0 ||
+                mesh->getIndexMeshInfo(0).dt == DrawType::Lines) {
+                MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
+                                                mesh->getDefaultMeshInfo());
+                utilgl::setShaderUniforms(lineShaders_[pass], *mesh, "geometry");
+                drawer.draw(MeshDrawerGL::DrawMode::Lines);
+                if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+            }
+        }
+    }
+
+    // Points
+    utilgl::GlBoolState pointSprite(GL_PROGRAM_POINT_SIZE, true);
+    utilgl::PolygonModeState polygon(GL_POINT, 1.0f, pointSize_.get());
+    pointShaders_[pass].activate();
+
+    utilgl::setUniforms(pointShaders_[pass], camera_, lightingProperty_, pointSize_, borderWidth_,
+                        borderColor_, antialising_);
+    setUniforms(pointShaders_[pass]);
+    for (auto mesh : inport_) {
+        if (mesh->getIndexBuffers().size() == 0 ||
+            mesh->getIndexMeshInfo(0).dt == DrawType::Points ||
+            mesh->getIndexMeshInfo(0).dt == DrawType::NotSpecified) {
+            MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
+                                            mesh->getDefaultMeshInfo());
+            utilgl::setShaderUniforms(pointShaders_[pass], *mesh, "geometry");
+            drawer.draw(MeshDrawerGL::DrawMode::Points);
+            if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        }
+    }
 }
 
 void DirectOpacityOptimisationRenderer::resizeBuffers(size2_t screenSize) {
