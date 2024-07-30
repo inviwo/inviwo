@@ -82,17 +82,17 @@ void main() {
                                    normalize(normal_), normalize(toCameraDir_));
 
     // Calculate g_i^2
-#ifdef USE_IMPORTANCE_VOLUME
-    float viewDepth = depth * (camera.farPlane - camera.nearPlane) + camera.nearPlane;
-    float clipDepth = convertDepthViewToClip(camera, viewDepth);
-    vec4 clip = vec4(2.0 * texCoord - 1.0, clipDepth, 1.0);
-    vec4 worldPos = camera.clipToWorld * clip;
-    worldPos /= worldPos.w;
-    vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
-    float gi = texture(importanceVolume, texPos.xyz).x; // sample importance from volume
-#else
-    float gi = color_.a;
-#endif
+    #ifdef USE_IMPORTANCE_VOLUME
+        float viewDepth = depth * (camera.farPlane - camera.nearPlane) + camera.nearPlane;
+        float clipDepth = convertDepthViewToClip(camera, viewDepth);
+        vec4 clip = vec4(2.0 * texCoord - 1.0, clipDepth, 1.0);
+        vec4 worldPos = camera.clipToWorld * clip;
+        worldPos /= worldPos.w;
+        vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
+        float gi = texture(importanceVolume, texPos.xyz).x; // sample importance from volume
+    #else
+        float gi = color_.a;
+    #endif
 
     // find alpha
     float gisq = gi * gi;
@@ -104,8 +104,7 @@ void main() {
                     + q * (gtot - Gd))),
                     0.0, 0.9999); // set pixel alpha using opacity optimisation
 
-    // find opical depth
-    float tauall = total(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS);
+    // find optical depth
     float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth); 
 
     float weight = alpha / sqrt(1 - alpha) * exp(-taud); // correct for optical depth approximation at discontinuity

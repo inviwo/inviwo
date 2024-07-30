@@ -72,6 +72,38 @@ void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float v
     }
 }
 
+#define MAX_COEFFS 32
+void projectLocal(inout float localCoeffs[MAX_COEFFS], int N, float depth, float val) {
+    float costheta = cos(TWOPI * depth);
+    float sintheta = sin(TWOPI * depth);
+    float coskm1theta = 1.0;
+    float sinkm1theta = 0.0;
+    float cosktheta = 0.0;
+    float sinktheta = 0.0;
+
+    for (int i = 0; i < N; i++) {
+        float projVal = 0.0;
+        if (i == 0) {
+            projVal = val;
+        } else if (i % 2 == 0) {
+            cosktheta = coskm1theta * costheta - sinkm1theta * sintheta;
+            projVal = val * cosktheta;
+        } else {
+            sinktheta = sinkm1theta * costheta + coskm1theta * sintheta;
+            projVal = val * sinktheta;
+        }
+
+        if (i % 2 == 0) {
+            if (i != 0) {
+                coskm1theta = cosktheta;
+                sinkm1theta = sinktheta;
+            }
+        }
+
+        localCoeffs[i] += projVal;
+    }
+}
+
 #ifdef COEFF_TEX_FIXED_POINT_FACTOR
 float approximate(layout(r32i) iimage2DArray coeffTex, int N, float depth)
 #else
