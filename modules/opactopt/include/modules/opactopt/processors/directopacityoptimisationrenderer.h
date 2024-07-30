@@ -31,7 +31,6 @@
 
 #include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <modules/opactopt/rendering/opacityoptimisationlinerenderer.h>
 #include <modules/opactopt/rendering/approximation.h>
 #include <modules/opengl/texture/texture2darray.h>
 #include <modules/opengl/texture/textureunit.h>
@@ -114,13 +113,11 @@ protected:
 
     // Shaders for each rendering pass and primitive type
     Shader meshShaders_[3];
+    Shader lineShaders_[3];
     Shader pointShaders_[3];
 
     // Screen space shaders
     Shader smoothH_, smoothV_, clear_, normalise_, background_;
-
-    // Line renderer is special
-    algorithm::OpacityOptimisationLineRenderer lineRenderer_;
 
     // Optional importance volume
     VolumeInport importanceVolume_;

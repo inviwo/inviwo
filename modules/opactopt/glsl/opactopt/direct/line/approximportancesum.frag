@@ -49,6 +49,11 @@ uniform float lineWidth = 2.0; // line width [pixel]
 uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), mat4(1),
                                     mat4(1), mat4(1), vec3(0), 0, 1);
 
+uniform layout(r32i) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
+
+uniform sampler3D importanceVolume;
+uniform VolumeParameters importanceVolumeParameters;
 
 // line stippling
 uniform StipplingParameters stippling = StipplingParameters(30.0, 10.0, 0.0, 4.0);
@@ -59,8 +64,24 @@ in vec2 texCoord_; // x = distance to segment start, y = orth. distance to cente
 in vec4 color_;
 flat in vec4 pickColor_;
 
+// Opacity optimisation settings
+uniform float q;
+uniform float r;
+uniform float lambda;
+
+#ifdef FOURIER
+    #include "opactopt/approximate/fourier.glsl"
+#endif
+#ifdef LEGENDRE
+    #include "opactopt/approximate/legendre.glsl"
+#endif
+#ifdef PIECEWISE
+    #include "opactopt/approximate/piecewise.glsl"
+#endif
+
 void main() {
-    vec4 color = color_;
+    // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
+    if(color_.a == 0) { discard; }
 
     float linewidthHalf = lineWidth * 0.5;
 
@@ -75,12 +96,41 @@ void main() {
 
     float d = distance - linewidthHalf + antialiasing;
 
-    // apply pseudo lighting
-#if defined(ENABLE_PSEUDO_LIGHTING)
-    color.rgb *= cos(distance / (linewidthHalf + antialiasing) * 1.2);
+#if defined(ENABLE_ROUND_DEPTH_PROFILE)
+    // correct depth for a round profile, i.e. tube like appearance
+    float view_depth = convertDepthScreenToView(camera, gl_FragCoord.z);
+    float maxDist = (linewidthHalf + antialiasing);
+    // assume circular profile of line
+    float z_v = view_depth - cos(distance/maxDist * M_PI) * maxDist / screenDim.x*0.5;
+#else
+    // Get linear depth
+    float z_v = convertDepthScreenToView(camera, gl_FragCoord.z); // view space depth
+#endif // ENABLE_ROUND_DEPTH_PROFILE
+
+    float depth = (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane); // linear normalised depth
+
+    // Calculate g_i^2
+#ifdef USE_IMPORTANCE_VOLUME
+    float viewDepth = depth * (camera.farPlane - camera.nearPlane) + camera.nearPlane;
+    float clipDepth = convertDepthViewToClip(camera, viewDepth);
+    vec4 clip = vec4(2.0 * texCoord - 1.0, clipDepth, 1.0);
+    vec4 worldPos = camera.clipToWorld * clip;
+    worldPos /= worldPos.w;
+    vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
+    float gi = texture(importanceVolume, texPos.xyz).x; // sample importance from volume
+#else
+    float gi = color_.a;
 #endif
 
-    float alpha = 1.0;
+    // Project importance
+    float gisq = gi * gi;
+    float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
+    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
+    float alpha = clamp(1 /
+                    (1 + pow(1 - gi, 2 * lambda)
+                    * (r * (Gd - gisq)
+                    + q * (gtot - Gd))),
+                    0.0, 0.9999); // set pixel alpha using opacity optimisation
 
     // line stippling
 #if defined(ENABLE_STIPPLING)
@@ -105,22 +155,12 @@ void main() {
     if( d > 0) {
         // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
         d /= antialiasing;
-        alpha = exp(-d*d);
+        alpha *= exp(-d*d);
     }
     // prevent fragments with low alpha from being rendered
     if (alpha < 0.05) discard;
 
-    color.rgb *= color.a;
-    FragData0 = color * alpha;
+    project(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth, -log(1 - alpha));
 
-#if defined(ENABLE_ROUND_DEPTH_PROFILE)
-    // correct depth for a round profile, i.e. tube like appearance
-    float depth = convertDepthScreenToView(camera, gl_FragCoord.z);
-    float maxDist = (linewidthHalf + antialiasing);
-    // assume circular profile of line
-    gl_FragDepth = convertDepthViewToScreen(camera, 
-        depth - cos(distance/maxDist * M_PI) * maxDist / screenDim.x*0.5);
-#endif // ENABLE_ROUND_DEPTH_PROFILE
-
-    PickingData = pickColor_;
+    discard;
 }
