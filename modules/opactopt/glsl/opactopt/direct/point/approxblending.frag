@@ -38,8 +38,8 @@ uniform vec4 borderColor = vec4(1.0, 0.0, 0.0, 1.0);
 
 uniform CameraParameters camera;
 
-uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+uniform layout(size1x32) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(size1x32) iimage2DArray opticalDepthCoeffs;
 
 uniform sampler3D importanceVolume;
 uniform VolumeParameters importanceVolumeParameters;
@@ -67,6 +67,33 @@ void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
     if(color_.a == 0) { discard; }
 
+    // Get linear depth
+    float z_v = convertDepthScreenToView(camera, gl_FragCoord.z); // view space depth
+    float depth = (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane); // linear normalised depth
+
+    // Calculate g_i^2
+    #ifdef USE_IMPORTANCE_VOLUME
+        float viewDepth = depth * (camera.farPlane - camera.nearPlane) + camera.nearPlane;
+        float clipDepth = convertDepthViewToClip(camera, viewDepth);
+        vec4 clip = vec4(2.0 * texCoord - 1.0, clipDepth, 1.0);
+        vec4 worldPos = camera.clipToWorld * clip;
+        worldPos /= worldPos.w;
+        vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
+        float gi = texture(importanceVolume, texPos.xyz).x; // sample importance from volume
+    #else
+        float gi = color_.a;
+    #endif
+
+    // find alpha
+    float gisq = gi * gi;
+    float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
+    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
+    float alpha = clamp(1 /
+                    (1 + pow(1 - gi, 2 * lambda)
+                    * (r * (Gd - gisq)
+                    + q * (gtot - Gd))),
+                    0.0, 0.9999); // set pixel alpha using opacity optimisation
+
     // calculate normal from texture coordinates
     vec3 normal;
     normal.xy = gl_PointCoord * vec2(2.0, -2.0) + vec2(-1.0, 1.0);
@@ -85,21 +112,18 @@ void main() {
     float outerglyphRadius = glyphRadius + borderWidth - antialising; // used for adjusting the alpha value of the outer rim
 
     float borderValue = clamp(mix(0.0, 1.0, (r - glyphRadius + 1) / 2), 0.0, 1.0);
-    float borderAlpha = clamp(mix(1.0, 0.0, (r - outerglyphRadius) / (glyphRadius + borderWidth - outerglyphRadius)), 0.0, 1.0);
+    float borderAlpha = clamp(mix(1.0, 0.0, (r - outerglyphRadius) / (glyphRadius + borderWidth - outerglyphRadius)), 0.0, alpha);
+    alpha *= borderAlpha;
 
     vec4 c = mix(color_, borderColor, borderValue);
-
-    // Get linear depth
-    float z_v = convertDepthScreenToView(camera, gl_FragCoord.z); // view space depth
-    float depth = (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane); // linear normalised depth
-
+    
     // Approximate blending
-    float tauall = total(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS);
     float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth); 
 
-    float weight = c.a / sqrt(1 - c.a) * exp(-taud); // correct for optical depth approximation at discontinuity
-    c.rgb = c.rgb * weight;
-    c.a = 1.0 - exp(-tauall);
+    float weight = alpha / sqrt(1 - alpha) * exp(-taud); // correct for optical depth approximation at discontinuity
+    c.rgb = weight * c.rgb;
+    c.a = weight;
 
     FragData0 = c;
+    PickingData = vec4(1.0);
 }

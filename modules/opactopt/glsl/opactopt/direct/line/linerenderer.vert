@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2016-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,39 +24,39 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
 #include "utils/structs.glsl"
 
-// Whole number pixel offsets (not necessary just to test the layout keyword !)
-layout(pixel_center_integer) in vec4 gl_FragCoord;
+in vec3 in_Position;
 
-uniform ImageParameters imageParameters;
-uniform sampler2D imageColor;
-uniform layout(r32i) iimage2DArray importanceSumCoeffs[2];
-uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
+uniform GeometryParameters geometry;
 
-#ifdef FOURIER
-    #include "opactopt/approximate/fourier.glsl"
+// initialize camera matrices with the identity matrix to enable default rendering
+// without any transformation, i.e. all lines in clip space
+uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), mat4(1),
+                                    mat4(1), mat4(1), vec3(0), 0, 1);
+
+uniform bool pickingEnabled = false;
+uniform vec4 defaultColor = vec4(1, 1, 1, 1);
+
+out vec4 worldPosition_;
+out vec4 vertexColor_;
+flat out uint pickID_;
+ 
+void main() {
+#if defined(HAS_COLOR)
+    vertexColor_ = in_Color;
+#else
+    vertexColor_ = defaultColor;
 #endif
-#ifdef LEGENDRE
-    #include "opactopt/approximate/legendre.glsl"
+
+    worldPosition_ = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
+    gl_Position = camera.worldToClip * worldPosition_;
+#if defined(HAS_PICKING)
+    pickID_ = in_Picking;
+#else 
+    pickID_ = 0;
 #endif
-#ifdef PIECEWISE
-    #include "opactopt/approximate/piecewise.glsl"
-#endif
-
-void main(void) {
-    // normalise colour
-    vec4 color = texelFetch(imageColor, ivec2(gl_FragCoord.xy), 0);
-    color.rgb /= color.a;
-
-    // set alpha using optical depth
-    float tauall = total(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS);
-    color.a = 1.0 - exp(-tauall);
-
-//    FragData0 = vec4(imageLoad(importanceSumCoeffs[0], ivec3(gl_FragCoord.xy, 5)).x / COEFF_TEX_FIXED_POINT_FACTOR, 0, 0, 1.0);
-    FragData0 = color;
-    if (color.a != 0) PickingData = vec4(0.0, 0.0, 0.0, 1.0);
 }
