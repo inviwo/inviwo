@@ -27,32 +27,65 @@
  *
  *********************************************************************************/
 
-void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float val) {
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+void project(layout(r32i) iimage2DArray coeffTex, int N, float depth, float val)
+#else
+void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float val)
+#endif
+{
     if (depth < 0.0 || depth > 1.0) return;
     int bin = min(int(depth * N), N - 1);
     ivec3 coord = ivec3(gl_FragCoord.xy, bin);
-    float currVal = imageLoad(coeffTex, coord).x;
-    imageStore(coeffTex, coord, vec4(currVal + val));
+        #ifdef COEFF_TEX_FIXED_POINT_FACTOR
+            imageAtomicAdd(coeffTex, coord, int(val * COEFF_TEX_FIXED_POINT_FACTOR));
+        #else
+            float currVal = imageLoad(coeffTex, coord).x;
+            imageStore(coeffTex, coord, vec4(currVal + val));
+        #endif
 }
 
-float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth) {
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+float approximate(layout(r32i) iimage2DArray coeffTex, int N, float depth)
+#else
+float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
+#endif
+{
     float sum = 0.0;
     int i = 0;
     while (depth * N >= i + 1 && i < N - 1) {
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-        float coeff = imageLoad(coeffTex, coord).x;
+        #ifdef COEFF_TEX_FIXED_POINT_FACTOR
+            float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
+        #else
+            float coeff = imageLoad(coeffTex, coord).x;
+        #endif
         sum += coeff;
         i++;
     }
     ivec3 coord = ivec3(gl_FragCoord.xy, i);
-    float coeff = imageLoad(coeffTex, coord).x;
+    #ifdef COEFF_TEX_FIXED_POINT_FACTOR
+        float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
+    #else
+        float coeff = imageLoad(coeffTex, coord).x;
+    #endif
     sum += fract(depth * N) * coeff;
 
     return sum;
 }
 
-float total(layout(size1x32) image2DArray coeffTex, int N) {
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+float total(layout(r32i) iimage2DArray coeffTex, int N)
+#else
+float total(layout(size1x32) image2DArray coeffTex, int N)
+#endif
+{
     float sum = 0.0;
-    for (int i = 0; i < N; i++) sum += imageLoad(coeffTex, ivec3(gl_FragCoord.xy, i)).x;
+    #ifdef COEFF_TEX_FIXED_POINT_FACTOR
+        for (int i = 0; i < N; i++)
+            sum += float(imageLoad(coeffTex, ivec3(gl_FragCoord.xy, i)).x) / COEFF_TEX_FIXED_POINT_FACTOR;
+    #else
+        for (int i = 0; i < N; i++)
+            sum += imageLoad(coeffTex, ivec3(gl_FragCoord.xy, i)).x;
+    #endif
     return sum;
 }
