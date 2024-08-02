@@ -146,6 +146,7 @@ void main() {
     if (alpha < 0.05) discard;
 
     // Project importance
+    gi *= alpha;
     float gisq = gi * gi;
     project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth, gisq);
 
