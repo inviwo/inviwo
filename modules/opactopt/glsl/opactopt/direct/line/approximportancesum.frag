@@ -122,16 +122,6 @@ void main() {
     float gi = color_.a;
 #endif
 
-    // Project importance
-    float gisq = gi * gi;
-    float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
-    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
-    float alpha = clamp(1 /
-                    (1 + pow(1 - gi, 2 * lambda)
-                    * (r * (Gd - gisq)
-                    + q * (gtot - Gd))),
-                    0.0, 0.9999); // set pixel alpha using opacity optimisation
-
     // line stippling
 #if defined(ENABLE_STIPPLING)
 
@@ -151,14 +141,28 @@ void main() {
     }
 #endif // ENABLE_STIPPLING
 
+    float alphamul = 1.0;
     // antialiasing around the edges
     if( d > 0) {
         // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
         d /= antialiasing;
-        alpha *= exp(-d*d);
+        alphamul = exp(-d*d);
     }
     // prevent fragments with low alpha from being rendered
-    if (alpha < 0.05) discard;
+    if (alphamul < 0.05) discard;
+
+    gi *= alphamul;
+
+    // Project importance
+    float gisq = gi * gi;
+    float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
+    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
+    float alpha = clamp(1 /
+                    (1 + pow(1 - gi, 2 * lambda)
+                    * (r * (Gd - gisq)
+                    + q * (gtot - Gd))),
+                    0.0, 0.9999); // set pixel alpha using opacity optimisation
+
 
     project(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth, -log(1 - alpha));
 
