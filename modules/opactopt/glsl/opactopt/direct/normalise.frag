@@ -56,7 +56,6 @@ void main(void) {
     float tauall = total(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS);
     color.a = 1.0 - exp(-tauall);
 
-//    FragData0 = vec4(imageLoad(importanceSumCoeffs[0], ivec3(gl_FragCoord.xy, 5)).x / COEFF_TEX_FIXED_POINT_FACTOR, 0, 0, 1.0);
     FragData0 = color;
     if (color.a != 0) PickingData = vec4(0.0, 0.0, 0.0, 1.0);
 }
