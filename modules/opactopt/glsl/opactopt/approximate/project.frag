@@ -95,7 +95,6 @@ void main() {
 
         // Project importance sum coefficients
         int counter = 0;
-        float localCoeffs[MAX_COEFFS];
         while (idx != 0 && counter < ABUFFER_SIZE) {
             vec4 data = readPixelStorage(idx - 1);
             #ifdef USE_IMPORTANCE_VOLUME
@@ -111,9 +110,6 @@ void main() {
             project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, data.y, data.z * data.z);
             idx = floatBitsToUint(data.x);
         }
-
-//        for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++){ imageStore(importanceSumCoeffs[0], ivec3(coords, i), vec4(localCoeffs[i]));
-//        memoryBarrierImage();}
     }
 
     discard;

@@ -218,15 +218,22 @@ DirectOpacityOptimisationRenderer::DirectOpacityOptimisationRenderer()
     for (auto& shader : pointShaders_) {
         shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     }
+
+    generateAndUploadLegendreCoefficients();
+    legendreCoefficients_.bindBase(9);
 }
 
 DirectOpacityOptimisationRenderer::~DirectOpacityOptimisationRenderer() = default;
 
 void DirectOpacityOptimisationRenderer::initializeResources() {
     for (auto& shader : meshShaders_) {
-        utilgl::addShaderDefines(shader, lightingProperty_);
         auto vert = shader.getVertexShaderObject();
         auto frag = shader.getFragmentShaderObject();
+
+        frag->clearShaderExtensions();
+        frag->clearShaderDefines();
+
+        utilgl::addShaderDefines(shader, lightingProperty_);
 
         vert->setShaderDefine("OVERRIDE_COLOR_BUFFER", overrideColorBuffer_);
         frag->setShaderDefine("COLOR_LAYER", colorLayer_);
@@ -255,6 +262,9 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
     for (auto& shader : lineShaders_) {
         auto vert = shader.getVertexShaderObject();
         auto frag = shader.getFragmentShaderObject();
+
+        frag->clearShaderExtensions();
+        frag->clearShaderDefines();
 
         shader[ShaderType::Fragment]->setShaderDefine("ENABLE_PSEUDO_LIGHTING",
                                                       lineSettings_.getPseudoLighting());
@@ -290,6 +300,9 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
         auto vert = shader.getVertexShaderObject();
         auto frag = shader.getFragmentShaderObject();
 
+        frag->clearShaderExtensions();
+        frag->clearShaderDefines();
+
         // add image load store extension
         frag->addShaderExtension("GL_EXT_shader_image_load_store", true);
 
@@ -317,6 +330,9 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
         auto vert = shader.getVertexShaderObject();
         auto frag = shader.getFragmentShaderObject();
 
+        frag->clearShaderExtensions();
+        frag->clearShaderDefines();
+
         // add image load store extension
         frag->addShaderExtension("GL_EXT_shader_image_load_store", true);
 
@@ -334,6 +350,9 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
 
         auto vert = shader.getVertexShaderObject();
         auto frag = shader.getFragmentShaderObject();
+
+        frag->clearShaderExtensions();
+        frag->clearShaderDefines();
 
         // add image load store extension
         frag->addShaderExtension("GL_EXT_shader_image_load_store", true);
@@ -357,6 +376,9 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
 
         auto vert = shader->getVertexShaderObject();
         auto frag = shader->getFragmentShaderObject();
+
+        frag->clearShaderExtensions();
+        frag->clearShaderDefines();
 
         // add image load store extension
         frag->addShaderExtension("GL_EXT_shader_image_load_store", true);
@@ -521,7 +543,7 @@ void DirectOpacityOptimisationRenderer::renderGeometry(int pass) {
 
         setUniforms(lineShaders_[pass]);
         for (auto mesh : inport_) {
-            if (mesh->getIndexBuffers().size() != 0 ||
+            if (mesh->getIndexBuffers().size() != 0 &&
                 mesh->getIndexMeshInfo(0).dt == DrawType::Lines) {
                 MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
                                                 mesh->getDefaultMeshInfo());
@@ -569,6 +591,12 @@ void DirectOpacityOptimisationRenderer::generateAndUploadGaussianKernel() {
     std::vector<float> k = util::generateGaussianKernel(gaussianRadius_, gaussianSigma_);
     gaussianKernel_.upload(&k[0], k.size() * sizeof(float));
     gaussianKernel_.unbind();
+}
+
+void DirectOpacityOptimisationRenderer::generateAndUploadLegendreCoefficients() {
+    std::vector<float> coeffs = Approximations::generateLegendreCoefficients();
+    legendreCoefficients_.upload(&coeffs[0], coeffs.size() * sizeof(int));
+    legendreCoefficients_.unbind();
 }
 
 }  // namespace inviwo

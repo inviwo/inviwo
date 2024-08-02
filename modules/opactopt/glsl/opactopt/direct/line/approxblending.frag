@@ -97,16 +97,16 @@ void main() {
 
     float d = distance - linewidthHalf + antialiasing;
 
-#if defined(ENABLE_ROUND_DEPTH_PROFILE)
-    // correct depth for a round profile, i.e. tube like appearance
-    float view_depth = convertDepthScreenToView(camera, gl_FragCoord.z);
-    float maxDist = (linewidthHalf + antialiasing);
-    // assume circular profile of line
-    float z_v = view_depth - cos(distance/maxDist * M_PI) * maxDist / screenDim.x*0.5;
-#else
-    // Get linear depth
-    float z_v = convertDepthScreenToView(camera, gl_FragCoord.z); // view space depth
-#endif // ENABLE_ROUND_DEPTH_PROFILE
+    #if defined(ENABLE_ROUND_DEPTH_PROFILE)
+        // correct depth for a round profile, i.e. tube like appearance
+        float view_depth = convertDepthScreenToView(camera, gl_FragCoord.z);
+        float maxDist = (linewidthHalf + antialiasing);
+        // assume circular profile of line
+        float z_v = view_depth - cos(distance/maxDist * M_PI) * maxDist / screenDim.x*0.5;
+    #else
+        // Get linear depth
+        float z_v = convertDepthScreenToView(camera, gl_FragCoord.z); // view space depth
+    #endif // ENABLE_ROUND_DEPTH_PROFILE
 
     float depth = (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane); // linear normalised depth
 
@@ -122,16 +122,6 @@ void main() {
 #else
     float gi = color_.a;
 #endif
-
-    // Project importance
-    float gisq = gi * gi;
-    float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
-    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
-    float alpha = clamp(1 /
-                    (1 + pow(1 - gi, 2 * lambda)
-                    * (r * (Gd - gisq)
-                    + q * (gtot - Gd))),
-                    0.0, 0.9999); // set pixel alpha using opacity optimisation
 
     // line stippling
 #if defined(ENABLE_STIPPLING)
@@ -152,15 +142,34 @@ void main() {
     }
 #endif // ENABLE_STIPPLING
 
+    float alphamul = 1.0;
     // antialiasing around the edges
     if( d > 0) {
         // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
         d /= antialiasing;
-        alpha = exp(-d*d);
+        alphamul = exp(-d*d);
     }
     // prevent fragments with low alpha from being rendered
-    if (alpha < 0.05) discard;
+    if (alphamul < 0.05) discard;
+
+    gi *= alphamul;
+
+    // Project importance
+    float gisq = gi * gi;
+    float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
+    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
+    float alpha = clamp(1 /
+                    (1 + pow(1 - gi, 2 * lambda)
+                    * (r * (Gd - gisq)
+                    + q * (gtot - Gd))),
+                    0.0, 0.9999); // set pixel alpha using opacity optimisation
+
     vec4 c = color_;
+    
+    // apply pseudo lighting
+    #if defined(ENABLE_PSEUDO_LIGHTING)
+        c.rgb *= cos(distance / (linewidthHalf + antialiasing) * 1.2);
+    #endif
 
     // find optical depth
     float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth); 

@@ -96,7 +96,6 @@ void main() {
         float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
         idx = pixelIdx;
         int counter = 0;
-        float localCoeffs[MAX_COEFFS];
         while (idx != 0 && counter < ABUFFER_SIZE) {
             vec4 data = readPixelStorage(idx - 1);
             abufferPixel pixel = uncompressPixelData(data);
@@ -115,9 +114,6 @@ void main() {
             idx = pixel.previous;
             counter++;
         }
-
-//        for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++) imageStore(opticalDepthCoeffs, ivec3(coords, i), vec4(localCoeffs[i]));
-//        memoryBarrierImage();
 
         // Composite
         vec3 numerator = vec3(0);
@@ -142,7 +138,6 @@ void main() {
         color.rgb = numerator / denominator;
         color.a = 1.0 - exp(-tauall);
 
-//        FragData0 = vec4(imageLoad(importanceSumCoeffs[0], ivec3(gl_FragCoord.xy, 5)).x, 0, 0, 1.0);
         FragData0 = color;
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
     } else {  // no pixel found

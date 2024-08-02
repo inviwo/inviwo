@@ -76,6 +76,7 @@ protected:
     void renderGeometry(int pass);
     void resizeBuffers(size2_t screenSize);
     void generateAndUploadGaussianKernel();
+    void generateAndUploadLegendreCoefficients();
 
     size2_t screenSize_;
 
