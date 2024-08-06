@@ -90,8 +90,8 @@ void main() {
     float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
     float alpha = clamp(1 /
                     (1 + pow(1 - gi, 2 * lambda)
-                    * (r * (Gd - gisq)
-                    + q * (gtot - Gd))),
+                    * (r * max(0, Gd - gisq)
+                    + q * max(0, gtot - Gd))),
                     0.0, 0.9999); // set pixel alpha using opacity optimisation
 
     // calculate normal from texture coordinates
