@@ -54,7 +54,8 @@ void main(void) {
 
     // set alpha using optical depth
     float tauall = total(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS);
-    color.a = 1.0 - exp(-tauall);
+    if (color.a != 0.0)
+        color.a = 1.0 - exp(-tauall);
 
     FragData0 = color;
     if (color.a != 0) PickingData = vec4(0.0, 0.0, 0.0, 1.0);
