@@ -115,6 +115,7 @@ protected:
     // Shaders for each rendering pass and primitive type
     Shader meshShaders_[3];
     Shader lineShaders_[3];
+    Shader lineAdjacencyShaders_[3];
     Shader pointShaders_[3];
 
     // Screen space shaders

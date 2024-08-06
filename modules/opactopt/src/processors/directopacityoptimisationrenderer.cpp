@@ -122,11 +122,17 @@ DirectOpacityOptimisationRenderer::DirectOpacityOptimisationRenderer()
                    {"meshrendering.vert", "opactopt/direct/mesh/approxblending.frag",
                     Shader::Build::No}}
     , lineShaders_{{"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
-                    "opactopt/direct/line/projectimportance.frag", Shader::Build::No},
-                   {"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
-                    "opactopt/direct/line/approximportancesum.frag", Shader::Build::No},
-                   {"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
-                    "opactopt/direct/line/approxblending.frag", Shader::Build::No}}
+                             "opactopt/direct/line/projectimportance.frag", Shader::Build::No},
+                            {"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
+                             "opactopt/direct/line/approximportancesum.frag", Shader::Build::No},
+                            {"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
+                             "opactopt/direct/line/approxblending.frag", Shader::Build::No}}
+    , lineAdjacencyShaders_{{"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
+                             "opactopt/direct/line/projectimportance.frag", Shader::Build::No},
+                            {"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
+                             "opactopt/direct/line/approximportancesum.frag", Shader::Build::No},
+                            {"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
+                             "opactopt/direct/line/approxblending.frag", Shader::Build::No}}
     , pointShaders_{{"pointrenderer.vert", "opactopt/direct/point/projectimportance.frag",
                      Shader::Build::No},
                     {"pointrenderer.vert", "opactopt/direct/point/approximportancesum.frag",
@@ -215,6 +221,9 @@ DirectOpacityOptimisationRenderer::DirectOpacityOptimisationRenderer()
     for (auto& shader : lineShaders_) {
         shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     }
+    for (auto& shader : lineAdjacencyShaders_) {
+        shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    }
     for (auto& shader : pointShaders_) {
         shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     }
@@ -274,6 +283,46 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
         utilgl::addShaderDefines(shader, lineSettings_.getStippling().getMode());
 
         vert->setShaderDefine("HAS_COLOR", true);
+
+        // add image load store extension
+        frag->addShaderExtension("GL_EXT_shader_image_load_store", true);
+
+        // set opacity optimisation defines
+        frag->setShaderDefine("USE_IMPORTANCE_VOLUME", importanceVolume_.hasData());
+
+        // set approximation defines
+        frag->setShaderDefine("N_IMPORTANCE_SUM_COEFFICIENTS", true,
+                              std::to_string(importanceSumCoefficients_).c_str());
+        frag->setShaderDefine("N_OPTICAL_DEPTH_COEFFICIENTS", true,
+                              std::to_string(opticalDepthCoefficients_).c_str());
+        frag->setShaderDefine(ap_->shaderDefineName.c_str(), true);
+        frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
+                              std::to_string(coeffTexFixedPointFactor));
+
+        // account for background
+        frag->setShaderDefine("BACKGROUND_AVAILABLE", imageInport_.hasData());
+
+        shader.build();
+    }
+
+    for (auto& shader : lineAdjacencyShaders_) {
+        auto vert = shader.getVertexShaderObject();
+        auto geom = shader.getGeometryShaderObject();
+        auto frag = shader.getFragmentShaderObject();
+
+        frag->clearShaderExtensions();
+        frag->clearShaderDefines();
+
+        shader[ShaderType::Fragment]->setShaderDefine("ENABLE_PSEUDO_LIGHTING",
+                                                      lineSettings_.getPseudoLighting());
+        shader[ShaderType::Fragment]->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE",
+                                                      lineSettings_.getRoundDepthProfile());
+
+        utilgl::addShaderDefines(shader, lineSettings_.getStippling().getMode());
+
+        vert->setShaderDefine("HAS_COLOR", true);
+
+        geom->setShaderDefine("ENABLE_ADJACENCY", true, "1");
 
         // add image load store extension
         frag->addShaderExtension("GL_EXT_shader_image_load_store", true);
@@ -532,23 +581,62 @@ void DirectOpacityOptimisationRenderer::renderGeometry(int pass) {
                             lineSettings_.roundCaps_, lineSettings_.defaultColor_);
 
         // Stippling settings
-        lineShaders_[pass].setUniform("stippling.length", lineSettings_.getStippling().getLength());
+        lineShaders_[pass].setUniform("stippling.length",
+                                               lineSettings_.getStippling().getLength());
         lineShaders_[pass].setUniform("stippling.spacing",
-                                      lineSettings_.getStippling().getSpacing());
-        lineShaders_[pass].setUniform("stippling.offset", lineSettings_.getStippling().getOffset());
+                                               lineSettings_.getStippling().getSpacing());
+        lineShaders_[pass].setUniform("stippling.offset",
+                                               lineSettings_.getStippling().getOffset());
         lineShaders_[pass].setUniform("stippling.worldScale",
-                                      lineSettings_.getStippling().getWorldScale());
+                                               lineSettings_.getStippling().getWorldScale());
 
         utilgl::setShaderUniforms(lineShaders_[pass], *mesh, "geometry");
 
         setUniforms(lineShaders_[pass]);
         for (auto mesh : inport_) {
             if (mesh->getIndexBuffers().size() != 0 &&
-                mesh->getIndexMeshInfo(0).dt == DrawType::Lines) {
+                mesh->getIndexMeshInfo(0).dt == DrawType::Lines &&
+                mesh->getIndexMeshInfo(0).ct < ConnectivityType::Adjacency) {
                 MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
                                                 mesh->getDefaultMeshInfo());
                 utilgl::setShaderUniforms(lineShaders_[pass], *mesh, "geometry");
                 drawer.draw(MeshDrawerGL::DrawMode::Lines);
+                if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+            }
+        }
+    }
+
+    // Line adjacency
+    for (const auto& mesh : inport_) {
+        lineAdjacencyShaders_[pass].activate();
+
+        lineAdjacencyShaders_[pass].setUniform("screenDim", vec2(screenSize_));
+        utilgl::setShaderUniforms(lineAdjacencyShaders_[pass], camera_, "camera");
+        utilgl::setUniforms(lineAdjacencyShaders_[pass], lineSettings_.lineWidth_,
+                            lineSettings_.antialiasing_, lineSettings_.miterLimit_,
+                            lineSettings_.roundCaps_, lineSettings_.defaultColor_);
+
+        // Stippling settings
+        lineAdjacencyShaders_[pass].setUniform("stippling.length",
+                                               lineSettings_.getStippling().getLength());
+        lineAdjacencyShaders_[pass].setUniform("stippling.spacing",
+                                               lineSettings_.getStippling().getSpacing());
+        lineAdjacencyShaders_[pass].setUniform("stippling.offset",
+                                               lineSettings_.getStippling().getOffset());
+        lineAdjacencyShaders_[pass].setUniform("stippling.worldScale",
+                                               lineSettings_.getStippling().getWorldScale());
+
+        utilgl::setShaderUniforms(lineAdjacencyShaders_[pass], *mesh, "geometry");
+
+        setUniforms(lineAdjacencyShaders_[pass]);
+        for (auto mesh : inport_) {
+            if (mesh->getIndexBuffers().size() != 0 &&
+                mesh->getIndexMeshInfo(0).dt == DrawType::Lines &&
+                mesh->getIndexMeshInfo(0).ct >= ConnectivityType::Adjacency) {
+                MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
+                                                mesh->getDefaultMeshInfo());
+                utilgl::setShaderUniforms(lineAdjacencyShaders_[pass], *mesh, "geometry");
+                drawer.draw(MeshDrawerGL::DrawMode::LineStripAdjacency);
                 if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
             }
         }

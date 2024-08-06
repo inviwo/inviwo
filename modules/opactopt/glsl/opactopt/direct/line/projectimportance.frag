@@ -115,7 +115,7 @@ void main() {
     float gi = color_.a;
 #endif
 
-    float alpha = 1.0;
+    float alphamul = 1.0;
 
     // line stippling
 #if defined(ENABLE_STIPPLING)
@@ -140,13 +140,13 @@ void main() {
     if( d > 0) {
         // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
         d /= antialiasing;
-        alpha = exp(-d*d);
+        alphamul = exp(-d*d);
     }
     // prevent fragments with low alpha from being rendered
-    if (alpha < 0.05) discard;
+//    if (alphamul < 0.05) discard;
 
     // Project importance
-    gi *= alpha;
+    gi *= alphamul;
     float gisq = gi * gi;
     project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth, gisq);
 
