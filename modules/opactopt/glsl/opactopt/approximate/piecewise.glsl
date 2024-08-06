@@ -66,7 +66,7 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
     #ifdef COEFF_TEX_FIXED_POINT_FACTOR
         float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
     #else
-        float coeff = imageLoad(coeffTex, coord).x;
+    float coeff = imageLoad(coeffTex, coord).x;
     #endif
     sum += fract(depth * N) * coeff;
 
