@@ -105,11 +105,9 @@ void main() {
             float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, pixel.depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
             float alpha = clamp(1 /
                             (1 + pow(1 - gi, 2 * lambda)
-                            * (r * (Gd - gisq)
-                            + q * (gtot - Gd))),
+                            * (r * max(0, Gd - gisq)
+                            + q * max(0, gtot - Gd))),
                             0.0, 0.9999); // set pixel alpha using opacity optimisation
-            pixel.color.a = alpha;
-            writePixelStorage(idx - 1, compressPixelData(pixel)); 
             project(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, pixel.depth, -log(1 - alpha));
             idx = pixel.previous;
             counter++;
@@ -125,10 +123,19 @@ void main() {
         while (idx != 0 && counter < ABUFFER_SIZE) {
             abufferPixel pixel = uncompressPixelData(readPixelStorage(idx - 1));
             vec4 c = pixel.color;
+            float gi = clamp(c.a, 0.001, 0.999);
+            float gisq = gi * gi;
+            float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, pixel.depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
+            float alpha = clamp(1 /
+                            (1 + pow(1 - gi, 2 * lambda)
+                            * (r * max(0, Gd - gisq)
+                            + q * max(0, gtot - Gd))),
+                            0.0, 0.9999); // set pixel alpha using opacity optimisation
+
             float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, pixel.depth); 
 
-            float weight = c.a / sqrt(1 - c.a) * exp(-taud); // correct for optical depth approximation at discontinuity
-            numerator += c.rgb * weight;
+            float weight = alpha / sqrt(1 - alpha) * exp(-taud); // correct for optical depth approximation at discontinuity
+            numerator += weight * c.rgb;
             denominator += weight;
             idx = pixel.previous;
             counter++;
@@ -136,7 +143,7 @@ void main() {
 
         vec4 color = vec4(0);
         color.rgb = numerator / denominator;
-        color.a = 1.0 - exp(-tauall);
+        color.a = 1 - exp(-tauall);
 
         FragData0 = color;
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
