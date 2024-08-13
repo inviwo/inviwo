@@ -150,25 +150,7 @@ Protected Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class to support processors owning a <a class="el" href="classinviwo_1_1ProgressBar.html">ProgressBar</a>. This class allows a progress bar contained within a processor to be visible in the network.</p>
-<h1><a class="anchor" id="example"></a>
-Example</h1>
-<p>Example of how to apply it to a processor. </p><div class="fragment"><div class="line"><span class="keyword">class </span>IVW_XXX_API MyProcessor: <span class="keyword">public</span> <a class="code hl_class" href="classinviwo_1_1Processor.html">Processor</a>, <span class="keyword">public</span> <a class="code hl_class" href="classinviwo_1_1ProgressBarOwner.html">ProgressBarOwner</a> {</div>
-<div class="line"><span class="keyword">public</span>:</div>
-<div class="line">    MyProcessor(): <a class="code hl_class" href="classinviwo_1_1Processor.html">Processor</a>(), <a class="code hl_class" href="classinviwo_1_1ProgressBarOwner.html">ProgressBarOwner</a>() {};</div>
-<div class="line">    <span class="comment">// Need to overload serialize/deseralize</span></div>
-<div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> serialize(<a class="code hl_class" href="classinviwo_1_1Serializer.html">Serializer</a>&amp; s)<span class="keyword"> const </span>{</div>
-<div class="line">       Processor::serialize(s);</div>
-<div class="line">       s.serialize(<span class="stringliteral">&quot;ProgressBar&quot;</span>, getProgressBar());</div>
-<div class="line">    }</div>
-<div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> deserialize(Deserializer&amp; d) {</div>
-<div class="line">       Processor::deserialize(d);</div>
-<div class="line">       d.deserialize(<span class="stringliteral">&quot;ProgressBar&quot;</span>, getProgressBar());</div>
-<div class="line">    }</div>
-<div class="line">};</div>
-<div class="ttc" id="aclassinviwo_1_1Processor_html"><div class="ttname"><a href="classinviwo_1_1Processor.html">inviwo::Processor</a></div><div class="ttdoc">A processor generally performs operation on input data and outputs the new result.</div><div class="ttdef"><b>Definition</b> processor.h:170</div></div>
-<div class="ttc" id="aclassinviwo_1_1ProgressBarOwner_html"><div class="ttname"><a href="classinviwo_1_1ProgressBarOwner.html">inviwo::ProgressBarOwner</a></div><div class="ttdef"><b>Definition</b> progressbarowner.h:63</div></div>
-<div class="ttc" id="aclassinviwo_1_1Serializer_html"><div class="ttname"><a href="classinviwo_1_1Serializer.html">inviwo::Serializer</a></div><div class="ttdef"><b>Definition</b> serializer.h:55</div></div>
-</div><!-- fragment --> <dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1ProgressBar.html">ProgressBar</a> </dd>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1ProgressBar.html">ProgressBar</a> </dd>
 <dd>
 <a class="el" href="classinviwo_1_1ProgressBarObservable.html">ProgressBarObservable</a> </dd></dl>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
