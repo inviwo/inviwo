@@ -46,17 +46,12 @@
 #include <utility>           // for pair
 #include <vector>            // for vector
 
-#include <include/base/cef_basictypes.h>     // for int64
 #include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
 #include <include/cef_base.h>                // for CefRefPtr, CefString
 #include <include/cef_frame.h>               // for CefFrame
 #include <nlohmann/json.hpp>                 // for basic_json, basic_json...
 
 class CefBrowser;
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <warn/pop>
 
 namespace inviwo {
 
@@ -80,7 +75,7 @@ auto ProcessorCefSynchronizer::registerCallback(const std::string& name,
 }
 
 bool ProcessorCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                       int64, const CefString& request, bool,
+                                       int64_t, const CefString& request, bool,
                                        CefRefPtr<Callback> callback) {
 
     const std::string& requestStr = request;

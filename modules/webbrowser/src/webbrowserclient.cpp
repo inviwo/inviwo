@@ -222,27 +222,43 @@ bool WebBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 }
 
 void WebBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
-                                                 TerminationStatus status) {
+                                                 TerminationStatus status, int,
+                                                 const CefString& error_string) {
     CEF_REQUIRE_UI_THREAD();
     switch (status) {
         case TS_ABNORMAL_TERMINATION:
             LogError(
                 "Web renderer process killed due to non-zero exit status "
-                "(TS_ABNORMAL_TERMINATION).");
+                "(TS_ABNORMAL_TERMINATION).\n"
+                << error_string);
             break;
         case TS_PROCESS_WAS_KILLED:
             LogError(
                 "Web renderer process killed due to SIGKILL or task manager kill "
-                "(TS_PROCESS_WAS_KILLED).");
+                "(TS_PROCESS_WAS_KILLED).\n"
+                << error_string);
             break;
         case TS_PROCESS_CRASHED:
             LogError(
-                "Web renderer process killed due to segmentation fault (TS_ABNORMAL_TERMINATION).");
+                "Web renderer process killed due to segmentation fault (TS_ABNORMAL_TERMINATION).\n"
+                << error_string);
             break;
         case TS_PROCESS_OOM:
             LogError(
                 "Web renderer process killed due to out of memory (TS_PROCESS_OOM). Some platforms "
-                "may use TS_PROCESS_CRASHED instead.");
+                "may use TS_PROCESS_CRASHED instead.\n"
+                << error_string);
+            break;
+        case TS_LAUNCH_FAILED:
+            LogError(
+                "Web renderer process killed due child process never launched. "
+                "(TS_LAUNCH_FAILED).\n"
+                << error_string);
+        case TS_INTEGRITY_FAILURE:
+            LogError(
+                "Web renderer process killed by the OS due to code integrity failure "
+                "(TS_INTEGRITY_FAILURE).\n"
+                << error_string);
             break;
     }
 

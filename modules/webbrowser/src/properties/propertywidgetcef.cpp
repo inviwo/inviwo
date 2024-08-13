@@ -35,17 +35,16 @@
 #include <inviwo/core/util/logcentral.h>                 // for LogCentral, LogError
 #include <modules/json/io/json/propertyjsonconverter.h>  // for json, PropertyJSONConverter
 
+#include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
+#include <include/cef_base.h>                // for CefRefPtr, CefString
+#include <include/cef_frame.h>               // for CefFrame
+#include <nlohmann/json.hpp>                 // for json_ref, basic_json, basic_json...
+
 #include <initializer_list>  // for initializer_list
 #include <ostream>           // for operator<<, basic_ostream, strin...
 #include <stdexcept>         // for out_of_range
 #include <utility>           // for move
 #include <vector>            // for vector
-
-#include <include/base/cef_basictypes.h>     // for int64
-#include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
-#include <include/cef_base.h>                // for CefRefPtr, CefString
-#include <include/cef_frame.h>               // for CefFrame
-#include <nlohmann/json.hpp>                 // for json_ref, basic_json, basic_json...
 
 class CefBrowser;
 
@@ -67,7 +66,7 @@ void PropertyWidgetCEF::setFrame(CefRefPtr<CefFrame> frame) {
 }
 
 bool PropertyWidgetCEF::onQuery(
-    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 /*query_id*/,
+    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64_t /*query_id*/,
     const CefString& request, bool /*persistent*/,
     CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) {
 

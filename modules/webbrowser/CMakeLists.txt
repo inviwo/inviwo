@@ -16,7 +16,7 @@
 # FATAL:async_layer_tree_frame_sink.cc
 # Known issue: Dropdown does not work.
 # Probably due to https://magpcss.org/ceforum/viewtopic.php?f=6&t=11618
-set(CEF_VERSION "111.2.4+g49cae37+chromium-111.0.5563.65")
+set(CEF_VERSION "126.2.10+g61241e4+chromium-126.0.6478.127")
 
 # Determine the platform.
 include("cmake/cef_platform.cmake")
