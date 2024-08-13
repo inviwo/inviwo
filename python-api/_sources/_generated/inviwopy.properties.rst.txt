@@ -4,15 +4,6 @@ inviwopy.properties
 .. automodule:: inviwopy.properties
 
    
-   
-   
-
-   
-   
-   
-
-   
-   
    .. rubric:: Classes
 
    .. autosummary::
@@ -108,11 +99,3 @@ inviwopy.properties
       StringProperty
       TransferFunctionProperty
    
-   
-
-   
-   
-   
-
-
-

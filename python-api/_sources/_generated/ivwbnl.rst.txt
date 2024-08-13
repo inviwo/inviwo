@@ -4,15 +4,6 @@
 .. automodule:: ivwbnl
 
    
-   
-   
-
-   
-   
-   
-
-   
-   
    .. rubric:: Classes
 
    .. autosummary::
@@ -28,11 +19,3 @@
       BrushingTargetsInvalidationLevel
       IndexList
    
-   
-
-   
-   
-   
-
-
-

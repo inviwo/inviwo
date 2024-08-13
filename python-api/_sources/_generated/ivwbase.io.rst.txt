@@ -4,11 +4,6 @@ ivwbase.io
 .. automodule:: ivwbase.io
 
    
-   
-   
-
-   
-   
    .. rubric:: Functions
 
    .. autosummary::
@@ -17,15 +12,3 @@ ivwbase.io
       saveIvfVolume
       saveIvfVolumeSequence
    
-   
-
-   
-   
-   
-
-   
-   
-   
-
-
-

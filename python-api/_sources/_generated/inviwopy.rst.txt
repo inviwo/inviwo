@@ -4,11 +4,6 @@
 .. automodule:: inviwopy
 
    
-   
-   
-
-   
-   
    .. rubric:: Functions
 
    .. autosummary::
@@ -22,10 +17,6 @@
       logWarn
       md2doc
       unindentMd2doc
-   
-   
-
-   
    
    .. rubric:: Classes
 
@@ -235,11 +226,3 @@
       vec4VectorMultiInport
       vec4VectorOutport
    
-   
-
-   
-   
-   
-
-
-

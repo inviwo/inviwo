@@ -4,15 +4,6 @@ inviwopy.data
 .. automodule:: inviwopy.data
 
    
-   
-   
-
-   
-   
-   
-
-   
-   
    .. rubric:: Classes
 
    .. autosummary::
@@ -167,11 +158,3 @@ inviwopy.data
       VolumeSequenceOutport
       Wrapping
    
-   
-
-   
-   
-   
-
-
-

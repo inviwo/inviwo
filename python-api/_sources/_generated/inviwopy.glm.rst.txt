@@ -4,11 +4,6 @@ inviwopy.glm
 .. automodule:: inviwopy.glm
 
    
-   
-   
-
-   
-   
    .. rubric:: Functions
 
    .. autosummary::
@@ -42,10 +37,6 @@ inviwopy.glm
       rotate
       sin
       tan
-   
-   
-
-   
    
    .. rubric:: Classes
 
@@ -142,11 +133,3 @@ inviwopy.glm
       vec3
       vec4
    
-   
-
-   
-   
-   
-
-
-

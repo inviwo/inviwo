@@ -4,11 +4,6 @@
 .. automodule:: ivwdataframe
 
    
-   
-   
-
-   
-   
    .. rubric:: Functions
 
    .. autosummary::
@@ -17,10 +12,6 @@
       appendRows
       innerJoin
       leftJoin
-   
-   
-
-   
    
    .. rubric:: Classes
 
@@ -42,11 +33,3 @@
       Size_tColumn
       UIntColumn
    
-   
-
-   
-   
-   
-
-
-

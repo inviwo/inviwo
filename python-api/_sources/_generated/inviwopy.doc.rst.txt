@@ -4,15 +4,6 @@ inviwopy.doc
 .. automodule:: inviwopy.doc
 
    
-   
-   
-
-   
-   
-   
-
-   
-   
    .. rubric:: Classes
 
    .. autosummary::
@@ -23,11 +14,3 @@ inviwopy.doc
       ElementType
       PathComponent
    
-   
-
-   
-   
-   
-
-
-

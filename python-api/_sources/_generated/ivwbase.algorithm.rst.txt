@@ -4,11 +4,6 @@ ivwbase.algorithm
 .. automodule:: ivwbase.algorithm
 
    
-   
-   
-
-   
-   
    .. rubric:: Functions
 
    .. autosummary::
@@ -16,15 +11,3 @@ ivwbase.algorithm
       curlVolume
       divergenceVolume
    
-   
-
-   
-   
-   
-
-   
-   
-   
-
-
-
