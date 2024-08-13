@@ -101,16 +101,10 @@ protected:
         if constexpr (std::is_floating_point_v<T>) {
             return static_cast<T>(val);
         } else {
-            return static_cast<int>(val + 0.5);
+            return static_cast<int>(std::lround(val));
         }
     }
-    double reprToEditor(T val) {
-        if constexpr (std::is_floating_point_v<T>) {
-            return static_cast<double>(val);
-        } else {
-            return static_cast<double>(val);
-        }
-    }
+    double reprToEditor(T val) { return static_cast<double>(val); }
 
     // Has implementations using above transformations.
     virtual double transformValueToEditor() override;

@@ -166,7 +166,7 @@ void DataFrameJoin::process() {
 void DataFrameJoin::onDidAddProperty(Property*, size_t) {}
 
 void DataFrameJoin::onDidRemoveProperty(PropertyOwner* owner, Property*, size_t) {
-    owner->invalidate(InvalidationLevel::InvalidOutput);
+    owner->invalidate(InvalidationLevel::InvalidOutput, nullptr);
 }
 
 }  // namespace inviwo

@@ -97,7 +97,7 @@ void KeyboardEventMatcher::deserialize(Deserializer& d) {
 }
 
 std::string KeyboardEventMatcher::displayString() const {
-    if (modifiers_ != KeyModifier::None) {
+    if (modifiers_ != KeyModifier::None && modifiers_ != KeyModifiers{flags::any}) {
         return fmt::format("{}+{}", modifiers_, key_);
     } else {
         return fmt::format("{}", key_);
@@ -177,13 +177,13 @@ void MouseEventMatcher::deserialize(Deserializer& d) {
 
 std::string MouseEventMatcher::displayString() const {
     if (buttons_ == MouseButtons{flags::any}) {
-        if (modifiers_ != KeyModifier::None) {
+        if (modifiers_ != KeyModifier::None && modifiers_ != KeyModifiers{flags::any}) {
             return fmt::format("{}+Any", modifiers_);
         } else {
             return "Any";
         }
     } else {
-        if (modifiers_ != KeyModifier::None) {
+        if (modifiers_ != KeyModifier::None && modifiers_ != KeyModifiers{flags::any}) {
             return fmt::format("{}+{}", modifiers_, buttons_);
         } else {
             return fmt::format("{}", buttons_);
@@ -229,7 +229,7 @@ void WheelEventMatcher::deserialize(Deserializer& d) {
 }
 
 std::string WheelEventMatcher::displayString() const {
-    if (modifiers_ != KeyModifier::None) {
+    if (modifiers_ != KeyModifier::None && modifiers_ != KeyModifiers{flags::any}) {
         return fmt::format("{}+Wheel", modifiers_);
     } else {
         return "Wheel";
@@ -300,7 +300,7 @@ void GestureEventMatcher::deserialize(Deserializer& d) {
 }
 
 std::string GestureEventMatcher::displayString() const {
-    if (modifiers_ != KeyModifier::None) {
+    if (modifiers_ != KeyModifier::None && modifiers_ != KeyModifiers{flags::any}) {
         return fmt::format("{}+{}", modifiers_, types_);
     } else {
         return fmt::format("{}", types_);

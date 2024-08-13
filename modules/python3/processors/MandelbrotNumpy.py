@@ -40,11 +40,11 @@ class MandelbrotNumpy(ivw.Processor):
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
 
-        self.outport = ivw.data.ImageOutport("outport")
-        self.addOutport(self.outport, owner=False)
+        self.outport = ivw.data.LayerOutport("outport")
+        self.addOutport(self.outport)
 
         self.imgdims = ivw.properties.IntSize2Property("size", "Image Dimensions",
-                                                       ivw.glm.size2_t(32, 2),
+                                                       ivw.glm.size2_t(32, 32),
                                                        min=(ivw.glm.size2_t(
                                                            1), cb.Immutable),
                                                        max=(ivw.glm.size2_t(1024), cb.Ignore))
@@ -109,4 +109,8 @@ See [python3/mandelbrot.inv](file:~modulePath~/data/workspaces/mandelbrot.inv) w
         layerpy = ivw.data.LayerPy(npData)
         layerpy.interpolation = ivw.data.InterpolationType.Nearest
 
-        self.outport.setData(ivw.data.Image(ivw.data.Layer(layerpy)))
+        layer = ivw.data.Layer(layerpy)
+        layer.dataMap.dataRange = ivw.glm.dvec2(npData.min(), npData.max())
+        layer.dataMap.valueRange = layer.dataMap.dataRange
+
+        self.outport.setData(layer)

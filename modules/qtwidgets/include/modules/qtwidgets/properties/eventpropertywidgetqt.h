@@ -55,6 +55,8 @@ public:
     virtual ~EventPropertyWidgetQt();
     void updateFromProperty();
 
+    std::unique_ptr<QMenu> getContextMenu() override;
+
 protected:
     virtual void keyPressEvent(QKeyEvent* event);
     virtual void keyReleaseEvent(QKeyEvent* event);
