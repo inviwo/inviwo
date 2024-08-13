@@ -127,8 +127,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a74d69493c0762e36ae181c0b79400222"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a344c2d307dba37e1226f5ea5af608ffc" id="r_a344c2d307dba37e1226f5ea5af608ffc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a344c2d307dba37e1226f5ea5af608ffc">updateFromProperty</a> ()</td></tr>
 <tr class="separator:a344c2d307dba37e1226f5ea5af608ffc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31bc8c45cd22247c23b3abb822b13f90" id="r_a31bc8c45cd22247c23b3abb822b13f90"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; QMenu &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a31bc8c45cd22247c23b3abb822b13f90">getContextMenu</a> () override</td></tr>
-<tr class="separator:a31bc8c45cd22247c23b3abb822b13f90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1PropertyWidgetQt"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1PropertyWidgetQt')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1PropertyWidgetQt.html">inviwo::PropertyWidgetQt</a></td></tr>
 <tr class="memitem:ae97a6e940425c4240eedb0bf4eb2b353 inherit pub_methods_classinviwo_1_1PropertyWidgetQt" id="r_ae97a6e940425c4240eedb0bf4eb2b353"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>PropertyWidgetQt</b> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property=nullptr)</td></tr>
@@ -163,6 +161,9 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>getNestedDepth</b> () 
 <tr class="memitem:aea4dc39deb04d199bb05d0e731d47806 inherit pub_methods_classinviwo_1_1PropertyWidgetQt" id="r_aea4dc39deb04d199bb05d0e731d47806"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setParentPropertyWidget</b> (<a class="el" href="classinviwo_1_1PropertyWidgetQt.html">PropertyWidgetQt</a> *parent)</td></tr>
 <tr class="separator:aea4dc39deb04d199bb05d0e731d47806 inherit pub_methods_classinviwo_1_1PropertyWidgetQt"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab76abbe7b78b8bad636a62263efbc474 inherit pub_methods_classinviwo_1_1PropertyWidgetQt" id="r_ab76abbe7b78b8bad636a62263efbc474"><td class="memItemLeft" align="right" valign="top">
+virtual std::unique_ptr&lt; QMenu &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getContextMenu</b> ()</td></tr>
+<tr class="separator:ab76abbe7b78b8bad636a62263efbc474 inherit pub_methods_classinviwo_1_1PropertyWidgetQt"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa74f1ca00f249a14a64f0c58081038d9 inherit pub_methods_classinviwo_1_1PropertyWidgetQt" id="r_aa74f1ca00f249a14a64f0c58081038d9"><td class="memItemLeft" align="right" valign="top">
 virtual std::unique_ptr&lt; QMimeData &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getPropertyMimeData</b> () const</td></tr>
 <tr class="separator:aa74f1ca00f249a14a64f0c58081038d9 inherit pub_methods_classinviwo_1_1PropertyWidgetQt"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -304,33 +305,6 @@ std::unordered_set&lt; <a class="el" href="classinviwo_1_1ObservableInterface.ht
 <tr class="separator:a12f32cb9d3e4742b33c347d5aa955b95 inherit pro_attribs_classinviwo_1_1Observer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a31bc8c45cd22247c23b3abb822b13f90" name="a31bc8c45cd22247c23b3abb822b13f90"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a31bc8c45cd22247c23b3abb822b13f90">&#9670;&#160;</a></span>getContextMenu()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::unique_ptr&lt; QMenu &gt; inviwo::EventPropertyWidgetQt::getContextMenu </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1PropertyWidgetQt.html">inviwo::PropertyWidgetQt</a>.</p>
-
-</div>
-</div>
 <a id="ac14b367e5c97b516003d1dddfe79095a" name="ac14b367e5c97b516003d1dddfe79095a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac14b367e5c97b516003d1dddfe79095a">&#9670;&#160;</a></span>mousePressEvent()</h2>
 
