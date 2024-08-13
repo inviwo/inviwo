@@ -29,4 +29,14 @@
 
 #include <inviwo/core/util/staticstring.h>
 
-namespace inviwo {}  // namespace inviwo
+namespace inviwo {
+
+static_assert(fmt::is_formattable<StaticString<5>>::value);
+static_assert(fmt::is_formattable<StaticString<5>&>::value);
+static_assert(fmt::is_formattable<StaticString<5>&&>::value);
+
+static_assert(fmt::is_formattable<const StaticString<5>>::value);
+static_assert(fmt::is_formattable<const StaticString<5>&>::value);
+static_assert(fmt::is_formattable<const StaticString<5>&&>::value);
+
+}  // namespace inviwo

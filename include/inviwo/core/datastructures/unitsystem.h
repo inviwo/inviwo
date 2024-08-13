@@ -277,7 +277,7 @@ struct fmt::formatter<::inviwo::Unit> {
     Braces braces = Braces::None;
     bool leadingSpace = false;
 
-    constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin()) {
+    constexpr auto parse(format_parse_context& ctx) -> format_parse_context::iterator {
         auto it = ctx.begin();
         auto end = ctx.end();
 
@@ -327,8 +327,7 @@ struct fmt::formatter<::inviwo::Unit> {
 
     // Formats the point p using the parsed format specification (presentation)
     // stored in this formatter.
-    template <typename FormatContext>
-    auto format(const ::inviwo::Unit& unit, FormatContext& ctx) -> decltype(ctx.out()) {
+    auto format(const ::inviwo::Unit& unit, format_context& ctx) const -> format_context::iterator {
         // ctx.out() is an output iterator to write to.
 
         if (unit == ::inviwo::Unit{}) return ctx.out();

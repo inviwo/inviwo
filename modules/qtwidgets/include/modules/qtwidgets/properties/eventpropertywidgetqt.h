@@ -53,16 +53,16 @@ class IVW_MODULE_QTWIDGETS_API EventPropertyWidgetQt : public PropertyWidgetQt {
 public:
     EventPropertyWidgetQt(EventProperty* eventproperty);
     virtual ~EventPropertyWidgetQt();
-    void updateFromProperty();
+    virtual void updateFromProperty() override;
 
     std::unique_ptr<QMenu> getContextMenu() override;
 
 protected:
-    virtual void keyPressEvent(QKeyEvent* event);
-    virtual void keyReleaseEvent(QKeyEvent* event);
-    virtual void mousePressEvent(QMouseEvent* event);
+    virtual void keyPressEvent(QKeyEvent* event) override;
+    virtual void keyReleaseEvent(QKeyEvent* event) override;
+    virtual void mousePressEvent(QMouseEvent* event) override;
 
-    virtual void focusOutEvent(QFocusEvent* event);
+    virtual void focusOutEvent(QFocusEvent* event) override;
     void clickedSlot();
 
 private:

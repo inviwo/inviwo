@@ -28,3 +28,33 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/glmfmt.h>
+#include <glm/gtx/quaternion.hpp>
+#include <inviwo/core/util/glm.h>
+
+namespace inviwo {
+
+static_assert(fmt::is_formattable<glm::vec2>::value);
+static_assert(fmt::is_formattable<glm::vec2&>::value);
+static_assert(fmt::is_formattable<glm::vec2&&>::value);
+
+static_assert(fmt::is_formattable<const glm::vec2>::value);
+static_assert(fmt::is_formattable<const glm::vec2&>::value);
+static_assert(fmt::is_formattable<const glm::vec2&&>::value);
+
+static_assert(fmt::is_formattable<glm::mat3>::value);
+static_assert(fmt::is_formattable<glm::mat3&>::value);
+static_assert(fmt::is_formattable<glm::mat3&&>::value);
+
+static_assert(fmt::is_formattable<const glm::mat3>::value);
+static_assert(fmt::is_formattable<const glm::mat3&>::value);
+static_assert(fmt::is_formattable<const glm::mat3&&>::value);
+
+static_assert(fmt::is_formattable<glm::quat>::value);
+static_assert(fmt::is_formattable<glm::quat&>::value);
+static_assert(fmt::is_formattable<glm::quat&&>::value);
+
+static_assert(fmt::is_formattable<const glm::quat>::value);
+static_assert(fmt::is_formattable<const glm::quat&>::value);
+static_assert(fmt::is_formattable<const glm::quat&&>::value);
+
+}  // namespace inviwo
