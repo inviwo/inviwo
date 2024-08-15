@@ -405,9 +405,8 @@ template <typename T, typename Pred>
 auto ordering(T& cont, Pred pred) -> std::vector<size_t> {
     std::vector<size_t> res(std::ranges::distance(cont));
     std::iota(res.begin(), res.end(), 0);
-    std::sort(res.begin(), res.end(), [&](const size_t& a, const size_t& b) {
-        return pred(cont[a], cont[b]);
-    });
+    std::sort(res.begin(), res.end(),
+              [&](const size_t& a, const size_t& b) { return pred(cont[a], cont[b]); });
     return res;
 }
 
@@ -463,7 +462,7 @@ namespace hashtuple {
  */
 template <class Tuple, size_t Index = std::tuple_size<Tuple>::value - 1>
 struct HashValueImpl {
-    static void apply(size_t& seed, Tuple const& tuple) {
+    static void apply(size_t& seed, const Tuple& tuple) {
         HashValueImpl<Tuple, Index - 1>::apply(seed, tuple);
         hash_combine(seed, std::get<Index>(tuple));
     }
@@ -471,7 +470,7 @@ struct HashValueImpl {
 
 template <class Tuple>
 struct HashValueImpl<Tuple, 0> {
-    static void apply(size_t& seed, Tuple const& tuple) { hash_combine(seed, std::get<0>(tuple)); }
+    static void apply(size_t& seed, const Tuple& tuple) { hash_combine(seed, std::get<0>(tuple)); }
 };
 
 }  // namespace hashtuple
@@ -492,7 +491,7 @@ struct hash<std::pair<T, U>> {
 
 template <typename... TT>
 struct hash<std::tuple<TT...>> {
-    size_t operator()(std::tuple<TT...> const& tt) const {
+    size_t operator()(const std::tuple<TT...>& tt) const {
         size_t seed = 0;
         inviwo::util::hashtuple::HashValueImpl<std::tuple<TT...>>::apply(seed, tt);
         return seed;

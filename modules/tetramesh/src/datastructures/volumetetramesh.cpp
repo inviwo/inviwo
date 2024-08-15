@@ -134,7 +134,7 @@ void VolumeTetraMesh::get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds)
         }
     });
 
-    const auto bounds = ivec3{dims} - ivec3{1,1,1};
+    const auto bounds = ivec3{dims} - ivec3{1, 1, 1};
     nodeIds.reserve(getNumberOfCells());
     util::IndexMapper<3, int> indexMapper{dims};
     for (int z = 0; z < bounds.z; ++z) {
