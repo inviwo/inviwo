@@ -62,6 +62,7 @@
 #include <QString>     // for QString
 #include <QModelIndex>
 #include <QPen>
+#include <QEvent>
 #include <glm/vec2.hpp>  // for vec<>::(anonymous)
 #include <glm/vec3.hpp>  // for vec<>::(anonymous), operator*
 #include <glm/vec4.hpp>  // for vec<>::(anonymous), operator*
@@ -434,3 +435,376 @@ T localizedStringTo(const std::string& str) {
 }
 
 }  // namespace inviwo
+
+class QActionEvent;
+class QChildEvent;
+class QCloseEvent;
+class QContextMenuEvent;
+class QDeferredDeleteEvent;
+class QDragEnterEvent;
+class QDragLeaveEvent;
+class QDragMoveEvent;
+class QDropEvent;
+class QEnterEvent;
+class QFileOpenEvent;
+class QFocusEvent;
+class QGestureEvent;
+class QGraphicsItem;
+class QGraphicsSceneContextMenuEvent;
+class QGraphicsSceneDragDropEvent;
+class QGraphicsSceneHoverEvent;
+class QGraphicsSceneMouseEvent;
+class QGraphicsSceneMoveEvent;
+class QGraphicsSceneResizeEvent;
+class QGraphicsSceneWheelEvent;
+class QHelpEvent;
+class QHideEvent;
+class QHoverEvent;
+class QIconDragEvent;
+class QInputMethodEvent;
+class QInputMethodQueryEvent;
+class QKeyEvent;
+class QMouseEvent;
+class QMoveEvent;
+class QNativeGestureEvent;
+class QPaintEvent;
+class QPlatformSurfaceEvent;
+class QResizeEvent;
+class QScreenOrientationChangeEvent;
+class QScrollEvent;
+class QScrollPrepareEvent;
+class QShortcutEvent;
+class QShowEvent;
+class QStateMachine;
+class QStatusTipEvent;
+class QTabletEvent;
+class QTimerEvent;
+class QTouchEvent;
+class QWheelEvent;
+class QWindowStateChangeEvent;
+
+namespace inviwo::utilqt {
+namespace detail {
+    template <QEvent::Type Type>
+    auto qEventMap() {
+        if constexpr (Type == QEvent::None) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ActionAdded) {
+            return static_cast<QActionEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ActionChanged) {
+            return static_cast<QActionEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ActionRemoved) {
+            return static_cast<QActionEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ActivationChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ApplicationFontChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ApplicationLayoutDirectionChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ApplicationPaletteChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ApplicationStateChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ApplicationWindowIconChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ChildAdded) {
+            return static_cast<QChildEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ChildPolished) {
+            return static_cast<QChildEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ChildRemoved) {
+            return static_cast<QChildEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ChildWindowAdded) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ChildWindowRemoved) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Clipboard) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Close) {
+            return static_cast<QCloseEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::CloseSoftwareInputPanel) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ContentsRectChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ContextMenu) {
+            return static_cast<QContextMenuEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::CursorChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::DeferredDelete) {
+            return static_cast<QDeferredDeleteEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::DevicePixelRatioChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::DragEnter) {
+            return static_cast<QDragEnterEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::DragLeave) {
+            return static_cast<QDragLeaveEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::DragMove) {
+            return static_cast<QDragMoveEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Drop) {
+            return static_cast<QDropEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::DynamicPropertyChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::EnabledChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Enter) {
+            return static_cast<QEnterEvent*>(nullptr);
+#ifdef QT_KEYPAD_NAVIGATION
+        } else if constexpr (Type == QEvent::EnterEditFocus) {
+            return static_cast<QEvent*>(nullptr);
+#endif
+        } else if constexpr (Type == QEvent::EnterWhatsThisMode) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Expose) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::FileOpen) {
+            return static_cast<QFileOpenEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::FocusIn) {
+            return static_cast<QFocusEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::FocusOut) {
+            return static_cast<QFocusEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::FocusAboutToChange) {
+            return static_cast<QFocusEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::FontChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Gesture) {
+            return static_cast<QGestureEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GestureOverride) {
+            return static_cast<QGestureEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GrabKeyboard) {
+            return static_cast<QGraphicsItem*>(nullptr);
+        } else if constexpr (Type == QEvent::GrabMouse) {
+            return static_cast<QGraphicsItem*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneContextMenu) {
+            return static_cast<QGraphicsSceneContextMenuEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneDragEnter) {
+            return static_cast<QGraphicsSceneDragDropEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneDragLeave) {
+            return static_cast<QGraphicsSceneDragDropEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneDragMove) {
+            return static_cast<QGraphicsSceneDragDropEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneDrop) {
+            return static_cast<QGraphicsSceneDragDropEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneHelp) {
+            return static_cast<QHelpEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneHoverEnter) {
+            return static_cast<QGraphicsSceneHoverEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneHoverLeave) {
+            return static_cast<QGraphicsSceneHoverEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneHoverMove) {
+            return static_cast<QGraphicsSceneHoverEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneMouseDoubleClick) {
+            return static_cast<QGraphicsSceneMouseEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneMouseMove) {
+            return static_cast<QGraphicsSceneMouseEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneMousePress) {
+            return static_cast<QGraphicsSceneMouseEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneMouseRelease) {
+            return static_cast<QGraphicsSceneMouseEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneMove) {
+            return static_cast<QGraphicsSceneMoveEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneResize) {
+            return static_cast<QGraphicsSceneResizeEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneWheel) {
+            return static_cast<QGraphicsSceneWheelEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::GraphicsSceneLeave) {
+            return static_cast<QGraphicsSceneWheelEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Hide) {
+            return static_cast<QHideEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::HideToParent) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::HoverEnter) {
+            return static_cast<QHoverEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::HoverLeave) {
+            return static_cast<QHoverEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::HoverMove) {
+            return static_cast<QHoverEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::IconDrag) {
+            return static_cast<QIconDragEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::InputMethod) {
+            return static_cast<QInputMethodEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::InputMethodQuery) {
+            return static_cast<QInputMethodQueryEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::KeyboardLayoutChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::KeyPress) {
+            return static_cast<QKeyEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::KeyRelease) {
+            return static_cast<QKeyEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::LanguageChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::LayoutDirectionChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::LayoutRequest) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Leave) {
+            return static_cast<QEvent*>(nullptr);
+#ifdef QT_KEYPAD_NAVIGATION
+        } else if constexpr (Type == QEvent::LeaveEditFocus) {
+            return static_cast<QEvent*>(nullptr);
+#endif
+        } else if constexpr (Type == QEvent::LeaveWhatsThisMode) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::LocaleChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::NonClientAreaMouseButtonDblClick) {
+            return static_cast<QMouseEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::NonClientAreaMouseButtonPress) {
+            return static_cast<QMouseEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::NonClientAreaMouseButtonRelease) {
+            return static_cast<QMouseEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::NonClientAreaMouseMove) {
+            return static_cast<QMouseEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::MacSizeChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::MetaCall) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ModifiedChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::MouseButtonDblClick) {
+            return static_cast<QMouseEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::MouseButtonPress) {
+            return static_cast<QMouseEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::MouseButtonRelease) {
+            return static_cast<QMouseEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::MouseMove) {
+            return static_cast<QMouseEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::MouseTrackingChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Move) {
+            return static_cast<QMoveEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::NativeGesture) {
+            return static_cast<QNativeGestureEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::OrientationChange) {
+            return static_cast<QScreenOrientationChangeEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Paint) {
+            return static_cast<QPaintEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::PaletteChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ParentAboutToChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ParentChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ParentWindowAboutToChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ParentWindowChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::PlatformPanel) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::PlatformSurface) {
+            return static_cast<QPlatformSurfaceEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Polish) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::PolishRequest) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::QueryWhatsThis) {
+            return static_cast<QHelpEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Quit) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ReadOnlyChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::RequestSoftwareInputPanel) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Resize) {
+            return static_cast<QResizeEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ScrollPrepare) {
+            return static_cast<QScrollPrepareEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Scroll) {
+            return static_cast<QScrollEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Shortcut) {
+            return static_cast<QShortcutEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ShortcutOverride) {
+            return static_cast<QKeyEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Show) {
+            return static_cast<QShowEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ShowToParent) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::SockAct) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::StateMachineSignal) {
+            return static_cast<QStateMachine*>(nullptr);
+        } else if constexpr (Type == QEvent::StateMachineWrapped) {
+            return static_cast<QStateMachine*>(nullptr);
+        } else if constexpr (Type == QEvent::StatusTip) {
+            return static_cast<QStatusTipEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::StyleChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::TabletMove) {
+            return static_cast<QTabletEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::TabletPress) {
+            return static_cast<QTabletEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::TabletRelease) {
+            return static_cast<QTabletEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::TabletEnterProximity) {
+            return static_cast<QTabletEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::TabletLeaveProximity) {
+            return static_cast<QTabletEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::TabletTrackingChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ThreadChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Timer) {
+            return static_cast<QTimerEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ToolBarChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ToolTip) {
+            return static_cast<QHelpEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ToolTipChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::TouchBegin) {
+            return static_cast<QTouchEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::TouchCancel) {
+            return static_cast<QTouchEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::TouchEnd) {
+            return static_cast<QTouchEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::TouchUpdate) {
+            return static_cast<QTouchEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::UngrabKeyboard) {
+            return static_cast<QGraphicsItem*>(nullptr);
+        } else if constexpr (Type == QEvent::UngrabMouse) {
+            return static_cast<QGraphicsItem*>(nullptr);
+        } else if constexpr (Type == QEvent::UpdateLater) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::UpdateRequest) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::WhatsThis) {
+            return static_cast<QHelpEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::WhatsThisClicked) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::Wheel) {
+            return static_cast<QWheelEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::WinEventAct) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::WindowActivate) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::WindowBlocked) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::WindowDeactivate) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::WindowIconChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::WindowStateChange) {
+            return static_cast<QWindowStateChangeEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::WindowTitleChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::WindowUnblocked) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::WinIdChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else if constexpr (Type == QEvent::ZOrderChange) {
+            return static_cast<QEvent*>(nullptr);
+        } else {
+            return static_cast<QEvent*>(nullptr);
+        }
+    }
+}  // namespace detail
+
+template <QEvent::Type Type>
+auto isEvent(QEvent* e) -> decltype(detail::qEventMap<Type>()) {
+    if (!e) {
+        return nullptr;
+    } else if (Type == e->type()) {
+        return static_cast<decltype(detail::qEventMap<Type>())>(e);
+    } else {
+        return nullptr;
+    }
+}
+}  // namespace inviwo::utilqt
