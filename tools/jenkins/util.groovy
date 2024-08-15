@@ -94,7 +94,7 @@ def cfgLabel(def state, String label, Boolean add) {
         } else {
             ifdef({state.pullRequest})?.removeLabel(label) 
         } 
-    } catch(e) {}    
+    } catch(e) {}
 }
 
 def checked(def state, String label, Boolean fail, Closure fun) {
@@ -230,7 +230,7 @@ def regression(def state, modulepaths) {
                         --output . \
                         --summary \
                         --modules ${modulepaths.join(' ')}
-            """        
+            """
         }
     }
     publishHTML([
@@ -290,7 +290,9 @@ def slack(def state, channel) {
 }
 
 def cmake(Map args = [:]) {
-    return "cmake -G Ninja " +
+    return "cmake --preset ninja-developer -B . " +
+        "-DVCPKG_TARGET_TRIPLET=x64-osx-dynamic " +
+        "--toolchain " + args.state.env.VCPKG_ROOT + "/scripts/buildsystems/vcpkg.cmake " +
         (args.printCMakeVars ? " -LA " : "") +
         (args.opts?.collect{" -D${it.key}=${it.value}"}?.join('') ?: "") + 
         (args.modulePaths ? " -DIVW_EXTERNAL_MODULES=\"" + args.modulePaths.join(";") + "\"" : "" ) +
@@ -339,19 +341,37 @@ def build(Map args = [:]) {
         println "External:\n  ${args.modulePaths?.join('\n  ')?:""}"
         println "Modules On:\n  ${args.onModules?.join('\n  ')?:""}"
         println "Modules Off:\n  ${args.offModules?.join('\n  ')?:""}"
-        log {
-            checked(args.state, 'Build', true) {
-                sh """
-                    ccache --zero-stats
-                    # tell ccache where the project root is
-                    export CCACHE_BASEDIR=${args.state.env.WORKSPACE}           
-                    ${cmake(args)}
-                    ninja
-                    ccache --show-stats
-                """
+        withCredentials([string(credentialsId: 'vcpkg_cache_token', variable: 'VCPKG_CACHE_TOKEN')]) {
+            log {
+                checked(args.state, 'Build', true) {
+                    sh """
+                        export VCPKG_BINARY_SOURCES="clear;http,https://jenkins.inviwo.org/cache/{sha},readwrite,Authorization: Bearer \$VCPKG_CACHE_TOKEN"
+                        ccache --zero-stats
+                        # tell ccache where the project root is
+                        export CCACHE_BASEDIR=${args.state.env.WORKSPACE}
+                        ${cmake(args)}
+                        ninja
+                        ccache --show-stats
+                    """
+                }
             }
         }
-    }    
+    }
+}
+
+def vcpkg(Map args = [:]) {
+    log() {
+        checked(args.state, 'Update vcpkg', true) {
+            sh """
+                SHA=`jq -r '.["vcpkg-configuration"].["default-registry"].baseline' inviwo/vcpkg.json`
+                cd ${args.state.env.VCPKG_ROOT}
+
+                git fetch
+                git checkout \$SHA
+                ./bootstrap-vcpkg.sh
+            """
+        }
+    }
 }
 
 // Args: 
@@ -377,6 +397,7 @@ def buildStandard(Map args = [:]) {
         if (args.state.env.offModules) args.offModules += args.state.env.offModules.tokenize(';')
         if (args.state.env.onModules) args.onModules += args.state.env.onModules.tokenize(';')
 
+        vcpkg(args)
         build(args)
     }
 }
