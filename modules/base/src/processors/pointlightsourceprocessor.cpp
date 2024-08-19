@@ -190,17 +190,17 @@ vec3 PointLightInteractionHandler::getLookFrom() const { return lightPosition_->
 
 vec3 PointLightInteractionHandler::getLookUp() const { return lookUp_; }
 
-PointLightInteractionHandler& PointLightInteractionHandler::setLookTo(vec3 lookTo) {
+TrackballObject& PointLightInteractionHandler::setLookTo(vec3 lookTo) {
     lookTo_ = lookTo;
     return *this;
 }
 
-PointLightInteractionHandler& PointLightInteractionHandler::setLookFrom(vec3 lookFrom) {
+TrackballObject& PointLightInteractionHandler::setLookFrom(vec3 lookFrom) {
     lightPosition_->updatePosition(lookFrom, CoordinateSpace::World);
     return *this;
 }
 
-PointLightInteractionHandler& PointLightInteractionHandler::setLookUp(vec3 lookUp) {
+TrackballObject& PointLightInteractionHandler::setLookUp(vec3 lookUp) {
     lookUp_ = lookUp;
     return *this;
 }
@@ -221,7 +221,7 @@ vec3 PointLightInteractionHandler::getLookToMaxValue() const {
     return camera_->lookTo_.getMaxValue();
 }
 
-PointLightInteractionHandler& PointLightInteractionHandler::setLook(vec3 lookFrom, vec3 lookTo,
+TrackballObject& PointLightInteractionHandler::setLook(vec3 lookFrom, vec3 lookTo,
                                                                     vec3 lookUp) {
     lightPosition_->updatePosition(lookFrom, CoordinateSpace::World);
     lookTo_ = lookTo;

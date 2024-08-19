@@ -110,9 +110,9 @@ public:
     [[nodiscard]] virtual vec3 getLookFrom() const override;
     [[nodiscard]] virtual vec3 getLookUp() const override;
 
-    virtual PointLightInteractionHandler& setLookTo(vec3 lookTo) override;
-    virtual PointLightInteractionHandler& setLookFrom(vec3 lookFrom) override;
-    virtual PointLightInteractionHandler& setLookUp(vec3 lookUp) override;
+    virtual TrackballObject& setLookTo(vec3 lookTo) override;
+    virtual TrackballObject& setLookFrom(vec3 lookFrom) override;
+    virtual TrackballObject& setLookUp(vec3 lookUp) override;
 
     [[nodiscard]] virtual vec3 getLookFromMinValue() const override;
     [[nodiscard]] virtual vec3 getLookFromMaxValue() const override;
@@ -120,7 +120,7 @@ public:
     [[nodiscard]] virtual vec3 getLookToMinValue() const override;
     [[nodiscard]] virtual vec3 getLookToMaxValue() const override;
 
-    virtual PointLightInteractionHandler& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;
+    virtual TrackballObject& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;
 
     [[nodiscard]] virtual float getNearPlaneDist() const override;
     [[nodiscard]] virtual float getFarPlaneDist() const override;

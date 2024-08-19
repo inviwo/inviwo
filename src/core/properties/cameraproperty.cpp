@@ -270,17 +270,17 @@ CameraProperty& CameraProperty::setCamera(std::unique_ptr<Camera> newCamera) {
     return *this;
 }
 
-CameraProperty& CameraProperty::setLookFrom(vec3 lookFrom) {
+TrackballObject& CameraProperty::setLookFrom(vec3 lookFrom) {
     lookFrom_.set(lookFrom);
     return *this;
 }
 
-CameraProperty& CameraProperty::setLookTo(vec3 lookTo) {
+TrackballObject& CameraProperty::setLookTo(vec3 lookTo) {
     lookTo_.set(lookTo);
     return *this;
 }
 
-CameraProperty& CameraProperty::setLookUp(vec3 lookUp) {
+TrackballObject& CameraProperty::setLookUp(vec3 lookUp) {
     lookUp_.set(lookUp);
     return *this;
 }
@@ -291,7 +291,7 @@ CameraProperty& CameraProperty::setAspectRatio(float aspectRatio) {
 }
 float CameraProperty::getAspectRatio() const { return camera_->getAspectRatio(); }
 
-CameraProperty& CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
+TrackballObject& CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
     NetworkLock lock(this);
     setLookFrom(lookFrom);
     setLookTo(lookTo);
