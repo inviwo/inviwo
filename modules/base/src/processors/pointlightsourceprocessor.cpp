@@ -221,8 +221,7 @@ vec3 PointLightInteractionHandler::getLookToMaxValue() const {
     return camera_->lookTo_.getMaxValue();
 }
 
-TrackballObject& PointLightInteractionHandler::setLook(vec3 lookFrom, vec3 lookTo,
-                                                                    vec3 lookUp) {
+TrackballObject& PointLightInteractionHandler::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
     lightPosition_->updatePosition(lookFrom, CoordinateSpace::World);
     lookTo_ = lookTo;
     lookUp_ = lookUp;
