@@ -496,7 +496,7 @@ jobs:
         -DIVW_MODULE_WEBBROWSER=ON
         -DVCPKG_MANIFEST_FEATURES="sgct"
 
-    - uses: cpp-linter/cpp-linter-action@v2.12.0
+    - uses: cpp-linter/cpp-linter-action@v2.12.1
       id: linter
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
