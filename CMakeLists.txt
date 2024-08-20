@@ -27,7 +27,7 @@
  #
  #################################################################################
 
-cmake_minimum_required(VERSION 3.23...3.27 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.23...3.30 FATAL_ERROR)
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 message(STATUS "CMake version: ${CMAKE_VERSION}")
 
