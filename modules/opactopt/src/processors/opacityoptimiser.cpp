@@ -69,7 +69,10 @@ OpacityOptimiser::OpacityOptimiser()
     , opticalDepthCoefficients_{"opticalDepthCoefficients", "Optical depth coefficients"}
     , smoothing_{"smoothing", "Smoothing", false}
     , gaussianKernelRadius_{"gaussianKernelRadius", "Gaussian kernel radius", 3, 1, 50}
-    , gaussianKernelSigma_{"gaussianKernelSigma", "Gaussian kernel sigma", 1, 0.001, 50} {
+    , gaussianKernelSigma_{"gaussianKernelSigma", "Gaussian kernel sigma", 1, 0.001, 50}
+    , debugCoords_{"debugCoords", "Coordinates", {0, 0}}
+    , debugFileName_{"debugFile", "Debug file"}
+    , debugApproximation_{"debugApproximation", "Debug and export"} {
 
     addPort(importanceVolume_).setOptional(true);
 
@@ -101,7 +104,8 @@ OpacityOptimiser::OpacityOptimiser()
     approximationMethod_.set("fourier");
 
     approximationProperties_.addProperties(approximationMethod_, importanceSumCoefficients_,
-                                           opticalDepthCoefficients_, smoothing_);
+                                           opticalDepthCoefficients_, smoothing_, debugCoords_,
+                                           debugFileName_, debugApproximation_);
     smoothing_.addProperties(gaussianKernelRadius_, gaussianKernelSigma_);
 
     importanceVolume_.onChange([this]() {
@@ -130,6 +134,7 @@ OpacityOptimiser::OpacityOptimiser()
             flr_ = std::make_unique<ApproximateOpacityOptimisationRenderer>(
                 p, &camera_, importanceSumCoefficients_, opticalDepthCoefficients_,
                 gaussianKernelRadius_, gaussianKernelSigma_);
+            auto aoor = dynamic_cast<ApproximateOpacityOptimisationRenderer*>(flr_.get());
             smoothing_.propertyModified();
         } else {
             removeProperty(approximationProperties_);
@@ -209,9 +214,36 @@ OpacityOptimiser::OpacityOptimiser()
         }
     });
 
+    debugApproximation_.onChange([this]() {
+        if (opacityOptimisationRenderer_ == 0 && !debugFileName_.get().empty()) {
+            auto aoor = dynamic_cast<ApproximateOpacityOptimisationRenderer*>(flr_.get());
+            if (aoor) {
+                aoor->debug = true;
+                aoor->debugCoords = debugCoords_;
+            }
+        } else if (debugFileName_.get().empty())
+            LogError("Debug file: Invalid file name");
+    });
+
+    debugCoords_.setMinValue({0, 0});
+    debugCoords_.setMaxValue(ivec2(flr_->screenSize_) - ivec2(1, 1));
+    debugFileName_.setSelectedExtension(
+        FileExtension::createFileExtensionFromString("Text file (*.txt)"));
     opacityOptimisationRenderer_.propertyModified();
 }
 
-void OpacityOptimiser::process() { RasterizationRenderer::process(); }
+void OpacityOptimiser::process() {
+    RasterizationRenderer::process();
+
+    if (opacityOptimisationRenderer_ == 0) {
+        auto aoor = dynamic_cast<ApproximateOpacityOptimisationRenderer*>(flr_.get());
+        if (aoor && aoor->debug) {
+            aoor->debug = false;
+            aoor->db_.exportDebugInfo(debugFileName_.get(), *(aoor->ap_), q_, r_, lambda_);
+        }
+    }
+    debugCoords_.setMinValue({0, 0});
+    debugCoords_.setMaxValue(ivec2(flr_->screenSize_) - ivec2(1, 1));
+}
 
 }  // namespace inviwo

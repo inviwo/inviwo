@@ -30,35 +30,30 @@
 
 #include <modules/opactopt/opactoptmoduledefine.h>
 
+#include <inviwo/core/datastructures/buffer/buffer.h>  // Buffer
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/io/datareader.h>
-
-#include <any>          // for any
-#include <memory>       // for shared_ptr
-#include <string_view>  // for string_view
 
 namespace inviwo {
 
 /**
  * \ingroup dataio
  * \brief Inviwo Module OpactOpt
+ *
+ * Raw point data reader
  */
-class IVW_MODULE_OPACTOPT_API AmiraMeshReader : public DataReaderType<Mesh> {
+class IVW_MODULE_OPACTOPT_API RawPointReader : public DataReaderType<Mesh> {
 public:
-    AmiraMeshReader();
-    AmiraMeshReader(const AmiraMeshReader& rhs) = default;
-    AmiraMeshReader& operator=(const AmiraMeshReader& that) = default;
-    virtual AmiraMeshReader* clone() const override;
-    virtual ~AmiraMeshReader() = default;
+    RawPointReader();
+    RawPointReader(const RawPointReader& rhs) = default;
+    RawPointReader& operator=(const RawPointReader& that) = default;
+    virtual RawPointReader* clone() const override;
+    virtual ~RawPointReader() = default;
 
     virtual std::shared_ptr<Mesh> readData(const std::filesystem::path& filePath) override;
 
 private:
     enum AmiraDataType { Lines, Vertices, Importance };
-
-    void processLines(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
-    void processVertices(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
-    void processImportance(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
 };
 
 }  // namespace inviwo

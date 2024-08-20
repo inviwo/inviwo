@@ -33,9 +33,12 @@
 #include <string>
 #include <map>
 #include <tuple>
+#include <fstream>
 
-#include <inviwo/core/properties/optionproperty.h>  // for OptionProperty
+#include <modules/opengl/buffer/bufferobject.h>
+#include <inviwo/core/properties/optionproperty.h>        // for OptionProperty
 #include <inviwo/core/properties/optionpropertytraits.h>  // for OptionPropertyTraits
+#include <inviwo/core/util/logcentral.h>
 
 namespace inviwo {
 
@@ -59,6 +62,32 @@ const std::map<std::string, const ApproximationProperties> approximations{
 
 double choose(double n, double k);
 std::vector<float> generateLegendreCoefficients();
+
+struct IVW_MODULE_OPACTOPT_API DebugApproximationCoeffs {
+    std::vector<float> importanceSumCoeffs;
+    std::vector<float> opticalDepthCoeffs;
+};
+
+struct IVW_MODULE_OPACTOPT_API DebugFragment {
+    float depth;
+    float importance;
+};
+
+class DebugBuffer {
+public:
+    bool ready = false;
+
+    DebugBuffer();
+    void initialiseDebugBuffer();
+    void retrieveDebugInfo(int nIsc, int nOdc);
+    void exportDebugInfo(std::filesystem::path path, const ApproximationProperties ap, int q, int r,
+                         int lambda);
+
+private:
+    BufferObject debugApproximationCoeffsBuffer_, debugFragmentsBuffer_;
+    DebugApproximationCoeffs debugCoeffs_;
+    std::vector<DebugFragment> debugFrags;
+};
 
 }  // namespace Approximations
 

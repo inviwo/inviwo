@@ -81,7 +81,7 @@ uniform float lambda;
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if(color_.a == 0) { discard; }
+    if(color_.a < 0.01) { discard; }
 
     float linewidthHalf = lineWidth * 0.5;
 
@@ -148,8 +148,6 @@ void main() {
         d /= antialiasing;
         alphamul = exp(-d*d);
     }
-    // prevent fragments with low alpha from being rendered
-//    if (alphamul < 0.05) discard;
 
     gi *= alphamul;
 

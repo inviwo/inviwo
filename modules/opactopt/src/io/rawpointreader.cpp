@@ -26,39 +26,45 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/opactopt/opactoptmoduledefine.h>
+#include <modules/opactopt/io/rawpointreader.h>
 
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>  // for DataReaderException
+#include <inviwo/core/util/raiiutils.h>
 
-#include <any>          // for any
-#include <memory>       // for shared_ptr
-#include <string_view>  // for string_view
+#include <vector>  // for vector
 
 namespace inviwo {
 
-/**
- * \ingroup dataio
- * \brief Inviwo Module OpactOpt
- */
-class IVW_MODULE_OPACTOPT_API AmiraMeshReader : public DataReaderType<Mesh> {
-public:
-    AmiraMeshReader();
-    AmiraMeshReader(const AmiraMeshReader& rhs) = default;
-    AmiraMeshReader& operator=(const AmiraMeshReader& that) = default;
-    virtual AmiraMeshReader* clone() const override;
-    virtual ~AmiraMeshReader() = default;
+RawPointReader::RawPointReader() : DataReaderType<Mesh>() {
+    addExtension(FileExtension("raw", "Raw point reader"));
+}
 
-    virtual std::shared_ptr<Mesh> readData(const std::filesystem::path& filePath) override;
+RawPointReader* RawPointReader::clone() const { return new RawPointReader(*this); }
 
-private:
-    enum AmiraDataType { Lines, Vertices, Importance };
+std::shared_ptr<Mesh> RawPointReader::readData(const std::filesystem::path& filePath) {
+    auto fin = std::ifstream(filePath, std::ios::in | std::ios::binary);
+    util::OnScopeExit close([&fin]() { fin.close(); });
 
-    void processLines(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
-    void processVertices(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
-    void processImportance(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
-};
+    auto mesh = std::make_shared<Mesh>();
+    if (fin.good()) {
+        fin.seekg(0, fin.end);
+        int bytes = fin.tellg();
+        int N = bytes / sizeof(vec3);
+        std::vector<vec3> dest(N);
+
+        fin.seekg(0, fin.beg);
+        fin.read(reinterpret_cast<char*>(dest.data()), bytes);
+        LogInfo("Read " << N << " points");
+
+        mesh->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
+                        util::makeBuffer(std::move(dest)));
+    } else {
+        LogError("Error reading file " << filePath);
+        return nullptr;
+    }
+
+    return mesh;
+}
 
 }  // namespace inviwo

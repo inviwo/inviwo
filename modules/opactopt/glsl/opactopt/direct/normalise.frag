@@ -32,6 +32,15 @@
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 
+#ifdef DEBUG
+uniform ivec2 debugCoords;
+
+layout(std430, binding = 10) buffer debugCoeffs {
+    float debugImportanceCoeffs[N_IMPORTANCE_SUM_COEFFICIENTS];
+    float debugOpticalCoeffs[N_OPTICAL_DEPTH_COEFFICIENTS];
+};
+#endif
+
 uniform ImageParameters imageParameters;
 uniform sampler2D imageColor;
 uniform layout(r32i) iimage2DArray importanceSumCoeffs[2];
@@ -56,6 +65,15 @@ void main(void) {
     float tauall = total(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS);
     if (color.a != 0.0)
         color.a = 1.0 - exp(-tauall);
+
+    #ifdef DEBUG
+        if (ivec2(gl_FragCoord.xy) == debugCoords) {
+            for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++)
+                debugImportanceCoeffs[i] = imageLoad(importanceSumCoeffs[0], ivec3(debugCoords, i)).x / COEFF_TEX_FIXED_POINT_FACTOR;
+            for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++)
+                debugOpticalCoeffs[i] = imageLoad(opticalDepthCoeffs, ivec3(debugCoords, i)).x / COEFF_TEX_FIXED_POINT_FACTOR;
+        }
+    #endif
 
     FragData0 = color;
     if (color.a != 0) PickingData = vec4(0.0, 0.0, 0.0, 1.0);

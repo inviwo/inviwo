@@ -29,6 +29,7 @@
 #pragma once
 
 #include <modules/opactopt/opactoptmoduledefine.h>
+#include <modules/opactopt/opactoptmodule.h>
 
 #include <modules/opactopt/rendering/opacityoptimisationrenderer.h>
 #include <modules/opactopt/rendering/approximation.h>
@@ -38,16 +39,14 @@
 
 namespace inviwo {
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_OPACTOPT_API ApproximateOpacityOptimisationRenderer
     : public OpacityOptimisationRenderer {
+
 public:
-    ApproximateOpacityOptimisationRenderer(const Approximations::ApproximationProperties* p,
-                                           CameraProperty* c, int isc, int odc,
-                                           int gaussianRadius = 3, float sigma = 1.0f);
+
+    ApproximateOpacityOptimisationRenderer(
+        const Approximations::ApproximationProperties* p, CameraProperty* c, int isc, int odc,
+        int gaussianRadius = 3, float sigma = 1.0f);
 
     virtual void prePass(const size2_t& screenSize) override;
     virtual bool postPass(bool useIllustration, const Image* background) override;
@@ -59,6 +58,11 @@ public:
     void generateAndUploadLegendreCoefficients(bool force = false);
 
     bool smoothing;
+    bool debug = false;
+    ivec2 debugCoords = ivec2(0, 0);
+    std::filesystem::path debugFile;
+    Approximations::DebugBuffer db_;
+    const Approximations::ApproximationProperties* ap_;
 
 private:
     virtual void buildShaders(bool hasBackground = false) override;
@@ -69,13 +73,12 @@ private:
 
     Shader project_, smoothH_, smoothV_, blend_, clearaoo_;
 
-    const Approximations::ApproximationProperties* ap_;
     int nImportanceSumCoefficients_;
     int nOpticalDepthCoefficients_;
-    Texture2DArray importanceSumCoeffs_[2];
-    Texture2DArray opticalDepthCoeffs_;
-
+    Texture2DArray importanceSumTexture_[2];
+    Texture2DArray opticalDepthTexture_;
     TextureUnit *abuffUnit_, *importanceSumUnitMain_, *importanceSumUnitSmooth_, *opticalDepthUnit_;
+
     BufferObject gaussianKernel_;
     int gaussianRadius_;
     float gaussianSigma_;

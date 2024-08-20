@@ -12,6 +12,7 @@ set(HEADER_FILES
     include/modules/opactopt/rendering/decoupledopacityoptimisationrenderer.h
     include/modules/opactopt/io/amirameshreader.h
     include/modules/opactopt/io/amiravolumereader.h
+    include/modules/opactopt/io/rawpointreader.h
     include/modules/opactopt/algorithm/gaussian.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -27,6 +28,7 @@ set(SOURCE_FILES
     src/rendering/decoupledopacityoptimisationrenderer.cpp
     src/io/amirameshreader.cpp
     src/io/amiravolumereader.cpp
+    src/io/rawpointreader.cpp
     src/algorithm/gaussian.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

@@ -33,6 +33,7 @@
 #include <modules/opactopt/processors/meshmappingvolume.h>
 #include <modules/opactopt/io/amirameshreader.h>
 #include <modules/opactopt/io/amiravolumereader.h>
+#include <modules/opactopt/io/rawpointreader.h>
 
 #include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
 #include <inviwo/core/common/inviwomodule.h>      // for InviwoModule
@@ -52,6 +53,7 @@ OpactOptModule::OpactOptModule(InviwoApplication* app) : InviwoModule(app, "Opac
     // Data readers
     registerDataReader(std::make_unique<AmiraMeshReader>());
     registerDataReader(std::make_unique<AmiraVolumeReader>());
+    registerDataReader(std::make_unique<RawPointReader>());
 }
 
 }  // namespace inviwo

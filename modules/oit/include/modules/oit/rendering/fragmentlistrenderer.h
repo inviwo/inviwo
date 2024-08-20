@@ -71,6 +71,8 @@ class Image;
  */
 class IVW_MODULE_OIT_API FragmentListRenderer {
 public:
+    size2_t screenSize_;
+
     FragmentListRenderer();
     virtual ~FragmentListRenderer();
 
@@ -144,7 +146,6 @@ protected:
     void fillIllustration(TextureUnit& abuffUnit, TextureUnit& idxUnit, TextureUnit& countUnit,
                           const Image* background);
 
-    size2_t screenSize_;
     size_t fragmentSize_;
 
     // basic fragment lists
