@@ -213,7 +213,7 @@ Camera& CameraProperty::get() { return *camera_; }
 
 void CameraProperty::set(const Property* srcProperty) {
     if (const auto src = dynamic_cast<const CameraProperty*>(srcProperty)) {
-        NetworkLock lock(this);
+        const NetworkLock lock(this);
         const auto aspect = getAspectRatio();
 
         cameraType_.set(&src->cameraType_);
@@ -234,7 +234,7 @@ CameraProperty* CameraProperty::clone() const { return new CameraProperty(*this)
 
 bool CameraProperty::changeCamera(const std::string& name) {
     if (name != camera_->getClassIdentifier()) {
-        NetworkLock lock(this);
+        const NetworkLock lock(this);
         auto newCamera = factory_->create(name);
         newCamera->updateFrom(*camera_);
         camera_->configureProperties(*this, false);
@@ -259,7 +259,7 @@ CameraProperty& CameraProperty::setCamera(const std::string& cameraIdentifier) {
 
 CameraProperty& CameraProperty::setCamera(std::unique_ptr<Camera> newCamera) {
     if (newCamera) {
-        NetworkLock lock(this);
+        const NetworkLock lock(this);
         camera_->configureProperties(*this, false);
         hideConfiguredProperties();
         newCamera->configureProperties(*this, true);
@@ -292,7 +292,7 @@ CameraProperty& CameraProperty::setAspectRatio(float aspectRatio) {
 float CameraProperty::getAspectRatio() const { return camera_->getAspectRatio(); }
 
 TrackballObject& CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     setLookFrom(lookFrom);
     setLookTo(lookTo);
     setLookUp(lookUp);
@@ -315,7 +315,7 @@ CameraProperty& CameraProperty::setFarPlaneDist(float v) {
 
 CameraProperty& CameraProperty::setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist,
                                                     float minMaxRatio) {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
 
     nearPlane_.set(nearPlaneDist, std::min(nearPlane_.getMinValue(), nearPlaneDist / minMaxRatio),
                    std::max(nearPlane_.getMaxValue(), nearPlaneDist * minMaxRatio),
@@ -402,7 +402,7 @@ CameraProperty& CameraProperty::setCurrentStateAsDefault() {
 }
 
 CameraProperty& CameraProperty::resetToDefaultState() {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     setCamera(std::unique_ptr<Camera>(defaultCamera_->clone()));
     for (auto& elem : properties_) {
         if (elem != &aspectRatio_) {  // We never want to reset the aspect

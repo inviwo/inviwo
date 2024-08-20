@@ -63,14 +63,14 @@ struct GlmFormatter {
     fmt::formatter<T> elementFormatter;
 
     constexpr auto parse(fmt::format_parse_context& ctx) -> fmt::format_parse_context::iterator {
-        auto it = ctx.begin();
-        auto end = ctx.end();
+        const auto it = ctx.begin();
+        const auto end = ctx.end();
 
         const auto range = std::string_view(it, end - it);
         const auto endPos = range.find_first_of(":}");
         const auto endIt =
             endPos != std::string_view::npos ? it + endPos + (range[endPos] == ':' ? 1 : 0) : end;
-        auto overallFormat = range.substr(0, endPos);
+        const auto overallFormat = range.substr(0, endPos);
 
         fmt::format_parse_context overallCtx{overallFormat};
         overallFormatter.parse(overallCtx);

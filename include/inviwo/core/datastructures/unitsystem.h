@@ -278,8 +278,8 @@ struct fmt::formatter<::inviwo::Unit> {
     bool leadingSpace = false;
 
     constexpr auto parse(format_parse_context& ctx) -> format_parse_context::iterator {
-        auto it = ctx.begin();
-        auto end = ctx.end();
+        const auto it = ctx.begin();
+        const auto end = ctx.end();
 
         const auto range = std::string_view(it, end - it);
         const auto endPos = range.find_first_of(":}");
