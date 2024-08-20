@@ -66,8 +66,8 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                           "The type of camera to use, defaults to a Perspective camera"_help;
                       return opts;
                   }())
-    , camera_{factory_->create(cameraType_)}
-    , defaultCamera_{}
+    , camera_{factory_->create(cameraType_, eye, center, lookUp)}
+    , defaultCamera_{camera_->clone()}
     , cameraActions_("actions", "Actions",
                      "Make automatic viewport adjustments. This requires that the camera gets "
                      "accurate data bounding box information."_help,
@@ -138,9 +138,6 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
     });
 
     updateFittingVisibility();
-
-    setLook(eye, center, lookUp);
-    defaultCamera_.reset(camera_->clone());
 }
 
 CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName,
@@ -170,8 +167,8 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     : CompositeProperty(rhs)
     , factory_{rhs.factory_}
     , cameraType_(rhs.cameraType_)
-    , camera_{factory_->create(cameraType_)}
-    , defaultCamera_{}
+    , camera_{rhs.camera_->clone()}
+    , defaultCamera_{rhs.defaultCamera_->clone()}
     , cameraActions_{rhs.cameraActions_, buttons()}
     , lookFrom_(rhs.lookFrom_)
     , lookTo_(rhs.lookTo_)
@@ -179,14 +176,12 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     , aspectRatio_(rhs.aspectRatio_)
     , nearPlane_(rhs.nearPlane_)
     , farPlane_(rhs.farPlane_)
-
     , settings_{rhs.settings_}
     , updateNearFar_{rhs.updateNearFar_}
     , updateLookRanges_{rhs.updateLookRanges_}
     , fittingRatio_{rhs.fittingRatio_}
     , setNearFarButton_{rhs.setNearFarButton_, [this] { setNearFar(); }}
     , setLookRangesButton_{rhs.setLookRangesButton_, [this] { setLookRange(); }}
-
     , getBoundingBox_(rhs.getBoundingBox_) {
 
     settings_.addProperties(setNearFarButton_, setLookRangesButton_, updateNearFar_,
@@ -202,8 +197,6 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
         updateFittingVisibility();
     });
     updateFittingVisibility();
-
-    defaultCamera_.reset(camera_->clone());
 }
 
 CameraProperty::~CameraProperty() = default;

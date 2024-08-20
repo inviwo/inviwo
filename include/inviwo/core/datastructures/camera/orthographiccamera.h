@@ -48,8 +48,8 @@ public:
                        vec3 lookTo = cameradefaults::lookTo, vec3 lookUp = cameradefaults::lookUp,
                        float nearPlane = cameradefaults::nearPlane,
                        float farPlane = cameradefaults::farPlane,
-                       float width = cameradefaults::width,
-                       float aspectRatio = cameradefaults::aspectRatio);
+                       float aspectRatio = cameradefaults::aspectRatio,
+                       float width = cameradefaults::width);
     virtual ~OrthographicCamera() = default;
     OrthographicCamera(const OrthographicCamera& other);
     OrthographicCamera& operator=(const OrthographicCamera& other);

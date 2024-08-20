@@ -48,7 +48,7 @@ public:
     virtual TrackballObject& setLookFrom(vec3 lookFrom) = 0;
     virtual TrackballObject& setLookUp(vec3 lookUp) = 0;
 
-    virtual TrackballObject& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) = 0;
+    virtual TrackballObject& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) = 0;  // NOLINT
 
     [[nodiscard]] virtual vec3 getLookFromMinValue() const = 0;
     [[nodiscard]] virtual vec3 getLookFromMaxValue() const = 0;

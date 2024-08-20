@@ -43,7 +43,7 @@
 namespace inviwo {
 
 SGCTCamera::SGCTCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane,
-                       float fieldOfView, float aspectRatio)
+                       float aspectRatio, float fieldOfView)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), fovy_(fieldOfView) {}
 
 SGCTCamera* SGCTCamera::clone() const { return new SGCTCamera(*this); }

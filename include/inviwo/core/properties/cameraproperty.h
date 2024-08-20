@@ -112,7 +112,7 @@ public:
      * Locks and unlocks processor network before and after changing property values.
      * @note Parameters will be capped by their min/max.
      */
-    virtual TrackballObject& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;
+    virtual TrackballObject& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override; // NOLINT
 
     virtual float getNearPlaneDist() const override;
     virtual float getFarPlaneDist() const override;

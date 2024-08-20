@@ -30,6 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/datastructures/camera/camera.h>
 
 #include <memory>
 #include <string>
@@ -37,15 +38,25 @@
 
 namespace inviwo {
 
-class Camera;
-
 class IVW_CORE_API CameraFactoryObject {
 public:
     CameraFactoryObject(std::string_view classIdentifier);
     virtual ~CameraFactoryObject() = default;
 
-    virtual std::unique_ptr<Camera> create() = 0;
+    std::unique_ptr<Camera> create(vec3 lookFrom = cameradefaults::lookFrom,
+                                   vec3 lookTo = cameradefaults::lookTo,
+                                   vec3 lookUp = cameradefaults::lookUp,
+                                   float nearPlane = cameradefaults::nearPlane,
+                                   float farPlane = cameradefaults::farPlane,
+                                   float aspectRatio = cameradefaults::aspectRatio) const {
+        return createImpl(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio);
+    }
     std::string getClassIdentifier() const;
+
+protected:
+    virtual std::unique_ptr<Camera> createImpl(vec3 lookFrom, vec3 lookTo, vec3 lookUp,
+                                               float nearPlane, float farPlane,
+                                               float aspectRatio) const = 0;
 
 private:
     std::string classIdentifier_;
@@ -56,7 +67,11 @@ public:
     CameraFactoryObjectTemplate(std::string_view classIdentifier)
         : CameraFactoryObject(classIdentifier) {}
 
-    virtual std::unique_ptr<Camera> create() override { return std::make_unique<T>(); }
+    virtual std::unique_ptr<Camera> createImpl(vec3 lookFrom, vec3 lookTo, vec3 lookUp,
+                                               float nearPlane, float farPlane,
+                                               float aspectRatio) const override {
+        return std::make_unique<T>(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio);
+    }
 };
 
 }  // namespace inviwo
