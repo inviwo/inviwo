@@ -55,20 +55,18 @@ void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float v
             projVal = val * sinktheta;
         }
 
-        if (i % 2 == 0) {
-            if (i != 0) {
-                coskm1theta = cosktheta;
-                sinkm1theta = sinktheta;
-            }
+        if (i % 2 == 0 && i != 0) {
+            coskm1theta = cosktheta;
+            sinkm1theta = sinktheta;
         }
 
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-        #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-            imageAtomicAdd(coeffTex, coord, int(projVal * COEFF_TEX_FIXED_POINT_FACTOR));
-        #else
-            float currVal = imageLoad(coeffTex, coord).x;
-            imageStore(coeffTex, coord, vec4(currVal + projVal));
-        #endif
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+        imageAtomicAdd(coeffTex, coord, int(projVal * float(COEFF_TEX_FIXED_POINT_FACTOR)));
+#else
+        float currVal = imageLoad(coeffTex, coord).x;
+        imageStore(coeffTex, coord, vec4(currVal + projVal));
+#endif
     }
 }
 
@@ -80,21 +78,38 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
 {
     float sum = 0.0;
     int k = 0;
+
+    float costheta = cos(TWOPI * depth);
+    float sintheta = sin(TWOPI * depth);
+    float coskm1theta = 1.0;
+    float sinkm1theta = 0.0;
+    float cosktheta = 0.0;
+    float sinktheta = 0.0;
+
     for (int i = 0; i < N; i++) {
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-        #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-            float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
-        #else
-            float coeff = imageLoad(coeffTex, coord).x;
-        #endif
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+        float coeff = float(imageLoad(coeffTex, coord).x) / float(COEFF_TEX_FIXED_POINT_FACTOR);
+#else
+        float coeff = imageLoad(coeffTex, coord).x;
+#endif
+
         if (i == 0) {
             sum += coeff * depth;
         } else if (i % 2 == 0) {
-            sum += (coeff / (PI * k)) * sin(TWOPI * k * depth);
+            sinktheta = sinkm1theta * costheta + coskm1theta * sintheta;
+            sum += (coeff / (PI * k)) * sinktheta;
         } else {
-            sum += (coeff / (PI * k)) * (1 - cos(TWOPI * k * depth));
+            cosktheta = coskm1theta * costheta - sinkm1theta * sintheta;
+            sum += (coeff / (PI * k)) * (1 - cosktheta);
         }
-        if (i % 2 == 0) k++;
+        if (i % 2 == 0) {
+            k++;
+            if (i != 0) {
+                coskm1theta = cosktheta;
+                sinkm1theta = sinktheta;
+            }
+        }
     }
 
     return sum;
@@ -106,9 +121,10 @@ float total(layout(r32i) iimage2DArray coeffTex, int N)
 float total(layout(size1x32) image2DArray coeffTex, int N)
 #endif
 {
-    #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-        return float(imageLoad(coeffTex, ivec3(gl_FragCoord.xy, 0)).x) / COEFF_TEX_FIXED_POINT_FACTOR;
-    #else
-        return imageLoad(coeffTex, ivec3(gl_FragCoord.xy, 0)).x;
-    #endif
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+    return float(imageLoad(coeffTex, ivec3(gl_FragCoord.xy, 0)).x) /
+           float(COEFF_TEX_FIXED_POINT_FACTOR);
+#else
+    return imageLoad(coeffTex, ivec3(gl_FragCoord.xy, 0)).x;
+#endif
 }
