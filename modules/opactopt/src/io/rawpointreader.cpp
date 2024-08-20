@@ -27,29 +27,44 @@
  *
  *********************************************************************************/
 
-#include <modules/opactopt/opactoptmodule.h>
-#include <modules/opactopt/processors/opacityoptimiser.h>
-#include <modules/opactopt/processors/directopacityoptimisationrenderer.h>
-#include <modules/opactopt/processors/meshmappingvolume.h>
 #include <modules/opactopt/io/rawpointreader.h>
 
-#include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
-#include <inviwo/core/common/inviwomodule.h>      // for InviwoModule
+#include <inviwo/core/io/datareaderexception.h>  // for DataReaderException
+#include <inviwo/core/util/raiiutils.h>
 
+#include <vector>  // for vector
 
 namespace inviwo {
 
-OpactOptModule::OpactOptModule(InviwoApplication* app) : InviwoModule(app, "OpactOpt") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+RawPointReader::RawPointReader() : DataReaderType<Mesh>() {
+    addExtension(FileExtension("raw", "Raw point reader"));
+}
 
-    // Processors
-    registerProcessor<OpacityOptimiser>();
-    registerProcessor<DirectOpacityOptimisationRenderer>();
-    registerProcessor<MeshMappingVolume>();
+RawPointReader* RawPointReader::clone() const { return new RawPointReader(*this); }
 
-    // Data readers
-    registerDataReader(std::make_unique<RawPointReader>());
+std::shared_ptr<Mesh> RawPointReader::readData(const std::filesystem::path& filePath) {
+    auto fin = std::ifstream(filePath, std::ios::in | std::ios::binary);
+    util::OnScopeExit close([&fin]() { fin.close(); });
+
+    auto mesh = std::make_shared<Mesh>();
+    if (fin.good()) {
+        fin.seekg(0, fin.end);
+        int bytes = fin.tellg();
+        int N = bytes / sizeof(vec3);
+        std::vector<vec3> dest(N);
+
+        fin.seekg(0, fin.beg);
+        fin.read(reinterpret_cast<char*>(dest.data()), bytes);
+        LogInfo("Read " << N << " points");
+
+        mesh->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
+                        util::makeBuffer(std::move(dest)));
+    } else {
+        LogError("Error reading file " << filePath);
+        return nullptr;
+    }
+
+    return mesh;
 }
 
 }  // namespace inviwo

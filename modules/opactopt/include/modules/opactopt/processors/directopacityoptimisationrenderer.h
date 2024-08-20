@@ -31,27 +31,32 @@
 
 #include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/io/csvwriter.h>
+
 #include <modules/opactopt/rendering/approximation.h>
 #include <modules/opengl/texture/texture2darray.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/buffer/bufferobject.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/fileproperty.h>
 #include <modules/opengl/volume/volumeutils.h>
 
-#include <inviwo/core/interaction/cameratrackball.h>        // for CameraTrackball
-#include <inviwo/core/ports/imageport.h>                    // for ImageInport, ImageOutport
-#include <inviwo/core/ports/meshport.h>                     // for MeshFlatMultiInport
-#include <inviwo/core/processors/processor.h>               // for Processor
-#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
-#include <inviwo/core/properties/cameraproperty.h>          // for CameraProperty
-#include <inviwo/core/properties/compositeproperty.h>       // for CompositeProperty
-#include <inviwo/core/properties/optionproperty.h>          // for OptionPropertyInt
-#include <inviwo/core/properties/ordinalproperty.h>         // for FloatVec4Property
-#include <inviwo/core/properties/boolcompositeproperty.h>   // for BoolCompositeProperty
-#include <inviwo/core/properties/simplelightingproperty.h>  // for SimpleLightingProperty
-#include <modules/opengl/shader/shader.h>                   // for Shader
+#include <inviwo/core/interaction/cameratrackball.h>  // for CameraTrackball
+#include <inviwo/core/ports/imageport.h>              // for ImageInport, ImageOutport
+#include <inviwo/core/ports/meshport.h>               // for MeshFlatMultiInport
+#include <inviwo/core/processors/processor.h>         // for Processor
+#include <inviwo/core/processors/processorinfo.h>     // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>      // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>           // for CameraProperty
+#include <inviwo/core/properties/compositeproperty.h>        // for CompositeProperty
+#include <inviwo/core/properties/optionproperty.h>           // for OptionPropertyInt
+#include <inviwo/core/properties/ordinalproperty.h>          // for FloatVec4Property
+#include <inviwo/core/properties/boolcompositeproperty.h>    // for BoolCompositeProperty
+#include <inviwo/core/properties/simplelightingproperty.h>   // for SimpleLightingProperty
+#include <modules/opengl/shader/shader.h>                    // for Shader
 #include <modules/basegl/properties/linesettingsproperty.h>  // for LineSettingsProperty
 
 namespace inviwo {
@@ -123,18 +128,18 @@ protected:
 
     // Optional importance volume
     VolumeInport importanceVolume_;
-    
+
     // Opacity optimisation settings
     FloatProperty q_, r_, lambda_;
     CompositeProperty approximationProperties_;
     OptionProperty<std::string> approximationMethod_;
     const Approximations::ApproximationProperties* ap_;
     IntProperty importanceSumCoefficients_, opticalDepthCoefficients_;
-    const float coeffTexFixedPointFactor = 10000.0f;
+    const float coeffTexFixedPointFactor = 10000000.0f;
 
     TextureUnitContainer textureUnits_;
-    Texture2DArray importanceSumCoeffs_[2];
-    Texture2DArray opticalDepthCoeffs_;
+    Texture2DArray importanceSumTexture_[2];
+    Texture2DArray opticalDepthTexture_;
     TextureUnit *importanceSumUnitMain_, *importanceSumUnitSmooth_, *opticalDepthUnit_;
 
     BufferObject gaussianKernel_;
@@ -144,6 +149,13 @@ protected:
 
     BufferObject legendreCoefficients_;
     bool legendreCoefficientsGenerated_ = false;
+
+    IntVec2Property debugCoords_;
+    FileProperty debugFileName_;
+    ButtonProperty debugApproximation_;
+
+    bool debugOn_;
+    Approximations::DebugBuffer db_;
 };
 
 }  // namespace inviwo
