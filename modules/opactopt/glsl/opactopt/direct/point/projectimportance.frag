@@ -30,6 +30,20 @@
 #include "utils/structs.glsl"
 #include "utils/depth.glsl"
 
+#ifdef DEBUG
+uniform ivec2 debugCoords;
+
+struct FragmentInfo {
+    float depth;
+    float importance;
+};
+
+layout(std430, binding = 11) buffer debugFragments {
+    int nFragments;
+    FragmentInfo debugFrags[];
+};
+#endif
+
 uniform float pointSize; // [pixel]
 uniform float borderWidth; // [pixel]
 uniform float antialising = 1.5; // [pixel]
@@ -91,6 +105,15 @@ void main() {
     // Project importance
     float gisq = gi * gi;
     project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth, gisq);
+
+    #ifdef DEBUG
+        if (ivec2(gl_FragCoord.xy) == debugCoords) {
+            FragmentInfo fi;
+            fi.depth = depth;
+            fi.importance = gi;
+            debugFrags[atomicAdd(nFragments, 1)] = fi;
+        }
+    #endif
 
     discard;
 }
