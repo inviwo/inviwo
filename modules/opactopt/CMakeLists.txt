@@ -10,6 +10,7 @@ set(HEADER_FILES
     include/modules/opactopt/rendering/approximateopacityoptimisationrenderer.h
     include/modules/opactopt/rendering/approximation.h
     include/modules/opactopt/rendering/decoupledopacityoptimisationrenderer.h
+    include/modules/opactopt/io/rawpointreader.h
     include/modules/opactopt/algorithm/gaussian.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -23,6 +24,7 @@ set(SOURCE_FILES
     src/rendering/approximateopacityoptimisationrenderer.cpp
     src/rendering/approximation.cpp
     src/rendering/decoupledopacityoptimisationrenderer.cpp
+    src/io/rawpointreader.cpp
     src/algorithm/gaussian.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

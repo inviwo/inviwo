@@ -43,6 +43,25 @@
 #include "oit/sort.glsl"
 #include "utils/structs.glsl"
 
+#ifdef DEBUG
+uniform ivec2 debugCoords;
+
+layout(std430, binding = 10) buffer debugCoeffs {
+    float debugImportanceCoeffs[N_IMPORTANCE_SUM_COEFFICIENTS];
+    float debugOpticalCoeffs[N_OPTICAL_DEPTH_COEFFICIENTS];
+};
+
+struct FragmentInfo {
+    float depth;
+    float importance;
+};
+
+layout(std430, binding = 11) buffer debugFragments {
+    int nFragments;
+    FragmentInfo debugFrags[];
+};
+#endif
+
 #ifdef BACKGROUND_AVAILABLE
 uniform ImageParameters bgParameters;
 uniform sampler2D bgColor;
@@ -99,6 +118,17 @@ void main() {
         while (idx != 0 && counter < ABUFFER_SIZE) {
             vec4 data = readPixelStorage(idx - 1);
             abufferPixel pixel = uncompressPixelData(data);
+
+            #ifdef DEBUG
+            if (coords == debugCoords) {
+                FragmentInfo fi;
+                fi.depth = pixel.depth;
+                fi.importance = pixel.color.a;
+                debugFrags[nFragments] = fi;
+                nFragments++;
+            }
+            #endif
+
             vec4 c = pixel.color;
             float gi = clamp(c.a, 0.001, 0.999);
             float gisq = gi * gi;
@@ -122,6 +152,7 @@ void main() {
         counter = 0;
         while (idx != 0 && counter < ABUFFER_SIZE) {
             abufferPixel pixel = uncompressPixelData(readPixelStorage(idx - 1));
+
             vec4 c = pixel.color;
             float gi = clamp(c.a, 0.001, 0.999);
             float gisq = gi * gi;
@@ -141,10 +172,21 @@ void main() {
             counter++;
         }
 
+        #ifdef DEBUG
+        if (coords == debugCoords) {
+            for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++)
+                debugImportanceCoeffs[i] = imageLoad(importanceSumCoeffs[0], ivec3(coords, i)).x;
+            for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++)
+                debugOpticalCoeffs[i] = imageLoad(opticalDepthCoeffs, ivec3(coords, i)).x;
+        }
+        #endif
+
         vec4 color = vec4(0);
         color.rgb = numerator / denominator;
-        color.a = 1 - exp(-tauall);
+        if (denominator != 0.0)
+            color.a = 1 - exp(-tauall);
 
+//        FragData0 = vec4(imageLoad(importanceSumCoeffs[0], ivec3(gl_FragCoord.xy, 0)).x, 0, 0, 1.0);
         FragData0 = color;
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
     } else {  // no pixel found

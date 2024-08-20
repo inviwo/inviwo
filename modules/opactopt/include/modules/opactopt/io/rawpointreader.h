@@ -26,30 +26,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/opactopt/opactoptmodule.h>
-#include <modules/opactopt/processors/opacityoptimiser.h>
-#include <modules/opactopt/processors/directopacityoptimisationrenderer.h>
-#include <modules/opactopt/processors/meshmappingvolume.h>
-#include <modules/opactopt/io/rawpointreader.h>
+#include <modules/opactopt/opactoptmoduledefine.h>
 
-#include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
-#include <inviwo/core/common/inviwomodule.h>      // for InviwoModule
-
+#include <inviwo/core/datastructures/buffer/buffer.h>  // Buffer
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/io/datareader.h>
 
 namespace inviwo {
 
-OpactOptModule::OpactOptModule(InviwoApplication* app) : InviwoModule(app, "OpactOpt") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+/**
+ * \ingroup dataio
+ * \brief Inviwo Module OpactOpt
+ *
+ * Raw point data reader
+ */
+class IVW_MODULE_OPACTOPT_API RawPointReader : public DataReaderType<Mesh> {
+public:
+    RawPointReader();
+    RawPointReader(const RawPointReader& rhs) = default;
+    RawPointReader& operator=(const RawPointReader& that) = default;
+    virtual RawPointReader* clone() const override;
+    virtual ~RawPointReader() = default;
 
-    // Processors
-    registerProcessor<OpacityOptimiser>();
-    registerProcessor<DirectOpacityOptimisationRenderer>();
-    registerProcessor<MeshMappingVolume>();
+    virtual std::shared_ptr<Mesh> readData(const std::filesystem::path& filePath) override;
 
-    // Data readers
-    registerDataReader(std::make_unique<RawPointReader>());
-}
+private:
+    enum AmiraDataType { Lines, Vertices, Importance };
+};
 
 }  // namespace inviwo

@@ -33,6 +33,20 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+#ifdef DEBUG
+uniform ivec2 debugCoords;
+
+struct FragmentInfo {
+    float depth;
+    float importance;
+};
+
+layout(std430, binding = 11) buffer debugFragments {
+    int nFragments;
+    FragmentInfo debugFrags[];
+};
+#endif
+
 uniform vec2 screenDim = vec2(512, 512);
 uniform float antialiasing = 0.5; // width of antialised edged [pixel]
 uniform float lineWidth = 2.0; // line width [pixel]
@@ -74,7 +88,7 @@ uniform float lambda;
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if(color_.a == 0) { discard; }
+    if(color_.a < 0.01) { discard; }
 
     float linewidthHalf = lineWidth * 0.5;
 
@@ -142,13 +156,20 @@ void main() {
         d /= antialiasing;
         alphamul = exp(-d*d);
     }
-    // prevent fragments with low alpha from being rendered
-//    if (alphamul < 0.05) discard;
 
     // Project importance
     gi *= alphamul;
     float gisq = gi * gi;
     project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth, gisq);
 
-    discard;
+    #ifdef DEBUG
+        if (ivec2(gl_FragCoord.xy) == debugCoords) {
+            FragmentInfo fi;
+            fi.depth = depth;
+            fi.importance = gi;
+            debugFrags[atomicAdd(nFragments, 1)] = fi;
+        }
+    #endif
+
+    PickingData = vec4(vec3(0), 1); // write into intermediate image to indicate pixel is being written to
 }
