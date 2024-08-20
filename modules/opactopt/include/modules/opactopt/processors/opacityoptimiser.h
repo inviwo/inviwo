@@ -33,6 +33,8 @@
 
 #include <modules/opactopt/rendering/approximation.h>
 #include <modules/oit/processors/rasterizationrenderer.h>  // for RasterizationRenderer
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/core/properties/fileproperty.h>
 
 #include <inviwo/core/interaction/cameratrackball.h>  // for CameraTrackball
 #include <inviwo/core/processors/processor.h>         // for Processor
@@ -65,7 +67,10 @@ private:
     IntProperty importanceSumCoefficients_, opticalDepthCoefficients_;
     BoolCompositeProperty smoothing_;
     IntProperty gaussianKernelRadius_;
-    FloatProperty gaussianKernelSigma_;    
+    FloatProperty gaussianKernelSigma_;
+    ButtonProperty debugApproximation_;
+    IntVec2Property debugCoords_;
+    FileProperty debugFileName_;
 };
 
 }  // namespace inviwo

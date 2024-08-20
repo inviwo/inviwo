@@ -33,6 +33,20 @@
 #include "utils/structs.glsl"
 #include "utils/depth.glsl"
 
+#ifdef DEBUG
+uniform ivec2 debugCoords;
+
+struct FragmentInfo {
+    float depth;
+    float importance;
+};
+
+layout(std430, binding = 11) buffer debugFragments {
+    int nFragments;
+    FragmentInfo debugFrags[];
+};
+#endif
+
 uniform CameraParameters camera;
 
 uniform layout(r32i) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
@@ -78,5 +92,14 @@ void main() {
     float gisq = gi * gi;
     project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth, gisq);
 
-    discard;
+    #ifdef DEBUG
+        if (ivec2(gl_FragCoord.xy) == debugCoords) {
+            FragmentInfo fi;
+            fi.depth = depth;
+            fi.importance = gi;
+            debugFrags[atomicAdd(nFragments, 1)] = fi;
+        }
+    #endif
+
+    PickingData = vec4(vec3(0), 1); // write into intermediate image to indicate pixel is being written to
 }
