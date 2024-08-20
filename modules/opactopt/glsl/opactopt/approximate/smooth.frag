@@ -39,6 +39,10 @@
 // GL_NV_gpu_shader5, GL_EXT_shader_image_load_store, GL_NV_shader_buffer_load,
 // GL_EXT_bindable_uniform
 
+#ifdef USE_ABUFFER
+    #include "oit/abufferlinkedlist.glsl"
+#endif
+
 uniform ivec2 screenSize;
 uniform int radius;
 layout(std430, binding = 8) buffer gaussianKernelBuffer {
@@ -51,8 +55,16 @@ uniform layout(r32i) iimage2DArray importanceSumCoeffs[2];
 uniform layout(size1x32) image2DArray importanceSumCoeffs[2];
 #endif
 
+#ifdef USE_PICK_IMAGE
+#include "utils/structs.glsl"
+
+uniform ImageParameters imageParameters;
+uniform sampler2D imageColor;
+uniform sampler2D imagePicking;
+#endif
+
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
-layout(pixel_center_integer) in vec4 gl_FragCoord;
+in vec4 gl_FragCoord;
 
 // Input interpolated fragment position
 smooth in vec4 fragPos;
@@ -60,7 +72,7 @@ smooth in vec4 fragPos;
 // Resolve A-Buffer and blend sorted fragments
 void main() {
     ivec2 coords = ivec2(gl_FragCoord.xy);
-    if (imageLoad(importanceSumCoeffs[0], ivec3(coords, 0)).x == 0) return;
+//    if (imageLoad(importanceSumCoeffs[0], ivec3(coords, 0)).x == 0) return;
 
     #if HORIZONTAL == 1
         ivec2 dir = ivec2(1, 0);
@@ -74,22 +86,28 @@ void main() {
         float val = 0.0;
         float kernel_sum = 0.0;
         for (int j = -radius; j <= radius; j++) {
-        #if HORIZONTAL == 1
-            if (coords.x + j < 0 || coords.x + j >= screenSize.x) continue;
-        #else
-            if (coords.y + j < 0 || coords.y + j >= screenSize.y) continue;
-        #endif
+            #if HORIZONTAL == 1
+                if (coords.x + j < 0 || coords.x + j >= screenSize.x) continue;
+            #else
+                if (coords.y + j < 0 || coords.y + j >= screenSize.y) continue;
+            #endif
 
-        if (imageLoad(importanceSumCoeffs[0], ivec3(coords + j * dir, 0)).x == 0) continue;
+            #if defined(USE_ABUFFER)
+                if (getPixelLink(coords + j * dir) == 0) continue;
+            #elif defined(USE_PICK_IMAGE)
+                if (texelFetch(imagePicking, coords + j * dir, 0).a == 0.0) continue;
+            #else
+                if (imageLoad(importanceSumCoeffs[0], ivec3(coords + j * dir, 0)).x == 0) continue;
+            #endif
 
-        #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-            float coeff = imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x / COEFF_TEX_FIXED_POINT_FACTOR;
-        #else
-            float coeff = imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x;
-        #endif
+            #ifdef COEFF_TEX_FIXED_POINT_FACTOR
+                float coeff = imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x / COEFF_TEX_FIXED_POINT_FACTOR;
+            #else
+                float coeff = imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x;
+            #endif
 
-        val += kernel[radius + j] * coeff;
-        kernel_sum += kernel[radius + j];
+            val += kernel[radius + j] * coeff;
+            kernel_sum += kernel[radius + j];
         }
         val /= kernel_sum;
 
