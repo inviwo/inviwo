@@ -101,7 +101,7 @@ void main() {
             #endif
 
             #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-                float coeff = imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x / COEFF_TEX_FIXED_POINT_FACTOR;
+                float coeff = imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x;
             #else
                 float coeff = imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x;
             #endif
@@ -112,7 +112,7 @@ void main() {
         val /= kernel_sum;
 
         #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-            imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, ivec4(val * COEFF_TEX_FIXED_POINT_FACTOR));       
+            imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, ivec4(val));       
         #else
             imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, vec4(val));
         #endif
