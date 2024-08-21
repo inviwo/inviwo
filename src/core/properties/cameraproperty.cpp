@@ -284,7 +284,7 @@ CameraProperty& CameraProperty::setAspectRatio(float aspectRatio) {
 }
 float CameraProperty::getAspectRatio() const { return camera_->getAspectRatio(); }
 
-TrackballObject& CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
+TrackballObject& CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {  // NOLINT
     const NetworkLock lock(this);
     setLookFrom(lookFrom);
     setLookTo(lookTo);

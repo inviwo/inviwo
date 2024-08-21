@@ -174,6 +174,9 @@ private:
         double zoom_ = 1.0f;
     } initialState_;
 
+    // By returning the as a pair we ensure we can never return an image not not a rep.
+    std::tuple<std::unique_ptr<Image>, ImageGL*> createWidgetImage(const ivec2& widgetSize);
+
     std::unique_ptr<Image> widgetImage_;  //!< the widget is rendered into this image, which is then
                                           //!< drawn on top of the input image
     ImageGL* widgetImageGL_;  //!< keep an ImageGL representation around to avoid overhead

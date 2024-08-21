@@ -66,23 +66,23 @@ void exposeCamera(pybind11::module& m) {
         .def(py::init<vec3, vec3, vec3, float, float, float, float>(),
              py::arg("lookFrom") = vec3(0.0f, 0.0f, 2.0f), py::arg("lookTo") = vec3(0.0f),
              py::arg("lookUp") = vec3(0.0f, 1.0f, 0.0f), py::arg("nearPlane") = 0.01f,
-             py::arg("farPlane") = 10000.0f, py::arg("fieldOfView") = 60.f,
-             py::arg("aspectRatio") = 1.f)
+             py::arg("farPlane") = 10000.0f, py::arg("aspectRatio") = 1.f,
+             py::arg("fieldOfView") = 60.f)
         .def_property("fovy", &PerspectiveCamera::getFovy, &PerspectiveCamera::setFovy);
 
     py::class_<OrthographicCamera, Camera>(m, "OrthographicCamera")
         .def(py::init<vec3, vec3, vec3, float, float, float, float>(),
              py::arg("lookFrom") = vec3(0.0f, 0.0f, 2.0f), py::arg("lookTo") = vec3(0.0f),
              py::arg("lookUp") = vec3(0.0f, 1.0f, 0.0f), py::arg("nearPlane") = 0.01f,
-             py::arg("farPlane") = 10000.0f, py::arg("width") = 60.f, py::arg("aspectRatio") = 1.f)
+             py::arg("farPlane") = 10000.0f, py::arg("aspectRatio") = 1.f, py::arg("width") = 60.f)
         .def_property("width", &OrthographicCamera::getWidth, &OrthographicCamera::setWidth);
 
     py::class_<SkewedPerspectiveCamera, Camera>(m, "SkewedPerspectiveCamera")
         .def(py::init<vec3, vec3, vec3, float, float, float, float, vec2>(),
              py::arg("lookFrom") = vec3(0.0f, 0.0f, 2.0f), py::arg("lookTo") = vec3(0.0f),
              py::arg("lookUp") = vec3(0.0f, 1.0f, 0.0f), py::arg("nearPlane") = 0.01f,
-             py::arg("farPlane") = 10000.0f, py::arg("fieldOfView") = 60.f,
-             py::arg("aspectRatio") = 1.f, py::arg("frustumOffset") = vec2(0.0f, 0.0f))
+             py::arg("farPlane") = 10000.0f, py::arg("aspectRatio") = 1.f,
+             py::arg("fieldOfView") = 60.f, py::arg("frustumOffset") = vec2(0.0f, 0.0f))
         .def_property("fovy", &SkewedPerspectiveCamera::getFovy, &SkewedPerspectiveCamera::setFovy)
         .def_property("offset", &SkewedPerspectiveCamera::getOffset,
                       &SkewedPerspectiveCamera::setOffset);

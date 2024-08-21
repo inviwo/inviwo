@@ -186,7 +186,7 @@ CameraWidget::CameraWidget()
 
     , internalProps_("internalProperties", "Internal Properties")
     , internalCamera_(vec3(0.0f, 0.0f, 14.6f), vec3(0.0f), vec3(0.0f, 1.0f, 0.0f), 1.0f, 30.0f,
-                      38.0f, 1.0f)
+                      1.0f, 38.0f)
     , lightingProperty_("internalLighting", "Lighting",
                         "Lighting setup for shading the widget"_help,
                         LightingConfig{
@@ -248,14 +248,20 @@ CameraWidget::CameraWidget()
 CameraWidget::~CameraWidget() = default;
 
 void CameraWidget::process() {
-    if (meshes_[0].get() == nullptr) {
-        loadMesh();
+    // determine size of the widget
+    // reference size (width/height) in pixel for scale equal to 1.0
+    const vec2 referenceSize(300.0f);
+    const ivec2 widgetSize(scaling_.get() * referenceSize);
+
+    if (widgetSize.x == 0 || widgetSize.y == 0) {
+        utilgl::activateTargetAndClearOrCopySource(outport_, inport_, ImageType::ColorDepthPicking);
+        utilgl::deactivateCurrentTarget();
+        return;
     }
 
-    // determine size of the widget
-    const vec2 referenceSize(
-        300.0f);  // reference size (width/height) in pixel for scale equal to 1.0
-    ivec2 widgetSize(scaling_.get() * referenceSize);
+    if (!meshes_[0]) {
+        loadMesh();
+    }
 
     updateWidgetTexture(widgetSize);
 
@@ -305,10 +311,17 @@ void CameraWidget::initializeResources() {
     shader_.deactivate();
 }
 
+std::tuple<std::unique_ptr<Image>, ImageGL*> CameraWidget::createWidgetImage(
+    const ivec2& widgetSize) {
+    auto img = std::make_unique<Image>(widgetSize, outport_.getDataFormat());
+    auto rep = img->getEditableRepresentation<ImageGL>();
+
+    return {std::move(img), rep};
+}
+
 void CameraWidget::updateWidgetTexture(const ivec2& widgetSize) {
     if (!widgetImage_.get() || (ivec2(widgetImage_->getDimensions()) != widgetSize)) {
-        widgetImage_ = std::make_unique<Image>(widgetSize, outport_.getDataFormat());
-        widgetImageGL_ = widgetImage_->getEditableRepresentation<ImageGL>();
+        std::tie(widgetImage_, widgetImageGL_) = createWidgetImage(widgetSize);
     }
     // enable fbo for rendering only the widget
     widgetImageGL_->activateBuffer(ImageType::ColorDepthPicking);
