@@ -110,7 +110,6 @@ void main() {
     // i.e. smooth transition between center and border, and smooth alpha fall-off at the outer rim
     float outerglyphRadius = glyphRadius + borderWidth - antialising; // used for adjusting the alpha value of the outer rim
 
-    float borderValue = clamp(mix(0.0, 1.0, (r - glyphRadius + 1) / 2), 0.0, 1.0);
     float borderAlpha = clamp(mix(1.0, 0.0, (r - outerglyphRadius) / (glyphRadius + borderWidth - outerglyphRadius)), 0.0, alpha);
     alpha *= borderAlpha;
 
