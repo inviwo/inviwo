@@ -135,7 +135,7 @@ protected:
     OptionProperty<std::string> approximationMethod_;
     const Approximations::ApproximationProperties* ap_;
     IntProperty importanceSumCoefficients_, opticalDepthCoefficients_;
-    const float coeffTexFixedPointFactor = 10000000.0f;
+    FloatProperty coeffTexFixedPointFactor_;
 
     TextureUnitContainer textureUnits_;
     Texture2DArray importanceSumTexture_[2];
