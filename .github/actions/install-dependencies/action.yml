@@ -1,0 +1,60 @@
+name: 'Install Inviwo dependencies'
+description: 'runs, Chocolatey, Brew and Apt to install dependencies'
+runs:
+  using: "composite"
+  steps:
+    - name: "Chocolatey Install"
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        # Choco-Install is GH Actions wrappers around choco, which does retries
+        # https://github.com/actions/runner-images/blob/main/images/windows/scripts/helpers/ChocoHelpers.ps1
+        Install-ChocoPackage -PackageName doxygen.install
+        Install-ChocoPackage -PackageName nsis
+        Install-ChocoPackage -PackageName tinytex
+
+    - name: "Chocolatey update paths"
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        GP=`cygpath -u $GITHUB_PATH`
+        echo "/c/Program Files/doxygen/bin" >> $GP
+        echo "/c/Program Files (x86)/NSIS" >> $GP
+        echo "/c/tools/TinyTeX/bin/win32" >> $GP
+
+    - name: "Brew Install"
+      shell: bash
+      if: runner.os == 'macOS'
+      run: |
+        brew install ninja pkg-config nasm
+        sudo xcode-select --switch /Applications/Xcode_15.2.app/Contents/Developer
+
+    - name: "Apt Install, switch to gcc-13"
+      shell: bash
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt install --fix-missing libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev \
+                         libglew-dev ninja-build gcc-14 g++-14 nasm
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 130 \
+                                 --slave /usr/bin/g++ g++ /usr/bin/g++-14 \
+                                 --slave /usr/bin/gcov gcov /usr/bin/gcov-14
+        sudo update-alternatives --set gcc /usr/bin/gcc-14
+
+    - name: "Install Qt"
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: 6.7.0
+        dir: ${{ github.workspace }}
+
+    - name: "Setup Python"
+      uses: actions/setup-python@v5
+      with:
+        python-version: '>=3.10'
+        architecture: 'x64'
+        cache: 'pip'
+        cache-dependency-path: 'inviwo/requirements.txt'
+
+    - name: "Install Python Modules"
+      shell: bash
+      run: pip3 install -r inviwo/requirements.txt
