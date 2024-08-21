@@ -51,11 +51,11 @@ ApproximateOpacityOptimisationRenderer::ApproximateOpacityOptimisationRenderer(
     , blend_{"oit/simplequad.vert", "opactopt/approximate/blend.frag", Shader::Build::No}
     , clearaoo_{"oit/simplequad.vert", "opactopt/approximate/clear.frag", Shader::Build::No}
     , importanceSumTexture_{{size3_t(screenSize_.x, screenSize_.y, nImportanceSumCoefficients_),
-                            GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST},
-                           {size3_t(screenSize_.x, screenSize_.y, nImportanceSumCoefficients_),
-                            GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST}}
-    , opticalDepthTexture_{size3_t(screenSize_.x, screenSize_.y, nOpticalDepthCoefficients_), GL_RED,
-                          GL_R32F, GL_FLOAT, GL_NEAREST}
+                             GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST},
+                            {size3_t(screenSize_.x, screenSize_.y, nImportanceSumCoefficients_),
+                             GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST}}
+    , opticalDepthTexture_{size3_t(screenSize_.x, screenSize_.y, nOpticalDepthCoefficients_),
+                           GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST}
     , gaussianKernel_{128 * sizeof(float),                  // allocate max possible size
                       GLFormats::getGLFormat(GL_FLOAT, 1),  // dummy format
                       GL_STATIC_DRAW, GL_SHADER_STORAGE_BUFFER}
@@ -294,9 +294,9 @@ void ApproximateOpacityOptimisationRenderer::setDescriptor(
 void ApproximateOpacityOptimisationRenderer::setImportanceSumCoeffs(int isc) {
     if (nImportanceSumCoefficients_ != isc) {
         importanceSumTexture_[0].uploadAndResize(nullptr,
-                                                size3_t(screenSize_.x, screenSize_.y, isc));
+                                                 size3_t(screenSize_.x, screenSize_.y, isc));
         importanceSumTexture_[1].uploadAndResize(nullptr,
-                                                size3_t(screenSize_.x, screenSize_.y, isc));
+                                                 size3_t(screenSize_.x, screenSize_.y, isc));
         nImportanceSumCoefficients_ = isc;
     }
     buildShaders(builtWithBackground_);
