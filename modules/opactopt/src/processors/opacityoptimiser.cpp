@@ -55,9 +55,9 @@ const ProcessorInfo OpacityOptimiser::processorInfo_{
 const ProcessorInfo OpacityOptimiser::getProcessorInfo() const { return processorInfo_; }
 
 OpacityOptimiser::OpacityOptimiser()
-    : q_{"q", "q", 1.0f, 0.0f, 1000.0f, 0.01f}
-    , r_{"r", "r", 1.0f, 0.0f, 1000.0f, 0.01f}
-    , lambda_{"lambda", "lambda", 0.5f, 0.001f, 10.0f, 0.01f}
+    : q_{"q", "q", 1.0f, 0.0f, 10000.0f, 0.1f}
+    , r_{"r", "r", 1.0f, 0.0f, 10000.0f, 0.1f}
+    , lambda_{"lambda", "lambda", 1.0f, 0.001f, 100.0f, 0.1f}
     , opacityOptimisationRenderer_{"opacityOptimisationRenderer",
                                    "Opacity Optimisation Renderer",
                                    {{"approximate", "Approximate", 0},

@@ -115,5 +115,5 @@ void main() {
         }
     #endif
 
-    discard;
+    PickingData = vec4(vec3(0), 1); // write into intermediate image to indicate pixel is being written to
 }
