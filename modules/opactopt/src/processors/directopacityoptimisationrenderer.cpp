@@ -145,19 +145,21 @@ DirectOpacityOptimisationRenderer::DirectOpacityOptimisationRenderer()
     , normalise_{"oit/simplequad.vert", "opactopt/direct/normalise.frag", Shader::Build::No}
     , background_{"oit/simplequad.vert", "opactopt/direct/background.frag", Shader::Build::No}
     , approximationProperties_{"approximationProperties", "Approximation Properties"}
-    , q_{"q", "q", 1.0f, 0.0f, 1000.0f, 0.01f}
-    , r_{"r", "r", 1.0f, 0.0f, 1000.0f, 0.01f}
-    , lambda_{"lambda", "lambda", 0.5f, 0.001f, 10.0f, 0.01f}
+    , q_{"q", "q", 1.0f, 0.0f, 10000.0f, 0.1f}
+    , r_{"r", "r", 1.0f, 0.0f, 10000.0f, 0.1f}
+    , lambda_{"lambda", "lambda", 1.0f, 0.001f, 100.0f, 0.1f}
     , approximationMethod_{"approximationMethod", "Approximation Method"}
     , importanceVolume_{"importanceVolume", "Optional scalar field with importance data"_help}
     , importanceSumCoefficients_{"importanceSumCoefficients", "Importance sum coefficients"}
     , opticalDepthCoefficients_{"opticalDepthCoefficients", "Optical depth coefficients"}
+    , coeffTexFixedPointFactor_{"coeffTexFixedPointFactor", "Fixed point multiplier", 1000000.0f,
+                                10.0f, 1000000000.0f}
     , importanceSumTexture_{{size3_t(screenSize_.x, screenSize_.y, importanceSumCoefficients_),
-                            GL_RED_INTEGER, GL_R32I, GL_INT, GL_NEAREST},
-                           {size3_t(screenSize_.x, screenSize_.y, importanceSumCoefficients_),
-                            GL_RED_INTEGER, GL_R32I, GL_INT, GL_NEAREST}}
+                             GL_RED_INTEGER, GL_R32I, GL_INT, GL_NEAREST},
+                            {size3_t(screenSize_.x, screenSize_.y, importanceSumCoefficients_),
+                             GL_RED_INTEGER, GL_R32I, GL_INT, GL_NEAREST}}
     , opticalDepthTexture_{size3_t(screenSize_.x, screenSize_.y, opticalDepthCoefficients_),
-                          GL_RED_INTEGER, GL_R32I, GL_INT, GL_NEAREST}
+                           GL_RED_INTEGER, GL_R32I, GL_INT, GL_NEAREST}
     , gaussianKernel_{128 * sizeof(float),                  // allocate max possible size
                       GLFormats::getGLFormat(GL_FLOAT, 1),  // dummy format
                       GL_STATIC_DRAW, GL_SHADER_STORAGE_BUFFER}
@@ -180,9 +182,10 @@ DirectOpacityOptimisationRenderer::DirectOpacityOptimisationRenderer()
     addProperties(camera_, approximationProperties_, meshProperties_, lineSettings_,
                   pointProperties_, lightingProperty_, trackball_, layers_);
 
-    approximationProperties_.addProperties(
-        q_, r_, lambda_, approximationMethod_, importanceSumCoefficients_,
-        opticalDepthCoefficients_, smoothing_, debugCoords_, debugFileName_, debugApproximation_);
+    approximationProperties_.addProperties(q_, r_, lambda_, approximationMethod_,
+                                           importanceSumCoefficients_, opticalDepthCoefficients_,
+                                           coeffTexFixedPointFactor_, smoothing_, debugCoords_,
+                                           debugFileName_, debugApproximation_);
 
     for (auto& isc : importanceSumTexture_) isc.initialize(nullptr);
     opticalDepthTexture_.initialize(nullptr);
@@ -208,9 +211,11 @@ DirectOpacityOptimisationRenderer::DirectOpacityOptimisationRenderer()
         initializeResources();
     });
     opticalDepthCoefficients_.onChange([this]() {
-        opticalDepthTexture_.uploadAndResize(nullptr, size3_t(screenSize_.x, screenSize_.y, opticalDepthCoefficients_));
+        opticalDepthTexture_.uploadAndResize(
+            nullptr, size3_t(screenSize_.x, screenSize_.y, opticalDepthCoefficients_));
         initializeResources();
     });
+    coeffTexFixedPointFactor_.onChange([this]() { initializeResources(); });
 
     smoothing_.addProperties(gaussianRadius_, gaussianSigma_);
 
@@ -283,7 +288,7 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
                               std::to_string(opticalDepthCoefficients_).c_str());
         frag->setShaderDefine(ap_->shaderDefineName.c_str(), true);
         frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
-                              std::to_string(coeffTexFixedPointFactor));
+                              std::to_string(coeffTexFixedPointFactor_));
         if (debugOn_) frag->setShaderDefine("DEBUG", true);
 
         // account for background
@@ -321,7 +326,7 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
                               std::to_string(opticalDepthCoefficients_).c_str());
         frag->setShaderDefine(ap_->shaderDefineName.c_str(), true);
         frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
-                              std::to_string(coeffTexFixedPointFactor));
+                              std::to_string(coeffTexFixedPointFactor_));
         if (debugOn_) frag->setShaderDefine("DEBUG", true);
 
         // account for background
@@ -362,7 +367,7 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
                               std::to_string(opticalDepthCoefficients_).c_str());
         frag->setShaderDefine(ap_->shaderDefineName.c_str(), true);
         frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
-                              std::to_string(coeffTexFixedPointFactor));
+                              std::to_string(coeffTexFixedPointFactor_));
         if (debugOn_) frag->setShaderDefine("DEBUG", true);
 
         // account for background
@@ -391,7 +396,7 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
                               std::to_string(opticalDepthCoefficients_).c_str());
         frag->setShaderDefine(ap_->shaderDefineName.c_str(), true);
         frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
-                              std::to_string(coeffTexFixedPointFactor));
+                              std::to_string(coeffTexFixedPointFactor_));
         if (debugOn_) frag->setShaderDefine("DEBUG", true);
 
         // account for background
@@ -440,7 +445,7 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
                               std::to_string(opticalDepthCoefficients_).c_str());
         frag->setShaderDefine(ap_->shaderDefineName.c_str(), true);
         frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
-                              std::to_string(coeffTexFixedPointFactor));
+                              std::to_string(coeffTexFixedPointFactor_));
         if (debugOn_) frag->setShaderDefine("DEBUG", true);
 
         shader.build();
@@ -468,7 +473,7 @@ void DirectOpacityOptimisationRenderer::initializeResources() {
                               std::to_string(importanceSumCoefficients_).c_str());
         frag->setShaderDefine(ap_->shaderDefineName.c_str(), true);
         frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
-                              std::to_string(coeffTexFixedPointFactor * 10.0f));
+                              std::to_string(coeffTexFixedPointFactor_));
         frag->setShaderDefine("HORIZONTAL", true, std::to_string(int(horizontal)));
         frag->setShaderDefine("USE_PICK_IMAGE", true);
         shader->build();
@@ -735,6 +740,8 @@ void DirectOpacityOptimisationRenderer::renderGeometry(int pass) {
             if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
         }
     }
+
+    LGL_ERROR_CLASS;
 }
 
 void DirectOpacityOptimisationRenderer::resizeBuffers(size2_t screenSize) {
