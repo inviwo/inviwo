@@ -43,38 +43,14 @@
       "hidden": true,
       "toolchainFile": "${sourceParentDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE":       "${sourceParentDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        "IVW_USE_EXTERNAL_ASSIMP":    { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_BENCHMARK": { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_CIMG":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_EIGEN":     { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_FMT":       { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_FREETYPE":  { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_GLEW":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_GLFW":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_GLM":       { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_GTEST":     { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_HDF5":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_IMG":       { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_INJA":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_JSON":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_NIFTI":     { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_OPENEXR":   { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_PEGTL":     { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_PYBIND11":  { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_ROARING":   { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_TCLAP":     { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_TIFF":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_UTFCPP":    { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_UNITS":     { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_WARN":      { "type": "BOOL", "value": "ON"}
+        "CMAKE_TOOLCHAIN_FILE": "${sourceParentDir}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       }
     },
     {
       "name" : "vcpkg-cache-read",
       "hidden": true,
       "environment": {
-        "VCPKG_BINARY_SOURCES" :"default;http,https://jenkins.inviwo.org/cache/{sha},read"
+        "VCPKG_BINARY_SOURCES" : "default;http,https://jenkins.inviwo.org/cache/{sha},read"
       },
       "cacheVariables": {
         "VCPKG_FEATURE_FLAGS":   "-compilertracking",
@@ -86,7 +62,7 @@
       "hidden": true,
       "inherits" : ["vcpkg-cache-read"],
       "environment": {
-        "VCPKG_BINARY_SOURCES" :"default;http,https://jenkins.inviwo.org/cache/{sha},readwrite,Authorization: Bearer $env{VCPKG_CACHE_TOKEN}"
+        "VCPKG_BINARY_SOURCES": "default;http,https://jenkins.inviwo.org/cache/{sha},readwrite,Authorization: Bearer $env{VCPKG_CACHE_TOKEN}"
       }
     },
 

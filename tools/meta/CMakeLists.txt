@@ -63,42 +63,12 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(warn CONFIG REQUIRED)
 
 # Add pegtL
-option(IVW_USE_EXTERNAL_PEGTL "Pegtl is provided externaly" OFF)
-if(NOT IVW_USE_EXTERNAL_PEGTL)
-    option(PEGTL_BUILD_TESTS "Build test programs" OFF)
-    option(PEGTL_BUILD_EXAMPLES "Build example programs" OFF)
-    add_subdirectory(ext/pegtl)
-    ivw_make_package(pegtl pegtl)
-    ivw_move_targets_in_dir_to_folder(ext/pegtl ext/pegtl)
-    ivw_register_license_file(NAME "PEGTL" VERSION 3.2.7 target taocpp::pegtl MODULE Core EXT
-        URL "https://github.com/taocpp/PEGTL"
-        TYPE "The MIT License"
-        FILES ${CMAKE_CURRENT_LIST_DIR}/ext/pegtl/LICENSE
-    )
-else()
-    find_package(pegtl CONFIG REQUIRED)
-    ivw_vcpkg_install(pegtl MODULE Core EXT)
-endif()
+find_package(pegtl CONFIG REQUIRED)
+ivw_vcpkg_install(pegtl MODULE Core EXT)
 
 # Add inja
-option(IVW_USE_EXTERNAL_INJA "Inja is provided externaly" OFF)
-if(NOT IVW_USE_EXTERNAL_INJA)
-    option(INJA_BUILD_TESTS "" OFF)
-    option(INJA_EXPORT "" OFF)
-    option(INJA_INSTALL "" OFF)
-    option(INJA_USE_EMBEDDED_JSON "" OFF)
-    option(BUILD_BENCHMARK "" OFF)
-    add_subdirectory(ext/inja)
-    ivw_make_package(inja inja)
-    ivw_register_license_file(NAME "inja" VERSION 3.3.0 target inja MODULE Core EXT
-        URL "https://github.com/pantor/inja"
-        TYPE "The MIT License"
-        FILES ${CMAKE_CURRENT_LIST_DIR}/ext/inja/LICENSE
-    )
-else()
-    find_package(inja CONFIG REQUIRED)
-    ivw_vcpkg_install(inja MODULE Core EXT)
-endif()
+find_package(inja CONFIG REQUIRED)
+ivw_vcpkg_install(inja MODULE Core EXT)
 
 target_link_libraries(inviwo-meta PUBLIC
     warn::warn
