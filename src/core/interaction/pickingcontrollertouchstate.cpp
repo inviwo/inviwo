@@ -36,7 +36,7 @@
 #include <inviwo/core/interaction/pickingaction.h>
 #include <inviwo/core/interaction/pickingcontroller.h>
 
-#include <sml/sml.hpp>
+#include <boost/sml.hpp>
 namespace sml = boost::sml;
 
 namespace inviwo {

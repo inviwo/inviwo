@@ -136,13 +136,8 @@ find_package(fmt CONFIG REQUIRED)
 ivw_vcpkg_install(fmt MODULE Core EXT)
 
 # sml
-message(STATUS "add subdirectory: sml")
-add_subdirectory(sml)
-ivw_register_license_file(NAME "[Boost].SML" VERSION 1.1.0 target inviwo::sml MODULE Core EXT
-    URL "https://github.com/boost-experimental/sml"
-    TYPE " Boost Software License"
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/sml/LICENSE_1_0.txt
-)
+find_package(sml CONFIG REQUIRED)
+ivw_vcpkg_install(bext-sml MODULE Core EXT)
 
 # CRoaring
 find_package(roaring CONFIG REQUIRED)
@@ -152,23 +147,13 @@ ivw_vcpkg_install(roaring MODULE Core EXT)
 find_package(llnl-units CONFIG REQUIRED)
 ivw_vcpkg_install(llnl-units MODULE Core EXT)
 
-# Markdown
-message(STATUS "add subdirectory: md4c")
-add_subdirectory(md4c)
-ivw_register_license_file(NAME "MD4C" VERSION 0.4.8 TARGET inviwo::md4c MODULE Core EXT
-    URL "http://github.com/mity/md4c"
-    TYPE "MIT License"
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/md4c/LICENSE.md
-)
+# md4c
+find_package(md4c CONFIG REQUIRED)
+ivw_vcpkg_install(md4c MODULE Core EXT)
 
 if(WIN32) # Stackwalker for windows for stack traces in the log
-    message(STATUS "add subdirectory: stackwalker")
-    add_subdirectory(stackwalker) 
-    ivw_register_license_file(NAME "stackwalker" TARGET inviwo::stackwalker MODULE Core EXT
-        URL http://stackwalker.codeplex.com/
-        TYPE "BSD-License"
-        FILES ${CMAKE_CURRENT_SOURCE_DIR}/stackwalker/LICENSE.txt
-    )
+    find_package(stackwalker CONFIG REQUIRED)
+    ivw_vcpkg_install(stackwalker MODULE Core EXT)
 endif()
 
 if(IVW_ENABLE_PYTHON)

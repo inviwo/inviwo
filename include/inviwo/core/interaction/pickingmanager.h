@@ -68,11 +68,11 @@ public:
     /*
      * Returns PickingAction for corresponding picking color if found, nullptr otherwise.
      */
-    const PickingAction* getPickingActionFromColor(const uvec3& color);
+    const PickingAction* getPickingActionFromColor(const uvec3& color) const;
     /*
      * Returns PickingAction for corresponding global picking index if found, nullptr otherwise.
      */
-    const PickingAction* getPickingActionFromIndex(size_t index);
+    const PickingAction* getPickingActionFromIndex(size_t index) const;
 
     bool isPickingActionRegistered(const PickingAction* action) const;
 

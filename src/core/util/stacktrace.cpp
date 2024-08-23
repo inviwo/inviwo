@@ -36,7 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #elif defined(_MSC_VER)
-#include <stackwalker/StackWalker.h>
+#include <StackWalker.h>
 #endif
 
 #include <inviwo/core/util/stringconversion.h>

@@ -898,6 +898,7 @@ target_compile_definitions(inviwo-core
         GLM_ENABLE_EXPERIMENTAL
         GLM_FORCE_UNRESTRICTED_GENTYPE
         GLM_FORCE_SILENT_WARNINGS
+        BOOST_SML_CFG_DISABLE_MIN_SIZE
 )
 
 target_link_libraries(inviwo-core 
@@ -906,18 +907,18 @@ target_link_libraries(inviwo-core
         glm::glm
         warn::warn
         inviwo::tclap
-        inviwo::sml
+        sml::sml
         inviwo::flags
         inviwo::tracywrap
         fmt::fmt
         $<$<BOOL:${IVW_ENABLE_OPENMP}>:OpenMP::OpenMP_CXX>
         $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
-        $<$<BOOL:${WIN32}>:inviwo::stackwalker>
+        $<$<BOOL:${WIN32}>:unofficial::stackwalker::StackWalker>
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
         llnl-units::units
     PRIVATE
         roaring::roaring
-        inviwo::md4c
+        md4c::md4c
         utf8cpp::utf8cpp
 )
 

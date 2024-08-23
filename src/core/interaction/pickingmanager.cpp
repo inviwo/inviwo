@@ -113,7 +113,7 @@ bool PickingManager::unregisterPickingAction(const PickingAction* p) {
     return false;
 }
 
-const PickingAction* PickingManager::getPickingActionFromIndex(size_t index) {
+const PickingAction* PickingManager::getPickingActionFromIndex(size_t index) const {
     if (index == 0) return nullptr;
 
     // This will find the first picking object with an start greater then index.
@@ -131,7 +131,7 @@ const PickingAction* PickingManager::getPickingActionFromIndex(size_t index) {
     return nullptr;
 }
 
-const PickingAction* PickingManager::getPickingActionFromColor(const uvec3& c) {
+const PickingAction* PickingManager::getPickingActionFromColor(const uvec3& c) const {
     return getPickingActionFromIndex(colorToIndex(c));
 }
 
