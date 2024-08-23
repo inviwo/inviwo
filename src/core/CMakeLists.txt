@@ -898,7 +898,6 @@ target_compile_definitions(inviwo-core
         GLM_ENABLE_EXPERIMENTAL
         GLM_FORCE_UNRESTRICTED_GENTYPE
         GLM_FORCE_SILENT_WARNINGS
-        BOOST_SML_CFG_DISABLE_MIN_SIZE # see https://github.com/boost-ext/sml/issues/249
 )
 
 target_link_libraries(inviwo-core 
