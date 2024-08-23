@@ -224,10 +224,18 @@ if(APPLE AND NOT OpenMP_CXX_INCLUDE_DIR)
 endif()
 
 # Check if OpenMP is available and set it to use, and include the dll in packs, except for MSVC
-find_package(OpenMP QUIET COMPONENTS CXX) 
+
 if(MSVC)
     option(IVW_ENABLE_OPENMP "Use OpenMP" OFF)
+    if(IVW_ENABLE_OPENMP)
+        set(OpenMP_CXX_FLAGS /openmp:llvm
+            CACHE STRING "CXX compiler flags for OpenMP parallelization")
+        set(OpenMP_C_FLAGS /openmp:llvm
+            CACHE STRING "C compiler flags for OpenMP parallelization")
+        find_package(OpenMP QUIET COMPONENTS CXX)
+    endif()
 else()
+    find_package(OpenMP QUIET COMPONENTS CXX)
     option(IVW_ENABLE_OPENMP "Use OpenMP" ${OpenMP_CXX_FOUND})
 endif()
 

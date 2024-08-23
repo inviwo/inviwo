@@ -96,11 +96,11 @@ public:
     CameraProperty& setCamera(std::unique_ptr<Camera> camera);
 
     virtual vec3 getLookFrom() const override;
-    virtual CameraProperty& setLookFrom(vec3 lookFrom) override;
+    virtual TrackballObject& setLookFrom(vec3 lookFrom) override;
     virtual vec3 getLookTo() const override;
-    virtual CameraProperty& setLookTo(vec3 lookTo) override;
+    virtual TrackballObject& setLookTo(vec3 lookTo) override;
     virtual vec3 getLookUp() const override;
-    virtual CameraProperty& setLookUp(vec3 lookUp) override;
+    virtual TrackballObject& setLookUp(vec3 lookUp) override;
 
     vec3 getLookRight() const;
 
@@ -112,7 +112,7 @@ public:
      * Locks and unlocks processor network before and after changing property values.
      * @note Parameters will be capped by their min/max.
      */
-    virtual CameraProperty& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;
+    virtual TrackballObject& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;  // NOLINT
 
     virtual float getNearPlaneDist() const override;
     virtual float getFarPlaneDist() const override;

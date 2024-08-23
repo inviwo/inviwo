@@ -29,7 +29,12 @@
 #pragma once
 
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 #include <inviwo/core/util/detected.h>
+#include <flags/flags.h>
+
+template <typename T, typename Char>
+struct fmt::is_range<inviwo::flags::flags<T>, Char> : std::false_type {};
 
 namespace inviwo {
 

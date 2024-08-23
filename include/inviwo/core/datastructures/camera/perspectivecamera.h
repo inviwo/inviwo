@@ -43,8 +43,8 @@ public:
                       vec3 lookTo = cameradefaults::lookTo, vec3 lookUp = cameradefaults::lookUp,
                       float nearPlane = cameradefaults::nearPlane,
                       float farPlane = cameradefaults::farPlane,
-                      float fieldOfView = cameradefaults::fieldOfView,
-                      float aspectRatio = cameradefaults::aspectRatio);
+                      float aspectRatio = cameradefaults::aspectRatio,
+                      float fieldOfView = cameradefaults::fieldOfView);
     virtual ~PerspectiveCamera() = default;
     PerspectiveCamera(const PerspectiveCamera& other);
     PerspectiveCamera& operator=(const PerspectiveCamera& other);

@@ -66,6 +66,7 @@
 #include <glm/common.hpp>             // for clamp, min
 #include <glm/vec2.hpp>               // for vec<>::(anonymous), vec, operator-
 #include <glm/vector_relational.hpp>  // for any, lessThanEqual, equal
+#include <glm/gtx/component_wise.hpp>
 
 namespace inviwo {
 class Inport;

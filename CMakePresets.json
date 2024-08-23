@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 6,
   "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
   "configurePresets": [
     {
@@ -136,7 +136,7 @@
       "name": "modules-vcpkg",
       "hidden": true,
       "environment": {
-        "VCPKG_OVERLAY_PORTS" : "${sourceDir}/tools/vcpkg;${sourceParentDir}/modules/tools/vcpkg"
+        "VCPKG_OVERLAY_PORTS" : "${sourceDir}/tools/vcpkg${pathListSep}${sourceParentDir}/modules/tools/vcpkg"
       }
     },
 

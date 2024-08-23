@@ -58,7 +58,7 @@ template <>
 struct PrintEventHelper<2> {
     template <typename Arg>
     static void print(std::ostream& os, Arg&& item) {
-        fmt::print(os, "{}: {:8} ", std::get<0>(item), std::get<1>(item));
+        fmt::print(os, "{}: {:} ", std::get<0>(item), std::get<1>(item));
     }
 };
 template <>

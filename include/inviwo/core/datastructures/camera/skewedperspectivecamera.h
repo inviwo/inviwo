@@ -47,8 +47,8 @@ public:
     SkewedPerspectiveCamera(
         vec3 lookFrom = cameradefaults::lookFrom, vec3 lookTo = cameradefaults::lookTo,
         vec3 lookUp = cameradefaults::lookUp, float nearPlane = cameradefaults::nearPlane,
-        float farPlane = cameradefaults::farPlane, float fieldOfView = cameradefaults::fieldOfView,
-        float aspectRatio = cameradefaults::aspectRatio, vec2 frustumOffset = vec2(0.0f, 0.0f));
+        float farPlane = cameradefaults::farPlane, float aspectRatio = cameradefaults::aspectRatio,
+        float fieldOfView = cameradefaults::fieldOfView, vec2 frustumOffset = vec2(0.0f, 0.0f));
     virtual ~SkewedPerspectiveCamera() = default;
     SkewedPerspectiveCamera(const SkewedPerspectiveCamera& other);
     SkewedPerspectiveCamera& operator=(const SkewedPerspectiveCamera& other);

@@ -82,8 +82,8 @@ void BoxSelectionRenderer::render(std::optional<std::array<dvec2, 2>> dragRect, 
             vec3{0.0f, 1.0f, 0.0f},
             0.01f,
             10000.0f,
-            static_cast<float>(screenDim.x),
-            static_cast<float>(screenDim.x) / static_cast<float>(screenDim.y)};
+            static_cast<float>(screenDim.x) / static_cast<float>(screenDim.y),
+            static_cast<float>(screenDim.x)};
         lineRenderer_.render(dragRectMesh_, camera_, screenDim, &lineSettings_);
     }
 }

@@ -33,7 +33,6 @@
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/foreacharg.h>
-#include <inviwo/core/util/stringconversion.h>
 
 #include <modules/python3/opaquetypes.h>
 
@@ -94,7 +93,7 @@ struct OrdinalRefPropertyHelper {
             .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
             .def_property("increment", &P::getIncrement, &P::setIncrement)
             .def("setGetAndSet", &P::setGetAndSet)
-            .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
+            .def("__repr__", [](P& v) { return fmt::to_string(v.get()); });
 
         return prop;
     }

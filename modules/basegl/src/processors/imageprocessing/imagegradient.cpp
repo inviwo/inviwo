@@ -34,6 +34,8 @@
 #include <inviwo/core/util/glmvec.h>
 #include <modules/opengl/shader/shader.h>
 
+#include <glm/gtx/component_wise.hpp>
+
 #include <functional>
 #include <memory>
 #include <sstream>

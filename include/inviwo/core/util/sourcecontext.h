@@ -37,6 +37,7 @@
 #include <string>
 #include <cstring>
 #include <iosfwd>
+#include <iterator>
 
 #include <fmt/format.h>
 

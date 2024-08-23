@@ -134,11 +134,12 @@ void VolumeTetraMesh::get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds)
         }
     });
 
+    const auto bounds = ivec3{dims} - ivec3{1, 1, 1};
     nodeIds.reserve(getNumberOfCells());
     util::IndexMapper<3, int> indexMapper{dims};
-    for (int z = 0; z < dims.z - 1; ++z) {
-        for (int y = 0; y < dims.y - 1; ++y) {
-            for (int x = 0; x < dims.x - 1; ++x) {
+    for (int z = 0; z < bounds.z; ++z) {
+        for (int y = 0; y < bounds.y; ++y) {
+            for (int x = 0; x < bounds.x; ++x) {
                 int v0 = indexMapper(x, y, z);
                 int v1 = indexMapper(x + 1, y, z);
                 int v2 = indexMapper(x, y + 1, z);

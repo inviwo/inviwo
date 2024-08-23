@@ -174,6 +174,11 @@ private:
         double zoom_ = 1.0f;
     } initialState_;
 
+    // Ensure that the Image and ImageGL are always in sync.
+    // By returning a pair we ensure we can never return an Image and a nullptr ImageGL,
+    // which can happen if we run into any OpenGL error.
+    std::tuple<std::unique_ptr<Image>, ImageGL*> createWidgetImage(const ivec2& widgetSize);
+
     std::unique_ptr<Image> widgetImage_;  //!< the widget is rendered into this image, which is then
                                           //!< drawn on top of the input image
     ImageGL* widgetImageGL_;  //!< keep an ImageGL representation around to avoid overhead

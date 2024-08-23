@@ -32,6 +32,7 @@
 #include <inviwo/core/util/glmfmt.h>
 
 #include <fmt/format.h>
+#include <ostream>
 
 namespace inviwo {
 

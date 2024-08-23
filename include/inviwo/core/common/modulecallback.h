@@ -32,6 +32,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/exception.h>
 
+#include <memory>
+
 namespace inviwo {
 
 class IVW_CORE_API CallbackWithSingleArgument {

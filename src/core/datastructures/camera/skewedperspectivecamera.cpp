@@ -42,8 +42,8 @@
 namespace inviwo {
 
 SkewedPerspectiveCamera::SkewedPerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp,
-                                                 float nearPlane, float farPlane, float fieldOfView,
-                                                 float aspectRatio, vec2 offset)
+                                                 float nearPlane, float farPlane, float aspectRatio,
+                                                 float fieldOfView, vec2 offset)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio)
     , fovy_(fieldOfView)
     , offset_(offset) {}

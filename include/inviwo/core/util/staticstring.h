@@ -34,6 +34,7 @@
 #include <string>
 
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 
 namespace inviwo {
 
@@ -202,12 +203,14 @@ constexpr std::string_view to_string_view(const StaticString<N>& s) {
 }  // namespace inviwo
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
+template <size_t N, typename Char>
+struct fmt::is_range<::inviwo::StaticString<N>, Char> : std::false_type {};
 template <size_t N>
 struct fmt::formatter<::inviwo::StaticString<N>> : ::fmt::formatter<string_view> {
     // parse is inherited from formatter<string_view>.
-    template <typename FormatContext>
-    auto format(const ::inviwo::StaticString<N>& str, FormatContext& ctx) {
+    auto format(const ::inviwo::StaticString<N>& str, format_context& ctx) const {
         return ::fmt::formatter<string_view>::format(str.view(), ctx);
     }
 };
+
 #endif

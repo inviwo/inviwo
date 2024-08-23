@@ -66,8 +66,8 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                           "The type of camera to use, defaults to a Perspective camera"_help;
                       return opts;
                   }())
-    , camera_{factory_->create(cameraType_)}
-    , defaultCamera_{}
+    , camera_{factory_->create(cameraType_, eye, center, lookUp)}
+    , defaultCamera_{camera_->clone()}
     , cameraActions_("actions", "Actions",
                      "Make automatic viewport adjustments. This requires that the camera gets "
                      "accurate data bounding box information."_help,
@@ -138,9 +138,6 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
     });
 
     updateFittingVisibility();
-
-    setLook(eye, center, lookUp);
-    defaultCamera_.reset(camera_->clone());
 }
 
 CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName,
@@ -170,8 +167,8 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     : CompositeProperty(rhs)
     , factory_{rhs.factory_}
     , cameraType_(rhs.cameraType_)
-    , camera_{factory_->create(cameraType_)}
-    , defaultCamera_{}
+    , camera_{rhs.camera_->clone()}
+    , defaultCamera_{rhs.defaultCamera_->clone()}
     , cameraActions_{rhs.cameraActions_, buttons()}
     , lookFrom_(rhs.lookFrom_)
     , lookTo_(rhs.lookTo_)
@@ -179,14 +176,12 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     , aspectRatio_(rhs.aspectRatio_)
     , nearPlane_(rhs.nearPlane_)
     , farPlane_(rhs.farPlane_)
-
     , settings_{rhs.settings_}
     , updateNearFar_{rhs.updateNearFar_}
     , updateLookRanges_{rhs.updateLookRanges_}
     , fittingRatio_{rhs.fittingRatio_}
     , setNearFarButton_{rhs.setNearFarButton_, [this] { setNearFar(); }}
     , setLookRangesButton_{rhs.setLookRangesButton_, [this] { setLookRange(); }}
-
     , getBoundingBox_(rhs.getBoundingBox_) {
 
     settings_.addProperties(setNearFarButton_, setLookRangesButton_, updateNearFar_,
@@ -202,8 +197,6 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
         updateFittingVisibility();
     });
     updateFittingVisibility();
-
-    defaultCamera_.reset(camera_->clone());
 }
 
 CameraProperty::~CameraProperty() = default;
@@ -213,7 +206,7 @@ Camera& CameraProperty::get() { return *camera_; }
 
 void CameraProperty::set(const Property* srcProperty) {
     if (const auto src = dynamic_cast<const CameraProperty*>(srcProperty)) {
-        NetworkLock lock(this);
+        const NetworkLock lock(this);
         const auto aspect = getAspectRatio();
 
         cameraType_.set(&src->cameraType_);
@@ -234,7 +227,7 @@ CameraProperty* CameraProperty::clone() const { return new CameraProperty(*this)
 
 bool CameraProperty::changeCamera(const std::string& name) {
     if (name != camera_->getClassIdentifier()) {
-        NetworkLock lock(this);
+        const NetworkLock lock(this);
         auto newCamera = factory_->create(name);
         newCamera->updateFrom(*camera_);
         camera_->configureProperties(*this, false);
@@ -259,7 +252,7 @@ CameraProperty& CameraProperty::setCamera(const std::string& cameraIdentifier) {
 
 CameraProperty& CameraProperty::setCamera(std::unique_ptr<Camera> newCamera) {
     if (newCamera) {
-        NetworkLock lock(this);
+        const NetworkLock lock(this);
         camera_->configureProperties(*this, false);
         hideConfiguredProperties();
         newCamera->configureProperties(*this, true);
@@ -270,17 +263,17 @@ CameraProperty& CameraProperty::setCamera(std::unique_ptr<Camera> newCamera) {
     return *this;
 }
 
-CameraProperty& CameraProperty::setLookFrom(vec3 lookFrom) {
+TrackballObject& CameraProperty::setLookFrom(vec3 lookFrom) {
     lookFrom_.set(lookFrom);
     return *this;
 }
 
-CameraProperty& CameraProperty::setLookTo(vec3 lookTo) {
+TrackballObject& CameraProperty::setLookTo(vec3 lookTo) {
     lookTo_.set(lookTo);
     return *this;
 }
 
-CameraProperty& CameraProperty::setLookUp(vec3 lookUp) {
+TrackballObject& CameraProperty::setLookUp(vec3 lookUp) {
     lookUp_.set(lookUp);
     return *this;
 }
@@ -291,8 +284,8 @@ CameraProperty& CameraProperty::setAspectRatio(float aspectRatio) {
 }
 float CameraProperty::getAspectRatio() const { return camera_->getAspectRatio(); }
 
-CameraProperty& CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
-    NetworkLock lock(this);
+TrackballObject& CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {  // NOLINT
+    const NetworkLock lock(this);
     setLookFrom(lookFrom);
     setLookTo(lookTo);
     setLookUp(lookUp);
@@ -315,7 +308,7 @@ CameraProperty& CameraProperty::setFarPlaneDist(float v) {
 
 CameraProperty& CameraProperty::setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist,
                                                     float minMaxRatio) {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
 
     nearPlane_.set(nearPlaneDist, std::min(nearPlane_.getMinValue(), nearPlaneDist / minMaxRatio),
                    std::max(nearPlane_.getMaxValue(), nearPlaneDist * minMaxRatio),
@@ -402,7 +395,7 @@ CameraProperty& CameraProperty::setCurrentStateAsDefault() {
 }
 
 CameraProperty& CameraProperty::resetToDefaultState() {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     setCamera(std::unique_ptr<Camera>(defaultCamera_->clone()));
     for (auto& elem : properties_) {
         if (elem != &aspectRatio_) {  // We never want to reset the aspect

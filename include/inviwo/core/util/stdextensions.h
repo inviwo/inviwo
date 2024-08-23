@@ -227,58 +227,43 @@ Dst& append(Dst& dest, Srcs&&... sources) {
 
 template <typename T, typename V>
 auto find(T& cont, const V& elem) {
-    using std::begin;
-    using std::end;
-    return std::find(begin(cont), end(cont), elem);
+    return std::ranges::find(cont, elem);
 }
 
 template <typename T, typename Pred>
 auto find_if(T& cont, Pred pred) -> typename T::iterator {
-    using std::begin;
-    using std::end;
-    return std::find_if(begin(cont), end(cont), pred);
+    return std::ranges::find_if(cont, pred);
 }
 
 template <typename T, typename Pred>
 auto find_if(const T& cont, Pred pred) -> typename T::const_iterator {
-    return std::find_if(cont.cbegin(), cont.cend(), pred);
+    return std::ranges::find_if(cont, pred);
 }
 
 template <typename T, typename V>
 bool contains(T& cont, const V& elem) {
-    using std::begin;
-    using std::end;
-    return std::find(begin(cont), end(cont), elem) != end(cont);
+    return std::ranges::find(cont, elem) != std::ranges::end(cont);
 }
 
 template <typename T, typename Pred>
 bool contains_if(T& cont, Pred pred) {
-    using std::begin;
-    using std::end;
-    return std::find_if(begin(cont), end(cont), pred) != end(cont);
+    return std::ranges::find_if(cont, pred) != std::ranges::end(cont);
 }
 
 template <typename T, typename V>
 bool contains(const T& cont, const V& elem) {
-    using std::cbegin;
-    using std::cend;
-    return std::find(cbegin(cont), cend(cont), elem) != end(cont);
+    return std::ranges::find(cont, elem) != std::ranges::end(cont);
 }
 
 template <typename T, typename Pred>
 bool contains_if(const T& cont, Pred pred) {
-    using std::cbegin;
-    using std::cend;
-    return std::find_if(cbegin(cont), cend(cont), pred) != end(cont);
+    return std::ranges::find_if(cont, pred) != std::ranges::end(cont);
 }
 
 template <typename T, typename P>
 auto find_if_or_null(T& cont, P pred) -> typename T::value_type {
-    using std::begin;
-    using std::end;
-
-    auto it = std::find_if(begin(cont), end(cont), pred);
-    if (it != end(cont)) {
+    auto it = std::ranges::find_if(cont, pred);
+    if (it != std::ranges::end(cont)) {
         return *it;
     } else {
         return nullptr;
@@ -287,11 +272,8 @@ auto find_if_or_null(T& cont, P pred) -> typename T::value_type {
 
 template <typename T, typename V>
 auto find_or_null(T& cont, const V& elem) -> typename T::value_type {
-    using std::begin;
-    using std::end;
-
-    auto it = std::find(begin(cont), end(cont), elem);
-    if (it != end(cont)) {
+    auto it = std::ranges::find(cont, elem);
+    if (it != std::ranges::end(cont)) {
         return *it;
     } else {
         return nullptr;
@@ -300,11 +282,8 @@ auto find_or_null(T& cont, const V& elem) -> typename T::value_type {
 
 template <typename T, typename V, typename Callable>
 auto find_or_null(T& cont, const V& elem, Callable f) -> typename T::value_type {
-    using std::begin;
-    using std::end;
-
-    auto it = std::find(begin(cont), end(cont), elem);
-    if (it != end(cont)) {
+    auto it = std::ranges::find(cont, elem);
+    if (it != std::ranges::end(cont)) {
         return f(*it);
     } else {
         return nullptr;
@@ -403,43 +382,31 @@ Iter find_not_equal(Iter begin, Iter end, Proj proj = {}) {
 
 template <typename T, typename OutIt, typename P>
 OutIt copy_if(const T& cont, OutIt out, P pred) {
-    using std::begin;
-    using std::end;
-    return std::copy_if(begin(cont), end(cont), out, pred);
+    return std::ranges::copy_if(cont, out, pred).out;
 }
 
 template <typename T, typename P>
 auto copy_if(const T& cont, P pred) -> std::vector<typename T::value_type> {
-    using std::begin;
-    using std::end;
     std::vector<typename T::value_type> res;
-    std::copy_if(begin(cont), end(cont), std::back_inserter(res), pred);
+    std::ranges::copy_if(cont, std::back_inserter(res), pred);
     return res;
 }
 
 template <typename T, typename UnaryOperation>
 auto transform(const T& cont, UnaryOperation op)
     -> std::vector<std::invoke_result_t<UnaryOperation, const typename T::value_type>> {
-    using std::begin;
-    using std::end;
-
     std::vector<std::invoke_result_t<UnaryOperation, const typename T::value_type>> res;
-    res.reserve(std::distance(begin(cont), end(cont)));
-    std::transform(begin(cont), end(cont), std::back_inserter(res), op);
+    res.reserve(std::ranges::distance(cont));
+    std::ranges::transform(cont, std::back_inserter(res), op);
     return res;
 }
 
 template <typename T, typename Pred>
 auto ordering(T& cont, Pred pred) -> std::vector<size_t> {
-    using std::begin;
-    using std::end;
-
-    std::vector<size_t> res(std::distance(begin(cont), end(cont)));
+    std::vector<size_t> res(std::ranges::distance(cont));
     std::iota(res.begin(), res.end(), 0);
-    std::sort(res.begin(), res.end(), [&](const size_t& a, const size_t& b) {
-        return pred(begin(cont)[a], begin(cont)[b]);
-    });
-
+    std::sort(res.begin(), res.end(),
+              [&](const size_t& a, const size_t& b) { return pred(cont[a], cont[b]); });
     return res;
 }
 
@@ -495,7 +462,7 @@ namespace hashtuple {
  */
 template <class Tuple, size_t Index = std::tuple_size<Tuple>::value - 1>
 struct HashValueImpl {
-    static void apply(size_t& seed, Tuple const& tuple) {
+    static void apply(size_t& seed, const Tuple& tuple) {
         HashValueImpl<Tuple, Index - 1>::apply(seed, tuple);
         hash_combine(seed, std::get<Index>(tuple));
     }
@@ -503,7 +470,7 @@ struct HashValueImpl {
 
 template <class Tuple>
 struct HashValueImpl<Tuple, 0> {
-    static void apply(size_t& seed, Tuple const& tuple) { hash_combine(seed, std::get<0>(tuple)); }
+    static void apply(size_t& seed, const Tuple& tuple) { hash_combine(seed, std::get<0>(tuple)); }
 };
 
 }  // namespace hashtuple
@@ -524,7 +491,7 @@ struct hash<std::pair<T, U>> {
 
 template <typename... TT>
 struct hash<std::tuple<TT...>> {
-    size_t operator()(std::tuple<TT...> const& tt) const {
+    size_t operator()(const std::tuple<TT...>& tt) const {
         size_t seed = 0;
         inviwo::util::hashtuple::HashValueImpl<std::tuple<TT...>>::apply(seed, tt);
         return seed;

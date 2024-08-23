@@ -38,6 +38,7 @@
 #include <tuple>
 #include <array>
 #include <optional>
+#include <iterator>
 
 #include <fmt/format.h>
 
@@ -262,7 +263,7 @@ constexpr bool Version::semanticVersionEqual(const Version& other) const {
 template <>
 struct fmt::formatter<inviwo::Version> : fmt::formatter<fmt::string_view> {
     template <typename FormatContext>
-    auto format(const inviwo::Version& val, FormatContext& ctx) const {
+    constexpr auto format(const inviwo::Version& val, FormatContext& ctx) const {
         fmt::memory_buffer buff;
 
         fmt::format_to(std::back_inserter(buff), "{}.{}.{}", val.major, val.minor, val.patch);

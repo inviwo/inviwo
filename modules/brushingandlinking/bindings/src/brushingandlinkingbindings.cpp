@@ -98,7 +98,7 @@ void exposeBnL(py::module& m) {
         .def("getIndices", &IndexList::getIndices)
         .def("removeSource", &IndexList::removeSources);
 
-    py::class_<BrushingTargetsInvalidationLevel, Inport>{m, "BrushingTargetsInvalidationLevel"}
+    py::class_<BrushingTargetsInvalidationLevel>{m, "BrushingTargetsInvalidationLevel"}
         .def(py::init<BrushingModifications, InvalidationLevel>(), py::arg("mods"),
              py::arg("invalidationLevel"))
         .def(py::init<std::vector<BrushingTarget>, BrushingModifications, InvalidationLevel>(),

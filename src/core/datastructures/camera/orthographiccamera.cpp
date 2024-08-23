@@ -39,7 +39,7 @@
 namespace inviwo {
 
 OrthographicCamera::OrthographicCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
-                                       float farPlane, float width, float aspectRatio)
+                                       float farPlane, float aspectRatio, float width)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), width_{width} {}
 
 OrthographicCamera::OrthographicCamera(const OrthographicCamera&) = default;

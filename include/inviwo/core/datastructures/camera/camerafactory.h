@@ -42,6 +42,22 @@ namespace inviwo {
 class IVW_CORE_API CameraFactory : public StandardFactory<Camera, CameraFactoryObject> {
 public:
     CameraFactory() = default;
+
+    using StandardFactory<Camera, CameraFactoryObject>::create;
+
+    std::unique_ptr<Camera> create(std::string_view key, vec3 lookFrom,
+                                   vec3 lookTo = cameradefaults::lookTo,
+                                   vec3 lookUp = cameradefaults::lookUp,
+                                   float nearPlane = cameradefaults::nearPlane,
+                                   float farPlane = cameradefaults::farPlane,
+                                   float aspectRatio = cameradefaults::aspectRatio) const {
+        auto it = this->map_.find(key);
+        if (it != end(this->map_)) {
+            return it->second->create(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio);
+        } else {
+            return nullptr;
+        }
+    }
 };
 
 }  // namespace inviwo
