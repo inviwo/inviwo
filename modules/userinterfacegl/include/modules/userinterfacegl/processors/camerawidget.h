@@ -174,7 +174,9 @@ private:
         double zoom_ = 1.0f;
     } initialState_;
 
-    // By returning the as a pair we ensure we can never return an image not not a rep.
+    // Ensure that the Image and ImageGL are always in sync.
+    // By returning a pair we ensure we can never return an Image and a nullptr ImageGL,
+    // which can happen if we run into any OpenGL error.
     std::tuple<std::unique_ptr<Image>, ImageGL*> createWidgetImage(const ivec2& widgetSize);
 
     std::unique_ptr<Image> widgetImage_;  //!< the widget is rendered into this image, which is then

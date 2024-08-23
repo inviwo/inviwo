@@ -36,8 +36,8 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-// Tell fmt to no treat glm types as ranges, otherwise the fmt range formatting will be used and
-// will conflict with the custom formatting below.
+// Tell fmt to not treat glm types as ranges, otherwise the fmt range formatting will be used and
+// will conflicts with the custom formatting below.
 
 template <glm::length_t L, typename T, glm::qualifier Q, typename Char>
 struct fmt::is_range<::glm::vec<L, T, Q>, Char> : std::false_type {};
