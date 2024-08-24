@@ -115,7 +115,7 @@ var searchData=
   ['setlinespacing_112',['setLineSpacing',['../classinviwo_1_1TextRenderer.html#adc7715714f0a4c50b643ef02d115898d',1,'inviwo::TextRenderer']]],
   ['setlinewidth_113',['setLineWidth',['../classinviwo_1_1plot_1_1AxisProperty.html#a79773801e3f0355c18722f828d93bdc4',1,'inviwo::plot::AxisProperty']]],
   ['setlocale_114',['setLocale',['../classinviwo_1_1CSVReader.html#ae2fd26930ac7af73f0d87e9504023093',1,'inviwo::CSVReader']]],
-  ['setlook_115',['setLook',['../classinviwo_1_1Trackball.html#aed15c7b9cc47ca49dacfd5f579cdb205',1,'inviwo::Trackball::setLook()'],['../classinviwo_1_1CameraProperty.html#a896c4b56fe6b5d72a5447cb53d14b6b2',1,'inviwo::CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override']]],
+  ['setlook_115',['setLook',['../classinviwo_1_1Trackball.html#aed15c7b9cc47ca49dacfd5f579cdb205',1,'inviwo::Trackball::setLook()'],['../classinviwo_1_1CameraProperty.html#aac9f6f6c37394aa42f860edbf2ff8527',1,'inviwo::CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override']]],
   ['setlookrange_116',['setLookRange',['../classinviwo_1_1CameraProperty.html#a76a92bb1d000dca0d7cd413864f1f81d',1,'inviwo::CameraProperty']]],
   ['setmainanimation_117',['setMainAnimation',['../classinviwo_1_1animation_1_1WorkspaceAnimations.html#a0aba91da17b61d95985e32247ec8ce29',1,'inviwo::animation::WorkspaceAnimations']]],
   ['setmargins_118',['setMargins',['../classinviwo_1_1glui_1_1Layout.html#aba597b5896147291e10869ee7e3fa7eb',1,'inviwo::glui::Layout']]],

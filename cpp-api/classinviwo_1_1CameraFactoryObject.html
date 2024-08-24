@@ -100,6 +100,7 @@ $(function(){initNavTree('classinviwo_1_1CameraFactoryObject.html',''); initResi
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classinviwo_1_1CameraFactoryObject-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::CameraFactoryObject Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
@@ -121,12 +122,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a71a0192fdb52918f9ad9bf8effb36581" id="r_a71a0192fdb52918f9ad9bf8effb36581"><td class="memItemLeft" align="right" valign="top"><a id="a71a0192fdb52918f9ad9bf8effb36581" name="a71a0192fdb52918f9ad9bf8effb36581"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>CameraFactoryObject</b> (std::string_view classIdentifier)</td></tr>
 <tr class="separator:a71a0192fdb52918f9ad9bf8effb36581"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1340c3ba42323baf879a280217302b6" id="r_ab1340c3ba42323baf879a280217302b6"><td class="memItemLeft" align="right" valign="top"><a id="ab1340c3ba42323baf879a280217302b6" name="ab1340c3ba42323baf879a280217302b6"></a>
-virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> ()=0</td></tr>
-<tr class="separator:ab1340c3ba42323baf879a280217302b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8877e3af07ce327f34304f92e722fba6" id="r_a8877e3af07ce327f34304f92e722fba6"><td class="memItemLeft" align="right" valign="top"><a id="a8877e3af07ce327f34304f92e722fba6" name="a8877e3af07ce327f34304f92e722fba6"></a>
+std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (vec3 lookFrom=cameradefaults::lookFrom, vec3 lookTo=cameradefaults::lookTo, vec3 lookUp=cameradefaults::lookUp, float nearPlane=cameradefaults::nearPlane, float farPlane=cameradefaults::farPlane, float aspectRatio=cameradefaults::aspectRatio) const</td></tr>
+<tr class="separator:a8877e3af07ce327f34304f92e722fba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a617482fe8c739672c1841f3913d17c23" id="r_a617482fe8c739672c1841f3913d17c23"><td class="memItemLeft" align="right" valign="top"><a id="a617482fe8c739672c1841f3913d17c23" name="a617482fe8c739672c1841f3913d17c23"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getClassIdentifier</b> () const</td></tr>
 <tr class="separator:a617482fe8c739672c1841f3913d17c23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:ae76c76f026d60805d49aab56f0585bac" id="r_ae76c76f026d60805d49aab56f0585bac"><td class="memItemLeft" align="right" valign="top"><a id="ae76c76f026d60805d49aab56f0585bac" name="ae76c76f026d60805d49aab56f0585bac"></a>
+virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createImpl</b> (vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane, float aspectRatio) const =0</td></tr>
+<tr class="separator:ae76c76f026d60805d49aab56f0585bac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li><b>camerafactoryobject.h</b></li>

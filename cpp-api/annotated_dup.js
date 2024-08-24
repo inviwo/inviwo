@@ -1,5 +1,8 @@
 var annotated_dup =
 [
+    [ "fmt", null, [
+      [ "is_range< inviwo::flags::flags< T >, Char >", "structfmt_1_1is__range_3_01inviwo_1_1flags_1_1flags_3_01T_01_4_00_01Char_01_4.html", null ]
+    ] ],
     [ "inviwo", "namespaceinviwo.html", [
       [ "algorithm", null, [
         [ "EntryExitPointsHelper", "classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html", "classinviwo_1_1algorithm_1_1EntryExitPointsHelper" ],

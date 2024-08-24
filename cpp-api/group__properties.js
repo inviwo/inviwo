@@ -37,7 +37,7 @@ var group__properties =
       [ "resetToDefaultState", "classinviwo_1_1CameraProperty.html#aa17e6e395dc830d93b745458225b8318", null ],
       [ "set", "classinviwo_1_1CameraProperty.html#a158a7a4eedefb08248a7a76a316e0521", null ],
       [ "setCurrentStateAsDefault", "classinviwo_1_1CameraProperty.html#acc4c1f079851a2288a370d31afc4376d", null ],
-      [ "setLook", "classinviwo_1_1CameraProperty.html#a896c4b56fe6b5d72a5447cb53d14b6b2", null ],
+      [ "setLook", "classinviwo_1_1CameraProperty.html#aac9f6f6c37394aa42f860edbf2ff8527", null ],
       [ "setLookRange", "classinviwo_1_1CameraProperty.html#a76a92bb1d000dca0d7cd413864f1f81d", null ],
       [ "setNearFar", "classinviwo_1_1CameraProperty.html#afaa30641a0823d297897a847ef55cc15", null ],
       [ "setNearFarPlaneDist", "classinviwo_1_1CameraProperty.html#a987b553f2b0deb651b21ec9fe8f80e46", null ],

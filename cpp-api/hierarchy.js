@@ -1169,6 +1169,7 @@ var hierarchy =
     [ "inviwo::FactoryKeyType< K >", "structinviwo_1_1FactoryKeyType.html", null ],
     [ "inviwo::FactoryKeyType< std::string_view >", "structinviwo_1_1FactoryKeyType_3_01std_1_1string__view_01_4.html", null ],
     [ "std::false_type", null, [
+      [ "fmt::is_range< inviwo::flags::flags< T >, Char >", "structfmt_1_1is__range_3_01inviwo_1_1flags_1_1flags_3_01T_01_4_00_01Char_01_4.html", null ],
       [ "inviwo::util::detail::HasEnumName< T, Enable >", "structinviwo_1_1util_1_1detail_1_1HasEnumName.html", [
         [ "inviwo::util::HasEnumName< T >", "structinviwo_1_1util_1_1HasEnumName.html", null ]
       ] ],

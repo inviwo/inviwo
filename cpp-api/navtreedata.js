@@ -83,7 +83,7 @@ var NAVTREEINDEX =
 "classinviwo_1_1utildoc_1_1TableBuilder.html",
 "namespaceinviwo_1_1filesystem.html#a5039752575c9aff24aa9c1b752e7b3f4",
 "namespaceinviwo_1_1util.html#acd81fc6f5826cfebaae57f83c333f28d",
-"structinviwo_1_1InviwoDefaults.html",
+"structinviwo_1_1InviwoDefaultData.html",
 "structinviwo_1_1ShaderSegment.html",
 "structinviwo_1_1representation__traits.html"
 ];
