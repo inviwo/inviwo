@@ -1,0 +1,37 @@
+name: 'Configure Inviwo Build environment'
+description: 'Configure vcpkg and ccache'
+runs:
+  using: "composite"
+  steps:
+    - name: "Setup MSVC"
+      uses: ilammy/msvc-dev-cmd@v1.13.0
+
+    - name: "VCPKG Update"
+      shell: bash
+      run: |
+        SHA=`jq -r '.["vcpkg-configuration"].["default-registry"].baseline' inviwo/vcpkg.json`
+        echo $VCPKG_INSTALLATION_ROOT
+        cd $VCPKG_INSTALLATION_ROOT
+        git reset --hard
+        git pull
+        git checkout $SHA
+        ./bootstrap-vcpkg.sh
+
+    - name: "Setup Ccache"
+      id: ccache
+      uses: petersteneteg/ccache-action@v1.1.0
+      with:
+        variant: ccache
+        max-size: "1500M"
+        verbose: 2
+        save: ${{github.ref == 'refs/heads/master'}}
+        key: inviwo-${{ matrix.triplet }}-${{ matrix.configuration }}
+        restore-keys: |
+          inviwo-${{ matrix.triplet }}-${{ matrix.configuration }}
+
+    - name: "Copy ccache"
+      shell: bash
+      if: runner.os == 'Windows'
+      run: |
+        mkdir build
+        cp ${{ steps.ccache.outputs.executable }} build/cl.exe
