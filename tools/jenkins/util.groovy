@@ -290,7 +290,7 @@ def slack(def state, channel) {
 }
 
 def cmake(Map args = [:]) {
-    return "cmake --preset ninja-developer -B . " +
+    return "cmake --preset " + arg.preset + " -B . " +
         "-DVCPKG_TARGET_TRIPLET=x64-osx-dynamic " +
         "--toolchain " + args.state.env.VCPKG_ROOT + "/scripts/buildsystems/vcpkg.cmake " +
         (args.printCMakeVars ? " -LA " : "") +

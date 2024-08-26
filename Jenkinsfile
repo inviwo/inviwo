@@ -17,7 +17,8 @@ node {
             onModules: ["DiscreteData", "HDF5", "OpenCL", "BaseCL",
                         "WebBrowser", "Example"],
             offModules: ["ABufferGL"],
-            opts: [:]
+            opts: [:],
+            preset: "ninja-developer"
         )
         util.warn(this)
         util.unittest(this)
