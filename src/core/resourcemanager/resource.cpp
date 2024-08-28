@@ -29,8 +29,29 @@
 
 #include <inviwo/core/resourcemanager/resource.h>
 
+#include <inviwo/core/resourcemanager/resourcemanager.h>
+
+#include <inviwo/core/common/factoryutil.h>
+
 namespace inviwo {
 
-Resource::Resource(const std::string& key) : key_(key) {}
+namespace resource {
+
+void add(const RAM& key, Resource resource) {
+    util::getResourceManager()->add(key, std::move(resource));
+}
+void remove(const RAM& key) { util::getResourceManager()->remove(key); }
+
+void add(const GL& key, Resource resource) {
+    util::getResourceManager()->add(key, std::move(resource));
+}
+void remove(const GL& key) { util::getResourceManager()->remove(key); }
+
+void add(const PY& key, Resource resource) {
+    util::getResourceManager()->add(key, std::move(resource));
+}
+void remove(const PY& key) { util::getResourceManager()->remove(key); }
+
+}  // namespace resource
 
 }  // namespace inviwo

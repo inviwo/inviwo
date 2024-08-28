@@ -38,6 +38,7 @@
 #include <modules/opengl/glformats.h>                          // for GLFormat, operator!=, GLFo...
 #include <modules/opengl/inviwoopengl.h>                       // for GLenum, GLsizeiptr, glVert...
 #include <modules/opengl/openglexception.h>                    // for OpenGLException
+#include <inviwo/core/resourcemanager/resource.h>
 
 #include <chrono>       // for literals
 #include <cstring>      // for memcpy
@@ -159,7 +160,10 @@ BufferObject& BufferObject::operator=(BufferObject&& rhs) {
     return *this;
 }
 
-BufferObject::~BufferObject() { glDeleteBuffers(1, &id_); }
+BufferObject::~BufferObject() {
+    resource::remove(resource::GL{id_});
+    glDeleteBuffers(1, &id_);
+}
 
 BufferObject* BufferObject::clone() const { return new BufferObject(*this); }
 
@@ -262,6 +266,13 @@ void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
     }
 
     forEachObserver([](BufferObjectObserver* o) { o->onAfterBufferInitialization(); });
+
+    resource::add(
+        resource::GL{id_},
+        Resource{
+            .dims = glm::size4_t{capacityInBytes_ / getDataFormat()->getSizeInBytes(), 0, 0, 0},
+            .format = getDataFormat()->getId(),
+            .desc = "BufferObject"});
 }
 
 void BufferObject::upload(const void* data, GLsizeiptr sizeInBytes, SizePolicy policy) {

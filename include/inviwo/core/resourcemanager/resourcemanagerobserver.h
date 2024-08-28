@@ -32,30 +32,35 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/observer.h>
 
-#include <string>
-#include <typeindex>
-#include <string>
-
 namespace inviwo {
 
 class Resource;
 
 class IVW_CORE_API ResourceManagerObserver : public Observer {
 public:
-    virtual void onResourceAdded(const std::string& /*key*/, const std::type_index& /*type*/,
-                                 Resource* /*resource*/){};
-    virtual void onResourceRemoved(const std::string& /*key*/, const std::type_index& /*type*/,
-                                   Resource* /*resource*/){};
-    virtual void onResourceManagerEnableStateChanged(){};
+    virtual void onWillAddResource(size_t group, size_t index, const Resource& resource);
+    virtual void onDidAddResource(size_t group, size_t index, const Resource& resource);
+    virtual void onWillUpdateResource(size_t group, size_t index, const Resource& resource);
+    virtual void onDidUpdateResource(size_t group, size_t index, const Resource& resource);
+    virtual void onWillRemoveResource(size_t group, size_t index, const Resource& resource);
+    virtual void onDidRemoveResource(size_t group, size_t index, const Resource& resource);
 };
 
 class IVW_CORE_API ResourceManagerObservable : public Observable<ResourceManagerObserver> {
 protected:
-    void notifyResourceAdded(const std::string& key, const std::type_index& type,
-                             Resource* resource);
-    void notifyResourceRemoved(const std::string& key, const std::type_index& type,
-                               Resource* resource);
-    void notifyEnableChanged();
+    void notifyWillAddResource(size_t group, size_t index, const Resource& resource);
+    void notifyDidAddResource(size_t group, size_t index, const Resource& resource);
+    void notifyWillUpdateResource(size_t group, size_t index, const Resource& resource);
+    void notifyDidUpdateResource(size_t group, size_t index, const Resource& resource);
+    void notifyWillRemoveResource(size_t group, size_t index, const Resource& resource);
+    void notifyDidRemoveResource(size_t group, size_t index, const Resource& resource);
 };
+
+inline void ResourceManagerObserver::onWillAddResource(size_t, size_t, const Resource&) {}
+inline void ResourceManagerObserver::onDidAddResource(size_t, size_t, const Resource&) {}
+inline void ResourceManagerObserver::onWillUpdateResource(size_t, size_t, const Resource&) {}
+inline void ResourceManagerObserver::onDidUpdateResource(size_t, size_t, const Resource&) {}
+inline void ResourceManagerObserver::onWillRemoveResource(size_t, size_t, const Resource&) {}
+inline void ResourceManagerObserver::onDidRemoveResource(size_t, size_t, const Resource&) {}
 
 }  // namespace inviwo

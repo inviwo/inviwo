@@ -60,7 +60,6 @@ namespace inviwo {
 class ProcessorNetwork;
 class ProcessorNetworkEvaluator;
 class CommandLineParser;
-struct AppResourceManagerObserver;
 
 class ResourceManager;
 class CameraFactory;
@@ -487,7 +486,6 @@ protected:
     std::unique_ptr<RepresentationMetaFactory> representationMetaFactory_;
     std::unique_ptr<RepresentationConverterMetaFactory> representationConverterMetaFactory_;
     std::unique_ptr<SystemSettings> systemSettings_;
-    std::unique_ptr<AppResourceManagerObserver> resourcemanagerobserver_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moduleCallbackActions_;
     ModuleManager moduleManager_;
     std::unique_ptr<ProcessorNetwork> processorNetwork_;

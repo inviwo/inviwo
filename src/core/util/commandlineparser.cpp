@@ -69,9 +69,7 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
     , quitAfterStartup_("q", "quit", "Pass this flag if you want to close inviwo after startup.")
     , wildcard_()
     , helpQuiet_("h", "help", "")
-    , versionQuiet_("v", "version", "")
-    , disableResourceManager_("", "no-resource-manager",
-                              "Pass this flag to disable the resource manager") {
+    , versionQuiet_("v", "version", "")  {
     cmdQuiet_.add(workspace_);
     cmdQuiet_.add(outputPath_);
     cmdQuiet_.add(quitAfterStartup_);
@@ -81,7 +79,6 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
     cmdQuiet_.add(logConsole_);
     cmdQuiet_.add(helpQuiet_);
     cmdQuiet_.add(versionQuiet_);
-    cmdQuiet_.add(disableResourceManager_);
     cmdQuiet_.add(wildcard_);
 
     cmd_.add(workspace_);
@@ -91,7 +88,6 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
     cmd_.add(logfile_);
     cmd_.add(moduleSearchPaths_);
     cmd_.add(logConsole_);
-    cmd_.add(disableResourceManager_);
 
     parse(Mode::Quiet);
 }
@@ -197,10 +193,6 @@ bool CommandLineParser::getLogToFile() const {
 }
 
 bool CommandLineParser::getLogToConsole() const { return logConsole_.isSet(); }
-
-bool CommandLineParser::getDisableResourceManager() const {
-    return disableResourceManager_.isSet();
-}
 
 int CommandLineParser::getARGC() const { return argc_; }
 

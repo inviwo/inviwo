@@ -35,6 +35,7 @@
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/resourcemanager/resource.h>
 
 #include <algorithm>
 
@@ -170,7 +171,7 @@ public:
     LayerRAMPrecision(const LayerRAMPrecision<T>& rhs);
     LayerRAMPrecision<T>& operator=(const LayerRAMPrecision<T>& that);
     virtual LayerRAMPrecision<T>* clone() const override;
-    virtual ~LayerRAMPrecision() = default;
+    virtual ~LayerRAMPrecision();
 
     virtual const DataFormatBase* getDataFormat() const override;
 
@@ -260,6 +261,11 @@ LayerRAMPrecision<T>::LayerRAMPrecision(size2_t dimensions, LayerType type,
     , wrapping_{wrapping} {
     std::fill(data_.get(), data_.get() + glm::compMul(dimensions_),
               (type == LayerType::Depth) ? T{1} : T{0});
+
+    resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
+                  Resource{.dims = glm::size4_t{dimensions_, 0, 0},
+                           .format = DataFormat<T>::id(),
+                           .desc = "LayerRAM"});
 }
 
 template <typename T>
@@ -277,6 +283,10 @@ LayerRAMPrecision<T>::LayerRAMPrecision(T* data, size2_t dimensions, LayerType t
         std::fill(data_.get(), data_.get() + glm::compMul(dimensions_),
                   (type == LayerType::Depth) ? T{1} : T{0});
     }
+    resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
+                  Resource{.dims = glm::size4_t{dimensions_, 0, 0},
+                           .format = DataFormat<T>::id(),
+                           .desc = "LayerRAM"});
 }
 
 template <typename T>
@@ -301,6 +311,11 @@ LayerRAMPrecision<T>::LayerRAMPrecision(const LayerRAMPrecision<T>& rhs)
     , interpolation_{rhs.interpolation_}
     , wrapping_{rhs.wrapping_} {
     std::copy(rhs.getView().begin(), rhs.getView().end(), data_.get());
+
+    resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
+                  Resource{.dims = glm::size4_t{dimensions_, 0, 0},
+                           .format = DataFormat<T>::id(),
+                           .desc = "LayerRAM"});
 }
 
 template <typename T>
@@ -317,8 +332,17 @@ LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(const LayerRAMPrecision<T>
         swizzleMask_ = that.swizzleMask_;
         interpolation_ = that.interpolation_;
         wrapping_ = that.wrapping_;
+        resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
+        resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
+                      Resource{.dims = glm::size4_t{dimensions_, 0, 0},
+                               .format = DataFormat<T>::id(),
+                               .desc = "LayerRAM"});
     }
     return *this;
+}
+template <typename T>
+LayerRAMPrecision<T>::~LayerRAMPrecision() {
+    resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())});
 }
 
 template <typename T>
@@ -520,10 +544,10 @@ public:
     virtual ~LayerRamResizer() = default;
 
     /**
-     * Copy the data from @p src to @p dst. This might involve up or down scaling if the dimensions
-     * do not match. The dimensions of both @p src and @p dst will not change.
-     * This is only intended to be used by LayerRAM::copyRepresentationsTo.
-     * The functionality is likely to be changed and should not be depended on
+     * Copy the data from @p src to @p dst. This might involve up or down scaling if the
+     * dimensions do not match. The dimensions of both @p src and @p dst will not change. This
+     * is only intended to be used by LayerRAM::copyRepresentationsTo. The functionality is
+     * likely to be changed and should not be depended on
      * @see CIMGLayerRamResizer LayerRAM::copyRepresentationsTo
      */
     virtual bool resize(const LayerRAM& src, LayerRAM& dst) const = 0;

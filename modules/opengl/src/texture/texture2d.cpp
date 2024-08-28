@@ -36,6 +36,7 @@
 #include <modules/opengl/openglcapabilities.h>            // for OpenGLCapabilities
 #include <modules/opengl/texture/texture.h>               // for Texture
 #include <modules/opengl/texture/textureobserver.h>       // for TextureObserver
+#include <inviwo/core/resourcemanager/resource.h>
 
 #include <mutex>   // for scoped_lock
 #include <vector>  // for vector
@@ -105,6 +106,8 @@ Texture2D& Texture2D::operator=(const Texture2D& rhs) {
 
 Texture2D& Texture2D::operator=(Texture2D&& rhs) = default;
 
+Texture2D::~Texture2D() { resource::remove(resource::GL{id_}); }
+
 Texture2D* Texture2D::clone() const { return new Texture2D(*this); }
 
 void Texture2D::initialize(const void* data) {
@@ -117,6 +120,10 @@ void Texture2D::initialize(const void* data) {
                  static_cast<GLsizei>(dimensions_.y), 0, format_, dataType_, data);
     LGL_ERROR;
     forEachObserver([](TextureObserver* o) { o->notifyAfterTextureInitialization(); });
+
+    resource::add(resource::GL{id_}, Resource{.dims = glm::size4_t{dimensions_, 0, 0},
+                                              .format = getDataFormat()->getId(),
+                                              .desc = "Texture2D"});
 }
 
 size_t Texture2D::getNumberOfValues() const { return dimensions_.x * dimensions_.y; }

@@ -36,6 +36,7 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/resourcemanager/resource.h>
 
 #include <glm/gtx/component_wise.hpp>
 #include <span>
@@ -298,7 +299,13 @@ VolumeRAMPrecision<T>::VolumeRAMPrecision(size3_t dimensions, const SwizzleMask&
     , data_{std::make_unique<T[]>(glm::compMul(dimensions_))}
     , swizzleMask_{swizzleMask}
     , interpolation_{interpolation}
-    , wrapping_{wrapping} {}
+    , wrapping_{wrapping} {
+
+    resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
+                  Resource{.dims = glm::size4_t{dimensions_, 0},
+                           .format = DataFormat<T>::id(),
+                           .desc = "VolumeRAM"});
+}
 
 template <typename T>
 VolumeRAMPrecision<T>::VolumeRAMPrecision(T* data, size3_t dimensions,
@@ -315,6 +322,10 @@ VolumeRAMPrecision<T>::VolumeRAMPrecision(T* data, size3_t dimensions,
     if (!data_) {
         data_ = std::make_unique<T[]>(glm::compMul(dimensions_));
     }
+    resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
+                  Resource{.dims = glm::size4_t{dimensions_, 0},
+                           .format = DataFormat<T>::id(),
+                           .desc = "VolumeRAM"});
 }
 
 template <typename T>
@@ -340,6 +351,11 @@ VolumeRAMPrecision<T>::VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs)
     , wrapping_{rhs.wrapping_} {
 
     std::copy(rhs.getView().begin(), rhs.getView().end(), data_.get());
+
+    resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
+                  Resource{.dims = glm::size4_t{dimensions_, 0},
+                           .format = DataFormat<T>::id(),
+                           .desc = "VolumeRAM"});
 }
 
 template <typename T>
@@ -355,13 +371,23 @@ VolumeRAMPrecision<T>& VolumeRAMPrecision<T>::operator=(const VolumeRAMPrecision
         swizzleMask_ = that.swizzleMask_;
         interpolation_ = that.interpolation_;
         wrapping_ = that.wrapping_;
+
+        resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
+        resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
+                      Resource{.dims = glm::size4_t{dimensions_, 0},
+                               .format = DataFormat<T>::id(),
+                               .desc = "VolumeRAM"});
     }
     return *this;
 }
 
 template <typename T>
 VolumeRAMPrecision<T>::~VolumeRAMPrecision() {
-    if (!ownsDataPtr_) data_.release();
+    if (!ownsDataPtr_) {
+        data_.release();
+    } else {
+        resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())});
+    }
 }
 
 template <typename T>
@@ -418,6 +444,12 @@ void VolumeRAMPrecision<T>::setData(void* d, size3_t dimensions) {
     data_.swap(data);
     std::swap(dimensions_, dimensions);
 
+    resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
+    resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
+                  Resource{.dims = glm::size4_t{dimensions_, 0},
+                           .format = DataFormat<T>::id(),
+                           .desc = "VolumeRAM"});
+
     if (!ownsDataPtr_) data.release();
     ownsDataPtr_ = true;
 }
@@ -425,6 +457,7 @@ void VolumeRAMPrecision<T>::setData(void* d, size3_t dimensions) {
 template <typename T>
 void VolumeRAMPrecision<T>::removeDataOwnership() {
     ownsDataPtr_ = false;
+    resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())});
 }
 
 template <typename T>
@@ -443,6 +476,13 @@ void VolumeRAMPrecision<T>::setDimensions(size3_t dimensions) {
         auto data = std::make_unique<T[]>(dimensions.x * dimensions.y * dimensions.z);
         data_.swap(data);
         dimensions_ = dimensions;
+
+        resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
+        resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
+                      Resource{.dims = glm::size4_t{dimensions_, 0},
+                               .format = DataFormat<T>::id(),
+                               .desc = "VolumeRAM"});
+
         if (!ownsDataPtr_) data.release();
         ownsDataPtr_ = true;
     }

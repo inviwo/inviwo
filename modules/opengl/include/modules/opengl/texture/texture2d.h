@@ -59,7 +59,7 @@ public:
     Texture2D(Texture2D&& other);
     Texture2D& operator=(const Texture2D& other);
     Texture2D& operator=(Texture2D&& other);
-    virtual ~Texture2D() = default;
+    virtual ~Texture2D();
 
     Texture2D* clone() const;
 

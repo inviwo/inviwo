@@ -59,7 +59,6 @@ public:
     BoolProperty logStackTraceProperty_;
     MultiFileProperty moduleSearchPaths_;
     BoolProperty runtimeModuleReloading_;
-    BoolProperty enableResourceManager_;
     OptionProperty<MessageBreakLevel> breakOnMessage_;
     BoolProperty breakOnException_;
     BoolProperty stackTraceInException_;

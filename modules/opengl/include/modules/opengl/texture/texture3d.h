@@ -58,7 +58,7 @@ public:
     Texture3D(Texture3D&& other);
     Texture3D& operator=(const Texture3D& other);
     Texture3D& operator=(Texture3D&& other);
-    virtual ~Texture3D() = default;
+    virtual ~Texture3D();
 
     Texture3D* clone() const;
 

@@ -31,20 +31,35 @@
 
 namespace inviwo {
 
-void ResourceManagerObservable::notifyResourceAdded(const std::string& key,
-                                                    const std::type_index& type,
-                                                    Resource* resource) {
-    forEachObserver([&](ResourceManagerObserver* o) { o->onResourceAdded(key, type, resource); });
+void ResourceManagerObservable::notifyWillAddResource(size_t group, size_t index,
+                                                      const Resource& resource) {
+    forEachObserver(
+        [&](ResourceManagerObserver* o) { o->onWillAddResource(group, index, resource); });
 }
-
-void ResourceManagerObservable::notifyResourceRemoved(const std::string& key,
-                                                      const std::type_index& type,
-                                                      Resource* resource) {
-    forEachObserver([&](ResourceManagerObserver* o) { o->onResourceRemoved(key, type, resource); });
+void ResourceManagerObservable::notifyDidAddResource(size_t group, size_t index,
+                                                     const Resource& resource) {
+    forEachObserver(
+        [&](ResourceManagerObserver* o) { o->onDidAddResource(group, index, resource); });
 }
-
-void ResourceManagerObservable::notifyEnableChanged() {
-    forEachObserver([&](ResourceManagerObserver* o) { o->onResourceManagerEnableStateChanged(); });
+void ResourceManagerObservable::notifyWillUpdateResource(size_t group, size_t index,
+                                                         const Resource& resource) {
+    forEachObserver(
+        [&](ResourceManagerObserver* o) { o->onWillUpdateResource(group, index, resource); });
+}
+void ResourceManagerObservable::notifyDidUpdateResource(size_t group, size_t index,
+                                                        const Resource& resource) {
+    forEachObserver(
+        [&](ResourceManagerObserver* o) { o->onDidUpdateResource(group, index, resource); });
+}
+void ResourceManagerObservable::notifyWillRemoveResource(size_t group, size_t index,
+                                                         const Resource& resource) {
+    forEachObserver(
+        [&](ResourceManagerObserver* o) { o->onWillRemoveResource(group, index, resource); });
+}
+void ResourceManagerObservable::notifyDidRemoveResource(size_t group, size_t index,
+                                                        const Resource& resource) {
+    forEachObserver(
+        [&](ResourceManagerObserver* o) { o->onDidRemoveResource(group, index, resource); });
 }
 
 }  // namespace inviwo

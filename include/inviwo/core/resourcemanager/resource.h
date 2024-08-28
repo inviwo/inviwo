@@ -30,76 +30,68 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/document.h>
-#include <inviwo/core/datastructures/datatraits.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/formats.h>
+#include <glm/vec4.hpp>
+#include <glm/gtx/component_wise.hpp>
+#include <string_view>
+#include <cstdint>
 
 namespace inviwo {
 
-/**
- * \class Resource
- * \brief Base class for resources.
- * @see TypedResource<T>
- * @see ResourceManager
- */
-class IVW_CORE_API Resource {
-public:
-    Resource(const std::string& key);
-    virtual ~Resource() = default;
+struct IVW_CORE_API Resource {
+    glm::size4_t dims{0, 0, 0, 0};
+    DataFormatId format{DataFormatId::NotSpecialized};
+    std::string_view desc{""};
 
-    Resource(const Resource& r) = delete;
-    Resource(Resource&& r) = delete;
-
-    Resource& operator=(const Resource& r) = delete;
-    Resource& operator=(const Resource&& r) = delete;
-
-    virtual std::string typeDisplayName() = 0;
-    virtual Document info() = 0;
-
-    std::string key() const { return key_; }
-
-private:
-    std::string key_;
-};
-
-/**
- * \class TypedResource
- * \brief Class used by ResourceManager to wrap a shared_ptr in a resource
- * \see ResourceManager
- */
-template <typename T>
-class TypedResource : public Resource {
-public:
-    TypedResource(std::shared_ptr<T> resource, const std::string& key)
-        : Resource(key), resource_(resource) {}
-    virtual ~TypedResource() = default;
-
-    std::shared_ptr<T> getData() { return resource_; }
-
-    virtual std::string typeDisplayName() override { return DataTraits<T>::dataName(); }
-
-    virtual Document info() override {
-        using P = Document::PathComponent;
-        using H = utildoc::TableBuilder::Header;
-        Document doc;
-        utildoc::TableBuilder tb(doc.handle(), P::end());
-        tb(H("Key"), util::htmlEncode(key()));
-        auto typeName = typeDisplayName();
-        if (typeName != "") {
-            tb(H("Type"), util::htmlEncode(typeName));
-        }
-        std::string dataInfo = DataTraits<T>::info(*resource_);
-        if (dataInfo != "") {
-            doc.append("", "<hr />");
-            doc.append("b", "Data Info");
-            doc.append("p", dataInfo);
-        }
-
-        return doc;
+    size_t sizeInBytes() const {
+        return glm::compMul(glm::max(dims, glm::size4_t{1, 1, 1, 1})) *
+               DataFormatBase::get(format)->getSizeInBytes();
     }
-
-private:
-    std::shared_ptr<T> resource_;
 };
+
+namespace resource {
+struct RAM {
+    std::uintptr_t key;
+    auto operator<=>(const RAM&) const = default;
+    static constexpr std::string_view name = "RAM";
+};
+struct GL {
+    unsigned int key;
+    auto operator<=>(const GL&) const = default;
+    static constexpr std::string_view name = "GL";
+};
+struct PY {
+    int key;
+    auto operator<=>(const PY&) const = default;
+    static constexpr std::string_view name = "PY";
+};
+
+IVW_CORE_API void add(const RAM& key, Resource resource);
+IVW_CORE_API void remove(const RAM& key);
+IVW_CORE_API void add(const GL& key, Resource resource);
+IVW_CORE_API void remove(const GL& key);
+IVW_CORE_API void add(const PY& key, Resource resource);
+IVW_CORE_API void remove(const PY& key);
+
+}  // namespace resource
 
 }  // namespace inviwo
+
+template <>
+struct std::hash<inviwo::resource::RAM> {
+    size_t operator()(const inviwo::resource::RAM& item) const {
+        return std::hash<decltype(item.key)>{}(item.key);
+    }
+};
+template <>
+struct std::hash<inviwo::resource::GL> {
+    size_t operator()(const inviwo::resource::GL& item) const {
+        return std::hash<decltype(item.key)>{}(item.key);
+    }
+};
+template <>
+struct std::hash<inviwo::resource::PY> {
+    size_t operator()(const inviwo::resource::PY& item) const {
+        return std::hash<decltype(item.key)>{}(item.key);
+    }
+};
