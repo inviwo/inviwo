@@ -97,6 +97,22 @@ TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
     return *this;
 }
 
+TFPrimitiveSet& TFPrimitiveSet::operator=(TFPrimitiveSet&& rhs) noexcept {
+    if (this != &rhs) {
+        type_ = rhs.type_;
+        for (size_t i = 0; i < std::min(values_.size(), rhs.values_.size()); i++) {
+            *values_[i] = *rhs.values_[i];
+        }
+        for (size_t i = std::min(values_.size(), rhs.values_.size()); i < rhs.values_.size(); i++) {
+            add(*rhs.values_[i]);
+        }
+        while (values_.size() > rhs.values_.size()) {
+            remove(--values_.end());
+        }
+    }
+    return *this;
+}
+
 void TFPrimitiveSet::set(const_iterator sbegin, const_iterator send) {
     auto dbegin = values_.begin();
     auto dend = values_.end();

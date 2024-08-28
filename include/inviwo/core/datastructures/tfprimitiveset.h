@@ -91,7 +91,7 @@ public:
     TFPrimitiveSet(const TFPrimitiveSet& rhs);
     TFPrimitiveSet(TFPrimitiveSet&& rhs) noexcept = default;
     TFPrimitiveSet& operator=(const TFPrimitiveSet& rhs);
-    TFPrimitiveSet& operator=(TFPrimitiveSet&& rhs) noexcept = default;
+    TFPrimitiveSet& operator=(TFPrimitiveSet&& rhs) noexcept;
     virtual ~TFPrimitiveSet() = default;
 
     void setType(TFPrimitiveSetType type);
