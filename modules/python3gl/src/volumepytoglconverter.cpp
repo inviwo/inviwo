@@ -31,10 +31,14 @@
 
 #include <modules/opengl/texture/texture3d.h>
 
+#include <pybind11/pybind11.h>
+
 namespace inviwo {
 
 std::shared_ptr<VolumeGL> VolumePy2GLConverter::createFrom(
     std::shared_ptr<const VolumePy> volumeSrc) const {
+    pybind11::gil_scoped_acquire gil;
+
     auto volumeDst = std::make_shared<VolumeGL>(
         volumeSrc->getDimensions(), volumeSrc->getDataFormat(), volumeSrc->getSwizzleMask(),
         volumeSrc->getInterpolation(), volumeSrc->getWrapping(), false);
@@ -56,6 +60,8 @@ std::shared_ptr<VolumeGL> VolumePy2GLConverter::createFrom(
 
 void VolumePy2GLConverter::update(std::shared_ptr<const VolumePy> volumeSrc,
                                   std::shared_ptr<VolumeGL> volumeDst) const {
+    pybind11::gil_scoped_acquire gil;
+
     volumeDst->setDimensions(volumeSrc->getDimensions());
     volumeDst->setSwizzleMask(volumeSrc->getSwizzleMask());
     volumeDst->setInterpolation(volumeSrc->getInterpolation());
@@ -76,6 +82,7 @@ void VolumePy2GLConverter::update(std::shared_ptr<const VolumePy> volumeSrc,
 
 std::shared_ptr<VolumePy> VolumeGL2PyConverter::createFrom(
     std::shared_ptr<const VolumeGL> volumeSrc) const {
+    pybind11::gil_scoped_acquire gil;
     auto volumeDst = std::make_shared<VolumePy>(
         volumeSrc->getDimensions(), volumeSrc->getDataFormat(), volumeSrc->getSwizzleMask(),
         volumeSrc->getInterpolation(), volumeSrc->getWrapping());
@@ -97,6 +104,8 @@ std::shared_ptr<VolumePy> VolumeGL2PyConverter::createFrom(
 
 void VolumeGL2PyConverter::update(std::shared_ptr<const VolumeGL> volumeSrc,
                                   std::shared_ptr<VolumePy> volumeDst) const {
+    pybind11::gil_scoped_acquire gil;
+
     volumeDst->setDimensions(volumeSrc->getDimensions());
     volumeDst->setSwizzleMask(volumeSrc->getSwizzleMask());
     volumeDst->setInterpolation(volumeSrc->getInterpolation());
