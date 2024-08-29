@@ -301,9 +301,6 @@ bool RangeSliderQt::eventFilter(QObject* obj, QEvent* event) {
         } else if (obj == widget(2)) {
             handleGrooveEvent(Groove::Right, event);
         }
-        if (event->isAccepted()) {
-            return true;
-        }
     }
     return QObject::eventFilter(obj, event);
 }

@@ -55,6 +55,7 @@
 #include <unordered_set>  // for unordered_set
 
 #include <glm/fwd.hpp>  // for uint8
+#include <fmt/core.h>
 
 namespace inviwo {
 
@@ -173,9 +174,10 @@ void ColormapProperty::setupForColumn(const Column& col, double minVal, double m
         auto maxColors = getMaxNumberOfColorsForFamily(colormap);
         auto numCategories = catCol->getCategories().size();
         if (maxColors < numCategories) {
-            LogWarn("Categories exceed maximum classes in colormap. "
-                    << maxColors << " will be used but " << numCategories
-                    << " needed. Override colormap to provide your own colormap with more classes.")
+            LogWarn(fmt::format(
+                "Categories exceed maximum classes in colormap. {} will be used but {} classes are "
+                "needed. Override colormap to provide your own colormap with more classes.",
+                maxColors, numCategories));
         }
         nColors = numCategories;
         discrete = true;
