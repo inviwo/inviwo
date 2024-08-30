@@ -46,7 +46,6 @@
 
 namespace inviwo {
 
-
 class IVW_MODULE_VOLUME_API VolumeRegionStatistics : public PoolProcessor {
 public:
     VolumeRegionStatistics();
