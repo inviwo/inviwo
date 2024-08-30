@@ -62,6 +62,13 @@ class ResourceManagerItemModel : public QAbstractItemModel, public ResourceManag
 public:
     static constexpr int SortRole = Qt::UserRole + 1;
 
+    enum class Cols : int { Dims = 0, Format, Desc, Size, Meta };
+    friend constexpr bool operator==(Cols lhs, int rhs) { return static_cast<int>(lhs) == rhs; }
+    friend constexpr bool operator==(int lhs, Cols rhs) { return lhs == static_cast<int>(rhs); }
+    static constexpr std::array colNames{std::string_view{"Dimensions"}, std::string_view{"Format"},
+                                         std::string_view{"Description"}, std::string_view{"Size"},
+                                         std::string_view{"Source"}};
+
     ResourceManagerItemModel(ResourceManager* manager, QObject* parent)
         : QAbstractItemModel(parent), manager_(manager) {
 
@@ -101,16 +108,15 @@ public:
             return 0;
         }
     }
-    virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override { return 4; }
+    virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override {
+        return colNames.size();
+    }
 
     virtual QVariant headerData(int section, Qt::Orientation orientation,
                                 int role = Qt::DisplayRole) const override {
 
-        constexpr std::array cols{std::string_view{"Dimensions"}, std::string_view{"Format"},
-                                  std::string_view{"Description"}, std::string_view{"Size"}};
-
-        if (role == Qt::DisplayRole && section < static_cast<int>(cols.size())) {
-            return utilqt::toQString(cols[section]);
+        if (role == Qt::DisplayRole && section < static_cast<int>(colNames.size())) {
+            return utilqt::toQString(colNames[section]);
         }
 
         return {};
@@ -133,7 +139,7 @@ public:
                 const auto item = index.row();
 
                 if (const auto* resource = manager_->get(group, item)) {
-                    if (index.column() == 0) {
+                    if (index.column() == Cols::Dims) {
                         fmt::memory_buffer buff;
                         auto out = fmt::appender(buff);
                         fmt::format_to(out, "{}", resource->dims.x);
@@ -148,13 +154,17 @@ public:
                         }
 
                         return utilqt::toQString(std::string_view{buff.data(), buff.size()});
-                    } else if (index.column() == 1) {
+                    } else if (index.column() == Cols::Format) {
                         return utilqt::toQString(fmt::to_string(resource->format));
-                    } else if (index.column() == 2) {
+                    } else if (index.column() == Cols::Desc) {
                         return utilqt::toQString(resource->desc);
-                    } else if (index.column() == 3) {
+                    } else if (index.column() == Cols::Size) {
                         return utilqt::toQString(
                             util::formatBytesToString(resource->sizeInBytes()));
+                    } else if (index.column() == Cols::Meta) {
+                        if (resource->meta.has_value()) {
+                            return utilqt::toQString(resource->meta->source);
+                        }
                     }
                 }
             }
@@ -167,15 +177,19 @@ public:
                 const auto item = index.row();
 
                 if (const auto* resource = manager_->get(group, item)) {
-                    if (index.column() == 0) {
+                    if (index.column() == Cols::Dims) {
                         return static_cast<qulonglong>(
                             glm::compMul(glm::max(resource->dims, glm::size4_t{1, 1, 1, 1})));
-                    } else if (index.column() == 1) {
+                    } else if (index.column() == Cols::Format) {
                         return utilqt::toQString(fmt::to_string(resource->format));
-                    } else if (index.column() == 2) {
+                    } else if (index.column() == Cols::Desc) {
                         return utilqt::toQString(resource->desc);
-                    } else if (index.column() == 3) {
+                    } else if (index.column() == Cols::Size) {
                         return static_cast<qulonglong>(resource->sizeInBytes());
+                    } else if (index.column() == Cols::Meta) {
+                        if (resource->meta.has_value()) {
+                            return utilqt::toQString(resource->meta->source);
+                        }
                     }
                 }
             }
@@ -227,11 +241,7 @@ ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget* parent, ResourceMa
     layout->addWidget(view_);
 
     view_->header()->setDefaultAlignment(Qt::AlignLeft);
-    view_->header()->setSectionResizeMode(0, QHeaderView::Stretch);
-    view_->header()->setSectionResizeMode(1, QHeaderView::Stretch);
-    view_->header()->setSectionResizeMode(2, QHeaderView::Stretch);
-    view_->header()->setSectionResizeMode(3, QHeaderView::Stretch);
-
+    view_->header()->setDefaultSectionSize(utilqt::emToPx(this, 10.0));
     view_->expandRecursively({});
 }
 

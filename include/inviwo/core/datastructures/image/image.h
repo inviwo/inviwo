@@ -168,6 +168,8 @@ public:
     template <typename C>
     void forEachLayer(C callback) const;
 
+    void updateResource(const ResourceMeta& meta) const;
+
     static uvec3 colorCode;
     static const std::string classIdentifier;
     static const std::string dataName;

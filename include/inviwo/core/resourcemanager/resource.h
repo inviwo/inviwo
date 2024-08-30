@@ -35,13 +35,19 @@
 #include <glm/gtx/component_wise.hpp>
 #include <string_view>
 #include <cstdint>
+#include <optional>
 
 namespace inviwo {
+
+struct IVW_CORE_API ResourceMeta {
+    std::string source;
+};
 
 struct IVW_CORE_API Resource {
     glm::size4_t dims{0, 0, 0, 0};
     DataFormatId format{DataFormatId::NotSpecialized};
     std::string_view desc{""};
+    std::optional<ResourceMeta> meta = std::nullopt;
 
     size_t sizeInBytes() const {
         return glm::compMul(glm::max(dims, glm::size4_t{1, 1, 1, 1})) *
@@ -67,11 +73,19 @@ struct PY {
 };
 
 IVW_CORE_API void add(const RAM& key, Resource resource);
-IVW_CORE_API void remove(const RAM& key);
+IVW_CORE_API std::optional<Resource> remove(const RAM& key);
+IVW_CORE_API void meta(const RAM& key, ResourceMeta meta);
 IVW_CORE_API void add(const GL& key, Resource resource);
-IVW_CORE_API void remove(const GL& key);
+IVW_CORE_API std::optional<Resource> remove(const GL& key);
+IVW_CORE_API void meta(const GL& key, ResourceMeta meta);
 IVW_CORE_API void add(const PY& key, Resource resource);
-IVW_CORE_API void remove(const PY& key);
+IVW_CORE_API std::optional<Resource> remove(const PY& key);
+IVW_CORE_API void meta(const PY& key, ResourceMeta meta);
+
+ constexpr auto getMeta(std::optional<Resource> r) -> std::optional<ResourceMeta> {
+    if (r) return r->meta;
+    return std::nullopt;
+};
 
 }  // namespace resource
 

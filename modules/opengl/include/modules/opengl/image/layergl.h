@@ -87,6 +87,8 @@ public:
     std::shared_ptr<Texture2D> getTexture() const { return texture_; }
     virtual std::type_index getTypeIndex() const override final;
 
+    virtual void updateResource(const ResourceMeta& meta) const override;
+
 private:
     std::shared_ptr<Texture2D> texture_;  // Can be shared
     mutable GLenum texUnit_ = 0;

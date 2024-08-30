@@ -38,19 +38,55 @@ namespace inviwo {
 namespace resource {
 
 void add(const RAM& key, Resource resource) {
-    util::getResourceManager()->add(key, std::move(resource));
+    if (auto* rm = util::getResourceManager()) {
+        rm->add(key, std::move(resource));
+    }
 }
-void remove(const RAM& key) { util::getResourceManager()->remove(key); }
+std::optional<Resource> remove(const RAM& key) {
+    if (auto* rm = util::getResourceManager()) {
+        return rm->remove(key);
+    }
+    return std::nullopt;
+}
+void meta(const RAM& key, ResourceMeta meta) {
+    if (auto* rm = util::getResourceManager()) {
+        rm->meta(key, std::move(meta));
+    }
+}
 
 void add(const GL& key, Resource resource) {
-    util::getResourceManager()->add(key, std::move(resource));
+    if (auto* rm = util::getResourceManager()) {
+        rm->add(key, std::move(resource));
+    }
 }
-void remove(const GL& key) { util::getResourceManager()->remove(key); }
+std::optional<Resource> remove(const GL& key) {
+    if (auto* rm = util::getResourceManager()) {
+        return rm->remove(key);
+    }
+    return std::nullopt;
+}
+void meta(const GL& key, ResourceMeta meta) {
+    if (auto* rm = util::getResourceManager()) {
+        rm->meta(key, std::move(meta));
+    }
+}
 
 void add(const PY& key, Resource resource) {
-    util::getResourceManager()->add(key, std::move(resource));
+    if (auto* rm = util::getResourceManager()) {
+        rm->add(key, std::move(resource));
+    }
 }
-void remove(const PY& key) { util::getResourceManager()->remove(key); }
+std::optional<Resource> remove(const PY& key) {
+    if (auto* rm = util::getResourceManager()) {
+        return rm->remove(key);
+    }
+    return std::nullopt;
+}
+void meta(const PY& key, ResourceMeta meta) {
+    if (auto* rm = util::getResourceManager()) {
+        rm->meta(key, std::move(meta));
+    }
+}
 
 }  // namespace resource
 

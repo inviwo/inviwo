@@ -36,6 +36,8 @@
 #include <inviwo/core/ports/porttraits.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/detected.h>
+#include <inviwo/core/resourcemanager/resource.h>
 
 #include <glm/fwd.hpp>
 
@@ -126,10 +128,20 @@ std::shared_ptr<const T> DataOutport<T>::getData() const {
     return data_;
 }
 
+namespace detail {
+template <typename T>
+using updateResourceType =
+    decltype(std::declval<T>().updateResource(std::declval<const ResourceMeta&>()));
+}
+
 template <typename T>
 void DataOutport<T>::setData(std::shared_ptr<const T> data) {
     data_ = data;
     isReady_.update();
+
+    if constexpr (util::is_detected_v<detail::updateResourceType, T>) {
+        data_->updateResource(ResourceMeta{.source = getPath()});
+    }
 }
 
 template <typename T>

@@ -71,14 +71,31 @@ public:
     }
 
     template <typename Key>
-    void remove(const Key& key) {
+    void meta(const Key& key, ResourceMeta meta) {
+        constexpr auto gi = groupIndex<Key>();
+        auto& group = get<Key>();
+
+        auto it = std::ranges::find(group, key, &std::pair<Key, Resource>::first);
+        if (it != group.end()) {
+            notifyWillUpdateResource(gi, std::distance(group.begin(), it), it->second);
+            it->second.meta = meta;
+            notifyDidUpdateResource(gi, std::distance(group.begin(), it), it->second);
+        }
+    }
+
+    template <typename Key>
+    std::optional<Resource> remove(const Key& key) {
         constexpr auto gi = groupIndex<Key>();
         auto& group = get<Key>();
         auto it = std::ranges::find(group, key, &std::pair<Key, Resource>::first);
         if (it != group.end()) {
             notifyWillRemoveResource(gi, std::distance(group.begin(), it), it->second);
+            Resource resource{std::move(it->second)};
             it = group.erase(it);
             notifyDidRemoveResource(gi, std::distance(group.begin(), it), it->second);
+            return resource;
+        } else {
+            return std::nullopt;
         }
     }
 
@@ -87,10 +104,9 @@ public:
     }
 
     size_t size(size_t groupIndex) const {
-        return std::visit(
-            util::overloaded{[](std::monostate) -> size_t { return 0; },
-                             [](const auto& list) -> size_t { return list->size(); }},
-            getGroup(groupIndex));
+        return std::visit(util::overloaded{[](std::monostate) -> size_t { return 0; },
+                                           [](const auto& list) -> size_t { return list->size(); }},
+                          getGroup(groupIndex));
     }
 
     size_t totalByteSize(size_t groupIndex) const {

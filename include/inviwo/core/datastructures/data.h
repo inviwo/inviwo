@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationfactorymanager.h>
 #include <inviwo/core/datastructures/nodata.h>
+#include <inviwo/core/resourcemanager/resource.h>
 
 #include <inviwo/core/util/demangle.h>
 
@@ -173,6 +174,8 @@ public:
      */
     void invalidateAllOther(const Repr* repr);
 
+    void updateResource(const ResourceMeta& meta) const;
+
 protected:
     Data() = default;
     Data(const Data<Self, Repr>& rhs);
@@ -214,6 +217,8 @@ private:
     mutable std::unordered_map<std::type_index, std::shared_ptr<Repr>> representations_;
     // A pointer to the the most recently updated representation. Makes updates and creation faster.
     mutable std::shared_ptr<Repr> lastValidRepresentation_;
+
+    mutable std::optional<ResourceMeta> meta_;
 };
 
 template <typename Self, typename Repr>
@@ -361,6 +366,9 @@ std::shared_ptr<Repr> Data<Self, Repr>::addRepresentationInternal(
     repr->setValid(true);
     repr->setOwner(static_cast<const Self*>(this));
     representations_[repr->getTypeIndex()] = repr;
+    if (meta_) {
+        repr->updateResource(*meta_);
+    }
     return repr;
 }
 
@@ -418,6 +426,14 @@ template <typename Self, typename Repr>
 bool Data<Self, Repr>::hasRepresentations() const {
     std::scoped_lock lock(mutex_);
     return !representations_.empty();
+}
+
+template <typename Self, typename Repr>
+void Data<Self, Repr>::updateResource(const ResourceMeta& meta) const {
+    meta_ = meta;
+    for (auto& elem : representations_) {
+        elem.second->updateResource(meta);
+    }
 }
 
 template <template <typename...> class F>

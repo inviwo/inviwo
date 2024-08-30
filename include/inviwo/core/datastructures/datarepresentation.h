@@ -35,6 +35,8 @@
 
 namespace inviwo {
 
+struct ResourceMeta;
+
 class IVW_CORE_API MissingRepresentation : public Exception {
 public:
     MissingRepresentation(const std::string& message = "",
@@ -61,6 +63,8 @@ public:
 
     bool isValid() const;
     void setValid(bool valid);
+
+    virtual void updateResource(const ResourceMeta& meta) const {};
 
 protected:
     DataRepresentation() = default;

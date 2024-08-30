@@ -41,7 +41,7 @@ Port::Port(std::string_view identifier, Document help)
 Processor* Port::getProcessor() const { return processor_; }
 
 std::string Port::getPath() const {
-    if (!processor_) throw Exception("No processor set", IVW_CONTEXT);
+    if (!processor_) return fmt::format("<not in any processor>.{}", identifier_);
     return fmt::format("{}.{}", processor_->getIdentifier(), identifier_);
 }
 

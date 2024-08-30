@@ -249,6 +249,10 @@ public:
 
     virtual size_t getNumberOfBytes() const override;
 
+    virtual void updateResource(const ResourceMeta& meta) const override {
+        resource::meta(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())}, meta);
+    }
+
 private:
     size3_t dimensions_;
     bool ownsDataPtr_;
@@ -372,11 +376,12 @@ VolumeRAMPrecision<T>& VolumeRAMPrecision<T>::operator=(const VolumeRAMPrecision
         interpolation_ = that.interpolation_;
         wrapping_ = that.wrapping_;
 
-        resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
+        auto old = resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
         resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
                       Resource{.dims = glm::size4_t{dimensions_, 0},
                                .format = DataFormat<T>::id(),
-                               .desc = "VolumeRAM"});
+                               .desc = "VolumeRAM",
+                               .meta = resource::getMeta(old)});
     }
     return *this;
 }
@@ -444,11 +449,12 @@ void VolumeRAMPrecision<T>::setData(void* d, size3_t dimensions) {
     data_.swap(data);
     std::swap(dimensions_, dimensions);
 
-    resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
+    auto old = resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
     resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
                   Resource{.dims = glm::size4_t{dimensions_, 0},
                            .format = DataFormat<T>::id(),
-                           .desc = "VolumeRAM"});
+                           .desc = "VolumeRAM",
+                           .meta = resource::getMeta(old)});
 
     if (!ownsDataPtr_) data.release();
     ownsDataPtr_ = true;
@@ -477,11 +483,12 @@ void VolumeRAMPrecision<T>::setDimensions(size3_t dimensions) {
         data_.swap(data);
         dimensions_ = dimensions;
 
-        resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
+        auto old = resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
         resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
                       Resource{.dims = glm::size4_t{dimensions_, 0},
                                .format = DataFormat<T>::id(),
-                               .desc = "VolumeRAM"});
+                               .desc = "VolumeRAM",
+                               .meta = resource::getMeta(old)});
 
         if (!ownsDataPtr_) data.release();
         ownsDataPtr_ = true;

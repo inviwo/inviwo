@@ -97,6 +97,8 @@ public:
     virtual void setWrapping(const Wrapping3D& wrapping) override;
     virtual Wrapping3D getWrapping() const override;
 
+    virtual void updateResource(const ResourceMeta& meta) const override;
+
 private:
     std::shared_ptr<Texture3D> texture_;
 };

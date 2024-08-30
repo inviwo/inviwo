@@ -355,6 +355,10 @@ dvec4 Image::readPixel(size2_t pos, LayerType layer, size_t index) const {
     }
 }
 
+void Image::updateResource(const ResourceMeta& meta) const {
+    forEachLayer([&](const Layer& l) { l.updateResource(meta); });
+}
+
 uvec3 Image::colorCode = uvec3(90, 127, 183);
 const std::string Image::classIdentifier = "org.inviwo.Image";
 const std::string Image::dataName = "Image";

@@ -150,4 +150,10 @@ Wrapping2D LayerGL::getWrapping() const {
     return utilgl::convertWrappingFromGL(texture_->getWrapping());
 }
 
+void LayerGL::updateResource(const ResourceMeta& meta) const {
+    if (texture_) {
+        resource::meta(resource::GL{texture_->getID()}, meta);
+    }
+}
+
 }  // namespace inviwo

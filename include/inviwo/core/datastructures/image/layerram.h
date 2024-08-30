@@ -221,6 +221,10 @@ public:
     virtual void setFromNormalizedDVec3(const size2_t& pos, dvec3 val) override;
     virtual void setFromNormalizedDVec4(const size2_t& pos, dvec4 val) override;
 
+    virtual void updateResource(const ResourceMeta& meta) const override {
+        resource::meta(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())}, meta);
+    }
+
 private:
     size2_t dimensions_;
     std::unique_ptr<T[]> data_;
@@ -332,11 +336,12 @@ LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(const LayerRAMPrecision<T>
         swizzleMask_ = that.swizzleMask_;
         interpolation_ = that.interpolation_;
         wrapping_ = that.wrapping_;
-        resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
+        auto old = resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
         resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
                       Resource{.dims = glm::size4_t{dimensions_, 0, 0},
                                .format = DataFormat<T>::id(),
-                               .desc = "LayerRAM"});
+                               .desc = "LayerRAM",
+                               .meta = resource::getMeta(old)});
     }
     return *this;
 }
@@ -397,6 +402,13 @@ void LayerRAMPrecision<T>::setDimensions(size2_t dimensions) {
         auto data = std::make_unique<T[]>(dimensions.x * dimensions.y);
         data_.swap(data);
         std::swap(dimensions, dimensions_);
+
+        auto old = resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
+        resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
+                      Resource{.dims = glm::size4_t{dimensions_, 0, 0},
+                               .format = DataFormat<T>::id(),
+                               .desc = "LayerRAM",
+                               .meta = resource::getMeta(old)});
     }
 }
 
