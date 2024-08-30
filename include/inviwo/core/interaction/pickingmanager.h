@@ -46,8 +46,8 @@ public:
     static const size_t VoidId = 0;  ///< Picking id when nothing is picked
 
     PickingManager();
-    PickingManager(PickingManager const&) = delete;
-    PickingManager& operator=(PickingManager const&) = delete;
+    PickingManager(const PickingManager&) = delete;
+    PickingManager& operator=(const PickingManager&) = delete;
     virtual ~PickingManager();
 
     // clang-format off
