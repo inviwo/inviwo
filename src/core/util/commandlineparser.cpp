@@ -69,7 +69,7 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
     , quitAfterStartup_("q", "quit", "Pass this flag if you want to close inviwo after startup.")
     , wildcard_()
     , helpQuiet_("h", "help", "")
-    , versionQuiet_("v", "version", "")  {
+    , versionQuiet_("v", "version", "") {
     cmdQuiet_.add(workspace_);
     cmdQuiet_.add(outputPath_);
     cmdQuiet_.add(quitAfterStartup_);

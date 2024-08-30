@@ -40,7 +40,6 @@
 #include <modules/opengl/openglutils.h>                   // for convertSwizzleMaskToGL, convert...
 #include <modules/opengl/texture/textureobserver.h>       // for TextureObserver
 
-
 #include <algorithm>    // for find_if
 #include <cstring>      // for memcpy
 #include <string>       // for string

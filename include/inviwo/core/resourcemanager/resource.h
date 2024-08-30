@@ -82,7 +82,7 @@ IVW_CORE_API void add(const PY& key, Resource resource);
 IVW_CORE_API std::optional<Resource> remove(const PY& key);
 IVW_CORE_API void meta(const PY& key, ResourceMeta meta);
 
- constexpr auto getMeta(std::optional<Resource> r) -> std::optional<ResourceMeta> {
+constexpr auto getMeta(std::optional<Resource> r) -> std::optional<ResourceMeta> {
     if (r) return r->meta;
     return std::nullopt;
 };

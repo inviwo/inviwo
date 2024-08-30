@@ -29,8 +29,4 @@
 
 #include <inviwo/core/resourcemanager/resourcemanager.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
-
+namespace inviwo {}  // namespace inviwo

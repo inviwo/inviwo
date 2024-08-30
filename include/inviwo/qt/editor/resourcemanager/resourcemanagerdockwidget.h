@@ -32,7 +32,6 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
 
-
 class QTreeView;
 class QCheckBox;
 
