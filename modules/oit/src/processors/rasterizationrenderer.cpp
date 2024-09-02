@@ -240,6 +240,13 @@ void RasterizationRenderer::process() {
     }
 
     utilgl::deactivateCurrentTarget();
+
+    // Set rasterization processors to valid now that rasterization is done and properties/inports
+    // were used.
+    // @see Rasterization::setValid()
+    for (auto rasterization : rasterizations_) {
+        rasterization->getProcessor()->Processor::setValid();
+    }
 }
 
 }  // namespace inviwo

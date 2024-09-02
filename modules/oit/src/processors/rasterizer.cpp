@@ -75,4 +75,11 @@ void Rasterizer::process() {
     outport_.setData(rasterization_);
 }
 
+void Rasterizer::setValid() {
+    // override setValid() to maintain isModified() state of properties and isChanged() for inports
+    // as these might be used later during rasterization in a subsequent rasterization renderer.
+    // Note: need to set this processor to valid _after_ rasterization.
+    for (auto outport : getOutports()) outport->setValid();
+}
+
 }  // namespace inviwo
