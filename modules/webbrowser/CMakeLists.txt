@@ -6,17 +6,7 @@
 # Specify the CEF distribution version.
 # https://cef-builds.spotifycdn.com/index.html
 # Test before upgrading version since they are sometimes unstable:
-# 3.3202.1680.g700054b Problems with event handling of html-range elements (sliders)
-# 3.3359.1774.gd49d25f Crashes when creating browsers
-# 3.3325.1758.g9aea513 Crashes on scroll event (Mac)
-# 3.3396.1775.g5340bb0 Crashes when switching web page
-# 3.3396.1775.g5340bb0 Crashes when using two fingers on trackpad (Mac)
-# 3.3538.1849.g458cc98
-# 75.0.7+g19229b6+chromium-75.0.3770.80 Rendering stops working, https://bitbucket.org/chromiumembedded/cef/issues/2618/onacceleratedpaint-is-not-called-with-off#comment-51661853
-# FATAL:async_layer_tree_frame_sink.cc
-# Known issue: Dropdown does not work.
-# Probably due to https://magpcss.org/ceforum/viewtopic.php?f=6&t=11618
-set(CEF_VERSION "126.2.10+g61241e4+chromium-126.0.6478.127")
+set(CEF_VERSION "128.4.5+gc1d356f+chromium-128.0.6613.18")
 
 # Determine the platform.
 include("cmake/cef_platform.cmake")
