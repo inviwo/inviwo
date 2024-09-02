@@ -254,6 +254,7 @@ void WebBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                 "Web renderer process killed due child process never launched. "
                 "(TS_LAUNCH_FAILED).\n"
                 << error_string);
+            break;
         case TS_INTEGRITY_FAILURE:
             LogError(
                 "Web renderer process killed by the OS due to code integrity failure "
