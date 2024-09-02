@@ -1,5 +1,7 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1plot_1_1AxisRenderer.html#a1fcc2ed0b7a321a5553a2bb775a6f093":[4,0,1,17,5,0],
+"classinviwo_1_1plot_1_1AxisRenderer.html#af160296a42a0b6c91c861a649966ea10":[2,0,0,13,4,1],
 "classinviwo_1_1plot_1_1AxisRenderer.html#af160296a42a0b6c91c861a649966ea10":[4,0,1,17,5,1],
 "classinviwo_1_1plot_1_1AxisRenderer3D.html":[2,0,0,13,5],
 "classinviwo_1_1plot_1_1AxisRenderer3D.html":[4,0,1,17,6],
@@ -135,8 +137,8 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1plot_1_1PersistenceDiagramPlotGL_1_1Properties.html":[4,0,1,17,34,0],
 "classinviwo_1_1plot_1_1PersistenceDiagramPlotGL_1_1Properties.html#a5cbd8c77df0d4295371958d78f694f8e":[2,0,0,13,33,0,0],
 "classinviwo_1_1plot_1_1PersistenceDiagramPlotGL_1_1Properties.html#a5cbd8c77df0d4295371958d78f694f8e":[4,0,1,17,34,0,0],
-"classinviwo_1_1plot_1_1PersistenceDiagramPlotProcessor.html":[1,3,115],
-"classinviwo_1_1plot_1_1PersistenceDiagramPlotProcessor.html#aeb1bb65ffc20eda5588765072fa1d5f4":[1,3,115,0],
+"classinviwo_1_1plot_1_1PersistenceDiagramPlotProcessor.html":[1,3,114],
+"classinviwo_1_1plot_1_1PersistenceDiagramPlotProcessor.html#aeb1bb65ffc20eda5588765072fa1d5f4":[1,3,114,0],
 "classinviwo_1_1plot_1_1PlotTextData.html":[2,0,0,13,35],
 "classinviwo_1_1plot_1_1PlotTextData.html":[4,0,1,17,36],
 "classinviwo_1_1plot_1_1PlotTextData.html#a9a22efa210d50a3b18b1a4b65a5e0621":[2,0,0,13,35,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1util_1_1is__container.html":[2,0,0,18,34],
 "classinviwo_1_1util_1_1is__container.html":[4,0,1,24,38],
 "classinviwo_1_1util_1_1is__stream__insertable.html":[2,0,0,18,38],
-"classinviwo_1_1util_1_1is__stream__insertable.html":[4,0,1,24,42],
-"classinviwo_1_1util_1_1ostream__joiner.html":[2,0,0,18,49],
-"classinviwo_1_1util_1_1ostream__joiner.html":[4,0,1,24,53]
+"classinviwo_1_1util_1_1is__stream__insertable.html":[4,0,1,24,42]
 };

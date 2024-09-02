@@ -283,9 +283,6 @@ var group__processors =
     [ "inviwo::VolumeRegionMapper", "classinviwo_1_1VolumeRegionMapper.html", [
       [ "process", "classinviwo_1_1VolumeRegionMapper.html#aa913cf2bed3a44b617930b3e907e70bd", null ]
     ] ],
-    [ "inviwo::VolumeRegionStatistics", "classinviwo_1_1VolumeRegionStatistics.html", [
-      [ "process", "classinviwo_1_1VolumeRegionStatistics.html#a0fe0c128ba62cddddbdb91b23de3133d", null ]
-    ] ],
     [ "inviwo::WebBrowserProcessor", "classinviwo_1_1WebBrowserProcessor.html", [
       [ "process", "classinviwo_1_1WebBrowserProcessor.html#a5e35b2e6683ba0d959273b4c03d9738e", null ]
     ] ],

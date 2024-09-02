@@ -1,5 +1,7 @@
 var NAVTREEINDEX29 =
 {
+"structinviwo_1_1InviwoApplication_1_1Queue.html":[4,0,1,457,0],
+"structinviwo_1_1InviwoDefaultData.html":[2,0,0,454],
 "structinviwo_1_1InviwoDefaultData.html":[4,0,1,459],
 "structinviwo_1_1InviwoDefaults.html":[2,0,0,455],
 "structinviwo_1_1InviwoDefaults.html":[4,0,1,460],
@@ -247,7 +249,5 @@ var NAVTREEINDEX29 =
 "structinviwo_1_1ShaderComponent_1_1Segment.html#ac3189a604789226d2a842af5840ff149":[2,0,0,997,0,2],
 "structinviwo_1_1ShaderComponent_1_1Segment.html#ac3189a604789226d2a842af5840ff149":[4,0,1,1002,0,2],
 "structinviwo_1_1ShaderObject_1_1InDeclaration.html":[2,0,0,1000,0],
-"structinviwo_1_1ShaderObject_1_1InDeclaration.html":[4,0,1,1005,0],
-"structinviwo_1_1ShaderObject_1_1OutDeclaration.html":[2,0,0,1000,1],
-"structinviwo_1_1ShaderObject_1_1OutDeclaration.html":[4,0,1,1005,1]
+"structinviwo_1_1ShaderObject_1_1InDeclaration.html":[4,0,1,1005,0]
 };
