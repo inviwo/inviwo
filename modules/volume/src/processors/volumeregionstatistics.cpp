@@ -54,16 +54,32 @@ const ProcessorInfo VolumeRegionStatistics::processorInfo_{
     "Volume Operation",                                           // Category
     CodeState::Stable,                                            // Code state
     Tags::CPU | Tag{"Volume"} | Tag{"Atlas"} | Tag{"DataFrame"},  // Tags
+    R"(Calculate statistics for each volume region/segment in a volume.
+    The following statistics are calculated for each region:
+     * Volume, given in World space
+     * Sum for each channel, given in "Value" range. This assumes a density in each voxel,
+       since we sum the voxel value times the voxel volume.
+     * Mean for each channel, given in "Value" range
+     * Min for each channel, given in "Value" range
+     * Max for each channel, given in "Value" range
+     * Center (x,y,z) mean position in each region, given in `Result Space` coordinates
+     * Center of Mass for each channel (x, y, z), given in `Result Space` coordinates
+    )"_unindentHelp
+
 };
 const ProcessorInfo VolumeRegionStatistics::getProcessorInfo() const { return processorInfo_; }
 
 VolumeRegionStatistics::VolumeRegionStatistics()
     : PoolProcessor()
-    , volume_("volume")
-    , atlas_{"atlas"}
-    , dataFrame_{"statistics"}
+    , volume_("volume", "Segmented input volume"_help)
+    , atlas_{"atlas", R"(Index volume, of unsigned integer type, assigning a region index to each
+        voxel. Has to have the same dimensions as volume. The index range is assumed to be
+        [0, dataMap.dataRange.y] and without gaps.)"_unindentHelp}
+    , dataFrame_{"statistics", "Data Frame with the statistics for each region."_help}
     , space_{"space",
              "Result Space",
+             "The spatial domain of the resulting statistics. Data, Model, World, or  Index, "
+             "defaults to World."_help,
              {CoordinateSpace::Data, CoordinateSpace::Model, CoordinateSpace::World,
               CoordinateSpace::Index},
              2} {
@@ -367,7 +383,7 @@ struct StatsFunctor {
                 throw Exception("Empty volume!");
             }
             (*regionVolumes)[region] = volumeScale * stat.getVolume();
-            (*regionSums[c])[region] = map.mapFromDataToValue(stat.getMass());
+            (*regionSums[c])[region] = map.mapFromDataToValue(volumeScale * stat.getMass());
             (*regionMean[c])[region] = map.mapFromDataToValue(stat.getMean());
             (*regionMin[c])[region] = map.mapFromDataToValue(stat.getMin());
             (*regionMax[c])[region] = map.mapFromDataToValue(stat.getMax());
