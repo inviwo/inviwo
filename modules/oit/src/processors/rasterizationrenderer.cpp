@@ -243,9 +243,9 @@ void RasterizationRenderer::process() {
 
     // Set rasterization processors to valid now that rasterization is done and properties/inports
     // were used.
-    // @see Rasterization::setValid()
+    // @see Rasterization::setValid, Rasterization::setValidDelayed
     for (auto rasterization : rasterizations_) {
-        rasterization->getProcessor()->Processor::setValid();
+        rasterization->getProcessor()->setValidDelayed();
     }
 }
 
