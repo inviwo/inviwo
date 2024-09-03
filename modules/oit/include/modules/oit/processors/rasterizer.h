@@ -55,6 +55,22 @@ public:
     virtual void process() override;
 
     /**
+     * Override to maintain isModified() state of properties and isChanged() for inports
+     * as these might be accessed later during rasterization in a subsequent rasterization renderer.
+     * Note: need to set this processor to valid _after_ rasterization using setValidDelayed.
+     *
+     * @see setValidDelayed
+     */
+    virtual void setValid() override;
+
+    /**
+     * Set this processor's state to valid. To be used after the rasterization.
+     *
+     * @see setValid
+     */
+    void setValidDelayed();
+
+    /**
      * @brief Render the fragments, with all setup and evaluation taken care of.
      * If opaque is set, a standard render call instead.
      * @param imageSize Size in pixels.

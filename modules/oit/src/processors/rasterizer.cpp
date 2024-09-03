@@ -75,4 +75,13 @@ void Rasterizer::process() {
     outport_.setData(rasterization_);
 }
 
+void Rasterizer::setValid() {
+    for (auto* outport : getOutports()) outport->setValid();
+}
+
+void Rasterizer::setValidDelayed() {
+    PropertyOwner::setValid();
+    setInportsChanged(false);
+}
+
 }  // namespace inviwo
