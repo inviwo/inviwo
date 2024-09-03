@@ -453,6 +453,8 @@ protected:
      */
     void removePortFromGroups(Port* port);
 
+    void setInportsChanged(bool changed);
+
 private:
     void addPortInternal(Inport* port, std::string_view portGroup);
     void addPortInternal(Outport* port, std::string_view portGroup);

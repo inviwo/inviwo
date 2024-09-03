@@ -441,8 +441,8 @@ void Processor::deserialize(Deserializer& d) {
 
 void Processor::setValid() {
     PropertyOwner::setValid();
-    for (auto inport : inports_) inport->setChanged(false);
-    for (auto outport : outports_) outport->setValid();
+    setInportsChanged(false);
+    for (auto* outport : outports_) outport->setValid();
 }
 
 void Processor::invokeEvent(Event* event) {
@@ -471,6 +471,10 @@ void Processor::propagateEvent(Event* event, Outport* source) {
         }
     }
     event->setUsed(used);
+}
+
+void Processor::setInportsChanged(bool changed) {
+    for (auto* inport : inports_) inport->setChanged(false);
 }
 
 }  // namespace inviwo

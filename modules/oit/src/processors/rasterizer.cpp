@@ -79,6 +79,9 @@ void Rasterizer::setValid() {
     for (auto* outport : getOutports()) outport->setValid();
 }
 
-void Rasterizer::setValidDelayed() { Processor::setValid(); }
+void Rasterizer::setValidDelayed() {
+    PropertyOwner::setValid();
+    setInportsChanged(false);
+}
 
 }  // namespace inviwo
