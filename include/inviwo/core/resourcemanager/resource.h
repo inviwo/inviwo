@@ -46,8 +46,8 @@ struct IVW_CORE_API ResourceMeta {
 struct IVW_CORE_API Resource {
     glm::size4_t dims{0, 0, 0, 0};
     DataFormatId format{DataFormatId::NotSpecialized};
-    std::string_view desc{""};
-    std::optional<ResourceMeta> meta = std::nullopt;
+    std::string_view desc{};
+    std::optional<ResourceMeta> meta{std::nullopt};
 
     size_t sizeInBytes() const {
         return glm::compMul(glm::max(dims, glm::size4_t{1, 1, 1, 1})) *
@@ -56,21 +56,28 @@ struct IVW_CORE_API Resource {
 };
 
 namespace resource {
-struct RAM {
+struct IVW_CORE_API RAM {
     std::uintptr_t key;
     auto operator<=>(const RAM&) const = default;
     static constexpr std::string_view name = "RAM";
 };
-struct GL {
+struct IVW_CORE_API GL {
     unsigned int key;
     auto operator<=>(const GL&) const = default;
     static constexpr std::string_view name = "GL";
 };
-struct PY {
-    int key;
+struct IVW_CORE_API PY {
+    size_t key;
     auto operator<=>(const PY&) const = default;
     static constexpr std::string_view name = "PY";
 };
+
+IVW_CORE_API RAM toRAM(const void* ptr);
+
+template <typename T>
+RAM toRAM(const std::unique_ptr<T>& data) {
+    return toRAM(static_cast<const void*>(data.get()));
+}
 
 IVW_CORE_API void add(const RAM& key, Resource resource);
 IVW_CORE_API std::optional<Resource> remove(const RAM& key);

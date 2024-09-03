@@ -36,7 +36,7 @@ class QTreeView;
 class QCheckBox;
 
 namespace inviwo {
-class Resource;
+struct Resource;
 class ResourceManager;
 
 class ResourceManagerItemModel;

@@ -1,4 +1,3 @@
-
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -65,7 +64,7 @@ public:
             notifyDidAddResource(gi, group.size() - 1, group.back().second);
         } else {
             notifyWillUpdateResource(gi, std::distance(group.begin(), it), it->second);
-            it->second = resource;
+            it->second = std::move(resource);
             notifyDidUpdateResource(gi, std::distance(group.begin(), it), it->second);
         }
     }
@@ -78,7 +77,7 @@ public:
         auto it = std::ranges::find(group, key, &std::pair<Key, Resource>::first);
         if (it != group.end()) {
             notifyWillUpdateResource(gi, std::distance(group.begin(), it), it->second);
-            it->second.meta = meta;
+            it->second.meta = std::move(meta);
             notifyDidUpdateResource(gi, std::distance(group.begin(), it), it->second);
         }
     }
@@ -92,7 +91,7 @@ public:
             notifyWillRemoveResource(gi, std::distance(group.begin(), it), it->second);
             Resource resource{std::move(it->second)};
             it = group.erase(it);
-            notifyDidRemoveResource(gi, std::distance(group.begin(), it), it->second);
+            notifyDidRemoveResource(gi, std::distance(group.begin(), it), resource);
             return resource;
         } else {
             return std::nullopt;

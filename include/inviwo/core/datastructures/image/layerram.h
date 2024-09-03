@@ -222,7 +222,7 @@ public:
     virtual void setFromNormalizedDVec4(const size2_t& pos, dvec4 val) override;
 
     virtual void updateResource(const ResourceMeta& meta) const override {
-        resource::meta(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())}, meta);
+        resource::meta(resource::toRAM(data_), meta);
     }
 
 private:
@@ -266,10 +266,9 @@ LayerRAMPrecision<T>::LayerRAMPrecision(size2_t dimensions, LayerType type,
     std::fill(data_.get(), data_.get() + glm::compMul(dimensions_),
               (type == LayerType::Depth) ? T{1} : T{0});
 
-    resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
-                  Resource{.dims = glm::size4_t{dimensions_, 0, 0},
-                           .format = DataFormat<T>::id(),
-                           .desc = "LayerRAM"});
+    resource::add(resource::toRAM(data_), Resource{.dims = glm::size4_t{dimensions_, 0, 0},
+                                                   .format = DataFormat<T>::id(),
+                                                   .desc = "LayerRAM"});
 }
 
 template <typename T>
@@ -287,10 +286,9 @@ LayerRAMPrecision<T>::LayerRAMPrecision(T* data, size2_t dimensions, LayerType t
         std::fill(data_.get(), data_.get() + glm::compMul(dimensions_),
                   (type == LayerType::Depth) ? T{1} : T{0});
     }
-    resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
-                  Resource{.dims = glm::size4_t{dimensions_, 0, 0},
-                           .format = DataFormat<T>::id(),
-                           .desc = "LayerRAM"});
+    resource::add(resource::toRAM(data_), Resource{.dims = glm::size4_t{dimensions_, 0, 0},
+                                                   .format = DataFormat<T>::id(),
+                                                   .desc = "LayerRAM"});
 }
 
 template <typename T>
@@ -316,10 +314,9 @@ LayerRAMPrecision<T>::LayerRAMPrecision(const LayerRAMPrecision<T>& rhs)
     , wrapping_{rhs.wrapping_} {
     std::copy(rhs.getView().begin(), rhs.getView().end(), data_.get());
 
-    resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
-                  Resource{.dims = glm::size4_t{dimensions_, 0, 0},
-                           .format = DataFormat<T>::id(),
-                           .desc = "LayerRAM"});
+    resource::add(resource::toRAM(data_), Resource{.dims = glm::size4_t{dimensions_, 0, 0},
+                                                   .format = DataFormat<T>::id(),
+                                                   .desc = "LayerRAM"});
 }
 
 template <typename T>
@@ -336,18 +333,17 @@ LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(const LayerRAMPrecision<T>
         swizzleMask_ = that.swizzleMask_;
         interpolation_ = that.interpolation_;
         wrapping_ = that.wrapping_;
-        auto old = resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
-        resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
-                      Resource{.dims = glm::size4_t{dimensions_, 0, 0},
-                               .format = DataFormat<T>::id(),
-                               .desc = "LayerRAM",
-                               .meta = resource::getMeta(old)});
+        auto old = resource::remove(resource::toRAM(data));
+        resource::add(resource::toRAM(data_), Resource{.dims = glm::size4_t{dimensions_, 0, 0},
+                                                       .format = DataFormat<T>::id(),
+                                                       .desc = "LayerRAM",
+                                                       .meta = resource::getMeta(old)});
     }
     return *this;
 }
 template <typename T>
 LayerRAMPrecision<T>::~LayerRAMPrecision() {
-    resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())});
+    resource::remove(resource::toRAM(data_));
 }
 
 template <typename T>
@@ -404,11 +400,10 @@ void LayerRAMPrecision<T>::setDimensions(size2_t dimensions) {
         std::swap(dimensions, dimensions_);
 
         auto old = resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
-        resource::add(resource::RAM{reinterpret_cast<std::uintptr_t>(data_.get())},
-                      Resource{.dims = glm::size4_t{dimensions_, 0, 0},
-                               .format = DataFormat<T>::id(),
-                               .desc = "LayerRAM",
-                               .meta = resource::getMeta(old)});
+        resource::add(resource::toRAM(data_), Resource{.dims = glm::size4_t{dimensions_, 0, 0},
+                                                       .format = DataFormat<T>::id(),
+                                                       .desc = "LayerRAM",
+                                                       .meta = resource::getMeta(old)});
     }
 }
 

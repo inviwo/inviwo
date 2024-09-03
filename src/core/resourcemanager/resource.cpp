@@ -33,9 +33,7 @@
 
 #include <inviwo/core/common/factoryutil.h>
 
-namespace inviwo {
-
-namespace resource {
+namespace inviwo::resource {
 
 void add(const RAM& key, Resource resource) {
     if (auto* rm = util::getResourceManager()) {
@@ -88,6 +86,9 @@ void meta(const PY& key, ResourceMeta meta) {
     }
 }
 
-}  // namespace resource
+RAM toRAM(const void* ptr) {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    return resource::RAM{reinterpret_cast<std::uintptr_t>(ptr)};
+}
 
-}  // namespace inviwo
+}  // namespace inviwo::resource

@@ -65,7 +65,7 @@ public:
 
     explicit VolumePy(const VolumeReprConfig& config);
 
-    virtual ~VolumePy() = default;
+    virtual ~VolumePy();
 
     VolumePy* clone() const override;
     std::type_index getTypeIndex() const override;
@@ -86,6 +86,8 @@ public:
 
     pybind11::array& data() { return data_; }
     const pybind11::array& data() const { return data_; }
+
+    virtual void updateResource(const ResourceMeta& meta) const override;
 
 private:
     SwizzleMask swizzleMask_;

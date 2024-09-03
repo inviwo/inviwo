@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-class Resource;
+struct Resource;
 
 class IVW_CORE_API ResourceManagerObserver : public Observer {
 public:

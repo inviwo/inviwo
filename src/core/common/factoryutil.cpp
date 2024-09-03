@@ -278,7 +278,10 @@ RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory(Proper
     return getRepresentationConverterMetaFactory(property->getOwner()->getProcessor());
 }
 
-ResourceManager* getResourceManager() { return getResourceManager(InviwoApplication::getPtr()); }
+ResourceManager* getResourceManager() {
+    if (!InviwoApplication::isInitialized()) return nullptr;
+    return getResourceManager(InviwoApplication::getPtr());
+}
 ResourceManager* getResourceManager(InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getResourceManager();

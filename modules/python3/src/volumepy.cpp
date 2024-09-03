@@ -40,6 +40,8 @@
 #include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT, IVW_CON...
 #include <modules/python3/pybindutils.h>                             // for toNumPyFormat, getDa...
 
+#include <inviwo/core/resourcemanager/resource.h>
+
 #include <cstring>      // for memcpy, size_t
 #include <string>       // for string
 #include <string_view>  // for string_view
@@ -48,6 +50,14 @@
 #include <glm/vec3.hpp>  // for vec<>::(anonymous)
 
 namespace inviwo {
+
+namespace resource {
+
+inline PY toPY(pybind11::array data) {
+    return resource::PY{pybind11::module_::import("builtins").attr("id")(data).cast<size_t>()};
+}
+
+}  // namespace resource
 
 namespace {
 const DataFormatBase* format(pybind11::array data) {
@@ -71,7 +81,12 @@ VolumePy::VolumePy(pybind11::array data, const SwizzleMask& swizzleMask,
     , interpolation_{interpolation}
     , wrapping_{wrapping}
     , data_{data}
-    , dims_{data_.shape(2), data_.shape(1), data_.shape(0)} {}
+    , dims_{data_.shape(2), data_.shape(1), data_.shape(0)} {
+
+    resource::add(resource::toPY(data_), Resource{.dims = glm::size4_t{dims_, 0},
+                                                  .format = getDataFormat()->getId(),
+                                                  .desc = "VolumePY"});
+}
 
 VolumePy::VolumePy(size3_t dimensions, const DataFormatBase* format, const SwizzleMask& swizzleMask,
                    InterpolationType interpolation, const Wrapping3D& wrapping)
@@ -83,7 +98,12 @@ VolumePy::VolumePy(size3_t dimensions, const DataFormatBase* format, const Swizz
           pyutil::toNumPyFormat(format),
           pybind11::array::ShapeContainer{dimensions.z, dimensions.y, dimensions.x,
                                           getDataFormat()->getComponents()})}
-    , dims_{dimensions} {}
+    , dims_{dimensions} {
+
+    resource::add(resource::toPY(data_), Resource{.dims = glm::size4_t{dims_, 0},
+                                                  .format = getDataFormat()->getId(),
+                                                  .desc = "VolumePY"});
+}
 
 VolumePy::VolumePy(const VolumeReprConfig& config)
     : VolumePy{config.dimensions.value_or(VolumeConfig::defaultDimensions),
@@ -91,6 +111,8 @@ VolumePy::VolumePy(const VolumeReprConfig& config)
                config.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask),
                config.interpolation.value_or(VolumeConfig::defaultInterpolation),
                config.wrapping.value_or(VolumeConfig::defaultWrapping)} {}
+
+VolumePy::~VolumePy() { resource::remove(resource::toPY(data_)); }
 
 VolumePy* VolumePy::clone() const { return new VolumePy(*this); }
 
@@ -100,10 +122,16 @@ const DataFormatBase* VolumePy::getDataFormat() const { return format(data_); }
 
 void VolumePy::setDimensions(size3_t dimensions) {
     if (dimensions != dims_) {
+        const auto old = resource::remove(resource::toPY(data_));
         data_ = pybind11::array(
             data_.dtype(), pybind11::array::ShapeContainer{dimensions.z, dimensions.y, dimensions.x,
                                                            getDataFormat()->getComponents()});
         dims_ = dimensions;
+
+        resource::add(resource::toPY(data_), Resource{.dims = glm::size4_t{dims_, 0},
+                                                      .format = getDataFormat()->getId(),
+                                                      .desc = "VolumePY",
+                                                      .meta = resource::getMeta(old)});
     }
 }
 
@@ -117,6 +145,10 @@ InterpolationType VolumePy::getInterpolation() const { return interpolation_; }
 
 void VolumePy::setWrapping(const Wrapping3D& wrapping) { wrapping_ = wrapping; }
 Wrapping3D VolumePy::getWrapping() const { return wrapping_; }
+
+void VolumePy::updateResource(const ResourceMeta& meta) const {
+    resource::meta(resource::toPY(data_), meta);
+}
 
 std::shared_ptr<VolumePy> VolumeRAM2PyConverter::createFrom(
     std::shared_ptr<const VolumeRAM> volumeSrc) const {

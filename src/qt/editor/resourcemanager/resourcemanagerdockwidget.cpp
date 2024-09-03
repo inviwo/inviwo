@@ -69,17 +69,17 @@ public:
                                          std::string_view{"Description"}, std::string_view{"Size"},
                                          std::string_view{"Source"}};
 
+    static constexpr quintptr root = std::numeric_limits<quintptr>::max();
+
     ResourceManagerItemModel(ResourceManager* manager, QObject* parent)
         : QAbstractItemModel(parent), manager_(manager) {
 
         manager_->addObserver(this);
     }
 
-    virtual QModelIndex index(int row, int column,
-                              const QModelIndex& parent = QModelIndex()) const override {
-
+    virtual QModelIndex index(int row, int column, const QModelIndex& parent) const override {
         if (parent == QModelIndex{}) {
-            return createIndex(row, column, quintptr(-1));
+            return createIndex(row, column, root);
         } else if (parent.parent() == QModelIndex{}) {
             if (row < static_cast<int>(manager_->size(static_cast<size_t>(parent.row())))) {
                 return createIndex(row, column, parent.row());
@@ -87,19 +87,17 @@ public:
         }
         return {};
     }
-    virtual Qt::ItemFlags flags(const QModelIndex& index) const override {
-        return Qt::ItemIsEnabled;
-    }
+    virtual Qt::ItemFlags flags(const QModelIndex&) const override { return Qt::ItemIsEnabled; }
 
     virtual QModelIndex parent(const QModelIndex& index) const override {
         const auto parent = index.internalId();
         if (parent < std::tuple_size_v<ResourceManager::Keys>) {
-            return createIndex(static_cast<int>(parent), 0, quintptr(-1));
+            return createIndex(static_cast<int>(parent), 0, root);
         }
         return {};
     }
 
-    virtual int rowCount(const QModelIndex& parent = QModelIndex()) const override {
+    virtual int rowCount(const QModelIndex& parent) const override {
         if (parent == QModelIndex{}) {
             return std::tuple_size_v<ResourceManager::Keys>;
         } else if (parent.parent() == QModelIndex{}) {
@@ -108,108 +106,114 @@ public:
             return 0;
         }
     }
-    virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override {
-        return colNames.size();
+    virtual int columnCount(const QModelIndex&) const override {
+        return static_cast<int>(colNames.size());
     }
 
-    virtual QVariant headerData(int section, Qt::Orientation orientation,
-                                int role = Qt::DisplayRole) const override {
-
+    virtual QVariant headerData(int section, Qt::Orientation, int role) const override {
         if (role == Qt::DisplayRole && section < static_cast<int>(colNames.size())) {
             return utilqt::toQString(colNames[section]);
         }
-
         return {};
     }
-    virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override {
-        if (role == Qt::DisplayRole) {
-            if (index.parent() == QModelIndex{}) {
-                if (index.row() < static_cast<int>(ResourceManager::names.size())) {
-                    if (index.column() == 0) {
-                        return utilqt::toQString(ResourceManager::names[index.row()]);
-                    } else if (index.column() == 1) {
-                        return static_cast<int>(manager_->size(static_cast<size_t>(index.row())));
-                    } else if (index.column() == 3) {
-                        return utilqt::toQString(util::formatBytesToString(
-                            manager_->totalByteSize(static_cast<size_t>(index.row()))));
-                    }
-                }
-            } else {
-                const auto group = index.parent().row();
-                const auto item = index.row();
 
-                if (const auto* resource = manager_->get(group, item)) {
-                    if (index.column() == Cols::Dims) {
-                        fmt::memory_buffer buff;
-                        auto out = fmt::appender(buff);
-                        fmt::format_to(out, "{}", resource->dims.x);
-                        if (resource->dims.y != 0) {
-                            fmt::format_to(out, "x{}", resource->dims.y);
-                        }
-                        if (resource->dims.z != 0) {
-                            fmt::format_to(out, "x{}", resource->dims.z);
-                        }
-                        if (resource->dims.w != 0) {
-                            fmt::format_to(out, "x{}", resource->dims.w);
-                        }
+    QVariant sortData(const QModelIndex& index) const {
+        if (index.parent().isValid()) {
+            const auto group = index.parent().row();
+            const auto item = index.row();
 
-                        return utilqt::toQString(std::string_view{buff.data(), buff.size()});
-                    } else if (index.column() == Cols::Format) {
-                        return utilqt::toQString(fmt::to_string(resource->format));
-                    } else if (index.column() == Cols::Desc) {
-                        return utilqt::toQString(resource->desc);
-                    } else if (index.column() == Cols::Size) {
-                        return utilqt::toQString(
-                            util::formatBytesToString(resource->sizeInBytes()));
-                    } else if (index.column() == Cols::Meta) {
-                        if (resource->meta.has_value()) {
-                            return utilqt::toQString(resource->meta->source);
-                        }
+            if (const auto* resource = manager_->get(group, item)) {
+                if (index.column() == Cols::Dims) {
+                    return static_cast<qulonglong>(
+                        glm::compMul(glm::max(resource->dims, glm::size4_t{1, 1, 1, 1})));
+                } else if (index.column() == Cols::Format) {
+                    return utilqt::toQString(fmt::to_string(resource->format));
+                } else if (index.column() == Cols::Desc) {
+                    return utilqt::toQString(resource->desc);
+                } else if (index.column() == Cols::Size) {
+                    return static_cast<qulonglong>(resource->sizeInBytes());
+                } else if (index.column() == Cols::Meta) {
+                    if (resource->meta.has_value()) {
+                        return utilqt::toQString(resource->meta->source);
                     }
                 }
             }
         }
-        if (role == SortRole) {
-            if (index.parent() == QModelIndex{}) {
-                return {};
-            } else {
-                const auto group = index.parent().row();
-                const auto item = index.row();
+        return {};
+    }
 
-                if (const auto* resource = manager_->get(group, item)) {
-                    if (index.column() == Cols::Dims) {
-                        return static_cast<qulonglong>(
-                            glm::compMul(glm::max(resource->dims, glm::size4_t{1, 1, 1, 1})));
-                    } else if (index.column() == Cols::Format) {
-                        return utilqt::toQString(fmt::to_string(resource->format));
-                    } else if (index.column() == Cols::Desc) {
-                        return utilqt::toQString(resource->desc);
-                    } else if (index.column() == Cols::Size) {
-                        return static_cast<qulonglong>(resource->sizeInBytes());
-                    } else if (index.column() == Cols::Meta) {
-                        if (resource->meta.has_value()) {
-                            return utilqt::toQString(resource->meta->source);
-                        }
+    QVariant displayData(const QModelIndex& index) const {
+        if (!index.parent().isValid()) {
+            if (index.row() < static_cast<int>(ResourceManager::names.size())) {
+                if (index.column() == 0) {
+                    return utilqt::toQString(ResourceManager::names[index.row()]);
+                } else if (index.column() == 1) {
+                    return static_cast<int>(manager_->size(static_cast<size_t>(index.row())));
+                } else if (index.column() == 3) {
+                    return utilqt::toQString(util::formatBytesToString(
+                        manager_->totalByteSize(static_cast<size_t>(index.row()))));
+                }
+            }
+        } else {
+            const auto group = index.parent().row();
+            const auto item = index.row();
+
+            if (const auto* resource = manager_->get(group, item)) {
+                if (index.column() == Cols::Dims) {
+                    fmt::memory_buffer buff;
+                    auto out = fmt::appender(buff);
+                    fmt::format_to(out, "{}", resource->dims.x);
+                    if (resource->dims.y != 0) {
+                        fmt::format_to(out, "x{}", resource->dims.y);
+                    }
+                    if (resource->dims.z != 0) {
+                        fmt::format_to(out, "x{}", resource->dims.z);
+                    }
+                    if (resource->dims.w != 0) {
+                        fmt::format_to(out, "x{}", resource->dims.w);
+                    }
+
+                    return utilqt::toQString(std::string_view{buff.data(), buff.size()});
+                } else if (index.column() == Cols::Format) {
+                    return utilqt::toQString(fmt::to_string(resource->format));
+                } else if (index.column() == Cols::Desc) {
+                    return utilqt::toQString(resource->desc);
+                } else if (index.column() == Cols::Size) {
+                    return utilqt::toQString(util::formatBytesToString(resource->sizeInBytes()));
+                } else if (index.column() == Cols::Meta) {
+                    if (resource->meta.has_value()) {
+                        return utilqt::toQString(resource->meta->source);
                     }
                 }
             }
+        }
+        return {};
+    }
+
+    virtual QVariant data(const QModelIndex& index, int role) const override {
+        if (role == Qt::DisplayRole) {
+            return displayData(index);
+        } else if (role == SortRole) {
+            return sortData(index);
         }
         return {};
     }
 
     virtual void onWillAddResource(size_t group, size_t item, const Resource&) override {
-        const auto parentIndex = index(static_cast<int>(group), 0);
+        const auto parentIndex = index(static_cast<int>(group), 0, QModelIndex{});
         beginInsertRows(parentIndex, static_cast<int>(item), static_cast<int>(item));
     }
     virtual void onDidAddResource(size_t, size_t, const Resource&) override { endInsertRows(); }
-    virtual void onWillUpdateResource(size_t group, size_t item, const Resource&) override {}
+
+    virtual void onWillUpdateResource(size_t, size_t, const Resource&) override {}
     virtual void onDidUpdateResource(size_t group, size_t item, const Resource&) override {
-        const auto parentIndex = index(static_cast<int>(group), 0);
+        const auto parentIndex = index(static_cast<int>(group), 0, QModelIndex{});
         dataChanged(index(static_cast<int>(item), 0, parentIndex),
                     index(static_cast<int>(item), 3, parentIndex));
     }
+
     virtual void onWillRemoveResource(size_t group, size_t item, const Resource&) override {
-        const auto parentIndex = index(static_cast<int>(group), 0);
+        const auto parentIndex = index(static_cast<int>(group), 0, QModelIndex{});
         beginRemoveRows(parentIndex, static_cast<int>(item), static_cast<int>(item));
     }
     virtual void onDidRemoveResource(size_t, size_t, const Resource&) override { endRemoveRows(); }
@@ -219,30 +223,27 @@ private:
 };
 
 ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget* parent, ResourceManager& manager)
-    : InviwoDockWidget("Resource Manager", parent, "ResourceManager"), manager_(manager) {
+    : InviwoDockWidget("Resource Manager", parent, "ResourceManager")
+    , manager_(manager)
+    , model_{new ResourceManagerItemModel(&manager_, this)}
+    , view_{new QTreeView()} {
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(40, 70)));  // default size
-
-    auto layout = new QVBoxLayout();
-    setContents(layout);
-
-    view_ = new QTreeView();
-    view_->setSortingEnabled(true);
-
-    model_ = new ResourceManagerItemModel(&manager_, this);
 
     auto* sortProxy = new QSortFilterProxyModel(this);
     sortProxy->setSourceModel(model_);
     sortProxy->setSortRole(ResourceManagerItemModel::SortRole);
 
     view_->setModel(sortProxy);
+    view_->setSortingEnabled(true);
     view_->setIndentation(utilqt::emToPx(this, 1.0));
-
-    layout->addWidget(view_);
-
     view_->header()->setDefaultAlignment(Qt::AlignLeft);
     view_->header()->setDefaultSectionSize(utilqt::emToPx(this, 10.0));
     view_->expandRecursively({});
+
+    auto layout = new QVBoxLayout();
+    layout->addWidget(view_);
+    setContents(layout);
 }
 
 }  // namespace inviwo

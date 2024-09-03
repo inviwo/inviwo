@@ -41,7 +41,6 @@ class IVW_CORE_API MissingRepresentation : public Exception {
 public:
     MissingRepresentation(const std::string& message = "",
                           ExceptionContext context = ExceptionContext());
-    virtual ~MissingRepresentation() noexcept = default;
 };
 
 /**
@@ -64,7 +63,7 @@ public:
     bool isValid() const;
     void setValid(bool valid);
 
-    virtual void updateResource(const ResourceMeta& meta) const {};
+    virtual void updateResource(const ResourceMeta&) const {};
 
 protected:
     DataRepresentation() = default;

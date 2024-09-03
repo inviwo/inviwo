@@ -132,7 +132,7 @@ namespace detail {
 template <typename T>
 using updateResourceType =
     decltype(std::declval<T>().updateResource(std::declval<const ResourceMeta&>()));
-}
+}  // namespace detail
 
 template <typename T>
 void DataOutport<T>::setData(std::shared_ptr<const T> data) {
