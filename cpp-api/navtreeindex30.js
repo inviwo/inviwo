@@ -1,5 +1,9 @@
 var NAVTREEINDEX30 =
 {
+"structinviwo_1_1ShaderComponent_1_1Segment.html#ac3189a604789226d2a842af5840ff149":[2,0,0,997,0,2],
+"structinviwo_1_1ShaderComponent_1_1Segment.html#ac3189a604789226d2a842af5840ff149":[4,0,1,1002,0,2],
+"structinviwo_1_1ShaderObject_1_1InDeclaration.html":[2,0,0,1000,0],
+"structinviwo_1_1ShaderObject_1_1InDeclaration.html":[4,0,1,1005,0],
 "structinviwo_1_1ShaderObject_1_1OutDeclaration.html":[2,0,0,1000,1],
 "structinviwo_1_1ShaderObject_1_1OutDeclaration.html":[4,0,1,1005,1],
 "structinviwo_1_1ShaderSegment.html":[2,0,0,1002],
@@ -245,9 +249,5 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1plot_1_1detail_1_1MemPtr.html":[4,0,1,17,0,6],
 "structinviwo_1_1plot_1_1detail_1_1Resetter.html":[4,0,1,17,0,7],
 "structinviwo_1_1pool_1_1detail_1_1JobTraits.html":[2,0,0,14,0,0],
-"structinviwo_1_1pool_1_1detail_1_1JobTraits.html":[4,0,1,18,0,0],
-"structinviwo_1_1pool_1_1detail_1_1State.html":[2,0,0,14,0,1],
-"structinviwo_1_1pool_1_1detail_1_1State.html":[4,0,1,18,0,1],
-"structinviwo_1_1pool_1_1detail_1_1StateTemplate.html":[2,0,0,14,0,2],
-"structinviwo_1_1pool_1_1detail_1_1StateTemplate.html":[4,0,1,18,0,2]
+"structinviwo_1_1pool_1_1detail_1_1JobTraits.html":[4,0,1,18,0,0]
 };

@@ -148,6 +148,10 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setUniforms</
 <tr class="separator:a2133fb2133528811e94e1081dd9abf01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21b5af665d6661278b9ccd389556f646" id="r_a21b5af665d6661278b9ccd389556f646"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a21b5af665d6661278b9ccd389556f646">process</a> () override</td></tr>
 <tr class="separator:a21b5af665d6661278b9ccd389556f646"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32aca6e70c567d4c5f973292df7a1eeb" id="r_a32aca6e70c567d4c5f973292df7a1eeb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a32aca6e70c567d4c5f973292df7a1eeb">setValid</a> () override</td></tr>
+<tr class="separator:a32aca6e70c567d4c5f973292df7a1eeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab507d388b773d095cb4bf14153868b14" id="r_ab507d388b773d095cb4bf14153868b14"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab507d388b773d095cb4bf14153868b14">setValidDelayed</a> ()</td></tr>
+<tr class="separator:ab507d388b773d095cb4bf14153868b14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a736905e639988b999f764f0e5bf7b98a" id="r_a736905e639988b999f764f0e5bf7b98a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a736905e639988b999f764f0e5bf7b98a">rasterize</a> (const ivec2 &amp;imageSize, const mat4 &amp;worldMatrixTransform)=0</td></tr>
 <tr class="memdesc:a736905e639988b999f764f0e5bf7b98a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render the fragments, with all setup and evaluation taken care of. If opaque is set, a standard render call instead.  <br /></td></tr>
 <tr class="separator:a736905e639988b999f764f0e5bf7b98a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -252,8 +256,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>allInportsConnected</
 <tr class="separator:a1bc3af8dcfabb8599f4ff0f8c769bebf inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d86ad3f64ff3cdadaad473036809a1d inherit pub_methods_classinviwo_1_1Processor" id="r_a6d86ad3f64ff3cdadaad473036809a1d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a6d86ad3f64ff3cdadaad473036809a1d">doIfNotReady</a> ()</td></tr>
 <tr class="separator:a6d86ad3f64ff3cdadaad473036809a1d inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b59c6bac28be62250911b9e1e006f1a inherit pub_methods_classinviwo_1_1Processor" id="r_a3b59c6bac28be62250911b9e1e006f1a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a3b59c6bac28be62250911b9e1e006f1a">setValid</a> () override</td></tr>
-<tr class="separator:a3b59c6bac28be62250911b9e1e006f1a inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60ba7b32a166fbdf87e140b9b2cc654c inherit pub_methods_classinviwo_1_1Processor" id="r_a60ba7b32a166fbdf87e140b9b2cc654c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a60ba7b32a166fbdf87e140b9b2cc654c">invalidate</a> (<a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel, <a class="el" href="classinviwo_1_1Property.html">Property</a> *modifiedProperty=nullptr) override</td></tr>
 <tr class="separator:a60ba7b32a166fbdf87e140b9b2cc654c inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adac1b6040b74014c3fe47b7c250b7323 inherit pub_methods_classinviwo_1_1Processor" id="r_adac1b6040b74014c3fe47b7c250b7323"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#adac1b6040b74014c3fe47b7c250b7323">addInteractionHandler</a> (<a class="el" href="classinviwo_1_1InteractionHandler.html">InteractionHandler</a> *interactionHandler)</td></tr>
@@ -571,6 +573,9 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>const_iterator</b> =
 <tr class="separator:a8b02d56fdf37b42ec6cfd600990bebc8 inherit pro_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46d0dc5bd8ce5d056f56b716f7dc6ab8 inherit pro_methods_classinviwo_1_1Processor" id="r_a46d0dc5bd8ce5d056f56b716f7dc6ab8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a46d0dc5bd8ce5d056f56b716f7dc6ab8">removePortFromGroups</a> (<a class="el" href="classinviwo_1_1Port.html">Port</a> *port)</td></tr>
 <tr class="separator:a46d0dc5bd8ce5d056f56b716f7dc6ab8 inherit pro_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d27b5c8868ad0cbfc51bab38c57701b inherit pro_methods_classinviwo_1_1Processor" id="r_a6d27b5c8868ad0cbfc51bab38c57701b"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setInportsChanged</b> (bool changed)</td></tr>
+<tr class="separator:a6d27b5c8868ad0cbfc51bab38c57701b inherit pro_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1PropertyOwner"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1PropertyOwner')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1PropertyOwner.html">inviwo::PropertyOwner</a></td></tr>
 <tr class="memitem:a681bc09edf240726f664d54870803249 inherit pro_methods_classinviwo_1_1PropertyOwner" id="r_a681bc09edf240726f664d54870803249"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>PropertyOwner</b> (const <a class="el" href="classinviwo_1_1PropertyOwner.html">PropertyOwner</a> &amp;rhs)</td></tr>
@@ -869,6 +874,54 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
 </dl>
 
 <p>Implemented in <a class="el" href="classinviwo_1_1LineRasterizer.html#a604be929ba4f22b91fc30d0c58359d5f">inviwo::LineRasterizer</a>, <a class="el" href="classinviwo_1_1MeshRasterizer.html#a9fe14d4e424789447022d6a37a10acc4">inviwo::MeshRasterizer</a>, <a class="el" href="classinviwo_1_1SphereRasterizer.html#ad8fda47900e0dada074b283845ab993e">inviwo::SphereRasterizer</a>, <a class="el" href="classinviwo_1_1TransformRasterization.html#aa2d1840bb69adde5244e56acaf351dca">inviwo::TransformRasterization</a>, and <a class="el" href="classinviwo_1_1VolumeRasterizer.html#af82c24581b38ca8d7a1af67dde71ea11">inviwo::VolumeRasterizer</a>.</p>
+
+</div>
+</div>
+<a id="a32aca6e70c567d4c5f973292df7a1eeb" name="a32aca6e70c567d4c5f973292df7a1eeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32aca6e70c567d4c5f973292df7a1eeb">&#9670;&#160;</a></span>setValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::Rasterizer::setValid </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Override to maintain isModified() state of properties and isChanged() for inports as these might be accessed later during rasterization in a subsequent rasterization renderer. Note: need to set this processor to valid <em>after</em> rasterization using setValidDelayed.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#ab507d388b773d095cb4bf14153868b14">setValidDelayed</a> </dd></dl>
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1Processor.html#a3b59c6bac28be62250911b9e1e006f1a">inviwo::Processor</a>.</p>
+
+</div>
+</div>
+<a id="ab507d388b773d095cb4bf14153868b14" name="ab507d388b773d095cb4bf14153868b14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab507d388b773d095cb4bf14153868b14">&#9670;&#160;</a></span>setValidDelayed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::Rasterizer::setValidDelayed </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set this processor's state to valid. To be used after the rasterization.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a32aca6e70c567d4c5f973292df7a1eeb">setValid</a> </dd></dl>
 
 </div>
 </div>

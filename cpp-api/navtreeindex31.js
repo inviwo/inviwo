@@ -1,5 +1,9 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1pool_1_1detail_1_1State.html":[2,0,0,14,0,1],
+"structinviwo_1_1pool_1_1detail_1_1State.html":[4,0,1,18,0,1],
+"structinviwo_1_1pool_1_1detail_1_1StateTemplate.html":[2,0,0,14,0,2],
+"structinviwo_1_1pool_1_1detail_1_1StateTemplate.html":[4,0,1,18,0,2],
 "structinviwo_1_1pyutil_1_1ModulePath.html":[2,0,0,15,0],
 "structinviwo_1_1pyutil_1_1ModulePath.html":[4,0,1,19,0],
 "structinviwo_1_1representation__traits.html":[2,0,0,948],
@@ -245,7 +249,5 @@ var NAVTREEINDEX31 =
 "structstd_1_1hash_3_01typename_01inviwo_1_1ShaderSegment_1_1Placeholder_01_4.html":[4,0,2,8],
 "structstd_1_1tuple__element_3_01N_00_01_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html":[2,0,1,9],
 "structstd_1_1tuple__element_3_01N_00_01_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html":[4,0,2,9],
-"structstd_1_1tuple__size_3_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html":[2,0,1,10],
-"structstd_1_1tuple__size_3_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html":[4,0,2,10],
-"topics.html":[1]
+"structstd_1_1tuple__size_3_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html":[2,0,1,10]
 };

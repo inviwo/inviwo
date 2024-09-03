@@ -1,5 +1,9 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1plot_1_1AxisRenderProcessor.html#acd6617b0ddbd2520aa27dd16b2fb7e5a":[1,3,113,0],
+"classinviwo_1_1plot_1_1AxisRenderer.html":[2,0,0,13,4],
+"classinviwo_1_1plot_1_1AxisRenderer.html":[4,0,1,17,5],
+"classinviwo_1_1plot_1_1AxisRenderer.html#a1fcc2ed0b7a321a5553a2bb775a6f093":[2,0,0,13,4,0],
 "classinviwo_1_1plot_1_1AxisRenderer.html#a1fcc2ed0b7a321a5553a2bb775a6f093":[4,0,1,17,5,0],
 "classinviwo_1_1plot_1_1AxisRenderer.html#af160296a42a0b6c91c861a649966ea10":[2,0,0,13,4,1],
 "classinviwo_1_1plot_1_1AxisRenderer.html#af160296a42a0b6c91c861a649966ea10":[4,0,1,17,5,1],
@@ -245,9 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1util_1_1TextureAtlas.html":[2,0,0,18,60],
 "classinviwo_1_1util_1_1TextureAtlas.html":[4,0,1,24,64],
 "classinviwo_1_1util_1_1cloneable__ptr.html":[2,0,0,18,4],
-"classinviwo_1_1util_1_1cloneable__ptr.html":[4,0,1,24,8],
-"classinviwo_1_1util_1_1is__container.html":[2,0,0,18,34],
-"classinviwo_1_1util_1_1is__container.html":[4,0,1,24,38],
-"classinviwo_1_1util_1_1is__stream__insertable.html":[2,0,0,18,38],
-"classinviwo_1_1util_1_1is__stream__insertable.html":[4,0,1,24,42]
+"classinviwo_1_1util_1_1cloneable__ptr.html":[4,0,1,24,8]
 };

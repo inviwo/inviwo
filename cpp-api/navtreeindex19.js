@@ -1,5 +1,9 @@
 var NAVTREEINDEX19 =
 {
+"classinviwo_1_1StructuredCoordinateTransformer.html#a2a5a6aee6c2cbdbdae36a477f9b8d82e":[2,0,0,1076,8],
+"classinviwo_1_1StructuredCoordinateTransformer.html#a2a5a6aee6c2cbdbdae36a477f9b8d82e":[4,0,1,1081,8],
+"classinviwo_1_1StructuredCoordinateTransformer.html#a3e142ba85ad9ecc01953202e4a747628":[2,0,0,1076,5],
+"classinviwo_1_1StructuredCoordinateTransformer.html#a3e142ba85ad9ecc01953202e4a747628":[4,0,1,1081,5],
 "classinviwo_1_1StructuredCoordinateTransformer.html#a450bdbf945e8eec67eaf4cf86213171c":[2,0,0,1076,11],
 "classinviwo_1_1StructuredCoordinateTransformer.html#a450bdbf945e8eec67eaf4cf86213171c":[4,0,1,1081,11],
 "classinviwo_1_1StructuredCoordinateTransformer.html#a4bb6c38493682453e5a94985d654da52":[2,0,0,1076,7],
@@ -245,9 +249,5 @@ var NAVTREEINDEX19 =
 "classinviwo_1_1TextFileReader.html#aaf0c5d25218422413b74567840764bad":[1,0,5,1],
 "classinviwo_1_1TextLabelOverlay.html":[2,0,0,1100],
 "classinviwo_1_1TextLabelOverlay.html":[4,0,1,1105],
-"classinviwo_1_1TextOverlayGL.html":[1,3,72],
-"classinviwo_1_1TextOverlayGL.html#acfb36fb35fcf8c986eb72ca473a75806":[1,3,72,0],
-"classinviwo_1_1TextOverlayProperty.html":[2,0,0,1102],
-"classinviwo_1_1TextOverlayProperty.html":[4,0,1,1107],
-"classinviwo_1_1TextOverlayProperty.html#a0ee1816270dc30ea3ba4eebe04c60a35":[2,0,0,1102,0]
+"classinviwo_1_1TextOverlayGL.html":[1,3,72]
 };

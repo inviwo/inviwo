@@ -1,5 +1,9 @@
 var NAVTREEINDEX22 =
 {
+"classinviwo_1_1VolumeInformationProperty.html":[1,4,33],
+"classinviwo_1_1VolumeInformationProperty.html#adf965a40daa1fd309d74624e7f717703":[1,4,33,0],
+"classinviwo_1_1VolumeInformationVisualizer.html":[2,0,0,1243],
+"classinviwo_1_1VolumeInformationVisualizer.html":[4,0,1,1248],
 "classinviwo_1_1VolumeInformationVisualizer.html#a03a51d7c4c575d675b502f96f0453d0b":[2,0,0,1243,7],
 "classinviwo_1_1VolumeInformationVisualizer.html#a03a51d7c4c575d675b502f96f0453d0b":[4,0,1,1248,7],
 "classinviwo_1_1VolumeInformationVisualizer.html#a5359ae741b672600ae321cc82c5073ca":[2,0,0,1243,1],
@@ -245,9 +249,5 @@ var NAVTREEINDEX22 =
 "classinviwo_1_1WorkspaceManager.html#a37c01880a5705834847dadb6ef7ab545":[2,0,0,1303,7],
 "classinviwo_1_1WorkspaceManager.html#a37c01880a5705834847dadb6ef7ab545":[4,0,1,1308,7],
 "classinviwo_1_1WorkspaceManager.html#a5ff18a6a4b41fa838f7698d1583dba30":[2,0,0,1303,3],
-"classinviwo_1_1WorkspaceManager.html#a5ff18a6a4b41fa838f7698d1583dba30":[4,0,1,1308,3],
-"classinviwo_1_1WorkspaceManager.html#a6e22abd4a2ca816d727511981bf6f73e":[2,0,0,1303,9],
-"classinviwo_1_1WorkspaceManager.html#a6e22abd4a2ca816d727511981bf6f73e":[4,0,1,1308,9],
-"classinviwo_1_1WorkspaceManager.html#aa05c15b6ce4fcb39833ba7717344d410":[2,0,0,1303,2],
-"classinviwo_1_1WorkspaceManager.html#aa05c15b6ce4fcb39833ba7717344d410":[4,0,1,1308,2]
+"classinviwo_1_1WorkspaceManager.html#a5ff18a6a4b41fa838f7698d1583dba30":[4,0,1,1308,3]
 };
