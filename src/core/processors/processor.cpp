@@ -474,7 +474,7 @@ void Processor::propagateEvent(Event* event, Outport* source) {
 }
 
 void Processor::setInportsChanged(bool changed) {
-    for (auto* inport : inports_) inport->setChanged(false);
+    for (auto* inport : inports_) inport->setChanged(changed);
 }
 
 }  // namespace inviwo
