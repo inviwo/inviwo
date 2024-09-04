@@ -31,6 +31,9 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/logstream.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/commandlineparser.h>
+
+#include <inviwo/core/resourcemanager/resourcemanager.h>
 
 namespace inviwo {
 
@@ -62,14 +65,26 @@ SystemSettings::SystemSettings(InviwoApplication* app)
                       0}
     , breakOnException_{"breakOnException", "Break on Exception", false}
     , stackTraceInException_{"stackTraceInException", "Create Stack Trace for Exceptions", false}
-    , redirectCout_{"redirectCout", "Redirect cout to LogCentral", false}
-    , redirectCerr_{"redirectCerr", "Redirect cerr to LogCentral", false} {
+    , enableResurceTracking_{"enableResurceTracking", "Track creation and destruction of resources",
+                             "Useful for gettting a overview of memory usage, but comes with a small runtime overhead"_help,
+                             false}
+    , redirectCout_{"redirectCout", "Redirect cout to LogCentral",
+                    "Enabling this means that any std::cout messages will no longer end up in the "
+                    "console, which can be confusing. "
+                    "This does not work when console logging is enabled with --logconsole or -c"_help,
+                    false}
+    , redirectCerr_{
+          "redirectCerr", "Redirect cerr to LogCentral",
+          "Enabling this means that any std::cerr messages will no longer end up in the "
+          "console, which can be confusing. "
+          "This does not work when console logging is enabled with --logconsole or -c"_help,
+          false} {
 
     addProperties(poolSize_, enablePortInspectors_, portInspectorSize_, enableTouchProperty_,
                   enableGesturesProperty_, enablePickingProperty_, enableSoundProperty_,
                   logStackTraceProperty_, moduleSearchPaths_, runtimeModuleReloading_,
-                  breakOnMessage_, breakOnException_, stackTraceInException_, redirectCout_,
-                  redirectCerr_);
+                  breakOnMessage_, breakOnException_, stackTraceInException_,
+                  enableResurceTracking_, redirectCout_, redirectCerr_);
 
     logStackTraceProperty_.onChange(
         [this]() { LogCentral::getPtr()->setLogStacktrace(logStackTraceProperty_.get()); });
@@ -82,8 +97,25 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     breakOnMessage_.onChange(
         [this]() { LogCentral::getPtr()->setMessageBreakLevel(breakOnMessage_.get()); });
 
-    redirectCout_.onChange([&]() {
+    enableResurceTracking_.onChange([this]() {
+        if (enableResurceTracking_) {
+            LogWarn("Resource tracking is enabled, this might slow down Inviwo");
+        }
+
+        if (!enableResurceTracking_) {
+            app_->getResourceManager()->clear();
+        }
+    });
+
+    redirectCout_.onChange([this]() {
         if (redirectCout_ && !cout_) {
+            if (app_->getCommandLineParser().getLogToConsole()) {
+                LogWarn("Cannot redirect std::cout to LogCentral when console logging is enabled");
+                redirectCout_.set(false);
+                return;
+            }
+            std::cout << "Redirecting std::cout to LogCentral, no further output will go to the "
+                      << "console, disable Systemsettings.redirectCout to stop." << std::endl;
             cout_ = std::make_unique<LogStream>(std::cout, "cout", LogLevel::Info,
                                                 LogAudience::Developer);
         } else if (!redirectCout_ && cout_) {
@@ -92,10 +124,17 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     });
 
     redirectCerr_.onChange([&]() {
-        if (redirectCout_ && !cerr_) {
+        if (redirectCerr_ && !cerr_) {
+            if (app_->getCommandLineParser().getLogToConsole()) {
+                LogWarn("Cannot redirect std::cerr to LogCentral when console logging is enabled");
+                redirectCerr_.set(false);
+                return;
+            }
+            std::cerr << "Redirecting std::cerr to LogCentral, no further output will go to the "
+                      << "console, disable Systemsettings.redirectCerr to stop." << std::endl;
             cerr_ = std::make_unique<LogStream>(std::cerr, "cerr", LogLevel::Error,
                                                 LogAudience::Developer);
-        } else if (!redirectCout_ && cerr_) {
+        } else if (!redirectCerr_ && cerr_) {
             cerr_.reset();
         }
     });

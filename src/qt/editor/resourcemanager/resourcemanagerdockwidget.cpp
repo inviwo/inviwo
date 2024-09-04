@@ -37,6 +37,9 @@
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/resourcemanager/resourcemanagerobserver.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/settings/systemsettings.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QWidget>
@@ -241,9 +244,30 @@ ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget* parent, ResourceMa
     view_->header()->setDefaultSectionSize(utilqt::emToPx(this, 10.0));
     view_->expandRecursively({});
 
-    auto layout = new QVBoxLayout();
+    auto& settings = InviwoApplication::getPtr()->getSystemSettings();
+    auto* enable = new QCheckBox("Enable");
+    enable->setChecked(settings.enableResurceTracking_.get());
+
+    auto* bottom = new QHBoxLayout();
+    bottom->addWidget(enable);
+    bottom->addStretch();
+
+    auto* layout = new QVBoxLayout();
+    layout->setSpacing(utilqt::emToPx(this,  utilqt::refSpaceEm()));
     layout->addWidget(view_);
+    layout->addLayout(bottom);
     setContents(layout);
+    widget()->setContentsMargins(0,0,0,0);
+
+
+    callback_ = settings.enableResurceTracking_.onChangeScoped([this, &settings, enable]() {
+        QSignalBlocker block{enable};
+        enable->setChecked(settings.enableResurceTracking_.get());
+    });
+    connect(enable, &QCheckBox::stateChanged, [this, enable, &settings](int state) {
+        QSignalBlocker block{enable};
+        settings.enableResurceTracking_.set(state == Qt::Checked);
+    });
 }
 
 }  // namespace inviwo

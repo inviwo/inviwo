@@ -70,14 +70,14 @@ public:
     }
 
     template <typename Key>
-    void meta(const Key& key, ResourceMeta meta) {
+    void meta(const Key& key, const ResourceMeta& meta) {
         constexpr auto gi = groupIndex<Key>();
         auto& group = get<Key>();
 
         auto it = std::ranges::find(group, key, &std::pair<Key, Resource>::first);
         if (it != group.end()) {
             notifyWillUpdateResource(gi, std::distance(group.begin(), it), it->second);
-            it->second.meta = std::move(meta);
+            it->second.meta = meta;
             notifyDidUpdateResource(gi, std::distance(group.begin(), it), it->second);
         }
     }
@@ -130,6 +130,16 @@ public:
                                  }
                              }},
             getGroup(groupIndex));
+    }
+
+    void clear() {
+        util::for_each_in_tuple(
+            [this](auto& vec) {
+                while (!vec.empty()) {
+                    remove(vec.back().first);
+                }
+            },
+            data_);         
     }
 
 private:

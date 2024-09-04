@@ -445,7 +445,7 @@ void VolumeRAMPrecision<T>::setData(void* d, size3_t dimensions) {
     data_.swap(data);
     std::swap(dimensions_, dimensions);
 
-    auto old = resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
+    auto old = resource::remove(resource::toRAM(data));
     resource::add(resource::toRAM(data_), Resource{.dims = glm::size4_t{dimensions_, 0},
                                                    .format = DataFormat<T>::id(),
                                                    .desc = "VolumeRAM",
@@ -478,7 +478,7 @@ void VolumeRAMPrecision<T>::setDimensions(size3_t dimensions) {
         data_.swap(data);
         dimensions_ = dimensions;
 
-        auto old = resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
+        auto old = resource::remove(resource::toRAM(data));
         resource::add(resource::toRAM(data_), Resource{.dims = glm::size4_t{dimensions_, 0},
                                                        .format = DataFormat<T>::id(),
                                                        .desc = "VolumeRAM",

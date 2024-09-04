@@ -33,56 +33,70 @@
 
 #include <inviwo/core/common/factoryutil.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/settings/systemsettings.h>
+
 namespace inviwo::resource {
 
+namespace {
+
+ResourceManager* getResourceManager() {
+    if (!InviwoApplication::isInitialized()) return nullptr;
+    auto* app = InviwoApplication::getPtr();
+    if (!app->getSystemSettings().enableResurceTracking_) return nullptr;
+    return util::getResourceManager(app);
+}
+
+}  // namespace
+
 void add(const RAM& key, Resource resource) {
-    if (auto* rm = util::getResourceManager()) {
+    if (auto* rm = getResourceManager()) {
         rm->add(key, std::move(resource));
     }
 }
 std::optional<Resource> remove(const RAM& key) {
-    if (auto* rm = util::getResourceManager()) {
+    if (auto* rm = getResourceManager()) {
         return rm->remove(key);
     }
     return std::nullopt;
 }
-void meta(const RAM& key, ResourceMeta meta) {
-    if (auto* rm = util::getResourceManager()) {
-        rm->meta(key, std::move(meta));
+void meta(const RAM& key, const ResourceMeta& meta) {
+    if (auto* rm = getResourceManager()) {
+        rm->meta(key, meta);
     }
 }
 
 void add(const GL& key, Resource resource) {
-    if (auto* rm = util::getResourceManager()) {
+    if (auto* rm = getResourceManager()) {
         rm->add(key, std::move(resource));
     }
 }
 std::optional<Resource> remove(const GL& key) {
-    if (auto* rm = util::getResourceManager()) {
+    if (auto* rm = getResourceManager()) {
         return rm->remove(key);
     }
     return std::nullopt;
 }
-void meta(const GL& key, ResourceMeta meta) {
-    if (auto* rm = util::getResourceManager()) {
-        rm->meta(key, std::move(meta));
+void meta(const GL& key, const ResourceMeta& meta) {
+    if (auto* rm = getResourceManager()) {
+        rm->meta(key, meta);
     }
 }
 
 void add(const PY& key, Resource resource) {
-    if (auto* rm = util::getResourceManager()) {
+    if (auto* rm = getResourceManager()) {
         rm->add(key, std::move(resource));
     }
 }
 std::optional<Resource> remove(const PY& key) {
-    if (auto* rm = util::getResourceManager()) {
+    if (auto* rm = getResourceManager()) {
         return rm->remove(key);
     }
     return std::nullopt;
 }
-void meta(const PY& key, ResourceMeta meta) {
-    if (auto* rm = util::getResourceManager()) {
-        rm->meta(key, std::move(meta));
+void meta(const PY& key, const ResourceMeta& meta) {
+    if (auto* rm = getResourceManager()) {
+        rm->meta(key, meta);
     }
 }
 

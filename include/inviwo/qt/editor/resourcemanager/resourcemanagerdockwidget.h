@@ -53,6 +53,7 @@ private:
     ResourceManager& manager_;
     ResourceManagerItemModel* model_;
     QTreeView* view_;
+    std::shared_ptr<std::function<void()>> callback_;
 };
 
 }  // namespace inviwo

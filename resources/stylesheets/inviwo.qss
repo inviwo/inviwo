@@ -1025,20 +1025,30 @@ QFrame#htmlEditorOutput {
 /************************ 
 ResourceManager
 ************************/
-
-QDockWidget#ResourceManager QTableView {
-    border: none;
+QDockWidget#ResourceManager QTreeView {
     color: #999999;
     selection-color: #999;
     selection-background-color: #47474b;
-    border-bottom: 0.125em ridge #4a4a4f;
 }
 
-QDockWidget#ResourceManager QTableView QHeaderView::section {
+QDockWidget#ResourceManager QTreeView QHeaderView {
+    background: #323235;
+}
+
+QDockWidget#ResourceManager QTreeView  QHeaderView::down-arrow {
+    image: url(:/svgicons/arrow-down-enabled.svg);
+    subcontrol-position: bottom center;
+}
+QDockWidget#ResourceManager QTreeView  QHeaderView::up-arrow {
+    image: url(:/svgicons/arrow-up-enabled.svg);
+    subcontrol-position: bottom center;
+}
+
+QDockWidget#ResourceManager QTreeView QHeaderView::section {
     padding: 0.1875em;
     border: none;
-    border-bottom: 0.125em ridge #4a4a4f;
-    background: transparent;
+    border-bottom: 0.0325em solid #999999;
+    background: #323235;
 }
 
 /************************ 

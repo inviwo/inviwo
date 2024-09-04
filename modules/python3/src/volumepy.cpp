@@ -53,7 +53,7 @@ namespace inviwo {
 
 namespace resource {
 
-inline PY toPY(pybind11::array data) {
+inline PY toPY(const pybind11::array& data) {
     return resource::PY{pybind11::module_::import("builtins").attr("id")(data).cast<size_t>()};
 }
 
@@ -84,7 +84,7 @@ VolumePy::VolumePy(pybind11::array data, const SwizzleMask& swizzleMask,
     , dims_{data_.shape(2), data_.shape(1), data_.shape(0)} {
 
     resource::add(resource::toPY(data_), Resource{.dims = glm::size4_t{dims_, 0},
-                                                  .format = getDataFormat()->getId(),
+                                                  .format = format(data_)->getId(),
                                                   .desc = "VolumePY"});
 }
 
@@ -100,9 +100,9 @@ VolumePy::VolumePy(size3_t dimensions, const DataFormatBase* format, const Swizz
                                           getDataFormat()->getComponents()})}
     , dims_{dimensions} {
 
-    resource::add(resource::toPY(data_), Resource{.dims = glm::size4_t{dims_, 0},
-                                                  .format = getDataFormat()->getId(),
-                                                  .desc = "VolumePY"});
+    resource::add(
+        resource::toPY(data_),
+        Resource{.dims = glm::size4_t{dims_, 0}, .format = format->getId(), .desc = "VolumePY"});
 }
 
 VolumePy::VolumePy(const VolumeReprConfig& config)
@@ -129,7 +129,7 @@ void VolumePy::setDimensions(size3_t dimensions) {
         dims_ = dimensions;
 
         resource::add(resource::toPY(data_), Resource{.dims = glm::size4_t{dims_, 0},
-                                                      .format = getDataFormat()->getId(),
+                                                      .format = format(data_)->getId(),
                                                       .desc = "VolumePY",
                                                       .meta = resource::getMeta(old)});
     }

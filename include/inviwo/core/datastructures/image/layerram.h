@@ -399,7 +399,7 @@ void LayerRAMPrecision<T>::setDimensions(size2_t dimensions) {
         data_.swap(data);
         std::swap(dimensions, dimensions_);
 
-        auto old = resource::remove(resource::RAM{reinterpret_cast<std::uintptr_t>(data.get())});
+        auto old = resource::remove(resource::toRAM(data));
         resource::add(resource::toRAM(data_), Resource{.dims = glm::size4_t{dimensions_, 0, 0},
                                                        .format = DataFormat<T>::id(),
                                                        .desc = "LayerRAM",
