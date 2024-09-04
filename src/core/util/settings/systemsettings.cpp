@@ -115,7 +115,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
                 return;
             }
             std::cout << "Redirecting std::cout to LogCentral, no further output will go to the "
-                      << "console, disable Systemsettings.redirectCout to stop." << std::endl;
+                      << "console, disable Systemsettings.redirectCout to stop.\n" << std::flush;
             cout_ = std::make_unique<LogStream>(std::cout, "cout", LogLevel::Info,
                                                 LogAudience::Developer);
         } else if (!redirectCout_ && cout_) {
@@ -131,7 +131,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
                 return;
             }
             std::cerr << "Redirecting std::cerr to LogCentral, no further output will go to the "
-                      << "console, disable Systemsettings.redirectCerr to stop." << std::endl;
+                      << "console, disable Systemsettings.redirectCerr to stop.\n" << std::flush;
             cerr_ = std::make_unique<LogStream>(std::cerr, "cerr", LogLevel::Error,
                                                 LogAudience::Developer);
         } else if (!redirectCerr_ && cerr_) {

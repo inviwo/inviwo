@@ -145,52 +145,61 @@ public:
         return {};
     }
 
-    QVariant displayData(const QModelIndex& index) const {
-        if (!index.parent().isValid()) {
-            if (index.row() < static_cast<int>(ResourceManager::names.size())) {
-                if (index.column() == 0) {
-                    return utilqt::toQString(ResourceManager::names[index.row()]);
-                } else if (index.column() == 1) {
-                    return static_cast<int>(manager_->size(static_cast<size_t>(index.row())));
-                } else if (index.column() == 3) {
-                    return utilqt::toQString(util::formatBytesToString(
-                        manager_->totalByteSize(static_cast<size_t>(index.row()))));
-                }
+    QVariant displayGroup(const QModelIndex& index) const {
+        if (index.row() < static_cast<int>(ResourceManager::names.size())) {
+            if (index.column() == 0) {
+                return utilqt::toQString(ResourceManager::names[index.row()]);
+            } else if (index.column() == 1) {
+                return static_cast<int>(manager_->size(static_cast<size_t>(index.row())));
+            } else if (index.column() == 3) {
+                return utilqt::toQString(util::formatBytesToString(
+                    manager_->totalByteSize(static_cast<size_t>(index.row()))));
             }
-        } else {
-            const auto group = index.parent().row();
-            const auto item = index.row();
+        }
+        return {};
+    }
 
-            if (const auto* resource = manager_->get(group, item)) {
-                if (index.column() == Cols::Dims) {
-                    fmt::memory_buffer buff;
-                    auto out = fmt::appender(buff);
-                    fmt::format_to(out, "{}", resource->dims.x);
-                    if (resource->dims.y != 0) {
-                        fmt::format_to(out, "x{}", resource->dims.y);
-                    }
-                    if (resource->dims.z != 0) {
-                        fmt::format_to(out, "x{}", resource->dims.z);
-                    }
-                    if (resource->dims.w != 0) {
-                        fmt::format_to(out, "x{}", resource->dims.w);
-                    }
+    QVariant displayResource(const QModelIndex& index) const {
+        const auto group = index.parent().row();
+        const auto item = index.row();
 
-                    return utilqt::toQString(std::string_view{buff.data(), buff.size()});
-                } else if (index.column() == Cols::Format) {
-                    return utilqt::toQString(fmt::to_string(resource->format));
-                } else if (index.column() == Cols::Desc) {
-                    return utilqt::toQString(resource->desc);
-                } else if (index.column() == Cols::Size) {
-                    return utilqt::toQString(util::formatBytesToString(resource->sizeInBytes()));
-                } else if (index.column() == Cols::Meta) {
-                    if (resource->meta.has_value()) {
-                        return utilqt::toQString(resource->meta->source);
-                    }
+        if (const auto* resource = manager_->get(group, item)) {
+            if (index.column() == Cols::Dims) {
+                fmt::memory_buffer buff;
+                auto out = fmt::appender(buff);
+                fmt::format_to(out, "{}", resource->dims.x);
+                if (resource->dims.y != 0) {
+                    fmt::format_to(out, "x{}", resource->dims.y);
+                }
+                if (resource->dims.z != 0) {
+                    fmt::format_to(out, "x{}", resource->dims.z);
+                }
+                if (resource->dims.w != 0) {
+                    fmt::format_to(out, "x{}", resource->dims.w);
+                }
+
+                return utilqt::toQString(std::string_view{buff.data(), buff.size()});
+            } else if (index.column() == Cols::Format) {
+                return utilqt::toQString(fmt::to_string(resource->format));
+            } else if (index.column() == Cols::Desc) {
+                return utilqt::toQString(resource->desc);
+            } else if (index.column() == Cols::Size) {
+                return utilqt::toQString(util::formatBytesToString(resource->sizeInBytes()));
+            } else if (index.column() == Cols::Meta) {
+                if (resource->meta.has_value()) {
+                    return utilqt::toQString(resource->meta->source);
                 }
             }
         }
         return {};
+    }
+
+    QVariant displayData(const QModelIndex& index) const {
+        if (!index.parent().isValid()) {
+            return displayGroup(index);
+        } else {
+            return displayResource(index);
+        }
     }
 
     virtual QVariant data(const QModelIndex& index, int role) const override {
@@ -259,12 +268,12 @@ ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget* parent, ResourceMa
     setContents(layout);
     widget()->setContentsMargins(0, 0, 0, 0);
 
-    callback_ = settings.enableResurceTracking_.onChangeScoped([this, &settings, enable]() {
-        QSignalBlocker block{enable};
+    callback_ = settings.enableResurceTracking_.onChangeScoped([&settings, enable]() {
+        const QSignalBlocker block{enable};
         enable->setChecked(settings.enableResurceTracking_.get());
     });
-    connect(enable, &QCheckBox::stateChanged, [this, enable, &settings](int state) {
-        QSignalBlocker block{enable};
+    connect(enable, &QCheckBox::stateChanged, [enable, &settings](int state) {
+        const QSignalBlocker block{enable};
         settings.enableResurceTracking_.set(state == Qt::Checked);
     });
 }

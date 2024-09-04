@@ -43,6 +43,7 @@ Checks: >
 
 CheckOptions: 
   bugprone-easily-swappable-parameters.MinimumLength: 3
+  cppcoreguidelines-rvalue-reference-param-not-moved.AllowPartialMove: true
   readability-braces-around-statements.ShortStatementLines: '1'
   readability-identifier-length.IgnoredParameterNames: '^(it|id)$'
   readability-identifier-length.IgnoredVariableNames: '^(it|id)$'
