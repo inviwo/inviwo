@@ -253,12 +253,11 @@ ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget* parent, ResourceMa
     bottom->addStretch();
 
     auto* layout = new QVBoxLayout();
-    layout->setSpacing(utilqt::emToPx(this,  utilqt::refSpaceEm()));
+    layout->setSpacing(utilqt::emToPx(this, utilqt::refSpaceEm()));
     layout->addWidget(view_);
     layout->addLayout(bottom);
     setContents(layout);
-    widget()->setContentsMargins(0,0,0,0);
-
+    widget()->setContentsMargins(0, 0, 0, 0);
 
     callback_ = settings.enableResurceTracking_.onChangeScoped([this, &settings, enable]() {
         QSignalBlocker block{enable};

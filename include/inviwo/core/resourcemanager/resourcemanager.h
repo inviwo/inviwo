@@ -139,7 +139,7 @@ public:
                     remove(vec.back().first);
                 }
             },
-            data_);         
+            data_);
     }
 
 private:
