@@ -46,7 +46,6 @@
 #include <inviwo/core/properties/optionproperty.h>              // for OptionProperty
 #include <inviwo/core/properties/ordinalproperty.h>             // for IntSizeTProperty
 #include <inviwo/core/properties/property.h>                    // for OverwriteState, Overwrite...
-#include <inviwo/core/resourcemanager/resourcemanager.h>        // for ResourceManager
 #include <inviwo/core/util/fileextension.h>                     // for FileExtension, operator==
 #include <inviwo/core/util/filesystem.h>                        // for fileExists
 #include <inviwo/core/util/logcentral.h>                        // for LogCentral, LogProcessorE...
@@ -139,41 +138,30 @@ void VolumeSource::load(bool deserialize) {
     if (file_.get().empty()) return;
 
     auto rf = util::getDataReaderFactory(app_);
-    auto rm = util::getResourceManager(app_);
-
     const auto sext = reader_.getSelectedValue();
 
-    // use resource unless the "Reload data"-button (reload_) was pressed,
-    // Note: reload_ will be marked as modified when deserializing.
-    bool checkResource = deserialized_ || !reload_.isModified();
-    if (checkResource && rm->hasResource<VolumeSequence>(file_.get().generic_string())) {
-        volumes_ = rm->getResource<VolumeSequence>(file_.get().generic_string());
-    } else {
-        try {
-            if (auto volumeSequenceReader =
-                    rf->getReaderForTypeAndExtension<VolumeSequence>(sext, file_.get())) {
-                auto volumes = volumeSequenceReader->readData(file_.get(), this);
-                std::swap(volumes, volumes_);
-                rm->addResource(file_.get().generic_string(), volumes_, reload_.isModified());
-            } else if (auto volumeReader =
-                           rf->getReaderForTypeAndExtension<Volume>(sext, file_.get())) {
-                auto volume = volumeReader->readData(file_.get(), this);
-                auto volumes = std::make_shared<VolumeSequence>();
-                volumes->push_back(volume);
-                std::swap(volumes, volumes_);
-                rm->addResource(file_.get().generic_string(), volumes_, reload_.isModified());
-            } else {
-                volumes_.reset();
-                error_ = fmt::format("Could not find a data reader for file: {}", file_.get());
-                isReady_.update();
-                LogProcessorError(error_);
-            }
-        } catch (const DataReaderException& e) {
+    try {
+        if (auto volumeSequenceReader =
+                rf->getReaderForTypeAndExtension<VolumeSequence>(sext, file_.get())) {
+            auto volumes = volumeSequenceReader->readData(file_.get(), this);
+            std::swap(volumes, volumes_);
+        } else if (auto volumeReader =
+                       rf->getReaderForTypeAndExtension<Volume>(sext, file_.get())) {
+            auto volume = volumeReader->readData(file_.get(), this);
+            auto volumes = std::make_shared<VolumeSequence>();
+            volumes->push_back(volume);
+            std::swap(volumes, volumes_);
+        } else {
             volumes_.reset();
-            error_ = e.getMessage();
+            error_ = fmt::format("Could not find a data reader for file: {}", file_.get());
             isReady_.update();
-            LogProcessorError(e.getMessage());
+            LogProcessorError(error_);
         }
+    } catch (const DataReaderException& e) {
+        volumes_.reset();
+        error_ = e.getMessage();
+        isReady_.update();
+        LogProcessorError(e.getMessage());
     }
 
     if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {

@@ -36,6 +36,7 @@
 #include <modules/opengl/openglcapabilities.h>            // for OpenGLCapabilities
 #include <modules/opengl/texture/texture.h>               // for Texture
 #include <modules/opengl/texture/textureobserver.h>       // for TextureObserver
+#include <inviwo/core/resourcemanager/resource.h>
 
 #include <mutex>   // for scoped_lock
 #include <vector>  // for vector
@@ -108,6 +109,8 @@ Texture3D& Texture3D::operator=(const Texture3D& rhs) {
 
 Texture3D& Texture3D::operator=(Texture3D&& rhs) = default;
 
+Texture3D::~Texture3D() { resource::remove(resource::GL{id_}); }
+
 Texture3D* Texture3D::clone() const { return new Texture3D(*this); }
 
 void Texture3D::initialize(const void* data) {
@@ -123,6 +126,10 @@ void Texture3D::initialize(const void* data) {
                  format_, dataType_, data);
     LGL_ERROR;
     forEachObserver([](TextureObserver* o) { o->notifyAfterTextureInitialization(); });
+
+    resource::add(resource::GL{id_}, Resource{.dims = glm::size4_t{dimensions_, 0},
+                                              .format = getDataFormat()->getId(),
+                                              .desc = "Texture3D"});
 }
 
 size_t Texture3D::getNumberOfValues() const {

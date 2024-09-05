@@ -109,6 +109,8 @@ Texture2DArray& Texture2DArray::operator=(const Texture2DArray& rhs) {
 
 Texture2DArray& Texture2DArray::operator=(Texture2DArray&& other) = default;
 
+Texture2DArray::~Texture2DArray() { resource::remove(resource::GL{id_}); }
+
 Texture2DArray* Texture2DArray::clone() const { return new Texture2DArray(*this); }
 
 void Texture2DArray::initialize(const void* data) {
@@ -123,6 +125,10 @@ void Texture2DArray::initialize(const void* data) {
                  format_, dataType_, data);
     LGL_ERROR;
     forEachObserver([](TextureObserver* o) { o->notifyAfterTextureInitialization(); });
+
+    resource::add(resource::GL{id_}, Resource{.dims = glm::size4_t{dimensions_, 0},
+                                              .format = getDataFormat()->getId(),
+                                              .desc = "Texture2DArray"});
 }
 
 size_t Texture2DArray::getNumberOfValues() const {

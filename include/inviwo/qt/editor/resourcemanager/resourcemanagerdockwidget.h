@@ -30,15 +30,13 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-
 #include <modules/qtwidgets/inviwodockwidget.h>
-#include <inviwo/core/resourcemanager/resourcemanagerobserver.h>
 
-class QTableView;
+class QTreeView;
 class QCheckBox;
 
 namespace inviwo {
-class Resource;
+struct Resource;
 class ResourceManager;
 
 class ResourceManagerItemModel;
@@ -47,25 +45,15 @@ class ResourceManagerItemModel;
  * \class ResourceManagerDockWidget
  * \brief Widget class for the Resource Manager
  */
-class IVW_QTEDITOR_API ResourceManagerDockWidget : public InviwoDockWidget,
-                                                   public ResourceManagerObserver {
+class IVW_QTEDITOR_API ResourceManagerDockWidget : public InviwoDockWidget {
 public:
     ResourceManagerDockWidget(QWidget* parent, ResourceManager& manager);
-    virtual ~ResourceManagerDockWidget();
-
-    virtual void onResourceAdded(const std::string& key, const std::type_index& type,
-                                 Resource* resource) override;
-    virtual void onResourceRemoved(const std::string& key, const std::type_index& type,
-                                   Resource* resource) override;
-
-    virtual void onResourceManagerEnableStateChanged() override;
 
 private:
     ResourceManager& manager_;
-
     ResourceManagerItemModel* model_;
-    QTableView* tableView_;
-    QCheckBox* disabledCheckBox_;
+    QTreeView* view_;
+    std::shared_ptr<std::function<void()>> callback_;
 };
 
 }  // namespace inviwo

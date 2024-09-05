@@ -65,7 +65,7 @@ public:
 
     explicit VolumePy(const VolumeReprConfig& config);
 
-    virtual ~VolumePy() = default;
+    virtual ~VolumePy();
 
     VolumePy* clone() const override;
     std::type_index getTypeIndex() const override;
@@ -87,6 +87,8 @@ public:
     pybind11::array& data() { return data_; }
     const pybind11::array& data() const { return data_; }
 
+    virtual void updateResource(const ResourceMeta& meta) const override;
+
 private:
     SwizzleMask swizzleMask_;
     InterpolationType interpolation_;
@@ -101,18 +103,18 @@ class IVW_MODULE_PYTHON3_API VolumeRAM2PyConverter
     : public RepresentationConverterType<VolumeRepresentation, VolumeRAM, VolumePy> {
 public:
     virtual std::shared_ptr<VolumePy> createFrom(
-        std::shared_ptr<const VolumeRAM> source) const override;
-    virtual void update(std::shared_ptr<const VolumeRAM> source,
-                        std::shared_ptr<VolumePy> destination) const override;
+        std::shared_ptr<const VolumeRAM> volumeSrc) const override;
+    virtual void update(std::shared_ptr<const VolumeRAM> volumeSrc,
+                        std::shared_ptr<VolumePy> volumeDst) const override;
 };
 
 class IVW_MODULE_PYTHON3_API VolumePy2RAMConverter
     : public RepresentationConverterType<VolumeRepresentation, VolumePy, VolumeRAM> {
 public:
     virtual std::shared_ptr<VolumeRAM> createFrom(
-        std::shared_ptr<const VolumePy> source) const override;
-    virtual void update(std::shared_ptr<const VolumePy> source,
-                        std::shared_ptr<VolumeRAM> destination) const override;
+        std::shared_ptr<const VolumePy> volumeSrc) const override;
+    virtual void update(std::shared_ptr<const VolumePy> volumeSrc,
+                        std::shared_ptr<VolumeRAM> volumeDst) const override;
 };
 
 }  // namespace inviwo

@@ -76,21 +76,6 @@
 
 namespace inviwo {
 
-struct AppResourceManagerObserver : ResourceManagerObserver {
-    AppResourceManagerObserver(SystemSettings* settings, ResourceManager* manager)
-        : settings{settings}, manager{manager} {
-
-        manager->addObserver(this);
-    }
-
-    virtual void onResourceManagerEnableStateChanged() override {
-        settings->enableResourceManager_.set(manager->isEnabled());
-    }
-
-    SystemSettings* settings = nullptr;
-    ResourceManager* manager = nullptr;
-};
-
 InviwoApplication* InviwoApplication::instance_ = nullptr;
 
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view displayName)
@@ -150,8 +135,6 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     , representationMetaFactory_{std::make_unique<RepresentationMetaFactory>()}
     , representationConverterMetaFactory_{std::make_unique<RepresentationConverterMetaFactory>()}
     , systemSettings_{std::make_unique<SystemSettings>(this)}
-    , resourcemanagerobserver_{std::make_unique<AppResourceManagerObserver>(systemSettings_.get(),
-                                                                            resourceManager_.get())}
     , moduleCallbackActions_{}
     , moduleManager_{this}
     , processorNetwork_{std::make_unique<ProcessorNetwork>(this)}
@@ -168,21 +151,6 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
         resizePool(systemSettings_->poolSize_);
         systemSettings_->poolSize_.onChange([this]() { resizePool(systemSettings_->poolSize_); });
     }
-
-    resourceManager_->setEnabled(systemSettings_->enableResourceManager_.get());
-    systemSettings_->enableResourceManager_.onChange(
-        [this]() { resourceManager_->setEnabled(systemSettings_->enableResourceManager_.get()); });
-    if (commandLineParser_->getDisableResourceManager()) {
-        resourceManager_->setEnabled(false);
-    }
-
-    moduleManager_.onModulesDidRegister([this]() {
-        if (resourceManager_->isEnabled() && resourceManager_->numberOfResources() > 0) {
-            LogWarn(
-                "Resource manager was not empty when reloading modules. The behavior of resources "
-                "of data structures that has changed is undefined and may effect stability");
-        }
-    });
 
     // initialize singletons
     init(this);

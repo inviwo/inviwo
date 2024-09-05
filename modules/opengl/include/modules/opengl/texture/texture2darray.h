@@ -35,6 +35,7 @@
 #include <inviwo/core/util/glmvec.h>                      // for size3_t
 #include <modules/opengl/inviwoopengl.h>                  // for GLenum, GL_CLAMP_TO_EDGE, GLint
 #include <modules/opengl/texture/texture.h>               // for Texture
+#include <inviwo/core/resourcemanager/resource.h>
 
 #include <array>    // for array
 #include <cstddef>  // for size_t
@@ -56,7 +57,7 @@ public:
     Texture2DArray(Texture2DArray&& other);
     Texture2DArray& operator=(const Texture2DArray& other);
     Texture2DArray& operator=(Texture2DArray&& other);
-    virtual ~Texture2DArray() = default;
+    virtual ~Texture2DArray();
 
     Texture2DArray* clone() const;
 

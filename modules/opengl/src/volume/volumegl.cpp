@@ -37,6 +37,7 @@
 #include <modules/opengl/glformats.h>                                // for GLFormats
 #include <modules/opengl/openglutils.h>                              // for convertWrappingToGL
 #include <modules/opengl/texture/texture3d.h>                        // for Texture3D
+#include <inviwo/core/resourcemanager/resource.h>
 
 #include <type_traits>  // for remove_extent_t
 
@@ -113,6 +114,12 @@ void VolumeGL::setWrapping(const Wrapping3D& wrapping) {
 
 Wrapping3D VolumeGL::getWrapping() const {
     return utilgl::convertWrappingFromGL(texture_->getWrapping());
+}
+
+void VolumeGL::updateResource(const ResourceMeta& meta) const {
+    if (texture_) {
+        resource::meta(resource::GL{texture_->getID()}, meta);
+    }
 }
 
 }  // namespace inviwo

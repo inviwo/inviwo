@@ -219,6 +219,8 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
                 entryPoints.getDimensions(), DataVec3Float32::get(), LayerType::Color));
 
             tmpEntryGL_ = tmpEntry_->getEditableRepresentation<ImageGL>();
+
+            tmpEntry_->updateResource(ResourceMeta{.source = "EntryExitPointsHelper"});
         }
 
         if (tmpEntry_->getDimensions() != entryPoints.getDimensions()) {

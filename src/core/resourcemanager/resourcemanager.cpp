@@ -29,33 +29,4 @@
 
 #include <inviwo/core/resourcemanager/resourcemanager.h>
 
-namespace inviwo {
-
-void ResourceManager::removeResource(const std::string& key, const std::type_index& type) {
-    IVW_ASSERT(!key.empty(), "Key should not be empty string");
-    auto it = resources_.find(std::make_pair(key, type));
-    if (it != resources_.end()) {
-        notifyResourceRemoved(key, type, it->second.get());
-        resources_.erase(it);
-    }
-}
-
-void ResourceManager::clear() {
-    while (!resources_.empty()) {
-        auto& p = resources_.begin()->first;
-        removeResource(p.first, p.second);
-    }
-}
-
-bool ResourceManager::isEnabled() const { return enabled_; }
-
-void ResourceManager::setEnabled(bool enable) {
-    if (enable != enabled_) {
-        enabled_ = enable;
-        notifyEnableChanged();
-    }
-}
-
-size_t ResourceManager::numberOfResources() const { return resources_.size(); }
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

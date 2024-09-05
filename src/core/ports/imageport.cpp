@@ -215,7 +215,9 @@ const DataFormatBase* ImageOutport::getDataFormat() const { return format_; }
 std::shared_ptr<const Image> ImageOutport::getDataForPort(const Inport* port) const {
     const auto it = requestedDimensions_.find(port);
     if (it != requestedDimensions_.end()) {
-        return cache_.getImage(it->second);
+        auto img = cache_.getImage(it->second);
+        img->updateResource(ResourceMeta{.source = getPath()});
+        return img;
     } else {
         return nullptr;
     }

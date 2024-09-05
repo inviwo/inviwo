@@ -30,8 +30,15 @@
 #include <inviwo/qt/editor/resourcemanager/resourcemanagerdockwidget.h>
 
 #include <inviwo/core/resourcemanager/resourcemanager.h>
+#include <inviwo/core/resourcemanager/resource.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/formatconversion.h>
+#include <inviwo/core/resourcemanager/resourcemanagerobserver.h>
+
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -39,7 +46,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QListView>
-#include <QTableView>
+#include <QTreeView>
 #include <QHeaderView>
 #include <QStandardItemModel>
 #include <QStyledItemDelegate>
@@ -49,126 +56,226 @@
 #include <QPixmap>
 #include <QIcon>
 #include <QCheckBox>
+#include <QSortFilterProxyModel>
 #include <warn/pop>
 
 namespace inviwo {
 
-int ResourceRole = Qt::UserRole + 1;
-
-class ResourceManagerItemModel : public QStandardItemModel {
+class ResourceManagerItemModel : public QAbstractItemModel, public ResourceManagerObserver {
 public:
-    ResourceManagerItemModel(QObject* parent) : QStandardItemModel(parent) { setColumnCount(3); }
+    static constexpr int SortRole = Qt::UserRole + 1;
 
-    virtual Qt::ItemFlags flags(const QModelIndex& /*index*/) const override {
-        return Qt::ItemIsEnabled;
+    enum class Cols : int { Dims = 0, Format, Desc, Size, Meta };
+    friend constexpr bool operator==(Cols lhs, int rhs) { return static_cast<int>(lhs) == rhs; }
+    friend constexpr bool operator==(int lhs, Cols rhs) { return lhs == static_cast<int>(rhs); }
+    static constexpr std::array colNames{std::string_view{"Dimensions"}, std::string_view{"Format"},
+                                         std::string_view{"Description"}, std::string_view{"Size"},
+                                         std::string_view{"Source"}};
+
+    static constexpr quintptr root = std::numeric_limits<quintptr>::max();
+
+    ResourceManagerItemModel(ResourceManager* manager, QObject* parent)
+        : QAbstractItemModel(parent), manager_(manager) {
+
+        manager_->addObserver(this);
     }
 
-    Resource* getResource(int row) const {
-        auto qvar = data(this->index(row, 0), ResourceRole);
-        return static_cast<Resource*>(qvar.value<void*>());
-    }
-
-    virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override {
-
-        if (role == Qt::ToolTipRole) {
-            auto resource = getResource(index.row());
-            auto toolTip = resource->info();
-            return QString(utilqt::toQString(toolTip));
+    virtual QModelIndex index(int row, int column, const QModelIndex& parent) const override {
+        if (parent == QModelIndex{}) {
+            return createIndex(row, column, root);
+        } else if (parent.parent() == QModelIndex{}) {
+            if (row < static_cast<int>(manager_->size(static_cast<size_t>(parent.row())))) {
+                return createIndex(row, column, parent.row());
+            }
         }
-        return QStandardItemModel::data(index, role);
+        return {};
     }
+    virtual Qt::ItemFlags flags(const QModelIndex&) const override { return Qt::ItemIsEnabled; }
+
+    virtual QModelIndex parent(const QModelIndex& index) const override {
+        const auto parent = index.internalId();
+        if (parent < std::tuple_size_v<ResourceManager::Keys>) {
+            return createIndex(static_cast<int>(parent), 0, root);
+        }
+        return {};
+    }
+
+    virtual int rowCount(const QModelIndex& parent) const override {
+        if (parent == QModelIndex{}) {
+            return std::tuple_size_v<ResourceManager::Keys>;
+        } else if (parent.parent() == QModelIndex{}) {
+            return static_cast<int>(manager_->size(static_cast<size_t>(parent.row())));
+        } else {
+            return 0;
+        }
+    }
+    virtual int columnCount(const QModelIndex&) const override {
+        return static_cast<int>(colNames.size());
+    }
+
+    virtual QVariant headerData(int section, Qt::Orientation, int role) const override {
+        if (role == Qt::DisplayRole && section < static_cast<int>(colNames.size())) {
+            return utilqt::toQString(colNames[section]);
+        }
+        return {};
+    }
+
+    QVariant sortData(const QModelIndex& index) const {
+        if (index.parent().isValid()) {
+            const auto group = index.parent().row();
+            const auto item = index.row();
+
+            if (const auto* resource = manager_->get(group, item)) {
+                if (index.column() == Cols::Dims) {
+                    return static_cast<qulonglong>(
+                        glm::compMul(glm::max(resource->dims, glm::size4_t{1, 1, 1, 1})));
+                } else if (index.column() == Cols::Format) {
+                    return utilqt::toQString(fmt::to_string(resource->format));
+                } else if (index.column() == Cols::Desc) {
+                    return utilqt::toQString(resource->desc);
+                } else if (index.column() == Cols::Size) {
+                    return static_cast<qulonglong>(resource->sizeInBytes());
+                } else if (index.column() == Cols::Meta) {
+                    if (resource->meta.has_value()) {
+                        return utilqt::toQString(resource->meta->source);
+                    }
+                }
+            }
+        }
+        return {};
+    }
+
+    QVariant displayGroup(const QModelIndex& index) const {
+        if (index.row() < static_cast<int>(ResourceManager::names.size())) {
+            if (index.column() == 0) {
+                return utilqt::toQString(ResourceManager::names[index.row()]);
+            } else if (index.column() == 1) {
+                return static_cast<int>(manager_->size(static_cast<size_t>(index.row())));
+            } else if (index.column() == 3) {
+                return utilqt::toQString(util::formatBytesToString(
+                    manager_->totalByteSize(static_cast<size_t>(index.row()))));
+            }
+        }
+        return {};
+    }
+
+    QVariant displayResource(const QModelIndex& index) const {
+        const auto group = index.parent().row();
+        const auto item = index.row();
+
+        if (const auto* resource = manager_->get(group, item)) {
+            if (index.column() == Cols::Dims) {
+                fmt::memory_buffer buff;
+                auto out = fmt::appender(buff);
+                fmt::format_to(out, "{}", resource->dims.x);
+                if (resource->dims.y != 0) {
+                    fmt::format_to(out, "x{}", resource->dims.y);
+                }
+                if (resource->dims.z != 0) {
+                    fmt::format_to(out, "x{}", resource->dims.z);
+                }
+                if (resource->dims.w != 0) {
+                    fmt::format_to(out, "x{}", resource->dims.w);
+                }
+
+                return utilqt::toQString(std::string_view{buff.data(), buff.size()});
+            } else if (index.column() == Cols::Format) {
+                return utilqt::toQString(fmt::to_string(resource->format));
+            } else if (index.column() == Cols::Desc) {
+                return utilqt::toQString(resource->desc);
+            } else if (index.column() == Cols::Size) {
+                return utilqt::toQString(util::formatBytesToString(resource->sizeInBytes()));
+            } else if (index.column() == Cols::Meta) {
+                if (resource->meta.has_value()) {
+                    return utilqt::toQString(resource->meta->source);
+                }
+            }
+        }
+        return {};
+    }
+
+    QVariant displayData(const QModelIndex& index) const {
+        if (!index.parent().isValid()) {
+            return displayGroup(index);
+        } else {
+            return displayResource(index);
+        }
+    }
+
+    virtual QVariant data(const QModelIndex& index, int role) const override {
+        if (role == Qt::DisplayRole) {
+            return displayData(index);
+        } else if (role == SortRole) {
+            return sortData(index);
+        }
+        return {};
+    }
+
+    virtual void onWillAddResource(size_t group, size_t item, const Resource&) override {
+        const auto parentIndex = index(static_cast<int>(group), 0, QModelIndex{});
+        beginInsertRows(parentIndex, static_cast<int>(item), static_cast<int>(item));
+    }
+    virtual void onDidAddResource(size_t, size_t, const Resource&) override { endInsertRows(); }
+
+    virtual void onWillUpdateResource(size_t, size_t, const Resource&) override {}
+    virtual void onDidUpdateResource(size_t group, size_t item, const Resource&) override {
+        const auto parentIndex = index(static_cast<int>(group), 0, QModelIndex{});
+        dataChanged(index(static_cast<int>(item), 0, parentIndex),
+                    index(static_cast<int>(item), 3, parentIndex));
+    }
+
+    virtual void onWillRemoveResource(size_t group, size_t item, const Resource&) override {
+        const auto parentIndex = index(static_cast<int>(group), 0, QModelIndex{});
+        beginRemoveRows(parentIndex, static_cast<int>(item), static_cast<int>(item));
+    }
+    virtual void onDidRemoveResource(size_t, size_t, const Resource&) override { endRemoveRows(); }
+
+private:
+    ResourceManager* manager_;  // should not be null
 };
 
 ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget* parent, ResourceManager& manager)
-    : InviwoDockWidget("Resource Manager", parent, "ResourceManager"), manager_(manager) {
+    : InviwoDockWidget("Resource Manager", parent, "ResourceManager")
+    , manager_(manager)
+    , model_{new ResourceManagerItemModel(&manager_, this)}
+    , view_{new QTreeView()} {
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(40, 70)));  // default size
 
-    manager_.addObserver(this);
+    auto* sortProxy = new QSortFilterProxyModel(this);
+    sortProxy->setSourceModel(model_);
+    sortProxy->setSortRole(ResourceManagerItemModel::SortRole);
 
-    auto layout = new QVBoxLayout();
+    view_->setModel(sortProxy);
+    view_->setSortingEnabled(true);
+    view_->setIndentation(utilqt::emToPx(this, 1.0));
+    view_->header()->setDefaultAlignment(Qt::AlignLeft);
+    view_->header()->setDefaultSectionSize(utilqt::emToPx(this, 10.0));
+    view_->expandRecursively({});
+
+    auto& settings = InviwoApplication::getPtr()->getSystemSettings();
+    auto* enable = new QCheckBox("Enable");
+    enable->setChecked(settings.enableResurceTracking_.get());
+
+    auto* bottom = new QHBoxLayout();
+    bottom->addWidget(enable);
+    bottom->addStretch();
+
+    auto* layout = new QVBoxLayout();
+    layout->setSpacing(utilqt::emToPx(this, utilqt::refSpaceEm()));
+    layout->addWidget(view_);
+    layout->addLayout(bottom);
     setContents(layout);
+    widget()->setContentsMargins(0, 0, 0, 0);
 
-    tableView_ = new QTableView();
-    tableView_->setSortingEnabled(true);
-    tableView_->verticalHeader()->hide();
-
-    model_ = new ResourceManagerItemModel(this);
-
-    model_->setHorizontalHeaderLabels({"Name", "Type", ""});
-
-    tableView_->setModel(model_);
-    tableView_->setGridStyle(Qt::NoPen);
-    tableView_->setCornerButtonEnabled(false);
-
-    layout->addWidget(tableView_);
-
-    tableView_->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-    tableView_->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
-    tableView_->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-    tableView_->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Fixed);
-    tableView_->setColumnWidth(2, 32);
-
-    auto buttomRowLayout = new QHBoxLayout();
-    layout->addLayout(buttomRowLayout);
-
-    disabledCheckBox_ = new QCheckBox("Disable");
-    disabledCheckBox_->setChecked(!manager_.isEnabled());
-    buttomRowLayout->addWidget(disabledCheckBox_);
-
-    buttomRowLayout->addStretch();
-
-    auto clearAllButton = new QPushButton("Clear all");
-    buttomRowLayout->addWidget(clearAllButton);
-
-    connect(clearAllButton, &QPushButton::pressed, [rm = &this->manager_]() { rm->clear(); });
-
-    connect(disabledCheckBox_, &QCheckBox::stateChanged, [this](int state) {
-        disabledCheckBox_->blockSignals(true);
-        manager_.setEnabled(state == Qt::Unchecked);
-        disabledCheckBox_->blockSignals(false);
+    callback_ = settings.enableResurceTracking_.onChangeScoped([&settings, enable]() {
+        const QSignalBlocker block{enable};
+        enable->setChecked(settings.enableResurceTracking_.get());
     });
-}
-
-ResourceManagerDockWidget::~ResourceManagerDockWidget() { manager_.removeObserver(this); }
-
-void ResourceManagerDockWidget::onResourceAdded(const std::string& key, const std::type_index& type,
-                                                Resource* resource) {
-    QList<QStandardItem*> row;
-
-    auto keyC = key;
-    replaceInString(keyC, "\\", "/");
-    auto keySplit = util::splitByLast(keyC, '/').second;
-
-    row.append(new QStandardItem(utilqt::toQString(keySplit)));
-    row.append(new QStandardItem(utilqt::toQString(resource->typeDisplayName())));
-    auto rowID = model_->rowCount();
-    model_->appendRow(row);
-    auto btn = new QToolButton();
-    btn->setIcon(QIcon(":/svgicons/edit-delete.svg"));
-    btn->setToolTip("Remove resource");
-    tableView_->setIndexWidget(model_->index(rowID, 2), btn);
-
-    model_->setData(model_->index(rowID, 0), QVariant::fromValue((void*)resource), ResourceRole);
-
-    connect(btn, &QPushButton::pressed,
-            [key, t = type, rm = &this->manager_]() { rm->removeResource(key, t); });
-}
-
-void ResourceManagerDockWidget::onResourceRemoved(const std::string&, const std::type_index&,
-                                                  Resource* resource) {
-    for (int i = 0; i < model_->rowCount(); i++) {
-        if (model_->getResource(i) == resource) {
-            model_->removeRow(i);
-            break;
-        }
-    }
-}
-
-void ResourceManagerDockWidget::onResourceManagerEnableStateChanged() {
-    disabledCheckBox_->blockSignals(true);
-    disabledCheckBox_->setChecked(!manager_.isEnabled());
-    disabledCheckBox_->blockSignals(false);
+    connect(enable, &QCheckBox::stateChanged, [enable, &settings](int state) {
+        const QSignalBlocker block{enable};
+        settings.enableResurceTracking_.set(state == Qt::Checked);
+    });
 }
 
 }  // namespace inviwo
