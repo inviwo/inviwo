@@ -112,22 +112,30 @@ $(function(){initNavTree('classinviwo_1_1ResourceManagerObserver.html',''); init
  <div class="center">
   <img src="classinviwo_1_1ResourceManagerObserver.png" usemap="#inviwo::ResourceManagerObserver_map" alt=""/>
   <map id="inviwo::ResourceManagerObserver_map" name="inviwo::ResourceManagerObserver_map">
-<area href="classinviwo_1_1Observer.html" alt="inviwo::Observer" shape="rect" coords="0,0,226,24"/>
-<area href="classinviwo_1_1ResourceManagerDockWidget.html" title="Widget class for the Resource Manager." alt="inviwo::ResourceManagerDockWidget" shape="rect" coords="0,112,226,136"/>
+<area href="classinviwo_1_1Observer.html" alt="inviwo::Observer" shape="rect" coords="0,0,213,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a27c41050aea300f1aca90ebf3f785944" id="r_a27c41050aea300f1aca90ebf3f785944"><td class="memItemLeft" align="right" valign="top"><a id="a27c41050aea300f1aca90ebf3f785944" name="a27c41050aea300f1aca90ebf3f785944"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onResourceAdded</b> (const std::string &amp;, const std::type_index &amp;, <a class="el" href="classinviwo_1_1Resource.html">Resource</a> *)</td></tr>
-<tr class="separator:a27c41050aea300f1aca90ebf3f785944"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab646465a46bf0913456b7f8bbc5782e2" id="r_ab646465a46bf0913456b7f8bbc5782e2"><td class="memItemLeft" align="right" valign="top"><a id="ab646465a46bf0913456b7f8bbc5782e2" name="ab646465a46bf0913456b7f8bbc5782e2"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onResourceRemoved</b> (const std::string &amp;, const std::type_index &amp;, <a class="el" href="classinviwo_1_1Resource.html">Resource</a> *)</td></tr>
-<tr class="separator:ab646465a46bf0913456b7f8bbc5782e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6fbe00e35048c3f90af2238a0efdf784" id="r_a6fbe00e35048c3f90af2238a0efdf784"><td class="memItemLeft" align="right" valign="top"><a id="a6fbe00e35048c3f90af2238a0efdf784" name="a6fbe00e35048c3f90af2238a0efdf784"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onResourceManagerEnableStateChanged</b> ()</td></tr>
-<tr class="separator:a6fbe00e35048c3f90af2238a0efdf784"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a871b9b9ace5e2af9c847ef49f6f85fd8" id="r_a871b9b9ace5e2af9c847ef49f6f85fd8"><td class="memItemLeft" align="right" valign="top"><a id="a871b9b9ace5e2af9c847ef49f6f85fd8" name="a871b9b9ace5e2af9c847ef49f6f85fd8"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onWillAddResource</b> (size_t group, size_t index, const <a class="el" href="structinviwo_1_1Resource.html">Resource</a> &amp;resource)</td></tr>
+<tr class="separator:a871b9b9ace5e2af9c847ef49f6f85fd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9c91d5c9960e0e298640ab07d0e0910" id="r_af9c91d5c9960e0e298640ab07d0e0910"><td class="memItemLeft" align="right" valign="top"><a id="af9c91d5c9960e0e298640ab07d0e0910" name="af9c91d5c9960e0e298640ab07d0e0910"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onDidAddResource</b> (size_t group, size_t index, const <a class="el" href="structinviwo_1_1Resource.html">Resource</a> &amp;resource)</td></tr>
+<tr class="separator:af9c91d5c9960e0e298640ab07d0e0910"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab84565d62b9a259d29ea1c5f8bc9e606" id="r_ab84565d62b9a259d29ea1c5f8bc9e606"><td class="memItemLeft" align="right" valign="top"><a id="ab84565d62b9a259d29ea1c5f8bc9e606" name="ab84565d62b9a259d29ea1c5f8bc9e606"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onWillUpdateResource</b> (size_t group, size_t index, const <a class="el" href="structinviwo_1_1Resource.html">Resource</a> &amp;resource)</td></tr>
+<tr class="separator:ab84565d62b9a259d29ea1c5f8bc9e606"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97b8712b1b50986638adefb7134fe827" id="r_a97b8712b1b50986638adefb7134fe827"><td class="memItemLeft" align="right" valign="top"><a id="a97b8712b1b50986638adefb7134fe827" name="a97b8712b1b50986638adefb7134fe827"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onDidUpdateResource</b> (size_t group, size_t index, const <a class="el" href="structinviwo_1_1Resource.html">Resource</a> &amp;resource)</td></tr>
+<tr class="separator:a97b8712b1b50986638adefb7134fe827"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36df3aed71aa44f4c5b5390ed8ecde1c" id="r_a36df3aed71aa44f4c5b5390ed8ecde1c"><td class="memItemLeft" align="right" valign="top"><a id="a36df3aed71aa44f4c5b5390ed8ecde1c" name="a36df3aed71aa44f4c5b5390ed8ecde1c"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onWillRemoveResource</b> (size_t group, size_t index, const <a class="el" href="structinviwo_1_1Resource.html">Resource</a> &amp;resource)</td></tr>
+<tr class="separator:a36df3aed71aa44f4c5b5390ed8ecde1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a489fb881e511ed53bfd0df39a44ad667" id="r_a489fb881e511ed53bfd0df39a44ad667"><td class="memItemLeft" align="right" valign="top"><a id="a489fb881e511ed53bfd0df39a44ad667" name="a489fb881e511ed53bfd0df39a44ad667"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onDidRemoveResource</b> (size_t group, size_t index, const <a class="el" href="structinviwo_1_1Resource.html">Resource</a> &amp;resource)</td></tr>
+<tr class="separator:a489fb881e511ed53bfd0df39a44ad667"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Observer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Observer')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Observer.html">inviwo::Observer</a></td></tr>
 <tr class="memitem:a05c1a5729cb5a4a65d7f3d3b597c24ff inherit pub_methods_classinviwo_1_1Observer" id="r_a05c1a5729cb5a4a65d7f3d3b597c24ff"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>Observer</b> (const <a class="el" href="classinviwo_1_1Observer.html">Observer</a> &amp;other)</td></tr>

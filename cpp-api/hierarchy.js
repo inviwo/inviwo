@@ -1235,6 +1235,7 @@ var hierarchy =
     ] ],
     [ "inviwo::util::detailzip::get_iterator< T >", "structinviwo_1_1util_1_1detailzip_1_1get__iterator.html", null ],
     [ "inviwo::kind::GL", "structinviwo_1_1kind_1_1GL.html", null ],
+    [ "inviwo::resource::GL", "structinviwo_1_1resource_1_1GL.html", null ],
     [ "inviwo::utilgl::GlBoolState", "structinviwo_1_1utilgl_1_1GlBoolState.html", [
       [ "inviwo::utilgl::BlendModeState", "structinviwo_1_1utilgl_1_1BlendModeState.html", [
         [ "inviwo::utilgl::BlendModeEquationState", "structinviwo_1_1utilgl_1_1BlendModeEquationState.html", null ]
@@ -1292,6 +1293,9 @@ var hierarchy =
     [ "std::hash< inviwo::PortConnection >", "structstd_1_1hash_3_01inviwo_1_1PortConnection_01_4.html", null ],
     [ "std::hash< inviwo::ProcessorPair >", "structstd_1_1hash_3_01inviwo_1_1ProcessorPair_01_4.html", null ],
     [ "std::hash< inviwo::PropertyLink >", "structstd_1_1hash_3_01inviwo_1_1PropertyLink_01_4.html", null ],
+    [ "std::hash< inviwo::resource::GL >", "structstd_1_1hash_3_01inviwo_1_1resource_1_1GL_01_4.html", null ],
+    [ "std::hash< inviwo::resource::PY >", "structstd_1_1hash_3_01inviwo_1_1resource_1_1PY_01_4.html", null ],
+    [ "std::hash< inviwo::resource::RAM >", "structstd_1_1hash_3_01inviwo_1_1resource_1_1RAM_01_4.html", null ],
     [ "std::hash< inviwo::ShaderType >", "structstd_1_1hash_3_01inviwo_1_1ShaderType_01_4.html", null ],
     [ "std::hash< std::pair< T, U > >", "structstd_1_1hash_3_01std_1_1pair_3_01T_00_01U_01_4_01_4.html", null ],
     [ "std::hash< std::tuple< TT... > >", "structstd_1_1hash_3_01std_1_1tuple_3_01TT_8_8_8_01_4_01_4.html", null ],
@@ -2345,9 +2349,7 @@ var hierarchy =
         [ "inviwo::PythonEditorWidget", "classinviwo_1_1PythonEditorWidget.html", null ],
         [ "inviwo::PythonLogger", "classinviwo_1_1PythonLogger.html", null ]
       ] ],
-      [ "inviwo::ResourceManagerObserver", "classinviwo_1_1ResourceManagerObserver.html", [
-        [ "inviwo::ResourceManagerDockWidget", "classinviwo_1_1ResourceManagerDockWidget.html", null ]
-      ] ],
+      [ "inviwo::ResourceManagerObserver", "classinviwo_1_1ResourceManagerObserver.html", null ],
       [ "inviwo::TFPrimitiveObserver", "classinviwo_1_1TFPrimitiveObserver.html", [
         [ "inviwo::TFEditorPrimitive", "classinviwo_1_1TFEditorPrimitive.html", [
           [ "inviwo::TFEditorControlPoint", "classinviwo_1_1TFEditorControlPoint.html", null ],
@@ -2796,6 +2798,7 @@ var hierarchy =
     [ "inviwo::util::detailzip::proxy< Ts >", "structinviwo_1_1util_1_1detailzip_1_1proxy.html", null ],
     [ "inviwo::PtrEqual< T >", "structinviwo_1_1PtrEqual.html", null ],
     [ "inviwo::PtrHash< T >", "structinviwo_1_1PtrHash.html", null ],
+    [ "inviwo::resource::PY", "structinviwo_1_1resource_1_1PY.html", null ],
     [ "inviwo::PythonMenu", "classinviwo_1_1PythonMenu.html", null ],
     [ "inviwo::PythonProcessorFactoryObjectData", "structinviwo_1_1PythonProcessorFactoryObjectData.html", null ],
     [ "inviwo::PythonScript", "classinviwo_1_1PythonScript.html", null ],
@@ -3039,6 +3042,7 @@ var hierarchy =
       [ "inviwo::animation::TrackControlsWidgetQt", "classinviwo_1_1animation_1_1TrackControlsWidgetQt.html", null ]
     ] ],
     [ "inviwo::kind::RAM", "structinviwo_1_1kind_1_1RAM.html", null ],
+    [ "inviwo::resource::RAM", "structinviwo_1_1resource_1_1RAM.html", null ],
     [ "inviwo::util::RandomCubicalPointGeneration", "structinviwo_1_1util_1_1RandomCubicalPointGeneration.html", null ],
     [ "inviwo::util::detail::RandomNumberRangeValues", "structinviwo_1_1util_1_1detail_1_1RandomNumberRangeValues.html", null ],
     [ "inviwo::util::RandomSphericalPointGeneration", "structinviwo_1_1util_1_1RandomSphericalPointGeneration.html", null ],
@@ -3078,9 +3082,8 @@ var hierarchy =
     [ "inviwo::RepresentationMetaFactory", "classinviwo_1_1RepresentationMetaFactory.html", null ],
     [ "inviwo::MeshShaderCache::Requirement", "structinviwo_1_1MeshShaderCache_1_1Requirement.html", null ],
     [ "inviwo::plot::detail::Resetter", "structinviwo_1_1plot_1_1detail_1_1Resetter.html", null ],
-    [ "inviwo::Resource", "classinviwo_1_1Resource.html", [
-      [ "inviwo::TypedResource< T >", "classinviwo_1_1TypedResource.html", null ]
-    ] ],
+    [ "inviwo::Resource", "structinviwo_1_1Resource.html", null ],
+    [ "inviwo::ResourceMeta", "structinviwo_1_1ResourceMeta.html", null ],
     [ "inviwo::HistogramCache::Result", "structinviwo_1_1HistogramCache_1_1Result.html", null ],
     [ "inviwo::IntegralLineTracer< SpatialSampler, TimeDependent >::Result", "structinviwo_1_1IntegralLineTracer_1_1Result.html", null ],
     [ "inviwo::csvfilters::RowFilter", "structinviwo_1_1csvfilters_1_1RowFilter.html", null ],

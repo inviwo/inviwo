@@ -114,21 +114,30 @@ $(function(){initNavTree('classinviwo_1_1ResourceManagerObservable.html',''); in
   <map id="inviwo::ResourceManagerObservable_map" name="inviwo::ResourceManagerObservable_map">
 <area href="classinviwo_1_1Observable.html" alt="inviwo::Observable&lt; ResourceManagerObserver &gt;" shape="rect" coords="0,56,303,80"/>
 <area href="classinviwo_1_1ObservableInterface.html" alt="inviwo::ObservableInterface" shape="rect" coords="0,0,303,24"/>
-<area href="classinviwo_1_1ResourceManager.html" title="A resource manager to store data to avoid creating/loading the same dataset twice." alt="inviwo::ResourceManager" shape="rect" coords="0,168,303,192"/>
+<area href="classinviwo_1_1ResourceManager.html" alt="inviwo::ResourceManager" shape="rect" coords="0,168,303,192"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ac7c03c342d8cc1ef2a24d0b0ec36b0e5" id="r_ac7c03c342d8cc1ef2a24d0b0ec36b0e5"><td class="memItemLeft" align="right" valign="top"><a id="ac7c03c342d8cc1ef2a24d0b0ec36b0e5" name="ac7c03c342d8cc1ef2a24d0b0ec36b0e5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyResourceAdded</b> (const std::string &amp;key, const std::type_index &amp;type, <a class="el" href="classinviwo_1_1Resource.html">Resource</a> *resource)</td></tr>
-<tr class="separator:ac7c03c342d8cc1ef2a24d0b0ec36b0e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab561ea14b8fc5c20094d21e152e51b1c" id="r_ab561ea14b8fc5c20094d21e152e51b1c"><td class="memItemLeft" align="right" valign="top"><a id="ab561ea14b8fc5c20094d21e152e51b1c" name="ab561ea14b8fc5c20094d21e152e51b1c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyResourceRemoved</b> (const std::string &amp;key, const std::type_index &amp;type, <a class="el" href="classinviwo_1_1Resource.html">Resource</a> *resource)</td></tr>
-<tr class="separator:ab561ea14b8fc5c20094d21e152e51b1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6cf347d07d624c0447da7b759f67ad22" id="r_a6cf347d07d624c0447da7b759f67ad22"><td class="memItemLeft" align="right" valign="top"><a id="a6cf347d07d624c0447da7b759f67ad22" name="a6cf347d07d624c0447da7b759f67ad22"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyEnableChanged</b> ()</td></tr>
-<tr class="separator:a6cf347d07d624c0447da7b759f67ad22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afaca7afc627b1342ccbfb08ea16d79d7" id="r_afaca7afc627b1342ccbfb08ea16d79d7"><td class="memItemLeft" align="right" valign="top"><a id="afaca7afc627b1342ccbfb08ea16d79d7" name="afaca7afc627b1342ccbfb08ea16d79d7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyWillAddResource</b> (size_t group, size_t index, const <a class="el" href="structinviwo_1_1Resource.html">Resource</a> &amp;resource)</td></tr>
+<tr class="separator:afaca7afc627b1342ccbfb08ea16d79d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b36ada801cfe843661a3c5553a467c2" id="r_a0b36ada801cfe843661a3c5553a467c2"><td class="memItemLeft" align="right" valign="top"><a id="a0b36ada801cfe843661a3c5553a467c2" name="a0b36ada801cfe843661a3c5553a467c2"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyDidAddResource</b> (size_t group, size_t index, const <a class="el" href="structinviwo_1_1Resource.html">Resource</a> &amp;resource)</td></tr>
+<tr class="separator:a0b36ada801cfe843661a3c5553a467c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7df75c52d6e3d016cd9d9e847b63be01" id="r_a7df75c52d6e3d016cd9d9e847b63be01"><td class="memItemLeft" align="right" valign="top"><a id="a7df75c52d6e3d016cd9d9e847b63be01" name="a7df75c52d6e3d016cd9d9e847b63be01"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyWillUpdateResource</b> (size_t group, size_t index, const <a class="el" href="structinviwo_1_1Resource.html">Resource</a> &amp;resource)</td></tr>
+<tr class="separator:a7df75c52d6e3d016cd9d9e847b63be01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d85f6d32f40fa0ef97e2ccd8733b47d" id="r_a5d85f6d32f40fa0ef97e2ccd8733b47d"><td class="memItemLeft" align="right" valign="top"><a id="a5d85f6d32f40fa0ef97e2ccd8733b47d" name="a5d85f6d32f40fa0ef97e2ccd8733b47d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyDidUpdateResource</b> (size_t group, size_t index, const <a class="el" href="structinviwo_1_1Resource.html">Resource</a> &amp;resource)</td></tr>
+<tr class="separator:a5d85f6d32f40fa0ef97e2ccd8733b47d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7239aec3e68d62df3256528282326119" id="r_a7239aec3e68d62df3256528282326119"><td class="memItemLeft" align="right" valign="top"><a id="a7239aec3e68d62df3256528282326119" name="a7239aec3e68d62df3256528282326119"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyWillRemoveResource</b> (size_t group, size_t index, const <a class="el" href="structinviwo_1_1Resource.html">Resource</a> &amp;resource)</td></tr>
+<tr class="separator:a7239aec3e68d62df3256528282326119"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a7de931a73bca941b3fd6a0a3a30982" id="r_a5a7de931a73bca941b3fd6a0a3a30982"><td class="memItemLeft" align="right" valign="top"><a id="a5a7de931a73bca941b3fd6a0a3a30982" name="a5a7de931a73bca941b3fd6a0a3a30982"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyDidRemoveResource</b> (size_t group, size_t index, const <a class="el" href="structinviwo_1_1Resource.html">Resource</a> &amp;resource)</td></tr>
+<tr class="separator:a5a7de931a73bca941b3fd6a0a3a30982"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; ResourceManagerObserver &gt;</a></td></tr>
 <tr class="memitem:a980d804dbfb060d91d5b54161f14dc8f inherit pro_methods_classinviwo_1_1Observable" id="r_a980d804dbfb060d91d5b54161f14dc8f"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>forEachObserver</b> (C callback)</td></tr>

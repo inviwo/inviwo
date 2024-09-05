@@ -7,6 +7,5 @@ var searchData=
   ['nodeswitch_4',['NodeSwitch',['../classinviwo_1_1NodeSwitch.html#a84485d9e26fd35f1528a4cf62a418783',1,'inviwo::NodeSwitch::NodeSwitch(SerializeBase &amp;serializer, TxElement *node, bool retrieveChild=true)'],['../classinviwo_1_1NodeSwitch.html#a4bc9400513f6818c233803438a12da5f',1,'inviwo::NodeSwitch::NodeSwitch(SerializeBase &amp;serializer, std::unique_ptr&lt; TxElement &gt; node, bool retrieveChild=true)'],['../classinviwo_1_1NodeSwitch.html#a925813c618132dd01d46cdab8f99db10',1,'inviwo::NodeSwitch::NodeSwitch(SerializeBase &amp;serializer, std::string_view key, bool retrieveChild=true)']]],
   ['normalize_5',['normalize',['../classinviwo_1_1VolumeNormalization.html#a98193b84990da9ea71b3164912f75f4c',1,'inviwo::VolumeNormalization']]],
   ['notifyaftertextureinitialization_6',['notifyAfterTextureInitialization',['../classinviwo_1_1TextureObserver.html#ae0df43dec71ab95ff7036dd945c3753d',1,'inviwo::TextureObserver']]],
-  ['notifybeforetextureinitialization_7',['notifyBeforeTextureInitialization',['../classinviwo_1_1TextureObserver.html#ad249a53fb5ab3f67099e29a12993b385',1,'inviwo::TextureObserver']]],
-  ['numberofresources_8',['numberOfResources',['../classinviwo_1_1ResourceManager.html#ab983d75a02b0ede96b1741f417a2a14a',1,'inviwo::ResourceManager']]]
+  ['notifybeforetextureinitialization_7',['notifyBeforeTextureInitialization',['../classinviwo_1_1TextureObserver.html#ad249a53fb5ab3f67099e29a12993b385',1,'inviwo::TextureObserver']]]
 ];

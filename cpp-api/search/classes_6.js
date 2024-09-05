@@ -7,7 +7,7 @@ var searchData=
   ['gestureevent_4',['GestureEvent',['../classinviwo_1_1GestureEvent.html',1,'inviwo']]],
   ['gestureeventmatcher_5',['GestureEventMatcher',['../classinviwo_1_1GestureEventMatcher.html',1,'inviwo']]],
   ['get_5fiterator_6',['get_iterator',['../structinviwo_1_1util_1_1detailzip_1_1get__iterator.html',1,'inviwo::util::detailzip']]],
-  ['gl_7',['GL',['../structinviwo_1_1kind_1_1GL.html',1,'inviwo::kind']]],
+  ['gl_7',['GL',['../structinviwo_1_1kind_1_1GL.html',1,'inviwo::kind::GL'],['../structinviwo_1_1resource_1_1GL.html',1,'inviwo::resource::GL']]],
   ['glboolstate_8',['GlBoolState',['../structinviwo_1_1utilgl_1_1GlBoolState.html',1,'inviwo::utilgl']]],
   ['glformat_9',['GLFormat',['../structinviwo_1_1GLFormat.html',1,'inviwo']]],
   ['glformats_10',['GLFormats',['../classinviwo_1_1GLFormats.html',1,'inviwo']]],

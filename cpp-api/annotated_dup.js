@@ -349,6 +349,11 @@ var annotated_dup =
       [ "pyutil", "namespaceinviwo_1_1pyutil.html", [
         [ "ModulePath", "structinviwo_1_1pyutil_1_1ModulePath.html", null ]
       ] ],
+      [ "resource", null, [
+        [ "GL", "structinviwo_1_1resource_1_1GL.html", null ],
+        [ "PY", "structinviwo_1_1resource_1_1PY.html", null ],
+        [ "RAM", "structinviwo_1_1resource_1_1RAM.html", null ]
+      ] ],
       [ "shuntingyard", null, [
         [ "Calculator", "classinviwo_1_1shuntingyard_1_1Calculator.html", null ],
         [ "Token", "classinviwo_1_1shuntingyard_1_1Token.html", null ],
@@ -1464,12 +1469,13 @@ var annotated_dup =
       [ "RepresentationFactoryObjectTemplate", "classinviwo_1_1RepresentationFactoryObjectTemplate.html", null ],
       [ "RepresentationMetaFactory", "classinviwo_1_1RepresentationMetaFactory.html", null ],
       [ "ResizeEvent", "classinviwo_1_1ResizeEvent.html", "classinviwo_1_1ResizeEvent" ],
-      [ "Resource", "classinviwo_1_1Resource.html", null ],
+      [ "Resource", "structinviwo_1_1Resource.html", null ],
       [ "ResourceException", "classinviwo_1_1ResourceException.html", null ],
-      [ "ResourceManager", "classinviwo_1_1ResourceManager.html", "classinviwo_1_1ResourceManager" ],
+      [ "ResourceManager", "classinviwo_1_1ResourceManager.html", null ],
       [ "ResourceManagerDockWidget", "classinviwo_1_1ResourceManagerDockWidget.html", null ],
       [ "ResourceManagerObservable", "classinviwo_1_1ResourceManagerObservable.html", null ],
       [ "ResourceManagerObserver", "classinviwo_1_1ResourceManagerObserver.html", null ],
+      [ "ResourceMeta", "structinviwo_1_1ResourceMeta.html", null ],
       [ "RowLayout", "classinviwo_1_1RowLayout.html", null ],
       [ "RuntimeModuleLoading", "structinviwo_1_1RuntimeModuleLoading.html", null ],
       [ "SafeCStr", "classinviwo_1_1SafeCStr.html", null ],
@@ -1686,7 +1692,6 @@ var annotated_dup =
       [ "TrianglesToWireframe", "classinviwo_1_1TrianglesToWireframe.html", "classinviwo_1_1TrianglesToWireframe" ],
       [ "TubeRendering", "classinviwo_1_1TubeRendering.html", "classinviwo_1_1TubeRendering" ],
       [ "TypedMesh", "classinviwo_1_1TypedMesh.html", "classinviwo_1_1TypedMesh" ],
-      [ "TypedResource", "classinviwo_1_1TypedResource.html", null ],
       [ "UndoManager", "classinviwo_1_1UndoManager.html", null ],
       [ "UniformLabelAtlasGL", "classinviwo_1_1UniformLabelAtlasGL.html", null ],
       [ "UnitDesc", "structinviwo_1_1UnitDesc.html", null ],
@@ -1814,6 +1819,9 @@ var annotated_dup =
       [ "hash< inviwo::PortConnection >", "structstd_1_1hash_3_01inviwo_1_1PortConnection_01_4.html", null ],
       [ "hash< inviwo::ProcessorPair >", "structstd_1_1hash_3_01inviwo_1_1ProcessorPair_01_4.html", null ],
       [ "hash< inviwo::PropertyLink >", "structstd_1_1hash_3_01inviwo_1_1PropertyLink_01_4.html", null ],
+      [ "hash< inviwo::resource::GL >", "structstd_1_1hash_3_01inviwo_1_1resource_1_1GL_01_4.html", null ],
+      [ "hash< inviwo::resource::PY >", "structstd_1_1hash_3_01inviwo_1_1resource_1_1PY_01_4.html", null ],
+      [ "hash< inviwo::resource::RAM >", "structstd_1_1hash_3_01inviwo_1_1resource_1_1RAM_01_4.html", null ],
       [ "hash< inviwo::ShaderType >", "structstd_1_1hash_3_01inviwo_1_1ShaderType_01_4.html", null ],
       [ "hash< std::pair< T, U > >", "structstd_1_1hash_3_01std_1_1pair_3_01T_00_01U_01_4_01_4.html", null ],
       [ "hash< std::tuple< TT... > >", "structstd_1_1hash_3_01std_1_1tuple_3_01TT_8_8_8_01_4_01_4.html", null ],

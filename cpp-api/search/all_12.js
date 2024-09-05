@@ -84,7 +84,7 @@ var searchData=
   ['setdragaction_81',['setDragAction',['../classinviwo_1_1SplitterRenderer.html#a246400099aa5473bfcbcd07bc38060b5',1,'inviwo::SplitterRenderer']]],
   ['setdrawblit_82',['setDrawBlit',['../classinviwo_1_1FrameBufferObject.html#aed56f33968fc6f8c23892aa344cc84a7',1,'inviwo::FrameBufferObject']]],
   ['setemptylabelstring_83',['setEmptyLabelString',['../classinviwo_1_1CollapsibleGroupBoxWidgetQt.html#a71b7bcb8aa6c7b2cb291260d624085ed',1,'inviwo::CollapsibleGroupBoxWidgetQt']]],
-  ['setenabled_84',['setEnabled',['../classinviwo_1_1LightSource.html#a3a81743833db86d3579c4f107a05f93f',1,'inviwo::LightSource::setEnabled()'],['../classinviwo_1_1PickingAction.html#af41fbf0ed0996eff1d198daea15f84e2',1,'inviwo::PickingAction::setEnabled()'],['../classinviwo_1_1ResourceManager.html#a24fa50f13b02ba89877a25b3aadcc64e',1,'inviwo::ResourceManager::setEnabled()']]],
+  ['setenabled_84',['setEnabled',['../classinviwo_1_1LightSource.html#a3a81743833db86d3579c4f107a05f93f',1,'inviwo::LightSource::setEnabled()'],['../classinviwo_1_1PickingAction.html#af41fbf0ed0996eff1d198daea15f84e2',1,'inviwo::PickingAction::setEnabled()']]],
   ['setenabledoubleprecision_85',['setEnableDoublePrecision',['../classinviwo_1_1CSVReader.html#a5c235e3e45f47bb149b91e6cbcbdc611',1,'inviwo::CSVReader']]],
   ['setevaluatewhenhidden_86',['setEvaluateWhenHidden',['../classinviwo_1_1CanvasProcessor.html#a1000f7096733319cff7cdcc2e8fd17c6',1,'inviwo::CanvasProcessor']]],
   ['setfarplanedist_87',['setFarPlaneDist',['../classinviwo_1_1Camera.html#a9b6752e4640ea77f4d9696b749ca7a45',1,'inviwo::Camera']]],
