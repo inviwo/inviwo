@@ -55,8 +55,7 @@ ivw_vcpkg_install(freetype MODULE FontRendering)
 
 find_package(utf8cpp CONFIG REQUIRED)
 target_link_libraries(inviwo-module-fontrendering 
-    PUBLIC 
-        Freetype::Freetype
     PRIVATE
+        Freetype::Freetype
         utf8cpp::utf8cpp
 )
