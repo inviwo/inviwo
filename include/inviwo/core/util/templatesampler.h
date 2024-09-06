@@ -77,8 +77,8 @@ TemplateVolumeSampler<ReturnType, DataType>::TemplateVolumeSampler(const Volume&
                                                                    CoordinateSpace space)
     : SpatialSampler<ReturnType>(volume, space)
     , data_(static_cast<const DataType*>(volume.getRepresentation<VolumeRAM>()->getData()))
-    , dimsM1_(volume.getRepresentation<VolumeRAM>()->getDimensions()- size3_t(1,1,1))
-    , max_(dimsM1_ )
+    , dimsM1_(volume.getRepresentation<VolumeRAM>()->getDimensions() - size3_t(1, 1, 1))
+    , max_(dimsM1_)
     , ic_(volume.getRepresentation<VolumeRAM>()->getDimensions()) {}
 
 template <typename ReturnType, typename DataType>

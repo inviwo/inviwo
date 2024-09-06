@@ -37,8 +37,7 @@
 #include <modules/opengl/buffer/framebufferobject.h>               // for FrameBufferObject
 #include <modules/opengl/openglutils.h>                            // for BlendModeState (ptr only)
 
-#include <glm/vec2.hpp>                // for vec
-
+#include <glm/vec2.hpp>  // for vec
 
 #include <map>            // for map, map<>::value_compare
 #include <memory>         // for shared_ptr
@@ -50,8 +49,8 @@
 
 // forward declare needed freetype types
 extern "C" {
-typedef struct FT_LibraryRec_  *FT_Library;
-typedef struct FT_FaceRec_*  FT_Face;
+typedef struct FT_LibraryRec_* FT_Library;
+typedef struct FT_FaceRec_* FT_Face;
 }
 
 namespace inviwo {
