@@ -1,3 +1,4 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -58,7 +59,8 @@ protected:
     ReturnType getVoxel(const size3_t& pos) const;
 
     const DataType* data_;
-    size3_t dims_;
+    size3_t dimsM1_;
+    dvec3 max_;
     util::IndexMapper3D ic_;
     std::shared_ptr<const Volume> sharedVolume_;
 };
@@ -75,8 +77,9 @@ TemplateVolumeSampler<ReturnType, DataType>::TemplateVolumeSampler(const Volume&
                                                                    CoordinateSpace space)
     : SpatialSampler<ReturnType>(volume, space)
     , data_(static_cast<const DataType*>(volume.getRepresentation<VolumeRAM>()->getData()))
-    , dims_(volume.getRepresentation<VolumeRAM>()->getDimensions())
-    , ic_(dims_) {}
+    , dimsM1_(volume.getRepresentation<VolumeRAM>()->getDimensions()- size3_t(1,1,1))
+    , max_(dimsM1_ )
+    , ic_(volume.getRepresentation<VolumeRAM>()->getDimensions()) {}
 
 template <typename ReturnType, typename DataType>
 bool TemplateVolumeSampler<ReturnType, DataType>::withinBoundsDataSpace(const dvec3& pos) const {
@@ -95,7 +98,7 @@ auto TemplateVolumeSampler<ReturnType, DataType>::sampleDataSpace(const dvec3& p
     if (!withinBoundsDataSpace(pos)) {
         return ReturnType{0};
     }
-    const dvec3 samplePos = pos * dvec3(dims_ - size3_t(1));
+    const dvec3 samplePos = pos * max_;
     const size3_t indexPos = size3_t(samplePos);
     const dvec3 interpolants = samplePos - dvec3(indexPos);
 
@@ -104,11 +107,6 @@ auto TemplateVolumeSampler<ReturnType, DataType>::sampleDataSpace(const dvec3& p
     samples[1] = getVoxel(indexPos + size3_t(1, 0, 0));
     samples[2] = getVoxel(indexPos + size3_t(0, 1, 0));
     samples[3] = getVoxel(indexPos + size3_t(1, 1, 0));
-
-    if (interpolants.z < std::numeric_limits<double>::epsilon()) {
-        return Interpolation<ReturnType, double>::bilinear(samples, dvec2(interpolants));
-    }
-
     samples[4] = getVoxel(indexPos + size3_t(0, 0, 1));
     samples[5] = getVoxel(indexPos + size3_t(1, 0, 1));
     samples[6] = getVoxel(indexPos + size3_t(0, 1, 1));
@@ -119,7 +117,7 @@ auto TemplateVolumeSampler<ReturnType, DataType>::sampleDataSpace(const dvec3& p
 
 template <typename ReturnType, typename DataType>
 auto TemplateVolumeSampler<ReturnType, DataType>::getVoxel(const size3_t& pos) const -> ReturnType {
-    return static_cast<ReturnType>(data_[ic_(pos)]);
+    return static_cast<ReturnType>(data_[ic_(glm::min(pos, dimsM1_))]);
 }
 
 }  // namespace inviwo
