@@ -42,6 +42,7 @@ jobs:
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=ON
               -DIVW_MODULE_WEBBROWSER=ON
+              -DIVW_MODULE_TETRAMESH=ON
               -DIVW_DOXYGEN_PROJECT=ON 
               -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"
               -DIVW_MODULE_SGCT=ON
@@ -66,6 +67,7 @@ jobs:
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=ON
               -DIVW_MODULE_WEBBROWSER=ON
+              -DIVW_MODULE_TETRAMESH=ON
             preset: ninja-developer
             targets: 'all'
             installer: 'inviwo-installer-macos'
@@ -82,6 +84,7 @@ jobs:
               -DIVW_MODULE_HDF5=ON
               -DIVW_MODULE_FFMPEG=OFF
               -DIVW_MODULE_WEBBROWSER=OFF
+              -DIVW_MODULE_TETRAMESH=ON
               -DIVW_TEST_BENCHMARKS=OFF
             preset: ninja-developer
             targets: 'all'
@@ -173,7 +176,6 @@ jobs:
       run: >
         VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ${{ matrix.preset }}
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
-        -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
         -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
         -DBUILD_SHARED_LIBS=${{ matrix.cmake_linkage }}
@@ -226,102 +228,43 @@ jobs:
         limit-access-to-actor: true
 
 
-  build-linux-apt:
-    name: "Build on Linux using Apt"
-    runs-on: ubuntu-24.04
+  devinstall:
+    name: Windows Development Installer
+    if: github.ref != 'refs/heads/master'
+    runs-on: windows-latest
     timeout-minutes: 720
-    
     steps:
-    - name: "Apt Install"
-      shell: bash
-      # https://packages.ubuntu.com has lists of all available packages
-      # 30/11/23 
-      # * libnifti-dev: does not work
-      #   > CMake Error at /usr/share/cmake/NIFTI/NIFTITargets.cmake:124 (message):
-      #   >    The imported target "NIFTI::znz" references the file
-      #   >        "/usr/lib/libznz.so.3.0.0"
-      #   >    but this file does not exist. 
-      #   Should find /usr/lib/x86_64-linux-gnu/libznz.so
-      #   libznz path wrong, sets it to /usr/lib instead of /usr/lib/x86_64-linux-gnu/
-      # * nlohmann-json: has problems with inja. inja wants to install nlohmann-json somehow
-      # * openexr, libopenexr-dev: does not work, submodule and vcpkg uses OpenEXR::OpenEXT 
-      #   which does not exist in apts package
-      # * fmt: better stick the a newer version
-      # * pybind11: does not have the smart holder branch
-      # * cimg: there is no standard cmake cimg finder, and not cmake file provided in dist package.
-      # * inja: there is no dist package
-      # * tinydir: there is no dist package
-      run: |
-        sudo apt-get update
-        sudo apt install --fix-missing \
-          build-essential git cmake extra-cmake-modules ninja-build g++-14 gcc-14 \
-          freeglut3-dev cimg-dev googletest libassimp-dev libeigen3-dev libfmt-dev \
-          libfreetype-dev libglew-dev libglm-dev libgtest-dev libhdf5-dev libjpeg-dev \
-          libpng-dev libqt6svg6-dev libtclap-dev libtiff-dev libtirpc-dev \
-          libutfcpp-dev libxcursor-dev libxinerama-dev libxrandr-dev libznz-dev \
-          nlohmann-json3-dev zlib1g zlib1g-dev python3 python3-numpy python3-pip \
-          qt6-base-dev qt6-tools-dev
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 130 \
-                                 --slave /usr/bin/g++ g++ /usr/bin/g++-14 \
-                                 --slave /usr/bin/gcov gcov /usr/bin/gcov-14
-        sudo update-alternatives --set gcc /usr/bin/gcc-14
-
     - name: "Clone Inviwo"
       uses: actions/checkout@v4
-      with: 
-        path: inviwo
-        submodules: recursive
-
-    - name: "Setup Ccache"
-      id: ccache
-      uses: petersteneteg/ccache-action@v1.1.0
       with:
-        variant: ccache
-        max-size: "1500M"
-        verbose: 2
-        save: false
-        key: inviwo-apt-x64-linux-dynamic-Release
-        restore-keys: |
-          inviwo-apt-x64-linux-dynamic-Release
+        path: inviwo
+        submodules: false
 
-    - name: "Configure"
-      shell: bash
-      run: >
-        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ninja-user-apt
-        -DVCPKG_TARGET_TRIPLET=x64-linux-dynamic
-        -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
-        -DBUILD_SHARED_LIBS=ON
-        -DCMAKE_BUILD_TYPE=Release
-        -DIVW_MODULE_EIGENUTILS=ON
-        -DIVW_MODULE_HDF5=ON
-        -DIVW_MODULE_FFMPEG=OFF
-        -DIVW_MODULE_WEBBROWSER=ON
-        -DIVW_TEST_BENCHMARKS=OFF
-        -DCMAKE_C_COMPILER_LAUNCHER=ccache
-        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-        
+    - name: Install dependencies
+      uses: ./inviwo/.github/actions/install-dependencies
 
-    - name: "Build"
-      timeout-minutes: 720
+    - name: Configure build environment
+      uses: ./inviwo/.github/actions/configure-build-env
+
+    - name: "CMake Workflow"
       shell: bash
       run: |
-        echo "::add-matcher::inviwo/.github/matchers/linux.json"   
-        cmake --build build --config Release --parallel --target all
+        echo "::add-matcher::inviwo/.github/matchers/windows.json"
+        cd inviwo
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake --workflow --preset msvc-dev-installer \
+        --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake \
+        -DVCPKG_INSTALL_OPTIONS='--clean-after-build' \
+        -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+        -DIVW_CFG_USE_CCACHE_MSVC=ON
         echo "::remove-matcher owner=compiler::"
         echo "::remove-matcher owner=linker::"
 
-    - name: "Run"
-      shell: bash
-      working-directory: "build/bin"
-      run: QT_QPA_PLATFORM=offscreen ./inviwo --logconsole --quit
-
-    - name: "Setup tmate session (on failure and debug_enabled)"
-      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
-
-      uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 30
+    - name: "Upload installer"
+      uses: actions/upload-artifact@v4
       with:
-        limit-access-to-actor: true
+        name: inviwo-dev-installer-win
+        path: msvc-user/inviwo-v*.exe
 
   clang-tidy:
     name: "Clang-tidy"
@@ -390,7 +333,6 @@ jobs:
       run: >
         VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ninja-developer
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
-        -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DCMAKE_CXX_FLAGS='-stdlib=libc++'
         -DVCPKG_TARGET_TRIPLET=x64-linux-dynamic
         -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
@@ -401,8 +343,8 @@ jobs:
         -DIVW_MODULE_HDF5=ON
         -DIVW_MODULE_SGCT=ON
         -DIVW_MODULE_TETRAMESH=ON
-        -DIVW_APP_INVIWO_DOME=ON
         -DIVW_MODULE_WEBBROWSER=ON
+        -DIVW_APP_INVIWO_DOME=ON
         -DVCPKG_MANIFEST_FEATURES="sgct"
 
     - uses: cpp-linter/cpp-linter-action@v2.12.1
@@ -533,7 +475,7 @@ jobs:
   update-api-docs:
     name: "Publish updated API Docs"
     if: github.ref == 'refs/heads/master'
-    needs: [build, test-installer, build-linux-apt]
+    needs: [build, test-installer]
     runs-on: windows-latest
     steps:
       - name: "Clone Inviwo"
@@ -576,7 +518,7 @@ jobs:
   update-latest-release:
     name: "Update latest release"
     if: github.ref == 'refs/heads/master'
-    needs: [build, test-installer, build-linux-apt]
+    needs: [build, test-installer]
     strategy:
       matrix:
         os: [windows-latest] # macos-latest,
