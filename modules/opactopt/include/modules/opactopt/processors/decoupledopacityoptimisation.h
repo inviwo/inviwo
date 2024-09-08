@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,34 +27,38 @@
  *
  *********************************************************************************/
 
-#include <modules/opactopt/algorithm/gaussian.h>
+#pragma once
+
+#include <modules/opactopt/opactoptmoduledefine.h>
+
+#include <modules/opactopt/rendering/decoupledopacityoptimisationrenderer.h>
+
+#include <modules/oit/processors/rasterizationrenderer.h>  // for RasterizationRenderer
+
+#include <inviwo/core/interaction/cameratrackball.h>  // for CameraTrackball
+#include <inviwo/core/processors/processor.h>         // for Processor
+#include <modules/opengl/shader/shader.h>             // for Shader
+#include <modules/opengl/texture/texture2d.h>         // for Texture2D
+#include <inviwo/core/ports/imageport.h>              // for ImageInport, ImageOu...
+#include <inviwo/core/properties/cameraproperty.h>    // for CameraProperty
+#include <inviwo/core/properties/optionproperty.h>    // for OptionProperty
+#include <inviwo/core/properties/simplelightingproperty.h>
+#include <modules/oit/ports/rasterizationport.h>  // for RasterizationInport
+#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
-namespace util {
 
-std::vector<float> generateGaussianKernel(int radius, float sigma) {
-    std::vector<float> res(radius + 1, 0.0f);
-    float kernel_sum = 0.0f;
+class IVW_MODULE_OPACTOPT_API DecoupledOpacityOptimisation : public RasterizationRenderer {
+public:
+    DecoupledOpacityOptimisation();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-    // Calculate kernel
-    for (int i = 0; i <= radius; i++) {
-        float val = std::exp(-((float)(i * i)) / (2 * (sigma * sigma)));
-        res[i] = val;
+private:
+    VolumeInport importanceVolume_;
 
-        //if (i == 0)
-        //    kernel_sum += val;
-        //else
-        //    kernel_sum += 2 * val;
-    }
+    FloatProperty q_, r_, lambda_;
+    DecoupledOpacityOptimisationRenderer* door_;
+};
 
-    // Don't normalise since kernel will take care of it
-    
-    //for (int i = -radius; i <= radius; i++) {
-    //    res[radius + i] /= kernel_sum;
-    //}
-
-    return res;
-}
-
-}  // namespace util
 }  // namespace inviwo
