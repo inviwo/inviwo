@@ -48,12 +48,20 @@ uniform float lineWidth = 2.0; // line width [pixel]
 // without any transformation, i.e. all lines in clip space
 uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), mat4(1),
                                     mat4(1), mat4(1), vec3(0), 0, 1);
+uniform vec2 reciprocalDimensions;
 
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
 uniform layout(r32i) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
 uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
+#else
+uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+#endif
 
+#ifdef USE_IMPORTANCE_VOLUME
 uniform sampler3D importanceVolume;
 uniform VolumeParameters importanceVolumeParameters;
+#endif
 
 // line stippling
 uniform StipplingParameters stippling = StipplingParameters(30.0, 10.0, 0.0, 4.0);
@@ -78,6 +86,13 @@ uniform float lambda;
 #ifdef PIECEWISE
     #include "opactopt/approximate/piecewise.glsl"
 #endif
+#ifdef POWER_MOMENTS
+    #include "opactopt/approximate/powermoments.glsl"
+#endif
+#ifdef TRIG_MOMENTS
+    #include "opactopt/approximate/trigmoments.glsl"
+#endif
+
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
@@ -111,13 +126,14 @@ void main() {
 
     // Calculate g_i^2
 #ifdef USE_IMPORTANCE_VOLUME
+    vec2 texCoord = gl_FragCoord.xy * reciprocalDimensions;
     float viewDepth = depth * (camera.farPlane - camera.nearPlane) + camera.nearPlane;
     float clipDepth = convertDepthViewToClip(camera, viewDepth);
     vec4 clip = vec4(2.0 * texCoord - 1.0, clipDepth, 1.0);
     vec4 worldPos = camera.clipToWorld * clip;
     worldPos /= worldPos.w;
     vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
-    float gi = texture(importanceVolume, texPos.xyz).x; // sample importance from volume
+    float gi = clamp(texture(importanceVolume, texPos.xyz).x, 0.0, 1.0); // sample importance from volume
 #else
     float gi = color_.a;
 #endif
@@ -154,7 +170,8 @@ void main() {
     // Project importance
     float gisq = gi * gi;
     float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
-    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
+    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth);
+    Gd += 0.5 * gisq; // correct for importance sum approximation at discontinuity
     float alpha = clamp(1 /
                     (1 + pow(1 - gi, 2 * lambda)
                     * (r * max(0, Gd - gisq)

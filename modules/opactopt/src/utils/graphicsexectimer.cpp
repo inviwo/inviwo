@@ -27,44 +27,59 @@
  *
  *********************************************************************************/
 
-// Whole number pixel offsets (not necessary just to test the layout keyword !)
-layout(pixel_center_integer) in vec4 gl_FragCoord;
+#include <modules/opactopt/utils/graphicsexectimer.h>
 
-uniform ivec2 screenSize;
+namespace inviwo {
+namespace util {
 
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-uniform layout(r32i) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
-#else
-uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-uniform layout(size1x32) image2DArray opticalDepthCoeffs;
-#endif
+GraphicsExecTimer::GraphicsExecTimer() {}
 
-
-void main() {
-    const ivec2 coords = ivec2(gl_FragCoord.xy);
-
-    if (coords.x >= 0 && coords.y >= 0 && coords.x < screenSize.x &&
-        coords.y < screenSize.y) {
-        // clear coefficient buffers
-        #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-        for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
-            imageStore(importanceSumCoeffs[0], ivec3(coords, i), ivec4(0));
-            imageStore(importanceSumCoeffs[1], ivec3(coords, i), ivec4(0));
-        }
-        for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++) {
-            imageStore(opticalDepthCoeffs, ivec3(coords, i), ivec4(0));
-        }
-        #else
-        for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
-            imageStore(importanceSumCoeffs[0], ivec3(coords, i), vec4(0));
-            imageStore(importanceSumCoeffs[1], ivec3(coords, i), vec4(0));
-        }
-        for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++) {
-            imageStore(opticalDepthCoeffs, ivec3(coords, i), vec4(0));
-        }
-        #endif
-    }
-
-    discard;
+void GraphicsExecTimer::setTimers(Int64Property* total, std::vector<Int64Property*> t) {
+    totalTimer = total;
+    N = t.size();
+    timers = t;
+    queries = std::vector<GLuint>(N + 1, 0);
 }
+
+void GraphicsExecTimer::reset(int mode) {
+    timingMode = mode;
+    if (timingMode) {
+        curr = 0;
+        glGenQueries(N + 1, &queries[0]);
+    }
+    LGL_ERROR;
+}
+
+void GraphicsExecTimer::addCounter() {
+    if (timingMode == 1) {
+        if (curr == 0 || curr == N) glQueryCounter(queries[curr], GL_TIMESTAMP);
+        curr++;
+        if (curr == N + 1) finish();
+    } else if (timingMode == 2) {
+        glQueryCounter(queries[curr++], GL_TIMESTAMP);
+        if (curr == N + 1) finish();
+    }
+    LGL_ERROR;
+}
+
+void GraphicsExecTimer::finish() {
+    GLint available = 0;
+    while (!available) glGetQueryObjectiv(queries[N], GL_QUERY_RESULT_AVAILABLE, &available);
+    GLuint64 timeStart, timeEnd;
+
+    if (timingMode == 1) {
+        glGetQueryObjectui64v(queries[0], GL_QUERY_RESULT, &timeStart);
+        glGetQueryObjectui64v(queries[N], GL_QUERY_RESULT, &timeEnd);
+        *totalTimer = timeEnd - timeStart;
+    } else if (timingMode == 2) {
+        for (int i = 0; i < N; i++) {
+            glGetQueryObjectui64v(queries[i], GL_QUERY_RESULT, &timeStart);
+            glGetQueryObjectui64v(queries[i + 1], GL_QUERY_RESULT, &timeEnd);
+            *timers[i] = timeEnd - timeStart;
+        }
+    }
+    LGL_ERROR;
+}
+
+}  // namespace util
+}  // namespace inviwo

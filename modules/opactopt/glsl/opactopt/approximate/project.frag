@@ -51,7 +51,10 @@
 uniform vec2 reciprocalDimensions;
 
 uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+#ifndef USE_EXACT_BLENDING
 uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+#endif
+
 uniform sampler3D importanceVolume;
 uniform CameraParameters camera;
 uniform VolumeParameters importanceVolumeParameters;
@@ -73,6 +76,13 @@ smooth in vec4 fragPos;
 #ifdef PIECEWISE
     #include "opactopt/approximate/piecewise.glsl"
 #endif
+#ifdef POWER_MOMENTS
+    #include "opactopt/approximate/powermoments.glsl"
+#endif
+#ifdef TRIG_MOMENTS
+    #include "opactopt/approximate/trigmoments.glsl"
+#endif
+
 
 // Converts depths from screen space to clip space
 void lineariseDepths(uint pixelIdx);
@@ -104,7 +114,7 @@ void main() {
                 vec4 worldPos = camera.clipToWorld * clip;
                 worldPos /= worldPos.w;
                 vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
-                data.z = texture(importanceVolume, texPos.xyz).x; // sample importance from volume
+                data.z = clamp(texture(importanceVolume, texPos.xyz).x, 0.0, 1.0); // sample importance from volume
                 writePixelStorage(idx - 1, data);
             #endif
             project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, data.y, data.z * data.z);
