@@ -5,7 +5,6 @@ set(dependencies
     InviwoOpenGLModule
     InviwoBaseModule
     InviwoBaseGLModule
-    InviwoDataFrameModule
 )
 set(EnableByDefault ON)
 

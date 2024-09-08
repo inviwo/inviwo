@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#define PI 3.141592653
-#define TWOPI 6.283185307
+#define PI 3.1415926535897932384626433832795
+#define TWOPI 6.283185307179586476925286766559
 
 #ifdef COEFF_TEX_FIXED_POINT_FACTOR
 void project(layout(r32i) iimage2DArray coeffTex, int N, float depth, float val)
@@ -55,14 +55,17 @@ void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float v
             projVal = val * sinktheta;
         }
 
+        // increment k
         if (i % 2 == 0 && i != 0) {
             coskm1theta = cosktheta;
             sinkm1theta = sinktheta;
         }
 
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-        imageAtomicAdd(coeffTex, coord, int(projVal * float(COEFF_TEX_FIXED_POINT_FACTOR)));
+#if defined(COEFF_TEX_FIXED_POINT_FACTOR)
+        imageAtomicAdd(coeffTex, coord, int(projVal * COEFF_TEX_FIXED_POINT_FACTOR));
+#elif defined(COEFF_TEX_ATOMIC_FLOAT)
+        imageAtomicAdd(coeffTex, coord, projVal);
 #else
         float currVal = imageLoad(coeffTex, coord).x;
         imageStore(coeffTex, coord, vec4(currVal + projVal));
@@ -89,7 +92,7 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
     for (int i = 0; i < N; i++) {
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
 #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-        float coeff = float(imageLoad(coeffTex, coord).x) / float(COEFF_TEX_FIXED_POINT_FACTOR);
+        float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
 #else
         float coeff = imageLoad(coeffTex, coord).x;
 #endif
@@ -122,8 +125,7 @@ float total(layout(size1x32) image2DArray coeffTex, int N)
 #endif
 {
 #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-    return float(imageLoad(coeffTex, ivec3(gl_FragCoord.xy, 0)).x) /
-           float(COEFF_TEX_FIXED_POINT_FACTOR);
+    return float(imageLoad(coeffTex, ivec3(gl_FragCoord.xy, 0)).x) / COEFF_TEX_FIXED_POINT_FACTOR;
 #else
     return imageLoad(coeffTex, ivec3(gl_FragCoord.xy, 0)).x;
 #endif

@@ -30,6 +30,7 @@
 
 #include <modules/opactopt/opactoptmoduledefine.h>
 
+#include <math.h>
 #include <string>
 #include <map>
 #include <tuple>
@@ -53,14 +54,20 @@ struct IVW_MODULE_OPACTOPT_API ApproximationProperties {
     std::string shaderFile;
     int minCoefficients;
     int maxCoefficients;
+    int increment;
 };
 
 const std::map<std::string, const ApproximationProperties> approximations{
-    {"fourier", {"Fourier", "FOURIER", "opactopt/approximate/fourier.glsl", 1, 31}},
-    {"legendre", {"Legendre", "LEGENDRE", "opactopt/approximate/legendre.glsl", 1, 31}},
-    {"piecewise", {"Piecewise", "PIECEWISE", "opactopt/approximate/piecewise.glsl", 1, 30}}};
+    {"fourier", {"Fourier", "FOURIER", "opactopt/approximate/fourier.glsl", 1, 31, 1}},
+    {"legendre", {"Legendre", "LEGENDRE", "opactopt/approximate/legendre.glsl", 1, 31, 1}},
+    {"piecewise", {"Piecewise", "PIECEWISE", "opactopt/approximate/piecewise.glsl", 1, 30, 1}},
+    {"powermoments",
+     {"Power moments", "POWER_MOMENTS", "opactopt/approximate/powermoments.glsl", 5, 9, 2}},
+    {"trigmoments",
+     {"Trigonometric moments", "TRIG_MOMENTS", "opactopt/approximate/trigmoments.glsl", 5, 9, 2}}};
 
 double choose(double n, double k);
+std::vector<OptionPropertyStringOption> generateApproximationStringOptions();
 std::vector<float> generateLegendreCoefficients();
 
 struct IVW_MODULE_OPACTOPT_API DebugApproximationCoeffs {
@@ -80,14 +87,30 @@ public:
     DebugBuffer();
     void initialiseDebugBuffer();
     void retrieveDebugInfo(int nIsc, int nOdc);
-    void exportDebugInfo(std::filesystem::path path, const ApproximationProperties ap, int q, int r,
-                         int lambda);
+    void exportDebugInfo(std::filesystem::path path, const ApproximationProperties ap, float q, float r,
+                         float lambda);
 
 private:
-    BufferObject debugApproximationCoeffsBuffer_, debugFragmentsBuffer_;
+    const int debugApproxSamples_ = 10000;
+    BufferObject debugApproximationCoeffsBuffer_, debugFragmentsBuffer_, debugApproxSamplesBuffer_;
     DebugApproximationCoeffs debugCoeffs_;
     std::vector<DebugFragment> debugFrags;
+    std::vector<float> debugImportanceSumSamples_, debugOpticalDepthSamples_;
 };
+
+class MomentSettings {
+public:
+    const float wrapping_zone_angle = 0.1f * M_PI;
+    const float overestimation = 0.25;
+    MomentSettings();
+
+private:
+    BufferObject momentSettingsBuffer_;
+    float circleToParameter(float angle, float* pOutMaxParameter);
+    void computeWrappingZoneParameters(glm::vec4& p_out_wrapping_zone_parameters,
+                                       float new_wrapping_zone_angle);
+};
+
 
 }  // namespace Approximations
 
