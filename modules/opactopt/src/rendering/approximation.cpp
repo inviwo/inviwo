@@ -36,6 +36,18 @@ double choose(double n, double k) {
     return (n * choose(n - 1, k - 1)) / k;
 }
 
+std::vector<OptionPropertyStringOption> generateApproximationStringOptions() {
+    int n = approximations.size();
+    std::vector<OptionPropertyStringOption> options;
+    options.reserve(n);
+
+    for (auto const& [key, val] : approximations) {
+        OptionPropertyStringOption option(key, val.name, key);
+        options.push_back(option);
+    }
+    return options;
+}
+
 std::vector<float> generateLegendreCoefficients() {
     double maxDegree = Approximations::approximations.at("legendre").maxCoefficients - 1;
     std::vector<float> coeffs;

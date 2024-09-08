@@ -43,6 +43,12 @@ layout(std430, binding = 10) buffer debugCoeffs {
 
 uniform ImageParameters imageParameters;
 uniform sampler2D imageColor;
+
+#ifdef BACKGROUND_AVAILABLE
+uniform ImageParameters bgParameters;
+uniform sampler2D bgColor;
+#endif
+
 uniform layout(r32i) iimage2DArray importanceSumCoeffs[2];
 uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
 
@@ -55,16 +61,39 @@ uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
 #ifdef PIECEWISE
     #include "opactopt/approximate/piecewise.glsl"
 #endif
+#ifdef POWER_MOMENTS
+    #include "opactopt/approximate/powermoments.glsl"
+#endif
+#ifdef TRIG_MOMENTS
+    #include "opactopt/approximate/trigmoments.glsl"
+#endif
 
 void main(void) {
     // normalise colour
     vec4 color = texelFetch(imageColor, ivec2(gl_FragCoord.xy), 0);
-    color.rgb /= color.a;
+
+    #ifdef NORMALISE
+    if (color.a != 0.0)
+        color.rgb /= color.a; // divide by normalisation weight
+    #endif
 
     // set alpha using optical depth
     float tauall = total(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS);
-    if (color.a != 0.0)
-        color.a = 1.0 - exp(-tauall);
+
+    color.a = color.a == 0.0 ? 0.0 : 1.0 - exp(-tauall);
+
+    #ifdef BACKGROUND_AVAILABLE
+        #ifdef NORMALISE
+            color.rgb = color.a * color.rgb + (1 - color.a) * texelFetch(bgColor, ivec2(gl_FragCoord.xy), 0).rgb;
+        #else
+            color.rgb = color.a * color.rgb + (1 - color.a) * texelFetch(bgColor, ivec2(gl_FragCoord.xy), 0).rgb;
+        #endif
+    #else
+        #ifdef NORMALISE
+            color.rgb = color.a * color.rgb;
+        #endif
+    #endif
+
 
     #ifdef DEBUG
         if (ivec2(gl_FragCoord.xy) == debugCoords) {

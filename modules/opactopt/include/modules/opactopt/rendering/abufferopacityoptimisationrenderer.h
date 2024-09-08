@@ -39,12 +39,12 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPACTOPT_API ApproximateOpacityOptimisationRenderer
+class IVW_MODULE_OPACTOPT_API AbufferOpacityOptimisationRenderer
     : public OpacityOptimisationRenderer {
 
 public:
 
-    ApproximateOpacityOptimisationRenderer(
+    AbufferOpacityOptimisationRenderer(
         const Approximations::ApproximationProperties* p, CameraProperty* c, int isc, int odc,
         int gaussianRadius = 3, float sigma = 1.0f);
 
@@ -54,6 +54,8 @@ public:
     void setDescriptor(const Approximations::ApproximationProperties* const p);
     void setImportanceSumCoeffs(int isc);
     void setOpticalDepthCoeffs(int odc);
+    void setExactBlending(bool eb);
+    void setNormalisedBlending(bool nb);
     void generateAndUploadGaussianKernel(int radius, float sigma, bool force = false);
     void generateAndUploadLegendreCoefficients(bool force = false);
 
@@ -75,6 +77,8 @@ private:
 
     int nImportanceSumCoefficients_;
     int nOpticalDepthCoefficients_;
+    bool useExactBlending_ = false;
+    bool normalisedBlending_ = true;
     Texture2DArray importanceSumTexture_[2];
     Texture2DArray opticalDepthTexture_;
     TextureUnit *abuffUnit_, *importanceSumUnitMain_, *importanceSumUnitSmooth_, *opticalDepthUnit_;

@@ -53,14 +53,20 @@ struct IVW_MODULE_OPACTOPT_API ApproximationProperties {
     std::string shaderFile;
     int minCoefficients;
     int maxCoefficients;
+    int increment;
 };
 
 const std::map<std::string, const ApproximationProperties> approximations{
-    {"fourier", {"Fourier", "FOURIER", "opactopt/approximate/fourier.glsl", 1, 31}},
-    {"legendre", {"Legendre", "LEGENDRE", "opactopt/approximate/legendre.glsl", 1, 31}},
-    {"piecewise", {"Piecewise", "PIECEWISE", "opactopt/approximate/piecewise.glsl", 1, 30}}};
+    {"fourier", {"Fourier", "FOURIER", "opactopt/approximate/fourier.glsl", 1, 31, 1}},
+    {"legendre", {"Legendre", "LEGENDRE", "opactopt/approximate/legendre.glsl", 1, 31, 1}},
+    {"piecewise", {"Piecewise", "PIECEWISE", "opactopt/approximate/piecewise.glsl", 1, 30, 1}},
+    {"powermoments",
+     {"Power moments", "POWER_MOMENTS", "opactopt/approximate/powermoments.glsl", 5, 9, 2}},
+    {"trigmoments",
+     {"Trigonometric moments", "TRIG_MOMENTS", "opactopt/approximate/trigmoments.glsl", 5, 9, 2}}};
 
 double choose(double n, double k);
+std::vector<OptionPropertyStringOption> generateApproximationStringOptions();
 std::vector<float> generateLegendreCoefficients();
 
 struct IVW_MODULE_OPACTOPT_API DebugApproximationCoeffs {

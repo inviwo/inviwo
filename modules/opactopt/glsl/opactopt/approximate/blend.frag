@@ -42,6 +42,9 @@
 #include "oit/abufferlinkedlist.glsl"
 #include "oit/sort.glsl"
 #include "utils/structs.glsl"
+#ifdef USE_EXACT_BLENDING
+#include "oit/sort.glsl"
+#endif
 
 #ifdef DEBUG
 uniform ivec2 debugCoords;
@@ -62,13 +65,6 @@ layout(std430, binding = 11) buffer debugFragments {
 };
 #endif
 
-#ifdef BACKGROUND_AVAILABLE
-uniform ImageParameters bgParameters;
-uniform sampler2D bgColor;
-uniform sampler2D bgDepth;
-uniform vec2 reciprocalDimensions;
-#endif  // BACKGROUND_AVAILABLE
-
 uniform ivec2 screenSize;
 
 // Opacity optimisation settings
@@ -77,7 +73,9 @@ uniform float r;
 uniform float lambda;
 
 uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+#ifndef USE_EXACT_BLENDING
 uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+#endif
 
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;
@@ -94,6 +92,12 @@ smooth in vec4 fragPos;
 #ifdef PIECEWISE
     #include "opactopt/approximate/piecewise.glsl"
 #endif
+#ifdef POWER_MOMENTS
+    #include "opactopt/approximate/powermoments.glsl"
+#endif
+#ifdef TRIG_MOMENTS
+    #include "opactopt/approximate/trigmoments.glsl"
+#endif
 
 // Resolve A-Buffer and blend sorted fragments
 void main() {
@@ -107,13 +111,38 @@ void main() {
     uint pixelIdx = getPixelLink(coords);
 
     if (pixelIdx > 0) {
-        float backgroundDepth = 1.0;
         // Perform opacity optimisation and compositing
         uint idx = pixelIdx;
+        vec4 color = vec4(0);
 
         // Optimise opacities and project optical depth coefficients
         float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
-        idx = pixelIdx;
+
+#ifdef USE_EXACT_BLENDING
+        // front-to-back compositing
+        uint lastPtr = 0;
+        vec4 nextFragment = selectionSortNext(pixelIdx, 0.0, lastPtr);
+        abufferPixel unpackedFragment = uncompressPixelData(nextFragment);
+        
+        while (unpackedFragment.depth >= 0 && unpackedFragment.depth <= 1.0) {
+            vec4 c = unpackedFragment.color;
+
+            float gi = clamp(c.a, 0.001, 0.999);
+            float gisq = gi * gi;
+            float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, unpackedFragment.depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
+            float alpha = clamp(1 /
+                            (1 + pow(1 - gi, 2 * lambda)
+                            * (r * max(0, Gd - gisq)
+                            + q * max(0, gtot - Gd))),
+                            0.0, 0.9999); // set pixel alpha using opacity optimisation
+
+            color.rgb += (1 - color.a) * alpha * c.rgb;
+            color.a += (1 - color.a) * alpha;
+
+            nextFragment = selectionSortNext(pixelIdx, unpackedFragment.depth, lastPtr);
+            unpackedFragment = uncompressPixelData(nextFragment);
+        }
+#else
         int counter = 0;
         while (idx != 0 && counter < ABUFFER_SIZE) {
             vec4 data = readPixelStorage(idx - 1);
@@ -181,12 +210,18 @@ void main() {
         }
         #endif
 
-        vec4 color = vec4(0);
-        color.rgb = numerator / denominator;
         if (denominator != 0.0)
             color.a = 1 - exp(-tauall);
 
-//        FragData0 = vec4(imageLoad(importanceSumCoeffs[0], ivec3(gl_FragCoord.xy, 0)).x, 0, 0, 1.0);
+        color.rgb = numerator;
+        #ifdef NORMALISE
+            color.rgb /= denominator;
+        #else
+            color.rgb /= color.a; // no alpha for non normalised blending
+        #endif
+
+#endif // !ifdef USE_EXACT_BLENDING
+
         FragData0 = color;
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
     } else {  // no pixel found

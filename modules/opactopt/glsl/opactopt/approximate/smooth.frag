@@ -72,12 +72,19 @@ smooth in vec4 fragPos;
 // Resolve A-Buffer and blend sorted fragments
 void main() {
     ivec2 coords = ivec2(gl_FragCoord.xy);
-//    if (imageLoad(importanceSumCoeffs[0], ivec3(coords, 0)).x == 0) return;
 
     #if HORIZONTAL == 1
         ivec2 dir = ivec2(1, 0);
     #else
         ivec2 dir = ivec2(0, 1);
+    #endif
+
+    #if defined(USE_ABUFFER)
+        if (getPixelLink(coords) == 0) return;
+    #elif defined(USE_PICK_IMAGE)
+        if (texelFetch(imagePicking, coords, 0).a == 0.0) return;
+    #else
+        if (imageLoad(importanceSumCoeffs[0], ivec3(coords, 0)).x == 0) return;
     #endif
 
     for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
@@ -106,8 +113,8 @@ void main() {
                 float coeff = imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x;
             #endif
 
-            val += kernel[radius + j] * coeff;
-            kernel_sum += kernel[radius + j];
+            val += kernel[abs(j)] * coeff;
+            kernel_sum += kernel[abs(j)];
         }
         val /= kernel_sum;
 

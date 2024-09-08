@@ -61,14 +61,14 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPACTOPT_API DirectOpacityOptimisationRenderer : public Processor {
+class IVW_MODULE_OPACTOPT_API DirectOpacityOptimisation : public Processor {
 public:
-    DirectOpacityOptimisationRenderer();
+    DirectOpacityOptimisation();
 
-    DirectOpacityOptimisationRenderer(const DirectOpacityOptimisationRenderer&) = delete;
-    DirectOpacityOptimisationRenderer& operator=(const DirectOpacityOptimisationRenderer&) = delete;
+    DirectOpacityOptimisation(const DirectOpacityOptimisation&) = delete;
+    DirectOpacityOptimisation& operator=(const DirectOpacityOptimisation&) = delete;
 
-    virtual ~DirectOpacityOptimisationRenderer();
+    virtual ~DirectOpacityOptimisation();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -124,7 +124,7 @@ protected:
     Shader pointShaders_[3];
 
     // Screen space shaders
-    Shader smoothH_, smoothV_, clear_, normalise_, background_;
+    Shader smoothH_, smoothV_, clear_, normalise_;
 
     // Optional importance volume
     VolumeInport importanceVolume_;
@@ -135,6 +135,7 @@ protected:
     OptionProperty<std::string> approximationMethod_;
     const Approximations::ApproximationProperties* ap_;
     IntProperty importanceSumCoefficients_, opticalDepthCoefficients_;
+    BoolProperty normalisedBlending_;
     FloatProperty coeffTexFixedPointFactor_;
 
     TextureUnitContainer textureUnits_;

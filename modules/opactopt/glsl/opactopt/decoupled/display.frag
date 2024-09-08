@@ -127,7 +127,7 @@ void main() {
 
                 writePixelStorage(idx - 1, data);
             #endif
-            float gi = clamp(data.z, 0.001, 0.999);
+            float gi = data.z;
             if (data.y >= 0 && data.y <= backgroundDepth)
                 gall += gi * gi;
             idx = floatBitsToUint(readPixelStorage(idx - 1).x);
@@ -144,15 +144,18 @@ void main() {
         while (unpackedFragment.depth >= 0 && unpackedFragment.depth <= backgroundDepth) {
             vec4 c = unpackedFragment.color;
 
-            float gi = clamp(c.a, 0.001, 0.999);
+            float gi = c.a;
             float gb = gall - gi * gi - gf;
 
-            c.a = 1 / (1 + pow(1 - gi, 2 * lambda) * (r * gf + q * gb)); // set alpha by opacity optimisation
-            c.a = clamp(c.a, 0.0, 1.0);
+            float alpha = clamp(1 /
+                    (1 + pow(1 - gi, 2 * lambda)
+                    * (r * gf
+                    + q * gb)),
+                    0.0, 0.9999); // set alpha by opacity optimisation
             gf += gi * gi;
 
-            color.rgb += (1 - color.a) * c.a * c.rgb;
-            color.a += (1 - color.a) * c.a;
+            color.rgb += (1 - color.a) * alpha * c.rgb;
+            color.a += (1 - color.a) * alpha;
 
             nextFragment = selectionSortNext(pixelIdx, unpackedFragment.depth, lastPtr);
             unpackedFragment = uncompressPixelData(nextFragment);
