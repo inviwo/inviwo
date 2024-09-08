@@ -27,44 +27,36 @@
  *
  *********************************************************************************/
 
-// Whole number pixel offsets (not necessary just to test the layout keyword !)
-layout(pixel_center_integer) in vec4 gl_FragCoord;
+#pragma once
 
-uniform ivec2 screenSize;
+#include <modules/opactopt/opactoptmoduledefine.h>
 
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-uniform layout(r32i) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
-#else
-uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-uniform layout(size1x32) image2DArray opticalDepthCoeffs;
-#endif
+#include <vector>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/opengl/inviwoopengl.h>
 
+namespace inviwo {
+namespace util {
 
-void main() {
-    const ivec2 coords = ivec2(gl_FragCoord.xy);
+class IVW_MODULE_OPACTOPT_API GraphicsExecTimer {
+    int timingMode = 0;
+    int N = 0;
+    int curr = 0;
+    Int64Property* totalTimer;
+    std::vector<Int64Property*> timers;
+    GLuint totalQuery[2];
+    std::vector<GLuint> queries;
 
-    if (coords.x >= 0 && coords.y >= 0 && coords.x < screenSize.x &&
-        coords.y < screenSize.y) {
-        // clear coefficient buffers
-        #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-        for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
-            imageStore(importanceSumCoeffs[0], ivec3(coords, i), ivec4(0));
-            imageStore(importanceSumCoeffs[1], ivec3(coords, i), ivec4(0));
-        }
-        for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++) {
-            imageStore(opticalDepthCoeffs, ivec3(coords, i), ivec4(0));
-        }
-        #else
-        for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
-            imageStore(importanceSumCoeffs[0], ivec3(coords, i), vec4(0));
-            imageStore(importanceSumCoeffs[1], ivec3(coords, i), vec4(0));
-        }
-        for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++) {
-            imageStore(opticalDepthCoeffs, ivec3(coords, i), vec4(0));
-        }
-        #endif
-    }
+public:
+    GraphicsExecTimer();
 
-    discard;
-}
+    void setTimers(Int64Property* total, std::vector<Int64Property*> t);
+    void reset(int mode);
+    void addCounter();
+
+private:
+    void finish();
+};
+
+}  // namespace util
+}  // namespace inviwo
