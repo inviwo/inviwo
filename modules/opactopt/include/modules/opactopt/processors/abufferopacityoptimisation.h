@@ -31,9 +31,9 @@
 
 #include <modules/opactopt/opactoptmoduledefine.h>
 
+#include <modules/opactopt/rendering/abufferopacityoptimisationrenderer.h>
 #include <modules/opactopt/rendering/approximation.h>
 #include <modules/oit/processors/rasterizationrenderer.h>  // for RasterizationRenderer
-#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/properties/fileproperty.h>
 
 #include <inviwo/core/interaction/cameratrackball.h>  // for CameraTrackball
@@ -49,9 +49,9 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPACTOPT_API OpacityOptimiser : public RasterizationRenderer {
+class IVW_MODULE_OPACTOPT_API AbufferOpacityOptimisation : public RasterizationRenderer {
 public:
-    OpacityOptimiser();
+    AbufferOpacityOptimisation();
     virtual const ProcessorInfo getProcessorInfo() const override;
     virtual void process() override;
 
@@ -61,16 +61,24 @@ private:
     VolumeInport importanceVolume_;
 
     FloatProperty q_, r_, lambda_;
-    OptionPropertyInt opacityOptimisationRenderer_;
+    AbufferOpacityOptimisationRenderer* aoor_;
     CompositeProperty approximationProperties_;
     OptionProperty<std::string> approximationMethod_;
     IntProperty importanceSumCoefficients_, opticalDepthCoefficients_;
+    BoolProperty useExactBlending_;
+    BoolProperty normalisedBlending_;
     BoolCompositeProperty smoothing_;
     IntProperty gaussianKernelRadius_;
     FloatProperty gaussianKernelSigma_;
     ButtonProperty debugApproximation_;
     IntVec2Property debugCoords_;
     FileProperty debugFileName_;
+
+    inviwo::util::GraphicsExecTimer execTimer;
+    IntProperty timingMode_;  // 0 off, 1 total, 2 per pass
+    Int64Property timeTotal_, timeSetup_, timeRasterisation_, timeProjection_, timeSmoothing_,
+        timeBlending_;
+    Int64Property nfrags_;
 };
 
 }  // namespace inviwo
