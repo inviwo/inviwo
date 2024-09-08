@@ -43,8 +43,20 @@ layout(std430, binding = 10) buffer debugCoeffs {
 
 uniform ImageParameters imageParameters;
 uniform sampler2D imageColor;
-uniform layout(r32i) iimage2DArray importanceSumCoeffs[2];
+
+#ifdef BACKGROUND_AVAILABLE
+uniform ImageParameters bgParameters;
+uniform sampler2D bgColor;
+#endif
+
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+uniform layout(r32i) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
 uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
+#else
+uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+#endif
+
 
 #ifdef FOURIER
     #include "opactopt/approximate/fourier.glsl"
@@ -55,23 +67,52 @@ uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
 #ifdef PIECEWISE
     #include "opactopt/approximate/piecewise.glsl"
 #endif
+#ifdef POWER_MOMENTS
+    #include "opactopt/approximate/powermoments.glsl"
+#endif
+#ifdef TRIG_MOMENTS
+    #include "opactopt/approximate/trigmoments.glsl"
+#endif
 
 void main(void) {
     // normalise colour
     vec4 color = texelFetch(imageColor, ivec2(gl_FragCoord.xy), 0);
-    color.rgb /= color.a;
+
+    #ifdef NORMALISE
+    if (color.a != 0.0)
+        color.rgb /= color.a; // divide by normalisation weight
+    #endif
 
     // set alpha using optical depth
     float tauall = total(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS);
-    if (color.a != 0.0)
-        color.a = 1.0 - exp(-tauall);
+
+    color.a = color.a == 0.0 ? 0.0 : 1.0 - exp(-tauall);
+
+    #ifdef BACKGROUND_AVAILABLE
+        #ifdef NORMALISE
+            color.rgb = color.a * color.rgb + (1 - color.a) * texelFetch(bgColor, ivec2(gl_FragCoord.xy), 0).rgb;
+        #else
+            color.rgb = color.rgb + (1 - color.a) * texelFetch(bgColor, ivec2(gl_FragCoord.xy), 0).rgb;
+        #endif
+    #else
+        #ifdef NORMALISE
+            color.rgb = color.a * color.rgb;
+        #endif
+    #endif
 
     #ifdef DEBUG
         if (ivec2(gl_FragCoord.xy) == debugCoords) {
+        #ifdef COEFF_TEX_FIXED_POINT_FACTOR
             for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++)
                 debugImportanceCoeffs[i] = imageLoad(importanceSumCoeffs[0], ivec3(debugCoords, i)).x / COEFF_TEX_FIXED_POINT_FACTOR;
             for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++)
                 debugOpticalCoeffs[i] = imageLoad(opticalDepthCoeffs, ivec3(debugCoords, i)).x / COEFF_TEX_FIXED_POINT_FACTOR;
+        #else
+            for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++)
+                debugImportanceCoeffs[i] = imageLoad(importanceSumCoeffs[0], ivec3(debugCoords, i)).x;
+            for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++)
+                debugOpticalCoeffs[i] = imageLoad(opticalDepthCoeffs, ivec3(debugCoords, i)).x;
+        #endif
         }
     #endif
 
