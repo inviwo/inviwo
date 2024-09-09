@@ -246,12 +246,12 @@ jobs:
     - name: Configure build environment
       uses: ./inviwo/.github/actions/configure-build-env
 
-    - name: "CMake Workflow"
+    - name: "CMake Config"
       shell: bash
       run: |
         echo "::add-matcher::inviwo/.github/matchers/windows.json"
         cd inviwo
-        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake --workflow --preset msvc-dev-installer \
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake --preset msvc-user \
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake \
         -DVCPKG_INSTALL_OPTIONS='--clean-after-build' \
         -DCMAKE_C_COMPILER_LAUNCHER=ccache \
@@ -260,6 +260,24 @@ jobs:
         echo "::remove-matcher owner=compiler::"
         echo "::remove-matcher owner=linker::"
 
+    - name: "CMake Build debug"
+      shell: bash
+      run: |
+        cd inviwo
+        cmake --build --preset msvc-user-debug
+
+    - name: "CMake Build release"
+      shell: bash
+      run: |
+        cd inviwo
+        cmake --build --preset msvc-user-debug
+
+    - name: "CPack package"
+      shell: bash
+      run: |
+        cd inviwo
+        cpack --preset msvc-user
+    
     - name: "Upload installer"
       uses: actions/upload-artifact@v4
       with:
