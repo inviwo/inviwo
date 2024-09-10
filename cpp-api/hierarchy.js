@@ -395,6 +395,7 @@ var hierarchy =
     [ "inviwo::DataTraits< std::vector< T *, A > >", "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01T_01_5_00_01A_01_4_01_4.html", null ],
     [ "inviwo::DataTraits< std::vector< T, A > >", "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01T_00_01A_01_4_01_4.html", null ],
     [ "inviwo::DataTraits< T, std::enable_if_t< DataFormatBase::typeToId< T >() !=DataFormatId::NotSpecialized > >", "structinviwo_1_1DataTraits_3_01T_00_01std_1_1enable__if__t_3_01DataFormatBase_1_1typeToId_3_01T_88db01cc90e24a64181cb70f2e0412fb.html", null ],
+    [ "inviwo::DataTraits< TetraMesh >", "structinviwo_1_1DataTraits_3_01TetraMesh_01_4.html", null ],
     [ "inviwo::DataTraits< TransferFunction >", "structinviwo_1_1DataTraits_3_01TransferFunction_01_4.html", null ],
     [ "inviwo::DataVisualizer", "classinviwo_1_1DataVisualizer.html", [
       [ "inviwo::DataFrameTableVisualizer", "classinviwo_1_1DataFrameTableVisualizer.html", null ],
@@ -785,6 +786,9 @@ var hierarchy =
         [ "inviwo::TFSelector", "classinviwo_1_1TFSelector.html", null ],
         [ "inviwo::TMIP", "classinviwo_1_1TMIP.html", null ],
         [ "inviwo::TestMatrix", "classinviwo_1_1TestMatrix.html", null ],
+        [ "inviwo::TetraMeshBoundaryExtractor", "classinviwo_1_1TetraMeshBoundaryExtractor.html", null ],
+        [ "inviwo::TetraMeshBoundingBox", "classinviwo_1_1TetraMeshBoundingBox.html", null ],
+        [ "inviwo::TetraMeshVolumeRaycaster", "classinviwo_1_1TetraMeshVolumeRaycaster.html", null ],
         [ "inviwo::TextOverlayGL", "classinviwo_1_1TextOverlayGL.html", null ],
         [ "inviwo::Transform< T >", "classinviwo_1_1Transform.html", null ],
         [ "inviwo::TrianglesToWireframe", "classinviwo_1_1TrianglesToWireframe.html", null ],
@@ -833,6 +837,7 @@ var hierarchy =
         [ "inviwo::VolumeSubset", "classinviwo_1_1VolumeSubset.html", null ],
         [ "inviwo::VolumeToDataFrame", "classinviwo_1_1VolumeToDataFrame.html", null ],
         [ "inviwo::VolumeToSpatialSampler", "classinviwo_1_1VolumeToSpatialSampler.html", null ],
+        [ "inviwo::VolumeToTetraMesh", "classinviwo_1_1VolumeToTetraMesh.html", null ],
         [ "inviwo::WebBrowserProcessor", "classinviwo_1_1WebBrowserProcessor.html", null ],
         [ "inviwo::WorldTransformDeprecated< T >", "classinviwo_1_1WorldTransformDeprecated.html", null ],
         [ "inviwo::glui::GLUIProcessor", "classinviwo_1_1glui_1_1GLUIProcessor.html", null ],
@@ -1444,6 +1449,9 @@ var hierarchy =
       [ "inviwo::DataInport< std::vector< T > >", "classinviwo_1_1DataInport.html", null ],
       [ "inviwo::DataInport< T, N, Flat >", "classinviwo_1_1DataInport.html", null ]
     ] ],
+    [ "inviwo::InportIterable< DataInport< TetraMesh, 1, false >, TetraMesh, false >", "classinviwo_1_1InportIterable.html", [
+      [ "inviwo::DataInport< TetraMesh >", "classinviwo_1_1DataInport.html", null ]
+    ] ],
     [ "inviwo::InportIterable< DataInport< Tracer::Sampler::SpatialDimensions, 1, false >, Tracer::Sampler::SpatialDimensions, false >", "classinviwo_1_1InportIterable.html", [
       [ "inviwo::DataInport< Tracer::Sampler::SpatialDimensions >", "classinviwo_1_1DataInport.html", null ]
     ] ],
@@ -1553,6 +1561,7 @@ var hierarchy =
       [ "inviwo::Python3QtModule", "classinviwo_1_1Python3QtModule.html", null ],
       [ "inviwo::QtWidgetsModule", "classinviwo_1_1QtWidgetsModule.html", null ],
       [ "inviwo::SGCTModule", "classinviwo_1_1SGCTModule.html", null ],
+      [ "inviwo::TetraMeshModule", "classinviwo_1_1TetraMeshModule.html", null ],
       [ "inviwo::UserInterfaceGLModule", "classinviwo_1_1UserInterfaceGLModule.html", null ],
       [ "inviwo::VectorFieldVisualizationGLModule", "classinviwo_1_1VectorFieldVisualizationGLModule.html", null ],
       [ "inviwo::VectorFieldVisualizationModule", "classinviwo_1_1VectorFieldVisualizationModule.html", null ],
@@ -2599,6 +2608,11 @@ var hierarchy =
         [ "inviwo::DataOutport< std::vector< vec4 > >", "classinviwo_1_1DataOutport.html", null ]
       ] ]
     ] ],
+    [ "inviwo::OutportIterable< TetraMesh >", "structinviwo_1_1OutportIterable.html", [
+      [ "inviwo::OutportIterableImpl< DataOutport< TetraMesh >, TetraMesh >", "structinviwo_1_1OutportIterableImpl.html", [
+        [ "inviwo::DataOutport< TetraMesh >", "classinviwo_1_1DataOutport.html", null ]
+      ] ]
+    ] ],
     [ "inviwo::OutportIterable< Volume >", "structinviwo_1_1OutportIterable.html", [
       [ "inviwo::OutportIterableImpl< DataOutport< Volume >, Volume >", "structinviwo_1_1OutportIterableImpl.html", [
         [ "inviwo::DataOutport< Volume >", "classinviwo_1_1DataOutport.html", null ]
@@ -2683,6 +2697,7 @@ var hierarchy =
     [ "inviwo::ProcessorTraits< StreamLines3D >", "structinviwo_1_1ProcessorTraits_3_01StreamLines3D_01_4.html", null ],
     [ "inviwo::ProcessorTraits< Transform< Layer > >", "structinviwo_1_1ProcessorTraits_3_01Transform_3_01Layer_01_4_01_4.html", null ],
     [ "inviwo::ProcessorTraits< Transform< Mesh > >", "structinviwo_1_1ProcessorTraits_3_01Transform_3_01Mesh_01_4_01_4.html", null ],
+    [ "inviwo::ProcessorTraits< Transform< TetraMesh > >", "structinviwo_1_1ProcessorTraits_3_01Transform_3_01TetraMesh_01_4_01_4.html", null ],
     [ "inviwo::ProcessorTraits< Transform< Volume > >", "structinviwo_1_1ProcessorTraits_3_01Transform_3_01Volume_01_4_01_4.html", null ],
     [ "inviwo::ProcessorTraits< VectorToBuffer< T > >", "structinviwo_1_1ProcessorTraits_3_01VectorToBuffer_3_01T_01_4_01_4.html", null ],
     [ "inviwo::ProcessorTraits< WorldTransformDeprecated< Mesh > >", "structinviwo_1_1ProcessorTraits_3_01WorldTransformDeprecated_3_01Mesh_01_4_01_4.html", null ],
@@ -3261,6 +3276,7 @@ var hierarchy =
           [ "inviwo::DataInport< inviwo::SpatialSampler< dvec3 > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::Volume, 0, true >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< std::vector< std::shared_ptr< inviwo::Volume > > >", "classinviwo_1_1DataInport.html", null ],
+          [ "inviwo::DataInport< TetraMesh >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< std::vector< std::string > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::DataSequence< T > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< std::vector< T > >", "classinviwo_1_1DataInport.html", null ],
@@ -3297,6 +3313,7 @@ var hierarchy =
           [ "inviwo::DataOutport< std::vector< inviwo::Plane > >", "classinviwo_1_1DataOutport.html", null ],
           [ "inviwo::DataOutport< inviwo::SpatialSampler< dvec3 > >", "classinviwo_1_1DataOutport.html", null ],
           [ "inviwo::DataOutport< inviwo::Spatial4DSampler< dvec3 > >", "classinviwo_1_1DataOutport.html", null ],
+          [ "inviwo::DataOutport< TetraMesh >", "classinviwo_1_1DataOutport.html", null ],
           [ "inviwo::DataOutport< Handle >", "classinviwo_1_1DataOutport.html", null ],
           [ "inviwo::DataOutport< std::vector< vec4 > >", "classinviwo_1_1DataOutport.html", null ],
           [ "inviwo::BrushingAndLinkingOutport", "classinviwo_1_1BrushingAndLinkingOutport.html", null ],
@@ -3424,7 +3441,10 @@ var hierarchy =
       ] ],
       [ "inviwo::Mesh", "classinviwo_1_1Mesh.html", null ],
       [ "inviwo::SpatialIdentity", "classinviwo_1_1SpatialIdentity.html", null ],
-      [ "inviwo::StructuredGridEntity< N >", "classinviwo_1_1StructuredGridEntity.html", null ]
+      [ "inviwo::StructuredGridEntity< N >", "classinviwo_1_1StructuredGridEntity.html", null ],
+      [ "inviwo::TetraMesh", "classinviwo_1_1TetraMesh.html", [
+        [ "inviwo::VolumeTetraMesh", "classinviwo_1_1VolumeTetraMesh.html", null ]
+      ] ]
     ] ],
     [ "inviwo::SpatialSampler< ReturnType >", "classinviwo_1_1SpatialSampler.html", [
       [ "inviwo::TemplateImageSampler< ReturnType, DataType >", "classinviwo_1_1TemplateImageSampler.html", null ],
@@ -3473,6 +3493,7 @@ var hierarchy =
     [ "TemplatePropertyWidgetCEF", null, [
       [ "inviwo::OrdinalPropertyWidgetCEF< T >", "classinviwo_1_1OrdinalPropertyWidgetCEF.html", null ]
     ] ],
+    [ "inviwo::TetraMeshBuffers", "structinviwo_1_1TetraMeshBuffers.html", null ],
     [ "inviwo::TexAtlasEntry", "structinviwo_1_1TexAtlasEntry.html", null ],
     [ "inviwo::TexAtlasRenderInfo", "structinviwo_1_1TexAtlasRenderInfo.html", null ],
     [ "inviwo::utilgl::TexEnv", "structinviwo_1_1utilgl_1_1TexEnv.html", null ],

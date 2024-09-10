@@ -74,18 +74,19 @@ var NAVTREEINDEX =
 "classinviwo_1_1SharedLibrary.html",
 "classinviwo_1_1SpotLight.html#ab282b937949aea075e8e0683d9f1eff3",
 "classinviwo_1_1StructuredCoordinateTransformer.html#affe06bad32098d4c28addb9f0b091d2d",
-"classinviwo_1_1TextRenderer.html#aa75fb888c311acd89bdb3c1a27b2993f",
-"classinviwo_1_1TubeRendering.html#a32add5612e9563648810e8c3171e451d",
-"classinviwo_1_1VolumeLaplacianProcessor.html",
-"classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html#a776bbe370716bb297d98e871d832003e",
-"classinviwo_1_1animation_1_1MainAnimation.html",
-"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#a039a836e17061e09cb670a56b7e03af7",
-"conceptinviwo_1_1Settable.html",
-"namespaceinviwo_1_1meshutil.html",
-"namespaceinviwo_1_1util.html#ae10672d3ce62a8142941c05a182ca335",
-"structinviwo_1_1InviwoDefaults_3_01size__t_01_4.html",
-"structinviwo_1_1StandardEvaluationErrorHandler.html",
-"structinviwo_1_1resource_1_1RAM.html"
+"classinviwo_1_1TextOverlayGL.html#acfb36fb35fcf8c986eb72ca473a75806",
+"classinviwo_1_1TransformRasterization.html",
+"classinviwo_1_1VolumeInformationVisualizer.html",
+"classinviwo_1_1WorkspaceManager.html#a2ec67fa2a267bbd793fceef50db09f98",
+"classinviwo_1_1animation_1_1KeyframeObservable.html",
+"classinviwo_1_1plot_1_1AxisProperty.html#a79773801e3f0355c18722f828d93bdc4",
+"classinviwo_1_1util_1_1Permutations.html",
+"namespaceinviwo_1_1dispatching_1_1filter.html",
+"namespaceinviwo_1_1util.html#abb89ce7475c175642c1af64b4968977e",
+"structinviwo_1_1FlagsFormatter.html",
+"structinviwo_1_1ResourceMeta.html",
+"structinviwo_1_1hdf5_1_1TypeMap_3_01char_01_4.html",
+"structinviwo_1_1utilgl_1_1Viewport.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

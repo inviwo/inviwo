@@ -224,6 +224,18 @@ var group__datastructures =
     [ "inviwo::VolumePy", "classinviwo_1_1VolumePy.html", [
       [ "setSwizzleMask", "classinviwo_1_1VolumePy.html#a81c78760e3ee150ea6722831d0844379", null ]
     ] ],
+    [ "inviwo::TetraMesh", "classinviwo_1_1TetraMesh.html", [
+      [ "get", "classinviwo_1_1TetraMesh.html#a30eee0cb8da04c164b144336da062020", null ],
+      [ "getBoundingBox", "classinviwo_1_1TetraMesh.html#ac7c7b1ff0cac8fc73b27fbfeeb7e5cfd", null ],
+      [ "getDataRange", "classinviwo_1_1TetraMesh.html#a5cffd83b9a73015ded6808b144800e60", null ]
+    ] ],
+    [ "inviwo::VolumeTetraMesh", "classinviwo_1_1VolumeTetraMesh.html", [
+      [ "get", "classinviwo_1_1VolumeTetraMesh.html#aeda37d2fa8020a7920d5c621a0626f3e", null ],
+      [ "getAxis", "classinviwo_1_1VolumeTetraMesh.html#aabda8b3ec7baba6b6fa75c1d05f69895", null ],
+      [ "getBoundingBox", "classinviwo_1_1VolumeTetraMesh.html#addf8f3924248adcf2f476bc76814da57", null ],
+      [ "getDataRange", "classinviwo_1_1VolumeTetraMesh.html#abe3cd1a8801029771b762afeab897505", null ],
+      [ "setData", "classinviwo_1_1VolumeTetraMesh.html#a1e7d021b6485855ed842c2704e880a12", null ]
+    ] ],
     [ "inviwo::TypedMesh< BufferTraits >", "classinviwo_1_1TypedMesh.html", [
       [ "addVertex", "classinviwo_1_1TypedMesh.html#a827a74be2582dbde141ec2a2c1cbd05b", null ],
       [ "addVertices", "classinviwo_1_1TypedMesh.html#a50d621b6246bf8320aa072fb964e669a", null ],
