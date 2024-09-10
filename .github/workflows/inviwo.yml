@@ -227,61 +227,6 @@ jobs:
       with:
         limit-access-to-actor: true
 
-
-  devinstall:
-    name: Windows Development Installer
-    if: github.ref != 'refs/heads/master'
-    runs-on: windows-latest
-    timeout-minutes: 720
-    steps:
-    - name: "Clone Inviwo"
-      uses: actions/checkout@v4
-      with:
-        path: inviwo
-        submodules: false
-
-    - name: Install dependencies
-      uses: ./inviwo/.github/actions/install-dependencies
-
-    - name: Configure build environment
-      uses: ./inviwo/.github/actions/configure-build-env
-
-    - name: "CMake Config"
-      shell: bash
-      run: |
-        echo "::add-matcher::inviwo/.github/matchers/windows.json"
-        cd inviwo
-        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake --preset msvc-user \
-        --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake \
-        -DVCPKG_INSTALL_OPTIONS='--clean-after-build' \
-        -DIVW_CFG_USE_CCACHE_MSVC=ON
-        echo "::remove-matcher owner=compiler::"
-        echo "::remove-matcher owner=linker::"
-
-    - name: "CMake Build debug"
-      shell: bash
-      run: |
-        cd inviwo
-        cmake --build --preset msvc-user-debug
-
-    - name: "CMake Build release"
-      shell: bash
-      run: |
-        cd inviwo
-        cmake --build --preset msvc-user-debug
-
-    - name: "CPack package"
-      shell: bash
-      run: |
-        cd inviwo
-        cpack --preset msvc-user
-    
-    - name: "Upload installer"
-      uses: actions/upload-artifact@v4
-      with:
-        name: inviwo-dev-installer-win
-        path: msvc-user/inviwo-v*.exe
-
   clang-tidy:
     name: "Clang-tidy"
     if: github.ref != 'refs/heads/master'
