@@ -42,7 +42,7 @@
 #include <inviwo/core/interaction/pickingcontrollermousestate.h>
 #include <inviwo/core/interaction/pickingcontrollertouchstate.h>
 
-#include <sml/sml.hpp>
+#include <boost/sml.hpp>
 namespace sml = boost::sml;
 
 #include <warn/push>

@@ -74,6 +74,9 @@
 
 #include <fmt/std.h>
 
+#include <freetype/config/ftheader.h>  // for FT_FREETYPE_H
+#include FT_FREETYPE_H
+
 namespace inviwo {
 
 TextRenderer::TextRenderer(const std::filesystem::path& fontPath)

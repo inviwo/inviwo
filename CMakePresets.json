@@ -16,7 +16,8 @@
         "IVW_APP_MINIMAL_QT":               { "type": "BOOL", "value": "OFF"},
         "IVW_TEST_BENCHMARKS":              { "type": "BOOL", "value": "OFF"},
         "IVW_TEST_INTEGRATION_TESTS":       { "type": "BOOL", "value": "OFF"},
-        "IVW_PACKAGE_INSTALLER":            { "type": "BOOL", "value": "OFF"}
+        "IVW_PACKAGE_INSTALLER":            { "type": "BOOL", "value": "ON"},
+        "IVW_PACKAGE_HEADERS":              { "type": "BOOL", "value": "ON"}
       }
     },
 
@@ -35,6 +36,7 @@
         "IVW_TEST_BENCHMARKS":              { "type": "BOOL", "value": "ON"},
         "IVW_TEST_INTEGRATION_TESTS":       { "type": "BOOL", "value": "ON"},
         "IVW_PACKAGE_INSTALLER":            { "type": "BOOL", "value": "ON"},
+        "IVW_PACKAGE_HEADERS":              { "type": "BOOL", "value": "ON"},
         "IVW_ENABLE_OPENEXR":               { "type": "BOOL", "value": "ON"}
       }
     },
@@ -43,38 +45,15 @@
       "hidden": true,
       "toolchainFile": "${sourceParentDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE":       "${sourceParentDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        "IVW_USE_EXTERNAL_ASSIMP":    { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_BENCHMARK": { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_CIMG":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_EIGEN":     { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_FMT":       { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_FREETYPE":  { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_GLEW":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_GLFW":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_GLM":       { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_GTEST":     { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_HDF5":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_IMG":       { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_INJA":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_JSON":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_NIFTI":     { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_OPENEXR":   { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_PEGTL":     { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_PYBIND11":  { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_ROARING":   { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_TCLAP":     { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_TIFF":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_UTFCPP":    { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_UNITS":     { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_WARN":      { "type": "BOOL", "value": "ON"}
+        "CMAKE_TOOLCHAIN_FILE": "${sourceParentDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_MANIFEST_FEATURES" : ""
       }
     },
     {
       "name" : "vcpkg-cache-read",
       "hidden": true,
       "environment": {
-        "VCPKG_BINARY_SOURCES" :"default;http,https://jenkins.inviwo.org/cache/{sha},read"
+        "VCPKG_BINARY_SOURCES" : "default;http,https://jenkins.inviwo.org/cache/{sha},read"
       },
       "cacheVariables": {
         "VCPKG_FEATURE_FLAGS":   "-compilertracking",
@@ -86,41 +65,7 @@
       "hidden": true,
       "inherits" : ["vcpkg-cache-read"],
       "environment": {
-        "VCPKG_BINARY_SOURCES" :"default;http,https://jenkins.inviwo.org/cache/{sha},readwrite,Authorization: Bearer $env{VCPKG_CACHE_TOKEN}"
-      }
-    },
-
-    {
-      "name": "apt",
-      "hidden": true,
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Linux"
-      },
-      "cacheVariables": {
-        "IVW_USE_EXTERNAL_ASSIMP":    { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_BENCHMARK": { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_CIMG":      { "type": "BOOL", "value": "OFF"},
-        "IVW_USE_EXTERNAL_EIGEN":     { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_FMT":       { "type": "BOOL", "value": "OFF"},
-        "IVW_USE_EXTERNAL_FREETYPE":  { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_GLEW":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_GLFW":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_GLM":       { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_GTEST":     { "type": "BOOL", "value": "OFF"},
-        "IVW_USE_EXTERNAL_HDF5":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_IMG":       { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_INJA":      { "type": "BOOL", "value": "OFF"},
-        "IVW_USE_EXTERNAL_JSON":      { "type": "BOOL", "value": "OFF"},
-        "IVW_USE_EXTERNAL_NIFTI":     { "type": "BOOL", "value": "OFF"},
-        "IVW_USE_EXTERNAL_OPENEXR":   { "type": "BOOL", "value": "OFF"},
-        "IVW_USE_EXTERNAL_PEGTL":     { "type": "BOOL", "value": "OFF"},
-        "IVW_USE_EXTERNAL_PYBIND11":  { "type": "BOOL", "value": "OFF"},
-        "IVW_USE_EXTERNAL_ROARING":   { "type": "BOOL", "value": "OFF"},
-        "IVW_USE_EXTERNAL_TCLAP":     { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_TIFF":      { "type": "BOOL", "value": "ON"},
-        "IVW_USE_EXTERNAL_UTFCPP":    { "type": "BOOL", "value": "OFF"}
+        "VCPKG_BINARY_SOURCES": "default;http,https://jenkins.inviwo.org/cache/{sha},readwrite,Authorization: Bearer $env{VCPKG_CACHE_TOKEN}"
       }
     },
 
@@ -131,7 +76,6 @@
         "IVW_EXTERNAL_MODULES" : "${sourceParentDir}/modules/misc;${sourceParentDir}/modules/medvis;${sourceParentDir}/modules/molvis;${sourceParentDir}/modules/tensorvis;${sourceParentDir}/modules/topovis;${sourceParentDir}/modules/vectorvis"
       }
     },
-
     {
       "name": "modules-vcpkg",
       "hidden": true,
@@ -150,12 +94,23 @@
       "name": "msvc",
       "hidden": true,
       "generator": "Visual Studio 17 2022",
-      "architecture" : "x64"
+      "architecture" : "x64",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET" : "x64-windows",
+        "VCPKG_HOST_TRIPLET"   : "x64-windows",
+        "BUILD_SHARED_LIBS"    : { "type": "BOOL", "value": "ON"}
+      }
     },
     {
       "name": "xcode",
       "hidden": true,
-      "generator": "Xcode"
+      "generator": "Xcode",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET" : "arm64-osx-dynamic",
+        "VCPKG_HOST_TRIPLET"   : "arm64-osx-dynamic",
+        "BUILD_SHARED_LIBS"    : { "type": "BOOL", "value": "ON"},
+        "VCPKG_APPLOCAL_DEPS"  : { "type": "BOOL", "value": "OFF"}
+      }
     },
     {
       "name": "ninja",
@@ -167,58 +122,94 @@
     },
 
     {
-      "name": "msvc-developer",
-      "displayName": "MSVC Developer configuration",
-      "inherits" : ["msvc", "developer", "vcpkg", "build"],
-      "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET" : "x64-windows"
-      }
-    },
-    {
       "name": "msvc-user",
       "displayName": "MSVC User configuration",
-      "inherits" : ["msvc", "user", "vcpkg", "build"],
-      "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET" : "x64-windows"
-      }
+      "inherits" : ["msvc", "user", "vcpkg", "vcpkg-cache-read", "build"]
+    },
+    {
+      "name": "msvc-developer",
+      "displayName": "MSVC Developer configuration",
+      "inherits" : ["msvc", "developer", "vcpkg", "vcpkg-cache-read", "build"]
+    },
+    {
+      "name": "msvc-developer-modules",
+      "displayName": "MSVC Developer configuration with Modules",
+      "inherits" : ["msvc", "developer", "vcpkg", "vcpkg-cache-read", "build", "modules", "modules-vcpkg"]
     },
 
-    {
-      "name": "xcode-developer",
-      "displayName": "Xcode Developer configuration",
-      "inherits" : ["xcode", "developer", "vcpkg", "build"],
-      "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET" : "arm64-osx-dynamic"
-      }
-    },
     {
       "name": "xcode-user",
       "displayName": "Xcode User configuration",
-      "inherits" : ["xcode", "user", "vcpkg", "build"],
-      "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET" : "arm64-osx-dynamic"
-      }
+      "inherits" : ["xcode", "user", "vcpkg", "vcpkg-cache-read", "build"]
+    },
+    {
+      "name": "xcode-developer",
+      "displayName": "Xcode Developer configuration",
+      "inherits" : ["xcode", "developer", "vcpkg", "vcpkg-cache-read", "build"]
+    },
+    {
+      "name": "xcode-developer-modules",
+      "displayName": "Xcode Developer configuration with Modules",
+      "inherits" : ["xcode", "developer", "vcpkg", "vcpkg-cache-read", "build", "modules", "modules-vcpkg"]
     },
 
     {
-      "name": "ninja-developer",
-      "displayName": "Ninja Developer configuration",
-      "inherits" : ["ninja", "developer", "vcpkg", "build"]
-    },
-    {
       "name": "ninja-user",
       "displayName": "Ninja User configuration",
-      "inherits" : ["ninja", "user", "vcpkg", "build"]
+      "inherits" : ["ninja", "user", "vcpkg", "vcpkg-cache-read", "build"]
     },
     {
-      "name": "ninja-developer-apt",
-      "displayName": "Ninja Developer configuration using apt",
-      "inherits" : ["ninja", "developer", "apt", "build"]
+      "name": "ninja-developer",
+      "displayName": "Ninja Developer configuration",
+      "inherits" : ["ninja", "developer", "vcpkg", "vcpkg-cache-read", "build"]
     },
     {
-      "name": "ninja-user-apt",
-      "displayName": "Ninja User configuration using apt",
-      "inherits" : ["ninja", "user",  "apt", "build"]
+      "name": "ninja-developer-modules",
+      "displayName": "Ninja Developer configuration with Modules",
+      "inherits" : ["ninja", "developer", "vcpkg", "vcpkg-cache-read", "build", "modules", "modules-vcpkg"]
+    }
+  ],
+"buildPresets": [
+    {
+      "name": "msvc-user-debug",
+      "configurePreset": "msvc-user",
+      "configuration": "Debug"
+    },
+    {
+      "name": "msvc-user-release",
+      "configurePreset": "msvc-user",
+      "configuration": "Release"
+    }
+  ],
+  "packagePresets": [
+    {
+      "name": "msvc-user",
+      "configurePreset": "msvc-user",
+      "generators": [ "ZIP", "NSIS" ],
+      "configurations": ["Debug", "Release"]
+    }
+  ],
+   "workflowPresets": [
+    {
+      "name": "msvc-dev-installer",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "msvc-user"
+        },
+        {
+          "type": "build",
+          "name": "msvc-user-debug"
+        },
+        {
+          "type": "build",
+          "name": "msvc-user-release"
+        },
+        {
+          "type": "package",
+          "name": "msvc-user"
+        }
+      ]
     }
   ]
 }

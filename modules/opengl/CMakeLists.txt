@@ -150,25 +150,14 @@ ivw_add_unittest(${TEST_FILES})
 # Create module
 ivw_create_module(
     PACKAGES GLEW OpenGL
-    FILES ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
+    FILES ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES}
+)
 
-option(IVW_USE_EXTERNAL_GLEW "GLEW is provided externaly" OFF)
-# Set CMake to prefere Vendor gl libraries rather than legacy, fixes warning on some unix systems
-if(NOT IVW_USE_EXTERNAL_GLEW)
-    set(OpenGL_GL_PREFERENCE GLVND) 
-    add_subdirectory(ext/glew)
-    target_link_libraries(inviwo-module-opengl PUBLIC inviwo::GLEW)
-    ivw_register_license_file(ID glew NAME "GLEW" TARGET inviwo::GLEW MODULE OpenGL
-        URL http://glew.sourceforge.net
-        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/glew/license.txt
-    )
-else()
-    find_package(GLEW REQUIRED)
-    ivw_vcpkg_install(glew MODULE OpenGL)
-    target_link_libraries(inviwo-module-opengl PUBLIC GLEW::GLEW)
-endif()
+find_package(GLEW REQUIRED)
+ivw_vcpkg_install(glew MODULE OpenGL)
+target_link_libraries(inviwo-module-opengl PUBLIC GLEW::GLEW)
 
-find_package(OpenGL QUIET REQUIRED)
+find_package(OpenGL REQUIRED)
 target_link_libraries(inviwo-module-opengl PUBLIC ${OPENGL_LIBRARIES})
 target_include_directories(inviwo-module-opengl PUBLIC ${OPENGL_INCLUDE_DIR})
 

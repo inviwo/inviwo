@@ -36,7 +36,7 @@
 #include <inviwo/core/interaction/pickingaction.h>
 #include <inviwo/core/interaction/pickingcontroller.h>
 
-#include <sml/sml.hpp>
+#include <boost/sml.hpp>
 namespace sml = boost::sml;
 
 namespace inviwo {
@@ -119,8 +119,8 @@ auto send(PickingState state, PickingPressState pressState, PickingHoverState ho
           bool updatePrev = true, bool markAsUsed = true) {
     return [state, pressState, hoverState, updatePrev, markAsUsed](
                const E& fsmEvent, FsmState& fsmState, PreviousFsmState& prev, PressFsmState& press,
-               PickingManager* pickingManager) {
-        auto action = pickingManager->getPickingActionFromIndex(fsmState.active_globalId);
+               const PickingManager& pickingManager) {
+        auto action = pickingManager.getPickingActionFromIndex(fsmState.active_globalId);
         if (fsmState.active_globalId == PickingManager::VoidId || !action) return;
 
         auto te = fsmEvent.event;
@@ -278,7 +278,7 @@ struct PickingControllerTouchStateSM {
     fsmt::FsmState state;
     fsmt::PreviousFsmState previousState;
     fsmt::PressFsmState pressState;
-    sml::sm<fsmt::Fsm> sm{state, previousState, pressState, pickingManager};
+    sml::sm<fsmt::Fsm> sm{state, previousState, pressState, *pickingManager};
 };
 
 PickingControllerTouchState::PickingControllerTouchState(PickingManager* pickingManager)

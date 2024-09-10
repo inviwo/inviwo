@@ -50,24 +50,12 @@ ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
 # Add font directory to pack
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/fonts)
 
-option(IVW_USE_EXTERNAL_FREETYPE "Freetype is provided externaly" OFF)
-if(NOT IVW_USE_EXTERNAL_FREETYPE)
-    add_subdirectory(ext/freetype)
-    ivw_register_license_file(NAME FreeType MODULE FontRendering TARGET freetype
-        URL "https://www.freetype.org/"
-        TYPE "BSD-style, acknowledgement: Portions of this software are copyright The FreeType Project (www.freetype.org). All rights reserved."
-        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/freetype/freetype/docs/FTL.TXT
-    )
-    ivw_default_install_targets(freetype)
-else()
-    find_package(Freetype REQUIRED)
-    ivw_vcpkg_install(freetype MODULE FontRendering)
-endif()
+find_package(Freetype REQUIRED)
+ivw_vcpkg_install(freetype MODULE FontRendering)
 
 find_package(utf8cpp CONFIG REQUIRED)
 target_link_libraries(inviwo-module-fontrendering 
-    PUBLIC 
-        Freetype::Freetype
     PRIVATE
+        Freetype::Freetype
         utf8cpp::utf8cpp
 )

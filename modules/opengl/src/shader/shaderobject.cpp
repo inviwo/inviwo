@@ -55,8 +55,8 @@
 #include <tuple>        // for tie, operator<, tuple
 #include <type_traits>  // for remove_extent_t, remove_reference<...
 
-#include <fmt/core.h>   // for format, arg, basic_string_view
-#include <sml/sml.hpp>  // for zero_wrapper, state, event, state_...
+#include <fmt/core.h>     // for format, arg, basic_string_view
+#include <boost/sml.hpp>  // for zero_wrapper, state, event, state_...
 
 namespace sml = boost::sml;
 

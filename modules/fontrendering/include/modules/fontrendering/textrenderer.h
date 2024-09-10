@@ -37,6 +37,8 @@
 #include <modules/opengl/buffer/framebufferobject.h>               // for FrameBufferObject
 #include <modules/opengl/openglutils.h>                            // for BlendModeState (ptr only)
 
+#include <glm/vec2.hpp>  // for vec
+
 #include <map>            // for map, map<>::value_compare
 #include <memory>         // for shared_ptr
 #include <string>         // for string
@@ -45,19 +47,17 @@
 #include <utility>        // for pair
 #include <vector>         // for vector
 
-#include <freetype/config/ftheader.h>  // for FT_FREETYPE_H
-#include <glm/vec2.hpp>                // for vec
+// forward declare needed freetype types
+extern "C" {
+typedef struct FT_LibraryRec_* FT_Library;
+typedef struct FT_FaceRec_* FT_Face;
+}
 
 namespace inviwo {
+
 class FontSettings;
 class Shader;
 struct TexAtlasEntry;
-}  // namespace inviwo
-
-#include FT_FREETYPE_H
-
-namespace inviwo {
-
 class Texture2D;
 
 struct TextTextureObject {

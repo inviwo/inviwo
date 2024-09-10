@@ -39,26 +39,19 @@ ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 find_package(ZLIB REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(TIFF REQUIRED)
+find_package(OpenEXR CONFIG REQUIRED)
+find_package(CImg CONFIG REQUIRED)
 
-option(IVW_USE_EXTERNAL_CIMG  "Cimg is provided externaly" OFF)
-if(NOT IVW_USE_EXTERNAL_CIMG)
-    add_subdirectory(ext/cimg)
-    ivw_register_license_file(NAME CImg VERSION 3.1.1 MODULE CImg TYPE CeCILL-C
-        URL http://cimg.eu
-        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/cimg/Licence_CeCILL-C_V1-en.txt
-    )
-    target_link_libraries(inviwo-module-cimg PRIVATE inviwo::cimg)
-else()
-    find_package(CImg CONFIG REQUIRED)
-    target_link_libraries(inviwo-module-cimg PRIVATE CImg::CImg)
-    ivw_vcpkg_install(cimg MODULE CImg)
-endif()
+ivw_vcpkg_install(cimg MODULE CImg)
+ivw_vcpkg_install(openexr MODULE CImg)
 
-target_link_libraries(inviwo-module-cimg 
+target_link_libraries(inviwo-module-cimg
     PRIVATE
+        CImg::CImg
         ZLIB::ZLIB
         JPEG::JPEG
         TIFF::TIFF
+        OpenEXR::OpenEXR
 )
 
 target_compile_definitions(inviwo-module-cimg PRIVATE
@@ -68,25 +61,9 @@ target_compile_definitions(inviwo-module-cimg PRIVATE
     cimg_use_jpeg
     cimg_use_zlib
     cimg_use_tiff
+    cimg_use_openexr
 )
 
-# The current OpenEXR has some problems with regards to packaging. So for now we make it optional.
-# When the packaging is fixed this option should be removed.
-option(IVW_ENABLE_OPENEXR  "Add OpenEXR image format support (HDR images)" ON)
-option(IVW_USE_EXTERNAL_OPENEXR  "OpenEXR is provided externaly" OFF)
-if(IVW_ENABLE_OPENEXR)
-    target_compile_definitions(inviwo-module-cimg PRIVATE cimg_use_openexr)
-    if(IVW_USE_EXTERNAL_OPENEXR)
-        find_package(OpenEXR CONFIG REQUIRED)
-        target_link_libraries(inviwo-module-cimg PRIVATE OpenEXR::OpenEXR)
-        ivw_vcpkg_install(openexr MODULE CImg)
-    else()
-        add_subdirectory(ext/openexr)
-        ivw_register_license_file(NAME "OpenEXR" TARGET OpenEXR::OpenEXR MODULE CImg
-            URL "http://www.openexr.com"
-            TYPE "Modified BSD License"
-            FILES ext/openexr/openexr/LICENSE.md
-        )
-        target_link_libraries(inviwo-module-cimg PRIVATE  OpenEXR::OpenEXR)
-    endif()
-endif()
+
+
+

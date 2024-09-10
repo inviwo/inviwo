@@ -34,7 +34,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <md4c/md4c.h>
+#include <md4c.h>
 #include <warn/pop>
 
 #include <utf8cpp/utf8/checked.h>

@@ -32,19 +32,7 @@ target_link_libraries(inviwo-module-glfw PRIVATE
     utf8cpp::utf8cpp
 )
 
-option(IVW_USE_EXTERNAL_GLFW "GLFW is provided externaly" OFF)
-if(NOT IVW_USE_EXTERNAL_GLFW)
-    add_subdirectory(ext/glfw)
-    ivw_register_license_file(NAME "GLFW" VERSION ${GLEW_VERSION} MODULE GLFW
-        URL http://www.glfw.org
-        TYPE "The zlib/libpng License"
-        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/glfw/LICENSE.md
-    )
-    ivw_default_install_targets(glfw)
-    ivw_make_package(glfw3 glfw)
-else()
-    find_package(glfw3 REQUIRED)
-    ivw_vcpkg_install(glfw3 MODULE GLFW)
-endif()
+find_package(glfw3 REQUIRED)
+ivw_vcpkg_install(glfw3 MODULE GLFW)
 
 target_link_libraries(inviwo-module-glfw PUBLIC glfw)
