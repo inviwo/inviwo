@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2024-09-10 LineRenderer brushing & linking
+The 2D `LineRenderer` processor now supports brushing and linking similar to the `SphereRenderer` including selection, highlighting, and filtering.
+
 ## 2024-05-13 Two-sided lighting
 The default lighting model was changed to support two-sided illumination. This should prevent issues with thin meshes like stream ribbons with no distinct front- and backsides. It is possible to select between two-sided and frontside/backside only illumination using the `Shading` property.
 
