@@ -254,8 +254,6 @@ jobs:
         VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake --preset msvc-user \
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake \
         -DVCPKG_INSTALL_OPTIONS='--clean-after-build' \
-        -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
         -DIVW_CFG_USE_CCACHE_MSVC=ON
         echo "::remove-matcher owner=compiler::"
         echo "::remove-matcher owner=linker::"
