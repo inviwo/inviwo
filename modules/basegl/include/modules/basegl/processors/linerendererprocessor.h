@@ -40,29 +40,14 @@
 #include <inviwo/core/properties/cameraproperty.h>           // for CameraProperty
 #include <modules/basegl/properties/linesettingsproperty.h>  // for LineSettingsProperty
 #include <modules/basegl/rendering/linerenderer.h>           // for LineRenderer
+#include <modules/basegl/util/meshbnlgl.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
 
 namespace inviwo {
 
 /** \docpage{org.inviwo.LineRenderer, Line Renderer}
  * ![](org.inviwo.LineRenderer.png?classIdentifier=org.inviwo.LineRenderer)
- * Render input meshes as lines using OpenGL.
- *
- * ### Inports
- *   * __geometry__ Input meshes
- *   * __imageInport__ Optional background image
- *
- * ### Outports
- *   * __image__ output image containing the rendered mesh and the optional input image
- *
- * ### Properties
- *   * __Line Width__  width of the rendered lines (in pixel)
- *   * __Antialising__ width of the antialiased line edge (in pixel), this determines the
- *                     softness along the edge
- *   * __Miter Limit__ limit for cutting of sharp corners
- *   * __Round Caps__  if enabled, round caps are drawn at the end of each line
- *   * __Pseudo Lighting__      enables radial shading as depth cue, i.e. tube like appearance
- *   * __Round Depth Profile__  modify line depth matching a round depth profile
- *   * __Write Depth Layer__    if enabled, line depths are rendered onto the background image
+ * 
  */
 
 /**
@@ -90,6 +75,7 @@ private:
 
     CameraProperty camera_;
     CameraTrackball trackball_;
+    MeshBnLGL bnl_;
     algorithm::LineRenderer lineRenderer_;
 };
 

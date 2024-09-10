@@ -93,6 +93,9 @@ MeshShaderCache::Requirement MeshBnLGL::getRequirement() const {
     return {[this](const Mesh&, Mesh::MeshInfo) -> int { return inport.isConnected() ? 1 : 0; },
             [](int mode, Shader& shader) {
                 shader[ShaderType::Vertex]->setShaderDefine("ENABLE_BNL", mode == 1);
+                if (auto* geometryShader = shader[ShaderType::Geometry]) {
+                    geometryShader->setShaderDefine("ENABLE_BNL", mode == 1);
+                }
             }};
 }
 

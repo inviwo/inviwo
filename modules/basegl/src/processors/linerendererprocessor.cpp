@@ -44,6 +44,7 @@
 #include <modules/opengl/inviwoopengl.h>                     // for GL_LEQUAL, GL_ONE_MINUS_SRC_...
 #include <modules/opengl/openglutils.h>                      // for BlendModeState, DepthFuncState
 #include <modules/opengl/texture/textureutils.h>             // for activateTargetAndClearOrCopy...
+#include <modules/opengl/texture/textureunit.h>
 
 #include <memory>       // for shared_ptr
 #include <string>       // for string
@@ -58,26 +59,30 @@ const ProcessorInfo LineRendererProcessor::processorInfo_{
     "Mesh Rendering",           // Category
     CodeState::Stable,          // Code state
     Tags::GL,                   // Tags
+    R"(Render input meshes as 2D lines using OpenGL.)"_unindentHelp,
 };
 const ProcessorInfo LineRendererProcessor::getProcessorInfo() const { return processorInfo_; }
 
 LineRendererProcessor::LineRendererProcessor()
     : Processor()
-    , inport_("geometry")
-    , imageInport_("imageInport")
+    , inport_("geometry", "Input meshes"_help)
+    , imageInport_("imageInport", "Optional background image"_help)
     , outport_("image")
     , lineSettings_("lineSettings", "Line Settings")
-    , writeDepth_("writeDepth", "Write Depth Layer", true)
+    , writeDepth_("writeDepth", "Write Depth Layer",
+                  "If enabled, line depths are rendered onto the background image"_help, true)
     , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
-    , lineRenderer_(&lineSettings_) {
+    , bnl_{}
+    , lineRenderer_({bnl_.getRequirement()}, &lineSettings_) {
 
     addPort(inport_);
-    addPort(imageInport_);
+    addPort(imageInport_).setOptional(true);
+    addPort(bnl_.inport);
     addPort(outport_);
-    imageInport_.setOptional(true);
 
-    addProperties(lineSettings_, writeDepth_, camera_, trackball_);
+    addProperties(lineSettings_, writeDepth_, bnl_.highlight, bnl_.select, bnl_.filter, camera_,
+                  trackball_);
 }
 
 void LineRendererProcessor::process() {
@@ -85,6 +90,10 @@ void LineRendererProcessor::process() {
 
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     utilgl::DepthMaskState depthMask(writeDepth_.get());
+
+    bnl_.update();
+    TextureUnitContainer cont;
+    utilgl::bind(cont, bnl_);
 
     utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
@@ -95,7 +104,8 @@ void LineRendererProcessor::process() {
 
 void LineRendererProcessor::drawMeshes() {
     for (const auto& mesh : inport_) {
-        lineRenderer_.render(*mesh, camera_.get(), outport_.getDimensions(), &lineSettings_);
+        lineRenderer_.renderWithUniforms(*mesh, camera_.get(), outport_.getDimensions(),
+                                         &lineSettings_, bnl_);
     }
 }
 

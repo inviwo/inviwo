@@ -43,6 +43,7 @@ out LineVert {
     vec4 worldPosition;
     vec4 color;
     flat uint pickID;
+    flat uint index;
 } vertex;
  
 void main() {
@@ -50,6 +51,12 @@ void main() {
     vertex.color = in_Color;
 #else
     vertex.color = defaultColor;
+#endif
+
+#if defined(HAS_INDEX)
+    vertex.index = in_Index;
+#else
+    vertex.index = gl_VertexID;
 #endif
 
     vertex.worldPosition = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);

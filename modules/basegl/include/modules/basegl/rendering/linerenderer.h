@@ -34,6 +34,7 @@
 #include <inviwo/core/util/glmvec.h>                        // for size2_t
 #include <modules/basegl/datastructures/linesettings.h>     // for LineSettings
 #include <modules/basegl/datastructures/meshshadercache.h>  // for MeshShaderCache
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
@@ -51,7 +52,9 @@ namespace algorithm {
  */
 class IVW_MODULE_BASEGL_API LineRenderer {
 public:
-    LineRenderer(const LineSettingsInterface* settings);
+    explicit LineRenderer(const LineSettingsInterface* settings);
+    LineRenderer(const std::vector<MeshShaderCache::Requirement>& requirements,
+                 const LineSettingsInterface* settings);
     ~LineRenderer() = default;
 
     /**
@@ -66,10 +69,20 @@ public:
     void render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
                 const LineSettingsInterface* settings);
 
+    template <typename... T>
+    void renderWithUniforms(const Mesh& mesh, const Camera& camera, size2_t screenDim,
+                            const LineSettingsInterface* settings, const T&... args) {
+        render(mesh, camera, screenDim, settings,
+               [&](Shader& shader) { utilgl::setUniforms(shader, args...); });
+    }
+
 protected:
+    void render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
+                const LineSettingsInterface* settings, const std::function<void(Shader&)>& func);
     // Call whenever PseudoLighting or RoundDepthProfile, or Stippling mode change
     void configureShaders();
-    void setUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, size2_t screenDim);
+    void setUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, size2_t screenDim,
+                     const std::function<void(Shader&)>& func);
     void configureShader(Shader& shader);
     LineSettings settings_;  //!< Local cache
     MeshShaderCache lineShaders_;

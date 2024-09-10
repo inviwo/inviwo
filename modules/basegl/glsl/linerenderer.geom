@@ -28,6 +28,7 @@
  *********************************************************************************/
 #include "utils/structs.glsl"
 #include "utils/pickingutils.glsl"
+#include "utils/selectioncolor.glsl"
 
 #if !defined(ENABLE_ADJACENCY)
 #  define ENABLE_ADJACENCY 0
@@ -47,10 +48,18 @@ uniform float lineWidth = 2.0; // line width [pixel]
 uniform float miterLimit = 0.8; // limit for miter joins, i.e. cutting off joints between parallel lines 
 uniform bool roundCaps = false;
 
+#if defined(ENABLE_BNL)
+uniform usamplerBuffer bnl;
+uniform SelectionColor bnlFilter;
+uniform SelectionColor bnlSelect;
+uniform SelectionColor bnlHighlight;
+#endif
+
 in LineVert {
     vec4 worldPosition;
     vec4 color;
     flat uint pickID;
+    flat uint index;
 } inVertices[];
 
 
@@ -137,7 +146,25 @@ void homogeneousClip(inout vec4 p1, inout vec4 p2, int axis, float sign,
     }
 }
 
+#if defined(ENABLE_BNL)
+void applyBrushingAndLinking(in uint index1, inout vec4 color1, 
+                             in uint index2, inout vec4 color2) {
+    int bnlSize = textureSize(bnl);
+    uint flags1 = index1 < bnlSize ? texelFetch(bnl, int(index1)).x : uint(0);
+    uint flags2 = index1 < bnlSize ? texelFetch(bnl, int(index2)).x : uint(0);
 
+    if (flags1 == 3 || flags2 == 3) {
+        color1 = applySelectionColor(color1, bnlFilter);
+        color2 = applySelectionColor(color2, bnlFilter);
+    } else if (flags1 == 2 || flags2 == 2) {
+        color1 = applySelectionColor(color1, bnlHighlight);
+        color2 = applySelectionColor(color2, bnlHighlight);
+    } else if (flags1 == 1 && flags2 == 1) {
+        color1 = applySelectionColor(color1, bnlSelect);
+        color2 = applySelectionColor(color2, bnlSelect);
+    }
+}
+#endif // ENABLE_BNL
 
 void main(void) {
     vec2 halfScreenDim = screenDim * 0.5;
@@ -151,9 +178,6 @@ void main(void) {
     vec4 p1in = gl_in[0].gl_Position;
     vec4 p2in = gl_in[1].gl_Position;
     vec4 p3in = gl_in[1].gl_Position;
-
-    // set pick ID equivalent to first vertex
-    uint pickID = inVertices[0].pickID;
 #else
     // Get the four vertices passed to the shader
     const int index1 = 1;
@@ -163,11 +187,21 @@ void main(void) {
     vec4 p1in = gl_in[1].gl_Position;
     vec4 p2in = gl_in[2].gl_Position;
     vec4 p3in = gl_in[3].gl_Position;
-    
-    // set pick ID equivalent to first vertex
-    uint pickID = inVertices[1].pickID;    
 #endif
     
+    vec4 color1 = inVertices[index1].color;
+    vec4 color2 = inVertices[index2].color;
+
+#if defined(ENABLE_BNL)
+    applyBrushingAndLinking(inVertices[index1].index, color1, inVertices[index2].index, color2);
+#endif
+
+    if (color1.a <= 0.0 && color2.a <= 0.0) {
+        EndPrimitive();
+        return;
+    }
+
+
     // perform homogeneous clipping
     if (p1in.w * p2in.w < 0.0) {
         // TODO: ignore all segments intersecting with the near clip plane due 
@@ -301,11 +335,13 @@ void main(void) {
     }
 
     vec2 vertexDepth = slopeDepth * texCoord + depth.x;
+    // set pick ID equivalent to first vertex
+    uint pickID = inVertices[index1].pickID;    
 
     Vertex vOut1 = createVertex(leftTop, vertexDepth.x, vec2(texCoord.x, w), 
-                                inVertices[index1].color, screenToWorldFactor);
+                                color1, screenToWorldFactor);
     Vertex vOut2 = createVertex(leftBottom, vertexDepth.y, vec2(texCoord.y, -w), 
-                                inVertices[index1].color, screenToWorldFactor);
+                                color1, screenToWorldFactor);
 
     emit(vOut1, pickID, segmentLength);
     emit(vOut2, pickID, segmentLength);
@@ -334,9 +370,9 @@ void main(void) {
     vertexDepth = slopeDepth * texCoord + depth.x;
 
     Vertex vOut3 = createVertex(rightTop, vertexDepth.x, vec2(texCoord.x, w), 
-                                inVertices[index2].color, screenToWorldFactor);
+                                color2, screenToWorldFactor);
     Vertex vOut4 = createVertex(rightBottom, vertexDepth.y, vec2(texCoord.y, -w), 
-                                inVertices[index2].color, screenToWorldFactor);
+                                color2, screenToWorldFactor);
 
     emit(vOut3, pickID, segmentLength);
     emit(vOut4, pickID, segmentLength);
