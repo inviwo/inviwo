@@ -44,21 +44,28 @@ uniform vec2 minmaxY;
 
 uniform bool pickingEnabled = false;
 
-out vec4 worldPosition_;
-out vec4 vertexColor_;
-flat out uint pickID_;
+out LineVert {
+    vec4 worldPosition;
+    vec4 color;
+    flat uint pickID;
+    flat uint index;
+} vertex;
  
 float norm(in float v, in vec2 mm) { 
     return (v - mm.x) / (mm.y - mm.x); 
 }
 
 void main() {
-    vertexColor_ = in_Color;
-
-    worldPosition_ = in_Vertex;
+    vertex.worldPosition = in_Vertex;
+    vertex.color = in_Color;
+#if defined(HAS_INDEX)
+    vertex.index = in_Index;
+#else
+    vertex.index = gl_VertexID;
+#endif
 
     vec2 point = vec2(norm(in_Vertex.x, minmaxX), norm(in_Vertex.y, minmaxY));
-
     gl_Position = vec4(getGLPositionFromPixel(getPixelCoordsWithSpacing(point)), 0.5, 1.0);
-    pickID_ = pickingEnabled ? in_PickId : 0;
+
+    vertex.pickID = pickingEnabled ? in_PickId : 0;
 }

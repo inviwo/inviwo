@@ -50,10 +50,13 @@ uniform float antialiasing = 0.5; // width of antialised edged [pixel]
 uniform float lineWidth = 2.0; // line width [pixel]
 uniform bool roundCaps = true;
 
-out vec2 texCoord_; // x = distance to segment start, y = orth. distance to center (in screen coords)
-out float segmentLength_;
-out vec4 color_;
-flat out vec4 pickColor_;
+out LineGeom {
+    vec2 texCoord; // x = distance to segment start, y = orth. distance to center (in screen coords)
+    vec4 color;
+    flat vec4 pickColor;
+    float segmentLength; // total length of the current line segment in screen space
+    float distanceWorld;  // distance in world coords to segment start
+} outLine;
 
 //
 // 2D line rendering in screen space.
@@ -74,13 +77,6 @@ float projectedDistance(vec2 p0, vec2 p1, vec2 p) {
     return dot(p - p0, p1 - p0) / length(p1 - p0);
 }
 
-// emit vertex data consisting of position in NDC, texture coord
-void emit(in vec4 pos, in vec2 texCoord) {
-    gl_Position = pos;
-    texCoord_ = texCoord;
-    EmitVertex();
-}
-
 vec2 convertNDCToScreen(vec2 v) {
     return (v + 1.0) * 0.5 * screenDim;
 }
@@ -89,13 +85,25 @@ vec4 convertScreenToNDC(vec2 v, float z) {
     return vec4(v / screenDim * 2.0 - 1.0, z, 1.0);
 }
 
+// emit vertex data consisting of position in NDC, texture coord, and color
+void emit(in vec2 pos, in float depth, in vec2 texCoord, in uint vertexPickID, 
+          in float segmentLength, in vec4 vertexColor) {
+
+    gl_Position = convertScreenToNDC(pos, depth);
+    outLine.segmentLength = segmentLength;
+    outLine.distanceWorld = segmentLength;
+    outLine.texCoord = texCoord;
+    outLine.color = vertexColor;
+    outLine.pickColor = vec4(pickingIndexToColor(vertexPickID), pickId == 0 ? 0.0 : 1.0);
+    EmitVertex();
+}
+
 void createLine(float pos, uint pickingId) {
+    vec4 lineColor = (pickingEnabled ? vec4(0) : color);
+
     vec4 startPos = trafo * vec4(pos, 0.0, 0.0, 1.0);
     vec4 endPos = trafo * vec4(pos, 1.0, 0.0, 1.0);
 
-    // set pick color equivalent to first vertex
-    pickColor_ = vec4(pickingIndexToColor(pickingId), pickId == 0 ? 0.0 : 1.0);
-    
     vec4 p1ndc = startPos / startPos.w;
     vec4 p2ndc = endPos / endPos.w;
 
@@ -105,7 +113,7 @@ void createLine(float pos, uint pickingId) {
     // determine line direction and normal
     vec2 v1 = normalize(p2 - p1);
     vec2 n1 = vec2(-v1.y, v1.x);
-    segmentLength_ = length(p2 - p1);
+    float segmentLength = length(p2 - p1);
 
     float w = lineWidth * 0.5 + 1.2 * antialiasing;
 
@@ -121,13 +129,13 @@ void createLine(float pos, uint pickingId) {
         texCoord -= w;
     }
 
-    emit(convertScreenToNDC(leftTop, p1ndc.z), vec2(texCoord.x, w));
-    emit(convertScreenToNDC(leftBottom, p1ndc.z), vec2(texCoord.y, -w));
+    emit(leftTop, p1ndc.z, vec2(texCoord.x, w), pickingId, segmentLength, lineColor);
+    emit(leftBottom, p1ndc.z, vec2(texCoord.y, -w), pickingId, segmentLength, lineColor);
 
     // compute end position at p2
     vec2 rightTop = p2 + w * n1;
     vec2 rightBottom = p2 - w * n1;
-    texCoord = vec2(segmentLength_);
+    texCoord = vec2(segmentLength);
 
     if (roundCaps) {
         // extend segment beyond p2 by radius for cap
@@ -136,15 +144,13 @@ void createLine(float pos, uint pickingId) {
         texCoord += w;
     }
 
-    emit(convertScreenToNDC(rightTop, p2ndc.z), vec2(texCoord.x, w));
-    emit(convertScreenToNDC(rightBottom, p2ndc.z), vec2(texCoord.y, -w));
+    emit(rightTop, p2ndc.z, vec2(texCoord.x, w), pickingId, segmentLength, lineColor);
+    emit(rightBottom, p2ndc.z, vec2(texCoord.y, -w), pickingId, segmentLength, lineColor);
 
     EndPrimitive();
 }
 
 void main() {
-    color_ = (pickingEnabled ? vec4(0) : color);
-
     for (int i = 0; i < NUM_SPLITTERS; ++i) {
         createLine(positions[i], pickId + i);
     }

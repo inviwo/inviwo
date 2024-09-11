@@ -45,11 +45,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.LineRenderer, Line Renderer}
- * ![](org.inviwo.LineRenderer.png?classIdentifier=org.inviwo.LineRenderer)
- * 
- */
-
 /**
  * \class LineRendererProcessor
  * \brief Renders input geometry with 2D lines

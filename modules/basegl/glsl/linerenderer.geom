@@ -62,7 +62,6 @@ in LineVert {
     flat uint index;
 } inVertices[];
 
-
 out LineGeom {
     vec2 texCoord; // x = distance to segment start, y = orth. distance to center (in screen coords)
     vec4 color;
