@@ -88,14 +88,13 @@ LineRendererProcessor::LineRendererProcessor()
 void LineRendererProcessor::process() {
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
-    utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    utilgl::DepthMaskState depthMask(writeDepth_.get());
+    const utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::DepthMaskState depthMask(writeDepth_.get());
+    const utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
     bnl_.update();
     TextureUnitContainer cont;
     utilgl::bind(cont, bnl_);
-
-    utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
     drawMeshes();
 
