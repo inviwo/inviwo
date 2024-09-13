@@ -28,6 +28,7 @@
  *********************************************************************************/
 #include "utils/structs.glsl"
 #include "utils/pickingutils.glsl"
+#include "utils/selectioncolor.glsl"
 
 #if !defined(ENABLE_ADJACENCY)
 #  define ENABLE_ADJACENCY 0
@@ -47,15 +48,34 @@ uniform float lineWidth = 2.0; // line width [pixel]
 uniform float miterLimit = 0.8; // limit for miter joins, i.e. cutting off joints between parallel lines 
 uniform bool roundCaps = false;
 
-in vec4 vertexColor_[];
-in vec4 worldPosition_[];
-flat in uint pickID_[];
+#if defined(ENABLE_BNL)
+uniform usamplerBuffer bnl;
+uniform SelectionColor bnlFilter;
+uniform SelectionColor bnlSelect;
+uniform SelectionColor bnlHighlight;
+#endif
 
-out float segmentLength_; // total length of the current line segment in screen space
-out float distanceWorld_;  // distance in world coords to segment start
-out vec2 texCoord_; // x = distance to segment start, y = orth. distance to center (in screen coords)
-out vec4 color_;
-flat out vec4 pickColor_;
+in LineVert {
+    vec4 worldPosition;
+    vec4 color;
+    flat uint pickID;
+    flat uint index;
+} inVertices[];
+
+out LineGeom {
+    vec2 texCoord; // x = distance to segment start, y = orth. distance to center (in screen coords)
+    vec4 color;
+    flat vec4 pickColor;
+    float segmentLength; // total length of the current line segment in screen space
+    float distanceWorld;  // distance in world coords to segment start
+} outLine;
+
+struct Vertex {
+    vec4 pos;
+    vec2 texCoord;
+    vec4 color;
+    float distanceWorld;
+};
 
 //
 // 2D line rendering in screen space.
@@ -76,21 +96,30 @@ float projectedDistance(vec2 p0, vec2 p1, vec2 p) {
     return dot(p - p0, p1 - p0) / length(p1 - p0);
 }
 
-// emit vertex data consisting of position in NDC, texture coord, and color
-void emit(in vec4 pos, in vec2 texCoord, in vec4 color, in float screenToWorldFactor) {
-    gl_Position = pos;
-    texCoord_ = texCoord;
-    color_ = color;
-    distanceWorld_ = texCoord.x * screenToWorldFactor;
-    EmitVertex();
-}
-
 vec2 convertNDCToScreen(vec2 v) {
     return (v + 1.0) * 0.5 * screenDim;
 }
 
 vec4 convertScreenToNDC(vec2 v, float z) {
     return vec4(v / screenDim * 2.0 - 1.0, z, 1.0);
+}
+
+Vertex createVertex(in vec2 pos, in float depth, in vec2 texCoord, in vec4 color, in float screenToWorldFactor) {
+    return Vertex(convertScreenToNDC(pos, depth),
+        texCoord,
+        color, 
+        texCoord.x * screenToWorldFactor);
+ }
+
+// emit vertex data consisting of position in NDC, texture coord, and color
+void emit(in Vertex vertex, in uint pickID, in float segmentLength) {
+    gl_Position = vertex.pos;
+    outLine.segmentLength = segmentLength;
+    outLine.distanceWorld = vertex.distanceWorld;
+    outLine.texCoord = vertex.texCoord;
+    outLine.color = vertex.color;
+    outLine.pickColor = vec4(pickingIndexToColor(pickID), pickID == 0 ? 0.0 : 1.0);
+    EmitVertex();
 }
 
 // homogeneous clipping for line segments
@@ -116,7 +145,25 @@ void homogeneousClip(inout vec4 p1, inout vec4 p2, int axis, float sign,
     }
 }
 
+#if defined(ENABLE_BNL)
+void applyBrushingAndLinking(in uint index1, inout vec4 color1, 
+                             in uint index2, inout vec4 color2) {
+    int bnlSize = textureSize(bnl);
+    uint flags1 = index1 < bnlSize ? texelFetch(bnl, int(index1)).x : uint(0);
+    uint flags2 = index1 < bnlSize ? texelFetch(bnl, int(index2)).x : uint(0);
 
+    if (flags1 == 3 || flags2 == 3) {
+        color1 = applySelectionColor(color1, bnlFilter);
+        color2 = applySelectionColor(color2, bnlFilter);
+    } else if (flags1 == 2 || flags2 == 2) {
+        color1 = applySelectionColor(color1, bnlHighlight);
+        color2 = applySelectionColor(color2, bnlHighlight);
+    } else if (flags1 == 1 && flags2 == 1) {
+        color1 = applySelectionColor(color1, bnlSelect);
+        color2 = applySelectionColor(color2, bnlSelect);
+    }
+}
+#endif // ENABLE_BNL
 
 void main(void) {
     vec2 halfScreenDim = screenDim * 0.5;
@@ -130,10 +177,6 @@ void main(void) {
     vec4 p1in = gl_in[0].gl_Position;
     vec4 p2in = gl_in[1].gl_Position;
     vec4 p3in = gl_in[1].gl_Position;
-
-    // set pick color equivalent to first vertex
-    pickColor_ = vec4(pickingIndexToColor(pickID_[0]), pickID_[0] == 0 ? 0.0 : 1.0);
-
 #else
     // Get the four vertices passed to the shader
     const int index1 = 1;
@@ -143,11 +186,21 @@ void main(void) {
     vec4 p1in = gl_in[1].gl_Position;
     vec4 p2in = gl_in[2].gl_Position;
     vec4 p3in = gl_in[3].gl_Position;
-    
-    // set pick color equivalent to first vertex
-    pickColor_ = vec4(pickingIndexToColor(pickID_[1]), pickID_[1] == 0 ? 0.0 : 1.0);
 #endif
     
+    vec4 color1 = inVertices[index1].color;
+    vec4 color2 = inVertices[index2].color;
+
+#if defined(ENABLE_BNL)
+    applyBrushingAndLinking(inVertices[index1].index, color1, inVertices[index2].index, color2);
+#endif
+
+    if (color1.a <= 0.0 && color2.a <= 0.0) {
+        EndPrimitive();
+        return;
+    }
+
+
     // perform homogeneous clipping
     if (p1in.w * p2in.w < 0.0) {
         // TODO: ignore all segments intersecting with the near clip plane due 
@@ -215,12 +268,12 @@ void main(void) {
     vec2 depth = vec2(p1ndc.z, p2ndc.z);
 
     float w = lineWidth * 0.5 + 1.2 * antialiasing;
-    segmentLength_ = length(p2 - p1);
+    float segmentLength = length(p2 - p1);
     // segment length in world space
-    float lineLengthWorld = length(worldPosition_[index2] - worldPosition_[index1]);
+    float lineLengthWorld = length(inVertices[index2].worldPosition - inVertices[index1].worldPosition);
     // scaling factor to convert line lengths in screenspace coords back to model space
     // this is used for reparametrization of the line
-    float screenToWorldFactor = lineLengthWorld / segmentLength_;
+    float screenToWorldFactor = lineLengthWorld / segmentLength;
 
     // angle between previous and current segment
     float d0 = sign(dot(v0, v1));
@@ -239,8 +292,8 @@ void main(void) {
     bool capEnd = (p2 == p3);
 
     // depth delta is computed in NDC, but we need to apply the slope depth in screen space
-    // i.e. normalization with respect to segmentLength_ and not length(p2ndc - p1ndc)
-    float slopeDepth = (depth.y - depth.x) / segmentLength_;
+    // i.e. normalization with respect to segmentLength and not length(p2ndc - p1ndc)
+    float slopeDepth = (depth.y - depth.x) / segmentLength;
 
     // avoid sharp corners by cutting them off
     // corner between previous segment and current one
@@ -281,17 +334,23 @@ void main(void) {
     }
 
     vec2 vertexDepth = slopeDepth * texCoord + depth.x;
+    // set pick ID equivalent to first vertex
+    uint pickID = inVertices[index1].pickID;    
 
-    emit(convertScreenToNDC(leftTop, vertexDepth.x), vec2(texCoord.x, w), vertexColor_[index1], screenToWorldFactor);
-    emit(convertScreenToNDC(leftBottom, vertexDepth.y), vec2(texCoord.y, -w), vertexColor_[index1], screenToWorldFactor);
+    Vertex vOut1 = createVertex(leftTop, vertexDepth.x, vec2(texCoord.x, w), 
+                                color1, screenToWorldFactor);
+    Vertex vOut2 = createVertex(leftBottom, vertexDepth.y, vec2(texCoord.y, -w), 
+                                color1, screenToWorldFactor);
 
+    emit(vOut1, pickID, segmentLength);
+    emit(vOut2, pickID, segmentLength);
 
     vec2 rightTop, rightBottom;
     if (capEnd) {
         // compute end position at p2
         rightTop = p2 + w * n1;
         rightBottom = p2 - w * n1;
-        texCoord = vec2(segmentLength_);
+        texCoord = vec2(segmentLength);
 
         if (roundCaps) {
             // extend segment beyond p2 by radius for cap
@@ -309,8 +368,13 @@ void main(void) {
 
     vertexDepth = slopeDepth * texCoord + depth.x;
 
-    emit(convertScreenToNDC(rightTop, vertexDepth.x), vec2(texCoord.x, w), vertexColor_[index2], screenToWorldFactor);
-    emit(convertScreenToNDC(rightBottom, vertexDepth.y), vec2(texCoord.y, -w), vertexColor_[index2], screenToWorldFactor);
+    Vertex vOut3 = createVertex(rightTop, vertexDepth.x, vec2(texCoord.x, w), 
+                                color2, screenToWorldFactor);
+    Vertex vOut4 = createVertex(rightBottom, vertexDepth.y, vec2(texCoord.y, -w), 
+                                color2, screenToWorldFactor);
+
+    emit(vOut3, pickID, segmentLength);
+    emit(vOut4, pickID, segmentLength);
 
     EndPrimitive();
 }

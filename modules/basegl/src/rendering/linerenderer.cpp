@@ -58,29 +58,52 @@ namespace inviwo {
 
 namespace algorithm {
 
-LineRenderer::LineRenderer(const LineSettingsInterface* settings)
+namespace detail {
+
+std::vector<MeshShaderCache::Requirement> defaultRequirements(
+    const std::vector<MeshShaderCache::Requirement>& additional = {}) {
+
+    std::vector<MeshShaderCache::Requirement> requirements = {
+        {BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+        {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
+        {BufferType::IndexAttrib, MeshShaderCache::Optional, "uint"},
+        {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
+        {[](const Mesh&, Mesh::MeshInfo mi) -> int {
+             return mi.ct == ConnectivityType::Adjacency ||
+                            mi.ct == ConnectivityType::StripAdjacency
+                        ? 1
+                        : 0;
+         },
+         [](int mode, Shader& shader) {
+             shader[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY", toString(mode));
+         }}};
+
+    requirements.insert(requirements.end(), additional.begin(), additional.end());
+    return requirements;
+}
+
+}  // namespace detail
+
+LineRenderer::LineRenderer(const LineSettingsInterface* settings) : LineRenderer({}, settings) {}
+
+LineRenderer::LineRenderer(const std::vector<MeshShaderCache::Requirement>& requirements,
+                           const LineSettingsInterface* settings)
     : settings_(settings)
     , lineShaders_{{{ShaderType::Vertex, std::string{"linerenderer.vert"}},
                     {ShaderType::Geometry, std::string{"linerenderer.geom"}},
                     {ShaderType::Fragment, std::string{"linerenderer.frag"}}},
 
-                   {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
-                    {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
-                    {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
-                    {[](const Mesh&, Mesh::MeshInfo mi) -> int {
-                         return mi.ct == ConnectivityType::Adjacency ||
-                                        mi.ct == ConnectivityType::StripAdjacency
-                                    ? 1
-                                    : 0;
-                     },
-                     [](int mode, Shader& shader) {
-                         shader[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY",
-                                                                       toString(mode));
-                     }}},
+                   detail::defaultRequirements(requirements),
                    [&](Shader& shader) -> void { configureShader(shader); }} {}
 
 void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
                           const LineSettingsInterface* settings) {
+    render(mesh, camera, screenDim, settings, [](Shader&) {});
+}
+
+void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
+                          const LineSettingsInterface* settings,
+                          const std::function<void(Shader&)>& func) {
     if (mesh.getNumberOfBuffers() == 0) return;
     // Changing these settings require recompilation
     if (settings_.getPseudoLighting() != settings->getPseudoLighting() ||
@@ -100,7 +123,7 @@ void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screen
             if (mesh.getIndexMeshInfo(i).dt != DrawType::Lines) continue;
             auto& shader = lineShaders_.getShader(mesh, mesh.getIndexMeshInfo(i));
             shader.activate();
-            setUniforms(shader, mesh, camera, screenDim);
+            setUniforms(shader, mesh, camera, screenDim, func);
             drawer.draw(i);
             shader.deactivate();
         }
@@ -109,7 +132,7 @@ void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screen
         if (mesh.getDefaultMeshInfo().dt != DrawType::Lines) return;
 
         shader.activate();
-        setUniforms(shader, mesh, camera, screenDim);
+        setUniforms(shader, mesh, camera, screenDim, func);
 
         drawer.draw();
         shader.deactivate();
@@ -117,7 +140,7 @@ void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screen
 }
 
 void LineRenderer::setUniforms(Shader& lineShader, const Mesh& mesh, const Camera& camera,
-                               size2_t screenDim) {
+                               size2_t screenDim, const std::function<void(Shader&)>& func) {
     lineShader.setUniform("screenDim", vec2(screenDim));
     utilgl::setShaderUniforms(lineShader, camera, "camera");
 
@@ -132,6 +155,7 @@ void LineRenderer::setUniforms(Shader& lineShader, const Mesh& mesh, const Camer
     lineShader.setUniform("stippling.offset", settings_.getStippling().getOffset());
     lineShader.setUniform("stippling.worldScale", settings_.getStippling().getWorldScale());
     utilgl::setShaderUniforms(lineShader, mesh, "geometry");
+    func(lineShader);
 }
 
 void LineRenderer::configureShaders() {
