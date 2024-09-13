@@ -1,5 +1,7 @@
 var NAVTREEINDEX24 =
 {
+"classinviwo_1_1animation_1_1KeyframeEditorWidget.html":[2,0,0,0,50],
+"classinviwo_1_1animation_1_1KeyframeEditorWidget.html":[4,0,1,1,51],
 "classinviwo_1_1animation_1_1KeyframeObservable.html":[2,0,0,0,51],
 "classinviwo_1_1animation_1_1KeyframeObservable.html":[4,0,1,1,52],
 "classinviwo_1_1animation_1_1KeyframeObserver.html":[2,0,0,0,52],
@@ -247,7 +249,5 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1plot_1_1AxisProperty.html#a42afb33ed34ca597f48b5652b0dd47b8":[4,0,1,17,4,0],
 "classinviwo_1_1plot_1_1AxisProperty.html#a5a6fa0714d88f3d1a9cd9adaec1d54e7":[2,0,0,13,3,3],
 "classinviwo_1_1plot_1_1AxisProperty.html#a5a6fa0714d88f3d1a9cd9adaec1d54e7":[4,0,1,17,4,3],
-"classinviwo_1_1plot_1_1AxisProperty.html#a70e035c8facd8095cb4e0c852701f6a9":[2,0,0,13,3,1],
-"classinviwo_1_1plot_1_1AxisProperty.html#a70e035c8facd8095cb4e0c852701f6a9":[4,0,1,17,4,1],
-"classinviwo_1_1plot_1_1AxisProperty.html#a79773801e3f0355c18722f828d93bdc4":[2,0,0,13,3,5]
+"classinviwo_1_1plot_1_1AxisProperty.html#a70e035c8facd8095cb4e0c852701f6a9":[2,0,0,13,3,1]
 };

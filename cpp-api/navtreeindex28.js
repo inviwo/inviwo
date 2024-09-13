@@ -1,5 +1,7 @@
 var NAVTREEINDEX28 =
 {
+"namespaceinviwo_1_1util.html#aba248938bdec0647ee6706ea2ece4c8c":[2,0,0,18,153],
+"namespaceinviwo_1_1util.html#ababf20580e98b848eaffd93c087fedb2":[2,0,0,18,267],
 "namespaceinviwo_1_1util.html#abb89ce7475c175642c1af64b4968977e":[2,0,0,18,135],
 "namespaceinviwo_1_1util.html#abdd152d8abef09fe85cd9d03d7e5d91d":[2,0,0,18,81],
 "namespaceinviwo_1_1util.html#abf9ff4b80212faa99dda24be3fd6639c":[2,0,0,18,78],
@@ -247,7 +249,5 @@ var NAVTREEINDEX28 =
 "structinviwo_1_1FileAssociationCommand.html":[4,0,1,311],
 "structinviwo_1_1FileAssociationCommand.html#a9ae64cc1470e71c0a8a184c99deef589":[2,0,0,305,0],
 "structinviwo_1_1FileAssociationCommand.html#a9ae64cc1470e71c0a8a184c99deef589":[4,0,1,311,0],
-"structinviwo_1_1FlagFormatter.html":[2,0,0,325],
-"structinviwo_1_1FlagFormatter.html":[4,0,1,331],
-"structinviwo_1_1FlagsFormatter.html":[2,0,0,326]
+"structinviwo_1_1FlagFormatter.html":[2,0,0,325]
 };

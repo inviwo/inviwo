@@ -1,5 +1,7 @@
 var NAVTREEINDEX30 =
 {
+"structinviwo_1_1Resource.html":[2,0,0,966],
+"structinviwo_1_1Resource.html":[4,0,1,972],
 "structinviwo_1_1ResourceMeta.html":[2,0,0,972],
 "structinviwo_1_1ResourceMeta.html":[4,0,1,978],
 "structinviwo_1_1RuntimeModuleLoading.html":[2,0,0,974],
@@ -247,7 +249,5 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1filters_1_1ItemFilter.html":[4,0,1,11,0],
 "structinviwo_1_1filters_1_1ItemFilter.html#a4204578d94a092c3daa1f01740ad1223":[4,0,1,11,0,1],
 "structinviwo_1_1filters_1_1ItemFilter.html#a5bc29c92ccbdd35feb9168fa5e8e3a0e":[4,0,1,11,0,0],
-"structinviwo_1_1hdf5_1_1Handle_1_1Selection.html":[4,0,1,13,1,0],
-"structinviwo_1_1hdf5_1_1MetaData.html":[4,0,1,13,3],
-"structinviwo_1_1hdf5_1_1TypeMap.html":[4,0,1,13,7]
+"structinviwo_1_1hdf5_1_1Handle_1_1Selection.html":[4,0,1,13,1,0]
 };

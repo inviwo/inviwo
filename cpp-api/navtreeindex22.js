@@ -1,5 +1,7 @@
 var NAVTREEINDEX22 =
 {
+"classinviwo_1_1VolumeInformationProperty.html":[1,4,33],
+"classinviwo_1_1VolumeInformationProperty.html#adf965a40daa1fd309d74624e7f717703":[1,4,33,0],
 "classinviwo_1_1VolumeInformationVisualizer.html":[2,0,0,1251],
 "classinviwo_1_1VolumeInformationVisualizer.html":[4,0,1,1257],
 "classinviwo_1_1VolumeInformationVisualizer.html#a03a51d7c4c575d675b502f96f0453d0b":[2,0,0,1251,7],
@@ -30,8 +32,8 @@ var NAVTREEINDEX22 =
 "classinviwo_1_1VolumeMapping.html#ab6b562bf4bcaba94b992e3a163818118":[1,3,55,0],
 "classinviwo_1_1VolumeMasker.html":[2,0,0,1255],
 "classinviwo_1_1VolumeMasker.html":[4,0,1,1261],
-"classinviwo_1_1VolumeMerger.html":[1,3,107],
-"classinviwo_1_1VolumeMerger.html#a272f96fe0a39be8c7999739db69479c0":[1,3,107,0],
+"classinviwo_1_1VolumeMerger.html":[1,3,106],
+"classinviwo_1_1VolumeMerger.html#a272f96fe0a39be8c7999739db69479c0":[1,3,106,0],
 "classinviwo_1_1VolumeModule.html":[2,0,0,1257],
 "classinviwo_1_1VolumeModule.html":[4,0,1,1263],
 "classinviwo_1_1VolumeNormalization.html":[2,0,0,1258],
@@ -44,8 +46,8 @@ var NAVTREEINDEX22 =
 "classinviwo_1_1VolumeNormalization.html#a98193b84990da9ea71b3164912f75f4c":[4,0,1,1264,0],
 "classinviwo_1_1VolumeNormalization.html#af990ab4275bde04031d12b608981ea0e":[2,0,0,1258,1],
 "classinviwo_1_1VolumeNormalization.html#af990ab4275bde04031d12b608981ea0e":[4,0,1,1264,1],
-"classinviwo_1_1VolumeNormalizationProcessor.html":[1,3,108],
-"classinviwo_1_1VolumeNormalizationProcessor.html#a613fcd6aea49ba69f0d5902303b219cf":[1,3,108,0],
+"classinviwo_1_1VolumeNormalizationProcessor.html":[1,3,107],
+"classinviwo_1_1VolumeNormalizationProcessor.html#a613fcd6aea49ba69f0d5902303b219cf":[1,3,107,0],
 "classinviwo_1_1VolumePy.html":[1,1,36],
 "classinviwo_1_1VolumePy.html#a81c78760e3ee150ea6722831d0844379":[1,1,36,0],
 "classinviwo_1_1VolumePy2GLConverter.html":[2,0,0,1261],
@@ -247,7 +249,5 @@ var NAVTREEINDEX22 =
 "classinviwo_1_1WorkspaceInfoLoader.html":[2,0,0,1312],
 "classinviwo_1_1WorkspaceInfoLoader.html":[4,0,1,1318],
 "classinviwo_1_1WorkspaceManager.html":[2,0,0,1313],
-"classinviwo_1_1WorkspaceManager.html":[4,0,1,1319],
-"classinviwo_1_1WorkspaceManager.html#a008234b62dad6d13e0aaaa7adf6a8f77":[2,0,0,1313,4],
-"classinviwo_1_1WorkspaceManager.html#a008234b62dad6d13e0aaaa7adf6a8f77":[4,0,1,1319,4]
+"classinviwo_1_1WorkspaceManager.html":[4,0,1,1319]
 };

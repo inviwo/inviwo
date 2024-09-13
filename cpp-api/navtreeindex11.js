@@ -1,5 +1,7 @@
 var NAVTREEINDEX11 =
 {
+"classinviwo_1_1MeshVisualizer.html#adb3dfd7dbbaed57b59d9c4f3c3bf6687":[4,0,1,634,7],
+"classinviwo_1_1MeshVisualizer.html#ae8fd7b44aa0c1be93250a007dfb0e40d":[2,0,0,628,3],
 "classinviwo_1_1MeshVisualizer.html#ae8fd7b44aa0c1be93250a007dfb0e40d":[4,0,1,634,3],
 "classinviwo_1_1MeshVolumeRenderer.html":[2,0,0,629],
 "classinviwo_1_1MeshVolumeRenderer.html":[4,0,1,635],
@@ -247,7 +249,5 @@ var NAVTREEINDEX11 =
 "classinviwo_1_1OpenGLException.html":[2,0,0,685],
 "classinviwo_1_1OpenGLException.html":[4,0,1,691],
 "classinviwo_1_1OpenGLInitException.html":[2,0,0,686],
-"classinviwo_1_1OpenGLInitException.html":[4,0,1,692],
-"classinviwo_1_1OpenGLModule.html":[2,0,0,687],
-"classinviwo_1_1OpenGLModule.html":[4,0,1,693]
+"classinviwo_1_1OpenGLInitException.html":[4,0,1,692]
 };

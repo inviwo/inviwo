@@ -1,5 +1,7 @@
 var NAVTREEINDEX17 =
 {
+"classinviwo_1_1ShaderWidget.html":[2,0,0,1007],
+"classinviwo_1_1ShaderWidget.html":[4,0,1,1013],
 "classinviwo_1_1SharedLibrary.html":[2,0,0,1008],
 "classinviwo_1_1SharedLibrary.html":[4,0,1,1014],
 "classinviwo_1_1SharedLibrary.html#a0311002e757680bc379085b825133ae7":[2,0,0,1008,0],
@@ -225,8 +227,8 @@ var NAVTREEINDEX17 =
 "classinviwo_1_1SphericalComponent.html#ae924d3a150ff89b0f5bbb29f7e432eac":[2,0,0,1038,1],
 "classinviwo_1_1SphericalComponent.html#ae924d3a150ff89b0f5bbb29f7e432eac":[4,0,1,1044,1],
 "classinviwo_1_1SphericalVolumeRaycaster.html":[1,3,50],
-"classinviwo_1_1SplitImage.html":[1,3,101],
-"classinviwo_1_1SplitImage.html#a801faced2965802c6cc9546babf958fc":[1,3,101,0],
+"classinviwo_1_1SplitImage.html":[1,3,100],
+"classinviwo_1_1SplitImage.html#a801faced2965802c6cc9546babf958fc":[1,3,100,0],
 "classinviwo_1_1SplitterProperty.html":[1,4,34],
 "classinviwo_1_1SplitterProperty.html#a82441a3819e8497587a45a2e9f0dddcf":[1,4,34,0],
 "classinviwo_1_1SplitterRenderer.html":[2,0,0,1042],
@@ -247,7 +249,5 @@ var NAVTREEINDEX17 =
 "classinviwo_1_1SpotLight.html#a6673ac89bd2a23c798d22956da379914":[4,0,1,1050,7],
 "classinviwo_1_1SpotLight.html#a94c65091b08e53eb137356337e3b84fa":[2,0,0,1044,1],
 "classinviwo_1_1SpotLight.html#a94c65091b08e53eb137356337e3b84fa":[4,0,1,1050,1],
-"classinviwo_1_1SpotLight.html#a9d3f827fbf94f37610e40df8cfbbd33e":[2,0,0,1044,0],
-"classinviwo_1_1SpotLight.html#a9d3f827fbf94f37610e40df8cfbbd33e":[4,0,1,1050,0],
-"classinviwo_1_1SpotLight.html#ab282b937949aea075e8e0683d9f1eff3":[2,0,0,1044,10]
+"classinviwo_1_1SpotLight.html#a9d3f827fbf94f37610e40df8cfbbd33e":[2,0,0,1044,0]
 };

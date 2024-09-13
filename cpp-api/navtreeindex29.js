@@ -1,5 +1,7 @@
 var NAVTREEINDEX29 =
 {
+"structinviwo_1_1FlagFormatter.html":[4,0,1,331],
+"structinviwo_1_1FlagsFormatter.html":[2,0,0,326],
 "structinviwo_1_1FlagsFormatter.html":[4,0,1,332],
 "structinviwo_1_1FragmentListRenderer_1_1IllustrationSettings.html":[2,0,0,334,0],
 "structinviwo_1_1FragmentListRenderer_1_1IllustrationSettings.html":[4,0,1,340,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX29 =
 "structinviwo_1_1RasterizationRenderer_1_1IllustrationSettings.html":[2,0,0,933,0],
 "structinviwo_1_1RasterizationRenderer_1_1IllustrationSettings.html":[4,0,1,939,0],
 "structinviwo_1_1RaycastingState.html":[2,0,0,943],
-"structinviwo_1_1RaycastingState.html":[4,0,1,949],
-"structinviwo_1_1Resource.html":[2,0,0,966],
-"structinviwo_1_1Resource.html":[4,0,1,972]
+"structinviwo_1_1RaycastingState.html":[4,0,1,949]
 };

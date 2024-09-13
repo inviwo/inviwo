@@ -1,5 +1,7 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1utilgl_1_1TexParameter.html":[2,0,0,21,18],
+"structinviwo_1_1utilgl_1_1TexParameter.html":[4,0,1,27,18],
 "structinviwo_1_1utilgl_1_1Viewport.html":[2,0,0,21,19],
 "structinviwo_1_1utilgl_1_1Viewport.html":[4,0,1,27,19],
 "structinviwo_1_1utilgl_1_1ViewportState.html":[2,0,0,21,20],

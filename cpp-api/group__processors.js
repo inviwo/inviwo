@@ -329,9 +329,6 @@ var group__processors =
       [ "initializeResources", "classinviwo_1_1Jacobian2D.html#ad17ea29b33938a7e4d436160cef5b54f", null ],
       [ "preProcess", "classinviwo_1_1Jacobian2D.html#afacc58dd099167184c466215bde9c5a9", null ]
     ] ],
-    [ "inviwo::LineRendererProcessor", "classinviwo_1_1LineRendererProcessor.html", [
-      [ "process", "classinviwo_1_1LineRendererProcessor.html#a8280d1b49c0eed99bc7359e55de485c5", null ]
-    ] ],
     [ "inviwo::PointRenderer", "classinviwo_1_1PointRenderer.html", [
       [ "process", "classinviwo_1_1PointRenderer.html#aaec9784f5309f0976dea8797f7e5a55b", null ]
     ] ],

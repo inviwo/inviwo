@@ -1,5 +1,7 @@
 var NAVTREEINDEX16 =
 {
+"classinviwo_1_1RawVolumeReader.html#a3b20c9c2a09079fe825920d3f3fd08d3":[1,0,4,0],
+"classinviwo_1_1RaycastingComponent.html":[2,0,0,941],
 "classinviwo_1_1RaycastingComponent.html":[4,0,1,947],
 "classinviwo_1_1RaycastingComponent.html#a45214793e70c7a6b7bfd8a96dd65c01c":[2,0,0,941,2],
 "classinviwo_1_1RaycastingComponent.html#a45214793e70c7a6b7bfd8a96dd65c01c":[4,0,1,947,2],
@@ -84,9 +86,9 @@ var NAVTREEINDEX16 =
 "classinviwo_1_1SGCTModule.html":[4,0,1,1003],
 "classinviwo_1_1SGCTSettings.html":[2,0,0,998],
 "classinviwo_1_1SGCTSettings.html":[4,0,1,1004],
-"classinviwo_1_1SSAO.html":[1,3,123],
-"classinviwo_1_1SSAO.html#a5c064716bebc60b676f028f2737d87ac":[1,3,123,0],
-"classinviwo_1_1SSAO.html#aa5ffd58f317ea3d3dd5e0c4856569eb6":[1,3,123,1],
+"classinviwo_1_1SSAO.html":[1,3,122],
+"classinviwo_1_1SSAO.html#a5c064716bebc60b676f028f2737d87ac":[1,3,122,0],
+"classinviwo_1_1SSAO.html#aa5ffd58f317ea3d3dd5e0c4856569eb6":[1,3,122,1],
 "classinviwo_1_1SafeCStr.html":[2,0,0,975],
 "classinviwo_1_1SafeCStr.html":[4,0,1,981],
 "classinviwo_1_1SampleTransformComponent.html":[2,0,0,976],
@@ -247,7 +249,5 @@ var NAVTREEINDEX16 =
 "classinviwo_1_1ShaderResource.html":[2,0,0,1004],
 "classinviwo_1_1ShaderResource.html":[4,0,1,1010],
 "classinviwo_1_1ShaderType.html":[2,0,0,1006],
-"classinviwo_1_1ShaderType.html":[4,0,1,1012],
-"classinviwo_1_1ShaderWidget.html":[2,0,0,1007],
-"classinviwo_1_1ShaderWidget.html":[4,0,1,1013]
+"classinviwo_1_1ShaderType.html":[4,0,1,1012]
 };

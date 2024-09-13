@@ -1,5 +1,7 @@
 var NAVTREEINDEX23 =
 {
+"classinviwo_1_1WorkspaceManager.html#a008234b62dad6d13e0aaaa7adf6a8f77":[2,0,0,1313,4],
+"classinviwo_1_1WorkspaceManager.html#a008234b62dad6d13e0aaaa7adf6a8f77":[4,0,1,1319,4],
 "classinviwo_1_1WorkspaceManager.html#a2ec67fa2a267bbd793fceef50db09f98":[2,0,0,1313,8],
 "classinviwo_1_1WorkspaceManager.html#a2ec67fa2a267bbd793fceef50db09f98":[4,0,1,1319,8],
 "classinviwo_1_1WorkspaceManager.html#a315040dfffc86ac9677806c3d75a783d":[2,0,0,1313,5],
@@ -247,7 +249,5 @@ var NAVTREEINDEX23 =
 "classinviwo_1_1animation_1_1InvalidationTrack.html#aef3bc07969916a27b1b7a8cb1bea561d":[2,0,0,0,48,0],
 "classinviwo_1_1animation_1_1InvalidationTrack.html#aef3bc07969916a27b1b7a8cb1bea561d":[4,0,1,1,49,0],
 "classinviwo_1_1animation_1_1Keyframe.html":[2,0,0,0,49],
-"classinviwo_1_1animation_1_1Keyframe.html":[4,0,1,1,50],
-"classinviwo_1_1animation_1_1KeyframeEditorWidget.html":[2,0,0,0,50],
-"classinviwo_1_1animation_1_1KeyframeEditorWidget.html":[4,0,1,1,51]
+"classinviwo_1_1animation_1_1Keyframe.html":[4,0,1,1,50]
 };

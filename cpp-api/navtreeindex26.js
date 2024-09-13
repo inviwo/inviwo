@@ -1,5 +1,7 @@
 var NAVTREEINDEX26 =
 {
+"classinviwo_1_1util_1_1NotificationBlocker.html":[2,0,0,18,47],
+"classinviwo_1_1util_1_1NotificationBlocker.html":[4,0,1,25,51],
 "classinviwo_1_1util_1_1Permutations.html":[2,0,0,18,51],
 "classinviwo_1_1util_1_1Permutations.html":[4,0,1,25,55],
 "classinviwo_1_1util_1_1TempFileHandle.html":[2,0,0,18,59],
@@ -247,7 +249,5 @@ var NAVTREEINDEX26 =
 "namespaceinviwo_1_1dataframefilters.html":[2,0,0,7],
 "namespaceinviwo_1_1dispatching.html":[2,0,0,8],
 "namespaceinviwo_1_1dispatching.html#a172fc38f8f66307a0614b74eb026eb30":[2,0,0,8,3],
-"namespaceinviwo_1_1dispatching.html#ac05fdf5c66624ddc37f7cfd7e4e77862":[2,0,0,8,2],
-"namespaceinviwo_1_1dispatching.html#ad62b9b33e37d1ad85aab5a936bd3b29d":[2,0,0,8,5],
-"namespaceinviwo_1_1dispatching.html#af0846b630796553663838ddc58c96170":[2,0,0,8,4]
+"namespaceinviwo_1_1dispatching.html#ac05fdf5c66624ddc37f7cfd7e4e77862":[2,0,0,8,2]
 };
