@@ -29,7 +29,6 @@ runs:
         xcrun simctl delete all
         sudo rm -rf ~/Library/Developer/CoreSimulator/Caches/*
         brew install ninja pkg-config nasm
-        sudo xcode-select --switch /Applications/Xcode_15.4.0.app/Contents/Developer
 
     - name: "Apt Install, switch to gcc-13"
       shell: bash
