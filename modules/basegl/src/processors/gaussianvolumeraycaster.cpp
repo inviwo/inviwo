@@ -94,7 +94,7 @@ const ProcessorInfo GaussianVolumeRaycaster::processorInfo_{
 
 GaussianVolumeRaycaster::GaussianVolumeRaycaster()
     : PoolProcessor()
-    , shader_("raycasting.frag", Shader::Build::No)
+    , shader_("gaussianraycasting.frag", Shader::Build::No)
     , volumePort_("volume")
     , entryPort_("entry")
     , exitPort_("exit")
