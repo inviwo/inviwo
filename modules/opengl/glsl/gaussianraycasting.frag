@@ -72,12 +72,12 @@ uniform bool useNormals = false;
 
 uniform int channel;
 
-#define ERT_THRESHOLD 0.8  // threshold for early ray termination
+#define ERT_THRESHOLD 0.99  // threshold for early ray termination
 
 #if (!defined(INCLUDE_DVR) && !defined(INCLUDE_ISOSURFACES))
 #  define INCLUDE_DVR
 #endif
-
+#define M_PI 3.14159
 
 vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgroundDepth, vec3 entryNormal) {
     vec4 result = vec4(0.0);
@@ -119,8 +119,21 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
     while (t < tEnd) {
         samplePos = entryPoint + t * rayDirection;
         vec4 previousVoxel = voxel;
+        //
         voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
 
+        vec3 a = vec3(0.1, 0.4, 0.4);
+        vec3 b = vec3(0.5, 0.5, 0.5);
+        vec3 c = vec3(0.8, 0.3, 0.1);
+        const vec3 points[3] = vec3[3](a,b,c);        
+        float sum = 0;
+        float sigma = 0.4;
+        for(int i = 0;i<points.length();++i)
+        {
+            sum += 1 / (sigma*sqrt(2*M_PI))*exp(-0.5*length(points[i]-samplePos)/(sigma*sigma));
+        }
+        
+        //result = vec4(1,1,1,1)*sum;
         // check for isosurfaces
 #if defined(ISOSURFACE_ENABLED) && defined(INCLUDE_ISOSURFACES)
         // make sure that tIncr has the correct length since drawIsoSurface will modify it
