@@ -101,6 +101,7 @@ GaussianVolumeRaycaster::GaussianVolumeRaycaster()
     , backgroundPort_("bg")
     , outport_("outport")
     , channel_("channel", "Render Channel", {{"Channel 1", "Channel 1", 0}}, 0)
+    , sigma_{"sigma", "Sigma", 0.1, 0.0, 1.0}
     , raycasting_("raycaster", "Raycasting")
     , isotfComposite_("isotfComposite", "TF & Isovalues", &volumePort_)
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
@@ -161,6 +162,7 @@ GaussianVolumeRaycaster::GaussianVolumeRaycaster()
     });
 
     addProperty(channel_);
+    addProperty(sigma_);
     addProperty(raycasting_);
     addProperty(isotfComposite_);
 
@@ -221,7 +223,7 @@ void GaussianVolumeRaycaster::raycast(const Volume& volume) {
     }
 
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
-                        channel_, isotfComposite_);
+                        channel_,sigma_, isotfComposite_);
 
     utilgl::singleDrawImagePlaneRect();
 

@@ -104,6 +104,7 @@ protected:
     ImageOutport outport_;
 
     OptionPropertyInt channel_;
+	FloatProperty sigma_;
     RaycastingProperty raycasting_;
     IsoTFProperty isotfComposite_;
 
