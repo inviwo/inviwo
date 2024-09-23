@@ -78,13 +78,13 @@ std::shared_ptr<DataFrame> createDataFrame(const std::vector<Histogram1D>& histo
 
     std::vector<double> binCenters(bins);
     std::ranges::generate(binCenters, [current = rangeMin, binSize]() mutable {
-        double v = current;
+        const double v = current;
         current += binSize;
         return v;
     });
-    std::string colName = !histograms[0].dataMap.valueAxis.name.empty()
-                              ? histograms[0].dataMap.valueAxis.name
-                              : "Scalars";
+    const std::string colName = !histograms[0].dataMap.valueAxis.name.empty()
+                                    ? histograms[0].dataMap.valueAxis.name
+                                    : "Scalars";
 
     dataframe->addColumn(colName, std::move(binCenters), histograms[0].dataMap.valueAxis.unit,
                          range);
