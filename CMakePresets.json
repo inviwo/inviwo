@@ -56,7 +56,6 @@
         "VCPKG_BINARY_SOURCES" : "default;http,https://jenkins.inviwo.org/cache/{sha},read"
       },
       "cacheVariables": {
-        "VCPKG_FEATURE_FLAGS":   "-compilertracking",
         "VCPKG_INSTALL_OPTIONS": "--x-abi-tools-use-exact-versions"
       }
     },
@@ -98,7 +97,8 @@
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET" : "x64-windows",
         "VCPKG_HOST_TRIPLET"   : "x64-windows",
-        "BUILD_SHARED_LIBS"    : { "type": "BOOL", "value": "ON"}
+        "BUILD_SHARED_LIBS"    : { "type": "BOOL", "value": "ON"},
+        "VCPKG_FEATURE_FLAGS":   "-compilertracking"
       }
     },
     {
