@@ -72,12 +72,16 @@ uniform bool useNormals = false;
 
 uniform int channel;
 
+uniform float sigma;
+
+#define M_PI 3.14159
 #define ERT_THRESHOLD 0.99  // threshold for early ray termination
 
 #if (!defined(INCLUDE_DVR) && !defined(INCLUDE_ISOSURFACES))
 #  define INCLUDE_DVR
 #endif
-#define M_PI 3.14159
+
+
 
 vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgroundDepth, vec3 entryNormal) {
     vec4 result = vec4(0.0);
@@ -93,6 +97,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
     vec4 color;
     vec4 voxel;
     vec3 samplePos;
+    float sum = 0;
     ShadingParameters shadingParams = defaultShadingParameters();
     vec3 toCameraDir = normalize((volumeParameters.textureToWorld * vec4(entryPoint, 1.0) -
                                   volumeParameters.textureToWorld * vec4(exitPoint, 1.0))
@@ -112,80 +117,44 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
 #endif // BACKGROUND_AVAILABLE
 
     // used for isosurface computation
-    voxel = getNormalizedVoxel(volume, volumeParameters, entryPoint + t * rayDirection);
-
+    //voxel = getNormalizedVoxel(volume, volumeParameters, entryPoint + t * rayDirection);
+    voxel = vec4( entryPoint + t * rayDirection,0.0);
 
     bool first = true;
     while (t < tEnd) {
         samplePos = entryPoint + t * rayDirection;
         vec4 previousVoxel = voxel;
-        //
-        voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
-
+        
         vec3 a = vec3(0.1, 0.4, 0.4);
         vec3 b = vec3(0.5, 0.5, 0.5);
         vec3 c = vec3(0.8, 0.3, 0.1);
-        const vec3 points[3] = vec3[3](a,b,c);        
-        float sum = 0;
-        float sigma = 0.4;
-        for(int i = 0;i<points.length();++i)
+        vec3 d = vec3(0.5, 0, 1);
+        const vec3 points[4] = vec3[4](a,b,c,d);        
+        
+        //float sigma = 0.15;
+        for(int i = 0;i < points.length();++i)
         {
+            
             sum += 1 / (sigma*sqrt(2*M_PI))*exp(-0.5*length(points[i]-samplePos)/(sigma*sigma));
         }
-        
-        //result = vec4(1,1,1,1)*sum;
+        voxel.a = sum;
+
         // check for isosurfaces
-#if defined(ISOSURFACE_ENABLED) && defined(INCLUDE_ISOSURFACES)
-        // make sure that tIncr has the correct length since drawIsoSurface will modify it
-        tIncr = tEnd / samples;
-        result = drawIsosurfaces(result, isovalues, voxel, previousVoxel, 
-                                 volume, volumeParameters, channel, transferFunction, camera, lighting, 
-                                 samplePos, rayDirection, toCameraDir, t, tIncr, tDepth);
-#endif // ISOSURFACE_ENABLED
+
 
 #if defined(BACKGROUND_AVAILABLE)
         result = DRAW_BACKGROUND(result, t, tIncr, backgroundColor, bgTDepth, tDepth);
 #endif // BACKGROUND_AVAILABLE
 
-#if defined(PLANES_ENABLED)
-        result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator, t, tDepth);
-#endif // #if defined(PLANES_ENABLED)
+
 
 #if defined(INCLUDE_DVR)
-        color = APPLY_CHANNEL_CLASSIFICATION(transferFunction, voxel, channel);
-        if (color.a > 0) {
-            
-            vec3 gradient;
-            if (first && useNormals) {
-                gradient = -entryNormal;
-            } else {
-                gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, samplePos, channel);
-                gradient = normalize(gradient);
 
-                // make sure that the gradient always points away from zero
-                gradient *= sign(voxel[channel] / (1.0 - volumeParameters.formatScaling) - volumeParameters.formatOffset);
-            }
+        color = applyTF(transferFunction, sum);
+        
+        if (color.a > 0.0) {
 
-            shadingParams = shading(color.rgb, -gradient, 
-                                    (volumeParameters.textureToWorld * vec4(samplePos, 1.0)).xyz);
-
-#if defined(SHADING_NORMAL) && (SHADING_NORMAL == 1)
-            // backside shading only
-            shadingParams.normal = -shadingParams.normal;
-#elif defined(SHADING_NORMAL) && (SHADING_NORMAL == 2)
-            // two-sided shading
-            if (dot(shadingParams.normal, rayDirection) > 0.0) {
-                shadingParams.normal = -shadingParams.normal;
-            }
-#endif
-
-            // Note that the gradient is reversed since we define the normal of a surface as
-            // the direction towards a lower intensity medium (gradient points in the increasing
-            // direction)
-            color.rgb = applyLighting(lighting, shadingParams, toCameraDir);            
-
-            result = APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera,
-                                       raycaster.isoValue, t, tDepth, tIncr);
+            result = APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera, raycaster.isoValue, t, tDepth, tIncr);
         }
 #endif // INCLUDE_DVR
 
@@ -200,7 +169,10 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
             t += tIncr;
         }
         first = false;
-    }
+    
+
+
+    }//end sampler loop
 
     // composite background if lying beyond the last volume sample, which is located at tEnd - tIncr*0.5
     if (bgTDepth > tEnd - tIncr * 0.5) {
