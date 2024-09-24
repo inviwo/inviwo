@@ -59,7 +59,9 @@ def defaultProperties() {
                 description: 'Select build configuration', 
                 name: 'Build_Type'
             )
-        ])
+        ]),
+        durabilityHint('PERFORMANCE_OPTIMIZED'), 
+        disableResume()
     ]
     return params
 }
