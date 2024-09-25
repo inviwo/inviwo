@@ -29,17 +29,13 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSE...
-
-#include <modules/webbrowser/processors/processorcefsynchronizer.h>  // for ProcessorCefSynchron...
-#include <modules/webbrowser/properties/propertycefsynchronizer.h>   // IWYU pragma: keep
-#include <modules/webbrowser/renderhandlergl.h>                      // for RenderHandlerGL
-
-#include <functional>  // for function
-#include <map>         // for map
-#include <memory>      // for unique_ptr, shared_ptr
-#include <string>      // for string
-#include <vector>      // for vector
+#include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <modules/webbrowser/renderhandlergl.h>  // for RenderHandlerGL
+#include <functional>                            // for function
+#include <map>                                   // for map
+#include <memory>                                // for unique_ptr, shared_ptr
+#include <string>                                // for string
+#include <vector>                                // for vector
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -66,9 +62,11 @@ class CefResourceHandler;
 
 namespace inviwo {
 
-class ModuleManager;
+class InviwoApplication;
 class Processor;
 class PropertyWidgetCEFFactory;
+class StringResourceProvider;
+class NetWorkCefSynchronizer;
 
 /* \class WebBrowserClient
  * CefClient with custom render handler and call redirections.
@@ -79,7 +77,6 @@ class PropertyWidgetCEFFactory;
  */
 #include <warn/push>
 #include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
-#include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
 class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
                                                    public CefLifeSpanHandler,
                                                    public CefRequestHandler,
@@ -87,31 +84,14 @@ class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
                                                    public CefDisplayHandler,
                                                    public CefResourceRequestHandler {
 public:
-    WebBrowserClient(ModuleManager& moduleManager, const PropertyWidgetCEFFactory* widgetFactory);
+    WebBrowserClient(InviwoApplication* app);
 
     virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return renderHandler_; }
     virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
     virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override { return this; }
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
-
-    /**
-     * Enable invalidation when the web page repaints and allow the Inviwo javascript API
-     * to access the parent processor.
-     * Connection will be removed when the browser closes or removeBrowserParent is called.
-     * A browser can only have one Processor as parent.
-     * @param browser to be associated with a processor.
-     * @param parent web browser processor responsible for the browser. Cannot be null.
-     * @see ProcessorCefSynchronizer
-     */
-    void setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent);
-    /**
-     * Removes Processor parent associated with the provided browser.
-     * Processor invalidation will not be called on repaints after removing the processor.
-     * Will do nothing if browser has no assoicated Processor.
-     * @param browser to remove processor association from.
-     */
-    void removeBrowserParent(CefRefPtr<CefBrowser> browser);
+    virtual ~WebBrowserClient() override;
 
     /**
      * Register a processor \p callback for a specific \p browser which can be triggered through a
@@ -126,10 +106,11 @@ public:
      *
      * \see ProcessorCefSynchronizer::registerCallback, setBrowserParent
      */
-    ProcessorCefSynchronizer::CallbackHandle registerCallback(
+    std::shared_ptr<std::function<std::string(const std::string&)>> registerCallback(
         CefRefPtr<CefBrowser> browser, const std::string& name,
-        std::function<ProcessorCefSynchronizer::CallbackFunc> callback);
+        std::function<std::string(const std::string&)> callback);
 
+    // CefClient override
     virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                           CefProcessId source_process,
                                           CefRefPtr<CefProcessMessage> message) override;
@@ -162,6 +143,13 @@ public:
      */
     void addLoadHandler(CefLoadHandler* loadHandler);
     void removeLoadHandler(CefLoadHandler* loadHandler);
+
+    void addStaticHandler(
+        int browserId,
+        std::function<bool(const std::string&, scoped_refptr<CefResourceManager::Request>)>
+            handler);
+    void removeStaticHandler(int browserId);
+
     ///
     // Called when the loading state has changed. This callback will be executed
     // twice -- once when loading is initiated either programmatically or by user
@@ -236,28 +224,35 @@ public:
         CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
         CefRefPtr<CefRequest> request) override;
 
-protected:
-    struct BrowserData {
-        Processor* processor;
-        CefRefPtr<ProcessorCefSynchronizer> processorCefSynchronizer;
-    };
+    void onNewRender(CefRefPtr<CefBrowser> browser, std::function<void()> func) {
+        onNewRender_[browser->GetIdentifier()] = func;
+    }
+    void onNewMessage(
+        CefRefPtr<CefBrowser> browser,
+        std::function<void(cef_log_severity_t, const CefString&, const CefString&, int)> func) {
+        onNewMessage_[browser->GetIdentifier()] = func;
+    }
 
-    std::map<int, BrowserData> browserParents_;  /// Owner of each browser
-    std::map<int, std::unique_ptr<PropertyCefSynchronizer>>
-        propertyCefSynchronizers_;                   /// One synchronizer per browser
+protected:
+    void notifyOnNewRender(CefRefPtr<CefBrowser> browser);
+
     const PropertyWidgetCEFFactory* widgetFactory_;  /// Non-owning reference
 
     CefRefPtr<RenderHandlerGL> renderHandler_;
+
+    std::map<int, std::function<void()>> onNewRender_;
+    std::map<int, std::function<void(cef_log_severity_t, const CefString&, const CefString&, int)>> onNewMessage_;
+
     // Handles the browser side of query routing.
-    CefRefPtr<CefMessageRouterBrowserSide> messageRouter_;
+    CefRefPtr<CefMessageRouterBrowserSide> router_;
+    CefRefPtr<NetWorkCefSynchronizer> networkSync_;
 
     std::vector<CefLoadHandler*> loadHandlers_;
     // Manages the registration and delivery of resources (redirections to
     // modules/app folders).
     CefRefPtr<CefResourceManager> resourceManager_;
 
-    // Track the number of browsers using this Client.
-    int browserCount_ = 0;
+    std::unique_ptr<StringResourceProvider> stringResourceProvider_;
 
 private:
     std::shared_ptr<std::function<void()>> onModulesRegisteredCallback_;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,32 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/json/jsoninportconverter.h>
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEB...
-
-#include <inviwo/core/util/factory.h>                                      // for StandardFactory
-#include <modules/webbrowser/properties/propertywidgetcef.h>               // for PropertyWidgetCEF
-#include <modules/webbrowser/properties/propertywidgetceffactoryobject.h>  // for PropertyWidget...
-
-#include <memory>  // for unique_ptr
-#include <string>  // for string
-#include <vector>  // for vector
-
-namespace inviwo {
-class Property;
-
-/**
- * Factory for creating PropertyWidgetCEF for a property.
- * The PropertyWidgetCEF requires a PropertyJSONConverter its corresponding
- * Property.
- */
-class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEFFactory
-    : public StandardFactory<PropertyWidgetCEF, PropertyWidgetCEFFactoryObject, const std::string&,
-                             Property*> {
-public:
-    PropertyWidgetCEFFactory();
-    virtual ~PropertyWidgetCEFFactory();
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo
