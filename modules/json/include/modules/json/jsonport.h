@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,47 +26,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/json/jsonmoduledefine.h>  // for IVW_MODULE_JSON_API
+#include <modules/json/jsonmoduledefine.h>
 
-#include <inviwo/core/properties/property.h>  // for PropertyTraits
 
-#include <memory>  // for unique_ptr, make_unique
-#include <string>  // for string
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+
+#include <modules/json/json.h>
+
+#include <nlohmann/json.hpp>
 
 namespace inviwo {
-class PropertyJSONConverter;
-template <typename SrcProperty>
-class TemplatePropertyJSONConverter;
+using json = ::nlohmann::json;
 
-class IVW_MODULE_JSON_API PropertyJSONConverterFactoryObject {
-public:
-    PropertyJSONConverterFactoryObject();
-    virtual ~PropertyJSONConverterFactoryObject();
 
-    virtual std::unique_ptr<PropertyJSONConverter> create(Property*) = 0;
-    /**
-     * Property class identifier.
-     */
-    virtual std::string getClassIdentifier() const = 0;
+using JSONInport = DataInport<json>;
+using JSONOutport = DataOutport<json>;
 
-private:
-};
 
-template <typename P>
-class PropertyJSONConverterFactoryObjectTemplate : public PropertyJSONConverterFactoryObject {
-public:
-    PropertyJSONConverterFactoryObjectTemplate() : PropertyJSONConverterFactoryObject() {}
+IVW_MODULE_JSON_API void to_json(json& j, const JSONInport& df);
+IVW_MODULE_JSON_API void from_json(const json& j, JSONInport& df);
 
-    virtual ~PropertyJSONConverterFactoryObjectTemplate() {}
-
-    virtual std::unique_ptr<PropertyJSONConverter> create(Property*) {
-        return std::make_unique<TemplatePropertyJSONConverter<P>>();
-    }
-
-    virtual std::string getClassIdentifier() const { return PropertyTraits<P>::classIdentifier(); };
-};
+IVW_MODULE_JSON_API void to_json(json& j, const JSONOutport& df);
+IVW_MODULE_JSON_API void from_json(const json& j, JSONOutport& df);
 
 }  // namespace inviwo

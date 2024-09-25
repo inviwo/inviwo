@@ -406,7 +406,7 @@ void Processor::deserialize(Deserializer& d) {
                         delete removePort(id);
                     }
                 });
-
+        
         desInports(d, inports_);
     }
     {
