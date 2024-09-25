@@ -195,7 +195,6 @@ void utilqt::configureInviwoQtApp() {
     qputenv("QT_STYLE_OVERRIDE", "");
 #endif
 
-    QCoreApplication::setAttribute(Qt::AA_NativeWindows);
     QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
     QSurfaceFormat defaultFormat;
