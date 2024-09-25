@@ -33,18 +33,15 @@
 #include <inviwo/core/properties/propertysemantics.h>    // for PropertySemantics
 #include <inviwo/core/properties/propertywidget.h>       // for PropertyWidget
 #include <inviwo/core/util/logcentral.h>                 // for LogCentral, LogError
-#include <modules/json/io/json/propertyjsonconverter.h>  // for json, PropertyJSONConverter
 
 #include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
 #include <include/cef_base.h>                // for CefRefPtr, CefString
 #include <include/cef_frame.h>               // for CefFrame
 #include <nlohmann/json.hpp>                 // for json_ref, basic_json, basic_json...
 
-#include <initializer_list>  // for initializer_list
-#include <ostream>           // for operator<<, basic_ostream, strin...
-#include <stdexcept>         // for out_of_range
-#include <utility>           // for move
-#include <vector>            // for vector
+#include <stdexcept>  // for out_of_range
+#include <utility>    // for move
+#include <vector>     // for vector
 
 class CefBrowser;
 
@@ -52,10 +49,9 @@ using json = nlohmann::json;
 
 namespace inviwo {
 
-PropertyWidgetCEF::PropertyWidgetCEF(Property* prop,
-                                     std::unique_ptr<PropertyJSONConverter> converter,
-                                     CefRefPtr<CefFrame> frame, std::string onChange)
-    : PropertyWidget(prop), converter_(std::move(converter)), onChange_(onChange), frame_(frame) {
+PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, const JSONPropertyConverter& converter,
+                                     CefRefPtr<CefFrame> frame, std::string_view onChange)
+    : PropertyWidget(prop), converter_(converter), onChange_(onChange), frame_(frame) {
     if (prop) {
         prop->addObserver(this);
     }
@@ -77,13 +73,11 @@ bool PropertyWidgetCEF::onQuery(
         auto p = getProperty();
         if (command == "property.set") {
             p->setInitiatingWidget(this);
-            converter_->fromJSON(j.at("parameters"), *p);
+            converter_.fromJSON(j.at("parameters"), *p);
             p->clearInitiatingWidget();
             callback->Success("");
         } else if (command == "property.get") {
-            json res;
-            converter_->toJSON(res, *p);
-            callback->Success(res.dump());
+            callback->Success(converter_.toJSON(*p).dump());
         }
     } catch (json::exception& ex) {
         LogError(ex.what());
@@ -98,58 +92,57 @@ void PropertyWidgetCEF::updateFromProperty() {
     if (!frame_) {
         return;
     }
-    std::stringstream script;
-    json p;
-    converter_->toJSON(p, *getProperty());
-    script << this->getOnChange() << "(" << p.dump() << ");";
-    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+
+    const auto script =
+        fmt::format("{}({})", getOnChange(), converter_.toJSON(*getProperty()).dump());
+    frame_->ExecuteJavaScript(script, frame_->GetURL(), 0);
 }
 
 void PropertyWidgetCEF::onSetIdentifier(Property* /*property*/, const std::string& identifier) {
     if (!frame_) {
         return;
     }
-    std::stringstream script;
+
     auto p = json{{"identifier", identifier}};
-    script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
-    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+    const auto script = fmt::format("{}({})", getPropertyObserverCallback(), p.dump());
+    frame_->ExecuteJavaScript(script, frame_->GetURL(), 0);
 }
 
 void PropertyWidgetCEF::onSetDisplayName(Property* /*property*/, const std::string& displayName) {
     if (!frame_) {
         return;
     }
-    std::stringstream script;
+
     auto p = json{{"displayName", displayName}};
-    script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
-    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+    const auto script = fmt::format("{}({})", getPropertyObserverCallback(), p.dump());
+    frame_->ExecuteJavaScript(script, frame_->GetURL(), 0);
 }
 void PropertyWidgetCEF::onSetSemantics(Property* /*property*/, const PropertySemantics& semantics) {
     if (!frame_) {
         return;
     }
-    std::stringstream script;
+
     auto p = json{{"semantics", semantics.getString()}};
-    script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
-    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+    const auto script = fmt::format("{}({})", getPropertyObserverCallback(), p.dump());
+    frame_->ExecuteJavaScript(script, frame_->GetURL(), 0);
 }
 void PropertyWidgetCEF::onSetReadOnly(Property* /*property*/, bool readonly) {
     if (!frame_) {
         return;
     }
-    std::stringstream script;
+
     auto p = json{{"readOnly", (readonly ? "true" : "false")}};
-    script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
-    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+    const auto script = fmt::format("{}({})", getPropertyObserverCallback(), p.dump());
+    frame_->ExecuteJavaScript(script, frame_->GetURL(), 0);
 }
 void PropertyWidgetCEF::onSetVisible(Property* /*property*/, bool visible) {
     if (!frame_) {
         return;
     }
-    std::stringstream script;
+
     auto p = json{{"visible", (visible ? "true" : "false")}};
-    script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
-    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+    const auto script = fmt::format("{}({})", getPropertyObserverCallback(), p.dump());
+    frame_->ExecuteJavaScript(script, frame_->GetURL(), 0);
 }
 
 }  // namespace inviwo

@@ -123,6 +123,17 @@ public:
      * @see isHighlightModified
      */
     BrushingModifications getModifiedActions() const;
+
+    /**
+     * return which targets were changed since the last network evaluation
+     */
+    std::vector<BrushingTarget> getModifiedTargets() const;
+
+    /**
+     * return which targets were changed by action since the last network evaluation
+     */
+    const std::unordered_map<BrushingTarget, BrushingModifications>& getModified() const;
+
     /**
      * return whether there was a filter action since the last network evaluation
      *

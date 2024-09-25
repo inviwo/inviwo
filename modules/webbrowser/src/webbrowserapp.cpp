@@ -29,9 +29,20 @@
 
 #include <modules/webbrowser/webbrowserapp.h>
 
+#include <inviwo/core/util/logcentral.h>
+
 #include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
 #include <include/cef_base.h>                // for CefRefPtr, CefString
 #include <include/cef_command_line.h>        // for CefCommandLine
+
+#include <include/cef_browser.h>
+#include <include/cef_callback.h>
+#include <include/cef_frame.h>
+#include <include/cef_request.h>
+#include <include/cef_resource_handler.h>
+#include <include/cef_response.h>
+#include <include/cef_scheme.h>
+#include <include/wrapper/cef_helpers.h>
 
 namespace inviwo {
 

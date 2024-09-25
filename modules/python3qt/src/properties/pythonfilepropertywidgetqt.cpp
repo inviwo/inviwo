@@ -43,7 +43,11 @@ namespace inviwo {
 PythonFilePropertyWidgetQt::PythonFilePropertyWidgetQt(FileProperty* property)
     : FilePropertyWidgetQt(property) {
 
-    IVW_ASSERT(property->getSemantics() == PropertySemantics::PythonEditor, "Wrong semantics");
+    if (property->getSemantics() != PropertySemantics::PythonEditor) {
+        throw Exception(IVW_CONTEXT,
+                        "Invalid semantics for HtmlPropertyWidgetQt, expected PythonEditor, got {}",
+                        property->getSemantics().getString());
+    }
 
     addEditor();
 }

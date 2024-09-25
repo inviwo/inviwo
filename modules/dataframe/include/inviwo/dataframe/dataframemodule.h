@@ -32,10 +32,18 @@
 
 #include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
 
+#include <modules/json/jsonsupplier.h>
+
 namespace inviwo {
 class InviwoApplication;
 
-class IVW_MODULE_DATAFRAME_API DataFrameModule : public InviwoModule {
+class IVW_MODULE_DATAFRAME_API DataFrameModule : public InviwoModule,
+                                                 public JSONSupplier<Inport, PortTraits>,
+                                                 public JSONSupplier<Property, PropertyTraits> {
+
+    using JSONSupplier<Inport, PortTraits>::registerJSONConverter;
+    using JSONSupplier<Property, PropertyTraits>::registerJSONConverter;
+
 public:
     DataFrameModule(InviwoApplication* app);
     virtual ~DataFrameModule() = default;

@@ -121,105 +121,8 @@ namespace inviwo {
 
 namespace {
 
-struct OrdinalReghelper {
-    template <typename T>
-    auto operator()(InviwoModule& qm) {
-        qm.registerProperty<OrdinalProperty<T>>();
-        qm.registerProperty<OrdinalRefProperty<T>>();
-    }
-};
-
-struct MinMaxReghelper {
-    template <typename T>
-    auto operator()(InviwoModule& qm) {
-        using PropertyType = MinMaxProperty<T>;
-        qm.registerProperty<PropertyType>();
-    }
-};
-
-struct OptionReghelper {
-    template <typename T>
-    auto operator()(InviwoModule& qm) {
-        using PropertyType = OptionProperty<T>;
-        qm.registerProperty<PropertyType>();
-    }
-};
-
-// Functors for registration of property converters
-// Can't use a regular lambda since we need the explicit template arguments.
-// We take a std::function to register the created converter since the registration function is
-// protected in the inviwo module
-struct ConverterRegFunctor {
-    template <typename T, typename U>
-    auto operator()(InviwoModule& m) {
-        if constexpr (!std::is_same<T, U>::value) {
-            m.registerPropertyConverter(
-                std::make_unique<
-                    OrdinalPropertyConverter<OrdinalProperty<T>, OrdinalProperty<U>>>());
-
-            m.registerPropertyConverter(
-                std::make_unique<
-                    OrdinalPropertyConverter<OrdinalRefProperty<T>, OrdinalRefProperty<U>>>());
-        }
-        m.registerPropertyConverter(
-            std::make_unique<
-                OrdinalPropertyConverter<OrdinalRefProperty<T>, OrdinalProperty<U>>>());
-        m.registerPropertyConverter(
-            std::make_unique<
-                OrdinalPropertyConverter<OrdinalProperty<T>, OrdinalRefProperty<U>>>());
-    }
-};
-struct ScalarStringConverterRegFunctor {
-    template <typename T>
-    auto operator()(InviwoModule& m) {
-        m.registerPropertyConverter(
-            std::make_unique<ScalarToStringConverter<OrdinalProperty<T>>>());
-        m.registerPropertyConverter(
-            std::make_unique<ScalarToStringConverter<OrdinalRefProperty<T>>>());
-    }
-};
-struct VectorStringConverterRegFunctor {
-    template <typename T>
-    auto operator()(InviwoModule& m) {
-        m.registerPropertyConverter(
-            std::make_unique<VectorToStringConverter<OrdinalProperty<T>>>());
-        m.registerPropertyConverter(
-            std::make_unique<VectorToStringConverter<OrdinalRefProperty<T>>>());
-    }
-};
-
 enum class OptionRegEnumInt : int {};
 enum class OptionRegEnumUInt : unsigned int {};
-
-struct OptionStringConverterRegFunctor {
-    template <typename T>
-    auto operator()(InviwoModule& m) {
-        m.registerPropertyConverter(std::make_unique<OptionToStringConverter<OptionProperty<T>>>());
-    }
-};
-
-struct OptionIntConverterRegFunctor {
-    template <typename T>
-    auto operator()(InviwoModule& m) {
-        m.registerPropertyConverter(std::make_unique<OptionToIntConverter<OptionProperty<T>>>());
-    }
-};
-
-struct IntOptionConverterRegFunctor {
-    template <typename T>
-    auto operator()(InviwoModule& m) {
-        m.registerPropertyConverter(std::make_unique<IntToOptionConverter<OptionProperty<T>>>());
-    }
-};
-
-// Functor for registering defaults for datatypes
-struct DataTypeRegFunctor {
-    template <typename T>
-    auto operator()(InviwoModule& m) {
-        m.registerDefaultsForDataType<T>();
-        m.registerDefaultsForDataType<std::vector<T>>();
-    }
-};
 
 }  // namespace
 
@@ -311,7 +214,12 @@ InviwoCore::InviwoCore(InviwoApplication* app)
         std::int64_t, i64vec2, i64vec3, i64vec4,
         std::uint64_t, u64vec2, u64vec3, u64vec4>;
     // clang-format on
-    util::for_each_type<types>{}(DataTypeRegFunctor{}, *this);
+
+    // Functor for registering defaults for datatypes
+    util::for_each_type<types>{}([&]<typename T>() {
+        registerDefaultsForDataType<T>();
+        registerDefaultsForDataType<std::vector<T>>();
+    });
 
     // Register PortInspectors
     registerPortInspector(PortTraits<ImageOutport>::classIdentifier(),
@@ -350,16 +258,21 @@ InviwoCore::InviwoCore(InviwoApplication* app)
         std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4, dmat2,
                    dmat3, dmat4, int, ivec2, ivec3, ivec4, glm::i64, unsigned int, uvec2, uvec3,
                    uvec4, size_t, size2_t, size3_t, size4_t, glm::fquat, glm::dquat>;
-    util::for_each_type<OrdinalTypes>{}(OrdinalReghelper{}, *this);
+    util::for_each_type<OrdinalTypes>{}([&]<typename T>() {
+        registerProperty<OrdinalProperty<T>>();
+        registerProperty<OrdinalRefProperty<T>>();
+    });
 
     // Register MinMaxProperty widgets
     using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;
-    util::for_each_type<ScalarTypes>{}(MinMaxReghelper{}, *this);
+    util::for_each_type<ScalarTypes>{}(
+        [&]<typename T>() { registerProperty<MinMaxProperty<T>>(); });
 
     // Register option property widgets
     using OptionTypes = std::tuple<char, unsigned char, unsigned int, int, size_t, float, double,
                                    std::string, FileExtension>;
-    util::for_each_type<OptionTypes>{}(OptionReghelper{}, *this);
+    util::for_each_type<OptionTypes>{}(
+        [&]<typename T>() { registerProperty<OptionProperty<T>>(); });
 
     registerProperty<IsoValueProperty>();
     registerProperty<IsoTFProperty>();
@@ -399,28 +312,69 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     // for_each_type_pair will call the functor with all permutation of types, and supplied
     // arguments like: ConverterRegFunctor<float, float>(*this), ConverterRegFunctor<float,
     // double>(*this), ...
-    util::for_each_type_pair<Scalars, Scalars>{}(ConverterRegFunctor{}, *this);
-    util::for_each_type_pair<Vec2s, Vec2s>{}(ConverterRegFunctor{}, *this);
-    util::for_each_type_pair<Vec3s, Vec3s>{}(ConverterRegFunctor{}, *this);
-    util::for_each_type_pair<Vec4s, Vec4s>{}(ConverterRegFunctor{}, *this);
 
-    util::for_each_type_pair<Mat2s, Mat2s>{}(ConverterRegFunctor{}, *this);
-    util::for_each_type_pair<Mat3s, Mat3s>{}(ConverterRegFunctor{}, *this);
-    util::for_each_type_pair<Mat4s, Mat4s>{}(ConverterRegFunctor{}, *this);
+    const auto ordinalLikeConverters = [&]<typename T, typename U>() {
+        if constexpr (!std::is_same<T, U>::value) {
+            registerPropertyConverter(
+                std::make_unique<
+                    OrdinalPropertyConverter<OrdinalProperty<T>, OrdinalProperty<U>>>());
 
-    util::for_each_type<Scalars>{}(ScalarStringConverterRegFunctor{}, *this);
-    util::for_each_type<Vec2s>{}(VectorStringConverterRegFunctor{}, *this);
-    util::for_each_type<Vec3s>{}(VectorStringConverterRegFunctor{}, *this);
-    util::for_each_type<Vec4s>{}(VectorStringConverterRegFunctor{}, *this);
+            registerPropertyConverter(
+                std::make_unique<
+                    OrdinalPropertyConverter<OrdinalRefProperty<T>, OrdinalRefProperty<U>>>());
+        }
+        registerPropertyConverter(
+            std::make_unique<
+                OrdinalPropertyConverter<OrdinalRefProperty<T>, OrdinalProperty<U>>>());
+        registerPropertyConverter(
+            std::make_unique<
+                OrdinalPropertyConverter<OrdinalProperty<T>, OrdinalRefProperty<U>>>());
+    };
 
-    util::for_each_type<OptionTypes>{}(OptionStringConverterRegFunctor{}, *this);
-    util::for_each_type<OptionTypes>{}(OptionIntConverterRegFunctor{}, *this);
-    util::for_each_type<OptionTypes>{}(IntOptionConverterRegFunctor{}, *this);
+    util::for_each_type_pair<Scalars, Scalars>{}(ordinalLikeConverters);
+    util::for_each_type_pair<Vec2s, Vec2s>{}(ordinalLikeConverters);
+    util::for_each_type_pair<Vec3s, Vec3s>{}(ordinalLikeConverters);
+    util::for_each_type_pair<Vec4s, Vec4s>{}(ordinalLikeConverters);
+
+    util::for_each_type_pair<Mat2s, Mat2s>{}(ordinalLikeConverters);
+    util::for_each_type_pair<Mat3s, Mat3s>{}(ordinalLikeConverters);
+    util::for_each_type_pair<Mat4s, Mat4s>{}(ordinalLikeConverters);
+
+    const auto scalarStringConverter = [&]<typename T>() {
+        registerPropertyConverter(std::make_unique<ScalarToStringConverter<OrdinalProperty<T>>>());
+        registerPropertyConverter(
+            std::make_unique<ScalarToStringConverter<OrdinalRefProperty<T>>>());
+    };
+    const auto vectorStringConverter = [&]<typename T>() {
+        registerPropertyConverter(std::make_unique<VectorToStringConverter<OrdinalProperty<T>>>());
+        registerPropertyConverter(
+            std::make_unique<VectorToStringConverter<OrdinalRefProperty<T>>>());
+    };
+    util::for_each_type<Scalars>{}(scalarStringConverter);
+    util::for_each_type<Vec2s>{}(vectorStringConverter);
+    util::for_each_type<Vec3s>{}(vectorStringConverter);
+    util::for_each_type<Vec4s>{}(vectorStringConverter);
+
+    const auto optionStringConverter = [&]<typename T>() {
+        registerPropertyConverter(std::make_unique<OptionToStringConverter<OptionProperty<T>>>());
+    };
+
+    const auto optionIntConverter = [&]<typename T>() {
+        registerPropertyConverter(std::make_unique<OptionToIntConverter<OptionProperty<T>>>());
+    };
+
+    const auto intOptionConverter = [&]<typename T>() {
+        registerPropertyConverter(std::make_unique<IntToOptionConverter<OptionProperty<T>>>());
+    };
+
+    util::for_each_type<OptionTypes>{}(optionStringConverter);
+    util::for_each_type<OptionTypes>{}(optionIntConverter);
+    util::for_each_type<OptionTypes>{}(intOptionConverter);
 
     using OptionEnumTypes = std::tuple<OptionRegEnumInt, OptionRegEnumUInt>;
-    util::for_each_type<OptionEnumTypes>{}(OptionStringConverterRegFunctor{}, *this);
-    util::for_each_type<OptionEnumTypes>{}(OptionIntConverterRegFunctor{}, *this);
-    util::for_each_type<OptionEnumTypes>{}(IntOptionConverterRegFunctor{}, *this);
+    util::for_each_type<OptionEnumTypes>{}(optionStringConverter);
+    util::for_each_type<OptionEnumTypes>{}(optionIntConverter);
+    util::for_each_type<OptionEnumTypes>{}(intOptionConverter);
 
     // Observe composite processors
     auto userCompositeDir = app_->getPath(PathType::Settings, "/composites");

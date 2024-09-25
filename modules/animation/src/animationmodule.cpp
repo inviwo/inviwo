@@ -29,41 +29,42 @@
 
 #include <modules/animation/animationmodule.h>
 
-#include <inviwo/core/common/inviwomodule.h>                               // for InviwoModule
-#include <inviwo/core/datastructures/camera/camera.h>                      // for mat4
-#include <inviwo/core/io/serialization/deserializer.h>                     // for ContainerWrapp...
-#include <inviwo/core/io/serialization/serializationexception.h>           // for SerializationE...
-#include <inviwo/core/io/serialization/ticpp.h>                            // for TxElement, Ele...
-#include <inviwo/core/io/serialization/versionconverter.h>                 // for ElementMatcher
-#include <inviwo/core/properties/boolproperty.h>                           // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                         // for ButtonProperty
-#include <inviwo/core/properties/cameraproperty.h>                         // for CameraProperty
-#include <inviwo/core/properties/fileproperty.h>                           // for FileProperty
-#include <inviwo/core/properties/minmaxproperty.h>                         // for MinMaxProperty
-#include <inviwo/core/properties/optionproperty.h>                         // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                        // for OrdinalProperty
-#include <inviwo/core/properties/ordinalrefproperty.h>                     // for OrdinalRefProp...
-#include <inviwo/core/properties/property.h>                               // for PropertyTraits
-#include <inviwo/core/properties/stringproperty.h>                         // for StringProperty
-#include <inviwo/core/util/exception.h>                                    // for Exception
-#include <inviwo/core/util/foreacharg.h>                                   // for for_each_type
-#include <inviwo/core/util/glmmat.h>                                       // for dmat2, dmat3
-#include <inviwo/core/util/glmmatext.h>                                    // for mix
-#include <inviwo/core/util/glmvec.h>                                       // for dvec2, dvec3
-#include <inviwo/core/util/staticstring.h>                                 // for operator+
-#include <inviwo/core/util/stringconversion.h>                             // for replaceInString
-#include <modules/animation/animationmanager.h>                            // for AnimationManager
-#include <modules/animation/animationsupplier.h>                           // for AnimationSupplier
-#include <modules/animation/datastructures/animationtime.h>                // for animation
-#include <modules/animation/datastructures/basetrack.h>                    // for BaseTrack<>::k...
-#include <modules/animation/datastructures/buttonkeyframe.h>               // for ButtonKeyframe
-#include <modules/animation/datastructures/buttonkeyframesequence.h>       // for ButtonKeyframe...
-#include <modules/animation/datastructures/buttontrack.h>                  // IWYU pragma: keep
-#include <modules/animation/datastructures/callbacktrack.h>                // for CallbackTrack
-#include <modules/animation/datastructures/camerakeyframe.h>               // for CameraKeyframe
-#include <modules/animation/datastructures/cameratrack.h>                  // IWYU pragma: keep
-#include <modules/animation/datastructures/controltrack.h>                 // for ControlTrack
-#include <modules/animation/datastructures/easing.h>                       // for ease
+#include <inviwo/core/common/inviwomodule.h>                          // for InviwoModule
+#include <inviwo/core/datastructures/camera/camera.h>                 // for mat4
+#include <inviwo/core/io/serialization/deserializer.h>                // for ContainerWrapp...
+#include <inviwo/core/io/serialization/serializationexception.h>      // for SerializationE...
+#include <inviwo/core/io/serialization/ticpp.h>                       // for TxElement, Ele...
+#include <inviwo/core/io/serialization/versionconverter.h>            // for ElementMatcher
+#include <inviwo/core/properties/boolproperty.h>                      // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                    // for ButtonProperty
+#include <inviwo/core/properties/cameraproperty.h>                    // for CameraProperty
+#include <inviwo/core/properties/fileproperty.h>                      // for FileProperty
+#include <inviwo/core/properties/minmaxproperty.h>                    // for MinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>                    // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                   // for OrdinalProperty
+#include <inviwo/core/properties/ordinalrefproperty.h>                // for OrdinalRefProp...
+#include <inviwo/core/properties/property.h>                          // for PropertyTraits
+#include <inviwo/core/properties/stringproperty.h>                    // for StringProperty
+#include <inviwo/core/util/exception.h>                               // for Exception
+#include <inviwo/core/util/foreacharg.h>                              // for for_each_type
+#include <inviwo/core/util/glmmat.h>                                  // for dmat2, dmat3
+#include <inviwo/core/util/glmmatext.h>                               // for mix
+#include <inviwo/core/util/glmvec.h>                                  // for dvec2, dvec3
+#include <inviwo/core/util/staticstring.h>                            // for operator+
+#include <inviwo/core/util/stringconversion.h>                        // for replaceInString
+#include <modules/animation/animationmanager.h>                       // for AnimationManager
+#include <modules/animation/animationsupplier.h>                      // for AnimationSupplier
+#include <modules/animation/datastructures/animationtime.h>           // for animation
+#include <modules/animation/datastructures/basetrack.h>               // for BaseTrack<>::k...
+#include <modules/animation/datastructures/buttonkeyframe.h>          // for ButtonKeyframe
+#include <modules/animation/datastructures/buttonkeyframesequence.h>  // for ButtonKeyframe...
+#include <modules/animation/datastructures/buttontrack.h>             // IWYU pragma: keep
+#include <modules/animation/datastructures/callbacktrack.h>           // for CallbackTrack
+#include <modules/animation/datastructures/camerakeyframe.h>          // for CameraKeyframe
+#include <modules/animation/datastructures/cameratrack.h>             // IWYU pragma: keep
+#include <modules/animation/datastructures/controltrack.h>            // for ControlTrack
+#include <modules/animation/datastructures/easing.h>                  // for ease
+#include <modules/animation/datastructures/invalidationtrack.h>
 #include <modules/animation/datastructures/keyframe.h>                     // for operator<
 #include <modules/animation/datastructures/keyframesequence.h>             // for operator<
 #include <modules/animation/datastructures/propertytrack.h>                // for PropertyTrack
@@ -102,82 +103,6 @@ class DemoController;
 class MainAnimation;
 }  // namespace animation
 
-namespace {
-
-template <typename PropertyType,
-          typename Keyframe = animation::ValueKeyframe<typename PropertyType::value_type>,
-          typename KeyframeSeq = animation::KeyframeSequenceTyped<Keyframe>>
-auto propTrackRegHelper(AnimationModule& am) {
-    using namespace animation;
-    // Register PropertyTrack and the KeyFrame it should use
-    am.registerTrack<PropertyTrack<PropertyType, Keyframe, KeyframeSeq>>();
-    am.registerPropertyTrackConnection(
-        PropertyTraits<PropertyType>::classIdentifier(),
-        PropertyTrack<PropertyType, Keyframe, KeyframeSeq>::classIdentifier());
-}
-
-template <typename PropertyType, typename Interpolation>
-auto interpolationRegHelper(AnimationModule& am) {
-    using namespace animation;
-    // No need to add existing interpolation method. Will produce a warning if adding a duplicate
-    if (!am.getAnimationManager().getInterpolationFactory().hasKey(
-            Interpolation::classIdentifier())) {
-        am.registerInterpolation<Interpolation>();
-    }
-}
-
-struct OrdinalReghelper {
-    template <typename T>
-    auto operator()(AnimationModule& am) {
-        using namespace animation;
-        using PropertyType = OrdinalProperty<T>;
-        using ValueType = typename PropertyType::value_type;
-        propTrackRegHelper<PropertyType>(am);
-        interpolationRegHelper<PropertyType, LinearInterpolation<ValueKeyframe<ValueType>>>(am);
-        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
-        using PropertyRefType = OrdinalRefProperty<T>;
-        propTrackRegHelper<PropertyRefType>(am);
-        interpolationRegHelper<PropertyRefType, LinearInterpolation<ValueKeyframe<ValueType>>>(am);
-        interpolationRegHelper<PropertyRefType, ConstantInterpolation<ValueKeyframe<ValueType>>>(
-            am);
-    }
-};
-
-struct MinMaxReghelper {
-    template <typename T>
-    auto operator()(AnimationModule& am) {
-        using namespace animation;
-        using PropertyType = MinMaxProperty<T>;
-        using ValueType = typename PropertyType::value_type;
-        propTrackRegHelper<PropertyType>(am);
-        interpolationRegHelper<PropertyType, LinearInterpolation<ValueKeyframe<ValueType>>>(am);
-        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
-    }
-};
-
-struct OptionReghelper {
-    template <typename T>
-    auto operator()(AnimationModule& am) {
-        using namespace animation;
-        using PropertyType = OptionProperty<T>;
-        using ValueType = typename PropertyType::value_type;
-        propTrackRegHelper<PropertyType>(am);
-        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
-    }
-};
-
-struct ConstantInterpolationReghelper {
-    template <typename PropertyType>
-    auto operator()(AnimationModule& am) {
-        using namespace animation;
-        propTrackRegHelper<PropertyType>(am);
-        using ValueType = typename PropertyType::value_type;
-        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
-    }
-};
-
-}  // namespace
-
 AnimationModule::AnimationModule(InviwoApplication* app)
     : InviwoModule(app, "Animation")
     , animation::AnimationSupplier(manager_)
@@ -191,30 +116,62 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     using Types = std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4,
                              dmat2, dmat3, dmat4, int, ivec2, ivec3, ivec4, unsigned int, uvec2,
                              uvec3, uvec4, size_t, size2_t, size3_t, size4_t>;
-    util::for_each_type<Types>{}(OrdinalReghelper{}, *this);
+    util::for_each_type<Types>{}([&]<typename T>() {
+        using PropertyType = OrdinalProperty<T>;
+        using ValueType = typename PropertyType::value_type;
+        propertyHelper<PropertyType>();
+        interpolationHelper<PropertyType, LinearInterpolation<ValueKeyframe<ValueType>>>();
+        interpolationHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>();
+    });
+    util::for_each_type<Types>{}([&]<typename T>() {
+        using PropertyType = OrdinalRefProperty<T>;
+        using ValueType = typename PropertyType::value_type;
+        propertyHelper<PropertyType>();
+        interpolationHelper<PropertyType, LinearInterpolation<ValueKeyframe<ValueType>>>();
+        interpolationHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>();
+    });
 
     // Register MinMaxProperties
     using ScalarTypes = std::tuple<float, double, int, unsigned int, size_t>;
-    util::for_each_type<ScalarTypes>{}(MinMaxReghelper{}, *this);
+    util::for_each_type<ScalarTypes>{}([&]<typename T>() {
+        using PropertyType = MinMaxProperty<T>;
+        using ValueType = typename PropertyType::value_type;
+        propertyHelper<PropertyType>();
+        interpolationHelper<PropertyType, LinearInterpolation<ValueKeyframe<ValueType>>>();
+        interpolationHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>();
+    });
 
     // Register properties that should not interpolate
     // Todo: Add MultiFileProperty when we can deal with vector<T> data in animation
     util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
-        ConstantInterpolationReghelper{}, *this);
-    util::for_each_type<ScalarTypes>{}(OptionReghelper{}, *this);
-    util::for_each_type<std::tuple<std::string>>{}(OptionReghelper{}, *this);
+        [&]<typename PropertyType>() {
+            propertyHelper<PropertyType>();
+            using ValueType = typename PropertyType::value_type;
+            interpolationHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>();
+        });
+
+    const auto optionReghelper = [&]<typename T>() {
+        using PropertyType = OptionProperty<T>;
+        using ValueType = typename PropertyType::value_type;
+        propertyHelper<PropertyType>();
+        interpolationHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>();
+    };
+
+    util::for_each_type<ScalarTypes>{}(optionReghelper);
+    util::for_each_type<std::tuple<std::string>>{}(optionReghelper);
 
     // Camera property
-    propTrackRegHelper<CameraProperty, CameraKeyframe>(*this);
-    interpolationRegHelper<CameraProperty, CameraSphericalInterpolation>(*this);
-    interpolationRegHelper<CameraProperty, CameraLinearInterpolation>(*this);
+    propertyHelper<CameraProperty, CameraKeyframe>();
+    interpolationHelper<CameraProperty, CameraSphericalInterpolation>();
+    interpolationHelper<CameraProperty, CameraLinearInterpolation>();
 
-    propTrackRegHelper<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>(*this);
+    propertyHelper<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>();
 
     // Todo: Add support for TransferFunctionProperty (special interpolation)
 
     registerTrack<CallbackTrack>();
     registerTrack<ControlTrack>();
+    registerTrack<InvalidationTrack>();
 
     registerRecorderFactory(std::make_unique<ImageRecorderFactory>(app));
 }

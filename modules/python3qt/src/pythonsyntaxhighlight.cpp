@@ -48,8 +48,6 @@ using namespace std::literals;
 
 namespace inviwo {
 
-namespace {}  // namespace
-
 PythonSyntaxHighlight::PythonSyntaxHighlight()
     : Settings("Python Syntax Highlighting")
     , font("font", "Font", utilqt::getMonoSpaceFonts(), utilqt::getDefaultMonoSpaceFontIndex())

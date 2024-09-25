@@ -5,6 +5,7 @@ set(dependencies
     InviwoOpenGLModule
     InviwoJSONModule
     InviwoDataFrameModule
+    InviwoBrushingAndLinkingModule
 )
 
 set(protected ON)

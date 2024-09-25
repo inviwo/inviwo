@@ -79,14 +79,12 @@ set(HEADER_FILES
     include/modules/webbrowser/cefimageconverter.h
     include/modules/webbrowser/interaction/cefinteractionhandler.h
     include/modules/webbrowser/interaction/cefkeyboardmapping.h
-    include/modules/webbrowser/processors/processorcefsynchronizer.h
+    include/modules/webbrowser/networkcefsynchronizer.h
+    include/modules/webbrowser/processors/basicwebbrowser.h
     include/modules/webbrowser/processors/progressbarobservercef.h
     include/modules/webbrowser/processors/webbrowserbase.h
     include/modules/webbrowser/processors/webbrowserprocessor.h
-    include/modules/webbrowser/properties/propertycefsynchronizer.h
     include/modules/webbrowser/properties/propertywidgetcef.h
-    include/modules/webbrowser/properties/propertywidgetceffactory.h
-    include/modules/webbrowser/properties/propertywidgetceffactoryobject.h
     include/modules/webbrowser/renderhandlergl.h
     include/modules/webbrowser/webbrowserapp.h
     include/modules/webbrowser/webbrowserclient.h
@@ -102,14 +100,12 @@ set(SOURCE_FILES
     src/cefimageconverter.cpp
     src/interaction/cefinteractionhandler.cpp
     src/interaction/cefkeyboardmapping.cpp
-    src/processors/processorcefsynchronizer.cpp
+    src/networkcefsynchronizer.cpp
+    src/processors/basicwebbrowser.cpp
     src/processors/progressbarobservercef.cpp
     src/processors/webbrowserbase.cpp
     src/processors/webbrowserprocessor.cpp
-    src/properties/propertycefsynchronizer.cpp
     src/properties/propertywidgetcef.cpp
-    src/properties/propertywidgetceffactory.cpp
-    src/properties/propertywidgetceffactoryobject.cpp
     src/renderhandlergl.cpp
     src/webbrowserapp.cpp
     src/webbrowserclient.cpp
@@ -128,6 +124,7 @@ ivw_group("Shader Files" ${SHADER_FILES})
 # Add javascript
 set(JS_FILES
     data/js/inviwoapi.js
+    data/js/inviwoapiv2.js
 )
 ivw_group("Javascript Files" BASE "${CMAKE_CURRENT_SOURCE_DIR}/data/js" ${JS_FILES})
 

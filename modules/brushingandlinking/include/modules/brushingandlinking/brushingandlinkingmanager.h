@@ -228,6 +228,12 @@ public:
      * return which targets were changed since the last network evaluation
      */
     std::vector<BrushingTarget> getModifiedTargets() const;
+
+    /**
+     * return which targets were changed by action since the last network evaluation
+     */
+    const std::unordered_map<BrushingTarget, BrushingModifications>& getModified() const;
+
     /**
      * return whether \p target was modified by any of \p modifications since the last network
      * evaluation

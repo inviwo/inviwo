@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,30 +27,31 @@
  *
  *********************************************************************************/
 
-#pragma once
+#ifdef _MSC_VER
+#pragma comment(linker, "/SUBSYSTEM:CONSOLE")
+#endif
 
-#include <modules/json/jsonmoduledefine.h>  // for IVW_MODULE_JSON_API
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/consolelogger.h>
+#include <inviwo/testutil/configurablegtesteventlistener.h>
 
-#include <inviwo/core/util/factory.h>                                 // for StandardFactory
-#include <modules/json/io/json/propertyjsonconverter.h>               // for PropertyJSONConverter
-#include <modules/json/io/json/propertyjsonconverterfactoryobject.h>  // for PropertyJSONConvert...
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
-#include <memory>  // for unique_ptr
-#include <string>  // for string
-#include <vector>  // for vector
+int main(int argc, char** argv) {
+    using namespace inviwo;
+    LogCentral::init();
+    auto logger = std::make_shared<ConsoleLogger>();
+    LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
+    LogCentral::getPtr()->registerLogger(logger);
 
-namespace inviwo {
-class Property;
-
-/**
- * Factory for creating converters between a Property and JSON.
- */
-class IVW_MODULE_JSON_API PropertyJSONConverterFactory
-    : public StandardFactory<PropertyJSONConverter, PropertyJSONConverterFactoryObject,
-                             const std::string&, Property*> {
-public:
-    PropertyJSONConverterFactory();
-    virtual ~PropertyJSONConverterFactory();
-};
-
-}  // namespace inviwo
+    int ret = -1;
+    {
+        ::testing::InitGoogleTest(&argc, argv);
+        inviwo::ConfigurableGTestEventListener::setup();
+        ret = RUN_ALL_TESTS();
+    }
+    return ret;
+}
