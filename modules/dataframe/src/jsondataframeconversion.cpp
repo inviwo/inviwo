@@ -240,4 +240,16 @@ void from_json(const json& j, DataFrame& df) {
     df.updateIndexBuffer();
 }
 
+void to_json(json& j, const DataFrameInport& port) {
+    if (auto data = port.getData()) {
+        j = *data;
+    } else {
+        j.clear();
+    }
+}
+void from_json(const json& j, DataFrameInport& port) {
+    throw Exception(IVW_CONTEXT_CUSTOM("from_json"),
+                    "It is not possible to assign a json object to an Inport");
+}
+
 }  // namespace inviwo

@@ -32,6 +32,7 @@ import argparse
 import urllib.request
 import urllib.error
 import json
+import pathlib
 
 import ivwpy.util
 from ivwpy.colorprint import *
@@ -42,10 +43,10 @@ def makeCmdParser():
         description="Convert a github-flavored markdown (GFM) changelog to HTML",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument('-i', '--input', type=str, required=True, action="store", dest="input",
+    parser.add_argument('-i', '--input', type=pathlib.Path, required=True, action="store", dest="input",
                         help='Markdown input file (GFM)')
-    parser.add_argument('-o', '--output', type=str, required=True, action="store", dest="output",
-                        help='Output HTML file')
+    parser.add_argument('-o', '--output', type=pathlib.Path, required=True, action='append',
+                        dest="output", help='Output HTML file')
     return parser.parse_args()
 
 
@@ -93,7 +94,7 @@ changelogBegin = "Here we document changes"
 def main(args):
     args = makeCmdParser()
 
-    if not os.path.exists(args.input):
+    if not args.input.exists():
         print_error("changelog-to-html.py was unable to locate the input file " + args.input)
         sys.exit(1)
 
@@ -125,10 +126,10 @@ def main(args):
             body = f.read().decode('utf-8')
         html = htmlHeader + body + htmlBody
 
-        (path, filename) = os.path.split(os.path.abspath(args.output))
-        ivwpy.util.mkdir(path)
-        with open(args.output, mode="w", encoding="utf-8", errors="xmlcharrefreplace") as f:
-            f.write(html)
+        for dest in args.output:
+            dest.parent.mkdir(exist_ok=True)
+            with open(dest, mode="w", encoding="utf-8", errors="xmlcharrefreplace") as f:
+                f.write(html)
     except urllib.error.HTTPError as e:
         print_error(f"Error code: {e.code}")
         print_error(e.read().decode("utf-8"))

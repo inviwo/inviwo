@@ -30,6 +30,8 @@
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSER_API
 
+#include <inviwo/core/util/logcentral.h>
+
 #include <tuple>  // for tuple
 
 #include <warn/push>
@@ -57,5 +59,13 @@ IVW_MODULE_WEBBROWSER_API std::tuple<CefWindowInfo, CefBrowserSettings> getDefau
 IVW_MODULE_WEBBROWSER_API double percentageToZoomLevel(double percent);
 
 IVW_MODULE_WEBBROWSER_API double zoomLevelToPercentage(double level);
+
+IVW_MODULE_WEBBROWSER_API LogLevel logLevel(cef_log_severity_t level);
+
+IVW_MODULE_WEBBROWSER_API std::string getDataURI(const std::string& data,
+                                                 const std::string& mime_type);
+
+// Return error code enum as string
+IVW_MODULE_WEBBROWSER_API std::string getCefErrorString(cef_errorcode_t code);
 
 }  // namespace inviwo::cefutil

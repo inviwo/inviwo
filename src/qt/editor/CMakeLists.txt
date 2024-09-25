@@ -126,8 +126,20 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg SvgWidgets)
 qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
 
 source_group("MOC Files" FILES ${MOCED_FILES})
-add_library(inviwo-qteditor ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES} ${QRC_FILE})
+add_library(inviwo-qteditor)
 add_library(inviwo::qteditor ALIAS inviwo-qteditor)
+
+target_sources(inviwo-qteditor
+    PUBLIC
+    FILE_SET HEADERS
+    TYPE HEADERS
+    BASE_DIRS ${IVW_INCLUDE_DIR}
+    FILES
+        ${HEADER_FILES}
+    PRIVATE
+        ${SOURCE_FILES} ${MOCED_FILES} ${QRC_FILE}
+)
+
 target_link_libraries(inviwo-qteditor PUBLIC 
     inviwo::core 
     inviwo::qtapplicationbase
@@ -160,33 +172,27 @@ if(IVW_CFG_BUILD_CHANGELOG)
 
     set(srcFile ${IVW_ROOT_DIR}/CHANGELOG.md)
     set(buildFile ${CMAKE_CURRENT_BINARY_DIR}/changelog.html)
-    set(destDir ${IVW_RESOURCES_DIR}/)
-    file(GENERATE 
-        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/CopyIfFound.cmake"
-        CONTENT 
-            "if (EXISTS \"${buildFile}\")
-                file(COPY \"${buildFile}\" DESTINATION \"${destDir}\")
-            endif()"
-    )
+    set(destFile ${IVW_RESOURCES_DIR}/changelog.html)
 
-    add_custom_command(OUTPUT ${buildFile}
+    add_custom_command(
+        OUTPUT ${buildFile}
         COMMAND ${Python3_EXECUTABLE}
              ${IVW_ROOT_DIR}/tools/changelog-to-html.py 
             -i ${srcFile}
             -o ${buildFile}
+            -o ${destFile}
         WORKING_DIRECTORY ${IVW_ROOT_DIR}
         MAIN_DEPENDENCY ${srcFile}
         DEPENDS ${IVW_ROOT_DIR}/tools/changelog-to-html.py
         COMMENT "Generating HTML version of the Inviwo Changelog"
         VERBATIM
     )
-    add_custom_target(inviwo-changelog
-        DEPENDS ${buildFile}
-        COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/CopyIfFound.cmake"
-        SOURCES ${srcFile} ${IVW_ROOT_DIR}/tools/changelog-to-html.py 
-    )
-    set_target_properties(inviwo-changelog PROPERTIES FOLDER tools)
-    add_dependencies(inviwo-qteditor inviwo-changelog)
+
+    target_sources(inviwo-qteditor PRIVATE ${buildFile})
+
+    #add_custom_target(inviwo-changelog DEPENDS ${buildFile})
+    #set_target_properties(inviwo-changelog PROPERTIES FOLDER tools)
+    #add_dependencies(inviwo-qteditor inviwo-changelog)
 endif()
 
 ivw_deploy_qt(inviwo-qteditor)

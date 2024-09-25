@@ -3,9 +3,9 @@
   <meta charset="utf-8">
   <title>Inviwo property syncing example</title>
   
-  <!-- inviwo://yourmodulename will be rediredcted to the module directory on the harddrive -->
-  <!-- inviwo://app will be rediredcted to the application (InviwoApplication::getBasePath()) directory on the harddrive -->
-  <script src="inviwo://webbrowser/data/js/inviwoapi.js"></script>
+  <!-- https://inviwo/yourmodulename will be rediredcted to the module directory on the harddrive -->
+  <!-- https://inviwo/app will be rediredcted to the application (InviwoApplication::getBasePath()) directory on the harddrive -->
+  <script src="https://inviwo/webbrowser/data/js/inviwoapi.js"></script>
 
   <script language="JavaScript">
     // Initialize Inviwo API so that we can use it to synchronize properties
@@ -76,10 +76,6 @@
     <form>
       <ul class="flex-outer">
         <li>
-          <label for="processorID">Processor Identifier</label>
-          <input type="text" readonly id="processorID">
-        </li>
-        <li>
           <label for="ordinalProperty">OrdinalProperty (line width)</label>
           <input type="range" id="ordinalProperty" min="1" max="100" value="50" class="slider">
         </li>
@@ -112,13 +108,7 @@
   </div>
 </body>
 
-
 <script>
-
-// Get the processor identifier of the parent web processor and show it
-inviwo.getParentWebBrowserProcessor(function(processor) {
-  document.getElementById("processorID").value = processor.path;
-});
 
 
 

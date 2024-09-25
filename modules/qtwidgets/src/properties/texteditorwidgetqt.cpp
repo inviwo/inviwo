@@ -178,6 +178,7 @@ SyntaxHighlighter& TextEditorDockWidget::getSyntaxHighlighter() {
 TextEditorDockWidget::~TextEditorDockWidget() = default;
 
 void TextEditorDockWidget::updateFromProperty() {
+    const auto oldPos = editor_->textCursor().position();
     if (fileProperty_) {
         fileObserver_.setFileName(fileProperty_->get());
         if (auto f = std::ifstream(fileProperty_->get())) {
@@ -191,6 +192,14 @@ void TextEditorDockWidget::updateFromProperty() {
         editor_->setPlainText(utilqt::toQString(stringProperty_->get()));
     }
     editor_->document()->setModified(false);
+
+    auto cursor = editor_->textCursor();
+    cursor.movePosition(QTextCursor::MoveOperation::End);
+    const auto max = cursor.position();
+    cursor.setPosition(std::min(oldPos, max));
+    editor_->setTextCursor(cursor);
+    editor_->ensureCursorVisible();
+
     updateWindowTitle();
 }
 

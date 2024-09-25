@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,15 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/properties/propertywidgetceffactory.h>
-
-#include <modules/webbrowser/properties/propertywidgetcef.h>               // for PropertyWidgetCEF
-#include <modules/webbrowser/properties/propertywidgetceffactoryobject.h>  // for PropertyWidget...
+#include <modules/json/jsonconverter.h>
 
 namespace inviwo {
 
-PropertyWidgetCEFFactory::PropertyWidgetCEFFactory() = default;
-
-PropertyWidgetCEFFactory::~PropertyWidgetCEFFactory() = default;
 
 }  // namespace inviwo

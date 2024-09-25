@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,16 +26,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/webbrowser/properties/propertywidgetceffactoryobject.h>
+#include <modules/json/jsonmoduledefine.h>
+
+#include <inviwo/core/datastructures/datatraits.h>
+
+#include <nlohmann/json.hpp>
+
+#include <utility>
 
 namespace inviwo {
-class PropertyJSONConverterFactory;
 
-PropertyWidgetCEFFactoryObject::PropertyWidgetCEFFactoryObject(
-    const PropertyJSONConverterFactory* converterFactory)
-    : converterFactory_(converterFactory) {}
+using json = ::nlohmann::json;
 
-PropertyWidgetCEFFactoryObject::~PropertyWidgetCEFFactoryObject() = default;
+
+template <typename T>
+concept JSONConvertable = requires(T& t, json& j) {
+    { to_json(j, std::as_const(t)) } -> std::same_as<void>;
+    { from_json(std::as_const(j), t) } -> std::same_as<void>;
+};
+
+
+template <>
+struct DataTraits<json> {
+    static std::string_view classIdentifier() { return "org.inviwo.json"; }
+    static std::string_view dataName() { return "json"; }
+
+    static uvec3 colorCode() { return uvec3{230, 200, 20}; }
+
+    static Document info(const json& data) {
+        Document doc;
+        doc.append("p", "JSON");
+
+        doc.append("pre", data.dump(2).substr(0, 200));
+
+        return doc;
+    }
+};
 
 }  // namespace inviwo

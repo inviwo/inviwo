@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,16 +26,33 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/json/io/json/propertyjsonconverterfactory.h>
+#include <inviwo/webqt/webqtmoduledefine.h>
 
-#include <modules/json/io/json/propertyjsonconverter.h>               // for PropertyJSONConverter
-#include <modules/json/io/json/propertyjsonconverterfactoryobject.h>  // for PropertyJSONConvert...
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/filepropertywidgetqt.h>  // for FilePropertyWidgetQt
 
 namespace inviwo {
 
-PropertyJSONConverterFactory::PropertyJSONConverterFactory() = default;
+class IVW_MODULE_WEBQT_API HtmlPropertyWidgetQt : public StringPropertyWidgetQt {
+public:
+    HtmlPropertyWidgetQt(StringProperty* property);
+    virtual ~HtmlPropertyWidgetQt();
 
-PropertyJSONConverterFactory::~PropertyJSONConverterFactory() = default;
+protected:
+    virtual void initEditor() override;
+};
+
+class IVW_MODULE_WEBQT_API HtmlFilePropertyWidgetQt : public FilePropertyWidgetQt {
+public:
+    HtmlFilePropertyWidgetQt(FileProperty* property);
+    virtual ~HtmlFilePropertyWidgetQt();
+
+protected:
+    virtual void initEditor() override;
+};
 
 }  // namespace inviwo

@@ -87,6 +87,11 @@ public:
     virtual void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
                          const RectList& dirtyRects, const void* buffer, int width,
                          int height) override;
+
+    virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
+                                    const RectList& dirtyRects,
+                                    const CefAcceleratedPaintInfo& info) override;
+
     /*
      * Get data containing the web page.
      * Note that top-left is considered origin so it needs to be vertically flipped to match Inviwo

@@ -37,6 +37,7 @@
 #include <modules/animation/animationsupplier.h>            // for AnimationSupplier
 #include <modules/animation/demo/democontroller.h>          // for DemoController
 #include <modules/animation/workspaceanimations.h>          // for WorkspaceAnimations
+#include <modules/animation/datastructures/propertytrack.h>
 
 #include <memory>  // for unique_ptr
 
@@ -77,6 +78,26 @@ public:
     const animation::DemoController& getDemoController() const;
 
 private:
+    template <typename PropertyType, typename Interpolation>
+    void interpolationHelper() {
+        // No need to add existing interpolation method. Will produce a warning if adding a
+        // duplicate
+        if (!manager_.getInterpolationFactory().hasKey(Interpolation::classIdentifier())) {
+            registerInterpolation<Interpolation>();
+        }
+    }
+    template <typename PropertyType,
+              typename Keyframe = animation::ValueKeyframe<typename PropertyType::value_type>,
+              typename KeyframeSeq = animation::KeyframeSequenceTyped<Keyframe>>
+    void propertyHelper() {
+         using namespace animation;
+        // Register PropertyTrack and the KeyFrame it should use
+        registerTrack<PropertyTrack<PropertyType, Keyframe, KeyframeSeq>>();
+        registerPropertyTrackConnection(
+            PropertyTraits<PropertyType>::classIdentifier(),
+            PropertyTrack<PropertyType, Keyframe, KeyframeSeq>::classIdentifier());
+    }
+
     class Converter : public VersionConverter {
     public:
         Converter(int version) : version_(version) {}

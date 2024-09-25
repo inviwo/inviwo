@@ -41,7 +41,15 @@
 #include <modules/opengl/texture/textureutils.h>          // for activateAndClearTarget, activat...
 
 namespace inviwo {
-CefImageConverter::CefImageConverter(vec3 pickingColor) {
+
+CefImageConverter::CefImageConverter(vec3 pickingColor)
+    : shader_{"img_convert_cef.frag", Shader::Build::No} {
+
+#if defined(WIN32)
+    shader_.getFragmentShaderObject()->addShaderDefine("SwizzleColor");
+#endif
+    shader_.build();
+
     shader_.activate();
     shader_.setUniform("pickingColor", pickingColor);
     shader_.deactivate();

@@ -134,14 +134,6 @@ struct Reghelper {
     }
 };
 
-struct PropertyValueKeyframeReghelper {
-    template <typename Prop>
-    auto operator()(animation::AnimationQtSupplier& as) {
-        using namespace animation;
-        registerPropertyTrackHelper<Prop, ValueKeyframe<typename Prop::value_type>>(as);
-    }
-};
-
 }  // namespace
 
 AnimationQtModule::AnimationQtModule(InviwoApplication* app)
@@ -237,7 +229,9 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
         Reghelper<OptionProperty>{}, *this);
 
     util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
-        PropertyValueKeyframeReghelper{}, *this);
+        [&]<typename Prop>() {
+            registerPropertyTrackHelper<Prop, ValueKeyframe<typename Prop::value_type>>(*this);
+        });
 
     registerPropertyTrackHelper<CameraProperty, CameraKeyframe>(*this);
 

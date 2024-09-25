@@ -33,8 +33,7 @@
 
 #include <inviwo/core/properties/propertyobserver.h>     // for PropertyObserver
 #include <inviwo/core/properties/propertywidget.h>       // for PropertyWidget
-#include <modules/json/io/json/propertyjsonconverter.h>  // for PropertyJSONConverter
-
+#include <modules/json/jsonpropertyconverter.h> 
 #include <warn/push>
 #include <warn/ignore/all>
 #include "include/wrapper/cef_message_router.h"
@@ -79,9 +78,8 @@ class PropertySemantics;
  */
 class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEF : public PropertyWidget, public PropertyObserver {
 public:
-    PropertyWidgetCEF() = default;
-    PropertyWidgetCEF(Property* prop, std::unique_ptr<PropertyJSONConverter> converter,
-                      CefRefPtr<CefFrame> frame = nullptr, std::string onChange = "");
+    PropertyWidgetCEF(Property* prop, const JSONPropertyConverter& converter,
+                      CefRefPtr<CefFrame> frame = nullptr, std::string_view onChange = "");
 
     friend class CefDOMSearchId;
     friend class PropertyCefSynchronizer;
@@ -164,7 +162,7 @@ protected:
      */
     virtual void onSetVisible(Property* property, bool visible) override;
 
-    std::unique_ptr<PropertyJSONConverter> converter_;
+    const JSONPropertyConverter& converter_;
 
     std::string onChange_;  /// Callback to execute in javascript when property changes
     std::string propertyObserverCallback_;  /// Execute on any PropertyObserver notifications

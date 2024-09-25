@@ -29,33 +29,32 @@
 
 #include <modules/json/jsonmodule.h>
 
-#include <inviwo/core/common/inviwomodule.h>                          // for InviwoModule
-#include <inviwo/core/properties/boolproperty.h>                      // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                    // for ButtonProperty
-#include <inviwo/core/properties/directoryproperty.h>                 // for DirectoryProperty
-#include <inviwo/core/properties/fileproperty.h>                      // for FileProperty
-#include <inviwo/core/properties/minmaxproperty.h>                    // for MinMaxProperty
-#include <inviwo/core/properties/optionproperty.h>                    // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                   // for OrdinalProperty
-#include <inviwo/core/properties/ordinalrefproperty.h>                // for OrdinalRefProperty
-#include <inviwo/core/properties/stringproperty.h>                    // for StringProperty
-#include <inviwo/core/util/foreacharg.h>                              // for for_each_type
-#include <inviwo/core/util/glmmat.h>                                  // for dmat2, dmat3, dmat4
-#include <inviwo/core/util/glmvec.h>                                  // for dvec2, dvec3, dvec4
-#include <inviwo/core/util/staticstring.h>                            // for operator+
-#include <modules/json/io/json/boolpropertyjsonconverter.h>           // for to_json
-#include <modules/json/io/json/buttonpropertyjsonconverter.h>         // for to_json
-#include <modules/json/io/json/directorypropertyjsonconverter.h>      // for to_json
-#include <modules/json/io/json/filepropertyjsonconverter.h>           // for to_json
-#include <modules/json/io/json/minmaxpropertyjsonconverter.h>         // for to_json
-#include <modules/json/io/json/optionpropertyjsonconverter.h>         // for to_json
-#include <modules/json/io/json/ordinalpropertyjsonconverter.h>        // for to_json
-#include <modules/json/io/json/ordinalrefpropertyjsonconverter.h>     // for to_json
-#include <modules/json/io/json/propertyjsonconverterfactory.h>        // for PropertyJSONConvert...
-#include <modules/json/io/json/propertyjsonconverterfactoryobject.h>  // for PropertyJSONConvert...
-#include <modules/json/io/json/stringpropertyjsonconverter.h>         // for to_json
-#include <modules/json/io/json/templatepropertyjsonconverter.h>       // for to_json
+#include <inviwo/core/common/inviwomodule.h>                       // for InviwoModule
+#include <inviwo/core/properties/boolproperty.h>                   // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                 // for ButtonProperty
+#include <inviwo/core/properties/directoryproperty.h>              // for DirectoryProperty
+#include <inviwo/core/properties/fileproperty.h>                   // for FileProperty
+#include <inviwo/core/properties/minmaxproperty.h>                 // for MinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>                 // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                // for OrdinalProperty
+#include <inviwo/core/properties/ordinalrefproperty.h>             // for OrdinalRefProperty
+#include <inviwo/core/properties/stringproperty.h>                 // for StringProperty
+#include <inviwo/core/util/foreacharg.h>                           // for for_each_type
+#include <inviwo/core/util/glmmat.h>                               // for dmat2, dmat3, dmat4
+#include <inviwo/core/util/glmvec.h>                               // for dvec2, dvec3, dvec4
+#include <inviwo/core/util/staticstring.h>                         // for operator+
+#include <modules/json/io/json/boolpropertyjsonconverter.h>        // for to_json
+#include <modules/json/io/json/buttonpropertyjsonconverter.h>      // for to_json
+#include <modules/json/io/json/directorypropertyjsonconverter.h>   // for to_json
+#include <modules/json/io/json/filepropertyjsonconverter.h>        // for to_json
+#include <modules/json/io/json/minmaxpropertyjsonconverter.h>      // for to_json
+#include <modules/json/io/json/optionpropertyjsonconverter.h>      // for to_json
+#include <modules/json/io/json/ordinalpropertyjsonconverter.h>     // for to_json
+#include <modules/json/io/json/ordinalrefpropertyjsonconverter.h>  // for to_json
+#include <modules/json/io/json/stringpropertyjsonconverter.h>      // for to_json
+#include <modules/json/io/json/templatepropertyjsonconverter.h>    // for to_json
 
+#include <modules/json/jsonport.h>
 #include <cstddef>      // for size_t
 #include <string>       // for string, operator==
 #include <tuple>        // for tuple
@@ -72,94 +71,57 @@
 #include <glm/vec2.hpp>                   // for operator+, operator!=
 #include <glm/vec3.hpp>                   // for operator+
 #include <glm/vec4.hpp>                   // for operator+
-#include <nlohmann/json.hpp>              // for basic_json<>::object_t
 
 namespace inviwo {
 class InviwoApplication;
 
-struct OrdinalReghelper {
-    template <typename T>
-    auto operator()(JSONModule& m) {
-        using PropertyType = OrdinalProperty<T>;
-        m.registerPropertyJSONConverter<PropertyType>();
-    }
-};
-
-struct OrdinalRefReghelper {
-    template <typename T>
-    auto operator()(JSONModule& m) {
-        using PropertyType = OrdinalRefProperty<T>;
-        m.registerPropertyJSONConverter<PropertyType>();
-    }
-};
-
-struct MinMaxReghelper {
-    template <typename T>
-    auto operator()(JSONModule& m) {
-        using PropertyType = MinMaxProperty<T>;
-        m.registerPropertyJSONConverter<PropertyType>();
-    }
-};
-
-struct OptionReghelper {
-    template <typename T>
-    auto operator()(JSONModule& m) {
-        using PropertyType = OptionProperty<T>;
-        m.registerPropertyJSONConverter<PropertyType>();
-    }
-};
-
-struct OptionEnumReghelper {
-    template <typename T>
-    auto operator()(JSONModule& m) {
-        enum class e : T;
-        using PropertyType = OptionProperty<e>;
-        m.registerPropertyJSONConverter<PropertyType>();
-
-        enum class eU : std::make_unsigned_t<T>;
-        using PropertyTypeU = OptionProperty<eU>;
-        m.registerPropertyJSONConverter<PropertyTypeU>();
-    }
-};
-
-JSONModule::JSONModule(InviwoApplication* app) : InviwoModule(app, "JSON") {
+JSONModule::JSONModule(InviwoApplication* app)
+    : InviwoModule(app, "JSON")
+    , JSONSupplier<Inport, PortTraits>{inportConverter_}
+    , JSONSupplier<Property, PropertyTraits>{propertyConverter_} {
 
     // Register JSON converters
-    // Note: Also add WebBrowserModule::registerPropertyWidgetCEF if a conversion is
-    // added here
-    registerPropertyJSONConverter<BoolProperty>();
-    registerPropertyJSONConverter<ButtonProperty>();
-    registerPropertyJSONConverter<DirectoryProperty>();
-    registerPropertyJSONConverter<FileProperty>();
-    registerPropertyJSONConverter<StringProperty>();
+    registerJSONConverter<BoolProperty>();
+    registerJSONConverter<ButtonProperty>();
+    registerJSONConverter<DirectoryProperty>();
+    registerJSONConverter<FileProperty>();
+    registerJSONConverter<StringProperty>();
 
-    // Register ordinal property widgets
+    // Register JSON converters for properties
     using OrdinalTypes =
         std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4, dmat2,
                    dmat3, dmat4, int, ivec2, ivec3, ivec4, glm::i64, unsigned int, uvec2, uvec3,
                    uvec4, size_t, size2_t, size3_t, size4_t, glm::fquat, glm::dquat>;
 
     using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;
-    util::for_each_type<OrdinalTypes>{}(OrdinalReghelper{}, *this);
-    util::for_each_type<OrdinalTypes>{}(OrdinalRefReghelper{}, *this);
+    util::for_each_type<OrdinalTypes>{}(
+        [&]<typename T>() {registerJSONConverter<OrdinalProperty<T>>(); });
+    util::for_each_type<OrdinalTypes>{}(
+        [&]<typename T>() { registerJSONConverter<OrdinalRefProperty<T>>(); });
 
-    // Register MinMaxProperty widgets
-    util::for_each_type<ScalarTypes>{}(MinMaxReghelper{}, *this);
-
-    // Register option property widgets
+    util::for_each_type<ScalarTypes>{}(
+        [&]<typename T>() { registerJSONConverter<MinMaxProperty<T>>(); });
     using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
-    util::for_each_type<OptionTypes>{}(OptionReghelper{}, *this);
+    util::for_each_type<OptionTypes>{}(
+        [&]<typename T>() { registerJSONConverter<OptionProperty<T>>(); });
 
-    // Register option property widgets for enums, commented types not yet supported by Inviwo
-    using OptionEnumTypes = std::tuple<char, int /*short, long, long long*/>;
-    util::for_each_type<OptionEnumTypes>{}(OptionEnumReghelper{}, *this);
+    using OptionEnumTypes = std::tuple<char, int>;
+    util::for_each_type<OptionEnumTypes>{}([&]<typename T>() {
+        enum class e : T;
+        registerJSONConverter<OptionProperty<e>>();
+
+        enum class eU : std::make_unsigned_t<T>;
+        registerJSONConverter<OptionProperty<eU>>();
+    });
+
+    registerDefaultsForDataType<json>();
+
+    registerJSONConverter<JSONInport>();
 }
 
-void JSONModule::registerPropertyJSONConverter(
-    std::unique_ptr<PropertyJSONConverterFactoryObject> propertyConverter) {
-    if (propertyJSONConverterFactory_.registerObject(propertyConverter.get())) {
-        propertyJSONConverters_.push_back(std::move(propertyConverter));
-    }
+JSONModule::~JSONModule() {
+    JSONSupplier<Inport, PortTraits>::unregisterJSONConverters();
+    JSONSupplier<Property, PropertyTraits>::unregisterJSONConverters();
 }
 
 }  // namespace inviwo
