@@ -31,41 +31,54 @@
 
 #include <modules/json/jsonmoduledefine.h>  // for IVW_MODULE_JSON_API
 
-#include <inviwo/core/common/inviwomodule.h>                          // for InviwoModule
-#include <modules/json/io/json/propertyjsonconverterfactory.h>        // for PropertyJSONConvert...
-#include <modules/json/io/json/propertyjsonconverterfactoryobject.h>  // for PropertyJSONConvert...
+#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+#include <inviwo/core/properties/property.h>
 
-#include <memory>  // for unique_ptr, make_un...
-#include <vector>  // for vector
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/porttraits.h>
+
+#include <modules/json/jsonconverter.h>
+#include <modules/json/jsonconverterregistry.h>
+#include <modules/json/jsonsupplier.h>
+
+#include <modules/json/jsoninportconverter.h>
+#include <modules/json/jsonpropertyconverter.h>
+
+#include <nlohmann/json.hpp>
 
 namespace inviwo {
+
+using json = ::nlohmann::json;
+
 class InviwoApplication;
 
-class IVW_MODULE_JSON_API JSONModule : public InviwoModule {
+class IVW_MODULE_JSON_API JSONModule : public InviwoModule,
+                                       public JSONSupplier<Inport, PortTraits>,
+                                       public JSONSupplier<Property, PropertyTraits> {
+    using JSONSupplier<Inport, PortTraits>::registerJSONConverter;
+    using JSONSupplier<Property, PropertyTraits>::registerJSONConverter;
+
 public:
     JSONModule(InviwoApplication* app);
-    virtual ~JSONModule() = default;
+    virtual ~JSONModule();
 
-    template <typename P>
-    void registerPropertyJSONConverter();
-    void registerPropertyJSONConverter(
-        std::unique_ptr<PropertyJSONConverterFactoryObject> propertyConverter);
-    inline const PropertyJSONConverterFactory* getPropertyJSONConverterFactory() const;
+    const JSONPropertyConverter& getJSONPropertyConverter() const { return propertyConverter_; }
+    const JSONInportConverter& getJSONInportConverter() const { return inportConverter_; }
+
+    template <typename Base>
+    JSONConverterRegistry<Base>& getRegistry() {
+        if constexpr (std::is_base_of_v<Property, Base>) {
+            return propertyConverter_;
+        } else if constexpr (std::is_base_of_v<Inport, Base>) {
+            return inportConverter_;
+        } else {
+            throw Exception("Invalid type for JSONModule::getRegistry", IVW_CONTEXT);
+        }
+    }
 
 protected:
-    // JSON Converter factory
-    std::vector<std::unique_ptr<PropertyJSONConverterFactoryObject>> propertyJSONConverters_;
-    PropertyJSONConverterFactory propertyJSONConverterFactory_;
+    JSONInportConverter inportConverter_;
+    JSONPropertyConverter propertyConverter_;
 };
-
-inline const PropertyJSONConverterFactory* JSONModule::getPropertyJSONConverterFactory() const {
-    return &propertyJSONConverterFactory_;
-}
-
-template <typename P>
-void JSONModule::registerPropertyJSONConverter() {
-    registerPropertyJSONConverter(
-        std::make_unique<PropertyJSONConverterFactoryObjectTemplate<P>>());
-}
 
 }  // namespace inviwo

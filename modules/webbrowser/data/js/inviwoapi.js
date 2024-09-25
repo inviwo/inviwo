@@ -167,15 +167,33 @@ class InviwoAPI {
      * @param callback  name of the callback
      * @param data      payload will be stringified into JSON
      */
-    async invokeCallback(callback, data) {
+    async invokeCallback(callback, data, onSuccess = function (response) {}, onFailure = function (error_code, error_message) {console.log('invokeCallback error (' + error_code + '): ' + error_message);}) {
         window.cefQuery({
             request: JSON.stringify({
                 'command': 'callback',
                 'callback': callback,
                 'data': JSON.stringify(data)
             }),
-            onSuccess: function (response) { },
-            onFailure: function (error_code, error_message) { }
+            onSuccess: onSuccess,
+            onFailure: onFailure
+        });
+    }
+
+    request(callback, data = "") {
+        return new Promise((resolve, reject) => {
+            var request_id = window.cefQuery({
+                request: JSON.stringify({
+                    'command': 'callback',
+                    'callback': callback,
+                    'data': JSON.stringify(data)
+                }),
+                onSuccess: function(response) {
+                    resolve(JSON.parse(response));
+                },
+                onFailure: function(error_code, error_message) {
+                    reject({"error_code": error_code, "error_message": error_message});
+                }
+            });
         });
     }
 

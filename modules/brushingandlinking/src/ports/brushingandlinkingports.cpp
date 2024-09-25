@@ -67,6 +67,15 @@ BrushingModifications BrushingAndLinkingInport::getModifiedActions() const {
     return manager_.getModifiedActions();
 }
 
+std::vector<BrushingTarget> BrushingAndLinkingInport::getModifiedTargets() const {
+    return manager_.getModifiedTargets();
+}
+
+const std::unordered_map<BrushingTarget, BrushingModifications>&
+BrushingAndLinkingInport::getModified() const {
+    return manager_.getModified();
+}
+
 bool BrushingAndLinkingInport::isFilteringModified() const {
     return manager_.isFilteringModified();
 }

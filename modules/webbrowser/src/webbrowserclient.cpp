@@ -29,129 +29,152 @@
 
 #include <modules/webbrowser/webbrowserclient.h>
 
-#include <inviwo/core/common/inviwoapplication.h>                    // for InviwoApplication
-#include <inviwo/core/common/inviwomodule.h>                         // for InviwoModule
-#include <inviwo/core/common/modulemanager.h>                        // for ModuleManager
-#include <inviwo/core/processors/processor.h>                        // for Processor
-#include <inviwo/core/properties/invalidationlevel.h>                // for InvalidationLevel
-#include <inviwo/core/util/exception.h>                              // for Exception
-#include <inviwo/core/util/logcentral.h>                             // for LogCentral, LogError
-#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT
-#include <inviwo/core/util/stdextensions.h>                          // for erase_remove
-#include <inviwo/core/util/stringconversion.h>                       // for replaceInString, spl...
-#include <modules/webbrowser/processors/processorcefsynchronizer.h>  // for ProcessorCefSynchron...
-#include <modules/webbrowser/properties/propertycefsynchronizer.h>   // for PropertyCefSynchronizer
-#include <modules/webbrowser/renderhandlergl.h>                      // for RenderHandlerGL, Ren...
-#include <modules/webbrowser/webbrowsermodule.h>                     // for CefString, cef_log_s...
+#include <inviwo/core/common/inviwoapplication.h>  // for InviwoApplication
+#include <inviwo/core/common/inviwomodule.h>       // for InviwoModule
+#include <inviwo/core/common/modulemanager.h>      // for ModuleManager
+
+#include <inviwo/core/util/exception.h>          // for Exception
+#include <inviwo/core/util/logcentral.h>         // for LogCentral, LogError
+#include <inviwo/core/util/stdextensions.h>      // for erase_remove
+#include <inviwo/core/util/stringconversion.h>   // for replaceInString, spl...
+#include <modules/webbrowser/renderhandlergl.h>  // for RenderHandlerGL, Ren...
+#include <modules/webbrowser/webbrowserutil.h>   // for CefString, cef_log_s...
+
+#include <modules/webbrowser/networkcefsynchronizer.h>
 
 #include <ostream>      // for operator<<, basic_os...
 #include <string_view>  // for string_view
 #include <utility>      // for pair
 
+#include <algorithm>
 #include <warn/push>
 #include <warn/ignore/all>
-#include <fmt/core.h>                              // for format
-#include <include/base/cef_bind.h>                 // for Bind
-#include <include/base/cef_logging.h>              // for COMPACT_GOOGLE_LOG_D...
-#include <include/base/cef_scoped_refptr.h>        // for scoped_refptr
-#include <include/cef_base.h>                      // for CefRefPtr
-#include <include/cef_browser.h>                   // for CefBrowser
-#include <include/cef_frame.h>                     // for CefFrame
-#include <include/cef_life_span_handler.h>         // for CefLifeSpanHandler
-#include <include/cef_load_handler.h>              // for CefLoadHandler, CefL...
-#include <include/cef_process_message.h>           // for CefProcessMessage
-#include <include/cef_request.h>                   // for CefRequest
-#include <include/cef_request_handler.h>           // for CefRequestHandler::T...
+#include <fmt/core.h>                        // for format
+#include <include/base/cef_bind.h>           // for Bind
+#include <include/base/cef_logging.h>        // for COMPACT_GOOGLE_LOG_D...
+#include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
+#include <include/cef_base.h>                // for CefRefPtr
+#include <include/cef_browser.h>             // for CefBrowser
+#include <include/cef_frame.h>               // for CefFrame
+#include <include/cef_life_span_handler.h>   // for CefLifeSpanHandler
+#include <include/cef_load_handler.h>        // for CefLoadHandler, CefL...
+#include <include/cef_process_message.h>     // for CefProcessMessage
+#include <include/cef_request.h>             // for CefRequest
+#include <include/cef_request_handler.h>     // for CefRequestHandler::T...
+
 #include <include/cef_resource_request_handler.h>  // for CefResourceRequestHa...
 #include <include/cef_task.h>                      // for CefCurrentlyOn
 #include <include/wrapper/cef_closure_task.h>      // for CefPostTask
 #include <include/wrapper/cef_helpers.h>           // for CEF_REQUIRE_UI_THREAD
-#include <include/wrapper/cef_message_router.h>    // for CefMessageRouterBrow...
 #include <include/wrapper/cef_resource_manager.h>  // for CefResourceManager
+#include <include/wrapper/cef_stream_resource_handler.h>
+
+#include <warn/pop>
 
 class CefResourceHandler;
 
 namespace inviwo {
+
 class PropertyWidgetCEFFactory;
-}  // namespace inviwo
 
-#include <warn/pop>
+class StringResourceProvider : public CefResourceManager::Provider {
 
-namespace inviwo {
+public:
+    explicit StringResourceProvider() : CefResourceManager::Provider{} {}
+
+    bool OnRequest(scoped_refptr<CefResourceManager::Request> request) override {
+        const std::string& url = request->url();
+
+        if (!url.starts_with("https://inviwo/app/static")) {
+            return false;
+        }
+
+        const auto id = request->browser()->GetIdentifier();
+        if (auto it = resourceHandlers_.find(id); it != resourceHandlers_.end()) {
+            return it->second(url, request);
+        } else {
+            return false;
+        }
+    }
+
+    void addHandler(
+        int id, std::function<bool(const std::string&, scoped_refptr<CefResourceManager::Request>)>
+                    handler) {
+        resourceHandlers_[id] = handler;
+    }
+    void removeHandler(int id) { resourceHandlers_.erase(id); }
+
+private:
+    std::map<int,
+             std::function<bool(const std::string&, scoped_refptr<CefResourceManager::Request>)>>
+        resourceHandlers_;
+};
 
 namespace detail {
 
 // Register inviwo application and module directories for resource loading
-void setupResourceManager(CefRefPtr<CefResourceManager> resource_manager) {
+void setupResourceManager(CefRefPtr<CefResourceManager> resourceManager, InviwoApplication* app) {
     if (!CefCurrentlyOn(TID_IO)) {
         // Execute on the browser IO thread.
-        CefPostTask(TID_IO, base::BindRepeating(setupResourceManager, resource_manager));
+        CefPostTask(TID_IO, base::BindRepeating(setupResourceManager, resourceManager, app));
         return;
     }
-    std::string origin = "inviwo://";
     // Redirect paths to corresponding app/module directories.
     // Enables resource loading from these directories directory (js-files and so on).
-    auto appOrigin = origin + "app";
-    resource_manager->AddDirectoryProvider(
-        appOrigin, InviwoApplication::getPtr()->getBasePath().string(), 99, std::string());
-
-    auto moduleOrigin = origin;
-
-    for (const auto& m : InviwoApplication::getPtr()->getModuleManager().getInviwoModules()) {
-        auto mOrigin = moduleOrigin + toLower(m.getIdentifier());
-        auto moduleDir = m.getPath();
-        resource_manager->AddDirectoryProvider(mOrigin, moduleDir.string(), 100, std::string());
+    for (const auto& m : app->getModuleManager().getInviwoModules()) {
+        const auto moduleOrigin = "https://inviwo/" + toLower(m.getIdentifier());
+        const auto moduleDir = m.getPath();
+        resourceManager->AddDirectoryProvider(moduleOrigin, moduleDir.string(), 100, std::string());
     }
 }
 
 }  // namespace detail
 
-WebBrowserClient::WebBrowserClient(ModuleManager& moduleManager,
-                                   const PropertyWidgetCEFFactory* widgetFactory)
-    : widgetFactory_{widgetFactory}
-    , renderHandler_(new RenderHandlerGL([&](CefRefPtr<CefBrowser> browser) {
-        auto bdIt = browserParents_.find(browser->GetIdentifier());
-        if (bdIt != browserParents_.end()) {
-            bdIt->second.processor->invalidate(InvalidationLevel::InvalidOutput);
-        }
-    }))
-    , resourceManager_(new CefResourceManager()) {
-    onModulesRegisteredCallback_ = moduleManager.onModulesDidRegister([&]() {
+WebBrowserClient::WebBrowserClient(InviwoApplication* app)
+    : renderHandler_{new RenderHandlerGL{
+          [this](CefRefPtr<CefBrowser> browser) { notifyOnNewRender(browser); }}}
+    , router_{CefMessageRouterBrowserSide::Create(CefMessageRouterConfig{})}
+    , networkSync_{new NetWorkCefSynchronizer{app}}
+    , resourceManager_{new CefResourceManager{}}
+    , stringResourceProvider_{std::make_unique<StringResourceProvider>()} {
+
+    resourceManager_->AddProvider(stringResourceProvider_.get(), 50, "StringResourceProvider");
+    resourceManager_->AddDirectoryProvider("https://inviwo/app/", app->getBasePath().string(), 99,
+                                           std::string());
+    onModulesRegisteredCallback_ = app->getModuleManager().onModulesDidRegister([&, app]() {
         // Ensure that all module resources have been registered before setting up resources
-        detail::setupResourceManager(resourceManager_);
+        detail::setupResourceManager(resourceManager_, app);
     });
+
+    router_->AddHandler(networkSync_.get(), false);
+
+    addLoadHandler(networkSync_.get());
 }
 
-void WebBrowserClient::setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent) {
-    CEF_REQUIRE_UI_THREAD();
-    BrowserData bd{parent, new ProcessorCefSynchronizer(parent)};
-    browserParents_[browser->GetIdentifier()] = bd;
-    addLoadHandler(bd.processorCefSynchronizer.get());
-    messageRouter_->AddHandler(bd.processorCefSynchronizer.get(), false);
-}
-
-void WebBrowserClient::removeBrowserParent(CefRefPtr<CefBrowser> browser) {
-    auto bdIt = browserParents_.find(browser->GetIdentifier());
-    if (bdIt != browserParents_.end()) {
-        messageRouter_->RemoveHandler(bdIt->second.processorCefSynchronizer.get());
-        removeLoadHandler(bdIt->second.processorCefSynchronizer.get());
-        browserParents_.erase(bdIt);
+void WebBrowserClient::notifyOnNewRender(CefRefPtr<CefBrowser> browser) {
+    if (auto& func = onNewRender_[browser->GetIdentifier()]) {
+        func();
     }
 }
 
-ProcessorCefSynchronizer::CallbackHandle WebBrowserClient::registerCallback(
+WebBrowserClient::~WebBrowserClient() {}
+
+void WebBrowserClient::addStaticHandler(
+    int browserId,
+    std::function<bool(const std::string&, scoped_refptr<CefResourceManager::Request>)> handler) {
+
+    stringResourceProvider_->addHandler(browserId, handler);
+}
+void WebBrowserClient::removeStaticHandler(int browserId) {
+    stringResourceProvider_->removeHandler(browserId);
+}
+
+NetWorkCefSynchronizer::CallbackHandle WebBrowserClient::registerCallback(
     CefRefPtr<CefBrowser> browser, const std::string& name,
-    std::function<ProcessorCefSynchronizer::CallbackFunc> callback) {
+    std::function<NetWorkCefSynchronizer::CallbackFunc> callback) {
     CEF_REQUIRE_UI_THREAD();
-    if (auto it = browserParents_.find(browser->GetIdentifier()); it != browserParents_.end()) {
-        return it->second.processorCefSynchronizer->registerCallback(name, callback);
-    } else {
-        throw Exception(
-            fmt::format(
-                "Registering callback '{}' in browser without a parent processor (browser ID {})",
-                name, browser->GetIdentifier()),
-            IVW_CONTEXT);
-    }
+
+    return networkSync_->registerCallback(browser, name, callback);
 }
 
 bool WebBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
@@ -159,27 +182,12 @@ bool WebBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                                 CefProcessId source_process,
                                                 CefRefPtr<CefProcessMessage> message) {
     CEF_REQUIRE_UI_THREAD();
-    return messageRouter_->OnProcessMessageReceived(browser, frame, source_process, message);
+    return router_->OnProcessMessageReceived(browser, frame, source_process, message);
 }
 
 void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
     CEF_REQUIRE_UI_THREAD();
 
-    if (!messageRouter_) {
-        // Create the browser-side router for query handling.
-        CefMessageRouterConfig config;
-        messageRouter_ = CefMessageRouterBrowserSide::Create(config);
-    }
-    // Create a Property synchronizer for the browser
-    propertyCefSynchronizers_[browser->GetIdentifier()] =
-        std::make_unique<PropertyCefSynchronizer>(browser, widgetFactory_);
-    auto synchronizer = propertyCefSynchronizers_[browser->GetIdentifier()].get();
-    addLoadHandler(synchronizer);
-    messageRouter_->AddHandler(synchronizer, false);
-
-    browserCount_++;
-
-    // Call the default shared implementation.
     CefLifeSpanHandler::OnAfterCreated(browser);
 }
 
@@ -190,15 +198,8 @@ bool WebBrowserClient::DoClose(CefRefPtr<CefBrowser> browser) {
 
 void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     CEF_REQUIRE_UI_THREAD();
-    removeBrowserParent(browser);
-    // Remove associated Property synchronizer
-    messageRouter_->RemoveHandler(propertyCefSynchronizers_[browser->GetIdentifier()].get());
-    removeLoadHandler(propertyCefSynchronizers_[browser->GetIdentifier()].get());
-    propertyCefSynchronizers_.erase(browser->GetIdentifier());
-    if (--browserCount_ == 0) {
-        // Free the router when the last browser is closed.
-        messageRouter_.reset();
-    }
+
+    networkSync_->clear(browser);
 
     // Call the default shared implementation.
     CefLifeSpanHandler::OnBeforeClose(browser);
@@ -217,7 +218,7 @@ bool WebBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<C
                                       bool /*is_redirect*/) {
     CEF_REQUIRE_UI_THREAD();
 
-    messageRouter_->OnBeforeBrowse(browser, frame);
+    router_->OnBeforeBrowse(browser, frame);
     return false;
 }
 
@@ -263,7 +264,7 @@ void WebBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
             break;
     }
 
-    messageRouter_->OnRenderProcessTerminated(browser);
+    router_->OnRenderProcessTerminated(browser);
 }
 
 void WebBrowserClient::addLoadHandler(CefLoadHandler* loadHandler) {
@@ -312,28 +313,25 @@ void WebBrowserClient::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefF
           "<h3>Page failed to load.</h3>"
           "URL: <a href=\""
        << failedUrl.ToString() << "\">" << failedUrl.ToString()
-       << "</a><br/>Error: " << WebBrowserModule::getCefErrorString(errorCode) << " (" << errorCode
-       << ")";
+       << "</a><br/>Error: " << cefutil::getCefErrorString(errorCode) << " (" << errorCode << ")";
 
     if (!errorText.empty()) {
         ss << "<br/>Description: " << errorText.ToString();
     }
     ss << "</body></html>";
 
-    frame->LoadURL(WebBrowserModule::getDataURI(ss.str(), "text/html"));
+    frame->LoadURL(cefutil::getDataURI(ss.str(), "text/html"));
 }
 
 bool WebBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level,
                                         const CefString& message, const CefString& source,
                                         int line) {
-    if (auto lc = LogCentral::getPtr()) {
-        std::string src = source.ToString();
 
-        std::string file = "";
-        if (src.rfind("file://", 0) == 0) {
-            replaceInString(src, "\\", "/");
-            file = std::string{util::splitByLast(src, '/').second};
-        }
+    if (auto it = onNewMessage_.find(browser->GetIdentifier()); it != onNewMessage_.end()) {
+        it->second(level, message, source, line);
+        return true;
+    } else if (auto lc = LogCentral::getPtr()) {
+        std::string src = source.ToString();
 
         LogLevel loglevel;
         switch (level) {
@@ -353,7 +351,7 @@ bool WebBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_s
                 break;
         }
 
-        lc->log("WebBrowserClient", loglevel, LogAudience::Developer, file.c_str(), "", line,
+        lc->log("WebBrowserClient", loglevel, LogAudience::Developer, src, "", line,
                 message.ToString());
         return true;
     }
@@ -364,7 +362,6 @@ cef_return_value_t WebBrowserClient::OnBeforeResourceLoad(CefRefPtr<CefBrowser> 
                                                           CefRefPtr<CefRequest> request,
                                                           CefRefPtr<CefCallback> callback) {
     CEF_REQUIRE_IO_THREAD();
-
     return resourceManager_->OnBeforeResourceLoad(browser, frame, request, callback);
 }
 
@@ -372,7 +369,6 @@ CefRefPtr<CefResourceHandler> WebBrowserClient::GetResourceHandler(CefRefPtr<Cef
                                                                    CefRefPtr<CefFrame> frame,
                                                                    CefRefPtr<CefRequest> request) {
     CEF_REQUIRE_IO_THREAD();
-
     return resourceManager_->GetResourceHandler(browser, frame, request);
 }
 
