@@ -46,6 +46,7 @@ namespace inviwo {
 RenderHandlerGL::RenderHandlerGL(OnWebPageCopiedCallback cb) : onWebPageCopiedCallback{cb} {}
 
 void RenderHandlerGL::updateCanvasSize(CefRefPtr<CefBrowser> browser, size2_t newSize) {
+    rendercontext::activateDefault();
     // Prevent crash when newSize = 0
     browserData_[browser->GetIdentifier()].texture2D.resize(glm::max(size2_t{1, 1}, newSize));
 }
@@ -100,7 +101,8 @@ void RenderHandlerGL::ClearPopupRects(CefRefPtr<CefBrowser> browser) {
 void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
                               const RectList& dirtyRects, const void* buffer, int width,
                               int height) {
-    RenderContext::getPtr()->activateLocalRenderContext();
+    rendercontext::activateDefault();
+
     auto& browserData = browserData_[browser->GetIdentifier()];
     auto& texture2D = browserData.texture2D;
     auto& popupRect = browserData.popupRect;
@@ -182,6 +184,69 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
     }
     // Notify that we are done copying
     onWebPageCopiedCallback(browser);
+}
+
+void RenderHandlerGL::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
+                                         const RectList& dirtyRects,
+                                         const CefAcceleratedPaintInfo& info) {
+
+    rendercontext::activateDefault();
+
+#if defined(WIN32)
+
+    if (dirtyRects.empty()) {
+        return;
+    }
+    // When the window is minimized the texture is 1x1.
+    // This prevents a hard crash when minimizing the window or when you resize the window
+    // so that only the top bar is visible.
+    // @TODO (ylvse 2024-08-20): minimizing window should be handled with the appropriate
+    // function in the CefBrowser called WasHidden
+    if (dirtyRects[0].height <= 1 || dirtyRects[0].width <= 1) {
+        return;
+    }
+
+    auto& orgTexture = getTexture2D(browser);
+
+    // This function is called asynchronously after a reshape which means we have to check
+    // for what we request. Validate the size. This prevents rendering a texture with the
+    // wrong size (the look will be deformed)
+    int newWidth = dirtyRects[0].width;
+    int newHeight = dirtyRects[0].height;
+    if (newWidth != orgTexture.getDimensions().x || newHeight != orgTexture.getDimensions().y) {
+        return;
+    }
+
+    // Create new texture that we can copy the shared texture into. Unfortunately
+    // textures are immutable so we have to create a new one
+    Texture2D newTexture(orgTexture.getDimensions(), GL_RGBA, GL_RGBA8, GL_UNSIGNED_BYTE,
+                         GL_NEAREST);
+
+    // Create the memory object handle
+    GLuint memObj;
+    glCreateMemoryObjectsEXT(1, &memObj);
+
+    // The size of the texture we get from CEF. The CEF format is CEF_COLOR_TYPE_BGRA_8888
+    // It has 4 bytes per pixel. The mem object requires this to be multiplied with 2
+    int size = newWidth * newHeight * 8;
+
+    // Cef uses the GL_HANDLE_TYPE_D3D11_IMAGE_EXT handle for their shared texture
+    // Import the shared texture to the memory object
+    glImportMemoryWin32HandleEXT(memObj, size, GL_HANDLE_TYPE_D3D11_IMAGE_EXT,
+                                 info.shared_texture_handle);
+
+    // Allocate immutable storage for the texture for the data from the memory object
+    // Use GL_RGBA8 since it is 4 bytes
+    glTextureStorageMem2DEXT(newTexture.getID(), 1, GL_RGBA8, newWidth, newHeight, memObj, 0);
+
+    glDeleteMemoryObjectsEXT(1, &memObj);
+    // Set the updated texture
+    browserData_[browser->GetIdentifier()].texture2D = std::move(newTexture);
+
+    // Notify that we are done copying
+    onWebPageCopiedCallback(browser);
+
+#endif
 }
 
 Texture2D& RenderHandlerGL::getTexture2D(CefRefPtr<CefBrowser> browser) {
