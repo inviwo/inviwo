@@ -99,6 +99,7 @@ set(HEADER_FILES
     include/modules/base/processors/meshplaneclipping.h
     include/modules/base/processors/meshsequenceelementselectorprocessor.h
     include/modules/base/processors/meshsource.h
+    include/modules/base/processors/mynoisegeneratorcolor.h
     include/modules/base/processors/noisegenerator2d.h
     include/modules/base/processors/noisegenerator3d.h
     include/modules/base/processors/ordinalpropertyanimator.h
@@ -248,6 +249,7 @@ set(SOURCE_FILES
     src/processors/meshplaneclipping.cpp
     src/processors/meshsequenceelementselectorprocessor.cpp
     src/processors/meshsource.cpp
+    src/processors/mynoisegeneratorcolor.cpp
     src/processors/noisegenerator2d.cpp
     src/processors/noisegenerator3d.cpp
     src/processors/ordinalpropertyanimator.cpp
