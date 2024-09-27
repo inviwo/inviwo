@@ -116,6 +116,7 @@
 #include <modules/base/processors/meshplaneclipping.h>
 #include <modules/base/processors/meshsequencesource.h>
 #include <modules/base/processors/meshsource.h>
+#include <modules/base/processors/mynoisegeneratorcolor.h>
 #include <modules/base/processors/noisegenerator2d.h>
 #include <modules/base/processors/noisegenerator3d.h>
 #include <modules/base/processors/ordinalpropertyanimator.h>
@@ -252,6 +253,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MeshPlaneClipping>();
     registerProcessor<MeshSequenceSource>();
     registerProcessor<MeshSource>();
+    registerProcessor<MyNoiseGeneratorColor>();
     registerProcessor<NoiseGenerator2D>();
     registerProcessor<NoiseGenerator3D>();
     registerProcessor<OrdinalPropertyAnimator>();

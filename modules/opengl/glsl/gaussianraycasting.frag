@@ -97,7 +97,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
     vec4 color;
     vec4 voxel;
     vec3 samplePos;
-    float sum = 0;
+    
     ShadingParameters shadingParams = defaultShadingParameters();
     vec3 toCameraDir = normalize((volumeParameters.textureToWorld * vec4(entryPoint, 1.0) -
                                   volumeParameters.textureToWorld * vec4(exitPoint, 1.0))
@@ -115,29 +115,26 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
         result = backgroundColor;
     }
 #endif // BACKGROUND_AVAILABLE
-
-    // used for isosurface computation
-    //voxel = getNormalizedVoxel(volume, volumeParameters, entryPoint + t * rayDirection);
-    voxel = vec4( entryPoint + t * rayDirection,0.0);
-
+    
     bool first = true;
+
+    vec3 a = vec3(0.1, 0.4, 0.4);
+    vec3 b = vec3(0.5, 0.5, 0.5);
+    vec3 c = vec3(0.8, 0.3, 0.1);
+    
+    const vec3 points[3] = vec3[3](a,b,c);
+    float sum = 0;
     while (t < tEnd) {
-        samplePos = entryPoint + t * rayDirection;
-        vec4 previousVoxel = voxel;
+
+        samplePos = entryPoint + t * rayDirection;       
         
-        vec3 a = vec3(0.1, 0.4, 0.4);
-        vec3 b = vec3(0.5, 0.5, 0.5);
-        vec3 c = vec3(0.8, 0.3, 0.1);
-        vec3 d = vec3(0.5, 0, 1);
-        const vec3 points[4] = vec3[4](a,b,c,d);        
-        
-        //float sigma = 0.15;
         for(int i = 0;i < points.length();++i)
         {
-            
-            sum += 1 / (sigma*sqrt(2*M_PI))*exp(-0.5*length(points[i]-samplePos)/(sigma*sigma));
+            vec3 dx = points[i]-samplePos;
+            float dx2 = length(dx)*length(dx);
+            sum += 1 / (sigma*sqrt(2*M_PI))*exp(-0.5*dx2/(sigma*sigma))*tIncr;
         }
-        voxel.a = sum;
+        
 
         // check for isosurfaces
 
@@ -152,9 +149,9 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
 
         color = applyTF(transferFunction, sum);
         
-        if (color.a > 0.0) {
-
-            result = APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera, raycaster.isoValue, t, tDepth, tIncr);
+        if (color.a > 0) {
+            result = compositeDVR(result, color, t, tDepth, tIncr);
+            
         }
 #endif // INCLUDE_DVR
 
