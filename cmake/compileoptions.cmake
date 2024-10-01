@@ -178,7 +178,6 @@ function(ivw_define_standard_properties)
             set_target_properties(${target} PROPERTIES 
                 ${warnings}
                 XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code"
-                XCODE_GENERATE_SCHEME YES
             )
         endif()
     endforeach()

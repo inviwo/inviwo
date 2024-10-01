@@ -205,6 +205,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # Add the automatically determined parts of the RPATH,
     # which point to directories outside the build tree, to the install RPATH
     set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+    set(CMAKE_XCODE_GENERATE_TOP_LEVEL_PROJECT_ONLY TRUE)
+    set(CMAKE_XCODE_GENERATE_SCHEME NO)
 endif()
 
 # Runtime module loading
