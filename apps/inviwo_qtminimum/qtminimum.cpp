@@ -194,7 +194,7 @@ int main(int argc, char** argv) {
     });
 
     // Do this after registerModules if some arguments were added
-    cmdParser.parse(inviwo::CommandLineParser::Mode::Normal);
+    cmdParser.parse();
 
     // Need to clear the network and (will delete processors and processorwidgets)
     // before QMainWindoes is deleted, otherwise it will delete all processorWidgets

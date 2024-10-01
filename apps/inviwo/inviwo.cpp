@@ -108,7 +108,7 @@ int main(int argc, char** argv) {
     qtApp.processEvents();
 
     // Do this after registerModules if some arguments were added
-    clp.parse(inviwo::CommandLineParser::Mode::Normal);
+    clp.parse();
 
     qtApp.processEvents();  // Update GUI
     splashScreen.showMessage("Loading workspace...");
