@@ -1,0 +1,13 @@
+diff --git forkSrcPrefix/tools/pybind11Common.cmake forkDstPrefix/tools/pybind11Common.cmake
+index 450a141566dec5b8fdb72fb1b7ac16456e681d38..52d857056d3cc99f957a7de30b9c5258f7511566 100644
+--- forkSrcPrefix/tools/pybind11Common.cmake
++++ forkDstPrefix/tools/pybind11Common.cmake
+@@ -18,7 +18,7 @@ Adds the following functions::
+ 
+ #]======================================================]
+ 
+-include_guard(GLOBAL)
++include_guard(DIRECTORY)
+ 
+ # If we are in subdirectory mode, all IMPORTED targets must be GLOBAL. If we
+ # are in CONFIG mode, they should be "normal" targets instead.
