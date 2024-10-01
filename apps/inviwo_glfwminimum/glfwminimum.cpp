@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
     });
 
     // Do this after registerModules if some arguments were added
-    cmdParser.parse(inviwo::CommandLineParser::Mode::Normal);
+    cmdParser.parse();
 
     // Load simple scene
     inviwoApp.getProcessorNetwork()->lock();
