@@ -30,3 +30,5 @@ ivw_define_standard_properties(inviwo_glfwminimum)
 
 ivw_folder(inviwo_glfwminimum apps)
 ivw_default_install_targets(inviwo_glfwminimum)
+
+set_target_properties(inviwo_glfwminimum PROPERTIES XCODE_GENERATE_SCHEME YES)

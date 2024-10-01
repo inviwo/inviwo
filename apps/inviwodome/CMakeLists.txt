@@ -42,6 +42,7 @@ set_target_properties(inviwo-dome PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:inviwo-dome>
     SGCT_CONFIG_DIR ${CMAKE_CURRENT_LIST_DIR}/scripts
     TRACY_EXE ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools/tracy/Tracy.exe
+    XCODE_GENERATE_SCHEME YES
 )
 
 ivw_folder(inviwo-dome apps)
