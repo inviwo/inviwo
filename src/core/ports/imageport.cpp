@@ -213,14 +213,13 @@ void ImageOutport::propagateEvent(Event* event, Inport* source) {
 const DataFormatBase* ImageOutport::getDataFormat() const { return format_; }
 
 std::shared_ptr<const Image> ImageOutport::getDataForPort(const Inport* port) const {
-    const auto it = requestedDimensions_.find(port);
-    if (it != requestedDimensions_.end()) {
-        auto img = cache_.getImage(it->second);
-        img->updateResource(ResourceMeta{.source = getPath()});
-        return img;
-    } else {
-        return nullptr;
+    if (const auto it = requestedDimensions_.find(port); it != requestedDimensions_.end()) {
+        if (auto img = cache_.getImage(it->second)) {
+            img->updateResource(ResourceMeta{.source = getPath()});
+            return img;
+        }
     }
+    return nullptr;
 }
 
 void ImageOutport::setDimensions(const size2_t& newDimension) {
