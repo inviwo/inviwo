@@ -78,6 +78,7 @@ set(HEADER_FILES
     include/modules/qtwidgets/properties/tfprimitivesetwidgetqt.h
     include/modules/qtwidgets/properties/tfpropertywidgetqt.h
     include/modules/qtwidgets/properties/valuedragger.h
+    include/modules/qtwidgets/qptr.h
     include/modules/qtwidgets/qstringhelper.h
     include/modules/qtwidgets/qtwidgetsmodule.h
     include/modules/qtwidgets/qtwidgetsmoduledefine.h
@@ -158,6 +159,7 @@ set(SOURCE_FILES
     src/properties/valuedragger.cpp
     src/properties/valuedragspinbox.cpp
     src/propertylistwidget.cpp
+    src/qptr.cpp
     src/qtwidgetsmodule.cpp
     src/rangesliderqt.cpp
     src/rawdatareaderdialogqt.cpp
