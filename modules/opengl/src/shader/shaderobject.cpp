@@ -626,8 +626,8 @@ void ShaderObject::addShaderDefine(std::string_view name, std::string_view value
         it->second = value;
     }
 }
-void ShaderObject::setShaderDefine(std::string_view name, bool exists, std::string_view value) {
-    if (exists) {
+void ShaderObject::setShaderDefine(std::string_view name, bool shouldAdd, std::string_view value) {
+    if (shouldAdd) {
         addShaderDefine(name, value);
     } else {
         removeShaderDefine(name);
