@@ -36,6 +36,8 @@
 #include <modules/python3/polymorphictypehooks.h>
 
 #include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 #include <fmt/format.h>
 
 namespace py = pybind11;

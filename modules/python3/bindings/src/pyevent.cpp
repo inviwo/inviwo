@@ -30,6 +30,11 @@
 #include <inviwopy/pyevent.h>
 #include <inviwopy/pyflags.h>
 
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+#include <pybind11/numpy.h>
+
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 #include <inviwo/core/interaction/events/interactionevent.h>
@@ -48,8 +53,6 @@
 
 #include <modules/python3/polymorphictypehooks.h>
 
-#include <pybind11/stl.h>
-#include <pybind11/functional.h>
 
 namespace inviwo {
 

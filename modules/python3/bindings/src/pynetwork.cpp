@@ -31,8 +31,10 @@
 #include <inviwopy/pyglmtypes.h>
 #include <inviwopy/vectoridentifierwrapper.h>
 
+#include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
+#include <pybind11/numpy.h>
 
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/network/networkutils.h>

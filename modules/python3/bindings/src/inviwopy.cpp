@@ -30,7 +30,9 @@
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
-#include <pybind11/embed.h>
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 #include <warn/pop>
 
 #include <modules/python3/python3module.h>
