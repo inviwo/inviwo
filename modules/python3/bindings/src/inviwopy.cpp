@@ -38,6 +38,7 @@
 #include <modules/python3/pybindmodule.h>
 #include <modules/python3/pythoninterpreter.h>
 #include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <inviwopy/pybitset.h>
 #include <inviwopy/pydataformat.h>

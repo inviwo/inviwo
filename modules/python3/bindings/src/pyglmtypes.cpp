@@ -34,6 +34,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <modules/python3/pyportutils.h>
 #include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>

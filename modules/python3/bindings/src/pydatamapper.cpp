@@ -33,6 +33,9 @@
 #include <inviwo/core/datastructures/unitsystem.h>
 
 #include <inviwo/core/util/glmfmt.h>
+
+#include <modules/python3/polymorphictypehooks.h>
+
 #include <pybind11/numpy.h>
 #include <fmt/core.h>
 

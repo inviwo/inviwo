@@ -46,6 +46,8 @@
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
 
+#include <modules/python3/polymorphictypehooks.h>
+
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 

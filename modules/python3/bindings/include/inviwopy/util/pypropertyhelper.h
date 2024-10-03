@@ -31,6 +31,8 @@
 
 #include <inviwo/core/util/stringconversion.h>
 
+#include <modules/python3/polymorphictypehooks.h>
+
 namespace inviwo {
 
 template <typename T, typename P, typename C>

@@ -40,6 +40,8 @@
 #include <inviwo/core/util/sourcecontext.h>         // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/stringconversion.h>      // for StrBuffer
 
+#include <modules/python3/polymorphictypehooks.h>
+
 #include <fmt/core.h>  // for format
 
 #include <memory>    // for shared_ptr

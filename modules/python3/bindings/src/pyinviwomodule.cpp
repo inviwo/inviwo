@@ -37,6 +37,8 @@
 #include <inviwo/core/util/licenseinfo.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#include <modules/python3/polymorphictypehooks.h>
+
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>

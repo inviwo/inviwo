@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,44 +26,50 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/commandlineparser.h>
-#include <modules/python3/pythonlogger.h>
-#include <modules/python3/pythonprocessorfolderobserver.h>
-#include <modules/python3/pyutils.h>
-
+#include <modules/python3qt/python3qtmoduledefine.h>
+#include <modules/python3qt/pythoneditorwidget.h>
 #include <modules/python3/pythonworkspacescripts.h>
-#include <string>
+
+// Ensure all python includes are before any Qt includes since qt defines slots
+#include <modules/qtwidgets/qptr.h>
+
+#include <map>
+
+#include <QMenu>
+#include <QMainWindow>
 
 namespace inviwo {
-class PythonInterpreter;
 
-class IVW_MODULE_PYTHON3_API Python3Module : public InviwoModule {
+class InviwoApplication;
+class PythonEditorWidget;
+
+class IVW_MODULE_PYTHON3QT_API PythonWorkspaceScriptMenu : public PythonWorkspaceScriptsObserver {
 public:
-    Python3Module(InviwoApplication* app);
-    virtual ~Python3Module();
+    PythonWorkspaceScriptMenu(PythonWorkspaceScripts& scripts, QMenu* parent,
+                              InviwoApplication* app, QMainWindow* win);
+    virtual ~PythonWorkspaceScriptMenu();
 
-    PythonInterpreter* getPythonInterpreter();
-
-    PythonWorkspaceScripts& getWorkspaceScripts();
+    virtual void onScriptAdded(std::string_view key, std::string_view script) override;
+    virtual void onScriptRemoved(std::string_view key, std::string_view script) override;
+    virtual void onScriptSaved(std::string_view key, std::string_view script) override;
+    virtual void onScriptUpdate(std::string_view key, std::string_view script) override;
 
 private:
-    std::unique_ptr<PythonInterpreter> pythonInterpreter_;
-    TCLAP::ValueArg<std::string> scriptArg_;
-    CommandLineArgHolder scriptArgHolder_;
-    TCLAP::ValueArg<std::string> workspaceScriptArg_;
-    CommandLineArgHolder workspaceScriptArgHolder_;
-    PythonLogger pythonLogger_;
+    void addScriptMenuItem(std::string_view key);
+    PythonEditorWidget* newScriptEditor(const std::string& key);
 
-    pyutil::ModulePath scripts_;
-    PythonProcessorFolderObserver pythonFolderObserver_;
-    PythonProcessorFolderObserver settingsFolderObserver_;
+    void openEditor(const std::string& key);
 
-    PythonWorkspaceScripts workspaceScripts_;
+    std::optional<std::string> getScriptName(std::string_view suggestion);
+
+    PythonWorkspaceScripts& scripts_;
+    InviwoApplication* app_;
+    QMainWindow* win_;
+    std::map<std::string, QPtr<QAction>, std::less<>> menuItems_;
+    std::map<std::string, QPtr<PythonEditorWidget>, std::less<>> scriptEditors_;
+    QPtr<QMenu> menu_;
 };
 
 }  // namespace inviwo

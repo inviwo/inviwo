@@ -33,6 +33,8 @@
 
 #include <inviwo/core/algorithm/markdown.h>
 
+#include <modules/python3/polymorphictypehooks.h>
+
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 

@@ -34,6 +34,8 @@
 #include <inviwo/core/util/filelogger.h>
 #include <inviwo/core/processors/processor.h>
 
+#include <modules/python3/polymorphictypehooks.h>
+
 namespace inviwo {
 
 void exposeLogging(pybind11::module& m) {

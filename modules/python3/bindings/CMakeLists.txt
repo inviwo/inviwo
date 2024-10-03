@@ -39,7 +39,6 @@ set(HEADER_FILES
     include/inviwopy/pyprocessors.h
     include/inviwopy/pyproperties.h
     include/inviwopy/pypropertyowner.h
-    include/inviwopy/pypropertytypehook.h
     include/inviwopy/pytfprimitiveset.h
     include/inviwopy/pyvolume.h
     include/inviwopy/util/pyglmhelper.h
@@ -89,7 +88,6 @@ set(SOURCE_FILES
     src/pyprocessors.cpp
     src/pyproperties.cpp
     src/pypropertyowner.cpp
-    src/pypropertytypehook.cpp
     src/pytfprimitiveset.cpp
     src/pyvolume.cpp
     src/util/pyglmhelper.cpp

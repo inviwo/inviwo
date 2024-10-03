@@ -28,11 +28,12 @@
  *********************************************************************************/
 
 #include <inviwopy/pycameraproperty.h>
-#include <inviwopy/pypropertytypehook.h>
 
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/algorithm/camerautils.h>
 #include <inviwo/core/ports/inport.h>
+
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <pybind11/functional.h>
 #include <fmt/format.h>
