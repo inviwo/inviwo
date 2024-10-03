@@ -28,12 +28,12 @@
  *********************************************************************************/
 
 #include <inviwopy/properties/pyordinalproperties.h>
-
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/foreacharg.h>
 #include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>

@@ -435,6 +435,7 @@ void PythonEditorWidget::clearOutput() { pythonOutput_->setPlainText(""); }
 void PythonEditorWidget::onTextChange() {
     std::string source = utilqt::fromQString(pythonCode_->toPlainText());
     script_.setSource(source);
+    setWindowModified(pythonCode_->document()->isModified());
 
     if (onTextChange_) onTextChange_(source);
 }
@@ -477,8 +478,10 @@ void PythonEditorWidget::setName(std::string_view name) {
 const std::string& PythonEditorWidget::getName() const { return script_.getName(); }
 
 void PythonEditorWidget::setSource(std::string_view source) {
-    pythonCode_->setPlainText(utilqt::toQString(source));
-    script_.setSource(source);
+    if (source != script_.getSource()) {
+        pythonCode_->setPlainText(utilqt::toQString(source));
+        script_.setSource(source);
+    }
 }
 
 const std::string& PythonEditorWidget::getSource() const { return script_.getSource(); }

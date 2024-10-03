@@ -43,6 +43,8 @@
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/processors/processorfactory.h>
 
+#include <modules/python3/polymorphictypehooks.h>
+
 #include <pybind11/stl/filesystem.h>
 
 namespace inviwo {

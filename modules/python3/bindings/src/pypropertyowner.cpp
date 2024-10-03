@@ -29,10 +29,12 @@
 
 #include <inviwopy/pypropertyowner.h>
 #include <inviwopy/vectoridentifierwrapper.h>
-#include <inviwopy/pypropertytypehook.h>
 
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/processors/processor.h>
+
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <pybind11/detail/common.h>
 

@@ -17,6 +17,7 @@ set(HEADER_FILES
     include/modules/python3qt/pythoneditorwidget.h
     include/modules/python3qt/pythonmenu.h
     include/modules/python3qt/pythonsyntaxhighlight.h
+    include/modules/python3qt/pythonworkspacescriptmenu.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -32,6 +33,7 @@ set(SOURCE_FILES
     src/pythoneditorwidget.cpp
     src/pythonmenu.cpp
     src/pythonsyntaxhighlight.cpp
+    src/pythonworkspacescriptmenu.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

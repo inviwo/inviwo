@@ -38,6 +38,7 @@
 #include <inviwo/core/datastructures/isovaluecollection.h>
 
 #include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <pybind11/stl/filesystem.h>
 

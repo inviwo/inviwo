@@ -37,6 +37,9 @@
 #include <modules/python3/pythonoutport.h>
 #include <modules/python3/pythoninport.h>
 
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>

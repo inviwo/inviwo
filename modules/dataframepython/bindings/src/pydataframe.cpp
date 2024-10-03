@@ -45,6 +45,7 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <modules/python3/pyportutils.h>
 #include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <fmt/format.h>
 

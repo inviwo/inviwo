@@ -36,6 +36,7 @@
 #include <inviwo/core/util/colorconversion.h>
 
 #include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>

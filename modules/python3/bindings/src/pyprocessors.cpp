@@ -38,7 +38,6 @@
 #include <warn/pop>
 
 #include <inviwopy/vectoridentifierwrapper.h>
-#include <inviwopy/pypropertytypehook.h>
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
@@ -59,6 +58,8 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/python3/processortrampoline.h>
 #include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+
 
 #include <fmt/format.h>
 #include <fmt/std.h>

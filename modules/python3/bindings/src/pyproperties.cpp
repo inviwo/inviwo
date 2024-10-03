@@ -29,7 +29,6 @@
 
 #include <inviwopy/pyproperties.h>
 #include <inviwopy/pyflags.h>
-#include <inviwopy/pypropertytypehook.h>
 #include <inviwopy/util/pypropertyhelper.h>
 
 #include <inviwopy/properties/pyordinalproperties.h>
@@ -43,6 +42,7 @@
 #include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/directoryproperty.h>
@@ -54,6 +54,7 @@
 #include <inviwo/core/datastructures/tfprimitive.h>
 
 #include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
