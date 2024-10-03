@@ -29,6 +29,11 @@
 
 #include <inviwopy/pydatawriters.h>
 
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+#include <pybind11/numpy.h>
+
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -39,8 +44,6 @@
 
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
-
-#include <pybind11/stl/filesystem.h>
 
 namespace inviwo {
 

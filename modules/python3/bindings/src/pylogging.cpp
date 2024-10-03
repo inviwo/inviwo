@@ -29,6 +29,11 @@
 
 #include <inviwopy/pylogging.h>
 
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+#include <pybind11/numpy.h>
+
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/util/filelogger.h>

@@ -30,6 +30,11 @@
 #include <inviwopy/pypickingmapper.h>
 #include <inviwopy/pyflags.h>
 
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+#include <pybind11/numpy.h>
+
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/interaction/pickingstate.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
@@ -38,9 +43,6 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
-
-#include <pybind11/stl.h>
-#include <pybind11/functional.h>
 
 namespace inviwo {
 

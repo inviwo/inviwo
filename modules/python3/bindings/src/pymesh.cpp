@@ -31,6 +31,12 @@
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pyglmtypes.h>
 
+#include <pybind11/functional.h>
+#include <pybind11/stl_bind.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+#include <pybind11/numpy.h>
+
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
@@ -38,9 +44,6 @@
 #include <modules/python3/pyportutils.h>
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
-
-#include <pybind11/numpy.h>
-#include <pybind11/stl_bind.h>
 
 #include <fmt/format.h>
 

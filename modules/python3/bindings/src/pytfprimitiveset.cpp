@@ -29,6 +29,12 @@
 
 #include <inviwopy/pytfprimitiveset.h>
 
+#include <pybind11/operators.h>
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+#include <pybind11/numpy.h>
+
 #include <inviwo/core/datastructures/tfprimitive.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <inviwo/core/datastructures/transferfunction.h>
@@ -37,10 +43,6 @@
 
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
-
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl/filesystem.h>
 
 #include <sstream>
 #include <utility>
