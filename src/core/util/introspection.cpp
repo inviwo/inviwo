@@ -39,13 +39,9 @@ struct ClassWithClassIdentifierLower {
     static const std::string classIdentifier;
 };
 
-const std::string ClassWithClassIdentifierLower::classIdentifier = "id";
-
 struct ClassWithClassIdentifierUpper {
     static const std::string CLASS_IDENTIFIER;
 };
-
-const std::string ClassWithClassIdentifierUpper::CLASS_IDENTIFIER = "id";
 
 struct Empty {};
 
