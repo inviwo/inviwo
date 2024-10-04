@@ -35,6 +35,7 @@
 #include <modules/basegl/datastructures/linesettings.h>     // for LineSettings
 #include <modules/basegl/datastructures/meshshadercache.h>  // for MeshShaderCache
 #include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/datastructures/tflookuptable.h>
 
 namespace inviwo {
 
@@ -86,6 +87,7 @@ protected:
     void configureShader(Shader& shader);
     LineSettings settings_;  //!< Local cache
     MeshShaderCache lineShaders_;
+    TFLookupTable tfLookup_;
 };
 
 }  // namespace algorithm

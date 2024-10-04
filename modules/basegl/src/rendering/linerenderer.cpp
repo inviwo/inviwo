@@ -46,6 +46,9 @@
 #include <modules/opengl/shader/shaderobject.h>                        // for ShaderObject
 #include <modules/opengl/shader/shadertype.h>                          // for ShaderType, Shader...
 #include <modules/opengl/shader/shaderutils.h>                         // for setShaderUniforms
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/image/layergl.h>
 
 #include <cstddef>     // for size_t
 #include <functional>  // for __base, function
@@ -68,6 +71,7 @@ std::vector<MeshShaderCache::Requirement> defaultRequirements(
         {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
         {BufferType::IndexAttrib, MeshShaderCache::Optional, "uint"},
         {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
+        {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"},
         {[](const Mesh&, Mesh::MeshInfo mi) -> int {
              return mi.ct == ConnectivityType::Adjacency ||
                             mi.ct == ConnectivityType::StripAdjacency
@@ -94,7 +98,8 @@ LineRenderer::LineRenderer(const std::vector<MeshShaderCache::Requirement>& requ
                     {ShaderType::Fragment, std::string{"linerenderer.frag"}}},
 
                    detail::defaultRequirements(requirements),
-                   [&](Shader& shader) -> void { configureShader(shader); }} {}
+                   [this](Shader& shader) -> void { configureShader(shader); }}
+    , tfLookup_{settings_.metaColor} {}
 
 void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
                           const LineSettingsInterface* settings) {
@@ -108,6 +113,9 @@ void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screen
     // Changing these settings require recompilation
     if (settings_.getPseudoLighting() != settings->getPseudoLighting() ||
         settings_.getRoundDepthProfile() != settings->getRoundDepthProfile() ||
+        settings_.getOverrideColor() != settings->getOverrideColor() ||
+        settings_.getOverrideAlpha() != settings->getOverrideAlpha() ||
+        settings_.getUseMetaColor() != settings->getUseMetaColor() ||
         settings_.getStippling().getMode() != settings->getStippling().getMode()) {
         settings_ = LineSettings(settings);
         configureShaders();
@@ -117,12 +125,20 @@ void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screen
 
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
+    TextureUnit texUnit;
+    if (settings_.getUseMetaColor()) {
+        if (const auto* tfLayer = tfLookup_.getRepresentation<LayerGL>()) {
+            tfLayer->bindTexture(texUnit.getEnum());
+        }
+    }
+
     MeshDrawerGL::DrawObject drawer(mesh.getRepresentation<MeshGL>(), mesh.getDefaultMeshInfo());
     if (mesh.getNumberOfIndicies() > 0) {
         for (size_t i = 0; i < mesh.getNumberOfIndicies(); ++i) {
             if (mesh.getIndexMeshInfo(i).dt != DrawType::Lines) continue;
             auto& shader = lineShaders_.getShader(mesh, mesh.getIndexMeshInfo(i));
             shader.activate();
+            shader.setUniform("metaColor", texUnit.getUnitNumber());
             setUniforms(shader, mesh, camera, screenDim, func);
             drawer.draw(i);
             shader.deactivate();
@@ -132,6 +148,7 @@ void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screen
         if (mesh.getDefaultMeshInfo().dt != DrawType::Lines) return;
 
         shader.activate();
+        shader.setUniform("metaColor", texUnit.getUnitNumber());
         setUniforms(shader, mesh, camera, screenDim, func);
 
         drawer.draw();
@@ -149,6 +166,8 @@ void LineRenderer::setUniforms(Shader& lineShader, const Mesh& mesh, const Camer
     lineShader.setUniform("miterLimit", settings_.getMiterLimit());
     lineShader.setUniform("roundCaps", settings_.getRoundCaps());
     lineShader.setUniform("defaultColor", settings_.getDefaultColor());
+    lineShader.setUniform("config.color", settings_.getOverrideColorValue());
+    lineShader.setUniform("config.alpha", settings_.getOverrideAlphaValue());
     // Stippling settings
     lineShader.setUniform("stippling.length", settings_.getStippling().getLength());
     lineShader.setUniform("stippling.spacing", settings_.getStippling().getSpacing());
@@ -168,6 +187,9 @@ void LineRenderer::configureShader(Shader& shader) {
                                                   settings_.getPseudoLighting());
     shader[ShaderType::Fragment]->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE",
                                                   settings_.getRoundDepthProfile());
+    shader[ShaderType::Vertex]->setShaderDefine("OVERRIDE_COLOR", settings_.getOverrideColor());
+    shader[ShaderType::Vertex]->setShaderDefine("OVERRIDE_ALPHA", settings_.getOverrideAlpha());
+    shader[ShaderType::Vertex]->setShaderDefine("USE_SCALARMETACOLOR", settings_.getUseMetaColor());
 
     utilgl::addShaderDefines(shader, settings_.getStippling().getMode());
     shader.build();

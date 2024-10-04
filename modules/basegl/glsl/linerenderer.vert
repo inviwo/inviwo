@@ -39,6 +39,14 @@ uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), m
 uniform bool pickingEnabled = false;
 uniform vec4 defaultColor = vec4(1, 1, 1, 1);
 
+struct Config {
+    vec3 color;
+    float alpha;    
+};
+uniform Config config = Config(vec3(0.7), 1.0);
+
+uniform sampler2D metaColor;
+
 out LineVert {
     vec4 worldPosition;
     vec4 color;
@@ -47,10 +55,20 @@ out LineVert {
 } vertex;
  
 void main() {
-#if defined(HAS_COLOR)
+#if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR)
+    vertex.color = texture(metaColor, vec2(in_ScalarMeta, 0.5));
+#elif defined(HAS_COLOR)
     vertex.color = in_Color;
 #else
     vertex.color = defaultColor;
+#endif
+
+#if defined(OVERRIDE_COLOR)
+    vertex.color.rgb = config.color;
+#endif
+
+#if defined(OVERRIDE_ALPHA)
+    vertex.color.a = config.alpha;
 #endif
 
 #if defined(HAS_INDEX)
