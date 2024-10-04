@@ -32,7 +32,7 @@
 
 #include <memory>
 #include <QObject>
-#include <Qt> 
+#include <Qt>
 
 namespace inviwo {
 

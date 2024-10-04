@@ -72,7 +72,6 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
 
     args_[0] = std::filesystem::path(args_[0]).filename().string();
 
-
     auto it = std::ranges::find(args_, "--");
     if (it != args_.end()) {
         std::copy(std::next(it), args_.end(), std::back_inserter(ignoredArgs_));
@@ -192,9 +191,7 @@ bool CommandLineParser::getLogToConsole() const { return logConsole_.isSet(); }
 
 const std::vector<std::string>& CommandLineParser::getArgs() const { return args_; }
 
-const std::vector<std::string>& CommandLineParser::getIgnoredArgs() const {
-    return ignoredArgs_;
-}
+const std::vector<std::string>& CommandLineParser::getIgnoredArgs() const { return ignoredArgs_; }
 
 void CommandLineParser::processCallbacks() {
     std::sort(callbacks_.begin(), callbacks_.end(),

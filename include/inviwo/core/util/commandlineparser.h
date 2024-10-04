@@ -110,7 +110,7 @@ private:
     void parseInternal(std::vector<std::string> args, Mode mode = Mode::Normal);
 
     std::vector<std::string> args_;
-    std::vector<std::string> ignoredArgs_; // Args after a "--"
+    std::vector<std::string> ignoredArgs_;  // Args after a "--"
 
     TCLAP::ValueArg<std::string> workspace_;
     TCLAP::ValueArg<std::string> outputPath_;
