@@ -62,7 +62,7 @@ private:
 
     void openEditor(const std::string& key);
 
-    std::optional<std::string> getScriptName(std::string_view suggestion);
+    static std::optional<std::string> getScriptName(std::string_view suggestion);
 
     PythonWorkspaceScripts& scripts_;
     InviwoApplication* app_;

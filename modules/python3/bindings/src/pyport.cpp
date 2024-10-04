@@ -48,6 +48,8 @@
 #include <pybind11/functional.h>
 #include <warn/pop>
 
+#include <utility>
+
 namespace inviwo {
 
 namespace {
@@ -100,18 +102,18 @@ void exposePort(pybind11::module& m) {
 
         .def("onChangeScoped",
              [](Inport* p, std::function<void()> func) {
-                 return InportCallbackHolderVoid{p->onConnectScoped(func)};
+                 return InportCallbackHolderVoid{p->onConnectScoped(std::move(func))};
              })
         .def("onInvalidScoped",
              [](Inport* p, std::function<void()> func) {
-                 return InportCallbackHolderVoid{p->onInvalidScoped(func)};
+                 return InportCallbackHolderVoid{p->onInvalidScoped(std::move(func))};
              })
         .def("onConnectScoped",
              [](Inport* p, std::function<void(Outport*)> func) {
-                 return InportCallbackHolderOutport{p->onConnectScoped(func)};
+                 return InportCallbackHolderOutport{p->onConnectScoped(std::move(func))};
              })
         .def("onDisconnectScoped", [](Inport* p, std::function<void(Outport*)> func) {
-            return InportCallbackHolderOutport{p->onDisconnectScoped(func)};
+            return InportCallbackHolderOutport{p->onDisconnectScoped(std::move(func))};
         });
 
     py::class_<PythonInport, Inport>(m, "PythonInport")

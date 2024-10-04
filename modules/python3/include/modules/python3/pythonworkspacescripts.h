@@ -50,7 +50,11 @@ public:
 class IVW_MODULE_PYTHON3_API PythonWorkspaceScripts
     : public Observable<PythonWorkspaceScriptsObserver> {
 public:
-    PythonWorkspaceScripts(WorkspaceManager& manager);
+    explicit PythonWorkspaceScripts(WorkspaceManager& manager);
+    PythonWorkspaceScripts(const PythonWorkspaceScripts&) = delete;
+    PythonWorkspaceScripts& operator=(const PythonWorkspaceScripts&) = delete;
+    PythonWorkspaceScripts(PythonWorkspaceScripts&&) = delete;
+    PythonWorkspaceScripts& operator=(PythonWorkspaceScripts&&) = delete;
 
     void addScript(std::string_view key, std::string_view script);
 

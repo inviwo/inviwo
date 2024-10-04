@@ -158,23 +158,23 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
 
             .def("address",
                  [](ProcessorWidget* w) {
-                     if (auto qw = dynamic_cast<QWidget*>(w)) {
-                         return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));
+                     if (auto* qw = dynamic_cast<QWidget*>(w)) {
+                         return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));  // NOLINT
                      } else {
                          throw Exception("invalid object");
                      }
                  })
             .def("address",
                  [](PropertyWidget* w) {
-                     if (auto qw = dynamic_cast<QWidget*>(w)) {
-                         return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));
+                     if (auto* qw = dynamic_cast<QWidget*>(w)) {
+                         return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));  // NOLINT
                      } else {
                          throw Exception("invalid object");
                      }
                  })
             .def("address", [](PropertyEditorWidget* w) {
-                if (auto qw = dynamic_cast<QWidget*>(w)) {
-                    return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));
+                if (auto* qw = dynamic_cast<QWidget*>(w)) {
+                    return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));  // NOLINT
                 } else {
                     throw Exception("invalid object");
                 }
@@ -212,7 +212,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
             .def("hide", &PropertyListWidget::hide)
             .def("move", [](PropertyListWidget* w, int x, int y) { w->move(x, y); })
             .def("address", [](PropertyListWidget* w) {
-                return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));
+                return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));  // NOLINT
             });
 
     } catch (const std::exception& e) {

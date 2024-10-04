@@ -98,7 +98,7 @@ std::optional<std::string_view> PythonWorkspaceScripts::getScript(std::string_vi
 std::vector<std::string_view> PythonWorkspaceScripts::getKeys() const {
     std::vector<std::string_view> keys;
     keys.reserve(pythonScripts_.size());
-    for (auto& [key, script] : pythonScripts_) {
+    for (const auto& [key, script] : pythonScripts_) {
         keys.push_back(key);
     }
     return keys;

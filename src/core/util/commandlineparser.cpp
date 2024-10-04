@@ -36,11 +36,11 @@ namespace inviwo {
 
 namespace {
 
-static constexpr std::string_view info =
+constexpr std::string_view info =
     "Inviwo, Interactive Visualization Workshop, a rapid prototyping environment for "
     "interactive visualizations";
 
-}
+}  // namespace
 
 CommandLineArgHolder::CommandLineArgHolder(InviwoApplication* app, TCLAP::Arg& arg)
     : app_{app}, arg_{arg} {
@@ -120,7 +120,7 @@ void CommandLineParser::parseInternal(std::vector<std::string> args, Mode mode) 
             exit(0);
         }
     } catch (TCLAP::ArgException& e) {
-        std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
+        std::cerr << "error: " << e.error() << " for arg " << e.argId() << "\n" << std::flush;
     }
 }
 
