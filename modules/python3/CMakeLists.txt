@@ -70,6 +70,8 @@ set(PYTHON_PROCESSORS_FILES
     processors/PythonPickingExample.py
     processors/PythonVolumeExample.py
     processors/VolumeCreationTest.py
+    processors/ChromatinDataFrameConverter.py
+    processors/ChromatinImport.py
 )
 ivw_group("Python Processor Files" BASE processors ${PYTHON_PROCESSORS_FILES})
 
@@ -150,7 +152,7 @@ if(IVW_PACKAGE_EMBED_PYTHON)
         if(NOT EXISTS ${py_dir}/python/Scripts)
             execute_process(COMMAND ${py_dir}/python/python.exe -I get-pip.py --no-warn-script-location 
                 WORKING_DIRECTORY "${py_dir}/python")
-            execute_process(COMMAND ${py_dir}/python/python.exe -I -m pip install numpy --isolated --no-warn-script-location 
+            execute_process(COMMAND ${py_dir}/python/python.exe -I -m pip install numpy pandas pyarrow natsort --isolated --no-warn-script-location 
                 WORKING_DIRECTORY "${py_dir}/python")
         endif()
 
