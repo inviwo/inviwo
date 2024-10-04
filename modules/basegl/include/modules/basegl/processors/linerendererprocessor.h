@@ -67,7 +67,6 @@ private:
     ImageOutport outport_;
     LineSettingsProperty lineSettings_;
     BoolProperty writeDepth_;
-
     CameraProperty camera_;
     CameraTrackball trackball_;
     MeshBnLGL bnl_;

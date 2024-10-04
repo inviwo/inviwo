@@ -32,6 +32,7 @@
 
 #include <modules/basegl/datastructures/linesettingsinterface.h>  // for LineSettingsInterface
 #include <modules/basegl/datastructures/stipplingsettings.h>      // for StipplingSettings
+#include <inviwo/core/datastructures/transferfunction.h>
 
 namespace inviwo {
 class StipplingSettingsInterface;
@@ -45,7 +46,7 @@ public:
     /*
      * Copy settings of other.
      */
-    LineSettings(const LineSettingsInterface* other);
+    explicit LineSettings(const LineSettingsInterface* other);
     virtual ~LineSettings() = default;
 
     float lineWidth = 1.f;
@@ -54,8 +55,16 @@ public:
     bool roundCaps = true;
     bool pseudoLighting = false;
     bool roundDepthProfile = false;
+    bool overrideColor = false;
+    bool overrideAlpha = false;
+    bool useMetaColor = false;
     StipplingSettings stippling;
     vec4 defaultColor = vec4{1.0f, 0.7f, 0.2f, 1.0f};
+    vec3 overrideColorValue = vec3{0.7f, 0.7f, 0.7f};
+    float overrideAlphaValue = 1.0f;
+    TransferFunction metaColor{
+        {{0.0, vec4{0.0f, 0.0f, 0.0f, 0.0f}}, {1.0, vec4{1.0f, 1.0f, 1.0f, 1.0f}}}};
+
     // Inherited from LineSettingsInterface
     /*
      * @copydoc LineSettingsInterface::getWidth
@@ -89,6 +98,15 @@ public:
      * @copydoc LineSettingsInterface::getStippling
      */
     virtual const StipplingSettingsInterface& getStippling() const override;
+
+    virtual bool getOverrideColor() const override;
+    virtual vec3 getOverrideColorValue() const override;
+
+    virtual bool getOverrideAlpha() const override;
+    virtual float getOverrideAlphaValue() const override;
+
+    virtual bool getUseMetaColor() const override;
+    virtual const TransferFunction& getMetaColor() const override;
 };
 
 }  // namespace inviwo

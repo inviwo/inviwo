@@ -42,8 +42,14 @@ LineSettings::LineSettings(const LineSettingsInterface* other)
     , roundCaps(other->getRoundCaps())
     , pseudoLighting(other->getPseudoLighting())
     , roundDepthProfile(other->getRoundDepthProfile())
-    , stippling(&other->getStippling())
-    , defaultColor(other->getDefaultColor()) {}
+    , overrideColor{other->getOverrideColor()}
+    , overrideAlpha{other->getOverrideAlpha()}
+    , useMetaColor{other->getUseMetaColor()}
+    , stippling{&other->getStippling()}
+    , defaultColor{other->getDefaultColor()}
+    , overrideColorValue{other->getOverrideColorValue()}
+    , overrideAlphaValue{other->getOverrideAlphaValue()}
+    , metaColor{other->getMetaColor()} {}
 
 float LineSettings::getWidth() const { return lineWidth; }
 
@@ -60,5 +66,15 @@ bool LineSettings::getRoundDepthProfile() const { return roundDepthProfile; }
 const StipplingSettingsInterface& LineSettings::getStippling() const { return stippling; }
 
 vec4 LineSettings::getDefaultColor() const { return defaultColor; }
+
+bool LineSettings::getOverrideColor() const { return overrideColor; }
+vec3 LineSettings::getOverrideColorValue() const { return overrideColorValue; }
+
+bool LineSettings::getOverrideAlpha() const { return overrideAlpha; }
+float LineSettings::getOverrideAlphaValue() const { return overrideAlphaValue; }
+
+bool LineSettings::getUseMetaColor() const { return useMetaColor; }
+
+const TransferFunction& LineSettings::getMetaColor() const { return metaColor; }
 
 }  // namespace inviwo

@@ -38,8 +38,4 @@ bool operator==(const LineSettingsInterface& a, const LineSettingsInterface& b) 
            a.getRoundDepthProfile() == b.getRoundDepthProfile();
 }
 
-bool operator!=(const LineSettingsInterface& a, const LineSettingsInterface& b) {
-    return !(a == b);
-}
-
 }  // namespace inviwo

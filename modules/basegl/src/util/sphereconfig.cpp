@@ -48,7 +48,7 @@ SphereConfig::SphereConfig()
                     InvalidationLevel::InvalidResources}
     , color{"color", "Default Color",
             util::ordinalColor(vec3(0.7f, 0.7f, 0.7f))
-                .set("custom color when overwriting the input colors"_help)}
+                .set("custom color when overriding the input colors"_help)}
     , overrideAlpha("useUniformAlpha", "Override Alpha", false, InvalidationLevel::InvalidResources)
     , alpha("alpha", "Default Alpha", 1.0f, 0.0f, 1.0f, 0.1f)
     , useMetaColor{"useMetaColor", "Use meta color mapping", false,

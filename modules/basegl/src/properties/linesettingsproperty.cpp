@@ -46,49 +46,86 @@ LineSettingsProperty::LineSettingsProperty(std::string_view identifier,
                                            std::string_view displayName,
                                            InvalidationLevel invalidationLevel,
                                            PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , lineWidth_("lineWidth", "Line Width (pixel)", 1.0f, 0.0f, 50.0f, 0.1f)
-    , antialiasing_("antialiasing", "Antialiasing (pixel)", 0.5f, 0.0f, 10.0f, 0.1f)
-    , miterLimit_("miterLimit", "Miter Limit", 0.8f, 0.0f, 1.0f, 0.1f)
-    , roundCaps_("roundCaps", "Round Caps", true)
-    , pseudoLighting_("pseudoLighting", "Pseudo Lighting", true,
-                      InvalidationLevel::InvalidResources)
-    , roundDepthProfile_("roundDepthProfile", "Round Depth Profile", true,
-                         InvalidationLevel::InvalidResources)
-    , defaultColor_("defaultColor", "Default Color",
-                    util::ordinalColor(vec4{1.0f, 0.7f, 0.2f, 1.0f}))
-    , stippling_("stippling", "Stippling") {
-    addProperties(lineWidth_, antialiasing_, miterLimit_, roundCaps_, pseudoLighting_,
-                  roundDepthProfile_, defaultColor_, stippling_);
+    : CompositeProperty{identifier, displayName, invalidationLevel, semantics}
+    , lineWidth{"lineWidth", "Line Width (pixel)", 1.0f, 0.0f, 50.0f, 0.1f}
+    , antialiasing{"antialiasing", "Antialiasing (pixel)", 0.5f, 0.0f, 10.0f, 0.1f}
+    , miterLimit{"miterLimit", "Miter Limit", 0.8f, 0.0f, 1.0f, 0.1f}
+    , roundCaps{"roundCaps", "Round Caps", true}
+    , pseudoLighting{"pseudoLighting", "Pseudo Lighting", true, InvalidationLevel::InvalidResources}
+    , roundDepthProfile{"roundDepthProfile", "Round Depth Profile", true,
+                        InvalidationLevel::InvalidResources}
+    , defaultColor{"defaultColor", "Default Color",
+                   util::ordinalColor(vec4{1.0f, 0.7f, 0.2f, 1.0f})}
+    , overrideColor{"overrideColor", "Override Color",
+                    "If enabled, all lines will share the same custom color"_help, false,
+                    InvalidationLevel::InvalidResources}
+    , color{"color", "Color",
+            util::ordinalColor(vec3{0.7f, 0.7f, 0.7f})
+                .set("Custom color when overriding the input colors"_help)}
+    , overrideAlpha{"useUniformAlpha", "Override Alpha", false, InvalidationLevel::InvalidResources}
+    , alpha{"alpha", "Alpha", 1.0f, 0.0f, 1.0f, 0.1f}
+    , useMetaColor{"useMetaColor", "Use meta color mapping", false,
+                   InvalidationLevel::InvalidResources}
+    , metaColor{"metaColor", "Meta Color Mapping"}
+    , stippling{"stippling", "Stippling"} {
+
+    overrideColor.addProperty(color);
+    overrideAlpha.addProperty(alpha);
+    useMetaColor.addProperty(metaColor);
+
+    addProperties(lineWidth, antialiasing, miterLimit, roundCaps, pseudoLighting, roundDepthProfile,
+                  defaultColor, overrideColor, overrideAlpha, useMetaColor, stippling);
 }
 
 LineSettingsProperty::LineSettingsProperty(const LineSettingsProperty& rhs)
-    : CompositeProperty(rhs)
-    , lineWidth_(rhs.lineWidth_)
-    , antialiasing_(rhs.antialiasing_)
-    , miterLimit_(rhs.miterLimit_)
-    , roundCaps_(rhs.roundCaps_)
-    , pseudoLighting_(rhs.pseudoLighting_)
-    , roundDepthProfile_(rhs.roundDepthProfile_)
-    , defaultColor_(rhs.defaultColor_)
-    , stippling_(rhs.stippling_) {
-    addProperties(lineWidth_, antialiasing_, miterLimit_, roundCaps_, pseudoLighting_,
-                  roundDepthProfile_, defaultColor_, stippling_);
+    : CompositeProperty{rhs}
+    , lineWidth{rhs.lineWidth}
+    , antialiasing{rhs.antialiasing}
+    , miterLimit{rhs.miterLimit}
+    , roundCaps{rhs.roundCaps}
+    , pseudoLighting{rhs.pseudoLighting}
+    , roundDepthProfile{rhs.roundDepthProfile}
+    , defaultColor{rhs.defaultColor}
+    , overrideColor{rhs.overrideColor}
+    , color{rhs.color}
+    , overrideAlpha{rhs.overrideAlpha}
+    , alpha{rhs.alpha}
+    , useMetaColor{rhs.useMetaColor}
+    , metaColor{rhs.metaColor}
+    , stippling{rhs.stippling} {
+
+    overrideColor.addProperty(color);
+    overrideAlpha.addProperty(alpha);
+    useMetaColor.addProperty(metaColor);
+
+    addProperties(lineWidth, antialiasing, miterLimit, roundCaps, pseudoLighting, roundDepthProfile,
+                  defaultColor, overrideColor, overrideAlpha, useMetaColor, stippling);
 }
 
 LineSettingsProperty* LineSettingsProperty::clone() const {
     return new LineSettingsProperty(*this);
 }
 
-float LineSettingsProperty::getWidth() const { return lineWidth_.get(); }
-float LineSettingsProperty::getAntialiasingWidth() const { return antialiasing_.get(); }
+float LineSettingsProperty::getWidth() const { return lineWidth.get(); }
+float LineSettingsProperty::getAntialiasingWidth() const { return antialiasing.get(); }
 
-float LineSettingsProperty::getMiterLimit() const { return miterLimit_.get(); }
-bool LineSettingsProperty::getRoundCaps() const { return roundCaps_.get(); }
-bool LineSettingsProperty::getPseudoLighting() const { return pseudoLighting_.get(); }
-bool LineSettingsProperty::getRoundDepthProfile() const { return roundDepthProfile_.get(); }
+float LineSettingsProperty::getMiterLimit() const { return miterLimit.get(); }
+bool LineSettingsProperty::getRoundCaps() const { return roundCaps.get(); }
+bool LineSettingsProperty::getPseudoLighting() const { return pseudoLighting.get(); }
+bool LineSettingsProperty::getRoundDepthProfile() const { return roundDepthProfile.get(); }
 
-vec4 LineSettingsProperty::getDefaultColor() const { return defaultColor_.get(); }
+vec4 LineSettingsProperty::getDefaultColor() const { return defaultColor.get(); }
 
-const StipplingSettingsInterface& LineSettingsProperty::getStippling() const { return stippling_; }
+const StipplingSettingsInterface& LineSettingsProperty::getStippling() const { return stippling; }
+
+bool LineSettingsProperty::getOverrideColor() const { return overrideColor.isChecked(); }
+vec3 LineSettingsProperty::getOverrideColorValue() const { return color.get(); }
+
+bool LineSettingsProperty::getOverrideAlpha() const { return overrideAlpha.isChecked(); }
+float LineSettingsProperty::getOverrideAlphaValue() const { return alpha.get(); }
+
+bool LineSettingsProperty::getUseMetaColor() const { return useMetaColor.isChecked(); }
+
+const TransferFunction& LineSettingsProperty::getMetaColor() const { return metaColor.get(); }
+
 }  // namespace inviwo

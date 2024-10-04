@@ -223,10 +223,10 @@ CropWidget::CropWidget()
     addProperty(outputProps_);
     addProperty(relativeRangeAdjustment_);
 
-    cropLineSettings_.lineWidth_.set(2.5f);
-    cropLineSettings_.lineWidth_.setCurrentStateAsDefault();
-    cropLineSettings_.defaultColor_.set(vec4{0.8f, 0.8f, 0.8f, 1.0f});
-    cropLineSettings_.defaultColor_.setCurrentStateAsDefault();
+    cropLineSettings_.lineWidth.set(2.5f);
+    cropLineSettings_.lineWidth.setCurrentStateAsDefault();
+    cropLineSettings_.defaultColor.set(vec4{0.8f, 0.8f, 0.8f, 1.0f});
+    cropLineSettings_.defaultColor.setCurrentStateAsDefault();
 
     // brighten up ambient color
     lightingProperty_.ambientColor_.set(vec3(0.6f));

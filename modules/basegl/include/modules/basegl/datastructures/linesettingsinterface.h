@@ -34,6 +34,7 @@
 
 namespace inviwo {
 class StipplingSettingsInterface;
+class TransferFunction;
 
 /**
  * \brief Settings for line rendering
@@ -76,11 +77,16 @@ public:
      * Default color used when the mesh doesn't have a color attribute.
      */
     virtual vec4 getDefaultColor() const = 0;
+
+    virtual bool getOverrideColor() const = 0;
+    virtual vec3 getOverrideColorValue() const = 0;
+    virtual bool getOverrideAlpha() const = 0;
+    virtual float getOverrideAlphaValue() const = 0;
+    virtual bool getUseMetaColor() const = 0;
+    virtual const TransferFunction& getMetaColor() const = 0;
 };
 
 IVW_MODULE_BASEGL_API bool operator==(const LineSettingsInterface& a,
-                                      const LineSettingsInterface& b);
-IVW_MODULE_BASEGL_API bool operator!=(const LineSettingsInterface& a,
                                       const LineSettingsInterface& b);
 
 }  // namespace inviwo
