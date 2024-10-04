@@ -43,12 +43,14 @@ namespace inviwo {
 template <typename T>
 class QPtr : std::unique_ptr<T> {
 public:
-    QPtr() = default;
-    QPtr(std::nullptr_t) : std::unique_ptr<T>(std::nullptr_t{}) {}
-    QPtr(T* ptr) : std::unique_ptr<T>{ptr} { connect(); }
+    explicit QPtr() = default;
+    explicit QPtr(std::nullptr_t) : std::unique_ptr<T>(std::nullptr_t{}) {}
+    explicit QPtr(T* ptr) : std::unique_ptr<T>{ptr} { connect(); }
 
+    QPtr(const QPtr& rhs) = delete;
+    QPtr& operator=(const QPtr& that) = delete;
     QPtr(QPtr&& rhs) noexcept : std::unique_ptr<T>{std::move(rhs)} { connect(); }
-    QPtr& operator=(QPtr&& that) {
+    QPtr& operator=(QPtr&& that) noexcept {
         if (this != &that) {
             disconnect();
             std::unique_ptr<T>::operator=(std::move(that));

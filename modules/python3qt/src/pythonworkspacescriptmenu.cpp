@@ -33,9 +33,13 @@
 namespace inviwo {
 
 namespace {
-static constexpr std::string_view defaultSource =
-    "#Inviwo Python script \nimport inviwopy\n\n\napp = inviwopy.app\nnetwork = "
-    "app.network\n";
+constexpr auto defaultSource = IVW_UNINDENT(R"(
+    #Inviwo Python script
+    import inviwopy
+
+    app = inviwopy.app
+    network = app.network
+    )");
 }  // namespace
 
 PythonWorkspaceScriptMenu::PythonWorkspaceScriptMenu(PythonWorkspaceScripts& scripts, QMenu* parent,

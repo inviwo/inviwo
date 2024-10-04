@@ -46,13 +46,13 @@ const void* castProcessor(const ::inviwo::Processor* processor, const std::type_
 
     // check if the exact type is registered in python, then return that.
     const auto& id = typeid(*processor);
-    if (::pybind11::detail::get_type_info(id)) {
+    if (::pybind11::detail::get_type_info(id) != nullptr) {
         type = &id;
         return dynamic_cast<const void*>(processor);
     }
 
     // else check if we know a more derived base then Processor and return that.
-    if (auto cp = dynamic_cast<const ::inviwo::CanvasProcessor*>(processor)) {
+    if (const auto* cp = dynamic_cast<const ::inviwo::CanvasProcessor*>(processor)) {
         type = &typeid(::inviwo::CanvasProcessor);
         return cp;
     } else {  // default implementation for processor != null
@@ -75,16 +75,16 @@ const void* castProperty(const ::inviwo::Property* property, const std::type_inf
     }
 
     // else check if we know a more derived base then Property and return that.
-    if (auto cp = dynamic_cast<const inviwo::BoolCompositeProperty*>(property)) {
+    if (const auto* cp = dynamic_cast<const inviwo::BoolCompositeProperty*>(property)) {
         type = &typeid(inviwo::BoolCompositeProperty);
         return cp;
-    } else if (auto lp = dynamic_cast<const inviwo::ListProperty*>(property)) {
+    } else if (const auto* lp = dynamic_cast<const inviwo::ListProperty*>(property)) {
         type = &typeid(inviwo::ListProperty);
         return lp;
-    } else if (auto bp = dynamic_cast<const inviwo::CompositeProperty*>(property)) {
+    } else if (const auto* bp = dynamic_cast<const inviwo::CompositeProperty*>(property)) {
         type = &typeid(inviwo::CompositeProperty);
         return bp;
-    } else if (auto op = dynamic_cast<const inviwo::BaseOptionProperty*>(property)) {
+    } else if (const auto* op = dynamic_cast<const inviwo::BaseOptionProperty*>(property)) {
         type = &typeid(inviwo::BaseOptionProperty);
         return op;
     } else {  // default implementation for property != null

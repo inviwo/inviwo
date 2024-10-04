@@ -35,6 +35,8 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/property.h>
 
+#include <typeinfo>
+
 namespace inviwo::detail {
 
 IVW_MODULE_PYTHON3_API const void* castProcessor(const ::inviwo::Processor* processor,
