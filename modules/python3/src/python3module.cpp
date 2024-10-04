@@ -121,8 +121,8 @@ Python3Module::Python3Module(InviwoApplication* app)
                                     if (auto script = workspaceScripts_.getScript(key)) {
 
                                         auto extra = app_->getCommandLineParser().getIgnoredArgs();
-                                        const std::unordered_map<std::string, pybind11::object> locals{
-                                            {"extraArgs", pybind11::cast(extra)}};
+                                        const std::unordered_map<std::string, pybind11::object>
+                                            locals{{"extraArgs", pybind11::cast(extra)}};
 
                                         auto code = PythonScript(*script, key);
                                         code.run(locals);
