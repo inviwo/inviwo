@@ -71,7 +71,6 @@ public:
 private:
     PythonEditorWidget* newEditor();
 
-
     InviwoApplication* app_;
     QMainWindow* win_;
     std::vector<QPtr<PythonEditorWidget>> editors_;

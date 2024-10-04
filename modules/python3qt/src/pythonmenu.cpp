@@ -60,8 +60,8 @@
 #include <QUrl>              // for QUrl, QUrl::TolerantMode
 #include <Qt>                // for WA_DeleteOnClose
 #include <QMenuBar>          // for QMenuBar
-#include <fmt/core.h>     // for basic_string_view, arg
-#include <fmt/ostream.h>  // for print
+#include <fmt/core.h>        // for basic_string_view, arg
+#include <fmt/ostream.h>     // for print
 #include <fmt/std.h>
 
 class QObject;
@@ -75,8 +75,8 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
     , editors_{}
     , toolbar_{win_->addToolBar("Python")}
     , menu_{utilqt::addMenu("&Python")}
-    , scriptMenu_{app->getModuleByType<Python3Module>()->getWorkspaceScripts(), menu_.get(), app, win}
-{
+    , scriptMenu_{app->getModuleByType<Python3Module>()->getWorkspaceScripts(), menu_.get(), app,
+                  win} {
 
     toolbar_->setObjectName("PythonToolBar");
     toolbar_->setMovable(false);

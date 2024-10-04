@@ -53,7 +53,6 @@
 
 #include <modules/python3/polymorphictypehooks.h>
 
-
 namespace inviwo {
 
 void exposeEvents(pybind11::module& m) {

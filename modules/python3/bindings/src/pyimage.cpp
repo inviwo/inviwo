@@ -56,8 +56,6 @@
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
-
-
 #include <fmt/format.h>
 #include <fmt/std.h>
 

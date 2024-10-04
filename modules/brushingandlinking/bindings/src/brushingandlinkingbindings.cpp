@@ -40,7 +40,6 @@
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
-
 #include <modules/brushingandlinking/datastructures/brushingaction.h>
 #include <modules/brushingandlinking/datastructures/indexlist.h>
 #include <modules/brushingandlinking/brushingandlinkingmanager.h>
