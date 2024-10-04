@@ -49,6 +49,10 @@ class IVW_MODULE_PYTHON3QT_API PythonWorkspaceScriptMenu : public PythonWorkspac
 public:
     PythonWorkspaceScriptMenu(PythonWorkspaceScripts& scripts, QMenu* parent,
                               InviwoApplication* app, QMainWindow* win);
+    PythonWorkspaceScriptMenu(const PythonWorkspaceScriptMenu&) = delete;
+    PythonWorkspaceScriptMenu(PythonWorkspaceScriptMenu&&) = delete;
+    PythonWorkspaceScriptMenu& operator=(const PythonWorkspaceScriptMenu&) = delete;
+    PythonWorkspaceScriptMenu& operator=(PythonWorkspaceScriptMenu&&) = delete;
     virtual ~PythonWorkspaceScriptMenu();
 
     virtual void onScriptAdded(std::string_view key, std::string_view script) override;

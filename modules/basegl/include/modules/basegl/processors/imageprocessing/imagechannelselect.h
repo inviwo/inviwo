@@ -38,19 +38,6 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.ImageChannelSelect, Image Channel Select}
- * ![](org.inviwo.ImageChannelSelect.png?classIdentifier=org.inviwo.ImageChannelSelect)
- * Creates a single channel texture with the selected channel from the drop down menu.
- *
- * ### Inports
- *   * __inputImage__ Input image
- *
- * ### Outports
- *   * __outputImage__ Single Channel Output Image
- *
- * ### Properties
- *   * __channelSelector__ Selection between RED, GREEN, BLUE, and ALPHA
- */
 class IVW_MODULE_BASEGL_API ImageChannelSelect : public ImageGLProcessor {
 public:
     ImageChannelSelect();

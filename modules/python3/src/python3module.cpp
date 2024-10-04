@@ -91,6 +91,15 @@ public:
         return layerPy;
     }
 };
+
+void runScript(PythonScript& script, InviwoApplication* app) {
+    auto extra = app->getCommandLineParser().getIgnoredArgs();
+    extra.insert(extra.begin(), app->getCommandLineParser().getArgs().front());
+    pybind11::module::import("sys").attr("argv") = extra;
+
+    script.run();
+}
+
 }  // namespace
 
 Python3Module::Python3Module(InviwoApplication* app)
@@ -105,8 +114,8 @@ Python3Module::Python3Module(InviwoApplication* app)
                                LogWarn("Could not run script, file does not exist: " << filename);
                                return;
                            }
-                           auto script = PythonScript::fromFile(filename);
-                           script.run();
+                           auto code = PythonScript::fromFile(filename);
+                           runScript(code, app_);
                        },
                        100}
     , workspaceScriptArg_{"",
@@ -119,13 +128,8 @@ Python3Module::Python3Module(InviwoApplication* app)
                                 [this]() {
                                     const auto key = workspaceScriptArg_.getValue();
                                     if (auto script = workspaceScripts_.getScript(key)) {
-
-                                        auto extra = app_->getCommandLineParser().getIgnoredArgs();
-                                        const std::unordered_map<std::string, pybind11::object>
-                                            locals{{"extraArgs", pybind11::cast(extra)}};
-
                                         auto code = PythonScript(*script, key);
-                                        code.run(locals);
+                                        runScript(code, app_);
                                     } else {
                                         LogError("Python workspace script: '" << key
                                                                               << "' not found");

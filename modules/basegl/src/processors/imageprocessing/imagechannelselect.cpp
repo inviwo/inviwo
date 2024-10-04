@@ -51,16 +51,15 @@ const ProcessorInfo ImageChannelSelect::processorInfo_{
     "org.inviwo.ImageChannelSelect",  // Class identifier
     "Image Channel Select",           // Display name
     "Image Operation",                // Category
-    CodeState::Experimental,          // Code state
+    CodeState::Stable,                // Code state
     Tags::GL,                         // Tags
+    "Creates a single channel texture with the selected channel from the drop down menu."_help
 };
 const ProcessorInfo ImageChannelSelect::getProcessorInfo() const { return processorInfo_; }
 
-static const std::string channelShaderDefine = "CHANNEL";
-
 ImageChannelSelect::ImageChannelSelect()
     : ImageGLProcessor("img_channel_select.frag")
-    , channelSelector_("channel", "Channel",
+    , channelSelector_("channel", "Channel", "Selection between RED, GREEN, BLUE, and ALPHA"_help,
                        {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Alpha", 3}}) {
 
     addProperty(channelSelector_);

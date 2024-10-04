@@ -69,7 +69,7 @@ const void* castProperty(const ::inviwo::Property* property, const std::type_inf
 
     // check if the exact type is registered in python, then return that.
     const auto& id = typeid(*property);
-    if (::pybind11::detail::get_type_info(id)) {
+    if (::pybind11::detail::get_type_info(id) != nullptr) {
         type = &id;
         return dynamic_cast<const void*>(property);
     }

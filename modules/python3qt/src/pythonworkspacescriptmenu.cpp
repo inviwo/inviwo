@@ -81,7 +81,7 @@ void PythonWorkspaceScriptMenu::onScriptUpdate(std::string_view key, std::string
 
 void PythonWorkspaceScriptMenu::addScriptMenuItem(std::string_view key) {
     const auto qKey = utilqt::toQString(key);
-    auto openScript = menu_->addAction(qKey);
+    auto* openScript = menu_->addAction(qKey);
     menuItems_.emplace(key, openScript);
     QObject::connect(openScript, &QAction::triggered,
                      [this, key = std::string{key}]() { openEditor(key); });
@@ -110,10 +110,10 @@ void PythonWorkspaceScriptMenu::openEditor(const std::string& key) {
 
 std::optional<std::string> PythonWorkspaceScriptMenu::getScriptName(std::string_view suggestion) {
     bool ok = false;
-    QString qKey = QInputDialog::getText(nullptr, "Script name", "Name:", QLineEdit::Normal,
-                                         utilqt::toQString(suggestion), &ok,
-                                         Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
-    const auto key = utilqt::fromQString(qKey);
+    const auto qKey = QInputDialog::getText(nullptr, "Script name", "Name:", QLineEdit::Normal,
+                                            utilqt::toQString(suggestion), &ok,
+                                            Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
+    auto key = utilqt::fromQString(qKey);
     if (ok && !key.empty()) {
         return key;
     } else {

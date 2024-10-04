@@ -82,7 +82,7 @@ void exposeNetwork(py::module& m) {
         .def(
             "__getattr__",
             [](ProcessorNetwork& po, std::string_view key) {
-                if (auto p = po.getProcessorByIdentifier(key)) {
+                if (auto* p = po.getProcessorByIdentifier(key)) {
                     return p;
                 } else {
                     throw py::attribute_error{fmt::format(
