@@ -94,10 +94,9 @@ VolumePy::VolumePy(size3_t dimensions, const DataFormatBase* format, const Swizz
     , swizzleMask_{swizzleMask}
     , interpolation_{interpolation}
     , wrapping_{wrapping}
-    , data_{pybind11::array(
-          pyutil::toNumPyFormat(format),
-          pybind11::array::ShapeContainer{dimensions.z, dimensions.y, dimensions.x,
-                                          getDataFormat()->getComponents()})}
+    , data_{pybind11::array(pyutil::toNumPyFormat(format),
+                            pybind11::array::ShapeContainer{dimensions.z, dimensions.y,
+                                                            dimensions.x, format->getComponents()})}
     , dims_{dimensions} {
 
     resource::add(
