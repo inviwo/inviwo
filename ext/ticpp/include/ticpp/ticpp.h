@@ -769,16 +769,7 @@ public:
     @param next [OUT] The pointer to the first valid node
     */
     template <class T>
-    void IterateFirst(const std::string& value, T** first) const {
-        *first = 0;
-        for (Node* child = FirstChild(value, false); child;
-             child = child->NextSibling(value, false)) {
-            *first = dynamic_cast<T*>(child);
-            if (0 != *first) {
-                return;
-            }
-        }
-    }
+    T* IterateFirst(const std::string& value) const;
 
     virtual void IterateFirst(const std::string&, Attribute**) const {
         TICPPTHROW("Attributes can only be iterated with Elements.")
@@ -792,15 +783,7 @@ public:
     @param next [OUT] The pointer to the next valid node
     */
     template <class T>
-    void IterateNext(const std::string& value, T** next) const {
-        Node* sibling = NextSibling(value, false);
-        *next = dynamic_cast<T*>(sibling);
-
-        while ((0 != sibling) && (0 == *next)) {
-            sibling = sibling->NextSibling(value, false);
-            *next = dynamic_cast<T*>(sibling);
-        }
-    }
+    void IterateNext(const std::string& value, T** next) const;
 
     /**
     @internal
@@ -810,15 +793,7 @@ public:
     @param previous [OUT] The pointer to the previous valid node
     */
     template <class T>
-    void IteratePrevious(const std::string& value, T** previous) const {
-        Node* sibling = PreviousSibling(value, false);
-        *previous = dynamic_cast<T*>(sibling);
-
-        while ((0 != sibling) && (0 == *previous)) {
-            sibling = sibling->PreviousSibling(value, false);
-            *previous = dynamic_cast<T*>(sibling);
-        }
-    }
+    void IteratePrevious(const std::string& value, T** previous) const;
 
     /**
     Navigate to a sibling element.
@@ -925,19 +900,7 @@ public:
     arguments, which this depends on ( e.g. VC6 ).
     */
     template <class T>
-    T* To() const {
-        T* pointer = dynamic_cast<T*>(this);
-        if (0 == pointer) {
-            std::string thisType = typeid(this).name();
-            std::string targetType = typeid(T).name();
-            std::string thatType = typeid(*this).name();
-            TICPPTHROW("The " << thisType.substr(6) << " could not be casted to a "
-                              << targetType.substr(6) << " *, because the target object is not a "
-                              << targetType.substr(6) << ". (It is a " << thatType.substr(6)
-                              << ")");
-        }
-        return pointer;
-    }
+    T* To() const;
 
     /**
     Pointer conversion - replaces TiXmlNode::ToDocument.
@@ -1082,9 +1045,7 @@ public:
     @endcode
     */
     T* begin(const Node* parent) const {
-        T* pointer;
-        parent->IterateFirst(m_value, &pointer);
-        return pointer;
+        return parent->IterateFirst<T>(m_value);
     }
 
     /**
@@ -1095,7 +1056,7 @@ public:
     for ( child = child.begin( parent ); child != child.end(); child++ )
     @endcode
     */
-    T* end() const { return 0; }
+    T* end() const { return nullptr; }
 
     /** Constructor.
     @param value If not empty, this iterator will only visit nodes with matching value.
@@ -1167,7 +1128,7 @@ public:
         if (m_p == p) {
             return false;
         }
-        if (0 == m_p || 0 == p) {
+        if (nullptr == m_p || nullptr == p) {
             return true;
         }
         return *m_p != *p;
@@ -1181,7 +1142,7 @@ public:
         if (m_p == p) {
             return true;
         }
-        if (0 == m_p || 0 == p) {
+        if (nullptr == m_p || nullptr == p) {
             return false;
         }
         return *m_p == *p;
@@ -1295,6 +1256,8 @@ public:
     Constructor.
     */
     Comment(const std::string& comment);
+
+    virtual ~Comment();
 };
 
 /** Wrapper around TiXmlText */
@@ -1310,6 +1273,8 @@ public:
     @overload
     */
     Text(TiXmlText* text);
+
+    virtual ~Text();
 
     /**
     Constructor.
@@ -1359,6 +1324,8 @@ public:
      * documentName SaveFile() needs to be called to save data to file specified by documentName.
      */
     Document(const std::string& documentName);
+
+    virtual ~Document();
 
     /**
     Load a file using the current document value. Throws if load is unsuccessful.
@@ -1415,7 +1382,7 @@ public:
 class TICPP_API Element final : public NodeImp<TiXmlElement> {
 public:
     Element();
-
+    virtual ~Element();
     /**
     Default	Constructor. Initializes all the variables.
     @param value The value of the element.
@@ -1769,6 +1736,7 @@ public:
     Declaration(const std::string_view version, std::string_view encoding,
                 std::string_view standalone);
 
+    virtual ~Declaration();
     /**
     Version. Will return an empty string if none was found.
     */
@@ -1792,6 +1760,7 @@ public:
     StylesheetReference(TiXmlStylesheetReference* stylesheetReference);
     StylesheetReference(const std::string& type, const std::string& href);
 
+    virtual ~StylesheetReference();
     /**
     Type. Will return an empty string if none was found.
     */
@@ -1802,4 +1771,51 @@ public:
     */
     std::string Href() const;
 };
+
+
+template <class T>
+T* Node::IterateFirst(const std::string& value) const {
+    for (Node* child = FirstChild(value, false); child; child = child->NextSibling(value, false)) {
+        if (T* tChild = dynamic_cast<T*>(child)) {
+            return tChild;
+        }
+    }
+    return nullptr;
+}
+
+template <class T>
+void Node::IterateNext(const std::string& value, T** next) const {
+    Node* sibling = NextSibling(value, false);
+    *next = dynamic_cast<T*>(sibling);
+    while ((0 != sibling) && (0 == *next)) {
+        sibling = sibling->NextSibling(value, false);
+        *next = dynamic_cast<T*>(sibling);
+    }
+}
+
+template <class T>
+void Node::IteratePrevious(const std::string& value, T** previous) const {
+    Node* sibling = PreviousSibling(value, false);
+    *previous = dynamic_cast<T*>(sibling);
+    while ((0 != sibling) && (0 == *previous)) {
+        sibling = sibling->PreviousSibling(value, false);
+        *previous = dynamic_cast<T*>(sibling);
+    }
+}
+
+template <class T>
+T* Node::To() const {
+    T* pointer = dynamic_cast<T*>(this);
+    if (0 == pointer) {
+        std::string thisType = typeid(this).name();
+        std::string targetType = typeid(T).name();
+        std::string thatType = typeid(*this).name();
+        TICPPTHROW("The " << thisType.substr(6) << " could not be casted to a "
+                          << targetType.substr(6) << " *, because the target object is not a "
+                          << targetType.substr(6) << ". (It is a " << thatType.substr(6)
+                          << ")");
+    }
+    return pointer;
+}
+
 }  // namespace ticpp
