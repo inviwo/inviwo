@@ -235,14 +235,14 @@ Node* Node::FirstChild(const std::string& value, bool throwIfNoChildren) const {
 }
 
 Node* Node::FirstChild(const char* value, bool throwIfNoChildren) const {
-    TiXmlNode* childNode;
+    TiXmlNode* childNode = nullptr;
     if (0 == strlen(value)) {
         childNode = GetTiXmlPointer()->FirstChild();
     } else {
         childNode = GetTiXmlPointer()->FirstChild(value);
     }
 
-    if ((0 == childNode) && throwIfNoChildren) {
+    if ((nullptr == childNode) && throwIfNoChildren) {
         TICPPTHROW("Child with the value of \"" << value << "\" not found");
     }
 
@@ -619,6 +619,7 @@ Comment::Comment(const std::string& comment) : NodeImp<TiXmlComment>(new TiXmlCo
     m_impRC->InitRef();
     m_tiXmlPointer->SetValue(comment);
 }
+Comment::~Comment() {}
 
 //*****************************************************************************
 
@@ -627,6 +628,8 @@ Text::Text() : NodeImp<TiXmlText>(new TiXmlText("")) { m_impRC->InitRef(); }
 Text::Text(const std::string& value) : NodeImp<TiXmlText>(new TiXmlText(value)) {
     m_impRC->InitRef();
 }
+
+Text::~Text() {}
 
 Text::Text(TiXmlText* text) : NodeImp<TiXmlText>(text) {}
 
@@ -645,6 +648,8 @@ Document::Document(const std::string& documentName)
     : NodeImp<TiXmlDocument>(new TiXmlDocument(documentName)) {
     m_impRC->InitRef();
 }
+
+Document::~Document() {}
 
 void Document::LoadFile(TiXmlEncoding encoding) {
     if (!m_tiXmlPointer->LoadFile(encoding)) {
@@ -690,6 +695,7 @@ Element::Element()
           new TiXmlElement("DefaultValueCausedByCreatingAnElementWithNoParameters")) {
     m_impRC->InitRef();
 }
+Element::~Element() {}
 
 Element::Element(const std::string& value) : NodeImp<TiXmlElement>(new TiXmlElement(value)) {
     m_impRC->InitRef();
@@ -823,6 +829,8 @@ Declaration::Declaration(std::string_view version, std::string_view encoding,
     m_impRC->InitRef();
 }
 
+Declaration::~Declaration() {}
+
 std::string Declaration::Version() const { return m_tiXmlPointer->Version(); }
 
 std::string Declaration::Encoding() const { return m_tiXmlPointer->Encoding(); }
@@ -843,6 +851,8 @@ StylesheetReference::StylesheetReference(const std::string& type, const std::str
     : NodeImp<TiXmlStylesheetReference>(new TiXmlStylesheetReference(type, href)) {
     m_impRC->InitRef();
 }
+
+StylesheetReference::~StylesheetReference() {}
 
 std::string StylesheetReference::Type() const { return m_tiXmlPointer->Type(); }
 
