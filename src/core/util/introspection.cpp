@@ -35,18 +35,27 @@ namespace inviwo {
 
 namespace {
 
+// We want to keep them for the static_assert below
+#if defined(__clang__)
+#pragma clang diagnostic push
+#if __has_warning("-Wunneeded-internal-declaration")
+#pragma clang diagnostic ignored "-Wunneeded-internal-declaration"
+#endif
+#endif
 struct ClassWithClassIdentifierLower {
     static const std::string classIdentifier;
 };
-
 struct ClassWithClassIdentifierUpper {
     static const std::string CLASS_IDENTIFIER;
 };
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 struct Empty {};
 
 template <typename T>
-struct [[deprecated("Type in warning")]] printType {};
+struct [[deprecated("Type in warning")]] printType{};
 
 }  // namespace
 
