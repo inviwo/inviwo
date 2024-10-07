@@ -53,8 +53,7 @@ const ProcessorInfo ImageChannelSelect::processorInfo_{
     "Image Operation",                // Category
     CodeState::Stable,                // Code state
     Tags::GL,                         // Tags
-    "Creates a single channel texture with the selected channel from the drop down menu."_help
-};
+    "Creates a single channel texture with the selected channel from the drop down menu."_help};
 const ProcessorInfo ImageChannelSelect::getProcessorInfo() const { return processorInfo_; }
 
 ImageChannelSelect::ImageChannelSelect()
