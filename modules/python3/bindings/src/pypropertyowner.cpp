@@ -29,10 +29,17 @@
 
 #include <inviwopy/pypropertyowner.h>
 #include <inviwopy/vectoridentifierwrapper.h>
-#include <inviwopy/pypropertytypehook.h>
+
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+#include <pybind11/numpy.h>
 
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/processors/processor.h>
+
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <pybind11/detail/common.h>
 

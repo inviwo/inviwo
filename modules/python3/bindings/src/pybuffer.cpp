@@ -30,7 +30,6 @@
 #include <inviwopy/pybuffer.h>
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pyglmtypes.h>
-
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
@@ -43,8 +42,12 @@
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pyportutils.h>
 #include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <pybind11/numpy.h>
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 
 #include <fmt/format.h>
 

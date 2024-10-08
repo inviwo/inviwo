@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,18 +26,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <warn/pop>
+#include <modules/python3/python3moduledefine.h>
 
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/listproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <pybind11/pybind11.h>
+
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/property.h>
+
+#include <typeinfo>
+
+namespace inviwo::detail {
+
+IVW_MODULE_PYTHON3_API const void* castProcessor(const ::inviwo::Processor* processor,
+                                                 const std::type_info*& type);
+IVW_MODULE_PYTHON3_API const void* castProperty(const ::inviwo::Property* property,
+                                                const std::type_info*& type);
+
+}  // namespace inviwo::detail
 
 /*
  * The python type caster for polymorphic types can only lookup exact
@@ -53,35 +60,14 @@
  */
 template <>
 struct pybind11::polymorphic_type_hook<inviwo::Property> {
-    static const void* get(const inviwo::Property* prop, const std::type_info*& type) {
-        if (!prop) {  // default implementation if prop is null
-            type = nullptr;
-            return dynamic_cast<const void*>(prop);
-        }
+    static const void* get(const inviwo::Property* property, const std::type_info*& type) {
+        return inviwo::detail::castProperty(property, type);
+    }
+};
 
-        // check if the exact type is registered in python, then return that.
-        const auto& id = typeid(*prop);
-        if (detail::get_type_info(id)) {
-            type = &id;
-            return dynamic_cast<const void*>(prop);
-        }
-
-        // else check if we know a more derived base then Property and return that.
-        if (auto cp = dynamic_cast<const inviwo::BoolCompositeProperty*>(prop)) {
-            type = &typeid(inviwo::BoolCompositeProperty);
-            return cp;
-        } else if (auto lp = dynamic_cast<const inviwo::ListProperty*>(prop)) {
-            type = &typeid(inviwo::ListProperty);
-            return lp;
-        } else if (auto bp = dynamic_cast<const inviwo::CompositeProperty*>(prop)) {
-            type = &typeid(inviwo::CompositeProperty);
-            return bp;
-        } else if (auto op = dynamic_cast<const inviwo::BaseOptionProperty*>(prop)) {
-            type = &typeid(inviwo::BaseOptionProperty);
-            return op;
-        } else {  // default implementation for prop != null
-            type = &id;
-            return dynamic_cast<const void*>(prop);
-        }
+template <>
+struct pybind11::polymorphic_type_hook<inviwo::Processor> {
+    static const void* get(const inviwo::Processor* processor, const std::type_info*& type) {
+        return inviwo::detail::castProcessor(processor, type);
     }
 };

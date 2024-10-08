@@ -79,19 +79,13 @@ private:
  */
 class IVW_CORE_API CommandLineParser {
 public:
-    enum class Mode { Normal, Quiet };
-
     CommandLineParser();
     CommandLineParser(int argc, char** argv);
     ~CommandLineParser();
 
-    void parse(int argc, char** argv, Mode mode = Mode::Normal);
+    void parse(int argc, char** argv);
+    void parse();
 
-    void parse(Mode mode = Mode::Normal);
-
-    void setArgc(int argc);
-
-    void setArgv(char** argv);
     std::filesystem::path getOutputPath() const;
     std::filesystem::path getWorkspacePath() const;
     std::filesystem::path getLogToFileFileName() const;
@@ -102,21 +96,22 @@ public:
     bool getLogToFile() const;
     bool getLogToConsole() const;
 
-    int getARGC() const;
-    char** getARGV() const;
+    const std::vector<std::string>& getArgs() const;
+
+    const std::vector<std::string>& getIgnoredArgs() const;
 
     void processCallbacks();
-    void add(TCLAP::Arg* arg);
-    void add(TCLAP::Arg* arg, std::function<void()> callback, int priority = 0);
-    void xorAdd(TCLAP::Arg* a, std::function<void()> callbackA, int priorityA, TCLAP::Arg* b,
-                std::function<void()> callbackB, int priorityB);
+
+    void add(TCLAP::Arg* arg, std::function<void()> callback = nullptr, int priority = 0);
     void remove(TCLAP::Arg* arg);
 
 private:
-    int argc_;
-    char** argv_;
-    TCLAP::CmdLine cmdQuiet_;
-    TCLAP::CmdLine cmd_;
+    enum class Mode { Normal, Quiet };
+    void parseInternal(std::vector<std::string> args, Mode mode = Mode::Normal);
+
+    std::vector<std::string> args_;
+    std::vector<std::string> ignoredArgs_;  // Args after a "--"
+
     TCLAP::ValueArg<std::string> workspace_;
     TCLAP::ValueArg<std::string> outputPath_;
     TCLAP::ValueArg<std::string> logfile_;
@@ -124,9 +119,8 @@ private:
     TCLAP::SwitchArg logConsole_;
     TCLAP::SwitchArg noSplashScreen_;
     TCLAP::SwitchArg quitAfterStartup_;
-    WildCardArg wildcard_;
-    TCLAP::SwitchArg helpQuiet_;
-    TCLAP::SwitchArg versionQuiet_;
+    TCLAP::SwitchArg version_;
+    TCLAP::SwitchArg help_;
 
     std::vector<std::tuple<int, TCLAP::Arg*, std::function<void()>>> callbacks_;
 };

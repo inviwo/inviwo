@@ -35,6 +35,8 @@
 #include <modules/python3/pythonlogger.h>
 #include <modules/python3/pythonprocessorfolderobserver.h>
 #include <modules/python3/pyutils.h>
+
+#include <modules/python3/pythonworkspacescripts.h>
 #include <string>
 
 namespace inviwo {
@@ -47,15 +49,21 @@ public:
 
     PythonInterpreter* getPythonInterpreter();
 
+    PythonWorkspaceScripts& getWorkspaceScripts();
+
 private:
     std::unique_ptr<PythonInterpreter> pythonInterpreter_;
-    TCLAP::ValueArg<std::string> pythonScriptArg_;
-    CommandLineArgHolder argHolder_;
+    TCLAP::ValueArg<std::string> scriptArg_;
+    CommandLineArgHolder scriptArgHolder_;
+    TCLAP::ValueArg<std::string> workspaceScriptArg_;
+    CommandLineArgHolder workspaceScriptArgHolder_;
     PythonLogger pythonLogger_;
 
     pyutil::ModulePath scripts_;
     PythonProcessorFolderObserver pythonFolderObserver_;
     PythonProcessorFolderObserver settingsFolderObserver_;
+
+    PythonWorkspaceScripts workspaceScripts_;
 };
 
 }  // namespace inviwo

@@ -151,6 +151,8 @@ TEST(SerializerPolymorphicTest, NullVectorUniquePtr) {
 
     d.deserialize("props", props2);
 
+    ASSERT_EQ(props2.size(), 2);
+
     EXPECT_EQ(props2[0]->getClassIdentifier(), PropertyTraits<FloatProperty>::classIdentifier());
     EXPECT_EQ(props2[1]->getClassIdentifier(), PropertyTraits<DoubleProperty>::classIdentifier());
 

@@ -29,11 +29,12 @@
 
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pyglmtypes.h>
-#include <inviwopy/pypropertytypehook.h>
 #include <inviwopy/vectoridentifierwrapper.h>
 
+#include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
+#include <pybind11/numpy.h>
 
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/network/networkutils.h>
@@ -45,34 +46,9 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 
+#include <modules/python3/polymorphictypehooks.h>
+
 namespace py = pybind11;
-
-// see #include <inviwopy/pypropertytypehook.h>
-template <>
-struct pybind11::polymorphic_type_hook<inviwo::Processor> {
-    static const void* get(const inviwo::Processor* processor, const std::type_info*& type) {
-        if (!processor) {  // default implementation if prop is null
-            type = nullptr;
-            return dynamic_cast<const void*>(processor);
-        }
-
-        // check if the exact type is registered in python, then return that.
-        const auto& id = typeid(*processor);
-        if (detail::get_type_info(id)) {
-            type = &id;
-            return dynamic_cast<const void*>(processor);
-        }
-
-        // else check if we know a more derived base then Processor and return that.
-        if (auto cp = dynamic_cast<const inviwo::CanvasProcessor*>(processor)) {
-            type = &typeid(inviwo::CanvasProcessor);
-            return cp;
-        } else {  // default implementation for prop != null
-            type = &id;
-            return dynamic_cast<const void*>(processor);
-        }
-    }
-};
 
 namespace inviwo {
 
@@ -105,8 +81,8 @@ void exposeNetwork(py::module& m) {
              py::return_value_policy::reference)
         .def(
             "__getattr__",
-            [](ProcessorNetwork& po, std::string key) {
-                if (auto p = po.getProcessorByIdentifier(key)) {
+            [](ProcessorNetwork& po, std::string_view key) {
+                if (auto* p = po.getProcessorByIdentifier(key)) {
                     return p;
                 } else {
                     throw py::attribute_error{fmt::format(

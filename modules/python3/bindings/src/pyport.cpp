@@ -37,17 +37,39 @@
 #include <modules/python3/pythonoutport.h>
 #include <modules/python3/pythoninport.h>
 
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
+#include <pybind11/functional.h>
 #include <warn/pop>
+
+#include <utility>
 
 namespace inviwo {
 
+namespace {
+
+struct InportCallbackHolderVoid {
+    std::shared_ptr<std::function<void()>> value;
+};
+struct InportCallbackHolderOutport {
+    std::shared_ptr<std::function<void(Outport*)>> value;
+};
+
+}  // namespace
 void exposePort(pybind11::module& m) {
     namespace py = pybind11;
+
+    py::class_<InportCallbackHolderVoid>(m, "InportCallbackHolderVoid")
+        .def("reset", [](InportCallbackHolderVoid* h) { h->value.reset(); });
+    py::class_<InportCallbackHolderOutport>(m, "InportCallbackHolderOutport")
+        .def("reset", [](InportCallbackHolderOutport* h) { h->value.reset(); });
+
     py::class_<Port>(m, "Port")
         .def_property_readonly("identifier", &Port::getIdentifier)
         .def_property_readonly("processor", &Port::getProcessor, py::return_value_policy::reference)
@@ -55,6 +77,13 @@ void exposePort(pybind11::module& m) {
         .def_property_readonly("contentInfo", &Port::getInfo)
         .def("isConnected", &Port::isConnected)
         .def("isReady", &Port::isReady);
+
+    py::class_<Outport, Port>(m, "Outport")
+        .def("isConnectedTo", &Outport::isConnectedTo)
+        .def("getConnectedInports", &Outport::getConnectedInports,
+             py::return_value_policy::reference)
+        .def("hasData", &Outport::hasData)
+        .def("clear", &Outport::clear);
 
     py::class_<Inport, Port>(m, "Inport")
         .def_property("optional", &Inport::isOptional, &Inport::setOptional)
@@ -70,20 +99,22 @@ void exposePort(pybind11::module& m) {
         .def("getMaxNumberOfConnections", &Inport::getMaxNumberOfConnections)
         .def("getNumberOfConnections", &Inport::getNumberOfConnections)
         .def("getChangedOutports", &Inport::getChangedOutports, py::return_value_policy::reference)
-        .def("onChangeScoped", &Inport::onChangeScoped)
-        .def("onInvalidScoped", &Inport::onInvalidScoped)
-        .def("onConnectScoped",
-             [](Inport* p, std::function<void(Outport*)> func) { return p->onConnectScoped(func); })
-        .def("onDisconnectScoped", [](Inport* p, std::function<void(Outport*)> func) {
-            return p->onDisconnectScoped(func);
-        });
 
-    py::class_<Outport, Port>(m, "Outport")
-        .def("isConnectedTo", &Outport::isConnectedTo)
-        .def("getConnectedInports", &Outport::getConnectedInports,
-             py::return_value_policy::reference)
-        .def("hasData", &Outport::hasData)
-        .def("clear", &Outport::clear);
+        .def("onChangeScoped",
+             [](Inport* p, std::function<void()> func) {
+                 return InportCallbackHolderVoid{p->onConnectScoped(std::move(func))};
+             })
+        .def("onInvalidScoped",
+             [](Inport* p, std::function<void()> func) {
+                 return InportCallbackHolderVoid{p->onInvalidScoped(std::move(func))};
+             })
+        .def("onConnectScoped",
+             [](Inport* p, std::function<void(Outport*)> func) {
+                 return InportCallbackHolderOutport{p->onConnectScoped(std::move(func))};
+             })
+        .def("onDisconnectScoped", [](Inport* p, std::function<void(Outport*)> func) {
+            return InportCallbackHolderOutport{p->onDisconnectScoped(std::move(func))};
+        });
 
     py::class_<PythonInport, Inport>(m, "PythonInport")
         .def(py::init<std::string, Document>(), py::arg("identifier"), py::arg("help") = Document{})

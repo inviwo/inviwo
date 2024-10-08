@@ -30,6 +30,14 @@
 #include <inviwopy/pyimage.h>
 #include <inviwopy/pyglmtypes.h>
 
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+#include <pybind11/numpy.h>
+#include <warn/pop>
+
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/image.h>
@@ -46,13 +54,7 @@
 #include <modules/python3/pyportutils.h>
 #include <modules/python3/layerpy.h>
 #include <modules/python3/opaquetypes.h>
-
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/numpy.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl/filesystem.h>
-#include <warn/pop>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <fmt/format.h>
 #include <fmt/std.h>

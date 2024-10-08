@@ -42,6 +42,7 @@ target_link_libraries(inviwo_qtminimum PUBLIC
 
 ivw_define_standard_definitions(inviwo_qtminimum inviwo_qtminimum) 
 ivw_define_standard_properties(inviwo_qtminimum)
+set_target_properties(inviwo_qtminimum PROPERTIES XCODE_GENERATE_SCHEME YES)
 
 # Move to folder
 ivw_folder(inviwo_qtminimum apps)

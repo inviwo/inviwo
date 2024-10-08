@@ -31,6 +31,12 @@
 #include <inviwopy/pyglmtypes.h>
 #include <inviwopy/pyimage.h>  // for the opaque swizzlemask
 
+#include <pybind11/stl_bind.h>
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+#include <pybind11/numpy.h>
+
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
@@ -42,9 +48,7 @@
 #include <modules/python3/pyportutils.h>
 #include <modules/python3/volumepy.h>
 #include <modules/python3/opaquetypes.h>
-
-#include <pybind11/numpy.h>
-#include <pybind11/stl_bind.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>

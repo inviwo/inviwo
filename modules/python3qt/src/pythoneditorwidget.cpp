@@ -91,7 +91,7 @@ const static std::string defaultSource =
 
 PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app,
                                        std::function<void(const std::string&)> onTextChange)
-    : InviwoDockWidget(tr("Python Editor"), parent, "PythonEditorWidget")
+    : InviwoDockWidget(tr("Python Editor[*]"), parent, "PythonEditorWidget")
     , infoTextColor_(153, 153, 153)
     , errorTextColor_(255, 107, 107)
     , runAction_(nullptr)
@@ -436,6 +436,8 @@ void PythonEditorWidget::onTextChange() {
     std::string source = utilqt::fromQString(pythonCode_->toPlainText());
     script_.setSource(source);
 
+    setWindowModified(pythonCode_->document()->isModified());
+
     if (onTextChange_) onTextChange_(source);
 }
 
@@ -477,8 +479,10 @@ void PythonEditorWidget::setName(std::string_view name) {
 const std::string& PythonEditorWidget::getName() const { return script_.getName(); }
 
 void PythonEditorWidget::setSource(std::string_view source) {
-    pythonCode_->setPlainText(utilqt::toQString(source));
-    script_.setSource(source);
+    if (source != script_.getSource()) {
+        pythonCode_->setPlainText(utilqt::toQString(source));
+        script_.setSource(source);
+    }
 }
 
 const std::string& PythonEditorWidget::getSource() const { return script_.getSource(); }

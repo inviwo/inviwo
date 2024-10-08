@@ -31,9 +31,12 @@
 
 #include <inviwo/core/datastructures/bitset.h>  // for BitSet
 
+#include <modules/python3/polymorphictypehooks.h>
 #include <pybind11/numpy.h>
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
+#include <pybind11/functional.h>
+#include <pybind11/stl/filesystem.h>
 
 #include <fmt/format.h>
 

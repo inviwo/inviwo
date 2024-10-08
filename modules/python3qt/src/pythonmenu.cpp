@@ -60,9 +60,8 @@
 #include <QUrl>              // for QUrl, QUrl::TolerantMode
 #include <Qt>                // for WA_DeleteOnClose
 #include <QMenuBar>          // for QMenuBar
-#include <QInputDialog>
-#include <fmt/core.h>     // for basic_string_view, arg
-#include <fmt/ostream.h>  // for print
+#include <fmt/core.h>        // for basic_string_view, arg
+#include <fmt/ostream.h>     // for print
 #include <fmt/std.h>
 
 class QObject;
@@ -76,49 +75,8 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
     , editors_{}
     , toolbar_{win_->addToolBar("Python")}
     , menu_{utilqt::addMenu("&Python")}
-    , scripts_{}
-    , pythonScripts_{}
-    , sHandle_{app->getWorkspaceManager()->onSave([this](Serializer& s) {
-        s.serialize("PythonScripts", pythonScripts_, "Script");
-        std::ranges::for_each(scriptEditors_, [](auto& item) {
-            if (item.second) {
-                item.second->setWindowModified(false);
-            }
-        });
-    })}
-    , dHandle_{app->getWorkspaceManager()->onLoad([this](Deserializer& d) {
-        d.deserialize("PythonScripts", pythonScripts_, "Script");
-
-        auto sit = pythonScripts_.begin();
-        auto eit = scriptEditors_.begin();
-        while (sit != pythonScripts_.end() && eit != scriptEditors_.end()) {
-            if (sit->first == eit->first) {
-                if (eit->second) {
-                    eit->second->setSource(sit->second);
-                    ++eit;
-                } else {
-                    eit = scriptEditors_.erase(eit);
-                }
-                ++sit;
-            } else if (sit->first < eit->first) {
-                ++sit;
-            } else {
-                eit = scriptEditors_.erase(eit);
-            }
-        }
-        while (eit != scriptEditors_.end()) {
-            eit = scriptEditors_.erase(eit);
-        }
-
-        updateScriptsMenu();
-    })}
-    , cHandle_{app->getWorkspaceManager()->onClear([this]() {
-        // avoid referencing scriptEditors_ in the PythonEditorWidget::destroyed callback
-        auto copy = std::move(scriptEditors_);
-        pythonScripts_.clear();
-
-        updateScriptsMenu();
-    })} {
+    , scriptMenu_{app->getModuleByType<Python3Module>()->getWorkspaceScripts(), menu_.get(), app,
+                  win} {
 
     toolbar_->setObjectName("PythonToolBar");
     toolbar_->setMovable(false);
@@ -131,10 +89,6 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
 
     auto pythonEditorOpen = menu_->addAction(QIcon(":/svgicons/python.svg"), "&Python Editor");
     QObject::connect(pythonEditorOpen, &QAction::triggered, [this]() { newEditor(); });
-
-    scripts_.reset(menu_->addMenu("Workspace Scripts"));
-
-    updateScriptsMenu();
 
     auto newPythonProcessor =
         menu_->addAction(QIcon(":/svgicons/processor-new.svg"), "&New Python Processor");
@@ -180,7 +134,7 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
 }
 
 PythonEditorWidget* PythonMenu::newEditor() {
-    auto editor = make_qptr<PythonEditorWidget>(win_, app_);
+    auto editor = util::make_qptr<PythonEditorWidget>(win_, app_);
     editor->loadState();
     editor->restore();
 
@@ -189,75 +143,6 @@ PythonEditorWidget* PythonMenu::newEditor() {
     editors_.push_back(std::move(editor));
 
     return editors_.back().get();
-}
-
-PythonEditorWidget* PythonMenu::newScriptEditor(const std::string& key) {
-    auto editor = make_qptr<PythonEditorWidget>(win_, app_, [this, key](const std::string& source) {
-        pythonScripts_[key] = source;
-        app_->getWorkspaceManager()->setModified();
-    });
-    editor->loadState();
-
-    editor->setAttribute(Qt::WA_DeleteOnClose);
-
-    editor->setVisible(true);
-    scriptEditors_[key] = std::move(editor);
-    return scriptEditors_[key].get();
-}
-
-PythonEditorWidget* PythonMenu::openEditor(const std::string& key) {
-    if (auto it = scriptEditors_.find(key); it != scriptEditors_.end() && it->second) {
-        it->second->show();
-        it->second->raise();
-        return it->second.get();
-    } else {
-        auto* editor = newScriptEditor(key);
-        editor->setName(key);
-        editor->setSource(pythonScripts_[key]);
-        return editor;
-    }
-}
-
-std::optional<std::string> PythonMenu::getScriptName(std::string_view suggestion) {
-    bool ok = false;
-    QString qKey = QInputDialog::getText(nullptr, "Script name", "Name:", QLineEdit::Normal,
-                                         utilqt::toQString(suggestion), &ok,
-                                         Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
-    const auto key = utilqt::fromQString(qKey);
-    if (ok && !key.empty()) {
-        return key;
-    } else {
-        return std::nullopt;
-    }
-}
-
-void PythonMenu::updateScriptsMenu() {
-    static constexpr std::string_view defaultSource =
-        "#Inviwo Python script \nimport inviwopy\n\n\napp = inviwopy.app\nnetwork = app.network\n";
-
-    scripts_->clear();
-
-    auto addScriptMenuItem = [this](std::string_view key) {
-        const auto qKey = utilqt::toQString(key);
-        auto openScript = scripts_->addAction(qKey);
-        QObject::connect(openScript, &QAction::triggered,
-                         [this, key = std::string{key}]() { openEditor(key); });
-        return openScript;
-    };
-
-    auto newScript = scripts_->addAction(QIcon(":/svgicons/newfile.svg"), "&New Python Script");
-    QObject::connect(newScript, &QAction::triggered, [this, addScriptMenuItem]() {
-        const auto keySuggestion = fmt::format("Script {}", pythonScripts_.size() + 1);
-        if (auto key = getScriptName(keySuggestion)) {
-            pythonScripts_[*key] = std::string{defaultSource};
-            addScriptMenuItem(*key)->trigger();
-        }
-    });
-
-    scripts_->addSeparator();
-    for (const auto& [key, script] : pythonScripts_) {
-        addScriptMenuItem(key);
-    }
 }
 
 PythonMenu::~PythonMenu() {

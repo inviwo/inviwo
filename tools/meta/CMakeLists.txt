@@ -54,7 +54,9 @@ set_target_properties(inviwo-meta PROPERTIES
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS OFF
     FOLDER tools
+    XCODE_GENERATE_SCHEME YES
 )
+
 ivw_define_standard_properties(inviwo-meta)
 ivw_define_standard_definitions(${PROJECT_NAME} inviwo-meta)
 

@@ -30,7 +30,9 @@
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
-#include <pybind11/embed.h>
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 #include <warn/pop>
 
 #include <modules/python3/python3module.h>
@@ -38,6 +40,7 @@
 #include <modules/python3/pybindmodule.h>
 #include <modules/python3/pythoninterpreter.h>
 #include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <inviwopy/pybitset.h>
 #include <inviwopy/pydataformat.h>

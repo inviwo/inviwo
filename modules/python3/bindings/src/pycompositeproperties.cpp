@@ -33,15 +33,14 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
 
-#include <inviwopy/pyflags.h>
-#include <inviwopy/pypropertytypehook.h>
-
 #include <inviwo/core/properties/constraintbehavior.h>
 #include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/properties/filepatternproperty.h>
 
+#include <modules/python3/polymorphictypehooks.h>
+#include <inviwopy/pyflags.h>
 #include <fmt/format.h>
 
 namespace py = pybind11;

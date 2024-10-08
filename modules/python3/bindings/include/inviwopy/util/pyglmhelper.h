@@ -31,16 +31,19 @@
 
 #include <inviwo/core/util/glm.h>
 #include <inviwopy/pyglmtypes.h>
-
 #include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/core/util/assertion.h>
 #include <modules/python3/pyportutils.h>
 #include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/operators.h>
 #include <pybind11/stl_bind.h>
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 #include <pybind11/numpy.h>
 #include <warn/pop>
 

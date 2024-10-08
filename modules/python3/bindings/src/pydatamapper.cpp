@@ -29,11 +29,18 @@
 
 #include <inviwopy/pydatamapper.h>
 
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+#include <pybind11/numpy.h>
+
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/unitsystem.h>
 
 #include <inviwo/core/util/glmfmt.h>
-#include <pybind11/numpy.h>
+
+#include <modules/python3/polymorphictypehooks.h>
+
 #include <fmt/core.h>
 
 namespace py = pybind11;

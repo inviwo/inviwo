@@ -29,9 +29,14 @@
 
 #include <inviwopy/pydataformat.h>
 
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/safecstr.h>
+#include <modules/python3/polymorphictypehooks.h>
 #include <fmt/core.h>
 
 namespace inviwo {

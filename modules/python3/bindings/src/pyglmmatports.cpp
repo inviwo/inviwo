@@ -32,11 +32,6 @@
 
 #include <inviwo/core/util/foreacharg.h>
 
-#include <inviwopy/pyglmmattypesfloat.h>
-#include <inviwopy/pyglmmattypesdouble.h>
-#include <inviwopy/pyglmmattypesint.h>
-#include <inviwopy/pyglmmattypesuint.h>
-
 namespace inviwo {
 
 void exposeGLMMatPorts(pybind11::module& m) {

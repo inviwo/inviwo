@@ -32,13 +32,10 @@
 
 // Note: Need to put any python includes first since qt defines some "slots" macro
 // which python also uses from some structs
-#include <pybind11/cast.h>           // for arg
-#include <pybind11/detail/common.h>  // for pybind11
-#include <pybind11/detail/descr.h>   // for operator+
-#include <pybind11/pybind11.h>       // for class_, module_, init
-#include <pybind11/pytypes.h>        // for str, none, reinterp...
+#include <pybind11/pybind11.h>  // for class_, module_, init
 #include <pybind11/embed.h>
 #include <pybind11/stl/filesystem.h>
+#include <pybind11/functional.h>
 
 #include <inviwo/core/common/inviwoapplication.h>      // IWYU pragma: keep
 #include <inviwo/core/common/inviwomodule.h>           // for InviwoModule
@@ -161,23 +158,23 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
 
             .def("address",
                  [](ProcessorWidget* w) {
-                     if (auto qw = dynamic_cast<QWidget*>(w)) {
-                         return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));
+                     if (auto* qw = dynamic_cast<QWidget*>(w)) {
+                         return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));  // NOLINT
                      } else {
                          throw Exception("invalid object");
                      }
                  })
             .def("address",
                  [](PropertyWidget* w) {
-                     if (auto qw = dynamic_cast<QWidget*>(w)) {
-                         return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));
+                     if (auto* qw = dynamic_cast<QWidget*>(w)) {
+                         return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));  // NOLINT
                      } else {
                          throw Exception("invalid object");
                      }
                  })
             .def("address", [](PropertyEditorWidget* w) {
-                if (auto qw = dynamic_cast<QWidget*>(w)) {
-                    return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));
+                if (auto* qw = dynamic_cast<QWidget*>(w)) {
+                    return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));  // NOLINT
                 } else {
                     throw Exception("invalid object");
                 }
@@ -215,7 +212,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
             .def("hide", &PropertyListWidget::hide)
             .def("move", [](PropertyListWidget* w, int x, int y) { w->move(x, y); })
             .def("address", [](PropertyListWidget* w) {
-                return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));
+                return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));  // NOLINT
             });
 
     } catch (const std::exception& e) {

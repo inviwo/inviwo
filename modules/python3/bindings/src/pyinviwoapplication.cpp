@@ -30,6 +30,9 @@
 #include <inviwopy/pyinviwoapplication.h>
 
 #include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+#include <pybind11/numpy.h>
 
 #include <inviwopy/vectoridentifierwrapper.h>
 
@@ -43,7 +46,7 @@
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/processors/processorfactory.h>
 
-#include <pybind11/stl/filesystem.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 namespace inviwo {
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,4 +27,6 @@
  *
  *********************************************************************************/
 
-#include <inviwopy/pypropertytypehook.h>
+#include <modules/qtwidgets/qptr.h>
+
+namespace inviwo {}  // namespace inviwo

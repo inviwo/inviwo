@@ -29,6 +29,11 @@
 
 #include <inviwopy/pydatareaders.h>
 
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+#include <pybind11/numpy.h>
+
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -38,8 +43,7 @@
 #include <inviwo/core/datastructures/isovaluecollection.h>
 
 #include <modules/python3/opaquetypes.h>
-
-#include <pybind11/stl/filesystem.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 namespace inviwo {
 

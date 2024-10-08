@@ -30,7 +30,7 @@
 #include <modules/python3/python3module.h>  // for Python3Module
 
 #include <pybind11/pybind11.h>  // for module
-
+#include <pybind11/stl.h>
 #include <inviwo/core/common/inviwoapplication.h>                    // for InviwoApplication
 #include <inviwo/core/common/inviwomodule.h>                         // for InviwoModule
 #include <inviwo/core/datastructures/datarepresentation.h>           // for DataRepresentation<>...
@@ -91,29 +91,56 @@ public:
         return layerPy;
     }
 };
+
+void runScript(PythonScript& script, InviwoApplication* app) {
+    auto extra = app->getCommandLineParser().getIgnoredArgs();
+    extra.insert(extra.begin(), app->getCommandLineParser().getArgs().front());
+    pybind11::module::import("sys").attr("argv") = extra;
+
+    script.run();
+}
+
 }  // namespace
 
 Python3Module::Python3Module(InviwoApplication* app)
     : InviwoModule(app, "Python3")
     , pythonInterpreter_(std::make_unique<PythonInterpreter>())
-    , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
-                       "python script")
-    , argHolder_{app, pythonScriptArg_,
-                 [this]() {
-                     auto filename = std::filesystem::path{pythonScriptArg_.getValue()};
-                     if (!std::filesystem::is_regular_file(filename)) {
-                         LogWarn("Could not run script, file does not exist: " << filename);
-                         return;
-                     }
-                     auto script = PythonScript::fromFile(filename);
-                     script.run();
-                 },
-                 100}
+    , scriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
+                 "python script")
+    , scriptArgHolder_{app, scriptArg_,
+                       [this]() {
+                           auto filename = std::filesystem::path{scriptArg_.getValue()};
+                           if (!std::filesystem::is_regular_file(filename)) {
+                               LogWarn("Could not run script, file does not exist: " << filename);
+                               return;
+                           }
+                           auto code = PythonScript::fromFile(filename);
+                           runScript(code, app_);
+                       },
+                       100}
+    , workspaceScriptArg_{"",
+                          "pythonWorkspaceScript",
+                          "Specify a python workspace script to run at startup",
+                          false,
+                          "",
+                          "python workspace script name"}
+    , workspaceScriptArgHolder_{app, workspaceScriptArg_,
+                                [this]() {
+                                    const auto key = workspaceScriptArg_.getValue();
+                                    if (auto script = workspaceScripts_.getScript(key)) {
+                                        auto code = PythonScript(*script, key);
+                                        runScript(code, app_);
+                                    } else {
+                                        LogError("Python workspace script: '" << key
+                                                                              << "' not found");
+                                    }
+                                }}
     , pythonLogger_{}
     , scripts_{getPath() / "scripts"}
     , pythonFolderObserver_{app, getPath() / "processors", *this}
     , settingsFolderObserver_{app, app->getPath(PathType::Settings, "/python_processors", true),
-                              *this} {
+                              *this}
+    , workspaceScripts_{*app->getWorkspaceManager()} {
 
     pythonInterpreter_->addObserver(&pythonLogger_);
 
@@ -140,9 +167,11 @@ Python3Module::Python3Module(InviwoApplication* app)
 
 Python3Module::~Python3Module() {
     pythonInterpreter_->removeObserver(&pythonLogger_);
-    app_->getCommandLineParser().remove(&pythonScriptArg_);
+    app_->getCommandLineParser().remove(&scriptArg_);
 }
 
 PythonInterpreter* Python3Module::getPythonInterpreter() { return pythonInterpreter_.get(); }
+
+PythonWorkspaceScripts& Python3Module::getWorkspaceScripts() { return workspaceScripts_; }
 
 }  // namespace inviwo

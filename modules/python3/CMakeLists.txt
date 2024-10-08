@@ -6,10 +6,11 @@ find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)
 set(HEADER_FILES
     include/modules/python3/layerpy.h
     include/modules/python3/opaquetypes.h
+    include/modules/python3/polymorphictypehooks.h
     include/modules/python3/processortrampoline.h
     include/modules/python3/pybindflags.h
-    include/modules/python3/pybindutils.h
     include/modules/python3/pybindmodule.h
+    include/modules/python3/pybindutils.h
     include/modules/python3/pyportutils.h
     include/modules/python3/python3module.h
     include/modules/python3/python3moduledefine.h
@@ -21,6 +22,7 @@ set(HEADER_FILES
     include/modules/python3/pythonprocessorfactoryobject.h
     include/modules/python3/pythonprocessorfolderobserver.h
     include/modules/python3/pythonscript.h
+    include/modules/python3/pythonworkspacescripts.h
     include/modules/python3/pyutils.h
     include/modules/python3/volumepy.h
 )
@@ -28,6 +30,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
     src/layerpy.cpp
+    src/polymorphictypehooks.cpp
     src/processortrampoline.cpp
     src/pybindflags.cpp
     src/pybindutils.cpp
@@ -41,6 +44,7 @@ set(SOURCE_FILES
     src/pythonprocessorfactoryobject.cpp
     src/pythonprocessorfolderobserver.cpp
     src/pythonscript.cpp
+    src/pythonworkspacescripts.cpp
     src/pyutils.cpp
     src/volumepy.cpp
 )
@@ -101,9 +105,8 @@ if(TARGET inviwo-unittests-python3)
 endif()
 
 # Add Python to package
-option(IVW_PACKAGE_EMBED_PYTHON "Embed a python dist in the installer.\ 
-
- Otherwise a existing python installation is needed to run inviwo" ON)
+option(IVW_PACKAGE_EMBED_PYTHON "Embed a python dist in the installer.\
+    Otherwise a existing python installation is needed to run inviwo" ON)
 if(IVW_PACKAGE_EMBED_PYTHON)
     if(WIN32)
         if(IVW_CFG_CMAKE_DEBUG)

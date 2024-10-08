@@ -34,6 +34,14 @@
 
 namespace inviwo {
 
+namespace {
+
+constexpr std::string_view info =
+    "Inviwo, Interactive Visualization Workshop, a rapid prototyping environment for "
+    "interactive visualizations";
+
+}  // namespace
+
 CommandLineArgHolder::CommandLineArgHolder(InviwoApplication* app, TCLAP::Arg& arg)
     : app_{app}, arg_{arg} {
     app_->getCommandLineParser().add(&arg);
@@ -49,16 +57,8 @@ CommandLineArgHolder::~CommandLineArgHolder() { app_->getCommandLineParser().rem
 CommandLineParser::CommandLineParser() : CommandLineParser(0, nullptr) {}
 
 CommandLineParser::CommandLineParser(int argc, char** argv)
-    : argc_(argc)
-    , argv_(argv)
-    , cmdQuiet_(
-          "Inviwo, Interactive Visualization Workshop, a rapid prototyping environment for "
-          "interactive visualizations",
-          ' ', toString(build::version), false)
-    , cmd_(
-          "Inviwo, Interactive Visualization Workshop, a rapid prototyping environment for "
-          "interactive visualizations",
-          ' ', toString(build::version))
+    : args_(argv, argv + argc)
+    , ignoredArgs_{}
     , workspace_("w", "workspace", "Specify workspace to open", false, "", "workspace file")
     , outputPath_("o", "output", "Specify output path", false, "", "output path")
     , logfile_("l", "logfile", "Write log messages to file.", false, "", "logfile")
@@ -67,70 +67,68 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
     , logConsole_("c", "logconsole", "Write log messages to console (cout)", false)
     , noSplashScreen_("n", "nosplash", "Pass this flag if you do not want to show a splash screen.")
     , quitAfterStartup_("q", "quit", "Pass this flag if you want to close inviwo after startup.")
-    , wildcard_()
-    , helpQuiet_("h", "help", "")
-    , versionQuiet_("v", "version", "") {
-    cmdQuiet_.add(workspace_);
-    cmdQuiet_.add(outputPath_);
-    cmdQuiet_.add(quitAfterStartup_);
-    cmdQuiet_.add(noSplashScreen_);
-    cmdQuiet_.add(logfile_);
-    cmdQuiet_.add(moduleSearchPaths_);
-    cmdQuiet_.add(logConsole_);
-    cmdQuiet_.add(helpQuiet_);
-    cmdQuiet_.add(versionQuiet_);
-    cmdQuiet_.add(wildcard_);
+    , version_{"", "version", "Displays version information and exits.", false}
+    , help_{"h", "help", "Displays usage information and exits.", false} {
 
-    cmd_.add(workspace_);
-    cmd_.add(outputPath_);
-    cmd_.add(quitAfterStartup_);
-    cmd_.add(noSplashScreen_);
-    cmd_.add(logfile_);
-    cmd_.add(moduleSearchPaths_);
-    cmd_.add(logConsole_);
+    args_[0] = std::filesystem::path(args_[0]).filename().string();
 
-    parse(Mode::Quiet);
+    auto it = std::ranges::find(args_, "--");
+    if (it != args_.end()) {
+        std::copy(std::next(it), args_.end(), std::back_inserter(ignoredArgs_));
+    }
+    args_.erase(it, args_.end());
+
+    parseInternal(args_, Mode::Quiet);
 }
 
 CommandLineParser::~CommandLineParser() = default;
 
-void CommandLineParser::parse(int argc, char** argv, Mode mode) {
-    switch (mode) {
-        case CommandLineParser::Mode::Normal: {
-            helpQuiet_.reset();
-            versionQuiet_.reset();
-            try {
-                if (argc > 0) {
-                    cmd_.reset();
-                    cmd_.parse(argc, argv);
-                }
-            } catch (TCLAP::ArgException& e) {
-                std::cerr << "error: " << e.error() << " for arg " << e.argId()
-                          << std::endl;  // catch exceptions
-            }
-            break;
+void CommandLineParser::parseInternal(std::vector<std::string> args, Mode mode) {
+
+    TCLAP::CmdLine cmd{std::string{info}, ' ', toString(build::version), false};
+
+    cmd.ignoreUnmatched(mode == Mode::Quiet);
+
+    cmd.add(workspace_);
+    cmd.add(outputPath_);
+    cmd.add(quitAfterStartup_);
+    cmd.add(noSplashScreen_);
+    cmd.add(logfile_);
+    cmd.add(moduleSearchPaths_);
+    cmd.add(logConsole_);
+    cmd.add(help_);
+    cmd.add(version_);
+
+    for (auto&& [prio, arg, callback] : callbacks_) {
+        cmd.add(arg);
+    }
+
+    for (auto* arg : cmd.getArgList()) {
+        arg->reset();
+    }
+
+    try {
+        cmd.parse(args);
+
+        if (mode == Mode::Normal && help_.isSet()) {
+            cmd.getOutput()->usage(cmd);
+            exit(0);
         }
 
-        case CommandLineParser::Mode::Quiet: {
-            try {
-                if (argc > 0) {
-                    cmdQuiet_.reset();
-                    cmdQuiet_.parse(argc, argv);
-                }
-            } catch (...) {
-            }
-            break;
+        if (version_.isSet()) {
+            cmd.getOutput()->version(cmd);
+            exit(0);
         }
-        default:
-            break;
+    } catch (TCLAP::ArgException& e) {
+        std::cerr << "error: " << e.error() << " for arg " << e.argId() << "\n" << std::flush;
     }
 }
 
-void CommandLineParser::parse(Mode mode) { parse(argc_, argv_, mode); }
+void CommandLineParser::parse(int argc, char** argv) {
+    parseInternal(std::vector<std::string>(argv, argv + argc), Mode::Normal);
+}
 
-void CommandLineParser::setArgc(int argc) { argc_ = argc; }
-
-void CommandLineParser::setArgv(char** argv) { argv_ = argv; }
+void CommandLineParser::parse() { parseInternal(args_, Mode::Normal); }
 
 std::filesystem::path CommandLineParser::getOutputPath() const {
     if (outputPath_.isSet()) return (outputPath_.getValue());
@@ -166,10 +164,7 @@ bool CommandLineParser::getQuitApplicationAfterStartup() const {
 }
 
 bool CommandLineParser::getShowSplashScreen() const {
-    if (versionQuiet_.isSet() || helpQuiet_.isSet())
-        return false;
-    else
-        return !(noSplashScreen_.isSet());
+    return !version_.isSet() && !help_.isSet() && !noSplashScreen_.isSet();
 }
 
 bool CommandLineParser::getLoadWorkspaceFromArg() const {
@@ -194,42 +189,25 @@ bool CommandLineParser::getLogToFile() const {
 
 bool CommandLineParser::getLogToConsole() const { return logConsole_.isSet(); }
 
-int CommandLineParser::getARGC() const { return argc_; }
+const std::vector<std::string>& CommandLineParser::getArgs() const { return args_; }
 
-char** CommandLineParser::getARGV() const { return argv_; }
+const std::vector<std::string>& CommandLineParser::getIgnoredArgs() const { return ignoredArgs_; }
 
 void CommandLineParser::processCallbacks() {
     std::sort(callbacks_.begin(), callbacks_.end(),
               [](const auto& a, const auto& b) { return std::get<0>(a) < std::get<0>(b); });
     for (auto&& [prio, arg, callback] : callbacks_) {
-        if (arg->isSet()) {
+        if (arg->isSet() && callback) {
             callback();
         }
     }
 }
 
-void CommandLineParser::add(TCLAP::Arg* arg) { cmd_.add(arg); }
-
 void CommandLineParser::add(TCLAP::Arg* arg, std::function<void()> callback, int priority) {
-    cmd_.add(arg);
     callbacks_.push_back(std::make_tuple(priority, arg, callback));
 }
 
-void CommandLineParser::xorAdd(TCLAP::Arg* a, std::function<void()> callbackA, int priorityA,
-                               TCLAP::Arg* b, std::function<void()> callbackB, int priorityB) {
-    auto args = std::vector<TCLAP::Arg*>{a, b};
-    cmd_.xorAdd(args);
-    callbacks_.push_back(std::make_tuple(priorityA, a, callbackA));
-    callbacks_.push_back(std::make_tuple(priorityB, b, callbackB));
-}
-
 void CommandLineParser::remove(TCLAP::Arg* arg) {
-    auto& args = cmd_.getArgList();
-    auto argIt = std::find_if(std::begin(args), std::end(args),
-                              [arg](const auto& arg_) { return arg_ == arg; });
-    if (argIt != args.end()) {
-        args.erase(argIt);
-    }
     auto it = std::find_if(std::begin(callbacks_), std::end(callbacks_),
                            [arg](const auto& callback) { return std::get<1>(callback) == arg; });
     if (it != callbacks_.end()) {
