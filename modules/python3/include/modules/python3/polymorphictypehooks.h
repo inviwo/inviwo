@@ -61,13 +61,13 @@ IVW_MODULE_PYTHON3_API const void* castProperty(const ::inviwo::Property* proper
 template <>
 struct pybind11::polymorphic_type_hook<inviwo::Property> {
     static const void* get(const inviwo::Property* property, const std::type_info*& type) {
-        return ::inviwo::detail::castProperty(property, type);
+        return inviwo::detail::castProperty(property, type);
     }
 };
 
 template <>
-struct ::pybind11::polymorphic_type_hook<::inviwo::Processor> {
-    static const void* get(const ::inviwo::Processor* processor, const std::type_info*& type) {
-        return ::inviwo::detail::castProcessor(processor, type);
+struct pybind11::polymorphic_type_hook<inviwo::Processor> {
+    static const void* get(const inviwo::Processor* processor, const std::type_info*& type) {
+        return inviwo::detail::castProcessor(processor, type);
     }
 };
