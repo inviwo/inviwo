@@ -1,0 +1,12 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 23, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "gha",
+      "displayName": "Xcode Developer configuration",
+      "inherits" : ["xcode", "developer", "vcpkg", "vcpkg-cache-write", "build"]
+    }
+  ]
+}
+
