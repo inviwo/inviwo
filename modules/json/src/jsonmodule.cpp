@@ -60,6 +60,7 @@
 #include <tuple>        // for tuple
 #include <type_traits>  // for make_unsigned_t
 #include <utility>      // for move
+#include <vector>
 
 #include <glm/detail/type_quat.hpp>       // for qua::operator[]
 #include <glm/ext/quaternion_double.hpp>  // for dquat
@@ -75,9 +76,37 @@
 namespace inviwo {
 class InviwoApplication;
 
+template <typename T>
+void to_json(json& j, const DataInport<T>& port) {
+    if (auto data = port.getData()) {
+        j = *data;
+    } else {
+        j.clear();
+    }
+}
+template <typename T>
+void from_json(const json&, DataInport<T>&) {
+    throw Exception(IVW_CONTEXT_CUSTOM("from_json"),
+                    "It is not possible to assign a json object to an Inport");
+}
+
+template <typename T>
+void to_json(json& j, const DataOutport<T>& port) {
+    if (auto data = port.getData()) {
+        j = *data;
+    } else {
+        j.clear();
+    }
+}
+template <typename T>
+void from_json(const json& j, DataOutport<T>& port) {
+    port.setData(std::make_shared<T>(j.get<T>()));
+}
+
 JSONModule::JSONModule(InviwoApplication* app)
     : InviwoModule(app, "JSON")
     , JSONSupplier<Inport, PortTraits>{inportConverter_}
+    , JSONSupplier<Outport, PortTraits>{outportConverter_}
     , JSONSupplier<Property, PropertyTraits>{propertyConverter_} {
 
     // Register JSON converters
@@ -95,7 +124,7 @@ JSONModule::JSONModule(InviwoApplication* app)
 
     using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;
     util::for_each_type<OrdinalTypes>{}(
-        [&]<typename T>() {registerJSONConverter<OrdinalProperty<T>>(); });
+        [&]<typename T>() { registerJSONConverter<OrdinalProperty<T>>(); });
     util::for_each_type<OrdinalTypes>{}(
         [&]<typename T>() { registerJSONConverter<OrdinalRefProperty<T>>(); });
 
@@ -117,10 +146,17 @@ JSONModule::JSONModule(InviwoApplication* app)
     registerDefaultsForDataType<json>();
 
     registerJSONConverter<JSONInport>();
+    registerJSONConverter<JSONOutport>();
+
+    registerJSONConverter<DataInport<std::vector<float>>>();
+    registerJSONConverter<DataInport<std::vector<double>>>();
+    registerJSONConverter<DataOutport<std::vector<float>>>();
+    registerJSONConverter<DataOutport<std::vector<double>>>();
 }
 
 JSONModule::~JSONModule() {
     JSONSupplier<Inport, PortTraits>::unregisterJSONConverters();
+    JSONSupplier<Outport, PortTraits>::unregisterJSONConverters();
     JSONSupplier<Property, PropertyTraits>::unregisterJSONConverters();
 }
 
