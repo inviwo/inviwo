@@ -42,20 +42,22 @@
 #include <modules/json/jsonsupplier.h>
 
 #include <modules/json/jsoninportconverter.h>
+#include <modules/json/jsonoutportconverter.h>
 #include <modules/json/jsonpropertyconverter.h>
 
 #include <nlohmann/json.hpp>
 
 namespace inviwo {
-
 using json = ::nlohmann::json;
 
 class InviwoApplication;
 
 class IVW_MODULE_JSON_API JSONModule : public InviwoModule,
                                        public JSONSupplier<Inport, PortTraits>,
+                                       public JSONSupplier<Outport, PortTraits>,
                                        public JSONSupplier<Property, PropertyTraits> {
     using JSONSupplier<Inport, PortTraits>::registerJSONConverter;
+    using JSONSupplier<Outport, PortTraits>::registerJSONConverter;
     using JSONSupplier<Property, PropertyTraits>::registerJSONConverter;
 
 public:
@@ -64,6 +66,7 @@ public:
 
     const JSONPropertyConverter& getJSONPropertyConverter() const { return propertyConverter_; }
     const JSONInportConverter& getJSONInportConverter() const { return inportConverter_; }
+    const JSONOutportConverter& getJSONOutportConverter() const { return outportConverter_; }
 
     template <typename Base>
     JSONConverterRegistry<Base>& getRegistry() {
@@ -71,6 +74,8 @@ public:
             return propertyConverter_;
         } else if constexpr (std::is_base_of_v<Inport, Base>) {
             return inportConverter_;
+        } else if constexpr (std::is_base_of_v<Outport, Base>) {
+            return outportConverter_;
         } else {
             throw Exception("Invalid type for JSONModule::getRegistry", IVW_CONTEXT);
         }
@@ -78,6 +83,7 @@ public:
 
 protected:
     JSONInportConverter inportConverter_;
+    JSONOutportConverter outportConverter_;
     JSONPropertyConverter propertyConverter_;
 };
 

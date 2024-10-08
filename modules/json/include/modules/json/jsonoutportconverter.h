@@ -26,31 +26,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/json/jsonport.h>
-#include <inviwo/core/util/exception.h>
+#include <modules/json/jsonmoduledefine.h>
+
+#include <inviwo/core/ports/outport.h>
+#include <modules/json/jsonconverterregistry.h>
+#include <nlohmann/json.hpp>
 
 namespace inviwo {
 
-void to_json(json& j, const JSONInport& port) {
-    if (auto data = port.getData()) {
-        j = *data;
-    } else {
-        j.clear();
-    }
-}
-void from_json(const json&, JSONInport&) {
-    throw Exception(IVW_CONTEXT_CUSTOM("from_json"),
-                    "It is not possible to assign a json object to an Inport");
-}
-
-void to_json(json& j, const JSONOutport& port) {
-    if (auto data = port.getData()) {
-        j = *data;
-    } else {
-        j.clear();
-    }
-}
-void from_json(const json& j, JSONOutport& port) { port.setData(std::make_shared<json>(j)); }
+using json = ::nlohmann::json;
+using JSONOutportConverter = JSONConverterRegistry<Outport>;
 
 }  // namespace inviwo

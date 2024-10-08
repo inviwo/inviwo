@@ -39,6 +39,7 @@
 
 #include <modules/json/jsonpropertyconverter.h>
 #include <modules/json/jsoninportconverter.h>
+#include <modules/json/jsonoutportconverter.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -157,7 +158,8 @@ private:
 
     InviwoApplication* app_;
     const JSONPropertyConverter& jsonPropertyConverter_;  /// Non-owning reference
-    const JSONInportConverter& jsonInportConverter_;  /// Non-owning reference
+    const JSONInportConverter& jsonInportConverter_;      /// Non-owning reference
+    const JSONOutportConverter& jsonOutportConverter_;    /// Non-owning reference
 
     std::map<int, std::vector<std::unique_ptr<PropertyWidgetCEF>>> widgets_;
 

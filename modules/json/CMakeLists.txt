@@ -19,6 +19,7 @@ set(HEADER_FILES
     include/modules/json/jsoninportconverter.h
     include/modules/json/jsonmodule.h
     include/modules/json/jsonmoduledefine.h
+    include/modules/json/jsonoutportconverter.h
     include/modules/json/jsonport.h
     include/modules/json/jsonpropertyconverter.h
     include/modules/json/jsonsupplier.h
@@ -37,6 +38,7 @@ set(SOURCE_FILES
     src/jsonconverterregistry.cpp
     src/jsoninportconverter.cpp
     src/jsonmodule.cpp
+    src/jsonoutportconverter.cpp
     src/jsonport.cpp
     src/jsonpropertyconverter.cpp
     src/jsonsupplier.cpp
