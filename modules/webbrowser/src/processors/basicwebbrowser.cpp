@@ -31,14 +31,20 @@
 
 #include <inviwo/dataframe/jsondataframeconversion.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/properties/propertyfactory.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/factoryutil.h>
 #include <modules/webbrowser/webbrowserutil.h>
 
 #include <include/wrapper/cef_stream_resource_handler.h>
 #include <include/wrapper/cef_byte_read_handler.h>
 #include <include/base/cef_ref_counted.h>
+
+#include <modules/json/jsonmodule.h>
+#include <modules/json/jsonpropertyconverter.h>
+
 #include <nlohmann/json.hpp>
 #include <fmt/format.h>
 
@@ -66,6 +72,22 @@ CefRefPtr<CefStreamResourceHandler> streamData(std::string_view string,
         reinterpret_cast<const unsigned char*>(data->data.data()), data->data.size(), data));
     auto response = CefStreamReader::CreateForHandler(handler);
     return CefRefPtr<CefStreamResourceHandler>(new CefStreamResourceHandler(mime_type, response));
+}
+
+OptionPropertyState<std::string> convertableProperties(InviwoApplication* app) {
+    auto& conv = app->getModuleByType<JSONModule>()->getJSONPropertyConverter();
+
+    std::vector<OptionPropertyOption<std::string>> options;
+    for (auto key : conv.getKeyView()) {
+        if (key.starts_with("org.inviwo.")){
+            options.emplace_back(key, camelCaseToHeader(key.substr(11)), key);
+        } else {
+            options.emplace_back(key, camelCaseToHeader(key), key);
+        }
+        std::ranges::sort(options, std::less<>{}, &OptionPropertyOption<std::string>::name_);
+    }
+    return OptionPropertyState<std::string>{.options = options,
+                                            .invalidationLevel = InvalidationLevel::Valid};
 }
 
 }  // namespace
@@ -102,15 +124,7 @@ BasicWebBrowser::BasicWebBrowser(InviwoApplication* app)
             PropertySemantics{"JavascriptEditor"}}
     , reload_("reload", "Reload", "Reload the webpage"_help, InvalidationLevel::Valid)
     , zoom_{"zoom", "Zoom Factor", 1.0, 0.2, 5.0, 0.1, InvalidationLevel::Valid}
-    , propertyTypes_{"propertyTypes", "Property Type",
-                     [&]() {
-                         std::vector<OptionPropertyOption<std::string>> options;
-                         for (auto key : util::getPropertyFactory(app)->getKeyView()) {
-                             options.emplace_back(key);
-                         }
-                         return OptionPropertyState<std::string>{
-                             .options = options, .invalidationLevel = InvalidationLevel::Valid};
-                     }()}
+    , propertyTypes_{"propertyTypes", "Property Type", convertableProperties(app)}
     , name_{"name", "Property Name", "extraProperty"}
     , add_("add", "Add extra property",
            [this, app]() {
