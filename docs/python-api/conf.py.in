@@ -28,6 +28,6 @@ autodoc_default_options = {
 autodoc_member_order = "groupwise"
 autodoc_typehints = 'both'
 autosummary_generate = True
-intersphinx_mapping = {'https://docs.python.org/3.10': None}
+intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
 primary_domain = 'py'
 highlight_language = 'python3'
