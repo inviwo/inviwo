@@ -1,0 +1,11 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 23, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "gha",
+      "displayName": "MSVC Developer configuration",
+      "inherits" : ["msvc", "developer", "vcpkg", "vcpkg-cache-write", "build"]
+    }
+  ]
+}
