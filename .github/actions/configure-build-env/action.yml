@@ -43,10 +43,10 @@ runs:
         max-size: "1500M"
         verbose: 2
         save: ${{github.ref == 'refs/heads/master'}}
-        append-timestamp: false
-        key: inviwo-${{ matrix.triplet }}-${{ matrix.configuration }}
+        append-timestamp: true
+        key: inviwo-${{ matrix.triplet }}-${{ matrix.configuration }}-
         restore-keys: |
-          inviwo-${{ matrix.triplet }}-${{ matrix.configuration }}
+          inviwo-${{ matrix.triplet }}-${{ matrix.configuration }}-
 
     - name: "Copy ccache"
       shell: bash
