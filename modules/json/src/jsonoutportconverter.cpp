@@ -27,30 +27,8 @@
  *
  *********************************************************************************/
 
-#include <modules/json/jsonport.h>
-#include <inviwo/core/util/exception.h>
+#include <modules/json/jsonoutportconverter.h>
 
 namespace inviwo {
-
-void to_json(json& j, const JSONInport& port) {
-    if (auto data = port.getData()) {
-        j = *data;
-    } else {
-        j.clear();
-    }
-}
-void from_json(const json&, JSONInport&) {
-    throw Exception(IVW_CONTEXT_CUSTOM("from_json"),
-                    "It is not possible to assign a json object to an Inport");
-}
-
-void to_json(json& j, const JSONOutport& port) {
-    if (auto data = port.getData()) {
-        j = *data;
-    } else {
-        j.clear();
-    }
-}
-void from_json(const json& j, JSONOutport& port) { port.setData(std::make_shared<json>(j)); }
 
 }  // namespace inviwo

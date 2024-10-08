@@ -247,7 +247,7 @@ void to_json(json& j, const DataFrameInport& port) {
         j.clear();
     }
 }
-void from_json(const json& j, DataFrameInport& port) {
+void from_json(const json&, DataFrameInport&) {
     throw Exception(IVW_CONTEXT_CUSTOM("from_json"),
                     "It is not possible to assign a json object to an Inport");
 }

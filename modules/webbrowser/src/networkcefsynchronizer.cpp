@@ -59,7 +59,8 @@ static constexpr std::string_view propCommand = "prop.";
 NetWorkCefSynchronizer::NetWorkCefSynchronizer(InviwoApplication* app)
     : app_{app}
     , jsonPropertyConverter_{app_->getModuleByType<JSONModule>()->getJSONPropertyConverter()}
-    , jsonInportConverter_{app_->getModuleByType<JSONModule>()->getJSONInportConverter()} {
+    , jsonInportConverter_{app_->getModuleByType<JSONModule>()->getJSONInportConverter()}
+    , jsonOutportConverter_{app_->getModuleByType<JSONModule>()->getJSONOutportConverter()} {
 
     app_->getProcessorNetwork()->addObserver(this);
 }
@@ -223,6 +224,33 @@ bool NetWorkCefSynchronizer::handleInport(const json& j, CefRefPtr<CefBrowser>&,
 }
 bool NetWorkCefSynchronizer::handleOutport(const json& j, CefRefPtr<CefBrowser>&,
                                            CefRefPtr<Callback>& reponse) {
+    const auto command = j.at("command").get<std::string_view>().substr(inportCommand.size());
+    const auto processorId = j.at("processor").get<std::string>();
+    const auto portId = j.at("identifier").get<std::string>();
+
+    auto* processor = app_->getProcessorNetwork()->getProcessorByIdentifier(processorId);
+    if (!processor) {
+        reponse->Failure(
+            0, fmt::format("Trying to invoke a outport command: {} on an unknown processor {}",
+                           command, processorId));
+        return true;
+    }
+
+    auto* port = processor->getOutport(portId);
+    if (!port) {
+        reponse->Failure(
+            0, fmt::format("Trying to invoke a outport command: {} on an unknown port {}", command,
+                           portId));
+        return true;
+    }
+
+    if (command == "setData") {
+        jsonOutportConverter_.fromJSON(j.at("data"), *port);
+        reponse->Success("{}");
+    } else {
+        reponse->Failure(0, fmt::format("Trying to invoke an unknow inport command: {}", command));
+    }
+
     return true;
 }
 bool NetWorkCefSynchronizer::handleProperty(const json& j, CefRefPtr<CefBrowser>&,
