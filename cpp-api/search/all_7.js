@@ -61,5 +61,6 @@ var searchData=
   ['highlight_58',['highlight',['../classinviwo_1_1BrushingAndLinkingManager.html#a60466f7008bd34b45e2c4d4ac8b79f39',1,'inviwo::BrushingAndLinkingManager']]],
   ['histogram1d_59',['Histogram1D',['../structinviwo_1_1Histogram1D.html',1,'inviwo']]],
   ['histogramcache_60',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]],
-  ['hsv2rgb_61',['hsv2rgb',['../namespaceinviwo_1_1color.html#a9690d1d32e192933bee1ea70e06256b6',1,'inviwo::color']]]
+  ['histogramtodataframe_61',['HistogramToDataFrame',['../classinviwo_1_1HistogramToDataFrame.html',1,'inviwo']]],
+  ['hsv2rgb_62',['hsv2rgb',['../namespaceinviwo_1_1color.html#a9690d1d32e192933bee1ea70e06256b6',1,'inviwo::color']]]
 ];

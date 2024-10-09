@@ -1,5 +1,9 @@
 var NAVTREEINDEX28 =
 {
+"namespaceinviwo_1_1util.html#ab09c288eeb600394bd546b3def257fb3":[2,0,0,18,83],
+"namespaceinviwo_1_1util.html#ab1e4eff95e999c0f37072af916d5d93b":[2,0,0,18,63],
+"namespaceinviwo_1_1util.html#ab279fda2d5e97b698c1c269a30ea6314":[2,0,0,18,75],
+"namespaceinviwo_1_1util.html#ab27d645275cb437d22b94f20ddfe611a":[2,0,0,18,289],
 "namespaceinviwo_1_1util.html#ab33c29f2ec6e6af67b8420361ee84bcd":[2,0,0,18,194],
 "namespaceinviwo_1_1util.html#ab36aead3fc89df1f8274c4a4ad543f2b":[2,0,0,18,234],
 "namespaceinviwo_1_1util.html#ab4f4b42cd6cd39b83dc90c559fa6bb0e":[2,0,0,18,136],
@@ -245,9 +249,5 @@ var NAVTREEINDEX28 =
 "structinviwo_1_1ElementIdentifier.html":[2,0,0,278],
 "structinviwo_1_1ElementIdentifier.html":[4,0,1,284],
 "structinviwo_1_1EnumTraits.html":[2,0,0,282],
-"structinviwo_1_1EnumTraits.html":[4,0,1,288],
-"structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html":[2,0,0,283],
-"structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html":[4,0,1,289],
-"structinviwo_1_1EnumTraits_3_01filters_1_1StringComp_01_4.html":[2,0,0,284],
-"structinviwo_1_1EnumTraits_3_01filters_1_1StringComp_01_4.html":[4,0,1,290]
+"structinviwo_1_1EnumTraits.html":[4,0,1,288]
 };
