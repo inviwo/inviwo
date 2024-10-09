@@ -63,6 +63,11 @@ layout(std430, binding = 11) buffer debugFragments {
     int nFragments;
     FragmentInfo debugFrags[];
 };
+
+layout(std430, binding = 12) buffer debugApproxVals {
+    int nApproxSamples;
+    float approxSamples[];
+};
 #endif
 
 uniform ivec2 screenSize;
@@ -127,9 +132,10 @@ void main() {
         while (unpackedFragment.depth >= 0 && unpackedFragment.depth <= 1.0) {
             vec4 c = unpackedFragment.color;
 
-            float gi = clamp(c.a, 0.001, 0.999);
+            float gi = c.a;
             float gisq = gi * gi;
-            float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, unpackedFragment.depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
+            float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, unpackedFragment.depth);
+            Gd += 0.5 * gisq; // correct for importance sum approximation at discontinuity
             float alpha = clamp(1 /
                             (1 + pow(1 - gi, 2 * lambda)
                             * (r * max(0, Gd - gisq)
@@ -159,9 +165,10 @@ void main() {
             #endif
 
             vec4 c = pixel.color;
-            float gi = clamp(c.a, 0.001, 0.999);
+            float gi = c.a;
             float gisq = gi * gi;
-            float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, pixel.depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
+            float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, pixel.depth);
+            Gd += 0.5 * gisq; // correct for importance sum approximation at discontinuity
             float alpha = clamp(1 /
                             (1 + pow(1 - gi, 2 * lambda)
                             * (r * max(0, Gd - gisq)
@@ -183,9 +190,10 @@ void main() {
             abufferPixel pixel = uncompressPixelData(readPixelStorage(idx - 1));
 
             vec4 c = pixel.color;
-            float gi = clamp(c.a, 0.001, 0.999);
+            float gi = c.a;
             float gisq = gi * gi;
-            float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, pixel.depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
+            float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, pixel.depth);
+            Gd += 0.5 * gisq; // correct for importance sum approximation at discontinuity
             float alpha = clamp(1 /
                             (1 + pow(1 - gi, 2 * lambda)
                             * (r * max(0, Gd - gisq)
@@ -193,7 +201,6 @@ void main() {
                             0.0, 0.9999); // set pixel alpha using opacity optimisation
 
             float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, pixel.depth); 
-
             float weight = alpha / sqrt(1 - alpha) * exp(-taud); // correct for optical depth approximation at discontinuity
             numerator += weight * c.rgb;
             denominator += weight;
@@ -207,6 +214,12 @@ void main() {
                 debugImportanceCoeffs[i] = imageLoad(importanceSumCoeffs[0], ivec3(coords, i)).x;
             for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++)
                 debugOpticalCoeffs[i] = imageLoad(opticalDepthCoeffs, ivec3(coords, i)).x;
+
+            for (int i = 0; i < nApproxSamples; i++) {
+                float sampleDepth = float(i + 1) / float(nApproxSamples);
+                approxSamples[i] = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, sampleDepth);
+                approxSamples[nApproxSamples + i] = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, sampleDepth);
+            }
         }
         #endif
 
@@ -222,10 +235,11 @@ void main() {
 
 #endif // !ifdef USE_EXACT_BLENDING
 
+//        color = vec4(abs(imageLoad(opticalDepthCoeffs, ivec3(ivec2(gl_FragCoord.xy), 3)).x), 0, 0, 1);
         FragData0 = color;
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
     } else {  // no pixel found
-        FragData0 = vec4(0.0f);
+        FragData0 = vec4(0);
         PickingData = vec4(0.0, 0.0, 0.0, 0.0);
     }
 }

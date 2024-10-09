@@ -27,16 +27,14 @@
  *
  *********************************************************************************/
 
-#define PI 3.1415926535897932384626433832795
-#define TWOPI 6.283185307179586476925286766559
+#define PI 3.1415926535897932384626433832795f
+#define TWOPI 6.283185307179586476925286766559f
 
-#ifndef OVERESTIMATION
-#define OVERESTIMATION 0.25f;
-#endif
-
-#ifndef WRAPPING_ZONE_ANGLE
-#define WRAPPING_ZONE_ANGLE 0.1f * PI;
-#endif
+layout(std430, binding = 13) buffer MomentSettings {
+    vec4 wrapping_zone_parameters;
+    float wrapping_zone_angle;
+    float overestimation;
+};
 
 float approximate2TrigonometricMoments(float b_0, vec2 trig_b[2], float depth, float bias,
                                        float overestimation, vec4 wrapping_zone_parameters);
@@ -44,7 +42,6 @@ float approximate3TrigonometricMoments(float b_0, vec2 trig_b[3], float depth, f
                                        float overestimation, vec4 wrapping_zone_parameters);
 float approximate4TrigonometricMoments(float b_0, vec2 trig_b[4], float depth, float bias,
                                        float overestimation, vec4 wrapping_zone_parameters);
-vec4 computeWrappingZoneParameters(float wrapping_zone_angle);
 
 #ifdef COEFF_TEX_FIXED_POINT_FACTOR
 void project(layout(r32i) iimage2DArray coeffTex, int N, float depth, float val)
@@ -52,8 +49,9 @@ void project(layout(r32i) iimage2DArray coeffTex, int N, float depth, float val)
 void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float val)
 #endif
 {
-    float costheta = cos(TWOPI * depth);
-    float sintheta = sin(TWOPI * depth);
+    float phase = fma(wrapping_zone_parameters.y, depth, wrapping_zone_parameters.y);
+    float costheta = cos(phase);
+    float sintheta = sin(phase);
     float coskm1theta = 1.0;
     float sinkm1theta = 0.0;
     float cosktheta = 0.0;
@@ -71,14 +69,17 @@ void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float v
             projVal = val * sinktheta;
         }
 
+        // increment k
         if (i % 2 == 0 && i != 0) {
             coskm1theta = cosktheta;
             sinkm1theta = sinktheta;
         }
 
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+#if defined(COEFF_TEX_FIXED_POINT_FACTOR)
         imageAtomicAdd(coeffTex, coord, int(projVal * COEFF_TEX_FIXED_POINT_FACTOR));
+#elif defined(COEFF_TEX_ATOMIC_FLOAT)
+        imageAtomicAdd(coeffTex, coord, projVal);
 #else
         float currVal = imageLoad(coeffTex, coord).x;
         imageStore(coeffTex, coord, vec4(currVal + projVal));
@@ -94,6 +95,8 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
 {
     float b_0;
     int k = 0;
+    float bias;
+
     if (N == 5) {
         vec2 trig_b[2];
 
@@ -104,15 +107,19 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
 #else
             float coeff = imageLoad(coeffTex, coord).x;
 #endif
-            if (i == 0) b_0 = coeff;
-            else if (i % 2 == 1) trig_b[k - 1].x = coeff / b_0;
-            else trig_b[k - 1].y = coeff / b_0;
+            if (i == 0)
+                b_0 = coeff;
+            else if (i % 2 == 1)
+                trig_b[k - 1].y = coeff / b_0;
+            else
+                trig_b[k - 1].x = coeff / b_0;
 
             if (i % 2 == 0) k++;
         }
 
-        float bias = 4e-4;
-        return approximate2TrigonometricMoments(b_0, trig_b, depth, bias, 0.25, computeWrappingZoneParameters(0.1f * PI));
+        bias = 4e-7;
+        return approximate2TrigonometricMoments(b_0, trig_b, depth, bias, overestimation,
+                                                wrapping_zone_parameters);
     } else if (N == 7) {
         vec2 trig_b[3];
 
@@ -123,15 +130,19 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
 #else
             float coeff = imageLoad(coeffTex, coord).x;
 #endif
-            if (i == 0) b_0 = coeff;
-            else if (i % 2 == 1) trig_b[k - 1].x = coeff / b_0;
-            else trig_b[k - 1].y = coeff / b_0;
+            if (i == 0)
+                b_0 = coeff;
+            else if (i % 2 == 1)
+                trig_b[k - 1].y = coeff / b_0;
+            else
+                trig_b[k - 1].x = coeff / b_0;
 
             if (i % 2 == 0) k++;
         }
 
-        float bias = 6.5e-4;
-        return approximate3TrigonometricMoments(b_0, trig_b, depth, bias, 0.25, computeWrappingZoneParameters(0.1f * PI));
+        bias = 8e-7;
+        return approximate3TrigonometricMoments(b_0, trig_b, depth, bias, overestimation,
+                                                wrapping_zone_parameters);
     } else if (N == 9) {
         vec2 trig_b[4];
 
@@ -142,15 +153,19 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
 #else
             float coeff = imageLoad(coeffTex, coord).x;
 #endif
-            if (i == 0) b_0 = coeff;
-            else if (i % 2 == 1) trig_b[k - 1].x = coeff / b_0;
-            else trig_b[k - 1].y = coeff / b_0;
+            if (i == 0)
+                b_0 = coeff;
+            else if (i % 2 == 1)
+                trig_b[k - 1].y = coeff / b_0;
+            else
+                trig_b[k - 1].x = coeff / b_0;
 
             if (i % 2 == 0) k++;
         }
 
-        float bias = 8.5e-4;
-        return approximate4TrigonometricMoments(b_0, trig_b, depth, bias, 0.25, computeWrappingZoneParameters(0.1f * PI));
+        bias = 1.5e-6;
+        return approximate4TrigonometricMoments(b_0, trig_b, depth, bias, overestimation,
+                                                wrapping_zone_parameters);
     } else {
         return 0;
     }
@@ -415,25 +430,6 @@ float circleToParameter(vec2 circle_point) {
     return (circle_point.y < 0.0f) ? (6.0f - result) : result;
 }
 
-// Ported from LineVis C code
-vec4 computeWrappingZoneParameters(float wrapping_zone_angle) {
-    vec4 wrapping_zone_parameters;
-    wrapping_zone_parameters[0] = wrapping_zone_angle;
-    wrapping_zone_parameters[1] = PI - 0.5f * wrapping_zone_angle;
-    if (wrapping_zone_angle <= 0.0f) {
-        wrapping_zone_parameters[2] = 0.0f;
-        wrapping_zone_parameters[3] = 0.0f;
-    } else {
-        vec2 circle_point =
-            vec2(cos(2.0f * PI - wrapping_zone_angle), sin(2.0f * PI - wrapping_zone_angle));
-        float zone_begin_parameter = circleToParameter(circle_point);
-        float zone_end_parameter = 7.0f;
-        wrapping_zone_parameters[2] = 1.0f / (zone_end_parameter - zone_begin_parameter);
-        wrapping_zone_parameters[3] = 1.0f - zone_end_parameter * wrapping_zone_parameters[2];
-    }
-    return wrapping_zone_parameters;
-}
-
 /*! This utility function returns the appropriate weight factor for a root at
     the given location. Both inputs are supposed to be unit vectors. If a
     circular arc going counter clockwise from (1.0,0.0) meets root first, it
@@ -507,7 +503,7 @@ float approximate2TrigonometricMoments(float b_0, vec2 trig_b[2], float depth, f
     weight_sum += RealPart(Multiply(b[0], polynomial[0]));
     weight_sum += RealPart(Multiply(b[1], polynomial[1]));
     weight_sum += RealPart(Multiply(b[2], polynomial[2]));
-    // Return the unnomalised approximation
+    // Turn the normalized absorbance into transmittance
     return b_0 * weight_sum;
 }
 
@@ -600,7 +596,7 @@ float approximate3TrigonometricMoments(float b_0, vec2 trig_b[3], float depth, f
     weight_sum += RealPart(Multiply(b[1], polynomial[1]));
     weight_sum += RealPart(Multiply(b[2], polynomial[2]));
     weight_sum += RealPart(Multiply(b[3], polynomial[3]));
-    // Return the unnomalised approximation
+    // Turn the normalized absorbance into transmittance
     return b_0 * weight_sum;
 }
 
@@ -716,6 +712,6 @@ float approximate4TrigonometricMoments(float b_0, vec2 trig_b[4], float depth, f
     weight_sum += RealPart(Multiply(b[2], polynomial[2]));
     weight_sum += RealPart(Multiply(b[3], polynomial[3]));
     weight_sum += RealPart(Multiply(b[4], polynomial[4]));
-    // Return the unnomalised approximation
+    // Turn the normalized absorbance into transmittance
     return b_0 * weight_sum;
 }

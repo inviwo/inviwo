@@ -15,6 +15,7 @@ set(HEADER_FILES
     include/modules/opactopt/io/amiravolumereader.h
     include/modules/opactopt/io/rawpointreader.h
     include/modules/opactopt/algorithm/gaussian.h
+    include/modules/opactopt/utils/graphicsexectimer.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -32,6 +33,7 @@ set(SOURCE_FILES
     src/io/amiravolumereader.cpp
     src/io/rawpointreader.cpp
     src/algorithm/gaussian.cpp
+    src/utils/graphicsexectimer.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -62,12 +64,21 @@ set(SHADER_FILES
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
+# Add script files
+set(SCRIPT_FILES
+    scripts/accuracyeval.py
+    scripts/approximationeval.py
+    scripts/memoryeval.py
+    scripts/renderereval.py
+)
+ivw_group("Script Files" ${SCRIPT_FILES})
+
 set(TEST_FILES
     tests/unittests/opactopt-unittest-main.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
+ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES} ${SCRIPT_FILES})
 
 # Add shader directory to install package
 ivw_add_to_module_pack(glsl)

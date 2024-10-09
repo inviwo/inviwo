@@ -180,7 +180,8 @@ void AmiraMeshReader::processImportance(std::ifstream& fs, std::shared_ptr<Mesh>
         i >> imp;
         importance.push_back(imp);
     }
-    mesh->addBuffer(Mesh::BufferInfo(BufferType::Unknown), util::makeBuffer(std::move(importance)));
+    mesh->addBuffer(Mesh::BufferInfo(BufferType::TexCoordAttrib),
+                    util::makeBuffer(std::move(importance)));
 }
 
 }  // namespace inviwo

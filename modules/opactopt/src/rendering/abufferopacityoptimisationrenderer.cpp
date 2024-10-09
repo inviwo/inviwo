@@ -50,13 +50,10 @@ AbufferOpacityOptimisationRenderer::AbufferOpacityOptimisationRenderer(
     , smoothV_{"oit/simplequad.vert", "opactopt/approximate/smooth.frag", Shader::Build::No}
     , blend_{"oit/simplequad.vert", "opactopt/approximate/blend.frag", Shader::Build::No}
     , clearaoo_{"oit/simplequad.vert", "opactopt/approximate/clear.frag", Shader::Build::No}
-    , importanceSumTexture_{{size3_t(screenSize_.x, screenSize_.y, isc),
-                             GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST},
-                            {size3_t(screenSize_.x, screenSize_.y, isc),
-                             GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST}}
-    , opticalDepthTexture_{size3_t(screenSize_.x, screenSize_.y, odc),
-                           GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST}
-    , gaussianKernel_{64 * sizeof(float),                  // allocate largeish size
+    , importanceSumTexture_{{size3_t(screenSize_.x, screenSize_.y, isc), imageFormat_, GL_NEAREST},
+                            {size3_t(screenSize_.x, screenSize_.y, isc), imageFormat_, GL_NEAREST}}
+    , opticalDepthTexture_{size3_t(screenSize_.x, screenSize_.y, odc), imageFormat_, GL_NEAREST}
+    , gaussianKernel_{64 * sizeof(float),                   // allocate largeish size
                       GLFormats::getGLFormat(GL_FLOAT, 1),  // dummy format
                       GL_STATIC_DRAW, GL_SHADER_STORAGE_BUFFER}
     , gaussianRadius_(gaussianRadius)
@@ -68,7 +65,10 @@ AbufferOpacityOptimisationRenderer::AbufferOpacityOptimisationRenderer(
 
     for (auto& ist : importanceSumTexture_) ist.initialize(nullptr);
     opticalDepthTexture_.initialize(nullptr);
-    generateAndUploadGaussianKernel(gaussianRadius, gaussianSigma, true);
+
+    generateAndUploadGaussianKernel(gaussianRadius, gaussianSigma);
+    generateAndUploadLegendreCoefficients();
+    legendreCoefficients_.bindBase(9);
 
     project_.onReload([this]() { onReload_.invoke(); });
     smoothH_.onReload([this]() { onReload_.invoke(); });
@@ -95,7 +95,7 @@ void AbufferOpacityOptimisationRenderer::prePass(const size2_t& screenSize) {
     importanceSumUnitMain_->activate();
     importanceSumTexture_[0].bind();
     glBindImageTexture(importanceSumUnitMain_->getUnitNumber(), importanceSumTexture_[0].getID(), 0,
-                       true, 0, GL_READ_WRITE, GL_R32F);
+                       true, 0, GL_READ_WRITE, imageFormat_.internalFormat);
     clearaoo_.setUniform("importanceSumCoeffs[0]", importanceSumUnitMain_->getUnitNumber());
 
     if (smoothing) {
@@ -103,7 +103,7 @@ void AbufferOpacityOptimisationRenderer::prePass(const size2_t& screenSize) {
         importanceSumUnitSmooth_->activate();
         importanceSumTexture_[1].bind();
         glBindImageTexture(importanceSumUnitSmooth_->getUnitNumber(),
-                           importanceSumTexture_[1].getID(), 0, true, 0, GL_READ_WRITE, GL_R32F);
+                           importanceSumTexture_[1].getID(), 0, true, 0, GL_READ_WRITE, imageFormat_.internalFormat);
         clearaoo_.setUniform("importanceSumCoeffs[1]", importanceSumUnitSmooth_->getUnitNumber());
     }
 
@@ -111,7 +111,7 @@ void AbufferOpacityOptimisationRenderer::prePass(const size2_t& screenSize) {
     opticalDepthUnit_->activate();
     opticalDepthTexture_.bind();
     glBindImageTexture(opticalDepthUnit_->getUnitNumber(), opticalDepthTexture_.getID(), 0, true, 0,
-                       GL_READ_WRITE, GL_R32F);
+                       GL_READ_WRITE, imageFormat_.internalFormat);
 
     setUniforms(clearaoo_, *abuffUnit_);
     utilgl::singleDrawImagePlaneRect();
@@ -124,8 +124,7 @@ void AbufferOpacityOptimisationRenderer::prePass(const size2_t& screenSize) {
     LGL_ERROR;
 }
 
-bool AbufferOpacityOptimisationRenderer::postPass(bool useIllustration,
-                                                      const Image* background) {
+bool AbufferOpacityOptimisationRenderer::postPass(bool useIllustration, const Image* background) {
     // memory barrier
     glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
 
@@ -138,11 +137,12 @@ bool AbufferOpacityOptimisationRenderer::postPass(bool useIllustration,
     if (numFrags > fragmentSize_) {
         // we have to resize the fragment storage buffer
         fragmentSize_ = static_cast<size_t>(1.1f * numFrags);
-
         // unbind texture
         textureUnits_.clear();
         return false;
     }
+    *nfrags = numFrags;
+    execTimer->addCounter();
 
     // Build shader depending on inport state.
     if ((supportsFragmentLists() && static_cast<bool>(background) != builtWithBackground_) ||
@@ -150,23 +150,6 @@ bool AbufferOpacityOptimisationRenderer::postPass(bool useIllustration,
         buildShaders(background);
         importanceVolumeDirty = false;
     }
-
-    importanceSumUnitMain_->activate();
-    importanceSumTexture_[0].bind();
-    glBindImageTexture(importanceSumUnitMain_->getUnitNumber(), importanceSumTexture_[0].getID(), 0,
-                       true, 0, GL_READ_WRITE, GL_R32F);
-
-    if (smoothing) {
-        importanceSumUnitSmooth_->activate();
-        importanceSumTexture_[1].bind();
-        glBindImageTexture(importanceSumUnitSmooth_->getUnitNumber(),
-                           importanceSumTexture_[1].getID(), 0, true, 0, GL_READ_WRITE, GL_R32F);
-    }
-
-    opticalDepthUnit_->activate();
-    opticalDepthTexture_.bind();
-    glBindImageTexture(opticalDepthUnit_->getUnitNumber(), opticalDepthTexture_.getID(), 0, true, 0,
-                       GL_READ_WRITE, GL_R32F);
 
     process();
     render(background);
@@ -184,10 +167,6 @@ void AbufferOpacityOptimisationRenderer::process() {
     utilgl::CullFaceState culling(GL_NONE);
 
     // project importance sum
-    if (ap_->name == "Legendre") {
-        if (!legendreCoefficientsGenerated_) generateAndUploadLegendreCoefficients();
-        legendreCoefficients_.bindBase(9);
-    }
     project_.activate();
     setUniforms(project_, *abuffUnit_);
     if (importanceVolume && importanceVolume->hasData())
@@ -195,6 +174,7 @@ void AbufferOpacityOptimisationRenderer::process() {
     project_.setUniform("reciprocalDimensions", vec2(1) / vec2(screenSize_));
     utilgl::singleDrawImagePlaneRect();
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
+    execTimer->addCounter();
 
     if (smoothing) {
         // smoothing importance
@@ -214,6 +194,7 @@ void AbufferOpacityOptimisationRenderer::process() {
         utilgl::singleDrawImagePlaneRect();
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     }
+    execTimer->addCounter();
 }
 
 void AbufferOpacityOptimisationRenderer::render(const Image* background) {
@@ -233,7 +214,7 @@ void AbufferOpacityOptimisationRenderer::render(const Image* background) {
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::CullFaceState culling(GL_NONE);
     utilgl::singleDrawImagePlaneRect();
-    blend_.deactivate();
+    execTimer->addCounter();
 
     if (debug) db_.retrieveDebugInfo(nImportanceSumCoefficients_, nOpticalDepthCoefficients_);
 }
@@ -322,7 +303,7 @@ void AbufferOpacityOptimisationRenderer::setNormalisedBlending(bool nb) {
 }
 
 void AbufferOpacityOptimisationRenderer::setUniforms(Shader& shader,
-                                                         const TextureUnit& abuffUnit) const {
+                                                     const TextureUnit& abuffUnit) const {
     OpacityOptimisationRenderer::setUniforms(shader, abuffUnit);
 
     shader.setUniform("screenSize", ivec2(screenSize_));
@@ -345,26 +326,19 @@ void AbufferOpacityOptimisationRenderer::resizeBuffers(const size2_t& screenSize
     FragmentListRenderer::resizeBuffers(screenSize);
 }
 
-void AbufferOpacityOptimisationRenderer::generateAndUploadGaussianKernel(int radius,
-                                                                             float sigma,
-                                                                             bool force) {
-    if (force || radius != gaussianRadius_ || sigma != gaussianSigma_) {
-        gaussianRadius_ = radius;
-        gaussianSigma_ = sigma;
+void AbufferOpacityOptimisationRenderer::generateAndUploadGaussianKernel(int radius, float sigma) {
+    gaussianRadius_ = radius;
+    gaussianSigma_ = sigma;
 
-        std::vector<float> k = util::generateGaussianKernel(radius, sigma);
-        gaussianKernel_.upload(&k[0], k.size() * sizeof(float));
-        gaussianKernel_.unbind();
-    }
+    std::vector<float> k = util::generateGaussianKernel(radius, sigma);
+    gaussianKernel_.upload(&k[0], k.size() * sizeof(float));
+    gaussianKernel_.unbind();
 }
 
-void AbufferOpacityOptimisationRenderer::generateAndUploadLegendreCoefficients(bool force) {
-    legendreCoefficientsGenerated_ = true;
-    if (force || ap_->name == "Legendre") {
-        std::vector<float> coeffs = Approximations::generateLegendreCoefficients();
-        legendreCoefficients_.upload(&coeffs[0], coeffs.size() * sizeof(int));
-        legendreCoefficients_.unbind();
-    }
+void AbufferOpacityOptimisationRenderer::generateAndUploadLegendreCoefficients() {
+    std::vector<float> coeffs = Approximations::generateLegendreCoefficients();
+    legendreCoefficients_.upload(&coeffs[0], coeffs.size() * sizeof(int));
+    legendreCoefficients_.unbind();
 }
 
 }  // namespace inviwo

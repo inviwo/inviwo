@@ -32,16 +32,22 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 
 uniform ivec2 screenSize;
 
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
 uniform layout(r32i) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
 uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
+#else
+uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+#endif
 
 
-void main(void) {
+void main() {
     const ivec2 coords = ivec2(gl_FragCoord.xy);
 
     if (coords.x >= 0 && coords.y >= 0 && coords.x < screenSize.x &&
         coords.y < screenSize.y) {
         // clear coefficient buffers
+        #ifdef COEFF_TEX_FIXED_POINT_FACTOR
         for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
             imageStore(importanceSumCoeffs[0], ivec3(coords, i), ivec4(0));
             imageStore(importanceSumCoeffs[1], ivec3(coords, i), ivec4(0));
@@ -49,6 +55,15 @@ void main(void) {
         for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++) {
             imageStore(opticalDepthCoeffs, ivec3(coords, i), ivec4(0));
         }
+        #else
+        for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
+            imageStore(importanceSumCoeffs[0], ivec3(coords, i), vec4(0));
+            imageStore(importanceSumCoeffs[1], ivec3(coords, i), vec4(0));
+        }
+        for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++) {
+            imageStore(opticalDepthCoeffs, ivec3(coords, i), vec4(0));
+        }
+        #endif
     }
 
     discard;

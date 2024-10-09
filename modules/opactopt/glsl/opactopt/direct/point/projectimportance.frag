@@ -53,8 +53,13 @@ uniform vec4 borderColor = vec4(1.0, 0.0, 0.0, 1.0);
 uniform CameraParameters camera;
 uniform vec2 reciprocalDimensions;
 
-uniform layout(size1x32) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-uniform layout(size1x32) iimage2DArray opticalDepthCoeffs;
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+uniform layout(r32i) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
+#else
+uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+#endif
 
 #ifdef USE_IMPORTANCE_VOLUME
 uniform sampler3D importanceVolume;
@@ -88,8 +93,8 @@ void main() {
     // calculate normal from texture coordinates
     vec3 normal;
     normal.xy = gl_PointCoord * vec2(2.0, -2.0) + vec2(-1.0, 1.0);
-    float r = sqrt(dot(normal.xy, normal.xy));
-    if (r > 1.0) {
+    float rad = sqrt(dot(normal.xy, normal.xy));
+    if (rad > 1.0) {
        discard;   // kill pixels outside circle
     }
 

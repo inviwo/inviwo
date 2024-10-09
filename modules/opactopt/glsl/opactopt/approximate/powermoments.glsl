@@ -27,9 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef OVERESTIMATION
-#define OVERESTIMATION 0.25;
-#endif
+#define PI 3.1415926535897932384626433832795f
+
+layout(std430, binding = 13) buffer MomentSettings {
+    vec4 wrapping_zone_parameters;
+    float wrapping_zone_angle;
+    float overestimation;
+};
 
 float approximate4PowerMoments(float b_0, vec2 b_even, vec2 b_odd, float depth, float bias,
                                float overestimation, vec4 bias_vector);
@@ -50,8 +54,10 @@ void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float v
         m_n *= depth;
 
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-        imageAtomicAdd(coeffTex, coord, int(projVal * float(COEFF_TEX_FIXED_POINT_FACTOR)));
+#if defined(COEFF_TEX_FIXED_POINT_FACTOR)
+        imageAtomicAdd(coeffTex, coord, int(projVal * COEFF_TEX_FIXED_POINT_FACTOR));
+#elif defined(COEFF_TEX_ATOMIC_FLOAT)
+        imageAtomicAdd(coeffTex, coord, projVal);
 #else
         float currVal = imageLoad(coeffTex, coord).x;
         imageStore(coeffTex, coord, vec4(currVal + projVal));
@@ -83,9 +89,10 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
             else b_even[(i - 2) / 2] = coeff / b_0;
         }
 
-        float bias = 6e-5;
-        vec4 bias_vector = vec4(0, 0.628, 0, 0.628);
-        return approximate4PowerMoments(b_0, b_even, b_odd, depth, bias, 0.25, bias_vector);
+        float bias = 5e-7;
+        const vec4 bias_vector = vec4(0, 0.375, 0, 0.375);
+        return approximate4PowerMoments(b_0, b_even, b_odd, depth, bias, overestimation,
+                                        bias_vector);
     } else if (N == 7) {
         float b_0;
         vec3 b_even;
@@ -104,9 +111,10 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
             else b_even[(i - 2) / 2] = coeff / b_0;
         }
 
-        float bias = 6e-4;
-        float bias_vector[6] = float[](0, 0.5566, 0, 0.489, 0, 0.47869382);
-        return approximate6PowerMoments(b_0, b_even, b_odd, depth, bias, 0.25, bias_vector);
+        float bias = 5e-6;
+        const float bias_vector[6] = {0, 0.48, 0, 0.451, 0, 0.45};
+        return approximate6PowerMoments(b_0, b_even, b_odd, depth, bias, overestimation,
+                                        bias_vector);
     } else if (N == 9) {
         float b_0;
         vec4 b_even;
@@ -125,9 +133,11 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
             else b_even[(i - 2) / 2] = coeff / b_0;
         }
 
-        float bias = 2.5e-3;
-        float bias_vector[8] = float[](0, 0.424749164, 0, 0.224078027, 0, 0.153692308, 0, 0.129004405);
-        return approximate8PowerMoments(b_0, b_even, b_odd, depth, bias, 0.25, bias_vector);
+        float bias = 5e-5;
+        const float bias_vector[8] = {0, 0.75, 0, 0.67666666666666664,
+                                      0, 0.63, 0, 0.60030303030303034};
+        return approximate8PowerMoments(b_0, b_even, b_odd, depth, bias, overestimation,
+                                        bias_vector);
     } else {
         return 0;
     }
@@ -160,65 +170,16 @@ float total(layout(size1x32) image2DArray coeffTex, int N)
  * Changes for the Vulkan GLSL port: Copyright 2018-2022 Christoph Neuhauser
  */
 
-// Math help files
-float rsqrt(float x) {
-    return 1.0 / x;
-}
-
-float saturate(float x) {
-    if (isinf(x)) x = 1.0;
-    return clamp(x, 0.0, 1.0);
-}
-
-#ifndef PI
-#define PI 3.1415926535897932384626433832795
-#endif
-/**
- * The OpenGL implementation of atan changes the order of x and y (compared to DirectX),
- * and is unstable for x close to 0.
- *
- * For more details see:
- * https://stackoverflow.com/questions/26070410/robust-atany-x-on-glsl-for-converting-xy-coordinate-to-angle
- */
-float atan2(in float y, in float x)
-{
-    bool s = (abs(x) > abs(y));
-    return mix(PI / 2.0 - atan(x,y), atan(y,x), s);
-}
-
-vec2 mul(vec2 v, mat2 m) {
-    return m * v;
-}
-
-vec3 mul(vec3 v, mat3 m) {
-    return m * v;
-}
-
-vec4 mul(vec4 v, mat4 m) {
-    return m * v;
-}
-
-vec2 mul(mat2 m, vec2 v) {
-    return v * m;
-}
-
-vec3 mul(mat3 m, vec3 v) {
-    return v * m;
-}
-
-vec4 mul(mat4 m, vec4 v) {
-    return v * m;
-}
-
-/*! \file
-    This header provides utility functions to reconstruct the transmittance
-    from a given vector of power moments (4, 6 or 8 power moments) at a
-    specified depth. As prerequisite, utility functions for computing the real
-    roots of polynomials up to degree four are defined.
-*/
-
 /*! Given coefficients of a quadratic polynomial A*x^2+B*x+C, this function
     outputs its two real roots.*/
+
+
+
+float atan2(in float y, in float x) {
+    bool s = (abs(x) > abs(y));
+    return mix(PI / 2.0 - atan(x, y), atan(y, x), s);
+}
+
 vec2 solveQuadratic(vec3 coeffs) {
     coeffs[1] *= 0.5;
 
@@ -255,7 +216,7 @@ vec3 SolveCubic(vec4 Coefficient) {
     // (third is zero, fourth is one)
     vec2 Depressed = vec2(fma(-2.0f * Coefficient.z, Delta.x, Delta.y), Delta.x);
     // Take the cubic root of a normalized complex number
-    float Theta = atan(-Depressed.x, sqrt(Discriminant)) / 3.0f;
+    float Theta = atan2(sqrt(Discriminant), -Depressed.x) / 3.0f;
     vec2 CubicRoot = vec2(cos(Theta), sin(Theta));
     // Compute the three roots, scale appropriately and
     // revert the depression transform
@@ -277,7 +238,7 @@ float solveCubicBlinnSmallest(vec4 coeffs) {
     float discriminant = 4.0 * delta.x * delta.z - delta.y * delta.y;
 
     vec2 depressed = vec2(delta.z, -coeffs.x * delta.y + 2.0 * coeffs.y * delta.z);
-    float theta = abs(atan(-depressed.y, coeffs.x * sqrt(discriminant))) / 3.0;
+    float theta = abs(atan2(coeffs.x * sqrt(discriminant), -depressed.y)) / 3.0;
     vec2 sin_cos = vec2(sin(theta), cos(theta));
     float tmp = 2.0 * sqrt(-depressed.x);
     vec2 x = vec2(tmp * sin_cos.y, tmp * (-0.5 * sin_cos.y - 0.5 * sqrt(3.0) * sin_cos.x));
@@ -395,12 +356,13 @@ float approximate4PowerMoments(float b_0, vec2 b_even, vec2 b_odd, float depth,
     polynomial[2] = polynomial[1];
     polynomial[1] = polynomial[0] - polynomial[1] * z[0];
     polynomial[0] = f0 - polynomial[0] * z[0];
-    float sum = polynomial[0] + dot(b.xy, polynomial.yz);
-    // Return the unnomalised approximation
-    return b_0 * sum;
+    float absorbance = polynomial[0] + dot(b.xy, polynomial.yz);
+    ;
+    // Turn the normalized absorbance into transmittance
+    return b_0 * absorbance;
 }
 
-/*! This function reconstructs the approximation at the given depth from six
+/*! This function reconstructs the transmittance at the given depth from six
     normalized power moments and the given zeroth moment.*/
 float approximate6PowerMoments(float b_0, vec3 b_even, vec3 b_odd, float depth,
                                                    float bias, float overestimation,
@@ -482,12 +444,12 @@ float approximate6PowerMoments(float b_0, vec3 b_even, vec3 b_odd, float depth,
     polynomial[2] = fma(polynomial[2], -z[0], polynomial[1]);
     polynomial[1] = fma(polynomial[1], -z[0], polynomial[0]);
     polynomial[0] = fma(polynomial[0], -z[0], f0);
-    float sum = dot(polynomial, vec4(1.0, b[0], b[1], b[2]));
-    // Return the unnomalised approximation
-    return b_0 * sum;
+    float absorbance = dot(polynomial, vec4(1.0, b[0], b[1], b[2]));
+    // Turn the normalized absorbance into transmittance
+    return b_0 * absorbance;
 }
 
-/*! This function reconstructs the approximation the given depth from eight
+/*! This function reconstructs the transmittance at the given depth from eight
     normalized power moments and the given zeroth moment.*/
 float approximate8PowerMoments(float b_0, vec4 b_even, vec4 b_odd, float depth,
                                                    float bias, float overestimation,
@@ -604,7 +566,7 @@ float approximate8PowerMoments(float b_0, vec4 b_even, vec4 b_odd, float depth,
     Polynomial[1] = fma(-Polynomial[1], z[0], Polynomial[0]);
     Polynomial[0] = fma(-Polynomial[0], z[0], Polynomial_0);
     Polynomial_0 = fma(-Polynomial_0, z[0], f0);
-    float sum = Polynomial_0 + dot(Polynomial, vec4(b[0], b[1], b[2], b[3]));
-    // Return the unnomalised approximation
-    return b_0 * sum;
+    float absorbance = Polynomial_0 + dot(Polynomial, vec4(b[0], b[1], b[2], b[3]));
+    // Turn the normalized absorbance into transmittance
+    return b_0 * absorbance;
 }

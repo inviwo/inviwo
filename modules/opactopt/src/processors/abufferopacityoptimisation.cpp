@@ -105,7 +105,18 @@ AbufferOpacityOptimisation::AbufferOpacityOptimisation()
     , gaussianKernelSigma_{"gaussianKernelSigma", "Gaussian kernel sigma", 1, 0.001, 50}
     , debugCoords_{"debugCoords", "Coordinates", {0, 0}}
     , debugFileName_{"debugFile", "Debug file"}
-    , debugApproximation_{"debugApproximation", "Debug and export"} {
+    , debugApproximation_{"debugApproximation", "Debug and export"}
+    , timingMode_{"timingMode", "Timing mode", 0, 0, 2, 1, InvalidationLevel::Valid}
+    , timeTotal_{"timeTotal", "Total time", 0, 0, INT64_MAX, 1, InvalidationLevel::Valid}
+    , timeSetup_{"timeSetup", "Setup time", 0, 0, INT64_MAX, 1, InvalidationLevel::Valid}
+    , timeRasterisation_{"timeRasterisation",     "Rasterisation time", 0, 0, INT64_MAX, 1,
+                         InvalidationLevel::Valid}
+    , timeProjection_{"timeProjection",        "Time projection", 0, 0, INT64_MAX, 1,
+                      InvalidationLevel::Valid}
+    , timeSmoothing_{"timeSmoothing",         "Time smoothing", 0, 0, INT64_MAX, 1,
+                     InvalidationLevel::Valid}
+    , timeBlending_{"timeBlending", "Time blending", 0, 0, INT64_MAX, 1, InvalidationLevel::Valid}
+    , nfrags_{"nfrags", "Fragments rendered", 0, 0, INT64_MAX, 1, InvalidationLevel::Valid} {
 
     flr_ = std::make_unique<AbufferOpacityOptimisationRenderer>(
         &Approximations::approximations.at(approximationMethod_), &camera_,
@@ -140,6 +151,20 @@ AbufferOpacityOptimisation::AbufferOpacityOptimisation()
                                            debugFileName_, debugApproximation_);
     smoothing_.addProperties(gaussianKernelRadius_, gaussianKernelSigma_);
 
+    std::vector<Int64Property*> timers{&timeSetup_, &timeRasterisation_, &timeProjection_,
+                                       &timeSmoothing_, &timeBlending_};
+    execTimer.setTimers(&timeTotal_, timers);
+    aoor_->execTimer = &execTimer;
+    aoor_->nfrags = &nfrags_;
+    for (auto timer : timers) {
+        addProperty(timer);
+        timer->setVisible(false);
+    }
+    addProperties(timingMode_, timeTotal_, nfrags_);
+    timingMode_.setVisible(false);
+    timeTotal_.setVisible(false);
+    nfrags_.setVisible(false);
+
     approximationMethod_.onChange([this]() {
         const auto* p = &Approximations::approximations.at(approximationMethod_);
         importanceSumCoefficients_.setMinValue(p->minCoefficients);
@@ -161,11 +186,7 @@ AbufferOpacityOptimisation::AbufferOpacityOptimisation()
         normalisedBlending_.setVisible(!useExactBlending_);
     });
     normalisedBlending_.onChange([this]() { aoor_->setNormalisedBlending(normalisedBlending_); });
-    smoothing_.onChange([this]() {
-        aoor_->smoothing = smoothing_;
-        if (smoothing_)
-            aoor_->generateAndUploadGaussianKernel(gaussianKernelRadius_, gaussianKernelSigma_);
-    });
+    smoothing_.onChange([this]() { aoor_->smoothing = smoothing_; });
     gaussianKernelRadius_.onChange([this]() {
         aoor_->generateAndUploadGaussianKernel(gaussianKernelRadius_, gaussianKernelSigma_);
     });
@@ -185,10 +206,46 @@ AbufferOpacityOptimisation::AbufferOpacityOptimisation()
     debugCoords_.setMaxValue(ivec2(aoor_->screenSize_) - ivec2(1, 1));
     debugFileName_.setSelectedExtension(
         FileExtension::createFileExtensionFromString("Text file (*.txt)"));
+
+    approximationProperties_.propertyModified();
 }
 
 void AbufferOpacityOptimisation::process() {
-    RasterizationRenderer::process();
+    execTimer.reset(timingMode_);
+    execTimer.addCounter();
+
+    if (intermediateImage_.getDimensions() != outport_.getDimensions()) {
+        intermediateImage_.setDimensions(outport_.getDimensions());
+    }
+
+    // render into a temp image to be able to compare depths in the final pass
+    utilgl::activateTargetAndClearOrCopySource(intermediateImage_, background_);
+    for (const auto& rasterization : rasterizations_) {
+        if (rasterization->usesFragmentLists() == UseFragmentList::No) {
+            rasterization->rasterize(outport_.getDimensions(), mat4(1.0));
+        }
+    }
+
+    // Loop: fragment list may need another try if not enough space for the pixels was available
+    for (bool success = false; !success;) {
+        // prepare fragment list rendering
+        aoor_->prePass(outport_.getDimensions());
+        execTimer.addCounter();
+
+        aoor_->beginCount();
+
+        for (const auto& rasterization : rasterizations_) {
+            if (rasterization->usesFragmentLists() == UseFragmentList::Yes) {
+                rasterization->rasterize(outport_.getDimensions(), mat4(1.0));
+            }
+        }
+        aoor_->endCount();
+
+        utilgl::activateTargetAndCopySource(outport_, intermediateImage_);
+
+        success = aoor_->postPass(false, &intermediateImage_);
+    }
+    utilgl::deactivateCurrentTarget();
 
     if (aoor_->debug) {
         aoor_->debug = false;

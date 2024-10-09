@@ -41,8 +41,13 @@ uniform LightParameters lighting;
 uniform CameraParameters camera;
 uniform vec2 reciprocalDimensions;
 
-uniform layout(size1x32) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-uniform layout(size1x32) iimage2DArray opticalDepthCoeffs;
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+uniform layout(r32i) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
+#else
+uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+#endif
 
 #ifdef USE_IMPORTANCE_VOLUME
 uniform sampler3D importanceVolume;
@@ -108,7 +113,8 @@ void main() {
     // find alpha
     float gisq = gi * gi;
     float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
-    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
+    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth);
+    Gd += 0.5 * gisq; // correct for importance sum approximation at discontinuity
     float alpha = clamp(1 /
                     (1 + pow(1 - gi, 2 * lambda)
                     * (r * max(0, Gd - gisq)
@@ -116,9 +122,9 @@ void main() {
                     0.0, 0.9999); // set pixel alpha using opacity optimisation
 
     // find optical depth
-    float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth); 
-
+    float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth);
     float weight = alpha / sqrt(1 - alpha) * exp(-taud); // correct for optical depth approximation at discontinuity
+
     c.rgb = weight * c.rgb;
     c.a = weight; // save sum of weights in alpha channel for later division
 

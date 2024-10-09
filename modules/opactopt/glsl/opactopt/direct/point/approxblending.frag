@@ -39,8 +39,13 @@ uniform vec4 borderColor = vec4(1.0, 0.0, 0.0, 1.0);
 uniform CameraParameters camera;
 uniform vec2 reciprocalDimensions;
 
-uniform layout(size1x32) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-uniform layout(size1x32) iimage2DArray opticalDepthCoeffs;
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+uniform layout(r32i) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
+#else
+uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+#endif
 
 #ifdef USE_IMPORTANCE_VOLUME
 uniform sampler3D importanceVolume;
@@ -97,7 +102,10 @@ void main() {
     // find alpha
     float gisq = gi * gi;
     float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
-    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth) + 0.5 * gisq; // correct for importance sum approximation at discontinuity
+    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth);
+    #if !defined(POWER_MOMENTS) && !defined(TRIG_MOMENTS)
+        Gd += 0.5 * gisq; // correct for importance sum approximation at discontinuity
+    #endif
     float alpha = clamp(1 /
                     (1 + pow(1 - gi, 2 * lambda)
                     * (r * max(0, Gd - gisq)
@@ -107,29 +115,27 @@ void main() {
     // calculate normal from texture coordinates
     vec3 normal;
     normal.xy = gl_PointCoord * vec2(2.0, -2.0) + vec2(-1.0, 1.0);
-    float r = sqrt(dot(normal.xy, normal.xy));
-    if (r > 1.0) {
+    float rad = sqrt(dot(normal.xy, normal.xy));
+    if (rad > 1.0) {
        discard;   // kill pixels outside circle
     }
-    normal.z = sqrt(1.0 - r);
 
     float glyphRadius = pointSize * 0.5;
     
-    r *= pointSize * 0.5 + borderWidth;
+    rad *= pointSize * 0.5 + borderWidth;
 
     // pseudo antialiasing with the help of the alpha channel
     // i.e. smooth transition between center and border, and smooth alpha fall-off at the outer rim
     float outerglyphRadius = glyphRadius + borderWidth - antialising; // used for adjusting the alpha value of the outer rim
 
-    float borderValue = clamp(mix(0.0, 1.0, (r - glyphRadius) / 2), 0.0, 1.0);
-    float borderAlpha = clamp(mix(1.0, 0.0, (r - outerglyphRadius) / (glyphRadius + borderWidth - outerglyphRadius)), 0.0, alpha);
+    float borderValue = clamp(mix(0.0, 1.0, (rad - glyphRadius) / 2), 0.0, 1.0);
+    float borderAlpha = clamp(mix(1.0, 0.0, (rad - outerglyphRadius) / (glyphRadius + borderWidth - outerglyphRadius)), 0.0, 1.0);
     alpha *= borderAlpha;
 
     vec4 c = mix(color_, borderColor, borderValue);
     
     // Approximate blending
-    float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth); 
-
+    float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth);
     float weight = alpha / sqrt(1 - alpha) * exp(-taud); // correct for optical depth approximation at discontinuity
     c.rgb = weight * c.rgb;
     c.a = weight;

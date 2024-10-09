@@ -31,7 +31,7 @@
 #define ABUFFERCOMMONS_H
 
 // max depth of the chain, all others are discarded during the final rendering
-#define ABUFFER_SIZE 128
+#define ABUFFER_SIZE 8192
 
 // Helpers
 

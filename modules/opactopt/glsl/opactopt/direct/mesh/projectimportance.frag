@@ -50,8 +50,13 @@ layout(std430, binding = 11) buffer debugFragments {
 uniform CameraParameters camera;
 uniform vec2 reciprocalDimensions;
 
-uniform layout(size1x32) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-uniform layout(size1x32) iimage2DArray opticalDepthCoeffs;
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+uniform layout(r32i) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
+#else
+uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+#endif
 
 #ifdef USE_IMPORTANCE_VOLUME
 uniform sampler3D importanceVolume;

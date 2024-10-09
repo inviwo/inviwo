@@ -73,6 +73,12 @@ private:
     ButtonProperty debugApproximation_;
     IntVec2Property debugCoords_;
     FileProperty debugFileName_;
+
+    inviwo::util::GraphicsExecTimer execTimer;
+    IntProperty timingMode_;  // 0 off, 1 total, 2 per pass
+    Int64Property timeTotal_, timeSetup_, timeRasterisation_, timeProjection_, timeSmoothing_,
+        timeBlending_;
+    Int64Property nfrags_;
 };
 
 }  // namespace inviwo

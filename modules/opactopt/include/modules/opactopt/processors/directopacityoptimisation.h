@@ -28,13 +28,10 @@
  *********************************************************************************/
 
 #pragma once
-
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
-
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/io/csvwriter.h>
+#include <modules/opactopt/opactoptmoduledefine.h>
 
 #include <modules/opactopt/rendering/approximation.h>
+#include <modules/opactopt/utils/graphicsexectimer.h>
 #include <modules/opengl/texture/texture2darray.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
@@ -42,6 +39,7 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <modules/opengl/volume/volumeutils.h>
+#include <modules/opengl/openglcapabilities.h>
 
 #include <inviwo/core/interaction/cameratrackball.h>  // for CameraTrackball
 #include <inviwo/core/ports/imageport.h>              // for ImageInport, ImageOutport
@@ -139,6 +137,10 @@ protected:
     FloatProperty coeffTexFixedPointFactor_;
 
     TextureUnitContainer textureUnits_;
+    GLFormat imageFormat_ = GLFormats::getGLFormat(
+        OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float") ? GL_FLOAT
+                                                                              : GL_INT,
+        1);
     Texture2DArray importanceSumTexture_[2];
     Texture2DArray opticalDepthTexture_;
     TextureUnit *importanceSumUnitMain_, *importanceSumUnitSmooth_, *opticalDepthUnit_;
@@ -151,9 +153,16 @@ protected:
     BufferObject legendreCoefficients_;
     bool legendreCoefficientsGenerated_ = false;
 
+    Approximations::MomentSettings ms;
+
     IntVec2Property debugCoords_;
     FileProperty debugFileName_;
     ButtonProperty debugApproximation_;
+
+    util::GraphicsExecTimer execTimer;
+    IntProperty timingMode_;  // 0 off, 1 total, 2 per pass
+    Int64Property timeTotal_, timeSetup_, timeProjection_, timeSmoothing_, timeImportanceApprox_,
+        timeBlending_, timeNormalisation_;
 
     bool debugOn_;
     Approximations::DebugBuffer db_;

@@ -33,9 +33,11 @@
 
 #include <modules/opactopt/rendering/opacityoptimisationrenderer.h>
 #include <modules/opactopt/rendering/approximation.h>
+#include <modules/opactopt/utils/graphicsexectimer.h>
 
 #include <modules/opengl/texture/texture2darray.h>
 #include <modules/opengl/buffer/bufferobject.h>
+#include <modules/opengl/openglcapabilities.h>
 
 namespace inviwo {
 
@@ -43,10 +45,9 @@ class IVW_MODULE_OPACTOPT_API AbufferOpacityOptimisationRenderer
     : public OpacityOptimisationRenderer {
 
 public:
-
-    AbufferOpacityOptimisationRenderer(
-        const Approximations::ApproximationProperties* p, CameraProperty* c, int isc, int odc,
-        int gaussianRadius = 3, float sigma = 1.0f);
+    AbufferOpacityOptimisationRenderer(const Approximations::ApproximationProperties* p,
+                                       CameraProperty* c, int isc, int odc, int gaussianRadius = 3,
+                                       float sigma = 1.0f);
 
     virtual void prePass(const size2_t& screenSize) override;
     virtual bool postPass(bool useIllustration, const Image* background) override;
@@ -56,15 +57,18 @@ public:
     void setOpticalDepthCoeffs(int odc);
     void setExactBlending(bool eb);
     void setNormalisedBlending(bool nb);
-    void generateAndUploadGaussianKernel(int radius, float sigma, bool force = false);
-    void generateAndUploadLegendreCoefficients(bool force = false);
+    void generateAndUploadGaussianKernel(int radius, float sigma);
+    void generateAndUploadLegendreCoefficients();
 
-    bool smoothing;
+    bool smoothing = false;
     bool debug = false;
     ivec2 debugCoords = ivec2(0, 0);
     std::filesystem::path debugFile;
     Approximations::DebugBuffer db_;
     const Approximations::ApproximationProperties* ap_;
+
+    util::GraphicsExecTimer* execTimer;
+    Int64Property* nfrags; 
 
 private:
     virtual void buildShaders(bool hasBackground = false) override;
@@ -79,6 +83,7 @@ private:
     int nOpticalDepthCoefficients_;
     bool useExactBlending_ = false;
     bool normalisedBlending_ = true;
+    GLFormat imageFormat_ = GLFormats::getGLFormat(GL_FLOAT, 1);
     Texture2DArray importanceSumTexture_[2];
     Texture2DArray opticalDepthTexture_;
     TextureUnit *abuffUnit_, *importanceSumUnitMain_, *importanceSumUnitSmooth_, *opticalDepthUnit_;
@@ -88,7 +93,7 @@ private:
     float gaussianSigma_;
 
     BufferObject legendreCoefficients_;
-    bool legendreCoefficientsGenerated_ = false;
+    Approximations::MomentSettings ms;
 };
 
 }  // namespace inviwo

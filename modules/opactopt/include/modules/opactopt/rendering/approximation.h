@@ -30,6 +30,7 @@
 
 #include <modules/opactopt/opactoptmoduledefine.h>
 
+#include <math.h>
 #include <string>
 #include <map>
 #include <tuple>
@@ -86,14 +87,30 @@ public:
     DebugBuffer();
     void initialiseDebugBuffer();
     void retrieveDebugInfo(int nIsc, int nOdc);
-    void exportDebugInfo(std::filesystem::path path, const ApproximationProperties ap, int q, int r,
-                         int lambda);
+    void exportDebugInfo(std::filesystem::path path, const ApproximationProperties ap, float q, float r,
+                         float lambda);
 
 private:
-    BufferObject debugApproximationCoeffsBuffer_, debugFragmentsBuffer_;
+    const int debugApproxSamples_ = 10000;
+    BufferObject debugApproximationCoeffsBuffer_, debugFragmentsBuffer_, debugApproxSamplesBuffer_;
     DebugApproximationCoeffs debugCoeffs_;
     std::vector<DebugFragment> debugFrags;
+    std::vector<float> debugImportanceSumSamples_, debugOpticalDepthSamples_;
 };
+
+class MomentSettings {
+public:
+    const float wrapping_zone_angle = 0.1f * M_PI;
+    const float overestimation = 0.25;
+    MomentSettings();
+
+private:
+    BufferObject momentSettingsBuffer_;
+    float circleToParameter(float angle, float* pOutMaxParameter);
+    void computeWrappingZoneParameters(glm::vec4& p_out_wrapping_zone_parameters,
+                                       float new_wrapping_zone_angle);
+};
+
 
 }  // namespace Approximations
 

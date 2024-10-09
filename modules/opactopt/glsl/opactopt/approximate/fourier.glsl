@@ -55,14 +55,17 @@ void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float v
             projVal = val * sinktheta;
         }
 
+        // increment k
         if (i % 2 == 0 && i != 0) {
             coskm1theta = cosktheta;
             sinkm1theta = sinktheta;
         }
 
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+#if defined(COEFF_TEX_FIXED_POINT_FACTOR)
         imageAtomicAdd(coeffTex, coord, int(projVal * COEFF_TEX_FIXED_POINT_FACTOR));
+#elif defined(COEFF_TEX_ATOMIC_FLOAT)
+        imageAtomicAdd(coeffTex, coord, projVal);
 #else
         float currVal = imageLoad(coeffTex, coord).x;
         imageStore(coeffTex, coord, vec4(currVal + projVal));
