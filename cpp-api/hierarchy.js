@@ -2029,6 +2029,9 @@ var hierarchy =
           [ "inviwo::PythonInterpreter", "classinviwo_1_1PythonInterpreter.html", null ]
         ] ]
       ] ],
+      [ "inviwo::Observable< PythonWorkspaceScriptsObserver >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::PythonWorkspaceScripts", "classinviwo_1_1PythonWorkspaceScripts.html", null ]
+      ] ],
       [ "inviwo::Observable< FactoryObserver< RepresentationFactoryObject< Representation > > >", "classinviwo_1_1Observable.html", [
         [ "inviwo::FactoryObservable< RepresentationFactoryObject< Representation > >", "classinviwo_1_1FactoryObservable.html", [
           [ "inviwo::FactoryRegister< RepresentationFactoryObject< Representation >, factoryKeyType< std::type_index >, std::type_index >", "classinviwo_1_1FactoryRegister.html", [
@@ -2358,6 +2361,9 @@ var hierarchy =
         [ "inviwo::PythonEditorWidget", "classinviwo_1_1PythonEditorWidget.html", null ],
         [ "inviwo::PythonLogger", "classinviwo_1_1PythonLogger.html", null ]
       ] ],
+      [ "inviwo::PythonWorkspaceScriptsObserver", "classinviwo_1_1PythonWorkspaceScriptsObserver.html", [
+        [ "inviwo::PythonWorkspaceScriptMenu", "classinviwo_1_1PythonWorkspaceScriptMenu.html", null ]
+      ] ],
       [ "inviwo::ResourceManagerObserver", "classinviwo_1_1ResourceManagerObserver.html", null ],
       [ "inviwo::TFPrimitiveObserver", "classinviwo_1_1TFPrimitiveObserver.html", [
         [ "inviwo::TFEditorPrimitive", "classinviwo_1_1TFEditorPrimitive.html", [
@@ -2656,6 +2662,8 @@ var hierarchy =
     [ "inviwo::plot::ScatterPlotGL::Points", "structinviwo_1_1plot_1_1ScatterPlotGL_1_1Points.html", null ],
     [ "inviwo::Polygon< T >", "classinviwo_1_1Polygon.html", null ],
     [ "inviwo::utilgl::PolygonModeState", "structinviwo_1_1utilgl_1_1PolygonModeState.html", null ],
+    [ "pybind11::polymorphic_type_hook< inviwo::Processor >", "structpybind11_1_1polymorphic__type__hook_3_01inviwo_1_1Processor_01_4.html", null ],
+    [ "pybind11::polymorphic_type_hook< inviwo::Property >", "structpybind11_1_1polymorphic__type__hook_3_01inviwo_1_1Property_01_4.html", null ],
     [ "inviwo::PortConnection", "classinviwo_1_1PortConnection.html", null ],
     [ "inviwo::PortInspector", "classinviwo_1_1PortInspector.html", null ],
     [ "inviwo::PortInspectorFactoryObject", "classinviwo_1_1PortInspectorFactoryObject.html", null ],
@@ -3594,6 +3602,7 @@ var hierarchy =
       [ "inviwo::QPtr< inviwo::PythonEditorWidget >", "classinviwo_1_1QPtr.html", null ],
       [ "inviwo::QPtr< QToolBar >", "classinviwo_1_1QPtr.html", null ],
       [ "inviwo::QPtr< QMenu >", "classinviwo_1_1QPtr.html", null ],
+      [ "inviwo::QPtr< QAction >", "classinviwo_1_1QPtr.html", null ],
       [ "inviwo::QPtr< T >", "classinviwo_1_1QPtr.html", null ]
     ] ],
     [ "inviwo::UnitDesc", "structinviwo_1_1UnitDesc.html", null ],

@@ -1,5 +1,8 @@
 var NAVTREEINDEX8 =
 {
+"classinviwo_1_1InviwoMainWindow.html":[4,0,1,479],
+"classinviwo_1_1InviwoMainWindow.html#a0b1e770fb72d271330411b194988aab9":[2,0,0,473,3],
+"classinviwo_1_1InviwoMainWindow.html#a0b1e770fb72d271330411b194988aab9":[4,0,1,479,3],
 "classinviwo_1_1InviwoMainWindow.html#a4df310b862803d1a1ab14adb98d77200":[2,0,0,473,1],
 "classinviwo_1_1InviwoMainWindow.html#a4df310b862803d1a1ab14adb98d77200":[4,0,1,479,1],
 "classinviwo_1_1InviwoMainWindow.html#a5dd214eab03c359b17573cdac1b0a712":[2,0,0,473,0],
@@ -132,9 +135,9 @@ var NAVTREEINDEX8 =
 "classinviwo_1_1JSONDataFrameReader.html#adf57fe32ab5775206b89c3ade59d0cf8":[1,0,17,1],
 "classinviwo_1_1JSONModule.html":[2,0,0,502],
 "classinviwo_1_1JSONModule.html":[4,0,1,508],
-"classinviwo_1_1Jacobian2D.html":[1,3,98],
-"classinviwo_1_1Jacobian2D.html#ad17ea29b33938a7e4d436160cef5b54f":[1,3,98,0],
-"classinviwo_1_1Jacobian2D.html#afacc58dd099167184c466215bde9c5a9":[1,3,98,1],
+"classinviwo_1_1Jacobian2D.html":[1,3,97],
+"classinviwo_1_1Jacobian2D.html#ad17ea29b33938a7e4d436160cef5b54f":[1,3,97,0],
+"classinviwo_1_1Jacobian2D.html#afacc58dd099167184c466215bde9c5a9":[1,3,97,1],
 "classinviwo_1_1KDNode.html":[2,0,0,503],
 "classinviwo_1_1KDNode.html":[4,0,1,509],
 "classinviwo_1_1KDTree.html":[2,0,0,505],
@@ -246,8 +249,5 @@ var NAVTREEINDEX8 =
 "classinviwo_1_1LayerInformationVisualizer.html#a39e3044c21f7c8ae389b41547abb186d":[2,0,0,531,1],
 "classinviwo_1_1LayerInformationVisualizer.html#a39e3044c21f7c8ae389b41547abb186d":[4,0,1,537,1],
 "classinviwo_1_1LayerInformationVisualizer.html#a3f2179e293a8dbc932b825efc482e788":[2,0,0,531,4],
-"classinviwo_1_1LayerInformationVisualizer.html#a3f2179e293a8dbc932b825efc482e788":[4,0,1,537,4],
-"classinviwo_1_1LayerInformationVisualizer.html#a52265286d87f530fd77eac7d5e2b3406":[2,0,0,531,5],
-"classinviwo_1_1LayerInformationVisualizer.html#a52265286d87f530fd77eac7d5e2b3406":[4,0,1,537,5],
-"classinviwo_1_1LayerInformationVisualizer.html#a57d8c3a5cae04ed32bc0c8537c9cc40f":[2,0,0,531,2]
+"classinviwo_1_1LayerInformationVisualizer.html#a3f2179e293a8dbc932b825efc482e788":[4,0,1,537,4]
 };

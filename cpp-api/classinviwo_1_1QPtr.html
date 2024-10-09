@@ -104,6 +104,8 @@ $(function(){initNavTree('classinviwo_1_1QPtr.html',''); initResizable(true); })
   <div class="headertitle"><div class="title">inviwo::QPtr&lt; T &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;qptr.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for inviwo::QPtr&lt; T &gt;:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
@@ -121,18 +123,27 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afa8be21b349cd308f10afef5cdf308e1" id="r_afa8be21b349cd308f10afef5cdf308e1"><td class="memItemLeft" align="right" valign="top"><a id="afa8be21b349cd308f10afef5cdf308e1" name="afa8be21b349cd308f10afef5cdf308e1"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>QPtr</b> (T *ptr)</td></tr>
 <tr class="separator:afa8be21b349cd308f10afef5cdf308e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3bfc042ef854afe50f8848745b4dbf0" id="r_aa3bfc042ef854afe50f8848745b4dbf0"><td class="memItemLeft" align="right" valign="top"><a id="aa3bfc042ef854afe50f8848745b4dbf0" name="aa3bfc042ef854afe50f8848745b4dbf0"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>QPtr</b> (const <a class="el" href="classinviwo_1_1QPtr.html">QPtr</a> &amp;rhs)=delete</td></tr>
+<tr class="separator:aa3bfc042ef854afe50f8848745b4dbf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64eed0298b23cf4470e5f0b3cbaa417f" id="r_a64eed0298b23cf4470e5f0b3cbaa417f"><td class="memItemLeft" align="right" valign="top"><a id="a64eed0298b23cf4470e5f0b3cbaa417f" name="a64eed0298b23cf4470e5f0b3cbaa417f"></a>
+<a class="el" href="classinviwo_1_1QPtr.html">QPtr</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1QPtr.html">QPtr</a> &amp;that)=delete</td></tr>
+<tr class="separator:a64eed0298b23cf4470e5f0b3cbaa417f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9327d99ebaa70f19fc138986a335a259" id="r_a9327d99ebaa70f19fc138986a335a259"><td class="memItemLeft" align="right" valign="top"><a id="a9327d99ebaa70f19fc138986a335a259" name="a9327d99ebaa70f19fc138986a335a259"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>QPtr</b> (<a class="el" href="classinviwo_1_1QPtr.html">QPtr</a> &amp;&amp;rhs) noexcept</td></tr>
 <tr class="separator:a9327d99ebaa70f19fc138986a335a259"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03015d8f33db2dfad60d79bf9894dcdc" id="r_a03015d8f33db2dfad60d79bf9894dcdc"><td class="memItemLeft" align="right" valign="top"><a id="a03015d8f33db2dfad60d79bf9894dcdc" name="a03015d8f33db2dfad60d79bf9894dcdc"></a>
-<a class="el" href="classinviwo_1_1QPtr.html">QPtr</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1QPtr.html">QPtr</a> &amp;&amp;that)</td></tr>
-<tr class="separator:a03015d8f33db2dfad60d79bf9894dcdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adba958d7e09039a9d06ce7ec3cd38bc5" id="r_adba958d7e09039a9d06ce7ec3cd38bc5"><td class="memItemLeft" align="right" valign="top"><a id="adba958d7e09039a9d06ce7ec3cd38bc5" name="adba958d7e09039a9d06ce7ec3cd38bc5"></a>
+<a class="el" href="classinviwo_1_1QPtr.html">QPtr</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1QPtr.html">QPtr</a> &amp;&amp;that) noexcept</td></tr>
+<tr class="separator:adba958d7e09039a9d06ce7ec3cd38bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d1b00c665fa7f1d630b670ddb1b59c8" id="r_a3d1b00c665fa7f1d630b670ddb1b59c8"><td class="memItemLeft" align="right" valign="top"><a id="a3d1b00c665fa7f1d630b670ddb1b59c8" name="a3d1b00c665fa7f1d630b670ddb1b59c8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> (T *ptr=nullptr)</td></tr>
 <tr class="separator:a3d1b00c665fa7f1d630b670ddb1b59c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>pythonmenu.h</b></li>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename T&gt;<br />
+class inviwo::QPtr&lt; T &gt;</div><p>A unique pointer that automatically connects to the QObject's destroyed signal to automatically release the pointer if the object is destroyed. </p>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
+<li><b>qptr.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

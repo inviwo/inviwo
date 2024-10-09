@@ -1,12 +1,15 @@
 var NAVTREEINDEX7 =
 {
+"classinviwo_1_1ImageSource.html":[2,0,0,418],
+"classinviwo_1_1ImageSource.html":[4,0,1,424],
+"classinviwo_1_1ImageSourceSeries.html":[1,3,1],
 "classinviwo_1_1ImageSourceSeries.html#a5d958521b15c198f5bf3647abae4384b":[1,3,1,0],
 "classinviwo_1_1ImageStackVolumeSource.html":[1,3,2],
 "classinviwo_1_1ImageStackVolumeSource.html#a71452a7c4c7a77aec5a17b3165ad7275":[1,3,2,0],
-"classinviwo_1_1ImageSubsetGL.html":[1,3,42],
-"classinviwo_1_1ImageSubsetGL.html#aafd3f1562fc369172d42a93fe1b6e565":[1,3,42,0],
-"classinviwo_1_1ImageToDataFrame.html":[1,3,66],
-"classinviwo_1_1ImageToDataFrame.html#a3378042d809d4522db9f2b0c8639519b":[1,3,66,0],
+"classinviwo_1_1ImageSubsetGL.html":[1,3,41],
+"classinviwo_1_1ImageSubsetGL.html#aafd3f1562fc369172d42a93fe1b6e565":[1,3,41,0],
+"classinviwo_1_1ImageToDataFrame.html":[1,3,65],
+"classinviwo_1_1ImageToDataFrame.html#a3378042d809d4522db9f2b0c8639519b":[1,3,65,0],
 "classinviwo_1_1ImageToLayer.html":[2,0,0,423],
 "classinviwo_1_1ImageToLayer.html":[4,0,1,429],
 "classinviwo_1_1ImageToLayer.html#a8d843a577eda282f6f56b7305edb888a":[2,0,0,423,0],
@@ -246,8 +249,5 @@ var NAVTREEINDEX7 =
 "classinviwo_1_1InviwoFileDialog.html#a23e46b1c32312d4f20129458d1efe45e":[4,0,1,478,1],
 "classinviwo_1_1InviwoFileDialog.html#ad28edb665b5fb2ee948cc1903eced783":[2,0,0,472,0],
 "classinviwo_1_1InviwoFileDialog.html#ad28edb665b5fb2ee948cc1903eced783":[4,0,1,478,0],
-"classinviwo_1_1InviwoMainWindow.html":[2,0,0,473],
-"classinviwo_1_1InviwoMainWindow.html":[4,0,1,479],
-"classinviwo_1_1InviwoMainWindow.html#a0b1e770fb72d271330411b194988aab9":[2,0,0,473,3],
-"classinviwo_1_1InviwoMainWindow.html#a0b1e770fb72d271330411b194988aab9":[4,0,1,479,3]
+"classinviwo_1_1InviwoMainWindow.html":[2,0,0,473]
 };

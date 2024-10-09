@@ -1,5 +1,8 @@
 var NAVTREEINDEX12 =
 {
+"classinviwo_1_1OpenGLException.html":[4,0,1,691],
+"classinviwo_1_1OpenGLInitException.html":[2,0,0,686],
+"classinviwo_1_1OpenGLInitException.html":[4,0,1,692],
 "classinviwo_1_1OpenGLModule.html":[2,0,0,687],
 "classinviwo_1_1OpenGLModule.html":[4,0,1,693],
 "classinviwo_1_1OpenGLQtCapabilities.html":[2,0,0,688],
@@ -246,8 +249,5 @@ var NAVTREEINDEX12 =
 "classinviwo_1_1PickingEvent.html#a3a9ab841e440bfa51846941ebc7e345b":[2,0,0,740,15],
 "classinviwo_1_1PickingEvent.html#a3a9ab841e440bfa51846941ebc7e345b":[4,0,1,746,15],
 "classinviwo_1_1PickingEvent.html#a4439e924f37cb44fea63dd97b1fc86fd":[2,0,0,740,0],
-"classinviwo_1_1PickingEvent.html#a4439e924f37cb44fea63dd97b1fc86fd":[4,0,1,746,0],
-"classinviwo_1_1PickingEvent.html#a4c1f2a30bc65158310557e7d405701ee":[2,0,0,740,17],
-"classinviwo_1_1PickingEvent.html#a4c1f2a30bc65158310557e7d405701ee":[4,0,1,746,17],
-"classinviwo_1_1PickingEvent.html#a5536037c5c052167f31657c0921df6d2":[2,0,0,740,18]
+"classinviwo_1_1PickingEvent.html#a4439e924f37cb44fea63dd97b1fc86fd":[4,0,1,746,0]
 };

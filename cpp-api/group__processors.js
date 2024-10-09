@@ -130,10 +130,6 @@ var group__processors =
     [ "inviwo::FindEdges", "classinviwo_1_1FindEdges.html", [
       [ "preProcess", "classinviwo_1_1FindEdges.html#aaa4bb85abcfcafda13091b91d56af265", null ]
     ] ],
-    [ "inviwo::ImageChannelSelect", "classinviwo_1_1ImageChannelSelect.html", [
-      [ "postProcess", "classinviwo_1_1ImageChannelSelect.html#aa84afa3c7de88c727e68eccb62f7338b", null ],
-      [ "preProcess", "classinviwo_1_1ImageChannelSelect.html#a535874829a7c27f938a357b9d05b2d1d", null ]
-    ] ],
     [ "inviwo::ImageCompositeProcessorGL", "classinviwo_1_1ImageCompositeProcessorGL.html", [
       [ "process", "classinviwo_1_1ImageCompositeProcessorGL.html#a4fceda1ae83712cdb003372a4da8d067", null ]
     ] ],

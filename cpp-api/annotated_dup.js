@@ -1426,6 +1426,9 @@ var annotated_dup =
       [ "PythonPropertyWidgetQt", "classinviwo_1_1PythonPropertyWidgetQt.html", null ],
       [ "PythonScript", "classinviwo_1_1PythonScript.html", "classinviwo_1_1PythonScript" ],
       [ "PythonSyntaxHighlight", "classinviwo_1_1PythonSyntaxHighlight.html", null ],
+      [ "PythonWorkspaceScriptMenu", "classinviwo_1_1PythonWorkspaceScriptMenu.html", null ],
+      [ "PythonWorkspaceScripts", "classinviwo_1_1PythonWorkspaceScripts.html", null ],
+      [ "PythonWorkspaceScriptsObserver", "classinviwo_1_1PythonWorkspaceScriptsObserver.html", null ],
       [ "QPtr", "classinviwo_1_1QPtr.html", null ],
       [ "QStringHelper", "classinviwo_1_1QStringHelper.html", null ],
       [ "QStringHelper< long int >", "classinviwo_1_1QStringHelper_3_01long_01int_01_4.html", null ],
@@ -1823,6 +1826,10 @@ var annotated_dup =
       [ "WorkspaceTreeView", "classinviwo_1_1WorkspaceTreeView.html", null ],
       [ "WorldTransformDeprecated", "classinviwo_1_1WorldTransformDeprecated.html", "classinviwo_1_1WorldTransformDeprecated" ],
       [ "XMLWriter", "classinviwo_1_1XMLWriter.html", null ]
+    ] ],
+    [ "pybind11", null, [
+      [ "polymorphic_type_hook< inviwo::Processor >", "structpybind11_1_1polymorphic__type__hook_3_01inviwo_1_1Processor_01_4.html", null ],
+      [ "polymorphic_type_hook< inviwo::Property >", "structpybind11_1_1polymorphic__type__hook_3_01inviwo_1_1Property_01_4.html", null ]
     ] ],
     [ "std", "namespacestd.html", [
       [ "hash< inviwo::FileExtension >", "structstd_1_1hash_3_01inviwo_1_1FileExtension_01_4.html", null ],
