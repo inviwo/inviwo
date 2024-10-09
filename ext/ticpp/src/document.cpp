@@ -391,14 +391,13 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData,
         // Did we get encoding info?
         if (encoding == TIXML_ENCODING_UNKNOWN && node->ToDeclaration()) {
             TiXmlDeclaration* dec = node->ToDeclaration();
-            const char* enc = dec->Encoding();
-            assert(enc);
+            const auto& enc = dec->Encoding();
 
-            if (*enc == 0)
+            if (enc.empty())
                 encoding = TIXML_ENCODING_UTF8;
-            else if (StringEqual(enc, "UTF-8", true, TIXML_ENCODING_UNKNOWN))
+            else if (StringEqual(enc.c_str(), "UTF-8", true, TIXML_ENCODING_UNKNOWN))
                 encoding = TIXML_ENCODING_UTF8;
-            else if (StringEqual(enc, "UTF8", true, TIXML_ENCODING_UNKNOWN))
+            else if (StringEqual(enc.c_str(), "UTF8", true, TIXML_ENCODING_UNKNOWN))
                 encoding = TIXML_ENCODING_UTF8;  // incorrect, but be nice
             else
                 encoding = TIXML_ENCODING_LEGACY;
