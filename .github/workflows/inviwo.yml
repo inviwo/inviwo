@@ -308,7 +308,7 @@ jobs:
         -DIVW_APP_INVIWO_DOME=ON
         -DVCPKG_MANIFEST_FEATURES="sgct"
 
-    - uses: cpp-linter/cpp-linter-action@v2.12.1
+    - uses: cpp-linter/cpp-linter-action@v2.13.1
       id: linter
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
