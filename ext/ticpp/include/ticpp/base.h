@@ -6,6 +6,8 @@
 #include <ticpp/ticpprc.h>
 
 #include <string>
+#include <string_view>
+#include <array>
 #include <cassert>
 
 /**	Internal structure for tracking location of items
@@ -108,9 +110,9 @@ public:
     virtual const char* Parse(const char* p, TiXmlParsingData* data,
                               TiXmlEncoding encoding /*= TIXML_ENCODING_UNKNOWN */) = 0;
 
-    /** Expands entities in a string. Note this should not contian the tag's '<', '>', etc,
+    /** Expands entities in a string. Note this should not contain the tag's '<', '>', etc,
      * or they will be transformed into entities!
-    */
+     */
     static void EncodeString(const std::string& str, std::string* out);
 
     enum {
@@ -193,7 +195,7 @@ protected:
             return p + (*length);
         } else {
             // Not valid text.
-            return 0;
+            return nullptr;
         }
     }
 
@@ -226,14 +228,13 @@ protected:
 
 private:
     struct Entity {
-        const char* str;
-        unsigned int strLength;
+        std::string_view str;
         char chr;
     };
-    enum {
-        NUM_ENTITY = 5,
-        MAX_ENTITY_LENGTH = 6
-    };
-    static Entity entity[NUM_ENTITY];
+    // Note the "PutString" hardcodes the same list. This
+    // is less flexible than it appears. Changing the entries
+    // or order will break putstring.
+    static constexpr std::array<Entity, 5> entity = {
+        {{"&amp;", '&'}, {"&lt;", '<'}, {"&gt;", '>'}, {"&quot;", '\"'}, {"&apos;", '\''}}};
     static bool condenseWhiteSpace;
 };
