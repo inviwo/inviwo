@@ -31,9 +31,9 @@ public:
     virtual ~TiXmlStylesheetReference() {}
 
     /// Type. Will return an empty string if none was found.
-    const char* Type() const { return type.c_str(); }
+    const std::string& Type() const { return type; }
     /// Href. Will return an empty string if none was found.
-    const char* Href() const { return href.c_str(); }
+    const std::string& Href() const { return href; }
 
     /// Creates a copy of this StylesheetReference and returns it.
     virtual TiXmlNode* Clone() const;

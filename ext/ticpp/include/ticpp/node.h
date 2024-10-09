@@ -94,7 +94,7 @@ public:
 
             The subclasses will wrap this function.
     */
-    const char* Value() const { return value.c_str(); }
+    [[deprecated("use ValueStr")]] const char* Value() const { return value.c_str(); }
 
     /** Return Value() as a std::string. If you only use STL,
         this is more efficient than calling Value().
@@ -127,13 +127,13 @@ public:
     TiXmlNode* Parent() { return parent; }
     const TiXmlNode* Parent() const { return parent; }
 
-    const TiXmlNode* FirstChild() const {
-        return firstChild;
-    }  ///< The first child of this node. Will be null if there are no children.
+    /// The first child of this node. Will be null if there are no children.
+    const TiXmlNode* FirstChild() const { return firstChild; }
     TiXmlNode* FirstChild() { return firstChild; }
-    const TiXmlNode* FirstChild(
-        const char* value) const;  ///< The first child of this node with the matching 'value'. Will
-                                   ///< be null if none found.
+
+    /// The first child of this node with the matching 'value'. Will be null if none found.
+    const TiXmlNode* FirstChild(const char* value) const;
+
     /// The first child of this node with the matching 'value'. Will be null if none found.
     TiXmlNode* FirstChild(const char* _value) {
         // Call through to the const version - safe since nothing is changed. Exiting syntax: cast
@@ -278,7 +278,6 @@ public:
     TiXmlNode* NextSibling(std::string_view _next) {
         return const_cast<TiXmlNode*>((const_cast<const TiXmlNode*>(this))->NextSibling(_next));
     }
-
 
     /** Convenience function to get through elements.
             Calls NextSibling and ToElement. Will skip all non-Element

@@ -3,6 +3,7 @@
 #include <istream>
 #include <cstring>
 
+#include <fmt/format.h>
 
 bool TiXmlBase::condenseWhiteSpace = true;
 
@@ -28,40 +29,28 @@ void TiXmlBase::EncodeString(const std::string& str, std::string* outString) {
                 ++i;
                 if (str[i] == ';') break;
             }
-        } else if (c == '&') {
-            outString->append(entity[0].str, entity[0].strLength);
+        } else if (c == entity[0].chr) {
+            outString->append(entity[0].str);
             ++i;
-        } else if (c == '<') {
-            outString->append(entity[1].str, entity[1].strLength);
+        } else if (c == entity[1].chr) {
+            outString->append(entity[1].str);
             ++i;
-        } else if (c == '>') {
-            outString->append(entity[2].str, entity[2].strLength);
+        } else if (c == entity[2].chr) {
+            outString->append(entity[2].str);
             ++i;
-        } else if (c == '\"') {
-            outString->append(entity[3].str, entity[3].strLength);
+        } else if (c == entity[3].chr) {
+            outString->append(entity[3].str);
             ++i;
-        } else if (c == '\'') {
-            outString->append(entity[4].str, entity[4].strLength);
+        } else if (c == entity[4].chr) {
+            outString->append(entity[4].str);
             ++i;
         } else if (c < 32) {
             // Easy pass at non-alpha/numeric/symbol
             // Below 32 is symbolic.
-            char buf[32];
-
-#if defined(TIXML_SNPRINTF)
-            TIXML_SNPRINTF(buf, sizeof(buf), "&#x%02X;", (unsigned)(c & 0xff));
-#else
-            sprintf(buf, "&#x%02X;", (unsigned)(c & 0xff));
-#endif
-
-            //*ME:	warning C4267: convert 'size_t' to 'int'
-            //*ME:	Int-Cast to make compiler happy ...
-            outString->append(buf, (int)strlen(buf));
+            outString->append(fmt::format("&#x{:02X};", c));
             ++i;
         } else {
-            // char realc = (char) c;
-            // outString->append( &realc, 1 );
-            *outString += (char)c;  // somewhat more efficient function call.
+            *outString += static_cast<char>(c);
             ++i;
         }
     }
@@ -87,17 +76,6 @@ const char* TiXmlBase::errorString[TIXML_ERROR_STRING_COUNT] = {
     "Error when TiXmlDocument added to document, because TiXmlDocument can only be at the root.",
 };
 
-
-
-// Note tha "PutString" hardcodes the same list. This
-// is less flexible than it appears. Changing the entries
-// or order will break putstring.
-TiXmlBase::Entity TiXmlBase::entity[NUM_ENTITY] = {{"&amp;", 5, '&'},
-                                                   {"&lt;", 4, '<'},
-                                                   {"&gt;", 4, '>'},
-                                                   {"&quot;", 6, '\"'},
-                                                   {"&apos;", 6, '\''}};
-
 // Bunch of unicode info at:
 //		http://www.unicode.org/faq/utf_bom.html
 // Including the basic of this table, which determines the #bytes in the
@@ -107,8 +85,6 @@ TiXmlBase::Entity TiXmlBase::entity[NUM_ENTITY] = {{"&amp;", 5, '&'},
 //				ef bb bf (Microsoft "lead bytes")
 //				ef bf be
 //				ef bf bf
-
-
 
 // clang-format off
 const int TiXmlBase::utf8ByteTable[256] = {
@@ -131,7 +107,6 @@ const int TiXmlBase::utf8ByteTable[256] = {
 		4,	4,	4,	4,	4,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1	// 0xf0 0xf0 to 0xf4 4 byte, 0xf5 and higher invalid
 };
 // clang-format on
-
 
 void TiXmlBase::ConvertUTF32ToUTF8(unsigned long input, char* output, int* length) {
     const unsigned long BYTE_MASK = 0xBF;
@@ -371,12 +346,11 @@ const char* TiXmlBase::GetEntity(const char* p, char* value, int* length, TiXmlE
     }
 
     // Now try to match it.
-    for (i = 0; i < NUM_ENTITY; ++i) {
-        if (strncmp(entity[i].str, p, entity[i].strLength) == 0) {
-            assert(strlen(entity[i].str) == entity[i].strLength);
+    for (i = 0; i < entity.size(); ++i) {
+        if (strncmp(entity[i].str.data(), p, entity[i].str.size()) == 0) {
             *value = entity[i].chr;
             *length = 1;
-            return (p + entity[i].strLength);
+            return (p + entity[i].str.size());
         }
     }
 
