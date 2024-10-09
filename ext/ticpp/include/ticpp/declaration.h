@@ -39,11 +39,11 @@ public:
     virtual ~TiXmlDeclaration() {}
 
     /// Version. Will return an empty string if none was found.
-    const char* Version() const { return version.c_str(); }
+    const std::string& Version() const { return version; }
     /// Encoding. Will return an empty string if none was found.
-    const char* Encoding() const { return encoding.c_str(); }
+    const std::string& Encoding() const { return encoding; }
     /// Is this a standalone document?
-    const char* Standalone() const { return standalone.c_str(); }
+    const std::string& Standalone() const { return standalone; }
 
     /// Creates a copy of this Declaration and returns it.
     virtual TiXmlNode* Clone() const;
