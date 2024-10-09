@@ -27,10 +27,14 @@
  *
  *********************************************************************************/
 
+#include <inviwo/volume/processors/histogramtodataframe.h>
 #include <inviwo/volume/processors/volumeregionstatistics.h>
 #include <inviwo/volume/processors/volumeregionmapper.h>
 #include <inviwo/volume/processors/volumevoronoisegmentation.h>
 #include <inviwo/volume/volumemodule.h>
+
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/layerport.h>
 
 namespace inviwo {
 
@@ -38,6 +42,8 @@ VolumeModule::VolumeModule(InviwoApplication* app) : InviwoModule(app, "Volume")
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
+    registerProcessor<HistogramToDataFrame<Layer>>();
+    registerProcessor<HistogramToDataFrame<Volume>>();
     registerProcessor<VolumeRegionMapper>();
     registerProcessor<VolumeRegionStatistics>();
     registerProcessor<VolumeVoronoiSegmentation>();
