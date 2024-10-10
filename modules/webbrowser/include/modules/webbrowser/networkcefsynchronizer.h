@@ -92,15 +92,60 @@ public:
 
     /**
      * Called due to cefQuery execution in message_router.html.
-     * Expects the request to be a JSON data object, see inviwoapi.js:
-     * {command: "subscribe", "path": propertyPath, "id":htmlId}
-     * for synchronizing property to change.
-     * {command: "property.set", "path":"PropertyIdentifier", "value":0.5}
-     * for setting a value
-     * {command: "property.get", "path": propertyPath}
-     * for getting a value.
-     * Currently only supports a single property in the request.
-     * @see PropertyWidgetCEF
+     * Expects the request to be a JSON data object, see inviwoapiv2.js:
+     *
+     * * for synchronizing property to change:
+     *      {command: "subscribe", "path": propertyPath, "id":htmlId}
+     * * for setting a value;
+     *      {command: "property.set", "path":"PropertyIdentifier", "value":0.5}
+     * * for getting a value:
+     *      {command: "property.get", "path": propertyPath}
+     *
+     * * Network commands:
+     *   * {command: "network.processors"}
+     * * Processor commands:
+     *   * {command: "processor.properties", identifier: "ProcessorIdentifier"}
+     *   * {command: "processor.inports",    identifier: "ProcessorIdentifier"}
+     *   * {command: "processor.outports",   identifier: "ProcessorIdentifier"}
+     * * Property commands:
+     *  * {command: "property.get", path: "ProcessorIdentifier/PropertyIdentifier"}
+     *  * {command: "property.set", path: "ProcessorIdentifier/PropertyIdentifier", "data": 0.5}
+     * * Inport commands:
+     *  * {command: "inport.getData", processor: "ProcessorIdentifier", identifier: "InportIdentifier"}
+     * * BrushingAndLinkingInport commands:
+     *   * {command: "inport.getFilteredIndices",
+     *      processor: "ProcessorIdentifier",
+     *      identifier: "InportIdentifier"
+     *      target: "BrushingTarget"}
+     *   * {command: "inport.getSelectedIndices",
+     *      processor: "ProcessorIdentifier",
+     *      identifier: "InportIdentifier"
+     *      target: "BrushingTarget"}
+     *   * {command: "inport.getHighlightedIndices",
+     *      processor: "ProcessorIdentifier",
+     *      identifier: "InportIdentifier"
+     *      target: "BrushingTarget"}
+     *   * {command: "inport.filter",
+     *      processor: "ProcessorIdentifier",
+     *      identifier: "InportIdentifier"
+     *      target: "BrushingTarget"
+     *      indices: "list of indices"}
+     *    * {command: "inport.select",
+     *      processor: "ProcessorIdentifier",
+     *      identifier: "InportIdentifier"
+     *      target: "BrushingTarget"
+     *      indices: "list of indices"}
+     *    * {command: "inport.highlight",
+     *      processor: "ProcessorIdentifier",
+     *      identifier: "InportIdentifier"
+     *      target: "BrushingTarget"
+     *      indices: "list of indices"}
+     * * Outport commands:
+     *   * {command: "outport.setData",
+     *      processor: "ProcessorIdentifier",
+     *      identifier: "OutportIdentifier",
+     *      data: "data"}
+     *
      */
     virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64_t query_id,
                          const CefString& request, bool persistent,
@@ -149,8 +194,9 @@ private:
      * Stops synchronizing property when this object
      * is destroyed, property is removed, or when stopSynchronize is called.
      * @param property Property to synchronize
-     * @param onChange Callback to execute when the property changes.
-     * @param propertyObserverCallback Callback to execute when on PropertyObserver notifications.
+     * @param frame Frame to synchronize with
+     * @param onChangeJS Callback to execute when the property changes.
+     * @param propertyObserverCallbackJS Callback to execute when on PropertyObserver notifications.
      */
     std::unique_ptr<PropertyWidgetCEF> createWidget(Property* property, CefRefPtr<CefFrame>& frame,
                                                     std::string_view onChangeJS,

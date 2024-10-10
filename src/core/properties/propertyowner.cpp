@@ -86,7 +86,7 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
 
     if (auto* existing = getPropertyByIdentifier(property->getIdentifier()); existing != nullptr) {
         throw Exception(IVW_CONTEXT,
-                        "Can not add Property: [id: '{}', class id: '{}'] to PropertyOwner '{}'"
+                        "Cannot add Property: [id: '{}', class id: '{}'] to PropertyOwner '{}'"
                         ", the identifier is already used by [id: '{}', class id: '{}']",
                         property->getIdentifier(), property->getClassIdentifier(), getIdentifier(),
                         existing->getIdentifier(), existing->getClassIdentifier());
@@ -94,7 +94,7 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
     if (auto parent = dynamic_cast<Property*>(this)) {
         if (parent == property) {
             throw Exception(IVW_CONTEXT,
-                            "Can't add Property: [id: '{}', class id: '{}'] to itself.",
+                            "Cannot add Property: [id: '{}', class id: '{}'] to itself.",
                             property->getIdentifier(), property->getClassIdentifier());
         }
     }
