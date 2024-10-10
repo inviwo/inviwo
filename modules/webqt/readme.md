@@ -1,3 +1,3 @@
 # webqt Module
 
-Description of the webqt module
+The WebQt has Qt property widgets for editing HTML and Javascript code.
