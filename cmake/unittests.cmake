@@ -76,4 +76,7 @@ function(ivw_make_unittest_target name target)
     # Define defintions and properties
     ivw_define_standard_definitions(${test_name} ${test_name})
     ivw_define_standard_properties(${test_name})
+
+    add_test(NAME ${test_name} COMMAND $<TARGET_FILE:${test_name}>)
+
 endfunction()

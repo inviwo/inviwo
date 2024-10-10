@@ -102,6 +102,7 @@ add_subdirectory(bindings)
 
 if(TARGET inviwo-unittests-python3)
     add_dependencies(inviwo-unittests-python3 inviwopy)
+    target_link_libraries(inviwo-unittests-python3 PUBLIC inviwo::python-helper)
 endif()
 
 # Add Python to package
