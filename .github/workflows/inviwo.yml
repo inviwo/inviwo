@@ -198,7 +198,17 @@ jobs:
       shell: bash
       working-directory: "build/bin"
       run: ${{ matrix.run }}
-      
+
+    - name: "Unittests"
+      shell: bash
+      working-directory: "build/bin"
+      run: |
+        rc=0
+        for unittest in inviwo-unittests-*
+          do ./${unittest} || rc=$?
+        done
+        exit ${rc}
+
     - name: "Upload installer"
       if: matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
       uses: actions/upload-artifact@v4
@@ -226,6 +236,67 @@ jobs:
       timeout-minutes: 30
       with:
         limit-access-to-actor: true
+
+  regression:
+    name: "Regression"
+    runs-on: [regression, macOS]
+    timeout-minutes: 320
+    steps:
+
+    - name: "Clone Inviwo"
+      uses: actions/checkout@v4
+      with:
+        path: inviwo
+
+    - name: "Configure CMake"
+      shell: bash
+      run: >
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ninja-developer
+        --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+        -DCMAKE_CXX_FLAGS='-stdlib=libc++'
+        -DVCPKG_TARGET_TRIPLET=x64-osx-dynamic
+        -DVCPKG_HOST_TRIPLET=x64-osx-dynamic
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        -DIVW_MODULE_EIGENUTILS=ON
+        -DIVW_MODULE_HDF5=ON
+        -DIVW_MODULE_TETRAMESH=OFF
+        -DIVW_MODULE_WEBBROWSER=ON
+
+    - name: "Build"
+      timeout-minutes: 360
+      shell: bash
+      run: |
+        echo "::add-matcher::inviwo/.github/matchers/macos.json"
+        cmake --build build --config RelWithDebInfo --parallel --target all
+        echo "::remove-matcher owner=compiler::"
+        echo "::remove-matcher owner=linker::"
+
+    - name: "Unit Tests"
+      shell: bash
+      working-directory: "build/bin"
+      run: |
+        rc=0
+        for unittest in inviwo-unittests-*
+          do ./${unittest} || rc=$?
+        done
+        exit ${rc}
+
+    - name: "Integration Tests"
+      shell: bash
+      working-directory: "build/bin"
+      run: ./inviwo-integrationtests
+
+    - name: "Regression Tests"
+      shell: bash
+      run: >
+        python3 inviwo/tools/regression.py
+          --config build/pyconfig.ini
+          --build_type RelWithDebInfo
+          --output regression
+          --summary
+          --modules inviwo/modules
+
 
   clang-tidy:
     name: "Clang-tidy"
