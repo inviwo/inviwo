@@ -140,7 +140,6 @@ private:
 
     bool isLoading_ = true;
     std::string url_;
-    double zoom_ = 1.0;
 
     std::function<void(bool)> onLoadingChanged_;
     Dispatcher<void()> loadingDone_;

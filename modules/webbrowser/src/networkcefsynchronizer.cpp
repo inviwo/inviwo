@@ -138,7 +138,7 @@ bool NetWorkCefSynchronizer::handleInport(const json& j, CefRefPtr<CefBrowser>&,
     auto* processor = app_->getProcessorNetwork()->getProcessorByIdentifier(processorId);
     if (!processor) {
         reponse->Failure(
-            0, fmt::format("Trying to invoke a inport command: {} on an unknown processor {}",
+            0, fmt::format("Trying to invoke an inport command: {} on an unknown processor {}",
                            command, processorId));
         return true;
     }
@@ -146,18 +146,12 @@ bool NetWorkCefSynchronizer::handleInport(const json& j, CefRefPtr<CefBrowser>&,
     auto* port = processor->getInport(portId);
     if (!port) {
         reponse->Failure(
-            0, fmt::format("Trying to invoke a inport command: {} on an unknown port {}", command,
+            0, fmt::format("Trying to invoke an inport command: {} on an unknown port {}", command,
                            portId));
         return true;
     }
 
-    if (command == "isReady") {
-        json result = port->isReady();
-        reponse->Success(CefString{result.dump()});
-    } else if (command == "isChanged") {
-        json result = port->isChanged();
-        reponse->Success(CefString{result.dump()});
-    } else if (command == "getData") {
+    if (command == "getData") {
         reponse->Success(CefString{jsonInportConverter_.toJSON(*port).dump()});
 
     } else if (command == "getFilteredIndices") {
@@ -231,7 +225,7 @@ bool NetWorkCefSynchronizer::handleOutport(const json& j, CefRefPtr<CefBrowser>&
     auto* processor = app_->getProcessorNetwork()->getProcessorByIdentifier(processorId);
     if (!processor) {
         reponse->Failure(
-            0, fmt::format("Trying to invoke a outport command: {} on an unknown processor {}",
+            0, fmt::format("Trying to invoke an outport command: {} on an unknown processor {}",
                            command, processorId));
         return true;
     }
@@ -239,7 +233,7 @@ bool NetWorkCefSynchronizer::handleOutport(const json& j, CefRefPtr<CefBrowser>&
     auto* port = processor->getOutport(portId);
     if (!port) {
         reponse->Failure(
-            0, fmt::format("Trying to invoke a outport command: {} on an unknown port {}", command,
+            0, fmt::format("Trying to invoke an outport command: {} on an unknown port {}", command,
                            portId));
         return true;
     }
@@ -308,7 +302,7 @@ bool NetWorkCefSynchronizer::handleProcessor(const json& j, CefRefPtr<CefBrowser
         }
         reponse->Success(CefString{result.dump()});
     } else {
-        reponse->Failure(0, fmt::format("Trying to invoke an unknow network command: {}", command));
+        reponse->Failure(0, fmt::format("Trying to invoke an unknow processor command: {}", command));
     }
     return true;
 }
@@ -342,7 +336,7 @@ bool NetWorkCefSynchronizer::handleCallback(
             callbacks.erase(it);
         }
     } else {
-        callback->Failure(0, "Trying to invoke non-registered Callback: " + callbackName);
+        callback->Failure(0, "Trying to invoke a non-registered Callback: " + callbackName);
     }
     return true;
 }
@@ -396,7 +390,7 @@ bool NetWorkCefSynchronizer::processorSubsrcibeProgress(
  * Changes can start from Inviwo (left) or browser (right).
  * Information is encoded in JSON format, e.g.
  * ```
- * {"command":"subscribe", "path": 'myprocessor.myproperty', "onChange":
+ * {"command":"subscribe", "path": "myprocessor.myproperty", "onChange":
  * "onChangeCallbackJS", "propertyObserver": "observerName"}
  * ```
  *     Inviwo           Browser (JavaScript)
@@ -405,7 +399,7 @@ bool NetWorkCefSynchronizer::processorSubsrcibeProgress(
  * updateFromProperty() --> onChangeCallbackJS(property)
  *                             |
  *                             |
- *     OnQuery  <---------  inviwo.setProperty('myprocessor.myproperty', {value: 2.0});
+ *     OnQuery  <---------  inviwo.setProperty("myprocessor.myproperty", {value: 2.0});
  *  from_json(json, property);
  */
 bool NetWorkCefSynchronizer::propertySubscribe(const json& j, CefRefPtr<CefBrowser>& browser,

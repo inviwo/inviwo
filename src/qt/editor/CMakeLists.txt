@@ -121,6 +121,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 # Add resource file
 qt_add_resources(QRC_FILE ${IVW_RESOURCES_DIR}/changelog.qrc)
 source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/changelog.qrc ${QRC_FILE})
+source_group("CMake Files" FILES CMakeLists.txt)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg SvgWidgets)
 qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
@@ -137,7 +138,7 @@ target_sources(inviwo-qteditor
     FILES
         ${HEADER_FILES}
     PRIVATE
-        ${SOURCE_FILES} ${MOCED_FILES} ${QRC_FILE}
+        ${SOURCE_FILES} ${MOCED_FILES} ${QRC_FILE} CMakeLists.txt
 )
 
 target_link_libraries(inviwo-qteditor PUBLIC 
@@ -190,9 +191,6 @@ if(IVW_CFG_BUILD_CHANGELOG)
 
     target_sources(inviwo-qteditor PRIVATE ${buildFile})
 
-    #add_custom_target(inviwo-changelog DEPENDS ${buildFile})
-    #set_target_properties(inviwo-changelog PROPERTIES FOLDER tools)
-    #add_dependencies(inviwo-qteditor inviwo-changelog)
 endif()
 
 ivw_deploy_qt(inviwo-qteditor)
