@@ -201,13 +201,8 @@ jobs:
 
     - name: "Unittests"
       shell: bash
-      working-directory: "build/bin"
-      run: |
-        rc=0
-        for unittest in inviwo-unittests-*
-          do ./${unittest} || rc=$?
-        done
-        exit ${rc}
+      working-directory: "build"
+      run: ctest -C ${{ matrix.configuration }}
 
     - name: "Upload installer"
       if: matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
@@ -274,13 +269,8 @@ jobs:
 
     - name: "Unit Tests"
       shell: bash
-      working-directory: "build/bin"
-      run: |
-        rc=0
-        for unittest in inviwo-unittests-*
-          do ./${unittest} || rc=$?
-        done
-        exit ${rc}
+      working-directory: "build"
+      run: ctest -C ${{ matrix.configuration }}
 
     - name: "Integration Tests"
       shell: bash
