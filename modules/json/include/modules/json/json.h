@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,46 +26,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSER_API
+#include <modules/json/jsonmoduledefine.h>
 
-#include <inviwo/core/properties/property.h>                    // for Property (ptr only), Prop...
-#include <modules/json/io/json/propertyjsonconverterfactory.h>  // for PropertyJSONConverterFactory
+#include <inviwo/core/datastructures/datatraits.h>
 
-#include <memory>  // for unique_ptr, make_unique
-#include <string>  // for string
+#include <nlohmann/json.hpp>
+
+#include <utility>
 
 namespace inviwo {
-class PropertyWidgetCEF;
 
-class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEFFactoryObject {
-public:
-    PropertyWidgetCEFFactoryObject(const PropertyJSONConverterFactory* converterFactory);
-    virtual ~PropertyWidgetCEFFactoryObject();
+using json = ::nlohmann::json;
 
-    virtual std::unique_ptr<PropertyWidgetCEF> create(Property*) = 0;
 
-    virtual std::string getClassIdentifier() const = 0;
-
-protected:
-    const PropertyJSONConverterFactory* converterFactory_;
+template <typename T>
+concept JSONConvertable = requires(T& t, json& j) {
+    { to_json(j, std::as_const(t)) } -> std::same_as<void>;
+    { from_json(std::as_const(j), t) } -> std::same_as<void>;
 };
 
-template <typename T, typename P>
-class PropertyWidgetCEFFactoryObjectTemplate : public PropertyWidgetCEFFactoryObject {
-public:
-    PropertyWidgetCEFFactoryObjectTemplate(const PropertyJSONConverterFactory* converterFactory)
-        : PropertyWidgetCEFFactoryObject(converterFactory) {}
 
-    virtual ~PropertyWidgetCEFFactoryObjectTemplate() {}
+template <>
+struct DataTraits<json> {
+    static std::string_view classIdentifier() { return "org.inviwo.json"; }
+    static std::string_view dataName() { return "json"; }
 
-    virtual std::unique_ptr<PropertyWidgetCEF> create(Property* prop) {
-        return std::make_unique<T>(prop, converterFactory_->create(getClassIdentifier(), prop));
+    static uvec3 colorCode() { return uvec3{230, 200, 20}; }
+
+    static Document info(const json& data) {
+        Document doc;
+        doc.append("p", "JSON");
+
+        doc.append("pre", data.dump(2).substr(0, 200));
+
+        return doc;
     }
-
-    virtual std::string getClassIdentifier() const { return PropertyTraits<P>::classIdentifier(); };
 };
 
 }  // namespace inviwo

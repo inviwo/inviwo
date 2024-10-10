@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,15 +27,30 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/properties/propertywidgetceffactoryobject.h>
+#include <modules/json/jsonport.h>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
-class PropertyJSONConverterFactory;
 
-PropertyWidgetCEFFactoryObject::PropertyWidgetCEFFactoryObject(
-    const PropertyJSONConverterFactory* converterFactory)
-    : converterFactory_(converterFactory) {}
+void to_json(json& j, const JSONInport& port) {
+    if (auto data = port.getData()) {
+        j = *data;
+    } else {
+        j.clear();
+    }
+}
+void from_json(const json&, JSONInport&) {
+    throw Exception(IVW_CONTEXT_CUSTOM("from_json"),
+                    "It is not possible to assign a json object to an Inport");
+}
 
-PropertyWidgetCEFFactoryObject::~PropertyWidgetCEFFactoryObject() = default;
+void to_json(json& j, const JSONOutport& port) {
+    if (auto data = port.getData()) {
+        j = *data;
+    } else {
+        j.clear();
+    }
+}
+void from_json(const json& j, JSONOutport& port) { port.setData(std::make_shared<json>(j)); }
 
 }  // namespace inviwo

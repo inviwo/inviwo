@@ -127,6 +127,11 @@ std::vector<BrushingTarget> BrushingAndLinkingManager::getModifiedTargets() cons
     return util::transform(modifications_, [](const auto& elem) { return elem.first; });
 }
 
+const std::unordered_map<BrushingTarget, BrushingModifications>&
+BrushingAndLinkingManager::getModified() const {
+    return modifications_;
+}
+
 bool BrushingAndLinkingManager::isTargetModified(BrushingTarget target,
                                                  BrushingAction action) const {
     return isTargetModified(target, fromAction(action));
