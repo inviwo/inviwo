@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "utils/structs.glsl"
@@ -53,13 +53,18 @@ uniform sampler2D transferFunction;
 uniform int shaderOutput = 0;
 uniform int maxSteps = 1000;
 uniform int numTetraSamples = 100;
+uniform vec3 cutplane;
+uniform bool enableIsoSurface;
+uniform float isoValue;
+uniform vec4 isoColor;
+uniform bool useIsoTF;
 
 // Use (scalar + tfValueOffset) * tfValueScaling to map scalar values from [min,max] to [0,1]
 uniform float tfValueScaling = 1.0;
 uniform float tfValueOffset = 0.0;
 
-// The opacity scaling factor affects the extinction parameter used in the integration along the 
-// ray. It can be used to obtain the same visual impression for differently scaled datasets since 
+// The opacity scaling factor affects the extinction parameter used in the integration along the
+// ray. It can be used to obtain the same visual impression for differently scaled datasets since
 // the ray traversal is performed in data coordinates and not restricted to [0,1] as in Inviwo's
 // regular volume raycasting.
 uniform float opacityScaling = 1.0;
@@ -71,6 +76,10 @@ uniform sampler2D backgroundDepth;
 uniform sampler2D tfGradients;
 
 const float invalidDepth = 1.0e8;
+
+const int OK = 0;
+const int PARTIAL = 1;
+const int REJECT = 2;
 
 struct VertexPosition {
     vec3 pos;
@@ -97,14 +106,14 @@ in Fragment {
 } in_frag;
 
 
-const ivec3 triIndices[4] = ivec3[4](ivec3(1, 2, 3), ivec3(2, 0, 3), 
+const ivec3 triIndices[4] = ivec3[4](ivec3(1, 2, 3), ivec3(2, 0, 3),
                                      ivec3(3, 0, 1), ivec3(0, 2, 1));
 
 struct Tetra {
     mat4x3 v; // vertices
     vec4 s; // scalar values
 
-    mat4x3 fA; // oriented face areas (in negative normal direction) as used in barycentricWeights(), 
+    mat4x3 fA; // oriented face areas (in negative normal direction) as used in barycentricWeights(),
                // their magnitude is equivalent to two times the face area.
     float jacobyDetInv; // 1 over determinant of the Jacobian, where det(Jacobian) = 6 vol(tetra)
 };
@@ -131,7 +140,7 @@ Tetra getTetra(in int tetraId) {
     return t;
 }
 
-// Compute the oriented face areas (in negative normal direction) as used in barycentric 
+// Compute the oriented face areas (in negative normal direction) as used in barycentric
 // interpolation. Their magnitude is equivalent to two times the face area.
 //
 // @param t   input tetraehdron
@@ -162,7 +171,7 @@ struct ExitFace {
     float segmentLength;
 };
 
-// Determine the closest exit face within the tetrahedron \p tetra given a ray at \p startPosition 
+// Determine the closest exit face within the tetrahedron \p tetra given a ray at \p startPosition
 // and direction \p rayDirection.
 //
 // @param tetra          current tetrahedron
@@ -170,7 +179,7 @@ struct ExitFace {
 // @param startPosition  start position of the ray
 // @param rayDirection   direction of the ray
 // @return the closest face where the ray exits the tetrahedron
-ExitFace findTetraExitFace(in Tetra tetra, in int entryFaceId, 
+ExitFace findTetraExitFace(in Tetra tetra, in int entryFaceId,
                            in vec3 startPosition, in vec3 rayDirection) {
     const mat4x3 faceNormal = getFaceNormals(tetra);
     // intersect ray at current position with all tetra faces
@@ -194,7 +203,7 @@ ExitFace findTetraExitFace(in Tetra tetra, in int entryFaceId,
     // face ID of closest intersection
     const int face1 = vt.x < vt.y ? 0 : 1;
     const int face2 = vt.z < vt.w ? 2 : 3;
-    const int face = vt[face1] < vt[face2] ? face1 : face2;        
+    const int face = vt[face1] < vt[face2] ? face1 : face2;
     const float tmin = vt[face];
 
     return ExitFace(face, tmin);
@@ -205,7 +214,7 @@ ExitFace findTetraExitFace(in Tetra tetra, in int entryFaceId,
 // @param p      position of the barycentric coords
 // @param tetra  input tetrahedron
 // @return interpolated scalar value
-// 
+//
 // see https://www.iue.tuwien.ac.at/phd/nentchev/node30.html
 // and https://www.iue.tuwien.ac.at/phd/nentchev/node31.html
 float barycentricInterpolation(in vec3 p, in Tetra tetra) {
@@ -226,7 +235,7 @@ float barycentricInterpolation(in vec3 p, in Tetra tetra) {
 // @param tetra  input tetrahedron with oriented face areas
 // @return barycentric gradients (direction matches face normals)
 mat4x3 getBarycentricGradients(in Tetra tetra) {
-    return tetra.fA * tetra.jacobyDetInv;    
+    return tetra.fA * tetra.jacobyDetInv;
 }
 
 // Compute the constant gradient within tetrahedron \p tetra
@@ -234,12 +243,12 @@ mat4x3 getBarycentricGradients(in Tetra tetra) {
 // @param tetra  input tetrahedron withoriented face areas
 // @return gradient of \p tetra
 vec3 getTetraGradient(in Tetra tetra) {
-    // accumulate the barycentric gradients (fA / det(Jacobian)) weighted by the 
+    // accumulate the barycentric gradients (fA / det(Jacobian)) weighted by the
     // corresponding scalar values
     return -normalize(tetra.fA * tetra.jacobyDetInv * tetra.s);
 }
 
-// Compute the absorption along distance \p tIncr according to the volume rendering equation. The 
+// Compute the absorption along distance \p tIncr according to the volume rendering equation. The
 // \p opacityScaling factor is used to scale the extinction to account for differently sized datasets.
 float absorption(in float opacity, in float tIncr) {
     return 1.0 - pow(1.0 - opacity, tIncr * REF_SAMPLING_INTERVAL * opacityScaling);
@@ -251,7 +260,7 @@ float normalizeScalar(float scalar) {
 
 // Convert normalized screen coordinates [0,1] to data coords of the tetramesh geometry
 float convertScreenPosToDataDepth(vec3 screenPos) {
-    vec4 posData = geometry.worldToData * camera.clipToWorld 
+    vec4 posData = geometry.worldToData * camera.clipToWorld
         * vec4(screenPos * 2.0 - 1.0, 1.0);
     posData /= posData.w;
     return length(posData.xyz - in_frag.camPosData);
@@ -268,6 +277,13 @@ float normalizedDeviceDepth(in vec3 posData, in mat4 dataToClip) {
     return ((depth / depthW) + 1.0) * 0.5;
 }
 
+bool isOutsideCutplane(vec3 pos) {
+    // Not sure if we want to try and convert the position to world space or not.
+    // pos = (geometry.dataToWorld * vec4(pos, 1.0)).xyz;
+    pos = normalize(pos);
+    return pos.x > cutplane.x || pos.y > cutplane.y || pos.z > cutplane.z;
+}
+
 void main() {
     // all computations except illumination (World space) take place in Data space
     const vec3 rayDirection = normalize(in_frag.position - in_frag.camPosData);
@@ -280,7 +296,7 @@ void main() {
 
 #if defined(BACKGROUND_AVAILABLE)
     vec2 screenTexCoords = gl_FragCoord.xy * backgroundParameters.reciprocalDimensions;
-    vec4 background = texture(backgroundColor, screenTexCoords); 
+    vec4 background = texture(backgroundColor, screenTexCoords);
     // prepare background color for pre-multiplied alpha blending
     background.rgb *= background.a;
 
@@ -312,6 +328,10 @@ void main() {
     float tTotal = tEntry;
     float tFirstHit = invalidDepth;
     int steps = 0;
+
+    bool firstHit = false;
+    out_picking_data = vec4(-1.0);
+
     while (tetraFaceId > -1 && steps < maxSteps && dvrColor.a < ERT_THRESHOLD) {
         // find next tetra
         tetraId = tetraFaceId / 4;
@@ -320,54 +340,126 @@ void main() {
 
         // query data of current tetrahedron
         tetra = getTetra(tetraId);
+
+        // Check if any of the 4 vertices are "outside" the cutplane
+        int status = REJECT;
+        bool isAnyVertexOk = false;
+        bool isAnyVertexRejected = false;
+
+        for(int i = 0; i < 4; i++) {
+            // Check vertex against plane
+            if(isOutsideCutplane(tetra.v[i])) {
+                isAnyVertexRejected = true;
+            }
+            else {
+                isAnyVertexOk = true;
+            }
+            // All vertices are inside the cutplane
+            if(!isAnyVertexRejected) {
+                status = OK;
+            }
+            else {
+                // At least one vertex is inside the cutplane
+                if(isAnyVertexOk) {
+                    status = PARTIAL;
+                }
+                else {
+                    // All vertices are outside the cutplane
+                    status = REJECT;
+                }
+            }
+        }
+
         ExitFace exitFace = findTetraExitFace(tetra, localFaceId, pos, rayDirection);
 
         vec3 endPos = pos + rayDirection * exitFace.segmentLength;
 
         const float scalar = normalizeScalar(barycentricInterpolation(endPos, tetra));
+        const float outScalar = barycentricInterpolation(endPos, tetra);
         const vec3 gradient = getTetraGradient(tetra);
         const vec3 gradientWorld = geometry.dataToWorldNormalMatrix * gradient;
-        
-        float tDelta = exitFace.segmentLength * tetraSamplingDelta;
-        for (int i = 1; i <= numTetraSamples; ++i) {
-            float s = mix(prevScalar, scalar, i * tetraSamplingDelta);
 
-            float tCurrent = tTotal + tDelta * i;
-#if defined(BACKGROUND_AVAILABLE)
-            if (!bgBlended && tBackground > tCurrent - tDelta && tBackground <= tCurrent) {
+        // Compute ISO-surface
+        if (enableIsoSurface) {
+            float isoValue_ = normalizeScalar(isoValue);
+            if ((isoValue_ - scalar) * (isoValue_ - prevScalar) <= 0) {
+                float a = (scalar - isoValue_) / (scalar - prevScalar);
+                vec3 worldPos = (geometry.dataToWorld * vec4(pos + rayDirection * exitFace.segmentLength * a, 1.0)).xyz;
+                vec4 isoColor_ = isoColor;
+                if(useIsoTF) {
+                    isoColor_ = applyTF(transferFunction, isoValue_);
+                }
+                isoColor_.a = 1.0;
+                vec3 s1 = shadeBlinnPhong(lighting, isoColor_.rgb, isoColor_.rgb, vec3(0.5), worldPos, gradientWorld, -rayDirWorld);
+                vec3 s2 = shadeBlinnPhong(lighting, isoColor_.rgb, isoColor_.rgb, vec3(0.5), worldPos, -gradientWorld, -rayDirWorld);
+
+                isoColor_.rgb = (s1 + s2);
+                isoColor_.rgb *= isoColor_.a;
+                dvrColor += (1.0 - dvrColor.a) * isoColor_;
+            }
+        }
+
+        float tDelta = exitFace.segmentLength * tetraSamplingDelta;
+
+        // If all vertices were rejected we step forward along the ray without computing any color
+        if (status != REJECT) {
+            for (int i = 1; i <= numTetraSamples; ++i) {
+                float s = mix(prevScalar, scalar, i * tetraSamplingDelta);
+
+                float tCurrent = tTotal + tDelta * i;
+
+                if (status == PARTIAL) {
+                    vec3 currPos = mix(pos, endPos, i * tetraSamplingDelta);
+                    // Skip current sample if it is outside the cutplane
+                    if(isOutsideCutplane(currPos)) {
+                        continue;
+                    }
+                }
+
+    #if defined(BACKGROUND_AVAILABLE)
+                if (!bgBlended && tBackground > tCurrent - tDelta && tBackground <= tCurrent) {
+                    dvrColor += (1.0 - dvrColor.a) * background;
+                    bgBlended = true;
+                }
+    #endif // BACKGROUND_AVAILABLE
+
+                vec4 color = applyTF(transferFunction, s);
+                if (color.a > 0) {
+                    tFirstHit = tFirstHit == invalidDepth ? tCurrent : tFirstHit;
+
+    #if defined(SHADING_ENABLED)
+                    // perform illumination in world coordinates
+                    vec3 worldPos = (geometry.dataToWorld * vec4(pos + rayDirection * tDelta * i, 1.0)).xyz;
+                    color.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0),
+                                            worldPos, gradientWorld, -rayDirWorld);
+    #endif // SHADING_ENABLED
+
+                    if(!firstHit) {
+                        // Set the picking data here to reduce number of "clickable" texels
+                        PickingData = in_frag.color;
+                        // We store the first hitpoint in a separate texture for later lookup
+                        out_picking_data = vec4(outScalar, endPos.x, endPos.y, endPos.z);
+                        firstHit = true;
+                    }
+
+                    // volume integration along current segment
+                    color.a = absorption(color.a, tDelta);
+                    // front-to-back blending
+                    color.rgb *= color.a;
+                    dvrColor += (1.0 - dvrColor.a) * color;
+                }
+            }
+
+    #if defined(BACKGROUND_AVAILABLE)
+            // need to check the entire interval again due to precision issues
+            if (!bgBlended && tBackground > tTotal && tBackground <= tTotal + exitFace.segmentLength) {
                 dvrColor += (1.0 - dvrColor.a) * background;
                 bgBlended = true;
             }
-#endif // BACKGROUND_AVAILABLE
+    #endif // BACKGROUND_AVAILABLE
 
-            vec4 color = applyTF(transferFunction, s);
-            if (color.a > 0) {
-                tFirstHit = tFirstHit == invalidDepth ? tCurrent : tFirstHit;
-
-#if defined(SHADING_ENABLED)
-                // perform illumination in world coordinates
-                vec3 worldPos = (geometry.dataToWorld * vec4(pos + rayDirection * tDelta * i, 1.0)).xyz;
-                color.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0),
-                                           worldPos, gradientWorld, -rayDirWorld);
-#endif // SHADING_ENABLED
-
-                // volume integration along current segment
-                color.a = absorption(color.a, tDelta);
-                // front-to-back blending
-                color.rgb *= color.a;
-                dvrColor += (1.0 - dvrColor.a) * color;
-            }
-        }
-
-#if defined(BACKGROUND_AVAILABLE)
-        // need to check the entire interval again due to precision issues
-        if (!bgBlended && tBackground > tTotal && tBackground <= tTotal + exitFace.segmentLength) {
-            dvrColor += (1.0 - dvrColor.a) * background;
-            bgBlended = true;
-        }
-#endif // BACKGROUND_AVAILABLE
-
-        prevScalar = scalar;
+            prevScalar = scalar;
+        } // status != REJECT
 
         // update position
         pos = endPos;
@@ -386,8 +478,8 @@ void main() {
     }
 #endif // BACKGROUND_AVAILABLE
 
-    float depth = tFirstHit == invalidDepth ? 1.0 : 
-        normalizedDeviceDepth(in_frag.camPosData + rayDirection * tFirstHit, 
+    float depth = tFirstHit == invalidDepth ? 1.0 :
+        normalizedDeviceDepth(in_frag.camPosData + rayDirection * tFirstHit,
                               camera.worldToClip * geometry.dataToWorld);
 
     gl_FragDepth = min(depth, bgDepthScreen);
