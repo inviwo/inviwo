@@ -270,7 +270,7 @@ jobs:
     - name: "Unit Tests"
       shell: bash
       working-directory: "build"
-      run: ctest -C ${{ matrix.configuration }}
+      run: ctest -C RelWithDebInfo
 
     - name: "Integration Tests"
       shell: bash
@@ -279,13 +279,14 @@ jobs:
 
     - name: "Regression Tests"
       shell: bash
-      run: >
-        python3 inviwo/tools/regression.py
-          --config build/pyconfig.ini
-          --build_type RelWithDebInfo
-          --output regression
+      run: |
+        mkdir -p regression
+        python3 inviwo/tools/regression.py \
+          --config build/pyconfig.ini \
+          --build_type RelWithDebInfo \
+          --output regression \
+          --modules inviwo/modules \
           --summary
-          --modules inviwo/modules
 
 
   clang-tidy:
