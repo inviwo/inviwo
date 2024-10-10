@@ -83,7 +83,6 @@ private:
 
     std::vector<std::shared_ptr<std::function<std::string(const std::string&)>>> callbacks_;
 
-    // Annojing state...
     bool loaded_ = false;
     std::string error_ = "";
 };
