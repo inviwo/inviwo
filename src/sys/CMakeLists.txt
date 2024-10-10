@@ -9,6 +9,7 @@ ivw_register_modules(
     ENABLED_MODULES_OUT enabled_modules
     MODULE_REGISTRATION_FILE ${CMAKE_CURRENT_BINARY_DIR}/moduleregistration.cpp
 )
+source_group("CMake Files" FILES CMakeLists.txt)
 
 target_sources(inviwo-module-system
     PUBLIC 
@@ -22,6 +23,7 @@ target_sources(inviwo-module-system
     PRIVATE
         moduleloading.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/moduleregistration.cpp
+        CMakeLists.txt
 )
 
 ivw_define_standard_definitions(IVW_SYS inviwo-module-system)
