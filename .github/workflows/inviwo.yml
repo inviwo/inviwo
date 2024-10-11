@@ -61,7 +61,7 @@ jobs:
               fi
           
           - system: macos
-            os: 'macos-13' # for now macos-latest == macos-12 since macos-13 is still "beta"
+            os: 'macos-latest'
             cmake: >
               -DIVW_MODULE_EIGENUTILS=ON
               -DIVW_MODULE_HDF5=ON
@@ -72,11 +72,10 @@ jobs:
             targets: 'all'
             installer: 'inviwo-installer-macos'
             artifact: 'build/inviwo-v*.dmg'
-            # run: './inviwo.app/Contents/MacOS/inviwo --logconsole --quit' Running on mac fails. FFMPEG link issue 
-            run: ''
+            run: './inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
           
           - system: linux
-            os: 'ubuntu-24.04'
+            os: 'ubuntu-latest'
             # Disable benchmark for now due to error: 
             # memcpy’ is not a member of ‘std’; did you mean ‘wmemcpy’
             cmake: >
