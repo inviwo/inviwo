@@ -27,7 +27,6 @@ runs:
       if: runner.os == 'macOS'
       run: |
         brew install ninja pkg-config nasm
-        sudo xcode-select --switch /Applications/Xcode_15.2.app/Contents/Developer
 
     - name: "Apt Install, switch to gcc-13"
       shell: bash
