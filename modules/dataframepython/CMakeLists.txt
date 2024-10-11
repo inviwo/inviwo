@@ -35,4 +35,5 @@ add_subdirectory(bindings)
 
 if(TARGET inviwo-unittests-dataframepython)
     add_dependencies(inviwo-unittests-dataframepython ivwdataframe inviwopy)
+    target_link_libraries(inviwo-unittests-dataframepython PUBLIC inviwo::python-helper)
 endif()
