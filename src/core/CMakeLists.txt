@@ -6,6 +6,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/boundingbox.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/camerautils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/cubeplaneintersection.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/histogram1d.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/linearmap.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/markdown.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/permutations.h
@@ -419,6 +420,7 @@ set(SOURCE_FILES
     algorithm/boundingbox.cpp
     algorithm/camerautils.cpp
     algorithm/cubeplaneintersection.cpp
+    algorithm/histogram1d.cpp
     algorithm/linearmap.cpp
     algorithm/markdown.cpp
     algorithm/permutations.cpp
