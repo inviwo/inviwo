@@ -232,7 +232,7 @@ def formatLog(file):
 
 def image(path, **opts):
     doc, tag, text = yattag.Doc().tagtext()
-    doc.stag('img', src=path, **opts)
+    doc.stag('img', src=path, loading="lazy", **opts)
     return doc.getvalue()
 
 
