@@ -32,6 +32,7 @@
 #include <inviwo/volume/volumemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/datainport.h>
@@ -57,6 +58,7 @@ private:
     DataFrameOutport outport_;
 
     OptionProperty<HistogramMode> histogramMode_;
+    BoolProperty includeDataRangeValues_;
 
     std::shared_ptr<DataFrame> dataframe_;
     HistogramCache::Result histogramResult_;
@@ -98,7 +100,7 @@ struct ProcessorTraits<HistogramToDataFrame<Volume>> {
 namespace detail {
 
 IVW_MODULE_VOLUME_API std::shared_ptr<DataFrame> createDataFrame(
-    const std::vector<Histogram1D>& histograms, HistogramMode mode);
+    const std::vector<Histogram1D>& histograms, HistogramMode mode, bool includeDataRangeValues);
 
 }  // namespace detail
 
@@ -107,24 +109,26 @@ HistogramToDataFrame<T>::HistogramToDataFrame()
     : Processor{}
     , inport_{"inport", "Input data"_help}
     , outport_{"histogram", "DataFrame containing the histogram of the input data"_help}
-    , histogramMode_{
-          "histogramMode", "Histogram Mode",
-          OptionPropertyState<HistogramMode>{.options = {{"all", "All", HistogramMode::All},
-                                                         {"p99", "99%", HistogramMode::P99},
-                                                         {"p99", "99%", HistogramMode::P95},
-                                                         {"p99", "99%", HistogramMode::P90},
-                                                         {"log", "Log", HistogramMode::Log}}}
-              .setSelectedValue(HistogramMode::All)} {
+    , histogramMode_{"histogramMode", "Histogram Mode",
+                     OptionPropertyState<HistogramMode>{
+                         .options = {{"all", "All", HistogramMode::All},
+                                     {"p99", "99%", HistogramMode::P99},
+                                     {"p99", "99%", HistogramMode::P95},
+                                     {"p99", "99%", HistogramMode::P90},
+                                     {"log", "Log", HistogramMode::Log}}}
+                         .setSelectedValue(HistogramMode::All)}
+    , includeDataRangeValues_{"includeDataRangeValues", "Include Data Range Values", true} {
 
     addPorts(inport_, outport_);
-    addProperties(histogramMode_);
+    addProperties(histogramMode_, includeDataRangeValues_);
 }
 
 template <typename T>
 void HistogramToDataFrame<T>::process() {
     histogramResult_ =
         inport_.getData()->calculateHistograms([this](const std::vector<Histogram1D>& histograms) {
-            dataframe_ = detail::createDataFrame(histograms, histogramMode_);
+            dataframe_ =
+                detail::createDataFrame(histograms, histogramMode_, includeDataRangeValues_);
             getProgressBar().finishProgress();
             outport_.setData(dataframe_);
             outport_.invalidate(InvalidationLevel::Valid);
