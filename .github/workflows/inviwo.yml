@@ -36,7 +36,7 @@ jobs:
         
         include:
           - system: windows
-            os: 'windows-latest'
+            os: 'windows-2022'
             cmake: >
               -DIVW_MODULE_EIGENUTILS=ON
               -DIVW_MODULE_HDF5=ON
@@ -61,7 +61,7 @@ jobs:
               fi
           
           - system: macos
-            os: 'macos-latest'
+            os: 'macos-15'
             cmake: >
               -DIVW_MODULE_EIGENUTILS=ON
               -DIVW_MODULE_HDF5=ON
@@ -75,7 +75,7 @@ jobs:
             run: './inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
           
           - system: linux
-            os: 'ubuntu-latest'
+            os: 'ubuntu-24.04'
             # Disable benchmark for now due to error: 
             # memcpy’ is not a member of ‘std’; did you mean ‘wmemcpy’
             cmake: >
@@ -107,10 +107,10 @@ jobs:
             
           - system: 'macos'
             linkage: 'dynamic'
-            triplet: 'x64-osx-dynamic'
+            triplet: 'arm64-osx-dynamic'
           - system: 'macos'
             linkage: 'static'
-            triplet: 'x64-osx'
+            triplet: 'arm64-osx'
             
           - system: 'linux'
             linkage: 'dynamic'
@@ -176,6 +176,7 @@ jobs:
         VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ${{ matrix.preset }}
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+        -DVCPKG_HOST_TRIPLET=${{ matrix.triplet }}
         -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
         -DBUILD_SHARED_LIBS=${{ matrix.cmake_linkage }}
         -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
@@ -519,7 +520,8 @@ jobs:
   update-api-docs:
     name: "Publish updated API Docs"
     if: github.ref == 'refs/heads/master'
-    needs: [build, test-installer]
+    needs: [build, test-installer, regression]
+
     runs-on: windows-latest
     steps:
       - name: "Clone Inviwo"
@@ -562,7 +564,7 @@ jobs:
   update-latest-release:
     name: "Update latest release"
     if: github.ref == 'refs/heads/master'
-    needs: [build, test-installer]
+    needs: [build, test-installer, regression, create-changelog]
     strategy:
       matrix:
         os: [windows-latest] # macos-latest,
