@@ -799,6 +799,7 @@ set(TEST_FILES
     tests/unittests/document-test.cpp
     tests/unittests/enumoptionproperty-test.cpp
     tests/unittests/glm-test.cpp
+    tests/unittests/histogram1d-test.cpp
     tests/unittests/image-tests.cpp
     tests/unittests/indirectiterator-tests.cpp
     tests/unittests/interpolation-tests.cpp
