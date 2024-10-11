@@ -40,26 +40,40 @@
 #include <vector>
 #include <array>
 #include <span>
+#include <tuple>
 #include <cmath>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 IVW_CORE_API std::vector<double> calculatePercentiles(const std::vector<size_t>& hist, dvec2 range,
                                                       size_t sum);
 IVW_CORE_API Statistics calculateHistogramStats(const std::vector<size_t>& hist);
 
+namespace detail {
+
+/**
+ * Determine optimal number of bins of a histogram while considering \p bins as an upper bound
+ * for the number of bins
+ * 1. if there are more than 100 samples per bin based on data range, use \p bins without
+ *    further modification
+ * 2. for integral types:
+ *    a. set bins to data range if the number of bins exceeds the data range
+ *    b. otherwise adjust the number of bins so that the bin size is a whole number,
+ *       i.e. \f$ n \in \mathbb{N} \f$
+ * 3. for floating point types:
+ *    a. if number of bins exceeds |data range|, use original \p bins count
+ *    b. if the data range is non-fractional, i.e. whole numbers
+ *       [min, max], adjust the number of bins so that the bin size is a whole number
+ * 4. otherwise, use original \p bins count
+ *
+ * @tparam T       type of the underlying data
+ * @param dataMap  used for calculating the number of bins
+ * @param bins     upper bound for the number of bins
+ * @return optimal number of bins and effective data range, which can be slightly larger than the
+ *                 original data range
+ */
 template <typename T>
-std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const DataMapper& dataMap,
-                                             size_t bins) {
-    // a double type with the same extent as T
-    using D = typename util::same_extent<T, double>::type;
-    // a size_t type with same extent as T
-    using I = typename util::same_extent<T, ptrdiff_t>::type;
-
-    constexpr size_t extent = util::rank<T>::value > 0 ? util::extent<T>::value : 1;
-
+std::pair<size_t, double> optimalBinCount(DataMapper dataMap, size_t bins) {
     auto intRangeBins = [&](size_t irange) -> std::pair<size_t, double> {
         const size_t m = (irange + bins) / bins;
         const auto numBins =
@@ -69,45 +83,43 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
     };
     auto isNonFractional = [](double v) { return std::abs(v - std::round(v)) < 1.0e-12; };
 
-    // determine optimal number of bins while considering \p bins as an upper bound
-    // for the number of bins
-    // 1. if there are more than 100 samples per bin based on data range, use \p bins without
-    //    further modification
-    // 2. for integral types:
-    //    a. set bins to data range if the number of bins exceeds the data range
-    //    b. otherwise adjust the number of bins so that the bin size is a whole number,
-    //       i.e. \f$ n \in \mathbb{N} \f$
-    // 3. for floating point types:
-    //    a. if number of bins exceeds |data range|, use original \p bins count
-    //    b. if the data range is non-fractional, i.e. whole numbers
-    //       [min, max], adjust the number of bins so that the bin size is a whole number
-    // 4. otherwise, use original \p bins count
-    auto&& [numbins, effectiveRange] = [&]() -> std::pair<size_t, double> {
-        const auto range = (dataMap.dataRange.y - dataMap.dataRange.x);
-        if (range / static_cast<double>(bins) > 100.0) {  // case 1
-            // sufficient samples per bin
+    const auto range = (dataMap.dataRange.y - dataMap.dataRange.x);
+    if (range / static_cast<double>(bins) > 100.0) {  // case 1
+        // sufficient samples per bin
+        return {bins, range};
+    }
+    if constexpr (std::is_floating_point_v<util::value_type_t<T>>) {
+        if (range < static_cast<double>(bins)) {  // case 3.a
             return {bins, range};
         }
-        if constexpr (std::is_floating_point_v<util::value_type_t<T>>) {
-            if (range < static_cast<double>(bins)) {  // case 3.a
-                return {bins, range};
-            }
-            if (isNonFractional(dataMap.dataRange.x) && isNonFractional(dataMap.dataRange.y)) {
-                // case 3.b
-                const auto irange = static_cast<size_t>(std::round(dataMap.dataRange.y) -
-                                                        std::round(dataMap.dataRange.x) + 1.0);
-                return intRangeBins(irange);
-            }
-        } else {
-            // check whether number of bins exceeds the data range only if it is an integral type
-            const auto irange = static_cast<std::size_t>(range + 1);
-            if (irange <= bins) {  // case 2.a
-                return {irange, range};
-            }
-            return intRangeBins(irange);  // case 2.b
+        if (isNonFractional(dataMap.dataRange.x) && isNonFractional(dataMap.dataRange.y)) {
+            // case 3.b
+            const auto irange = static_cast<size_t>(std::round(dataMap.dataRange.y) -
+                                                    std::round(dataMap.dataRange.x) + 1.0);
+            return intRangeBins(irange);
         }
-        return {bins, range};
-    }();
+    } else {
+        // check whether number of bins exceeds the data range only if it is an integral type
+        const auto irange = static_cast<std::size_t>(range + 1);
+        if (irange <= bins) {  // case 2.a
+            return {irange, range};
+        }
+        return intRangeBins(irange);  // case 2.b
+    }
+    return {bins, range};
+}
+
+}  // namespace detail
+
+template <typename T>
+std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const DataMapper& dataMap,
+                                             size_t bins) {
+    // a double type with the same extent as T
+    using D = typename util::same_extent<T, double>::type;
+    // a ptrdiff_t type with same extent as T
+    using I = typename util::same_extent<T, ptrdiff_t>::type;
+
+    constexpr size_t extent = util::rank<T>::value > 0 ? util::extent<T>::value : 1;
 
     D min(std::numeric_limits<double>::max());
     D max(std::numeric_limits<double>::lowest());
@@ -118,6 +130,7 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
     std::array<size_t, extent> underflow{0};
     std::array<size_t, extent> overflow{0};
 
+    auto [numbins, effectiveRange] = detail::optimalBinCount<T>(dataMap, bins);
     const D rangeMin(dataMap.dataRange.x);
     const D rangeScaleFactor(static_cast<double>(numbins - 1) / effectiveRange);
 
@@ -184,6 +197,4 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
     return histograms;
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util
