@@ -28,52 +28,5 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/histogram.h>
-#include <algorithm>
-#include <numeric>
 
-namespace inviwo {
-
-std::vector<double> util::calculatePercentiles(const std::vector<size_t>& hist, dvec2 range,
-                                               const size_t sum) {
-    size_t i{0};
-    size_t accumulation{0};
-    std::vector<double> percentiles(101, 0.0);
-
-    const double binSize = 1.0 / static_cast<double>(hist.size() - 1) * (range.y - range.x);
-    const auto dSum = static_cast<double>(sum);
-
-    for (size_t j = 0; j < hist.size(); ++j) {
-        accumulation += hist[j];
-        while (static_cast<double>(accumulation) / dSum >= static_cast<double>(i) / 100.0) {
-            percentiles[i] = static_cast<double>(j) * binSize + range.x;
-            i++;
-        }
-    }
-    return percentiles;
-}
-
-Statistics util::calculateHistogramStats(const std::vector<size_t>& hist) {
-    std::vector<size_t> sorted = hist;
-    std::sort(sorted.begin(), sorted.end());
-    const size_t sum = std::accumulate(hist.begin(), hist.end(), size_t{0});
-    const size_t sum2 =
-        std::accumulate(hist.begin(), hist.end(), 0, [](size_t a, size_t b) { return a + b * b; });
-
-    std::vector<double> percentiles(101, 0.0);
-    for (size_t i = 1; i < percentiles.size(); ++i) {
-        percentiles[i] = static_cast<double>(
-            sorted.at(static_cast<size_t>(std::ceil(static_cast<double>(i) /
-                                                    static_cast<double>(percentiles.size() - 1) *
-                                                    static_cast<double>(hist.size()))) -
-                      1));
-    }
-
-    return {.min = static_cast<double>(sorted.front()),
-            .max = static_cast<double>(sorted.back()),
-            .mean = static_cast<double>(sum) / static_cast<double>(hist.size()),
-            .standardDeviation = std::sqrt(static_cast<double>((hist.size() * sum2 - sum * sum)) /
-                                           static_cast<double>(hist.size() * (hist.size() - 1))),
-            .percentiles = std::move(percentiles)};
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo
