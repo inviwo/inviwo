@@ -35,10 +35,11 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-set(TEST_FILES
-    tests/unittests/ffmpeg-unittest-main.cpp
-)
-ivw_add_unittest(${TEST_FILES})
+# Disable tests until there are some
+#set(TEST_FILES
+#    tests/unittests/ffmpeg-unittest-main.cpp
+#)
+#vw_add_unittest(${TEST_FILES})
 
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
