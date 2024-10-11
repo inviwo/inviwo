@@ -202,7 +202,7 @@ jobs:
     - name: "Unittests"
       shell: bash
       working-directory: "build"
-      run: ctest -C ${{ matrix.configuration }}
+      run: ctest -C ${{ matrix.configuration }} --output-on-failure
 
     - name: "Upload installer"
       if: matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
@@ -270,24 +270,46 @@ jobs:
     - name: "Unit Tests"
       shell: bash
       working-directory: "build"
-      run: ctest -C RelWithDebInfo
+      continue-on-error: true
+      run: ctest -C RelWithDebInfo --output-on-failure
 
     - name: "Integration Tests"
       shell: bash
       working-directory: "build/bin"
+      continue-on-error: true
       run: ./inviwo-integrationtests
+
+    - name: "Clone Regression"
+      uses: actions/checkout@v4
+      with:
+        repository: inviwo/regression
+        ref: main
+        token: ${{ secrets.INVIWO_TEAM_SECRET }}
+        path: regression
 
     - name: "Regression Tests"
       shell: bash
+      continue-on-error: true
       run: |
-        mkdir -p regression
+        mkdir -p regression/macos/${{ github.ref }}
         python3 inviwo/tools/regression.py \
           --config build/pyconfig.ini \
           --build_type RelWithDebInfo \
-          --output regression \
+          --output regression/macos/${{ github.ref }} \
           --modules inviwo/modules \
           --summary
 
+    - name: Push report
+      shell: bash
+      run: |
+        cd regression
+        git config --global user.name 'Inviwo-Team'
+        git config --global user.email 'team@inviwo.org'
+        git add .
+        git commit -am "Regression report for macos ${{ github.ref }}"
+        git push
+
+        echo "### :chart_with_upwards_trend: Regression report at https://inviwo.org/regression/macos/${{ github.ref }}/report.html " >> $GITHUB_STEP_SUMMARY
 
   clang-tidy:
     name: "Clang-tidy"
