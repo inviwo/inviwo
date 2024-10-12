@@ -19,6 +19,14 @@ runs:
         ref: ${{ env.VCPKG_SHA }}
         path: vcpkg
 
+    - name: "Patch vcpkg"
+      shell: bash
+      run: |
+        cd vcpkg
+        git config --global user.name 'Inviwo-Team'
+        git config --global user.email 'team@inviwo.org'
+        git apply ../inviwo/tools/vcpkg/39889.patch
+
     - name: "VCPKG Update"
       shell: bash
       run: |
