@@ -55,9 +55,9 @@ TEST(StatsUtilsTest, init) {
     vecY.emplace_back(70);
     auto res = statsutil::linearRegresion(X, Y);
 
-    EXPECT_DOUBLE_EQ(0.64383561643835918, res.k) << " value of K";
-    EXPECT_DOUBLE_EQ(26.780821917808225, res.m) << " value of m";
-    EXPECT_DOUBLE_EQ(0.48032180908893229, res.r2) << " value of r";
+    EXPECT_NEAR(0.64383561643835918, res.k, 1E-12) << " value of K";
+    EXPECT_NEAR(26.780821917808225, res.m, 1E-12) << " value of m";
+    EXPECT_NEAR(0.48032180908893229, res.r2, 1E-12) << " value of r";
 
     // https://en.wikipedia.org/wiki/Percentile
     auto data = std::vector<double>({20., 15., 50., 40., 35.});

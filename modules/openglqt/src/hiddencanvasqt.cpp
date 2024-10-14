@@ -29,17 +29,18 @@
 
 #include <modules/openglqt/hiddencanvasqt.h>
 
-#include <inviwo/core/common/inviwoapplication.h>  // for dispatchFront
-#include <inviwo/core/util/canvas.h>               // for Canvas, Canvas::ContextID
-#include <inviwo/core/util/rendercontext.h>        // for CanvasContextHolder, RenderContext
-#include <inviwo/core/util/stringconversion.h>     // for toString
-#include <modules/opengl/openglcapabilities.h>     // for OpenGLCapabilities
-
+// Ensure we only include Qt OpenGL stuff, no Glew OpenGL
 #include <QApplication>       // for QApplication
 #include <QCoreApplication>   // for QCoreApplication
 #include <QOffscreenSurface>  // for QOffscreenSurface
 #include <QOpenGLContext>     // for QOpenGLContext
 #include <QThread>            // for QThread
+
+#include <inviwo/core/common/inviwoapplication.h>  // for dispatchFront
+#include <inviwo/core/util/canvas.h>               // for Canvas, Canvas::ContextID
+#include <inviwo/core/util/rendercontext.h>        // for CanvasContextHolder, RenderContext
+#include <inviwo/core/util/stringconversion.h>     // for toString
+#include <modules/opengl/openglcapabilities.h>     // for OpenGLCapabilities
 
 #include <atomic>      // for atomic, __atomic_base
 #include <functional>  // for __base
