@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -295,38 +295,38 @@ TEST(HalfEdges, indexbufferAdjacency) {
 
         {
             const auto fb12 = dvec2{v1} + dvec2{v2} - dvec2{v3};
-            const auto ub12 = glm::uvec2(glm::round(fb12));
+            const auto ub12 = glm::ivec2(glm::round(fb12));
 
-            const auto b12 = glm::any(glm::lessThan(ub12, glm::uvec2{0})) ||
-                                     glm::any(glm::greaterThan(ub12, glm::uvec2{width, height}))
-                                 ? v3
+            const auto b12 = glm::any(glm::lessThan(ub12, glm::ivec2{0})) ||
+                                     glm::any(glm::greaterThan(ub12, glm::ivec2{width, height}))
+                                 ? glm::ivec2{v3}
                                  : ub12;
 
-            EXPECT_EQ(b12, a12) << "V1 " << v1 << " V2 " << v2 << " V3 " << v3;
+            EXPECT_EQ(b12, glm::ivec2{a12}) << "V1 " << v1 << " V2 " << v2 << " V3 " << v3;
         }
 
         {
             const auto fb23 = dvec2{v2} + dvec2{v3} - dvec2{v1};
-            const auto ub23 = glm::uvec2(glm::round(fb23));
+            const auto ub23 = glm::ivec2(glm::round(fb23));
 
-            const auto b23 = glm::any(glm::lessThan(ub23, glm::uvec2{0})) ||
-                                     glm::any(glm::greaterThan(ub23, glm::uvec2{width, height}))
-                                 ? v1
+            const auto b23 = glm::any(glm::lessThan(ub23, glm::ivec2{0})) ||
+                                     glm::any(glm::greaterThan(ub23, glm::ivec2{width, height}))
+                                 ? glm::ivec2{v1}
                                  : ub23;
 
-            EXPECT_EQ(b23, a23) << "V1 " << v1 << " V2 " << v2 << " V3 " << v3;
+            EXPECT_EQ(b23, glm::ivec2{a23}) << "V1 " << v1 << " V2 " << v2 << " V3 " << v3;
         }
         {
 
             const auto fb31 = dvec2{v3} + dvec2{v1} - dvec2{v2};
-            const auto ub31 = glm::uvec2(glm::round(fb31));
+            const auto ub31 = glm::ivec2(glm::round(fb31));
 
-            const auto b31 = glm::any(glm::lessThan(ub31, glm::uvec2{0})) ||
-                                     glm::any(glm::greaterThan(ub31, glm::uvec2{width, height}))
-                                 ? v2
+            const auto b31 = glm::any(glm::lessThan(ub31, glm::ivec2{0})) ||
+                                     glm::any(glm::greaterThan(ub31, glm::ivec2{width, height}))
+                                 ? glm::ivec2{v2}
                                  : ub31;
 
-            EXPECT_EQ(b31, a31) << "V1 " << v1 << " V2 " << v2 << " V3 " << v3;
+            EXPECT_EQ(b31, glm::ivec2{a31}) << "V1 " << v1 << " V2 " << v2 << " V3 " << v3;
         }
     }
 }

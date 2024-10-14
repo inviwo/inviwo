@@ -106,9 +106,9 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
     });
 
     for (auto&& [i, coordinate] : util::enumerate(cartesian_)) {
-        connect(coordinate, &OrdinalSpinBoxWidget<float>::valueChanged, this, [this, i = i]() {
+        connect(coordinate, &OrdinalSpinBoxWidget<float>::valueChanged, this, [this, iLocal = i]() {
             auto newPos = halfSphere_->getPosition();
-            newPos[i] = cartesian_[i]->getValue();
+            newPos[iLocal] = cartesian_[iLocal]->getValue();
 
             QSignalBlocker lblocker(halfSphere_);
             QSignalBlocker rblocker(radius_);

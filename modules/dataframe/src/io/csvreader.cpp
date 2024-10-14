@@ -321,14 +321,6 @@ size_t parse(std::string_view str, std::string_view delimiters, std::optional<si
     return index;
 }
 
-namespace config {
-#if defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L
-constexpr bool charconv = true;
-#else
-constexpr bool charconv = false;
-#endif
-}  // namespace config
-
 template <typename T>
 std::optional<T> toNumberLocale(std::string_view str) {
     SafeCStr cstr{str};
