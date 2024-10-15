@@ -28,18 +28,20 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/properties/boolproperty.h>                  // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>             // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>             // for InvalidationLevel, Inva...
-#include <inviwo/core/properties/ordinalproperty.h>               // for FloatProperty
-#include <inviwo/core/properties/propertysemantics.h>             // for PropertySemantics, Prop...
-#include <modules/basegl/datastructures/linesettingsinterface.h>  // for LineSettingsInterface
-#include <modules/basegl/properties/stipplingproperty.h>          // for StipplingProperty
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <modules/basegl/datastructures/linesettingsinterface.h>
+#include <modules/basegl/properties/stipplingproperty.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 class StipplingSettingsInterface;
@@ -92,17 +94,33 @@ public:
      */
     virtual const StipplingSettingsInterface& getStippling() const override;
 
-    FloatProperty lineWidth_;
-    FloatProperty antialiasing_;
-    FloatProperty miterLimit_;
-    BoolProperty roundCaps_;
+    virtual bool getOverrideColor() const override;
+    virtual vec3 getOverrideColorValue() const override;
 
-    BoolProperty pseudoLighting_;
-    BoolProperty roundDepthProfile_;
+    virtual bool getOverrideAlpha() const override;
+    virtual float getOverrideAlphaValue() const override;
 
-    FloatVec4Property defaultColor_;
+    virtual bool getUseMetaColor() const override;
 
-    StipplingProperty stippling_;
+    virtual const TransferFunction& getMetaColor() const override;
+
+    FloatProperty lineWidth;
+    FloatProperty antialiasing;
+    FloatProperty miterLimit;
+    BoolProperty roundCaps;
+
+    BoolProperty pseudoLighting;
+    BoolProperty roundDepthProfile;
+
+    FloatVec4Property defaultColor;
+    BoolCompositeProperty overrideColor;
+    FloatVec3Property color;
+    BoolCompositeProperty overrideAlpha;
+    FloatProperty alpha;
+    BoolCompositeProperty useMetaColor;
+    TransferFunctionProperty metaColor;
+
+    StipplingProperty stippling;
 };
 
 }  // namespace inviwo

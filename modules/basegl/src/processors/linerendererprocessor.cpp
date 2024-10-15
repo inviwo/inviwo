@@ -65,16 +65,16 @@ const ProcessorInfo LineRendererProcessor::getProcessorInfo() const { return pro
 
 LineRendererProcessor::LineRendererProcessor()
     : Processor()
-    , inport_("geometry", "Input meshes"_help)
-    , imageInport_("imageInport", "Optional background image"_help)
-    , outport_("image")
-    , lineSettings_("lineSettings", "Line Settings")
-    , writeDepth_("writeDepth", "Write Depth Layer",
-                  "If enabled, line depths are rendered onto the background image"_help, true)
-    , camera_("camera", "Camera", util::boundingBox(inport_))
-    , trackball_(&camera_)
+    , inport_{"geometry", "Input meshes"_help}
+    , imageInport_{"imageInport", "Optional background image"_help}
+    , outport_{"image"}
+    , lineSettings_{"lineSettings", "Line Settings"}
+    , writeDepth_{"writeDepth", "Write Depth Layer",
+                  "If enabled, line depths are rendered onto the background image"_help, true}
+    , camera_{"camera", "Camera", util::boundingBox(inport_)}
+    , trackball_{&camera_}
     , bnl_{}
-    , lineRenderer_({bnl_.getRequirement()}, &lineSettings_) {
+    , lineRenderer_{{bnl_.getRequirement()}, &lineSettings_} {
 
     addPort(inport_);
     addPort(imageInport_).setOptional(true);
