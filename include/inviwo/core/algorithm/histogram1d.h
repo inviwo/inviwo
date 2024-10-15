@@ -62,8 +62,9 @@ namespace detail {
  *       i.e. \f$ n \in \mathbb{N} \f$
  * 3. for floating point types:
  *    a. if number of bins exceeds |data range|, use original \p bins count
- *    b. if the data range is non-fractional, i.e. whole numbers
- *       [min, max], adjust the number of bins so that the bin size is a whole number
+ *    b. if the data range is larger than 1 and non-fractional, i.e. whole numbers
+ *       [min, max] and |max - min| >= 1, adjust the number of bins so that the bin
+ *       size is a whole number
  * 4. otherwise, use original \p bins count
  *
  * @tparam T       type of the underlying data
@@ -92,7 +93,8 @@ std::pair<size_t, double> optimalBinCount(DataMapper dataMap, size_t bins) {
         if (range < static_cast<double>(bins)) {  // case 3.a
             return {bins, range};
         }
-        if (isNonFractional(dataMap.dataRange.x) && isNonFractional(dataMap.dataRange.y)) {
+        if (range >= 1.0 && isNonFractional(dataMap.dataRange.x) &&
+            isNonFractional(dataMap.dataRange.y)) {
             // case 3.b
             const auto irange = static_cast<size_t>(std::round(dataMap.dataRange.y) -
                                                     std::round(dataMap.dataRange.x) + 1.0);

@@ -62,7 +62,7 @@ public:
         std::vector<double> data(numValues);
         std::ranges::generate(data,
                               [&]() { return dis_(rand_) * (maxValue - minValue) + minValue; });
-        DataMapper dataMap{dvec2{minValue, maxValue}};
+        const DataMapper dataMap{dvec2{minValue, maxValue}};
         return util::calculateHistograms<double>(data, dataMap, binCount);
     }
 
@@ -70,7 +70,7 @@ public:
     std::vector<Histogram1D> createUniformHistogram(int maxValue, int inc, size_t binCount) const {
         auto seq = util::make_sequence<int>(0, maxValue, inc);
         std::vector<T> data{seq.begin(), seq.end()};
-        DataMapper dataMap{dvec2{0.0, static_cast<double>(maxValue)}};
+        const DataMapper dataMap{dvec2{0.0, static_cast<double>(maxValue)}};
         return util::calculateHistograms<T>(data, dataMap, binCount);
     }
 
@@ -82,7 +82,7 @@ private:
     std::uniform_real_distribution<double> dis_;
 };
 
-TEST_F(Histogram1DTest, int_range_below_bin_count) {
+TEST_F(Histogram1DTest, intRangeBelowBinCount) {
     const size_t binCount = 64;
 
     auto histograms = createUniformHistogram<int>(62, 1, binCount);
@@ -94,7 +94,7 @@ TEST_F(Histogram1DTest, int_range_below_bin_count) {
     EXPECT_TRUE(isHistogramUniform(histograms[0])) << "different counts per bin";
 }
 
-TEST_F(Histogram1DTest, int_range_exact_bin_count) {
+TEST_F(Histogram1DTest, intRangeExactBinCount) {
     const size_t binCount = 64;
 
     auto histograms = createUniformHistogram<int>(63, 1, binCount);
@@ -106,7 +106,7 @@ TEST_F(Histogram1DTest, int_range_exact_bin_count) {
     EXPECT_TRUE(isHistogramUniform(histograms[0])) << "different counts per bin";
 }
 
-TEST_F(Histogram1DTest, int_range_multiple_bin_count) {
+TEST_F(Histogram1DTest, intRangeMultipleBinCount) {
     const size_t binCount = 32;
 
     auto histograms = createUniformHistogram<int>(62, 1, binCount);
@@ -118,7 +118,7 @@ TEST_F(Histogram1DTest, int_range_multiple_bin_count) {
     EXPECT_TRUE(isHistogramUniform(histograms[0])) << "different counts per bin";
 }
 
-TEST_F(Histogram1DTest, int_range_greater_than_bin_count) {
+TEST_F(Histogram1DTest, intRangeGreaterThanBinCount) {
     const size_t binCount = 32;
 
     auto histograms = createUniformHistogram<int>(63, 1, binCount);
@@ -130,7 +130,7 @@ TEST_F(Histogram1DTest, int_range_greater_than_bin_count) {
     EXPECT_TRUE(isHistogramUniform(histograms[0])) << "different counts per bin";
 }
 
-TEST_F(Histogram1DTest, float_range_below_bin_count) {
+TEST_F(Histogram1DTest, floatRangeBelowBinCount) {
     const size_t binCount = 64;
 
     auto histograms = createUniformHistogram<double>(62, 1, binCount);
@@ -143,7 +143,7 @@ TEST_F(Histogram1DTest, float_range_below_bin_count) {
     EXPECT_EQ(62, histograms[0].totalCounts) << "different total counts";
 }
 
-TEST_F(Histogram1DTest, float_range_exact_bin_count) {
+TEST_F(Histogram1DTest, floatRangeExactBinCount) {
     const size_t binCount = 64;
 
     auto histograms = createUniformHistogram<double>(63, 1, binCount);
@@ -156,7 +156,7 @@ TEST_F(Histogram1DTest, float_range_exact_bin_count) {
     EXPECT_TRUE(isHistogramUniform(histograms[0])) << "different counts per bin";
 }
 
-TEST_F(Histogram1DTest, float_range_greater_than_bin_count) {
+TEST_F(Histogram1DTest, floatRangeGreaterThanBinCount) {
     const size_t binCount = 64;
 
     auto histograms = createUniformHistogram<double>(64, 1, binCount);
@@ -168,7 +168,7 @@ TEST_F(Histogram1DTest, float_range_greater_than_bin_count) {
     EXPECT_TRUE(isHistogramUniform(histograms[0])) << "different counts per bin";
 }
 
-TEST_F(Histogram1DTest, float_nonfractional_range) {
+TEST_F(Histogram1DTest, floatNonfractionalRange) {
     const size_t binCount = 16;
 
     auto histograms = createUniformHistogram<double>(20, 1, binCount);
@@ -180,7 +180,7 @@ TEST_F(Histogram1DTest, float_nonfractional_range) {
     EXPECT_TRUE(isHistogramUniform(histograms[0])) << "different counts per bin";
 }
 
-TEST_F(Histogram1DTest, float_fractional_range_lower) {
+TEST_F(Histogram1DTest, floatFractionalRangeLower) {
     const size_t binCount = 16;
 
     auto histograms = createHistogram(0.123, 67.0, 20, binCount);
@@ -189,7 +189,7 @@ TEST_F(Histogram1DTest, float_fractional_range_lower) {
     EXPECT_EQ(20, histograms[0].totalCounts) << "different total counts";
 }
 
-TEST_F(Histogram1DTest, float_fractional_range_upper) {
+TEST_F(Histogram1DTest, floatFractionalRangeUpper) {
     const size_t binCount = 16;
 
     auto histograms = createHistogram(0.0, 67.998, 20, binCount);
