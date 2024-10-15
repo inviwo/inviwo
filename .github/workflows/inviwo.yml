@@ -48,7 +48,6 @@ jobs:
               -DIVW_MODULE_SGCT=ON
               -DIVW_APP_INVIWO_DOME=ON
               -DVCPKG_MANIFEST_FEATURES="sgct"
-            preset: msvc-developer
             targets: 'ALL_BUILD'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
@@ -68,8 +67,7 @@ jobs:
               -DIVW_MODULE_FFMPEG=ON
               -DIVW_MODULE_WEBBROWSER=ON
               -DIVW_MODULE_TETRAMESH=ON
-            preset: ninja-developer
-            targets: 'all'
+            targets: 'ALL_BUILD'
             installer: 'inviwo-installer-macos'
             artifact: 'build/inviwo-v*.dmg'
             run: './inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
@@ -85,7 +83,6 @@ jobs:
               -DIVW_MODULE_WEBBROWSER=OFF
               -DIVW_MODULE_TETRAMESH=ON
               -DIVW_TEST_BENCHMARKS=OFF
-            preset: ninja-developer
             targets: 'all'
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.deb'
