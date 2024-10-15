@@ -64,6 +64,9 @@ $(document).ready(function() {
             body = $(this).next(".libody")
             body.slideToggle(100);
             $.sparkline_display_visible();
+
+            // Only create the zoom set on need.
+            $(body).find(".zoomset").zoom({magnify : 4, on : 'grab', duration : 400});
     });
 
     $('.sparkline_elapsed_time').sparkline('html', sparkOptions(function(date, val) {
@@ -82,8 +85,6 @@ $(document).ready(function() {
         normalRangeMin : -0.5,
         normalRangeMax : 0.5
     }));
-
-    $('.zoomset').zoom({magnify : 4, on : 'grab', duration : 400});
 
     userList.sort('testname');
     userList.sort('testmodule');

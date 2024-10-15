@@ -6,16 +6,34 @@ runs:
     - name: "Setup MSVC"
       uses: ilammy/msvc-dev-cmd@v1.13.0
 
-    - name: "VCPKG Update"
+    - name: "Get Vcpkg SHA"
       shell: bash
       run: |
         SHA=`jq -r '.["vcpkg-configuration"].["default-registry"].baseline' inviwo/vcpkg.json`
-        echo $VCPKG_INSTALLATION_ROOT
-        cd $VCPKG_INSTALLATION_ROOT
-        git reset --hard
-        git pull
-        git checkout $SHA
+        echo "VCPKG_SHA=${SHA}" >> $GITHUB_ENV
+
+    - name: "Clone Vcpkg"
+      uses: actions/checkout@v4
+      with:
+        repository: microsoft/vcpkg
+        ref: ${{ env.VCPKG_SHA }}
+        path: vcpkg
+
+    - name: "Patch vcpkg"
+      shell: bash
+      run: |
+        cd vcpkg
+        git config --global user.name 'Inviwo-Team'
+        git config --global user.email 'team@inviwo.org'
+        git apply ../inviwo/tools/vcpkg/39889.patch
+
+    - name: "VCPKG Update"
+      shell: bash
+      run: |
+        cd vcpkg
         ./bootstrap-vcpkg.sh
+        echo "VCPKG_INSTALLATION_ROOT=`pwd`" >> $GITHUB_ENV
+        echo "VCPKG_ROOT=`pwd`" >> $GITHUB_ENV
 
     - name: "Setup Ccache"
       id: ccache

@@ -36,7 +36,7 @@ jobs:
         
         include:
           - system: windows
-            os: 'windows-latest'
+            os: 'windows-2022'
             cmake: >
               -DIVW_MODULE_EIGENUTILS=ON
               -DIVW_MODULE_HDF5=ON
@@ -61,7 +61,7 @@ jobs:
               fi
           
           - system: macos
-            os: 'macos-13' # for now macos-latest == macos-12 since macos-13 is still "beta"
+            os: 'macos-15'
             cmake: >
               -DIVW_MODULE_EIGENUTILS=ON
               -DIVW_MODULE_HDF5=ON
@@ -72,8 +72,7 @@ jobs:
             targets: 'all'
             installer: 'inviwo-installer-macos'
             artifact: 'build/inviwo-v*.dmg'
-            # run: './inviwo.app/Contents/MacOS/inviwo --logconsole --quit' Running on mac fails. FFMPEG link issue 
-            run: ''
+            run: './inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
           
           - system: linux
             os: 'ubuntu-24.04'
@@ -108,10 +107,10 @@ jobs:
             
           - system: 'macos'
             linkage: 'dynamic'
-            triplet: 'x64-osx-dynamic'
+            triplet: 'arm64-osx-dynamic'
           - system: 'macos'
             linkage: 'static'
-            triplet: 'x64-osx'
+            triplet: 'arm64-osx'
             
           - system: 'linux'
             linkage: 'dynamic'
@@ -177,6 +176,7 @@ jobs:
         VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ${{ matrix.preset }}
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+        -DVCPKG_HOST_TRIPLET=${{ matrix.triplet }}
         -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
         -DBUILD_SHARED_LIBS=${{ matrix.cmake_linkage }}
         -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
@@ -198,7 +198,12 @@ jobs:
       shell: bash
       working-directory: "build/bin"
       run: ${{ matrix.run }}
-      
+
+    - name: "Unittests"
+      shell: bash
+      working-directory: "build"
+      run: ctest -C ${{ matrix.configuration }} --output-on-failure
+
     - name: "Upload installer"
       if: matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
       uses: actions/upload-artifact@v4
@@ -226,6 +231,85 @@ jobs:
       timeout-minutes: 30
       with:
         limit-access-to-actor: true
+
+  regression:
+    name: "Regression"
+    runs-on: [regression, macOS]
+    timeout-minutes: 320
+    steps:
+
+    - name: "Clone Inviwo"
+      uses: actions/checkout@v4
+      with:
+        path: inviwo
+
+    - name: "Configure CMake"
+      shell: bash
+      run: >
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ninja-developer
+        --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+        -DCMAKE_CXX_FLAGS='-stdlib=libc++'
+        -DVCPKG_TARGET_TRIPLET=x64-osx-dynamic
+        -DVCPKG_HOST_TRIPLET=x64-osx-dynamic
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        -DIVW_MODULE_EIGENUTILS=ON
+        -DIVW_MODULE_HDF5=ON
+        -DIVW_MODULE_TETRAMESH=OFF
+        -DIVW_MODULE_WEBBROWSER=ON
+
+    - name: "Build"
+      timeout-minutes: 360
+      shell: bash
+      run: |
+        echo "::add-matcher::inviwo/.github/matchers/macos.json"
+        cmake --build build --config RelWithDebInfo --parallel --target all
+        echo "::remove-matcher owner=compiler::"
+        echo "::remove-matcher owner=linker::"
+
+    - name: "Unit Tests"
+      shell: bash
+      working-directory: "build"
+      continue-on-error: true
+      run: ctest -C RelWithDebInfo --output-on-failure
+
+    - name: "Integration Tests"
+      shell: bash
+      working-directory: "build/bin"
+      continue-on-error: true
+      run: ./inviwo-integrationtests
+
+    - name: "Clone Regression"
+      uses: actions/checkout@v4
+      with:
+        repository: inviwo/regression
+        ref: main
+        token: ${{ secrets.INVIWO_TEAM_SECRET }}
+        path: regression
+
+    - name: "Regression Tests"
+      shell: bash
+      continue-on-error: true
+      run: |
+        mkdir -p regression/macos/${{ github.ref }}
+        python3 inviwo/tools/regression.py \
+          --config build/pyconfig.ini \
+          --build_type RelWithDebInfo \
+          --output regression/macos/${{ github.ref }} \
+          --modules inviwo/modules \
+          --summary
+
+    - name: Push report
+      shell: bash
+      run: |
+        cd regression
+        git config --global user.name 'Inviwo-Team'
+        git config --global user.email 'team@inviwo.org'
+        git add .
+        git commit -am "Regression report for macos ${{ github.ref }}"
+        git push
+
+        echo "### :chart_with_upwards_trend: Regression report at https://inviwo.org/regression/macos/${{ github.ref }}/report.html " >> $GITHUB_STEP_SUMMARY
 
   clang-tidy:
     name: "Clang-tidy"
@@ -436,7 +520,8 @@ jobs:
   update-api-docs:
     name: "Publish updated API Docs"
     if: github.ref == 'refs/heads/master'
-    needs: [build, test-installer]
+    needs: [build, test-installer, regression]
+
     runs-on: windows-latest
     steps:
       - name: "Clone Inviwo"
@@ -479,7 +564,7 @@ jobs:
   update-latest-release:
     name: "Update latest release"
     if: github.ref == 'refs/heads/master'
-    needs: [build, test-installer]
+    needs: [build, test-installer, regression, create-changelog]
     strategy:
       matrix:
         os: [windows-latest] # macos-latest,
