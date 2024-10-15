@@ -145,8 +145,16 @@ if (OS_MAC)
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${_helper_app}"
             "${CEF_APP}/Contents/Frameworks/${_helper_output_name}.app"
+            COMMAND ${CMAKE_COMMAND} -E touch "fingerprint-${_plist_suffix}"
+            BYPRODUCTS "fingerprint-${_plist_suffix}"
             VERBATIM
         )
+        add_custom_target(
+            "depend-${_plist_suffix}"
+            DEPENDS "fingerprint-${_plist_suffix}"
+        )
+        add_dependencies(inviwo-module-system "depend-${_plist_suffix}")
+
         # Copy the helper app bundle into the Frameworks directory (used by installer)
         install(DIRECTORY "${_helper_app}"
             DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/${_helper_output_name}.app"
