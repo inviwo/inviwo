@@ -145,13 +145,18 @@ if (OS_MAC)
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${_helper_app}"
             "${CEF_APP}/Contents/Frameworks/${_helper_output_name}.app"
-            COMMAND ${CMAKE_COMMAND} -E touch "fingerprint-${_plist_suffix}"
+
+            COMMAND
+            /usr/bin/codesign --force --sign - --entitlements "${CMAKE_CURRENT_SOURCE_DIR}/resources/mac/helper${_target_suffix}-entitlements.plist"
+                --timestamp\=none --generate-entitlement-der "${CEF_APP}/Contents/Frameworks/${_helper_output_name}.app"
+
+            COMMAND ${CMAKE_COMMAND} -E touch "fingerprint${_plist_suffix}"
             BYPRODUCTS "fingerprint-${_plist_suffix}"
             VERBATIM
         )
         add_custom_target(
             "depend-${_plist_suffix}"
-            DEPENDS "fingerprint-${_plist_suffix}"
+            DEPENDS "fingerprint${_plist_suffix}"
         )
         add_dependencies(inviwo-module-system "depend-${_plist_suffix}")
 
