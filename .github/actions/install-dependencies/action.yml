@@ -1,5 +1,20 @@
 name: 'Install Inviwo dependencies'
 description: 'runs, Chocolatey, Brew and Apt to install dependencies'
+
+inputs:
+  linux-compilter:
+    description: 'Which linux compilter to use (gcc or clang)'
+    default: gcc
+
+  gcc-version:
+    description: 'Which gcc version to use'
+    default: 14
+
+  clang-version:
+    description: 'Which clang version to use'
+    default: 17
+
+
 runs:
   using: "composite"
   steps:
@@ -28,17 +43,30 @@ runs:
       run: |
         brew install ninja pkg-config nasm
 
-    - name: "Apt Install, switch to gcc-13"
+    - name: "Apt Install"
       shell: bash
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
         sudo apt install --fix-missing libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev \
-                         libglew-dev ninja-build gcc-14 g++-14 nasm
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 130 \
-                                 --slave /usr/bin/g++ g++ /usr/bin/g++-14 \
-                                 --slave /usr/bin/gcov gcov /usr/bin/gcov-14
-        sudo update-alternatives --set gcc /usr/bin/gcc-14
+                         libglew-dev ninja-build nasm
+
+    - name: "Setup GCC ${{ inputs.gcc-version }}"
+      shell: bash
+      if: runner.os == 'Linux' && inputs.linux-compilter == 'gcc'
+      run: |
+        sudo apt install --fix-missing  gcc-${{ inputs.gcc-version }} g++-${{ inputs.gcc-version }}
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${{ inputs.gcc-version }} 130 \
+                                 --slave /usr/bin/g++ g++ /usr/bin/g++-${{ inputs.gcc-version }} \
+                                 --slave /usr/bin/gcov gcov /usr/bin/gcov-${{ inputs.gcc-version }}
+        sudo update-alternatives --set gcc /usr/bin/gcc-${{ inputs.gcc-version }}
+
+    - name: "Setup Clang ${{ inputs.clang-version }}"
+      if: runner.os == 'Linux' && inputs.linux-compilter == 'clang'
+      uses: KyleMayes/install-llvm-action@v2
+      with:
+        version: ${{ inputs.clang-version }}
+        env: true
 
     - name: "Install Qt"
       uses: jurplel/install-qt-action@v3

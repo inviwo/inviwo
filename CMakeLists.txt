@@ -49,7 +49,7 @@ endif()
 set(IVW_CFG_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
 project(${IVW_CFG_PROJECT_NAME} 
     HOMEPAGE_URL https://github.com/inviwo/inviwo
-    LANGUAGES CXX
+    LANGUAGES CXX C
     VERSION ${IVW_MAJOR_VERSION}.${IVW_MINOR_VERSION}.${IVW_PATCH_VERSION}
 )
 
@@ -74,7 +74,30 @@ if(IVW_CFG_USE_CCACHE_MSVC)
         "DebugInformationFormat=OldStyle"
     )
 endif()
+option(IVW_CFG_USE_CCACHE_XCODE "build using cache in xcode" OFF)
+if(IVW_CFG_USE_CCACHE_XCODE)
+    message(STATUS "Configuring ccache for use with XCode")
+    message(STATUS " * CXX = ${CMAKE_CXX_COMPILER}")
+    message(STATUS " * C   = ${CMAKE_C_COMPILER}")
 
+    file(CONFIGURE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/launcher-c   CONTENT [=[#!/bin/sh
+        export CCACHE_SLOPPINESS=clang_index_store
+        exec ccache @CMAKE_C_COMPILER@ "$@"
+    ]=]
+    @ONLY)
+    file(CONFIGURE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/launcher-cxx CONTENT [=[#!/bin/sh
+        export CCACHE_SLOPPINESS=clang_index_store
+        exec ccache @CMAKE_CXX_COMPILER@ "$@"
+    ]=]
+    @ONLY)
+    file(CHMOD ${CMAKE_CURRENT_BINARY_DIR}/launcher-c ${CMAKE_CURRENT_BINARY_DIR}/launcher-cxx
+         FILE_PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE)
+
+    set(CMAKE_XCODE_ATTRIBUTE_CC          "${CMAKE_CURRENT_BINARY_DIR}/launcher-c")
+    set(CMAKE_XCODE_ATTRIBUTE_CXX         "${CMAKE_CURRENT_BINARY_DIR}/launcher-cxx")
+    set(CMAKE_XCODE_ATTRIBUTE_LD          "${CMAKE_CURRENT_BINARY_DIR}/launcher-c")
+    set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS  "${CMAKE_CURRENT_BINARY_DIR}/launcher-cxx")
+endif()
 
 option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 
