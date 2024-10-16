@@ -1,5 +1,18 @@
 name: 'Configure Inviwo Build environment'
 description: 'Configure vcpkg and ccache'
+
+inputs:
+  triplet:
+    description: 'Vcpkg triplet to use'
+    required: true
+  configuration:
+    description: 'Configuration to use'
+    required: true
+  ccache:
+    description: 'Setup ccache'
+    required: false
+    default: true
+
 runs:
   using: "composite"
   steps:
@@ -37,6 +50,7 @@ runs:
 
     - name: "Setup Ccache"
       id: ccache
+      if: inputs.ccache
       uses: petersteneteg/ccache-action@v1.1.0
       with:
         variant: ccache
@@ -44,13 +58,13 @@ runs:
         verbose: 2
         save: ${{github.ref == 'refs/heads/master'}}
         append-timestamp: true
-        key: inviwo-${{ matrix.triplet }}-${{ matrix.configuration }}-
+        key: inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}-
         restore-keys: |
-          inviwo-${{ matrix.triplet }}-${{ matrix.configuration }}-
+          inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}-
 
     - name: "Copy ccache"
       shell: bash
-      if: runner.os == 'Windows'
+      if: runner.os == 'Windows' && inputs.ccache
       run: |
         mkdir build
         cp ${{ steps.ccache.outputs.executable }} build/cl.exe
