@@ -133,12 +133,13 @@ if (OS_MAC)
         # Add the Helper as a dependency of the main executable target.
         add_dependencies(${CEF_TARGET} "${_helper_target}")
 
-        # Nedd to make sure we build and sign the herpers before we build any apps,
+        # Need to make sure we build and sign the helpers before we build any apps,
         # since they will need to be copied into the app bundle
         # and be signed before the app bundle is signed.
         add_dependencies(inviwo-module-system "${_helper_target}")
 
         # Copy files into the bin directory (used during development)
+        # And explicitly sign them. Since they might not have been signed yet.
         add_custom_command(
             TARGET ${_helper_target}
             POST_BUILD
