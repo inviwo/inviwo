@@ -1,0 +1,11 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 23, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "gha",
+      "displayName": "Ninja Developer configuration",
+      "inherits" : ["ninja", "developer", "vcpkg", "vcpkg-cache-write", "build"]
+    }
+  ]
+}

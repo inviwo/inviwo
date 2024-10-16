@@ -133,15 +133,28 @@ if (OS_MAC)
         # Add the Helper as a dependency of the main executable target.
         add_dependencies(${CEF_TARGET} "${_helper_target}")
 
+        # Need to make sure we build and sign the helpers before we build any apps,
+        # since they will need to be copied into the app bundle
+        # and be signed before the app bundle is signed.
+        add_dependencies(inviwo-module-system "${_helper_target}")
+
         # Copy files into the bin directory (used during development)
+        # And explicitly sign them. Since they might not have been signed yet.
         add_custom_command(
             TARGET ${_helper_target}
             POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${_helper_app}"
             "${CEF_APP}/Contents/Frameworks/${_helper_output_name}.app"
+
+            COMMAND
+            /usr/bin/codesign --force --sign - --entitlements "${CMAKE_CURRENT_SOURCE_DIR}/resources/mac/helper${_target_suffix}-entitlements.plist"
+                --timestamp\=none --generate-entitlement-der "${CEF_APP}/Contents/Frameworks/${_helper_output_name}.app"
+
             VERBATIM
         )
+
+
         # Copy the helper app bundle into the Frameworks directory (used by installer)
         install(DIRECTORY "${_helper_app}"
             DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/${_helper_output_name}.app"

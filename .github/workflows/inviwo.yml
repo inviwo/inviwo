@@ -17,7 +17,7 @@ permissions:
   contents: write  # Enable vcpkg to write to the dependency graph
 
 env:
-  VCPKG_BINARY_SOURCES: 'clear;http,https://jenkins.inviwo.org/cache/{sha},readwrite,Authorization: Bearer ${{ secrets.VCPKG_CACHE_TOKEN }}'
+  VCPKG_CACHE_TOKEN: ${{ secrets.VCPKG_CACHE_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
   # QT_DEBUG_PLUGINS: 1                           # print qt plugin debug info
@@ -48,7 +48,6 @@ jobs:
               -DIVW_MODULE_SGCT=ON
               -DIVW_APP_INVIWO_DOME=ON
               -DVCPKG_MANIFEST_FEATURES="sgct"
-            preset: msvc-developer
             targets: 'ALL_BUILD'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
@@ -68,11 +67,9 @@ jobs:
               -DIVW_MODULE_FFMPEG=ON
               -DIVW_MODULE_WEBBROWSER=ON
               -DIVW_MODULE_TETRAMESH=ON
-            preset: ninja-developer
-            targets: 'all'
+            targets: 'ALL_BUILD'
             installer: 'inviwo-installer-macos'
             artifact: 'build/inviwo-v*.dmg'
-            run: './inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
           
           - system: linux
             os: 'ubuntu-24.04'
@@ -85,7 +82,6 @@ jobs:
               -DIVW_MODULE_WEBBROWSER=OFF
               -DIVW_MODULE_TETRAMESH=ON
               -DIVW_TEST_BENCHMARKS=OFF
-            preset: ninja-developer
             targets: 'all'
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.deb'
@@ -118,6 +114,14 @@ jobs:
           - system: 'linux'
             linkage: 'static'
             triplet: 'x64-linux'
+
+          # Run
+          - system: 'macos'
+            configuration: Release
+            run: './Release/inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
+          - system: 'macos'
+            configuration: Debug
+            run: './Debug/inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
 
           # extra targets 
           - system: windows
@@ -170,10 +174,14 @@ jobs:
     - name: Configure build environment
       uses: ./inviwo/.github/actions/configure-build-env
 
+    - name: Copy Preset
+      shell: bash
+      run: cp inviwo/.github/presets/${{ matrix.system }}.json inviwo/CMakeUserPresets.json
+
     - name: "Configure CMake"
       shell: bash
       run: >
-        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ${{ matrix.preset }}
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset gha
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
         -DVCPKG_HOST_TRIPLET=${{ matrix.triplet }}
@@ -373,10 +381,14 @@ jobs:
         path: inviwo
         submodules: recursive
         
+    - name: Copy Preset
+      shell: bash
+      run: cp inviwo/.github/presets/linux.json inviwo/CMakeUserPresets.json
+
     - name: "Configure CMake"
       shell: bash
       run: >
-        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ninja-developer
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset gha
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DCMAKE_CXX_FLAGS='-stdlib=libc++'
         -DVCPKG_TARGET_TRIPLET=x64-linux-dynamic
