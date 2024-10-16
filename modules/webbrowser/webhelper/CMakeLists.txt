@@ -150,15 +150,9 @@ if (OS_MAC)
             /usr/bin/codesign --force --sign - --entitlements "${CMAKE_CURRENT_SOURCE_DIR}/resources/mac/helper${_target_suffix}-entitlements.plist"
                 --timestamp\=none --generate-entitlement-der "${CEF_APP}/Contents/Frameworks/${_helper_output_name}.app"
 
-            COMMAND ${CMAKE_COMMAND} -E touch "fingerprint${_plist_suffix}"
-            BYPRODUCTS "fingerprint-${_plist_suffix}"
             VERBATIM
         )
-        add_custom_target(
-            "depend-${_plist_suffix}"
-            DEPENDS "fingerprint${_plist_suffix}"
-        )
-        add_dependencies(inviwo-module-system "depend-${_plist_suffix}")
+
 
         # Copy the helper app bundle into the Frameworks directory (used by installer)
         install(DIRECTORY "${_helper_app}"
