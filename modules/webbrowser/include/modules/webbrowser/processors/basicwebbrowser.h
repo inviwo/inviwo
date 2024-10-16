@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,44 +29,62 @@
 
 #pragma once
 
-#include <modules/json/jsonmoduledefine.h>  // for IVW_MODULE_JSON_API
+#include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <inviwo/core/processors/processor.h>
 
-#include <inviwo/core/properties/property.h>  // for PropertyTraits
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
-#include <memory>  // for unique_ptr, make_unique
-#include <string>  // for string
+
+#include <inviwo/dataframe/datastructures/dataframe.h>
+
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+
+#include <modules/json/jsonport.h>
+
+#include <modules/webbrowser/processors/webbrowserbase.h>
 
 namespace inviwo {
-class PropertyJSONConverter;
-template <typename SrcProperty>
-class TemplatePropertyJSONConverter;
 
-class IVW_MODULE_JSON_API PropertyJSONConverterFactoryObject {
+class IVW_MODULE_WEBBROWSER_API BasicWebBrowser : public Processor {
 public:
-    PropertyJSONConverterFactoryObject();
-    virtual ~PropertyJSONConverterFactoryObject();
+    BasicWebBrowser(InviwoApplication* app);
 
-    virtual std::unique_ptr<PropertyJSONConverter> create(Property*) = 0;
-    /**
-     * Property class identifier.
-     */
-    virtual std::string getClassIdentifier() const = 0;
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 private:
-};
+    void render();
 
-template <typename P>
-class PropertyJSONConverterFactoryObjectTemplate : public PropertyJSONConverterFactoryObject {
-public:
-    PropertyJSONConverterFactoryObjectTemplate() : PropertyJSONConverterFactoryObject() {}
+    DataFrameInport dataframe_;
+    JSONInport json_;
+    BrushingAndLinkingInport brushing_;
+    ImageInport background_;
+    ImageOutport outport_;
 
-    virtual ~PropertyJSONConverterFactoryObjectTemplate() {}
+    StringProperty html_;
+    StringProperty code_;
+    ButtonProperty reload_;
+    DoubleProperty zoom_;
 
-    virtual std::unique_ptr<PropertyJSONConverter> create(Property*) {
-        return std::make_unique<TemplatePropertyJSONConverter<P>>();
-    }
+    
+    OptionPropertyString propertyTypes_;
+    StringProperty name_;
+    ButtonProperty add_;
+    CompositeProperty extra_;
 
-    virtual std::string getClassIdentifier() const { return PropertyTraits<P>::classIdentifier(); };
+    CefRefPtr<WebBrowserBase> browser_;
+
+    std::vector<std::shared_ptr<std::function<std::string(const std::string&)>>> callbacks_;
+
+    bool loaded_ = false;
+    std::string error_ = "";
 };
 
 }  // namespace inviwo

@@ -84,15 +84,18 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
         index = properties_.size();
     }
 
-    if (getPropertyByIdentifier(property->getIdentifier()) != nullptr) {
-        throw Exception(
-            "Can't add property, identifier \"" + property->getIdentifier() + "\" already exist.",
-            IVW_CONTEXT);
+    if (auto* existing = getPropertyByIdentifier(property->getIdentifier()); existing != nullptr) {
+        throw Exception(IVW_CONTEXT,
+                        "Cannot add Property: [id: '{}', class id: '{}'] to PropertyOwner '{}'"
+                        ", the identifier is already used by [id: '{}', class id: '{}']",
+                        property->getIdentifier(), property->getClassIdentifier(), getIdentifier(),
+                        existing->getIdentifier(), existing->getClassIdentifier());
     }
     if (auto parent = dynamic_cast<Property*>(this)) {
         if (parent == property) {
-            throw Exception("Can't add property \"" + property->getIdentifier() + "\" to itself.",
-                            IVW_CONTEXT);
+            throw Exception(IVW_CONTEXT,
+                            "Cannot add Property: [id: '{}', class id: '{}'] to itself.",
+                            property->getIdentifier(), property->getClassIdentifier());
         }
     }
 
@@ -133,9 +136,8 @@ Property* PropertyOwner::removeProperty(Property& property) { return removePrope
 
 Property* PropertyOwner::removeProperty(size_t index) {
     if (index >= size()) {
-        throw RangeException("Invalid index when removing property " + std::to_string(index) +
-                                 " (" + std::to_string(size()) + " elements)",
-                             IVW_CONTEXT);
+        throw RangeException(IVW_CONTEXT, "Index '{}' out of range while removing property, ({} elements)",
+                             index, size());
     }
     return removeProperty(begin() + index);
 }

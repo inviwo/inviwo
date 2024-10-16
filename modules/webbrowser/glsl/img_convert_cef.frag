@@ -39,8 +39,12 @@ void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
 	texCoords.y = 1.0 - texCoords.y;
     vec4 color = texture(inport, texCoords);
-    if (color.w > 0) {
-        FragData0 = texture(inport, texCoords);
+    if (color.a > 0) {
+        #ifdef SwizzleColor
+        FragData0 = color.bgra;
+        #else
+        FragData0 = color;
+        #endif
         PickingData = vec4(pickingColor, 1.0);
     } else {
         discard;
