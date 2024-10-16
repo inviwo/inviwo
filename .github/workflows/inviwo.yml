@@ -70,7 +70,6 @@ jobs:
             targets: 'ALL_BUILD'
             installer: 'inviwo-installer-macos'
             artifact: 'build/inviwo-v*.dmg'
-            run: './inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
           
           - system: linux
             os: 'ubuntu-24.04'
@@ -115,6 +114,14 @@ jobs:
           - system: 'linux'
             linkage: 'static'
             triplet: 'x64-linux'
+
+          # Run
+          - system: 'macos'
+            configuration: Release
+            run: './Release/inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
+          - system: 'macos'
+            configuration: Debug
+            run: './Debug/inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
 
           # extra targets 
           - system: windows
