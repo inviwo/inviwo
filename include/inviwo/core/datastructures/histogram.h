@@ -57,8 +57,6 @@ struct IVW_CORE_API Histogram1D {
     size_t totalCounts{0};
     size_t maxCount{0};
     DataMapper dataMap{};
-    dvec2 effectiveDataRange{0.0};
-    dvec2 effectiveValueRange{0.0};
     size_t underflow{0};
     size_t overflow{0};
 
