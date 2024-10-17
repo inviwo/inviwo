@@ -29,6 +29,7 @@
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/algorithm/histogram1d.h>
 #include <inviwo/core/util/document.h>
 
 #include <fmt/format.h>
@@ -245,7 +246,7 @@ namespace {
 auto histCalc(const Volume& v) {
     return [dataMap = v.dataMap, repr = v.getRepresentationShared<VolumeRAM>()]() {
         return repr->dispatch<std::vector<Histogram1D>>(
-            [&]<typename T>(const VolumeRAMPrecision<T>* rp) {
+            [dataMap]<typename T>(const VolumeRAMPrecision<T>* rp) {
                 return util::calculateHistograms(rp->getView(), dataMap, 2048);
             });
     };
