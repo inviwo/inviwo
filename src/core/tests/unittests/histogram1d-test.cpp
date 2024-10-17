@@ -88,7 +88,7 @@ TEST_F(Histogram1DTest, intRangeBelowBinCount) {
     auto histograms = createUniformHistogram<int>(62, 1, binCount);
     EXPECT_EQ(63, histograms[0].counts.size()) << "number of bins differs";
     const double effectiveRange =
-        histograms[0].effectiveDataRange.y - histograms[0].effectiveDataRange.x;
+        histograms[0].dataMap.dataRange.y - histograms[0].dataMap.dataRange.x;
     EXPECT_DOUBLE_EQ(62.0, effectiveRange);
 
     EXPECT_TRUE(isHistogramUniform(histograms[0])) << "different counts per bin";
@@ -100,7 +100,7 @@ TEST_F(Histogram1DTest, intRangeExactBinCount) {
     auto histograms = createUniformHistogram<int>(63, 1, binCount);
     EXPECT_EQ(binCount, histograms[0].counts.size()) << "number of bins differs";
     const double effectiveRange =
-        histograms[0].effectiveDataRange.y - histograms[0].effectiveDataRange.x;
+        histograms[0].dataMap.dataRange.y - histograms[0].dataMap.dataRange.x;
     EXPECT_DOUBLE_EQ(63.0, effectiveRange);
 
     EXPECT_TRUE(isHistogramUniform(histograms[0])) << "different counts per bin";
@@ -112,7 +112,7 @@ TEST_F(Histogram1DTest, intRangeMultipleBinCount) {
     auto histograms = createUniformHistogram<int>(62, 1, binCount);
     EXPECT_EQ(binCount, histograms[0].counts.size()) << "number of bins differs";
     const double effectiveRange =
-        histograms[0].effectiveDataRange.y - histograms[0].effectiveDataRange.x;
+        histograms[0].dataMap.dataRange.y - histograms[0].dataMap.dataRange.x;
     EXPECT_DOUBLE_EQ(62.0, effectiveRange);
 
     EXPECT_TRUE(isHistogramUniform(histograms[0])) << "different counts per bin";
@@ -124,7 +124,7 @@ TEST_F(Histogram1DTest, intRangeGreaterThanBinCount) {
     auto histograms = createUniformHistogram<int>(63, 1, binCount);
     EXPECT_EQ(22, histograms[0].counts.size()) << "number of bins differs";
     const double effectiveRange =
-        histograms[0].effectiveDataRange.y - histograms[0].effectiveDataRange.x;
+        histograms[0].dataMap.dataRange.y - histograms[0].dataMap.dataRange.x;
     EXPECT_DOUBLE_EQ(63.0, effectiveRange);
 
     EXPECT_TRUE(isHistogramUniform(histograms[0])) << "different counts per bin";
@@ -137,7 +137,7 @@ TEST_F(Histogram1DTest, floatRangeBelowBinCount) {
     EXPECT_EQ(binCount, histograms[0].counts.size()) << "number of bins differs";
     const double dataRange = histograms[0].dataMap.dataRange.y - histograms[0].dataMap.dataRange.x;
     const double effectiveRange =
-        histograms[0].effectiveDataRange.y - histograms[0].effectiveDataRange.x;
+        histograms[0].dataMap.dataRange.y - histograms[0].dataMap.dataRange.x;
     EXPECT_DOUBLE_EQ(dataRange, effectiveRange) << "effective range does not match data range";
 
     EXPECT_EQ(62, histograms[0].totalCounts) << "different total counts";
@@ -149,7 +149,7 @@ TEST_F(Histogram1DTest, floatRangeExactBinCount) {
     auto histograms = createUniformHistogram<double>(63, 1, binCount);
     EXPECT_EQ(binCount, histograms[0].counts.size()) << "number of bins differs";
     const double effectiveRange =
-        histograms[0].effectiveDataRange.y - histograms[0].effectiveDataRange.x;
+        histograms[0].dataMap.dataRange.y - histograms[0].dataMap.dataRange.x;
     const double dataRange = histograms[0].dataMap.dataRange.y - histograms[0].dataMap.dataRange.x;
     EXPECT_DOUBLE_EQ(dataRange, effectiveRange) << "effective range does not match data range";
 
@@ -162,7 +162,7 @@ TEST_F(Histogram1DTest, floatRangeGreaterThanBinCount) {
     auto histograms = createUniformHistogram<double>(64, 1, binCount);
     EXPECT_EQ(33, histograms[0].counts.size()) << "number of bins differs";
     const double effectiveRange =
-        histograms[0].effectiveDataRange.y - histograms[0].effectiveDataRange.x;
+        histograms[0].dataMap.dataRange.y - histograms[0].dataMap.dataRange.x;
     EXPECT_DOUBLE_EQ(64.0, effectiveRange) << "effective range does not match data range";
 
     EXPECT_TRUE(isHistogramUniform(histograms[0])) << "different counts per bin";
@@ -174,7 +174,7 @@ TEST_F(Histogram1DTest, floatNonfractionalRange) {
     auto histograms = createUniformHistogram<double>(20, 1, binCount);
     EXPECT_EQ(11, histograms[0].counts.size()) << "number of bins differs";
     const double effectiveRange =
-        histograms[0].effectiveDataRange.y - histograms[0].effectiveDataRange.x;
+        histograms[0].dataMap.dataRange.y - histograms[0].dataMap.dataRange.x;
     EXPECT_DOUBLE_EQ(20.0, effectiveRange);
 
     EXPECT_TRUE(isHistogramUniform(histograms[0])) << "different counts per bin";

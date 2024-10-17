@@ -72,6 +72,7 @@ private:
         TFPropertyConcept::HistogramChange change = TFPropertyConcept::HistogramChange::NoData;
         HistogramMode mode = HistogramMode::Off;
         HistogramSelection selection = histogramSelectionAll;
+        DataMapper dataMap;
         std::vector<Histogram1D> histograms = {};
         std::vector<QPolygonF> polygons = {};
         static void paintHistogram(QPainter* painter, const QPolygonF& histogram, size_t channel,
@@ -80,9 +81,11 @@ private:
                                const QRect& rect);
         void paintState(QPainter* painter, const QRect& rect) const;
         void paintHistograms(QPainter* painter, const QRectF& sceneRect, const QRect& rect) const;
-        static QPolygonF createHistogramPolygon(const Histogram1D& histogram, HistogramMode mode);
+        static QPolygonF createHistogramPolygon(const Histogram1D& histogram, HistogramMode mode,
+                                                const DataMapper& dataMap);
         static std::vector<QPolygonF> createHistogramPolygons(
-            const std::vector<Histogram1D>& histograms, HistogramMode mode);
+            const std::vector<Histogram1D>& histograms, HistogramMode mode,
+            const DataMapper& dataMap);
     };
     HistogramState histogramState_;
     DispatcherHandle<TFPropertyConcept::HistogramCallback> histogramChangeHandle_;

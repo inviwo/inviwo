@@ -77,8 +77,11 @@ namespace inviwo {
 TFEditorView::TFEditorView(TFPropertyConcept* tfProperty, QGraphicsScene* scene, QWidget* parent)
     : QGraphicsView(scene, parent)
     , property_{tfProperty}
-    , histogramState_{.mode = tfProperty->getHistogramMode(),
-                      .selection = tfProperty->getHistogramSelection()} {
+    , histogramState_{
+          .mode = tfProperty->getHistogramMode(),
+          .selection = tfProperty->getHistogramSelection(),
+          .dataMap = DataMapper{dvec2{0.0, 1.0}, dvec2{0.0, 1.0}},
+      } {
 
     setMouseTracking(true);
     setRenderHint(QPainter::Antialiasing, true);
@@ -93,8 +96,14 @@ TFEditorView::TFEditorView(TFPropertyConcept* tfProperty, QGraphicsScene* scene,
                                             const std::vector<Histogram1D>& histograms) {
             histogramState_.change = change;
             histogramState_.histograms = histograms;
+            if (const auto* dataMap = property_->getDataMap()) {
+                histogramState_.dataMap = *dataMap;
+            } else {
+                histogramState_.dataMap.dataRange = dvec2{0.0, 1.0};
+                histogramState_.dataMap.valueRange = dvec2{0.0, 1.0};
+            }
             histogramState_.polygons = HistogramState::createHistogramPolygons(
-                histogramState_.histograms, histogramState_.mode);
+                histogramState_.histograms, histogramState_.mode, histogramState_.dataMap);
             resetCachedContent();
             update();
         });
@@ -111,7 +120,7 @@ void TFEditorView::onHistogramModeChange(HistogramMode mode) {
         histogramState_.mode = mode;
 
         histogramState_.polygons = HistogramState::createHistogramPolygons(
-            histogramState_.histograms, histogramState_.mode);
+            histogramState_.histograms, histogramState_.mode, histogramState_.dataMap);
         resetCachedContent();
         update();
     }
@@ -203,8 +212,13 @@ void TFEditorView::resizeEvent(QResizeEvent* event) {
 }
 
 QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D& histogram,
-                                                               HistogramMode mode) {
-    const auto stepSize = 1.0 / histogram.counts.size();
+                                                               HistogramMode mode,
+                                                               const DataMapper& dataMap) {
+    // adjust step size, that is bin size, on x axis to account for the range of the histogram
+    // bins
+    const auto ratio = (histogram.dataMap.dataRange.y - histogram.dataMap.dataRange.x) /
+                       (dataMap.dataRange.y - dataMap.dataRange.x);
+    const auto stepSize = ratio / histogram.counts.size();
 
     QPolygonF polygon{};
     polygon << QPointF(0.0, 0.0);
@@ -242,12 +256,12 @@ QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D
 }
 
 std::vector<QPolygonF> TFEditorView::HistogramState::createHistogramPolygons(
-    const std::vector<Histogram1D>& histograms, HistogramMode mode) {
+    const std::vector<Histogram1D>& histograms, HistogramMode mode, const DataMapper& dataMap) {
     std::vector<QPolygonF> polygons;
 
     if (mode != HistogramMode::Off) {
         for (const auto& histogram : histograms) {
-            polygons.push_back(createHistogramPolygon(histogram, mode));
+            polygons.push_back(createHistogramPolygon(histogram, mode, dataMap));
         }
     }
 
