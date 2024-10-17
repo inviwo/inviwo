@@ -64,7 +64,7 @@ std::vector<double> scaleHistogram(const Histogram1D& hist, HistogramMode mode) 
 }
 
 std::shared_ptr<DataFrame> createDataFrame(const std::vector<Histogram1D>& histograms,
-                                           HistogramMode mode, bool includeDataRangeValues) {
+                                           HistogramMode mode) {
     auto dataframe = std::make_shared<DataFrame>();
 
     if (histograms.empty()) {
@@ -86,15 +86,11 @@ std::shared_ptr<DataFrame> createDataFrame(const std::vector<Histogram1D>& histo
         return binCenters;
     };
 
-    if (includeDataRangeValues) {
-        dataframe->addColumn("Data Values", generateBinCenters(histograms[0].effectiveDataRange),
-                             {}, histograms[0].effectiveDataRange);
-    }
     const std::string colName = !histograms[0].dataMap.valueAxis.name.empty()
                                     ? histograms[0].dataMap.valueAxis.name
                                     : "Scalars";
-    dataframe->addColumn(colName, generateBinCenters(histograms[0].effectiveValueRange),
-                         histograms[0].dataMap.valueAxis.unit, histograms[0].effectiveValueRange);
+    dataframe->addColumn(colName, generateBinCenters(histograms[0].dataMap.valueRange),
+                         histograms[0].dataMap.valueAxis.unit, histograms[0].dataMap.valueRange);
 
     for (auto&& [index, hist] : util::enumerate<int>(histograms)) {
         dataframe->addColumn(fmt::format("Channel{}", index), scaleHistogram(hist, mode));

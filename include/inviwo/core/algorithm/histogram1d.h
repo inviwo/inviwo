@@ -53,13 +53,14 @@ namespace detail {
 
 /**
  * Determine optimal number of bins of a histogram while considering \p bins as an upper bound
- * for the number of bins
+ * for the number of bins. As fractional bin sizes might align badly with integer data, this
+ * function ensures for integral types of \p T and integral ranges that the bins align with whole
+ * numbers in order to guarantee an equal distribution of scalar values over all bins.
  * 1. if there are more than 100 samples per bin based on data range, use \p bins without
  *    further modification
  * 2. for integral types:
  *    a. set bins to data range if the number of bins exceeds the data range
- *    b. otherwise adjust the number of bins so that the bin size is a whole number,
- *       i.e. \f$ n \in \mathbb{N} \f$
+ *    b. otherwise adjust the number of bins so that the bin size is a whole number, i.e. n in N
  * 3. for floating point types:
  *    a. if number of bins exceeds |data range|, use original \p bins count
  *    b. if the data range is larger than 1 and non-fractional, i.e. whole numbers
@@ -68,10 +69,10 @@ namespace detail {
  * 4. otherwise, use original \p bins count
  *
  * @tparam T       type of the underlying data
- * @param dataMap  used for calculating the number of bins
+ * @param dataMap  used for calculating the number of bins, data range can be slightly larger than
+ *                 the original data ranges
  * @param bins     upper bound for the number of bins
- * @return optimal number of bins and effective data range, which can be slightly larger than the
- *                 original data range
+ * @return optimal number of bins and effective data range,
  */
 template <typename T>
 std::pair<size_t, double> optimalBinCount(DataMapper dataMap, size_t bins) {
@@ -113,6 +114,16 @@ std::pair<size_t, double> optimalBinCount(DataMapper dataMap, size_t bins) {
 
 }  // namespace detail
 
+/**
+ * Calculate histograms and statistics for a given span \p data of type \p T.
+ *
+ * @tparam T       underlying data type, can be a scalar or glm vector type
+ * @param data
+ * @param dataMap  provides the data range used for bin positions and size
+ * @param bins     upper limit of bins to use, actual number of bins might be lower based on data
+ *                 range and data type of \p T
+ * @return vector of histograms, one per channel/component in \p data
+ */
 template <typename T>
 std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const DataMapper& dataMap,
                                              size_t bins) {
@@ -173,6 +184,7 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
     const dvec2 effectiveDataRange{dataMap.dataRange.x, dataMap.dataRange.x + effectiveRange};
     const dvec2 effectiveValueRange{dataMap.valueRange.x,
                                     dataMap.mapFromDataToValue(effectiveDataRange.y)};
+    DataMapper histogramDataMap{effectiveDataRange, effectiveValueRange, dataMap.valueAxis};
 
     for (size_t channel = 0; channel < extent; ++channel) {
         const auto maxBinCount = *std::ranges::max_element(hists[channel]);
@@ -181,9 +193,7 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
             .counts = hists[channel],
             .totalCounts = count,
             .maxCount = maxBinCount,
-            .dataMap = dataMap,
-            .effectiveDataRange = effectiveDataRange,
-            .effectiveValueRange = effectiveValueRange,
+            .dataMap = histogramDataMap,
             .underflow = underflow[channel],
             .overflow = overflow[channel],
             .dataStats = {.min = util::glmcomp(min, channel),
