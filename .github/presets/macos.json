@@ -5,7 +5,29 @@
     {
       "name": "gha",
       "displayName": "Xcode Developer configuration",
-      "inherits" : ["xcode", "developer", "vcpkg", "vcpkg-cache-write", "build"]
+      "inherits" : ["xcode", "developer", "vcpkg", "vcpkg-cache-write", "build"],
+      "cacheVariables": {
+        "IVW_CFG_USE_CCACHE_XCODE": "ON",
+
+        "IVW_MODULE_EIGENUTILS": "ON",
+        "IVW_MODULE_HDF5": "ON",
+        "IVW_MODULE_FFMPEG": "ON",
+        "IVW_MODULE_WEBBROWSER": "ON",
+        "IVW_MODULE_TETRAMESH": "ON"
+      }
+    },
+    {
+      "name": "gha-static",
+      "inherits" : ["gha"],
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS":    { "type": "BOOL", "value": "OFF"},
+        "VCPKG_TARGET_TRIPLET": "arm64-osx",
+        "VCPKG_HOST_TRIPLET":   "arm64-osx"
+      }
+    },
+    {
+      "name": "gha-dynamic",
+      "inherits" : ["gha"]
     }
   ]
 }

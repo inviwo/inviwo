@@ -4,8 +4,36 @@
   "configurePresets": [
     {
       "name": "gha",
-      "displayName": "MSVC Developer configuration",
-      "inherits" : ["msvc", "developer", "vcpkg", "vcpkg-cache-write", "build"]
+      "inherits" : ["msvc", "developer", "vcpkg", "vcpkg-cache-write", "build"],
+      "cacheVariables": {
+        "IVW_CFG_USE_CCACHE_MSVC": "ON",
+        "IVW_MODULE_EIGENUTILS": "ON",
+        "IVW_MODULE_HDF5": "ON",
+        "IVW_MODULE_FFMPEG": "ON",
+        "IVW_MODULE_WEBBROWSER": "ON",
+        "IVW_MODULE_TETRAMESH": "ON",
+        "IVW_MODULE_SGCT": "ON",
+        "IVW_APP_INVIWO_DOME": "ON",
+        "VCPKG_MANIFEST_FEATURES": "sgct"
+      }
+    },
+    {
+      "name": "gha-static",
+      "inherits" : ["gha"],
+      "cacheVariables": {
+        "IVW_CFG_MSVC_FORCE_SHARED_CRT": { "type": "BOOL", "value": "ON"},
+        "BUILD_SHARED_LIBS":             { "type": "BOOL", "value": "OFF"},
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static-md",
+        "VCPKG_HOST_TRIPLET": "x64-windows-static-md"
+      }
+    },
+    {
+      "name": "gha-dynamic",
+      "inherits" : ["gha"],
+      "cacheVariables": {
+        "IVW_DOXYGEN_PROJECT": "ON",
+        "IVW_DOXYGEN_LATEX_PATH": "C:/tools/TinyTeX/bin/win32/pdflatex.exe"
+      }
     }
   ]
 }
