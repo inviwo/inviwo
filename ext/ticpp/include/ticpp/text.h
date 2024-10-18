@@ -41,7 +41,7 @@ public:
     /// Turns on or off a CDATA representation of text.
     void SetCDATA(bool _cdata) { cdata = _cdata; }
 
-    virtual const char* Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data);
 
     /// Cast to a more defined type. Will return null not of the requested type.
     virtual const TiXmlText* ToText() const { return this; }

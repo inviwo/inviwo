@@ -28,7 +28,7 @@ public:
         tag.reserve(8 * 1000);
         base.StreamIn(&in, &tag);
 
-        base.Parse(tag.c_str(), 0, TIXML_DEFAULT_ENCODING);
+        base.Parse(tag.c_str(), 0);
         return in;
     }
     /** An output stream operator, for every class. Note that this outputs
@@ -352,7 +352,7 @@ protected:
     virtual void StreamIn(std::istream* in, std::string* tag) = 0;
 
     // Figure out what is at *p, and parse it. Returns null if it is not an xml node.
-    TiXmlNode* Identify(const char* start, TiXmlEncoding encoding);
+    TiXmlNode* Identify(const char* start);
 
     TiXmlNode* parent;
     NodeType type;
