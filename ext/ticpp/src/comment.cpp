@@ -67,7 +67,7 @@ const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, TiXmlEnco
     const char* startTag = "<!--";
     const char* endTag = "-->";
 
-    if (!StringEqual(p, startTag, false, encoding)) {
+    if (!StringEqual(p, startTag, false)) {
         document->SetError(TIXML_ERROR_PARSING_COMMENT, p, data, encoding);
         return 0;
     }
@@ -93,7 +93,7 @@ const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, TiXmlEnco
 
     value = "";
     // Keep all the white space.
-    while (p && *p && !StringEqual(p, endTag, false, encoding)) {
+    while (p && *p && !StringEqual(p, endTag, false)) {
         value.append(p, 1);
         ++p;
     }

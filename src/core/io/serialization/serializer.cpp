@@ -38,10 +38,9 @@ namespace inviwo {
 
 Serializer::Serializer(const std::filesystem::path& fileName) : SerializeBase(fileName) {
     try {
-        auto decl = std::make_unique<TxDeclaration>(SerializeConstants::XmlVersion, "UTF-8", "");
-        doc_->LinkEndChild(decl.get());
-        rootElement_ = new TxElement(SerializeConstants::InviwoWorkspace);
-
+        auto decl = new TiXmlDeclaration(SerializeConstants::XmlVersion, "UTF-8", "");
+        doc_->LinkEndChild(decl);
+        rootElement_ = new TiXmlElement(SerializeConstants::InviwoWorkspace);
         rootElement_->SetAttribute(SerializeConstants::VersionAttribute,
                                    detail::toStr(SerializeConstants::InviwoWorkspaceVersion));
         doc_->LinkEndChild(rootElement_);
@@ -51,7 +50,7 @@ Serializer::Serializer(const std::filesystem::path& fileName) : SerializeBase(fi
     }
 }
 
-Serializer::~Serializer() { delete rootElement_; }
+Serializer::~Serializer() { }
 
 void Serializer::serialize(std::string_view key, const std::filesystem::path& path,
                            const SerializationTarget& target) {
@@ -65,24 +64,23 @@ void Serializer::serialize(std::string_view key, const std::filesystem::path& pa
 }
 
 void Serializer::serialize(std::string_view key, const Serializable& sObj) {
-    auto node = std::make_unique<TxElement>(key);
-    rootElement_->LinkEndChild(node.get());
-    NodeSwitch nodeSwitch(*this, std::move(node));
+    NodeSwitch nodeSwitch{*this, rootElement_->LinkEndChild(new TiXmlElement(key))->ToElement()};
     sObj.serialize(*this);
 }
 
 NodeSwitch Serializer::switchToNewNode(std::string_view key) {
-    auto node = std::make_unique<TxElement>(key);
-    rootElement_->LinkEndChild(node.get());
-    NodeSwitch nodeSwitch(*this, std::move(node));
-    return nodeSwitch;
+    return {*this, rootElement_->LinkEndChild(new TiXmlElement(key))->ToElement()};
 }
 
-TxElement* Serializer::getLastChild() const { return rootElement_->LastChild()->ToElement(); }
+TiXmlElement* Serializer::getLastChild() const { return rootElement_->LastChild()->ToElement(); }
 
-void Serializer::linkEndChild(TxElement* child) { rootElement_->LinkEndChild(child); }
+// void Serializer::linkEndChild(TxElement* child) { rootElement_->LinkEndChild(child); }
 
 void Serializer::setValue(TxElement* node, std::string_view val) { node->SetValue(val); }
+
+void Serializer::setAttribute(TiXmlElement* node, std::string_view key, std::string_view val) {
+    node->SetAttribute(key, val);
+}
 
 void Serializer::setAttribute(TxElement* node, std::string_view key, std::string_view val) {
     node->SetAttribute(key, val);

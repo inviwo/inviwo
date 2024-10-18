@@ -25,9 +25,10 @@ void TiXmlUnknown::StreamIn(std::istream* in, std::string* tag) {
     while (in->good()) {
         int c = in->get();
         if (c <= 0) {
-            TiXmlDocument* document = GetDocument();
-            if (document)
-                document->SetError(TIXML_ERROR_EMBEDDED_NULL, 0, 0, TIXML_ENCODING_UNKNOWN);
+            if (TiXmlDocument* document = GetDocument()) {
+                document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr,
+                                   TIXML_ENCODING_UNKNOWN);
+            }
             return;
         }
         (*tag) += (char)c;
@@ -60,7 +61,7 @@ const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data, TiXmlEnco
     }
 
     if (!p) {
-        if (document) document->SetError(TIXML_ERROR_PARSING_UNKNOWN, 0, 0, encoding);
+        if (document) document->SetError(TIXML_ERROR_PARSING_UNKNOWN, nullptr, nullptr, encoding);
     }
     if (*p == '>') return p + 1;
     return p;

@@ -46,19 +46,20 @@ constexpr bool charconv = false;
 }  // namespace config
 
 SerializeBase::SerializeBase()
-    : doc_{std::make_unique<TxDocument>()}, rootElement_{nullptr}, retrieveChild_{true} {}
+    : doc_{std::make_unique<TiXmlDocument>()}, rootElement_{nullptr}, retrieveChild_{true} {}
 
 SerializeBase::SerializeBase(const std::filesystem::path& fileName)
     : fileName_{fileName}
-    , doc_{std::make_unique<TxDocument>(fileName.string())}
+    , doc_{std::make_unique<TiXmlDocument>(fileName.string())}
     , rootElement_{nullptr}
     , retrieveChild_{true} {}
 
 SerializeBase::SerializeBase(std::istream& stream, const std::filesystem::path& path)
     : fileName_{path}
-    , doc_{std::make_unique<TxDocument>()}
+    , doc_{std::make_unique<TiXmlDocument>()}
     , rootElement_{nullptr}
     , retrieveChild_{true} {
+
     stream >> *doc_;
 }
 
@@ -104,7 +105,7 @@ NodeSwitch& NodeSwitch::operator=(NodeSwitch&& rhs) noexcept {
     return *this;
 }
 
-NodeSwitch::NodeSwitch(SerializeBase& serializer, TxElement* node, bool retrieveChild)
+NodeSwitch::NodeSwitch(SerializeBase& serializer, TiXmlElement* node, bool retrieveChild)
     : serializer_(&serializer)
     , storedNode_(serializer_->rootElement_)
     , storedRetrieveChild_(serializer_->retrieveChild_) {
@@ -113,6 +114,9 @@ NodeSwitch::NodeSwitch(SerializeBase& serializer, TxElement* node, bool retrieve
     serializer_->retrieveChild_ = retrieveChild;
 }
 
+NodeSwitch::NodeSwitch(SerializeBase& serializer, TxElement* node, bool retrieveChild)
+    : NodeSwitch(serializer, node->GetXmlPointer(), retrieveChild) {}
+
 NodeSwitch::NodeSwitch(SerializeBase& serializer, std::unique_ptr<TxElement> node,
                        bool retrieveChild)
     : node_(std::move(node))
@@ -120,7 +124,7 @@ NodeSwitch::NodeSwitch(SerializeBase& serializer, std::unique_ptr<TxElement> nod
     , storedNode_(serializer_->rootElement_)
     , storedRetrieveChild_(serializer_->retrieveChild_) {
 
-    serializer_->rootElement_ = node_.get();
+    serializer_->rootElement_ = node_->GetXmlPointer();
     serializer_->retrieveChild_ = retrieveChild;
 }
 NodeSwitch::NodeSwitch(SerializeBase& serializer, std::string_view key, bool retrieveChild)
@@ -128,10 +132,9 @@ NodeSwitch::NodeSwitch(SerializeBase& serializer, std::string_view key, bool ret
     , storedNode_(serializer_->rootElement_)
     , storedRetrieveChild_(serializer_->retrieveChild_) {
 
-    serializer_->rootElement_ =
-        serializer_->retrieveChild_
-            ? serializer_->rootElement_->FirstChildElement(key.data(), false)
-            : serializer_->rootElement_;
+    if (serializer_->retrieveChild_) {
+        serializer_->rootElement_ = serializer_->rootElement_->FirstChildElement(key);
+    }
 
     serializer_->retrieveChild_ = retrieveChild;
 }

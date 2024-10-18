@@ -6,17 +6,17 @@
 #include <ticpp/node.h>
 
 /** In correct XML the declaration is the first entry in the file.
-        @verbatim
-                <?xml version="1.0" standalone="yes"?>
-        @endverbatim
+    @verbatim
+        <?xml version="1.0" standalone="yes"?>
+    @endverbatim
 
-        TinyXml will happily read or write files without a declaration,
-        however. There are 3 possible attributes to the declaration:
-        version, encoding, and standalone.
+    TinyXml will happily read or write files without a declaration,
+    however. There are 3 possible attributes to the declaration:
+    version, encoding, and standalone.
 
-        Note: In this version of the code, the attributes are
-        handled as special cases, not generic attributes, simply
-        because there can only be at most 3 and they are always the same.
+    Note: In this version of the code, the attributes are
+    handled as special cases, not generic attributes, simply
+    because there can only be at most 3 and they are always the same.
 */
 class TICPP_API TiXmlDeclaration : public TiXmlNode {
 public:
@@ -53,15 +53,13 @@ public:
 
     virtual const char* Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding);
 
-    virtual const TiXmlDeclaration* ToDeclaration() const {
-        return this;
-    }  ///< Cast to a more defined type. Will return null not of the requested type.
-    virtual TiXmlDeclaration* ToDeclaration() {
-        return this;
-    }  ///< Cast to a more defined type. Will return null not of the requested type.
+    /// Cast to a more defined type. Will return null not of the requested type.
+    virtual const TiXmlDeclaration* ToDeclaration() const { return this; }
 
-    /** Walk the XML tree visiting this node and all of its children.
-     */
+    /// Cast to a more defined type. Will return null not of the requested type.
+    virtual TiXmlDeclaration* ToDeclaration() { return this; }
+
+    /// Walk the XML tree visiting this node and all of its children.
     virtual bool Accept(TiXmlVisitor* visitor) const;
 
 protected:

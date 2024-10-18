@@ -115,7 +115,7 @@ const char* TiXmlDeclaration::Parse(const char* p, TiXmlParsingData* data,
     // Find the beginning, find the end, and look for
     // the stuff in-between.
     TiXmlDocument* document = GetDocument();
-    if (!p || !*p || !StringEqual(p, "<?xml", true, _encoding)) {
+    if (!p || !*p || !StringEqual(p, "<?xml", true)) {
         if (document) document->SetError(TIXML_ERROR_PARSING_DECLARATION, 0, 0, _encoding);
         return 0;
     }
@@ -136,15 +136,15 @@ const char* TiXmlDeclaration::Parse(const char* p, TiXmlParsingData* data,
         }
 
         p = SkipWhiteSpace(p, _encoding);
-        if (StringEqual(p, "version", true, _encoding)) {
+        if (StringEqual(p, "version", true)) {
             TiXmlAttribute attrib;
             p = attrib.Parse(p, data, _encoding);
             version = attrib.Value();
-        } else if (StringEqual(p, "encoding", true, _encoding)) {
+        } else if (StringEqual(p, "encoding", true)) {
             TiXmlAttribute attrib;
             p = attrib.Parse(p, data, _encoding);
             encoding = attrib.Value();
-        } else if (StringEqual(p, "standalone", true, _encoding)) {
+        } else if (StringEqual(p, "standalone", true)) {
             TiXmlAttribute attrib;
             p = attrib.Parse(p, data, _encoding);
             standalone = attrib.Value();
