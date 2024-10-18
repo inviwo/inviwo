@@ -1,5 +1,6 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1dispatching_1_1filter_1_1Vec2s.html":[2,0,0,8,0,16],
 "structinviwo_1_1dispatching_1_1filter_1_1Vec2s.html":[4,0,1,9,1,16],
 "structinviwo_1_1dispatching_1_1filter_1_1Vec3s.html":[2,0,0,8,0,17],
 "structinviwo_1_1dispatching_1_1filter_1_1Vec3s.html":[4,0,1,9,1,17],
@@ -248,6 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1utilgl_1_1ColorMaskState.html":[2,0,0,21,9],
 "structinviwo_1_1utilgl_1_1ColorMaskState.html":[4,0,1,27,9],
 "structinviwo_1_1utilgl_1_1ColorMaski.html":[2,0,0,21,7],
-"structinviwo_1_1utilgl_1_1ColorMaski.html":[4,0,1,27,7],
-"structinviwo_1_1utilgl_1_1ColorMaskiState.html":[2,0,0,21,8]
+"structinviwo_1_1utilgl_1_1ColorMaski.html":[4,0,1,27,7]
 };

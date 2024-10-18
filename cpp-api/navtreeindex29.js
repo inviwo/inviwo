@@ -1,5 +1,6 @@
 var NAVTREEINDEX29 =
 {
+"structinviwo_1_1EnumTraits.html":[4,0,1,288],
 "structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html":[2,0,0,283],
 "structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html":[4,0,1,289],
 "structinviwo_1_1EnumTraits_3_01filters_1_1StringComp_01_4.html":[2,0,0,284],
@@ -248,6 +249,5 @@ var NAVTREEINDEX29 =
 "structinviwo_1_1PropertyTraits_3_01MinMaxProperty_3_01T_01_4_01_4.html":[2,0,0,882],
 "structinviwo_1_1PropertyTraits_3_01MinMaxProperty_3_01T_01_4_01_4.html":[4,0,1,888],
 "structinviwo_1_1PropertyTraits_3_01OptionProperty_3_01T_01_4_01_4.html":[2,0,0,883],
-"structinviwo_1_1PropertyTraits_3_01OptionProperty_3_01T_01_4_01_4.html":[4,0,1,889],
-"structinviwo_1_1PropertyTraits_3_01OrdinalAnimationProperty_3_01T_01_4_01_4.html":[2,0,0,884]
+"structinviwo_1_1PropertyTraits_3_01OptionProperty_3_01T_01_4_01_4.html":[4,0,1,889]
 };

@@ -83,7 +83,7 @@ var NAVTREEINDEX =
 "classinviwo_1_1util_1_1IndexedDeserializer.html",
 "namespaceinviwo_1_1dataframe.html#a2c8508ae29c8648359e53e581e54e646",
 "namespaceinviwo_1_1util.html#ab09c288eeb600394bd546b3def257fb3",
-"structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html",
+"structinviwo_1_1EnumTraits.html",
 "structinviwo_1_1PropertyTraits_3_01OrdinalAnimationProperty_3_01T_01_4_01_4.html",
 "structinviwo_1_1dispatching_1_1filter_1_1Vec2s.html",
 "structinviwo_1_1utilgl_1_1ColorMaskiState.html"

@@ -431,6 +431,15 @@ IVW_CORE_API std::optional&lt; mat4 &gt;&#160;</td><td class="memItemRight" vali
 <tr class="memitem:a8325313545a3da575e7d59610adc77b5" id="r_a8325313545a3da575e7d59610adc77b5"><td class="memItemLeft" align="right" valign="top"><a id="a8325313545a3da575e7d59610adc77b5" name="a8325313545a3da575e7d59610adc77b5"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>cubePlaneInstersection</b> (const <a class="el" href="classinviwo_1_1Plane.html">Plane</a> &amp;plane)</td></tr>
 <tr class="separator:a8325313545a3da575e7d59610adc77b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dbf4900cecbb7eaca4bbb1d642b0284" id="r_a5dbf4900cecbb7eaca4bbb1d642b0284"><td class="memItemLeft" align="right" valign="top"><a id="a5dbf4900cecbb7eaca4bbb1d642b0284" name="a5dbf4900cecbb7eaca4bbb1d642b0284"></a>
+IVW_CORE_API std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>calculatePercentiles</b> (const std::vector&lt; size_t &gt; &amp;hist, dvec2 range, size_t sum)</td></tr>
+<tr class="separator:a5dbf4900cecbb7eaca4bbb1d642b0284"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa869b00bc942efbca128e0cb8b084ff6" id="r_aa869b00bc942efbca128e0cb8b084ff6"><td class="memItemLeft" align="right" valign="top"><a id="aa869b00bc942efbca128e0cb8b084ff6" name="aa869b00bc942efbca128e0cb8b084ff6"></a>
+IVW_CORE_API <a class="el" href="structinviwo_1_1Statistics.html">Statistics</a>&#160;</td><td class="memItemRight" valign="bottom"><b>calculateHistogramStats</b> (const std::vector&lt; size_t &gt; &amp;hist)</td></tr>
+<tr class="separator:aa869b00bc942efbca128e0cb8b084ff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae56ff35451c5eafad52c74568b0ae4f2" id="r_ae56ff35451c5eafad52c74568b0ae4f2"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ae56ff35451c5eafad52c74568b0ae4f2"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ae56ff35451c5eafad52c74568b0ae4f2">calculateHistograms</a> (std::span&lt; const T &gt; data, const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;dataMap, size_t bins)</td></tr>
+<tr class="separator:ae56ff35451c5eafad52c74568b0ae4f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2bfdf4a3d482622cdc4e0c93413d8882" id="r_a2bfdf4a3d482622cdc4e0c93413d8882"><td class="memTemplParams" colspan="2"><a id="a2bfdf4a3d482622cdc4e0c93413d8882" name="a2bfdf4a3d482622cdc4e0c93413d8882"></a>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a2bfdf4a3d482622cdc4e0c93413d8882"><td class="memTemplItemLeft" align="right" valign="top">constexpr T&#160;</td><td class="memTemplItemRight" valign="bottom"><b>linearMap</b> (T val, glm::vec&lt; 2, T &gt; from, glm::vec&lt; 2, T &gt; to) noexcept</td></tr>
@@ -561,16 +570,6 @@ IVW_CORE_API size_t&#160;</td><td class="memItemRight" valign="bottom"><b>number
 <tr class="memitem:a5a7b00c8154ef230492a4910c6f79c58" id="r_a5a7b00c8154ef230492a4910c6f79c58"><td class="memItemLeft" align="right" valign="top"><a id="a5a7b00c8154ef230492a4910c6f79c58" name="a5a7b00c8154ef230492a4910c6f79c58"></a>
 IVW_CORE_API size_t&#160;</td><td class="memItemRight" valign="bottom"><b>numberOfVerticesForPrimitive</b> (DrawType dt)</td></tr>
 <tr class="separator:a5a7b00c8154ef230492a4910c6f79c58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5dbf4900cecbb7eaca4bbb1d642b0284" id="r_a5dbf4900cecbb7eaca4bbb1d642b0284"><td class="memItemLeft" align="right" valign="top"><a id="a5dbf4900cecbb7eaca4bbb1d642b0284" name="a5dbf4900cecbb7eaca4bbb1d642b0284"></a>
-IVW_CORE_API std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>calculatePercentiles</b> (const std::vector&lt; size_t &gt; &amp;hist, dvec2 range, size_t sum)</td></tr>
-<tr class="separator:a5dbf4900cecbb7eaca4bbb1d642b0284"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa869b00bc942efbca128e0cb8b084ff6" id="r_aa869b00bc942efbca128e0cb8b084ff6"><td class="memItemLeft" align="right" valign="top"><a id="aa869b00bc942efbca128e0cb8b084ff6" name="aa869b00bc942efbca128e0cb8b084ff6"></a>
-IVW_CORE_API <a class="el" href="structinviwo_1_1Statistics.html">Statistics</a>&#160;</td><td class="memItemRight" valign="bottom"><b>calculateHistogramStats</b> (const std::vector&lt; size_t &gt; &amp;hist)</td></tr>
-<tr class="separator:aa869b00bc942efbca128e0cb8b084ff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae56ff35451c5eafad52c74568b0ae4f2" id="r_ae56ff35451c5eafad52c74568b0ae4f2"><td class="memTemplParams" colspan="2"><a id="ae56ff35451c5eafad52c74568b0ae4f2" name="ae56ff35451c5eafad52c74568b0ae4f2"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ae56ff35451c5eafad52c74568b0ae4f2"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>calculateHistograms</b> (std::span&lt; const T &gt; data, const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;dataMap, size_t bins)</td></tr>
-<tr class="separator:ae56ff35451c5eafad52c74568b0ae4f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6fd9efe91dbf2a0948f48cb2006efbe" id="r_aa6fd9efe91dbf2a0948f48cb2006efbe"><td class="memTemplParams" colspan="2"><a id="aa6fd9efe91dbf2a0948f48cb2006efbe" name="aa6fd9efe91dbf2a0948f48cb2006efbe"></a>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:aa6fd9efe91dbf2a0948f48cb2006efbe"><td class="memTemplItemLeft" align="right" valign="top">glm::vec&lt; 4, T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>applySwizzleMask</b> (const glm::vec&lt; 4, T &gt; &amp;value, const SwizzleMask &amp;swizzlemask)</td></tr>
@@ -2699,6 +2698,50 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Calculate a bounding box of the volume in world space. The bounding box is represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are between 0 and 1. </p>
+
+</div>
+</div>
+<a id="ae56ff35451c5eafad52c74568b0ae4f2" name="ae56ff35451c5eafad52c74568b0ae4f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae56ff35451c5eafad52c74568b0ae4f2">&#9670;&#160;</a></span>calculateHistograms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a> &gt; inviwo::util::calculateHistograms </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const T &gt;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>dataMap</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>bins</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calculate histograms and statistics for a given span <code>data</code> of type <code>T</code>.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>underlying data type, can be a scalar or glm vector type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td></td></tr>
+    <tr><td class="paramname">dataMap</td><td>provides the data range used for bin positions and size </td></tr>
+    <tr><td class="paramname">bins</td><td>upper limit of bins to use, actual number of bins might be lower based on data range and data type of <code>T</code> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>vector of histograms, one per channel/component in <code>data</code> </dd></dl>
 
 </div>
 </div>

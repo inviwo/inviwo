@@ -92,6 +92,7 @@ var namespaceinviwo_1_1util =
     [ "boundingBox", "namespaceinviwo_1_1util.html#a212b4034a9b7f9090fb3cdf1ced7153d", null ],
     [ "boundingBox", "namespaceinviwo_1_1util.html#a07503961e01f5f633c9f1a371b36d780", null ],
     [ "boundingBox", "namespaceinviwo_1_1util.html#ac6b304bd97447cbc99865cf2a8bdc3a9", null ],
+    [ "calculateHistograms", "namespaceinviwo_1_1util.html#ae56ff35451c5eafad52c74568b0ae4f2", null ],
     [ "combineChannels", "namespaceinviwo_1_1util.html#a0aaefd44a8fc7b7156c27f830e98ace1", null ],
     [ "commonFormatPrecision", "namespaceinviwo_1_1util.html#a8b656c765eccf8074aa2adde7b031b09", null ],
     [ "commonNumericType", "namespaceinviwo_1_1util.html#a5f94054887b47451f416e2b60f9d248c", null ],

@@ -1,5 +1,6 @@
 var NAVTREEINDEX30 =
 {
+"structinviwo_1_1PropertyTraits_3_01OrdinalAnimationProperty_3_01T_01_4_01_4.html":[2,0,0,884],
 "structinviwo_1_1PropertyTraits_3_01OrdinalAnimationProperty_3_01T_01_4_01_4.html":[4,0,1,890],
 "structinviwo_1_1PropertyTraits_3_01OrdinalProperty_3_01T_01_4_01_4.html":[2,0,0,885],
 "structinviwo_1_1PropertyTraits_3_01OrdinalProperty_3_01T_01_4_01_4.html":[4,0,1,891],
@@ -248,6 +249,5 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerScalars.html":[2,0,0,8,0,14],
 "structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerScalars.html":[4,0,1,9,1,14],
 "structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerVecs.html":[2,0,0,8,0,15],
-"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerVecs.html":[4,0,1,9,1,15],
-"structinviwo_1_1dispatching_1_1filter_1_1Vec2s.html":[2,0,0,8,0,16]
+"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerVecs.html":[4,0,1,9,1,15]
 };
