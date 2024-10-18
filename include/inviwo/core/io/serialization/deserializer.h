@@ -302,7 +302,7 @@ public:
     int getInviwoWorkspaceVersion() const;
 
 private:
-    TxElement* retrieveChild(std::string_view key);
+    TiXmlElement* retrieveChild(std::string_view key);
 
     ExceptionHandler exceptionHandler_;
     std::vector<FactoryBase*> registeredFactories_;
@@ -326,6 +326,8 @@ constexpr bool canDeserialize() {
 }
 
 IVW_CORE_API const std::string& getAttribute(TxElement* node, std::string_view key);
+IVW_CORE_API const std::string& getAttribute(TiXmlElement* node, std::string_view key);
+IVW_CORE_API const std::string* attribute(TiXmlElement* node, std::string_view key);
 
 template <typename T>
 void getNodeAttribute(TxElement* node, std::string_view key, T& dest) {
@@ -334,8 +336,18 @@ void getNodeAttribute(TxElement* node, std::string_view key, T& dest) {
     }
 }
 
+template <typename T>
+void getNodeAttribute(TiXmlElement* node, std::string_view key, T& dest) {
+    if (auto* str = attribute(node, key)) {
+        detail::fromStr(*str, dest);
+    }
+}
+
+
 IVW_CORE_API void forEachChild(TxElement* node, std::string_view key,
-                               std::function<void(TxElement*)> func);
+                               const std::function<void(TxElement*)>& func);
+IVW_CORE_API void forEachChild(TiXmlElement* node, std::string_view key,
+                               const std::function<void(TxElement*)>& func);
 
 }  // namespace detail
 

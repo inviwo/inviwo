@@ -6,13 +6,13 @@
 #include <ticpp/node.h>
 
 /** A stylesheet reference looks like this:
-        @verbatim
-                <?xml-stylesheet type="text/xsl" href="style.xsl"?>
-        @endverbatim
+    @verbatim
+            <?xml-stylesheet type="text/xsl" href="style.xsl"?>
+    @endverbatim
 
-        Note: In this version of the code, the attributes are
-        handled as special cases, not generic attributes, simply
-        because there can only be at most 2 and they are always the same.
+    Note: In this version of the code, the attributes are
+    handled as special cases, not generic attributes, simply
+    because there can only be at most 2 and they are always the same.
 */
 class TICPP_API TiXmlStylesheetReference : public TiXmlNode {
 public:
@@ -43,15 +43,12 @@ public:
 
     virtual const char* Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding);
 
-    virtual const TiXmlStylesheetReference* ToStylesheetReference() const {
-        return this;
-    }  ///< Cast to a more defined type. Will return null not of the requested type.
-    virtual TiXmlStylesheetReference* ToStylesheetReference() {
-        return this;
-    }  ///< Cast to a more defined type. Will return null not of the requested type.
+    /// Cast to a more defined type. Will return null not of the requested type.
+    virtual const TiXmlStylesheetReference* ToStylesheetReference() const { return this; }
+    /// Cast to a more defined type. Will return null not of the requested type.
+    virtual TiXmlStylesheetReference* ToStylesheetReference() { return this; }
 
-    /** Walk the XML tree visiting this node and all of its children.
-     */
+    /// Walk the XML tree visiting this node and all of its children.
     virtual bool Accept(TiXmlVisitor* visitor) const;
 
 protected:

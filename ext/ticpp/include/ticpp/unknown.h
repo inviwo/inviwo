@@ -27,15 +27,12 @@ public:
 
     virtual const char* Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding);
 
-    virtual const TiXmlUnknown* ToUnknown() const {
-        return this;
-    }  ///< Cast to a more defined type. Will return null not of the requested type.
-    virtual TiXmlUnknown* ToUnknown() {
-        return this;
-    }  ///< Cast to a more defined type. Will return null not of the requested type.
+    /// Cast to a more defined type. Will return null not of the requested type.
+    virtual const TiXmlUnknown* ToUnknown() const { return this; }
+    /// Cast to a more defined type. Will return null not of the requested type.
+    virtual TiXmlUnknown* ToUnknown() { return this; }
 
-    /** Walk the XML tree visiting this node and all of its children.
-     */
+    /// Walk the XML tree visiting this node and all of its children.
     virtual bool Accept(TiXmlVisitor* content) const;
 
 protected:

@@ -39,8 +39,8 @@ void TiCppRCImp::DecRef() {
 
 void TiCppRCImp::InitRef() { m_count = 1; }
 
-void TiCppRCImp::Nullify() { m_tiCppRC = 0; }
+void TiCppRCImp::Nullify() { m_tiCppRC = nullptr; }
 
 TiCppRC* TiCppRCImp::Get() { return m_tiCppRC; }
 
-bool TiCppRCImp::IsNull() { return 0 == m_tiCppRC; }
+bool TiCppRCImp::IsNull() { return nullptr == m_tiCppRC; }
