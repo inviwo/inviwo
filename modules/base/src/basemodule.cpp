@@ -148,7 +148,7 @@
 #include <modules/base/processors/volumeshifter.h>                           // for VolumeShifter
 #include <modules/base/processors/volumesliceextractor.h>                    // for VolumeSliceE...
 #include <modules/base/processors/volumesource.h>                            // for VolumeSource
-#include <modules/base/processors/volumesubsample.h>                         // for VolumeSubsample
+#include <modules/base/processors/volumedownsample.h>                        // for VolumeDownsample
 #include <modules/base/processors/volumesubset.h>                            // for VolumeSubset
 #include <modules/base/processors/volumetospatialsampler.h>                  // for VolumeToSpat...
 #include <modules/base/processors/worldtransformdeprecated.h>                // for WorldTransfo...
@@ -272,6 +272,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeCreator>();
     registerProcessor<VolumeCurlCPUProcessor>();
     registerProcessor<VolumeDivergenceCPUProcessor>();
+    registerProcessor<VolumeDownsample>();
     registerProcessor<VolumeExport>();
     registerProcessor<VolumeGradientCPUProcessor>();
     registerProcessor<VolumeInformation>();
@@ -283,7 +284,6 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeShifter>();
     registerProcessor<VolumeSliceExtractor>();
     registerProcessor<VolumeSource>();
-    registerProcessor<VolumeSubsample>();
     registerProcessor<VolumeSubset>();
     registerProcessor<VolumeToSpatialSampler>();
     registerProcessor<WorldTransformMeshDeprecated>();
@@ -337,7 +337,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
 
-int BaseModule::getVersion() const { return 9; }
+int BaseModule::getVersion() const { return 10; }
 
 std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -574,6 +574,18 @@ bool BaseModule::Converter::convert(TxElement* root) {
                 return true;
             }};
             conv.convert(root);
+            [[fallthrough]];
+        }
+        case 9: {
+            res |= xml::changeAttributeRecursive(
+                root,
+                {{xml::Kind::processor("org.inviwo.VolumeSubset"),
+                  xml::Kind::property("org.inviwo.IntMinMaxProperty")}},
+                "identifier", "subSampleFactors", "org.inviwo.IntMinMaxProperty");
+
+            res |= xml::changeAttributeRecursive(
+                root, {{xml::Kind::processor("org.inviwo.VolumeSubset")}}, "type",
+                "org.inviwo.VolumeSubset", "org.inviwo.VolumeDownsample");
 
             return res;
         }
