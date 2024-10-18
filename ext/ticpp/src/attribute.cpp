@@ -124,31 +124,31 @@ const TiXmlAttribute* TiXmlAttributeSet::Find(std::string_view name) const {
     return nullptr;
 }
 
-const char* TiXmlAttribute::Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding) {
-    p = SkipWhiteSpace(p, encoding);
+const char* TiXmlAttribute::Parse(const char* p, TiXmlParsingData* data) {
+    p = SkipWhiteSpace(p);
     if (!p || !*p) return nullptr;
 
     if (data) {
-        data->Stamp(p, encoding);
+        data->Stamp(p);
         location = data->Cursor();
     }
     // Read the name, the '=' and the value.
     const char* pErr = p;
-    p = ReadName(p, &name, encoding);
+    p = ReadName(p, &name);
     if (!p || !*p) {
-        if (document) document->SetError(TIXML_ERROR_READING_ATTRIBUTES, pErr, data, encoding);
+        if (document) document->SetError(TIXML_ERROR_READING_ATTRIBUTES, pErr, data);
         return 0;
     }
-    p = SkipWhiteSpace(p, encoding);
+    p = SkipWhiteSpace(p);
     if (!p || !*p || *p != '=') {
-        if (document) document->SetError(TIXML_ERROR_READING_ATTRIBUTES, p, data, encoding);
+        if (document) document->SetError(TIXML_ERROR_READING_ATTRIBUTES, p, data);
         return nullptr;
     }
 
     ++p;  // skip '='
-    p = SkipWhiteSpace(p, encoding);
+    p = SkipWhiteSpace(p);
     if (!p || !*p) {
-        if (document) document->SetError(TIXML_ERROR_READING_ATTRIBUTES, p, data, encoding);
+        if (document) document->SetError(TIXML_ERROR_READING_ATTRIBUTES, p, data);
         return nullptr;
     }
 
@@ -159,11 +159,11 @@ const char* TiXmlAttribute::Parse(const char* p, TiXmlParsingData* data, TiXmlEn
     if (*p == SINGLE_QUOTE) {
         ++p;
         end = "\'";  // single quote in string
-        p = ReadText(p, &value, false, end, false, encoding);
+        p = ReadText(p, &value, false, end, false);
     } else if (*p == DOUBLE_QUOTE) {
         ++p;
         end = "\"";  // double quote in string
-        p = ReadText(p, &value, false, end, false, encoding);
+        p = ReadText(p, &value, false, end, false);
     } else {
         // All attribute values should be in single or double quotes.
         // But this is such a common error that the parser will try
@@ -177,7 +177,7 @@ const char* TiXmlAttribute::Parse(const char* p, TiXmlParsingData* data, TiXmlEn
                 // [ 1451649 ] Attribute values with trailing quotes not handled correctly
                 // We did not have an opening quote but seem to have a
                 // closing one. Give up and throw an error.
-                if (document) document->SetError(TIXML_ERROR_READING_ATTRIBUTES, p, data, encoding);
+                if (document) document->SetError(TIXML_ERROR_READING_ATTRIBUTES, p, data);
                 return nullptr;
             }
             value += *p;
