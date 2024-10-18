@@ -20,6 +20,11 @@ env:
   VCPKG_CACHE_TOKEN: ${{ secrets.VCPKG_CACHE_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
+  CCACHE_DEBUG: 1
+  CCACHE_DEBUGDIR: ccache-debug
+  CCACHE_BASEDIR: ${{ github.workspace }}
+  CCACHE_IGNOREOPTIONS: "-fmodules-ts -fmodule-mapper=*"
+
   # QT_DEBUG_PLUGINS: 1                           # print qt plugin debug info
 
 # Information about the github runners can be found here
@@ -187,7 +192,7 @@ jobs:
         path: build/docs/python-api/*
     
     - name: "Setup tmate session (on failure and debug_enabled)"
-      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
+      #if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
