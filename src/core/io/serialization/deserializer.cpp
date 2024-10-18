@@ -39,7 +39,7 @@ namespace inviwo {
 
 Deserializer::Deserializer(const std::filesystem::path& fileName) : SerializeBase(fileName) {
     try {
-        doc_->LoadFile(TIXML_ENCODING_UTF8);
+        doc_->LoadFile();
         rootElement_ = doc_->FirstChildElement();
         rootElement_->QueryIntAttribute(SerializeConstants::VersionAttribute,
                                         &inviwoWorkspaceVersion_);

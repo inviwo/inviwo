@@ -10,7 +10,7 @@ class TiXmlParsingData {
     friend class TiXmlDocument;
 
 public:
-    void Stamp(const char* now, TiXmlEncoding encoding);
+    void Stamp(const char* now);
 
     const TiXmlCursor& Cursor() { return cursor; }
 

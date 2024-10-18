@@ -76,7 +76,7 @@ public:
     /*	Attribute parsing starts: first letter of the name
                                              returns: the next char after the value end quote
     */
-    virtual const char* Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data);
 
     // Prints this Attribute to a FILE stream.
     virtual void Print(FILE* cfile, int depth) const { Print(cfile, depth, 0); }

@@ -2,7 +2,6 @@
 #include <ticpp/parsingdata.h>
 #include <ticpp/declaration.h>
 
-
 #include <ostream>
 
 #if defined(WIN32)
@@ -70,11 +69,10 @@ void TiXmlDocument::operator=(const TiXmlDocument& copy) {
     copy.CopyTo(this);
 }
 
-bool TiXmlDocument::LoadFile(TiXmlEncoding encoding) {
+bool TiXmlDocument::LoadFile() {
     // See STL_STRING_BUG below.
     // StringToBuffer buf( value );
-
-    return LoadFile(Value(), encoding);
+    return LoadFile(Value());
 }
 
 bool TiXmlDocument::SaveFile() const {
@@ -88,7 +86,7 @@ bool TiXmlDocument::SaveFile() const {
     return SaveFile(Value());
 }
 
-bool TiXmlDocument::LoadFile(const char* _filename, TiXmlEncoding encoding) {
+bool TiXmlDocument::LoadFile(const char* _filename) {
     // There was a really terrifying little bug here. The code:
     //		value = filename
     // in the STL case, cause the assignment method of the std::string to
@@ -103,18 +101,18 @@ bool TiXmlDocument::LoadFile(const char* _filename, TiXmlEncoding encoding) {
     FILE* file = TiXmlFOpen(value.c_str(), "rb");
 
     if (file) {
-        bool result = LoadFile(file, encoding);
+        bool result = LoadFile(file);
         fclose(file);
         return result;
     } else {
-        SetError(TIXML_ERROR_OPENING_FILE, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
+        SetError(TIXML_ERROR_OPENING_FILE, nullptr, nullptr);
         return false;
     }
 }
 
-bool TiXmlDocument::LoadFile(FILE* file, TiXmlEncoding encoding) {
+bool TiXmlDocument::LoadFile(FILE* file) {
     if (!file) {
-        SetError(TIXML_ERROR_OPENING_FILE, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
+        SetError(TIXML_ERROR_OPENING_FILE, nullptr, nullptr);
         return false;
     }
 
@@ -130,7 +128,7 @@ bool TiXmlDocument::LoadFile(FILE* file, TiXmlEncoding encoding) {
 
     // Strange case, but good to handle up front.
     if (length <= 0) {
-        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
+        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
         return false;
     }
 
@@ -165,7 +163,7 @@ bool TiXmlDocument::LoadFile(FILE* file, TiXmlEncoding encoding) {
 
     if (fread(buf, length, 1, file) != 1) {
         delete[] buf;
-        SetError(TIXML_ERROR_OPENING_FILE, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
+        SetError(TIXML_ERROR_OPENING_FILE, nullptr, nullptr);
         return false;
     }
 
@@ -212,7 +210,7 @@ bool TiXmlDocument::LoadFile(FILE* file, TiXmlEncoding encoding) {
     delete[] buf;
     buf = 0;
 
-    Parse(data.c_str(), 0, encoding);
+    Parse(data.c_str(), 0);
 
     if (Error())
         return false;
@@ -295,7 +293,7 @@ void TiXmlDocument::StreamIn(std::istream* in, std::string* tag) {
     // sub-tag can orient itself.
 
     if (!StreamTo(in, '<', tag)) {
-        SetError(TIXML_ERROR_PARSING_EMPTY, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
+        SetError(TIXML_ERROR_PARSING_EMPTY, nullptr, nullptr);
         return;
     }
 
@@ -304,7 +302,7 @@ void TiXmlDocument::StreamIn(std::istream* in, std::string* tag) {
         while (in->good() && in->peek() != '>') {
             int c = in->get();
             if (c <= 0) {
-                SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
+                SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
                 break;
             }
             (*tag) += (char)c;
@@ -314,7 +312,7 @@ void TiXmlDocument::StreamIn(std::istream* in, std::string* tag) {
             // We now have something we presume to be a node of
             // some sort. Identify it, and call the node to
             // continue streaming.
-            TiXmlNode* node = Identify(tag->c_str() + tagIndex, TIXML_DEFAULT_ENCODING);
+            TiXmlNode* node = Identify(tag->c_str() + tagIndex);
 
             if (node) {
                 node->StreamIn(in, tag);
@@ -328,24 +326,23 @@ void TiXmlDocument::StreamIn(std::istream* in, std::string* tag) {
                     return;
                 }
             } else {
-                SetError(TIXML_ERROR, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
+                SetError(TIXML_ERROR, nullptr, nullptr);
                 return;
             }
         }
     }
     // We should have returned sooner.
-    SetError(TIXML_ERROR, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
+    SetError(TIXML_ERROR, nullptr, nullptr);
 }
 
-const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData,
-                                 TiXmlEncoding encoding) {
+const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData) {
     ClearError();
 
     // Parse away, at the document level. Since a document
     // contains nothing but other tags, most of what happens
     // here is skipping white space.
     if (!p || !*p) {
-        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
+        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
         return 0;
     }
 
@@ -363,52 +360,32 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData,
     TiXmlParsingData data(p, TabSize(), location.row, location.col);
     location = data.Cursor();
 
-    if (encoding == TIXML_ENCODING_UNKNOWN) {
-        // Check for the Microsoft UTF-8 lead bytes.
-        const unsigned char* pU = (const unsigned char*)p;
-        if (*(pU + 0) && *(pU + 0) == TIXML_UTF_LEAD_0 && *(pU + 1) &&
-            *(pU + 1) == TIXML_UTF_LEAD_1 && *(pU + 2) && *(pU + 2) == TIXML_UTF_LEAD_2) {
-            encoding = TIXML_ENCODING_UTF8;
-            useMicrosoftBOM = true;
-        }
+    const unsigned char* pU = (const unsigned char*)p;
+    if (*(pU + 0) && *(pU + 0) == TIXML_UTF_LEAD_0 && *(pU + 1) && *(pU + 1) == TIXML_UTF_LEAD_1 &&
+        *(pU + 2) && *(pU + 2) == TIXML_UTF_LEAD_2) {
+        useMicrosoftBOM = true;
     }
 
-    p = SkipWhiteSpace(p, encoding);
+    p = SkipWhiteSpace(p);
     if (!p) {
-        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
+        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
         return 0;
     }
 
     while (p && *p) {
-        TiXmlNode* node = Identify(p, encoding);
-        if (node) {
-            p = node->Parse(p, &data, encoding);
+        if (TiXmlNode* node = Identify(p)) {
+            p = node->Parse(p, &data);
             LinkEndChild(node);
         } else {
             break;
         }
 
-        // Did we get encoding info?
-        if (encoding == TIXML_ENCODING_UNKNOWN && node->ToDeclaration()) {
-            TiXmlDeclaration* dec = node->ToDeclaration();
-            const auto& enc = dec->Encoding();
-
-            if (enc.empty())
-                encoding = TIXML_ENCODING_UTF8;
-            else if (StringEqual(enc.c_str(), "UTF-8", true))
-                encoding = TIXML_ENCODING_UTF8;
-            else if (StringEqual(enc.c_str(), "UTF8", true))
-                encoding = TIXML_ENCODING_UTF8;  // incorrect, but be nice
-            else
-                encoding = TIXML_ENCODING_LEGACY;
-        }
-
-        p = SkipWhiteSpace(p, encoding);
+        p = SkipWhiteSpace(p);
     }
 
     // Was this empty?
     if (!firstChild) {
-        SetError(TIXML_ERROR_DOCUMENT_EMPTY, 0, 0, encoding);
+        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
         return 0;
     }
 
@@ -416,8 +393,7 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData,
     return p;
 }
 
-void TiXmlDocument::SetError(int err, const char* pError, TiXmlParsingData* data,
-                             TiXmlEncoding encoding) {
+void TiXmlDocument::SetError(int err, const char* pError, TiXmlParsingData* data) {
     // The first error in a chain is more accurate - don't set again!
     if (error) return;
 
@@ -428,7 +404,7 @@ void TiXmlDocument::SetError(int err, const char* pError, TiXmlParsingData* data
 
     errorLocation.Clear();
     if (pError && data) {
-        data->Stamp(pError, encoding);
+        data->Stamp(pError);
         errorLocation = data->Cursor();
     }
 }

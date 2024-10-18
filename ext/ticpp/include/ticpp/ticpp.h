@@ -1282,11 +1282,10 @@ public:
     /**
     Load a file using the current document value. Throws if load is unsuccessful.
 
-    @param encoding Sets the documents encoding.
     @see TiXmlEncoding
     @throws Exception
     */
-    void LoadFile(TiXmlEncoding encoding = TIXML_DEFAULT_ENCODING);
+    void LoadFile();
 
     /**
     Save a file using the current document value. Throws if it can't save the file.
@@ -1299,16 +1298,15 @@ public:
     Load a file using the given filename. Throws if load is unsuccessful.
 
     @param filename File to load.
-    @param encoding Sets the documents encoding.
     @see TiXmlEncoding
     @throws Exception
     */
-    void LoadFile(const std::string& filename, TiXmlEncoding encoding = TIXML_DEFAULT_ENCODING);
+    void LoadFile(const std::string& filename);
 
     /**
     @copydoc Document::LoadFile( const std::string&, TiXmlEncoding )
     */
-    void LoadFile(const char* filename, TiXmlEncoding encoding = TIXML_DEFAULT_ENCODING);
+    void LoadFile(const char* filename);
 
     /**
     Save a file using the given filename. Throws if it can't save the file.
@@ -1323,11 +1321,9 @@ public:
 
     @param xml Xml to parse.
     @param throwIfParseError [DEF] If true, throws when there is a parse error.
-    @param encoding Sets the documents encoding.
     @throws Exception
     */
-    void Parse(const std::string& xml, bool throwIfParseError = true,
-               TiXmlEncoding encoding = TIXML_DEFAULT_ENCODING);
+    void Parse(const std::string& xml, bool throwIfParseError = true);
 };
 
 /** Wrapper around TiXmlElement */

@@ -57,8 +57,7 @@ TiXmlNode* TiXmlNode::LinkEndChild(TiXmlNode* node) {
     if (node->Type() == TiXmlNode::DOCUMENT) {
         delete node;
         if (GetDocument()) {
-            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr,
-                                    TIXML_ENCODING_UNKNOWN);
+            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
         }
         return nullptr;
     }
@@ -80,8 +79,7 @@ TiXmlNode* TiXmlNode::LinkEndChild(TiXmlNode* node) {
 TiXmlNode* TiXmlNode::InsertEndChild(const TiXmlNode& addThis) {
     if (addThis.Type() == TiXmlNode::DOCUMENT) {
         if (GetDocument()) {
-            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr,
-                                    TIXML_ENCODING_UNKNOWN);
+            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
         }
         return nullptr;
     }
@@ -97,8 +95,7 @@ TiXmlNode* TiXmlNode::InsertBeforeChild(TiXmlNode* beforeThis, const TiXmlNode& 
     }
     if (addThis.Type() == TiXmlNode::DOCUMENT) {
         if (GetDocument()) {
-            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr,
-                                    TIXML_ENCODING_UNKNOWN);
+            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
         }
         return nullptr;
     }
@@ -125,8 +122,7 @@ TiXmlNode* TiXmlNode::InsertAfterChild(TiXmlNode* afterThis, const TiXmlNode& ad
     }
     if (addThis.Type() == TiXmlNode::DOCUMENT) {
         if (GetDocument()) {
-            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr,
-                                    TIXML_ENCODING_UNKNOWN);
+            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
         }
         return nullptr;
     }
@@ -242,16 +238,16 @@ const TiXmlNode* TiXmlNode::PreviousSibling(std::string_view _value) const {
     return nullptr;
 }
 
-TiXmlNode* TiXmlNode::Identify(const char* p, TiXmlEncoding encoding) {
+TiXmlNode* TiXmlNode::Identify(const char* p) {
     TiXmlNode* returnNode = nullptr;
 
-    p = SkipWhiteSpace(p, encoding);
+    p = SkipWhiteSpace(p);
     if (!p || !*p || *p != '<') {
         return nullptr;
     }
 
     TiXmlDocument* doc = GetDocument();
-    p = SkipWhiteSpace(p, encoding);
+    p = SkipWhiteSpace(p);
 
     if (!p || !*p) {
         return nullptr;
@@ -313,7 +309,7 @@ TiXmlNode* TiXmlNode::Identify(const char* p, TiXmlEncoding encoding) {
         // Set the parent, so it can report errors
         returnNode->parent = this;
     } else {
-        if (doc) doc->SetError(TIXML_ERROR_OUT_OF_MEMORY, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
+        if (doc) doc->SetError(TIXML_ERROR_OUT_OF_MEMORY, nullptr, nullptr);
     }
     return returnNode;
 }

@@ -107,8 +107,7 @@ public:
     // in the UTF-8 sequence.
     static const int utf8ByteTable[256];
 
-    virtual const char* Parse(const char* p, TiXmlParsingData* data,
-                              TiXmlEncoding encoding /*= TIXML_ENCODING_UNKNOWN */) = 0;
+    virtual const char* Parse(const char* p, TiXmlParsingData* data) = 0;
 
     /** Expands entities in a string. Note this should not contain the tag's '<', '>', etc,
      * or they will be transformed into entities!
@@ -138,7 +137,7 @@ public:
     };
 
 protected:
-    static const char* SkipWhiteSpace(const char*, TiXmlEncoding encoding);
+    static const char* SkipWhiteSpace(const char*);
     inline static bool IsWhiteSpace(char c) {
         return (isspace((unsigned char)c) || c == '\n' || c == '\r');
     }
@@ -154,7 +153,7 @@ protected:
      * a pointer just past the last character of the name,
      * or 0 if the function has an error.
      */
-    static const char* ReadName(const char* p, std::string* name, TiXmlEncoding encoding);
+    static const char* ReadName(const char* p, std::string* name);
 
     /*	Reads text. Returns a pointer past the given end tag.
      * Wickedly complex options, but it keeps the (sensitive) code in one place.
@@ -163,26 +162,21 @@ protected:
                                 std::string* text,        // the string read
                                 bool ignoreWhiteSpace,    // whether to keep the white space
                                 const char* endTag,       // what ends this text
-                                bool ignoreCase,          // whether to ignore case in the end tag
-                                TiXmlEncoding encoding);  // the current encoding
+                                bool ignoreCase);         // whether to ignore case in the end tag
 
     // If an entity has been found, transform it into a character.
-    static const char* GetEntity(const char* in, char* value, int* length, TiXmlEncoding encoding);
+    static const char* GetEntity(const char* in, char* value, int* length);
 
     // Get a character, while interpreting entities.
     // The length can be from 0 to 4 bytes.
-    inline static const char* GetChar(const char* p, char* _value, int* length,
-                                      TiXmlEncoding encoding) {
+    inline static const char* GetChar(const char* p, char* _value, int* length) {
         assert(p);
-        if (encoding == TIXML_ENCODING_UTF8) {
-            *length = utf8ByteTable[*((const unsigned char*)p)];
-            assert(*length >= 0 && *length < 5);
-        } else {
-            *length = 1;
-        }
+        *length = utf8ByteTable[*((const unsigned char*)p)];
+        assert(*length >= 0 && *length < 5);
+
 
         if (*length == 1) {
-            if (*p == '&') return GetEntity(p, _value, length, encoding);
+            if (*p == '&') return GetEntity(p, _value, length);
             *_value = *p;
             return p + 1;
         } else if (*length) {

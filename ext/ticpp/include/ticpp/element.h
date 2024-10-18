@@ -148,7 +148,7 @@ public:
     /*	Attribute parsing starts: next char past '<'
         returns: next char past '>'
     */
-    virtual const char* Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data);
 
     /// Cast to a more defined type. Will return null not of the requested type.
     virtual const TiXmlElement* ToElement() const { return this; }
@@ -169,7 +169,7 @@ protected:
         Reads the "value" of the element -- another element, or text.
         This should terminate with the current end tag.
     */
-    const char* ReadValue(const char* in, TiXmlParsingData* prevData, TiXmlEncoding encoding);
+    const char* ReadValue(const char* in, TiXmlParsingData* prevData);
 
 private:
     TiXmlAttributeSet attributeSet;
