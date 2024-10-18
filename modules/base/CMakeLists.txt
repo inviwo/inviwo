@@ -30,7 +30,7 @@ set(HEADER_FILES
     include/modules/base/algorithm/volume/volumegradient.h
     include/modules/base/algorithm/volume/volumelaplacian.h
     include/modules/base/algorithm/volume/volumeramdistancetransform.h
-    include/modules/base/algorithm/volume/volumeramsubsample.h
+    include/modules/base/algorithm/volume/volumeramdownsample.h
     include/modules/base/algorithm/volume/volumeramsubset.h
     include/modules/base/algorithm/volume/volumesignificantvoxels.h
     include/modules/base/algorithm/volume/volumevoronoi.h
@@ -125,6 +125,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumecreator.h
     include/modules/base/processors/volumecurlcpuprocessor.h
     include/modules/base/processors/volumedivergencecpuprocessor.h
+    include/modules/base/processors/volumedownsample.h
     include/modules/base/processors/volumeexport.h
     include/modules/base/processors/volumegradientcpuprocessor.h
     include/modules/base/processors/volumeinformation.h
@@ -136,7 +137,6 @@ set(HEADER_FILES
     include/modules/base/processors/volumeshifter.h
     include/modules/base/processors/volumesliceextractor.h
     include/modules/base/processors/volumesource.h
-    include/modules/base/processors/volumesubsample.h
     include/modules/base/processors/volumesubset.h
     include/modules/base/processors/volumetospatialsampler.h
     include/modules/base/processors/worldtransformdeprecated.h
@@ -181,7 +181,7 @@ set(SOURCE_FILES
     src/algorithm/volume/volumegradient.cpp
     src/algorithm/volume/volumelaplacian.cpp
     src/algorithm/volume/volumeramdistancetransform.cpp
-    src/algorithm/volume/volumeramsubsample.cpp
+    src/algorithm/volume/volumeramdownsample.cpp
     src/algorithm/volume/volumeramsubset.cpp
     src/algorithm/volume/volumesignificantvoxels.cpp
     src/algorithm/volume/volumevoronoi.cpp
@@ -271,6 +271,7 @@ set(SOURCE_FILES
     src/processors/volumecreator.cpp
     src/processors/volumecurlcpuprocessor.cpp
     src/processors/volumedivergencecpuprocessor.cpp
+    src/processors/volumedownsample.cpp
     src/processors/volumeexport.cpp
     src/processors/volumegradientcpuprocessor.cpp
     src/processors/volumeinformation.cpp
@@ -282,7 +283,6 @@ set(SOURCE_FILES
     src/processors/volumeshifter.cpp
     src/processors/volumesliceextractor.cpp
     src/processors/volumesource.cpp
-    src/processors/volumesubsample.cpp
     src/processors/volumesubset.cpp
     src/processors/volumetospatialsampler.cpp
     src/properties/basisproperty.cpp

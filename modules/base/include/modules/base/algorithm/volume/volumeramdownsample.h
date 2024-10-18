@@ -29,54 +29,29 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <inviwo/core/ports/volumeport.h>            // for VolumeInport, VolumeOutport
-#include <inviwo/core/processors/poolprocessor.h>    // for PoolProcessor
-#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>     // for BoolProperty
-#include <inviwo/core/properties/ordinalproperty.h>  // for IntVec3Property
-#include <inviwo/core/util/glmvec.h>                 // for size3_t
-
-#include <memory>  // for shared_ptr
+#include <memory>
 
 namespace inviwo {
-class Volume;
 
-/** \docpage{org.inviwo.VolumeSubsample, Volume Subsample}
- * ![](org.inviwo.VolumeSubsample.png?classIdentifier=org.inviwo.VolumeSubsample)
- *
- * ...
- *
- * ### Inports
- *   * __volume.inport__ ...
- *
- * ### Outports
- *   * __volume.outport__ ...
- *
- * ### Properties
- *   * __Enable Operation__ ...
- *   * __Factors__ ...
- *
- */
-class IVW_MODULE_BASE_API VolumeSubsample : public PoolProcessor {
-public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+class VolumeRAM;
 
-    VolumeSubsample();
-    virtual ~VolumeSubsample() = default;
+namespace util {
 
-protected:
-    virtual void process() override;
+enum class DownsamplingMode { Strided, Averaged };
 
-    static std::shared_ptr<Volume> subsample(std::shared_ptr<const Volume> volume, size3_t f);
+IVW_MODULE_BASE_API std::shared_ptr<VolumeRAM> volumeDownsample(const VolumeRAM* in,
+                                                                size3_t strides,
+                                                                DownsamplingMode mode);
 
-private:
-    VolumeInport inport_;
-    VolumeOutport outport_;
+IVW_MODULE_BASE_API std::shared_ptr<VolumeRAM> volumeStridedDownsample(const VolumeRAM* in,
+                                                                       size3_t strides);
 
-    BoolProperty enabled_;
-    IntVec3Property subSampleFactors_;
-};
+IVW_MODULE_BASE_API std::shared_ptr<VolumeRAM> volumeAveragedDownsample(const VolumeRAM* in,
+                                                                        size3_t strides);
+
+}  // namespace util
+
 }  // namespace inviwo
