@@ -31,19 +31,11 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/glmutils.h>
-#include <inviwo/core/util/glmcomp.h>
-#include <inviwo/core/util/glmmatext.h>
 #include <inviwo/core/datastructures/datamapper.h>
-#include <inviwo/core/util/dispatcher.h>
-
-#include <glm/common.hpp>
 
 #include <iterator>
 #include <vector>
 #include <bitset>
-#include <array>
-#include <span>
 
 namespace inviwo {
 enum class HistogramMode : int { Off = 0, All, P99, P95, P90, Log };
@@ -71,100 +63,5 @@ struct IVW_CORE_API Histogram1D {
     Statistics dataStats;
     Statistics histStats;
 };
-
-namespace util {
-
-IVW_CORE_API std::vector<double> calculatePercentiles(const std::vector<size_t>& hist, dvec2 range,
-                                                      size_t sum);
-IVW_CORE_API Statistics calculateHistogramStats(const std::vector<size_t>& hist);
-
-template <typename T>
-std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const DataMapper& dataMap,
-                                             size_t bins) {
-    // a double type with the same extent as T
-    using D = typename util::same_extent<T, double>::type;
-    // a size_t type with same extent as T
-    using I = typename util::same_extent<T, size_t>::type;
-
-    constexpr size_t extent = util::rank<T>::value > 0 ? util::extent<T>::value : 1;
-
-    // check whether number of bins exceeds the data range only if it is an integral type
-    if constexpr (!std::is_floating_point_v<util::value_type_t<T>>) {
-        bins =
-            std::min(bins, static_cast<std::size_t>(dataMap.dataRange.y - dataMap.dataRange.x + 1));
-    }
-
-    std::array<std::vector<size_t>, extent> hists;
-    for (size_t i = 0; i < extent; ++i) {
-        hists[i].resize(bins, 0);
-    }
-
-    D min(std::numeric_limits<double>::max());
-    D max(std::numeric_limits<double>::lowest());
-    D sum(0);
-    D sum2(0);
-    size_t count(0);
-
-    std::array<size_t, extent> underflow{0};
-    std::array<size_t, extent> overflow{0};
-
-    const D rangeMin(dataMap.dataRange.x);
-    const D rangeScaleFactor(static_cast<double>(bins - 1) /
-                             (dataMap.dataRange.y - dataMap.dataRange.x));
-
-    const size_t maxBin = bins - 1;
-
-    for (const auto& item : data) {
-        const auto val = static_cast<D>(item);
-
-        min = glm::min(min, val);
-        max = glm::max(max, val);
-        sum += val;
-        sum2 += val * val;
-        count++;
-
-        const auto ind = static_cast<I>((val - rangeMin) * rangeScaleFactor);
-        for (size_t channel = 0; channel < extent; ++channel) {
-            const auto v = util::glmcomp(ind, channel);
-            if (v < 0) {
-                ++underflow[channel];
-            } else if (v > maxBin) {
-                ++overflow[channel];
-            } else {
-                ++hists[channel][v];
-            }
-        }
-    }
-
-    const auto dcount = static_cast<double>(count);
-    const auto mean = sum / dcount;
-    const auto stddev = glm::sqrt((dcount * sum2 - sum * sum) / (dcount * (dcount - D{1})));
-
-    std::vector<Histogram1D> histograms;
-
-    for (size_t channel = 0; channel < extent; ++channel) {
-        const auto maxBinCount = *std::max_element(hists[channel].begin(), hists[channel].end());
-
-        histograms.push_back(Histogram1D{
-            .counts = hists[channel],
-            .totalCounts = count,
-            .maxCount = maxBinCount,
-            .dataMap = dataMap,
-            .underflow = underflow[channel],
-            .overflow = overflow[channel],
-            .dataStats = {.min = util::glmcomp(min, channel),
-                          .max = util::glmcomp(max, channel),
-                          .mean = util::glmcomp(mean, channel),
-                          .standardDeviation = util::glmcomp(stddev, channel),
-                          .percentiles =
-                              calculatePercentiles(hists[channel], dataMap.dataRange, count)},
-            .histStats = calculateHistogramStats(hists[channel]),
-        });
-    }
-
-    return histograms;
-}
-
-}  // namespace util
 
 }  // namespace inviwo

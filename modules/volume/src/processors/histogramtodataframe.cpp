@@ -72,22 +72,25 @@ std::shared_ptr<DataFrame> createDataFrame(const std::vector<Histogram1D>& histo
     }
 
     const size_t bins = histograms[0].counts.size();
-    const dvec2 range{histograms[0].dataMap.valueRange};
-    const double binSize = (range.y - range.x) / static_cast<double>(bins - 1);
-    const double rangeMin = range.x + binSize * 0.5;
 
-    std::vector<double> binCenters(bins);
-    std::ranges::generate(binCenters, [current = rangeMin, binSize]() mutable {
-        const double v = current;
-        current += binSize;
-        return v;
-    });
+    auto generateBinCenters = [bins](const dvec2& range) {
+        const double binSize = (range.y - range.x) / static_cast<double>(bins - 1);
+        const double rangeMin = range.x + binSize * 0.5;
+
+        std::vector<double> binCenters(bins);
+        std::ranges::generate(binCenters, [current = rangeMin, binSize]() mutable {
+            const double v = current;
+            current += binSize;
+            return v;
+        });
+        return binCenters;
+    };
+
     const std::string colName = !histograms[0].dataMap.valueAxis.name.empty()
                                     ? histograms[0].dataMap.valueAxis.name
                                     : "Scalars";
-
-    dataframe->addColumn(colName, std::move(binCenters), histograms[0].dataMap.valueAxis.unit,
-                         range);
+    dataframe->addColumn(colName, generateBinCenters(histograms[0].dataMap.valueRange),
+                         histograms[0].dataMap.valueAxis.unit, histograms[0].dataMap.valueRange);
 
     for (auto&& [index, hist] : util::enumerate<int>(histograms)) {
         dataframe->addColumn(fmt::format("Channel{}", index), scaleHistogram(hist, mode));
