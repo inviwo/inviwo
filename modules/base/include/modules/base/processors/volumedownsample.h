@@ -29,21 +29,43 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>  // for size3_t
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/poolprocessor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <memory>  // for shared_ptr
+#include <modules/base/algorithm/volume/volumeramdownsample.h>
+
+#include <memory>
 
 namespace inviwo {
+class Volume;
 
-class VolumeRAM;
+class IVW_MODULE_BASE_API VolumeDownsample : public PoolProcessor {
+public:
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-namespace util {
+    VolumeDownsample();
+    virtual ~VolumeDownsample() = default;
 
-IVW_MODULE_BASE_API std::shared_ptr<VolumeRAM> volumeSubSample(const VolumeRAM* in,
-                                                               size3_t factors);
+    virtual void process() override;
 
-}  // namespace util
+private:
+    static std::shared_ptr<Volume> downsample(std::shared_ptr<const Volume> source, size3_t strides,
+                                              util::DownsamplingMode mode);
 
+    VolumeInport inport_;
+    VolumeOutport outport_;
+
+    BoolProperty enabled_;
+    OptionProperty<util::DownsamplingMode> mode_;
+    BoolProperty uniform_;
+    IntVec3Property strides_;
+};
 }  // namespace inviwo
