@@ -40,6 +40,11 @@ runs:
         echo "VCPKG_INSTALLATION_ROOT=`pwd`" >> $GITHUB_ENV
         echo "VCPKG_ROOT=`pwd`" >> $GITHUB_ENV
 
+    - name: "Create ccache directory"
+      shell: bash
+      run: |
+        mkdir ccache-debug
+
     - name: "Setup Ccache"
       id: ccache
       if: inputs.ccache
@@ -48,7 +53,7 @@ runs:
         variant: ccache
         max-size: "1500M"
         verbose: 2
-        save: ${{github.ref == 'refs/heads/master'}}
+        save: "${{ github.ref == 'refs/heads/master' || contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
         append-timestamp: true
         key: inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}-
         restore-keys: |
