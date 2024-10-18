@@ -20,7 +20,13 @@ env:
   VCPKG_CACHE_TOKEN: ${{ secrets.VCPKG_CACHE_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
-  # QT_DEBUG_PLUGINS: 1                           # print qt plugin debug info
+  CCACHE_DEBUG: 1
+  CCACHE_BASEDIR: ${{ github.workspace }}
+  CCACHE_IGNOREOPTIONS: "-fmodules-ts -fmodule-mapper=* -fdeps-format=*"
+  CCACHE_LOGFILE: ${{ github.workspace }}/ccache.log
+  CCACHE_NODEPEND: true
+
+  # QT_DEBUG_PLUGINS: 1    # print qt plugin debug info
 
 # Information about the github runners can be found here
 # https://github.com/actions/runner-images
@@ -144,7 +150,6 @@ jobs:
       run: >
         cmake -S inviwo -B build --preset gha-${{ matrix.linkage }}
         -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
-        -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
         
     - name: "Build"
       timeout-minutes: 360
@@ -186,6 +191,20 @@ jobs:
         name: inviwo-python-api
         path: build/docs/python-api/*
     
+    - name: "Upload ccache-logs"
+      if: "${{ contains( github.event.pull_request.labels.*.name, 'CI: Debug') }}"
+      uses: actions/upload-artifact@v4
+      with:
+        name: ccache-log-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
+        path: ccache.log
+
+    - name: "Upload Vcpkg build Logs"
+      if: "${{ failure() }}"
+      uses: actions/upload-artifact@v4
+      with:
+        name: vcpkg-logs-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
+        path: vcpkg/buildtrees/**/*.log
+
     - name: "Setup tmate session (on failure and debug_enabled)"
       if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
       uses: mxschmitt/action-tmate@v3
@@ -326,7 +345,6 @@ jobs:
       run: >
         cmake -S inviwo -B build --preset gha-dynamic
         -DCMAKE_CXX_FLAGS='-stdlib=libc++'
-        -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
         -DCMAKE_BUILD_TYPE=Release
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DIVW_MODULE_WEBBROWSER=ON
@@ -401,10 +419,11 @@ jobs:
       shell: pwsh
       run: |
         $ver = (Get-ChildItem -Name C:/"Program Files"/Inviwo/*)
-        Invoke-expression "C:/'Program Files'/Inviwo/$ver/bin/inviwo-cli.exe --logconsole --quit"
-        if($LASTEXITCODE -ne 0) {
-          Invoke-expression "C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\gflags.exe /i C:/'Program Files'/Inviwo/$ver/bin/inviwo-cli.exe +sls"
-          Invoke-Expression "C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\cdb.exe -g -c q C:/'Program Files'/Inviwo/$ver/bin/inviwo-cli.exe"
+        cd C:/'Program Files'/Inviwo/$ver/bin/
+        ./inviwo-cli.exe --logconsole --quit
+        if ($LASTEXITCODE -ne 0) {
+          C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\gflags.exe /i inviwo-cli.exe +sls
+          C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\cdb.exe -g -c q inviwo-cli.exe
         }
     
     # Macos
