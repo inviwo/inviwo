@@ -26,7 +26,7 @@ public:
     /*	Attribtue parsing starts: at the ! of the !--
         returns: next char past '>'
     */
-    virtual const char* Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data);
 
     /// Cast to a more defined type. Will return null not of the requested type.
     virtual const TiXmlComment* ToComment() const { return this; }

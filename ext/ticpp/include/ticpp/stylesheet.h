@@ -41,7 +41,7 @@ public:
     virtual void Print(FILE* cfile, int depth, std::string* str) const;
     virtual void Print(FILE* cfile, int depth) const { Print(cfile, depth, 0); }
 
-    virtual const char* Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data);
 
     /// Cast to a more defined type. Will return null not of the requested type.
     virtual const TiXmlStylesheetReference* ToStylesheetReference() const { return this; }

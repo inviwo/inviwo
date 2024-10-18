@@ -643,8 +643,8 @@ Document::Document(const std::string& documentName)
 
 Document::~Document() {}
 
-void Document::LoadFile(TiXmlEncoding encoding) {
-    if (!m_tiXmlPointer->LoadFile(encoding)) {
+void Document::LoadFile() {
+    if (!m_tiXmlPointer->LoadFile()) {
         error(fmt::format("Couldn't load {}", m_tiXmlPointer->Value()));
     }
 }
@@ -655,14 +655,14 @@ void Document::SaveFile(void) const {
     }
 }
 
-void Document::LoadFile(const std::string& filename, TiXmlEncoding encoding) {
-    if (!m_tiXmlPointer->LoadFile(filename.c_str(), encoding)) {
+void Document::LoadFile(const std::string& filename) {
+    if (!m_tiXmlPointer->LoadFile(filename.c_str())) {
         error(fmt::format("Couldn't load {}", filename));
     }
 }
 
-void Document::LoadFile(const char* filename, TiXmlEncoding encoding) {
-    if (!m_tiXmlPointer->LoadFile(filename, encoding)) {
+void Document::LoadFile(const char* filename) {
+    if (!m_tiXmlPointer->LoadFile(filename)) {
         error(fmt::format("Couldn't load {}", filename));
     }
 }
@@ -673,8 +673,8 @@ void Document::SaveFile(const std::string& filename) const {
     }
 }
 
-void Document::Parse(const std::string& xml, bool throwIfParseError, TiXmlEncoding encoding) {
-    m_tiXmlPointer->Parse(xml.c_str(), 0, encoding);
+void Document::Parse(const std::string& xml, bool throwIfParseError) {
+    m_tiXmlPointer->Parse(xml.c_str(), 0);
     if (throwIfParseError && m_tiXmlPointer->Error()) {
         error("Error parsing xml.");
     }

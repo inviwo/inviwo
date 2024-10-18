@@ -148,7 +148,7 @@ std::shared_ptr<TransferFunction> TransferFunctionXMLReader::readData(
 
     try {
         TxDocument doc;
-        doc.Parse(str, true, TIXML_ENCODING_UTF8);
+        doc.Parse(str, true);
 
         auto root = doc.FirstChildElement();
         if (!root) {

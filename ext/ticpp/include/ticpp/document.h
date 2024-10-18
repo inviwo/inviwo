@@ -30,11 +30,12 @@ public:
         Returns true if successful. Will delete any existing
         document data before loading.
     */
-    bool LoadFile(TiXmlEncoding encoding = TIXML_DEFAULT_ENCODING);
+    bool LoadFile();
     /// Save a file using the current document value. Returns true if successful.
     bool SaveFile() const;
     /// Load a file using the given filename. Returns true if successful.
-    bool LoadFile(const char* filename, TiXmlEncoding encoding = TIXML_DEFAULT_ENCODING);
+
+    bool LoadFile(const char* filename);
     /// Save a file using the given filename. Returns true if successful.
     bool SaveFile(const char* filename) const;
     /** Load a file using the given FILE*. Returns true if successful. Note that this method
@@ -42,30 +43,18 @@ public:
         will be interpreted as an XML file. TinyXML doesn't stream in XML from the current
         file location. Streaming may be added in the future.
     */
-    bool LoadFile(FILE*, TiXmlEncoding encoding = TIXML_DEFAULT_ENCODING);
+    bool LoadFile(FILE*);
     /// Save a file using the given FILE*. Returns true if successful.
     bool SaveFile(FILE*) const;
 
-    bool LoadFile(const std::string& filename,
-                  TiXmlEncoding encoding = TIXML_DEFAULT_ENCODING)  ///< STL std::string version.
-    {
-        // StringToBuffer f( filename );
-        // return ( f.buffer && LoadFile( f.buffer, encoding ));
-        return LoadFile(filename.c_str(), encoding);
-    }
-    bool SaveFile(const std::string& filename) const  ///< STL std::string version.
-    {
-        // StringToBuffer f( filename );
-        // return ( f.buffer && SaveFile( f.buffer ));
-        return SaveFile(filename.c_str());
-    }
+    bool LoadFile(const std::string& filename) { return LoadFile(filename.c_str()); }
+    bool SaveFile(const std::string& filename) const { return SaveFile(filename.c_str()); }
 
     /** Parse the given null terminated block of xml data. Passing in an encoding to this
         method (either TIXML_ENCODING_LEGACY or TIXML_ENCODING_UTF8 will force TinyXml
         to use that encoding, regardless of what TinyXml might otherwise try to detect.
     */
-    virtual const char* Parse(const char* p, TiXmlParsingData* data = 0,
-                              TiXmlEncoding encoding = TIXML_DEFAULT_ENCODING);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data = nullptr);
 
     /** Get the root element -- the only top level element -- of the document.
         In well formed XML, there should only be one. TinyXml is tolerant of
@@ -146,8 +135,7 @@ public:
     /// Print this Document to a FILE stream.
     virtual void Print(FILE* cfile, int depth = 0) const;
     // [internal use]
-    void SetError(int err, const char* errorLocation, TiXmlParsingData* prevData,
-                  TiXmlEncoding encoding);
+    void SetError(int err, const char* errorLocation, TiXmlParsingData* prevData);
 
     /// The column where the error occured. See ErrorRow()
     virtual const TiXmlDocument* ToDocument() const { return this; }
