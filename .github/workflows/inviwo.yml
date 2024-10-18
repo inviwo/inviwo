@@ -37,17 +37,6 @@ jobs:
         include:
           - system: windows
             os: 'windows-2022'
-            cmake: >
-              -DIVW_MODULE_EIGENUTILS=ON
-              -DIVW_MODULE_HDF5=ON
-              -DIVW_MODULE_FFMPEG=ON
-              -DIVW_MODULE_WEBBROWSER=ON
-              -DIVW_MODULE_TETRAMESH=ON
-              -DIVW_DOXYGEN_PROJECT=ON 
-              -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"
-              -DIVW_MODULE_SGCT=ON
-              -DIVW_APP_INVIWO_DOME=ON
-              -DVCPKG_MANIFEST_FEATURES="sgct"
             targets: 'ALL_BUILD'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
@@ -61,38 +50,17 @@ jobs:
           
           - system: macos
             os: 'macos-15'
-            cmake: >
-              -DIVW_MODULE_EIGENUTILS=ON
-              -DIVW_MODULE_HDF5=ON
-              -DIVW_MODULE_FFMPEG=ON
-              -DIVW_MODULE_WEBBROWSER=ON
-              -DIVW_MODULE_TETRAMESH=ON
             targets: 'ALL_BUILD'
             installer: 'inviwo-installer-macos'
             artifact: 'build/inviwo-v*.dmg'
           
           - system: linux
             os: 'ubuntu-24.04'
-            # Disable benchmark for now due to error: 
-            # memcpy’ is not a member of ‘std’; did you mean ‘wmemcpy’
-            cmake: >
-              -DIVW_MODULE_EIGENUTILS=ON
-              -DIVW_MODULE_HDF5=ON
-              -DIVW_MODULE_FFMPEG=OFF
-              -DIVW_MODULE_WEBBROWSER=OFF
-              -DIVW_MODULE_TETRAMESH=ON
-              -DIVW_TEST_BENCHMARKS=OFF
             targets: 'all'
             installer: 'inviwo-installer-ubuntu'
             artifact: 'build/inviwo-v*.deb'
             run: QT_QPA_PLATFORM=offscreen ./inviwo --logconsole --quit
-          
-          # linkage
-          - linkage: 'dynamic'
-            cmake_linkage: 'ON'
-          - linkage: 'static'
-            cmake_linkage: 'OFF'
-          
+
           # set triplets
           - system: 'windows'
             linkage: 'dynamic'
@@ -100,14 +68,14 @@ jobs:
           - system: 'windows'
             linkage: 'static'
             triplet: 'x64-windows-static-md'
-            
+
           - system: 'macos'
             linkage: 'dynamic'
             triplet: 'arm64-osx-dynamic'
           - system: 'macos'
             linkage: 'static'
             triplet: 'arm64-osx'
-            
+
           - system: 'linux'
             linkage: 'dynamic'
             triplet: 'x64-linux-dynamic'
@@ -137,16 +105,6 @@ jobs:
             configuration: Release
             targets: 'all package'
 
-          # need /MD for static to go with x64-windows-static-md
-          - system: windows
-            linkage: static
-            cmake: >
-              -DIVW_MODULE_EIGENUTILS=ON
-              -DIVW_MODULE_HDF5=ON
-              -DIVW_MODULE_FFMPEG=ON
-              -DIVW_MODULE_WEBBROWSER=ON
-              -DIVW_CFG_MSVC_FORCE_SHARED_CRT=ON
-
         exclude:
           # Windows debug build are to big, they run out of diskspace
           - system: windows
@@ -173,6 +131,9 @@ jobs:
     
     - name: Configure build environment
       uses: ./inviwo/.github/actions/configure-build-env
+      with:
+        triplet: ${{ matrix.triplet }}
+        configuration: ${{ matrix.configuration }}
 
     - name: Copy Preset
       shell: bash
@@ -181,17 +142,9 @@ jobs:
     - name: "Configure CMake"
       shell: bash
       run: >
-        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset gha
-        --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
-        -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
-        -DVCPKG_HOST_TRIPLET=${{ matrix.triplet }}
-        -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
-        -DBUILD_SHARED_LIBS=${{ matrix.cmake_linkage }}
+        cmake -S inviwo -B build --preset gha-${{ matrix.linkage }}
         -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
-        -DCMAKE_C_COMPILER_LAUNCHER=ccache
-        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-        -DIVW_CFG_USE_CCACHE_MSVC=ON
-        ${{ matrix.cmake }}
+        -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
         
     - name: "Build"
       timeout-minutes: 360
@@ -329,82 +282,45 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 320
     steps:
-    - name: "Apt Install"
-      shell: bash
-      if: runner.os == 'Linux'
-      run: |
-        sudo apt-get update
-        sudo apt install --fix-missing libgl-dev libglew-dev libglu1-mesa-dev \
-          libxcursor-dev libxi-dev libxinerama-dev libxinerama-dev \
-          libxmu-dev nasm ninja-build pkg-config xorg-dev
-
-    - name: "Install Qt"
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: 6.7.0
-        dir: ${{ github.workspace }}
-
-    - name: Install LLVM and Clang
-      uses: KyleMayes/install-llvm-action@v2
-      with:
-        version: ${{ env.LLVM_VERSION }}
-        env: true
-           
-    - name: "Setup Python"
-      uses: actions/setup-python@v5
-      with:
-        python-version: '>=3.10'
-        architecture: 'x64'
-    
-    - name: "Install Python Modules" 
-      shell: bash
-      run: pip3 install numpy
-
-    - name: "VCPKG Update"
-      shell: bash
-      run: |
-        echo $VCPKG_INSTALLATION_ROOT
-        cd $VCPKG_INSTALLATION_ROOT
-        git reset --hard
-        git pull
-    
-    - name: "VCPKG Cache config"
-      uses: actions/github-script@v7
-      with:
-        script: |
-          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
     - name: "Clone Inviwo"
       uses: actions/checkout@v4
-      with: 
+      with:
         path: inviwo
-        submodules: recursive
-        
-    - name: Copy Preset
+        submodules: false
+
+    - name: "Install dependencies"
+      uses: ./inviwo/.github/actions/install-dependencies
+      with:
+        linux-compilter: clang
+        clang-version: ${{ env.LLVM_VERSION }}
+
+    - name: "Configure build environment"
+      uses: ./inviwo/.github/actions/configure-build-env
+      with:
+        triplet: x64-linux-dynamic
+        configuration: Release
+        ccache: false
+
+    - name: "Copy Preset"
       shell: bash
       run: cp inviwo/.github/presets/linux.json inviwo/CMakeUserPresets.json
 
     - name: "Configure CMake"
       shell: bash
       run: >
-        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset gha
-        --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+        cmake -S inviwo -B build --preset gha-dynamic
         -DCMAKE_CXX_FLAGS='-stdlib=libc++'
-        -DVCPKG_TARGET_TRIPLET=x64-linux-dynamic
         -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
-        -DBUILD_SHARED_LIBS=ON
         -DCMAKE_BUILD_TYPE=Release
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-        -DIVW_MODULE_EIGENUTILS=ON
-        -DIVW_MODULE_HDF5=ON
-        -DIVW_MODULE_SGCT=ON
-        -DIVW_MODULE_TETRAMESH=ON
         -DIVW_MODULE_WEBBROWSER=ON
+        -DIVW_MODULE_SGCT=ON
         -DIVW_APP_INVIWO_DOME=ON
         -DVCPKG_MANIFEST_FEATURES="sgct"
 
-    - uses: cpp-linter/cpp-linter-action@v2.13.1
+    - name: "Run clang-tidy"
+      uses: cpp-linter/cpp-linter-action@v2.13.1
       id: linter
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
