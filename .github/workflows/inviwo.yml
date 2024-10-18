@@ -14,7 +14,13 @@ env:
   VCPKG_CACHE_TOKEN: ${{ secrets.VCPKG_CACHE_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
-  # QT_DEBUG_PLUGINS: 1                           # print qt plugin debug info
+  CCACHE_DEBUG: 1
+  CCACHE_BASEDIR: ${{ github.workspace }}
+  CCACHE_IGNOREOPTIONS: "-fmodules-ts -fmodule-mapper=* -fdeps-format=*"
+  CCACHE_LOGFILE: ${{ github.workspace }}/ccache.log
+  CCACHE_NODEPEND: true
+
+  # QT_DEBUG_PLUGINS: 1    # print qt plugin debug info
 
 # Information about the github runners can be found here
 # https://github.com/actions/runner-images
@@ -179,6 +185,13 @@ jobs:
         name: inviwo-python-api
         path: build/docs/python-api/*
     
+    - name: "Upload ccache-logs"
+      if: "${{ contains( github.event.pull_request.labels.*.name, 'CI: Debug') }}"
+      uses: actions/upload-artifact@v4
+      with:
+        name: ccache-log-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
+        path: ccache.log
+
     - name: "Upload Vcpkg build Logs"
       if: "${{ failure() }}"
       uses: actions/upload-artifact@v4
@@ -187,7 +200,7 @@ jobs:
         path: vcpkg/buildtrees/**/*.log
 
     - name: "Setup tmate session"
-      if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
+      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
