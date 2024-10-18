@@ -77,17 +77,17 @@ const char* TiXmlText::Parse(const char* p, TiXmlParsingData* data, TiXmlEncodin
     const char* const startTag = "<![CDATA[";
     const char* const endTag = "]]>";
 
-    if (cdata || StringEqual(p, startTag, false, encoding)) {
+    if (cdata || StringEqual(p, startTag, false)) {
         cdata = true;
 
-        if (!StringEqual(p, startTag, false, encoding)) {
+        if (!StringEqual(p, startTag, false)) {
             document->SetError(TIXML_ERROR_PARSING_CDATA, p, data, encoding);
             return 0;
         }
         p += strlen(startTag);
 
         // Keep all the white space, ignore the encoding, etc.
-        while (p && *p && !StringEqual(p, endTag, false, encoding)) {
+        while (p && *p && !StringEqual(p, endTag, false)) {
             value += *p;
             ++p;
         }

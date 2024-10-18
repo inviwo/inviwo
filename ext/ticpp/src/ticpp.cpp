@@ -110,12 +110,12 @@ Attribute::~Attribute() { m_impRC->DecRef(); }
 
 const std::string& Attribute::Value() const {
     ValidatePointer();
-    return m_tiXmlPointer->ValueStr();
+    return m_tiXmlPointer->Value();
 }
 
 const std::string& Attribute::Name() const {
     ValidatePointer();
-    return m_tiXmlPointer->NameTStr();
+    return m_tiXmlPointer->Name();
 }
 
 Attribute* Attribute::Next(bool throwIfNoAttribute) const {
@@ -213,7 +213,7 @@ Node* Node::NodeFactory(TiXmlNode* tiXmlNode, bool throwIfNull, bool rememberSpa
     return temp;
 }
 
-const std::string& Node::Value() const { return GetTiXmlPointer()->ValueStr(); }
+const std::string& Node::Value() const { return GetTiXmlPointer()->Value(); }
 
 void Node::Clear() { GetTiXmlPointer()->Clear(); }
 
@@ -770,7 +770,7 @@ const std::string& ticpp::Element::GetAttribute(const char* name) const {
     ValidatePointer();
 
     // Get value from TinyXML, if the attribute exists
-    if (auto* str = m_tiXmlPointer->AttributeStr(name)) {
+    if (auto* str = m_tiXmlPointer->Attribute(name)) {
         return *str;
     } else {
         static const std::string empty;

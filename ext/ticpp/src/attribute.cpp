@@ -12,34 +12,12 @@ const TiXmlAttribute* TiXmlAttribute::Next() const {
     return next;
 }
 
-/*
-TiXmlAttribute* TiXmlAttribute::Next()
-{
-        // We are using knowledge of the sentinel. The sentinel
-        // have a value or name.
-        if ( next->value.empty() && next->name.empty() )
-                return 0;
-        return next;
-}
-*/
-
 const TiXmlAttribute* TiXmlAttribute::Previous() const {
     // We are using knowledge of the sentinel. The sentinel
     // have a value or name.
     if (prev->value.empty() && prev->name.empty()) return 0;
     return prev;
 }
-
-/*
-TiXmlAttribute* TiXmlAttribute::Previous()
-{
-        // We are using knowledge of the sentinel. The sentinel
-        // have a value or name.
-        if ( prev->value.empty() && prev->name.empty() )
-                return 0;
-        return prev;
-}
-*/
 
 void TiXmlAttribute::Print(FILE* cfile, int /*depth*/, std::string* str) const {
     std::string n, v;
@@ -115,7 +93,7 @@ TiXmlAttributeSet::~TiXmlAttributeSet() {
 }
 
 void TiXmlAttributeSet::Add(TiXmlAttribute* addMe) {
-    assert(!Find(addMe->NameTStr()));  // Shouldn't be multiply adding to the set.
+    assert(!Find(addMe->Name()));  // Shouldn't be multiply adding to the set.
 
     addMe->next = &sentinel;
     addMe->prev = sentinel.prev;
@@ -139,27 +117,12 @@ void TiXmlAttributeSet::Remove(TiXmlAttribute* removeMe) {
     assert(0);  // we tried to remove a non-linked attribute.
 }
 
-const TiXmlAttribute* TiXmlAttributeSet::Find(const std::string& name) const {
-    for (const TiXmlAttribute* node = sentinel.next; node != &sentinel; node = node->next) {
-        if (node->name == name) return node;
-    }
-    return nullptr;
-}
-
 const TiXmlAttribute* TiXmlAttributeSet::Find(std::string_view name) const {
     for (const TiXmlAttribute* node = sentinel.next; node != &sentinel; node = node->next) {
         if (node->name == name) return node;
     }
     return nullptr;
 }
-
-const TiXmlAttribute* TiXmlAttributeSet::Find(const char* name) const {
-    for (const TiXmlAttribute* node = sentinel.next; node != &sentinel; node = node->next) {
-        if (strcmp(node->name.c_str(), name) == 0) return node;
-    }
-    return nullptr;
-}
-
 
 const char* TiXmlAttribute::Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding) {
     p = SkipWhiteSpace(p, encoding);

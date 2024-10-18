@@ -230,7 +230,7 @@ public:
                 if (doc->Error()) {
                     return fmt::format("\nDescription: {}\nFile: {} \nLine: {}\nColumn: {}",
                                        doc->ErrorDesc(),
-                                       (strlen(doc->Value()) > 0 ? doc->Value() : "<unnamed-file>"),
+                                       (!doc->Value().empty() ? doc->Value() : "<unnamed-file>"),
                                        doc->ErrorRow(), doc->ErrorCol());
                 }
             }
@@ -328,7 +328,7 @@ public:
     template <class T>
     void GetValue(T* value) const {
         ValidatePointer();
-        FromString(m_tiXmlPointer->ValueStr(), value);
+        FromString(m_tiXmlPointer->Value(), value);
     }
 
     /**
@@ -442,7 +442,7 @@ public:
     */
     template <class T>
     void GetValue(T* value) const {
-        FromString(GetTiXmlPointer()->ValueStr(), value);
+        FromString(GetTiXmlPointer()->Value(), value);
     }
 
     /**
@@ -934,14 +934,14 @@ public:
         return out;
     }
 
+    TiXmlBase* GetBasePointer() const { return GetTiXmlPointer(); }
+
 protected:
     /**
     @internal
     Allows NodeImp to use Node*'s.
     */
     virtual TiXmlNode* GetTiXmlPointer() const = 0;
-
-    TiXmlBase* GetBasePointer() const { return GetTiXmlPointer(); }
 
     /**
     @internal
@@ -1179,6 +1179,11 @@ protected:
     }
 
 public:
+    T* GetXmlPointer() const {
+        ValidatePointer();
+        return m_tiXmlPointer;
+    }
+
     /*
     Deletes the spawned wrapper objects.
     Decrements reference count.
