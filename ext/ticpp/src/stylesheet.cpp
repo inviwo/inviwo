@@ -93,7 +93,7 @@ const char* TiXmlStylesheetReference::Parse(const char* p, TiXmlParsingData* dat
     // Find the beginning, find the end, and look for
     // the stuff in-between.
     TiXmlDocument* document = GetDocument();
-    if (!p || !*p || !StringEqual(p, "<?xml-stylesheet", true, _encoding)) {
+    if (!p || !*p || !StringEqual(p, "<?xml-stylesheet", true)) {
         if (document) document->SetError(TIXML_ERROR_PARSING_DECLARATION, 0, 0, _encoding);
         return 0;
     }
@@ -113,11 +113,11 @@ const char* TiXmlStylesheetReference::Parse(const char* p, TiXmlParsingData* dat
         }
 
         p = SkipWhiteSpace(p, _encoding);
-        if (StringEqual(p, "type", true, _encoding)) {
+        if (StringEqual(p, "type", true)) {
             TiXmlAttribute attrib;
             p = attrib.Parse(p, data, _encoding);
             type = attrib.Value();
-        } else if (StringEqual(p, "href", true, _encoding)) {
+        } else if (StringEqual(p, "href", true)) {
             TiXmlAttribute attrib;
             p = attrib.Parse(p, data, _encoding);
             href = attrib.Value();

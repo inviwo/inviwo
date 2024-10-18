@@ -107,14 +107,14 @@ bool TiXmlDocument::LoadFile(const char* _filename, TiXmlEncoding encoding) {
         fclose(file);
         return result;
     } else {
-        SetError(TIXML_ERROR_OPENING_FILE, 0, 0, TIXML_ENCODING_UNKNOWN);
+        SetError(TIXML_ERROR_OPENING_FILE, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
         return false;
     }
 }
 
 bool TiXmlDocument::LoadFile(FILE* file, TiXmlEncoding encoding) {
     if (!file) {
-        SetError(TIXML_ERROR_OPENING_FILE, 0, 0, TIXML_ENCODING_UNKNOWN);
+        SetError(TIXML_ERROR_OPENING_FILE, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
         return false;
     }
 
@@ -130,7 +130,7 @@ bool TiXmlDocument::LoadFile(FILE* file, TiXmlEncoding encoding) {
 
     // Strange case, but good to handle up front.
     if (length <= 0) {
-        SetError(TIXML_ERROR_DOCUMENT_EMPTY, 0, 0, TIXML_ENCODING_UNKNOWN);
+        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
         return false;
     }
 
@@ -165,7 +165,7 @@ bool TiXmlDocument::LoadFile(FILE* file, TiXmlEncoding encoding) {
 
     if (fread(buf, length, 1, file) != 1) {
         delete[] buf;
-        SetError(TIXML_ERROR_OPENING_FILE, 0, 0, TIXML_ENCODING_UNKNOWN);
+        SetError(TIXML_ERROR_OPENING_FILE, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
         return false;
     }
 
@@ -295,7 +295,7 @@ void TiXmlDocument::StreamIn(std::istream* in, std::string* tag) {
     // sub-tag can orient itself.
 
     if (!StreamTo(in, '<', tag)) {
-        SetError(TIXML_ERROR_PARSING_EMPTY, 0, 0, TIXML_ENCODING_UNKNOWN);
+        SetError(TIXML_ERROR_PARSING_EMPTY, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
         return;
     }
 
@@ -304,7 +304,7 @@ void TiXmlDocument::StreamIn(std::istream* in, std::string* tag) {
         while (in->good() && in->peek() != '>') {
             int c = in->get();
             if (c <= 0) {
-                SetError(TIXML_ERROR_EMBEDDED_NULL, 0, 0, TIXML_ENCODING_UNKNOWN);
+                SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
                 break;
             }
             (*tag) += (char)c;
@@ -328,13 +328,13 @@ void TiXmlDocument::StreamIn(std::istream* in, std::string* tag) {
                     return;
                 }
             } else {
-                SetError(TIXML_ERROR, 0, 0, TIXML_ENCODING_UNKNOWN);
+                SetError(TIXML_ERROR, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
                 return;
             }
         }
     }
     // We should have returned sooner.
-    SetError(TIXML_ERROR, 0, 0, TIXML_ENCODING_UNKNOWN);
+    SetError(TIXML_ERROR, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
 }
 
 const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData,
@@ -345,7 +345,7 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData,
     // contains nothing but other tags, most of what happens
     // here is skipping white space.
     if (!p || !*p) {
-        SetError(TIXML_ERROR_DOCUMENT_EMPTY, 0, 0, TIXML_ENCODING_UNKNOWN);
+        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
         return 0;
     }
 
@@ -375,7 +375,7 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData,
 
     p = SkipWhiteSpace(p, encoding);
     if (!p) {
-        SetError(TIXML_ERROR_DOCUMENT_EMPTY, 0, 0, TIXML_ENCODING_UNKNOWN);
+        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
         return 0;
     }
 
@@ -395,9 +395,9 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData,
 
             if (enc.empty())
                 encoding = TIXML_ENCODING_UTF8;
-            else if (StringEqual(enc.c_str(), "UTF-8", true, TIXML_ENCODING_UNKNOWN))
+            else if (StringEqual(enc.c_str(), "UTF-8", true))
                 encoding = TIXML_ENCODING_UTF8;
-            else if (StringEqual(enc.c_str(), "UTF8", true, TIXML_ENCODING_UNKNOWN))
+            else if (StringEqual(enc.c_str(), "UTF8", true))
                 encoding = TIXML_ENCODING_UTF8;  // incorrect, but be nice
             else
                 encoding = TIXML_ENCODING_LEGACY;

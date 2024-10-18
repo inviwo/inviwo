@@ -202,8 +202,7 @@ protected:
     // Return true if the next characters in the stream are any of the endTag sequences.
     // Ignore case only works for english, and should only be relied on when comparing
     // to English words: StringEqual( p, "version", true ) is fine.
-    static bool StringEqual(const char* p, const char* endTag, bool ignoreCase,
-                            TiXmlEncoding encoding);
+    static bool StringEqual(const char* p, const char* endTag, bool ignoreCase);
 
     static const char* errorString[TIXML_ERROR_STRING_COUNT];
 
@@ -214,15 +213,11 @@ protected:
 
     // None of these methods are reliable for any language except English.
     // Good for approximation, not great for accuracy.
-    static int IsAlpha(unsigned char anyByte, TiXmlEncoding encoding);
-    static int IsAlphaNum(unsigned char anyByte, TiXmlEncoding encoding);
-    inline static int ToLower(int v, TiXmlEncoding encoding) {
-        if (encoding == TIXML_ENCODING_UTF8) {
-            if (v < 128) return tolower(v);
-            return v;
-        } else {
-            return tolower(v);
-        }
+    static bool IsAlpha(int anyByte);
+    static bool IsAlphaNum(int anyByte);
+    inline static int ToLower(int v) {
+        if (v < 128) return tolower(v);
+        return v;
     }
     static void ConvertUTF32ToUTF8(unsigned long input, char* output, int* length);
 

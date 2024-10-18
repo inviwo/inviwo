@@ -35,8 +35,12 @@
 #include <string>
 #include <array>
 #include <filesystem>
+#include <optional>
 
 #include <fmt/format.h>
+
+class TiXmlElement;
+class TiXmlDocument;
 
 namespace ticpp {
 class Element;
@@ -155,8 +159,8 @@ protected:
     friend class NodeSwitch;
 
     std::filesystem::path fileName_;
-    std::unique_ptr<TxDocument> doc_;
-    TxElement* rootElement_;
+    std::unique_ptr<TiXmlDocument> doc_;
+    TiXmlElement* rootElement_;
     bool retrieveChild_;
 };
 
@@ -238,6 +242,7 @@ public:
      * @param retrieveChild whether to retrieve child node or not.
      */
     NodeSwitch(SerializeBase& serializer, TxElement* node, bool retrieveChild = true);
+    NodeSwitch(SerializeBase& serializer, TiXmlElement* node, bool retrieveChild = true);
 
     /**
      * \brief NodeSwitch helps track parent node during recursive/nested function calls.
@@ -268,7 +273,7 @@ public:
 private:
     std::unique_ptr<TxElement> node_;
     SerializeBase* serializer_;  // reference to serializer or deserializer
-    TxElement* storedNode_;      // Parent (Ticpp Node) element.
+    TiXmlElement* storedNode_;      // Parent (Ticpp Node) element.
     bool storedRetrieveChild_;
 };
 

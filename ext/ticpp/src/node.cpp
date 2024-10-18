@@ -12,17 +12,17 @@
 #include <cstring>
 
 TiXmlNode::TiXmlNode(NodeType _type) : TiXmlBase() {
-    parent = 0;
+    parent = nullptr;
     type = _type;
-    firstChild = 0;
-    lastChild = 0;
-    prev = 0;
-    next = 0;
+    firstChild = nullptr;
+    lastChild = nullptr;
+    prev = nullptr;
+    next = nullptr;
 }
 
 TiXmlNode::~TiXmlNode() {
     TiXmlNode* node = firstChild;
-    TiXmlNode* temp = 0;
+    TiXmlNode* temp = nullptr;
 
     while (node) {
         temp = node;
@@ -38,7 +38,7 @@ void TiXmlNode::CopyTo(TiXmlNode* target) const {
 
 void TiXmlNode::Clear() {
     TiXmlNode* node = firstChild;
-    TiXmlNode* temp = 0;
+    TiXmlNode* temp = nullptr;
 
     while (node) {
         temp = node;
@@ -46,55 +46,61 @@ void TiXmlNode::Clear() {
         delete temp;
     }
 
-    firstChild = 0;
-    lastChild = 0;
+    firstChild = nullptr;
+    lastChild = nullptr;
 }
 
 TiXmlNode* TiXmlNode::LinkEndChild(TiXmlNode* node) {
-    assert(node->parent == 0 || node->parent == this);
-    assert(node->GetDocument() == 0 || node->GetDocument() == this->GetDocument());
+    assert(node->parent == nullptr || node->parent == this);
+    assert(node->GetDocument() == nullptr || node->GetDocument() == this->GetDocument());
 
     if (node->Type() == TiXmlNode::DOCUMENT) {
         delete node;
-        if (GetDocument())
-            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, 0, 0, TIXML_ENCODING_UNKNOWN);
-        return 0;
+        if (GetDocument()) {
+            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr,
+                                    TIXML_ENCODING_UNKNOWN);
+        }
+        return nullptr;
     }
 
     node->parent = this;
 
     node->prev = lastChild;
-    node->next = 0;
+    node->next = nullptr;
 
-    if (lastChild)
+    if (lastChild) {
         lastChild->next = node;
-    else
+    } else {
         firstChild = node;  // it was an empty list.
-
+    }
     lastChild = node;
     return node;
 }
 
 TiXmlNode* TiXmlNode::InsertEndChild(const TiXmlNode& addThis) {
     if (addThis.Type() == TiXmlNode::DOCUMENT) {
-        if (GetDocument())
-            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, 0, 0, TIXML_ENCODING_UNKNOWN);
-        return 0;
+        if (GetDocument()) {
+            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr,
+                                    TIXML_ENCODING_UNKNOWN);
+        }
+        return nullptr;
     }
     TiXmlNode* node = addThis.Clone();
-    if (!node) return 0;
+    if (!node) return nullptr;
 
     return LinkEndChild(node);
 }
 
 TiXmlNode* TiXmlNode::InsertBeforeChild(TiXmlNode* beforeThis, const TiXmlNode& addThis) {
     if (!beforeThis || beforeThis->parent != this) {
-        return 0;
+        return nullptr;
     }
     if (addThis.Type() == TiXmlNode::DOCUMENT) {
-        if (GetDocument())
-            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, 0, 0, TIXML_ENCODING_UNKNOWN);
-        return 0;
+        if (GetDocument()) {
+            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr,
+                                    TIXML_ENCODING_UNKNOWN);
+        }
+        return nullptr;
     }
 
     TiXmlNode* node = addThis.Clone();
@@ -115,16 +121,18 @@ TiXmlNode* TiXmlNode::InsertBeforeChild(TiXmlNode* beforeThis, const TiXmlNode& 
 
 TiXmlNode* TiXmlNode::InsertAfterChild(TiXmlNode* afterThis, const TiXmlNode& addThis) {
     if (!afterThis || afterThis->parent != this) {
-        return 0;
+        return nullptr;
     }
     if (addThis.Type() == TiXmlNode::DOCUMENT) {
-        if (GetDocument())
-            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, 0, 0, TIXML_ENCODING_UNKNOWN);
-        return 0;
+        if (GetDocument()) {
+            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr,
+                                    TIXML_ENCODING_UNKNOWN);
+        }
+        return nullptr;
     }
 
     TiXmlNode* node = addThis.Clone();
-    if (!node) return 0;
+    if (!node) return nullptr;
     node->parent = this;
 
     node->prev = afterThis;
@@ -140,23 +148,25 @@ TiXmlNode* TiXmlNode::InsertAfterChild(TiXmlNode* afterThis, const TiXmlNode& ad
 }
 
 TiXmlNode* TiXmlNode::ReplaceChild(TiXmlNode* replaceThis, const TiXmlNode& withThis) {
-    if (replaceThis->parent != this) return 0;
+    if (replaceThis->parent != this) return nullptr;
 
     TiXmlNode* node = withThis.Clone();
-    if (!node) return 0;
+    if (!node) return nullptr;
 
     node->next = replaceThis->next;
     node->prev = replaceThis->prev;
 
-    if (replaceThis->next)
+    if (replaceThis->next) {
         replaceThis->next->prev = node;
-    else
+    } else {
         lastChild = node;
+    }
 
-    if (replaceThis->prev)
+    if (replaceThis->prev) {
         replaceThis->prev->next = node;
-    else
+    } else {
         firstChild = node;
+    }
 
     delete replaceThis;
     node->parent = this;
@@ -169,42 +179,35 @@ bool TiXmlNode::RemoveChild(TiXmlNode* removeThis) {
         return false;
     }
 
-    if (removeThis->next)
-        removeThis->next->prev = removeThis->prev;
-    else
+    if (removeThis->next) {
+            removeThis->next->prev = removeThis->prev;
+        }
+    else {
         lastChild = removeThis->prev;
+    }
 
-    if (removeThis->prev)
+    if (removeThis->prev) {
         removeThis->prev->next = removeThis->next;
-    else
+    } else {
         firstChild = removeThis->next;
+    }
 
     delete removeThis;
     return true;
 }
 
-const TiXmlNode* TiXmlNode::FirstChild(const char* _value) const {
-    const TiXmlNode* node;
-    for (node = firstChild; node; node = node->next) {
-        if (strcmp(node->Value(), _value) == 0) return node;
-    }
-    return 0;
-}
-
 const TiXmlNode* TiXmlNode::FirstChild(std::string_view _value) const {
-    const TiXmlNode* node;
-    for (node = firstChild; node; node = node->next) {
-        if (node->ValueStr() ==_value) return node;
+    for (const TiXmlNode* node = firstChild; node; node = node->next) {
+        if (node->Value() == _value) return node;
     }
     return nullptr;
 }
 
-const TiXmlNode* TiXmlNode::LastChild(const char* _value) const {
-    const TiXmlNode* node;
-    for (node = lastChild; node; node = node->prev) {
-        if (strcmp(node->Value(), _value) == 0) return node;
+const TiXmlNode* TiXmlNode::LastChild(std::string_view _value) const {
+    for (const TiXmlNode* node = lastChild; node; node = node->prev) {
+        if (node->Value() == _value) return node;
     }
-    return 0;
+    return nullptr;
 }
 
 const TiXmlNode* TiXmlNode::IterateChildren(const TiXmlNode* previous) const {
@@ -216,7 +219,7 @@ const TiXmlNode* TiXmlNode::IterateChildren(const TiXmlNode* previous) const {
     }
 }
 
-const TiXmlNode* TiXmlNode::IterateChildren(const char* val, const TiXmlNode* previous) const {
+const TiXmlNode* TiXmlNode::IterateChildren(std::string_view val, const TiXmlNode* previous) const {
     if (!previous) {
         return FirstChild(val);
     } else {
@@ -225,55 +228,41 @@ const TiXmlNode* TiXmlNode::IterateChildren(const char* val, const TiXmlNode* pr
     }
 }
 
-const TiXmlNode* TiXmlNode::NextSibling(const char* _value) const {
-    const TiXmlNode* node;
-    for (node = next; node; node = node->next) {
-        if (strcmp(node->Value(), _value) == 0) return node;
-    }
-    return 0;
-}
-
 const TiXmlNode* TiXmlNode::NextSibling(std::string_view _value) const {
-    const TiXmlNode* node;
-    for (node = next; node; node = node->next) {
-        if (node->ValueStr() == _value) return node;
+    for (const TiXmlNode* node = next; node; node = node->next) {
+        if (node->Value() == _value) return node;
     }
-    return 0;
+    return nullptr;
 }
 
-
-const TiXmlNode* TiXmlNode::PreviousSibling(const char* _value) const {
-    const TiXmlNode* node;
-    for (node = prev; node; node = node->prev) {
-        if (strcmp(node->Value(), _value) == 0) return node;
+const TiXmlNode* TiXmlNode::PreviousSibling(std::string_view _value) const {
+    for (const TiXmlNode* node = prev; node; node = node->prev) {
+        if (node->Value() == _value) return node;
     }
-    return 0;
+    return nullptr;
 }
-
-
 
 TiXmlNode* TiXmlNode::Identify(const char* p, TiXmlEncoding encoding) {
-    TiXmlNode* returnNode = 0;
+    TiXmlNode* returnNode = nullptr;
 
     p = SkipWhiteSpace(p, encoding);
     if (!p || !*p || *p != '<') {
-        return 0;
+        return nullptr;
     }
 
     TiXmlDocument* doc = GetDocument();
     p = SkipWhiteSpace(p, encoding);
 
     if (!p || !*p) {
-        return 0;
+        return nullptr;
     }
 
     // What is this thing?
     // - Elements start with a letter or underscore, but xml is reserved.
     // - Comments: <!--
-    // - Decleration: <?xml
+    // - Declaration: <?xml
     // - StylesheetReference <?xml-stylesheet
-    // - Everthing else is unknown to tinyxml.
-    //
+    // - Everything else is unknown to tinyxml.
 
     const char* xmlHeader = {"<?xml"};
     const char* xmlSSHeader = {"<?xml-stylesheet"};
@@ -281,34 +270,34 @@ TiXmlNode* TiXmlNode::Identify(const char* p, TiXmlEncoding encoding) {
     const char* dtdHeader = {"<!"};
     const char* cdataHeader = {"<![CDATA["};
 
-    if (StringEqual(p, xmlSSHeader, true, encoding)) {
+    if (StringEqual(p, xmlSSHeader, true)) {
 #ifdef DEBUG_PARSER
         TIXML_LOG("XML parsing Stylesheet Reference\n");
 #endif
         returnNode = new TiXmlStylesheetReference();
-    } else if (StringEqual(p, xmlHeader, true, encoding)) {
+    } else if (StringEqual(p, xmlHeader, true)) {
 #ifdef DEBUG_PARSER
         TIXML_LOG("XML parsing Declaration\n");
 #endif
         returnNode = new TiXmlDeclaration();
-    } else if (StringEqual(p, commentHeader, false, encoding)) {
+    } else if (StringEqual(p, commentHeader, false)) {
 #ifdef DEBUG_PARSER
         TIXML_LOG("XML parsing Comment\n");
 #endif
         returnNode = new TiXmlComment();
-    } else if (StringEqual(p, cdataHeader, false, encoding)) {
+    } else if (StringEqual(p, cdataHeader, false)) {
 #ifdef DEBUG_PARSER
         TIXML_LOG("XML parsing CDATA\n");
 #endif
         TiXmlText* text = new TiXmlText("");
         text->SetCDATA(true);
         returnNode = text;
-    } else if (StringEqual(p, dtdHeader, false, encoding)) {
+    } else if (StringEqual(p, dtdHeader, false)) {
 #ifdef DEBUG_PARSER
         TIXML_LOG("XML parsing Unknown(1)\n");
 #endif
         returnNode = new TiXmlUnknown();
-    } else if (IsAlpha(*(p + 1), encoding) || *(p + 1) == '_') {
+    } else if (IsAlpha(*(p + 1)) || *(p + 1) == '_') {
 #ifdef DEBUG_PARSER
         TIXML_LOG("XML parsing Element\n");
 #endif
@@ -324,7 +313,42 @@ TiXmlNode* TiXmlNode::Identify(const char* p, TiXmlEncoding encoding) {
         // Set the parent, so it can report errors
         returnNode->parent = this;
     } else {
-        if (doc) doc->SetError(TIXML_ERROR_OUT_OF_MEMORY, 0, 0, TIXML_ENCODING_UNKNOWN);
+        if (doc) doc->SetError(TIXML_ERROR_OUT_OF_MEMORY, nullptr, nullptr, TIXML_ENCODING_UNKNOWN);
     }
     return returnNode;
+}
+
+const TiXmlElement* TiXmlNode::FirstChildElement() const {
+    for (const TiXmlNode* node = FirstChild(); node; node = node->NextSibling()) {
+        if (node->ToElement()) return node->ToElement();
+    }
+    return nullptr;
+}
+
+const TiXmlElement* TiXmlNode::FirstChildElement(std::string_view _value) const {
+    for (const TiXmlNode* node = FirstChild(_value); node; node = node->NextSibling(_value)) {
+        if (node->ToElement()) return node->ToElement();
+    }
+    return nullptr;
+}
+
+const TiXmlElement* TiXmlNode::NextSiblingElement() const {
+    for (const TiXmlNode* node = NextSibling(); node; node = node->NextSibling()) {
+        if (node->ToElement()) return node->ToElement();
+    }
+    return nullptr;
+}
+
+const TiXmlElement* TiXmlNode::NextSiblingElement(std::string_view _value) const {
+    for (const TiXmlNode* node = NextSibling(_value); node; node = node->NextSibling(_value)) {
+        if (node->ToElement()) return node->ToElement();
+    }
+    return nullptr;
+}
+
+const TiXmlDocument* TiXmlNode::GetDocument() const {
+    for (const TiXmlNode* node = this; node; node = node->parent) {
+        if (node->ToDocument()) return node->ToDocument();
+    }
+    return nullptr;
 }
