@@ -37,18 +37,18 @@ if(MSVC)
                 "The latest Visual Studio version is available at "
                 "https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx")
     endif()
-    CHECK_CXX_COMPILER_FLAG("/std:c++20" compiler_supports_cxx20)
+    CHECK_CXX_COMPILER_FLAG("/std:c++23" compiler_supports_cxx23)
 else()
-    CHECK_CXX_COMPILER_FLAG("-std=c++20" compiler_supports_cxx20)
+    CHECK_CXX_COMPILER_FLAG("-std=c++23" compiler_supports_cxx23)
 endif()
-if(NOT compiler_supports_cxx20)
-    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++20 support. "
+if(NOT compiler_supports_cxx23)
+    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++23 support. "
             "Please use a different C++ compiler.")
 endif()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
     message(FATAL_ERROR "Inviwo is only supported for 64-bit architectures. Resolve the error by deleting "
