@@ -579,13 +579,13 @@ bool BaseModule::Converter::convert(TxElement* root) {
         case 9: {
             res |= xml::changeAttributeRecursive(
                 root,
-                {{xml::Kind::processor("org.inviwo.VolumeSubset"),
+                {{xml::Kind::processor("org.inviwo.VolumeSubsample"),
                   xml::Kind::property("org.inviwo.IntMinMaxProperty")}},
                 "identifier", "subSampleFactors", "org.inviwo.IntMinMaxProperty");
 
             res |= xml::changeAttributeRecursive(
-                root, {{xml::Kind::processor("org.inviwo.VolumeSubset")}}, "type",
-                "org.inviwo.VolumeSubset", "org.inviwo.VolumeDownsample");
+                root, {{xml::Kind::processor("org.inviwo.VolumeSubsample")}}, "type",
+                "org.inviwo.VolumeSubsample", "org.inviwo.VolumeDownsample");
 
             return res;
         }
