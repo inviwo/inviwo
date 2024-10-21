@@ -73,8 +73,8 @@ std::shared_ptr<VolumeRAM> volumeStridedDownsample(const VolumeRAM* volume, size
             const auto src = srcVol->getDataTyped();
             auto dst = destVol->getDataTyped();
 
-            util::IndexMapper3D sourceMapper(srcDims);
-            util::IndexMapper3D destMapper(destDims);
+            const util::IndexMapper3D sourceMapper(srcDims);
+            const util::IndexMapper3D destMapper(destDims);
 
 #ifdef IVW_USE_OPENMP
 #pragma omp parallel for
@@ -112,8 +112,8 @@ std::shared_ptr<VolumeRAM> volumeAveragedDownsample(const VolumeRAM* volume, siz
             const auto src = srcVol->getDataTyped();
             auto dst = destVol->getDataTyped();
 
-            util::IndexMapper3D sourceMapper(srcDims);
-            util::IndexMapper3D destMapper(destDims);
+            const util::IndexMapper3D sourceMapper(srcDims);
+            const util::IndexMapper3D destMapper(destDims);
             const double samplesInv = 1.0 / static_cast<double>(glm::compMul(strides));
 
 #ifdef IVW_USE_OPENMP
