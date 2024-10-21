@@ -78,7 +78,7 @@ VolumeDownsample::VolumeDownsample()
 
 void VolumeDownsample::process() {
     const size3_t strides = [&]() {
-        size3_t s =
+        const size3_t s =
             uniform_ ? size3_t{static_cast<size_t>(strides_.get().x)} : size3_t{strides_.get()};
         return glm::clamp(s, size3_t{1}, inport_.getData()->getDimensions());
     }();
@@ -101,7 +101,7 @@ void VolumeDownsample::process() {
 std::shared_ptr<Volume> VolumeDownsample::downsample(std::shared_ptr<const Volume> source,
                                                      size3_t strides, util::DownsamplingMode mode) {
     auto volumeRam = util::volumeDownsample(source->getRepresentation<VolumeRAM>(), strides, mode);
-    auto volume = std::make_shared<Volume>(*source.get(), noData,
+    auto volume = std::make_shared<Volume>(*source, noData,
                                            VolumeConfig{.dimensions = volumeRam->getDimensions()});
     volume->addRepresentation(volumeRam);
 
