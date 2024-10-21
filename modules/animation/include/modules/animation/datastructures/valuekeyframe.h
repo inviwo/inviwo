@@ -65,7 +65,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    T value_{0};
+    T value_{};
 };
 
 template <typename T>
@@ -78,7 +78,7 @@ bool operator!=(const ValueKeyframe<T>& a, const ValueKeyframe<T>& b) {
 }
 
 template <typename T>
-ValueKeyframe<T>::ValueKeyframe(Seconds time) : BaseKeyframe{time}, value_(static_cast<T>(0)) {}
+ValueKeyframe<T>::ValueKeyframe(Seconds time) : BaseKeyframe{time}, value_{} {}
 
 template <typename T>
 ValueKeyframe<T>::ValueKeyframe(Seconds time, const T& value) : BaseKeyframe{time}, value_(value) {}
