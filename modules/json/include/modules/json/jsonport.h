@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,16 +26,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/json/io/json/propertyjsonconverterfactory.h>
+#include <modules/json/jsonmoduledefine.h>
 
-#include <modules/json/io/json/propertyjsonconverter.h>               // for PropertyJSONConverter
-#include <modules/json/io/json/propertyjsonconverterfactoryobject.h>  // for PropertyJSONConvert...
+
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+
+#include <modules/json/json.h>
+
+#include <nlohmann/json.hpp>
 
 namespace inviwo {
+using json = ::nlohmann::json;
 
-PropertyJSONConverterFactory::PropertyJSONConverterFactory() = default;
 
-PropertyJSONConverterFactory::~PropertyJSONConverterFactory() = default;
+using JSONInport = DataInport<json>;
+using JSONOutport = DataOutport<json>;
+
+
+IVW_MODULE_JSON_API void to_json(json& j, const JSONInport& df);
+IVW_MODULE_JSON_API void from_json(const json& j, JSONInport& df);
+
+IVW_MODULE_JSON_API void to_json(json& j, const JSONOutport& df);
+IVW_MODULE_JSON_API void from_json(const json& j, JSONOutport& df);
 
 }  // namespace inviwo

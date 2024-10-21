@@ -11,13 +11,18 @@ set(HEADER_FILES
     include/modules/json/io/json/optionpropertyjsonconverter.h
     include/modules/json/io/json/ordinalpropertyjsonconverter.h
     include/modules/json/io/json/ordinalrefpropertyjsonconverter.h
-    include/modules/json/io/json/propertyjsonconverter.h
-    include/modules/json/io/json/propertyjsonconverterfactory.h
-    include/modules/json/io/json/propertyjsonconverterfactoryobject.h
     include/modules/json/io/json/stringpropertyjsonconverter.h
     include/modules/json/io/json/templatepropertyjsonconverter.h
+    include/modules/json/json.h
+    include/modules/json/jsonconverter.h
+    include/modules/json/jsonconverterregistry.h
+    include/modules/json/jsoninportconverter.h
     include/modules/json/jsonmodule.h
     include/modules/json/jsonmoduledefine.h
+    include/modules/json/jsonoutportconverter.h
+    include/modules/json/jsonport.h
+    include/modules/json/jsonpropertyconverter.h
+    include/modules/json/jsonsupplier.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -27,10 +32,16 @@ set(SOURCE_FILES
     src/io/json/directorypropertyjsonconverter.cpp
     src/io/json/filepropertyjsonconverter.cpp
     src/io/json/ordinalrefpropertyjsonconverter.cpp
-    src/io/json/propertyjsonconverterfactory.cpp
-    src/io/json/propertyjsonconverterfactoryobject.cpp
     src/io/json/stringpropertyjsonconverter.cpp
+    src/json.cpp
+    src/jsonconverter.cpp
+    src/jsonconverterregistry.cpp
+    src/jsoninportconverter.cpp
     src/jsonmodule.cpp
+    src/jsonoutportconverter.cpp
+    src/jsonport.cpp
+    src/jsonpropertyconverter.cpp
+    src/jsonsupplier.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

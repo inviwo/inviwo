@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,16 +26,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/webbrowser/properties/propertywidgetceffactory.h>
+#include <modules/json/jsonmoduledefine.h>
 
-#include <modules/webbrowser/properties/propertywidgetcef.h>               // for PropertyWidgetCEF
-#include <modules/webbrowser/properties/propertywidgetceffactoryobject.h>  // for PropertyWidget...
+#include <inviwo/core/ports/outport.h>
+#include <modules/json/jsonconverterregistry.h>
+#include <nlohmann/json.hpp>
 
 namespace inviwo {
 
-PropertyWidgetCEFFactory::PropertyWidgetCEFFactory() = default;
-
-PropertyWidgetCEFFactory::~PropertyWidgetCEFFactory() = default;
+using json = ::nlohmann::json;
+using JSONOutportConverter = JSONConverterRegistry<Outport>;
 
 }  // namespace inviwo
