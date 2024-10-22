@@ -71,7 +71,7 @@ VolumePathTracer::VolumePathTracer()
     , entryPort_("entry")
     , exitPort_("exit")
     , minMaxOpacity_("VolumeMinMaxOpacity")
-    , outport_("outport")
+    , outport_("outport", DataVec4Float32::get())
     , shader_({{ShaderType::Compute, "bidirectionalvolumepathtracer.comp"}}, Shader::Build::No)
     , shaderUniform_({{ShaderType::Compute, "bidirectionalvolumepathtraceruniform.comp"}},
                      Shader::Build::No)
@@ -117,6 +117,7 @@ VolumePathTracer::VolumePathTracer()
     volumePort_.onChange([this]() { invalidateProgressiveRendering(); });
     entryPort_.onChange([this]() { invalidateProgressiveRendering(); });
     exitPort_.onChange([this]() { invalidateProgressiveRendering(); });
+    minMaxOpacity_.onChange([this]() { invalidateProgressiveRendering(); });
 
     channel_.setSerializationMode(PropertySerializationMode::All);
 
