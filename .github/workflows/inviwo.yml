@@ -96,10 +96,10 @@ jobs:
             linkage: dynamic
             configuration: Release
             targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
-          #- system: macos  # Disable mac packaging since it probably runs out of diskspace
-          #  linkage: dynamic
-          #  configuration: Release
-          #  targets: 'all package'
+          - system: macos
+            linkage: dynamic
+            configuration: Release
+            targets: 'all package'
           - system: linux
             linkage: dynamic
             configuration: Release
