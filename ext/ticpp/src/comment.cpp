@@ -35,24 +35,6 @@ TiXmlNode* TiXmlComment::Clone() const {
     return clone;
 }
 
-void TiXmlComment::StreamIn(std::istream* in, std::string* tag) {
-    while (in->good()) {
-        int c = in->get();
-        if (c <= 0) {
-            TiXmlDocument* document = GetDocument();
-            if (document) document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
-            return;
-        }
-
-        (*tag) += (char)c;
-
-        if (c == '>' && tag->at(tag->length() - 2) == '-' && tag->at(tag->length() - 3) == '-') {
-            // All is well.
-            return;
-        }
-    }
-}
-
 const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data) {
     TiXmlDocument* document = GetDocument();
     value = "";

@@ -29,45 +29,16 @@ void TiXmlText::CopyTo(TiXmlText* target) const {
 bool TiXmlText::Accept(TiXmlVisitor* visitor) const { return visitor->Visit(*this); }
 
 TiXmlNode* TiXmlText::Clone() const {
-    TiXmlText* clone = 0;
-    clone = new TiXmlText("");
+    TiXmlText* clone = new TiXmlText("");
 
-    if (!clone) return 0;
+    if (!clone) return nullptr;
 
     CopyTo(clone);
     return clone;
 }
 
-
-void TiXmlText::StreamIn(std::istream* in, std::string* tag) {
-    while (in->good()) {
-        int c = in->peek();
-        if (!cdata && (c == '<')) {
-            return;
-        }
-        if (c <= 0) {
-            TiXmlDocument* document = GetDocument();
-            if (document)
-                document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
-            return;
-        }
-
-        (*tag) += (char)c;
-        in->get();  // "commits" the peek made above
-
-        if (cdata && c == '>' && tag->size() >= 3) {
-            size_t len = tag->size();
-            if ((*tag)[len - 2] == ']' && (*tag)[len - 3] == ']') {
-                // terminator of cdata.
-                return;
-            }
-        }
-    }
-}
-
 const char* TiXmlText::Parse(const char* p, TiXmlParsingData* data) {
     value = "";
-    TiXmlDocument* document = GetDocument();
 
     if (data) {
         data->Stamp(p);
@@ -81,6 +52,7 @@ const char* TiXmlText::Parse(const char* p, TiXmlParsingData* data) {
         cdata = true;
 
         if (!StringEqual(p, startTag, false)) {
+            TiXmlDocument* document = GetDocument();
             document->SetError(TIXML_ERROR_PARSING_CDATA, p, data);
             return nullptr;
         }
@@ -101,12 +73,13 @@ const char* TiXmlText::Parse(const char* p, TiXmlParsingData* data) {
         const char* end = "<";
         p = ReadText(p, &value, ignoreWhite, end, false);
         if (p) return p - 1;  // don't truncate the '<'
-        return 0;
+        return nullptr;
     }
 }
 
 bool TiXmlText::Blank() const {
-    for (unsigned i = 0; i < value.length(); i++)
+    for (unsigned i = 0; i < value.length(); i++) {
         if (!IsWhiteSpace(value[i])) return false;
+    }
     return true;
 }

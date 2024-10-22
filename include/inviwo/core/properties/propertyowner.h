@@ -192,7 +192,6 @@ protected:
 
 private:
     Property* removeProperty(std::vector<Property*>::iterator it);
-    bool findPropsForComposites(TxElement*);
     InvalidationLevel invalidationLevel_;
 };
 

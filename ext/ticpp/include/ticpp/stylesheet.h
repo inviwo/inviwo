@@ -20,10 +20,7 @@ public:
     TiXmlStylesheetReference() : TiXmlNode(TiXmlNode::STYLESHEETREFERENCE) {}
 
     /// Constructor.
-    TiXmlStylesheetReference(const std::string& _type, const std::string& _href);
-
-    /// Construct.
-    TiXmlStylesheetReference(const char* _type, const char* _href);
+    TiXmlStylesheetReference(std::string_view _type, std::string_view _href);
 
     TiXmlStylesheetReference(const TiXmlStylesheetReference& copy);
     void operator=(const TiXmlStylesheetReference& copy);
@@ -53,8 +50,6 @@ public:
 
 protected:
     void CopyTo(TiXmlStylesheetReference* target) const;
-    // used to be public
-    virtual void StreamIn(std::istream* in, std::string* tag);
 
 private:
     std::string type;

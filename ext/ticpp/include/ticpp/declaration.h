@@ -64,8 +64,6 @@ public:
 
 protected:
     void CopyTo(TiXmlDeclaration* target) const;
-    // used to be public
-    virtual void StreamIn(std::istream* in, std::string* tag);
 
 private:
     std::string version;

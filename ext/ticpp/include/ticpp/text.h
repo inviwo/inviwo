@@ -15,20 +15,13 @@ class TICPP_API TiXmlText : public TiXmlNode {
 
 public:
     /** Constructor for text element. By default, it is treated as
-            normal, encoded text. If you want it be output as a CDATA text
-            element, set the parameter _cdata to 'true'
+        normal, encoded text. If you want it be output as a CDATA text
+        element, set the parameter _cdata to 'true'
     */
-    TiXmlText(const char* initValue) : TiXmlNode(TiXmlNode::TEXT) {
-        SetValue(initValue);
-        cdata = false;
-    }
-    virtual ~TiXmlText() {}
+    TiXmlText(std::string_view initValue, bool _cdata = false)
+        : TiXmlNode(TiXmlNode::TEXT, initValue), cdata{_cdata} {}
 
-    /// Constructor.
-    TiXmlText(const std::string& initValue) : TiXmlNode(TiXmlNode::TEXT) {
-        SetValue(initValue);
-        cdata = false;
-    }
+    virtual ~TiXmlText() {}
 
     TiXmlText(const TiXmlText& copy) : TiXmlNode(TiXmlNode::TEXT) { copy.CopyTo(this); }
     void operator=(const TiXmlText& base) { base.CopyTo(this); }
@@ -58,7 +51,6 @@ protected:
 
     bool Blank() const;  // returns true if all white space and new lines
                          // [internal use]
-    virtual void StreamIn(std::istream* in, std::string* tag);
 
 private:
     bool cdata;  // true if this should be input and output as a CDATA style text element

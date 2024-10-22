@@ -16,21 +16,10 @@
  * can be queried, and it can be cast to its more defined type.
  */
 class TICPP_API TiXmlNode : public TiXmlBase {
-    friend class TiXmlDocument;
-    friend class TiXmlElement;
+//    friend class TiXmlDocument;
+//    friend class TiXmlElement;
 
 public:
-    /** An input stream operator, for every class. Tolerant of newlines and
-     * formatting, but doesn't expect them.
-     */
-    friend std::istream& operator>>(std::istream& in, TiXmlNode& base) {
-        std::string tag;
-        tag.reserve(8 * 1000);
-        base.StreamIn(&in, &tag);
-
-        base.Parse(tag.c_str(), 0);
-        return in;
-    }
     /** An output stream operator, for every class. Note that this outputs
      * without any newlines or formatting, as opposed to Print(), which
      * includes tabs and new lines.
@@ -204,9 +193,9 @@ public:
     TiXmlNode* NextSibling() { return next; }
 
     /// Navigate to a sibling node with the given 'value'.
-    const TiXmlNode* NextSibling(std::string_view value) const;
-    TiXmlNode* NextSibling(std::string_view value) {
-        return const_cast<TiXmlNode*>((const_cast<const TiXmlNode*>(this))->NextSibling(value));
+    const TiXmlNode* NextSibling(std::string_view _value) const;
+    TiXmlNode* NextSibling(std::string_view _value) {
+        return const_cast<TiXmlNode*>((const_cast<const TiXmlNode*>(this))->NextSibling(_value));
     }
 
     /// Navigate to a sibling node.
@@ -214,9 +203,9 @@ public:
     TiXmlNode* PreviousSibling() { return prev; }
 
     /// Navigate to a sibling node.
-    const TiXmlNode* PreviousSibling(std::string_view) const;
-    TiXmlNode* PreviousSibling(std::string_view value) {
-        return const_cast<TiXmlNode*>((const_cast<const TiXmlNode*>(this))->PreviousSibling(value));
+    const TiXmlNode* PreviousSibling(std::string_view _value) const;
+    TiXmlNode* PreviousSibling(std::string_view _value) {
+        return const_cast<TiXmlNode*>((const_cast<const TiXmlNode*>(this))->PreviousSibling(_value));
     }
 
     /** Convenience function to get through elements.
@@ -233,10 +222,10 @@ public:
             Calls NextSibling and ToElement. Will skip all non-Element
             nodes. Returns 0 if there is not another element.
     */
-    const TiXmlElement* NextSiblingElement(std::string_view value) const;
-    TiXmlElement* NextSiblingElement(std::string_view value) {
+    const TiXmlElement* NextSiblingElement(std::string_view _value) const;
+    TiXmlElement* NextSiblingElement(std::string_view _value) {
         return const_cast<TiXmlElement*>(
-            (const_cast<const TiXmlNode*>(this))->NextSiblingElement(value));
+            (const_cast<const TiXmlNode*>(this))->NextSiblingElement(_value));
     }
 
     /// Convenience function to get through elements.
@@ -317,7 +306,7 @@ public:
     */
     virtual TiXmlNode* Clone() const = 0;
 
-    /** Accept a hierchical visit the nodes in the TinyXML DOM. Every node in the
+    /** Accept a hierarchical visit the nodes in the TinyXML DOM. Every node in the
         XML tree will be conditionally visited and the host will be called back
         via the TiXmlVisitor interface.
 
@@ -342,14 +331,11 @@ public:
     virtual bool Accept(TiXmlVisitor* visitor) const = 0;
 
 protected:
-    TiXmlNode(NodeType _type);
+    TiXmlNode(NodeType _type, std::string_view _value = "");
 
     // Copy to the allocated object. Shared functionality between Clone, Copy constructor,
     // and the assignment operator.
     void CopyTo(TiXmlNode* target) const;
-
-    // The real work of the input operator.
-    virtual void StreamIn(std::istream* in, std::string* tag) = 0;
 
     // Figure out what is at *p, and parse it. Returns null if it is not an xml node.
     TiXmlNode* Identify(const char* start);
