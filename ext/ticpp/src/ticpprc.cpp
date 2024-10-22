@@ -1,5 +1,7 @@
 #include <ticpp/ticpprc.h>
 
+#include <ticpp/ticpp.h>
+
 TiCppRC::TiCppRC() : privRC{this}, m_tiRC{&privRC} {
     // Spawn reference counter for this object
     // m_tiRC = new TiCppRCImp(this);

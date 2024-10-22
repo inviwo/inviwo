@@ -21,24 +21,6 @@ TiXmlNode* TiXmlUnknown::Clone() const {
     return clone;
 }
 
-void TiXmlUnknown::StreamIn(std::istream* in, std::string* tag) {
-    while (in->good()) {
-        int c = in->get();
-        if (c <= 0) {
-            if (TiXmlDocument* document = GetDocument()) {
-                document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
-            }
-            return;
-        }
-        (*tag) += (char)c;
-
-        if (c == '>') {
-            // All is well.
-            return;
-        }
-    }
-}
-
 const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data) {
     TiXmlDocument* document = GetDocument();
     p = SkipWhiteSpace(p);

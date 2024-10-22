@@ -38,7 +38,5 @@ public:
 protected:
     void CopyTo(TiXmlUnknown* target) const;
 
-    virtual void StreamIn(std::istream* in, std::string* tag);
-
 private:
 };

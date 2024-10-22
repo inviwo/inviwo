@@ -16,10 +16,7 @@ public:
     /// Create an empty document, that has no name.
     TiXmlDocument();
     /// Create a document with a name. The name of the document is also the filename of the xml.
-    TiXmlDocument(const char* documentName);
-
-    /// Constructor.
-    TiXmlDocument(const std::string& documentName);
+    TiXmlDocument(std::string_view documentName);
 
     TiXmlDocument(const TiXmlDocument& copy);
     void operator=(const TiXmlDocument& copy);
@@ -35,9 +32,9 @@ public:
     bool SaveFile() const;
     /// Load a file using the given filename. Returns true if successful.
 
-    bool LoadFile(const char* filename);
+    bool LoadFile(std::string_view filename);
     /// Save a file using the given filename. Returns true if successful.
-    bool SaveFile(const char* filename) const;
+    bool SaveFile(std::string_view filename) const;
     /** Load a file using the given FILE*. Returns true if successful. Note that this method
         doesn't stream - the entire object pointed at by the FILE*
         will be interpreted as an XML file. TinyXML doesn't stream in XML from the current
@@ -47,12 +44,8 @@ public:
     /// Save a file using the given FILE*. Returns true if successful.
     bool SaveFile(FILE*) const;
 
-    bool LoadFile(const std::string& filename) { return LoadFile(filename.c_str()); }
-    bool SaveFile(const std::string& filename) const { return SaveFile(filename.c_str()); }
 
-    /** Parse the given null terminated block of xml data. Passing in an encoding to this
-        method (either TIXML_ENCODING_LEGACY or TIXML_ENCODING_UTF8 will force TinyXml
-        to use that encoding, regardless of what TinyXml might otherwise try to detect.
+    /** Parse the given null terminated block of xml data.
     */
     virtual const char* Parse(const char* p, TiXmlParsingData* data = nullptr);
 
@@ -83,7 +76,7 @@ public:
         (memory errors, for example, have no row/column) or the parser lost the error. (An
         error in the error reporting, in that case.)
 
-            @sa SetTabSize, Row, Column
+        @sa SetTabSize, Row, Column
     */
     int ErrorRow() const { return errorLocation.row + 1; }
 
@@ -126,7 +119,6 @@ public:
         errorId = 0;
         errorDesc = "";
         errorLocation.row = errorLocation.col = 0;
-        // errorLocation.last = 0;
     }
 
     /** Write the document to standard out using formatted printing ("pretty print"). */
@@ -148,8 +140,6 @@ public:
 protected:
     virtual TiXmlNode* Clone() const;
 
-    virtual void StreamIn(std::istream* in, std::string* tag);
-
 private:
     void CopyTo(TiXmlDocument* target) const;
 
@@ -158,5 +148,4 @@ private:
     std::string errorDesc;
     int tabsize;
     TiXmlCursor errorLocation;
-    bool useMicrosoftBOM;  // the UTF-8 BOM were found when read. Note this, and try to write.
 };

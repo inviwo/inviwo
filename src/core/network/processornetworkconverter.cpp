@@ -375,17 +375,16 @@ void ProcessorNetworkConverter::updatePropertyLinks(TxElement* node) {
 }
 
 void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
-    struct RefManager : public ticpp::Visitor {
-        virtual bool VisitEnter(const TxElement& node, const TxAttribute*) override {
-            const auto& id = node.GetAttribute("id");
-            if (!id.empty()) {
-                ids_.push_back(id);
+    struct RefManager : public TiXmlVisitor {
+        virtual bool VisitEnter(const TiXmlElement& node, const TiXmlAttribute*) override {
+            if (const auto* id = node.Attribute("id")) {
+                ids_.push_back(*id);
                 std::sort(ids_.begin(), ids_.end());
             }
             return true;
         };
-        virtual bool VisitEnter(const TxDocument& doc) override {
-            return ticpp::Visitor::VisitEnter(doc);
+        virtual bool VisitEnter(const TiXmlDocument& doc) override {
+            return true;
         }
         std::string getNewRef() {
             std::string ref("ref0");
@@ -400,8 +399,8 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
     };
 
     RefManager refs;
+    root->GetXmlPointer()->Accept(&refs);
 
-    root->Accept(&refs);
 
     TxNode* processorlist = root->FirstChild("Processors");
     std::map<std::string, TxElement*> processorsOutports;

@@ -89,26 +89,6 @@ TiXmlNode* TiXmlDeclaration::Clone() const {
     return clone;
 }
 
-
-
-void TiXmlDeclaration::StreamIn(std::istream* in, std::string* tag) {
-    while (in->good()) {
-        int c = in->get();
-        if (c <= 0) {
-            TiXmlDocument* document = GetDocument();
-            if (document)
-                document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
-            return;
-        }
-        (*tag) += (char)c;
-
-        if (c == '>') {
-            // All is well.
-            return;
-        }
-    }
-}
-
 const char* TiXmlDeclaration::Parse(const char* p, TiXmlParsingData* data) {
     p = SkipWhiteSpace(p);
     // Find the beginning, find the end, and look for

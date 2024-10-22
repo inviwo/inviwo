@@ -29,7 +29,7 @@
 
 #include <inviwo/core/io/serialization/nodedebugger.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/io/serialization/ticpp.h>
+#include <ticpp/tinyxml.h>
 
 #include <sstream>
 
@@ -42,19 +42,6 @@ NodeDebugger::NodeDebugger(TiXmlElement* elem) {
         nodes_.push_back(Node(elem->Value(), id ? *id : std::string{},
                               type ? *type : std::string{}, elem->Row()));
         elem = elem->Parent()->ToElement();
-    }
-}
-
-NodeDebugger::NodeDebugger(TxElement* elem) {
-    while (elem) {
-        nodes_.push_back(Node(elem->Value(), elem->GetAttribute("identifier"),
-                              elem->GetAttribute("type"), elem->Row()));
-        TxNode* node = elem->Parent(false);
-        if (node) {
-            elem = dynamic_cast<TxElement*>(node);
-        } else {
-            elem = nullptr;
-        }
     }
 }
 

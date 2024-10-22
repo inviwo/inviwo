@@ -325,29 +325,24 @@ constexpr bool canDeserialize() {
            util::is_detected_v<isDeserializable, T> || std::is_enum_v<T>;
 }
 
-IVW_CORE_API const std::string& getAttribute(TxElement* node, std::string_view key);
-IVW_CORE_API const std::string& getAttribute(TiXmlElement* node, std::string_view key);
+IVW_CORE_API const std::string& getAttribute(TiXmlElement& node, std::string_view key);
 IVW_CORE_API const std::string* attribute(TiXmlElement* node, std::string_view key);
 
 template <typename T>
-void getNodeAttribute(TxElement* node, std::string_view key, T& dest) {
-    if (const auto& str = detail::getAttribute(node, key); !str.empty()) {
-        detail::fromStr(str, dest);
+void getNodeAttribute(TiXmlElement* node, std::string_view key, T& dest) {
+    if (const auto* str = attribute(node, key)) {
+        detail::fromStr(*str, dest);
     }
 }
-
 template <typename T>
-void getNodeAttribute(TiXmlElement* node, std::string_view key, T& dest) {
-    if (auto* str = attribute(node, key)) {
+void getNodeAttribute(TiXmlElement& node, std::string_view key, T& dest) {
+    if (const auto* str = attribute(&node, key)) {
         detail::fromStr(*str, dest);
     }
 }
 
-
-IVW_CORE_API void forEachChild(TxElement* node, std::string_view key,
-                               const std::function<void(TxElement*)>& func);
 IVW_CORE_API void forEachChild(TiXmlElement* node, std::string_view key,
-                               const std::function<void(TxElement*)>& func);
+                               const std::function<void(TiXmlElement&)>& func);
 
 }  // namespace detail
 
@@ -372,7 +367,7 @@ public:
 
     std::string_view getItemKey() const { return itemKey_; }
 
-    void deserialize(Deserializer& d, TxElement* node, size_t ind) {
+    void deserialize(Deserializer& d, TiXmlElement& node, size_t ind) {
         auto item = valueGetter_(idGetter_(node), ind);
         if (item.doDeserialize) {
             try {
@@ -392,7 +387,7 @@ private:
 
 namespace util {
 
-constexpr auto defaultIdGetter = [](TxElement* node) -> decltype(auto) {
+constexpr auto defaultIdGetter = [](TiXmlElement& node) -> decltype(auto) {
     return inviwo::detail::getAttribute(node, "identifier");
 };
 
@@ -654,7 +649,7 @@ public:
                     return {filter_(id, ind), tmp, [&, id](T& val) { onNewItem_(id, val); }};
                 }
             },
-            [&](TxElement* node) {
+            [&](TiXmlElement& node) {
                 return identifierTransform_(::inviwo::detail::getAttribute(node, attribKey_));
             });
 
@@ -802,7 +797,7 @@ void Deserializer::deserialize(std::string_view key, std::vector<T*>& vector,
     if (!vectorNodeSwitch) return;
 
     size_t i = 0;
-    detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
+    detail::forEachChild(rootElement_, itemKey, [&](TiXmlElement& child) {
         // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
         NodeSwitch elementNodeSwitch(*this, child, false);
@@ -835,24 +830,25 @@ void Deserializer::deserialize(std::string_view key, std::vector<std::unique_ptr
     if (!vectorNodeSwitch) return;
 
     size_t i = 0;
-    detail::forEachChild(rootElement_, itemKey,
-                         [&](TxElement* child) {  // In the next deserialization call do not fetch
-                                                  // the "child" since we are looping...
-                             // hence the "false" as the last arg.
-                             NodeSwitch elementNodeSwitch(*this, child, false);
-                             try {
-                                 if (i < vector.size()) {
-                                     deserialize(itemKey, vector[i]);
-                                 } else {
-                                     std::unique_ptr<T> item;
-                                     deserialize(itemKey, item);
-                                     vector.emplace_back(std::move(item));
-                                 }
-                             } catch (...) {
-                                 handleError(IVW_CONTEXT);
-                             }
-                             i++;
-                         });
+    detail::forEachChild(
+        rootElement_, itemKey,
+        [&](TiXmlElement& child) {  // In the next deserialization call do not fetch
+                                    // the "child" since we are looping...
+            // hence the "false" as the last arg.
+            NodeSwitch elementNodeSwitch(*this, child, false);
+            try {
+                if (i < vector.size()) {
+                    deserialize(itemKey, vector[i]);
+                } else {
+                    std::unique_ptr<T> item;
+                    deserialize(itemKey, item);
+                    vector.emplace_back(std::move(item));
+                }
+            } catch (...) {
+                handleError(IVW_CONTEXT);
+            }
+            i++;
+        });
 }
 
 template <typename T, typename C>
@@ -866,7 +862,7 @@ void Deserializer::deserialize(std::string_view key, std::vector<T*>& vector,
 
     auto lastInsertion = vector.begin();
 
-    detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
+    detail::forEachChild(rootElement_, itemKey, [&](TiXmlElement& child) {
         identifier.setKey(child);
         auto it = std::find_if(vector.begin(), vector.end(), identifier);
 
@@ -903,7 +899,7 @@ void Deserializer::deserialize(std::string_view key, std::vector<T>& vector,
     if (!vectorNodeSwitch) return;
 
     size_t i = 0;
-    detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
+    detail::forEachChild(rootElement_, itemKey, [&](TiXmlElement& child) {
         // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
         NodeSwitch elementNodeSwitch(*this, child, false);
@@ -930,7 +926,7 @@ void Deserializer::deserialize(std::string_view key, std::unordered_set<T>& set,
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
 
-    detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
+    detail::forEachChild(rootElement_, itemKey, [&](TiXmlElement& child) {
         // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
         NodeSwitch elementNodeSwitch(*this, child, false);
@@ -953,24 +949,25 @@ void Deserializer::deserialize(std::string_view key, std::list<T>& container,
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
     size_t i = 0;
-    detail::forEachChild(rootElement_, itemKey,
-                         [&](TxElement* child) {  // In the next deserialization call do not fetch
-                                                  // the "child" since we are looping...
-                             // hence the "false" as the last arg.
-                             NodeSwitch elementNodeSwitch(*this, child, false);
-                             try {
-                                 if (container.size() <= i) {
-                                     T item;
-                                     deserialize(itemKey, item);
-                                     container.push_back(item);
-                                 } else {
-                                     deserialize(itemKey, *std::next(container.begin(), i));
-                                 }
-                             } catch (...) {
-                                 handleError(IVW_CONTEXT);
-                             }
-                             i++;
-                         });
+    detail::forEachChild(
+        rootElement_, itemKey,
+        [&](TiXmlElement& child) {  // In the next deserialization call do not fetch
+                                    // the "child" since we are looping...
+            // hence the "false" as the last arg.
+            NodeSwitch elementNodeSwitch(*this, child, false);
+            try {
+                if (container.size() <= i) {
+                    T item;
+                    deserialize(itemKey, item);
+                    container.push_back(item);
+                } else {
+                    deserialize(itemKey, *std::next(container.begin(), i));
+                }
+            } catch (...) {
+                handleError(IVW_CONTEXT);
+            }
+            i++;
+        });
 }
 
 template <typename T, size_t N>
@@ -982,23 +979,24 @@ void Deserializer::deserialize(std::string_view key, std::array<T, N>& cont,
     if (!vectorNodeSwitch) return;
 
     size_t i = 0;
-    detail::forEachChild(rootElement_, itemKey,
-                         [&](TxElement* child) {  // In the next deserialization call do not fetch
-                                                  // the "child" since we are looping...
-                             // hence the "false" as the last arg.
-                             NodeSwitch elementNodeSwitch(*this, child, false);
-                             try {
-                                 if (i < cont.size()) {
-                                     deserialize(itemKey, cont[i]);
-                                 } else {
-                                     throw SerializationException(
-                                         "To many elements found for std::array", IVW_CONTEXT, key);
-                                 }
-                             } catch (...) {
-                                 handleError(IVW_CONTEXT);
-                             }
-                             i++;
-                         });
+    detail::forEachChild(
+        rootElement_, itemKey,
+        [&](TiXmlElement& child) {  // In the next deserialization call do not fetch
+                                    // the "child" since we are looping...
+            // hence the "false" as the last arg.
+            NodeSwitch elementNodeSwitch(*this, child, false);
+            try {
+                if (i < cont.size()) {
+                    deserialize(itemKey, cont[i]);
+                } else {
+                    throw SerializationException("To many elements found for std::array",
+                                                 IVW_CONTEXT, key);
+                }
+            } catch (...) {
+                handleError(IVW_CONTEXT);
+            }
+            i++;
+        });
 }
 
 template <typename K, typename V, typename C, typename A>
@@ -1010,7 +1008,7 @@ void Deserializer::deserialize(std::string_view key, std::map<K, V, C, A>& map,
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
 
-    detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
+    detail::forEachChild(rootElement_, itemKey, [&](TiXmlElement& child) {
         // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
         NodeSwitch elementNodeSwitch(*this, child, false);
@@ -1039,24 +1037,25 @@ void Deserializer::deserialize(std::string_view key, std::map<K, V*, C, A>& map,
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
 
-    detail::forEachChild(rootElement_, itemKey,
-                         [&](TxElement* child) {  // In the next deserialization call do not fetch
-                                                  // the "child" since we are looping...
-                             // hence the "false" as the last arg.
-                             NodeSwitch elementNodeSwitch(*this, child, false);
-                             K childkey;
-                             detail::getNodeAttribute(child, comparisonAttribute, childkey);
+    detail::forEachChild(
+        rootElement_, itemKey,
+        [&](TiXmlElement& child) {  // In the next deserialization call do not fetch
+                                    // the "child" since we are looping...
+            // hence the "false" as the last arg.
+            NodeSwitch elementNodeSwitch(*this, child, false);
+            K childkey;
+            detail::getNodeAttribute(child, comparisonAttribute, childkey);
 
-                             auto it = map.find(childkey);
-                             V* value = (it != map.end() ? it->second : nullptr);
+            auto it = map.find(childkey);
+            V* value = (it != map.end() ? it->second : nullptr);
 
-                             try {
-                                 deserialize(itemKey, value);
-                                 map[childkey] = value;
-                             } catch (...) {
-                                 handleError(IVW_CONTEXT);
-                             }
-                         });
+            try {
+                deserialize(itemKey, value);
+                map[childkey] = value;
+            } catch (...) {
+                handleError(IVW_CONTEXT);
+            }
+        });
 }
 
 // unique_ptr specialization
@@ -1069,7 +1068,7 @@ void Deserializer::deserialize(std::string_view key, std::map<K, std::unique_ptr
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
 
-    detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
+    detail::forEachChild(rootElement_, itemKey, [&](TiXmlElement& child) {
         // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
         NodeSwitch elementNodeSwitch(*this, child, false);
@@ -1100,19 +1099,19 @@ void Deserializer::deserialize(std::string_view key, std::unordered_map<K, V, H,
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
 
-    detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
+    detail::forEachChild(rootElement_, itemKey, [&](TiXmlElement& child) {
         // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
         NodeSwitch elementNodeSwitch(*this, child, false);
-        K childkey;
-        detail::getNodeAttribute(child, comparisonAttribute, childkey);
+        K childKey;
+        detail::getNodeAttribute(child, comparisonAttribute, childKey);
 
         V value;
-        auto it = map.find(childkey);
+        auto it = map.find(childKey);
         if (it != map.end()) value = it->second;
         try {
             deserialize(itemKey, value);
-            map[childkey] = value;
+            map[childKey] = value;
         } catch (...) {
             handleError(IVW_CONTEXT);
         }
@@ -1143,22 +1142,22 @@ void Deserializer::deserialize(std::string_view key, T*& data) {
     auto keyNode = retrieveChild(key);
     if (!keyNode) return;
 
-    const auto& type_attr = detail::getAttribute(keyNode, SerializeConstants::TypeAttribute);
+    const auto* typeAttr = detail::attribute(keyNode, SerializeConstants::TypeAttribute);
 
-    if (!data && !type_attr.empty()) {
+    if (!data && typeAttr) {
         try {
-            data = getRegisteredType<T>(type_attr);
+            data = getRegisteredType<T>(*typeAttr);
         } catch (Exception& e) {
             NodeDebugger error(keyNode);
             throw SerializationException(
                 "Error trying to create " + error.toString(0) + ". Reason:\n" + e.getMessage(),
-                e.getContext(), key, type_attr, error[0].identifier, keyNode);
+                e.getContext(), key, *typeAttr, error[0].identifier, keyNode);
         }
         if (!data) {
             NodeDebugger error(keyNode);
             throw SerializationException("Could not create " + error.toString(0) + ". Reason: \"" +
-                                             type_attr + "\" Not found in factory.",
-                                         IVW_CONTEXT, key, type_attr, error[0].identifier, keyNode);
+                                             *typeAttr + "\" Not found in factory.",
+                                         IVW_CONTEXT, key, *typeAttr, error[0].identifier, keyNode);
         }
     } else if (!data) {
         try {
@@ -1167,13 +1166,13 @@ void Deserializer::deserialize(std::string_view key, T*& data) {
             NodeDebugger error(keyNode);
             throw SerializationException(
                 "Error trying to create " + error.toString(0) + ". Reason:\n" + e.getMessage(),
-                e.getContext(), key, type_attr, error[0].identifier, keyNode);
+                e.getContext(), key, "", error[0].identifier, keyNode);
         }
         if (!data) {
             NodeDebugger error(keyNode);
             throw SerializationException(
                 "Could not create " + error.toString(0) + ". Reason: No default constructor found.",
-                IVW_CONTEXT, key, type_attr, error[0].identifier, keyNode);
+                IVW_CONTEXT, key, "", error[0].identifier, keyNode);
         }
     }
 
@@ -1188,9 +1187,9 @@ void Deserializer::deserialize(std::string_view key, std::unique_ptr<T>& data) {
 
     if constexpr (util::HasGetClassIdentifier<T>::value) {
         if (auto keyNode = retrieveChild(key)) {
-            const std::string& type_attr =
-                detail::getAttribute(keyNode, SerializeConstants::TypeAttribute);
-            if (data && !type_attr.empty() && type_attr != data->getClassIdentifier()) {
+            const std::string* typeAttr =
+                detail::attribute(keyNode, SerializeConstants::TypeAttribute);
+            if (data && typeAttr && *typeAttr != data->getClassIdentifier()) {
                 // object has wrong type, delete it and let the deserialization create a new object
                 // with the correct type
                 data.reset();
@@ -1214,10 +1213,10 @@ void Deserializer::deserialize(std::string_view key, std::shared_ptr<T>& data) {
     auto keyNode = retrieveChild(key);
     if (!keyNode) return;
 
-    const std::string& typeId = detail::getAttribute(keyNode, SerializeConstants::TypeAttribute);
+    const auto* typeId = detail::attribute(keyNode, SerializeConstants::TypeAttribute);
 
     if constexpr (util::HasGetClassIdentifier<T>::value) {
-        if (data && !typeId.empty() && typeId != data->getClassIdentifier()) {
+        if (data && typeId && *typeId != data->getClassIdentifier()) {
             // object has wrong type, delete it and let the deserialization create a new object
             // with the correct type
             data.reset();
@@ -1225,28 +1224,28 @@ void Deserializer::deserialize(std::string_view key, std::shared_ptr<T>& data) {
     }
 
     if (!data) {
-        if (typeId.empty()) {
+        if (!typeId) {
             try {
                 data.reset(getNonRegisteredType<T>());
             } catch (Exception& e) {
                 NodeDebugger error(keyNode);
                 throw SerializationException(
                     "Error trying to create " + error.toString(0) + ". Reason:\n" + e.getMessage(),
-                    e.getContext(), key, typeId, error[0].identifier, keyNode);
+                    e.getContext(), key, "", error[0].identifier, keyNode);
             }
             if (!data) {
                 NodeDebugger error(keyNode);
                 throw SerializationException("Could not create " + error.toString(0) +
                                                  ". Reason: No default constructor found.",
-                                             IVW_CONTEXT, key, typeId, error[0].identifier,
+                                             IVW_CONTEXT, key, "", error[0].identifier,
                                              keyNode);
             }
         } else {
             try {
                 for (auto base : registeredFactories_) {
-                    if (base->hasKey(typeId)) {
+                    if (base->hasKey(*typeId)) {
                         if (auto factory = dynamic_cast<Factory<T, std::string_view>*>(base)) {
-                            if ((data = factory->createShared(typeId))) {
+                            if ((data = factory->createShared(*typeId))) {
                                 break;
                             }
                         }
@@ -1256,14 +1255,14 @@ void Deserializer::deserialize(std::string_view key, std::shared_ptr<T>& data) {
                 NodeDebugger error(keyNode);
                 throw SerializationException(
                     "Error trying to create " + error.toString(0) + ". Reason:\n" + e.getMessage(),
-                    e.getContext(), key, typeId, error[0].identifier, keyNode);
+                    e.getContext(), key, *typeId, error[0].identifier, keyNode);
             }
             if (!data) {
                 NodeDebugger error(keyNode);
                 throw SerializationException(
-                    "Could not create " + error.toString(0) + ". Reason: \"" + typeId +
+                    "Could not create " + error.toString(0) + ". Reason: \"" + *typeId +
                         "\" Not found in factory.",
-                    IVW_CONTEXT, key, typeId, error[0].identifier, keyNode);
+                    IVW_CONTEXT, key, *typeId, error[0].identifier, keyNode);
             }
         }
     }
@@ -1280,7 +1279,7 @@ void Deserializer::deserialize(std::string_view key,
     if (!vectorNodeSwitch) return;
     size_t i = 0;
 
-    detail::forEachChild(rootElement_, container.getItemKey(), [&](TxElement* child) {
+    detail::forEachChild(rootElement_, container.getItemKey(), [&](TiXmlElement& child) {
         // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
         NodeSwitch elementNodeSwitch(*this, child, false);
