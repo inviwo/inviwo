@@ -23,7 +23,7 @@ public:
     // Write this Comment to a FILE stream.
     virtual void Print(FILE* cfile, int depth) const;
 
-    /*	Attribtue parsing starts: at the ! of the !--
+    /*	Attribute parsing starts: at the ! of the !--
         returns: next char past '>'
     */
     virtual const char* Parse(const char* p, TiXmlParsingData* data);
@@ -38,7 +38,4 @@ public:
 
 protected:
     void CopyTo(TiXmlComment* target) const;
-
-    // used to be public
-    virtual void StreamIn(std::istream* in, std::string* tag);
 };

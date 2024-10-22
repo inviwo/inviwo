@@ -9,16 +9,19 @@
 #include <string_view>
 #include <array>
 #include <cassert>
+#include <sstream>
 
 /**	Internal structure for tracking location of items
  * in the XML file.
  */
 struct TICPP_API TiXmlCursor {
-    TiXmlCursor() { Clear(); }
-    void Clear() { row = col = -1; }
+    void Clear() {
+        row = -1;
+        col = -1;
+    }
 
-    int row;  // 0 based.
-    int col;  // 0 based.
+    int row = -1;  // 0 based.
+    int col = -1;  // 0 based.
 };
 
 /**
@@ -51,7 +54,7 @@ class TICPP_API TiXmlBase : public TiCppRC {
     friend class TiXmlDocument;
 
 public:
-    TiXmlBase() : userData(0) {}
+    TiXmlBase() {}
     TiXmlBase(const TiXmlBase&) = delete;
     TiXmlBase& operator=(const TiXmlBase& base) = delete;
     virtual ~TiXmlBase() {}
@@ -99,10 +102,6 @@ public:
     int Row() const { return location.row + 1; }
     int Column() const { return location.col + 1; }  ///< See Row()
 
-    void SetUserData(void* user) { userData = user; }     ///< Set a pointer to arbitrary user data.
-    void* GetUserData() { return userData; }              ///< Get a pointer to arbitrary user data.
-    const void* GetUserData() const { return userData; }  ///< Get a pointer to arbitrary user data.
-
     // Table that returs, for a given lead byte, the total number of bytes
     // in the UTF-8 sequence.
     static const int utf8ByteTable[256];
@@ -112,7 +111,7 @@ public:
     /** Expands entities in a string. Note this should not contain the tag's '<', '>', etc,
      * or they will be transformed into entities!
      */
-    static void EncodeString(const std::string& str, std::string* out);
+    static void EncodeString(const std::string_view str, std::string* out);
 
     enum {
         TIXML_NO_ERROR = 0,
@@ -137,6 +136,7 @@ public:
     };
 
 protected:
+
     static const char* SkipWhiteSpace(const char*);
     inline static bool IsWhiteSpace(char c) {
         return (isspace((unsigned char)c) || c == '\n' || c == '\r');
@@ -158,11 +158,11 @@ protected:
     /*	Reads text. Returns a pointer past the given end tag.
      * Wickedly complex options, but it keeps the (sensitive) code in one place.
      */
-    static const char* ReadText(const char* in,           // where to start
-                                std::string* text,        // the string read
-                                bool ignoreWhiteSpace,    // whether to keep the white space
-                                const char* endTag,       // what ends this text
-                                bool ignoreCase);         // whether to ignore case in the end tag
+    static const char* ReadText(const char* in,         // where to start
+                                std::string* text,      // the string read
+                                bool ignoreWhiteSpace,  // whether to keep the white space
+                                const char* endTag,     // what ends this text
+                                bool ignoreCase);       // whether to ignore case in the end tag
 
     // If an entity has been found, transform it into a character.
     static const char* GetEntity(const char* in, char* value, int* length);
@@ -173,7 +173,6 @@ protected:
         assert(p);
         *length = utf8ByteTable[*((const unsigned char*)p)];
         assert(*length >= 0 && *length < 5);
-
 
         if (*length == 1) {
             if (*p == '&') return GetEntity(p, _value, length);
@@ -201,9 +200,6 @@ protected:
     static const char* errorString[TIXML_ERROR_STRING_COUNT];
 
     TiXmlCursor location;
-
-    /// Field containing a generic user pointer
-    void* userData;
 
     // None of these methods are reliable for any language except English.
     // Good for approximation, not great for accuracy.

@@ -25,7 +25,7 @@ bool TiXmlPrinter::VisitEnter(const TiXmlElement& element, const TiXmlAttribute*
 
     for (const TiXmlAttribute* attrib = firstAttribute; attrib; attrib = attrib->Next()) {
         buffer += " ";
-        attrib->Print(0, 0, &buffer);
+        attrib->Print(&buffer, 0);
     }
 
     if (!element.FirstChild()) {

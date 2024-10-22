@@ -7,7 +7,7 @@
 
 bool TiXmlBase::condenseWhiteSpace = true;
 
-void TiXmlBase::EncodeString(const std::string& str, std::string* outString) {
+void TiXmlBase::EncodeString(const std::string_view str, std::string* outString) {
     int i = 0;
 
     while (i < (int)str.length()) {
@@ -134,14 +134,17 @@ void TiXmlBase::ConvertUTF32ToUTF8(unsigned long input, char* output, int* lengt
             --output;
             *output = (char)((input | BYTE_MARK) & BYTE_MASK);
             input >>= 6;
+            [[fallthrough]];
         case 3:
             --output;
             *output = (char)((input | BYTE_MARK) & BYTE_MASK);
             input >>= 6;
+            [[fallthrough]];
         case 2:
             --output;
             *output = (char)((input | BYTE_MARK) & BYTE_MASK);
             input >>= 6;
+            [[fallthrough]];
         case 1:
             --output;
             *output = (char)(input | FIRST_BYTE_MARK[*length]);
@@ -154,10 +157,11 @@ bool TiXmlBase::IsAlpha(int anyByte) {
     // to figure out alphabetical vs. not across encoding. So take a very
     // conservative approach.
 
-    if (anyByte < 127)
+    if (anyByte < 127) {
         return std::isalpha(anyByte);
-    else
+    } else {
         return true;  // What else to do? The unicode set is huge...get the english ones right.
+    }
 }
 
 bool TiXmlBase::IsAlphaNum(int anyByte) {
@@ -166,10 +170,11 @@ bool TiXmlBase::IsAlphaNum(int anyByte) {
     // to figure out alhabetical vs. not across encoding. So take a very
     // conservative approach.
 
-    if (anyByte < 127)
+    if (anyByte < 127) {
         return std::isalnum(anyByte);
-    else
+    } else {
         return true;  // What else to do? The unicode set is huge...get the english ones right.
+    }
 }
 
 const char* TiXmlBase::SkipWhiteSpace(const char* p) {
@@ -204,7 +209,7 @@ const char* TiXmlBase::SkipWhiteSpace(const char* p) {
     return p;
 }
 
-/*static*/ bool TiXmlBase::StreamWhiteSpace(std::istream* in, std::string* tag) {
+bool TiXmlBase::StreamWhiteSpace(std::istream* in, std::string* tag) {
     for (;;) {
         if (!in->good()) return false;
 
@@ -216,8 +221,7 @@ const char* TiXmlBase::SkipWhiteSpace(const char* p) {
     }
 }
 
-/*static*/ bool TiXmlBase::StreamTo(std::istream* in, int character, std::string* tag) {
-    // assert( character > 0 && character < 128 );	// else it won't work in utf-8
+bool TiXmlBase::StreamTo(std::istream* in, int character, std::string* tag) {
     while (in->good()) {
         int c = in->peek();
         if (c == character) return true;
@@ -263,7 +267,6 @@ const char* TiXmlBase::ReadName(const char* p, std::string* name) {
 const char* TiXmlBase::GetEntity(const char* p, char* value, int* length) {
     // Presume an entity, and pull it out.
     std::string ent;
-    int i;
     *length = 0;
 
     if (*(p + 1) && *(p + 1) == '#' && *(p + 2)) {
@@ -324,7 +327,7 @@ const char* TiXmlBase::GetEntity(const char* p, char* value, int* length) {
     }
 
     // Now try to match it.
-    for (i = 0; i < entity.size(); ++i) {
+    for (size_t i = 0; i < entity.size(); ++i) {
         if (strncmp(entity[i].str.data(), p, entity[i].str.size()) == 0) {
             *value = entity[i].chr;
             *length = 1;

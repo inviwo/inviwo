@@ -102,48 +102,6 @@ class TICPP_API Text;
 class TICPP_API Comment;
 class TICPP_API Attribute;
 
-/** Wrapper around TiXmlVisitor */
-class TICPP_API Visitor : public TiXmlVisitor {
-public:
-    // Overload the TiXmlVisitor functions, wrap objects, call ticpp::Visitor functions
-    /// @internal
-    virtual bool VisitEnter(const TiXmlDocument& doc) final;
-    /// @internal
-    virtual bool VisitExit(const TiXmlDocument& doc) final;
-    /// @internal
-    virtual bool VisitEnter(const TiXmlElement& element,
-                            const TiXmlAttribute* firstAttribute) final;
-    /// @internal
-    virtual bool VisitExit(const TiXmlElement& element) final;
-    /// @internal
-    virtual bool Visit(const TiXmlDeclaration& declaration) final;
-    /// @internal
-    virtual bool Visit(const TiXmlStylesheetReference& stylesheet) final;
-    /// @internal
-    virtual bool Visit(const TiXmlText& text) final;
-    /// @internal
-    virtual bool Visit(const TiXmlComment& comment) final;
-
-    /// Visit a document.
-    virtual bool VisitEnter(const Document& /*doc*/) { return true; }
-    /// Visit a document.
-    virtual bool VisitExit(const Document& /*doc*/) { return true; }
-    /// Visit an element.
-    virtual bool VisitEnter(const Element& /*element*/, const Attribute* /*firstAttribute*/) {
-        return true;
-    }
-    /// Visit an element.
-    virtual bool VisitExit(const Element& /*element*/) { return true; }
-    /// Visit a declaration
-    virtual bool Visit(const Declaration& /*declaration*/) { return true; }
-    /// Visit a stylesheet reference
-    virtual bool Visit(const StylesheetReference& /*stylesheet*/) { return true; }
-    /// Visit a text node
-    virtual bool Visit(const Text& /*text*/) { return true; }
-    /// Visit a comment node
-    virtual bool Visit(const Comment& /*comment*/) { return true; }
-};
-
 /** Wrapper around TiXmlBase */
 class TICPP_API Base {
 public:
@@ -919,14 +877,6 @@ public:
     bool Accept(TiXmlVisitor* visitor) const;
 
     /**
-    Stream input operator.
-    */
-    friend std::istream& operator>>(std::istream& in, Node& base) {
-        in >> *base.GetTiXmlPointer();
-        return in;
-    }
-
-    /**
     Stream output operator.
     */
     friend std::ostream& operator<<(std::ostream& out, const Node& base) {
@@ -1395,33 +1345,7 @@ public:
         }
     }
 
-    /**
-    Sets an attribute of name to a given value.
-    The attribute will be created if it does not exist, or changed if it does.
-    Uses ToString to convert the @a value to a string, so there is no need to use any other
-    SetAttribute methods.
-
-    @see GetAttribute
-    */
-    template <class T>
-    void SetAttribute(const std::string& name, const T& value) {
-        ValidatePointer();
-        if constexpr (std::is_same_v<T, std::string>) {
-            m_tiXmlPointer->SetAttribute(name, value);
-        } else {
-            m_tiXmlPointer->SetAttribute(name, ToString(value));
-        }
-    }
-
-    void SetAttribute(const char* name, const char* value) {
-        ValidatePointer();
-        m_tiXmlPointer->SetAttribute(name, value);
-    }
     void SetAttribute(std::string_view name, std::string_view value) {
-        ValidatePointer();
-        m_tiXmlPointer->SetAttribute(name, value);
-    }
-    void SetAttribute(const char* name, int value) {
         ValidatePointer();
         m_tiXmlPointer->SetAttribute(name, value);
     }
@@ -1547,27 +1471,6 @@ public:
 
     /**
     Gets an attribute of @a name from an element, if it doesn't exist it will return the
-    defaultValue. Uses FromString to convert the string to the type of choice.
-
-    @param name			The name of the attribute you are querying.
-    @param value		[OUT] The container for the returned value.
-    @param defaultValue	What to put in @a value if there is no attribute in this element.
-    @throws Exception
-
-    @see GetAttribute
-    */
-    template <class T, class DefaulT>
-    void GetAttributeOrDefault(const std::string& name, T* value,
-                               const DefaulT& defaultValue) const {
-        if (auto* str = GetAttributePtr(name)) {
-            FromString(*str, value);
-        } else {
-            *value = defaultValue;
-        }
-    }
-
-    /**
-    Gets an attribute of @a name from an element, if it doesn't exist it will return the
     defaultValue.
 
     @param name			The name of the attribute you are querying.
@@ -1577,11 +1480,6 @@ public:
     */
     const std::string& GetAttributeOrDefault(std::string_view name,
                                              const std::string& defaultValue) const;
-
-    [[deprecated(
-        "Use GetAttributeOrDefault(std::string_view, const std::string&) or "
-        "GetAttribute(std::string_view) or GetAttributePtr(std::string_view)")]] std::string
-    GetAttributeOrDefault(const std::string_view name, std::string&& defaultValue) const;
 
     /**
     Returns an attribute of @a name from an element.

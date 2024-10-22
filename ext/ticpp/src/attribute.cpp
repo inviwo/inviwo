@@ -8,79 +8,50 @@
 const TiXmlAttribute* TiXmlAttribute::Next() const {
     // We are using knowledge of the sentinel. The sentinel
     // have a value or name.
-    if (next->value.empty() && next->name.empty()) return 0;
+    if (next->value.empty() && next->name.empty()) return nullptr;
     return next;
 }
 
 const TiXmlAttribute* TiXmlAttribute::Previous() const {
     // We are using knowledge of the sentinel. The sentinel
     // have a value or name.
-    if (prev->value.empty() && prev->name.empty()) return 0;
+    if (prev->value.empty() && prev->name.empty()) return nullptr;
     return prev;
 }
 
-void TiXmlAttribute::Print(FILE* cfile, int /*depth*/, std::string* str) const {
+void TiXmlAttribute::Print(FILE* cfile, int /*depth*/) const {
+    if (!cfile) return;
     std::string n, v;
 
     EncodeString(name, &n);
     EncodeString(value, &v);
 
     if (value.find('\"') == std::string::npos) {
-        if (cfile) {
-            fprintf(cfile, "%s=\"%s\"", n.c_str(), v.c_str());
-        }
-        if (str) {
-            (*str) += n;
-            (*str) += "=\"";
-            (*str) += v;
-            (*str) += "\"";
-        }
+        fprintf(cfile, "%s=\"%s\"", n.c_str(), v.c_str());
     } else {
-        if (cfile) {
-            fprintf(cfile, "%s='%s'", n.c_str(), v.c_str());
-        }
-        if (str) {
-            (*str) += n;
-            (*str) += "='";
-            (*str) += v;
-            (*str) += "'";
-        }
+        fprintf(cfile, "%s='%s'", n.c_str(), v.c_str());
     }
 }
 
-int TiXmlAttribute::QueryIntValue(int* ival) const {
-    if (TIXML_SSCANF(value.c_str(), "%d", ival) == 1) return TIXML_SUCCESS;
-    return TIXML_WRONG_TYPE;
+void TiXmlAttribute::Print(std::string* str, int /*depth*/) const {
+    if (!str) return;
+    std::string n, v;
+
+    EncodeString(name, &n);
+    EncodeString(value, &v);
+
+    if (value.find('\"') == std::string::npos) {
+        (*str) += n;
+        (*str) += "=\"";
+        (*str) += v;
+        (*str) += "\"";
+    } else {
+        (*str) += n;
+        (*str) += "='";
+        (*str) += v;
+        (*str) += "'";
+    }
 }
-
-int TiXmlAttribute::QueryDoubleValue(double* dval) const {
-    if (TIXML_SSCANF(value.c_str(), "%lf", dval) == 1) return TIXML_SUCCESS;
-    return TIXML_WRONG_TYPE;
-}
-
-void TiXmlAttribute::SetIntValue(int _value) {
-    char buf[64];
-#if defined(TIXML_SNPRINTF)
-    TIXML_SNPRINTF(buf, sizeof(buf), "%d", _value);
-#else
-    sprintf(buf, "%d", _value);
-#endif
-    SetValue(buf);
-}
-
-void TiXmlAttribute::SetDoubleValue(double _value) {
-    char buf[256];
-#if defined(TIXML_SNPRINTF)
-    TIXML_SNPRINTF(buf, sizeof(buf), "%lf", _value);
-#else
-    sprintf(buf, "%lf", _value);
-#endif
-    SetValue(buf);
-}
-
-int TiXmlAttribute::IntValue() const { return atoi(value.c_str()); }
-
-double TiXmlAttribute::DoubleValue() const { return atof(value.c_str()); }
 
 TiXmlAttributeSet::TiXmlAttributeSet() {
     sentinel.next = &sentinel;
@@ -137,7 +108,7 @@ const char* TiXmlAttribute::Parse(const char* p, TiXmlParsingData* data) {
     p = ReadName(p, &name);
     if (!p || !*p) {
         if (document) document->SetError(TIXML_ERROR_READING_ATTRIBUTES, pErr, data);
-        return 0;
+        return nullptr;
     }
     p = SkipWhiteSpace(p);
     if (!p || !*p || *p != '=') {

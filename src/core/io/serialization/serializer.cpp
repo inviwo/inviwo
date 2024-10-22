@@ -74,15 +74,7 @@ NodeSwitch Serializer::switchToNewNode(std::string_view key) {
 
 TiXmlElement* Serializer::getLastChild() const { return rootElement_->LastChild()->ToElement(); }
 
-// void Serializer::linkEndChild(TxElement* child) { rootElement_->LinkEndChild(child); }
-
-void Serializer::setValue(TxElement* node, std::string_view val) { node->SetValue(val); }
-
 void Serializer::setAttribute(TiXmlElement* node, std::string_view key, std::string_view val) {
-    node->SetAttribute(key, val);
-}
-
-void Serializer::setAttribute(TxElement* node, std::string_view key, std::string_view val) {
     node->SetAttribute(key, val);
 }
 

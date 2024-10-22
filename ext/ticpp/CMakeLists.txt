@@ -12,7 +12,7 @@ target_compile_definitions(ticpp
         $<$<AND:$<BOOL:${WIN32}>,$<BOOL:${BUILD_SHARED_LIBS}>>:BUILD_TICPP_DLL>
 )
 ivw_define_standard_definitions(ticpp ticpp)
-ivw_suppress_compiler_warnings(ticpp)
+ivw_define_standard_properties(ticpp)
 
 target_sources(ticpp
     PUBLIC

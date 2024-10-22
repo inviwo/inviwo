@@ -133,9 +133,9 @@ Property* PropertyOwner::removeProperty(Property& property) { return removePrope
 
 Property* PropertyOwner::removeProperty(size_t index) {
     if (index >= size()) {
-        throw RangeException("Invalid index when removing property " + std::to_string(index) +
-                                 " (" + std::to_string(size()) + " elements)",
-                             IVW_CONTEXT);
+        throw RangeException(IVW_CONTEXT,
+                             "Index '{}' out of range while removing property, ({} elements)",
+                             index, size());
     }
     return removeProperty(begin() + index);
 }
@@ -310,7 +310,12 @@ void PropertyOwner::serialize(Serializer& s) const {
 void PropertyOwner::deserialize(Deserializer& d) {
     if (d.getInviwoWorkspaceVersion() < 3) {
         // This is for finding renamed composites, and moving old properties to new composites.
-        NodeVersionConverter tvc(this, &PropertyOwner::findPropsForComposites);
+        NodeVersionConverter tvc([this](TxElement* node) {
+            std::vector<const CompositeProperty*> props;
+            std::copy(compositeProperties_.begin(), compositeProperties_.end(),
+                      std::back_inserter(props));
+            return xml::findMatchingSubPropertiesForComposites(node, props);
+        });
         d.convertVersion(&tvc);
     }
 
@@ -335,12 +340,6 @@ void PropertyOwner::deserialize(Deserializer& d) {
             .onMove([&](Property*& p, size_t i) { move(p, i); });
 
     des(d, properties_);
-}
-
-bool PropertyOwner::findPropsForComposites(TxElement* node) {
-    std::vector<const CompositeProperty*> props;
-    std::copy(compositeProperties_.begin(), compositeProperties_.end(), std::back_inserter(props));
-    return xml::findMatchingSubPropertiesForComposites(node, props);
 }
 
 void PropertyOwner::setAllPropertiesCurrentStateAsDefault() {

@@ -11,14 +11,15 @@
 #include <ostream>
 #include <cstring>
 
-TiXmlNode::TiXmlNode(NodeType _type) : TiXmlBase() {
-    parent = nullptr;
-    type = _type;
-    firstChild = nullptr;
-    lastChild = nullptr;
-    prev = nullptr;
-    next = nullptr;
-}
+TiXmlNode::TiXmlNode(NodeType _type, std::string_view _value)
+    : TiXmlBase()
+    , parent{nullptr}
+    , type{_type}
+    , firstChild{nullptr}
+    , lastChild{nullptr}
+    , value{_value}
+    , prev{nullptr}
+    , next{nullptr} {}
 
 TiXmlNode::~TiXmlNode() {
     TiXmlNode* node = firstChild;
@@ -31,10 +32,7 @@ TiXmlNode::~TiXmlNode() {
     }
 }
 
-void TiXmlNode::CopyTo(TiXmlNode* target) const {
-    target->SetValue(value.c_str());
-    target->userData = userData;
-}
+void TiXmlNode::CopyTo(TiXmlNode* target) const { target->SetValue(value.c_str()); }
 
 void TiXmlNode::Clear() {
     TiXmlNode* node = firstChild;
@@ -176,9 +174,8 @@ bool TiXmlNode::RemoveChild(TiXmlNode* removeThis) {
     }
 
     if (removeThis->next) {
-            removeThis->next->prev = removeThis->prev;
-        }
-    else {
+        removeThis->next->prev = removeThis->prev;
+    } else {
         lastChild = removeThis->prev;
     }
 
@@ -246,13 +243,6 @@ TiXmlNode* TiXmlNode::Identify(const char* p) {
         return nullptr;
     }
 
-    TiXmlDocument* doc = GetDocument();
-    p = SkipWhiteSpace(p);
-
-    if (!p || !*p) {
-        return nullptr;
-    }
-
     // What is this thing?
     // - Elements start with a letter or underscore, but xml is reserved.
     // - Comments: <!--
@@ -285,9 +275,7 @@ TiXmlNode* TiXmlNode::Identify(const char* p) {
 #ifdef DEBUG_PARSER
         TIXML_LOG("XML parsing CDATA\n");
 #endif
-        TiXmlText* text = new TiXmlText("");
-        text->SetCDATA(true);
-        returnNode = text;
+        returnNode = new TiXmlText("", true);
     } else if (StringEqual(p, dtdHeader, false)) {
 #ifdef DEBUG_PARSER
         TIXML_LOG("XML parsing Unknown(1)\n");
@@ -309,6 +297,7 @@ TiXmlNode* TiXmlNode::Identify(const char* p) {
         // Set the parent, so it can report errors
         returnNode->parent = this;
     } else {
+        TiXmlDocument* doc = GetDocument();
         if (doc) doc->SetError(TIXML_ERROR_OUT_OF_MEMORY, nullptr, nullptr);
     }
     return returnNode;

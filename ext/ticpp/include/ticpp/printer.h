@@ -42,31 +42,28 @@ public:
     virtual bool Visit(const TiXmlStylesheetReference& stylesheet);
 
     /** Set the indent characters for printing. By default 4 spaces
-            but tab (\t) is also useful, or null/empty string for no indentation.
+        but tab (\t) is also useful, or empty string for no indentation.
     */
-    void SetIndent(const char* _indent) { indent = _indent ? _indent : ""; }
+    void SetIndent(std::string_view _indent) { indent = _indent; }
     /// Query the indention string.
-    const char* Indent() { return indent.c_str(); }
+    const std::string& Indent() { return indent; }
+
     /** Set the line breaking string. By default set to newline (\n).
-            Some operating systems prefer other characters, or can be
-            set to the null/empty string for no indenation.
+        Some operating systems prefer other characters, or can be
+        set to the empty string for no breaking.
     */
-    void SetLineBreak(const char* _lineBreak) { lineBreak = _lineBreak ? _lineBreak : ""; }
+    void SetLineBreak(std::string_view _lineBreak) { lineBreak = _lineBreak; }
     /// Query the current line breaking string.
-    const char* LineBreak() { return lineBreak.c_str(); }
+    const std::string& LineBreak() { return lineBreak; }
 
     /** Switch over to "stream printing" which is the most dense formatting without
-            linebreaks. Common when the XML is needed for network transmission.
+        line breaks. Common when the XML is needed for network transmission.
     */
     void SetStreamPrinting() {
         indent = "";
         lineBreak = "";
     }
-    /// Return the result.
-    const char* CStr() { return buffer.c_str(); }
-    /// Return the length of the result string.
-    size_t Size() { return buffer.size(); }
-
+    
     /// Return the result.
     const std::string& Str() { return buffer; }
 
