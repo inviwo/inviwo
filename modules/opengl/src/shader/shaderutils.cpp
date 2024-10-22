@@ -163,13 +163,32 @@ void addShaderDefines(Shader& shader, const ShadingMode& mode) {
         }
     }();
 
+    const int shadingNormalValue = [&]() -> int {
+        switch (mode) {
+            case ShadingMode::Ambient:
+            case ShadingMode::Diffuse:
+            case ShadingMode::Specular:
+            case ShadingMode::BlinnPhong:
+            case ShadingMode::Phong:
+                return 2;
+            case ShadingMode::BlinnPhongFront:
+            case ShadingMode::PhongFront:
+                return 0;
+            case ShadingMode::BlinnPhongBack:
+            case ShadingMode::PhongBack:
+                return 1;
+            case ShadingMode::None:
+            default:
+                return 0;
+        }
+    }();
+
     StrBuffer buff;
-    auto shadingNormalValueStr = buff.replace("{}", shadingNormalValue);
-    auto shaderObjects[] = {shader.getFragmentShaderObject(), shader.getComputeShaderObject()};
+    ShaderObject* shaderObjects[] = {shader.getFragmentShaderObject(), shader.getComputeShaderObject()};
     for (auto&& shaderObject: shaderObjects) {
         if (shaderObject) {
             shaderObject->addShaderDefine(shadingKey, shadingValue);
-            shaderObject->addShaderDefine("SHADING_NORMAL", shadingNormalValueStr);
+            shaderObject->addShaderDefine("SHADING_NORMAL", buff.replace("{}", shadingNormalValue));
             shaderObject->setShaderDefine("SHADING_ENABLED", mode != ShadingMode::None);
         }
      }
