@@ -72,8 +72,9 @@ VolumePathTracer::VolumePathTracer()
     , exitPort_("exit")
     , minMaxOpacity_("VolumeMinMaxOpacity")
     , outport_("outport")
-    , shader_({{ShaderType::Compute, "bidirectionalvolumepathtracer.comp"}})
-    , shaderUniform_({{ShaderType::Compute, "bidirectionalvolumepathtraceruniform.comp"}})
+    , shader_({{ShaderType::Compute, "bidirectionalvolumepathtracer.comp"}}, Shader::Build::No)
+    , shaderUniform_({{ShaderType::Compute, "bidirectionalvolumepathtraceruniform.comp"}},
+                     Shader::Build::No)
     , channel_("channel", "Render Channel", {{"Channel 1", "Channel 1", 0}}, 0)
     , raycasting_("raycaster", "Raycasting")
     , transferFunction_("transferFunction", "Transfer Function", &volumePort_)
@@ -169,6 +170,21 @@ VolumePathTracer::VolumePathTracer()
         }
     });
 
+        
+    shader_.onReload([this]() {
+        invalidate(InvalidationLevel::InvalidOutput);
+        invalidateProgressiveRendering();
+    });
+    shaderUniform_.onReload([this]() {
+        invalidate(InvalidationLevel::InvalidOutput);
+        invalidateProgressiveRendering();
+    });
+
+    transmittanceMethod_.onChange([this]() {
+        invalidate(InvalidationLevel::InvalidOutput);
+        invalidateProgressiveRendering();
+    });
+
     // Used for determining uniform float t_ms
     timeStart_ = std::chrono::high_resolution_clock::now();
 
@@ -181,8 +197,6 @@ VolumePathTracer::VolumePathTracer()
 
     enableProgressiveRefinement_.onChange([this]() { progressiveRefinementChanged(); });
 
-    //invalidateRender_.onChange([this]() { invalidateProgressiveRendering(); });
-
     progressiveRefinementChanged();
 }
 
@@ -194,21 +208,12 @@ void VolumePathTracer::initializeResources() {
     } else {
         activeShader_ = &shader_;
     }
-
-    // moved from construction due to activeShader_ being uninitializable in ctor
-    activeShader_->onReload([this]() {
-        invalidate(InvalidationLevel::InvalidOutput);
-        invalidateProgressiveRendering();
-    });
-    // moved from construction due to activeShader_ being uninitializable in ctor
-    transmittanceMethod_.onChange([this]() {
-        invalidate(InvalidationLevel::InvalidOutput);
-        invalidateProgressiveRendering();
-    });
-
+ 
     utilgl::addShaderDefines(*activeShader_, raycasting_);
     utilgl::addShaderDefines(*activeShader_, camera_);
     utilgl::addShaderDefines(*activeShader_, light_);
+    activeShader_->getComputeShaderObject()->addShaderExtension("GL_NV_compute_shader_derivatives",
+                                                         ShaderObject::ExtensionBehavior::Enable);
     activeShader_->build();
 }
 
@@ -220,14 +225,9 @@ void VolumePathTracer::process() {
 
     if (iteration_ == 0) {
         // Copy depth and picking
-        // utilgl::activateAndClearTarget(outport_);
         Image* outImage = outport_.getEditableData().get();
         ImageGL* outImageGL = outImage->getEditableRepresentation<ImageGL>();
         entryPort_.getData()->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
-        
-        // 
-        //outport_.getEditableData().get()->copyRepresentationsTo(renderResult_);
-        //ImageGL* outImageGL = renderResult_.getEditableRepresentation<ImageGL>();
     }
     activeShader_->activate();
     activeShader_->setUniform("time_ms", MSSinceStart_);
