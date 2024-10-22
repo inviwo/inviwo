@@ -30,7 +30,7 @@ uniform sampler2D exitDepth;
 uniform ImageParameters exitParameters;
 
 // output
-uniform layout(binding = 0, rgba8)
+uniform layout(binding = 0, rgba32f)
 image2D outportColor;
 uniform layout(binding = 1, r32f)
 image2D outportDepth;
