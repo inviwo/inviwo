@@ -37,6 +37,8 @@ vec4 calcMinMaxAvg_OutsideVoxel(ivec3 pos) {
     float maxOpacity = 0f;
     float avgOpacity = 0f;
     float sampleCount = 0f;
+    float minVal = 1f;
+    float maxVal = 0;
 
     for (int z = startCoord.z; z < endCoord.z; ++z) {
         for (int y = startCoord.y; y < endCoord.y; ++y) {
@@ -45,13 +47,23 @@ vec4 calcMinMaxAvg_OutsideVoxel(ivec3 pos) {
                 vec4 vn = getNormalizedVoxel(volumeData, volumeDataParameters, texCoord);
                 float opacity = applyTF(tf, vn).a;
 
-                minOpacity = min(minOpacity, opacity);
-                maxOpacity = max(maxOpacity, opacity);
+                minVal = min(minVal, vn.x);
+                maxVal = max(maxVal, vn.x);
 
                 avgOpacity += opacity;
                 sampleCount += 1f;
             }
         }
+    }
+    // Compute min/max values that can occur in the TF.
+    // TODO: Ideally, we would go through the control points instead of looking up every pixel value.
+    float tfDimensions = 1024f;
+    // Take smaller steps than the tf pixels
+    float dx = 1f/(tfDimensions + 10f);
+    for (float v = minVal; v <= maxVal; v += dx) {
+        float opacity = applyTF(tf, min(v, maxVal)).a;
+        minOpacity = min(minOpacity, opacity);
+        maxOpacity = max(maxOpacity, opacity);
     }
 
     // TODO: Sample edge planes of the grid cell instead of the neighboring voxel to create tighter
