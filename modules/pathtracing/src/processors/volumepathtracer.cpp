@@ -280,6 +280,8 @@ void VolumePathTracer::process() {
     }
 
     utilgl::bindAndSetUniforms(*activeShader_, units, transferFunction_);
+    const auto* tfLayer = transferFunction_.getRepresentation<LayerGL>();
+    activeShader_->setUniform("tfSize", static_cast<int>(tfLayer->getDimensions().x));
 
     utilgl::setUniforms(*activeShader_, camera_, raycasting_, positionIndicator_, light_, channel_);
 
