@@ -14,6 +14,7 @@ uniform VolumeParameters opacityDataParameters;
 
 uniform ivec3 regionSize;
 uniform sampler2D tf;
+uniform int tfSize;
 
 // look at
 // https://github.com/ResearchDaniel/Correlated-Photon-Mapping-for-Interactive-Global-Illumination-of-Time-Varying-Volumetric-Data/blob/8ce15569df62e4cc9cfcb13086dcf8a523fbbdb4/modules/importancesamplingcl/processors/minmaxuniformgrid3dimportanceclprocessor.cpp#L304
@@ -57,14 +58,15 @@ vec4 calcMinMaxAvg_OutsideVoxel(ivec3 pos) {
     }
     // Compute min/max values that can occur in the TF.
     // TODO: Ideally, we would go through the control points instead of looking up every pixel value.
-    float tfDimensions = 1024f;
     // Take smaller steps than the tf pixels
-    float dx = 1f/(tfDimensions + 10f);
+    float dx = 1f/float(tfSize + 10f);
     for (float v = minVal; v <= maxVal; v += dx) {
         float opacity = applyTF(tf, min(v, maxVal)).a;
         minOpacity = min(minOpacity, opacity);
         maxOpacity = max(maxOpacity, opacity);
     }
+    // Ensure that maxValue is accounted for
+    maxOpacity = max(maxOpacity, applyTF(tf, maxVal).a);
 
     // TODO: Sample edge planes of the grid cell instead of the neighboring voxel to create tighter
     // bounds. The code below samples the edges, but also all voxels inside. We need to divide it
