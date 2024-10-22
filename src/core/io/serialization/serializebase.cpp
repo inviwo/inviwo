@@ -54,22 +54,13 @@ SerializeBase::SerializeBase(const std::filesystem::path& fileName)
     , rootElement_{nullptr}
     , retrieveChild_{true} {}
 
-SerializeBase::SerializeBase(std::istream& stream, const std::filesystem::path& path)
-    : fileName_{path}
-    , doc_{std::make_unique<TiXmlDocument>()}
-    , rootElement_{nullptr}
-    , retrieveChild_{true} {
-
-    stream >> *doc_;
-}
-
 SerializeBase::~SerializeBase() = default;
 SerializeBase::SerializeBase(SerializeBase&&) noexcept = default;
 SerializeBase& SerializeBase::operator=(SerializeBase&&) noexcept = default;
 
 const std::filesystem::path& SerializeBase::getFileName() const { return fileName_; }
 
-std::string SerializeBase::nodeToString(const TxElement& node) {
+std::string SerializeBase::nodeToString(const TiXmlElement& node) {
     try {
         TiXmlPrinter printer;
         printer.SetIndent("    ");
@@ -81,8 +72,7 @@ std::string SerializeBase::nodeToString(const TxElement& node) {
 }
 
 NodeSwitch::NodeSwitch(NodeSwitch&& rhs) noexcept
-    : node_{std::move(rhs.node_)}
-    , serializer_{rhs.serializer_}
+    : serializer_{rhs.serializer_}
     , storedNode_{nullptr}
     , storedRetrieveChild_{rhs.storedRetrieveChild_} {
 
@@ -94,8 +84,7 @@ NodeSwitch& NodeSwitch::operator=(NodeSwitch&& rhs) noexcept {
         if (storedNode_) {
             serializer_->rootElement_ = storedNode_;
             serializer_->retrieveChild_ = storedRetrieveChild_;
-        }
-        node_ = std::move(rhs.node_);
+        };
         serializer_ = rhs.serializer_;
         storedNode_ = rhs.storedNode_;
         storedRetrieveChild_ = rhs.storedRetrieveChild_;
@@ -114,19 +103,15 @@ NodeSwitch::NodeSwitch(SerializeBase& serializer, TiXmlElement* node, bool retri
     serializer_->retrieveChild_ = retrieveChild;
 }
 
-NodeSwitch::NodeSwitch(SerializeBase& serializer, TxElement* node, bool retrieveChild)
-    : NodeSwitch(serializer, node->GetXmlPointer(), retrieveChild) {}
-
-NodeSwitch::NodeSwitch(SerializeBase& serializer, std::unique_ptr<TxElement> node,
-                       bool retrieveChild)
-    : node_(std::move(node))
-    , serializer_(&serializer)
+NodeSwitch::NodeSwitch(SerializeBase& serializer, TiXmlElement& node, bool retrieveChild)
+    : serializer_(&serializer)
     , storedNode_(serializer_->rootElement_)
     , storedRetrieveChild_(serializer_->retrieveChild_) {
 
-    serializer_->rootElement_ = node_->GetXmlPointer();
+    serializer_->rootElement_ = &node;
     serializer_->retrieveChild_ = retrieveChild;
 }
+
 NodeSwitch::NodeSwitch(SerializeBase& serializer, std::string_view key, bool retrieveChild)
     : serializer_(&serializer)
     , storedNode_(serializer_->rootElement_)
@@ -147,11 +132,6 @@ NodeSwitch::~NodeSwitch() {
 }
 
 NodeSwitch::operator bool() const { return serializer_->rootElement_ != nullptr; }
-
-std::string detail::getNodeAttributeOrDefault(TxElement* node, const std::string& key,
-                                              const std::string& defaultValue) {
-    return node->GetAttributeOrDefault(key, defaultValue);
-}
 
 namespace {
 
@@ -181,8 +161,8 @@ void fromStrInternal(std::string_view value, T& dest) {
             }
         }
     } else if constexpr (std::is_same_v<bool, T>) {
-        static std::string_view trueVal = "1";
-        static std::string_view falseVal = "0";
+        static constexpr std::string_view trueVal = "1";
+        static constexpr std::string_view falseVal = "0";
         if (value == trueVal) {
             dest = true;
         } else if (value == falseVal) {
@@ -199,38 +179,23 @@ void fromStrInternal(std::string_view value, T& dest) {
 
 }  // namespace
 
-void detail::numericalFromStr(std::string_view value, double& dest) {
-    fromStrInternal(value, dest);
-}
-void detail::numericalFromStr(std::string_view value, float& dest) { fromStrInternal(value, dest); }
-void detail::numericalFromStr(std::string_view value, char& dest) { fromStrInternal(value, dest); }
-void detail::numericalFromStr(std::string_view value, signed char& dest) {
-    fromStrInternal(value, dest);
-}
-void detail::numericalFromStr(std::string_view value, unsigned char& dest) {
-    fromStrInternal(value, dest);
-}
-void detail::numericalFromStr(std::string_view value, short& dest) { fromStrInternal(value, dest); }
-void detail::numericalFromStr(std::string_view value, unsigned short& dest) {
-    fromStrInternal(value, dest);
-}
-void detail::numericalFromStr(std::string_view value, int& dest) { fromStrInternal(value, dest); }
-void detail::numericalFromStr(std::string_view value, unsigned int& dest) {
-    fromStrInternal(value, dest);
-}
-void detail::numericalFromStr(std::string_view value, long& dest) { fromStrInternal(value, dest); }
-void detail::numericalFromStr(std::string_view value, unsigned long& dest) {
-    fromStrInternal(value, dest);
-}
-void detail::numericalFromStr(std::string_view value, long long& dest) {
-    fromStrInternal(value, dest);
-}
-void detail::numericalFromStr(std::string_view value, unsigned long long& dest) {
+void detail::fromStr(std::string_view value, double& dest) { fromStrInternal(value, dest); }
+void detail::fromStr(std::string_view value, float& dest) { fromStrInternal(value, dest); }
+void detail::fromStr(std::string_view value, char& dest) { fromStrInternal(value, dest); }
+void detail::fromStr(std::string_view value, signed char& dest) { fromStrInternal(value, dest); }
+void detail::fromStr(std::string_view value, unsigned char& dest) { fromStrInternal(value, dest); }
+void detail::fromStr(std::string_view value, short& dest) { fromStrInternal(value, dest); }
+void detail::fromStr(std::string_view value, unsigned short& dest) { fromStrInternal(value, dest); }
+void detail::fromStr(std::string_view value, int& dest) { fromStrInternal(value, dest); }
+void detail::fromStr(std::string_view value, unsigned int& dest) { fromStrInternal(value, dest); }
+void detail::fromStr(std::string_view value, long& dest) { fromStrInternal(value, dest); }
+void detail::fromStr(std::string_view value, unsigned long& dest) { fromStrInternal(value, dest); }
+void detail::fromStr(std::string_view value, long long& dest) { fromStrInternal(value, dest); }
+void detail::fromStr(std::string_view value, unsigned long long& dest) {
     fromStrInternal(value, dest);
 }
 
-void detail::reportSerializationError() {
-    throw SerializationException("Error parsing number", IVW_CONTEXT_CUSTOM("fromStr"));
-}
+void detail::fromStr(std::string_view value, bool& dest) { fromStrInternal(value, dest); }
+void detail::fromStr(std::string_view value, std::string& dest) { dest = value; }
 
 }  // namespace inviwo

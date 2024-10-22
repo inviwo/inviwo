@@ -99,16 +99,16 @@ public:
     /// Return a handle to the first child node.
     TiXmlHandle FirstChild() const;
     /// Return a handle to the first child node with the given name.
-    TiXmlHandle FirstChild(const char* value) const;
+    TiXmlHandle FirstChild(std::string_view value) const;
     /// Return a handle to the first child element.
     TiXmlHandle FirstChildElement() const;
     /// Return a handle to the first child element with the given name.
-    TiXmlHandle FirstChildElement(const char* value) const;
+    TiXmlHandle FirstChildElement(std::string_view value) const;
 
     /** Return a handle to the "index" child with the given name.
         The first child is 0, the second 1, etc.
     */
-    TiXmlHandle Child(const char* value, int index) const;
+    TiXmlHandle Child(std::string_view value, int index) const;
     /** Return a handle to the "index" child.
         The first child is 0, the second 1, etc.
     */
@@ -117,40 +117,24 @@ public:
         The first child element is 0, the second 1, etc. Note that only TiXmlElements
         are indexed: other types are not counted.
     */
-    TiXmlHandle ChildElement(const char* value, int index) const;
+    TiXmlHandle ChildElement(std::string_view value, int index) const;
     /** Return a handle to the "index" child element.
         The first child element is 0, the second 1, etc. Note that only TiXmlElements
         are indexed: other types are not counted.
     */
     TiXmlHandle ChildElement(int index) const;
 
-    TiXmlHandle FirstChild(const std::string& _value) const { return FirstChild(_value.c_str()); }
-    TiXmlHandle FirstChildElement(const std::string& _value) const {
-        return FirstChildElement(_value.c_str());
-    }
-
-    TiXmlHandle Child(const std::string& _value, int index) const {
-        return Child(_value.c_str(), index);
-    }
-    TiXmlHandle ChildElement(const std::string& _value, int index) const {
-        return ChildElement(_value.c_str(), index);
-    }
-
     /// Return the handle as a TiXmlNode. This may return null.
     TiXmlNode* ToNode() const { return node; }
 
     /// Return the handle as a TiXmlElement. This may return null.
-    TiXmlElement* ToElement() const {
-        return ((node && node->ToElement()) ? node->ToElement() : nullptr);
-    }
+    TiXmlElement* ToElement() const { return node ? node->ToElement() : nullptr; }
 
     ///	Return the handle as a TiXmlText. This may return null.
-    TiXmlText* ToText() const { return ((node && node->ToText()) ? node->ToText() : nullptr); }
+    TiXmlText* ToText() const { return node ? node->ToText() : nullptr; }
 
     /// Return the handle as a TiXmlUnknown. This may return null.
-    TiXmlUnknown* ToUnknown() const {
-        return ((node && node->ToUnknown()) ? node->ToUnknown() : nullptr);
-    }
+    TiXmlUnknown* ToUnknown() const { return node ? node->ToUnknown() : nullptr; }
 
 private:
     TiXmlNode* node;

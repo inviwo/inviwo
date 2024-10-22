@@ -29,43 +29,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace ticpp {
 
-// In the following Visitor functions, casting away const should be safe, as the object can only be
-// referred to by a const &
-bool Visitor::VisitEnter(const TiXmlDocument& doc) {
-    return VisitEnter(Document(const_cast<TiXmlDocument*>(&doc)));
-}
-
-bool Visitor::VisitExit(const TiXmlDocument& doc) {
-    return VisitEnter(Document(const_cast<TiXmlDocument*>(&doc)));
-}
-
-bool Visitor::VisitEnter(const TiXmlElement& element, const TiXmlAttribute* firstAttribute) {
-    if (firstAttribute) {
-        Attribute attribute(const_cast<TiXmlAttribute*>(firstAttribute));
-        return VisitEnter(Element(const_cast<TiXmlElement*>(&element)), &attribute);
-    } else {
-        return VisitEnter(Element(const_cast<TiXmlElement*>(&element)), nullptr);
-    }
-}
-
-bool Visitor::VisitExit(const TiXmlElement& element) {
-    return VisitExit(Element(const_cast<TiXmlElement*>(&element)));
-}
-
-bool Visitor::Visit(const TiXmlDeclaration& declaration) {
-    return Visit(Declaration(const_cast<TiXmlDeclaration*>(&declaration)));
-}
-
-bool Visitor::Visit(const TiXmlStylesheetReference& stylesheet) {
-    return Visit(StylesheetReference(const_cast<TiXmlStylesheetReference*>(&stylesheet)));
-}
-
-bool Visitor::Visit(const TiXmlText& text) { return Visit(Text(const_cast<TiXmlText*>(&text))); }
-
-bool Visitor::Visit(const TiXmlComment& comment) {
-    return Visit(Comment(const_cast<TiXmlComment*>(&comment)));
-}
-
 Attribute::Attribute() {
     SetTiXmlPointer(new TiXmlAttribute());
     m_impRC->InitRef();
@@ -752,15 +715,6 @@ const std::string& Element::GetAttributeOrDefault(std::string_view name,
     }
 }
 
-std::string Element::GetAttributeOrDefault(std::string_view name,
-                                           std::string&& defaultValue) const {
-    if (auto* str = GetAttributePtr(name)) {
-        return *str;
-    } else {
-        return defaultValue;
-    }
-}
-
 const std::string& Element::GetAttribute(const std::string& name) const {
     static const std::string empty;
     return GetAttributeOrDefault(name, empty);
@@ -802,7 +756,7 @@ const std::string* Element::GetAttributePtr(std::string_view name) const {
 const std::string* Element::GetTextImp() const {
     ValidatePointer();
 
-    return m_tiXmlPointer->GetTextStr();
+    return m_tiXmlPointer->GetText();
 }
 
 Declaration::Declaration() : NodeImp<TiXmlDeclaration>(new TiXmlDeclaration()) {

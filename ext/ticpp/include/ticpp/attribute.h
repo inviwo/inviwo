@@ -17,42 +17,22 @@ class TICPP_API TiXmlAttribute : public TiXmlBase {
 
 public:
     /// Construct an empty attribute.
-    TiXmlAttribute() : TiXmlBase() {
-        document = nullptr;
-        prev = next = nullptr;
-    }
+    TiXmlAttribute()
+        : TiXmlBase(), document{nullptr}, name{}, value{}, prev{nullptr}, next{nullptr} {}
 
-    TiXmlAttribute(std::string_view _name, std::string_view _value) {
-        name = _name;
-        value = _value;
-        document = nullptr;
-        prev = next = nullptr;
-    }
+    TiXmlAttribute(std::string_view _name, std::string_view _value)
+        : TiXmlBase()
+        , document{nullptr}
+        , name{_name}
+        , value{_value}
+        , prev{nullptr}
+        , next{nullptr} {}
 
     TiXmlAttribute(const TiXmlAttribute&) = delete;
     TiXmlAttribute& operator=(const TiXmlAttribute& base) = delete;
 
     const std::string& Name() const { return name; }    ///< Return the name of this attribute.
     const std::string& Value() const { return value; }  ///< Return the value of this attribute.
-
-    int IntValue() const;        ///< Return the value of this attribute, converted to an integer.
-    double DoubleValue() const;  ///< Return the value of this attribute, converted to a double.
-
-    /** QueryIntValue examines the value string. It is an alternative to the
-     * IntValue() method with richer error checking.
-     * If the value is an integer, it is stored in 'value' and
-     * the call returns TIXML_SUCCESS. If it is not
-     * an integer, it returns TIXML_WRONG_TYPE.
-     *
-     * A specialized but useful call. Note that for success it returns 0,
-     * which is the opposite of almost all other TinyXml calls.
-     */
-    int QueryIntValue(int* _value) const;
-    /// QueryDoubleValue examines the value string. See QueryIntValue().
-    int QueryDoubleValue(double* _value) const;
-
-    void SetIntValue(int _value);        ///< Set the value from an integer.
-    void SetDoubleValue(double _value);  ///< Set the value from a double.
 
     void SetName(std::string_view _name) { name = _name; }
     void SetValue(std::string_view _value) { value = _value; }
@@ -74,13 +54,13 @@ public:
     bool operator>(const TiXmlAttribute& rhs) const { return name > rhs.name; }
 
     /*	Attribute parsing starts: first letter of the name
-                                             returns: the next char after the value end quote
+        returns: the next char after the value end quote
     */
-    virtual const char* Parse(const char* p, TiXmlParsingData* data);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data) override;
 
     // Prints this Attribute to a FILE stream.
-    virtual void Print(FILE* cfile, int depth) const { Print(cfile, depth, 0); }
-    void Print(FILE* cfile, int depth, std::string* str) const;
+    virtual void Print(FILE* cfile, int depth) const override;
+    void Print(std::string* str, int depth) const;
 
     // [internal use]
     // Set the document pointer so the attribute can report errors.
@@ -128,6 +108,5 @@ public:
     }
 
 private:
-
     TiXmlAttribute sentinel;
 };

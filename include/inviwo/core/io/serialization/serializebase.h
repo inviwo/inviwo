@@ -42,44 +42,7 @@
 class TiXmlElement;
 class TiXmlDocument;
 
-namespace ticpp {
-class Element;
-class Document;
-}  // namespace ticpp
-
 namespace inviwo {
-using TxElement = ticpp::Element;
-using TxDocument = ticpp::Document;
-
-namespace detail {
-IVW_CORE_API std::string getNodeAttributeOrDefault(TxElement* node, const std::string& key,
-                                                   const std::string& defaultValue);
-}
-
-template <typename T>
-struct ElementIdentifier {
-    virtual ~ElementIdentifier() = default;
-    virtual void setKey(TxElement*) = 0;
-    virtual bool operator()(const T* elem) const = 0;
-};
-
-template <typename T>
-struct StandardIdentifier : public ElementIdentifier<T> {
-    typedef std::string (T::*funcPtr)() const;
-
-    StandardIdentifier(std::string key = "identifier", funcPtr ptr = &T::getIdentifier)
-        : ptr_(ptr), key_(std::move(key)) {}
-
-    virtual void setKey(TxElement* node) {
-        identifier_ = detail::getNodeAttributeOrDefault(node, key_, "");
-    }
-    virtual bool operator()(const T* elem) const { return identifier_ == (*elem.*ptr_)(); }
-
-private:
-    funcPtr ptr_;
-    std::string key_;
-    std::string identifier_;
-};
 
 enum class SerializationTarget { Node, Attribute };
 
@@ -92,8 +55,7 @@ public:
      * \brief Base class for Serializer and Deserializer.
      *
      * This class consists of features that are common to both serializer
-     * and de-serializer. Some of them are reference data manager,
-     * (ticpp::Node) node switch and factory registration.
+     * and de-serializer.
      */
     SerializeBase();
 
@@ -101,24 +63,11 @@ public:
      * \brief Base class for Serializer and Deserializer.
      *
      * This class consists of features that are common to both serializer
-     * and de-serializer. Some of them are reference data manager,
-     * (ticpp::Node) node switch and factory registration.
+     * and de-serializer.
      *
      * @param fileName full path to xml file (for reading or writing).
      */
     SerializeBase(const std::filesystem::path& fileName);
-
-    /**
-     * \brief Base class for Serializer and Deserializer.
-     *
-     * This class consists of features that are common to both serializer
-     * and de-serializer. Some of them are reference data manager,
-     * (ticpp::Node) node switch and factory registration.
-     *
-     * @param stream containing all xml data (for reading).
-     * @param path A path that will be used to decode the location of data during deserialization.
-     */
-    SerializeBase(std::istream& stream, const std::filesystem::path& path);
 
     SerializeBase(const SerializeBase& rhs) = delete;
     SerializeBase(SerializeBase&& rhs) noexcept;
@@ -153,7 +102,7 @@ public:
                std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view>;
     }
 
-    static std::string nodeToString(const TxElement& node);
+    static std::string nodeToString(const TiXmlElement& node);
 
 protected:
     friend class NodeSwitch;
@@ -166,26 +115,22 @@ protected:
 
 namespace detail {
 
-IVW_CORE_API void numericalFromStr(std::string_view value, double& dest);
-IVW_CORE_API void numericalFromStr(std::string_view value, float& dest);
-IVW_CORE_API void numericalFromStr(std::string_view value, char& dest);
-IVW_CORE_API void numericalFromStr(std::string_view value, signed char& dest);
-IVW_CORE_API void numericalFromStr(std::string_view value, unsigned char& dest);
-IVW_CORE_API void numericalFromStr(std::string_view value, short& dest);
-IVW_CORE_API void numericalFromStr(std::string_view value, unsigned short& dest);
-IVW_CORE_API void numericalFromStr(std::string_view value, int& dest);
-IVW_CORE_API void numericalFromStr(std::string_view value, unsigned int& dest);
-IVW_CORE_API void numericalFromStr(std::string_view value, long& dest);
-IVW_CORE_API void numericalFromStr(std::string_view value, unsigned long& dest);
-IVW_CORE_API void numericalFromStr(std::string_view value, long long& dest);
-IVW_CORE_API void numericalFromStr(std::string_view value, unsigned long long& dest);
+IVW_CORE_API void fromStr(std::string_view value, double& dest);
+IVW_CORE_API void fromStr(std::string_view value, float& dest);
+IVW_CORE_API void fromStr(std::string_view value, char& dest);
+IVW_CORE_API void fromStr(std::string_view value, signed char& dest);
+IVW_CORE_API void fromStr(std::string_view value, unsigned char& dest);
+IVW_CORE_API void fromStr(std::string_view value, short& dest);
+IVW_CORE_API void fromStr(std::string_view value, unsigned short& dest);
+IVW_CORE_API void fromStr(std::string_view value, int& dest);
+IVW_CORE_API void fromStr(std::string_view value, unsigned int& dest);
+IVW_CORE_API void fromStr(std::string_view value, long& dest);
+IVW_CORE_API void fromStr(std::string_view value, unsigned long& dest);
+IVW_CORE_API void fromStr(std::string_view value, long long& dest);
+IVW_CORE_API void fromStr(std::string_view value, unsigned long long& dest);
 
-IVW_CORE_API void reportSerializationError();
-
-template <typename T>
-constexpr bool alwaysFalse() {
-    return false;
-}
+IVW_CORE_API void fromStr(std::string_view value, bool& dest);
+IVW_CORE_API void fromStr(std::string_view value, std::string& dest);
 
 template <class T>
 decltype(auto) toStr(const T& value) {
@@ -199,28 +144,6 @@ decltype(auto) toStr(const T& value) {
         return value ? trueVal : falseVal;
     } else {
         return fmt::to_string(value);
-    }
-}
-
-template <class T>
-void fromStr(const std::string& value, T& dest) {
-    if constexpr (std::is_same_v<std::string, T>) {
-        dest = value;
-    } else if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T> ||
-                         (!std::is_same_v<bool, T> && std::is_integral_v<T>)) {
-        numericalFromStr(value, dest);
-    } else if constexpr (std::is_same_v<bool, T>) {
-        static std::string_view trueVal = "1";
-        static std::string_view falseVal = "0";
-        if (value == trueVal) {
-            dest = true;
-        } else if (value == falseVal) {
-            dest = false;
-        } else {
-            reportSerializationError();
-        }
-    } else {
-        static_assert(alwaysFalse<T>(), "unsupported type");
     }
 }
 
@@ -238,21 +161,11 @@ public:
      * \brief NodeSwitch helps track parent node during recursive/nested function calls.
      *
      * @param serializer reference to serializer or deserializer
-     * @param node //Parent (Ticpp Node) element.
+     * @param node // the node to switch to
      * @param retrieveChild whether to retrieve child node or not.
      */
-    NodeSwitch(SerializeBase& serializer, TxElement* node, bool retrieveChild = true);
     NodeSwitch(SerializeBase& serializer, TiXmlElement* node, bool retrieveChild = true);
-
-    /**
-     * \brief NodeSwitch helps track parent node during recursive/nested function calls.
-     *
-     * @param serializer reference to serializer or deserializer
-     * @param node //Parent (Ticpp Node) element.
-     * @param retrieveChild whether to retrieve child node or not.
-     */
-    NodeSwitch(SerializeBase& serializer, std::unique_ptr<TxElement> node,
-               bool retrieveChild = true);
+    NodeSwitch(SerializeBase& serializer, TiXmlElement& node, bool retrieveChild = true);
 
     /**
      * \brief NodeSwitch helps track parent node during recursive/nested function calls.
@@ -263,17 +176,13 @@ public:
      */
     NodeSwitch(SerializeBase& serializer, std::string_view key, bool retrieveChild = true);
 
-    /**
-     * \brief Destructor
-     */
     ~NodeSwitch();
 
     operator bool() const;
 
 private:
-    std::unique_ptr<TxElement> node_;
     SerializeBase* serializer_;  // reference to serializer or deserializer
-    TiXmlElement* storedNode_;      // Parent (Ticpp Node) element.
+    TiXmlElement* storedNode_;   // Parent (Ticpp Node) element.
     bool storedRetrieveChild_;
 };
 

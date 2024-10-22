@@ -4,14 +4,9 @@
 #include <ticpp/document.h>
 #include <ticpp/parsingdata.h>
 
-TiXmlStylesheetReference::TiXmlStylesheetReference(const char* _type, const char* _href)
-    : TiXmlNode(TiXmlNode::STYLESHEETREFERENCE) {
-    type = _type;
-    href = _href;
-}
 
-TiXmlStylesheetReference::TiXmlStylesheetReference(const std::string& _type,
-                                                   const std::string& _href)
+TiXmlStylesheetReference::TiXmlStylesheetReference(std::string_view _type,
+                                                   std::string_view _href)
     : TiXmlNode(TiXmlNode::STYLESHEETREFERENCE) {
     type = _type;
     href = _href;
@@ -67,24 +62,6 @@ TiXmlNode* TiXmlStylesheetReference::Clone() const {
 
     CopyTo(clone);
     return clone;
-}
-
-void TiXmlStylesheetReference::StreamIn(std::istream* in, std::string* tag) {
-    while (in->good()) {
-        int c = in->get();
-        if (c <= 0) {
-            TiXmlDocument* document = GetDocument();
-            if (document)
-                document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
-            return;
-        }
-        (*tag) += (char)c;
-
-        if (c == '>') {
-            // All is well.
-            return;
-        }
-    }
 }
 
 const char* TiXmlStylesheetReference::Parse(const char* p, TiXmlParsingData* data) {

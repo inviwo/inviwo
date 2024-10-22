@@ -34,6 +34,8 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/colorconversion.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 TransferFunctionXMLWriter::TransferFunctionXMLWriter() {
@@ -52,12 +54,12 @@ std::string TransferFunctionXMLWriter::toXML(const TransferFunction& tf) {
 
         for (auto p : tf) {
             TxElement point("Point");
-            point.SetAttribute<double>("x", p.getPosition());
-            point.SetAttribute<double>("o", p.getAlpha());
+            point.SetAttribute("x", fmt::to_string(p.getPosition()));
+            point.SetAttribute("o", fmt::to_string(p.getAlpha()));
             const auto color = p.getColor();
-            point.SetAttribute<double>("r", color.r);
-            point.SetAttribute<double>("g", color.g);
-            point.SetAttribute<double>("b", color.b);
+            point.SetAttribute("r", fmt::to_string(color.r));
+            point.SetAttribute("g", fmt::to_string(color.g));
+            point.SetAttribute("b", fmt::to_string(color.b));
             colormap.InsertEndChild(point);
         }
 

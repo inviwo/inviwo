@@ -16,12 +16,9 @@ public:
 
 private:
     // Only used by the document!
-    TiXmlParsingData(const char* start, int _tabsize, int row, int col) {
+    TiXmlParsingData(const char* start, int _tabsize, int row, int col)
+        : cursor{.row = row, .col = col}, stamp{start}, tabsize{_tabsize} {
         assert(start);
-        stamp = start;
-        tabsize = _tabsize;
-        cursor.row = row;
-        cursor.col = col;
     }
 
     TiXmlCursor cursor;
