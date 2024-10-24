@@ -49,11 +49,9 @@ struct TICPP_API TiXmlCursor {
  */
 
 class TICPP_API TiXmlBase : public TiCppRC {
-    friend class TiXmlNode;
-    friend class TiXmlElement;
-    friend class TiXmlDocument;
-
 public:
+    using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
+
     TiXmlBase() {}
     TiXmlBase(const TiXmlBase&) = delete;
     TiXmlBase& operator=(const TiXmlBase& base) = delete;
@@ -106,7 +104,8 @@ public:
     // in the UTF-8 sequence.
     static const int utf8ByteTable[256];
 
-    virtual const char* Parse(const char* p, TiXmlParsingData* data) = 0;
+    virtual const char* Parse(const char* p, TiXmlParsingData* data,
+                              const allocator_type& alloc) = 0;
 
     /** Expands entities in a string. Note this should not contain the tag's '<', '>', etc,
      * or they will be transformed into entities!
@@ -136,7 +135,6 @@ public:
     };
 
 protected:
-
     static const char* SkipWhiteSpace(const char*);
     inline static bool IsWhiteSpace(char c) {
         return (isspace((unsigned char)c) || c == '\n' || c == '\r');
@@ -153,16 +151,16 @@ protected:
      * a pointer just past the last character of the name,
      * or 0 if the function has an error.
      */
-    static const char* ReadName(const char* p, std::string* name);
+    static const char* ReadName(const char* p, std::pmr::string* name);
 
     /*	Reads text. Returns a pointer past the given end tag.
      * Wickedly complex options, but it keeps the (sensitive) code in one place.
      */
-    static const char* ReadText(const char* in,         // where to start
-                                std::string* text,      // the string read
-                                bool ignoreWhiteSpace,  // whether to keep the white space
-                                const char* endTag,     // what ends this text
-                                bool ignoreCase);       // whether to ignore case in the end tag
+    static const char* ReadText(const char* in,          // where to start
+                                std::pmr::string* text,  // the string read
+                                bool ignoreWhiteSpace,   // whether to keep the white space
+                                const char* endTag,      // what ends this text
+                                bool ignoreCase);        // whether to ignore case in the end tag
 
     // If an entity has been found, transform it into a character.
     static const char* GetEntity(const char* in, char* value, int* length);

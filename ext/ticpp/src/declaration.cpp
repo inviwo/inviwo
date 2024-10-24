@@ -4,29 +4,18 @@
 #include <ticpp/document.h>
 #include <ticpp/parsingdata.h>
 
-TiXmlDeclaration::TiXmlDeclaration(const char* _version, const char* _encoding,
-                                   const char* _standalone)
-    : TiXmlNode(TiXmlNode::DECLARATION) {
-    version = _version;
-    encoding = _encoding;
-    standalone = _standalone;
-}
-
-TiXmlDeclaration::TiXmlDeclaration(const std::string& _version, const std::string& _encoding,
-                                   const std::string& _standalone)
-    : TiXmlNode(TiXmlNode::DECLARATION) {
-    version = _version;
-    encoding = _encoding;
-    standalone = _standalone;
-}
+TiXmlDeclaration::TiXmlDeclaration(const allocator_type& alloc)
+    : TiXmlNode(TiXmlNode::DECLARATION, "", alloc)
+    , version{alloc}
+    , encoding(alloc)
+    , standalone(alloc) {}
 
 TiXmlDeclaration::TiXmlDeclaration(std::string_view _version, std::string_view _encoding,
-                                   std::string_view _standalone)
-    : TiXmlNode(TiXmlNode::DECLARATION) {
-    version = _version;
-    encoding = _encoding;
-    standalone = _standalone;
-}
+                                   std::string_view _standalone, const allocator_type& alloc)
+    : TiXmlNode(TiXmlNode::DECLARATION, "", alloc)
+    , version{_version, alloc}
+    , encoding(_encoding, alloc)
+    , standalone(_standalone, alloc) {}
 
 TiXmlDeclaration::TiXmlDeclaration(const TiXmlDeclaration& copy)
     : TiXmlNode(TiXmlNode::DECLARATION) {
@@ -89,7 +78,8 @@ TiXmlNode* TiXmlDeclaration::Clone() const {
     return clone;
 }
 
-const char* TiXmlDeclaration::Parse(const char* p, TiXmlParsingData* data) {
+const char* TiXmlDeclaration::Parse(const char* p, TiXmlParsingData* data,
+                                    const allocator_type& alloc) {
     p = SkipWhiteSpace(p);
     // Find the beginning, find the end, and look for
     // the stuff in-between.
@@ -116,16 +106,16 @@ const char* TiXmlDeclaration::Parse(const char* p, TiXmlParsingData* data) {
 
         p = SkipWhiteSpace(p);
         if (StringEqual(p, "version", true)) {
-            TiXmlAttribute attrib;
-            p = attrib.Parse(p, data);
+            TiXmlAttribute attrib{alloc};
+            p = attrib.Parse(p, data, alloc);
             version = attrib.Value();
         } else if (StringEqual(p, "encoding", true)) {
-            TiXmlAttribute attrib;
-            p = attrib.Parse(p, data);
+            TiXmlAttribute attrib{alloc};
+            p = attrib.Parse(p, data, alloc);
             encoding = attrib.Value();
         } else if (StringEqual(p, "standalone", true)) {
-            TiXmlAttribute attrib;
-            p = attrib.Parse(p, data);
+            TiXmlAttribute attrib{alloc};
+            p = attrib.Parse(p, data, alloc);
             standalone = attrib.Value();
         } else {
             // Read over whatever it is.

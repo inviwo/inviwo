@@ -11,12 +11,12 @@
     XML pieces. It can be saved, loaded, and printed to the screen.
     The 'value' of a document node is the xml file name.
 */
-class TICPP_API TiXmlDocument : public TiXmlNode {
+class TICPP_API TiXmlDocument final : public TiXmlNode {
 public:
     /// Create an empty document, that has no name.
-    TiXmlDocument();
+    TiXmlDocument(const allocator_type& alloc = {});
     /// Create a document with a name. The name of the document is also the filename of the xml.
-    TiXmlDocument(std::string_view documentName);
+    TiXmlDocument(std::string_view documentName, const allocator_type& alloc = {});
 
     TiXmlDocument(const TiXmlDocument& copy);
     void operator=(const TiXmlDocument& copy);
@@ -44,10 +44,11 @@ public:
     /// Save a file using the given FILE*. Returns true if successful.
     bool SaveFile(FILE*) const;
 
-
     /** Parse the given null terminated block of xml data.
-    */
-    virtual const char* Parse(const char* p, TiXmlParsingData* data = nullptr);
+     */
+    const char* Parse(const char* p, TiXmlParsingData* data);
+
+    virtual const char* Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc);
 
     /** Get the root element -- the only top level element -- of the document.
         In well formed XML, there should only be one. TinyXml is tolerant of
@@ -137,11 +138,15 @@ public:
     /// Walk the XML tree visiting this node and all of its children.
     virtual bool Accept(TiXmlVisitor* content) const;
 
+    const allocator_type& getAllocator() const { return allocator; }
+
 protected:
     virtual TiXmlNode* Clone() const;
 
 private:
     void CopyTo(TiXmlDocument* target) const;
+
+    allocator_type allocator;
 
     bool error;
     int errorId;

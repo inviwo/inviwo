@@ -62,7 +62,7 @@ public:
      * @param fileName full path to xml file.
      * @throws SerializationException
      */
-    Serializer(const std::filesystem::path& fileName);
+    Serializer(const std::filesystem::path& fileName, const allocator_type& alloc = {});
 
     virtual ~Serializer();
 

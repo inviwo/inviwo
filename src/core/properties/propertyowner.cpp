@@ -324,9 +324,9 @@ void PropertyOwner::deserialize(Deserializer& d) {
 
     auto des =
         util::IdentifiedDeserializer<std::string, Property*>("Properties", "Property")
-            .setGetId([](Property* const& p) -> decltype(auto) { return p->getIdentifier(); })
+            .setGetId([](Property* const& p) -> const std::string& { return p->getIdentifier(); })
             .setMakeNew([]() { return nullptr; })
-            .setNewFilter([&](const std::string& id, size_t /*ind*/) {
+            .setNewFilter([&](std::string_view id, size_t /*ind*/) {
                 return util::contains(ownedIdentifiers, id);
             })
             .onNewIndexed([&](Property*& p, size_t i) { insertProperty(i, p, true); })

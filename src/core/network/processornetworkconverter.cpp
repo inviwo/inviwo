@@ -377,8 +377,8 @@ void ProcessorNetworkConverter::updatePropertyLinks(TxElement* node) {
 void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
     struct RefManager : public TiXmlVisitor {
         virtual bool VisitEnter(const TiXmlElement& node, const TiXmlAttribute*) override {
-            if (const auto* id = node.Attribute("id")) {
-                ids_.push_back(*id);
+            if (const auto id = node.Attribute("id")) {
+                ids_.emplace_back(*id);
                 std::sort(ids_.begin(), ids_.end());
             }
             return true;

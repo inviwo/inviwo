@@ -21,7 +21,7 @@ TiXmlNode* TiXmlUnknown::Clone() const {
     return clone;
 }
 
-const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data) {
+const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc) {
     TiXmlDocument* document = GetDocument();
     p = SkipWhiteSpace(p);
 

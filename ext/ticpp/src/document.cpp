@@ -41,14 +41,13 @@ FILE* TiXmlFOpen(std::string_view filename, const char* mode) {
 #endif
 }
 
-TiXmlDocument::TiXmlDocument() : TiXmlNode(TiXmlNode::DOCUMENT) {
-    tabsize = 4;
+TiXmlDocument::TiXmlDocument(const allocator_type& alloc)
+    : TiXmlNode(TiXmlNode::DOCUMENT, "", alloc), allocator{alloc}, tabsize{4} {
     ClearError();
 }
 
-TiXmlDocument::TiXmlDocument(std::string_view documentName) : TiXmlNode(TiXmlNode::DOCUMENT) {
-    tabsize = 4;
-    value = documentName;
+TiXmlDocument::TiXmlDocument(std::string_view documentName, const allocator_type& alloc)
+    : TiXmlNode(TiXmlNode::DOCUMENT, documentName, alloc), allocator{alloc}, tabsize{4} {
     ClearError();
 }
 
@@ -61,13 +60,9 @@ void TiXmlDocument::operator=(const TiXmlDocument& copy) {
     copy.CopyTo(this);
 }
 
-bool TiXmlDocument::LoadFile() {
-    return LoadFile(Value());
-}
+bool TiXmlDocument::LoadFile() { return LoadFile(Value()); }
 
-bool TiXmlDocument::SaveFile() const {
-    return SaveFile(Value());
-}
+bool TiXmlDocument::SaveFile() const { return SaveFile(Value()); }
 
 bool TiXmlDocument::LoadFile(std::string_view filename) {
     value = filename;
@@ -109,7 +104,7 @@ bool TiXmlDocument::LoadFile(FILE* file) {
 
     // If we have a file, assume it is all one big XML file, and read it in.
     // The document parser may decide the document ends sooner than the entire file, however.
-    std::string data;
+    std::pmr::string data{allocator};
     data.reserve(length);
 
     // Subtle bug here. TinyXml did use fgets. But from the XML spec:
@@ -185,12 +180,13 @@ bool TiXmlDocument::LoadFile(FILE* file) {
     delete[] buf;
     buf = 0;
 
-    Parse(data.c_str(), 0);
+    Parse(data.c_str(), nullptr, allocator);
 
-    if (Error())
+    if (Error()) {
         return false;
-    else
+    } else {
         return true;
+    }
 }
 
 bool TiXmlDocument::SaveFile(std::string_view filename) const {
@@ -250,6 +246,11 @@ bool TiXmlDocument::Accept(TiXmlVisitor* visitor) const {
 }
 
 const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData) {
+    return Parse(p, prevData, allocator);
+}
+
+const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData,
+                                 const allocator_type& alloc) {
     ClearError();
 
     // Parse away, at the document level. Since a document
@@ -281,8 +282,8 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData) {
     }
 
     while (p && *p) {
-        if (TiXmlNode* node = Identify(p)) {
-            p = node->Parse(p, &data);
+        if (TiXmlNode* node = Identify(p, alloc)) {
+            p = node->Parse(p, &data, alloc);
             LinkEndChild(node);
         } else {
             break;

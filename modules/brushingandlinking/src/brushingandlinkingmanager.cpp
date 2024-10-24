@@ -446,7 +446,7 @@ void BrushingAndLinkingManager::deserialize(Deserializer& d) {
                            .onNew([&](const BrushingTarget& key, BitSet& b) { map[key] = b; })
                            .onRemove([&](const BrushingTarget& key) { map.erase(key); })
                            .setIdentifierTransform(
-                               [](const std::string& id) { return BrushingTarget(id); });
+                               [](std::string_view id) { return BrushingTarget(id); });
 
             des(d, map);
         } else if (std::holds_alternative<IndexListTargets>(targetmap)) {
@@ -458,7 +458,7 @@ void BrushingAndLinkingManager::deserialize(Deserializer& d) {
                     .onNew([&](const BrushingTarget& key, IndexList& l) { map[key] = l; })
                     .onRemove([&](const BrushingTarget& key) { map.erase(key); })
                     .setIdentifierTransform(
-                        [](const std::string& id) { return BrushingTarget(id); });
+                        [](std::string_view id) { return BrushingTarget(id); });
             des(d, map);
         }
     }

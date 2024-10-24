@@ -7,12 +7,14 @@
 
 /**	An XML comment.
  */
-class TICPP_API TiXmlComment : public TiXmlNode {
+class TICPP_API TiXmlComment final : public TiXmlNode {
 public:
     /// Constructs an empty comment.
-    TiXmlComment() : TiXmlNode(TiXmlNode::COMMENT) {}
+    TiXmlComment(const allocator_type& alloc = {}) : TiXmlNode(TiXmlNode::COMMENT, "", alloc) {}
     /// Construct a comment from text.
-    TiXmlComment(const char* _value) : TiXmlNode(TiXmlNode::COMMENT) { SetValue(_value); }
+    TiXmlComment(std::string_view _value, const allocator_type& alloc = {})
+        : TiXmlNode(TiXmlNode::COMMENT, _value, alloc) {}
+        
     TiXmlComment(const TiXmlComment&);
     void operator=(const TiXmlComment& base);
 
@@ -26,7 +28,7 @@ public:
     /*	Attribute parsing starts: at the ! of the !--
         returns: next char past '>'
     */
-    virtual const char* Parse(const char* p, TiXmlParsingData* data);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc);
 
     /// Cast to a more defined type. Will return null not of the requested type.
     virtual const TiXmlComment* ToComment() const { return this; }
