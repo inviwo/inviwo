@@ -45,12 +45,9 @@ constexpr bool charconv = false;
 #endif
 }  // namespace config
 
-SerializeBase::SerializeBase()
-    : doc_{std::make_unique<TiXmlDocument>()}, rootElement_{nullptr}, retrieveChild_{true} {}
-
-SerializeBase::SerializeBase(const std::filesystem::path& fileName)
+SerializeBase::SerializeBase(const std::filesystem::path& fileName, const allocator_type& alloc)
     : fileName_{fileName}
-    , doc_{std::make_unique<TiXmlDocument>(fileName.string())}
+    , doc_{std::make_unique<TiXmlDocument>(fileName.string(), alloc)}
     , rootElement_{nullptr}
     , retrieveChild_{true} {}
 

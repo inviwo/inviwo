@@ -541,7 +541,7 @@ bool BaseModule::Converter::convert(TxElement* root) {
             TraversingVersionConverter conv{[&](TxElement* node) -> bool {
                 const auto& key = node->Value();
                 if (key != "Processor") return true;
-                std::string_view type = node->GetAttribute("type");
+                std::string type = node->GetAttribute("type");
                 if (type != "org.inviwo.TransformLayer" && type != "org.inviwo.TransformMesh" &&
                     type != "org.inviwo.TransformVolume") {
                     return true;

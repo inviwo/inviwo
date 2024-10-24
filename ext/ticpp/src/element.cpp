@@ -7,8 +7,8 @@
 
 #include <cstring>
 
-TiXmlElement::TiXmlElement(std::string_view _value)
-    : TiXmlNode(TiXmlNode::ELEMENT, _value), attributeSet{} {}
+TiXmlElement::TiXmlElement(std::string_view _value, const allocator_type& alloc)
+    : TiXmlNode(TiXmlNode::ELEMENT, _value, alloc), attributeSet{alloc} {}
 
 TiXmlElement::TiXmlElement(const TiXmlElement& copy)
     : TiXmlNode(TiXmlNode::ELEMENT), attributeSet{} {
@@ -31,11 +31,11 @@ void TiXmlElement::ClearThis() {
     }
 }
 
-const std::string* TiXmlElement::Attribute(std::string_view name) const {
+std::optional<std::string_view> TiXmlElement::Attribute(std::string_view name) const {
     if (const TiXmlAttribute* node = attributeSet.Find(name)) {
-        return &node->Value();
+        return node->Value();
     }
-    return nullptr;
+    return std::nullopt;
 }
 
 void TiXmlElement::SetAttribute(std::string_view name, std::string_view _value) {
@@ -44,11 +44,12 @@ void TiXmlElement::SetAttribute(std::string_view name, std::string_view _value) 
         return;
     }
 
-    if (TiXmlAttribute* attrib = new TiXmlAttribute(name, _value)) {
+    if (TiXmlAttribute* attrib = new TiXmlAttribute(name, _value, value.get_allocator())) {
         attributeSet.Add(attrib);
     } else {
-        TiXmlDocument* document = GetDocument();
-        if (document) document->SetError(TIXML_ERROR_OUT_OF_MEMORY, nullptr, nullptr);
+        if (TiXmlDocument* document = GetDocument()) {
+            document->SetError(TIXML_ERROR_OUT_OF_MEMORY, nullptr, nullptr);
+        }
     }
 }
 
@@ -135,16 +136,17 @@ TiXmlNode* TiXmlElement::Clone() const {
     return clone;
 }
 
-const std::string* TiXmlElement::GetText() const {
+std::optional<std::string_view> TiXmlElement::GetText() const {
     if (const auto* child = this->FirstChild()) {
         if (const auto childText = child->ToText()) {
-            return &childText->Value();
+            return childText->Value();
         }
     }
-    return nullptr;
+    return std::nullopt;
 }
 
-const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data) {
+const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data,
+                                const allocator_type& alloc) {
     p = SkipWhiteSpace(p);
     TiXmlDocument* document = GetDocument();
 
@@ -174,7 +176,7 @@ const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data) {
         return nullptr;
     }
 
-    std::string endTag("</");
+    std::pmr::string endTag("</", alloc);
     endTag += value;
     endTag += ">";
 
@@ -200,8 +202,8 @@ const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data) {
             // Read the value -- which can include other
             // elements -- read the end tag, and return.
             ++p;
-            p = ReadValue(p, data);  // Note this is an Element method, and will set the
-                                     // error if one happens.
+            p = ReadValue(p, data, alloc);  // Note this is an Element method, and will set the
+                                            // error if one happens.
             if (!p || !*p) {
                 // We were looking for the end tag, but found nothing.
                 // Fix for [ 1663758 ] Failure to report error on bad XML
@@ -227,7 +229,7 @@ const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data) {
 
             attrib->SetDocument(document);
             pErr = p;
-            p = attrib->Parse(p, data);
+            p = attrib->Parse(p, data, alloc);
 
             if (!p || !*p) {
                 if (document) document->SetError(TIXML_ERROR_PARSING_ELEMENT, pErr, data);
@@ -248,7 +250,8 @@ const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data) {
     return p;
 }
 
-const char* TiXmlElement::ReadValue(const char* p, TiXmlParsingData* data) {
+const char* TiXmlElement::ReadValue(const char* p, TiXmlParsingData* data,
+                                    const allocator_type& alloc) {
     TiXmlDocument* document = GetDocument();
 
     // Read in text and elements in any order.
@@ -258,25 +261,26 @@ const char* TiXmlElement::ReadValue(const char* p, TiXmlParsingData* data) {
     while (p && *p) {
         if (*p != '<') {
             // Take what we have, make a text element.
-            TiXmlText* textNode = new TiXmlText("");
+            TiXmlText* textNode = new TiXmlText("", false, alloc);
 
             if (!textNode) {
                 if (document) document->SetError(TIXML_ERROR_OUT_OF_MEMORY, 0, 0);
-                return 0;
+                return nullptr;
             }
 
             if (TiXmlBase::IsWhiteSpaceCondensed()) {
-                p = textNode->Parse(p, data);
+                p = textNode->Parse(p, data, alloc);
             } else {
                 // Special case: we want to keep the white space
                 // so that leading spaces aren't removed.
-                p = textNode->Parse(pWithWhiteSpace, data);
+                p = textNode->Parse(pWithWhiteSpace, data, alloc);
             }
 
-            if (!textNode->Blank())
+            if (!textNode->Blank()) {
                 LinkEndChild(textNode);
-            else
+            } else {
                 delete textNode;
+            }
         } else {
             // We hit a '<'
             // Have we hit a new element or an end tag? This could also be
@@ -284,12 +288,11 @@ const char* TiXmlElement::ReadValue(const char* p, TiXmlParsingData* data) {
             if (StringEqual(p, "</", false)) {
                 return p;
             } else {
-                TiXmlNode* node = Identify(p);
-                if (node) {
-                    p = node->Parse(p, data);
+                if (TiXmlNode* node = Identify(p, alloc)) {
+                    p = node->Parse(p, data, alloc);
                     LinkEndChild(node);
                 } else {
-                    return 0;
+                    return nullptr;
                 }
             }
         }
