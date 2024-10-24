@@ -53,7 +53,7 @@ void TiXmlAttribute::Print(std::string* str, int /*depth*/) const {
     }
 }
 
-TiXmlAttributeSet::TiXmlAttributeSet() {
+TiXmlAttributeSet::TiXmlAttributeSet(const allocator_type& alloc) : sentinel{alloc} {
     sentinel.next = &sentinel;
     sentinel.prev = &sentinel;
 }
@@ -95,7 +95,8 @@ const TiXmlAttribute* TiXmlAttributeSet::Find(std::string_view name) const {
     return nullptr;
 }
 
-const char* TiXmlAttribute::Parse(const char* p, TiXmlParsingData* data) {
+const char* TiXmlAttribute::Parse(const char* p, TiXmlParsingData* data,
+                                  const allocator_type& alloc) {
     p = SkipWhiteSpace(p);
     if (!p || !*p) return nullptr;
 

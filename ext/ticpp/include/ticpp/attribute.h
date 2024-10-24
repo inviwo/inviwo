@@ -5,6 +5,8 @@
 
 #include <ticpp/base.h>
 
+#include <memory_resource>
+
 /** An attribute is a name-value pair. Elements have an arbitrary
  * number of attributes, each with a unique name.
  *
@@ -12,27 +14,28 @@
  * part of the tinyXML document object model. There are other
  * suggested ways to look at this problem.
  */
-class TICPP_API TiXmlAttribute : public TiXmlBase {
+class TICPP_API TiXmlAttribute final : public TiXmlBase {
     friend class TiXmlAttributeSet;
 
 public:
     /// Construct an empty attribute.
-    TiXmlAttribute()
-        : TiXmlBase(), document{nullptr}, name{}, value{}, prev{nullptr}, next{nullptr} {}
+    TiXmlAttribute(const allocator_type& alloc = {})
+        : TiXmlBase(), document{nullptr}, name{alloc}, value{alloc}, prev{nullptr}, next{nullptr} {}
 
-    TiXmlAttribute(std::string_view _name, std::string_view _value)
+    TiXmlAttribute(std::string_view _name, std::string_view _value,
+                   const allocator_type& alloc = {})
         : TiXmlBase()
         , document{nullptr}
-        , name{_name}
-        , value{_value}
+        , name{_name, alloc}
+        , value{_value, alloc}
         , prev{nullptr}
         , next{nullptr} {}
 
     TiXmlAttribute(const TiXmlAttribute&) = delete;
     TiXmlAttribute& operator=(const TiXmlAttribute& base) = delete;
 
-    const std::string& Name() const { return name; }    ///< Return the name of this attribute.
-    const std::string& Value() const { return value; }  ///< Return the value of this attribute.
+    std::string_view Name() const { return name; }    ///< Return the name of this attribute.
+    std::string_view Value() const { return value; }  ///< Return the value of this attribute.
 
     void SetName(std::string_view _name) { name = _name; }
     void SetValue(std::string_view _value) { value = _value; }
@@ -56,7 +59,8 @@ public:
     /*	Attribute parsing starts: first letter of the name
         returns: the next char after the value end quote
     */
-    virtual const char* Parse(const char* p, TiXmlParsingData* data) override;
+    virtual const char* Parse(const char* p, TiXmlParsingData* data,
+                              const allocator_type& alloc) override;
 
     // Prints this Attribute to a FILE stream.
     virtual void Print(FILE* cfile, int depth) const override;
@@ -68,8 +72,8 @@ public:
 
 private:
     TiXmlDocument* document;  // A pointer back to a document, for error reporting.
-    std::string name;
-    std::string value;
+    std::pmr::string name;
+    std::pmr::string value;
     TiXmlAttribute* prev;
     TiXmlAttribute* next;
 };
@@ -88,7 +92,9 @@ private:
  */
 class TICPP_API TiXmlAttributeSet {
 public:
-    TiXmlAttributeSet();
+    using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
+
+    TiXmlAttributeSet(const allocator_type& alloc = {});
     ~TiXmlAttributeSet();
     TiXmlAttributeSet(const TiXmlAttributeSet&) = delete;
     TiXmlAttributeSet& operator=(const TiXmlAttributeSet&) = delete;

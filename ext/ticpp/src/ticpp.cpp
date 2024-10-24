@@ -71,12 +71,12 @@ Attribute::Attribute(const Attribute& copy) : Base() {
 
 Attribute::~Attribute() { m_impRC->DecRef(); }
 
-const std::string& Attribute::Value() const {
+std::string_view Attribute::Value() const {
     ValidatePointer();
     return m_tiXmlPointer->Value();
 }
 
-const std::string& Attribute::Name() const {
+std::string_view Attribute::Name() const {
     ValidatePointer();
     return m_tiXmlPointer->Name();
 }
@@ -176,7 +176,7 @@ Node* Node::NodeFactory(TiXmlNode* tiXmlNode, bool throwIfNull, bool rememberSpa
     return temp;
 }
 
-const std::string& Node::Value() const { return GetTiXmlPointer()->Value(); }
+std::string_view Node::Value() const { return GetTiXmlPointer()->Value(); }
 
 void Node::Clear() { GetTiXmlPointer()->Clear(); }
 
@@ -637,7 +637,7 @@ void Document::SaveFile(const std::string& filename) const {
 }
 
 void Document::Parse(const std::string& xml, bool throwIfParseError) {
-    m_tiXmlPointer->Parse(xml.c_str(), 0);
+    m_tiXmlPointer->Parse(xml.c_str(), 0, TiXmlDocument::allocator_type{});
     if (throwIfParseError && m_tiXmlPointer->Error()) {
         error("Error parsing xml.");
     }
@@ -706,40 +706,23 @@ Attribute* Element::LastAttribute(bool throwIfNoAttributes) const {
     return temp;
 }
 
-const std::string& Element::GetAttributeOrDefault(std::string_view name,
+std::string Element::GetAttributeOrDefault(std::string_view name,
                                                   const std::string& defaultValue) const {
-    if (auto* str = GetAttributePtr(name)) {
-        return *str;
+    if (auto str = GetAttributePtr(name)) {
+        return std::string{*str};
     } else {
         return defaultValue;
     }
 }
 
-const std::string& Element::GetAttribute(const std::string& name) const {
-    static const std::string empty;
-    return GetAttributeOrDefault(name, empty);
-}
-
-const std::string& ticpp::Element::GetAttribute(const char* name) const {
-    ValidatePointer();
-
-    // Get value from TinyXML, if the attribute exists
-    if (auto* str = m_tiXmlPointer->Attribute(name)) {
-        return *str;
-    } else {
-        static const std::string empty;
-        return empty;
-    }
-}
-
-const std::string& Element::GetAttribute(std::string_view name) const {
+std::string Element::GetAttribute(std::string_view name) const {
     static const std::string empty;
     return GetAttributeOrDefault(name, empty);
 }
 
 bool Element::HasAttribute(std::string_view name) const {
     ValidatePointer();
-    return m_tiXmlPointer->Attribute(name) != nullptr;
+    return m_tiXmlPointer->Attribute(name).has_value();
 }
 
 void Element::RemoveAttribute(std::string_view name) {
@@ -747,13 +730,13 @@ void Element::RemoveAttribute(std::string_view name) {
     m_tiXmlPointer->RemoveAttribute(name);
 }
 
-const std::string* Element::GetAttributePtr(std::string_view name) const {
+std::optional<std::string_view> Element::GetAttributePtr(std::string_view name) const {
     ValidatePointer();
 
     return m_tiXmlPointer->Attribute(name);
 }
 
-const std::string* Element::GetTextImp() const {
+std::optional<std::string_view> Element::GetTextImp() const {
     ValidatePointer();
 
     return m_tiXmlPointer->GetText();
@@ -773,11 +756,11 @@ Declaration::Declaration(std::string_view version, std::string_view encoding,
 
 Declaration::~Declaration() {}
 
-const std::string& Declaration::Version() const { return m_tiXmlPointer->Version(); }
+std::string_view Declaration::Version() const { return m_tiXmlPointer->Version(); }
 
-const std::string& Declaration::Encoding() const { return m_tiXmlPointer->Encoding(); }
+std::string_view Declaration::Encoding() const { return m_tiXmlPointer->Encoding(); }
 
-const std::string& Declaration::Standalone() const { return m_tiXmlPointer->Standalone(); }
+std::string_view Declaration::Standalone() const { return m_tiXmlPointer->Standalone(); }
 
 StylesheetReference::StylesheetReference()
     : NodeImp<TiXmlStylesheetReference>(new TiXmlStylesheetReference()) {
@@ -794,8 +777,8 @@ StylesheetReference::StylesheetReference(const std::string& type, const std::str
 
 StylesheetReference::~StylesheetReference() {}
 
-const std::string& StylesheetReference::Type() const { return m_tiXmlPointer->Type(); }
+std::string_view StylesheetReference::Type() const { return m_tiXmlPointer->Type(); }
 
-const std::string& StylesheetReference::Href() const { return m_tiXmlPointer->Href(); }
+std::string_view StylesheetReference::Href() const { return m_tiXmlPointer->Href(); }
 
 }  // namespace ticpp

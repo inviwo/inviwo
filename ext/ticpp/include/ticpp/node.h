@@ -16,9 +16,6 @@
  * can be queried, and it can be cast to its more defined type.
  */
 class TICPP_API TiXmlNode : public TiXmlBase {
-//    friend class TiXmlDocument;
-//    friend class TiXmlElement;
-
 public:
     /** An output stream operator, for every class. Note that this outputs
      * without any newlines or formatting, as opposed to Print(), which
@@ -83,7 +80,7 @@ public:
 
         The subclasses will wrap this function.
     */
-    const std::string& Value() const { return value; }
+    std::string_view Value() const { return value; }
 
     /** Changes the value of the node. Defined as:
         @verbatim
@@ -205,7 +202,8 @@ public:
     /// Navigate to a sibling node.
     const TiXmlNode* PreviousSibling(std::string_view _value) const;
     TiXmlNode* PreviousSibling(std::string_view _value) {
-        return const_cast<TiXmlNode*>((const_cast<const TiXmlNode*>(this))->PreviousSibling(_value));
+        return const_cast<TiXmlNode*>(
+            (const_cast<const TiXmlNode*>(this))->PreviousSibling(_value));
     }
 
     /** Convenience function to get through elements.
@@ -331,14 +329,14 @@ public:
     virtual bool Accept(TiXmlVisitor* visitor) const = 0;
 
 protected:
-    TiXmlNode(NodeType _type, std::string_view _value = "");
+    TiXmlNode(NodeType _type, std::string_view _value = "", const allocator_type& alloc = {});
 
     // Copy to the allocated object. Shared functionality between Clone, Copy constructor,
     // and the assignment operator.
     void CopyTo(TiXmlNode* target) const;
 
     // Figure out what is at *p, and parse it. Returns null if it is not an xml node.
-    TiXmlNode* Identify(const char* start);
+    TiXmlNode* Identify(const char* start, const allocator_type& alloc);
 
     TiXmlNode* parent;
     NodeType type;
@@ -346,7 +344,7 @@ protected:
     TiXmlNode* firstChild;
     TiXmlNode* lastChild;
 
-    std::string value;
+    std::pmr::string value;
 
     TiXmlNode* prev;
     TiXmlNode* next;

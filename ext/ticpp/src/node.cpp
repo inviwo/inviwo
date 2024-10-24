@@ -11,13 +11,13 @@
 #include <ostream>
 #include <cstring>
 
-TiXmlNode::TiXmlNode(NodeType _type, std::string_view _value)
+TiXmlNode::TiXmlNode(NodeType _type, std::string_view _value, const allocator_type& alloc)
     : TiXmlBase()
     , parent{nullptr}
     , type{_type}
     , firstChild{nullptr}
     , lastChild{nullptr}
-    , value{_value}
+    , value{_value, alloc}
     , prev{nullptr}
     , next{nullptr} {}
 
@@ -235,7 +235,7 @@ const TiXmlNode* TiXmlNode::PreviousSibling(std::string_view _value) const {
     return nullptr;
 }
 
-TiXmlNode* TiXmlNode::Identify(const char* p) {
+TiXmlNode* TiXmlNode::Identify(const char* p, const allocator_type& alloc) {
     TiXmlNode* returnNode = nullptr;
 
     p = SkipWhiteSpace(p);
@@ -260,37 +260,37 @@ TiXmlNode* TiXmlNode::Identify(const char* p) {
 #ifdef DEBUG_PARSER
         TIXML_LOG("XML parsing Stylesheet Reference\n");
 #endif
-        returnNode = new TiXmlStylesheetReference();
+        returnNode = new TiXmlStylesheetReference(alloc);
     } else if (StringEqual(p, xmlHeader, true)) {
 #ifdef DEBUG_PARSER
         TIXML_LOG("XML parsing Declaration\n");
 #endif
-        returnNode = new TiXmlDeclaration();
+        returnNode = new TiXmlDeclaration(alloc);
     } else if (StringEqual(p, commentHeader, false)) {
 #ifdef DEBUG_PARSER
         TIXML_LOG("XML parsing Comment\n");
 #endif
-        returnNode = new TiXmlComment();
+        returnNode = new TiXmlComment(alloc);
     } else if (StringEqual(p, cdataHeader, false)) {
 #ifdef DEBUG_PARSER
         TIXML_LOG("XML parsing CDATA\n");
 #endif
-        returnNode = new TiXmlText("", true);
+        returnNode = new TiXmlText("", true, alloc);
     } else if (StringEqual(p, dtdHeader, false)) {
 #ifdef DEBUG_PARSER
         TIXML_LOG("XML parsing Unknown(1)\n");
 #endif
-        returnNode = new TiXmlUnknown();
+        returnNode = new TiXmlUnknown(alloc);
     } else if (IsAlpha(*(p + 1)) || *(p + 1) == '_') {
 #ifdef DEBUG_PARSER
         TIXML_LOG("XML parsing Element\n");
 #endif
-        returnNode = new TiXmlElement("");
+        returnNode = new TiXmlElement("", alloc);
     } else {
 #ifdef DEBUG_PARSER
         TIXML_LOG("XML parsing Unknown(2)\n");
 #endif
-        returnNode = new TiXmlUnknown();
+        returnNode = new TiXmlUnknown(alloc);
     }
 
     if (returnNode) {

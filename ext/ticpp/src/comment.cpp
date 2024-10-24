@@ -35,7 +35,7 @@ TiXmlNode* TiXmlComment::Clone() const {
     return clone;
 }
 
-const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data) {
+const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc) {
     TiXmlDocument* document = GetDocument();
     value = "";
 

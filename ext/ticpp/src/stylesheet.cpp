@@ -4,13 +4,14 @@
 #include <ticpp/document.h>
 #include <ticpp/parsingdata.h>
 
+TiXmlStylesheetReference::TiXmlStylesheetReference(const allocator_type& alloc)
+    : TiXmlNode(TiXmlNode::STYLESHEETREFERENCE, "", alloc), type{alloc}, href{alloc} {}
 
-TiXmlStylesheetReference::TiXmlStylesheetReference(std::string_view _type,
-                                                   std::string_view _href)
-    : TiXmlNode(TiXmlNode::STYLESHEETREFERENCE) {
-    type = _type;
-    href = _href;
-}
+TiXmlStylesheetReference::TiXmlStylesheetReference(std::string_view _type, std::string_view _href,
+                                                   const allocator_type& alloc)
+    : TiXmlNode(TiXmlNode::STYLESHEETREFERENCE, "", alloc)
+    , type{_type, alloc}
+    , href{_href, alloc} {}
 
 TiXmlStylesheetReference::TiXmlStylesheetReference(const TiXmlStylesheetReference& copy)
     : TiXmlNode(TiXmlNode::STYLESHEETREFERENCE) {
@@ -64,7 +65,8 @@ TiXmlNode* TiXmlStylesheetReference::Clone() const {
     return clone;
 }
 
-const char* TiXmlStylesheetReference::Parse(const char* p, TiXmlParsingData* data) {
+const char* TiXmlStylesheetReference::Parse(const char* p, TiXmlParsingData* data,
+                                            const allocator_type& alloc) {
     p = SkipWhiteSpace(p);
     // Find the beginning, find the end, and look for
     // the stuff in-between.
@@ -90,12 +92,12 @@ const char* TiXmlStylesheetReference::Parse(const char* p, TiXmlParsingData* dat
 
         p = SkipWhiteSpace(p);
         if (StringEqual(p, "type", true)) {
-            TiXmlAttribute attrib;
-            p = attrib.Parse(p, data);
+            TiXmlAttribute attrib{alloc};
+            p = attrib.Parse(p, data, alloc);
             type = attrib.Value();
         } else if (StringEqual(p, "href", true)) {
-            TiXmlAttribute attrib;
-            p = attrib.Parse(p, data);
+            TiXmlAttribute attrib{alloc};
+            p = attrib.Parse(p, data, alloc);
             href = attrib.Value();
         } else {
             // Read over whatever it is.

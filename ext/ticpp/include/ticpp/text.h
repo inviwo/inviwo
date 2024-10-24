@@ -10,7 +10,7 @@
         you generally want to leave it alone, but you can change the output mode with
         SetCDATA() and query it with CDATA().
 */
-class TICPP_API TiXmlText : public TiXmlNode {
+class TICPP_API TiXmlText final : public TiXmlNode {
     friend class TiXmlElement;
 
 public:
@@ -18,8 +18,8 @@ public:
         normal, encoded text. If you want it be output as a CDATA text
         element, set the parameter _cdata to 'true'
     */
-    TiXmlText(std::string_view initValue, bool _cdata = false)
-        : TiXmlNode(TiXmlNode::TEXT, initValue), cdata{_cdata} {}
+    TiXmlText(std::string_view initValue, bool _cdata = false, const allocator_type& alloc = {})
+        : TiXmlNode(TiXmlNode::TEXT, initValue, alloc), cdata{_cdata} {}
 
     virtual ~TiXmlText() {}
 
@@ -34,7 +34,7 @@ public:
     /// Turns on or off a CDATA representation of text.
     void SetCDATA(bool _cdata) { cdata = _cdata; }
 
-    virtual const char* Parse(const char* p, TiXmlParsingData* data);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc);
 
     /// Cast to a more defined type. Will return null not of the requested type.
     virtual const TiXmlText* ToText() const { return this; }

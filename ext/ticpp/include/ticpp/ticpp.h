@@ -139,7 +139,7 @@ public:
     @throws Exception When temp cannot be converted to the target type
     */
     template <class T>
-    void FromString(const std::string& temp, T* out) const {
+    void FromString(std::string_view temp, T* out) const {
         if constexpr (std::is_same_v<T, std::string>) {
             *out = temp;
         } else if constexpr (std::is_arithmetic_v<T>) {
@@ -149,7 +149,7 @@ public:
                 error(fmt::format("Could not convert \"{}\" to target type", temp));
             }
         } else {
-            std::istringstream val(temp);
+            std::istringstream val(std::string{temp});
             val >> *out;
             if (val.fail()) {
                 error(fmt::format("Could not convert \"{}\" to target type", temp));
@@ -295,7 +295,7 @@ public:
 
     @see GetValue
     */
-    const std::string& Value() const;
+    std::string_view Value() const;
 
     /**
     Set the value of this node.
@@ -328,7 +328,7 @@ public:
 
     @see GetName
     */
-    const std::string& Name() const;
+    std::string_view Name() const;
 
     /**
     Set the value of this attribute.
@@ -409,7 +409,7 @@ public:
 
     @see GetValue
     */
-    const std::string& Value() const;
+    std::string_view Value() const;
 
     /**
     Set the value of this node.
@@ -1363,9 +1363,9 @@ public:
     @see GetTextOrDefault( T* value, const DefaultT& defaultValue )
     @see TiXmlElement::GetText
     */
-    const std::string& GetText(bool throwIfNotFound = true) const {
+    std::string_view GetText(bool throwIfNotFound = true) const {
         // Get the element's text value as a std::string
-        if (auto* str = GetTextImp()) {
+        if (auto str = GetTextImp()) {
             return *str;
         } else if (throwIfNotFound) {
             error("Text does not exists in the current element");
@@ -1386,8 +1386,8 @@ public:
     @see GetTextOrDefault( T* value, const DefaultT& defaultValue )
     @see TiXmlElement::GetText
     */
-    const std::string& GetTextOrDefault(const std::string& defaultValue) const {
-        if (auto* str = GetTextImp()) {
+    std::string_view GetTextOrDefault(const std::string& defaultValue) const {
+        if (auto str = GetTextImp()) {
             return *str;
         } else {
             return defaultValue;
@@ -1412,7 +1412,7 @@ public:
     */
     template <class T, class DefaultT>
     void GetTextOrDefault(T* value, const DefaultT& defaultValue) const {
-        if (auto* str = GetTextImp()) {
+        if (auto str = GetTextImp()) {
             FromString(*str, value);
         } else {
             *value = defaultValue;
@@ -1438,7 +1438,7 @@ public:
     */
     template <class T>
     void GetText(T* value, bool throwIfNotFound = true) const {
-        if (auto* str = GetTextImp()) {
+        if (auto str = GetTextImp()) {
             FromString(*str, value);
         } else if (throwIfNotFound) {
             error("Text does not exists in the current element");
@@ -1460,7 +1460,7 @@ public:
         if (m_tiXmlPointer->NoChildren()) {
             m_tiXmlPointer->LinkEndChild(new TiXmlText(temp));
         } else {
-            if (0 == m_tiXmlPointer->GetText()) {
+            if (!m_tiXmlPointer->GetText()) {
                 m_tiXmlPointer->InsertBeforeChild(m_tiXmlPointer->FirstChild(), TiXmlText(temp));
             } else {
                 // There already is text, so change it
@@ -1478,7 +1478,7 @@ public:
 
     @see GetAttribute
     */
-    const std::string& GetAttributeOrDefault(std::string_view name,
+    std::string GetAttributeOrDefault(std::string_view name,
                                              const std::string& defaultValue) const;
 
     /**
@@ -1494,7 +1494,7 @@ public:
     template <class T>
     T GetAttribute(std::string_view name, bool throwIfNotFound = true) const {
         T value;
-        if (auto* str = GetAttributePtr(name)) {
+        if (auto str = GetAttributePtr(name)) {
             FromString(*str, &value);
         } else if (throwIfNotFound) {
             error(fmt::format("Attribute '{}' does not exist", name));
@@ -1516,7 +1516,7 @@ public:
     */
     template <class T>
     void GetAttribute(std::string_view name, T* value, bool throwIfNotFound = true) const {
-        if (auto* str = GetAttributePtr(name)) {
+        if (auto str = GetAttributePtr(name)) {
             FromString(*str, value);
         } else if (throwIfNotFound) {
             error(fmt::format("Attribute '{}' does not exist", name));
@@ -1532,9 +1532,7 @@ public:
 
     @see GetAttributeOrDefault
     */
-    const std::string& GetAttribute(const std::string& name) const;
-    const std::string& GetAttribute(const char* name) const;
-    const std::string& GetAttribute(std::string_view name) const;
+   std::string GetAttribute(std::string_view name) const;
 
     /**
     Gets an attribute of @a name from an element.
@@ -1543,7 +1541,7 @@ public:
     @param name	The name of the attribute you are querying.
     @return a pointer to the value of the attribute, or nullptr if it does not exist.
     */
-    const std::string* GetAttributePtr(std::string_view name) const;
+    std::optional<std::string_view> GetAttributePtr(std::string_view name) const;
 
     /**
     Returns true, if attribute exists
@@ -1566,7 +1564,7 @@ private:
     Implimentation of the GetText, GetTextOrDefault, GetTextValue, and GetTextValueOrDefault
     template methods.
     */
-    const std::string* GetTextImp() const;
+    std::optional<std::string_view> GetTextImp() const;
 };
 
 /** Wrapper around TiXmlDeclaration */
@@ -1581,17 +1579,17 @@ public:
     /**
     Version. Will return an empty string if none was found.
     */
-    const std::string& Version() const;
+    std::string_view Version() const;
 
     /**
     Encoding. Will return an empty string if none was found.
     */
-    const std::string& Encoding() const;
+    std::string_view Encoding() const;
 
     /**
     StandAlone. Is this a standalone document?
     */
-    const std::string& Standalone() const;
+    std::string_view Standalone() const;
 };
 
 /** Wrapper around TiXmlStylesheetReference */
@@ -1605,12 +1603,12 @@ public:
     /**
     Type. Will return an empty string if none was found.
     */
-    const std::string& Type() const;
+    std::string_view Type() const;
 
     /**
     Href. Will return an empty string if none was found.
     */
-    const std::string& Href() const;
+    std::string_view Href() const;
 };
 
 template <class T>
