@@ -39,11 +39,12 @@
 
 namespace inviwo {
 
-Deserializer::Deserializer(const std::filesystem::path& fileName) : SerializeBase(fileName) {
+Deserializer::Deserializer(const std::filesystem::path& fileName, const allocator_type& alloc)
+    : SerializeBase(fileName, alloc) {
     try {
         doc_->LoadFile();
         rootElement_ = doc_->FirstChildElement();
-        if (const auto* ver = rootElement_->Attribute(SerializeConstants::VersionAttribute)) {
+        if (const auto ver = rootElement_->Attribute(SerializeConstants::VersionAttribute)) {
             detail::fromStr(*ver, inviwoWorkspaceVersion_);
         } else {
             throw AbortException("Missing inviwo workspace version", IVW_CONTEXT);
@@ -53,17 +54,18 @@ Deserializer::Deserializer(const std::filesystem::path& fileName) : SerializeBas
     }
 }
 
-Deserializer::Deserializer(std::istream& stream, const std::filesystem::path& path)
-    : SerializeBase(path) {
+Deserializer::Deserializer(std::istream& stream, const std::filesystem::path& path,
+                           const allocator_type& alloc)
+    : SerializeBase(path, alloc) {
     try {
 
         const std::string data(std::istreambuf_iterator<char>{stream},
                                std::istreambuf_iterator<char>{});
-        doc_->Parse(data.c_str());
+        doc_->Parse(data.c_str(), nullptr, TiXmlDocument::allocator_type{});
 
         rootElement_ = doc_->FirstChildElement();
 
-        if (const auto* ver = rootElement_->Attribute(SerializeConstants::VersionAttribute)) {
+        if (const auto ver = rootElement_->Attribute(SerializeConstants::VersionAttribute)) {
             detail::fromStr(*ver, inviwoWorkspaceVersion_);
         } else {
             throw AbortException("Missing inviwo workspace version", IVW_CONTEXT);
@@ -79,19 +81,19 @@ void Deserializer::deserialize(std::string_view key, std::filesystem::path& path
 
     try {
         if (target == SerializationTarget::Attribute) {
-            if (const auto* val = rootElement_->Attribute(key)) {
+            if (const auto val = rootElement_->Attribute(key)) {
                 path = *val;
             }
         } else {
             if (NodeSwitch ns{*this, key}) {
-                if (const auto* val =
+                if (const auto val =
                         rootElement_->Attribute(SerializeConstants::ContentAttribute)) {
                     path = *val;
                 }
                 return;
             }
             if (NodeSwitch ns{*this, key, true}) {
-                if (const auto* val =
+                if (const auto val =
                         rootElement_->Attribute(SerializeConstants::ContentAttribute)) {
                     path = *val;
                 }
@@ -155,13 +157,13 @@ void Deserializer::registerFactory(FactoryBase* factory) {
 
 int Deserializer::getInviwoWorkspaceVersion() const { return inviwoWorkspaceVersion_; }
 
-const std::string* detail::attribute(TiXmlElement* node, std::string_view key) {
+std::optional<std::string_view> detail::attribute(TiXmlElement* node, std::string_view key) {
     return node->Attribute(key);
 }
-const std::string& detail::getAttribute(TiXmlElement& node, std::string_view key) {
+std::string_view detail::getAttribute(TiXmlElement& node, std::string_view key) {
     static const std::string empty;
 
-    if (auto* str = node.Attribute(key)) {
+    if (auto str = node.Attribute(key)) {
         return *str;
     } else {
         return empty;

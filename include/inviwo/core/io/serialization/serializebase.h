@@ -31,11 +31,9 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
-#include <map>
 #include <string>
-#include <array>
+#include <string_view>
 #include <filesystem>
-#include <optional>
 
 #include <fmt/format.h>
 
@@ -51,13 +49,7 @@ class Serializable;
 
 class IVW_CORE_API SerializeBase {
 public:
-    /**
-     * \brief Base class for Serializer and Deserializer.
-     *
-     * This class consists of features that are common to both serializer
-     * and de-serializer.
-     */
-    SerializeBase();
+    using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
 
     /**
      * \brief Base class for Serializer and Deserializer.
@@ -67,7 +59,7 @@ public:
      *
      * @param fileName full path to xml file (for reading or writing).
      */
-    SerializeBase(const std::filesystem::path& fileName);
+    SerializeBase(const std::filesystem::path& fileName, const allocator_type& alloc = {});
 
     SerializeBase(const SerializeBase& rhs) = delete;
     SerializeBase(SerializeBase&& rhs) noexcept;

@@ -25,7 +25,7 @@ void TiXmlBase::EncodeString(const std::string_view str, std::string* outString)
             // However, there is no mechanism (currently) for
             // this function to return an error.
             while (i < (int)str.length() - 1) {
-                outString->append(str.c_str() + i, 1);
+                outString->push_back(str[i]);
                 ++i;
                 if (str[i] == ';') break;
             }
@@ -236,7 +236,7 @@ bool TiXmlBase::StreamTo(std::istream* in, int character, std::string* tag) {
 
 // One of TinyXML's more performance demanding functions. Try to keep the memory overhead down. The
 // "assign" optimization removes over 10% of the execution time.
-const char* TiXmlBase::ReadName(const char* p, std::string* name) {
+const char* TiXmlBase::ReadName(const char* p, std::pmr::string* name) {
     // Oddly, not supported on some compilers,
     // name->clear();
     // So use this:
@@ -371,7 +371,7 @@ bool TiXmlBase::StringEqual(const char* p, const char* tag, bool ignoreCase) {
     return false;
 }
 
-const char* TiXmlBase::ReadText(const char* p, std::string* text, bool trimWhiteSpace,
+const char* TiXmlBase::ReadText(const char* p, std::pmr::string* text, bool trimWhiteSpace,
                                 const char* endTag, bool caseInsensitive) {
     *text = "";
     if (!trimWhiteSpace          // certain tags always keep whitespace

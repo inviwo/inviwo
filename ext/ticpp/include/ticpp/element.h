@@ -2,19 +2,18 @@
 
 #include <ticpp/ticppapi.h>
 #include <ticpp/fwd.h>
-
 #include <ticpp/node.h>
 #include <ticpp/attribute.h>
 
-#include <sstream>
+#include <optional>
 
 /** The element is a container class. It has a value, the element name,
     and can contain other elements, text, comments, and unknowns.
     Elements also contain an arbitrary number of attributes.
 */
-class TICPP_API TiXmlElement : public TiXmlNode {
+class TICPP_API TiXmlElement final : public TiXmlNode {
 public:
-    TiXmlElement(std::string_view value);
+    TiXmlElement(std::string_view _value, const allocator_type& alloc = {});
     TiXmlElement(const TiXmlElement&);
     void operator=(const TiXmlElement& base);
     virtual ~TiXmlElement();
@@ -22,7 +21,7 @@ public:
     /** Given an attribute name, Attribute() returns the value
      *  for the attribute of that name, or null if none exists.
      */
-    const std::string* Attribute(std::string_view name) const;
+    std::optional<std::string_view> Attribute(std::string_view name) const;
 
     /** Sets an attribute of name to a given value. The attribute
         will be created if it does not exist, or changed if it does.
@@ -72,7 +71,7 @@ public:
                  similarly named TiXmlHandle::Text() and TiXmlNode::ToText() which are
                  safe type casts on the referenced node.
     */
-    const std::string* GetText() const;
+    std::optional<std::string_view> GetText() const;
 
     /// Creates a new Element and returns it - the returned element is a copy.
     virtual TiXmlNode* Clone() const;
@@ -82,7 +81,7 @@ public:
     /*	Attribute parsing starts: next char past '<'
         returns: next char past '>'
     */
-    virtual const char* Parse(const char* p, TiXmlParsingData* data);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc);
 
     /// Cast to a more defined type. Will return null not of the requested type.
     virtual const TiXmlElement* ToElement() const { return this; }
@@ -100,7 +99,7 @@ protected:
         Reads the "value" of the element -- another element, or text.
         This should terminate with the current end tag.
     */
-    const char* ReadValue(const char* in, TiXmlParsingData* prevData);
+    const char* ReadValue(const char* in, TiXmlParsingData* prevData, const allocator_type& alloc);
 
 private:
     TiXmlAttributeSet attributeSet;

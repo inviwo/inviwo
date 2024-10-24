@@ -12,9 +12,9 @@
 
         DTD tags get thrown into TiXmlUnknowns.
 */
-class TICPP_API TiXmlUnknown : public TiXmlNode {
+class TICPP_API TiXmlUnknown final : public TiXmlNode {
 public:
-    TiXmlUnknown() : TiXmlNode(TiXmlNode::UNKNOWN) {}
+    TiXmlUnknown(const allocator_type& alloc = {}) : TiXmlNode(TiXmlNode::UNKNOWN, "", alloc) {}
     virtual ~TiXmlUnknown() {}
 
     TiXmlUnknown(const TiXmlUnknown& copy) : TiXmlNode(TiXmlNode::UNKNOWN) { copy.CopyTo(this); }
@@ -25,7 +25,7 @@ public:
     // Print this Unknown to a FILE stream.
     virtual void Print(FILE* cfile, int depth) const;
 
-    virtual const char* Parse(const char* p, TiXmlParsingData* data);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc);
 
     /// Cast to a more defined type. Will return null not of the requested type.
     virtual const TiXmlUnknown* ToUnknown() const { return this; }
@@ -37,6 +37,4 @@ public:
 
 protected:
     void CopyTo(TiXmlUnknown* target) const;
-
-private:
 };

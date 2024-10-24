@@ -459,7 +459,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         auto des = util::MapDeserializer<std::string, std::shared_ptr<Processor>>(
                        "Processors", "Processor", "identifier")
                        .setIdentifierTransform(
-                           [](const std::string& id) { return util::stripIdentifier(id); })
+                           [](std::string_view id) { return util::stripIdentifier(id); })
                        .setMakeNew([]() {
                            rendercontext::activateDefault();
                            return nullptr;

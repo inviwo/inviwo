@@ -37,7 +37,7 @@ TiXmlNode* TiXmlText::Clone() const {
     return clone;
 }
 
-const char* TiXmlText::Parse(const char* p, TiXmlParsingData* data) {
+const char* TiXmlText::Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc) {
     value = "";
 
     if (data) {
@@ -64,7 +64,7 @@ const char* TiXmlText::Parse(const char* p, TiXmlParsingData* data) {
             ++p;
         }
 
-        std::string dummy;
+        std::pmr::string dummy{alloc};
         p = ReadText(p, &dummy, false, endTag, false);
         return p;
     } else {
