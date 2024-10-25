@@ -224,7 +224,7 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                                 alphaNode.SetAttribute("identifier", "highlightAlpha");
                                 TxElement valueNode("value");
 
-                                if (const auto str = value->GetAttributePtr("w")) {
+                                if (const auto str = value->Attribute("w")) {
                                     valueNode.SetAttribute("content", *str);
                                 } else {
                                     valueNode.SetAttribute("content", "1.0");
@@ -257,7 +257,7 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                                 alphaNode.SetAttribute("type", "org.inviwo.FloatProperty");
                                 alphaNode.SetAttribute("identifier", "selectionAlpha");
                                 TxElement valueNode("value");
-                                if (const auto str = value->GetAttributePtr("w")) {
+                                if (const auto str = value->Attribute("w")) {
                                     valueNode.SetAttribute("content", *str);
                                 } else {
                                     valueNode.SetAttribute("content", "1.0");
@@ -330,12 +330,12 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                             customRange.SetAttribute("type", "org.inviwo.DoubleMinMaxProperty");
                             customRange.SetAttribute("identifier", "customRange");
                             TxElement valueNode("value");
-                            if (const auto str = value->GetAttributePtr("x")) {
+                            if (const auto str = value->Attribute("x")) {
                                 valueNode.SetAttribute("x", *str);
                             } else {
                                 valueNode.SetAttribute("x", "0.0");
                             }
-                            if (const auto str = value->GetAttributePtr("y")) {
+                            if (const auto str = value->Attribute("y")) {
                                 valueNode.SetAttribute("y", *str);
                             } else {
                                 valueNode.SetAttribute("y", "100.0");

@@ -1,7 +1,6 @@
 #include <ticpp/base.h>
 #include <ticpp/parsingdata.h>
 
-#include <istream>
 #include <cstring>
 
 #include <fmt/format.h>
@@ -205,33 +204,6 @@ const char* TiXmlBase::SkipWhiteSpace(const char* p) {
 
     return p;
 }
-
-/*
-bool TiXmlBase::StreamWhiteSpace(std::istream* in, std::string* tag) {
-    for (;;) {
-        if (!in->good()) return false;
-
-        int c = in->peek();
-        // At this scope, we can't get to a document. So fail silently.
-        if (!IsWhiteSpace(c) || c <= 0) return true;
-
-        *tag += (char)in->get();
-    }
-}
-
-bool TiXmlBase::StreamTo(std::istream* in, int character, std::string* tag) {
-    while (in->good()) {
-        int c = in->peek();
-        if (c == character) return true;
-        if (c <= 0)  // Silent failure: can't get document at this scope
-            return false;
-
-        in->get();
-        *tag += (char)c;
-    }
-    return false;
-}
-*/
 
 // One of TinyXML's more performance demanding functions. Try to keep the memory overhead down. The
 // "assign" optimization removes over 10% of the execution time.

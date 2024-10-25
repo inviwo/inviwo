@@ -222,6 +222,11 @@ bool TiXmlDocument::Accept(TiXmlVisitor* visitor) const {
     return visitor->VisitExit(*this);
 }
 
+const char* TiXmlDocument::Parse(const char* p) {
+    return Parse(p, nullptr, allocator);
+}
+
+
 const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData) {
     return Parse(p, prevData, allocator);
 }

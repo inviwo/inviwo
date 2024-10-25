@@ -2,9 +2,9 @@
 
 #include <ticpp/ticppapi.h>
 #include <ticpp/fwd.h>
-
 #include <ticpp/base.h>
 
+#include <string>
 #include <memory_resource>
 
 /** An attribute is a name-value pair. Elements have an arbitrary
@@ -14,7 +14,7 @@
  * part of the tinyXML document object model. There are other
  * suggested ways to look at this problem.
  */
-class TICPP_API TiXmlAttribute : public TiXmlBase {
+class TICPP_API TiXmlAttribute {
     friend class TiXmlAttributeSet;
 
 public:
@@ -56,9 +56,6 @@ public:
 
     int Row() const { return location.row + 1; }
     int Column() const { return location.col + 1; }
-
-    virtual const char* Parse(const char* p, TiXmlParsingData* data,
-                              const allocator_type& alloc) {return nullptr; };
 
 private:
     std::pmr::string name;

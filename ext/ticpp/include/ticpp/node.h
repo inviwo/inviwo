@@ -338,16 +338,13 @@ protected:
     // Figure out what is at *p, and parse it. Returns null if it is not an xml node.
     std::unique_ptr<TiXmlNode> Identify(const char* start, const allocator_type& alloc);
 
+    std::pmr::string value;
     TiXmlNode* parent;
-    NodeType type;
-
     TiXmlNode* firstChild;
     TiXmlNode* lastChild;
-
-    std::pmr::string value;
-
     TiXmlNode* prev;
     TiXmlNode* next;
+    NodeType type;
 
 private:
     TiXmlNode(const TiXmlNode&);            // not implemented.

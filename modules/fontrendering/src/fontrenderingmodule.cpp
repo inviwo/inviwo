@@ -176,8 +176,7 @@ bool FontRenderingModule::Converter::convert(TxElement* root) {
         }
         case 4: {
             TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                std::string key;
-                node->GetValue(&key);
+                auto key = node->Value();
                 if (key != "Property") return true;
                 const auto& type = node->GetAttribute("type");
                 if (type != "org.inviwo.FontProperty") return true;

@@ -19,9 +19,17 @@ public:
     virtual ~TiXmlElement();
 
     /** Given an attribute name, Attribute() returns the value
-     *  for the attribute of that name, or null if none exists.
+     *  for the attribute of that name, or nullopt if none exists.
      */
     std::optional<std::string_view> Attribute(std::string_view name) const;
+
+    std::string GetAttribute(std::string_view name) const {
+        if (const auto attribute = Attribute(name)) {
+            return std::string{*attribute};
+        } else {
+            return std::string{};
+        }
+    }
 
     /** Sets an attribute of name to a given value. The attribute
         will be created if it does not exist, or changed if it does.
