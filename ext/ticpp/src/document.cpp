@@ -42,14 +42,10 @@ FILE* TiXmlFOpen(std::string_view filename, const char* mode) {
 }
 
 TiXmlDocument::TiXmlDocument(const allocator_type& alloc)
-    : TiXmlNode(TiXmlNode::DOCUMENT, "", alloc), allocator{alloc}, tabsize{4} {
-    ClearError();
-}
+    : TiXmlNode(TiXmlNode::DOCUMENT, "", alloc), allocator{alloc}, tabsize{4} {}
 
 TiXmlDocument::TiXmlDocument(std::string_view documentName, const allocator_type& alloc)
-    : TiXmlNode(TiXmlNode::DOCUMENT, documentName, alloc), allocator{alloc}, tabsize{4} {
-    ClearError();
-}
+    : TiXmlNode(TiXmlNode::DOCUMENT, documentName, alloc), allocator{alloc}, tabsize{4} {}
 
 TiXmlDocument::TiXmlDocument(const TiXmlDocument& copy) : TiXmlNode(TiXmlNode::DOCUMENT) {
     copy.CopyTo(this);
@@ -60,30 +56,32 @@ void TiXmlDocument::operator=(const TiXmlDocument& copy) {
     copy.CopyTo(this);
 }
 
-bool TiXmlDocument::LoadFile() { return LoadFile(Value()); }
+void TiXmlDocument::LoadFile() { LoadFile(Value()); }
 
 bool TiXmlDocument::SaveFile() const { return SaveFile(Value()); }
 
-bool TiXmlDocument::LoadFile(std::string_view filename) {
+void TiXmlDocument::LoadFile(std::string_view filename) {
     value = filename;
 
     // reading in binary mode so that tinyxml can normalize the EOL
     FILE* file = TiXmlFOpen(value, "rb");
 
     if (file) {
-        bool result = LoadFile(file);
+        try {
+            LoadFile(file);
+        } catch (...) {
+            fclose(file);
+            throw;
+        }
         fclose(file);
-        return result;
     } else {
-        SetError(TIXML_ERROR_OPENING_FILE, nullptr, nullptr);
-        return false;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_OPENING_FILE, nullptr, nullptr);
     }
 }
 
-bool TiXmlDocument::LoadFile(FILE* file) {
+void TiXmlDocument::LoadFile(FILE* file) {
     if (!file) {
-        SetError(TIXML_ERROR_OPENING_FILE, nullptr, nullptr);
-        return false;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_OPENING_FILE, nullptr, nullptr);
     }
 
     // Delete the existing data:
@@ -98,8 +96,7 @@ bool TiXmlDocument::LoadFile(FILE* file) {
 
     // Strange case, but good to handle up front.
     if (length <= 0) {
-        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
-        return false;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
     }
 
     // If we have a file, assume it is all one big XML file, and read it in.
@@ -133,8 +130,7 @@ bool TiXmlDocument::LoadFile(FILE* file) {
 
     if (fread(buf, length, 1, file) != 1) {
         delete[] buf;
-        SetError(TIXML_ERROR_OPENING_FILE, nullptr, nullptr);
-        return false;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_OPENING_FILE, nullptr, nullptr);
     }
 
     const char* lastPos = buf;
@@ -178,21 +174,14 @@ bool TiXmlDocument::LoadFile(FILE* file) {
         data.append(lastPos, p - lastPos);
     }
     delete[] buf;
-    buf = 0;
+    buf = nullptr;
 
     Parse(data.c_str(), nullptr, allocator);
-
-    if (Error()) {
-        return false;
-    } else {
-        return true;
-    }
 }
 
 bool TiXmlDocument::SaveFile(std::string_view filename) const {
     // The old c stuff lives on...
-    FILE* fp = TiXmlFOpen(filename, "w");
-    if (fp) {
+    if (FILE* fp = TiXmlFOpen(filename, "w")) {
         bool result = SaveFile(fp);
         fclose(fp);
         return result;
@@ -200,40 +189,28 @@ bool TiXmlDocument::SaveFile(std::string_view filename) const {
     return false;
 }
 
-bool TiXmlDocument::SaveFile(FILE* fp) const {
-    Print(fp, 0);
-    return (ferror(fp) == 0);
+bool TiXmlDocument::SaveFile(FILE* file) const {
+    TiXmlFilePrinter printer{file, TiXmlStreamPrint::Yes};
+    Accept(&printer);
+    return (ferror(file) == 0);
 }
 
 void TiXmlDocument::CopyTo(TiXmlDocument* target) const {
     TiXmlNode::CopyTo(target);
 
-    target->error = error;
-    target->errorId = errorId;
-    target->errorDesc = errorDesc;
     target->tabsize = tabsize;
-    target->errorLocation = errorLocation;
 
-    TiXmlNode* node = 0;
-    for (node = firstChild; node; node = node->NextSibling()) {
+    for (TiXmlNode* node = firstChild; node; node = node->NextSibling()) {
         target->LinkEndChild(node->Clone());
     }
 }
 
 TiXmlNode* TiXmlDocument::Clone() const {
     TiXmlDocument* clone = new TiXmlDocument();
-    if (!clone) return 0;
+    if (!clone) return nullptr;
 
     CopyTo(clone);
     return clone;
-}
-
-void TiXmlDocument::Print(FILE* cfile, int depth) const {
-    assert(cfile);
-    for (const TiXmlNode* node = FirstChild(); node; node = node->NextSibling()) {
-        node->Print(cfile, depth);
-        fprintf(cfile, "\n");
-    }
 }
 
 bool TiXmlDocument::Accept(TiXmlVisitor* visitor) const {
@@ -251,14 +228,12 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData) {
 
 const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData,
                                  const allocator_type& alloc) {
-    ClearError();
 
     // Parse away, at the document level. Since a document
     // contains nothing but other tags, most of what happens
     // here is skipping white space.
     if (!p || !*p) {
-        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
-        return 0;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
     }
 
     // Note that, for a document, this needs to come
@@ -266,8 +241,8 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData,
     // starts from the pointer we are given.
     location.Clear();
     if (prevData) {
-        location.row = prevData->cursor.row;
-        location.col = prevData->cursor.col;
+        location.row = prevData->Cursor().row;
+        location.col = prevData->Cursor().col;
     } else {
         location.row = 0;
         location.col = 0;
@@ -277,14 +252,13 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData,
 
     p = SkipWhiteSpace(p);
     if (!p) {
-        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
-        return 0;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
     }
 
     while (p && *p) {
-        if (TiXmlNode* node = Identify(p, alloc)) {
+        if (std::unique_ptr<TiXmlNode> node = Identify(p, alloc)) {
             p = node->Parse(p, &data, alloc);
-            LinkEndChild(node);
+            LinkEndChild(node.release());
         } else {
             break;
         }
@@ -294,26 +268,9 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData,
 
     // Was this empty?
     if (!firstChild) {
-        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
-        return 0;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
     }
 
     // All is well.
     return p;
-}
-
-void TiXmlDocument::SetError(int err, const char* pError, TiXmlParsingData* data) {
-    // The first error in a chain is more accurate - don't set again!
-    if (error) return;
-
-    assert(err > 0 && err < TIXML_ERROR_STRING_COUNT);
-    error = true;
-    errorId = err;
-    errorDesc = errorString[errorId];
-
-    errorLocation.Clear();
-    if (pError && data) {
-        data->Stamp(pError);
-        errorLocation = data->Cursor();
-    }
 }

@@ -29,6 +29,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace ticpp {
 
+
 Attribute::Attribute() {
     SetTiXmlPointer(new TiXmlAttribute());
     m_impRC->InitRef();
@@ -123,7 +124,7 @@ void Attribute::IteratePrevious(const std::string&, Attribute** previous) const 
 
 void Attribute::Print(FILE* file, int depth) const {
     ValidatePointer();
-    m_tiXmlPointer->Print(file, depth);
+    m_tiXmlPointer->Print(file);
 }
 
 void Attribute::SetTiXmlPointer(TiXmlAttribute* newPointer) {
@@ -607,9 +608,7 @@ Document::Document(const std::string& documentName)
 Document::~Document() {}
 
 void Document::LoadFile() {
-    if (!m_tiXmlPointer->LoadFile()) {
-        error(fmt::format("Couldn't load {}", m_tiXmlPointer->Value()));
-    }
+    m_tiXmlPointer->LoadFile();
 }
 
 void Document::SaveFile(void) const {
@@ -619,15 +618,11 @@ void Document::SaveFile(void) const {
 }
 
 void Document::LoadFile(const std::string& filename) {
-    if (!m_tiXmlPointer->LoadFile(filename.c_str())) {
-        error(fmt::format("Couldn't load {}", filename));
-    }
+    m_tiXmlPointer->LoadFile(filename);
 }
 
 void Document::LoadFile(const char* filename) {
-    if (!m_tiXmlPointer->LoadFile(filename)) {
-        error(fmt::format("Couldn't load {}", filename));
-    }
+    m_tiXmlPointer->LoadFile(filename);
 }
 
 void Document::SaveFile(const std::string& filename) const {
@@ -636,11 +631,8 @@ void Document::SaveFile(const std::string& filename) const {
     }
 }
 
-void Document::Parse(const std::string& xml, bool throwIfParseError) {
+void Document::Parse(const std::string& xml, bool) {
     m_tiXmlPointer->Parse(xml.c_str(), 0, TiXmlDocument::allocator_type{});
-    if (throwIfParseError && m_tiXmlPointer->Error()) {
-        error("Error parsing xml.");
-    }
 }
 
 Element::Element()

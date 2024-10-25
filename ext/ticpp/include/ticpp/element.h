@@ -74,26 +74,24 @@ public:
     std::optional<std::string_view> GetText() const;
 
     /// Creates a new Element and returns it - the returned element is a copy.
-    virtual TiXmlNode* Clone() const;
-    // Print the Element to a FILE stream.
-    virtual void Print(FILE* cfile, int depth) const;
+    virtual TiXmlNode* Clone() const override;
 
     /*	Attribute parsing starts: next char past '<'
         returns: next char past '>'
     */
-    virtual const char* Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data,
+                              const allocator_type& alloc) override;
 
     /// Cast to a more defined type. Will return null not of the requested type.
-    virtual const TiXmlElement* ToElement() const { return this; }
+    virtual const TiXmlElement* ToElement() const override { return this; }
     /// Cast to a more defined type. Will return null not of the requested type.
-    virtual TiXmlElement* ToElement() { return this; }
+    virtual TiXmlElement* ToElement() override { return this; }
 
     /// Walk the XML tree visiting this node and all of its children.
-    virtual bool Accept(TiXmlVisitor* visitor) const;
+    virtual bool Accept(TiXmlVisitor* visitor) const override;
 
 protected:
     void CopyTo(TiXmlElement* target) const;
-    void ClearThis();  // like clear, but initializes 'this' object as well
 
     /*	[internal use]
         Reads the "value" of the element -- another element, or text.

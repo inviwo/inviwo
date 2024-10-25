@@ -5,22 +5,6 @@
 
 #include <cstring>
 
-void TiXmlText::Print(FILE* cfile, int depth) const {
-    assert(cfile);
-    if (cdata) {
-        int i;
-        fprintf(cfile, "\n");
-        for (i = 0; i < depth; i++) {
-            fprintf(cfile, "    ");
-        }
-        fprintf(cfile, "<![CDATA[%s]]>\n", value.c_str());  // unformatted output
-    } else {
-        std::string buffer;
-        EncodeString(value, &buffer);
-        fprintf(cfile, "%s", buffer.c_str());
-    }
-}
-
 void TiXmlText::CopyTo(TiXmlText* target) const {
     TiXmlNode::CopyTo(target);
     target->cdata = cdata;
@@ -52,9 +36,7 @@ const char* TiXmlText::Parse(const char* p, TiXmlParsingData* data, const alloca
         cdata = true;
 
         if (!StringEqual(p, startTag, false)) {
-            TiXmlDocument* document = GetDocument();
-            document->SetError(TIXML_ERROR_PARSING_CDATA, p, data);
-            return nullptr;
+            throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_CDATA, p, data);
         }
         p += strlen(startTag);
 
