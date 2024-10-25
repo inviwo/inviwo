@@ -146,22 +146,18 @@ void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& sele
     auto visitNodes = [&](auto& self, TxElement* node,
                           std::vector<ElementMatcher>::const_iterator begin,
                           std::vector<ElementMatcher>::const_iterator end) -> void {
-        ticpp::Iterator<ticpp::Element> child;
-
-        for (child = child.begin(node); child != child.end(); ++child) {
-            const auto& childName = child->Value();
-            if (childName == begin->name) {
-                bool match = true;
-                for (const auto& attribute : begin->attributes) {
-                    auto val = child->GetAttribute(attribute.name);
-                    match = match && val == attribute.value;
-                }
-                if (match) {
-                    if (begin + 1 == end) {
-                        visitor(child.Get());
-                    } else {
-                        self(self, child.Get(), begin + 1, end);
-                    }
+        for (TiXmlElement* child = node->FirstChildElement(begin->name); child;
+             child = child->NextSiblingElement(begin->name)) {
+            bool match = true;
+            for (const auto& attribute : begin->attributes) {
+                auto val = child->Attribute(attribute.name);
+                match = match && val && *val == attribute.value;
+            }
+            if (match) {
+                if (begin + 1 == end) {
+                    visitor(child);
+                } else {
+                    self(self, child, begin + 1, end);
                 }
             }
         }
@@ -176,20 +172,20 @@ void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& sele
 template <typename Visitor>
 void visitMatchingNodesRecursive(TxElement* root, const ElementMatcher& selector, Visitor visitor) {
     auto visitNodes = [&](auto& self, TxElement* node) -> void {
-        ticpp::Iterator<ticpp::Element> child;
-        for (child = child.begin(node); child != child.end(); ++child) {
-            const auto& childName = child->Value();
-            if (childName == selector.name) {
+        for (TiXmlElement* child = node->FirstChildElement(); child;
+             child = child->NextSiblingElement()) {
+
+            if (child->Value() == selector.name) {
                 bool match = true;
                 for (const auto& attribute : selector.attributes) {
-                    const auto& val = child->GetAttribute(attribute.name);
-                    match = match && val == attribute.value;
+                    const auto val = child->Attribute(attribute.name);
+                    match = match && val && *val == attribute.value;
                 }
                 if (match) {
-                    visitor(child.Get());
+                    visitor(child);
                 }
             }
-            self(self, child.Get());
+            self(self, child);
         }
     };
     visitNodes(visitNodes, root);
@@ -223,9 +219,9 @@ void visitMatchingNodesRecursive(TxElement* root, const std::vector<ElementMatch
             std::invoke(visitor, node);
         }
 
-        ticpp::Iterator<ticpp::Element> child;
-        for (child = child.begin(node); child != child.end(); ++child) {
-            self(self, child.Get());
+        for (TiXmlElement* child = node->FirstChildElement(); child;
+             child = child->NextSiblingElement()) {
+            self(self, child);
         }
 
         stack.pop_back();

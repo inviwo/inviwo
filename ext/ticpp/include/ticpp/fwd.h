@@ -20,6 +20,3 @@ class TICPP_API TiXmlDeclaration;
 class TICPP_API TiXmlStylesheetReference;
 class TICPP_API TiXmlParsingData;
 class TICPP_API TiXmlVisitor;
-
-// Only used by Attribute::Query functions
-enum { TIXML_SUCCESS, TIXML_NO_ATTRIBUTE, TIXML_WRONG_TYPE };

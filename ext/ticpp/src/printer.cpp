@@ -10,8 +10,6 @@
 #include <ticpp/stylesheet.h>
 #include <ticpp/unknown.h>
 
-// TMP
-#include <ticpp/ticpp.h>
 
 #include <fmt/printf.h>
 

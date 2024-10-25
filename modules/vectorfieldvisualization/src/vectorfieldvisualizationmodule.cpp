@@ -125,10 +125,11 @@ std::unique_ptr<VersionConverter> VectorFieldVisualizationModule::getConverter(i
 
 bool VectorFieldVisualizationModule::Converter::traverseNodes(TxElement* node, updateType update) {
     (this->*update)(node);
-    ticpp::Iterator<ticpp::Element> child;
+
     bool res = false;
-    for (child = child.begin(node); child != child.end(); child++) {
-        res |= traverseNodes(child.Get(), update);
+    for (TiXmlElement* child = node->FirstChildElement(); child;
+         child = child->NextSiblingElement()) {
+        res |= traverseNodes(child, update);
     }
 
     return res;
@@ -147,11 +148,11 @@ bool VectorFieldVisualizationModule::Converter::updateAllowLooping(TxElement* no
             TxElement* pathLinePropertiesPropertiesNode = nullptr;
             TxElement* allowLoopingNode = nullptr;
 
-            ticpp::Iterator<ticpp::Element> child;
-            for (child = child.begin(node); child != child.end(); child++) {
-                const auto& childkey = child->Value();
+            for (TiXmlElement* child = node->FirstChildElement(key); child;
+                 child = child->NextSiblingElement(key)) {
+                const auto childkey = child->Value();
                 if (childkey == "Properties") {
-                    propertiesNode = child.Get();
+                    propertiesNode = child;
                     break;
                 }
             }
@@ -159,13 +160,14 @@ bool VectorFieldVisualizationModule::Converter::updateAllowLooping(TxElement* no
                 return false;
             }
 
-            for (child = child.begin(propertiesNode); child != child.end(); child++) {
-                const auto& childkey = child->Value();
+            for (TiXmlElement* child = propertiesNode->FirstChildElement(key); child;
+                 child = child->NextSiblingElement(key)) {
+                const auto childkey = child->Value();
                 if (childkey == "Property") {
-                    const auto& childType = child->GetAttribute("type");
+                    const auto childType = child->Attribute("type");
 
-                    if (childType == "org.inviwo.PathLineProperties") {
-                        pathLinePropertiesNode = child.Get();
+                    if (childType && *childType == "org.inviwo.PathLineProperties") {
+                        pathLinePropertiesNode = child;
                         break;
                     }
                 }
@@ -174,10 +176,11 @@ bool VectorFieldVisualizationModule::Converter::updateAllowLooping(TxElement* no
             if (pathLinePropertiesNode == nullptr) {
                 return false;
             }
-            for (child = child.begin(pathLinePropertiesNode); child != child.end(); child++) {
-                const auto& childkey = child->Value();
+            for (TiXmlElement* child = pathLinePropertiesNode->FirstChildElement(key); child;
+                 child = child->NextSiblingElement(key)) {
+                const auto childkey = child->Value();
                 if (childkey == "Properties") {
-                    pathLinePropertiesPropertiesNode = child.Get();
+                    pathLinePropertiesPropertiesNode = child;
                     break;
                 }
             }
@@ -185,16 +188,16 @@ bool VectorFieldVisualizationModule::Converter::updateAllowLooping(TxElement* no
                 return false;
             }
 
-            for (child = child.begin(pathLinePropertiesPropertiesNode); child != child.end();
-                 child++) {
-                const auto& childkey = child->Value();
+            for (TiXmlElement* child = pathLinePropertiesPropertiesNode->FirstChildElement(key);
+                 child; child = child->NextSiblingElement(key)) {
+                const auto childkey = child->Value();
                 if (childkey == "Property") {
-                    const auto& childType = child->GetAttribute("type");
-                    const auto& childIdentifier = child->GetAttribute("identifier");
+                    const auto childType = child->GetAttribute("type");
+                    const auto childIdentifier = child->GetAttribute("identifier");
 
                     if (childType == "org.inviwo.BoolProperty" &&
                         childIdentifier == "allowLooping") {
-                        allowLoopingNode = child.Get();
+                        allowLoopingNode = child;
                         break;
                     }
                 }

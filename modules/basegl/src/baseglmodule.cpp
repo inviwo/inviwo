@@ -481,16 +481,16 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
                                             "Properties/Property&identifier=sphereProperties/"
                                             "Properties/Property&identifier=color")) {
 
-                        auto alpha = color->Clone();
+                        auto* alpha = color->Clone();
 
                         color->SetAttribute("type", "org.inviwo.FloatVec3Property");
 
                         alpha->ToElement()->SetAttribute("identifier", "alpha");
                         alpha->ToElement()->SetAttribute("type", "org.inviwo.FloatProperty");
-                        if (auto* value = alpha->FirstChild(false)) {
-                            auto a = value->ToElement()->GetAttribute("w");
-                            value->ToElement()->SetAttribute("content", a);
-                            color->Parent()->InsertEndChild(*alpha);
+                        if (auto* value = alpha->FirstChildElement()) {
+                            auto a = value->GetAttribute("w");
+                            value->SetAttribute("content", a);
+                            color->Parent()->LinkEndChild(alpha);
                         }
 
                         res |= true;

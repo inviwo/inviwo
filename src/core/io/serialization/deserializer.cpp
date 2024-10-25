@@ -131,8 +131,7 @@ void Deserializer::deserialize(std::string_view key, unsigned char& data,
 void Deserializer::setExceptionHandler(ExceptionHandler handler) { exceptionHandler_ = handler; }
 
 void Deserializer::convertVersion(VersionConverter* converter) {
-    TxElement elem(rootElement_);
-    converter->convert(&elem);
+    converter->convert(rootElement_);
 }
 
 void Deserializer::handleError(const ExceptionContext& context) {

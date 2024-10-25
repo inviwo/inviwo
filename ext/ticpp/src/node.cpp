@@ -13,13 +13,13 @@
 
 TiXmlNode::TiXmlNode(NodeType _type, std::string_view _value, const allocator_type& alloc)
     : TiXmlBase()
+    , value{_value, alloc}
     , parent{nullptr}
-    , type{_type}
     , firstChild{nullptr}
     , lastChild{nullptr}
-    , value{_value, alloc}
     , prev{nullptr}
-    , next{nullptr} {}
+    , next{nullptr}
+    , type{_type} {}
 
 TiXmlNode::~TiXmlNode() {
     TiXmlNode* node = firstChild;

@@ -3,13 +3,10 @@
 #include <ticpp/ticppapi.h>
 #include <ticpp/fwd.h>
 
-#include <ticpp/ticpprc.h>
-
 #include <string>
 #include <string_view>
 #include <array>
 #include <cassert>
-#include <sstream>
 #include <stdexcept>
 #include <array>
 
@@ -101,7 +98,7 @@ private:
  * @endverbatim
  */
 
-class TICPP_API TiXmlBase : public TiCppRC {
+class TICPP_API TiXmlBase {
 public:
     using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
 
@@ -110,7 +107,7 @@ public:
     TiXmlBase& operator=(const TiXmlBase& base) = delete;
     virtual ~TiXmlBase() {}
 
-    /**	The world does not agree on whether white space should be kept or
+    /** The world does not agree on whether white space should be kept or
      * not. In order to make everyone happy, these global, static functions
      * are provided to set whether or not TinyXml will condense all white space
      * into a single space or not. The default is to condense. Note changing this
@@ -215,9 +212,6 @@ public:
                                      std::pmr::string* value, TiXmlParsingData* data);
 
 protected:
-    // static bool StreamWhiteSpace(std::istream* in, std::string* tag);
-    // static bool StreamTo(std::istream* in, int character, std::string* tag);
-
     // If an entity has been found, transform it into a character.
     static const char* GetEntity(const char* in, char* value, int* length);
 

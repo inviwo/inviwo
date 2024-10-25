@@ -34,6 +34,8 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/colorconversion.h>
 
+#include <inviwo/core/io/serialization/serializebase.h>
+
 #include <fmt/std.h>
 
 namespace inviwo {
@@ -66,17 +68,22 @@ void parseColorMapNode(TransferFunction& tf, TxElement* node) {
         }
     }();
 
-    ticpp::Iterator<ticpp::Element> child;
-    for (child = child.begin(node); child != child.end(); ++child) {
-        auto elem = child.Get();
-        auto value = elem->Value();
-        if (value == "Point") {
-            auto x = elem->GetAttribute<double>("x");
-            auto opacity = elem->GetAttribute<double>("o");
-            dvec3 color{elem->GetAttribute<double>("r"), elem->GetAttribute<double>("g"),
-                        elem->GetAttribute<double>("b")};
-            tf.add(x, vec4(vec3{color}, opacity));
+    const auto toDouble = [](std::optional<std::string_view> str) {
+        double dest{};
+        if (str) {
+            detail::fromStr(*str, dest);
         }
+        return dest;
+    };
+
+    for (TiXmlElement* child = node->FirstChildElement("Point"); child;
+         child = child->NextSiblingElement("Point")) {
+
+        const auto x = toDouble(child->Attribute("x"));
+        const auto opacity = toDouble(child->Attribute("o"));
+        const dvec3 color{toDouble(child->Attribute("r")), toDouble(child->Attribute("g")),
+                          toDouble(child->Attribute("b"))};
+        tf.add(x, vec4(vec3{color}, opacity));
     }
 }
 
@@ -88,17 +95,16 @@ void parseColorMapsNode(TransferFunction& tf, TxElement* node) {
     }
 
     size_t count = 0;
-    ticpp::Iterator<ticpp::Element> child;
-    for (child = child.begin(node); child != child.end(); ++child) {
-        if (child.Get()->Value() == "ColorMap") {
-            ++count;
-            if (count > 1) {
-                LogWarnCustom("TransferFunctionXMLReader::loadFromXML()",
-                              "Detected more than one ColorMap");
-                return;
-            }
-            parseColorMapNode(tf, child.Get());
+
+    for (TiXmlElement* child = node->FirstChildElement("ColorMap"); child;
+         child = child->NextSiblingElement("ColorMap")) {
+        ++count;
+        if (count > 1) {
+            LogWarnCustom("TransferFunctionXMLReader::loadFromXML()",
+                          "Detected more than one ColorMap");
+            return;
         }
+        parseColorMapNode(tf, child);
     }
 }
 
@@ -148,7 +154,7 @@ std::shared_ptr<TransferFunction> TransferFunctionXMLReader::readData(
 
     try {
         TxDocument doc;
-        doc.Parse(str, true);
+        doc.Parse(str.c_str());
 
         auto root = doc.FirstChildElement();
         if (!root) {

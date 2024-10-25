@@ -6,13 +6,11 @@
 #include <ticpp/node.h>
 
 /** XML text. A text node can have 2 ways to output the next. "normal" output
-        and CDATA. It will default to the mode it was parsed from the XML file and
-        you generally want to leave it alone, but you can change the output mode with
-        SetCDATA() and query it with CDATA().
+    and CDATA. It will default to the mode it was parsed from the XML file and
+    you generally want to leave it alone, but you can change the output mode with
+    SetCDATA() and query it with CDATA().
 */
 class TICPP_API TiXmlText final : public TiXmlNode {
-    friend class TiXmlElement;
-
 public:
     /** Constructor for text element. By default, it is treated as
         normal, encoded text. If you want it be output as a CDATA text
@@ -42,13 +40,12 @@ public:
     /// Walk the XML tree visiting this node and all of its children.
     virtual bool Accept(TiXmlVisitor* content) const override;
 
-protected:
-    ///  [internal use] Creates a new Element and returns it.
-    virtual TiXmlNode* Clone() const override;
-    void CopyTo(TiXmlText* target) const;
-
     bool Blank() const;  // returns true if all white space and new lines
-                         // [internal use]
+
+    virtual TiXmlNode* Clone() const override;
+
+protected:
+    void CopyTo(TiXmlText* target) const;
 
 private:
     bool cdata;  // true if this should be input and output as a CDATA style text element

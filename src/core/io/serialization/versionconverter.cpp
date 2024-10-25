@@ -48,9 +48,9 @@ bool TraversingVersionConverter::convert(TxElement* root) { return traverseNodes
 bool TraversingVersionConverter::traverseNodes(TxElement* node) {
     bool res = fun_(node);
     if (res) {
-        ticpp::Iterator<ticpp::Element> child;
-        for (child = child.begin(node); child != child.end(); ++child) {
-            res = res && traverseNodes(child.Get());
+        for (TiXmlElement* child = node->FirstChildElement(); child;
+             child = child->NextSiblingElement()) {
+            res = res && traverseNodes(child);
         }
     }
     return res;
@@ -65,22 +65,24 @@ bool xml::copyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProp
     for (auto& p : prop.getProperties()) {
         bool match = false;
 
-        ticpp::Iterator<ticpp::Element> child;
-        for (child = child.begin(node); child != child.end(); ++child) {
+        for (TiXmlElement* child = node->FirstChildElement(); child;
+             child = child->NextSiblingElement()) {
 
-            const auto& type = child->GetAttribute("type");
-            const auto& id = child->GetAttribute("identifier");
+            const auto type = child->Attribute("type");
+            const auto id = child->Attribute("identifier");
 
-            if (p->getIdentifier() == id &&
-                (p->getClassIdentifier() == type ||
-                 p->getClassIdentifier() == util::splitByLast(type, '.').second)) {
-                LogInfoCustom("VersionConverter",
-                              "    Match for sub property: " + p->getPath() + " found in type: "
-                                  << type << " id: " << id);
+            if (type && id) {
+                if (p->getIdentifier() == *id &&
+                    (p->getClassIdentifier() == *type ||
+                     p->getClassIdentifier() == util::splitByLast(*type, '.').second)) {
+                    LogInfoCustom("VersionConverter",
+                                  "    Match for sub property: " + p->getPath() + " found in type: "
+                                      << *type << " id: " << *id);
 
-                list.InsertEndChild(*(child->Clone()));
-                toBeDeleted.push_back(child.Get());
-                match = true;
+                    list.LinkEndChild(child->Clone());
+                    toBeDeleted.push_back(child);
+                    match = true;
+                }
             }
         }
         res = res || match;
@@ -105,10 +107,13 @@ bool xml::copyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProp
 
 bool xml::hasProp(TxElement* node, const Property& prop) {
     bool result = false;
-    ticpp::Iterator<ticpp::Element> child;
-    for (child = child.begin(node); child != child.end(); ++child) {
-        if (prop.getClassIdentifier() == child->GetAttribute("type") &&
-            prop.getIdentifier() == child->GetAttribute("identifier")) {
+    for (TiXmlElement* child = node->FirstChildElement(); child;
+         child = child->NextSiblingElement()) {
+
+        const auto type = child->Attribute("type");
+        const auto id = child->Attribute("identifier");
+
+        if (type && id && prop.getClassIdentifier() == *type && prop.getIdentifier() == *id) {
             result = true;
         }
     }
@@ -117,14 +122,9 @@ bool xml::hasProp(TxElement* node, const Property& prop) {
 
 std::vector<TxElement*> xml::getMatchingElements(TxElement* node, std::string_view key) {
     std::vector<TxElement*> res;
-    ticpp::Iterator<ticpp::Element> child;
-    for (child = child.begin(node); child != child.end(); ++child) {
-        std::string childkey;
-        child->GetValue(&childkey);
-
-        if (childkey == key) {
-            res.push_back(child.Get());
-        }
+    for (TiXmlElement* child = node->FirstChildElement(key); child;
+         child = child->NextSiblingElement(key)) {
+        res.push_back(child);
     }
     return res;
 }
@@ -154,25 +154,20 @@ TxElement* xml::getElement(TxElement* node, std::string_view path) {
         const auto components = util::splitStringView(parts[0], '&');
         std::string_view name = components[0];
 
-        ticpp::Iterator<ticpp::Element> child;
-        for (child = child.begin(node); child != child.end(); ++child) {
+        for (TiXmlElement* child = node->FirstChildElement(name); child;
+             child = child->NextSiblingElement(name)) {
             bool match = true;
-            std::string childname;
-            child->GetValue(&childname);
-            if (childname == name) {
-                for (size_t i = 1; i < components.size(); ++i) {
-                    const auto [attr, value] = util::splitByFirst(components[i], '=');
-                    auto val = child->GetAttribute(attr);
-                    match = match && val == value;
-                }
-            } else {
-                match = false;
+
+            for (size_t i = 1; i < components.size(); ++i) {
+                const auto [attr, value] = util::splitByFirst(components[i], '=');
+                const auto val = child->Attribute(attr);
+                match = match && val && *val == value;
             }
             if (match) {
                 if (parts.size() > 1) {
-                    return getElement(child.Get(), joinString(parts.begin() + 1, parts.end(), "/"));
+                    return getElement(child, joinString(parts.begin() + 1, parts.end(), "/"));
                 } else {
-                    return child.Get();
+                    return child;
                 }
                 break;
             }
@@ -182,8 +177,8 @@ TxElement* xml::getElement(TxElement* node, std::string_view path) {
 }
 
 bool xml::copyMatchingCompositeProperty(TxElement* node, const CompositeProperty& prop) {
-    ticpp::Iterator<ticpp::Element> child;
-    for (child = child.begin(node); child != child.end(); ++child) {
+    for (TiXmlElement* child = node->FirstChildElement(); child;
+         child = child->NextSiblingElement()) {
 
         const auto& type = child->GetAttribute("type");
         const auto& id = child->GetAttribute("identifier");
@@ -192,7 +187,7 @@ bool xml::copyMatchingCompositeProperty(TxElement* node, const CompositeProperty
             prop.getIdentifier() == id) {
             LogInfoCustom("VersionConverter", "    Found Composite with same identifier");
 
-            TxElement* newChild = node->InsertEndChild(*(child.Get()))->ToElement();
+            TxElement* newChild = node->InsertEndChild(*child)->ToElement();
             newChild->SetAttribute("type", prop.getClassIdentifier());
             return true;
         }
