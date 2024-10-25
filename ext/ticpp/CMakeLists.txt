@@ -33,9 +33,7 @@ target_sources(ticpp
         include/ticpp/printer.h
         include/ticpp/stylesheet.h
         include/ticpp/text.h
-        include/ticpp/ticpp.h
         include/ticpp/ticppapi.h
-        include/ticpp/ticpprc.h
         include/ticpp/tinyxml.h
         include/ticpp/unknown.h
         include/ticpp/visitor.h
@@ -53,8 +51,6 @@ target_sources(ticpp
         src/printer.cpp
         src/stylesheet.cpp
         src/text.cpp
-        src/ticpp.cpp
-        src/ticpprc.cpp
         src/tinyxml.cpp
         src/unknown.cpp
         src/visitor.cpp

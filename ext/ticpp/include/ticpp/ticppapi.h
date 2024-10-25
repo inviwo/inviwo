@@ -24,10 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #undef TICPP_API
 
-#if defined(_WIN32) | defined(WIN32) | defined(WINDOWS) | defined(_WINDOWS)   
-    //windows dll defines
-    //#include <windows.h> // Remove this not sure why it is in here /Peter
-    
+#if defined(_WIN32) | defined(WIN32) | defined(WINDOWS) | defined(_WINDOWS)
     // define BUILD_TICPP_DLL when building TiCPP dll.
     #ifdef BUILD_TICPP_DLL
         #define TICPP_API __declspec(dllexport)
@@ -39,17 +36,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         #define TICPP_API __declspec(dllimport)
         #define TICPP_EXT extern
     #endif
-    
-    // Disable dll-interface warning
-    // Inviwo: 
-    //         commented out since the warning(push) is not matched thus messing up
-    //         warnings in other files
-    // #ifdef TICPP_API
-    //     #pragma warning( push )
-    //     #pragma warning( disable : 4251 ) // X needs to have dll-interface to be used by clients of class Y
-    //     #pragma warning( disable : 4275 ) // X is derived from class Y but only X is exported
-    // #endif
-    
 #endif
 
 #ifndef TICPP_API

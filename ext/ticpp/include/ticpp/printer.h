@@ -35,7 +35,9 @@ public:
         , depth{0}
         , simpleTextPrint{false}
         , indent{streamPrint == TiXmlStreamPrint::No ? "    " : ""}
-        , lineBreak{streamPrint == TiXmlStreamPrint::No ? "\n" : ""} {}
+        , lineBreak{streamPrint == TiXmlStreamPrint::No ? "\n" : ""} {
+        buffer.reserve(4096);
+    }
 
     virtual bool VisitEnter(const TiXmlDocument& doc);
     virtual bool VisitExit(const TiXmlDocument& doc);

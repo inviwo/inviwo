@@ -29,25 +29,22 @@
 
 #pragma once
 
-#ifndef TIXML_USE_TICPP
-#define TIXML_USE_TICPP
-#endif
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <ticpp/ticpp.h>
-#include <warn/pop>
+#include <ticpp/base.h>
+#include <ticpp/node.h>
+#include <ticpp/document.h>
+#include <ticpp/attribute.h>
+#include <ticpp/element.h>
+#include <ticpp/comment.h>
+#include <ticpp/declaration.h>
 
 namespace inviwo {
 
-using TxDocument = ticpp::Document;
-using TxElement = ticpp::Element;
-using TxNode = ticpp::Node;
-using TxException = ticpp::Exception;
-using TxDeclaration = ticpp::Declaration;
-using TxComment = ticpp::Comment;
-using TxAttribute = ticpp::Attribute;
-using TxEIt = ticpp::Iterator<TxElement>;
-using TxAIt = ticpp::Iterator<TxAttribute>;
+using TxDocument = TiXmlDocument;
+using TxElement = TiXmlElement;
+using TxNode = TiXmlNode;
+using TxException = TiXmlError;
+using TxDeclaration = TiXmlDeclaration;
+using TxComment = TiXmlComment;
+using TxAttribute = TiXmlAttribute;
 
 }  // namespace inviwo

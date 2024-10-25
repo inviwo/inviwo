@@ -45,6 +45,8 @@ public:
     bool SaveFile(FILE*) const;
 
     /// Parse the given null terminated block of xml data.
+    const char* Parse(const char* p);
+
     const char* Parse(const char* p, TiXmlParsingData* data);
 
     virtual const char* Parse(const char* p, TiXmlParsingData* data,
