@@ -32,7 +32,7 @@ TiXmlNode::~TiXmlNode() {
     }
 }
 
-void TiXmlNode::CopyTo(TiXmlNode* target) const { target->SetValue(value.c_str()); }
+void TiXmlNode::CopyTo(TiXmlNode* target) const { target->SetValue(value); }
 
 void TiXmlNode::Clear() {
     TiXmlNode* node = firstChild;
@@ -54,10 +54,7 @@ TiXmlNode* TiXmlNode::LinkEndChild(TiXmlNode* node) {
 
     if (node->Type() == TiXmlNode::DOCUMENT) {
         delete node;
-        if (GetDocument()) {
-            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
-        }
-        return nullptr;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
     }
 
     node->parent = this;
@@ -76,10 +73,7 @@ TiXmlNode* TiXmlNode::LinkEndChild(TiXmlNode* node) {
 
 TiXmlNode* TiXmlNode::InsertEndChild(const TiXmlNode& addThis) {
     if (addThis.Type() == TiXmlNode::DOCUMENT) {
-        if (GetDocument()) {
-            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
-        }
-        return nullptr;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
     }
     TiXmlNode* node = addThis.Clone();
     if (!node) return nullptr;
@@ -92,10 +86,7 @@ TiXmlNode* TiXmlNode::InsertBeforeChild(TiXmlNode* beforeThis, const TiXmlNode& 
         return nullptr;
     }
     if (addThis.Type() == TiXmlNode::DOCUMENT) {
-        if (GetDocument()) {
-            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
-        }
-        return nullptr;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
     }
 
     TiXmlNode* node = addThis.Clone();
@@ -119,10 +110,7 @@ TiXmlNode* TiXmlNode::InsertAfterChild(TiXmlNode* afterThis, const TiXmlNode& ad
         return nullptr;
     }
     if (addThis.Type() == TiXmlNode::DOCUMENT) {
-        if (GetDocument()) {
-            GetDocument()->SetError(TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
-        }
-        return nullptr;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
     }
 
     TiXmlNode* node = addThis.Clone();
@@ -235,9 +223,7 @@ const TiXmlNode* TiXmlNode::PreviousSibling(std::string_view _value) const {
     return nullptr;
 }
 
-TiXmlNode* TiXmlNode::Identify(const char* p, const allocator_type& alloc) {
-    TiXmlNode* returnNode = nullptr;
-
+std::unique_ptr<TiXmlNode> TiXmlNode::Identify(const char* p, const allocator_type& alloc) {
     p = SkipWhiteSpace(p);
     if (!p || !*p || *p != '<') {
         return nullptr;
@@ -256,50 +242,26 @@ TiXmlNode* TiXmlNode::Identify(const char* p, const allocator_type& alloc) {
     const char* dtdHeader = {"<!"};
     const char* cdataHeader = {"<![CDATA["};
 
-    if (StringEqual(p, xmlSSHeader, true)) {
-#ifdef DEBUG_PARSER
-        TIXML_LOG("XML parsing Stylesheet Reference\n");
-#endif
-        returnNode = new TiXmlStylesheetReference(alloc);
-    } else if (StringEqual(p, xmlHeader, true)) {
-#ifdef DEBUG_PARSER
-        TIXML_LOG("XML parsing Declaration\n");
-#endif
-        returnNode = new TiXmlDeclaration(alloc);
-    } else if (StringEqual(p, commentHeader, false)) {
-#ifdef DEBUG_PARSER
-        TIXML_LOG("XML parsing Comment\n");
-#endif
-        returnNode = new TiXmlComment(alloc);
-    } else if (StringEqual(p, cdataHeader, false)) {
-#ifdef DEBUG_PARSER
-        TIXML_LOG("XML parsing CDATA\n");
-#endif
-        returnNode = new TiXmlText("", true, alloc);
-    } else if (StringEqual(p, dtdHeader, false)) {
-#ifdef DEBUG_PARSER
-        TIXML_LOG("XML parsing Unknown(1)\n");
-#endif
-        returnNode = new TiXmlUnknown(alloc);
-    } else if (IsAlpha(*(p + 1)) || *(p + 1) == '_') {
-#ifdef DEBUG_PARSER
-        TIXML_LOG("XML parsing Element\n");
-#endif
-        returnNode = new TiXmlElement("", alloc);
-    } else {
-#ifdef DEBUG_PARSER
-        TIXML_LOG("XML parsing Unknown(2)\n");
-#endif
-        returnNode = new TiXmlUnknown(alloc);
-    }
+    std::unique_ptr<TiXmlNode> returnNode = [&]() -> std::unique_ptr<TiXmlNode> {
+        if (StringEqual(p, xmlSSHeader, true)) {
+            return std::make_unique<TiXmlStylesheetReference>(alloc);
+        } else if (StringEqual(p, xmlHeader, true)) {
+            return std::make_unique<TiXmlDeclaration>(alloc);
+        } else if (StringEqual(p, commentHeader, false)) {
+            return std::make_unique<TiXmlComment>(alloc);
+        } else if (StringEqual(p, cdataHeader, false)) {
+            return std::make_unique<TiXmlText>("", true, alloc);
+        } else if (StringEqual(p, dtdHeader, false)) {
+            return std::make_unique<TiXmlUnknown>(alloc);
+        } else if (IsAlpha(*(p + 1)) || *(p + 1) == '_') {
+            return std::make_unique<TiXmlElement>("", alloc);
+        } else {
+            return std::make_unique<TiXmlUnknown>(alloc);
+        }
+    }();
 
-    if (returnNode) {
-        // Set the parent, so it can report errors
-        returnNode->parent = this;
-    } else {
-        TiXmlDocument* doc = GetDocument();
-        if (doc) doc->SetError(TIXML_ERROR_OUT_OF_MEMORY, nullptr, nullptr);
-    }
+    returnNode->parent = this;
+
     return returnNode;
 }
 

@@ -155,7 +155,7 @@ std::shared_ptr<TransferFunction> TransferFunctionXMLReader::readData(
             throw DataReaderException(IVW_CONTEXT, "No XML root node found in '{}'", filePath);
         }
         parseColorMapsNode(*data, root);
-    } catch (TxException& e) {
+    } catch (const TiXmlError& e) {
         throw DataReaderException(e.what(), IVW_CONTEXT);
     }
 

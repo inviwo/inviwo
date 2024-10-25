@@ -49,7 +49,7 @@ Deserializer::Deserializer(const std::filesystem::path& fileName, const allocato
         } else {
             throw AbortException("Missing inviwo workspace version", IVW_CONTEXT);
         }
-    } catch (TxException& e) {
+    } catch (const TiXmlError& e) {
         throw AbortException(e.what(), IVW_CONTEXT);
     }
 }
@@ -71,7 +71,7 @@ Deserializer::Deserializer(std::istream& stream, const std::filesystem::path& pa
             throw AbortException("Missing inviwo workspace version", IVW_CONTEXT);
         }
 
-    } catch (TxException& e) {
+    } catch (const TiXmlError& e) {
         throw AbortException(e.what(), IVW_CONTEXT);
     }
 }

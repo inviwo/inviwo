@@ -14,14 +14,6 @@ void TiXmlComment::operator=(const TiXmlComment& base) {
     base.CopyTo(this);
 }
 
-void TiXmlComment::Print(FILE* cfile, int depth) const {
-    assert(cfile);
-    for (int i = 0; i < depth; i++) {
-        fprintf(cfile, "    ");
-    }
-    fprintf(cfile, "<!--%s-->", value.c_str());
-}
-
 void TiXmlComment::CopyTo(TiXmlComment* target) const { TiXmlNode::CopyTo(target); }
 
 bool TiXmlComment::Accept(TiXmlVisitor* visitor) const { return visitor->Visit(*this); }
@@ -36,7 +28,6 @@ TiXmlNode* TiXmlComment::Clone() const {
 }
 
 const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc) {
-    TiXmlDocument* document = GetDocument();
     value = "";
 
     p = SkipWhiteSpace(p);
@@ -49,8 +40,7 @@ const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, const all
     const char* endTag = "-->";
 
     if (!StringEqual(p, startTag, false)) {
-        document->SetError(TIXML_ERROR_PARSING_COMMENT, p, data);
-        return 0;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_COMMENT, p, data);
     }
     p += strlen(startTag);
 
