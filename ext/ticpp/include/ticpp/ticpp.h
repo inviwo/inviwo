@@ -183,16 +183,6 @@ public:
     Builds detailed error string using TiXmlDocument::Error() and others
     */
     std::string BuildDetailedErrorString() const {
-        if (auto* node = dynamic_cast<TiXmlNode*>(GetBasePointer())) {
-            if (auto* doc = node->GetDocument()) {
-                if (doc->Error()) {
-                    return fmt::format("\nDescription: {}\nFile: {} \nLine: {}\nColumn: {}",
-                                       doc->ErrorDesc(),
-                                       (!doc->Value().empty() ? doc->Value() : "<unnamed-file>"),
-                                       doc->ErrorRow(), doc->ErrorCol());
-                }
-            }
-        }
         return {};
     }
 
@@ -229,6 +219,8 @@ protected:
 /**
 Wrapper around TiXmlAttribute
 */
+
+
 class TICPP_API Attribute final : public Base {
 private:
     TiXmlAttribute* m_tiXmlPointer;
@@ -385,6 +377,7 @@ private:
     */
     void SetTiXmlPointer(TiXmlAttribute* newPointer);
 };
+
 
 /**
 Wrapper around TiXmlNode

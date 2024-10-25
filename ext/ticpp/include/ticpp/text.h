@@ -26,27 +26,25 @@ public:
     TiXmlText(const TiXmlText& copy) : TiXmlNode(TiXmlNode::TEXT) { copy.CopyTo(this); }
     void operator=(const TiXmlText& base) { base.CopyTo(this); }
 
-    // Write this text object to a FILE stream.
-    virtual void Print(FILE* cfile, int depth) const;
-
     /// Queries whether this represents text using a CDATA section.
     bool CDATA() const { return cdata; }
     /// Turns on or off a CDATA representation of text.
     void SetCDATA(bool _cdata) { cdata = _cdata; }
 
-    virtual const char* Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data,
+                              const allocator_type& alloc) override;
 
     /// Cast to a more defined type. Will return null not of the requested type.
-    virtual const TiXmlText* ToText() const { return this; }
+    virtual const TiXmlText* ToText() const override { return this; }
     /// Cast to a more defined type. Will return null not of the requested type.
-    virtual TiXmlText* ToText() { return this; }
+    virtual TiXmlText* ToText() override { return this; }
 
     /// Walk the XML tree visiting this node and all of its children.
-    virtual bool Accept(TiXmlVisitor* content) const;
+    virtual bool Accept(TiXmlVisitor* content) const override;
 
 protected:
     ///  [internal use] Creates a new Element and returns it.
-    virtual TiXmlNode* Clone() const;
+    virtual TiXmlNode* Clone() const override;
     void CopyTo(TiXmlText* target) const;
 
     bool Blank() const;  // returns true if all white space and new lines

@@ -38,21 +38,22 @@ public:
     std::string_view Standalone() const { return standalone; }
 
     /// Creates a copy of this Declaration and returns it.
-    virtual TiXmlNode* Clone() const;
-    // Print this declaration to a FILE stream.
-    virtual void Print(FILE* cfile, int depth, std::string* str) const;
-    virtual void Print(FILE* cfile, int depth) const { Print(cfile, depth, 0); }
+    virtual TiXmlNode* Clone() const override;
 
-    virtual const char* Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc);
+    void Print(std::string* str) const;
+    void Print(FILE* file) const;
 
-    /// Cast to a more defined type. Will return null not of the requested type.
-    virtual const TiXmlDeclaration* ToDeclaration() const { return this; }
+    virtual const char* Parse(const char* p, TiXmlParsingData* data,
+                              const allocator_type& alloc) override;
 
     /// Cast to a more defined type. Will return null not of the requested type.
-    virtual TiXmlDeclaration* ToDeclaration() { return this; }
+    virtual const TiXmlDeclaration* ToDeclaration() const override { return this; }
+
+    /// Cast to a more defined type. Will return null not of the requested type.
+    virtual TiXmlDeclaration* ToDeclaration() override { return this; }
 
     /// Walk the XML tree visiting this node and all of its children.
-    virtual bool Accept(TiXmlVisitor* visitor) const;
+    virtual bool Accept(TiXmlVisitor* visitor) const override;
 
 protected:
     void CopyTo(TiXmlDeclaration* target) const;

@@ -72,7 +72,7 @@ std::string TransferFunctionXMLWriter::toXML(const TransferFunction& tf) {
 
         return printer.Str();
 
-    } catch (TxException& e) {
+    } catch (const TiXmlError& e) {
         throw DataWriterException(e.what(), IVW_CONTEXT_CUSTOM("TransferFunctionXMLWriter"));
     }
 }
@@ -83,7 +83,7 @@ void TransferFunctionXMLWriter::writeData(const TransferFunction* data,
         auto of = open(filePath);
         of << toXML(*data);
         of.close();
-    } catch (TxException& e) {
+    } catch (const TiXmlError& e) {
         throw DataWriterException(e.what(), IVW_CONTEXT_CUSTOM("TransferFunctionXMLWriter"));
     }
 };

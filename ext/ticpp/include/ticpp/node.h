@@ -336,7 +336,7 @@ protected:
     void CopyTo(TiXmlNode* target) const;
 
     // Figure out what is at *p, and parse it. Returns null if it is not an xml node.
-    TiXmlNode* Identify(const char* start, const allocator_type& alloc);
+    std::unique_ptr<TiXmlNode> Identify(const char* start, const allocator_type& alloc);
 
     TiXmlNode* parent;
     NodeType type;

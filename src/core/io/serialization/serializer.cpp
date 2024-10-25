@@ -46,7 +46,7 @@ Serializer::Serializer(const std::filesystem::path& fileName, const allocator_ty
                                    detail::toStr(SerializeConstants::InviwoWorkspaceVersion));
         doc_->LinkEndChild(rootElement_);
 
-    } catch (TxException& e) {
+    } catch (const TiXmlError& e) {
         throw SerializationException(e.what(), IVW_CONTEXT);
     }
 }
@@ -98,7 +98,7 @@ void Serializer::serialize(std::string_view key, const unsigned char& data,
 void Serializer::writeFile() {
     try {
         doc_->SaveFile(getFileName().string());
-    } catch (TxException& e) {
+    } catch (const TiXmlError& e) {
         throw SerializationException(e.what(), IVW_CONTEXT);
     }
 }
@@ -113,7 +113,7 @@ void Serializer::writeFile(std::ostream& stream, bool format) {
         } else {
             stream << *doc_;
         }
-    } catch (TxException& e) {
+    } catch (const TiXmlError& e) {
         throw SerializationException(e.what(), IVW_CONTEXT);
     }
 }

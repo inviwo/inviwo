@@ -27,12 +27,12 @@ public:
         Returns true if successful. Will delete any existing
         document data before loading.
     */
-    bool LoadFile();
+    void LoadFile();
     /// Save a file using the current document value. Returns true if successful.
     bool SaveFile() const;
     /// Load a file using the given filename. Returns true if successful.
 
-    bool LoadFile(std::string_view filename);
+    void LoadFile(std::string_view filename);
     /// Save a file using the given filename. Returns true if successful.
     bool SaveFile(std::string_view filename) const;
     /** Load a file using the given FILE*. Returns true if successful. Note that this method
@@ -40,15 +40,15 @@ public:
         will be interpreted as an XML file. TinyXML doesn't stream in XML from the current
         file location. Streaming may be added in the future.
     */
-    bool LoadFile(FILE*);
+    void LoadFile(FILE*);
     /// Save a file using the given FILE*. Returns true if successful.
     bool SaveFile(FILE*) const;
 
-    /** Parse the given null terminated block of xml data.
-     */
+    /// Parse the given null terminated block of xml data.
     const char* Parse(const char* p, TiXmlParsingData* data);
 
-    virtual const char* Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data,
+                              const allocator_type& alloc) override;
 
     /** Get the root element -- the only top level element -- of the document.
         In well formed XML, there should only be one. TinyXml is tolerant of
@@ -56,33 +56,6 @@ public:
     */
     const TiXmlElement* RootElement() const { return FirstChildElement(); }
     TiXmlElement* RootElement() { return FirstChildElement(); }
-
-    /** If an error occurs, Error will be set to true. Also,
-        The ErrorId() will contain the integer identifier of the error (not generally useful)
-        The ErrorDesc() method will return the name of the error. (very useful)
-        The ErrorRow() and ErrorCol() will return the location of the error (if known)
-    */
-    bool Error() const { return error; }
-
-    /// Contains a textual (english) description of the error if one occurs.
-    const char* ErrorDesc() const { return errorDesc.c_str(); }
-
-    /** Generally, you probably want the error string ( ErrorDesc() ). But if you
-        prefer the ErrorId, this function will fetch it.
-    */
-    int ErrorId() const { return errorId; }
-
-    /** Returns the location (if known) of the error. The first column is column 1,
-        and the first row is row 1. A value of 0 means the row and column wasn't applicable
-        (memory errors, for example, have no row/column) or the parser lost the error. (An
-        error in the error reporting, in that case.)
-
-        @sa SetTabSize, Row, Column
-    */
-    int ErrorRow() const { return errorLocation.row + 1; }
-
-    /// The column where the error occurred. See ErrorRow()
-    int ErrorCol() const { return errorLocation.col + 1; }
 
     /** SetTabSize() allows the error reporting functions (ErrorRow() and ErrorCol())
         to report the correct values for row and column. It does not change the output
@@ -112,45 +85,20 @@ public:
 
     int TabSize() const { return tabsize; }
 
-    /** If you have handled the error, it can be reset with this call. The error
-        state is automatically cleared if you Parse a new XML block.
-    */
-    void ClearError() {
-        error = false;
-        errorId = 0;
-        errorDesc = "";
-        errorLocation.row = errorLocation.col = 0;
-    }
-
-    /** Write the document to standard out using formatted printing ("pretty print"). */
-    void Print() const { Print(stdout, 0); }
-
-    /// Print this Document to a FILE stream.
-    virtual void Print(FILE* cfile, int depth = 0) const;
-    // [internal use]
-    void SetError(int err, const char* errorLocation, TiXmlParsingData* prevData);
-
-    /// The column where the error occured. See ErrorRow()
-    virtual const TiXmlDocument* ToDocument() const { return this; }
-    /// The column where the error occured. See ErrorRow()
-    virtual TiXmlDocument* ToDocument() { return this; }
+    virtual const TiXmlDocument* ToDocument() const override { return this; }
+    virtual TiXmlDocument* ToDocument() override { return this; }
 
     /// Walk the XML tree visiting this node and all of its children.
-    virtual bool Accept(TiXmlVisitor* content) const;
+    virtual bool Accept(TiXmlVisitor* content) const override;
 
     const allocator_type& getAllocator() const { return allocator; }
 
 protected:
-    virtual TiXmlNode* Clone() const;
+    virtual TiXmlNode* Clone() const override;
 
 private:
     void CopyTo(TiXmlDocument* target) const;
 
     allocator_type allocator;
-
-    bool error;
-    int errorId;
-    std::string errorDesc;
     int tabsize;
-    TiXmlCursor errorLocation;
 };
