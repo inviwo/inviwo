@@ -44,7 +44,7 @@ const ProcessorInfo ImageToLayer::processorInfo_{
     Tags::CPU | Tag{"Image"} | Tag{"Layer"},  // Tags
     R"(Extracts one layer from an image.)"_unindentHelp};
 
-const ProcessorInfo ImageToLayer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageToLayer::getProcessorInfo() const { return processorInfo_; }
 
 ImageToLayer::ImageToLayer()
     : Processor{}

@@ -47,7 +47,7 @@ const ProcessorInfo LayerSeriesSource::processorInfo_{
     R"(Provides functionality to pick a single layer from a list of files
      matching a pattern or selection)"_unindentHelp};
 
-const ProcessorInfo LayerSeriesSource::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerSeriesSource::getProcessorInfo() const { return processorInfo_; }
 
 LayerSeriesSource::LayerSeriesSource(InviwoApplication* app)
     : Processor{}

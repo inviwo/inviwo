@@ -56,7 +56,7 @@ class InviwoApplication;
 
 class IVW_MODULE_BASE_API VolumeSource : public Processor {
 public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     VolumeSource(InviwoApplication* app, const std::filesystem::path& filePath = {});

@@ -54,7 +54,7 @@ const ProcessorInfo MeshSource::processorInfo_{
     CodeState::Stable,            // Code state
     Tags::CPU,                    // Tags
 };
-const ProcessorInfo MeshSource::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshSource::getProcessorInfo() const { return processorInfo_; }
 
 MeshSource::MeshSource(InviwoApplication* app, const std::filesystem::path& filename)
     : DataSource<Mesh, MeshOutport>(util::getDataReaderFactory(app), filename, "geometry") {

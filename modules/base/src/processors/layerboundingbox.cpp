@@ -42,7 +42,7 @@ const ProcessorInfo LayerBoundingBox::processorInfo_{
     "Creates a mesh containing the bounding box of a layer, that is lines with "
     "adjacency information."_unindentHelp};
 
-const ProcessorInfo LayerBoundingBox::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerBoundingBox::getProcessorInfo() const { return processorInfo_; }
 
 LayerBoundingBox::LayerBoundingBox()
     : Processor{}

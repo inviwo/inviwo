@@ -51,7 +51,7 @@ const ProcessorInfo ImageInvert::processorInfo_{
     
     The input range is assumed to be normalized, i.e. [0, 1].)"_unindentHelp};
 
-const ProcessorInfo ImageInvert::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageInvert::getProcessorInfo() const { return processorInfo_; }
 
 ImageInvert::ImageInvert() : ImageGLProcessor("img_invert.frag") {}
 

@@ -53,7 +53,7 @@ public:
 
     virtual void process() override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
 
 private:
     DataInport<typename Tracer::Sampler> sampler_;
@@ -181,8 +181,9 @@ struct ProcessorTraits<PathLines3D> {
 };
 
 template <typename Tracer>
-const ProcessorInfo IntegralLineTracerProcessor<Tracer>::getProcessorInfo() const {
-    return ProcessorTraits<IntegralLineTracerProcessor<Tracer>>::getProcessorInfo();
+const ProcessorInfo& IntegralLineTracerProcessor<Tracer>::getProcessorInfo() const {
+    static const ProcessorInfo info{ProcessorTraits<IntegralLineTracerProcessor<Tracer>>::getProcessorInfo()};
+    return info;
 }
 
 }  // namespace inviwo

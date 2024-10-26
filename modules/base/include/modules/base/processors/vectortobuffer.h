@@ -88,7 +88,7 @@ public:
         }
     }
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
@@ -100,8 +100,9 @@ private:
 };
 
 template <typename T>
-const ProcessorInfo VectorToBuffer<T>::getProcessorInfo() const {
-    return ProcessorTraits<VectorToBuffer<T>>::getProcessorInfo();
+const ProcessorInfo& VectorToBuffer<T>::getProcessorInfo() const {
+    static const ProcessorInfo info{ProcessorTraits<VectorToBuffer<T>>::getProcessorInfo()};
+    return info;
 }
 
 template <typename T>

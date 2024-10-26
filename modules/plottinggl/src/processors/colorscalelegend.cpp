@@ -89,7 +89,7 @@ const ProcessorInfo ColorScaleLegend::processorInfo_{
     "Displays a color legend axis based on a transfer function. If a volume is connected, its data "
     "ranges are considered. The corresponding values of the colors can be displayed next to the "
     "colors."_help};
-const ProcessorInfo ColorScaleLegend::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ColorScaleLegend::getProcessorInfo() const { return processorInfo_; }
 
 ColorScaleLegend::ColorScaleLegend()
     : Processor()

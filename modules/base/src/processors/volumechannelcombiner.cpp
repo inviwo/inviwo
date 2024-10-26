@@ -48,7 +48,7 @@ and precision of the inputs.
 )"_unindentHelp,
 };
 
-const ProcessorInfo VolumeChannelCombiner::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeChannelCombiner::getProcessorInfo() const { return processorInfo_; }
 
 namespace {
 const std::vector<OptionPropertyIntOption> channelsList = {{"channel1", "Channel 1", 0},

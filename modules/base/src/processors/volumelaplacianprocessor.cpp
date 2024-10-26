@@ -55,7 +55,7 @@ const ProcessorInfo VolumeLaplacianProcessor::processorInfo_{
     CodeState::Experimental,                // Code state
     Tags::CPU,                              // Tags
 };
-const ProcessorInfo VolumeLaplacianProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeLaplacianProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeLaplacianProcessor::VolumeLaplacianProcessor()
     : PoolProcessor()

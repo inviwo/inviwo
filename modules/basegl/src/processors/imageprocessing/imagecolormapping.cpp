@@ -59,7 +59,7 @@ const ProcessorInfo ImageColorMapping::processorInfo_{
     Maps the input image to an output image with the help of a transfer function.
     )"_unindentHelp,
 };
-const ProcessorInfo ImageColorMapping::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageColorMapping::getProcessorInfo() const { return processorInfo_; }
 
 ImageColorMapping::ImageColorMapping()
     : ImageGLProcessor("img_mapping.frag")

@@ -46,7 +46,7 @@ const ProcessorInfo Vector2DCurl::processorInfo_{
     Tags::GL | Tag{"Layer"},       // Tags
     R"(Computes the curl of a 2D vector field.)"_unindentHelp,
 };
-const ProcessorInfo Vector2DCurl::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& Vector2DCurl::getProcessorInfo() const { return processorInfo_; }
 
 Vector2DCurl::Vector2DCurl() : LayerGLProcessor{utilgl::findShaderResource("vector2dcurl.frag")} {}
 

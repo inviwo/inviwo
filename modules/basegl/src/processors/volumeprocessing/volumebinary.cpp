@@ -59,7 +59,7 @@ const ProcessorInfo VolumeBinary::processorInfo_{
     CodeState::Stable,          // Code state
     Tags::None,                 // Tags
 };
-const ProcessorInfo VolumeBinary::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeBinary::getProcessorInfo() const { return processorInfo_; }
 
 VolumeBinary::VolumeBinary()
     : VolumeGLProcessor("volume_binary.frag", false)

@@ -84,7 +84,7 @@ const ProcessorInfo ColumnLayout::processorInfo_{
     CodeState::Stable,          // Code state
     Tags::GL | Tag("Layout"),   // Tags
 };
-const ProcessorInfo ColumnLayout::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ColumnLayout::getProcessorInfo() const { return processorInfo_; }
 
 const ProcessorInfo RowLayout::processorInfo_{
     "org.inviwo.RowLayout",    // Class identifier
@@ -93,7 +93,7 @@ const ProcessorInfo RowLayout::processorInfo_{
     CodeState::Stable,         // Code state
     Tags::GL | Tag("Layout"),  // Tags
 };
-const ProcessorInfo RowLayout::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& RowLayout::getProcessorInfo() const { return processorInfo_; }
 
 Layout::Layout(splitter::Direction direction)
     : Processor()

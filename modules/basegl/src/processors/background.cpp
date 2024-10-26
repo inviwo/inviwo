@@ -82,7 +82,7 @@ const ProcessorInfo Background::processorInfo_{"org.inviwo.Background",  // Clas
         out.a = bg.a * (1.0 - in.a) + in * in.a
         ```
     )"_unindentHelp};
-const ProcessorInfo Background::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& Background::getProcessorInfo() const { return processorInfo_; }
 
 Background::Background()
     : Processor()

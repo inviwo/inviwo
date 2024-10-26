@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -75,7 +75,7 @@ const ProcessorInfo LorenzSystem::processorInfo_{
     CodeState::Stable,          // Code state
     "GL, Generator",            // Tags
 };
-const ProcessorInfo LorenzSystem::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LorenzSystem::getProcessorInfo() const { return processorInfo_; }
 
 LorenzSystem::LorenzSystem()
     : Processor()

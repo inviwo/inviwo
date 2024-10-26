@@ -56,7 +56,7 @@ const ProcessorInfo VolumeMerger::processorInfo_{
     CodeState::Stable,          // Code state
     "GL",                       // Tags
 };
-const ProcessorInfo VolumeMerger::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeMerger::getProcessorInfo() const { return processorInfo_; }
 
 VolumeMerger::VolumeMerger()
     : VolumeGLProcessor("volumemerger.frag"), vol2_("volume2"), vol3_("volume3"), vol4_("volume4") {

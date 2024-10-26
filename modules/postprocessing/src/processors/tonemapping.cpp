@@ -55,7 +55,7 @@ const ProcessorInfo Tonemapping::processorInfo_{
     CodeState::Stable,         // Code state
     Tags::GL,                  // Tags
 };
-const ProcessorInfo Tonemapping::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& Tonemapping::getProcessorInfo() const { return processorInfo_; }
 
 enum Method { None, Gamma, Reinhard, Uncharted2 };
 

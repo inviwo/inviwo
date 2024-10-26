@@ -64,7 +64,7 @@ const ProcessorInfo LIC3D::processorInfo_{
     Tags::GL,                      // Tags
 };
 
-const ProcessorInfo LIC3D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LIC3D::getProcessorInfo() const { return processorInfo_; }
 
 LIC3D::LIC3D()
     : VolumeGLProcessor("lic3d.frag")

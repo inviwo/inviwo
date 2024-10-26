@@ -57,7 +57,7 @@ const ProcessorInfo MeshInformation::processorInfo_{
     R"(
     Shows available information provided by the input mesh including metadata.
     )"_unindentHelp};
-const ProcessorInfo MeshInformation::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshInformation::getProcessorInfo() const { return processorInfo_; }
 
 MeshInformation::MeshInformation()
     : Processor()

@@ -40,7 +40,7 @@ class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector3DDivergence : public Volu
 public:
     Vector3DDivergence();
     virtual ~Vector3DDivergence();
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 protected:

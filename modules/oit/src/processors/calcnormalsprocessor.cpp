@@ -51,7 +51,7 @@ const ProcessorInfo CalcNormalsProcessor::processorInfo_{
     CodeState::Experimental,            // Code state
     Tags::CPU,                          // Tags
 };
-const ProcessorInfo CalcNormalsProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& CalcNormalsProcessor::getProcessorInfo() const { return processorInfo_; }
 
 CalcNormalsProcessor::CalcNormalsProcessor()
     : Processor()

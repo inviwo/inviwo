@@ -64,7 +64,7 @@ public:
     StreamLinesDeprecated();
     virtual ~StreamLinesDeprecated();
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     virtual void process() override;

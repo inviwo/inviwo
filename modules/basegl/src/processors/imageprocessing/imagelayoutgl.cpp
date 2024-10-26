@@ -78,7 +78,7 @@ const ProcessorInfo ImageLayoutGL::processorInfo_{
     CodeState::Experimental,     // Code state
     Tags::GL,                    // Tags
 };
-const ProcessorInfo ImageLayoutGL::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageLayoutGL::getProcessorInfo() const { return processorInfo_; }
 
 ImageLayoutGL::ImageLayoutGL()
     : Processor()

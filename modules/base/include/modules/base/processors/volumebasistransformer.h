@@ -76,7 +76,7 @@ public:
     BasisTransform();
     virtual ~BasisTransform() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
 
     virtual void deserialize(Deserializer& d) override;
 
@@ -93,8 +93,9 @@ private:
 };
 
 template <typename T>
-const ProcessorInfo inviwo::BasisTransform<T>::getProcessorInfo() const {
-    return ProcessorTraits<BasisTransform<T>>::getProcessorInfo();
+const ProcessorInfo& BasisTransform<T>::getProcessorInfo() const {
+    static const ProcessorInfo info{ProcessorTraits<BasisTransform<T>>::getProcessorInfo()};
+    return info;
 }
 
 class Mesh;

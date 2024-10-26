@@ -68,7 +68,7 @@ const ProcessorInfo GridPlanes::processorInfo_{
     R"(Creates a mesh that can be used to draw grid planes for the current coordinate system.
     )"_unindentHelp};
 
-const ProcessorInfo GridPlanes::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& GridPlanes::getProcessorInfo() const { return processorInfo_; }
 
 GridPlanes::GridPlanes()
     : Processor()

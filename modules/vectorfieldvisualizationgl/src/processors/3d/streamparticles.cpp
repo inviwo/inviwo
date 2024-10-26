@@ -103,7 +103,7 @@ const ProcessorInfo StreamParticles::processorInfo_{
     intervall than the advection based on the __Reseed interval__ property. Using GLSL Compute
     Shaders, requires OpenGL 4.3)"_unindentHelp};
 
-const ProcessorInfo StreamParticles::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& StreamParticles::getProcessorInfo() const { return processorInfo_; }
 
 StreamParticles::StreamParticles(InviwoApplication* app)
     : Processor()

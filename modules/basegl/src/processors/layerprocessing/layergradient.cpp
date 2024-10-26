@@ -45,7 +45,7 @@ const ProcessorInfo LayerGradient::processorInfo_{
     R"(Computes the gradient of one channel of the input Layer.)"_unindentHelp,
 };
 
-const ProcessorInfo LayerGradient::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerGradient::getProcessorInfo() const { return processorInfo_; }
 
 LayerGradient::LayerGradient()
     : LayerGLProcessor{utilgl::findShaderResource("img_gradient.frag")}

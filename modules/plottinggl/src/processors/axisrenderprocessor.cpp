@@ -63,7 +63,7 @@ const ProcessorInfo AxisRenderProcessor::processorInfo_{
     CodeState::Stable,                 // Code state
     "GL, Plotting, Demo",              // Tags
 };
-const ProcessorInfo AxisRenderProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& AxisRenderProcessor::getProcessorInfo() const { return processorInfo_; }
 
 AxisRenderProcessor::AxisRenderProcessor()
     : Processor()

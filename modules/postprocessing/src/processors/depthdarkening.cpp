@@ -76,7 +76,7 @@ const ProcessorInfo DepthDarkening::processorInfo_{
     CodeState::Experimental,      // Code state
     Tags::None,                   // Tags
 };
-const ProcessorInfo DepthDarkening::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& DepthDarkening::getProcessorInfo() const { return processorInfo_; }
 
 DepthDarkening::DepthDarkening()
     : Processor()

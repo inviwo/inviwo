@@ -56,7 +56,7 @@ const ProcessorInfo VolumeSequenceToSpatial4DSampler::processorInfo_{
     CodeState::Experimental,                        // Code state
     Tags::None,                                     // Tags
 };
-const ProcessorInfo VolumeSequenceToSpatial4DSampler::getProcessorInfo() const {
+const ProcessorInfo& VolumeSequenceToSpatial4DSampler::getProcessorInfo() const {
     return processorInfo_;
 }
 

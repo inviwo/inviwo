@@ -85,7 +85,7 @@ const ProcessorInfo VolumeSliceExtractor::processorInfo_{
 Extracts an axis aligned 2D slice from an input volume. The input data will be renormalized to either 
 [0,1] for floating point values or [0, max] of the data format using the data mapper of the volume.
 )"_unindentHelp};
-const ProcessorInfo VolumeSliceExtractor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeSliceExtractor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSliceExtractor::VolumeSliceExtractor()
     : Processor()

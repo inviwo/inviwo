@@ -67,7 +67,7 @@ const ProcessorInfo VolumeRegionStatistics::processorInfo_{
     )"_unindentHelp
 
 };
-const ProcessorInfo VolumeRegionStatistics::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeRegionStatistics::getProcessorInfo() const { return processorInfo_; }
 
 VolumeRegionStatistics::VolumeRegionStatistics()
     : PoolProcessor()

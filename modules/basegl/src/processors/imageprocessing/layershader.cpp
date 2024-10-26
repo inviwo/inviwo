@@ -95,7 +95,7 @@ const ProcessorInfo LayerShader::processorInfo_{
     Tags::GL | Tag{"Layer"} | Tag{"Shader"},  // Tags
     R"(Applies a customizable shader to perform computations on the input layer.)"_unindentHelp};
 
-const ProcessorInfo LayerShader::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerShader::getProcessorInfo() const { return processorInfo_; }
 
 LayerShader::LayerShader()
     : LayerGLProcessor(Shader{

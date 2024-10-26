@@ -67,7 +67,7 @@ const ProcessorInfo EntryExitPoints::processorInfo_{
     in texture space. The output color will be zero if no intersection is found,
     otherwise.)"_unindentHelp};
 
-const ProcessorInfo EntryExitPoints::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& EntryExitPoints::getProcessorInfo() const { return processorInfo_; }
 
 EntryExitPoints::EntryExitPoints()
     : Processor()

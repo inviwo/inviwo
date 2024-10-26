@@ -73,7 +73,7 @@ const ProcessorInfo LightingRaycaster::processorInfo_{
     CodeState::Experimental,         // Code state
     Tags::GL,                        // Tags
 };
-const ProcessorInfo LightingRaycaster::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LightingRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 LightingRaycaster::LightingRaycaster()
     : Processor()

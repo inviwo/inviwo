@@ -64,7 +64,7 @@ const ProcessorInfo VectorMagnitudeProcessor::processorInfo_{
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
-const ProcessorInfo VectorMagnitudeProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VectorMagnitudeProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VectorMagnitudeProcessor::VectorMagnitudeProcessor()
     : VolumeGLProcessor("vectormagnitudeprocessor.frag") {

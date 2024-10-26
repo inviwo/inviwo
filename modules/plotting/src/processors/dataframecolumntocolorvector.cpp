@@ -68,7 +68,7 @@ const ProcessorInfo DataFrameColumnToColorVector::processorInfo_{
     CodeState::Stable,                          // Code state
     "CPU, Plotting, DataFrame"                  // Tags
 };
-const ProcessorInfo DataFrameColumnToColorVector::getProcessorInfo() const {
+const ProcessorInfo& DataFrameColumnToColorVector::getProcessorInfo() const {
     return processorInfo_;
 }
 

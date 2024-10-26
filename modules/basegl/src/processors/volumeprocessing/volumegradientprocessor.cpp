@@ -61,7 +61,7 @@ const ProcessorInfo VolumeGradientProcessor::processorInfo_{
     CodeState::Stable,            // Code state
     Tags::GL,                     // Tags
 };
-const ProcessorInfo VolumeGradientProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeGradientProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeGradientProcessor::VolumeGradientProcessor()
     : VolumeGLProcessor("volume_gradient.frag")

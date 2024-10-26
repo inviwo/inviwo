@@ -96,7 +96,7 @@ const ProcessorInfo PathLinesDeprecated::processorInfo_{
     Tags::CPU,                         // Tags
 };
 
-const ProcessorInfo PathLinesDeprecated::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& PathLinesDeprecated::getProcessorInfo() const { return processorInfo_; }
 
 PathLinesDeprecated::PathLinesDeprecated()
     : Processor()

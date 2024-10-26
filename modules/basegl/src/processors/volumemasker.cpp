@@ -51,7 +51,7 @@ Depending on the data ranges of the input volume and the mask volume, the result
 data range of the input.
 )"_unindentHelp};
 
-const ProcessorInfo VolumeMasker::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeMasker::getProcessorInfo() const { return processorInfo_; }
 
 VolumeMasker::VolumeMasker()
     : VolumeGLProcessor{"volumemask.frag"}

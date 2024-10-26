@@ -58,7 +58,7 @@ const ProcessorInfo Fog::processorInfo_{
     CodeState::Stable,      // Code state
     "GL, Image Operation",  // Tags
 };
-const ProcessorInfo Fog::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& Fog::getProcessorInfo() const { return processorInfo_; }
 
 Fog::Fog()
     : input_("inport")

@@ -80,7 +80,7 @@ const ProcessorInfo ConvexHull2DProcessor::processorInfo_{
     Example Workspace: [core/convexhull.inv](file:~basePath~/data/workspaces/convexhull.inv)
     )"_unindentHelp};
 
-const ProcessorInfo ConvexHull2DProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ConvexHull2DProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ConvexHull2DProcessor::ConvexHull2DProcessor()
     : Processor()

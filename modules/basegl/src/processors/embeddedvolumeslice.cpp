@@ -91,7 +91,7 @@ const ProcessorInfo EmbeddedVolumeSlice::processorInfo_{
     CodeState::Stable,                 // Code state
     Tags::GL,                          // Tags
 };
-const ProcessorInfo EmbeddedVolumeSlice::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& EmbeddedVolumeSlice::getProcessorInfo() const { return processorInfo_; }
 
 EmbeddedVolumeSlice::EmbeddedVolumeSlice()
     : Processor()

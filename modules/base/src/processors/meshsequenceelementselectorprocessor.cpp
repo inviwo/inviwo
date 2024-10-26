@@ -54,7 +54,7 @@ const ProcessorInfo MeshSequenceElementSelectorProcessor::processorInfo_{
     CodeState::Stable,                  // Code state
     Tags::CPU,                          // Tags
 };
-const ProcessorInfo MeshSequenceElementSelectorProcessor::getProcessorInfo() const {
+const ProcessorInfo& MeshSequenceElementSelectorProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 MeshSequenceElementSelectorProcessor::MeshSequenceElementSelectorProcessor()

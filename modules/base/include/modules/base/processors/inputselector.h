@@ -71,7 +71,7 @@ public:
     InputSelector();
     virtual ~InputSelector() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
 
     virtual void process() override;
 
@@ -87,8 +87,10 @@ private:
 };
 
 template <typename Inport, typename Outport>
-const ProcessorInfo InputSelector<Inport, Outport>::getProcessorInfo() const {
-    return ProcessorTraits<InputSelector<Inport, Outport>>::getProcessorInfo();
+const ProcessorInfo& InputSelector<Inport, Outport>::getProcessorInfo() const {
+    static const ProcessorInfo info{
+        ProcessorTraits<InputSelector<Inport, Outport>>::getProcessorInfo()};
+    return info;
 }
 
 template <typename Inport, typename Outport>

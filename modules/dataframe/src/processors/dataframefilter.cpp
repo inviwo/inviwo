@@ -72,7 +72,7 @@ const ProcessorInfo DataFrameFilter::processorInfo_{
     CodeState::Experimental,                       // Code state
     Tags::CPU | Tag("DataFrame") | Tag("Filter"),  // Tags
 };
-const ProcessorInfo DataFrameFilter::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& DataFrameFilter::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameFilter::DataFrameFilter()
     : Processor()

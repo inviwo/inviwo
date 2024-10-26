@@ -65,7 +65,7 @@ const ProcessorInfo TFSelector::processorInfo_{
     "Transfer Function, TF, Presets, UI",  // Tags
 };
 
-const ProcessorInfo TFSelector::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TFSelector::getProcessorInfo() const { return processorInfo_; }
 
 TFSelector::TFSelector()
     : Processor()

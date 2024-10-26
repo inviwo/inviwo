@@ -90,7 +90,7 @@ public:
     AtlasVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
     virtual ~AtlasVolumeRaycaster() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:

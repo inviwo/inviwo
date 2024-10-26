@@ -85,7 +85,7 @@ const ProcessorInfo SphereRasterizer::processorInfo_{
        spherical glyphs in OpenGL. The glyphs are resolution independent and
        consist only of a single point.)"_unindentHelp};
 
-const ProcessorInfo SphereRasterizer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SphereRasterizer::getProcessorInfo() const { return processorInfo_; }
 
 SphereRasterizer::SphereRasterizer()
     : Rasterizer()

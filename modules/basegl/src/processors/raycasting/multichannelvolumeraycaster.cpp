@@ -64,7 +64,7 @@ const ProcessorInfo MultiChannelVolumeRaycaster::processorInfo_{
     CodeState::Experimental,                     // Code state
     Tags::GL | Tag{"Volume"} | Tag{"Raycaster"}  // Tags
 };
-const ProcessorInfo MultiChannelVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MultiChannelVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 MultiChannelVolumeRaycaster::MultiChannelVolumeRaycaster(std::string_view identifier,
                                                          std::string_view displayName)

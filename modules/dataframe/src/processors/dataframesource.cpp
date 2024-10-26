@@ -55,7 +55,7 @@ const ProcessorInfo DataFrameSource::processorInfo_{
     CodeState::Stable,                                           // Code state
     "CPU, Plotting, Source, CSV, JSON, DataFrame, Spreadsheet",  // Tags
     "Loads a DataFrame from file."_help};
-const ProcessorInfo DataFrameSource::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& DataFrameSource::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameSource::DataFrameSource(InviwoApplication* app, const std::filesystem::path& filePath)
     : DataSource<DataFrame, DataFrameOutport>(util::getDataReaderFactory(app), filePath,

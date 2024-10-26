@@ -54,7 +54,7 @@ const ProcessorInfo ImageSnapshot::processorInfo_{
     CodeState::Experimental,     // Code state
     Tags::None,                  // Tags
     R"(Save snapshot of images that can be viewed later. Useful for comparisons.)"_unindentHelp};
-const ProcessorInfo ImageSnapshot::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageSnapshot::getProcessorInfo() const { return processorInfo_; }
 
 ImageSnapshot::ImageSnapshot()
     : Processor()

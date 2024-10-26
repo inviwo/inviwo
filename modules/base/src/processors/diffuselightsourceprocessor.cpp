@@ -73,7 +73,7 @@ const ProcessorInfo DiffuseLightSourceProcessor::processorInfo_{
     when specified in world space and normalize(camera_.getLookTo() - lightPos) when specified in
     view space.)"_unindentHelp};
 
-const ProcessorInfo DiffuseLightSourceProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& DiffuseLightSourceProcessor::getProcessorInfo() const { return processorInfo_; }
 
 DiffuseLightSourceProcessor::DiffuseLightSourceProcessor()
     : Processor()

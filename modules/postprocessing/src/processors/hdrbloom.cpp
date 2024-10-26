@@ -77,7 +77,7 @@ const ProcessorInfo HdrBloom::processorInfo_{
     Tags::GL,               // Tags
 };
 
-const ProcessorInfo HdrBloom::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& HdrBloom::getProcessorInfo() const { return processorInfo_; }
 
 HdrBloom::HdrBloom()
     : Processor()

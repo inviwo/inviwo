@@ -55,7 +55,7 @@ const ProcessorInfo SphereRenderer::processorInfo_{
     R"(This processor renders a set of point meshes using spherical glyphs in OpenGL.
     The glyphs are resolution independent and consist only of a single point.
     )"_unindentHelp};
-const ProcessorInfo SphereRenderer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SphereRenderer::getProcessorInfo() const { return processorInfo_; }
 
 SphereRenderer::SphereRenderer()
     : Processor()

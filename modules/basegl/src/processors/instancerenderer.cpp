@@ -113,7 +113,7 @@ const ProcessorInfo InstanceRenderer::processorInfo_{
         [basegl/instance_renderer.inv](file:~modulePath~/data/workspaces/instance_renderer.inv)
     )"_unindentHelp};
 
-const ProcessorInfo InstanceRenderer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& InstanceRenderer::getProcessorInfo() const { return processorInfo_; }
 
 namespace irplaceholder {
 

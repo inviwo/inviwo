@@ -74,7 +74,7 @@ const ProcessorInfo MultichannelRaycaster::processorInfo_{
     CodeState::Experimental,             // Code state
     Tags::GL,                            // Tags
 };
-const ProcessorInfo MultichannelRaycaster::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MultichannelRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 MultichannelRaycaster::MultichannelRaycaster()
     : Processor()

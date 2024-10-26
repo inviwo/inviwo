@@ -42,7 +42,7 @@ const ProcessorInfo LayerToImage::processorInfo_{
     Tags::CPU | Tag{"Image"} | Tag{"Layer"},  // Tags
     R"(Create a color Image from a single Layer)"_unindentHelp};
 
-const ProcessorInfo LayerToImage::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerToImage::getProcessorInfo() const { return processorInfo_; }
 
 LayerToImage::LayerToImage()
     : Processor{}

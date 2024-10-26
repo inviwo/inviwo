@@ -53,7 +53,7 @@ const ProcessorInfo ImageSequenceElementSelectorProcessor::processorInfo_{
     CodeState::Stable,                   // Code state
     Tags::CPU,                           // Tags
     R"(Select a specific image out of a sequence of images)"_unindentHelp};
-const ProcessorInfo ImageSequenceElementSelectorProcessor::getProcessorInfo() const {
+const ProcessorInfo& ImageSequenceElementSelectorProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 ImageSequenceElementSelectorProcessor::ImageSequenceElementSelectorProcessor()

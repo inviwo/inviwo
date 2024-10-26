@@ -81,7 +81,7 @@ const ProcessorInfo ImageGrayscale::processorInfo_{
      * _green_ l.rgb = vec3(0, 1, 0)
      * _blue_ l.rgb = vec3(0, 0, 1))"_unindentHelp};
 
-const ProcessorInfo ImageGrayscale::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageGrayscale::getProcessorInfo() const { return processorInfo_; }
 
 ImageGrayscale::ImageGrayscale()
     : ImageGLProcessor("img_graysc.frag")

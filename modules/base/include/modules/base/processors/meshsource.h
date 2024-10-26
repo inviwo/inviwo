@@ -61,7 +61,7 @@ public:
     MeshSource(InviwoApplication* app, const std::filesystem::path& filePath = {});
     virtual ~MeshSource() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 };
 

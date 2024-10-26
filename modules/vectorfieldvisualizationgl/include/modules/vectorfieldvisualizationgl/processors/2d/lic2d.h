@@ -43,7 +43,7 @@ class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API LIC2D : public LayerGLProcessor 
 public:
     LIC2D();
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:

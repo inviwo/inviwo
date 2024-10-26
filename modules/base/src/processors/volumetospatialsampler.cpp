@@ -57,7 +57,7 @@ const ProcessorInfo VolumeToSpatialSampler::processorInfo_{
     CodeState::Experimental,              // Code state
     Tags::CPU,                            // Tags
 };
-const ProcessorInfo VolumeToSpatialSampler::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeToSpatialSampler::getProcessorInfo() const { return processorInfo_; }
 
 VolumeToSpatialSampler::VolumeToSpatialSampler()
     : Processor(), volume_("volume"), sampler_("sampler") {

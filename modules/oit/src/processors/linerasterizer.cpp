@@ -85,7 +85,7 @@ const ProcessorInfo LineRasterizer::processorInfo_{
     CodeState::Stable,            // Code state
     Tags::GL,                     // Tags
 };
-const ProcessorInfo LineRasterizer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LineRasterizer::getProcessorInfo() const { return processorInfo_; }
 
 LineRasterizer::LineRasterizer()
     : Rasterizer()

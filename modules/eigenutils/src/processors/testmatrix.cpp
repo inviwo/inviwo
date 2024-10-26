@@ -53,7 +53,7 @@ const ProcessorInfo TestMatrix::processorInfo_{
     CodeState::Stable,        // Code state
     "Testing",                // Tags
 };
-const ProcessorInfo TestMatrix::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TestMatrix::getProcessorInfo() const { return processorInfo_; }
 
 TestMatrix::TestMatrix()
     : Processor(), matrix_("matrix_"), size_("size", "Matrix size (square)", 10, 1, 1000) {

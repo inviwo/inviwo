@@ -64,7 +64,7 @@ const ProcessorInfo AtlasVolumeRaycaster::processorInfo_{
     Tags::GL | Tag{"Volume"} | Tag{"Raycaster"} | Tag{"Atlas"}  // Tags
 };
 
-const ProcessorInfo AtlasVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& AtlasVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 AtlasVolumeRaycaster::AtlasVolumeRaycaster(std::string_view identifier,
                                            std::string_view displayName)

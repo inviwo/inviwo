@@ -89,7 +89,7 @@ class StringShaderResource;
  */
 class IVW_MODULE_BASEGL_API VolumeCombiner : public Processor {
 public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     VolumeCombiner();

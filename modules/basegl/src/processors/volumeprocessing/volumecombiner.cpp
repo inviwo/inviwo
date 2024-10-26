@@ -104,7 +104,7 @@ const ProcessorInfo VolumeCombiner::processorInfo_{
     CodeState::Experimental,      // Code state
     Tags::GL,                     // Tags
 };
-const ProcessorInfo VolumeCombiner::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeCombiner::getProcessorInfo() const { return processorInfo_; }
 
 VolumeCombiner::VolumeCombiner()
     : Processor()

@@ -44,7 +44,7 @@ const ProcessorInfo LayerNormalization::processorInfo_{
     Tags::GL | Tag{"Layer"},          // Tags
     R"(Normalize the input layer either per channel or globally.)"_unindentHelp};
 
-const ProcessorInfo LayerNormalization::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerNormalization::getProcessorInfo() const { return processorInfo_; }
 
 LayerNormalization::LayerNormalization()
     : LayerGLProcessor{utilgl::findShaderResource("img_normalize.frag")}

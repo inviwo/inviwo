@@ -52,7 +52,7 @@ const ProcessorInfo VolumeExport::processorInfo_{
 VolumeExport::VolumeExport(InviwoApplication* app)
     : DataExport<Volume, VolumeInport>{util::getDataWriterFactory(app), "", "volume"} {}
 
-const ProcessorInfo VolumeExport::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeExport::getProcessorInfo() const { return processorInfo_; }
 
 const Volume* VolumeExport::getData() { return port_.getData().get(); }
 

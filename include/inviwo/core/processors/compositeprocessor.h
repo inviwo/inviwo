@@ -150,7 +150,7 @@ public:
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:

@@ -45,7 +45,7 @@ namespace inviwo {
 class IVW_MODULE_BASEGL_API ImageChannelCombine : public Processor {
 public:
     ImageChannelCombine();
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     virtual void process() override;

@@ -51,7 +51,7 @@ const ProcessorInfo ImageEdgeDarken::processorInfo_{
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
-const ProcessorInfo ImageEdgeDarken::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageEdgeDarken::getProcessorInfo() const { return processorInfo_; }
 
 ImageEdgeDarken::ImageEdgeDarken()
     : ImageGLProcessor("edgedarken.frag")

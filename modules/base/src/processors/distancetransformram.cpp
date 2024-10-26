@@ -84,7 +84,7 @@ const ProcessorInfo DistanceTransformRAM::processorInfo_{
     Example Network:
     [basegl/distance_transform.inv](file:~modulePath~/tests/regression/distance_transform.inv)
     )"_unindentHelp};
-const ProcessorInfo DistanceTransformRAM::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& DistanceTransformRAM::getProcessorInfo() const { return processorInfo_; }
 
 DistanceTransformRAM::DistanceTransformRAM()
     : PoolProcessor(pool::Option::DelayDispatch)

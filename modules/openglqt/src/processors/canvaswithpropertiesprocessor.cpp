@@ -98,7 +98,7 @@ const ProcessorInfo CanvasWithPropertiesProcessor::processorInfo_{
     CodeState::Experimental,                     // Code state
     Tags::GL,                                    // Tags
 };
-const ProcessorInfo CanvasWithPropertiesProcessor::getProcessorInfo() const {
+const ProcessorInfo& CanvasWithPropertiesProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 

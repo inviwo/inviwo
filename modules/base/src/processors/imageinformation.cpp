@@ -57,7 +57,7 @@ const ProcessorInfo ImageInformation::processorInfo_{
     R"(
     Shows available information provided by the input image including metadata.
     )"_unindentHelp};
-const ProcessorInfo ImageInformation::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageInformation::getProcessorInfo() const { return processorInfo_; }
 
 ImageInformation::ImageInformation()
     : Processor()

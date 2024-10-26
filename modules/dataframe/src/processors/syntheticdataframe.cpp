@@ -71,7 +71,7 @@ const ProcessorInfo SyntheticDataFrame::processorInfo_{
     CodeState::Stable,                // Code state
     "CPU, Plotting, DataFrame"        // Tags
 };
-const ProcessorInfo SyntheticDataFrame::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SyntheticDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 SyntheticDataFrame::SyntheticDataFrame()
     : Processor()

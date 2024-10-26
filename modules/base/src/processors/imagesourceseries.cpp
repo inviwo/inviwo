@@ -70,7 +70,7 @@ const ProcessorInfo ImageSourceSeries::processorInfo_{
     CodeState::Experimental,         // Code state
     Tags::CPU,                       // Tags
 };
-const ProcessorInfo ImageSourceSeries::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageSourceSeries::getProcessorInfo() const { return processorInfo_; }
 
 ImageSourceSeries::ImageSourceSeries(InviwoApplication* app)
     : Processor()

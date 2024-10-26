@@ -43,7 +43,7 @@ public:
     LayerSequenceElementSelector();
     virtual ~LayerSequenceElementSelector() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 };
 

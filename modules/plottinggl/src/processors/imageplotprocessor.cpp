@@ -85,7 +85,7 @@ const ProcessorInfo ImagePlotProcessor::processorInfo_{
     CodeState::Stable,                // Code state
     "GL, Plotting",                   // Tags
     "Renders a given image as a 2D plot with x and y axis."_help};
-const ProcessorInfo ImagePlotProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImagePlotProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ImagePlotProcessor::ImagePlotProcessor()
     : Processor()

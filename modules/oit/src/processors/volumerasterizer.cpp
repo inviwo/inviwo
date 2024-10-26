@@ -63,7 +63,7 @@ const ProcessorInfo VolumeRasterizer::processorInfo_{
         sampled at the same time. This may necessitate scaling opacity values of individual transfer
         functions by means of the `Opacity Scaling` property.
     )"_unindentHelp};
-const ProcessorInfo VolumeRasterizer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeRasterizer::getProcessorInfo() const { return processorInfo_; }
 
 VolumeRasterizer::VolumeRasterizer()
     : Rasterizer{}

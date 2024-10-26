@@ -433,7 +433,7 @@ struct TestProcessor : Processor {
         Tags::CPU,                             // Tags
     };
 
-    virtual const ProcessorInfo getProcessorInfo() const override { return processorInfo_; }
+    virtual const ProcessorInfo& getProcessorInfo() const override { return processorInfo_; }
 
     TestProcessor(std::string_view id, std::string_view name) : Processor{id, name} {
         addProperty(floatProperty);

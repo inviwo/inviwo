@@ -71,7 +71,7 @@ const ProcessorInfo SplitImage::processorInfo_{
     CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
 };
-const ProcessorInfo SplitImage::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SplitImage::getProcessorInfo() const { return processorInfo_; }
 
 SplitImage::SplitImage()
     : Processor()

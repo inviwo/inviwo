@@ -51,7 +51,7 @@ const ProcessorInfo EigenMix::processorInfo_{
     CodeState::Experimental,  // Code state
     "Eigen",                  // Tags
 };
-const ProcessorInfo EigenMix::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& EigenMix::getProcessorInfo() const { return processorInfo_; }
 
 EigenMix::EigenMix()
     : Processor(), a_("a"), b_("b"), res_("res"), w_("w", "Mix factor", 0.5f, 0.f, 1.f, 0.1f) {

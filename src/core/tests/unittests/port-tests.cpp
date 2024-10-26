@@ -55,7 +55,7 @@ struct OutportTestProcessor : Processor {
         addPort(outport);
     }
 
-    virtual const ProcessorInfo getProcessorInfo() const override { return processorInfo_; }
+    virtual const ProcessorInfo& getProcessorInfo() const override { return processorInfo_; }
 
     static const ProcessorInfo processorInfo_;
 
@@ -79,7 +79,7 @@ struct VectorOutportTestProcessor : Processor {
         addPort(outport);
     }
 
-    virtual const ProcessorInfo getProcessorInfo() const override { return processorInfo_; }
+    virtual const ProcessorInfo& getProcessorInfo() const override { return processorInfo_; }
 
     static const ProcessorInfo processorInfo_;
 
@@ -105,7 +105,7 @@ struct InportTestProcessor : Processor {
     InportTestProcessor(std::string_view id) : Processor(id, id), inport{"inport"} {
         addPort(inport);
     }
-    virtual const ProcessorInfo getProcessorInfo() const override { return processorInfo_; }
+    virtual const ProcessorInfo& getProcessorInfo() const override { return processorInfo_; }
     static const ProcessorInfo processorInfo_;
 
     MOCK_METHOD(void, process, (), (override));
@@ -124,7 +124,7 @@ struct MultiInportTestProcessor : Processor {
     MultiInportTestProcessor(std::string_view id) : Processor(id, id), inport{"inport"} {
         addPort(inport);
     }
-    virtual const ProcessorInfo getProcessorInfo() const override { return processorInfo_; }
+    virtual const ProcessorInfo& getProcessorInfo() const override { return processorInfo_; }
     static const ProcessorInfo processorInfo_;
     MOCK_METHOD(void, process, (), (override));
     DataInport<int, 0> inport;
@@ -142,7 +142,7 @@ struct FlatMultiInportTestProcessor : Processor {
     FlatMultiInportTestProcessor(std::string_view id) : Processor(id, id), inport{"inport"} {
         addPort(inport);
     }
-    virtual const ProcessorInfo getProcessorInfo() const override { return processorInfo_; }
+    virtual const ProcessorInfo& getProcessorInfo() const override { return processorInfo_; }
     static const ProcessorInfo processorInfo_;
     MOCK_METHOD(void, process, (), (override));
     DataInport<int, 0, true> inport;

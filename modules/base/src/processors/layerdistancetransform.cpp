@@ -52,7 +52,7 @@ const ProcessorInfo LayerDistanceTransform::processorInfo_{
     Note: Only works correctly for Layers with an orthogonal basis.)"_unindentHelp,
 };
 
-const ProcessorInfo LayerDistanceTransform::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerDistanceTransform::getProcessorInfo() const { return processorInfo_; }
 
 LayerDistanceTransform::LayerDistanceTransform()
     : PoolProcessor()

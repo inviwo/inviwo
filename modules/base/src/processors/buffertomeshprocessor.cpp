@@ -61,7 +61,7 @@ const ProcessorInfo BufferToMeshProcessor::processorInfo_{
     default. See https://www.khronos.org/opengl/wiki/Primitive for more information about draw
     types and connectivity.)"_unindentHelp};
 
-const ProcessorInfo BufferToMeshProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& BufferToMeshProcessor::getProcessorInfo() const { return processorInfo_; }
 
 BufferToMeshProcessor::BufferToMeshProcessor()
     : Processor()

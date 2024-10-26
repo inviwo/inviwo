@@ -75,7 +75,7 @@ const ProcessorInfo VectorFieldGenerator3D::processorInfo_{
     CodeState::Stable,                    // Code state
     "GL, Generator",                      // Tags
 };
-const ProcessorInfo VectorFieldGenerator3D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VectorFieldGenerator3D::getProcessorInfo() const { return processorInfo_; }
 
 VectorFieldGenerator3D::VectorFieldGenerator3D()
     : Processor()

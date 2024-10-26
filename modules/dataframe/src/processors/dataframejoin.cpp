@@ -58,7 +58,7 @@ const ProcessorInfo DataFrameJoin::processorInfo_{
     CodeState::Experimental,     // Code state
     "CPU, DataFrame",            // Tags
 };
-const ProcessorInfo DataFrameJoin::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& DataFrameJoin::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameJoin::DataFrameJoin()
     : Processor()

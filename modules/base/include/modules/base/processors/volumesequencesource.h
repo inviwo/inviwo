@@ -64,7 +64,7 @@ class IVW_MODULE_BASE_API VolumeSequenceSource : public Processor {
     enum class InputType { SingleFile, Folder };
 
 public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     VolumeSequenceSource(InviwoApplication* app);
     virtual ~VolumeSequenceSource() = default;

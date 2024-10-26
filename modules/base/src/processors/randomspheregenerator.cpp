@@ -85,7 +85,7 @@ const ProcessorInfo RandomSphereGenerator::processorInfo_{
     CodeState::Stable,                   // Code state
     Tags::CPU,                           // Tags
 };
-const ProcessorInfo RandomSphereGenerator::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& RandomSphereGenerator::getProcessorInfo() const { return processorInfo_; }
 
 RandomSphereGenerator::RandomSphereGenerator()
     : Processor()

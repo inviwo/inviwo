@@ -67,7 +67,7 @@ const ProcessorInfo NoiseGenerator2D::processorInfo_{
     )"_unindentHelp,
 };
 
-const ProcessorInfo NoiseGenerator2D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& NoiseGenerator2D::getProcessorInfo() const { return processorInfo_; }
 
 NoiseGenerator2D::NoiseGenerator2D()
     : Processor()

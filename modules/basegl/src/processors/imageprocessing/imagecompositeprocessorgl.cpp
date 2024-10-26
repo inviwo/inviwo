@@ -53,7 +53,7 @@ const ProcessorInfo ImageCompositeProcessorGL::processorInfo_{
     CodeState::Stable,                       // Code state
     Tags::GL,                                // Tags
 };
-const ProcessorInfo ImageCompositeProcessorGL::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageCompositeProcessorGL::getProcessorInfo() const { return processorInfo_; }
 
 ImageCompositeProcessorGL::ImageCompositeProcessorGL()
     : Processor()

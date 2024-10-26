@@ -64,7 +64,7 @@ const ProcessorInfo VolumeBoundaryPlanes::processorInfo_{
     CodeState::Stable,                  // Code state
     Tags::CPU,                          // Tags
 };
-const ProcessorInfo VolumeBoundaryPlanes::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeBoundaryPlanes::getProcessorInfo() const { return processorInfo_; }
 
 VolumeBoundaryPlanes::VolumeBoundaryPlanes()
     : Processor()

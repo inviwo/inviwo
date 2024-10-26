@@ -87,7 +87,7 @@ public:
 
     virtual ~WorldTransformDeprecated() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
 
 protected:
     void onMatrixChange();
@@ -114,8 +114,10 @@ private:
 };
 
 template <typename T>
-const ProcessorInfo inviwo::WorldTransformDeprecated<T>::getProcessorInfo() const {
-    return ProcessorTraits<WorldTransformDeprecated<T>>::getProcessorInfo();
+const ProcessorInfo& WorldTransformDeprecated<T>::getProcessorInfo() const {
+    static const ProcessorInfo info{
+        ProcessorTraits<WorldTransformDeprecated<T>>::getProcessorInfo()};
+    return info;
 }
 
 class Mesh;

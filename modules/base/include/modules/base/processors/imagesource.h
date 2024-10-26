@@ -47,7 +47,7 @@ class InviwoApplication;
 
 class IVW_MODULE_BASE_API ImageSource : public DataSource<Image, ImageOutport, Layer> {
 public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     ImageSource(InviwoApplication* app, const std::filesystem::path& filePath = "");

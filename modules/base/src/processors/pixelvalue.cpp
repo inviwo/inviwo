@@ -82,7 +82,7 @@ const ProcessorInfo PixelValue::processorInfo_{
     CodeState::Stable,        // Code state
     Tags::CPU,                // Tags
 };
-const ProcessorInfo PixelValue::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& PixelValue::getProcessorInfo() const { return processorInfo_; }
 
 PixelValue::PixelValue()
     : Processor()

@@ -49,7 +49,7 @@ const ProcessorInfo FindEdges::processorInfo_{
     CodeState::Stable,       // Code state
     Tags::GL,                // Tags
 };
-const ProcessorInfo FindEdges::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& FindEdges::getProcessorInfo() const { return processorInfo_; }
 
 FindEdges::FindEdges()
     : ImageGLProcessor("img_findedges.frag"), alpha_("alpha", "Alpha", 0.5f, 0.0f, 1.0f) {

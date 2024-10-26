@@ -44,7 +44,7 @@ const ProcessorInfo LIC2D::processorInfo_{
     Tags::GL | Tag{"Layer"},       // Tags
     R"(Performs a line integral convolution (LIC) on a 2D vector field.)"_unindentHelp,
 };
-const ProcessorInfo LIC2D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LIC2D::getProcessorInfo() const { return processorInfo_; }
 
 LIC2D::LIC2D()
     : LayerGLProcessor{utilgl::findShaderResource("lic2d.frag")}

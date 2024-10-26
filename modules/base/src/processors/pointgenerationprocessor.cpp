@@ -65,7 +65,7 @@ const ProcessorInfo Point3DGenerationProcessor::processorInfo_{
     CodeState::Stable,                      // Code state
     Tags::CPU,                              // Tags
 };
-const ProcessorInfo Point3DGenerationProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& Point3DGenerationProcessor::getProcessorInfo() const { return processorInfo_; }
 
 Point3DGenerationProcessor::Point3DGenerationProcessor()
     : Processor()
