@@ -42,8 +42,9 @@ Serializer::Serializer(const std::filesystem::path& fileName, const allocator_ty
         auto decl = new TiXmlDeclaration(SerializeConstants::XmlVersion, "UTF-8", "", alloc);
         doc_->LinkEndChild(decl);
         rootElement_ = new TiXmlElement(SerializeConstants::InviwoWorkspace, alloc);
-        rootElement_->SetAttribute(SerializeConstants::VersionAttribute,
-                                   detail::toStr(SerializeConstants::InviwoWorkspaceVersion));
+        rootElement_->SetAttribute(
+            SerializeConstants::VersionAttribute,
+            detail::toStr(SerializeConstants::InviwoWorkspaceVersion, buffer));
         doc_->LinkEndChild(rootElement_);
 
     } catch (const TiXmlError& e) {

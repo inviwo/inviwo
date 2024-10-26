@@ -176,6 +176,9 @@ protected:
     TiXmlElement* getLastChild() const;
 
     static void setAttribute(TiXmlElement* node, std::string_view key, std::string_view val);
+
+    // Buffer for doing format conversions
+    std::vector<char> buffer{};
 };
 
 template <typename T, typename Pred, typename Proj>
@@ -234,7 +237,8 @@ void Serializer::serialize(std::string_view key, const std::map<K, V, C, A>& map
     auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : map) {
         serialize(itemKey, item.second);
-        setAttribute(getLastChild(), SerializeConstants::KeyAttribute, detail::toStr(item.first));
+        setAttribute(getLastChild(), SerializeConstants::KeyAttribute,
+                     detail::toStr(item.first, buffer));
     }
 }
 
@@ -251,7 +255,7 @@ void Serializer::serialize(std::string_view key, const std::unordered_map<K, V, 
         if (std::invoke(pred, item)) {
             serialize(itemKey, std::invoke(vproj, item.second));
             setAttribute(getLastChild(), SerializeConstants::KeyAttribute,
-                         detail::toStr(std::invoke(kproj, item.first)));
+                         detail::toStr(std::invoke(kproj, item.first), buffer));
         }
     }
 }
@@ -273,10 +277,11 @@ template <typename T,
                                   int>::type>
 void Serializer::serialize(std::string_view key, const T& data, const SerializationTarget& target) {
     if (target == SerializationTarget::Attribute) {
-        setAttribute(rootElement_, key, detail::toStr(data));
+        setAttribute(rootElement_, key, detail::toStr(data, buffer));
     } else {
         auto nodeSwitch = switchToNewNode(key);
-        setAttribute(rootElement_, SerializeConstants::ContentAttribute, detail::toStr(data));
+        setAttribute(rootElement_, SerializeConstants::ContentAttribute,
+                     detail::toStr(data, buffer));
     }
 }
 
@@ -300,7 +305,8 @@ template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int
 void Serializer::serialize(std::string_view key, const Vec& data) {
     auto nodeSwitch = switchToNewNode(key);
     for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
-        setAttribute(rootElement_, SerializeConstants::VectorAttributes[i], detail::toStr(data[i]));
+        setAttribute(rootElement_, SerializeConstants::VectorAttributes[i],
+                     detail::toStr(data[i], buffer));
     }
 }
 
