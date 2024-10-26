@@ -125,7 +125,7 @@ IVW_CORE_API void fromStr(std::string_view value, bool& dest);
 IVW_CORE_API void fromStr(std::string_view value, std::string& dest);
 
 template <class T>
-decltype(auto) toStr(const T& value) {
+decltype(auto) toStr(const T& value, std::vector<char>& buffer) {
     if constexpr (std::is_same_v<std::string, T>) {
         return value;
     } else if constexpr (std::is_same_v<std::string_view, T>) {
@@ -135,7 +135,10 @@ decltype(auto) toStr(const T& value) {
         static std::string_view falseVal = "0";
         return value ? trueVal : falseVal;
     } else {
-        return fmt::to_string(value);
+        buffer.clear();
+        auto [it, size] =
+            fmt::format_to_n(std::back_inserter(buffer), buffer.max_size(), "{}", value);
+        return std::string_view{buffer.data(), size};
     }
 }
 
