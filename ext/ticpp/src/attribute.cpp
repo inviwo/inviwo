@@ -85,7 +85,9 @@ void TiXmlAttributeSet::Add(std::string_view name, std::string_view value) {
     if (Find(name)) {
         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DUPLICATE_ATTRIBUTE, nullptr, nullptr);
     }
-    auto attribute = new TiXmlAttribute(name, value, sentinel.value.get_allocator());
+
+    auto alloc = sentinel.value.get_allocator();
+    auto* attribute = alloc.new_object<TiXmlAttribute>(name, value);
 
     attribute->next = &sentinel;
     attribute->prev = sentinel.prev;
@@ -102,17 +104,19 @@ void TiXmlAttributeSet::Remove(std::string_view name) {
             node->next = nullptr;
             node->prev = nullptr;
 
-            delete node;
+            auto alloc = sentinel.value.get_allocator();
+            alloc.delete_object(node);
             return;
         }
     }
 }
 void TiXmlAttributeSet::Clear() {
     TiXmlAttribute* node = sentinel.next;
+    auto alloc = sentinel.value.get_allocator();
     while (node != &sentinel) {
         auto temp = node;
         node = node->next;
-        delete temp;
+        alloc.delete_object(temp);
     }
     sentinel.next = &sentinel;
     sentinel.prev = &sentinel;
@@ -126,6 +130,19 @@ const TiXmlAttribute* TiXmlAttributeSet::Find(std::string_view name) const {
     return nullptr;
 }
 
+template <typename T>
+struct PMRDeleter {
+    void operator()(T* item) { alloc.delete_object(item); }
+    std::pmr::polymorphic_allocator<> alloc;
+};
+
+template <class T, class... Args>
+std::unique_ptr<T, PMRDeleter<T>> pmr_make_unique(std::pmr::polymorphic_allocator<> alloc,
+                                                  Args&&... args) {
+    return std::unique_ptr<T, PMRDeleter<T>>(alloc.new_object<T>(std::forward<Args>(args)...),
+                                             PMRDeleter<T>{alloc});
+}
+
 const char* TiXmlAttributeSet::Parse(const char* p, TiXmlParsingData* data) {
     p = TiXmlBase::SkipWhiteSpace(p);
     if (!p || !*p) return nullptr;
@@ -136,7 +153,8 @@ const char* TiXmlAttributeSet::Parse(const char* p, TiXmlParsingData* data) {
         location = data->Cursor();
     }
 
-    auto attribute = std::make_unique<TiXmlAttribute>(location, sentinel.value.get_allocator());
+    auto alloc = sentinel.value.get_allocator();
+    auto attribute = pmr_make_unique<TiXmlAttribute>(alloc, location);
 
     const char* pErr = p;
     p = TiXmlBase::ReadNameValue(p, &attribute->name, &attribute->value, data);
