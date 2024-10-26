@@ -70,8 +70,9 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
     , version_{"", "version", "Displays version information and exits.", false}
     , help_{"h", "help", "Displays usage information and exits.", false} {
 
-    args_[0] = std::filesystem::path(args_[0]).filename().string();
-
+    if (!args_.empty()) {
+        args_[0] = std::filesystem::path(args_[0]).filename().string();
+    }
     auto it = std::ranges::find(args_, "--");
     if (it != args_.end()) {
         std::copy(std::next(it), args_.end(), std::back_inserter(ignoredArgs_));
@@ -84,6 +85,7 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
 CommandLineParser::~CommandLineParser() = default;
 
 void CommandLineParser::parseInternal(std::vector<std::string> args, Mode mode) {
+    if (args.empty()) return;
 
     TCLAP::CmdLine cmd{std::string{info}, ' ', toString(build::version), false};
 

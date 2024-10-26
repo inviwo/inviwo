@@ -34,8 +34,7 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/demangle.h>
 
-#include <sstream>
-#include <vector>
+#include <string>
 
 namespace inviwo {
 

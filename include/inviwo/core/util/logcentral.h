@@ -36,6 +36,7 @@
 #include <inviwo/core/util/demangle.h>
 
 #include <ostream>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <vector>
