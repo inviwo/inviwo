@@ -226,6 +226,9 @@ ivw_add_external_projects()                  # Add external projects
 if(IVW_TEST_INTEGRATION_TESTS)
     add_subdirectory(tests/integrationtests) # Add integration tests, uses the modules.
 endif()
+if(IVW_TEST_BENCHMARKS)
+    add_subdirectory(tests/benchmarks)
+endif()
 add_subdirectory(docs)                       # Generate Doxygen targets
 
 if(MSVC AND TARGET inviwo)
