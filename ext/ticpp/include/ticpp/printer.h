@@ -7,6 +7,8 @@
 #include <string>
 #include <cstdio>
 
+#include <fmt/printf.h>
+
 enum class TiXmlStreamPrint { No, Yes };
 
 /** Print to memory functionality. The TiXmlPrinter is useful when you need to:
@@ -28,7 +30,7 @@ enum class TiXmlStreamPrint { No, Yes };
     fprintf( stdout, "%s", printer.CStr() );
     @endverbatim
 */
-class TICPP_API TiXmlPrinter : public TiXmlVisitor {
+class TICPP_API TiXmlPrinter final : public TiXmlVisitor {
 public:
     TiXmlPrinter(TiXmlStreamPrint streamPrint = TiXmlStreamPrint::No)
         : buffer{}
@@ -39,8 +41,8 @@ public:
         buffer.reserve(4096);
     }
 
-    virtual bool VisitEnter(const TiXmlDocument& doc);
-    virtual bool VisitExit(const TiXmlDocument& doc);
+    virtual bool VisitEnter(const TiXmlDocument& doc) { return true; }
+    virtual bool VisitExit(const TiXmlDocument& doc) { return true; }
 
     virtual bool VisitEnter(const TiXmlElement& element, const TiXmlAttribute* firstAttribute);
     virtual bool VisitExit(const TiXmlElement& element);
@@ -78,8 +80,11 @@ public:
     const std::string& Str() { return buffer; }
 
 private:
-    void DoIndent();
-    void DoLineBreak();
+    void DoIndent() {
+        if (indent.empty()) return;
+        for (int i = 0; i < depth; ++i) buffer += indent;
+    }
+    void DoLineBreak() { buffer += lineBreak; }
 
     std::string buffer;
 
@@ -89,7 +94,7 @@ private:
     std::string lineBreak;
 };
 
-class TICPP_API TiXmlFilePrinter : public TiXmlVisitor {
+class TICPP_API TiXmlFilePrinter final : public TiXmlVisitor {
 public:
     TiXmlFilePrinter(FILE* _file, TiXmlStreamPrint streamPrint = TiXmlStreamPrint::No)
         : file{_file}
@@ -98,8 +103,8 @@ public:
         , indent{streamPrint == TiXmlStreamPrint::No ? "    " : ""}
         , lineBreak{streamPrint == TiXmlStreamPrint::No ? "\n" : ""} {}
 
-    virtual bool VisitEnter(const TiXmlDocument& doc);
-    virtual bool VisitExit(const TiXmlDocument& doc);
+    virtual bool VisitEnter(const TiXmlDocument& doc) { return true; }
+    virtual bool VisitExit(const TiXmlDocument& doc) { return true; }
 
     virtual bool VisitEnter(const TiXmlElement& element, const TiXmlAttribute* firstAttribute);
     virtual bool VisitExit(const TiXmlElement& element);
@@ -136,8 +141,16 @@ public:
     FILE* GetFile() { return file; }
 
 private:
-    void DoIndent();
-    void DoLineBreak();
+    void DoIndent() {
+        if (indent.empty()) return;
+        for (int i = 0; i < depth; ++i) {
+            fmt::fprintf(file, "%s", indent);
+        }
+    }
+    void DoLineBreak() {
+        if (lineBreak.empty()) return;
+        fmt::fprintf(file, "%s", lineBreak);
+    }
     FILE* file;
     int depth;
     bool simpleTextPrint;

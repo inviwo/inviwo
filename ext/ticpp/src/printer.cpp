@@ -11,17 +11,6 @@
 #include <ticpp/unknown.h>
 
 
-#include <fmt/printf.h>
-
-void TiXmlPrinter::DoIndent() {
-    for (int i = 0; i < depth; ++i) buffer += indent;
-}
-void TiXmlPrinter::DoLineBreak() { buffer += lineBreak; }
-
-bool TiXmlPrinter::VisitEnter(const TiXmlDocument&) { return true; }
-
-bool TiXmlPrinter::VisitExit(const TiXmlDocument&) { return true; }
-
 bool TiXmlPrinter::VisitEnter(const TiXmlElement& element, const TiXmlAttribute* firstAttribute) {
     DoIndent();
     buffer += "<";
@@ -116,17 +105,6 @@ bool TiXmlPrinter::Visit(const TiXmlStylesheetReference& stylesheet) {
     DoLineBreak();
     return true;
 }
-
-void TiXmlFilePrinter::DoIndent() {
-    for (int i = 0; i < depth; ++i) {
-        fmt::fprintf(file, "%s", indent);
-    }
-}
-void TiXmlFilePrinter::DoLineBreak() { fmt::fprintf(file, "%s", lineBreak); }
-
-bool TiXmlFilePrinter::VisitEnter(const TiXmlDocument&) { return true; }
-
-bool TiXmlFilePrinter::VisitExit(const TiXmlDocument&) { return true; }
 
 bool TiXmlFilePrinter::VisitEnter(const TiXmlElement& element,
                                   const TiXmlAttribute* firstAttribute) {

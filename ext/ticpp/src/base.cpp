@@ -56,12 +56,12 @@ TiXmlError::TiXmlError(TiXmlErrorCode err, const char* errorLocation, TiXmlParsi
 bool TiXmlBase::condenseWhiteSpace = true;
 
 void TiXmlBase::EncodeString(const std::string_view str, std::string* outString) {
-    int i = 0;
+    size_t i = 0;
 
-    while (i < (int)str.length()) {
-        unsigned char c = (unsigned char)str[i];
+    while (i < str.length()) {
+        const auto c = str[i];
 
-        if (c == '&' && i < ((int)str.length() - 2) && str[i + 1] == '#' && str[i + 2] == 'x') {
+        if (c == '&' && i + 2 < str.length() && str[i + 1] == '#' && str[i + 2] == 'x') {
             // Hexadecimal character reference.
             // Pass through unchanged.
             // &#xA9;	-- copyright symbol, for example.
@@ -72,7 +72,7 @@ void TiXmlBase::EncodeString(const std::string_view str, std::string* outString)
             // while fails (error case) and break (semicolon found).
             // However, there is no mechanism (currently) for
             // this function to return an error.
-            while (i < (int)str.length() - 1) {
+            while (i + 1 < str.length()) {
                 outString->push_back(str[i]);
                 ++i;
                 if (str[i] == ';') break;
@@ -98,7 +98,7 @@ void TiXmlBase::EncodeString(const std::string_view str, std::string* outString)
             outString->append(fmt::format("&#x{:02X};", c));
             ++i;
         } else {
-            *outString += static_cast<char>(c);
+            outString->push_back(c);
             ++i;
         }
     }
