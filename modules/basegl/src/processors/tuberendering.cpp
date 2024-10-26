@@ -82,7 +82,7 @@ const ProcessorInfo TubeRendering::processorInfo_{
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
 };
-const ProcessorInfo TubeRendering::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TubeRendering::getProcessorInfo() const { return processorInfo_; }
 
 TubeRendering::TubeRendering()
     : Processor()

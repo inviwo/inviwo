@@ -73,7 +73,7 @@ const ProcessorInfo SeedPointsFromMask::processorInfo_{
     CodeState::Stable,                // Code state
     Tags::CPU,                        // Tags
 };
-const ProcessorInfo SeedPointsFromMask::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SeedPointsFromMask::getProcessorInfo() const { return processorInfo_; }
 
 SeedPointsFromMask::SeedPointsFromMask()
     : Processor()

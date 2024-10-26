@@ -65,7 +65,7 @@ const ProcessorInfo PersistenceDiagramPlotProcessor::processorInfo_{
     CodeState::Stable,                             // Code state
     "GL, Plotting, Topology",                      // Tags
 };
-const ProcessorInfo PersistenceDiagramPlotProcessor::getProcessorInfo() const {
+const ProcessorInfo& PersistenceDiagramPlotProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 

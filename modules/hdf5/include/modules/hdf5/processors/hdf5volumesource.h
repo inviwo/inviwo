@@ -86,7 +86,7 @@ public:
     HDF5ToVolume();
     virtual ~HDF5ToVolume();
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 protected:

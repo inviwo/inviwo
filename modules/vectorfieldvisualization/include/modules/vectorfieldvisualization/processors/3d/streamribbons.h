@@ -64,7 +64,7 @@ namespace inviwo {
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamRibbonsDeprecated : public Processor {
 public:
     enum class ColoringMethod { Velocity, Vorticity, ColorPort };
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     StreamRibbonsDeprecated();
     virtual ~StreamRibbonsDeprecated() = default;

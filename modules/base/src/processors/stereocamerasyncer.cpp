@@ -55,7 +55,7 @@ const ProcessorInfo StereoCameraSyncer::processorInfo_{
     CodeState::Experimental,          // Code state
     Tags::None,                       // Tags
 };
-const ProcessorInfo StereoCameraSyncer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& StereoCameraSyncer::getProcessorInfo() const { return processorInfo_; }
 
 StereoCameraSyncer::StereoCameraSyncer()
     : Processor()

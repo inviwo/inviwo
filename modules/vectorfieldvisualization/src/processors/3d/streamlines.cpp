@@ -88,7 +88,7 @@ const ProcessorInfo StreamLinesDeprecated::processorInfo_{
     CodeState::Deprecated,               // Code state
     Tags::CPU,                           // Tags
 };
-const ProcessorInfo StreamLinesDeprecated::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& StreamLinesDeprecated::getProcessorInfo() const { return processorInfo_; }
 
 StreamLinesDeprecated::StreamLinesDeprecated()
     : Processor()

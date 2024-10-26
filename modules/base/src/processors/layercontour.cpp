@@ -46,7 +46,7 @@ const ProcessorInfo LayerContour::processorInfo_{
     The output contour is provided as a line mesh.)"_unindentHelp,
 };
 
-const ProcessorInfo LayerContour::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerContour::getProcessorInfo() const { return processorInfo_; }
 
 LayerContour::LayerContour()
     : Processor{}

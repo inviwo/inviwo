@@ -53,7 +53,7 @@ namespace inviwo {
 
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointsFromMask : public Processor {
 public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     SeedPointsFromMask();
     virtual ~SeedPointsFromMask() {}

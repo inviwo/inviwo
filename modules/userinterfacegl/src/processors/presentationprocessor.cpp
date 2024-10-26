@@ -76,7 +76,7 @@ const ProcessorInfo PresentationProcessor::processorInfo_{
     CodeState::Stable,                   // Code state
     "CPU, UI, Presentation",             // Tags
 };
-const ProcessorInfo PresentationProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& PresentationProcessor::getProcessorInfo() const { return processorInfo_; }
 
 PresentationProcessor::PresentationProcessor()
     : Processor()

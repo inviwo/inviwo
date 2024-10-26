@@ -106,7 +106,7 @@ const ProcessorInfo ImageStackVolumeSource::processorInfo_{
     CodeState::Stable,                    // Code state
     "Layer, Image, Volume",               // Tags
 };
-const ProcessorInfo ImageStackVolumeSource::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageStackVolumeSource::getProcessorInfo() const { return processorInfo_; }
 
 ImageStackVolumeSource::ImageStackVolumeSource(InviwoApplication* app)
     : Processor()

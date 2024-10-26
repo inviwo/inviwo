@@ -69,7 +69,7 @@ public:
     virtual void setValid() override;
     virtual void invalidate(InvalidationLevel invalidationLevel,
                             Property* modifiedProperty = nullptr) override;
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     virtual void invokeEvent(Event* event) override;
     virtual void propagateEvent(Event* event, Outport* source) override;
 };

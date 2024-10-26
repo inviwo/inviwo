@@ -56,7 +56,7 @@ const ProcessorInfo ImageFilter::processorInfo_{
     CodeState::Experimental,   // Code state
     Tags::GL,                  // Tags
 };
-const ProcessorInfo ImageFilter::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageFilter::getProcessorInfo() const { return processorInfo_; }
 
 ImageFilter::ImageFilter()
     : Processor()

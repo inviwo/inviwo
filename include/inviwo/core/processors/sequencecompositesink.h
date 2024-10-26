@@ -94,7 +94,7 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
 
     virtual void superProcessStart() override {
         sequenceData_ = std::make_shared<OutportSequenceData>();
@@ -132,10 +132,11 @@ struct ProcessorTraits<SequenceCompositeSink<InportType, OutportSequenceType>> {
 };
 
 template <typename InportType, typename OutportSequenceType>
-const ProcessorInfo SequenceCompositeSink<InportType, OutportSequenceType>::getProcessorInfo()
+const ProcessorInfo& SequenceCompositeSink<InportType, OutportSequenceType>::getProcessorInfo()
     const {
-    return ProcessorTraits<
-        SequenceCompositeSink<InportType, OutportSequenceType>>::getProcessorInfo();
+    static const ProcessorInfo info{ProcessorTraits<
+        SequenceCompositeSink<InportType, OutportSequenceType>>::getProcessorInfo()};
+    return info;
 }
 
 template <typename InportType, typename OutportSequenceType>

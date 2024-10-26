@@ -44,7 +44,7 @@ const ProcessorInfo ImageBinary::processorInfo_{
     R"(Computes a binary image of the input image using a threshold. The output
     will contain "0" for all values below the threshold and "1" otherwise.)"_unindentHelp};
 
-const ProcessorInfo ImageBinary::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageBinary::getProcessorInfo() const { return processorInfo_; }
 
 ImageBinary::ImageBinary()
     : ImageGLProcessor("img_binary.frag")

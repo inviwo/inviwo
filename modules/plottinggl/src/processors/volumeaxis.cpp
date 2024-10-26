@@ -49,7 +49,7 @@ const ProcessorInfo VolumeAxis::processorInfo_{
     Tags::GL | Tag{"Plotting"},  // Tags
     "Renders x, y, and z axes next to the input volume."_help};
 
-const ProcessorInfo VolumeAxis::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeAxis::getProcessorInfo() const { return processorInfo_; }
 
 VolumeAxis::VolumeAxis()
     : Processor()

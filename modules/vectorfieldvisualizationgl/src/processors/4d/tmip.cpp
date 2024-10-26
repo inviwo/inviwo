@@ -74,7 +74,7 @@ const ProcessorInfo TMIP::processorInfo_{
     Tags::GL,                     // Tags
 };
 
-const ProcessorInfo TMIP::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TMIP::getProcessorInfo() const { return processorInfo_; }
 
 TMIP::TMIP()
     : Processor()

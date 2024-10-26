@@ -55,7 +55,7 @@ const ProcessorInfo ImageGradient::processorInfo_{
     Tags::GL,                    // Tags
     R"(Computes the gradient of one channel of the input image.)"_unindentHelp,
 };
-const ProcessorInfo ImageGradient::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageGradient::getProcessorInfo() const { return processorInfo_; }
 
 ImageGradient::ImageGradient()
     : ImageGLProcessor("img_gradient.frag"), channel_("channel", "Channel") {

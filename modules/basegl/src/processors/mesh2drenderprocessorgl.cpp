@@ -70,7 +70,7 @@ const ProcessorInfo Mesh2DRenderProcessorGL::processorInfo_{
     CodeState::Stable,                     // Code state
     Tags::GL,                              // Tags
     "Render a mesh using only an orthographic projection without any illumination calculation."_unindentHelp};
-const ProcessorInfo Mesh2DRenderProcessorGL::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& Mesh2DRenderProcessorGL::getProcessorInfo() const { return processorInfo_; }
 
 Mesh2DRenderProcessorGL::Mesh2DRenderProcessorGL()
     : Processor()

@@ -55,7 +55,7 @@ const ProcessorInfo ImageResample::processorInfo_{
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
 };
-const ProcessorInfo ImageResample::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageResample::getProcessorInfo() const { return processorInfo_; }
 
 ImageResample::ImageResample()
     : ImageGLProcessor("img_resample.frag")

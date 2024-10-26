@@ -67,7 +67,7 @@ const ProcessorInfo PixelToBufferProcessor::processorInfo_{
     CodeState::Experimental,              // Code state
     Tags::CPU,                            // Tags
 };
-const ProcessorInfo PixelToBufferProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& PixelToBufferProcessor::getProcessorInfo() const { return processorInfo_; }
 
 PixelToBufferProcessor::PixelToBufferProcessor()
     : Processor()

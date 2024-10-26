@@ -41,7 +41,7 @@ class IVW_MODULE_BASEGL_API LayerGradient : public LayerGLProcessor {
 public:
     LayerGradient();
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:

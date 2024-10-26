@@ -58,7 +58,7 @@ const ProcessorInfo MeshPlaneClipping::processorInfo_{
     CodeState::Experimental,         // Code state
     Tags::None,                      // Tags
 };
-const ProcessorInfo MeshPlaneClipping::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshPlaneClipping::getProcessorInfo() const { return processorInfo_; }
 
 MeshPlaneClipping::MeshPlaneClipping()
     : Processor()

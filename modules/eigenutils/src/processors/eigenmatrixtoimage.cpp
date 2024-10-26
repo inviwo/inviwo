@@ -56,7 +56,7 @@ const ProcessorInfo EigenMatrixToImage::processorInfo_{
     CodeState::Experimental,          // Code state
     "Eigen",                          // Tags
 };
-const ProcessorInfo EigenMatrixToImage::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& EigenMatrixToImage::getProcessorInfo() const { return processorInfo_; }
 
 EigenMatrixToImage::EigenMatrixToImage()
     : Processor(), matrix_("matrix"), image_("image"), flipY_("flipy", "Flip Y-axis", true) {

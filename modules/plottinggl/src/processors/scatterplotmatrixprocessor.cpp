@@ -98,7 +98,7 @@ const ProcessorInfo ScatterPlotMatrixProcessor::processorInfo_{
     CodeState::Stable,                        // Code state
     "GL, Plotting",                           // Tags
 };
-const ProcessorInfo ScatterPlotMatrixProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ScatterPlotMatrixProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     : Processor()

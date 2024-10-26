@@ -50,7 +50,7 @@ const ProcessorInfo TransformRasterization::processorInfo_{
     CodeState::Stable,                    // Code state
     Tags::GL,                             // Tags
 };
-const ProcessorInfo TransformRasterization::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TransformRasterization::getProcessorInfo() const { return processorInfo_; }
 
 TransformRasterization::TransformRasterization()
     : Rasterizer()

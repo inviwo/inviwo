@@ -50,7 +50,7 @@ const ProcessorInfo HDF5ToVolume::processorInfo_{
     CodeState::Stable,           // Code state
     Tags::None,                  // Tags
 };
-const ProcessorInfo HDF5ToVolume::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& HDF5ToVolume::getProcessorInfo() const { return processorInfo_; }
 
 HDF5ToVolume::HDF5ToVolume()
     : Processor()

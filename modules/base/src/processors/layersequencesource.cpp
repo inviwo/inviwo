@@ -64,7 +64,7 @@ const ProcessorInfo LayerSequenceSource::processorInfo_{
     Tags::CPU,                         // Tags
     R"(Loads a sequence of layers)"_unindentHelp};
 
-const ProcessorInfo LayerSequenceSource::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerSequenceSource::getProcessorInfo() const { return processorInfo_; }
 
 namespace {
 

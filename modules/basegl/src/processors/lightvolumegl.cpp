@@ -92,7 +92,7 @@ const ProcessorInfo LightVolumeGL::processorInfo_{
     CodeState::Experimental,     // Code state
     Tags::GL,                    // Tags
 };
-const ProcessorInfo LightVolumeGL::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LightVolumeGL::getProcessorInfo() const { return processorInfo_; }
 
 const vec4 LightVolumeGL::borderColor_{1.f, 1.f, 1.f, 1.f};
 

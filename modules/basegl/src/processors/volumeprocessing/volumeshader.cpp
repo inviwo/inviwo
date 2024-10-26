@@ -77,7 +77,7 @@ void VolumeShader::initializeResources() {
     shader_.build();
 }
 
-const ProcessorInfo VolumeShader::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeShader::getProcessorInfo() const { return processorInfo_; }
 
 VolumeShader::VolumeShader()
     : VolumeShader(std::make_shared<StringShaderResource>("volume_shader.frag", defaultFrag)) {}

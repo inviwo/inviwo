@@ -58,7 +58,7 @@ const ProcessorInfo SeedPointGenerator2D::processorInfo_{
     CodeState::Stable,                  // Code state
     "CPU, Seed Points, Generator",      // Tags
 };
-const ProcessorInfo SeedPointGenerator2D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SeedPointGenerator2D::getProcessorInfo() const { return processorInfo_; }
 
 SeedPointGenerator2D::SeedPointGenerator2D()
     : Processor()

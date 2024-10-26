@@ -88,7 +88,7 @@ const ProcessorInfo SurfaceExtraction::processorInfo_{
     CodeState::Experimental,         // Code state
     Tags::CPU,                       // Tags
 };
-const ProcessorInfo SurfaceExtraction::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SurfaceExtraction::getProcessorInfo() const { return processorInfo_; }
 
 SurfaceExtraction::SurfaceExtraction()
     : PoolProcessor(pool::Option::KeepOldResults | pool::Option::DelayDispatch)

@@ -234,7 +234,7 @@ const ProcessorInfo TexturedIsosurfaceRenderer::processorInfo_{
        [core/textured_isosurface_renderer.inv](file:~modulePath~/data/workspaces/textured_isosurface_renderer.inv)
     )"_unindentHelp};
 
-const ProcessorInfo TexturedIsosurfaceRenderer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TexturedIsosurfaceRenderer::getProcessorInfo() const { return processorInfo_; }
 
 TexturedIsosurfaceRenderer::TexturedIsosurfaceRenderer(std::string_view identifier,
                                                        std::string_view displayName)

@@ -184,11 +184,11 @@ public:
     virtual ~Processor();
 
     // Should be implemented by all inheriting classes;
-    virtual const ProcessorInfo getProcessorInfo() const = 0;
-    std::string getClassIdentifier() const;
-    std::string getCategory() const;
+    virtual const ProcessorInfo& getProcessorInfo() const = 0;
+    const std::string& getClassIdentifier() const;
+    const std::string& getCategory() const;
     CodeState getCodeState() const;
-    Tags getTags() const;
+    const Tags& getTags() const;
 
     /**
      * Sets the identifier of the Processor. Processor identifiers should only contain alpha numeric

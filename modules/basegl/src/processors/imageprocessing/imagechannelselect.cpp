@@ -54,7 +54,7 @@ const ProcessorInfo ImageChannelSelect::processorInfo_{
     CodeState::Stable,                // Code state
     Tags::GL,                         // Tags
     "Creates a single channel texture with the selected channel from the drop down menu."_help};
-const ProcessorInfo ImageChannelSelect::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageChannelSelect::getProcessorInfo() const { return processorInfo_; }
 
 ImageChannelSelect::ImageChannelSelect()
     : ImageGLProcessor("img_channel_select.frag")

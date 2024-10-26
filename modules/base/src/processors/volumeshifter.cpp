@@ -66,7 +66,7 @@ const ProcessorInfo VolumeShifter::processorInfo_{
     CodeState::Experimental,     // Code state
     Tags::CPU,                   // Tags
 };
-const ProcessorInfo VolumeShifter::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeShifter::getProcessorInfo() const { return processorInfo_; }
 
 VolumeShifter::VolumeShifter()
     : Processor()

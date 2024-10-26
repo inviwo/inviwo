@@ -67,7 +67,7 @@ const ProcessorInfo DataFrameExporter::processorInfo_{
     "CPU, DataFrame, Export, CSV, XML",  // Tags
 };
 
-const ProcessorInfo DataFrameExporter::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& DataFrameExporter::getProcessorInfo() const { return processorInfo_; }
 
 FileExtension DataFrameExporter::csvExtension_ = FileExtension("csv", "CSV");
 FileExtension DataFrameExporter::xmlExtension_ = FileExtension("xml", "XML");

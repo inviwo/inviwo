@@ -80,7 +80,7 @@ const ProcessorInfo RandomMeshGenerator::processorInfo_{
     Tags::CPU,                         // Tags
 };
 
-const ProcessorInfo RandomMeshGenerator::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& RandomMeshGenerator::getProcessorInfo() const { return processorInfo_; }
 
 RandomMeshGenerator::RandomMeshGenerator()
     : Processor()

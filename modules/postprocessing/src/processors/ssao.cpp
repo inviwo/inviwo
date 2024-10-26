@@ -136,7 +136,7 @@ const ProcessorInfo SSAO::processorInfo_{
     "GL, Postprocessing, Image Operation, Ambient Occlusion",  // Tags
 };
 
-const ProcessorInfo SSAO::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SSAO::getProcessorInfo() const { return processorInfo_; }
 
 SSAO::SSAO()
     : Processor()

@@ -105,7 +105,7 @@ public:
     InstanceRenderer();
     virtual ~InstanceRenderer();
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     virtual void initializeResources() override;

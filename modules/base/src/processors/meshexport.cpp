@@ -52,7 +52,7 @@ const ProcessorInfo MeshExport::processorInfo_{
 MeshExport::MeshExport(InviwoApplication* app)
     : DataExport<Mesh, MeshInport>{util::getDataWriterFactory(app), "", "geometry"} {}
 
-const ProcessorInfo MeshExport::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshExport::getProcessorInfo() const { return processorInfo_; }
 
 const Mesh* MeshExport::getData() { return port_.getData().get(); }
 

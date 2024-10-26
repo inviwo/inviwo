@@ -69,7 +69,7 @@ const ProcessorInfo ScatterPlotProcessor::processorInfo_{
     "GL, Plotting",                     // Tags
 };
 
-const ProcessorInfo ScatterPlotProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ScatterPlotProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ScatterPlotProcessor::ScatterPlotProcessor()
     : Processor()

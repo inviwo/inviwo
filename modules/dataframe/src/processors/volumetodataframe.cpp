@@ -83,7 +83,7 @@ const ProcessorInfo VolumeToDataFrame::processorInfo_{
     CodeState::Stable,               // Code state
     "CPU, DataFrame, Volume",        // Tags
 };
-const ProcessorInfo VolumeToDataFrame::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 VolumeToDataFrame::VolumeToDataFrame()
     : Processor()

@@ -181,7 +181,7 @@ VolumeRaycaster::VolumeRaycaster()
                   lighting_.property, indicator_.property, toggleShading_);
 }
 
-const ProcessorInfo VolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 void VolumeRaycaster::initializeResources() {
     utilgl::addDefines(shader_, raycasting_.property, isotf_.property, camera_.property,

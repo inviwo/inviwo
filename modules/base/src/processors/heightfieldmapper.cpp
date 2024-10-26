@@ -78,7 +78,7 @@ const ProcessorInfo HeightFieldMapper::processorInfo_{
     image to be used in the Height Field Renderer processor. Additionally, data values
     are mapped to either an user-defined range or are scaled to fit in a given maximum
     height based on the sea level.)"_unindentHelp};
-const ProcessorInfo HeightFieldMapper::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& HeightFieldMapper::getProcessorInfo() const { return processorInfo_; }
 
 HeightFieldMapper::HeightFieldMapper()
     : Processor()

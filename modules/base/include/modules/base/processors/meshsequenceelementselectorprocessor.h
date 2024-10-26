@@ -66,7 +66,7 @@ public:
     MeshSequenceElementSelectorProcessor();
     virtual ~MeshSequenceElementSelectorProcessor() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 };
 

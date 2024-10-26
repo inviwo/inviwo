@@ -50,7 +50,7 @@ const ProcessorInfo DataFrameMetaData::processorInfo_{
     CodeState::Experimental,         // Code state
     "CPU, DataFrame",                // Tags
 };
-const ProcessorInfo DataFrameMetaData::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& DataFrameMetaData::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameMetaData::DataFrameMetaData()
     : Processor()

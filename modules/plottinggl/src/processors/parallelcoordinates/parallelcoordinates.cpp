@@ -117,7 +117,7 @@ const ProcessorInfo ParallelCoordinates::processorInfo_{
     "GL, Plotting",                    // Tags
     "This processor plots a given DataFrame using a Parallel Coordinate Plot."_help};
 
-const ProcessorInfo ParallelCoordinates::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ParallelCoordinates::getProcessorInfo() const { return processorInfo_; }
 
 ParallelCoordinates::ParallelCoordinates()
     : Processor()

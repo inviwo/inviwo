@@ -69,7 +69,7 @@ const ProcessorInfo ImageDistanceTransform::processorInfo_{
     of the input Image. It uses Saito's algorithm to compute the Euclidean distance.
     Note: Only works correctly for Layers with an orthogonal basis.)"_unindentHelp,
 };
-const ProcessorInfo ImageDistanceTransform::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageDistanceTransform::getProcessorInfo() const { return processorInfo_; }
 
 ImageDistanceTransform::ImageDistanceTransform()
     : PoolProcessor()

@@ -54,7 +54,7 @@ const ProcessorInfo ImageLayout3D::processorInfo_{
     Tags::GL,                    // Tags
     R"(<Explanation of how to use the processor.>)"_unindentHelp};
 
-const ProcessorInfo ImageLayout3D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageLayout3D::getProcessorInfo() const { return processorInfo_; }
 
 namespace {
 

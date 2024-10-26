@@ -51,8 +51,8 @@ void ProcessorTrampoline::invalidate(InvalidationLevel invalidationLevel,
                                      Property* modifiedProperty) {
     PYBIND11_OVERLOAD(void, Processor, invalidate, invalidationLevel, modifiedProperty);
 }
-const ProcessorInfo ProcessorTrampoline::getProcessorInfo() const {
-    PYBIND11_OVERLOAD_PURE(const ProcessorInfo, Processor, getProcessorInfo, );
+const ProcessorInfo& ProcessorTrampoline::getProcessorInfo() const {
+    PYBIND11_OVERLOAD_PURE(const ProcessorInfo&, Processor, getProcessorInfo, );
 }
 
 void ProcessorTrampoline::invokeEvent(Event* event) {

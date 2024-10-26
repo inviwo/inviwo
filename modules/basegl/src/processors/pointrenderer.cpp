@@ -68,7 +68,7 @@ const ProcessorInfo PointRenderer::processorInfo_{
     Tags::GL,                    // Tags
     R"(This processor renders a set of meshes as 2D points using OpenGL.)"_unindentHelp,
 };
-const ProcessorInfo PointRenderer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& PointRenderer::getProcessorInfo() const { return processorInfo_; }
 
 PointRenderer::PointRenderer()
     : Processor{}

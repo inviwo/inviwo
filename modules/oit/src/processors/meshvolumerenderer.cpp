@@ -61,7 +61,7 @@ const ProcessorInfo MeshVolumeRenderer::processorInfo_{
        Volume rendering is performed for volume rasterization objects.
        Fragment lists are used to render the transparent pixels with correct alpha blending.)"_unindentHelp,
 };
-const ProcessorInfo MeshVolumeRenderer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshVolumeRenderer::getProcessorInfo() const { return processorInfo_; }
 
 MeshVolumeRenderer::MeshVolumeRenderer()
     : rasterizations_("raster")

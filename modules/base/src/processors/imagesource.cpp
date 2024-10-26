@@ -69,7 +69,7 @@ const ProcessorInfo ImageSource::processorInfo_{"org.inviwo.ImageSource",  // Cl
                                                 CodeState::Stable,         // Code state
                                                 Tags::CPU,                 // Tags
                                                 "Loads an image from disk."_help};
-const ProcessorInfo ImageSource::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageSource::getProcessorInfo() const { return processorInfo_; }
 
 ImageSource::ImageSource(InviwoApplication* app, const std::filesystem::path& file)
     : DataSource<Image, ImageOutport, Layer>(util::getDataReaderFactory(app), file, "image")

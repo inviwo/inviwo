@@ -50,7 +50,7 @@ const ProcessorInfo ImageBrightnessContrast::processorInfo_{
     CodeState::Stable,                     // Code state
     Tags::None,                            // Tags
 };
-const ProcessorInfo ImageBrightnessContrast::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageBrightnessContrast::getProcessorInfo() const { return processorInfo_; }
 
 ImageBrightnessContrast::ImageBrightnessContrast()
     : ImageGLProcessor("brightnesscontrast.frag")

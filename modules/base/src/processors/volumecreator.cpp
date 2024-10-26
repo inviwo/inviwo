@@ -66,7 +66,7 @@ const ProcessorInfo VolumeCreator::processorInfo_{
     CodeState::Stable,           // Code state
     Tags::CPU,                   // Tags
 };
-const ProcessorInfo VolumeCreator::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeCreator::getProcessorInfo() const { return processorInfo_; }
 
 VolumeCreator::VolumeCreator()
     : Processor()

@@ -52,7 +52,7 @@ const ProcessorInfo Seed3Dto4D::processorInfo_{
     CodeState::Stable,        // Code state
     Tags::CPU,                // Tags
 };
-const ProcessorInfo Seed3Dto4D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& Seed3Dto4D::getProcessorInfo() const { return processorInfo_; }
 
 Seed3Dto4D::Seed3Dto4D()
     : Processor()

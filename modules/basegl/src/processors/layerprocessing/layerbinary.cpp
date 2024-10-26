@@ -43,7 +43,7 @@ const ProcessorInfo LayerBinary::processorInfo_{
     R"(Computes a binary image of the input layer using a threshold. The output will
        contain "0" for all values below the threshold and "1" otherwise.)"_unindentHelp};
 
-const ProcessorInfo LayerBinary::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerBinary::getProcessorInfo() const { return processorInfo_; }
 
 LayerBinary::LayerBinary()
     : LayerGLProcessor{utilgl::findShaderResource("img_binary.frag")}

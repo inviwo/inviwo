@@ -58,7 +58,7 @@ class IVW_MODULE_BASEGL_API VectorMagnitudeProcessor : public VolumeGLProcessor 
 public:
     VectorMagnitudeProcessor();
     virtual ~VectorMagnitudeProcessor();
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 protected:

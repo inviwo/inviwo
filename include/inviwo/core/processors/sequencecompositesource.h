@@ -85,7 +85,7 @@ public:
 
     virtual void process() override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
 
     /**
      * Inport to be used by the SequenceProcessor to put data into its sub network.
@@ -123,7 +123,7 @@ struct ProcessorTraits<SequenceCompositeSource<InportSequenceType, OutportType>>
         using intype = typename InportSequenceType::type;
         using outtype = typename InportSequenceType::type;
         static_assert(std::is_same<intype, outtype>::value, "type mismatch");
-         auto name = fmt::format("{} Meta Source", DataTraits<intype>::dataName());
+        auto name = fmt::format("{} Meta Source", DataTraits<intype>::dataName());
         auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(),
                                          SequenceCompositeSourceBase::identifierSuffix());
         return {
@@ -139,10 +139,11 @@ struct ProcessorTraits<SequenceCompositeSource<InportSequenceType, OutportType>>
 };
 
 template <typename InportSequenceType, typename OutportType>
-const ProcessorInfo SequenceCompositeSource<InportSequenceType, OutportType>::getProcessorInfo()
+const ProcessorInfo& SequenceCompositeSource<InportSequenceType, OutportType>::getProcessorInfo()
     const {
-    return ProcessorTraits<
-        SequenceCompositeSource<InportSequenceType, OutportType>>::getProcessorInfo();
+    static const ProcessorInfo info{ProcessorTraits<
+        SequenceCompositeSource<InportSequenceType, OutportType>>::getProcessorInfo()};
+    return info;
 }
 
 template <typename InportSequenceType, typename OutportType>

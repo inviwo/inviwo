@@ -51,7 +51,7 @@ namespace {
 struct TestProcessor : Processor {
     TestProcessor(const std::string& id) : Processor(id, id) {}
 
-    virtual const ProcessorInfo getProcessorInfo() const override { return processorInfo_; }
+    virtual const ProcessorInfo& getProcessorInfo() const override { return processorInfo_; }
 
     static const ProcessorInfo processorInfo_;
 

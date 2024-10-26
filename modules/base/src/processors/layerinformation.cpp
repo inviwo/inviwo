@@ -43,7 +43,7 @@ const ProcessorInfo LayerInformation::processorInfo_{
     Tags::CPU | Tag{"Layer"} | Tag{"Information"},  // Tags
     R"(Shows available information provided by the input layer.)"_unindentHelp};
 
-const ProcessorInfo LayerInformation::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerInformation::getProcessorInfo() const { return processorInfo_; }
 
 LayerInformation::LayerInformation()
     : Processor{}

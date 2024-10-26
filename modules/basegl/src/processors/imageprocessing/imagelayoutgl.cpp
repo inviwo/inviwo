@@ -100,7 +100,7 @@ const ProcessorInfo ImageLayoutGL::processorInfo_{
     point left/bottom will have precedence.
     )"_unindentHelp};
 
-const ProcessorInfo ImageLayoutGL::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageLayoutGL::getProcessorInfo() const { return processorInfo_; }
 
 ImageLayoutGL::ImageLayoutGL()
     : Processor()

@@ -62,7 +62,7 @@ public:
 
     virtual void process() override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override = 0;
+    virtual const ProcessorInfo& getProcessorInfo() const override = 0;
 
 protected:
     void exportData();

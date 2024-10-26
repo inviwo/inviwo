@@ -74,7 +74,7 @@ const ProcessorInfo VolumeLowPass::processorInfo_{
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
     "Applies a low pass filter on the input volume."_help};
-const ProcessorInfo VolumeLowPass::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeLowPass::getProcessorInfo() const { return processorInfo_; }
 
 VolumeLowPass::VolumeLowPass()
     : VolumeGLProcessor("volume_lowpass.frag")

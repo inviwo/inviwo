@@ -50,7 +50,7 @@ const ProcessorInfo ImageOpacity::processorInfo_{
     CodeState::Experimental,    // Code state
     Tags::None,                 // Tags
 };
-const ProcessorInfo ImageOpacity::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageOpacity::getProcessorInfo() const { return processorInfo_; }
 
 ImageOpacity::ImageOpacity()
     : ImageGLProcessor("imageopacity.frag"), alpha_("alpha", "Alpha", 1.0f, 0.0f, 1.f, 0.01f) {

@@ -67,7 +67,7 @@ const ProcessorInfo SequenceProcessor::processorInfo_{
     "A processor for wrapping ProcessorNetworks"_help,
     false};
 
-const ProcessorInfo SequenceProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SequenceProcessor::getProcessorInfo() const { return processorInfo_; }
 
 SequenceProcessor::SequenceProcessor(std::string_view identifier, std::string_view displayName,
                                      InviwoApplication* app, const std::filesystem::path& file)

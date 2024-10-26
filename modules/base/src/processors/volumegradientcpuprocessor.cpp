@@ -49,7 +49,7 @@ const ProcessorInfo VolumeGradientCPUProcessor::processorInfo_{
     CodeState::Experimental,                  // Code state
     Tags::CPU,                                // Tags
 };
-const ProcessorInfo VolumeGradientCPUProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeGradientCPUProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeGradientCPUProcessor::VolumeGradientCPUProcessor()
     : Processor(), inport_("inport"), outport_("outport") {

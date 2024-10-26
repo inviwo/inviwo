@@ -92,7 +92,7 @@ ImageExport::ImageExport(InviwoApplication* app)
 
     imageSize_.onChange([this]() { sendResizeEvent(); });
 }
-const ProcessorInfo ImageExport::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageExport::getProcessorInfo() const { return processorInfo_; }
 
 void ImageExport::setNetwork(ProcessorNetwork* network) {
     if (network) network->addObserver(this);

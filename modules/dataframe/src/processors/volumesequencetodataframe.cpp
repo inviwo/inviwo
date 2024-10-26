@@ -89,7 +89,7 @@ const ProcessorInfo VolumeSequenceToDataFrame::processorInfo_{
     "CPU, DataFrame, Volume",                // Tags
 };
 
-const ProcessorInfo VolumeSequenceToDataFrame::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeSequenceToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSequenceToDataFrame::VolumeSequenceToDataFrame()
     : Processor()

@@ -76,7 +76,7 @@ const ProcessorInfo CSVSource::processorInfo_{
     CodeState::Stable,                        // Code state
     "CPU, Plotting, Source, CSV, DataFrame",  // Tags
 };
-const ProcessorInfo CSVSource::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& CSVSource::getProcessorInfo() const { return processorInfo_; }
 
 CSVSource::CSVSource(const std::filesystem::path& file)
     : Processor{}

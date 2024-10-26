@@ -48,7 +48,7 @@ class Volume;
 
 class IVW_MODULE_BASE_API VolumeDownsample : public PoolProcessor {
 public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     VolumeDownsample();

@@ -88,7 +88,7 @@ const ProcessorInfo VolumeInformation::processorInfo_{
     R"(
     Shows available information provided by input volume including metadata.
     )"_unindentHelp};
-const ProcessorInfo VolumeInformation::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeInformation::getProcessorInfo() const { return processorInfo_; }
 
 namespace {
 constexpr auto transforms = util::generateTransforms(std::array{

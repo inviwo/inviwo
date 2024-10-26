@@ -50,7 +50,7 @@ const ProcessorInfo LayerRenderer::processorInfo_{
     R"(Renders a set of Layers using OpenGL. The basis transformation of each layer is used to "
       "position it in 3D world coordinates.)"_unindentHelp};
 
-const ProcessorInfo LayerRenderer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerRenderer::getProcessorInfo() const { return processorInfo_; }
 
 LayerRenderer::LayerRenderer()
     : Processor{}

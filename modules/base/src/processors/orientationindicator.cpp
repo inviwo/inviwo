@@ -69,7 +69,7 @@ const ProcessorInfo OrientationIndicator::processorInfo_{
     Tags::CPU,                          // Tags
     "Generates a mesh with three arrows indicating the direction of the three coordinate axes."_help};
 
-const ProcessorInfo OrientationIndicator::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& OrientationIndicator::getProcessorInfo() const { return processorInfo_; }
 
 OrientationIndicator::OrientationIndicator()
     : Processor()

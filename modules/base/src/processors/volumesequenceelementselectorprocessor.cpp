@@ -49,7 +49,7 @@ const ProcessorInfo VolumeSequenceElementSelectorProcessor::processorInfo_{
     CodeState::Stable,                   // Code state
     Tags::CPU,                           // Tags
 };
-const ProcessorInfo VolumeSequenceElementSelectorProcessor::getProcessorInfo() const {
+const ProcessorInfo& VolumeSequenceElementSelectorProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 VolumeSequenceElementSelectorProcessor::VolumeSequenceElementSelectorProcessor()

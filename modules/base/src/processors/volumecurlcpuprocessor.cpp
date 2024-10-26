@@ -50,7 +50,7 @@ const ProcessorInfo VolumeCurlCPUProcessor::processorInfo_{
     CodeState::Stable,                    // Code state
     Tags::CPU,                            // Tags
 };
-const ProcessorInfo VolumeCurlCPUProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeCurlCPUProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeCurlCPUProcessor::VolumeCurlCPUProcessor()
     : Processor(), inport_("inport"), outport_("outport") {

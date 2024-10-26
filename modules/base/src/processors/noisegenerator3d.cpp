@@ -77,7 +77,7 @@ const ProcessorInfo NoiseGenerator3D::processorInfo_{
     [base/noise_volume_generation.inv](file:~modulePath~/data/workspaces/noise_volume_generation.inv)
     )"_unindentHelp};
 
-const ProcessorInfo NoiseGenerator3D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& NoiseGenerator3D::getProcessorInfo() const { return processorInfo_; }
 
 NoiseGenerator3D::NoiseGenerator3D()
     : Processor()

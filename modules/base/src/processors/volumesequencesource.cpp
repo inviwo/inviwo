@@ -73,7 +73,7 @@ const ProcessorInfo VolumeSequenceSource::processorInfo_{
     R"(Loads a sequence of volume either from a 4D dataset or from a selection of 3D datasets. The
        filename of the source data is available via MetaData.)"_unindentHelp};
 
-const ProcessorInfo VolumeSequenceSource::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeSequenceSource::getProcessorInfo() const { return processorInfo_; }
 
 namespace {
 

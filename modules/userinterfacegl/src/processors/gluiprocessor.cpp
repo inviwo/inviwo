@@ -78,7 +78,7 @@ const ProcessorInfo GLUIProcessor::processorInfo_{
     CodeState::Stable,           // Code state
     "GL, UI, Properties",        // Tags
 };
-const ProcessorInfo GLUIProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& GLUIProcessor::getProcessorInfo() const { return processorInfo_; }
 
 GLUIProcessor::GLUIProcessor(InviwoApplication* app)
     : Processor()

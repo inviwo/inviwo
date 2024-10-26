@@ -55,7 +55,7 @@ const ProcessorInfo VolumeBoundingBox::processorInfo_{
     Tags::CPU,                       // Tags
     "Creates a mesh containing the bounding box of the volume, that is lines with adjacency "
     "information."_help};
-const ProcessorInfo VolumeBoundingBox::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeBoundingBox::getProcessorInfo() const { return processorInfo_; }
 
 VolumeBoundingBox::VolumeBoundingBox()
     : Processor()

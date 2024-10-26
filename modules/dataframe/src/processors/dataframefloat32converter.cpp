@@ -61,7 +61,7 @@ const ProcessorInfo DataFrameFloat32Converter::processorInfo_{
     CodeState::Stable,                       // Code state
     "CPU, Plotting, DataFrame",              // Tags
 };
-const ProcessorInfo DataFrameFloat32Converter::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& DataFrameFloat32Converter::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameFloat32Converter::DataFrameFloat32Converter()
     : Processor(), inport_("inport"), outport_("outport") {

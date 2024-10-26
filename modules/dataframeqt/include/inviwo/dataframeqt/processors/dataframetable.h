@@ -83,7 +83,7 @@ public:
 
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     /**

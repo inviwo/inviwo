@@ -84,7 +84,7 @@ const ProcessorInfo RBFVectorFieldGenerator2D::processorInfo_{
     CodeState::Stable,                       // Code state
     "CPU, Generator",                        // Tags
 };
-const ProcessorInfo RBFVectorFieldGenerator2D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& RBFVectorFieldGenerator2D::getProcessorInfo() const { return processorInfo_; }
 
 RBFVectorFieldGenerator2D::RBFVectorFieldGenerator2D()
     : Processor()

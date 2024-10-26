@@ -61,7 +61,7 @@ const ProcessorInfo LineRendererProcessor::processorInfo_{
     Tags::GL,                   // Tags
     R"(Render input meshes as 2D lines using OpenGL.)"_unindentHelp,
 };
-const ProcessorInfo LineRendererProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LineRendererProcessor::getProcessorInfo() const { return processorInfo_; }
 
 LineRendererProcessor::LineRendererProcessor()
     : Processor()

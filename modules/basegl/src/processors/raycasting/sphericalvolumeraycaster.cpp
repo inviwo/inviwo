@@ -61,7 +61,7 @@ const ProcessorInfo SphericalVolumeRaycaster::processorInfo_{
     CodeState::Experimental,                     // Code state
     Tags::GL | Tag{"Volume"} | Tag{"Raycaster"}  // Tags
 };
-const ProcessorInfo SphericalVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SphericalVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 SphericalVolumeRaycaster::SphericalVolumeRaycaster(std::string_view identifier,
                                                    std::string_view displayName)

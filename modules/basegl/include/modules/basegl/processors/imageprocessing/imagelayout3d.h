@@ -88,7 +88,7 @@ public:
 
     virtual void propagateEvent(Event*, Outport* source) override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:

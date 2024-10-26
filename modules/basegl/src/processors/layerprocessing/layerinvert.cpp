@@ -47,7 +47,7 @@ const ProcessorInfo LayerInvert::processorInfo_{
     
     The input range is assumed to be normalized, i.e. [0, 1].)"_unindentHelp};
 
-const ProcessorInfo LayerInvert::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerInvert::getProcessorInfo() const { return processorInfo_; }
 
 LayerInvert::LayerInvert() : LayerGLProcessor{utilgl::findShaderResource("img_invert.frag")} {}
 

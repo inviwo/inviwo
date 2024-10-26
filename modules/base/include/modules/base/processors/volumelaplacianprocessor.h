@@ -64,7 +64,7 @@ public:
     virtual ~VolumeLaplacianProcessor() = default;
 
     static const ProcessorInfo processorInfo_;
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
 
     virtual void process() override;
 

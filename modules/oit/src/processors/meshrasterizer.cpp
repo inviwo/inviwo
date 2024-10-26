@@ -124,7 +124,7 @@ const ProcessorInfo MeshRasterizer::processorInfo_{
        Fragment lists are used to render the transparent pixels with correct alpha blending.
        Many different alpha modes, shading modes, coloring modes are available.)"_unindentHelp};
 
-const ProcessorInfo MeshRasterizer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshRasterizer::getProcessorInfo() const { return processorInfo_; }
 
 MeshRasterizer::MeshRasterizer()
     : Rasterizer()

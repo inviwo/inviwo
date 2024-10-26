@@ -67,7 +67,7 @@ const ProcessorInfo ImageChannelCombine::processorInfo_{
     "Creates a 4 channel image with the connected inputs, from each of them the channel specified "
     "in its property is used. If the optional alpha channel is not provided, the alpha property "
     "is used to set the alpha value of the entire image."_help};
-const ProcessorInfo ImageChannelCombine::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageChannelCombine::getProcessorInfo() const { return processorInfo_; }
 
 namespace {
 const std::vector<OptionPropertyIntOption> channelsList = {

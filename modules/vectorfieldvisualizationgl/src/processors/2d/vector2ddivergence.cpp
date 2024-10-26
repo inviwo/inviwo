@@ -45,7 +45,7 @@ const ProcessorInfo Vector2DDivergence::processorInfo_{
     Tags::GL | Tag{"Layer"},          // Tags
     R"(Computes the divergence of a 2D vector field.)"_unindentHelp,
 };
-const ProcessorInfo Vector2DDivergence::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& Vector2DDivergence::getProcessorInfo() const { return processorInfo_; }
 
 Vector2DDivergence::Vector2DDivergence()
     : LayerGLProcessor{utilgl::findShaderResource("vector2ddivergence.frag")} {}

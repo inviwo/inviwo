@@ -60,7 +60,7 @@ const ProcessorInfo VolumeNormalizationProcessor::processorInfo_{
     CodeState::Stable,                          // Code state
     Tags::GL,                                   // Tags
 };
-const ProcessorInfo VolumeNormalizationProcessor::getProcessorInfo() const {
+const ProcessorInfo& VolumeNormalizationProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 

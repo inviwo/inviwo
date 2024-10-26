@@ -45,7 +45,7 @@ const ProcessorInfo LayerAxis::processorInfo_{"org.inviwo.LayerAxis",      // Cl
                                               Tags::GL | Tag{"Plotting"},  // Tags
                                               "Renders x and y axes next to the layer."_help};
 
-const ProcessorInfo LayerAxis::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerAxis::getProcessorInfo() const { return processorInfo_; }
 
 LayerAxis::LayerAxis()
     : Processor{}
