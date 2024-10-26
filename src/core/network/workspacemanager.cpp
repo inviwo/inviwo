@@ -43,6 +43,8 @@
 #include <fmt/ostream.h>
 #include <fmt/std.h>
 
+#include <memory_resource>
+
 namespace inviwo {
 
 class NetworkModified final : public ProcessorNetworkObserver {
@@ -180,7 +182,10 @@ void WorkspaceManager::clear() {
 
 void WorkspaceManager::save(std::ostream& stream, const std::filesystem::path& refPath,
                             const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
-    Serializer serializer(refPath);
+
+    std::pmr::monotonic_buffer_resource mbr{1024 * 32};
+
+    Serializer serializer(refPath, &mbr);
 
     if (mode != WorkspaceSaveMode::Undo) {
         InviwoSetupInfo info(*app_, *app_->getProcessorNetwork());
