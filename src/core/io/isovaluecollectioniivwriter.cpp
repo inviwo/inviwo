@@ -29,6 +29,8 @@
 
 #include <inviwo/core/io/isovaluecollectioniivwriter.h>
 
+#include <sstream>
+
 namespace inviwo {
 
 IsoValueCollectionIIVWriter::IsoValueCollectionIIVWriter() {
