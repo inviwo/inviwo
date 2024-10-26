@@ -82,7 +82,7 @@ const ProcessorInfo CubeRenderer::processorInfo_{
     CodeState::Stable,          // Code state
     Tags::GL,                   // Tags
 };
-const ProcessorInfo CubeRenderer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& CubeRenderer::getProcessorInfo() const { return processorInfo_; }
 
 CubeRenderer::CubeRenderer()
     : Processor()

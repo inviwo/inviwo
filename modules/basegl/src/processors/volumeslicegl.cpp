@@ -127,7 +127,7 @@ const ProcessorInfo VolumeSliceGL::processorInfo_{
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
 };
-const ProcessorInfo VolumeSliceGL::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeSliceGL::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSliceGL::VolumeSliceGL()
     : Processor()

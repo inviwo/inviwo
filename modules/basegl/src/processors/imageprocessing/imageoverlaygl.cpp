@@ -69,7 +69,7 @@ const ProcessorInfo ImageOverlayGL::processorInfo_{
     CodeState::Experimental,      // Code state
     Tags::GL,                     // Tags
 };
-const ProcessorInfo ImageOverlayGL::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageOverlayGL::getProcessorInfo() const { return processorInfo_; }
 
 OverlayProperty::OverlayProperty(std::string identifier, std::string displayName,
                                  InvalidationLevel invalidationLevel, PropertySemantics semantics)

@@ -82,7 +82,7 @@ const ProcessorInfo VolumeRegionShrink::processorInfo_{
     value of any of the 26 closest neighbors is different. The procedure is repeated
     number of iterations times.)"_unindentHelp};
 
-const ProcessorInfo VolumeRegionShrink::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeRegionShrink::getProcessorInfo() const { return processorInfo_; }
 
 namespace {
 

@@ -57,7 +57,7 @@ const ProcessorInfo ImageToSpatialSampler::processorInfo_{
     Tags::CPU,                           // Tags
     "Creates a Spatial Sampler for the given input image"_help};
 
-const ProcessorInfo ImageToSpatialSampler::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageToSpatialSampler::getProcessorInfo() const { return processorInfo_; }
 
 ImageToSpatialSampler::ImageToSpatialSampler()
     : Processor()

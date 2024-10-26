@@ -88,7 +88,7 @@ const ProcessorInfo MeshPicking::processorInfo_{
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
-const ProcessorInfo MeshPicking::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshPicking::getProcessorInfo() const { return processorInfo_; }
 
 MeshPicking::MeshPicking()
     : Processor()

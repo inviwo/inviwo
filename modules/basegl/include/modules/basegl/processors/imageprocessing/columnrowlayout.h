@@ -90,7 +90,7 @@ public:
     ColumnLayout();
     virtual ~ColumnLayout() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
@@ -107,7 +107,7 @@ public:
     RowLayout();
     virtual ~RowLayout() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:

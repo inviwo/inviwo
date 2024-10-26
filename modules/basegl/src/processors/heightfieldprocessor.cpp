@@ -73,7 +73,7 @@ const ProcessorInfo HeightFieldProcessor::processorInfo_{
         [core/heightfield.inv](file:~basePath~/data/workspaces/heightfield.inv)
     )"_unindentHelp};
 
-const ProcessorInfo HeightFieldProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& HeightFieldProcessor::getProcessorInfo() const { return processorInfo_; }
 
 HeightFieldProcessor::HeightFieldProcessor()
     : Processor()

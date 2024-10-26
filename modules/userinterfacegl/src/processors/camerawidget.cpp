@@ -114,7 +114,7 @@ const ProcessorInfo CameraWidget::processorInfo_{
     The widget is rendered on top of the input image. It also provides the current camera
     rotation in matrix form.)"_unindentHelp,
 };
-const ProcessorInfo CameraWidget::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& CameraWidget::getProcessorInfo() const { return processorInfo_; }
 
 CameraWidget::CameraWidget()
     : Processor()

@@ -87,7 +87,7 @@ public:
     TexturedIsosurfaceRenderer(std::string_view identifier = "", std::string_view displayName = "");
     virtual ~TexturedIsosurfaceRenderer() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:

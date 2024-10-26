@@ -38,7 +38,7 @@ const ProcessorInfo LayerSequenceElementSelector::processorInfo_{
     CodeState::Stable,                          // Code state
     Tags::CPU,                                  // Tags
     R"(Select a specific layer out of a sequence of layers)"_unindentHelp};
-const ProcessorInfo LayerSequenceElementSelector::getProcessorInfo() const {
+const ProcessorInfo& LayerSequenceElementSelector::getProcessorInfo() const {
     return processorInfo_;
 }
 LayerSequenceElementSelector::LayerSequenceElementSelector()

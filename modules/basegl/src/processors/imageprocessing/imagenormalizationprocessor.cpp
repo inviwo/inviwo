@@ -75,7 +75,7 @@ const ProcessorInfo ImageNormalizationProcessor::processorInfo_{
     R"(
 Normalizes the RGB channels of the input image given a specific range.
 )"_unindentHelp};
-const ProcessorInfo ImageNormalizationProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageNormalizationProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ImageNormalizationProcessor::ImageNormalizationProcessor()
     : ImageGLProcessor("img_normalize.frag")

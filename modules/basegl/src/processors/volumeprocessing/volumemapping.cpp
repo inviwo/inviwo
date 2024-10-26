@@ -49,7 +49,7 @@ const ProcessorInfo VolumeMapping::processorInfo_{
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
 };
-const ProcessorInfo VolumeMapping::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeMapping::getProcessorInfo() const { return processorInfo_; }
 
 VolumeMapping::VolumeMapping()
     : VolumeGLProcessor("volume_mapping.frag")

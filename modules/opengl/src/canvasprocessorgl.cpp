@@ -51,7 +51,7 @@ const ProcessorInfo CanvasProcessorGL::processorInfo_{
        different image layers. By default the first color layer is rendered.
        The processor also has functionality to save images to disk.)"_unindentHelp  // Help
 };
-const ProcessorInfo CanvasProcessorGL::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& CanvasProcessorGL::getProcessorInfo() const { return processorInfo_; }
 
 CanvasProcessorGL::CanvasProcessorGL(InviwoApplication* app) : CanvasProcessor(app) {}
 

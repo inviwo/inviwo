@@ -64,7 +64,7 @@ const ProcessorInfo BrushingAndLinkingProcessor::processorInfo_{
     CodeState::Stable,                         // Code state
     "Brushing, Linking",                       // Tags
 };
-const ProcessorInfo BrushingAndLinkingProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& BrushingAndLinkingProcessor::getProcessorInfo() const { return processorInfo_; }
 
 BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
     : Processor()

@@ -43,7 +43,7 @@ const ProcessorInfo LayerSource::processorInfo_{
     Tags::CPU | Tag{"Layer"} | Tag{"Source"},  // Tags
     R"(Loads a Layer from an image file on disk.)"_unindentHelp};
 
-const ProcessorInfo LayerSource::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerSource::getProcessorInfo() const { return processorInfo_; }
 
 LayerSource::LayerSource(InviwoApplication* app, const std::filesystem::path& filePath)
     : DataSource<Layer, LayerOutport>(util::getDataReaderFactory(app), filePath, "image")

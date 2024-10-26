@@ -41,7 +41,7 @@ const ProcessorInfo VolumeRegionMapper::processorInfo_{
     CodeState::Stable,                                           // Code state
     Tags::CPU | Tag{"Volume"} | Tag{"Atlas"} | Tag{"DataFrame"}  // Tags
 };
-const ProcessorInfo VolumeRegionMapper::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeRegionMapper::getProcessorInfo() const { return processorInfo_; }
 
 VolumeRegionMapper::VolumeRegionMapper()
     : Processor()

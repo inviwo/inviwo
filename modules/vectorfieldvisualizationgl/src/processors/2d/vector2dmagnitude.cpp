@@ -45,7 +45,7 @@ const ProcessorInfo Vector2DMagnitude::processorInfo_{
     Tags::GL | Tag{"Layer"},         // Tags
     R"(Computes the vector magnitude of a 2D vector field.)"_unindentHelp,
 };
-const ProcessorInfo Vector2DMagnitude::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& Vector2DMagnitude::getProcessorInfo() const { return processorInfo_; }
 
 Vector2DMagnitude::Vector2DMagnitude()
     : LayerGLProcessor{utilgl::findShaderResource("vector2dmagnitude.frag")} {}

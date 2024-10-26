@@ -68,7 +68,7 @@ const ProcessorInfo FirstIvwProcessor::processorInfo_{
     CodeState::Stable,               // Code state
     Tags::GL,                        // Tags
 };
-const ProcessorInfo FirstIvwProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& FirstIvwProcessor::getProcessorInfo() const { return processorInfo_; }
 
 FirstIvwProcessor::FirstIvwProcessor()
     : Processor()

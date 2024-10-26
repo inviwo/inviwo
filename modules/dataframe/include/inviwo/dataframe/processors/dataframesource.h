@@ -53,7 +53,7 @@ public:
     virtual void dataLoaded(std::shared_ptr<DataFrame> data) override;
     virtual void dataDeserialized(std::shared_ptr<DataFrame> data) override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:

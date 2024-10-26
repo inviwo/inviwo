@@ -67,7 +67,7 @@ const ProcessorInfo AxisAlignedCutPlane::processorInfo_{
     R"(Render up to three volume slices aligned with the principal axes of a volume.
     )"_unindentHelp,
 };
-const ProcessorInfo AxisAlignedCutPlane::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& AxisAlignedCutPlane::getProcessorInfo() const { return processorInfo_; }
 
 AxisAlignedCutPlane::AxisAlignedCutPlane()
     : Processor()

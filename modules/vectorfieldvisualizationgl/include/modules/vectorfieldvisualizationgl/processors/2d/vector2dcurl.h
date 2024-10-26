@@ -40,7 +40,7 @@ class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector2DCurl : public LayerGLPro
 public:
     Vector2DCurl();
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:

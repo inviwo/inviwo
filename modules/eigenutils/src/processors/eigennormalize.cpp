@@ -50,7 +50,7 @@ const ProcessorInfo EigenNormalize::processorInfo_{
     CodeState::Experimental,      // Code state
     "Eigen",                      // Tags
 };
-const ProcessorInfo EigenNormalize::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& EigenNormalize::getProcessorInfo() const { return processorInfo_; }
 
 EigenNormalize::EigenNormalize()
     : Processor()

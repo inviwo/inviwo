@@ -67,7 +67,7 @@ are required. These can be created with the EntryExitPoints processor. The camer
  between these two processors need to be linked.
 )"_unindentHelp,
 };
-const ProcessorInfo StandardVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& StandardVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 StandardVolumeRaycaster::StandardVolumeRaycaster(std::string_view identifier,
                                                  std::string_view displayName)

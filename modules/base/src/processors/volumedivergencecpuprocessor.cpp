@@ -50,7 +50,7 @@ const ProcessorInfo VolumeDivergenceCPUProcessor::processorInfo_{
     CodeState::Stable,                          // Code state
     Tags::CPU,                                  // Tags
 };
-const ProcessorInfo VolumeDivergenceCPUProcessor::getProcessorInfo() const {
+const ProcessorInfo& VolumeDivergenceCPUProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 

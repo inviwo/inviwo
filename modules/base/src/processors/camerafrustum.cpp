@@ -59,7 +59,7 @@ const ProcessorInfo CameraFrustum::processorInfo_{
     [base/camera_frustum.inv](file:~modulePath~/data/workspaces/camera_frustum.inv)
     )"_unindentHelp};
 
-const ProcessorInfo CameraFrustum::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& CameraFrustum::getProcessorInfo() const { return processorInfo_; }
 
 CameraFrustum::CameraFrustum()
     : Processor()

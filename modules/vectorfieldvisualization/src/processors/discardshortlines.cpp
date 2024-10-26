@@ -56,7 +56,7 @@ const ProcessorInfo DiscardShortLines::processorInfo_{
     CodeState::Stable,               // Code state
     Tags::CPU,                       // Tags
 };
-const ProcessorInfo DiscardShortLines::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& DiscardShortLines::getProcessorInfo() const { return processorInfo_; }
 
 DiscardShortLines::DiscardShortLines()
     : Processor()

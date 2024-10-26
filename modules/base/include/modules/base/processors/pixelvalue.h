@@ -73,7 +73,7 @@ public:
 
     void mouseMoveEvent(Event* theevent);
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:

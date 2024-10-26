@@ -195,13 +195,15 @@ void Processor::removePortFromGroups(Port* port) {
     portGroups_.erase(port);
 }
 
-std::string Processor::getClassIdentifier() const { return getProcessorInfo().classIdentifier; }
+const std::string& Processor::getClassIdentifier() const {
+    return getProcessorInfo().classIdentifier;
+}
 
-std::string Processor::getCategory() const { return getProcessorInfo().category; }
+const std::string& Processor::getCategory() const { return getProcessorInfo().category; }
 
 CodeState Processor::getCodeState() const { return getProcessorInfo().codeState; }
 
-Tags Processor::getTags() const { return getProcessorInfo().tags; }
+const Tags& Processor::getTags() const { return getProcessorInfo().tags; }
 
 void Processor::setIdentifier(std::string_view identifier) {
     if (identifier != identifier_) {

@@ -68,7 +68,7 @@ Note that this algorithm normalizes channels independently, it does not normaliz
 volume in terms of vector norms.
 )"_unindentHelp,
 };
-const ProcessorInfo VolumeNormalizationProcessor::getProcessorInfo() const {
+const ProcessorInfo& VolumeNormalizationProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 

@@ -63,7 +63,7 @@ const ProcessorInfo ImageScaling::processorInfo_{
     CodeState::Stable,          // Code state
     "GL, Image",                // Tags
 };
-const ProcessorInfo ImageScaling::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageScaling::getProcessorInfo() const { return processorInfo_; }
 
 ImageScaling::ImageScaling()
     : Processor()

@@ -73,7 +73,7 @@ const ProcessorInfo DirectionalLightSourceProcessor::processorInfo_{
     glm::normalize(vec3(0) - lightPos) when specified in world space and
     normalize(camera_.getLookTo() - lightPos) when specified in view space.)"_unindentHelp};
 
-const ProcessorInfo DirectionalLightSourceProcessor::getProcessorInfo() const {
+const ProcessorInfo& DirectionalLightSourceProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 

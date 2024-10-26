@@ -69,7 +69,7 @@ const ProcessorInfo SingleVoxel::processorInfo_{
     Tags::CPU,                 // Tags
 };
 
-const ProcessorInfo SingleVoxel::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SingleVoxel::getProcessorInfo() const { return processorInfo_; }
 
 SingleVoxel::SingleVoxel()
     : Processor()

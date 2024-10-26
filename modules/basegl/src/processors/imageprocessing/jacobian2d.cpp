@@ -52,7 +52,7 @@ const ProcessorInfo Jacobian2D::processorInfo_{
     CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
 };
-const ProcessorInfo Jacobian2D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& Jacobian2D::getProcessorInfo() const { return processorInfo_; }
 
 Jacobian2D::Jacobian2D()
     : ImageGLProcessor("img_jacobian.frag")

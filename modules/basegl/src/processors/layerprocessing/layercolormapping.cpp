@@ -44,7 +44,7 @@ const ProcessorInfo LayerColorMapping::processorInfo_{
     match the input with a value range of [0, 1].)"_unindentHelp,
 };
 
-const ProcessorInfo LayerColorMapping::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerColorMapping::getProcessorInfo() const { return processorInfo_; }
 
 LayerColorMapping::LayerColorMapping()
     : LayerGLProcessor{utilgl::findShaderResource("img_mapping.frag")}

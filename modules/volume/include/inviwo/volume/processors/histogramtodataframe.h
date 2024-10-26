@@ -50,7 +50,7 @@ public:
 
     virtual void process() override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
 
 private:
     DataInport<T> inport_;
@@ -63,8 +63,9 @@ private:
 };
 
 template <typename T>
-const ProcessorInfo HistogramToDataFrame<T>::getProcessorInfo() const {
-    return ProcessorTraits<HistogramToDataFrame<T>>::getProcessorInfo();
+const ProcessorInfo& HistogramToDataFrame<T>::getProcessorInfo() const {
+    static const ProcessorInfo info{ProcessorTraits<HistogramToDataFrame<T>>::getProcessorInfo()};
+    return info;
 }
 
 template <>

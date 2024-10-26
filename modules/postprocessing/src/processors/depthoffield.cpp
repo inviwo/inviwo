@@ -106,7 +106,7 @@ const ProcessorInfo DepthOfField::processorInfo_{
     CodeState::Experimental,    // Code state
     Tags::None,                 // Tags
 };
-const ProcessorInfo DepthOfField::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& DepthOfField::getProcessorInfo() const { return processorInfo_; }
 
 DepthOfField::DepthOfField()
     : Processor()

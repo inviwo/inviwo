@@ -41,7 +41,7 @@ const ProcessorInfo Source::processorInfo_{
     CodeState::Stable,         // Code state
     Tags::None,                // Tags
 };
-const ProcessorInfo Source::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& Source::getProcessorInfo() const { return processorInfo_; }
 
 Source::Source() : Processor(), file_("filename", "HDF File"), port_("outport") {
     addPort(port_);

@@ -84,7 +84,7 @@ const ProcessorInfo MeshCreator::processorInfo_{
     CodeState::Stable,         // Code state
     Tags::CPU,                 // Tags
 };
-const ProcessorInfo MeshCreator::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshCreator::getProcessorInfo() const { return processorInfo_; }
 
 MeshCreator::MeshCreator()
     : Processor()

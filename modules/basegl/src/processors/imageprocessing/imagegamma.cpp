@@ -56,7 +56,7 @@ Applies a gamma correction utilizing the `ImageGLProcessor` as follows
 
 The input range is assumed to be normalized, that is [0, 1].
     )"_unindentHelp};
-const ProcessorInfo ImageGamma::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageGamma::getProcessorInfo() const { return processorInfo_; }
 
 ImageGamma::ImageGamma()
     : ImageGLProcessor("img_gamma.frag")

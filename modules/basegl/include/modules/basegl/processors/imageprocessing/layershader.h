@@ -52,7 +52,7 @@ class IVW_MODULE_BASEGL_API LayerShader : public LayerGLProcessor {
 public:
     LayerShader();
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;

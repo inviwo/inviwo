@@ -70,7 +70,7 @@ const ProcessorInfo SeedPointGenerator::processorInfo_{
     CodeState::Stable,                  // Code state
     "CPU, Seed Points, Generator",      // Tags
 };
-const ProcessorInfo SeedPointGenerator::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SeedPointGenerator::getProcessorInfo() const { return processorInfo_; }
 
 SeedPointGenerator::SeedPointGenerator()
     : Processor()

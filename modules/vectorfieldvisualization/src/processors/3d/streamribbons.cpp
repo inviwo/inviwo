@@ -86,7 +86,7 @@ const ProcessorInfo StreamRibbonsDeprecated::processorInfo_{
     CodeState::Deprecated,                 // Code state
     Tags::CPU,                             // Tags
 };
-const ProcessorInfo StreamRibbonsDeprecated::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& StreamRibbonsDeprecated::getProcessorInfo() const { return processorInfo_; }
 
 StreamRibbonsDeprecated::StreamRibbonsDeprecated()
     : Processor()

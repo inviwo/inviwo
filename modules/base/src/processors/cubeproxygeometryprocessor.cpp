@@ -67,7 +67,7 @@ const ProcessorInfo CubeProxyGeometry::processorInfo_{
     The geometry will be shaped as a parallelepiped. If clipping is enabled the geometry
     will be cut along the corresponding axes.)"_unindentHelp};
 
-const ProcessorInfo CubeProxyGeometry::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& CubeProxyGeometry::getProcessorInfo() const { return processorInfo_; }
 
 CubeProxyGeometry::CubeProxyGeometry()
     : Processor()

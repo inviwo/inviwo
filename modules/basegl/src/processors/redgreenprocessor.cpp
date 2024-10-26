@@ -49,7 +49,7 @@ const ProcessorInfo RedGreenProcessor::processorInfo_{
     CodeState::Stable,               // Code state
     Tags::GL,                        // Tags
 };
-const ProcessorInfo RedGreenProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& RedGreenProcessor::getProcessorInfo() const { return processorInfo_; }
 
 RedGreenProcessor::RedGreenProcessor()
     : Processor(), outportRed_("outportRed"), outportGreen_("outportGreen") {

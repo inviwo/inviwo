@@ -57,7 +57,7 @@ const ProcessorInfo GeometryEntryExitPoints::processorInfo_{
     CodeState::Stable,                     // Code state
     Tags::GL,                              // Tags
 };
-const ProcessorInfo GeometryEntryExitPoints::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& GeometryEntryExitPoints::getProcessorInfo() const { return processorInfo_; }
 
 GeometryEntryExitPoints::GeometryEntryExitPoints()
     : Processor()

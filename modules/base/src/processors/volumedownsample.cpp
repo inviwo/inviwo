@@ -48,7 +48,7 @@ const ProcessorInfo VolumeDownsample::processorInfo_{
     R"(Reduce the input volume by downsampling.
 )"_unindentHelp,
 };
-const ProcessorInfo VolumeDownsample::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeDownsample::getProcessorInfo() const { return processorInfo_; }
 
 VolumeDownsample::VolumeDownsample()
     : PoolProcessor{}

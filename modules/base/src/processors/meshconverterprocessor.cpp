@@ -57,7 +57,7 @@ const ProcessorInfo MeshConverterProcessor::processorInfo_{
     CodeState::Stable,           // Code state
     Tags::CPU,                   // Tags
 };
-const ProcessorInfo MeshConverterProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshConverterProcessor::getProcessorInfo() const { return processorInfo_; }
 
 MeshConverterProcessor::MeshConverterProcessor()
     : Processor()

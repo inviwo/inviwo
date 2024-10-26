@@ -41,7 +41,7 @@ const ProcessorInfo PathSelection::processorInfo_{
     CodeState::Stable,                // Code state
     Tags::None,                       // Tags
 };
-const ProcessorInfo PathSelection::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& PathSelection::getProcessorInfo() const { return processorInfo_; }
 
 PathSelection::PathSelection()
     : Processor(), inport_("inport"), outport_("outport"), selection_("selection", "Select Group") {
