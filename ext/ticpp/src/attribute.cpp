@@ -61,18 +61,16 @@ void TiXmlAttribute::Print(FILE* file) const {
 void TiXmlAttribute::Print(std::string* str) const {
     if (!str) return;
 
-    str->reserve(str->size() + name.size() + value.size() + 3);
-
     if (value.find('\"') == std::string::npos) {
         TiXmlBase::EncodeString(name, str);
-        (*str) += "=\"";
+        *str += "=\"";
         TiXmlBase::EncodeString(value, str);
-        (*str) += "\"";
+        *str += "\"";
     } else {
         TiXmlBase::EncodeString(name, str);
-        (*str) += "='";
+        *str += "='";
         TiXmlBase::EncodeString(value, str);
-        (*str) += "'";
+        *str += "'";
     }
 }
 
