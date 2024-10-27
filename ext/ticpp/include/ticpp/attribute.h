@@ -20,10 +20,9 @@ class TICPP_API TiXmlAttribute {
 public:
     using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
 
-    TiXmlAttribute(const allocator_type& alloc = {});
-    TiXmlAttribute(TiXmlCursor _location, const allocator_type& alloc = {});
-    TiXmlAttribute(std::string_view _name, std::string_view _value,
-                   const allocator_type& alloc = {});
+    TiXmlAttribute(allocator_type alloc = {});
+    TiXmlAttribute(TiXmlCursor _location, allocator_type alloc = {});
+    TiXmlAttribute(std::string_view _name, std::string_view _value, allocator_type alloc = {});
 
     TiXmlAttribute(const TiXmlAttribute&) = delete;
     TiXmlAttribute& operator=(const TiXmlAttribute& base) = delete;
@@ -81,7 +80,7 @@ class TICPP_API TiXmlAttributeSet {
 public:
     using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
 
-    TiXmlAttributeSet(const allocator_type& alloc = {});
+    TiXmlAttributeSet(allocator_type alloc = {});
     ~TiXmlAttributeSet();
     TiXmlAttributeSet(const TiXmlAttributeSet&) = delete;
     TiXmlAttributeSet& operator=(const TiXmlAttributeSet&) = delete;

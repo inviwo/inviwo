@@ -12,16 +12,13 @@ void TiXmlText::CopyTo(TiXmlText* target) const {
 
 bool TiXmlText::Accept(TiXmlVisitor* visitor) const { return visitor->Visit(*this); }
 
-TiXmlNode* TiXmlText::Clone() const {
-    TiXmlText* clone = new TiXmlText("");
-
-    if (!clone) return nullptr;
-
+TiXmlNode* TiXmlText::Clone(allocator_type alloc) const {
+    TiXmlText* clone = alloc.new_object<TiXmlText>("", false);
     CopyTo(clone);
     return clone;
 }
 
-const char* TiXmlText::Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc) {
+const char* TiXmlText::Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) {
     value = "";
 
     if (data) {

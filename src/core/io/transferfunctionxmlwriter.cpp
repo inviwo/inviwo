@@ -67,7 +67,6 @@ std::string TransferFunctionXMLWriter::toXML(const TransferFunction& tf) {
         doc.InsertEndChild(TxElement("ColorMaps"))->InsertEndChild(colormap);
 
         TiXmlPrinter printer;
-        printer.SetIndent("    ");
         doc.Accept(&printer);
 
         return printer.Str();

@@ -271,7 +271,7 @@ void FileProperty::serialize(Serializer& s) const {
 
     if (this->serializationMode_ == PropertySerializationMode::None) return;
 
-    const std::filesystem::path absolutePath = get();
+    const std::filesystem::path& absolutePath = get();
     std::filesystem::path workspaceRelativePath;
     std::filesystem::path dataRelativePath;
 

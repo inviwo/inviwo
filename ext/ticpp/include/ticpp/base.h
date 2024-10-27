@@ -139,8 +139,7 @@ public:
     int Row() const { return location.row + 1; }
     int Column() const { return location.col + 1; }  ///< See Row()
 
-    virtual const char* Parse(const char* p, TiXmlParsingData* data,
-                              const allocator_type& alloc) = 0;
+    virtual const char* Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) = 0;
 
     /** Expands entities in a string. Note this should not contain the tag's '<', '>', etc,
      * or they will be transformed into entities!
@@ -206,7 +205,8 @@ public:
                                 const char* endTag,      // what ends this text
                                 bool ignoreCase);        // whether to ignore case in the end tag
 
-    static const char* ReadQuotedText(const char* in, std::pmr::string* text, TiXmlParsingData* data);
+    static const char* ReadQuotedText(const char* in, std::pmr::string* text,
+                                      TiXmlParsingData* data);
 
     static const char* ReadNameValue(const char* in, std::pmr::string* name,
                                      std::pmr::string* value, TiXmlParsingData* data);
