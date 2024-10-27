@@ -54,6 +54,33 @@
 
 using namespace inviwo;
 
+int64_t allocCount{0};
+int64_t deallocCount{0};
+int64_t allocSize{0};
+
+#if 1
+void* operator new(size_t count) {
+    ++allocCount;
+    allocSize += count;
+
+    return malloc(count);
+}
+void* operator new[](std::size_t count) {
+    ++allocCount;
+    allocSize += count;
+
+    return malloc(count);
+}
+void operator delete(void* ptr) noexcept {
+    ++deallocCount;
+    free(ptr);
+}
+void operator delete[](void* ptr) noexcept {
+    ++deallocCount;
+    free(ptr);
+}
+#endif
+
 struct Log {
     Log() : logCentral{}, log{std::make_shared<ConsoleLogger>()} {
         LogCentral::init(&logCentral);
@@ -76,7 +103,7 @@ struct App {
             [](ModuleContainer& container) { return container.name().contains("Qt"); });
     }
 
-    virtual ~App() { }
+    virtual ~App() {}
 
     Log log;
     InviwoApplication inviwo;
@@ -86,11 +113,30 @@ static std::unique_ptr<App> app{};
 
 struct Fixture : ::benchmark::Fixture {
     void SetUp(::benchmark::State& state) {
+        testAllocCount = allocCount;
+        testDeallocCount = deallocCount;
+        testAllocSize = allocSize;
+
         if (!app) {
             app = std::make_unique<App>();
         }
     }
-    void TearDown(::benchmark::State& state) {}
+    void TearDown(::benchmark::State& state) {
+        const auto loc = std::locale("en_US.UTF-8");
+        const auto str =
+            fmt::format(loc,
+                        "Test: alloc {:14L}, dealloc {:14L}, diff {:14L}, Size {:14L} "
+                        "Total: alloc {:14L}, dealloc {:14L}, diff {:14L}, Size {:14L}",
+                        allocCount - testAllocCount, deallocCount - testDeallocCount,
+                        (allocCount - testAllocCount) - (deallocCount - testDeallocCount),
+                        (allocSize - testAllocSize), allocCount, deallocCount,
+                        allocCount - deallocCount, allocSize);
+        fmt::println("{}", str);
+    }
+
+    int64_t testAllocCount{0};
+    int64_t testDeallocCount{0};
+    int64_t testAllocSize{0};
 };
 
 BENCHMARK_DEFINE_F(Fixture, Loading)(benchmark::State& st) {
@@ -111,7 +157,7 @@ BENCHMARK_DEFINE_F(Fixture, Saving)(benchmark::State& st) {
     }
 }
 
-BENCHMARK_REGISTER_F(Fixture, Saving)->Unit(benchmark::kMillisecond)->MinTime(10.0);
-//BENCHMARK_REGISTER_F(Fixture, Loading)->Unit(benchmark::kMillisecond)->MinTime(5.0);
+BENCHMARK_REGISTER_F(Fixture, Saving)->Unit(benchmark::kMicrosecond)->MinTime(10.0);
+// BENCHMARK_REGISTER_F(Fixture, Loading)->Unit(benchmark::kMillisecond)->MinTime(5.0);
 
 BENCHMARK_MAIN();
