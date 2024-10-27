@@ -62,7 +62,7 @@ public:
      * @param fileName full path to xml file.
      * @throws SerializationException
      */
-    Serializer(const std::filesystem::path& fileName, const allocator_type& alloc = {});
+    Serializer(const std::filesystem::path& fileName, allocator_type alloc = {});
 
     virtual ~Serializer();
 
@@ -178,7 +178,7 @@ protected:
     static void setAttribute(TiXmlElement* node, std::string_view key, std::string_view val);
 
     // Buffer for doing format conversions
-    std::vector<char> buffer{};
+    std::pmr::vector<char> buffer{};
 };
 
 template <typename T, typename Pred, typename Proj>
@@ -321,7 +321,7 @@ void Serializer::serialize(std::string_view key, const Mat& data) {
 
 template <size_t N>
 void Serializer::serialize(std::string_view key, const std::bitset<N>& bits) {
-    serialize(key, bits.to_string());
+    serialize(key, detail::toStr(bits, buffer));
 }
 
 // serializable classes

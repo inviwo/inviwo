@@ -45,7 +45,7 @@ constexpr bool charconv = false;
 #endif
 }  // namespace config
 
-SerializeBase::SerializeBase(const std::filesystem::path& fileName, const allocator_type& alloc)
+SerializeBase::SerializeBase(const std::filesystem::path& fileName, allocator_type alloc)
     : fileName_{fileName}
     , doc_{std::make_unique<TiXmlDocument>(fileName.string(), alloc)}
     , rootElement_{nullptr}
@@ -60,7 +60,6 @@ const std::filesystem::path& SerializeBase::getFileName() const { return fileNam
 std::string SerializeBase::nodeToString(const TiXmlElement& node) {
     try {
         TiXmlPrinter printer;
-        printer.SetIndent("    ");
         node.Accept(&printer);
         return printer.Str();
     } catch (const TiXmlError& e) {

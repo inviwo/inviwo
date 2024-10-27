@@ -97,7 +97,7 @@ public:
      * \brief Deserialize content from a file
      * @param fileName path to file that is to be deserialized.
      */
-    Deserializer(const std::filesystem::path& fileName, const allocator_type& alloc = {});
+    Deserializer(const std::filesystem::path& fileName, allocator_type alloc = {});
 
     /**
      * \brief Deserialize content from a stream.
@@ -105,7 +105,7 @@ public:
      * @param refPath Used to calculate paths relative to the stream source if any.
      */
     Deserializer(std::istream& stream, const std::filesystem::path& refPath,
-                 const allocator_type& alloc = {});
+                 allocator_type alloc = {});
 
     Deserializer(const Deserializer&) = delete;
     Deserializer(Deserializer&&) = default;

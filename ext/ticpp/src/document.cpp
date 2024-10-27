@@ -41,10 +41,10 @@ FILE* TiXmlFOpen(std::string_view filename, const char* mode) {
 #endif
 }
 
-TiXmlDocument::TiXmlDocument(const allocator_type& alloc)
+TiXmlDocument::TiXmlDocument(allocator_type alloc)
     : TiXmlNode(TiXmlNode::DOCUMENT, "", alloc), allocator{alloc}, tabsize{4} {}
 
-TiXmlDocument::TiXmlDocument(std::string_view documentName, const allocator_type& alloc)
+TiXmlDocument::TiXmlDocument(std::string_view documentName, allocator_type alloc)
     : TiXmlNode(TiXmlNode::DOCUMENT, documentName, alloc), allocator{alloc}, tabsize{4} {}
 
 TiXmlDocument::TiXmlDocument(const TiXmlDocument& copy) : TiXmlNode(TiXmlNode::DOCUMENT) {
@@ -205,10 +205,8 @@ void TiXmlDocument::CopyTo(TiXmlDocument* target) const {
     }
 }
 
-TiXmlNode* TiXmlDocument::Clone() const {
-    TiXmlDocument* clone = new TiXmlDocument();
-    if (!clone) return nullptr;
-
+TiXmlNode* TiXmlDocument::Clone(allocator_type alloc) const {
+    TiXmlDocument* clone = alloc.new_object<TiXmlDocument>();
     CopyTo(clone);
     return clone;
 }
@@ -222,17 +220,13 @@ bool TiXmlDocument::Accept(TiXmlVisitor* visitor) const {
     return visitor->VisitExit(*this);
 }
 
-const char* TiXmlDocument::Parse(const char* p) {
-    return Parse(p, nullptr, allocator);
-}
-
+const char* TiXmlDocument::Parse(const char* p) { return Parse(p, nullptr, allocator); }
 
 const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData) {
     return Parse(p, prevData, allocator);
 }
 
-const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData,
-                                 const allocator_type& alloc) {
+const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData, allocator_type alloc) {
 
     // Parse away, at the document level. Since a document
     // contains nothing but other tags, most of what happens

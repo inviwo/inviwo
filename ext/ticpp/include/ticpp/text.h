@@ -16,7 +16,7 @@ public:
         normal, encoded text. If you want it be output as a CDATA text
         element, set the parameter _cdata to 'true'
     */
-    TiXmlText(std::string_view initValue, bool _cdata = false, const allocator_type& alloc = {})
+    TiXmlText(std::string_view initValue, bool _cdata = false, allocator_type alloc = {})
         : TiXmlNode(TiXmlNode::TEXT, initValue, alloc), cdata{_cdata} {}
 
     virtual ~TiXmlText() {}
@@ -29,20 +29,21 @@ public:
     /// Turns on or off a CDATA representation of text.
     void SetCDATA(bool _cdata) { cdata = _cdata; }
 
-    virtual const char* Parse(const char* p, TiXmlParsingData* data,
-                              const allocator_type& alloc) override;
+    virtual const char* Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) override;
 
     /// Cast to a more defined type. Will return null not of the requested type.
     virtual const TiXmlText* ToText() const override { return this; }
     /// Cast to a more defined type. Will return null not of the requested type.
     virtual TiXmlText* ToText() override { return this; }
 
-    /// Walk the XML tree visiting this node and all of its children.
-    virtual bool Accept(TiXmlVisitor* content) const override;
-
     bool Blank() const;  // returns true if all white space and new lines
 
-    virtual TiXmlNode* Clone() const override;
+    /// Creates a copy of this TiXmlText and returns it.
+    virtual TiXmlNode* Clone(allocator_type alloc) const override;
+    using TiXmlNode::Clone;
+
+    /// Walk the XML tree visiting this node and all of its children.
+    virtual bool Accept(TiXmlVisitor* content) const override;
 
 protected:
     void CopyTo(TiXmlText* target) const;

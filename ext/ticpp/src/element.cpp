@@ -7,7 +7,7 @@
 
 #include <cstring>
 
-TiXmlElement::TiXmlElement(std::string_view _value, const allocator_type& alloc)
+TiXmlElement::TiXmlElement(std::string_view _value, allocator_type alloc)
     : TiXmlNode(TiXmlNode::ELEMENT, _value, alloc), attributeSet{alloc} {}
 
 TiXmlElement::TiXmlElement(const TiXmlElement& copy)
@@ -38,9 +38,7 @@ void TiXmlElement::SetAttribute(std::string_view name, std::string_view _value) 
     attributeSet.Add(name, _value);
 }
 
-void TiXmlElement::RemoveAttribute(std::string_view name) {
-    attributeSet.Remove(name);
-}
+void TiXmlElement::RemoveAttribute(std::string_view name) { attributeSet.Remove(name); }
 
 void TiXmlElement::CopyTo(TiXmlElement* target) const {
     // superclass:
@@ -54,7 +52,7 @@ void TiXmlElement::CopyTo(TiXmlElement* target) const {
     }
 
     for (TiXmlNode* node = firstChild; node; node = node->NextSibling()) {
-        target->LinkEndChild(node->Clone());
+        target->LinkEndChild(node->Clone(target->Allocator()));
     }
 }
 
@@ -67,10 +65,8 @@ bool TiXmlElement::Accept(TiXmlVisitor* visitor) const {
     return visitor->VisitExit(*this);
 }
 
-TiXmlNode* TiXmlElement::Clone() const {
-    TiXmlElement* clone = new TiXmlElement(Value());
-    if (!clone) return nullptr;
-
+TiXmlNode* TiXmlElement::Clone(allocator_type alloc) const {
+    TiXmlElement* clone = alloc.new_object<TiXmlElement>(Value());
     CopyTo(clone);
     return clone;
 }
@@ -84,8 +80,7 @@ std::optional<std::string_view> TiXmlElement::GetText() const {
     return std::nullopt;
 }
 
-const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data,
-                                const allocator_type& alloc) {
+const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) {
     p = SkipWhiteSpace(p);
 
     if (!p || !*p) {
@@ -157,8 +152,7 @@ const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data,
     return p;
 }
 
-const char* TiXmlElement::ReadValue(const char* p, TiXmlParsingData* data,
-                                    const allocator_type& alloc) {
+const char* TiXmlElement::ReadValue(const char* p, TiXmlParsingData* data, allocator_type alloc) {
     // Read in text and elements in any order.
     const char* pWithWhiteSpace = p;
     p = SkipWhiteSpace(p);

@@ -421,7 +421,6 @@ TxElement* xml::createNode(std::string_view desc, TxElement* parent) {
 void xml::logNode(TxElement* node) {
     std::stringstream ss;
     TiXmlPrinter printer;
-    printer.SetIndent("    ");
     node->Accept(&printer);
     ss << printer.Str();
     LogInfoCustom("xml", ss.str());

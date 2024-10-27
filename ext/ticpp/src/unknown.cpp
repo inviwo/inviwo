@@ -7,17 +7,13 @@ void TiXmlUnknown::CopyTo(TiXmlUnknown* target) const { TiXmlNode::CopyTo(target
 
 bool TiXmlUnknown::Accept(TiXmlVisitor* visitor) const { return visitor->Visit(*this); }
 
-TiXmlNode* TiXmlUnknown::Clone() const {
-    TiXmlUnknown* clone = new TiXmlUnknown();
-
-    if (!clone) return 0;
-
+TiXmlNode* TiXmlUnknown::Clone(allocator_type alloc) const {
+    TiXmlUnknown* clone = alloc.new_object<TiXmlUnknown>();
     CopyTo(clone);
     return clone;
 }
 
-const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data,
-                                const allocator_type& alloc) {
+const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) {
     p = SkipWhiteSpace(p);
 
     if (data) {
@@ -36,7 +32,7 @@ const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data,
     }
 
     if (!p) {
-         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_UNKNOWN, nullptr, nullptr);
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_UNKNOWN, nullptr, nullptr);
     }
     if (*p == '>') return p + 1;
     return p;
