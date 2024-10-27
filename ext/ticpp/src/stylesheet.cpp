@@ -3,11 +3,11 @@
 
 #include <fmt/printf.h>
 
-TiXmlStylesheetReference::TiXmlStylesheetReference(const allocator_type& alloc)
+TiXmlStylesheetReference::TiXmlStylesheetReference(allocator_type alloc)
     : TiXmlNode(TiXmlNode::STYLESHEETREFERENCE, "", alloc), type{alloc}, href{alloc} {}
 
 TiXmlStylesheetReference::TiXmlStylesheetReference(std::string_view _type, std::string_view _href,
-                                                   const allocator_type& alloc)
+                                                   allocator_type alloc)
     : TiXmlNode(TiXmlNode::STYLESHEETREFERENCE, "", alloc)
     , type{_type, alloc}
     , href{_href, alloc} {}
@@ -61,17 +61,14 @@ void TiXmlStylesheetReference::CopyTo(TiXmlStylesheetReference* target) const {
 
 bool TiXmlStylesheetReference::Accept(TiXmlVisitor* visitor) const { return visitor->Visit(*this); }
 
-TiXmlNode* TiXmlStylesheetReference::Clone() const {
-    TiXmlStylesheetReference* clone = new TiXmlStylesheetReference();
-
-    if (!clone) return 0;
-
+TiXmlNode* TiXmlStylesheetReference::Clone(allocator_type alloc) const {
+    TiXmlStylesheetReference* clone = alloc.new_object<TiXmlStylesheetReference>();
     CopyTo(clone);
     return clone;
 }
 
 const char* TiXmlStylesheetReference::Parse(const char* p, TiXmlParsingData* data,
-                                            const allocator_type& alloc) {
+                                            allocator_type alloc) {
     p = SkipWhiteSpace(p);
     // Find the beginning, find the end, and look for
     // the stuff in-between.

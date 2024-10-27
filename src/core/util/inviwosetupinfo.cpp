@@ -48,20 +48,22 @@ void InviwoSetupInfo::ModuleSetupInfo::deserialize(Deserializer& d) {
 }
 
 InviwoSetupInfo::InviwoSetupInfo(const InviwoApplication& app, ProcessorNetwork& network) {
-    std::unordered_set<std::string> usedProcessorClassIdentifiers;
+    std::unordered_set<std::string_view> usedProcessorClassIdentifiers;
+    usedProcessorClassIdentifiers.reserve(network.size());
     network.forEachProcessor(
         [&](const Processor* p) { usedProcessorClassIdentifiers.insert(p->getClassIdentifier()); });
 
     for (const auto& inviwoModule : app.getModuleManager().getInviwoModules()) {
-        ModuleSetupInfo info{inviwoModule.getIdentifier(), inviwoModule.getVersion(), {}};
-        for (const auto& processor : inviwoModule.getProcessors()) {
-            const auto& id = processor->getClassIdentifier();
+        std::vector<std::string> processors;
+        for (const auto& processor : inviwoModule.processors()) {
+            const auto& id = processor.getClassIdentifier();
             if (usedProcessorClassIdentifiers.count(id) > 0) {
-                info.processors.push_back(id);
+                processors.push_back(id);
             }
         }
-        if (!info.processors.empty()) {
-            modules_.push_back(std::move(info));
+        if (!processors.empty()) {
+            modules_.emplace_back(inviwoModule.getIdentifier(), inviwoModule.getVersion(),
+                                  std::move(processors));
         }
     }
 }

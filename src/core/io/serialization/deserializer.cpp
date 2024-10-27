@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-Deserializer::Deserializer(const std::filesystem::path& fileName, const allocator_type& alloc)
+Deserializer::Deserializer(const std::filesystem::path& fileName, allocator_type alloc)
     : SerializeBase(fileName, alloc) {
     try {
         doc_->LoadFile();
@@ -55,13 +55,12 @@ Deserializer::Deserializer(const std::filesystem::path& fileName, const allocato
 }
 
 Deserializer::Deserializer(std::istream& stream, const std::filesystem::path& path,
-                           const allocator_type& alloc)
+                           allocator_type alloc)
     : SerializeBase(path, alloc) {
     try {
-
         const std::string data(std::istreambuf_iterator<char>{stream},
                                std::istreambuf_iterator<char>{});
-        doc_->Parse(data.c_str(), nullptr, TiXmlDocument::allocator_type{});
+        doc_->Parse(data.c_str(), nullptr, alloc);
 
         rootElement_ = doc_->FirstChildElement();
 
@@ -130,9 +129,7 @@ void Deserializer::deserialize(std::string_view key, unsigned char& data,
 
 void Deserializer::setExceptionHandler(ExceptionHandler handler) { exceptionHandler_ = handler; }
 
-void Deserializer::convertVersion(VersionConverter* converter) {
-    converter->convert(rootElement_);
-}
+void Deserializer::convertVersion(VersionConverter* converter) { converter->convert(rootElement_); }
 
 void Deserializer::handleError(const ExceptionContext& context) {
     if (exceptionHandler_) {

@@ -7,14 +7,14 @@
 
 #include <fmt/printf.h>
 
-TiXmlAttribute::TiXmlAttribute(const allocator_type& alloc)
+TiXmlAttribute::TiXmlAttribute(allocator_type alloc)
     : name{alloc}, value{alloc}, prev{nullptr}, next{nullptr}, location{} {}
 
-TiXmlAttribute::TiXmlAttribute(TiXmlCursor _location, const allocator_type& alloc)
+TiXmlAttribute::TiXmlAttribute(TiXmlCursor _location, allocator_type alloc)
     : name{alloc}, value{alloc}, prev{nullptr}, next{nullptr}, location{_location} {}
 
 TiXmlAttribute::TiXmlAttribute(std::string_view _name, std::string_view _value,
-                               const allocator_type& alloc)
+                               allocator_type alloc)
     : name{_name, alloc}, value{_value, alloc}, prev{nullptr}, next{nullptr}, location{} {}
 
 TiXmlAttribute::~TiXmlAttribute() = default;
@@ -61,20 +61,21 @@ void TiXmlAttribute::Print(FILE* file) const {
 void TiXmlAttribute::Print(std::string* str) const {
     if (!str) return;
 
+    TiXmlBase::EncodeString(name, str);
+    str->push_back('=');
+
     if (value.find('\"') == std::string::npos) {
-        TiXmlBase::EncodeString(name, str);
-        *str += "=\"";
+        str->push_back('\"');
         TiXmlBase::EncodeString(value, str);
-        *str += "\"";
+        str->push_back('\"');
     } else {
-        TiXmlBase::EncodeString(name, str);
-        *str += "='";
+        str->push_back('\'');
         TiXmlBase::EncodeString(value, str);
-        *str += "'";
+        str->push_back('\'');
     }
 }
 
-TiXmlAttributeSet::TiXmlAttributeSet(const allocator_type& alloc) : sentinel{alloc} {
+TiXmlAttributeSet::TiXmlAttributeSet(allocator_type alloc) : sentinel{alloc} {
     sentinel.next = &sentinel;
     sentinel.prev = &sentinel;
 }

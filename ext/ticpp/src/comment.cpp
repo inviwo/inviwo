@@ -18,16 +18,13 @@ void TiXmlComment::CopyTo(TiXmlComment* target) const { TiXmlNode::CopyTo(target
 
 bool TiXmlComment::Accept(TiXmlVisitor* visitor) const { return visitor->Visit(*this); }
 
-TiXmlNode* TiXmlComment::Clone() const {
-    TiXmlComment* clone = new TiXmlComment();
-
-    if (!clone) return 0;
-
+TiXmlNode* TiXmlComment::Clone(allocator_type alloc) const {
+    TiXmlComment* clone = alloc.new_object<TiXmlComment>();
     CopyTo(clone);
     return clone;
 }
 
-const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc) {
+const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) {
     value = "";
 
     p = SkipWhiteSpace(p);

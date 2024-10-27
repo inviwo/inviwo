@@ -301,7 +301,7 @@ PropertyOwner* PropertyOwner::getOwner() { return nullptr; }
 void PropertyOwner::serialize(Serializer& s) const {
     s.serialize("OwnedPropertyIdentifiers", ownedProperties_, "PropertyIdentifier",
                 util::alwaysTrue{},
-                [](const std::unique_ptr<Property>& p) { return p->getIdentifier(); });
+                [](const std::unique_ptr<Property>& p) -> decltype(auto) { return p->getIdentifier(); });
 
     s.serialize("Properties", properties_, "Property",
                 [](const Property* p) { return p->needsSerialization(); });

@@ -36,6 +36,7 @@
 #include <filesystem>
 
 #include <fmt/format.h>
+#include <fmt/std.h>
 
 class TiXmlElement;
 class TiXmlDocument;
@@ -59,7 +60,7 @@ public:
      *
      * @param fileName full path to xml file (for reading or writing).
      */
-    SerializeBase(const std::filesystem::path& fileName, const allocator_type& alloc = {});
+    SerializeBase(const std::filesystem::path& fileName, allocator_type alloc = {});
 
     SerializeBase(const SerializeBase& rhs) = delete;
     SerializeBase(SerializeBase&& rhs) noexcept;
@@ -125,7 +126,7 @@ IVW_CORE_API void fromStr(std::string_view value, bool& dest);
 IVW_CORE_API void fromStr(std::string_view value, std::string& dest);
 
 template <class T>
-decltype(auto) toStr(const T& value, std::vector<char>& buffer) {
+decltype(auto) toStr(const T& value, std::pmr::vector<char>& buffer) {
     if constexpr (std::is_same_v<std::string, T>) {
         return value;
     } else if constexpr (std::is_same_v<std::string_view, T>) {

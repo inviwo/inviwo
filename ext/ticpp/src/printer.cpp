@@ -10,23 +10,23 @@
 #include <ticpp/stylesheet.h>
 #include <ticpp/unknown.h>
 
-
 bool TiXmlPrinter::VisitEnter(const TiXmlElement& element, const TiXmlAttribute* firstAttribute) {
     DoIndent();
-    buffer += "<";
-    buffer += element.Value();
+    buffer.push_back('<');
+    buffer.append(element.Value());
 
     for (const TiXmlAttribute* attribute = firstAttribute; attribute;
          attribute = attribute->Next()) {
-        buffer += " ";
+        buffer.push_back(' ');
         attribute->Print(&buffer);
     }
 
     if (!element.FirstChild()) {
-        buffer += " />";
+        buffer.push_back('/');
+        buffer.push_back('>');
         DoLineBreak();
     } else {
-        buffer += ">";
+        buffer.push_back('>');
         if (element.FirstChild()->ToText() && element.LastChild() == element.FirstChild() &&
             element.FirstChild()->ToText()->CDATA() == false) {
             simpleTextPrint = true;
@@ -49,9 +49,10 @@ bool TiXmlPrinter::VisitExit(const TiXmlElement& element) {
         } else {
             DoIndent();
         }
-        buffer += "</";
-        buffer += element.Value();
-        buffer += ">";
+        buffer.push_back('<');
+        buffer.push_back('/');
+        buffer.append(element.Value());
+        buffer.push_back('>');
         DoLineBreak();
     }
     return true;
