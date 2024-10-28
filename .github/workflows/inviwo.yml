@@ -320,7 +320,7 @@ jobs:
         -DVCPKG_MANIFEST_FEATURES="sgct"
 
     - name: "Run clang-tidy"
-      uses: cpp-linter/cpp-linter-action@v2.13.2
+      uses: cpp-linter/cpp-linter-action@v2.13.3
       id: linter
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
