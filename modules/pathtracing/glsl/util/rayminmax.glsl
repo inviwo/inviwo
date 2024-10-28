@@ -45,9 +45,8 @@ vec2 rayMinMax(vec3 pos, vec3 dir, float t0, float t1, sampler3D opacity,
 }
 
 vec3 rayMinMaxAvg(vec3 pos, vec3 dir, float t0, float t1, sampler3D opacity,
-                  VolumeParameters opacityParameters, VolumeParameters volumeParameters) {
-
-    vec3 cellDim = volumeParameters.dimensions * opacityParameters.reciprocalDimensions;
+                  VolumeParameters opacityParameters, VolumeParameters volumeParameters,
+                  vec3 cellDim) {
 
     if (t1 <= t0) {
         return vec3(0.f);
