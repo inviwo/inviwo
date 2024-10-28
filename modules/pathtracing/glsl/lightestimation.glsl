@@ -3,20 +3,18 @@
 #include "util/rayboxintersection.glsl"
 
 vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam, sampler2D tf,
-                                    sampler3D opacity, VolumeParameters opacityParam,
+                                    sampler3D opacity, VolumeParameters opacityParam, vec3 cellDim,
                                     vec3 samplePos, vec3 cameraDir, LightParameters light,
                                     uint hashSeed, int rcChannel, int TRANSMITTANCEMETHOD) {
 
     vec3 lightTexPos = (volParam.worldToTexture * vec4(light.position, 1f)).xyz;
 
-    vec3 toLightPath2 = lightTexPos - samplePos;
+    vec3 toLightPath = lightTexPos - samplePos;
 
-    vec3 toLightDir = normalize(toLightPath2);
     float t0 = 0.0f;
-    float t1 = length(toLightPath2);
+    float t1 = length(toLightPath);
+    vec3 toLightDir = normalize(toLightPath);
 
-    float t0_prev = 0;
-    float t1_prev = t1;
 
     if (!rayBoxIntersection(vec3(0.0f), vec3(1.0f), samplePos, toLightDir, t0, t1)) {
         return vec3(0);
@@ -26,7 +24,8 @@ vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam,
 
     vec3 auxReturn = vec3(0);
     Tl = partitionedTransmittanceTracking(TRANSMITTANCEMETHOD, samplePos, toLightDir, t0, t1,
-                                         hashSeed, volume, volParam, tf, opacity, opacityParam,
+                                         hashSeed, volume, volParam, tf,
+                                         opacity, opacityParam, cellDim,
                                          auxReturn);
 
     if (Tl == 0.0f) {
