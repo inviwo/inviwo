@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/datastructures/image/layer.h>
+#include<inviwo/core/util/formats.h>
 
 namespace inviwo {
 
@@ -65,7 +66,7 @@ void LayerSource::dataLoaded(std::shared_ptr<Layer> data) {
     dimensions_.set(data->getDimensions());
     basis_.updateForNewEntity(*data, false);
     basis_.updateEntity(*data);
-
+    
     information_.updateForNewLayer(*data, util::OverwriteState::No);
     information_.updateLayer(*data);
 }
@@ -73,7 +74,10 @@ void LayerSource::dataDeserialized(std::shared_ptr<Layer> data) {
     dimensions_.set(data->getDimensions());
     basis_.updateForNewEntity(*data, true);
     basis_.updateEntity(*data);
+    
 
+    
+    
     information_.updateForNewLayer(*data, util::OverwriteState::Yes);
     information_.updateLayer(*data);
 }

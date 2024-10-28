@@ -147,23 +147,39 @@ std::unique_ptr<Volume> makeMarchingCubeVolume(const size_t& index) {
 }
 
 template <typename T = float>
-std::unique_ptr<Volume> makeGaussianVolume(const size3_t& size,const float& sigma) {
-    return generateVolume(size, mat3(1.0), [&](const size3_t& ind) {
-        dvec3 a{0.1, 0.4, 0.4};
-        dvec3 b{0.5, 0.5, 0.5};
-        dvec3 c{0.8, 0.3, 0.1};
-        std::array<dvec3, 3> points{dvec3(b), dvec3(a), dvec3(c)};
+std::unique_ptr<Volume> makeGaussianVolume(size3_t const& size, float const &sigma_,
+                                           std::vector<dvec4> const& points) {
+    return generateVolume(size, mat3(1.0), [&](size3_t const& ind) {
+        
         dvec3 x = dvec3(ind);
-        
+        double normFactor{1.0 / size.x};
         x = x/dvec3(size);
+        float s{sigma_};
+        /* double density{std::accumulate(
+            std::begin(points), std::end(points), 0.0,
+            [&sigma,&x](double sum, dvec4 const& point) {
+                sigma *= point.w;
+                double A{1.0 / (sigma * sqrt(2 * M_PI))};
+                double B{0.5 / (sigma * sigma)};
 
-        double sum{0.0};
-        //double sigma{0.1};
+                return sum + A * exp(-B * glm::length2(dvec3{point.x, point.y, point.z} - x));
+
+            })};*/
+
+
+        double density{0.0};
         
-        for (auto &p : points) { 
-            sum += 1 / (sigma * sqrt(2 * M_PI)) * exp(-0.5 * glm::length2(p - x)/(sigma*sigma));
+        for (auto& p : points) {
+            
+            dvec3 point{p.x, p.y, p.z};
+            s = p.w*sigma_;
+            double r2{glm::length2(point - x)};
+            double A{1.0 / (s * sqrt(2 * M_PI))};
+            double B{0.5 * r2 / (s * s)};
+
+            density += A * exp(-B * r2);
         }
-        return glm_convert_normalized<T>(sum);
+        return glm_convert_normalized<T>(density);
     });
 }
 

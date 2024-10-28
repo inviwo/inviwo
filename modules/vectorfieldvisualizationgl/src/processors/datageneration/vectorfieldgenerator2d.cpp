@@ -94,6 +94,7 @@ void VectorFieldGenerator2D::initializeResources() {
 
 void VectorFieldGenerator2D::process() {
     bool reattach = false;
+    
     const LayerConfig newConfig{.dimensions = size_.get(),
                                 .format = DataVec2Float32::get(),
                                 .swizzleMask = swizzlemasks::defaultData(0)};

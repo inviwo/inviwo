@@ -96,6 +96,7 @@ GaussianVolumeRaycaster::GaussianVolumeRaycaster()
     : PoolProcessor()
     , shader_("gaussianraycasting.frag", Shader::Build::No)
     , volumePort_("volume")
+    , layerPort_("layerPort")
     , entryPort_("entry")
     , exitPort_("exit")
     , backgroundPort_("bg")
@@ -110,9 +111,11 @@ GaussianVolumeRaycaster::GaussianVolumeRaycaster()
     , toggleShading_(
           "toggleShading", "Toggle Shading", [this](Event* e) { toggleShading(e); }, IvwKey::L) {
 
+  
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(volumePort_, "VolumePortGroup");
+    addPort(layerPort_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
@@ -160,7 +163,7 @@ GaussianVolumeRaycaster::GaussianVolumeRaycaster()
             }
         }
     });
-
+    
     addProperty(channel_);
     addProperty(sigma_);
     addProperty(raycasting_);
@@ -207,9 +210,11 @@ void GaussianVolumeRaycaster::raycast(const Volume& volume) {
 
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, volume, "volume");
+    utilgl::bindAndSetUniforms(shader_, units, layerPort_);
     utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
+    
     if (backgroundPort_.hasData()) {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
     }

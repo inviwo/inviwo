@@ -48,13 +48,15 @@
 #include <modules/base/properties/basisproperty.h>              // for BasisProperty
 #include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
                                      
-
+#include <random>
 #include <array>    // for array
 #include <cstddef>  // for size_t
 
 #include <glm/common.hpp>              // for max, min
 #include <glm/gtx/component_wise.hpp>  // for compMax, compMin
 #include <glm/gtx/hash.hpp>            // for hash<>::operator()
+
+
 
 namespace inviwo {
 class Deserializer;
@@ -71,6 +73,7 @@ const ProcessorInfo GaussianVolumeCreator::getProcessorInfo() const { return pro
 
 GaussianVolumeCreator::GaussianVolumeCreator()
     : Processor()
+    , points_{"points", "Imported points"_help}
     , outport_("volume")
     , type_{"type",
             "Type",
@@ -92,10 +95,12 @@ GaussianVolumeCreator::GaussianVolumeCreator()
     , index_("index", "Index", 5, 0, 255)
     , information_("Information", "Data information")
     , basis_("Basis", "Basis and offset")
-    , sigma_{"sigma", "Sigma", 0.1,0.0,1.0} {
-
+    , sigma_{"sigma", "Sigma", 0.1,0.0,1.0}
+    , nPoints_{"nPoints","Points","Number of points"_help,size_t(256),{size_t(1), ConstraintBehavior::Editable},{size_t(1096), ConstraintBehavior::Editable}}
+    , radii_{"radii", "Radii", 1,0.0,100.0} {
+    addPort(points_);
     addPort(outport_);
-    addProperties(type_, format_, dimensions_, index_, information_, basis_,sigma_);
+    addProperties(type_, format_, dimensions_, index_, information_, basis_,sigma_,nPoints_,radii_);
 
     information_.setChecked(true);
     information_.setCurrentStateAsDefault();
@@ -103,7 +108,7 @@ GaussianVolumeCreator::GaussianVolumeCreator()
 
 void GaussianVolumeCreator::process() {
     
-    if (util::any_of(util::ref<Property>(format_, type_, dimensions_, index_,sigma_),
+    if (util::any_of(util::ref<Property>(format_, type_, dimensions_, index_,sigma_,nPoints_,radii_),
                      &Property::isModified)) {
         loadedData_ =
             dispatching::singleDispatch<std::shared_ptr<Volume>, dispatching::filter::All>(
@@ -121,10 +126,13 @@ void GaussianVolumeCreator::process() {
                         case GaussianVolumeCreator::Type::MarchingCube:
                             return std::shared_ptr<Volume>(
                                 util::makeMarchingCubeVolume<T>(index_.get()));
-                        case GaussianVolumeCreator::Type::Gaussian:
+                        case GaussianVolumeCreator::Type::Gaussian: {
                             
-                            return std::shared_ptr<Volume>(
-                                util::makeGaussianVolume<T>(dimensions_.get(),sigma_.get()));
+                            return std::shared_ptr<Volume>(util::makeGaussianVolume<T>(
+                                dimensions_.get(), sigma_.get(), *points_.getData()));
+
+                        }
+                            
 
                         default:
                             return std::shared_ptr<Volume>{};

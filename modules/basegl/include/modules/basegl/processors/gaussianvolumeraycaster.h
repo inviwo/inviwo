@@ -32,6 +32,7 @@
 #include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
 #include <inviwo/core/ports/imageport.h>                     // for ImageInport, ImageOutport
+#include <inviwo/core/ports/layerport.h>
 #include <inviwo/core/ports/volumeport.h>                    // for VolumeInport
 #include <inviwo/core/processors/poolprocessor.h>            // for PoolProcessor
 #include <inviwo/core/processors/processorinfo.h>            // for ProcessorInfo
@@ -98,6 +99,7 @@ protected:
 
     Shader shader_;
     VolumeInport volumePort_;
+    LayerInport layerPort_;
     ImageInport entryPort_;
     ImageInport exitPort_;
     ImageInport backgroundPort_;
