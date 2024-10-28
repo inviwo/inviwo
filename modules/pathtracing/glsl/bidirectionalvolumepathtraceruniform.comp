@@ -86,13 +86,13 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
     vec3 samplePosition = entryPoint;
 
     float T = 0.0f;
-    vec3 minMax = vec3(0.f, 1.0f, 0.0f);
+    vec2 minMax = vec2(0.f, 1.0f);
 
     vec3 errorReturn = vec3(0);
 
     minMax =
-        rayMinMaxAvgTest(samplePosition, rayDir, t0, t1, minMaxOpacity, minMaxOpacityParameters,
-                         cellDim, volume, volumeParameters, transferFunction, errorReturn);
+        rayMinMax(samplePosition, rayDir, t0, t1, minMaxOpacity, minMaxOpacityParameters,
+                         cellDim, volume, volumeParameters, transferFunction);
     // Avoid case where control extinction == upper bound (causing division by zero)
     minMax.y += 1e-6;
 
