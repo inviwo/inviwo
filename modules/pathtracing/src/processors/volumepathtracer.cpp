@@ -170,13 +170,16 @@ VolumePathTracer::VolumePathTracer()
         }
     });
 
-        
+    shader_.getComputeShaderObject()->addShaderExtension(
+        "GL_NV_compute_shader_derivatives", ShaderObject::ExtensionBehavior::Enable);
+    shaderUniform_.getComputeShaderObject()->addShaderExtension(
+        "GL_NV_compute_shader_derivatives", ShaderObject::ExtensionBehavior::Enable);
     shader_.onReload([this]() {
-        invalidate(InvalidationLevel::InvalidOutput);
+        invalidate(InvalidationLevel::InvalidResources);
         invalidateProgressiveRendering();
     });
     shaderUniform_.onReload([this]() {
-        invalidate(InvalidationLevel::InvalidOutput);
+        invalidate(InvalidationLevel::InvalidResources);
         invalidateProgressiveRendering();
     });
 
@@ -212,8 +215,6 @@ void VolumePathTracer::initializeResources() {
     utilgl::addShaderDefines(*activeShader_, raycasting_);
     utilgl::addShaderDefines(*activeShader_, camera_);
     utilgl::addShaderDefines(*activeShader_, light_);
-    activeShader_->getComputeShaderObject()->addShaderExtension("GL_NV_compute_shader_derivatives",
-                                                         ShaderObject::ExtensionBehavior::Enable);
     activeShader_->build();
 }
 
