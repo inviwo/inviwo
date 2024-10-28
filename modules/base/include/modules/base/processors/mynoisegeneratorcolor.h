@@ -50,8 +50,6 @@ namespace inviwo {
  * \brief A processor to generate a noise image
  */
 class IVW_MODULE_BASE_API MyNoiseGeneratorColor : public Processor {
-    enum class NoiseType { Random, Perlin, PoissonDisk, HaltonSequence };
-
 public:
     MyNoiseGeneratorColor();
 
@@ -61,33 +59,16 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    LayerOutport noise_;
-    ImageOutport colornoise_;
+    DataOutport<std::vector<dvec4>> points_;
+    LayerOutport pointsLayer_;
 
-
-    IntSize2Property size_;           ///< Size of the output image.
-    OptionProperty<NoiseType> type_;  ///< Witch type of noise to generate.
-    FloatMinMaxProperty range_;       ///< The min/max values of the output values (default: [0 1]).
-    IntMinMaxProperty levels_;   ///< Numbers of levels used in the generation of the Perlin noise
-    FloatProperty persistence_;  ///< Controls the sharpens in Perlin noise
-
-    IntProperty poissonDotsAlongX_;  ///< Average number of points along the x-axis.
-    IntProperty poissonMaxPoints_;   ///< Maximum number of output points (total).
-
-    IntSizeTProperty haltonNumPoints_;
-    IntSizeTProperty haltonXBase_;
-    IntSizeTProperty haltonYBase_;
-
-    CompositeProperty randomness_;
-    BoolProperty useSameSeed_;  ///< Use the same seed for each call to process.
-    IntProperty seed_;          ///<  The seed used to initialize the random sequence
-
-    LayerInformationProperty information_;
-    BasisProperty basis_;
+    
+    
+    IntSizeTProperty size_;           ///< Size of the output image.
+    FloatProperty radii_;
+    IntSizeTProperty seed_; 
 
 private:
-    std::random_device rd_;
-    std::mt19937 mt_;
 };
 
 }  // namespace inviwo

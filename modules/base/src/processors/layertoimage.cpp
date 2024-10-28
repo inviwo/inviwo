@@ -54,6 +54,7 @@ LayerToImage::LayerToImage()
 }
 
 void LayerToImage::process() {
+    
     outport_.setData(std::make_shared<Image>(std::shared_ptr<Layer>(inport_.getData()->clone())));
 }
 

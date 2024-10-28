@@ -42,6 +42,7 @@
 #include <inviwo/core/util/staticstring.h>                      // for operator+
 #include <modules/base/properties/basisproperty.h>              // for BasisProperty
 #include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
+#include <inviwo/core/ports/layerport.h>                        // for LayerInport
 
 #include <functional>   // for __base
 #include <memory>       // for shared_ptr
@@ -87,12 +88,15 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
+    DataInport<std::vector<dvec4>> points_;
     VolumeOutport outport_;
     OptionProperty<Type> type_;
     OptionProperty<DataFormatId> format_;
     IntSize3Property dimensions_;
     IntProperty index_;
     FloatProperty sigma_;
+    IntProperty nPoints_;
+    FloatProperty radii_;
     
     VolumeInformationProperty information_;
     BasisProperty basis_;

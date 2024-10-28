@@ -42,7 +42,7 @@
 
 uniform VolumeParameters volumeParameters;
 uniform sampler3D volume;
-
+uniform sampler2D layerPort;
 uniform sampler2D transferFunction;
 
 uniform ImageParameters entryParameters;
@@ -81,7 +81,53 @@ uniform float sigma;
 #  define INCLUDE_DVR
 #endif
 
+vec4 centerPoints[500];
+int count;
 
+int load() {
+    ivec2 texCoords = textureSize(layerPort, 0);
+
+    int c = 0;
+    for(int i = 0; i < texCoords.x; ++i) {
+        for(int j = 0; j < texCoords.y; ++j) {
+            vec2 cord = vec2((float(i) + 0.5)/texCoords.x , (float(j) + 0.5)/texCoords.y);
+            vec4 point = texture(layerPort, cord);
+            centerPoints[c] = point;
+            ++c;
+        }
+    }
+
+    return c;
+}
+
+
+vec4 sumFunction(float sigma, vec3 samplePos, float tIncr, int count){
+    vec4 result = vec4(0.0);
+    float sum = 0;
+    for(int i = 0; i < count; ++i) {
+        
+        float s = sigma*centerPoints[i].w;
+        vec3 dr = centerPoints[i].xyz - samplePos;
+        float r2 = dr.x * dr.x + dr.y * dr.y + dr.z * dr.z;
+        float A = 1.0 / (s*sqrt(2*M_PI));
+        float B = 0.5*r2/(s*s);
+
+        float v = A*exp(-B*r2);
+        vec3 grad = -2*B*dr*v;
+        
+
+        result += vec4(grad, v);
+        
+        /*float s = centerPoints[i].w;
+        vec3 dp = (centerPoints[i].xyz - samplePos);
+        float r2 = (dp.x*dp.x + dp.y*dp.y + dp.z*dp.z);
+        sum += 1.0/(s*sqrt(2*M_PI))*exp(-0.5*r2/(s*s))*tIncr*100*/;
+
+
+    }
+    
+    return result;
+}
 
 vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgroundDepth, vec3 entryNormal) {
     vec4 result = vec4(0.0);
@@ -91,6 +137,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
         tEnd, tEnd / (raycaster.samplingRate * length(rayDirection * volumeParameters.dimensions)));
     float samples = ceil(tEnd / tIncr);
     tIncr = tEnd / samples;
+    //tIncr = 0.1;
     float t = 0.5f * tIncr;
     rayDirection = normalize(rayDirection);
     float tDepth = -1.0;
@@ -117,43 +164,34 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
 #endif // BACKGROUND_AVAILABLE
     
     bool first = true;
-
-    vec3 a = vec3(0.1, 0.4, 0.4);
-    vec3 b = vec3(0.5, 0.5, 0.5);
-    vec3 c = vec3(0.8, 0.3, 0.1);
     
-    const vec3 points[3] = vec3[3](a,b,c);
-    float sum = 0;
+    
+    
+    
     while (t < tEnd) {
-
+    
         samplePos = entryPoint + t * rayDirection;       
-        
-        for(int i = 0;i < points.length();++i)
-        {
-            vec3 dx = points[i]-samplePos;
-            float dx2 = length(dx)*length(dx);
-            sum += 1 / (sigma*sqrt(2*M_PI))*exp(-0.5*dx2/(sigma*sigma))*tIncr;
-        }
-        
-
-        // check for isosurfaces
-
 
 #if defined(BACKGROUND_AVAILABLE)
         result = DRAW_BACKGROUND(result, t, tIncr, backgroundColor, bgTDepth, tDepth);
 #endif // BACKGROUND_AVAILABLE
-
-
-
-#if defined(INCLUDE_DVR)
-
-        color = applyTF(transferFunction, sum);
         
+        vec4 res = sumFunction(sigma, samplePos, tIncr, count);
+        //sum = res.w;
+
+        vec3 gradient = normalize(res.xyz);
+
+        color = applyTF(transferFunction, res.w);
+
+        ShadingParameters shadingParams = shading(color.rgb, gradient, 
+                                    (volumeParameters.textureToWorld * vec4(samplePos, 1.0)).xyz);
+        color.rgb = applyLighting(lighting, shadingParams, toCameraDir);   
+
         if (color.a > 0) {
             result = compositeDVR(result, color, t, tDepth, tIncr);
             
         }
-#endif // INCLUDE_DVR
+
 
         // early ray termination
         if (result.a > ERT_THRESHOLD) {
@@ -191,6 +229,8 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
 }
 
 void main() {
+    count = load();
+    
     vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
     vec3 entryPoint = texture(entryColor, texCoords).rgb;
     vec3 exitPoint = texture(exitColor, texCoords).rgb;

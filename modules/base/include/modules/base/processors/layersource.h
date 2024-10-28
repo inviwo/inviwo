@@ -38,7 +38,7 @@
 #include <modules/base/processors/datasource.h>
 #include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/layerinformationproperty.h>
-
+#include<inviwo/core/util/formats.h>
 #include <filesystem>
 
 namespace inviwo {
