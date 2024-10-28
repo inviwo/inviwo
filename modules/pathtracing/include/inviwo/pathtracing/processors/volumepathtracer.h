@@ -132,9 +132,6 @@ private:
 
     bool partitionedTransmittance_;
     Shader* activeShader_;
-
-    // Render to this image, and copy results to outport
-    Image renderResult_;
 };
 
 }  // namespace inviwo

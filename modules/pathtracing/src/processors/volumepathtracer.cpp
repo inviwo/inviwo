@@ -104,8 +104,7 @@ VolumePathTracer::VolumePathTracer()
     , enableProgressiveRefinement_("enableRefinement", "Enable progressive refinement", false)
     , invalidateRender_("invalidate", "Invalidate render", [this]() { invalidateProgressiveRendering(); }) 
     , volumeRegionSize_("region", "Region size", 8, 1, 100)
-    , progressiveTimer_(Timer::Milliseconds(0), std::bind(&VolumePathTracer::onTimerEvent, this))
-    , renderResult_(size2_t(512, 512), DataVec4UInt8::get()) {
+    , progressiveTimer_(Timer::Milliseconds(0), std::bind(&VolumePathTracer::onTimerEvent, this)) {
 
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
