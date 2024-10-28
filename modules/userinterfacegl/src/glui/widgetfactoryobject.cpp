@@ -33,11 +33,11 @@ namespace inviwo {
 
 namespace glui {
 
-WidgetFactoryObject::WidgetFactoryObject(const std::string& className) : className_(className) {}
+WidgetFactoryObject::WidgetFactoryObject(std::string_view className) : className_(className) {}
 
 WidgetFactoryObject::~WidgetFactoryObject() = default;
 
-std::string WidgetFactoryObject::getClassIdentifier() const { return className_; }
+std::string_view WidgetFactoryObject::getClassIdentifier() const { return className_; }
 
 }  // namespace glui
 

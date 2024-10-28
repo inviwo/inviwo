@@ -69,7 +69,7 @@ public:
     };
     enum class BasisPropertyReference { Volume, Voxel };
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     BasisProperty(std::string_view identifier, std::string_view displayName,

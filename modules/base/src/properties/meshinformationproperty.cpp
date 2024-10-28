@@ -82,7 +82,7 @@ std::array<FloatMat4Property, 6> transformProps() {
 }  // namespace
 
 const std::string MeshInformationProperty::classIdentifier = "org.inviwo.MeshInformationProperty";
-std::string MeshInformationProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view MeshInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
 MeshInformationProperty::MeshInformationProperty(std::string_view identifier,
                                                  std::string_view displayName,

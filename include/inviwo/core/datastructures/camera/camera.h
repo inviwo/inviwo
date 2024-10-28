@@ -85,7 +85,7 @@ public:
     Camera(Camera&& other) noexcept = default;
     Camera& operator=(Camera&& other) noexcept = default;
     virtual Camera* clone() const = 0;
-    virtual std::string getClassIdentifier() const = 0;
+    virtual std::string_view getClassIdentifier() const = 0;
 
     virtual void updateFrom(const Camera& source);
     virtual void configureProperties(CameraProperty& cameraProperty, bool attach);

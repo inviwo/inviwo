@@ -50,7 +50,7 @@ class Renderer;
 
 const std::string DoubleMinMaxPropertyWidget::classIdentifier =
     "org.inviwo.glui.DoubleMinMaxPropertyWidget";
-std::string DoubleMinMaxPropertyWidget::getClassIdentifier() const { return classIdentifier; }
+std::string_view DoubleMinMaxPropertyWidget::getClassIdentifier() const { return classIdentifier; }
 
 DoubleMinMaxPropertyWidget::DoubleMinMaxPropertyWidget(DoubleMinMaxProperty& property,
                                                        Processor& processor, Renderer& uiRenderer,

@@ -42,7 +42,7 @@
 namespace inviwo {
 
 const std::string ListProperty::classIdentifier = "org.inviwo.ListProperty";
-std::string ListProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view ListProperty::getClassIdentifier() const { return classIdentifier; }
 
 ListProperty::ListProperty(std::string_view identifier, std::string_view displayName, Document help,
                            std::vector<std::unique_ptr<Property>> prefabs,
@@ -87,7 +87,7 @@ ListProperty::ListProperty(const ListProperty& rhs)
 
 ListProperty* ListProperty::clone() const { return new ListProperty(*this); }
 
-std::string ListProperty::getClassIdentifierForWidget() const {
+std::string_view ListProperty::getClassIdentifierForWidget() const {
     return ListProperty::classIdentifier;
 }
 
@@ -214,9 +214,8 @@ void ListProperty::insertProperty(size_t index, Property* property, bool owner) 
                            [&, id = property->getClassIdentifier()](auto& elem) {
                                return elem->getClassIdentifier() == id;
                            })) {
-        throw Exception("Unsupported property type, no prefab matching `" +
-                            property->getClassIdentifier() + "`.",
-                        IVW_CONTEXT);
+        throw Exception(IVW_CONTEXT, "Unsupported property type, no prefab matching `{}`.",
+                        property->getClassIdentifier());
     }
 
     if ((maxNumElements_ == size_t{0}) || (size() + 1 < maxNumElements_)) {
@@ -310,7 +309,7 @@ void ListProperty::deserialize(Deserializer& d) {
 std::set<std::string> ListProperty::getPrefabIDs() const {
     std::set<std::string> ids;
     for (const auto& elem : prefabs_.value.properties) {
-        ids.insert(elem->getClassIdentifier());
+        ids.emplace(elem->getClassIdentifier());
     }
 
     return ids;

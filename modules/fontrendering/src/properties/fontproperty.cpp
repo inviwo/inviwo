@@ -40,7 +40,7 @@
 namespace inviwo {
 
 const std::string FontProperty::classIdentifier = "org.inviwo.FontProperty";
-std::string FontProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view FontProperty::getClassIdentifier() const { return classIdentifier; }
 
 FontProperty::FontProperty(std::string_view identifier, std::string_view displayName,
                            std::string_view fontFaceName, int size, float lineSpacing,

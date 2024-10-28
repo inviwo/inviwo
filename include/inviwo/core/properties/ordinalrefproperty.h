@@ -194,7 +194,7 @@ public:
      */
     void set(component_type val, size_t i, size_t j);
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
 
     const T& getMinValue() const;
     void setMinValue(const T& value);
@@ -345,7 +345,7 @@ using IntSize4RefProperty = OrdinalRefProperty<size4_t>;
 
 template <typename T>
 struct PropertyTraits<OrdinalRefProperty<T>> {
-    static const std::string& classIdentifier() {
+    static std::string_view classIdentifier() {
         static const std::string identifier =
             "org.inviwo." + Defaultvalues<T>::getName() + "RefProperty";
         return identifier;
@@ -459,7 +459,7 @@ template <typename T>
 OrdinalRefProperty<T>::~OrdinalRefProperty() = default;
 
 template <typename T>
-std::string OrdinalRefProperty<T>::getClassIdentifier() const {
+std::string_view OrdinalRefProperty<T>::getClassIdentifier() const {
     return PropertyTraits<OrdinalRefProperty<T>>::classIdentifier();
 }
 

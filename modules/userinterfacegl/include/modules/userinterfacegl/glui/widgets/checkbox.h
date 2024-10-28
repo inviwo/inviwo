@@ -51,7 +51,7 @@ class Renderer;
  */
 class IVW_MODULE_USERINTERFACEGL_API CheckBox : public Element {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     CheckBox(const std::string& label, Processor& processor, Renderer& uiRenderer,

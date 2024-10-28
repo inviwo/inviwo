@@ -31,7 +31,7 @@
 namespace inviwo {
 
 const std::string PlaneProperty::classIdentifier = "org.inviwo.PlaneProperty";
-std::string PlaneProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view PlaneProperty::getClassIdentifier() const { return classIdentifier; }
 
 PlaneProperty::PlaneProperty(std::string_view identifier, std::string_view displayName,
                              vec3 position, vec3 normal, vec4 color,

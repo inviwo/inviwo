@@ -52,7 +52,7 @@ class Renderer;
  */
 class IVW_MODULE_USERINTERFACEGL_API Slider : public Element {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     Slider(const std::string& label, int value, int minValue, int maxValue, Processor& processor,

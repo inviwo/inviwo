@@ -52,7 +52,7 @@ class Column;
  */
 class IVW_MODULE_DATAFRAME_API ColumnMetaDataProperty : public BoolCompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     ColumnMetaDataProperty(

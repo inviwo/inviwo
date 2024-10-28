@@ -49,7 +49,7 @@ class Shader;
 class IVW_MODULE_BASEGL_API StipplingProperty : public CompositeProperty,
                                                 public StipplingSettingsInterface {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     StipplingProperty(std::string_view identifier, std::string_view displayName,

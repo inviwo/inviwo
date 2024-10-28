@@ -98,7 +98,7 @@ public:
     using iterator = std::vector<Property*>::iterator;
     using const_iterator = std::vector<std::unique_ptr<Property>>::const_iterator;
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     ListProperty(std::string_view identifier, std::string_view displayName, Document help = {},
@@ -131,7 +131,7 @@ public:
     virtual ListProperty* clone() const override;
     virtual ~ListProperty() = default;
 
-    virtual std::string getClassIdentifierForWidget() const override;
+    virtual std::string_view getClassIdentifierForWidget() const override;
 
     virtual void set(const Property* src) override;
     void set(const ListProperty* src);

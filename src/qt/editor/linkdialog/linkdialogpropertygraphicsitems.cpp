@@ -74,7 +74,7 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogTreeIte
     auto offset = classIdentifier->boundingRect().height();
     classIdentifier->setPos(rect().bottomLeft() +
                             QPointF(linkdialog::offset, -linkdialog::offset - offset));
-    std::string className = item_->getClassIdentifier();
+    std::string className{item_->getClassIdentifier()};
     className = removeSubString(className, "Property");
     classIdentifier->setText(QString::fromStdString(className));
 

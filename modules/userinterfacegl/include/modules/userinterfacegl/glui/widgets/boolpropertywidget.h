@@ -54,7 +54,7 @@ class IVW_MODULE_USERINTERFACEGL_API BoolPropertyWidget : public CheckBox,
                                                           public PropertyWidget,
                                                           public PropertyObserver {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     BoolPropertyWidget(BoolProperty& property, Processor& processor, Renderer& uiRenderer,

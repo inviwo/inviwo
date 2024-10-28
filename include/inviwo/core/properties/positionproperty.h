@@ -51,7 +51,7 @@ namespace inviwo {
  */
 class IVW_CORE_API PositionProperty : public CompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     enum class CoordinateOffset { None, CameraLookAt, Custom };

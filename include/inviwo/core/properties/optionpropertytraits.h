@@ -36,7 +36,7 @@ namespace inviwo {
 
 template <typename T>
 struct OptionPropertyTraits {
-    static const std::string& classIdentifier() {
+    static std::string_view classIdentifier() {
         if constexpr (std::is_enum_v<T>) {
             static const std::string identifier = "org.inviwo.OptionProperty" + util::enumName<T>();
             return identifier;

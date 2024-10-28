@@ -62,8 +62,8 @@ public:
 
     virtual std::string getName() const override;
 
-    static std::string classIdentifier();
-    virtual std::string getClassIdentifier() const override;
+    static std::string_view classIdentifier();
+    virtual std::string_view getClassIdentifier() const override;
 
     virtual bool equal(const Interpolation& other) const override;
 

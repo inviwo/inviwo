@@ -51,7 +51,7 @@ PerspectiveCamera& PerspectiveCamera::operator=(const PerspectiveCamera& other) 
 
 PerspectiveCamera* PerspectiveCamera::clone() const { return new PerspectiveCamera(*this); }
 
-std::string PerspectiveCamera::getClassIdentifier() const { return classIdentifier; }
+std::string_view PerspectiveCamera::getClassIdentifier() const { return classIdentifier; }
 
 const std::string PerspectiveCamera::classIdentifier = "PerspectiveCamera";
 

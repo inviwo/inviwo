@@ -64,13 +64,15 @@ CameraSphericalInterpolation* CameraSphericalInterpolation::clone() const {
 
 std::string CameraSphericalInterpolation::getName() const { return "Orbit/Pan/Tilt"; }
 
-std::string CameraSphericalInterpolation::getClassIdentifier() const { return classIdentifier(); }
+std::string_view CameraSphericalInterpolation::getClassIdentifier() const {
+    return classIdentifier();
+}
 
 bool CameraSphericalInterpolation::equal(const Interpolation& other) const {
     return classIdentifier() == other.getClassIdentifier();
 }
 
-std::string CameraSphericalInterpolation::classIdentifier() {
+std::string_view CameraSphericalInterpolation::classIdentifier() {
     return "org.inviwo.animation.camerasphericalinterpolation";
 }
 

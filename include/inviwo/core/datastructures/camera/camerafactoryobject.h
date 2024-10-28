@@ -51,7 +51,7 @@ public:
                                    float aspectRatio = cameradefaults::aspectRatio) const {
         return createImpl(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio);
     }
-    std::string getClassIdentifier() const;
+    std::string_view getClassIdentifier() const;
 
 protected:
     virtual std::unique_ptr<Camera> createImpl(vec3 lookFrom, vec3 lookTo, vec3 lookUp,

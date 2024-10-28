@@ -61,8 +61,8 @@ public:
 
     virtual ControlTrack* clone() const override;
 
-    static std::string classIdentifier();
-    virtual std::string getClassIdentifier() const override;
+    static std::string_view classIdentifier();
+    virtual std::string_view getClassIdentifier() const override;
 
     virtual AnimationTimeState operator()(Seconds from, Seconds to,
                                           AnimationState state) const override;

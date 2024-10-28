@@ -54,7 +54,7 @@ public:
     OrthographicCamera(const OrthographicCamera& other);
     OrthographicCamera& operator=(const OrthographicCamera& other);
     virtual OrthographicCamera* clone() const override;
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     virtual void updateFrom(const Camera& source) override;

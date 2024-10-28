@@ -34,6 +34,6 @@ namespace inviwo {
 CameraFactoryObject::CameraFactoryObject(std::string_view classIdentifier)
     : classIdentifier_(classIdentifier) {}
 
-std::string CameraFactoryObject::getClassIdentifier() const { return classIdentifier_; }
+std::string_view CameraFactoryObject::getClassIdentifier() const { return classIdentifier_; }
 
 }  // namespace inviwo

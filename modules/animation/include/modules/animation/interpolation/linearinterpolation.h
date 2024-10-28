@@ -53,8 +53,8 @@ public:
 
     virtual std::string getName() const override;
 
-    static std::string classIdentifier();
-    virtual std::string getClassIdentifier() const override;
+    static std::string_view classIdentifier();
+    virtual std::string_view getClassIdentifier() const override;
 
     virtual bool equal(const Interpolation& other) const override;
 
@@ -79,7 +79,7 @@ std::string LinearInterpolation<Key, Result>::getName() const {
 }
 
 template <typename Key, typename Result>
-std::string LinearInterpolation<Key, Result>::getClassIdentifier() const {
+std::string_view LinearInterpolation<Key, Result>::getClassIdentifier() const {
     return classIdentifier();
 }
 
@@ -89,9 +89,10 @@ bool LinearInterpolation<Key, Result>::equal(const Interpolation& other) const {
 }
 
 template <typename Key, typename Result>
-std::string LinearInterpolation<Key, Result>::classIdentifier() {
-    return "org.inviwo.animation.linearinterpolation." +
-           Defaultvalues<typename Key::value_type>::getName();
+std::string_view LinearInterpolation<Key, Result>::classIdentifier() {
+    static const auto cid = "org.inviwo.animation.linearinterpolation." +
+                            Defaultvalues<typename Key::value_type>::getName();
+    return cid;
 }
 
 template <typename Key, typename Result>

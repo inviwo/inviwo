@@ -188,7 +188,7 @@ bool FileBase::deserialize(Deserializer& d, PropertySerializationMode mode) {
 }
 
 const std::string FileProperty::classIdentifier = "org.inviwo.FileProperty";
-std::string FileProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view FileProperty::getClassIdentifier() const { return classIdentifier; }
 
 FileProperty::FileProperty(std::string_view identifier, std::string_view displayName, Document help,
                            const std::filesystem::path& value, AcceptMode acceptMode,

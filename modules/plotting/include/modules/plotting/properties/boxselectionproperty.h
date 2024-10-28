@@ -54,7 +54,7 @@ namespace plot {
 class IVW_MODULE_PLOTTING_API BoxSelectionProperty : public BoxSelectionSettingsInterface,
                                                      public CompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     BoxSelectionProperty(const std::string& identifier, const std::string& displayName,

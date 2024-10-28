@@ -41,7 +41,7 @@ public:
     InteractionHandler() = default;
     virtual ~InteractionHandler() = default;
 
-    virtual std::string getClassIdentifier() const = 0;
+    virtual std::string_view getClassIdentifier() const = 0;
 
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
