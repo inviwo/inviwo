@@ -83,7 +83,7 @@ ImageOutport::ImageOutport(std::string_view identifier, bool handleResizeEvents)
     : ImageOutport(identifier, {}, DataVec4UInt8::get(),
                    handleResizeEvents ? HandleResizeEvents::Yes : HandleResizeEvents::No) {}
 
-std::string ImageOutport::getClassIdentifier() const {
+std::string_view ImageOutport::getClassIdentifier() const {
     return PortTraits<ImageOutport>::classIdentifier();
 }
 

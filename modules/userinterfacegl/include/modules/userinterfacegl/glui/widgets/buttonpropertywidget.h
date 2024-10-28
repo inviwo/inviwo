@@ -57,7 +57,7 @@ class IVW_MODULE_USERINTERFACEGL_API ButtonPropertyWidget : public Button,
                                                             public PropertyWidget,
                                                             public PropertyObserver {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     ButtonPropertyWidget(ButtonProperty& property, Processor& processor, Renderer& uiRenderer,

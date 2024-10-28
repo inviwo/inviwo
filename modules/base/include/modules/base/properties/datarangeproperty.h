@@ -55,7 +55,7 @@ class Volume;
  */
 class IVW_MODULE_BASE_API DataRangeProperty : public CompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
     DataRangeProperty(std::string_view identifier, std::string_view displayName,
                       bool customRanges = true,

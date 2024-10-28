@@ -70,7 +70,7 @@ public:
      */
     std::string getPath() const;
 
-    virtual std::string getClassIdentifier() const = 0;
+    virtual std::string_view getClassIdentifier() const = 0;
     /**
      * Returns the RGB color code used to colorize all ports of this type. This color code is for
      * instance used in the NetworkEditor. To distinguish different port types through their color,

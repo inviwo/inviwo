@@ -50,7 +50,7 @@ class IVW_CORE_API EventProperty : public Property {
 public:
     using Action = std::function<void(Event*)>;
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     /**

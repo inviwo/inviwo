@@ -102,8 +102,8 @@ TEST_P(PropertyCreationTests, Create) {
             << "Number of subproperties does not match for property copy \'" << GetParam() << "\'";
 
         for (auto&& [org, clone] : util::zip(sProps, cProps)) {
-            const std::string errorMsg = " in property copy \'" + org->getClassIdentifier() +
-                                         "\' (base property: \'" + GetParam() + "\')";
+            const std::string errorMsg = fmt::format(" in property copy '{}' (base property: '{}'",
+                                                     org->getClassIdentifier(), GetParam());
 
             EXPECT_EQ(org->getIdentifier(), clone->getIdentifier())
                 << "Identifier mismatch" << errorMsg;

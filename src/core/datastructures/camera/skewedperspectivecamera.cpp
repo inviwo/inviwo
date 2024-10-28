@@ -56,7 +56,7 @@ SkewedPerspectiveCamera* SkewedPerspectiveCamera::clone() const {
     return new SkewedPerspectiveCamera(*this);
 }
 
-std::string SkewedPerspectiveCamera::getClassIdentifier() const { return classIdentifier; }
+std::string_view SkewedPerspectiveCamera::getClassIdentifier() const { return classIdentifier; }
 
 const std::string SkewedPerspectiveCamera::classIdentifier = "SkewedPerspectiveCamera";
 

@@ -233,7 +233,8 @@ typename std::enable_if<!util::is_stream_insertable<T>::value, std::string>::typ
 
 template <typename M, typename Key, typename K>
 bool FactoryRegister<M, Key, K>::registerObject(M* obj) {
-    if (util::insert_unique(map_, obj->getClassIdentifier(), obj)) {
+    auto [it, inserted] = map_.emplace(obj->getClassIdentifier(), obj);
+    if (inserted) {
         this->notifyObserversOnRegister(obj);
         return true;
     } else {

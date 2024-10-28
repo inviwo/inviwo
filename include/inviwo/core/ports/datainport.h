@@ -64,7 +64,7 @@ public:
     DataInport(std::string_view identifier, Document help = {});
     virtual ~DataInport() = default;
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     virtual uvec3 getColorCode() const override;
     virtual Document getInfo() const override;
 
@@ -89,22 +89,26 @@ using FlatMultiDataInport = DataInport<T, 0, true>;
 
 template <typename T, size_t N, bool Flat>
 struct PortTraits<DataInport<T, N, Flat>> {
-    static std::string classIdentifier() {
-        auto&& classId = DataTraits<T>::classIdentifier();
-        if (classId.empty()) return {};
+    static std::string_view classIdentifier() {
+        static const std::string cld{[]() -> std::string {
+            auto&& classId = DataTraits<T>::classIdentifier();
+            if (classId.empty()) return {};
 
-        StrBuffer name;
-        name.append("{}", classId);
-        if constexpr (Flat) {
-            name.append(".flat");
-        }
-        if constexpr (N == 0) {
-            name.append(".multi");
-        } else if constexpr (N != 1) {
-            name.append(".{}", N);
-        }
-        name.append(".inport");
-        return std::string{name.view()};
+            StrBuffer name;
+            name.append("{}", classId);
+            if constexpr (Flat) {
+                name.append(".flat");
+            }
+            if constexpr (N == 0) {
+                name.append(".multi");
+            } else if constexpr (N != 1) {
+                name.append(".{}", N);
+            }
+            name.append(".inport");
+            return std::string{name.view()};
+        }()};
+
+        return cld;
     }
 };
 
@@ -113,7 +117,7 @@ DataInport<T, N, Flat>::DataInport(std::string_view identifier, Document help)
     : Inport(identifier, std::move(help)), InportIterable<DataInport<T, N, Flat>, T, Flat>{} {}
 
 template <typename T, size_t N, bool Flat>
-std::string DataInport<T, N, Flat>::getClassIdentifier() const {
+std::string_view DataInport<T, N, Flat>::getClassIdentifier() const {
     return PortTraits<DataInport<T, N, Flat>>::classIdentifier();
 }
 

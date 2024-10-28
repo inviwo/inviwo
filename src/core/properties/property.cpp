@@ -138,7 +138,7 @@ Property& Property::setSemantics(const PropertySemantics& semantics) {
     return *this;
 }
 
-std::string Property::getClassIdentifierForWidget() const { return getClassIdentifier(); }
+std::string_view Property::getClassIdentifierForWidget() const { return getClassIdentifier(); }
 
 bool Property::getReadOnly() const { return readOnly_; }
 Property& Property::setReadOnly(bool readOnly) {
@@ -230,9 +230,9 @@ void Property::deserialize(Deserializer& d) {
     std::string className;
     d.deserialize("type", className, SerializationTarget::Attribute);
     if (className != getClassIdentifier()) {
-        LogWarn("Deserialized property: " + getPath() +
-                " with class identifier: " + getClassIdentifier() +
-                " from a serialized property with a different class identifier: " + className);
+        LogWarn("Deserialized property: "
+                << getPath() << " with class identifier: " << getClassIdentifier()
+                << " from a serialized property with a different class identifier: " << className);
     }
 
     {

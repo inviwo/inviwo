@@ -242,7 +242,7 @@ public:
     virtual bool canConnectTo(const Port* port) const override;
     virtual size_t getMaxNumberOfConnections() const override { return 1; }
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     virtual glm::uvec3 getColorCode() const override { return uvec3(160, 182, 240); }
     virtual Document getInfo() const override;
 
@@ -318,7 +318,7 @@ public:
     virtual glm::uvec3 getColorCode() const override { return uvec3(160, 182, 240); }
     virtual Document getInfo() const override;
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
 
 private:
     BrushingAndLinkingManager manager_;
@@ -326,12 +326,12 @@ private:
 
 template <>
 struct PortTraits<BrushingAndLinkingInport> {
-    static std::string classIdentifier() { return "BrushingAndLinkingInport"; }
+    static std::string_view classIdentifier() { return "BrushingAndLinkingInport"; }
 };
 
 template <>
 struct PortTraits<BrushingAndLinkingOutport> {
-    static std::string classIdentifier() { return "BrushingAndLinkingOutport"; }
+    static std::string_view classIdentifier() { return "BrushingAndLinkingOutport"; }
 };
 
 }  // namespace inviwo

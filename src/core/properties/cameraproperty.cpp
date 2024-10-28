@@ -47,7 +47,7 @@
 namespace inviwo {
 
 const std::string CameraProperty::classIdentifier = "org.inviwo.CameraProperty";
-std::string CameraProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view CameraProperty::getClassIdentifier() const { return classIdentifier; }
 
 CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName,
                                Document help, std::function<std::optional<mat4>()> getBoundingBox,

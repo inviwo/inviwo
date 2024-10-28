@@ -62,13 +62,13 @@ CameraLinearInterpolation* CameraLinearInterpolation::clone() const {
 
 std::string CameraLinearInterpolation::getName() const { return "Linear"; }
 
-std::string CameraLinearInterpolation::getClassIdentifier() const { return classIdentifier(); }
+std::string_view CameraLinearInterpolation::getClassIdentifier() const { return classIdentifier(); }
 
 bool CameraLinearInterpolation::equal(const Interpolation& other) const {
     return classIdentifier() == other.getClassIdentifier();
 }
 
-std::string CameraLinearInterpolation::classIdentifier() {
+std::string_view CameraLinearInterpolation::classIdentifier() {
     return "org.inviwo.animation.cameralinearinterpolation";
 }
 

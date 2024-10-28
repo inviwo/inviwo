@@ -201,7 +201,7 @@ public:
      */
     void set(component_type val, size_t i, size_t j);
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
 
     const T& getMinValue() const;
     void setMinValue(const T& value);
@@ -428,7 +428,7 @@ using FloatQuaternionProperty = OrdinalProperty<glm::fquat>;
 
 template <typename T>
 struct PropertyTraits<OrdinalProperty<T>> {
-    static const std::string& classIdentifier() {
+    static std::string_view classIdentifier() {
         static const std::string identifier =
             "org.inviwo." + Defaultvalues<T>::getName() + "Property";
         return identifier;
@@ -524,7 +524,7 @@ template <typename T>
 OrdinalProperty<T>::~OrdinalProperty() = default;
 
 template <typename T>
-std::string OrdinalProperty<T>::getClassIdentifier() const {
+std::string_view OrdinalProperty<T>::getClassIdentifier() const {
     return PropertyTraits<OrdinalProperty<T>>::classIdentifier();
 }
 

@@ -214,8 +214,8 @@ public:
 
     virtual PropertyTrack* clone() const override;
 
-    static std::string classIdentifier();
-    virtual std::string getClassIdentifier() const override;
+    static std::string_view classIdentifier();
+    virtual std::string_view getClassIdentifier() const override;
 
     virtual AnimationTimeState operator()(Seconds from, Seconds to,
                                           AnimationState state) const override;
@@ -339,11 +339,10 @@ inline std::unique_ptr<Seq> PropertyTrack<Prop, Key, Seq>::createKeyframeSequenc
             // No interpolation specified, use default
             return std::make_unique<Seq>(std::move(keys));
         } else {
-            throw Exception("Invalid interpolation " + interpolation->getClassIdentifier() +
-                                " for " + getClassIdentifier() +
-                                ". @Developer: Please follow interpolation registration examples "
-                                "in animationmodule.cpp",
-                            IVW_CONTEXT);
+            throw Exception(IVW_CONTEXT,
+                            "Invalid interpolation {} for {} . @Developer: Please follow "
+                            "interpolation registration examples in animationmodule.cpp",
+                            interpolation->getClassIdentifier(), getClassIdentifier());
         }
     } else {
         return std::make_unique<Seq>(std::move(keys));
@@ -368,16 +367,16 @@ template <typename Prop, typename Key, typename Seq>
 PropertyTrack<Prop, Key, Seq>::~PropertyTrack() = default;
 
 template <typename Prop, typename Key, typename Seq>
-std::string PropertyTrack<Prop, Key, Seq>::classIdentifier() {
+std::string_view PropertyTrack<Prop, Key, Seq>::classIdentifier() {
     // Use property class identifier since multiple properties
     // may have the same key (data type)
-    std::string id =
-        "org.inviwo.animation.PropertyTrack.for." + PropertyTraits<Prop>::classIdentifier();
+    static const std::string id = fmt::format("org.inviwo.animation.PropertyTrack.for.{}",
+                                              PropertyTraits<Prop>::classIdentifier());
     return id;
 }
 
 template <typename Prop, typename Key, typename Seq>
-std::string PropertyTrack<Prop, Key, Seq>::getClassIdentifier() const {
+std::string_view PropertyTrack<Prop, Key, Seq>::getClassIdentifier() const {
     return classIdentifier();
 }
 
@@ -444,10 +443,9 @@ Key* PropertyTrack<Prop, Key, Seq>::addKeyFrameUsingPropertyValue(
     const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation) {
     auto prop = dynamic_cast<const Prop*>(property);
     if (!prop) {
-        throw Exception("Cannot add key frame from property type " +
-                            (property ? property->getClassIdentifier() : "null") + " for " +
-                            property_->getClassIdentifier(),
-                        IVW_CONTEXT);
+        throw Exception(IVW_CONTEXT, "Cannot add key frame from property type '{}' for '{}'.",
+                        (property ? property->getClassIdentifier() : "null"),
+                        property_->getClassIdentifier());
     }
     if (this->empty()) {
         // Use provided interpolation if we can

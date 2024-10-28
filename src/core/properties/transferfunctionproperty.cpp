@@ -35,7 +35,7 @@
 namespace inviwo {
 
 const std::string TransferFunctionProperty::classIdentifier = "org.inviwo.TransferFunctionProperty";
-std::string TransferFunctionProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view TransferFunctionProperty::getClassIdentifier() const { return classIdentifier; }
 
 void TFPropertyObserver::onZoomHChange(const dvec2&) {}
 

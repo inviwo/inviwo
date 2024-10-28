@@ -47,7 +47,7 @@ class IVW_CORE_API IsoTFProperty : public CompositeProperty,
                                    public TFPropertyObservable,
                                    public TFPropertyObserver {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     IsoTFProperty(std::string_view identifier, std::string_view displayName, Document help,
@@ -80,7 +80,7 @@ public:
 
     virtual IsoTFProperty* clone() const override;
 
-    virtual std::string getClassIdentifierForWidget() const override;
+    virtual std::string_view getClassIdentifierForWidget() const override;
 
     virtual void set(const Property* property) override;
     /**

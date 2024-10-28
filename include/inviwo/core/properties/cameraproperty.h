@@ -58,7 +58,7 @@ class CameraFactory;
 class IVW_CORE_API CameraProperty : public CompositeProperty, public TrackballObject {
 public:
     using value_type = Camera;
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     CameraProperty(std::string_view identifier, std::string_view displayName, Document help,

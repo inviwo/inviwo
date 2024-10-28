@@ -53,7 +53,7 @@ public:
 
     std::vector<PropertySemantics> getSupportedSemanicsForProperty(Property* property);
 
-    using WidgetMap = std::multimap<std::string, PropertyWidgetFactoryObject*>;
+    using WidgetMap = std::multimap<std::string, PropertyWidgetFactoryObject*, std::less<>>;
 
 private:
     mutable WidgetMap widgetMap_;

@@ -74,7 +74,7 @@ public:
      */
     virtual Track* clone() const = 0;
 
-    virtual std::string getClassIdentifier() const = 0;
+    virtual std::string_view getClassIdentifier() const = 0;
 
     virtual bool isEnabled() const = 0;
     virtual void setEnabled(bool enabled) = 0;

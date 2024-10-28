@@ -54,7 +54,7 @@ class Processor;
 namespace glui {
 
 const std::string CheckBox::classIdentifier = "org.inviwo.glui.CheckBox";
-std::string CheckBox::getClassIdentifier() const { return classIdentifier; }
+std::string_view CheckBox::getClassIdentifier() const { return classIdentifier; }
 
 CheckBox::CheckBox(const std::string& label, Processor& processor, Renderer& uiRenderer,
                    const ivec2& extent)

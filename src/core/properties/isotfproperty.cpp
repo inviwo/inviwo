@@ -32,7 +32,7 @@
 namespace inviwo {
 
 const std::string IsoTFProperty::classIdentifier = "org.inviwo.IsoTFProperty";
-std::string IsoTFProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view IsoTFProperty::getClassIdentifier() const { return classIdentifier; }
 
 IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName,
                              Document help, const IsoValueCollection& isovalues,
@@ -96,7 +96,7 @@ IsoTFProperty::IsoTFProperty(const IsoTFProperty& rhs)
 
 IsoTFProperty* IsoTFProperty::clone() const { return new IsoTFProperty(*this); }
 
-std::string IsoTFProperty::getClassIdentifierForWidget() const {
+std::string_view IsoTFProperty::getClassIdentifierForWidget() const {
     return IsoTFProperty::classIdentifier;
 }
 

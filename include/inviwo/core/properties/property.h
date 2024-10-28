@@ -130,7 +130,7 @@ class IVW_CORE_API Property : public PropertyObservable,
                               public virtual Serializable,
                               public MetaDataOwner {
 public:
-    virtual std::string getClassIdentifier() const = 0;
+    virtual std::string_view getClassIdentifier() const = 0;
 
     explicit Property(std::string_view identifier = "", std::string_view displayName = "",
                       Document help = {},
@@ -180,7 +180,7 @@ public:
      * Defaults to getClassIdentifier(), should only be overridden
      * if a subclass want to reuse another property's widget.
      */
-    virtual std::string getClassIdentifierForWidget() const;
+    virtual std::string_view getClassIdentifierForWidget() const;
 
     virtual Property& setSemantics(const PropertySemantics& semantics);
     virtual PropertySemantics getSemantics() const;

@@ -40,7 +40,7 @@ namespace inviwo {
 class StipplingSettingsInterface;
 
 const std::string LineSettingsProperty::classIdentifier = "org.inviwo.LineSettingsProperty";
-std::string LineSettingsProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view LineSettingsProperty::getClassIdentifier() const { return classIdentifier; }
 
 LineSettingsProperty::LineSettingsProperty(std::string_view identifier,
                                            std::string_view displayName,

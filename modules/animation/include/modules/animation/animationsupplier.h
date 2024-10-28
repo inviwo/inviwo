@@ -75,8 +75,8 @@ public:
      * @param trackClassID PropertyTrack::getIdentifier()
      * @see AnimationManager
      */
-    void registerPropertyTrackConnection(const std::string& propertyClassID,
-                                         const std::string& trackClassID);
+    void registerPropertyTrackConnection(std::string_view propertyClassID,
+                                         std::string_view trackClassID);
 
     void registerRecorderFactory(std::unique_ptr<RecorderFactory> recorderFactory);
 

@@ -72,27 +72,27 @@ public:
     virtual ~StringsProperty() = default;
 
     virtual Document getDescription() const override;
-    virtual std::string getClassIdentifier() const override;
-    virtual std::string getClassIdentifierForWidget() const override;
+    virtual std::string_view getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifierForWidget() const override;
 
     std::array<StringProperty, N> strings;
 };
 
 template <size_t N>
 struct PropertyTraits<StringsProperty<N>> {
-    static const std::string& classIdentifier() {
+    static std::string_view classIdentifier() {
         static const std::string identifier = fmt::format("org.inviwo.StringsProperty{}", N);
         return identifier;
     }
 };
 
 template <size_t N>
-std::string StringsProperty<N>::getClassIdentifier() const {
+std::string_view StringsProperty<N>::getClassIdentifier() const {
     return PropertyTraits<StringsProperty<N>>::classIdentifier();
 }
 
 template <size_t N>
-std::string StringsProperty<N>::getClassIdentifierForWidget() const {
+std::string_view StringsProperty<N>::getClassIdentifierForWidget() const {
     return PropertyTraits<StringsProperty<N>>::classIdentifier();
 }
 

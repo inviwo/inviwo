@@ -106,7 +106,7 @@ public:
 
 template <>
 struct OptionPropertyTraits<FileExtension> {
-    static const std::string& classIdentifier() {
+    static std::string_view classIdentifier() {
         static const std::string id{"org.inviwo.OptionPropertyFileExtension"};
         return id;
     }

@@ -49,7 +49,7 @@ public:
     PerspectiveCamera(const PerspectiveCamera& other);
     PerspectiveCamera& operator=(const PerspectiveCamera& other);
     virtual PerspectiveCamera* clone() const override;
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     virtual void updateFrom(const Camera& source) override;

@@ -94,16 +94,15 @@ private:
 
     static std::map<std::string, std::string>& getPropertyPresets(Property* property);
 
-    struct Preset : Serializable {
+    struct Preset {
         Preset();
-        Preset(std::string id, std::string n, std::string d);
-        virtual ~Preset();
+        Preset(std::string_view id, std::string_view n, std::string_view d);
         std::string classIdentifier;
         std::string name;
         std::string data;
 
-        virtual void serialize(Serializer& s) const override;
-        virtual void deserialize(Deserializer& d) override;
+        void serialize(Serializer& s) const;
+        void deserialize(Deserializer& d);
     };
 
     InviwoApplication* app_;

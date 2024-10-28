@@ -48,7 +48,7 @@ OrthographicCamera& OrthographicCamera::operator=(const OrthographicCamera&) = d
 
 OrthographicCamera* OrthographicCamera::clone() const { return new OrthographicCamera(*this); }
 
-std::string OrthographicCamera::getClassIdentifier() const { return classIdentifier; }
+std::string_view OrthographicCamera::getClassIdentifier() const { return classIdentifier; }
 
 const std::string OrthographicCamera::classIdentifier = "OrthographicCamera";
 

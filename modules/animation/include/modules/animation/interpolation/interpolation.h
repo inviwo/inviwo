@@ -56,7 +56,7 @@ public:
 
     virtual std::string getName() const = 0;
 
-    virtual std::string getClassIdentifier() const = 0;
+    virtual std::string_view getClassIdentifier() const = 0;
     virtual bool equal(const Interpolation& other) const = 0;
 
     virtual void serialize(Serializer& s) const override = 0;
@@ -83,7 +83,7 @@ public:
 
     virtual InterpolationTyped* clone() const override = 0;
 
-    virtual std::string getClassIdentifier() const override = 0;
+    virtual std::string_view getClassIdentifier() const override = 0;
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
 

@@ -46,7 +46,7 @@ public:
 
     virtual std::unique_ptr<Dialog> create() = 0;
 
-    std::string getClassIdentifier() const;
+    std::string_view getClassIdentifier() const;
 
 private:
     std::string className_;
