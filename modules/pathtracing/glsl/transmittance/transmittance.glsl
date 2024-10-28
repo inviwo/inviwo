@@ -8,14 +8,14 @@ float partitionedTransmittanceTracking(int METHOD, vec3 raystart, vec3 raydir, f
                                        float tEnd, inout uint hashSeed, sampler3D volume,
                                        VolumeParameters volumeParameters,
                                        sampler2D transferFunction, sampler3D opacity,
-                                       VolumeParameters opacityParameters, inout vec3 auxReturn) {
+                                       VolumeParameters opacityParameters, vec3 cellDim,
+                                       inout vec3 auxReturn) {
 
     mat4 volumeTexToIndMat = volumeParameters.textureToIndex;
 
     vec3 x1 = (volumeTexToIndMat * vec4(raystart + tStart * raydir, 1.0f)).xyz + 0.5f;
     vec3 x2 = (volumeTexToIndMat * vec4(raystart + tEnd * raydir, 1.0f)).xyz + 0.5f;
 
-    vec3 cellDim = volumeParameters.dimensions * opacityParameters.reciprocalDimensions;
     ivec3 cellCoord = ivec3(x1 / cellDim);
 
     if (tEnd <= tStart) {
@@ -179,16 +179,15 @@ float transmittance(int METHOD, vec3 raystart, vec3 raydir, float tStart, float 
 
 float partitionedTransmittanceTesting(int METHOD, vec3 raystart, vec3 raydir, float tStart, float tEnd,
                            inout uint hashSeed, sampler3D volume, VolumeParameters volumeParameters,
-                           sampler2D transferFunction, sampler3D opacity,
-                           VolumeParameters opacityParameters, inout vec3 auxReturn) {
+                           sampler2D transferFunction, sampler3D opacity, VolumeParameters opacityParameters, 
+                                      vec3 cellDim,inout vec3 auxReturn) {
 
 
     mat4 volumeTexToIndMat = volumeParameters.textureToIndex;
 
     vec3 x1 = (volumeTexToIndMat * vec4(raystart + tStart * raydir, 1.0f)).xyz + 0.5f;
     vec3 x2 = (volumeTexToIndMat * vec4(raystart + tEnd * raydir, 1.0f)).xyz + 0.5f;
-
-    vec3 cellDim = volumeParameters.dimensions * opacityParameters.reciprocalDimensions;
+    
     ivec3 cellCoord = ivec3(x1 / cellDim);
 
     if (tEnd <= tStart) {
