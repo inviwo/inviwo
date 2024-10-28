@@ -75,9 +75,10 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
 
     // All coords are texture space unless specified otherwise
     vec3 ray = exitPoint - entryPoint;
-    vec3 rayDir = normalize(ray);
     float t1 = length(ray);
     float t0 = 0.f;
+    vec3 rayDir = normalize(ray);
+
     uint hashSeed = getHashSeed();
 
     vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volumeParameters.textureToWorld);
@@ -116,7 +117,8 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
         depth = rayDepth;
 
         result.rgb = estimateDirectLightUniformGrid(
-            volume, volumeParameters, transferFunction, minMaxOpacity, minMaxOpacityParameters,
+            volume, volumeParameters, transferFunction,
+            minMaxOpacity, minMaxOpacityParameters, cellDim,
             samplePosition, cameraDir, light, hashSeed, channel, transmittanceMethod);
         result.a = 1f - T;
 
