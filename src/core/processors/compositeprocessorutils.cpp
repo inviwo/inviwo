@@ -96,7 +96,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
         for (auto& [outport, inports] : inConnections) {
             auto portId = outport->getClassIdentifier();
 
-            if (auto source = pf->createShared(portId + ".metasource")) {
+            if (auto source = pf->createShared(fmt::format("{}.metasource", portId))) {
                 if (auto metasouce = dynamic_cast<CompositeSourceBase*>(source.get())) {
                     subNetwork.addProcessor(source);
                     bool optional = true;
@@ -145,7 +145,8 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
         for (auto& [outport, inports] : outConnections) {
             auto portId = outport->getClassIdentifier();
 
-            if (auto sink = std::shared_ptr<Processor>(pf->createShared(portId + ".metasink"))) {
+            if (auto sink = std::shared_ptr<Processor>(
+                    pf->createShared(fmt::format("{}.metasink", portId)))) {
                 if (auto metasink = dynamic_cast<CompositeSinkBase*>(sink.get())) {
                     subNetwork.addProcessor(sink);
                     subNetwork.addConnection(outport, metasink->getInports().front());
@@ -345,8 +346,8 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
         for (auto& [outport, inports] : inConnections) {
             auto portId = outport->getClassIdentifier();
 
-            if (auto source = pf->createShared(fmt::format(
-                    "{}{}", portId, SequenceCompositeSourceBase::identifierSuffix()))) {
+            if (auto source = pf->createShared(
+                    fmt::format("{}{}", portId, SequenceCompositeSourceBase::identifierSuffix()))) {
                 if (auto metasouce = dynamic_cast<SequenceCompositeSourceBase*>(source.get())) {
                     subNetwork.addProcessor(source);
                     bool optional = true;
@@ -402,8 +403,8 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
                 if (auto metasink = dynamic_cast<SequenceCompositeSinkBase*>(sink.get())) {
                     subNetwork.addProcessor(sink);
                     subNetwork.addConnection(outport, metasink->getInports().front());
-                    //for (auto inport : inports) {
-                        // network.addConnection(&metasink->getSuperOutport(), inport);
+                    // for (auto inport : inports) {
+                    //  network.addConnection(&metasink->getSuperOutport(), inport);
                     //}
                     auto portIdentifier = outport->getIdentifier();
                     // Make first letter uppercase for readability when combined with processor

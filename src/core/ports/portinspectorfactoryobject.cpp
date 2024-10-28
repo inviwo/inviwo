@@ -37,7 +37,7 @@ PortInspectorFactoryObject::PortInspectorFactoryObject(
     : portClassIdentifier_(portClassIdentifier)
     , inspectorWorkspaceFileName_(inspectorWorkspaceFileName) {}
 
-std::string PortInspectorFactoryObject::getClassIdentifier() const { return portClassIdentifier_; }
+std::string_view PortInspectorFactoryObject::getClassIdentifier() const { return portClassIdentifier_; }
 
 std::unique_ptr<PortInspector> PortInspectorFactoryObject::create() {
     return std::make_unique<PortInspector>(portClassIdentifier_, inspectorWorkspaceFileName_);

@@ -54,7 +54,7 @@ namespace plot {
 class IVW_MODULE_PLOTTING_API MajorTickProperty : public MajorTickSettings,
                                                   public CompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     MajorTickProperty(std::string_view identifier, std::string_view displayName,
@@ -83,7 +83,7 @@ public:
 class IVW_MODULE_PLOTTING_API MinorTickProperty : public MinorTickSettings,
                                                   public CompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     MinorTickProperty(std::string_view identifier, std::string_view displayName,

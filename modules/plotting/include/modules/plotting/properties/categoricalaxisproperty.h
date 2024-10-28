@@ -63,7 +63,7 @@ class PlotTextSettings;
 class IVW_MODULE_PLOTTING_API CategoricalAxisProperty : public AxisSettings,
                                                         public CompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     CategoricalAxisProperty(std::string_view identifier, std::string_view displayName,

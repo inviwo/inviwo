@@ -53,7 +53,7 @@ public:
     SkewedPerspectiveCamera(const SkewedPerspectiveCamera& other);
     SkewedPerspectiveCamera& operator=(const SkewedPerspectiveCamera& other);
     virtual SkewedPerspectiveCamera* clone() const override;
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     virtual void updateFrom(const Camera& source) override;

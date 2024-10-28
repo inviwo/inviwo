@@ -53,7 +53,7 @@ class IVW_MODULE_USERINTERFACEGL_API DoubleMinMaxPropertyWidget : public RangeSl
                                                                   public PropertyWidget,
                                                                   public PropertyObserver {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     DoubleMinMaxPropertyWidget(DoubleMinMaxProperty& property, Processor& processor,

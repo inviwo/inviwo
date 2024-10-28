@@ -71,10 +71,10 @@ InvalidationTrack::~InvalidationTrack() = default;
 
 InvalidationTrack* InvalidationTrack::clone() const { return new InvalidationTrack(*this); }
 
-std::string InvalidationTrack::classIdentifier() {
+std::string_view InvalidationTrack::classIdentifier() {
     return "org.inviwo.animation.InvalidationTrack";
 }
-std::string InvalidationTrack::getClassIdentifier() const { return classIdentifier(); }
+std::string_view InvalidationTrack::getClassIdentifier() const { return classIdentifier(); }
 
 AnimationTimeState InvalidationTrack::operator()(Seconds, Seconds to, AnimationState state) const {
     if (!isEnabled() || empty()) return {to, state};

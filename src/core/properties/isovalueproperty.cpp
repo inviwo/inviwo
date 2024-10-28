@@ -34,7 +34,7 @@
 namespace inviwo {
 
 const std::string IsoValueProperty::classIdentifier = "org.inviwo.IsoValueProperty";
-std::string IsoValueProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view IsoValueProperty::getClassIdentifier() const { return classIdentifier; }
 
 IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
                                    Document help, const IsoValueCollection& value, TFData port,

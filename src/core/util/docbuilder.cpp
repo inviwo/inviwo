@@ -92,14 +92,14 @@ help::HelpProcessor help::buildProcessorHelp(Processor& processor) {
 
     std::vector<HelpInport> inports;
     for (auto inport : processor.getInports()) {
-        inports.push_back(
-            HelpInport{inport->getClassIdentifier(), inport->getIdentifier(), inport->getHelp()});
+        inports.push_back(HelpInport{std::string{inport->getClassIdentifier()},
+                                     inport->getIdentifier(), inport->getHelp()});
     }
 
     std::vector<HelpOutport> outports;
     for (auto outport : processor.getOutports()) {
-        outports.push_back(HelpOutport{outport->getClassIdentifier(), outport->getIdentifier(),
-                                       outport->getHelp()});
+        outports.push_back(HelpOutport{std::string{outport->getClassIdentifier()},
+                                       outport->getIdentifier(), outport->getHelp()});
     }
 
     std::vector<HelpProperty> properties;
@@ -107,12 +107,16 @@ help::HelpProcessor help::buildProcessorHelp(Processor& processor) {
 
     LambdaNetworkVisitor visitor{
         [&](Property& property) {
-            stack.back()->push_back(HelpProperty{
-                property.getClassIdentifier(), property.getDisplayName(), property.getHelp(), {}});
+            stack.back()->push_back(HelpProperty{std::string{property.getClassIdentifier()},
+                                                 property.getDisplayName(),
+                                                 property.getHelp(),
+                                                 {}});
         },
         [&](CompositeProperty& property, NetworkVisitorEnter) {
-            stack.back()->push_back(HelpProperty{
-                property.getClassIdentifier(), property.getDisplayName(), property.getHelp(), {}});
+            stack.back()->push_back(HelpProperty{std::string{property.getClassIdentifier()},
+                                                 property.getDisplayName(),
+                                                 property.getHelp(),
+                                                 {}});
             stack.push_back(&stack.back()->back().properties);
 
             return true;

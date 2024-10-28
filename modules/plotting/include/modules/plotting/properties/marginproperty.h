@@ -54,7 +54,7 @@ namespace plot {
  */
 class IVW_MODULE_PLOTTING_API MarginProperty : public CompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     MarginProperty(std::string_view identifier, std::string_view displayName, float top = 20.0f,

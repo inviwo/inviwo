@@ -62,7 +62,7 @@ public:
     TransformationList(const TransformationList& other) = default;
     ~TransformationList() = default;
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     virtual TransformationList* clone() const override;
@@ -82,7 +82,7 @@ public:
     TransformListProperty(const TransformListProperty& other);
     ~TransformListProperty() = default;
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     virtual TransformListProperty* clone() const override;
@@ -107,7 +107,7 @@ public:
 
 class IVW_MODULE_BASE_API TranslateProperty : public TransformProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     TranslateProperty(std::string_view identifier, std::string_view displayName,
@@ -129,7 +129,7 @@ class IVW_MODULE_BASE_API RotateProperty : public TransformProperty {
 public:
     enum class AngleMeasure { Radians, Degrees };
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     RotateProperty(std::string_view identifier, std::string_view displayName,
@@ -153,7 +153,7 @@ public:
 
 class IVW_MODULE_BASE_API ScaleProperty : public TransformProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     ScaleProperty(std::string_view identifier, std::string_view displayName,
@@ -173,7 +173,7 @@ public:
 
 class IVW_MODULE_BASE_API CustomTransformProperty : public TransformProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     CustomTransformProperty(

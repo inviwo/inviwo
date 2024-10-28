@@ -80,7 +80,7 @@ public:
 
     virtual void invokeEvent(Event* event) override;
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     /**
      * \brief Added callbacks will be called when selection changed.
      */

@@ -41,7 +41,7 @@
 namespace inviwo {
 
 const std::string SplitterProperty::classIdentifier = "org.inviwo.SplitterProperty";
-std::string SplitterProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view SplitterProperty::getClassIdentifier() const { return classIdentifier; }
 
 SplitterProperty::SplitterProperty(std::string_view identifier, std::string_view displayName,
                                    bool checked, splitter::Style style, vec4 color, vec4 bgColor,

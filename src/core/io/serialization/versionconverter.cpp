@@ -202,11 +202,11 @@ void util::renamePort(Deserializer& d, std::vector<std::pair<const Port*, std::s
         for (auto rule : rules) {
             TxElement* elem = nullptr;
             if (auto p1 = dynamic_cast<const Outport*>(rule.first)) {
-                elem = xml::getElement(node, "OutPorts/OutPort&type=" + p1->getClassIdentifier() +
-                                                 "&identifier=" + rule.second);
+                elem = xml::getElement(node, fmt::format("OutPorts/OutPort&type={}&identifier={}",
+                                                         p1->getClassIdentifier(), rule.second));
             } else if (auto p2 = dynamic_cast<const Inport*>(rule.first)) {
-                elem = xml::getElement(node, "InPorts/InPort&type=" + p2->getClassIdentifier() +
-                                                 "&identifier=" + rule.second);
+                elem = xml::getElement(node, fmt::format("InPorts/InPort&type={}&identifier={}",
+                                                         p2->getClassIdentifier(), rule.second));
             }
             if (elem) {
                 elem->SetAttribute("identifier", rule.first->getIdentifier());
@@ -225,8 +225,8 @@ void util::renameProperty(Deserializer& d,
         bool didChanges = false;
         for (auto rule : rules) {
             TxElement* p =
-                xml::getElement(node, path + "/Property&type=" + rule.first->getClassIdentifier() +
-                                          "&identifier=" + rule.second);
+                xml::getElement(node, fmt::format("{}/Property&type={}&identifier={}", path,
+                                                  rule.first->getClassIdentifier(), rule.second));
             if (p) {
                 p->SetAttribute("identifier", rule.first->getIdentifier());
                 didChanges = true;
@@ -243,8 +243,8 @@ void util::changePropertyType(Deserializer& d,
         bool didChanges = false;
         for (auto rule : rules) {
             TxElement* p = xml::getElement(
-                node, "Properties/Property&type=" + rule.first->getClassIdentifier() +
-                          "&identifier=" + rule.first->getIdentifier());
+                node, fmt::format("Properties/Property&type={}&identifier={}",
+                                  rule.first->getClassIdentifier(), rule.first->getIdentifier()));
             if (p) {
                 p->SetAttribute("type", rule.second);
                 didChanges = true;

@@ -97,7 +97,7 @@ FilterResult filterValue(const double& value, const dvec2& range) {
 
 const std::string PCPAxisSettings::classIdentifier =
     "org.inviwo.parallelcoordinates.axissettingsproperty";
-std::string PCPAxisSettings::getClassIdentifier() const { return classIdentifier; }
+std::string_view PCPAxisSettings::getClassIdentifier() const { return classIdentifier; }
 
 PCPAxisSettings::PCPAxisSettings(std::string_view identifier, std::string_view displayName,
                                  size_t columnId)

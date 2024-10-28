@@ -48,7 +48,7 @@ class Processor;
 namespace glui {
 
 const std::string Button::classIdentifier = "org.inviwo.glui.Button";
-std::string Button::getClassIdentifier() const { return classIdentifier; }
+std::string_view Button::getClassIdentifier() const { return classIdentifier; }
 
 Button::Button(const std::string& label, Processor& processor, Renderer& uiRenderer,
                const ivec2& extent)

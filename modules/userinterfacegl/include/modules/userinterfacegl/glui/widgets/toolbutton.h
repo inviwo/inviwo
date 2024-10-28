@@ -54,7 +54,7 @@ class Renderer;
  */
 class IVW_MODULE_USERINTERFACEGL_API ToolButton : public AbstractButton {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     ToolButton(const std::string& filename, Processor& processor, Renderer& uiRenderer,

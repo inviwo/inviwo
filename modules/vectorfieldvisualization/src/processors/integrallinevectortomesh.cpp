@@ -107,7 +107,7 @@ static double norm(const glm::vec<L, T, Q>& glm) {
 
 const std::string IntegralLineVectorToMesh::ColorByProperty::classIdentifier =
     "org.inviwo.IntegralLineVectorToMesh.ColorByProperty";
-std::string IntegralLineVectorToMesh::ColorByProperty::getClassIdentifier() const {
+std::string_view IntegralLineVectorToMesh::ColorByProperty::getClassIdentifier() const {
     return classIdentifier;
 }
 

@@ -72,7 +72,7 @@ IVW_MODULE_BASE_API std::ostream& operator<<(std::ostream& ss, BoundaryType bt);
 template <typename T>
 class OrdinalAnimationProperty : public BaseOrdinalAnimationProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     using valueType = T;
 
     OrdinalAnimationProperty(std::string_view identifier, std::string_view displayName);
@@ -128,13 +128,15 @@ OrdinalAnimationProperty<T>* OrdinalAnimationProperty<T>::clone() const {
 
 template <typename T>
 struct PropertyTraits<OrdinalAnimationProperty<T>> {
-    static std::string classIdentifier() {
-        return "org.inviwo.OrdinalAnimationProperty." + Defaultvalues<T>::getName();
+    static std::string_view classIdentifier() {
+        static const std::string cid =
+            "org.inviwo.OrdinalAnimationProperty." + Defaultvalues<T>::getName();
+        return cid;
     }
 };
 
 template <typename T>
-std::string OrdinalAnimationProperty<T>::getClassIdentifier() const {
+std::string_view OrdinalAnimationProperty<T>::getClassIdentifier() const {
     return PropertyTraits<OrdinalAnimationProperty<T>>::classIdentifier();
 }
 

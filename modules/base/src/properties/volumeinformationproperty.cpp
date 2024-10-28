@@ -65,7 +65,7 @@ namespace inviwo {
 
 const std::string VolumeInformationProperty::classIdentifier =
     "org.inviwo.VolumeInformationProperty";
-std::string VolumeInformationProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view VolumeInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
 namespace {
 auto props(VolumeInformationProperty& prop) {
