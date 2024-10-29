@@ -8,8 +8,7 @@ uniform sampler3D volumeData;
 uniform VolumeParameters volumeDataParameters;
 
 // output volume
-uniform layout(binding = 0, rgba32f)
-image3D opacityData;
+layout(binding = 0, rgba32f) restrict writeonly uniform image3D opacityData;
 uniform VolumeParameters opacityDataParameters;
 
 uniform ivec3 regionSize;
@@ -30,14 +29,13 @@ vec4 calcMinMaxAvg_OutsideVoxel(ivec3 pos) {
     // Enlarge the neighborhood by 1 voxel to deal with the edges of the grid cell.
     // The edges of the grid cell will be between two voxels.
 
-    ivec3 startCoord = pos * regionSize - 1;
+    ivec3 startCoord = max(ivec3(0), pos * regionSize - 1);
     ivec3 endCoord =
         clamp(startCoord + regionSize + 2, ivec3(0), ivec3(volumeDataParameters.dimensions));
 
     float minOpacity = 1f;
     float maxOpacity = 0f;
     float avgOpacity = 0f;
-    float sampleCount = 0f;
     float minVal = 1f;
     float maxVal = 0;
 
@@ -52,7 +50,6 @@ vec4 calcMinMaxAvg_OutsideVoxel(ivec3 pos) {
                 maxVal = max(maxVal, vn.x);
 
                 avgOpacity += opacity;
-                sampleCount += 1f;
             }
         }
     }
@@ -72,8 +69,9 @@ vec4 calcMinMaxAvg_OutsideVoxel(ivec3 pos) {
     // bounds. The code below samples the edges, but also all voxels inside. We need to divide it
     // into loops that covers the 6 edge planes of the grid cell. This checks the absolute edge of
     // voxel, but we need to check the center edge
-
-    avgOpacity /= sampleCount;
+    ivec3 rs = endCoord - startCoord;
+    int sampleCount = rs.x * rs.y * rs.z;
+    avgOpacity /= float(sampleCount);
 
     return vec4(minOpacity, maxOpacity, avgOpacity, 0f);
 }
@@ -96,7 +94,7 @@ vec4 calcMinMaxAvg_EdgePlanes(ivec3 pos) {
             for (int x = startCoord.x; x < endCoord.x; ++x) {
                 ivec3 texCoord = ivec3(x, y, z);
                 vec4 vn = getNormalizedVoxel(volumeData, volumeDataParameters, texCoord);
-                float opacity = applyTF(tf, vn).a;
+                float opacity = applyTF(transferFunction, vn).a;
 
                 minOpacity = min(minOpacity, opacity);
                 maxOpacity = max(maxOpacity, opacity);
@@ -147,7 +145,7 @@ vec4 calcMinMaxAvg_EdgePlanes(ivec3 pos) {
 
                     vec3 texCoord = (texEdge) / vec3(volumeDataParameters.dimensions);
                     vec4 vn = getNormalizedVoxel(volumeData, volumeDataParameters, texCoord);
-                    float opacity = applyTF(tf, vn).a;
+                    float opacity = applyTF(transferFunction, vn).a;
 
                     minOpacity = min(minOpacity, opacity);
                     maxOpacity = max(maxOpacity, opacity);
