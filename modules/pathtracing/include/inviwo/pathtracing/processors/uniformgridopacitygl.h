@@ -56,13 +56,13 @@ public:
 
 private:
     VolumeInport inport_;
-    // OpacityMinMaxUniformGrid3DOutport outport_;
     VolumeOutport outportVolume_;
     OptionPropertyInt channel_;
 
     TransferFunctionProperty transferFunction_;
     IntProperty volumeRegionSize_;
     Shader shader_;
+    std::shared_ptr<Volume> volume_;
 };
 
 }  // namespace inviwo

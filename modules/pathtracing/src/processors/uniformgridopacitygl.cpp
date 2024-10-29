@@ -56,7 +56,6 @@ UniformGridOpacityGL::UniformGridOpacityGL()
     , shader_({{ShaderType::Compute, "minmaxopacity/minmaxavg.comp"}}) {
 
     addPort(inport_);
-    // addPort(outport_);
     addPort(outportVolume_);
 
     channel_.setSerializationMode(PropertySerializationMode::All);
@@ -90,39 +89,28 @@ UniformGridOpacityGL::UniformGridOpacityGL()
     addProperty(volumeRegionSize_);
 
     shader_.onReload([this]() {
-        //shader_.build();
         invalidate(InvalidationLevel::InvalidOutput);
     });
-
-    volumeRegionSize_.onChange([this](){ invalidate(InvalidationLevel::InvalidOutput); });
 }
-/*
-    Sometimes breaks, and fails to generate
-*/
-void UniformGridOpacityGL::process() {
-    auto curVolume = inport_.getData();
 
-    //std::cout << "Is the input volume broken?\n" << curVolume->getInfo() << std::endl;
-    
-    auto dim = curVolume->getDimensions();
+void UniformGridOpacityGL::process() {
+    auto inputVolume = inport_.getData();
+
+    auto dim = inputVolume->getDimensions();
     auto region = inviwo::ivec3(volumeRegionSize_.get());
     const size3_t outDim{glm::ceil(vec3(dim) / static_cast<float>(volumeRegionSize_.get()))};
+    if (!volume_ || glm::any(glm::notEqual(outDim, volume_->getDimensions()))) {
+        volume_ = std::make_shared<Volume>(outDim, DataVec4Float32::get(), swizzlemasks::rgba,
+                                           InterpolationType::Nearest, inputVolume->getWrapping());
+        // Opacity is defined between [0 1]
+        volume_->dataMap.dataRange = dvec2(0, 1); 
+        volume_->dataMap.valueRange = dvec2(0, 1);
 
-    // GL rep construction. TODO: Do we need to add a dataformat id (see formats.h /.cpp)?
-    auto statsGLRep =
-        std::make_shared<VolumeGL>(outDim, DataVec4Float32::get(), swizzlemasks::rgba,
-                                   InterpolationType::Nearest, curVolume->getWrapping());
+        volume_->setModelMatrix(inputVolume->getModelMatrix());
+        volume_->setWorldMatrix(inputVolume->getWorldMatrix());
 
-    auto stats = std::make_shared<Volume>(statsGLRep);
-
-    stats->dataMap.dataRange.x = 0;  // should map from 0,1
-    stats->dataMap.dataRange.y = 1;  // should map from 0,1
-    stats->dataMap.valueRange.x = 0;
-    stats->dataMap.valueRange.y = 1;
-
-    stats->setModelMatrix(curVolume->getModelMatrix());
-    stats->setWorldMatrix(curVolume->getWorldMatrix());
-    stats->setDimensions(outDim);
+        outportVolume_.setData(volume_);
+    }
 
     // Compute Shader set up
     shader_.activate();
@@ -137,7 +125,7 @@ void UniformGridOpacityGL::process() {
     /*utilgl::bindAndSetUniforms(shader_, units, *stats, "opacityData"); // with write capabilites*/
     {
         TextureUnit unit;
-        auto statsGL = stats->getEditableRepresentation<VolumeGL>();
+        auto statsGL = volume_->getEditableRepresentation<VolumeGL>();
         statsGL->bindImageTexture(unit.getEnum(), unit.getUnitNumber(), GL_WRITE_ONLY);
 
         shader_.setUniform("opacityData", unit);
@@ -146,7 +134,7 @@ void UniformGridOpacityGL::process() {
 
         StrBuffer buff;
 
-        utilgl::setShaderUniforms(shader_, *stats,
+        utilgl::setShaderUniforms(shader_, *volume_,
                                   buff.replace("{}Parameters", outportVolume_.getIdentifier()));
     }
 
@@ -160,10 +148,6 @@ void UniformGridOpacityGL::process() {
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     shader_.deactivate();
-
-    //std::cout << "And what about mine?\n" << stats->getInfo() << std::endl;
-
-    outportVolume_.setData(stats);
 }
 
 }  // namespace inviwo
