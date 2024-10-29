@@ -13,7 +13,7 @@ image3D opacityData;
 uniform VolumeParameters opacityDataParameters;
 
 uniform ivec3 regionSize;
-uniform sampler2D tf;
+uniform sampler2D transferFunction;
 uniform int tfSize;
 
 // look at
@@ -46,7 +46,7 @@ vec4 calcMinMaxAvg_OutsideVoxel(ivec3 pos) {
             for (int x = startCoord.x; x < endCoord.x; ++x) {
                 ivec3 texCoord = ivec3(x, y, z);
                 vec4 vn = getNormalizedVoxel(volumeData, volumeDataParameters, texCoord);
-                float opacity = applyTF(tf, vn).a;
+                float opacity = applyTF(transferFunction, vn).a;
 
                 minVal = min(minVal, vn.x);
                 maxVal = max(maxVal, vn.x);
@@ -61,12 +61,12 @@ vec4 calcMinMaxAvg_OutsideVoxel(ivec3 pos) {
     // Take smaller steps than the tf pixels
     float dx = 1f/float(tfSize + 10f);
     for (float v = minVal; v <= maxVal; v += dx) {
-        float opacity = applyTF(tf, min(v, maxVal)).a;
+        float opacity = applyTF(transferFunction, min(v, maxVal)).a;
         minOpacity = min(minOpacity, opacity);
         maxOpacity = max(maxOpacity, opacity);
     }
     // Ensure that maxValue is accounted for
-    maxOpacity = max(maxOpacity, applyTF(tf, maxVal).a);
+    maxOpacity = max(maxOpacity, applyTF(transferFunction, maxVal).a);
 
     // TODO: Sample edge planes of the grid cell instead of the neighboring voxel to create tighter
     // bounds. The code below samples the edges, but also all voxels inside. We need to divide it
