@@ -54,20 +54,25 @@
 
 using namespace inviwo;
 
+std::thread::id main_id = std::this_thread::get_id();
 int64_t allocCount{0};
 int64_t deallocCount{0};
 int64_t allocSize{0};
 
 #if 1
 void* operator new(size_t count) {
-    ++allocCount;
-    allocSize += count;
+    if (main_id == std::this_thread::get_id()) {
+        ++allocCount;
+        allocSize += count;
+    }
 
     return malloc(count);
 }
 void* operator new[](std::size_t count) {
-    ++allocCount;
-    allocSize += count;
+    if (main_id == std::this_thread::get_id()) {
+        ++allocCount;
+        allocSize += count;
+    };
 
     return malloc(count);
 }
@@ -119,6 +124,7 @@ struct Fixture : ::benchmark::Fixture {
 
         if (!app) {
             app = std::make_unique<App>();
+            app->inviwo.getProcessorNetwork()->lock();
         }
     }
     void TearDown(::benchmark::State& state) {
@@ -141,9 +147,10 @@ struct Fixture : ::benchmark::Fixture {
 
 BENCHMARK_DEFINE_F(Fixture, Loading)(benchmark::State& st) {
     auto workspace = app->inviwo.getPath(PathType::Workspaces) / "boron.inv";
+
     for (auto _ : st) {
         app->inviwo.getWorkspaceManager()->load(workspace);
-        app->inviwo.getWorkspaceManager()->clear();
+        //app->inviwo.getWorkspaceManager()->clear();
     }
 }
 
@@ -157,7 +164,7 @@ BENCHMARK_DEFINE_F(Fixture, Saving)(benchmark::State& st) {
     }
 }
 
-BENCHMARK_REGISTER_F(Fixture, Saving)->Unit(benchmark::kMicrosecond)->MinTime(10.0);
-// BENCHMARK_REGISTER_F(Fixture, Loading)->Unit(benchmark::kMillisecond)->MinTime(5.0);
+// BENCHMARK_REGISTER_F(Fixture, Saving)->Unit(benchmark::kMicrosecond)->MinTime(10.0);
+BENCHMARK_REGISTER_F(Fixture, Loading)->Unit(benchmark::kMillisecond)->MinTime(10.0);
 
 BENCHMARK_MAIN();
