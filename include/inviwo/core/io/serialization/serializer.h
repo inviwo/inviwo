@@ -82,8 +82,9 @@ public:
     virtual void writeFile(std::ostream& stream, bool format = false);
 
     // std containers
-    template <typename T, typename Pred = util::alwaysTrue, typename Proj = util::identity>
-    void serialize(std::string_view key, const std::vector<T>& sVector,
+    template <typename T, typename Alloc, typename Pred = util::alwaysTrue,
+              typename Proj = util::identity>
+    void serialize(std::string_view key, const std::vector<T, Alloc>& sVector,
                    std::string_view itemKey = "item", Pred pred = {}, Proj proj = {});
     template <typename T>
     void serialize(std::string_view key, const std::unordered_set<T>& sSet,
@@ -110,29 +111,35 @@ public:
 
     // Specializations for chars
     void serialize(std::string_view key, const signed char& data,
-                   const SerializationTarget& target = SerializationTarget::Node);
+                   SerializationTarget target = SerializationTarget::Node);
     void serialize(std::string_view key, const char& data,
-                   const SerializationTarget& target = SerializationTarget::Node);
+                   SerializationTarget target = SerializationTarget::Node);
     void serialize(std::string_view key, const unsigned char& data,
-                   const SerializationTarget& target = SerializationTarget::Node);
+                   SerializationTarget target = SerializationTarget::Node);
 
-    // integers, reals, strings
-    template <typename T, typename std::enable_if<std::is_integral<T>::value ||
-                                                      util::is_floating_point<T>::value ||
-                                                      util::is_string<T>::value,
-                                                  int>::type = 0>
+    // String types
+    void serialize(std::string_view key, std::string_view data,
+                   SerializationTarget target = SerializationTarget::Node);
+    void serialize(std::string_view key, const std::string& data,
+                   SerializationTarget target = SerializationTarget::Node);
+    void serialize(std::string_view key, const std::pmr::string& data,
+                   SerializationTarget target = SerializationTarget::Node);
+
+    // integers, reals
+    template <typename T>
+        requires(std::is_integral<T>::value || std::is_floating_point<T>::value)
     void serialize(std::string_view key, const T& data,
-                   const SerializationTarget& target = SerializationTarget::Node);
+                   SerializationTarget target = SerializationTarget::Node);
 
     // Enum types
     template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
     void serialize(std::string_view key, const T& data,
-                   const SerializationTarget& target = SerializationTarget::Node);
+                   SerializationTarget target = SerializationTarget::Node);
 
     // Flag types
     template <typename T>
     void serialize(std::string_view key, const flags::flags<T>& data,
-                   const SerializationTarget& target = SerializationTarget::Node);
+                   SerializationTarget target = SerializationTarget::Node);
 
     // glm vector types
     template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type = 0>
@@ -148,7 +155,7 @@ public:
 
     // path
     void serialize(std::string_view key, const std::filesystem::path& path,
-                   const SerializationTarget& target = SerializationTarget::Node);
+                   SerializationTarget target = SerializationTarget::Node);
 
     // serializable classes
     void serialize(std::string_view key, const Serializable& sObj);
@@ -169,10 +176,20 @@ public:
               typename = std::enable_if_t<util::is_detected_exact_v<void, HasSerialize, T>>>
     void serialize(std::string_view key, const T& sObj);
 
+    // SerializeFunction should look like this by default
+    // [](Serializer& s, auto&& item) { s.serialize("item", std::forward<decltype(item)>(item)); };
+    template <typename Range, typename SerializeFunction>
+    void serializeRange(std::string_view key, Range&& range,
+                        SerializeFunction serializeFunction = {}) {
+        auto nodeSwitch = switchToNewNode(key);
+        for (const auto& item : range) {
+            serializeFunction(*this, item);
+        }
+    }
+    NodeSwitch switchToNewNode(std::string_view key);
+
 protected:
     friend class NodeSwitch;
-
-    NodeSwitch switchToNewNode(std::string_view key);
     TiXmlElement* getLastChild() const;
 
     static void setAttribute(TiXmlElement* node, std::string_view key, std::string_view val);
@@ -181,8 +198,8 @@ protected:
     std::pmr::vector<char> buffer{};
 };
 
-template <typename T, typename Pred, typename Proj>
-void Serializer::serialize(std::string_view key, const std::vector<T>& vector,
+template <typename T, typename Alloc, typename Pred, typename Proj>
+void Serializer::serialize(std::string_view key, const std::vector<T, Alloc>& vector,
                            std::string_view itemKey, Pred pred, Proj proj) {
     if (vector.empty()) return;
 
@@ -270,12 +287,10 @@ void Serializer::serialize(std::string_view key, const T* const& data) {
     serialize(key, *data);
 }
 
-// integers, reals, strings
-template <typename T,
-          typename std::enable_if<std::is_integral<T>::value || util::is_floating_point<T>::value ||
-                                      util::is_string<T>::value,
-                                  int>::type>
-void Serializer::serialize(std::string_view key, const T& data, const SerializationTarget& target) {
+// integers, reals
+template <typename T>
+    requires(std::is_integral<T>::value || std::is_floating_point<T>::value)
+void Serializer::serialize(std::string_view key, const T& data, SerializationTarget target) {
     if (target == SerializationTarget::Attribute) {
         setAttribute(rootElement_, key, detail::toStr(data, buffer));
     } else {
@@ -287,7 +302,7 @@ void Serializer::serialize(std::string_view key, const T& data, const Serializat
 
 // enum types
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type>
-void Serializer::serialize(std::string_view key, const T& data, const SerializationTarget& target) {
+void Serializer::serialize(std::string_view key, const T& data, SerializationTarget target) {
     using ET = typename std::underlying_type<T>::type;
     const ET tmpdata{static_cast<const ET>(data)};
     serialize(key, tmpdata, target);
@@ -296,7 +311,7 @@ void Serializer::serialize(std::string_view key, const T& data, const Serializat
 // Flag types
 template <typename T>
 void Serializer::serialize(std::string_view key, const flags::flags<T>& data,
-                           const SerializationTarget& target) {
+                           SerializationTarget target) {
     serialize(key, data.underlying_value(), target);
 }
 

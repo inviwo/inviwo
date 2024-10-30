@@ -37,6 +37,11 @@ public:
     */
     void SetAttribute(std::string_view name, std::string_view _value);
 
+    /** Adds an attribute of name to a given value. The attribute
+        will be created; It should not exist.
+    */
+    void AddAttribute(std::string_view name, std::string_view _value);
+
     /** Deletes an attribute with the given name.
      */
     void RemoveAttribute(std::string_view name);

@@ -124,6 +124,7 @@ IVW_CORE_API void fromStr(std::string_view value, unsigned long long& dest);
 
 IVW_CORE_API void fromStr(std::string_view value, bool& dest);
 IVW_CORE_API void fromStr(std::string_view value, std::string& dest);
+IVW_CORE_API void fromStr(std::string_view value, std::pmr::string& dest);
 
 template <class T>
 decltype(auto) toStr(const T& value, std::pmr::vector<char>& buffer) {

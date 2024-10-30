@@ -41,23 +41,34 @@ class InviwoModule;
 class InviwoApplication;
 
 struct IVW_CORE_API InviwoSetupInfo {
+    using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
+
     struct ModuleSetupInfo {
+        ModuleSetupInfo(allocator_type alloc = {}) : name{alloc}, processors{alloc} {}
+
+        ModuleSetupInfo(std::string_view aName, int aVersion,
+                        std::pmr::vector<std::pmr::string> someProcessors,
+                        allocator_type alloc = {})
+            : name{aName, alloc}, version{aVersion}, processors{std::move(someProcessors)} {}
+
         void serialize(Serializer& s) const;
         void deserialize(Deserializer& d);
-        std::string name;
+        std::pmr::string name;
         int version = 0;
-        std::vector<std::string> processors;
+        std::pmr::vector<std::pmr::string> processors;
     };
 
-    InviwoSetupInfo() = default;
-    InviwoSetupInfo(const InviwoApplication& app, ProcessorNetwork& network);
+    InviwoSetupInfo(allocator_type alloc = {});
+    InviwoSetupInfo(const InviwoApplication& app, ProcessorNetwork& network,
+                    allocator_type alloc = {});
     void serialize(Serializer& s) const;
     void deserialize(Deserializer& d);
-    std::vector<ModuleSetupInfo> modules_;
 
-    const InviwoSetupInfo::ModuleSetupInfo* getModuleInfo(const std::string& module) const;
+    const InviwoSetupInfo::ModuleSetupInfo* getModuleInfo(std::string_view moduleName) const;
     const InviwoSetupInfo::ModuleSetupInfo* getModuleForProcessor(
-        const std::string& processorClassIdentifier) const;
+        std::string_view processorClassIdentifier) const;
+
+    std::pmr::vector<ModuleSetupInfo> modules_;
 };
 
 }  // namespace inviwo
