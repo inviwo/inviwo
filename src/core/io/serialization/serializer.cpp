@@ -55,7 +55,7 @@ Serializer::Serializer(const std::filesystem::path& fileName, allocator_type all
 Serializer::~Serializer() {}
 
 void Serializer::serialize(std::string_view key, const std::filesystem::path& path,
-                           const SerializationTarget& target) {
+                           SerializationTarget target) {
 
     if (target == SerializationTarget::Attribute) {
         setAttribute(rootElement_, key, path.generic_string());
@@ -81,20 +81,38 @@ NodeSwitch Serializer::switchToNewNode(std::string_view key) {
 TiXmlElement* Serializer::getLastChild() const { return rootElement_->LastChild()->ToElement(); }
 
 void Serializer::setAttribute(TiXmlElement* node, std::string_view key, std::string_view val) {
-    node->SetAttribute(key, val);
+    // Use Add here, this will throw if the attribute already exist.
+    node->AddAttribute(key, val);
 }
 
 void Serializer::serialize(std::string_view key, const signed char& data,
-                           const SerializationTarget& target) {
+                           SerializationTarget target) {
     serialize(key, static_cast<int>(data), target);
 }
-void Serializer::serialize(std::string_view key, const char& data,
-                           const SerializationTarget& target) {
+void Serializer::serialize(std::string_view key, const char& data, SerializationTarget target) {
     serialize(key, static_cast<int>(data), target);
 }
 void Serializer::serialize(std::string_view key, const unsigned char& data,
-                           const SerializationTarget& target) {
+                           SerializationTarget target) {
     serialize(key, static_cast<unsigned int>(data), target);
+}
+
+void Serializer::serialize(std::string_view key, std::string_view data,
+                           SerializationTarget target) {
+    if (target == SerializationTarget::Attribute) {
+        setAttribute(rootElement_, key, data);
+    } else {
+        auto nodeSwitch = switchToNewNode(key);
+        setAttribute(rootElement_, SerializeConstants::ContentAttribute, data);
+    }
+}
+void Serializer::serialize(std::string_view key, const std::string& data,
+                           SerializationTarget target) {
+    serialize(key, std::string_view{data}, target);
+}
+void Serializer::serialize(std::string_view key, const std::pmr::string& data,
+                           SerializationTarget target) {
+    serialize(key, std::string_view{data}, target);
 }
 
 void Serializer::writeFile() {

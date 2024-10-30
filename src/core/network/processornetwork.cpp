@@ -394,25 +394,28 @@ void ProcessorNetwork::onProcessorMetaDataSelectionChange() {
 
 void ProcessorNetwork::serialize(Serializer& s) const {
     s.serialize("ProcessorNetworkVersion", processorNetworkVersion_);
-    s.serialize("Processors", getProcessors(), "Processor");
 
-    {
-        std::vector<NetworkEdge> connections;
-        connections.reserve(connectionsVec_.size());
-        for (const auto& item : connectionsVec_) {
-            connections.emplace_back(item);
-        }
-        s.serialize("Connections", connections, "Connection");
-    }
+    s.serializeRange("Processors", processors_, [](Serializer& nested, const auto& item) {
+        nested.serialize("Processor", item.second.get());
+    });
 
-    {
-        std::vector<NetworkEdge> links;
-        links.reserve(links_.size());
-        for (const auto& item : links_) {
-            links.emplace_back(item);
-        }
-        s.serialize("PropertyLinks", links, "PropertyLink");
-    }
+    s.serializeRange("Connections", connectionsVec_,
+                     [](Serializer& nested, const PortConnection& connection) {
+                         auto nodeSwitch = nested.switchToNewNode("Connection");
+                         nested.serialize("src", connection.getOutport()->getPath(),
+                                          SerializationTarget::Attribute);
+                         nested.serialize("dst", connection.getInport()->getPath(),
+                                          SerializationTarget::Attribute);
+                     });
+
+    s.serializeRange("PropertyLinks", links_,
+                     [](Serializer& nested, const PropertyLink& link) {
+                         auto nodeSwitch = nested.switchToNewNode("PropertyLink");
+                         nested.serialize("src", link.getSource()->getPath(),
+                                          SerializationTarget::Attribute);
+                         nested.serialize("dst", link.getDestination()->getPath(),
+                                          SerializationTarget::Attribute);
+                     });
 }
 
 void ProcessorNetwork::addPropertyOwnerObservation(PropertyOwner* po) {

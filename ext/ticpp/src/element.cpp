@@ -38,6 +38,10 @@ void TiXmlElement::SetAttribute(std::string_view name, std::string_view _value) 
     attributeSet.Add(name, _value);
 }
 
+void TiXmlElement::AddAttribute(std::string_view name, std::string_view _value) {
+    attributeSet.Add(name, _value);
+}
+
 void TiXmlElement::RemoveAttribute(std::string_view name) { attributeSet.Remove(name); }
 
 void TiXmlElement::CopyTo(TiXmlElement* target) const {

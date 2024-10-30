@@ -193,5 +193,6 @@ void detail::fromStr(std::string_view value, unsigned long long& dest) {
 
 void detail::fromStr(std::string_view value, bool& dest) { fromStrInternal(value, dest); }
 void detail::fromStr(std::string_view value, std::string& dest) { dest = value; }
+void detail::fromStr(std::string_view value, std::pmr::string& dest) { dest = value; }
 
 }  // namespace inviwo
