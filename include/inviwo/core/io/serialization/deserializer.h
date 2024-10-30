@@ -144,8 +144,8 @@ public:
     void deserialize(std::string_view key, std::vector<T*>& sVector, std::string_view itemKey,
                      C identifier);
 
-    template <typename T>
-    void deserialize(std::string_view key, std::vector<T>& sVector,
+    template <typename T, typename Alloc>
+    void deserialize(std::string_view key, std::vector<T, Alloc>& sVector,
                      std::string_view itemKey = "item");
 
     template <typename T>
@@ -902,8 +902,8 @@ void Deserializer::deserialize(std::string_view key, std::vector<T*>& vector,
     });
 }
 
-template <typename T>
-void Deserializer::deserialize(std::string_view key, std::vector<T>& vector,
+template <typename T, typename Alloc>
+void Deserializer::deserialize(std::string_view key, std::vector<T, Alloc>& vector,
                                std::string_view itemKey) {
     static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 

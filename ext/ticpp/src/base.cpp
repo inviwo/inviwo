@@ -60,8 +60,7 @@ void TiXmlBase::EncodeString(const std::string_view str, std::string* outString)
 
     // Fast path where we don't have any thing to encode
     // avoid c < 32, " = 34, & = 38, ' = 39, < = 60, > = 62,
-    if (std::ranges::find_if(str, [](char c) { return c < 40 || c == 60 || c == 62; }) ==
-        str.end()) {
+    if (std::all_of(str.begin(), str.end(), [](char c) { return c >= 40 && c != 60 && c != 62; })) {
         outString->append(str);
         return;
     }

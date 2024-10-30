@@ -188,7 +188,7 @@ void WorkspaceManager::save(std::ostream& stream, const std::filesystem::path& r
     Serializer serializer(refPath, &mbr);
 
     if (mode != WorkspaceSaveMode::Undo) {
-        InviwoSetupInfo info(*app_, *app_->getProcessorNetwork());
+        InviwoSetupInfo info(*app_, *app_->getProcessorNetwork(), &mbr);
         serializer.serialize("InviwoSetup", info);
     }
 
