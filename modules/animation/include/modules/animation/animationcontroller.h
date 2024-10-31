@@ -85,6 +85,12 @@ public:
     // Pause and reset to start
     void stop();
 
+    void nextKeyframe();
+    void prevKeyframe();
+
+    void nextControlKeyframe();
+    void prevControlKeyframe();
+
     void setState(AnimationState newState);
 
     /// Advances the animation to the next time step in playing state.

@@ -258,6 +258,50 @@ void AnimationController::stop() {
     eval(currentTime_, Seconds(0));
 }
 
+void AnimationController::nextKeyframe() {
+    auto times = animation_->getAllTimes();
+    auto it = std::upper_bound(times.begin(), times.end(), getCurrentTime());
+    if (it != times.end()) {
+        eval(getCurrentTime(), *it);
+    }
+}
+
+void AnimationController::prevKeyframe() {
+    auto times = animation_->getAllTimes();
+    auto it = std::lower_bound(times.begin(), times.end(), getCurrentTime());
+    if (it != times.begin()) {
+        eval(getCurrentTime(), *std::prev(it));
+    }
+}
+
+void AnimationController::nextControlKeyframe() {
+    std::vector<Seconds> times;
+    for (auto& track : animation_->getTracksOfType<ControlTrack>()) {
+        auto t = track->getAllTimes();
+        times.insert(times.end(), t.begin(), t.end());
+    }
+    std::sort(times.begin(), times.end());
+
+    auto it = std::upper_bound(times.begin(), times.end(), getCurrentTime());
+    if (it != times.end()) {
+        eval(getCurrentTime(), *it);
+    }
+}
+
+void AnimationController::prevControlKeyframe() {
+    std::vector<Seconds> times;
+    for (auto& track : animation_->getTracksOfType<ControlTrack>()) {
+        auto t = track->getAllTimes();
+        times.insert(times.end(), t.begin(), t.end());
+    }
+    std::sort(times.begin(), times.end());
+
+    auto it = std::lower_bound(times.begin(), times.end(), getCurrentTime());
+    if (it != times.begin()) {
+        eval(getCurrentTime(), *std::prev(it));
+    }
+}
+
 void AnimationController::tick() {
     if (state_ != AnimationState::Playing) {
         setState(AnimationState::Paused);
