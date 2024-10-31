@@ -171,6 +171,13 @@ public:
     iterator findTrack(Property* withMe);
 
     /**
+     * Find Track of a given type.
+     * @return All tracks of the specified type.
+     */
+    template<typename TrackType>
+    std::vector<TrackType*> getTracksOfType();
+
+    /**
      * Remove all tracks. Calls TrackObserver::notifyTrackRemoved for each removed track.
      */
     void clear();
@@ -229,6 +236,17 @@ private:
     std::string name_;
     AnimationManager* am_;
 };
+
+template <typename TrackType>
+std::vector<TrackType*> Animation::getTracksOfType() {
+    std::vector<TrackType*> tracks;
+    for (auto& track : *this) {
+        if (auto tr = dynamic_cast<TrackType*>(&track)) {
+            tracks.push_back(tr);
+        }
+    }
+    return tracks;
+}
 
 }  // namespace animation
 
