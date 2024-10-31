@@ -264,21 +264,22 @@ TEST(AnimationTests, ControlTrackTest) {
     {
         auto controlTrack = std::make_unique<ControlTrack>();
         std::vector<std::unique_ptr<ControlKeyframe>> controlKeys;
-        controlKeys.push_back(std::make_unique<ControlKeyframe>(Seconds(0), ControlAction::Pause));
+        controlKeys.push_back(std::make_unique<ControlKeyframe>(Seconds(1), ControlAction::Pause));
         controlKeys.push_back(
-            std::make_unique<ControlKeyframe>(Seconds(1), ControlAction::Jump, Seconds(5)));
+            std::make_unique<ControlKeyframe>(Seconds(2), ControlAction::Jump, Seconds(5)));
         controlKeys.push_back(std::make_unique<ControlKeyframe>(Seconds(8), ControlAction::Pause));
         auto controlSequence = std::make_unique<ControlKeyframeSequence>(std::move(controlKeys));
         controlTrack->add(std::move(controlSequence));
         animation.add(std::move(controlTrack));
     }
     {
-        auto state1 = animation(Seconds{0.0}, Seconds{1.0}, AnimationState::Playing);
+        auto state1 = animation(Seconds{0.0}, Seconds{2.0}, AnimationState::Playing);
         EXPECT_EQ(AnimationState::Paused, state1.state);
-        EXPECT_EQ(Seconds{0.0}, state1.time);
+        EXPECT_EQ(Seconds{1.0}, state1.time);
 
         auto state2 = animation(Seconds{1.0}, Seconds{2.0}, AnimationState::Playing);
-        EXPECT_EQ(AnimationState::Playing, state2.state);
+        // Starting at control keyframe should not trigger it
+        EXPECT_EQ(AnimationState::Playing, state2.state); 
         EXPECT_EQ(Seconds{5}, state2.time);
 
         auto state3 = animation(Seconds{1.0}, animation.getLastTime(), AnimationState::Playing);
@@ -287,20 +288,19 @@ TEST(AnimationTests, ControlTrackTest) {
     }
     {
         // Reverse
-        // Time-jump to 5 seconds, skipping the pause-control keyframe at 0
-        // This behaviour might be debatable, but taking time-jumping into consideration makes
-        // evaluation complex and
-        auto state1 = animation(Seconds{1.0}, Seconds{0.0}, AnimationState::Playing);
-        EXPECT_EQ(AnimationState::Playing, state1.state);
-        EXPECT_EQ(Seconds{5}, state1.time);
+        auto state1 = animation(Seconds{2.0}, Seconds{0.0}, AnimationState::Playing);
+        EXPECT_EQ(AnimationState::Paused, state1.state);
+        EXPECT_EQ(Seconds{1}, state1.time);
 
         auto state2 = animation(Seconds{2.0}, Seconds{1.0}, AnimationState::Playing);
-        EXPECT_EQ(AnimationState::Playing, state2.state);
-        EXPECT_EQ(Seconds{5}, state2.time);
-
-        auto state3 = animation(Seconds(8), Seconds{1.0}, AnimationState::Playing);
-        EXPECT_EQ(AnimationState::Paused, state3.state);
-        EXPECT_EQ(animation.getLastTime(), state3.time);
+        EXPECT_EQ(AnimationState::Paused, state2.state); 
+        EXPECT_EQ(Seconds{1}, state2.time);
+        // Time-jump to 5 seconds, skipping the pause-control keyframe at 1
+        // This behaviour might be debatable, but taking time-jumping into consideration makes
+        // evaluation complex
+        auto state3 = animation(Seconds(8), Seconds{0.0}, AnimationState::Playing);
+        EXPECT_EQ(AnimationState::Playing, state3.state);
+        EXPECT_EQ(Seconds(5), state3.time);
     }
 }
 
