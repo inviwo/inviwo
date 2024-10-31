@@ -71,8 +71,8 @@ AnimationTimeState ControlKeyframe::operator()(Seconds from, Seconds to,
         // Do not apply action when the animation is starting
         // exactly at the keyframe (from == getTime()) to allow for
         // continuing an animation from the keyframe.
-        bool passedKeyframPlayingForward = (from < getTime() && to >= getTime());
-        bool passedKeyframePlayingBackward = (to <= getTime() && from > getTime());
+        const bool passedKeyframPlayingForward = (from < getTime() && to >= getTime());
+        const bool passedKeyframePlayingBackward = (to <= getTime() && from > getTime());
         if (passedKeyframPlayingForward || passedKeyframePlayingBackward) {
             // We passed over this keyframe
             switch (action_) {
