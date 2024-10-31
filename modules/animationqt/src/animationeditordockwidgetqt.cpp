@@ -482,7 +482,7 @@ void AnimationEditorDockWidgetQt::onAnimationChanged(AnimationController*, Anima
 bool AnimationEditorDockWidgetQt::isKeyDoublePressed() const {
     auto timestamp = std::chrono::system_clock::now();
     const std::chrono::duration<double> doublePressThreshold(0.500);
-    bool isDoublePress = (timestamp - lastKeyEventTimestamp_) < doublePressThreshold;
+    const bool isDoublePress = (timestamp - lastKeyEventTimestamp_) < doublePressThreshold;
     return isDoublePress;
 }
 
