@@ -86,15 +86,13 @@ const char* TiXmlDeclaration::Parse(const char* p, TiXmlParsingData* data, alloc
     if (!p || !*p || !StringEqual(p, "<?xml", true)) {
         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_DECLARATION, nullptr, nullptr);
     }
-    if (data) {
-        data->Stamp(p);
-        location = data->Cursor();
-    }
-    p += 5;
 
-    version = "";
-    encoding = "";
-    standalone = "";
+    constexpr size_t size = std::string_view{"<?xml"}.size();
+    p += size;
+
+    version.clear();
+    encoding.clear();
+    standalone.clear();
 
     while (p && *p) {
         if (*p == '>') {

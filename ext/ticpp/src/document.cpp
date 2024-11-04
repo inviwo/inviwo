@@ -86,7 +86,6 @@ void TiXmlDocument::LoadFile(FILE* file) {
 
     // Delete the existing data:
     Clear();
-    location.Clear();
 
     // Get the file size, so we can pre-allocate the string. HUGE speed impact.
     long length = 0;
@@ -235,19 +234,8 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData, allo
         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
     }
 
-    // Note that, for a document, this needs to come
-    // before the while space skip, so that parsing
-    // starts from the pointer we are given.
-    location.Clear();
-    if (prevData) {
-        location.row = prevData->Cursor().row;
-        location.col = prevData->Cursor().col;
-    } else {
-        location.row = 0;
-        location.col = 0;
-    }
-    TiXmlParsingData data(p, TabSize(), location.row, location.col);
-    location = data.Cursor();
+    TiXmlParsingData data(p, TabSize(), prevData ? prevData->Cursor().row : 0,
+                          prevData ? prevData->Cursor().col : 0);
 
     p = SkipWhiteSpace(p);
     if (!p) {

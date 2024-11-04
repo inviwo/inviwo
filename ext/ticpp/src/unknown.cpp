@@ -16,15 +16,11 @@ TiXmlNode* TiXmlUnknown::Clone(allocator_type alloc) const {
 const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) {
     p = SkipWhiteSpace(p);
 
-    if (data) {
-        data->Stamp(p);
-        location = data->Cursor();
-    }
     if (!p || !*p || *p != '<') {
         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_UNKNOWN, p, data);
     }
     ++p;
-    value = "";
+    value.clear();
 
     while (p && *p && *p != '>') {
         value += *p;

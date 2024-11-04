@@ -91,11 +91,6 @@ const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data, allocator
         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_ELEMENT, nullptr, nullptr);
     }
 
-    if (data) {
-        data->Stamp(p);
-        location = data->Cursor();
-    }
-
     if (*p != '<') {
         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_ELEMENT, p, data);
     }
