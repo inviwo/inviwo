@@ -58,8 +58,13 @@ Deserializer::Deserializer(std::istream& stream, const std::filesystem::path& pa
                            allocator_type alloc)
     : SerializeBase(path, alloc) {
     try {
-        const std::string data(std::istreambuf_iterator<char>{stream},
-                               std::istreambuf_iterator<char>{});
+
+        std::string data;
+        stream.seekg(0, std::ios::end);
+        data.reserve(stream.tellg());
+        stream.seekg(0, std::ios::beg);
+        data.assign(std::istreambuf_iterator<char>{stream}, std::istreambuf_iterator<char>{});
+
         doc_->Parse(data.c_str(), nullptr, alloc);
 
         rootElement_ = doc_->FirstChildElement();
