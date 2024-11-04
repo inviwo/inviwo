@@ -75,14 +75,12 @@ const char* TiXmlStylesheetReference::Parse(const char* p, TiXmlParsingData* dat
     if (!p || !*p || !StringEqual(p, "<?xml-stylesheet", true)) {
         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_DECLARATION, nullptr, nullptr);
     }
-    if (data) {
-        data->Stamp(p);
-        location = data->Cursor();
-    }
-    p += 5;
 
-    type = "";
-    href = "";
+    constexpr size_t size = std::string_view{"<?xml-stylesheet"}.size();
+    p += size;
+
+    type.clear();
+    href.clear();
 
     while (p && *p) {
         if (*p == '>') {

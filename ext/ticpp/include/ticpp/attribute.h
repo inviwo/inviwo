@@ -21,7 +21,6 @@ public:
     using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
 
     TiXmlAttribute(allocator_type alloc = {});
-    TiXmlAttribute(TiXmlCursor _location, allocator_type alloc = {});
     TiXmlAttribute(std::string_view _name, std::string_view _value, allocator_type alloc = {});
 
     TiXmlAttribute(const TiXmlAttribute&) = delete;
@@ -53,15 +52,11 @@ public:
     void Print(FILE* file) const;
     void Print(std::string* str) const;
 
-    int Row() const { return location.row + 1; }
-    int Column() const { return location.col + 1; }
-
 private:
     std::pmr::string name;
     std::pmr::string value;
     TiXmlAttribute* prev;
     TiXmlAttribute* next;
-    TiXmlCursor location;
 };
 
 /**	A class used to manage a group of attributes.

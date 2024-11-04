@@ -118,27 +118,6 @@ public:
     /// Return the current white space setting.
     static bool IsWhiteSpaceCondensed() { return condenseWhiteSpace; }
 
-    /** Return the position, in the original source file, of this node or attribute.
-     * The row and column are 1-based. (That is the first row and first column is
-     * 1,1). If the returns values are 0 or less, then the parser does not have
-     * a row and column value.
-     *
-     * Generally, the row and column value will be set when the TiXmlDocument::Load(),
-     * TiXmlDocument::LoadFile(), or any TiXmlNode::Parse() is called. It will NOT be set
-     * when the DOM was created from operator>>.
-     *
-     * The values reflect the initial load. Once the DOM is modified programmatically
-     * (by adding or changing nodes and attributes) the new values will NOT update to
-     * reflect changes in the document.
-     *
-     * There is a minor performance cost to computing the row and column. Computation
-     * can be disabled if TiXmlDocument::SetTabSize() is called with 0 as the value.
-     *
-     * @sa TiXmlDocument::SetTabSize()
-     */
-    int Row() const { return location.row + 1; }
-    int Column() const { return location.col + 1; }  ///< See Row()
-
     virtual const char* Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) = 0;
 
     /** Expands entities in a string. Note this should not contain the tag's '<', '>', etc,
@@ -244,8 +223,6 @@ protected:
     // Ignore case only works for english, and should only be relied on when comparing
     // to English words: StringEqual( p, "version", true ) is fine.
     static bool StringEqual(const char* p, const char* endTag, bool ignoreCase);
-
-    TiXmlCursor location;
 
     // None of these methods are reliable for any language except English.
     // Good for approximation, not great for accuracy.
