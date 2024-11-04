@@ -176,9 +176,12 @@ public:
     /**
      *	Create a deserializer for a workspace stream, and apply all needed version updates.
      */
-    Deserializer createWorkspaceDeserializer(std::istream& stream,
-                                             const std::filesystem::path& refPath,
-                                             Logger* logger = LogCentral::getPtr()) const;
+    Deserializer createWorkspaceDeserializer(
+        std::istream& stream, const std::filesystem::path& refPath,
+        Logger* logger = LogCentral::getPtr(),
+        std::pmr::polymorphic_allocator<std::byte> alloc = {}) const;
+
+    using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
 
 private:
     void setModified(bool modified);
