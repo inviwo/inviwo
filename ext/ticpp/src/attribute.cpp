@@ -8,14 +8,11 @@
 #include <fmt/printf.h>
 
 TiXmlAttribute::TiXmlAttribute(allocator_type alloc)
-    : name{alloc}, value{alloc}, prev{nullptr}, next{nullptr}, location{} {}
-
-TiXmlAttribute::TiXmlAttribute(TiXmlCursor _location, allocator_type alloc)
-    : name{alloc}, value{alloc}, prev{nullptr}, next{nullptr}, location{_location} {}
+    : name{alloc}, value{alloc}, prev{nullptr}, next{nullptr} {}
 
 TiXmlAttribute::TiXmlAttribute(std::string_view _name, std::string_view _value,
                                allocator_type alloc)
-    : name{_name, alloc}, value{_value, alloc}, prev{nullptr}, next{nullptr}, location{} {}
+    : name{_name, alloc}, value{_value, alloc}, prev{nullptr}, next{nullptr} {}
 
 TiXmlAttribute::~TiXmlAttribute() = default;
 
@@ -148,14 +145,8 @@ const char* TiXmlAttributeSet::Parse(const char* p, TiXmlParsingData* data) {
     p = TiXmlBase::SkipWhiteSpace(p);
     if (!p || !*p) return nullptr;
 
-    TiXmlCursor location;
-    if (data) {
-        data->Stamp(p);
-        location = data->Cursor();
-    }
-
     auto alloc = sentinel.value.get_allocator();
-    auto attribute = pmr_make_unique<TiXmlAttribute>(alloc, location);
+    auto attribute = pmr_make_unique<TiXmlAttribute>(alloc);
 
     const char* pErr = p;
     p = TiXmlBase::ReadNameValue(p, &attribute->name, &attribute->value, data);

@@ -39,7 +39,7 @@ NodeDebugger::NodeDebugger(TiXmlElement* elem) {
     while (elem) {
         const auto id = elem->Attribute("identifier");
         const auto type = elem->Attribute("type");
-        nodes_.emplace_back(elem->Value(), id.value_or(""), type.value_or(""), elem->Row());
+        nodes_.emplace_back(elem->Value(), id.value_or(""), type.value_or(""));
         elem = elem->Parent()->ToElement();
     }
 }
@@ -49,7 +49,7 @@ const NodeDebugger::Node& NodeDebugger::operator[](std::size_t idx) const { retu
 std::string NodeDebugger::toString(std::size_t idx) const {
     if (idx < nodes_.size()) {
         return nodes_[idx].key + ": \"" + nodes_[idx].identifier + "\" of class \"" +
-               nodes_[idx].type + "\" at line: " + inviwo::toString(nodes_[idx].line);
+               nodes_[idx].type;
     } else {
         return "";
     }
@@ -78,7 +78,7 @@ std::string NodeDebugger::getDescription() const {
 
 size_t NodeDebugger::size() const { return nodes_.size(); }
 
-NodeDebugger::Node::Node(std::string_view k, std::string_view i, std::string_view t, int l)
-    : key(k), identifier(i), type(t), line(l) {}
+NodeDebugger::Node::Node(std::string_view k, std::string_view i, std::string_view t)
+    : key(k), identifier(i), type(t) {}
 
 }  // namespace inviwo

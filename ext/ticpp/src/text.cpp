@@ -19,12 +19,7 @@ TiXmlNode* TiXmlText::Clone(allocator_type alloc) const {
 }
 
 const char* TiXmlText::Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) {
-    value = "";
-
-    if (data) {
-        data->Stamp(p);
-        location = data->Cursor();
-    }
+    value.clear();
 
     const char* const startTag = "<![CDATA[";
     const char* const endTag = "]]>";
