@@ -249,8 +249,8 @@ jobs:
         path: regression
 
     - name: "Regression Tests"
+      id: regression
       shell: bash
-      continue-on-error: true
       run: |
         mkdir -p regression/macos/${{ github.ref }}
         python3 inviwo/tools/regression.py \
@@ -262,6 +262,7 @@ jobs:
 
     - name: Push report
       shell: bash
+      if: ${{ success() || steps.regression.conclusion == 'failure' }}
       run: |
         cd regression
         git config --global user.name 'Inviwo-Team'
