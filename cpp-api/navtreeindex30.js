@@ -1,5 +1,7 @@
 var NAVTREEINDEX30 =
 {
+"structinviwo_1_1PropertyTraits_3_01OptionProperty_3_01T_01_4_01_4.html":[2,0,0,883],
+"structinviwo_1_1PropertyTraits_3_01OptionProperty_3_01T_01_4_01_4.html":[4,0,1,889],
 "structinviwo_1_1PropertyTraits_3_01OrdinalAnimationProperty_3_01T_01_4_01_4.html":[2,0,0,884],
 "structinviwo_1_1PropertyTraits_3_01OrdinalAnimationProperty_3_01T_01_4_01_4.html":[4,0,1,890],
 "structinviwo_1_1PropertyTraits_3_01OrdinalProperty_3_01T_01_4_01_4.html":[2,0,0,885],
@@ -148,8 +150,8 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1ViewManager_1_1View.html":[4,0,1,1233,0],
 "structinviwo_1_1VolumeConfig.html":[2,0,0,1236],
 "structinviwo_1_1VolumeConfig.html":[4,0,1,1242],
-"structinviwo_1_1VolumeReprConfig.html":[2,0,0,1281],
-"structinviwo_1_1VolumeReprConfig.html":[4,0,1,1287],
+"structinviwo_1_1VolumeReprConfig.html":[2,0,0,1282],
+"structinviwo_1_1VolumeReprConfig.html":[4,0,1,1288],
 "structinviwo_1_1WebBrowserClient_1_1BrowserData.html":[2,0,0,1306,0],
 "structinviwo_1_1WebBrowserClient_1_1BrowserData.html":[4,0,1,1312,0],
 "structinviwo_1_1WorkspaceAnnotationsQt_1_1ProcessorShim.html":[2,0,0,1315,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerVecs.html":[2,0,0,8,0,13],
 "structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerVecs.html":[4,0,1,9,1,13],
 "structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerScalars.html":[2,0,0,8,0,14],
-"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerScalars.html":[4,0,1,9,1,14],
-"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerVecs.html":[2,0,0,8,0,15],
-"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerVecs.html":[4,0,1,9,1,15]
+"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerScalars.html":[4,0,1,9,1,14]
 };

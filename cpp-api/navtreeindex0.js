@@ -50,7 +50,7 @@ var NAVTREEINDEX0 =
 "classinviwo_1_1AtlasComponent.html#a9399818afb73df30a977fa0b38624c4b":[4,0,1,42,0],
 "classinviwo_1_1AtlasComponent.html#af59dfa1980286dccd77a99a888b1c6f4":[2,0,0,36,1],
 "classinviwo_1_1AtlasComponent.html#af59dfa1980286dccd77a99a888b1c6f4":[4,0,1,42,1],
-"classinviwo_1_1AtlasVolumeRaycaster.html":[1,3,47],
+"classinviwo_1_1AtlasVolumeRaycaster.html":[1,3,46],
 "classinviwo_1_1AutoLinker.html":[2,0,0,38],
 "classinviwo_1_1AutoLinker.html":[4,0,1,44],
 "classinviwo_1_1AutoLinker.html#a1d249efc553fd93bcb3974e7088c98f1":[2,0,0,38,0],

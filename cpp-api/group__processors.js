@@ -100,9 +100,6 @@ var group__processors =
     [ "inviwo::VolumeShifter", "classinviwo_1_1VolumeShifter.html", [
       [ "process", "classinviwo_1_1VolumeShifter.html#acdc22cfa3828f5b75f2817429e378631", null ]
     ] ],
-    [ "inviwo::VolumeSubsample", "classinviwo_1_1VolumeSubsample.html", [
-      [ "process", "classinviwo_1_1VolumeSubsample.html#a1bd6244b7f7ab69fd7324ca1dca71703", null ]
-    ] ],
     [ "inviwo::WorldTransformDeprecated< T >", "classinviwo_1_1WorldTransformDeprecated.html", [
       [ "process", "classinviwo_1_1WorldTransformDeprecated.html#aebf13cd44926ab6c52fca40fc9be1b84", null ]
     ] ],

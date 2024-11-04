@@ -1,5 +1,7 @@
 var NAVTREEINDEX23 =
 {
+"classinviwo_1_1WheelEvent.html":[4,0,1,1317],
+"classinviwo_1_1WheelEventMatcher.html":[2,0,0,1312],
 "classinviwo_1_1WheelEventMatcher.html":[4,0,1,1318],
 "classinviwo_1_1WildCardArg.html":[2,0,0,1313],
 "classinviwo_1_1WildCardArg.html":[4,0,1,1319],
@@ -37,8 +39,8 @@ var NAVTREEINDEX23 =
 "classinviwo_1_1WorkspaceTreeModel.html":[4,0,1,1326],
 "classinviwo_1_1WorkspaceTreeView.html":[2,0,0,1321],
 "classinviwo_1_1WorkspaceTreeView.html":[4,0,1,1327],
-"classinviwo_1_1WorldTransformDeprecated.html":[1,3,29],
-"classinviwo_1_1WorldTransformDeprecated.html#aebf13cd44926ab6c52fca40fc9be1b84":[1,3,29,0],
+"classinviwo_1_1WorldTransformDeprecated.html":[1,3,28],
+"classinviwo_1_1WorldTransformDeprecated.html#aebf13cd44926ab6c52fca40fc9be1b84":[1,3,28,0],
 "classinviwo_1_1XMLWriter.html":[2,0,0,1323],
 "classinviwo_1_1XMLWriter.html":[4,0,1,1329],
 "classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html":[4,0,1,0,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX23 =
 "classinviwo_1_1animation_1_1InterpolationFactoryObjectKeyframe.html":[4,0,1,1,43],
 "classinviwo_1_1animation_1_1InterpolationFactoryObjectTemplate.html":[2,0,0,0,43],
 "classinviwo_1_1animation_1_1InterpolationFactoryObjectTemplate.html":[4,0,1,1,44],
-"classinviwo_1_1animation_1_1InterpolationTyped.html":[2,0,0,0,44],
-"classinviwo_1_1animation_1_1InterpolationTyped.html":[4,0,1,1,45],
-"classinviwo_1_1animation_1_1InvalidationKeyframe.html":[2,0,0,0,45]
+"classinviwo_1_1animation_1_1InterpolationTyped.html":[2,0,0,0,44]
 };

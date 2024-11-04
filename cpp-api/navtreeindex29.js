@@ -1,5 +1,7 @@
 var NAVTREEINDEX29 =
 {
+"structinviwo_1_1ElementIdentifier.html":[4,0,1,284],
+"structinviwo_1_1EnumTraits.html":[2,0,0,282],
 "structinviwo_1_1EnumTraits.html":[4,0,1,288],
 "structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html":[2,0,0,283],
 "structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html":[4,0,1,289],
@@ -81,7 +83,7 @@ var NAVTREEINDEX29 =
 "structinviwo_1_1LayerConfig.html":[4,0,1,525],
 "structinviwo_1_1LayerReprConfig.html":[2,0,0,544],
 "structinviwo_1_1LayerReprConfig.html":[4,0,1,550],
-"structinviwo_1_1LightVolumeGL_1_1PropagationParameters.html":[1,3,44,0],
+"structinviwo_1_1LightVolumeGL_1_1PropagationParameters.html":[1,3,43,0],
 "structinviwo_1_1LightingConfig.html":[2,0,0,561],
 "structinviwo_1_1LightingConfig.html":[4,0,1,567],
 "structinviwo_1_1LightingState.html":[2,0,0,563],
@@ -247,7 +249,5 @@ var NAVTREEINDEX29 =
 "structinviwo_1_1PropertyTraits_3_01Gaussian3DProperty_01_4.html":[2,0,0,881],
 "structinviwo_1_1PropertyTraits_3_01Gaussian3DProperty_01_4.html":[4,0,1,887],
 "structinviwo_1_1PropertyTraits_3_01MinMaxProperty_3_01T_01_4_01_4.html":[2,0,0,882],
-"structinviwo_1_1PropertyTraits_3_01MinMaxProperty_3_01T_01_4_01_4.html":[4,0,1,888],
-"structinviwo_1_1PropertyTraits_3_01OptionProperty_3_01T_01_4_01_4.html":[2,0,0,883],
-"structinviwo_1_1PropertyTraits_3_01OptionProperty_3_01T_01_4_01_4.html":[4,0,1,889]
+"structinviwo_1_1PropertyTraits_3_01MinMaxProperty_3_01T_01_4_01_4.html":[4,0,1,888]
 };

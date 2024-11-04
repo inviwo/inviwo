@@ -76,17 +76,17 @@ var NAVTREEINDEX =
 "classinviwo_1_1StructuredCoordinateTransformer.html#a450bdbf945e8eec67eaf4cf86213171c",
 "classinviwo_1_1TetraMeshVolumeRaycaster.html",
 "classinviwo_1_1TransferFunctionProperty.html#aacc0d44e59b42492a84d7624ab389c30",
-"classinviwo_1_1VolumeGradientMagnitude.html",
-"classinviwo_1_1WheelEventMatcher.html",
-"classinviwo_1_1animation_1_1InvalidationKeyframe.html",
-"classinviwo_1_1plot_1_1Axis2DProcessorHelper.html",
-"classinviwo_1_1util_1_1IndexedDeserializer.html",
-"namespaceinviwo_1_1dataframe.html#a2c8508ae29c8648359e53e581e54e646",
-"namespaceinviwo_1_1util.html#ab09c288eeb600394bd546b3def257fb3",
-"structinviwo_1_1EnumTraits.html",
-"structinviwo_1_1PropertyTraits_3_01OrdinalAnimationProperty_3_01T_01_4_01_4.html",
-"structinviwo_1_1dispatching_1_1filter_1_1Vec2s.html",
-"structinviwo_1_1utilgl_1_1ColorMaskiState.html"
+"classinviwo_1_1VolumeGLProcessor.html#abfab80071ec4f01565edf2e8f93a0709",
+"classinviwo_1_1WheelEvent.html",
+"classinviwo_1_1animation_1_1InterpolationTyped.html",
+"classinviwo_1_1hdf5_1_1Source.html",
+"classinviwo_1_1util_1_1IndexProduct.html",
+"namespaceinviwo_1_1csvfilters.html#abd4190195b3e63213d342bab837c8325",
+"namespaceinviwo_1_1util.html#aae046e2b3232a4ce60452ccc5853efb9",
+"structinviwo_1_1ElementIdentifier.html",
+"structinviwo_1_1PropertyTraits_3_01OptionProperty_3_01T_01_4_01_4.html",
+"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerVecs.html",
+"structinviwo_1_1utilgl_1_1ColorMaski.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

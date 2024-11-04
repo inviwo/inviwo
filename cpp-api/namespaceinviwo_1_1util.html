@@ -396,6 +396,10 @@ Enumerations</h2></td></tr>
 , <b>Scaled</b>
  }</td></tr>
 <tr class="separator:a50b7c5a6156793bd1e87dec727b16af2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f08158eb427b86672500a91536f559a" id="r_a6f08158eb427b86672500a91536f559a"><td class="memItemLeft" align="right" valign="top"><a id="a6f08158eb427b86672500a91536f559a" name="a6f08158eb427b86672500a91536f559a"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>DownsamplingMode</b> { <b>Strided</b>
+, <b>Averaged</b>
+ }</td></tr>
+<tr class="separator:a6f08158eb427b86672500a91536f559a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -1700,9 +1704,15 @@ template&lt;typename U , typename ProgressCallback &gt; </td></tr>
 template&lt;typename U &gt; </td></tr>
 <tr class="memitem:a37fcc3980d8e07d143351b3964765eef"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>volumeDistanceTransform</b> (const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> *inVolume, <a class="el" href="classinviwo_1_1VolumeRAMPrecision.html">VolumeRAMPrecision</a>&lt; U &gt; *outDistanceField, const size3_t &amp;upsample, double threshold, bool normalize, bool flip, bool square, double scale)</td></tr>
 <tr class="separator:a37fcc3980d8e07d143351b3964765eef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6ff91fe7e398366d3653bb8145922a4" id="r_aa6ff91fe7e398366d3653bb8145922a4"><td class="memItemLeft" align="right" valign="top"><a id="aa6ff91fe7e398366d3653bb8145922a4" name="aa6ff91fe7e398366d3653bb8145922a4"></a>
-IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>volumeSubSample</b> (const <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> *in, size3_t factors)</td></tr>
-<tr class="separator:aa6ff91fe7e398366d3653bb8145922a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af58f52396296402c1a04714b030e2cbd" id="r_af58f52396296402c1a04714b030e2cbd"><td class="memItemLeft" align="right" valign="top"><a id="af58f52396296402c1a04714b030e2cbd" name="af58f52396296402c1a04714b030e2cbd"></a>
+IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>volumeDownsample</b> (const <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> *in, size3_t strides, DownsamplingMode mode)</td></tr>
+<tr class="separator:af58f52396296402c1a04714b030e2cbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa35f7c4615c5b99e462e8525806e9eb7" id="r_aa35f7c4615c5b99e462e8525806e9eb7"><td class="memItemLeft" align="right" valign="top"><a id="aa35f7c4615c5b99e462e8525806e9eb7" name="aa35f7c4615c5b99e462e8525806e9eb7"></a>
+IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>volumeStridedDownsample</b> (const <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> *in, size3_t strides)</td></tr>
+<tr class="separator:aa35f7c4615c5b99e462e8525806e9eb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29b49204cbc9c760845eb3434740352b" id="r_a29b49204cbc9c760845eb3434740352b"><td class="memItemLeft" align="right" valign="top"><a id="a29b49204cbc9c760845eb3434740352b" name="a29b49204cbc9c760845eb3434740352b"></a>
+IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>volumeAveragedDownsample</b> (const <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> *in, size3_t strides)</td></tr>
+<tr class="separator:a29b49204cbc9c760845eb3434740352b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46a19842e043a90aa4498f0e706a0510" id="r_a46a19842e043a90aa4498f0e706a0510"><td class="memItemLeft" align="right" valign="top"><a id="a46a19842e043a90aa4498f0e706a0510" name="a46a19842e043a90aa4498f0e706a0510"></a>
 IVW_MODULE_BASE_API size_t&#160;</td><td class="memItemRight" valign="bottom"><b>volumeSignificantVoxels</b> (const <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> *volume, IgnoreSpecialValues ignore=IgnoreSpecialValues::No)</td></tr>
 <tr class="separator:a46a19842e043a90aa4498f0e706a0510"><td class="memSeparator" colspan="2">&#160;</td></tr>
