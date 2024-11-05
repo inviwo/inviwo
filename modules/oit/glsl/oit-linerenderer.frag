@@ -106,19 +106,19 @@ void main() {
 
     // line stippling
 #if defined(ENABLE_STIPPLING)
-
+    float stippleLength = stippling.length + stippling.spacing;
 #if STIPPLE_MODE == 2
     // in world space
     float v = (distanceWorld_ * stippling.worldScale);
 #else
     // in screen space
-    float v = (texCoord_.x + stippling.offset) / stippling.length;
+    float v = (texCoord_.x + stippling.offset) / stippleLength;
 #endif  // STIPPLE_MODE
 
-    float t = fract(v) * (stippling.length) / stippling.spacing;
+    float t = fract(v) * stippleLength / stippling.spacing;
     if ((t > 0.0) && (t < 1.0)) {
         // renormalize t with respect to stippling length
-        t = min(t, 1.0 - t) * (stippling.spacing) * 0.5;
+        t = min(t, 1.0 - t) * stippling.spacing * 0.5;
         d = max(d, t);
     }
 #endif  // ENABLE_STIPPLING

@@ -86,19 +86,19 @@ void main() {
 
     // line stippling
 #if defined(ENABLE_STIPPLING)
-
+    float stippleLength = stippling.length + stippling.spacing;
 #if STIPPLE_MODE == 2
     // in world space
     float v = (fragment.distanceWorld * stippling.worldScale);
 #else
     // in screen space
-    float v = (fragment.texCoord.x + stippling.offset) / stippling.length;    
+    float v = (fragment.texCoord.x + stippling.offset) / stippleLength;
 #endif // STIPPLE_MODE
 
-    float t = fract(v) * (stippling.length) / stippling.spacing;
+    float t = fract(v) * stippleLength / stippling.spacing;
     if ((t > 0.0) && (t < 1.0)) {
         // renormalize t with respect to stippling length
-        t = min(t, 1.0-t) * (stippling.spacing) * 0.5;
+        t = min(t, 1.0 - t) * stippling.spacing * 0.5;
         d = max(d, t);
     }
 #endif // ENABLE_STIPPLING
@@ -110,7 +110,7 @@ void main() {
         alpha = exp(-d*d);
     }
     // prevent fragments with low alpha from being rendered
-    if (alpha < 0.05) discard;
+    if (alpha < 0.02) discard;
 
     color.rgb *= color.a;
     FragData0 = color * alpha;
@@ -121,7 +121,7 @@ void main() {
     float maxDist = (linewidthHalf + antialiasing);
     // assume circular profile of line
     gl_FragDepth = convertDepthViewToScreen(camera, 
-        depth - cos(distance/maxDist * M_PI) * maxDist / screenDim.x*0.5);
+        depth - cos(distance / maxDist * M_PI) * maxDist / screenDim.x * 0.5);
 #endif // ENABLE_ROUND_DEPTH_PROFILE
 
     PickingData = fragment.pickColor;
