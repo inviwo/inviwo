@@ -150,7 +150,7 @@ void applyBrushingAndLinking(in uint index1, inout vec4 color1,
                              in uint index2, inout vec4 color2) {
     int bnlSize = textureSize(bnl);
     uint flags1 = index1 < bnlSize ? texelFetch(bnl, int(index1)).x : uint(0);
-    uint flags2 = index1 < bnlSize ? texelFetch(bnl, int(index2)).x : uint(0);
+    uint flags2 = index2 < bnlSize ? texelFetch(bnl, int(index2)).x : uint(0);
 
     if (flags1 == 3 || flags2 == 3) {
         color1 = applySelectionColor(color1, bnlFilter);
