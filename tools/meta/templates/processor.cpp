@@ -38,7 +38,8 @@ const ProcessorInfo {{ file/name }}::processorInfo_{
     "Undefined",                   // Category
     CodeState::Experimental,       // Code state
     Tags::None,                    // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp};
+    R"(<Explanation of how to use the processor.>)"_unindentHelp,
+};
 
 const ProcessorInfo {{ file/name }}::getProcessorInfo() const { return processorInfo_; }
 
@@ -51,7 +52,7 @@ const ProcessorInfo {{ file/name }}::getProcessorInfo() const { return processor
                 "<description of the property>"_help,
                 vec3(0.0f),
                 {vec3(-100.0f), ConstraintBehavior::Ignore},
-                {vec3(-100.0f), ConstraintBehavior::Ignore}} {
+                {vec3(100.0f), ConstraintBehavior::Ignore}} {
 
     addPorts(inport_, outport_);
     addProperties(position_);
