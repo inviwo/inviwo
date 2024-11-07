@@ -110,7 +110,7 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const LightingState
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const CameraProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const CameraProperty& property,
                                              std::string_view name);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const Camera& property,
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const Camera& camera,
                                              std::string_view name);
 
 // RaycastingProperty

@@ -218,20 +218,20 @@ void setShaderUniforms(Shader& shader, const CameraProperty& property, std::stri
     shader.setUniform(buff.replace("{}.farPlane", name), property.getFarPlaneDist());
 }
 
-void setShaderUniforms(Shader& shader, const Camera& property, std::string_view name) {
+void setShaderUniforms(Shader& shader, const Camera& camera, std::string_view name) {
     StrBuffer buff;
 
-    shader.setUniform(buff.replace("{}.worldToView", name), property.getViewMatrix());
-    shader.setUniform(buff.replace("{}.viewToWorld", name), property.getInverseViewMatrix());
+    shader.setUniform(buff.replace("{}.worldToView", name), camera.getViewMatrix());
+    shader.setUniform(buff.replace("{}.viewToWorld", name), camera.getInverseViewMatrix());
     shader.setUniform(buff.replace("{}.worldToClip", name),
-                      property.getProjectionMatrix() * property.getViewMatrix());
-    shader.setUniform(buff.replace("{}.viewToClip", name), property.getProjectionMatrix());
-    shader.setUniform(buff.replace("{}.clipToView", name), property.getInverseProjectionMatrix());
+                      camera.getProjectionMatrix() * camera.getViewMatrix());
+    shader.setUniform(buff.replace("{}.viewToClip", name), camera.getProjectionMatrix());
+    shader.setUniform(buff.replace("{}.clipToView", name), camera.getInverseProjectionMatrix());
     shader.setUniform(buff.replace("{}.clipToWorld", name),
-                      property.getInverseViewMatrix() * property.getInverseProjectionMatrix());
-    shader.setUniform(buff.replace("{}.position", name), property.getLookFrom());
-    shader.setUniform(buff.replace("{}.nearPlane", name), property.getNearPlaneDist());
-    shader.setUniform(buff.replace("{}.farPlane", name), property.getFarPlaneDist());
+                      camera.getInverseViewMatrix() * camera.getInverseProjectionMatrix());
+    shader.setUniform(buff.replace("{}.position", name), camera.getLookFrom());
+    shader.setUniform(buff.replace("{}.nearPlane", name), camera.getNearPlaneDist());
+    shader.setUniform(buff.replace("{}.farPlane", name), camera.getFarPlaneDist());
 }
 
 void addShaderDefines(Shader& shader, const RaycastingProperty& property) {
