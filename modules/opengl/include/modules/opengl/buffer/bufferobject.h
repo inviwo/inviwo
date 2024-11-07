@@ -173,8 +173,9 @@ public:
      * @see upload(const void*, GLsizeiptr, SizePolicy)
      */
     template <typename T>
-    void upload(const std::vector<T>& cont, SizePolicy policy = SizePolicy::GrowOnly) {
-        auto sizeInBytes = static_cast<GLsizeiptr>(sizeof(T) * cont.size());
+    void upload(const T& cont, SizePolicy policy = SizePolicy::GrowOnly) {
+        using ValueType = typename T::value_type;
+        const auto sizeInBytes = static_cast<GLsizeiptr>(sizeof(ValueType) * cont.size());
         upload(cont.data(), sizeInBytes, policy);
     }
 
