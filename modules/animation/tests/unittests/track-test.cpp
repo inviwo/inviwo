@@ -279,7 +279,7 @@ TEST(AnimationTests, ControlTrackTest) {
 
         auto state2 = animation(Seconds{1.0}, Seconds{2.0}, AnimationState::Playing);
         // Starting at control keyframe should not trigger it
-        EXPECT_EQ(AnimationState::Playing, state2.state); 
+        EXPECT_EQ(AnimationState::Playing, state2.state);
         EXPECT_EQ(Seconds{5}, state2.time);
 
         auto state3 = animation(Seconds{1.0}, animation.getLastTime(), AnimationState::Playing);
@@ -293,7 +293,7 @@ TEST(AnimationTests, ControlTrackTest) {
         EXPECT_EQ(Seconds{1}, state1.time);
 
         auto state2 = animation(Seconds{2.0}, Seconds{1.0}, AnimationState::Playing);
-        EXPECT_EQ(AnimationState::Paused, state2.state); 
+        EXPECT_EQ(AnimationState::Paused, state2.state);
         EXPECT_EQ(Seconds{1}, state2.time);
         // Time-jump to 5 seconds, skipping the pause-control keyframe at 1
         // This behaviour might be debatable, but taking time-jumping into consideration makes
