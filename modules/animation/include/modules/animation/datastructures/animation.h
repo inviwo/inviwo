@@ -174,7 +174,7 @@ public:
      * Find Track of a given type.
      * @return All tracks of the specified type.
      */
-    template<typename TrackType>
+    template <typename TrackType>
     std::vector<TrackType*> getTracksOfType();
 
     /**

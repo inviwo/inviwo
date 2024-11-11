@@ -316,7 +316,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     {
         // For presentation, e.g, a clicker (Key_PageUp)
         auto* prevControlKeyframe = mainWindow_->addAction("Prev Control Keyframe");
-        prevControlKeyframe->setShortcut(Qt::Key_PageUp);  
+        prevControlKeyframe->setShortcut(Qt::Key_PageUp);
         prevControlKeyframe->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         prevControlKeyframe->setToolTip("Previous Control Keyframe");
         connect(prevControlKeyframe, &QAction::triggered, [&]() {
@@ -352,9 +352,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
         prev->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         prev->setToolTip("Prev Key");
         mainWindow_->addAction(prev);
-        connect(prev, &QAction::triggered, [&]() {
-            controller_.prevKeyframe();
-        });
+        connect(prev, &QAction::triggered, [&]() { controller_.prevKeyframe(); });
     }
 
     toolBar->addAction(playPause_);
@@ -372,8 +370,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
 
     {
         // For presentation, e.g, clicker (Key_PageDown)
-        auto* nextControlKeyframe = mainWindow_->addAction(
-            "Next Control Keyframe");
+        auto* nextControlKeyframe = mainWindow_->addAction("Next Control Keyframe");
         nextControlKeyframe->setShortcut(Qt::Key_PageDown);
         nextControlKeyframe->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         nextControlKeyframe->setToolTip("Next Control Keyframe");
