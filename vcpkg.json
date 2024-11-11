@@ -109,6 +109,14 @@
       "description": "Enable graph layout using graphviz",
       "dependencies": ["graphviz"]
     },
+    "openmesh": {
+      "description": "OpenMesh library",
+      "dependencies": ["openmesh"]
+    },
+    "nanovg": {
+      "description": "NanoVG library",
+      "dependencies": ["nanovg"]
+    },
     "sgct-tracy" : {
       "description": "Inviwo Dome dependencies",
       "dependencies": [
