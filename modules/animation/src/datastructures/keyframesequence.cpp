@@ -47,6 +47,7 @@ bool KeyframeSequence::isAnyKeyframeSelected() const {
 
 Seconds KeyframeSequence::getFirstTime() const { return getFirst().getTime(); }
 Seconds KeyframeSequence::getLastTime() const { return getLast().getTime(); }
+
 std::pair<Seconds, Seconds> KeyframeSequence::getTimeSpan() const {
     return {getFirstTime(), getLastTime()};
 }

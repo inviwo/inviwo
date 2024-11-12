@@ -322,9 +322,9 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
         connect(prevControlKeyframe, &QAction::triggered, [&]() {
             if (isKeyDoublePressed()) {
                 if (controller_.getAnimation().getTracksOfType<ControlTrack>().empty()) {
-                    controller_.prevKeyframe();
+                    controller_.jumpToPrevKeyframe();
                 } else {
-                    controller_.prevControlKeyframe();
+                    controller_.jumpToPrevControlKeyframe();
                 }
                 controller_.pause();
             } else {
@@ -352,7 +352,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
         prev->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         prev->setToolTip("Prev Key");
         mainWindow_->addAction(prev);
-        connect(prev, &QAction::triggered, [&]() { controller_.prevKeyframe(); });
+        connect(prev, &QAction::triggered, [&]() { controller_.jumpToPrevKeyframe(); });
     }
 
     toolBar->addAction(playPause_);
@@ -365,7 +365,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
         next->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         next->setToolTip("Next Key");
         mainWindow_->addAction(next);
-        connect(next, &QAction::triggered, [&]() { controller_.nextKeyframe(); });
+        connect(next, &QAction::triggered, [&]() { controller_.jumpToNextKeyframe(); });
     }
 
     {
@@ -378,9 +378,9 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
             if (isKeyDoublePressed()) {
                 // Jump to next keyframe
                 if (controller_.getAnimation().getTracksOfType<ControlTrack>().empty()) {
-                    controller_.nextKeyframe();
+                    controller_.jumpToNextKeyframe();
                 } else {
-                    controller_.nextControlKeyframe();
+                    controller_.jumpToNextControlKeyframe();
                 }
                 controller_.pause();
             } else {
@@ -415,8 +415,6 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     }
 
     toolBar->addSeparator();
-
-    animationView_->setFocus();
 
     controller_.AnimationControllerObservable::addObserver(this);
 }

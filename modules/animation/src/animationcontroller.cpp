@@ -258,49 +258,59 @@ void AnimationController::stop() {
     eval(currentTime_, Seconds(0));
 }
 
-void AnimationController::nextKeyframe() {
-    auto times = animation_->getAllTimes();
-    auto it = std::upper_bound(times.begin(), times.end(), getCurrentTime());
-    if (it != times.end()) {
-        eval(getCurrentTime(), *it);
+void AnimationController::jumpToPrevKeyframe() {
+    auto prevKeyframeTime = animation_->getPrevTime(getCurrentTime());
+    if (getCurrentTime() != prevKeyframeTime) {
+        eval(getCurrentTime(), prevKeyframeTime);
     }
 }
 
-void AnimationController::prevKeyframe() {
-    auto times = animation_->getAllTimes();
-    auto it = std::lower_bound(times.begin(), times.end(), getCurrentTime());
-    if (it != times.begin()) {
-        eval(getCurrentTime(), *std::prev(it));
+void AnimationController::jumpToNextKeyframe() {
+    auto nextKeyframeTime = animation_->getNextTime(getCurrentTime());
+    if (getCurrentTime() != nextKeyframeTime) {
+        eval(getCurrentTime(), nextKeyframeTime);
     }
 }
 
-void AnimationController::nextControlKeyframe() {
-    std::vector<Seconds> times;
+void AnimationController::jumpToPrevControlKeyframe() {
+    auto prevKeyframeTime = getCurrentTime();
     for (auto& track : animation_->getTracksOfType<ControlTrack>()) {
-        auto t = track->getAllTimes();
-        times.insert(times.end(), t.begin(), t.end());
+        auto t = track.getPrevTime(getCurrentTime());
+        bool found = t != getCurrentTime();
+        if (!found) {
+            continue;
+        }
+        if (getCurrentTime() == prevKeyframeTime) {
+            prevKeyframeTime = t;
+        } else {
+            prevKeyframeTime = std::max(prevKeyframeTime, t);
+        }
     }
-    std::sort(times.begin(), times.end());
-
-    auto it = std::upper_bound(times.begin(), times.end(), getCurrentTime());
-    if (it != times.end()) {
-        eval(getCurrentTime(), *it);
+    if (getCurrentTime() != prevKeyframeTime) {
+        eval(getCurrentTime(), prevKeyframeTime);
     }
 }
 
-void AnimationController::prevControlKeyframe() {
-    std::vector<Seconds> times;
+void AnimationController::jumpToNextControlKeyframe() {
+    auto nextKeyframeTime = getCurrentTime();
     for (auto& track : animation_->getTracksOfType<ControlTrack>()) {
-        auto t = track->getAllTimes();
-        times.insert(times.end(), t.begin(), t.end());
+        auto t = track.getNextTime(getCurrentTime());
+        bool found = t != getCurrentTime();
+        if (!found) {
+            continue;
+        }
+        if (getCurrentTime() == nextKeyframeTime) {
+            nextKeyframeTime = t;
+        } else {
+            nextKeyframeTime = std::min(nextKeyframeTime, t);
+        }
     }
-    std::sort(times.begin(), times.end());
-
-    auto it = std::lower_bound(times.begin(), times.end(), getCurrentTime());
-    if (it != times.begin()) {
-        eval(getCurrentTime(), *std::prev(it));
+    if (getCurrentTime() != nextKeyframeTime) {
+        eval(getCurrentTime(), nextKeyframeTime);
     }
 }
+
+
 
 void AnimationController::tick() {
     if (state_ != AnimationState::Playing) {

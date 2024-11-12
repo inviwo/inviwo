@@ -85,11 +85,31 @@ public:
     // Pause and reset to start
     void stop();
 
-    void nextKeyframe();
-    void prevKeyframe();
+    /*
+     * Set current time to that of the previous keyframe, if there is one.
+     * Equal to eval(getCurrentTime(), prevKeyframeTime).
+     * Does not alter current PlaybackDirection.
+     */
+    void jumpToPrevKeyframe();
+    /*
+     * Set current time to that of the next keyframe, if there is one.
+     * Equal to eval(getCurrentTime(), nextKeyframeTime).
+     * Does not alter current PlaybackDirection.
+     */
+    void jumpToNextKeyframe();
 
-    void nextControlKeyframe();
-    void prevControlKeyframe();
+    /*
+     * Set current time to that of the previous ControlTrack keyframe, if there is one.
+     * Equal to eval(getCurrentTime(), prevKeyframeTime).
+     * Does not alter current PlaybackDirection.
+     */
+    void jumpToPrevControlKeyframe();
+    /*
+     * Set current time to that of the next ControlTrack keyframe, if there is one.
+     * Equal to eval(getCurrentTime(), nextKeyframeTime).
+     * Does not alter current PlaybackDirection.
+     */
+    void jumpToNextControlKeyframe();
 
     void setState(AnimationState newState);
 

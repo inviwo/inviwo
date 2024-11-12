@@ -83,6 +83,15 @@ public:
     virtual const Key& getLast() const override;
     virtual Key& getLast() override;
 
+    /*
+     * Return time of previous keyframe, or at if not found.
+     */
+    virtual Seconds getPrevTime(Seconds at) const final;
+    /*
+     * Return time of next keyframe, or at if not found.
+     */
+    virtual Seconds getNextTime(Seconds at) const final;
+
     iterator begin();
     const_iterator begin() const;
     iterator end();
@@ -246,6 +255,31 @@ Key& BaseKeyframeSequence<Key>::getFirst() {
 template <typename Key>
 const Key& animation::BaseKeyframeSequence<Key>::getFirst() const {
     return *keyframes_.front();
+}
+template <typename Key>
+Seconds animation::BaseKeyframeSequence<Key>::getPrevTime(Seconds at) const {
+    auto it = std::lower_bound(begin(), end(), at, [](const auto& key, const auto& time) {
+        return key.getTime() < time;
+    });
+
+    if (it != begin()) {
+        return std::prev(it)->getTime();
+    } else {
+        return at;
+    }
+}
+
+template <typename Key>
+Seconds animation::BaseKeyframeSequence<Key>::getNextTime(Seconds at) const {
+    auto it = std::upper_bound(begin(), end(), at, [](const auto& time, const auto& key) {
+        return time < key.getTime();
+    });
+
+    if (it != end()) {
+        return it->getTime();
+    } else {
+        return at;
+    }
 }
 
 template <typename Key>
