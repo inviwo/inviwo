@@ -41,6 +41,7 @@
 
 #include <cstddef>      // for size_t
 #include <memory>       // for unique_ptr
+#include <ranges>
 #include <string>       // for string
 #include <string_view>  // for string_view
 #include <vector>       // for vector<>::iterator, vect...
@@ -171,11 +172,18 @@ public:
     iterator findTrack(Property* withMe);
 
     /**
-     * Find Track of a given type.
-     * @return All tracks of the specified type.
+     * Check if any track of TrackType has been added.
+     * @return True if any of the tracks are of the provided type, false otherwise.
      */
     template <typename TrackType>
-    std::vector<TrackType*> getTracksOfType();
+    bool hasTrackType() const;
+
+    /**
+     * Find Track of a given type.
+     * @return View of all tracks of the specified type.
+     */
+    template <typename TrackType>
+    std::ranges::view auto getTracksOfType();
 
     /**
      * Remove all tracks. Calls TrackObserver::notifyTrackRemoved for each removed track.
@@ -197,6 +205,16 @@ public:
      * Return time of last Keyframe in all tracks, or 0 if no track exist.
      */
     Seconds getLastTime() const;
+
+    /**
+     * Return time of closest previous Keyframe in all tracks, or at if no previous keyframe exist.
+     */
+    Seconds getPrevTime(Seconds at) const;
+
+    /**
+     * Return time of closest next Keyframe in all tracks, or at if there is no next keyframe.
+     */
+    Seconds getNextTime(Seconds at) const;
 
     /**
      * Return the name of the Animation. Used for display in the GUI.
@@ -238,14 +256,14 @@ private:
 };
 
 template <typename TrackType>
-std::vector<TrackType*> Animation::getTracksOfType() {
-    std::vector<TrackType*> tracks;
-    for (auto& track : *this) {
-        if (auto tr = dynamic_cast<TrackType*>(&track)) {
-            tracks.push_back(tr);
-        }
-    }
-    return tracks;
+bool Animation::hasTrackType() const {
+    return end() !=
+           std::find_if(begin(), end(), [](const auto& t) { return dynamic_cast<const TrackType*>(&t) != nullptr; });
+}
+
+template <typename TrackType>
+std::ranges::view auto Animation::getTracksOfType() {
+    return *this | std::views::filter([](auto& t) { return dynamic_cast<TrackType*>(&t); });
 }
 
 }  // namespace animation
