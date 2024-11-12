@@ -321,7 +321,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
         prevControlKeyframe->setToolTip("Previous Control Keyframe");
         connect(prevControlKeyframe, &QAction::triggered, [&]() {
             if (isKeyDoublePressed()) {
-                if (controller_.getAnimation().getTracksOfType<ControlTrack>().empty()) {
+                if (controller_.getAnimation().hasTrackType<ControlTrack>()) {
                     controller_.jumpToPrevKeyframe();
                 } else {
                     controller_.jumpToPrevControlKeyframe();
