@@ -1,8 +1,8 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO petersteneteg/warn
-    REF 80cb8e70af6de335998340811cd92db10ab3910c
-    SHA512 a91d615fc18488399380735f1085b846e66fbae12226da89ca236c53b24127197e714ff4eb5592dab7250c654db2a5cdd06424c604cfb75af333c33be9ed5856
+    REF 12492b5f78005cc978a200bf8b0e57929a19976a
+    SHA512 ee85afa2360ee0a83c6f37d6e384f1da25d642d2eb03ffb12128fa80e0c22ff36ade09dfddf5025037da73368f739ac90d72cf14d0a19eb2adec8aae2bb21a18
     HEAD_REF master
 )
 
@@ -17,7 +17,6 @@ vcpkg_from_github(
 file(COPY ${CW_SOURCE_PATH}/ DESTINATION ${SOURCE_PATH}/ext/barro)
 
 vcpkg_find_acquire_program(PYTHON3)
-x_vcpkg_get_python_packages(PYTHON_EXECUTABLE "${PYTHON3}" PACKAGES packaging OUT_PYTHON_VAR PYTHON3)
 get_filename_component(PYTHON3_DIR "${PYTHON3}" DIRECTORY)
 vcpkg_add_to_path("${PYTHON3_DIR}")
 
