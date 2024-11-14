@@ -258,9 +258,8 @@ const Key& animation::BaseKeyframeSequence<Key>::getFirst() const {
 }
 template <typename Key>
 Seconds animation::BaseKeyframeSequence<Key>::getPrevTime(Seconds at) const {
-    auto it = std::lower_bound(begin(), end(), at, [](const auto& key, const auto& time) {
-        return key.getTime() < time;
-    });
+    auto it = std::lower_bound(
+        begin(), end(), at, [](const auto& key, const auto& time) { return key.getTime() < time; });
 
     if (it != begin()) {
         return std::prev(it)->getTime();
@@ -271,9 +270,8 @@ Seconds animation::BaseKeyframeSequence<Key>::getPrevTime(Seconds at) const {
 
 template <typename Key>
 Seconds animation::BaseKeyframeSequence<Key>::getNextTime(Seconds at) const {
-    auto it = std::upper_bound(begin(), end(), at, [](const auto& time, const auto& key) {
-        return time < key.getTime();
-    });
+    auto it = std::upper_bound(
+        begin(), end(), at, [](const auto& time, const auto& key) { return time < key.getTime(); });
 
     if (it != end()) {
         return it->getTime();
