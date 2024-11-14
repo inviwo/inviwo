@@ -222,14 +222,14 @@ TEST(AnimationTests, AnimationTest) {
     EXPECT_EQ(Seconds{1.0}, animation.getFirstTime());
     EXPECT_EQ(Seconds{3.0}, animation.getLastTime());
 
-    EXPECT_EQ(Seconds{0.0}, animation.getPrevTime(Seconds{0.0}));
-    EXPECT_EQ(Seconds{1.0}, animation.getPrevTime(Seconds{1.0}));
+    EXPECT_EQ(std::nullopt, animation.getPrevTime(Seconds{0.0}));
+    EXPECT_EQ(std::nullopt, animation.getPrevTime(Seconds{1.0}));
     EXPECT_EQ(Seconds{1.0}, animation.getPrevTime(Seconds{2.0}));
     EXPECT_EQ(Seconds{3.0}, animation.getPrevTime(Seconds{4.0}));
 
     EXPECT_EQ(Seconds{1.0}, animation.getNextTime(Seconds{0.0}));
     EXPECT_EQ(Seconds{2.0}, animation.getNextTime(Seconds{1.0}));
-    EXPECT_EQ(Seconds{4.0}, animation.getNextTime(Seconds{4.0}));
+    EXPECT_EQ(std::nullopt, animation.getNextTime(Seconds{4.0}));
 
     animation[1][0].add(std::make_unique<ValueKeyframe<dvec3>>(Seconds{1.5}, dvec3(2.0)));
     animation[1][0].add(std::make_unique<ValueKeyframe<dvec3>>(Seconds{4.0}, dvec3(2.0)));

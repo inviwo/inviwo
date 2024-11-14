@@ -102,14 +102,9 @@ public:
 
     virtual Seconds getFirstTime() const override;
     virtual Seconds getLastTime() const override;
-    /*
-     * Return time of previous keyframe, or at if not found.
-     */
-    virtual Seconds getPrevTime(Seconds at) const final;
-    /*
-     * Return time of next keyframe, or at if not found.
-     */
-    virtual Seconds getNextTime(Seconds at) const final;
+
+    virtual std::optional<Seconds> getPrevTime(Seconds at) const final;
+    virtual std::optional<Seconds> getNextTime(Seconds at) const final;
     virtual std::vector<Seconds> getAllTimes() const override;
 
     virtual size_t size() const override;
@@ -273,36 +268,30 @@ Seconds BaseTrack<Seq>::getLastTime() const {
     }
 }
 template <typename Seq>
-Seconds BaseTrack<Seq>::getPrevTime(Seconds at) const {
-    auto prevKeyframeTime = at;
+std::optional<Seconds> BaseTrack<Seq>::getPrevTime(Seconds at) const {
+    std::optional<Seconds> prevKeyframeTime = std::nullopt;
     for (auto& sequence : sequences_) {
-        auto t = sequence->getPrevTime(at);
-        bool found = t != at;
-        if (!found) {
-            continue;
-        }
-        if (at == prevKeyframeTime) {
-            prevKeyframeTime = t;
-        } else {
-            prevKeyframeTime = std::max(prevKeyframeTime, t);
+        if (auto t = sequence->getPrevTime(at)) {
+            if (!prevKeyframeTime) {
+                prevKeyframeTime = t;
+            } else {
+                prevKeyframeTime = std::max(prevKeyframeTime, t);
+            }
         }
     }
     return prevKeyframeTime;
 }
 
 template <typename Seq>
-Seconds BaseTrack<Seq>::getNextTime(Seconds at) const {
-    auto nextKeyframeTime = at;
+std::optional<Seconds> BaseTrack<Seq>::getNextTime(Seconds at) const {
+    std::optional<Seconds> nextKeyframeTime = std::nullopt;
     for (auto& sequence : sequences_) {
-        auto t = sequence->getNextTime(at);
-        bool found = t != at;
-        if (!found) {
-            continue;
-        }
-        if (at == nextKeyframeTime) {
-            nextKeyframeTime = t;
-        } else {
-            nextKeyframeTime = std::min(nextKeyframeTime, t);
+        if (auto t = sequence->getNextTime(at)) {
+            if (!nextKeyframeTime) {
+                nextKeyframeTime = t;
+            } else {
+                nextKeyframeTime = std::min(nextKeyframeTime, t);
+            }
         }
     }
     return nextKeyframeTime;
