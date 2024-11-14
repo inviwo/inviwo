@@ -310,8 +310,6 @@ void AnimationController::jumpToNextControlKeyframe() {
     }
 }
 
-
-
 void AnimationController::tick() {
     if (state_ != AnimationState::Playing) {
         setState(AnimationState::Paused);

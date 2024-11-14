@@ -39,8 +39,8 @@
 #include <modules/animation/datastructures/track.h>              // for Track
 #include <modules/animation/datastructures/trackobserver.h>      // for TrackObserver
 
-#include <cstddef>      // for size_t
-#include <memory>       // for unique_ptr
+#include <cstddef>  // for size_t
+#include <memory>   // for unique_ptr
 #include <ranges>
 #include <string>       // for string
 #include <string_view>  // for string_view
@@ -257,8 +257,9 @@ private:
 
 template <typename TrackType>
 bool Animation::hasTrackType() const {
-    return end() !=
-           std::find_if(begin(), end(), [](const auto& t) { return dynamic_cast<const TrackType*>(&t) != nullptr; });
+    return end() != std::find_if(begin(), end(), [](const auto& t) {
+               return dynamic_cast<const TrackType*>(&t) != nullptr;
+           });
 }
 
 template <typename TrackType>
