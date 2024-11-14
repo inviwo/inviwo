@@ -266,35 +266,29 @@ Seconds Animation::getLastTime() const {
     return time;
 }
 
-Seconds Animation::getPrevTime(Seconds at) const {
-    auto prevKeyframeTime = at;
+std::optional<Seconds> Animation::getPrevTime(Seconds at) const {
+    std::optional<Seconds> prevKeyframeTime = std::nullopt;
     for (auto& track : tracks_) {
-        auto t = track->getPrevTime(at);
-        bool found = t != at;
-        if (!found) {
-            continue;
-        }
-        if (at == prevKeyframeTime) {
-            prevKeyframeTime = t;
-        } else {
-            prevKeyframeTime = std::max(prevKeyframeTime, t);
+        if (auto t = track->getPrevTime(at)) {
+            if (!prevKeyframeTime) {
+                prevKeyframeTime = t;
+            } else {
+                *prevKeyframeTime = std::max(*prevKeyframeTime, *t);
+            }
         }
     }
     return prevKeyframeTime;
 }
 
-Seconds Animation::getNextTime(Seconds at) const {
-    auto nextKeyframeTime = at;
+std::optional<Seconds> Animation::getNextTime(Seconds at) const {
+    std::optional<Seconds> nextKeyframeTime = std::nullopt;
     for (auto& track : tracks_) {
-        auto t = track->getNextTime(at);
-        bool found = t != at;
-        if (!found) {
-            continue;
-        }
-        if (at == nextKeyframeTime) {
-            nextKeyframeTime = t;
-        } else {
-            nextKeyframeTime = std::min(nextKeyframeTime, t);
+        if (auto t = track->getNextTime(at)) {
+            if (!nextKeyframeTime) {
+                nextKeyframeTime = t;
+            } else {
+                *nextKeyframeTime = std::min(*nextKeyframeTime, *t);
+            }
         }
     }
     return nextKeyframeTime;

@@ -207,14 +207,14 @@ public:
     Seconds getLastTime() const;
 
     /**
-     * Return time of closest previous Keyframe in all tracks, or at if no previous keyframe exist.
+     * Return time of closest previous Keyframe in all tracks if found.
      */
-    Seconds getPrevTime(Seconds at) const;
+    std::optional<Seconds> getPrevTime(Seconds at) const;
 
     /**
-     * Return time of closest next Keyframe in all tracks, or at if there is no next keyframe.
+     * Return time of closest next Keyframe in all tracks if found.
      */
-    Seconds getNextTime(Seconds at) const;
+    std::optional<Seconds> getNextTime(Seconds at) const;
 
     /**
      * Return the name of the Animation. Used for display in the GUI.

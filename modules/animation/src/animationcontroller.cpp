@@ -259,54 +259,46 @@ void AnimationController::stop() {
 }
 
 void AnimationController::jumpToPrevKeyframe() {
-    auto prevKeyframeTime = animation_->getPrevTime(getCurrentTime());
-    if (getCurrentTime() != prevKeyframeTime) {
-        eval(getCurrentTime(), prevKeyframeTime);
+    if (auto prevKeyframeTime = animation_->getPrevTime(getCurrentTime())) {
+        eval(getCurrentTime(), *prevKeyframeTime);
     }
 }
 
 void AnimationController::jumpToNextKeyframe() {
-    auto nextKeyframeTime = animation_->getNextTime(getCurrentTime());
-    if (getCurrentTime() != nextKeyframeTime) {
-        eval(getCurrentTime(), nextKeyframeTime);
+    if (auto nextKeyframeTime = animation_->getNextTime(getCurrentTime())) {
+        eval(getCurrentTime(), *nextKeyframeTime);
     }
 }
 
 void AnimationController::jumpToPrevControlKeyframe() {
-    auto prevKeyframeTime = getCurrentTime();
+    std::optional<Seconds> prevKeyframeTime = std::nullopt;
     for (auto& track : animation_->getTracksOfType<ControlTrack>()) {
-        auto t = track.getPrevTime(getCurrentTime());
-        bool found = t != getCurrentTime();
-        if (!found) {
-            continue;
-        }
-        if (getCurrentTime() == prevKeyframeTime) {
-            prevKeyframeTime = t;
-        } else {
-            prevKeyframeTime = std::max(prevKeyframeTime, t);
+        if (auto t = track.getPrevTime(getCurrentTime())) {
+            if (!prevKeyframeTime) {
+                prevKeyframeTime = t;
+            } else {
+                *prevKeyframeTime = std::max(*prevKeyframeTime, *t);
+            }
         }
     }
-    if (getCurrentTime() != prevKeyframeTime) {
-        eval(getCurrentTime(), prevKeyframeTime);
+    if (prevKeyframeTime) {
+        eval(getCurrentTime(), *prevKeyframeTime);
     }
 }
 
 void AnimationController::jumpToNextControlKeyframe() {
-    auto nextKeyframeTime = getCurrentTime();
+    std::optional<Seconds> nextKeyframeTime = std::nullopt;
     for (auto& track : animation_->getTracksOfType<ControlTrack>()) {
-        auto t = track.getNextTime(getCurrentTime());
-        bool found = t != getCurrentTime();
-        if (!found) {
-            continue;
-        }
-        if (getCurrentTime() == nextKeyframeTime) {
-            nextKeyframeTime = t;
-        } else {
-            nextKeyframeTime = std::min(nextKeyframeTime, t);
+        if (auto t = track.getNextTime(getCurrentTime())) {
+            if (!nextKeyframeTime) {
+                nextKeyframeTime = t;
+            } else {
+                *nextKeyframeTime = std::min(*nextKeyframeTime, *t);
+            }
         }
     }
-    if (getCurrentTime() != nextKeyframeTime) {
-        eval(getCurrentTime(), nextKeyframeTime);
+    if (nextKeyframeTime) {
+        eval(getCurrentTime(), *nextKeyframeTime);
     }
 }
 
