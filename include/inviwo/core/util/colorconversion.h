@@ -34,9 +34,7 @@
 
 #include <string>
 
-namespace inviwo {
-
-namespace color {
+namespace inviwo::color {
 
 /**
  * \brief convert from hexadecimal html color code to RGBA
@@ -107,6 +105,29 @@ IVW_CORE_API vec3 hsv2rgb(vec3 hsv);
  * @return HSV color in the [0 1]^3 range
  */
 IVW_CORE_API vec3 rgb2hsv(vec3 rgb);
+/**
+ * \brief Convert from HSV to RGB color.
+ *
+ * See http://en.wikipedia.org/wiki/HSL_and_HSV and
+ * http://en.wikipedia.org/wiki/RGB_color_model
+ * for a detailed explanation of the color spaces.
+ *
+ * @param hsl Color in the [0 1]^3 range
+ * @return RGB color in [0 1]^3 range
+ */
+IVW_CORE_API vec3 hsl2rgb(vec3 hsl);
+
+/**
+ * \brief Convert from RGB to HSV color.
+ *
+ * See http://en.wikipedia.org/wiki/HSL_and_HSV and
+ * http://en.wikipedia.org/wiki/RGB_color_model
+ * for a detailed explanation of the color spaces.
+ *
+ * @param rgb Color in the [0 1]^3 range
+ * @return HSL color in the [0 1]^3 range
+ */
+IVW_CORE_API vec3 rgb2hsl(vec3 rgb);
 
 /**
  * \brief Convert from XYZ to Lab color space
@@ -347,6 +368,4 @@ IVW_CORE_API vec4 darker(const vec4& rgba, float factor = 2.0f);
  */
 IVW_CORE_API uvec3 darker(const uvec3& rgb, float factor = 2.0f);
 
-}  // namespace color
-
-}  // namespace inviwo
+}  // namespace inviwo::color

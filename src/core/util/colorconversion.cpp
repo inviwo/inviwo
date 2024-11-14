@@ -35,9 +35,7 @@
 #include <algorithm>
 #include <sstream>
 
-namespace inviwo {
-
-namespace color {
+namespace inviwo ::color {
 
 vec4 hex2rgba(std::string str) {
     vec4 result;
@@ -184,7 +182,6 @@ vec3 rgb2hsv(vec3 rgb) {
     bool notGray = (std::abs(val - sat) > 1.0e-8);
     double hue = 0.0;
 
-    // blue hue
     if (notGray) {
         if (b == val)
             hue = 2.0 / 3.0 + 1.0 / 6.0 * (r - g) / range;
@@ -203,6 +200,46 @@ vec3 rgb2hsv(vec3 rgb) {
         sat = 0.0;
     }
     return vec3(static_cast<float>(hue), static_cast<float>(sat), static_cast<float>(val));
+}
+
+vec3 hsl2rgb(vec3 hsl) {
+    const double hue = hsl.x;
+    const double sat = hsl.y;
+    const double lum = hsl.z;
+
+    auto f = [lum, a = sat * std::min(lum, 1.0 - lum), h = hue * 360.0 / 30.0](double n) {
+        const double k = std::fmod(n + h, 12.0);
+        return lum - a * std::max(-1.0, std::min(k - 3.0, std::min(9.0 - k, 1.0)));
+    };
+    return vec3{f(0.0), f(8.0), f(4.0)};
+}
+
+vec3 rgb2hsl(vec3 rgb) {
+    const double max = glm::compMax(rgb);
+    const double min = glm::compMin(rgb);
+    const double range = max - min;
+    const double lum = (max + min) * 0.5;
+
+    bool notGray = (std::abs(range) > 1.0e-8);
+    double hue = 0.0;
+    double sat = 0.0;
+
+    if (notGray) {
+        if (rgb.b == max)
+            hue = 2.0 / 3.0 + 1.0 / 6.0 * (rgb.r - rgb.g) / range;
+        else if (rgb.g == max)
+            hue = 1.0 / 3.0 + 1.0 / 6.0 * (rgb.b - rgb.r) / range;
+        else if (rgb.r == max)
+            hue = 1.0 / 6.0 * (rgb.g - rgb.b) / range;
+    }
+
+    if (hue < 0.0) {
+        hue += 1.0;
+    }
+    if (lum > util::epsilon<double>() && lum < 1.0 - util::epsilon<float>()) {
+        sat = range / (1.0 - std::abs(2.0 * lum - 1.0));
+    }
+    return vec3(static_cast<float>(hue), static_cast<float>(sat), static_cast<float>(lum));
 }
 
 vec3 XYZ2lab(vec3 xyz, vec3 whitePoint) {
@@ -502,6 +539,4 @@ vec4 darker(const vec4& rgba, float factor) {
     return vec4(hsv2rgb(hsv), rgba.a);
 }
 
-}  // namespace color
-
-}  // namespace inviwo
+}  // namespace inviwo::color
