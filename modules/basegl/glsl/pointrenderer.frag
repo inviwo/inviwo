@@ -35,10 +35,11 @@ uniform float antialising = 1.5; // [pixel]
 
 uniform vec4 borderColor = vec4(1.0, 0.0, 0.0, 1.0);
 
-in vec4 worldPosition_;
-in vec3 normal_;
-in vec4 color_;
-flat in vec4 pickColor_;
+in Point {
+    vec4 color;
+    vec4 pickColor;
+}
+fragment;
 
 void main() {
     // calculate normal from texture coordinates
@@ -61,7 +62,7 @@ void main() {
     float borderValue = clamp(mix(0.0, 1.0, (r - glyphRadius + 1) / 2), 0.0, 1.0);
     float borderAlpha = clamp(mix(1.0, 0.0, (r - outerglyphRadius) / (glyphRadius + borderWidth - outerglyphRadius)), 0.0, 1.0);
 
-    vec4 color = mix(color_, borderColor, borderValue);
+    vec4 color = mix(fragment.color, borderColor, borderValue);
     FragData0 = vec4(color.rgb, color.a * borderAlpha);
-    PickingData = pickColor_;
+    PickingData = fragment.pickColor;
 }
