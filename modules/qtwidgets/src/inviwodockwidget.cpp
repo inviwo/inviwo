@@ -75,6 +75,10 @@ InviwoDockWidget::~InviwoDockWidget() = default;
 void InviwoDockWidget::showEvent(QShowEvent* showEvent) {
     raise();
     QDockWidget::showEvent(showEvent);
+    // Workaround: set focus for floating dock widget
+    if (isFloating()) {
+        activateWindow();
+    }
 }
 
 void InviwoDockWidget::keyPressEvent(QKeyEvent* keyEvent) {
