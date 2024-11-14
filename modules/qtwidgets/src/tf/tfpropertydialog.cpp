@@ -120,6 +120,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
             const auto iconsize =
                 utilqt::emToPx(this, QSizeF(titlebar->getIconSize(), titlebar->getIconSize()));
             helpBtn->setIconSize(iconsize);
+            helpBtn->setFocusPolicy(Qt::FocusPolicy::NoFocus);
             layout->insertWidget(1, helpBtn);
 
             auto qtModule = util::getInviwoApplication(concept_->getProperty())

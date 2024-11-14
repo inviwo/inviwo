@@ -171,7 +171,6 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     , sequenceEditorView_{new SequenceEditorPanel(controller_, manager, editorFactory, this)}
     , mainWindow_{new QMainWindow()} {
 
-    resize(utilqt::emToPx(this, QSizeF(100, 40)));  // default size
     setAllowedAreas(Qt::BottomDockWidgetArea);
 
     setFloating(true);
@@ -451,6 +450,10 @@ void AnimationEditorDockWidgetQt::importAnimation() {
 }
 
 void AnimationEditorDockWidgetQt::closeEvent(QCloseEvent*) { controller_.pause(); }
+
+QSize AnimationEditorDockWidgetQt::sizeHint() const {
+    return utilqt::emToPx(this, QSizeF(100, 40)); // Default size
+ }
 
 void AnimationEditorDockWidgetQt::onStateChanged(AnimationController*, AnimationState,
                                                  AnimationState newState) {
