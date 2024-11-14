@@ -452,8 +452,8 @@ void AnimationEditorDockWidgetQt::importAnimation() {
 void AnimationEditorDockWidgetQt::closeEvent(QCloseEvent*) { controller_.pause(); }
 
 QSize AnimationEditorDockWidgetQt::sizeHint() const {
-    return utilqt::emToPx(this, QSizeF(100, 40)); // Default size
- }
+    return utilqt::emToPx(this, QSizeF(100, 40));  // Default size
+}
 
 void AnimationEditorDockWidgetQt::onStateChanged(AnimationController*, AnimationState,
                                                  AnimationState newState) {
