@@ -40,19 +40,16 @@ uniform float borderWidth = 1.0; // [pixel]
 
 uniform bool pickingEnabled = true;
 
-out vec4 worldPosition_;
-out vec3 normal_;
-out vec4 color_;
-flat out vec4 pickColor_;
+out Point {
+    vec4 color;
+    vec4 pickColor;
+}
+vertex;
 
 void main() {
-    worldPosition_ = geometry.dataToWorld * in_Vertex;
-
-    color_ = in_Color;
-
-    normal_ = geometry.dataToWorldNormalMatrix * in_Normal;
-    gl_Position = camera.worldToClip * worldPosition_;
+    vertex.color = in_Color;
+    vertex.pickColor = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
 
     gl_PointSize = pointSize + 2 * borderWidth;
-    pickColor_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
+    gl_Position = camera.worldToClip * geometry.dataToWorld * in_Vertex;
 }  
