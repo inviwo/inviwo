@@ -268,7 +268,7 @@ Seconds Animation::getLastTime() const {
 
 std::optional<Seconds> Animation::getPrevTime(Seconds at) const {
     std::optional<Seconds> prevKeyframeTime = std::nullopt;
-    for (auto& track : tracks_) {
+    for (const auto& track : tracks_) {
         if (auto t = track->getPrevTime(at)) {
             if (!prevKeyframeTime) {
                 prevKeyframeTime = t;
@@ -282,7 +282,7 @@ std::optional<Seconds> Animation::getPrevTime(Seconds at) const {
 
 std::optional<Seconds> Animation::getNextTime(Seconds at) const {
     std::optional<Seconds> nextKeyframeTime = std::nullopt;
-    for (auto& track : tracks_) {
+    for (const auto& track : tracks_) {
         if (auto t = track->getNextTime(at)) {
             if (!nextKeyframeTime) {
                 nextKeyframeTime = t;
