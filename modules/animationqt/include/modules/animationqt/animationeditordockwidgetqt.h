@@ -86,10 +86,6 @@ protected:
     // Selected Animation in animationsList_ changed
     virtual void onAnimationChanged(AnimationController* controller, Animation* oldAnim,
                                     Animation* newAnim) override;
-    /*
-     * @return True if less than 0.5 seconds since last press, false otherwise.
-     */
-    bool isKeyDoublePressed() const;
 
     WorkspaceAnimations& animations_;
     AnimationController& controller_;
@@ -103,8 +99,6 @@ protected:
     TextLabelOverlay* overlay_;
     SequenceEditorPanel* sequenceEditorView_;
     QMainWindow* mainWindow_;
-    std::chrono::time_point<std::chrono::system_clock> lastKeyEventTimestamp_ =
-        std::chrono::system_clock::now();
     bool vScrolling_ = false;
 };
 

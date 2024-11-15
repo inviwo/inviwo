@@ -301,6 +301,16 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
 
     toolBar->addSeparator();
 
+    // Double click if less than 0.5 seconds since last press
+    auto isKeyDoublePressed = [lastKeyEventTimestamp =
+                                   std::chrono::system_clock::now()]() mutable -> bool {
+        auto timestamp = std::chrono::system_clock::now();
+        const std::chrono::duration<double> doublePressThreshold(0.500);
+        const bool isDoublePress = (timestamp - lastKeyEventTimestamp) < doublePressThreshold;
+        lastKeyEventTimestamp = timestamp;
+        return isDoublePress;
+    };
+
     {
         auto* begin = toolBar->addAction(
             QIcon(":/animation/icons/arrow_media_next_player_previous_song_icon_128.svg"),
@@ -341,7 +351,6 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
                         break;
                 }
             }
-            lastKeyEventTimestamp_ = std::chrono::system_clock::now();
         });
     }
 
@@ -397,7 +406,6 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
                         break;
                 }
             }
-            lastKeyEventTimestamp_ = std::chrono::system_clock::now();
         });
     }
 
@@ -475,13 +483,6 @@ void AnimationEditorDockWidgetQt::onAnimationChanged(AnimationController*, Anima
             animationsList_->setCurrentIndex(selectedIndex);
         }
     }
-}
-
-bool AnimationEditorDockWidgetQt::isKeyDoublePressed() const {
-    auto timestamp = std::chrono::system_clock::now();
-    const std::chrono::duration<double> doublePressThreshold(0.500);
-    const bool isDoublePress = (timestamp - lastKeyEventTimestamp_) < doublePressThreshold;
-    return isDoublePress;
 }
 
 }  // namespace animation
