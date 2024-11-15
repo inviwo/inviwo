@@ -65,55 +65,69 @@
 
 #include <glm/vec2.hpp>  // for operator*, operator+, vec
 
-namespace inviwo {
-class PropertyOwner;
-
-namespace glui {
+namespace inviwo::glui {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo GLUIProcessor::processorInfo_{
-    "org.inviwo.GLUIProcessor",  // Class identifier
-    "GLUIProcessor",             // Display name
-    "UI",                        // Category
-    CodeState::Stable,           // Code state
-    "GL, UI, Properties",        // Tags
+    "org.inviwo.GLUIProcessor",                // Class identifier
+    "GLUIProcessor",                           // Display name
+    "UI",                                      // Category
+    CodeState::Stable,                         // Code state
+    Tags::GL | Tag{"UI"} | Tag{"Properties"},  // Tags
+    R"(Provides a simple, adpative OpenGL user interface based on GLUI. Properties can be
+       added to and removed from a list property.)"_unindentHelp,
 };
+
 const ProcessorInfo GLUIProcessor::getProcessorInfo() const { return processorInfo_; }
 
 GLUIProcessor::GLUIProcessor(InviwoApplication* app)
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
+    , inport_("inport", "Input image"_help)
+    , outport_("outport", "Input image with the UI rendered on top"_help)
 
     // settings properties for GLUI
     , uiSettings_("uiSettings", "UI Settings")
-    , uiVisible_("uiVisibility", "UI Visible", true)
+    , uiVisible_("uiVisibility", "UI Visible",
+                 "UI visibility, i.e. whether the UI is rendered or not"_help, true)
     , positioning_("positioning", "Positioning")
     , position_("position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
-    , anchorPos_("anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
+    , anchorPos_("anchor", "Anchor",
+                 util::ordinalSymmetricVector(vec2{-1.0f}, vec2{1.0f})
+                     .set("Relative alignments of labels"_help))
     , offset_("offset", "Offset (Pixel)", ivec2(0), ivec2(-100), ivec2(100))
-    , uiScaling_("uiScaling", "UI Scaling", 1.0f, 0.0f, 4.0f)
-    , uiColor_("uiColor", "UI Color", vec4(0.51f, 0.64f, 0.91f, 1.0f), vec4(0.0f), vec4(1.0f))
-    , uiSecondaryColor_("uiSecondaryColor", "UI Secondary Color", vec4(0.4f, 0.4f, 0.45f, 1.0f),
-                        vec4(0.0f), vec4(1.0f))
-    , uiBorderColor_("uiBorderColor", "UI Border Color", vec4(vec3(0.1f), 1.0f), vec4(0.0f),
-                     vec4(1.0f))
-    , uiDisabledColor_("uiDisabledColor", "UI Disabled Color", vec4(0.6f, 0.6f, 0.63f, 1.0f),
-                       vec4(0.0f), vec4(1.0f))
-    , uiTextColor_("uiTextColor", "Text Color", vec4(vec3(0.0f), 1.0f), vec4(0.0f), vec4(1.0f))
-    , hoverColor_("hoverColor", "Hover Color", vec4(1.0f, 1.0f, 1.0f, 0.5f), vec4(0.0f), vec4(1.0f))
+    , uiScaling_("uiScaling", "UI Scaling", util::ordinalScale(1.0f, 4.0f))
+    , uiColor_("uiColor", "UI Color",
+               util::ordinalColor(vec4{0.51f, 0.64f, 0.91f, 1.0f}).set("Main color of the UI"_help))
+    , uiSecondaryColor_(
+          "uiSecondaryColor", "UI Secondary Color",
+          util::ordinalColor(vec4{0.4f, 0.4f, 0.45f, 1.0f}).set("Secondary color of the UI"_help))
+    , uiBorderColor_("uiBorderColor", "UI Border Color",
+                     util::ordinalColor(vec4{vec3{0.1f}, 1.0f})
+                         .set("Color of the border around UI elements"_help))
+    , uiDisabledColor_("uiDisabledColor", "UI Disabled Color",
+                       util::ordinalColor(vec4{0.6f, 0.6f, 0.63f, 1.0f})
+                           .set("Used for disabled/read-only elements"_help))
+    , uiTextColor_("uiTextColor", "Text Color",
+                   util::ordinalColor(vec4{vec3{0.0f}, 1.0f}).set("Color of the text labels"_help))
+    , hoverColor_("hoverColor", "Hover Color",
+                  util::ordinalColor(vec4{1.0f, 1.0f, 1.0f, 0.5f})
+                      .set("Highlight color when hovering UI elements"_help))
     , layoutDirection_("layoutDirection", "Layout Direction",
                        {{"horizontal", "Horizontal", glui::BoxLayout::LayoutDirection::Horizontal},
                         {"vertical", "Vertical", glui::BoxLayout::LayoutDirection::Vertical}},
                        1)
-    , layoutSpacing_("layoutSpacing", "Layout Spacing", 5, 0, 50)
-    , layoutMargins_("layoutMargins", "Layout Margins", ivec4(10), ivec4(0), ivec4(50))
+    , layoutSpacing_("layoutSpacing", "Layout Spacing",
+                     util::ordinalLength(5, 50).set("Spacing in between UI elements"_help))
+    , layoutMargins_("layoutMargins", "Layout Margins",
+                     util::ordinalLength(ivec4(10), ivec4(50))
+                         .set("Margins applied to the layout (top, left, bottom, right)"_help))
     // list of dynamic properties
     , dynamicProperties_(
           "dynamicProperties", "Properties",
           [app]() {
               std::vector<std::unique_ptr<Property>> v;
-              auto& factory = app->getModuleByType<UserInterfaceGLModule>()->getGLUIWidgetFactory();
+              const auto& factory =
+                  app->getModuleByType<UserInterfaceGLModule>()->getGLUIWidgetFactory();
               auto propertyFactory = app->getPropertyFactory();
 
               for (auto&& key : factory.getKeyView()) {
@@ -129,19 +143,11 @@ GLUIProcessor::GLUIProcessor(InviwoApplication* app)
 
     inport_.setOptional(true);
 
-    addPort(inport_);
-    addPort(outport_);
+    addPorts(inport_, outport_);
 
     dynamicProperties_.PropertyOwnerObservable::addObserver(this);
 
     // UI specific settings
-    uiColor_.setSemantics(PropertySemantics::Color);
-    uiSecondaryColor_.setSemantics(PropertySemantics::Color);
-    uiBorderColor_.setSemantics(PropertySemantics::Color);
-    uiDisabledColor_.setSemantics(PropertySemantics::Color);
-    uiTextColor_.setSemantics(PropertySemantics::Color);
-    hoverColor_.setSemantics(PropertySemantics::Color);
-
     positioning_.setCollapsed(true);
     positioning_.addProperties(position_, anchorPos_, offset_);
 
@@ -215,7 +221,7 @@ void GLUIProcessor::process() {
 void GLUIProcessor::onWillAddProperty(PropertyOwner*, Property*, size_t) {}
 
 void GLUIProcessor::onDidAddProperty(Property* property, size_t) {
-    auto& factory = app_->getModuleByType<UserInterfaceGLModule>()->getGLUIWidgetFactory();
+    const auto& factory = app_->getModuleByType<UserInterfaceGLModule>()->getGLUIWidgetFactory();
 
     auto widget = factory.create(property->getClassIdentifier(), *property, *this, uiRenderer_);
     layout_.addElement(*widget.get());
@@ -238,6 +244,4 @@ void GLUIProcessor::onWillRemoveProperty(Property* property, size_t) {
 
 void GLUIProcessor::onDidRemoveProperty(PropertyOwner*, Property*, size_t) {}
 
-}  // namespace glui
-
-}  // namespace inviwo
+}  // namespace inviwo::glui
