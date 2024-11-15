@@ -17,6 +17,8 @@ const int GEOMETRICRESIDUAL = 7;
 
 #define REFSAMPLINGINTERVAL 150.0
 
+#define upperBoundMultiplier 3.0
+
 /*
     Note: The Residual methods fail when using opacity control directly from the uniform grid for a 'high frequency' transmittance function.
     Independent Multiple poisson tracking, while using poisson residual ratio tracking, does not suffer from the obvious artifacts of the acceleration grid.  
@@ -103,7 +105,7 @@ float residualRatioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStar
                                          VolumeParameters volumeParameters,
                                          sampler2D transferFunction, float opacityUpperbound,
                                          float opacityControl, out vec3 auxReturn) {
-
+    opacityUpperbound *= upperBoundMultiplier;
     if (opacityUpperbound < 2e-6) {
         return 1.f;
     }
@@ -177,12 +179,11 @@ float poissonResidualTrackingTransmittance(vec3 raystart, vec3 raydir, float tSt
                                            VolumeParameters volumeParameters,
                                            sampler2D transferFunction, float opacityUpperbound,
                                            float opacityControl, out vec3 auxReturn) {
-
+    opacityUpperbound *= upperBoundMultiplier;
     if (opacityUpperbound < 2e-6) {
         return 1.f;
     }
     float invMaxExtinction = 1.f / (opacityUpperbound - opacityControl);
-    float invOpacitUpperbound = 1.f / opacityUpperbound;
     float d = (tEnd - tStart);
     float Tc = exp(-opacityToExtinction(opacityControl) * d);
     float Tr = 1.f;  // Transmittance
