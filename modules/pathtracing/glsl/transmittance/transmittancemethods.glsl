@@ -132,8 +132,7 @@ float residualRatioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStar
 
     } while (true);
 
-    return clamp(Tr * Tc, 0.f, 1.f);
-    //return Tr * Tc;
+    return Tr * Tc;
 }
 
 // Poisson Transmittance Trackers
@@ -170,7 +169,7 @@ float poissonTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, flo
         T *= (1.f - opacity * invMaxExtinction);
     }
 
-    return clamp(T, 0.f, 1.f);
+    return T;
 }
 
 float poissonResidualTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
@@ -204,7 +203,7 @@ float poissonResidualTrackingTransmittance(vec3 raystart, vec3 raydir, float tSt
         Tr *= (1.f - (opacity - opacityControl) * invMaxExtinction);
     }
 
-    return clamp(Tr * Tc, 0.f, 1.f);
+    return Tr * Tc;
 }
 
 float independentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart,
@@ -296,7 +295,7 @@ float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, flo
         Tr *= (1.f - (opacity - opacityControl) * invMaxExtinction);
     }
 
-    return clamp(Tc * Tr, 0.f, 1.f);
+    return Tc * Tr;
 }
 
 // NOTE: Non functioning
