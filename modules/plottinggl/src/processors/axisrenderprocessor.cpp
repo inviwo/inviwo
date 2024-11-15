@@ -37,12 +37,12 @@
 #include <inviwo/core/processors/processortags.h>           // for Tags
 #include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
 #include <inviwo/core/properties/ordinalproperty.h>         // for FloatProperty
+#include <inviwo/core/properties/marginproperty.h>          // for MarginProperty
 #include <inviwo/core/util/glmvec.h>                        // for size2_t
 #include <modules/opengl/texture/textureutils.h>            // for activateTargetAndClearOrCopyS...
 #include <modules/plotting/datastructures/axissettings.h>   // for AxisSettings::Orientation
 #include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
 #include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
-#include <modules/plotting/properties/marginproperty.h>     // for MarginProperty
 #include <modules/plotting/properties/plottextproperty.h>   // for PlotTextProperty
 #include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
 

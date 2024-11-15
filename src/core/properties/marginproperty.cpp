@@ -27,23 +27,19 @@
  *
  *********************************************************************************/
 
-#include <modules/plotting/properties/marginproperty.h>
+#include <inviwo/core/properties/marginproperty.h>
 
-#include <inviwo/core/network/networklock.h>            // for NetworkLock
-#include <inviwo/core/properties/compositeproperty.h>   // for CompositeProperty
-#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior, ConstraintBeh...
-#include <inviwo/core/properties/invalidationlevel.h>   // for InvalidationLevel
-#include <inviwo/core/properties/ordinalproperty.h>     // for FloatProperty, OrdinalProperty
-#include <inviwo/core/properties/propertysemantics.h>   // for PropertySemantics
-#include <inviwo/core/util/glmvec.h>                    // for vec2, vec4
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/constraintbehavior.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <algorithm>  // for max, min
-
-#include <glm/vec2.hpp>  // for operator-, vec<>::(anonymous), vec
+#include <algorithm>
 
 namespace inviwo {
-
-namespace plot {
 
 const std::string MarginProperty::classIdentifier = "org.inviwo.MarginProperty";
 std::string MarginProperty::getClassIdentifier() const { return classIdentifier; }
@@ -159,7 +155,5 @@ std::pair<vec2, vec2> MarginProperty::getRect(vec2 size) const {
 vec2 MarginProperty::getSize(vec2 size) const {
     return size - vec2{left_, bottom_} - vec2{right_, top_};
 }
-
-}  // namespace plot
 
 }  // namespace inviwo

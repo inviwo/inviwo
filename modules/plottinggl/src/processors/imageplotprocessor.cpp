@@ -44,6 +44,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>         // for FloatProperty
 #include <inviwo/core/properties/propertysemantics.h>       // for PropertySemantics, PropertySe...
 #include <inviwo/core/properties/stringproperty.h>          // for StringProperty
+#include <inviwo/core/properties/marginproperty.h>          // for MarginProperty
 #include <inviwo/core/util/formats.h>                       // for DataFloat32
 #include <inviwo/core/util/glmmat.h>                        // for mat4
 #include <inviwo/core/util/glmvec.h>                        // for size2_t, ivec4, ivec2, dvec2
@@ -59,7 +60,6 @@
 #include <modules/plotting/datastructures/axissettings.h>   // for AxisSettings::Orientation
 #include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
 #include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
-#include <modules/plotting/properties/marginproperty.h>     // for MarginProperty
 #include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
 
 #include <cstddef>      // for size_t

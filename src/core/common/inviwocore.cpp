@@ -88,6 +88,7 @@
 #include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/properties/marginproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -366,6 +367,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
 
     registerProperty<ListProperty>();
 
+    registerProperty<MarginProperty>();
     registerProperty<PlaneProperty>();
     registerProperty<PositionProperty>();
     registerProperty<AdvancedMaterialProperty>();

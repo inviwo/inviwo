@@ -39,6 +39,7 @@
 #include <inviwo/core/processors/processortags.h>                      // for Tags
 #include <inviwo/core/properties/optionproperty.h>                     // for OptionPropertyOption
 #include <inviwo/core/properties/ordinalproperty.h>                    // for FloatProperty
+#include <inviwo/core/properties/marginproperty.h>                     // for MarginProperty
 #include <inviwo/core/util/staticstring.h>                             // for operator+
 #include <inviwo/core/util/zip.h>                                      // for enumerate, zipIter...
 #include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
@@ -49,7 +50,6 @@
 #include <modules/opengl/openglutils.h>                                // for BlendModeState
 #include <modules/opengl/texture/textureutils.h>                       // for ImageInport
 #include <modules/plotting/properties/axisproperty.h>                  // for AxisProperty
-#include <modules/plotting/properties/marginproperty.h>                // for MarginProperty
 #include <modules/plotting/properties/plottextproperty.h>              // for PlotTextProperty
 #include <modules/plottinggl/plotters/scatterplotgl.h>                 // for ScatterPlotGL, Sca...
 

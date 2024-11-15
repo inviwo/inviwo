@@ -47,6 +47,7 @@
 #include <inviwo/core/properties/optionproperty.h>                            // for OptionProperty
 #include <inviwo/core/properties/ordinalproperty.h>                           // for FloatProperty
 #include <inviwo/core/properties/stringproperty.h>                            // for StringProperty
+#include <inviwo/core/properties/marginproperty.h>                            // for MarginProperty
 #include <inviwo/core/util/glmvec.h>                                          // for vec2, size2_t
 #include <inviwo/core/util/staticstring.h>                                    // for operator+
 #include <inviwo/dataframe/properties/dataframecolormapproperty.h>            // for DataFrameCo...
@@ -54,7 +55,6 @@
 #include <modules/fontrendering/properties/fontproperty.h>                    // for FontProperty
 #include <modules/opengl/inviwoopengl.h>                                      // for GLsizei
 #include <modules/opengl/shader/shader.h>                                     // for Shader
-#include <modules/plotting/properties/marginproperty.h>                       // for MarginProperty
 #include <modules/plottinggl/utils/axisrenderer.h>                            // for AxisRenderer
 #include <modules/userinterfacegl/glui/renderer.h>                            // for Renderer
 #include <modules/userinterfacegl/glui/widgets/doubleminmaxpropertywidget.h>  // for DoubleMinMa...

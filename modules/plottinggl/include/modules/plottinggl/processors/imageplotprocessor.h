@@ -39,13 +39,13 @@
 #include <inviwo/core/properties/minmaxproperty.h>          // for DoubleMinMaxProperty
 #include <inviwo/core/properties/optionproperty.h>          // for OptionProperty
 #include <inviwo/core/properties/ordinalproperty.h>         // for FloatProperty
+#include <inviwo/core/properties/marginproperty.h>          // for MarginProperty
 #include <inviwo/core/util/glmvec.h>                        // for size2_t, ivec2, ivec4
 #include <inviwo/core/util/staticstring.h>                  // for operator+
 #include <modules/basegl/viewmanager.h>                     // for ViewManager
 #include <modules/opengl/rendering/texturequadrenderer.h>   // for TextureQuadRenderer
 #include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
 #include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
-#include <modules/plotting/properties/marginproperty.h>     // for MarginProperty
 #include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
 
 #include <array>        // for array

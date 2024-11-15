@@ -44,13 +44,13 @@
 #include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
 #include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
 #include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionP...
+#include <inviwo/core/properties/marginproperty.h>                      // for MarginProperty
 #include <inviwo/core/util/dispatcher.h>                                // for Dispatcher
 #include <inviwo/core/util/glmvec.h>                                    // for size2_t, vec2, ivec2
 #include <modules/opengl/shader/shader.h>                               // for Shader
 #include <modules/opengl/texture/textureutils.h>                        // for ImageInport
 #include <modules/plotting/properties/axisproperty.h>                   // for AxisProperty
 #include <modules/plotting/properties/axisstyleproperty.h>              // for AxisStyleProperty
-#include <modules/plotting/properties/marginproperty.h>                 // for MarginProperty
 #include <modules/plottinggl/utils/axisrenderer.h>                      // for AxisRenderer
 
 #include <array>          // for array
