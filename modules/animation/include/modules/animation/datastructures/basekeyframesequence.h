@@ -263,7 +263,7 @@ std::optional<Seconds> animation::BaseKeyframeSequence<Key>::getPrevTime(Seconds
 }
 
 template <typename Key>
-Seconds animation::BaseKeyframeSequence<Key>::getNextTime(Seconds at) const {
+std::optional<Seconds> animation::BaseKeyframeSequence<Key>::getNextTime(Seconds at) const {
     auto it = std::upper_bound(
         begin(), end(), at, [](const auto& time, const auto& key) { return time < key.getTime(); });
 
