@@ -201,7 +201,7 @@ float poissonResidualTrackingTransmittance(vec3 raystart, vec3 raydir, float tSt
             auxReturn.x += opacity - opacityUpperbound;
         }
 
-        Tr *= (1.f - (opacity - opacityControl) * invOpacitUpperbound);
+        Tr *= (1.f - (opacity - opacityControl) * invMaxExtinction);
     }
 
     return clamp(Tr * Tc, 0.f, 1.f);
