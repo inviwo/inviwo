@@ -50,7 +50,6 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/bloomcompose.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/bloomhighpass.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/brightnesscontrast.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/colortools.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/common.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/depthdarkening.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/depthlinearize.frag

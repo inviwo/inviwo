@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include "utils/structs.glsl"
-#include "colortools.glsl"
+#include "utils/colorconversion.glsl"
 
 uniform sampler2D inport;
 uniform ImageParameters outportParameters;
