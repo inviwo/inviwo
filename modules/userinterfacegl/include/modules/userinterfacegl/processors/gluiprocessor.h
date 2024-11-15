@@ -43,12 +43,6 @@
 #include <inviwo/core/properties/propertyownerobserver.h>  // for PropertyOwnerObserver
 #include <inviwo/core/util/staticstring.h>                 // for operator+
 
-/*
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-*/
-
 #include <modules/userinterfacegl/glui/layout/boxlayout.h>  // for BoxLayout::LayoutDirection
 #include <modules/userinterfacegl/glui/renderer.h>          // for Renderer
 
@@ -69,30 +63,6 @@ class PropertyOwner;
 namespace glui {
 
 class Element;
-
-/** \docpage{org.inviwo.GLUIProcessor, GLUIProcessor}
- * ![](org.inviwo.GLUIProcessor.png?classIdentifier=org.inviwo.GLUIProcessor)
- * provides a simple, adpative user interface based on GLUI. Properties can be added to and
- * removed from the list property.
- *
- * ### Inports
- *   * __inport__  Input image
- *
- * ### Outports
- *   * __outport__ Input image with the UI rendered on top.
- *
- * ### UI Properties
- *   * __UI Visible__   UI visibility, i.e. whether the UI is rendered or not
- *   * __Position__ Where to put the text, relative position from 0 to 1
- *   * __Anchor__ What point of the text to put at "Position". relative from -1,1. 0 means the image
- *     is centered on "Position".
- *   * __UI Color__     main color of the UI
- *   * __UI Interaction Color__
- *   * __Text Color__   color of the text labels
- *   * __Hover Color__  highlight color when hovering UI elements
- *   * __Layout Spacing__      spacing in between UI elements
- *   * __Layout Margins__      margins applied to the layout (top, left, bottom, right)
- */
 
 /**
  * \brief provides a simple user interface based on GLUI
