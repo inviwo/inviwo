@@ -52,6 +52,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>                     // for FloatVec4Property
 #include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
 #include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionP...
+#include <inviwo/core/properties/marginproperty.h>                      // for MarginProperty
 #include <inviwo/core/util/dispatcher.h>                                // for Dispatcher
 #include <inviwo/core/util/foreacharg.h>                                // for for_each_in_tuple
 #include <inviwo/core/util/formatdispatching.h>                         // for Scalars
@@ -72,7 +73,6 @@
 #include <modules/plotting/datastructures/axissettings.h>               // for AxisSettings::Ori...
 #include <modules/plotting/properties/axisproperty.h>                   // for AxisProperty
 #include <modules/plotting/properties/axisstyleproperty.h>              // for AxisStyleProperty
-#include <modules/plotting/properties/marginproperty.h>                 // for MarginProperty
 #include <modules/plottinggl/utils/axisrenderer.h>                      // for AxisRenderer
 
 #include <map>          // for operator!=

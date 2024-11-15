@@ -53,6 +53,7 @@
 #include <inviwo/core/properties/propertysemantics.h>                     // for PropertySemantics
 #include <inviwo/core/properties/selectioncolorproperty.h>                // for SelectionColorP...
 #include <inviwo/core/properties/transferfunctionproperty.h>              // for TransferFunctio...
+#include <inviwo/core/properties/marginproperty.h>                        // for MarginProperty
 #include <inviwo/core/util/dispatcher.h>                                  // for Dispatcher
 #include <inviwo/core/util/foreacharg.h>                                  // for for_each_in_tuple
 #include <inviwo/core/util/formatdispatching.h>                           // for Scalars
@@ -74,7 +75,6 @@
 #include <modules/plotting/properties/axisproperty.h>                     // for AxisProperty
 #include <modules/plotting/properties/axisstyleproperty.h>                // for AxisStyleProperty
 #include <modules/plotting/properties/boxselectionproperty.h>             // for BoxSelectionPro...
-#include <modules/plotting/properties/marginproperty.h>                   // for MarginProperty
 #include <modules/plottinggl/rendering/boxselectionrenderer.h>            // for BoxSelectionRen...
 #include <modules/plottinggl/utils/axisrenderer.h>                        // for AxisRenderer
 
