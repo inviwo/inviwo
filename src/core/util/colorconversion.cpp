@@ -33,39 +33,39 @@
 #include <inviwo/core/util/glm.h>
 
 #include <algorithm>
-#include <sstream>
+#include <fmt/format.h>
+#include <charconv>
 
-namespace inviwo ::color {
+namespace inviwo::color {
 
-vec4 hex2rgba(std::string str) {
+vec4 hex2rgba(std::string_view str) {
     vec4 result;
-    str = trim(str);
+
+    str = util::trim(str);
     if (!str.empty() && (str[0] == '#') && (str.length() <= 9)) {
         // extract rgba values from HTML color code
 
-        const auto numStr = [str]() {
-            if ((str.length() == 4) || (str.length() == 5)) {
-                // duplicate each character for hexcodes #RGB and #RGBA
-                std::string result;
-                for (auto c : str.substr(1)) {
-                    result.append(std::string(2, c));
-                }
-                return result;
-            }
-            return str.substr(1);
-        }();
+        // remove '#'
+        str = str.substr(1);
 
-        const unsigned long v = [numStr]() {
-            unsigned long v = 0;
-            std::istringstream stream("0x" + numStr);
-            if (!(stream >> std::hex >> v)) {
-                throw Exception("Invalid hex code \"#" + numStr + "\".",
-                                IVW_CONTEXT_CUSTOM("color::hex2rgba"));
+        StrBuffer buf;
+        if ((str.length() == 3) || (str.length() == 4)) {
+            // duplicate each character for hexcodes #RGB and #RGBA
+            for (const auto& c : str) {
+                buf.append("{0}{0}", c);
             }
-            return v;
-        }();
-        auto* c = reinterpret_cast<const unsigned char*>(&v);
-        switch (numStr.size()) {
+            str = buf.view();
+        }
+
+        unsigned long v{};
+        const auto end = str.data() + str.size();
+        if (auto [p, ec] = std::from_chars(str.data(), str.data() + str.size(), v, 16);
+            ec != std::errc() || p != end) {
+            throw Exception(IVW_CONTEXT_CUSTOM("color::hex2rgba"), "Invalid hex code \"{}\".", str);
+        }
+
+        const auto* c = reinterpret_cast<const unsigned char*>(&v);
+        switch (str.length()) {
             case 6:
                 result = vec4(c[2], c[1], c[0], 255) / 255.0f;
                 break;
@@ -73,12 +73,11 @@ vec4 hex2rgba(std::string str) {
                 result = vec4(c[3], c[2], c[1], c[0]) / 255.0f;
                 break;
             default:
-                throw Exception("Invalid hex code \"" + str + "\".",
-                                IVW_CONTEXT_CUSTOM("color::hex2rgba"));
+                throw Exception(IVW_CONTEXT_CUSTOM("color::hex2rgba"), "Invalid hex code \"{}\".",
+                                str);
         }
-
     } else {
-        throw Exception("Invalid hex code \"" + str + "\".", IVW_CONTEXT_CUSTOM("color::hex2rgba"));
+        throw Exception(IVW_CONTEXT_CUSTOM("color::hex2rgba"), "Invalid hex code \"{}\".", str);
     }
     return result;
 }
@@ -88,27 +87,19 @@ std::string rgba2hex(const vec4& rgba) {
     // change byte order
     std::swap(color.r, color.a);
     std::swap(color.g, color.b);
-
-    std::ostringstream ss;
-    ss << "#" << std::setw(8) << std::setfill('0') << std::hex
-       << *reinterpret_cast<unsigned int*>(&color);
-    return ss.str();
+    return fmt::format("#{:08x}", *reinterpret_cast<unsigned int*>(&color));
 }
 
 std::string rgb2hex(const vec3& rgb) {
     glm::u8vec4 color(rgb * 255.0f, 0);
     // change byte order
     std::swap(color.r, color.b);
-
-    std::ostringstream ss;
-    ss << "#" << std::setw(6) << std::setfill('0') << std::hex
-       << *reinterpret_cast<unsigned int*>(&color);
-    return ss.str();
+    return fmt::format("#{:06x}", *reinterpret_cast<unsigned int*>(&color));
 }
 
 vec3 getD65WhitePoint() {
     // whiteD65 = rgb2XYZ(vec3(1.0f, 1.0f, 1.0f);
-    return vec3(0.95047f, 1.0f, 1.08883f);
+    return {0.95047f, 1.0f, 1.08883f};
 }
 
 vec3 hsv2rgb(vec3 hsv) {
@@ -167,7 +158,7 @@ vec3 hsv2rgb(vec3 hsv) {
             b = q;
             break;
     }
-    return vec3(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));
+    return {static_cast<float>(r), static_cast<float>(g), static_cast<float>(b)};
 }
 
 vec3 rgb2hsv(vec3 rgb) {
@@ -199,7 +190,7 @@ vec3 rgb2hsv(vec3 rgb) {
     } else {
         sat = 0.0;
     }
-    return vec3(static_cast<float>(hue), static_cast<float>(sat), static_cast<float>(val));
+    return {static_cast<float>(hue), static_cast<float>(sat), static_cast<float>(val)};
 }
 
 vec3 hsl2rgb(vec3 hsl) {
@@ -220,17 +211,18 @@ vec3 rgb2hsl(vec3 rgb) {
     const double range = max - min;
     const double lum = (max + min) * 0.5;
 
-    bool notGray = (std::abs(range) > 1.0e-8);
+    const bool notGray = (std::abs(range) > 1.0e-8);
     double hue = 0.0;
     double sat = 0.0;
 
     if (notGray) {
-        if (rgb.b == max)
+        if (rgb.b == max) {
             hue = 2.0 / 3.0 + 1.0 / 6.0 * (rgb.r - rgb.g) / range;
-        else if (rgb.g == max)
+        } else if (rgb.g == max) {
             hue = 1.0 / 3.0 + 1.0 / 6.0 * (rgb.b - rgb.r) / range;
-        else if (rgb.r == max)
+        } else if (rgb.r == max) {
             hue = 1.0 / 6.0 * (rgb.g - rgb.b) / range;
+        }
     }
 
     if (hue < 0.0) {
@@ -239,7 +231,7 @@ vec3 rgb2hsl(vec3 rgb) {
     if (lum > util::epsilon<double>() && lum < 1.0 - util::epsilon<float>()) {
         sat = range / (1.0 - std::abs(2.0 * lum - 1.0));
     }
-    return vec3(static_cast<float>(hue), static_cast<float>(sat), static_cast<float>(lum));
+    return {static_cast<float>(hue), static_cast<float>(sat), static_cast<float>(lum)};
 }
 
 vec3 XYZ2lab(vec3 xyz, vec3 whitePoint) {
