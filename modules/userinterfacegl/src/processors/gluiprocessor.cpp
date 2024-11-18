@@ -128,7 +128,7 @@ GLUIProcessor::GLUIProcessor(InviwoApplication* app)
               std::vector<std::unique_ptr<Property>> v;
               const auto& factory =
                   app->getModuleByType<UserInterfaceGLModule>()->getGLUIWidgetFactory();
-              auto propertyFactory = app->getPropertyFactory();
+              auto* propertyFactory = app->getPropertyFactory();
 
               for (auto&& key : factory.getKeyView()) {
                   auto displayName = std::string{util::splitByLast(key, '.').second};

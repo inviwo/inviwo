@@ -38,6 +38,7 @@
 #include <string_view>  // for string_view
 #include <tuple>        // for tuple
 #include <vector>       // for vector
+#include <optional>
 
 namespace inviwo {
 class Inport;
@@ -66,7 +67,7 @@ public:
 
     std::string getGradientString() const;
 
-    size_t channelsForVolume(size_t index = 0) const;
+    std::optional<size_t> channelsForVolume() const;
 
     VolumeInport volumePort;
     Gradients gradients;
