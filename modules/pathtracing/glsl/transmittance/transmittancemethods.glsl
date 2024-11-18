@@ -30,14 +30,11 @@ float opacityToExtinction(float s_max) { return s_max * REFSAMPLINGINTERVAL; }
 
 float woodcockTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd, inout uint hashSeed,
                        sampler3D volume, VolumeParameters volumeParameters,
-                       sampler2D transferFunction, float opacityUpperbound, out vec3 auxReturn) {
-
+                       sampler2D transferFunction, float opacityUpperbound) {
     float invMaxExtinction = 1.f / opacityToExtinction(opacityUpperbound);
     float invOpacitUpperbound = 1.f / opacityUpperbound;
     float t = tStart;
     float opacity;
-
-    auxReturn = vec3(0);
 
     do {
         t += -log(randomize(hashSeed)) * invMaxExtinction;
@@ -54,9 +51,6 @@ float woodcockTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd, ino
         vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
         opacity = applyTF(transferFunction, volumeSample).a;
 
-        if (opacity > opacityUpperbound) {
-            auxReturn.x += opacity - opacityUpperbound;
-        }
 
     } while ((randomize(hashSeed) >= opacity * invOpacitUpperbound));
 
@@ -66,7 +60,7 @@ float woodcockTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd, ino
 float ratioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
                                  inout uint hashSeed, sampler3D volume,
                                  VolumeParameters volumeParameters, sampler2D transferFunction,
-                                 float opacityUpperbound, out vec3 auxReturn) {
+                                 float opacityUpperbound) {
 
     if (opacityUpperbound < 2e-6) {
         return 1.f;
@@ -78,7 +72,6 @@ float ratioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float
     float opacity;
     vec3 samplePos = vec3(0);
     float T = 1.f;  // transmittance
-    auxReturn = vec3(0);
 
     do {
         t += -log(randomize(hashSeed)) * invMaxExtinction;
@@ -88,10 +81,6 @@ float ratioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float
         samplePos = raystart + t * raydir;
         vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
         opacity = applyTF(transferFunction, volumeSample).a;
-
-        if (opacity > opacityUpperbound) {
-            auxReturn.x += opacity - opacityUpperbound;
-        }
 
         T *= (1 - opacity * invOpacitUpperbound);
 
@@ -104,7 +93,7 @@ float residualRatioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStar
                                          inout uint hashSeed, sampler3D volume,
                                          VolumeParameters volumeParameters,
                                          sampler2D transferFunction, float opacityUpperbound,
-                                         float opacityControl, out vec3 auxReturn) {
+                                         float opacityControl) {
     opacityUpperbound *= upperBoundMultiplier;
     if (opacityUpperbound < 2e-6) {
         return 1.f;
@@ -115,7 +104,6 @@ float residualRatioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStar
 
     float Tc = exp(-opacityToExtinction(opacityControl) * (tEnd - tStart));
     float Tr = 1.f;  // transmittance
-    auxReturn = vec3(0);
 
     do {
         t = t - log(randomize(hashSeed)) * invMaxExtinction;
@@ -125,10 +113,6 @@ float residualRatioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStar
         vec3 samplePos = raystart + t * raydir;
         float volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos).x;
         float opacity = applyTF(transferFunction, volumeSample).a;
-
-        if (opacity > opacityUpperbound) {
-            auxReturn.x += opacity - opacityUpperbound;
-        }
 
         Tr *= (1.f - (opacity - opacityControl) * invOpacitUpperbound);
 
@@ -142,20 +126,17 @@ float residualRatioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStar
 float poissonTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
                                    inout uint hashSeed, sampler3D volume,
                                    VolumeParameters volumeParameters, sampler2D transferFunction,
-                                   float opacityUpperbound, out vec3 auxReturn) {
+                                   float opacityUpperbound) {
 
     if (opacityUpperbound < 2e-6) {
         return 1.f;
     }
 
     float invMaxExtinction = 1.f / opacityUpperbound;
-    // should it be extinction or opacity
-    // (extinctionToOpacity(extinction)) ?
     float d = (tEnd - tStart);
     float T = 1.f;  // Transmittance
 
     int k = poisson_uni(hashSeed, d * (opacityToExtinction(opacityUpperbound)));
-    auxReturn = vec3(0);
 
     for (int i = 0; i < k; i++) {
         float t = tStart + randomize(hashSeed) * d;
@@ -163,10 +144,6 @@ float poissonTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, flo
         vec3 samplePos = raystart + t * raydir;
         vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
         float opacity = applyTF(transferFunction, volumeSample).a;
-
-        if (opacity > opacityUpperbound) {
-            auxReturn.x += opacity - opacityUpperbound;
-        }
 
         T *= (1.f - opacity * invMaxExtinction);
     }
@@ -178,7 +155,7 @@ float poissonResidualTrackingTransmittance(vec3 raystart, vec3 raydir, float tSt
                                            inout uint hashSeed, sampler3D volume,
                                            VolumeParameters volumeParameters,
                                            sampler2D transferFunction, float opacityUpperbound,
-                                           float opacityControl, out vec3 auxReturn) {
+                                           float opacityControl) {
     opacityUpperbound *= upperBoundMultiplier;
     if (opacityUpperbound < 2e-6) {
         return 1.f;
@@ -189,17 +166,12 @@ float poissonResidualTrackingTransmittance(vec3 raystart, vec3 raydir, float tSt
     float Tr = 1.f;  // Transmittance
 
     int k = poisson_uni(hashSeed, d * (opacityToExtinction(opacityUpperbound - opacityControl)));
-    auxReturn = vec3(0);
 
     for (int i = 0; i < k; i++) {
         float t = tStart + randomize(hashSeed) * d;
         vec3 samplePos = raystart + t * raydir;
         vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
         float opacity = applyTF(transferFunction, volumeSample).a;
-
-        if (opacity > opacityUpperbound) {
-            auxReturn.x += opacity - opacityUpperbound;
-        }
 
         Tr *= (1.f - (opacity - opacityControl) * invMaxExtinction);
     }
@@ -212,7 +184,7 @@ float independentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, f
                                                    sampler3D volume,
                                                    VolumeParameters volumeParameters,
                                                    sampler2D transferFunction,
-                                                   float opacityUpperbound, out vec3 auxReturn) {
+                                                   float opacityUpperbound) {
 
     if (opacityUpperbound < 2e-6) {
         return 1.f;
@@ -226,7 +198,6 @@ float independentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, f
 
     float opacityControl = 0;
     float d = (tEnd - tStart);
-    auxReturn = vec3(0);
 
     for (int i = 0; i < N; i++) {
         float t = tStart + randomize(hashSeed) * d;
@@ -237,7 +208,7 @@ float independentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, f
     opacityControl /= float(N);
     return poissonResidualTrackingTransmittance(raystart, raydir, tStart, tEnd, hashSeed, volume,
                                                 volumeParameters, transferFunction,
-                                                opacityUpperbound, opacityControl, auxReturn);
+                                                opacityUpperbound, opacityControl);
 }
 
 
@@ -245,7 +216,7 @@ float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, flo
                                                  float tEnd, inout uint hashSeed, sampler3D volume,
                                                  VolumeParameters volumeParameters,
                                                  sampler2D transferFunction,
-                                                 float opacityUpperbound, out vec3 auxReturn) {
+                                                 float opacityUpperbound) {
 
     if (opacityUpperbound < 2e-6) {
         return 1.f;
@@ -253,7 +224,6 @@ float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, flo
     float d = (tEnd - tStart);
     int N = poisson_uni(hashSeed, d * opacityToExtinction(opacityUpperbound));
     float opacityControl = 0;
-    auxReturn = vec3(0);
 
     float extinctions[16];
 
@@ -289,10 +259,6 @@ float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, flo
         vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
         float opacity = applyTF(transferFunction, volumeSample).a;
 
-        if (opacity > opacityUpperbound) {
-            auxReturn.x += opacity - opacityUpperbound;
-        }
-
         Tr *= (1.f - (opacity - opacityControl) * invMaxExtinction);
     }
 
@@ -303,8 +269,7 @@ float dependentMultiPoissonTrackingTransmittance(vec3 raystart, vec3 raydir, flo
 float geometricTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, float tEnd,
                                      inout uint hashSeed, sampler3D volume,
                                      VolumeParameters volumeParameters, sampler2D transferFunction,
-                                     float opacityUpperbound, float opacityControl,
-                                     out vec3 auxReturn) {
+                                     float opacityUpperbound, float opacityControl) {
     if (opacityUpperbound < 2e-6) {
         return 1.f;
     }
@@ -327,10 +292,6 @@ float geometricTrackingTransmittance(vec3 raystart, vec3 raydir, float tStart, f
         vec3 samplePos = raystart + t * raydir;
         vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
         float opacity = applyTF(transferFunction, volumeSample).a;
-
-        if (opacity > opacityUpperbound) {
-            auxReturn.x += opacity - opacityUpperbound;
-        }
 
         Tr *= (1.f - (opacity - opacityControl) * invMaxExtinction);
     }
