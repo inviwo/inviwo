@@ -45,8 +45,8 @@ class Volume;
 
 /** \class VolumeNormalization
  *
- * GL implementation of volume normalization. The algorithm takes in a volume and normalized its
- * data in the selected channels to range [0,1].
+ * GL implementation of volume normalization. The algorithm takes in a volume and normalizes its
+ * data in the selected channels to range [0, 1].
  * Note that this algorithm normalizes channels independently, it does not normalize a multi-channel
  * volume in terms of vector norms!
  */
@@ -64,7 +64,7 @@ public:
      * Performs the normalization on the GPU.
      *
      * @param volume Input volume to be normalized.
-     * @return A volume whose selected channels have been normalized.
+     * @return A float32 volume whose selected channels have been normalized.
      */
     std::shared_ptr<Volume> normalize(const Volume& volume);
 
