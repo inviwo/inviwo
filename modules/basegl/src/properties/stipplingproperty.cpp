@@ -47,7 +47,7 @@ std::string StipplingProperty::getClassIdentifier() const { return classIdentifi
 StipplingProperty::StipplingProperty(std::string_view identifier, std::string_view displayName,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : CompositeProperty{identifier, displayName, invalidationLevel, semantics}
+    : CompositeProperty{identifier, displayName, invalidationLevel, std::move(semantics)}
     , mode_{"stippleMode",
             "Stipple Mode",
             {{"none", "None", Mode::None},

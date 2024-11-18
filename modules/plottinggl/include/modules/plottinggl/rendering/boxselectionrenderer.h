@@ -39,9 +39,7 @@
 #include <array>     // for array
 #include <optional>  // for optional
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 class BoxSelectionProperty;
 
 /**
@@ -78,6 +76,4 @@ protected:
                                {0, 1, 2, 3}};
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

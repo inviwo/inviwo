@@ -44,9 +44,7 @@
 #include <glm/vec2.hpp>  // for vec<>::(anonymous)
 #include <glm/vec4.hpp>  // for operator!=, vec
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 BoxSelectionRenderer::BoxSelectionRenderer(const BoxSelectionProperty& settings)
     : settings_(settings), lineRenderer_(&lineSettings_) {
@@ -79,6 +77,4 @@ void BoxSelectionRenderer::render(std::optional<std::array<dvec2, 2>> dragRect, 
     }
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot
