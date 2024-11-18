@@ -139,6 +139,7 @@ void UniformGridOpacityGL::process() {
     }
 
     utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
+    shader_.setUniform("tfSize", static_cast<int>(transferFunction_.getLookUpTableSize()));
 
     // dispatch size? The workload can be anything from 1 to 150^3
     // 150/regionsize in all dimensions? We can start with a 'naive' (stupid) implementation and let
