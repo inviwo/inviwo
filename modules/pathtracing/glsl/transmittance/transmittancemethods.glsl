@@ -40,19 +40,10 @@ float woodcockTracking(vec3 raystart, vec3 raydir, float tStart, float tEnd, ino
         t += -log(randomize(hashSeed)) * invMaxExtinction;
         vec3 samplePos = raystart + t * raydir;
 
-        // NOTE: Simply to stop samplePos fromo falling outside of relevant opacity voxel, where
-        //       opacityUpperbound no longer is correct when doing opacity testing. 'Should be'
-        //       logically equivalent to having
-        //       && (t <= tEnd) in the while clause.
-        if (t > tEnd) {
-            break;
-        }
-
         vec4 volumeSample = getNormalizedVoxel(volume, volumeParameters, samplePos);
         opacity = applyTF(transferFunction, volumeSample).a;
 
-
-    } while ((randomize(hashSeed) >= opacity * invOpacitUpperbound));
+    } while ((randomize(hashSeed) >= opacity * invOpacitUpperbound) && t <= tEnd);
 
     return t;
 }
