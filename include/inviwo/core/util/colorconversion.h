@@ -33,6 +33,7 @@
 #include <inviwo/core/util/glmvec.h>
 
 #include <string>
+#include <string_view>
 
 namespace inviwo::color {
 
@@ -49,7 +50,7 @@ namespace inviwo::color {
  * @return RGBA color in [0 1]^3 range
  * @throw Exception if string is malformed
  */
-IVW_CORE_API vec4 hex2rgba(std::string str);
+IVW_CORE_API vec4 hex2rgba(std::string_view str);
 
 /**
  * \brief convert from rgba to 8-digit hexadecimal html color code
@@ -112,7 +113,7 @@ IVW_CORE_API vec3 rgb2hsv(vec3 rgb);
  * http://en.wikipedia.org/wiki/RGB_color_model
  * for a detailed explanation of the color spaces.
  *
- * @param hsl Color in the [0 1]^3 range
+ * @param hsl Color in the [0 1]^3 range, where [0 1] corresponds to [0 360) degrees for h
  * @return RGB color in [0 1]^3 range
  */
 IVW_CORE_API vec3 hsl2rgb(vec3 hsl);
