@@ -142,7 +142,7 @@ vec3 rgb2hsl(vec3 rgb) {
  * @param whitePointXYZ Normalized white point. Default white point is D65.
  * @return Lab color
  */
-vec3 XYZ2lab(vec3 xyz, vec3 whitePointXYZ = whitePoint) {
+vec3 XYZ2lab(vec3 xyz, vec3 whitePointXYZ) {
     const float epsilon = 0.008856f;
     const float kappa = 903.3f;
     vec3 lab;
@@ -160,6 +160,7 @@ vec3 XYZ2lab(vec3 xyz, vec3 whitePointXYZ = whitePoint) {
     lab.z = 200.f * (f.y - f.z);
     return lab;
 }
+vec3 XYZ2lab(vec3 xyz) { return XYZ2lab(xyz, whitePoint); }
 
 /**
  * \brief Convert from Lab to CIE XYZ color space
@@ -169,7 +170,7 @@ vec3 XYZ2lab(vec3 xyz, vec3 whitePointXYZ = whitePoint) {
  * @param whitePoint Normalized white point. Default white point is D65.
  * @return CIE XYZ color (roughly in the [0 1]^3 range)
  */
-vec3 lab2XYZ(vec3 lab, const vec3 whitePointXYZ = whitePoint) {
+vec3 lab2XYZ(vec3 lab, const vec3 whitePointXYZ) {
     vec3 t = vec3((1.f / 116.f) * (lab.x + 16.f));
     t.y += (1.f / 500.f) * lab.y;
     t.z -= (1.f / 200.f) * lab.z;
@@ -189,6 +190,7 @@ vec3 lab2XYZ(vec3 lab, const vec3 whitePointXYZ = whitePoint) {
     xyz.z = whitePoint.z * f.z;
     return xyz;
 }
+vec3 lab2XYZ(vec3 lab) { return lab2XYZ(lab, whitePoint); }
 
 /** 
  * \brief Convert from XYZ color to sRGB using D65 white point.
@@ -283,7 +285,7 @@ vec3 lab2rgb(vec3 lab) {
  * @param whitePointXYZ  Normalized white point. Default white point is D65.
  * @return CIE Luv color value, L in [0, 100], u and v in [-100, +100] (for typical images)
  */
-vec3 XYZ2Luv(vec3 XYZ, vec3 whitePointXYZ = whitePoint) {
+vec3 XYZ2Luv(vec3 XYZ, vec3 whitePointXYZ) {
     // see http://www.brucelindbloom.com/index.html?Eqn_XYZ_to_Luv.html
 
     const float epsilon = 216.0 / 24389.0;
@@ -311,6 +313,7 @@ vec3 XYZ2Luv(vec3 XYZ, vec3 whitePointXYZ = whitePoint) {
 
     return vec3(L, u, v);
 }
+vec3 XYZ2Luv(vec3 XYZ) { return XYZ2Luv(XYZ,  whitePoint); }
 
 /**
  * \brief Convert from CIE Luv to CIE XYZ
@@ -325,7 +328,7 @@ vec3 XYZ2Luv(vec3 XYZ, vec3 whitePointXYZ = whitePoint) {
  * @param whitePointXYZ  Normalized white point. Default white point is D65.
  * @return CIE XYZ color (roughly in the [0 1]^3 range)
  */
-vec3 Luv2XYZ(vec3 Luv, vec3 whitePointXYZ = whitePoint) {
+vec3 Luv2XYZ(vec3 Luv, vec3 whitePointXYZ) {
     // see http://www.brucelindbloom.com/index.html?Eqn_Luv_to_XYZ.html
 
     const float epsilon = 216.0 / 24389.0;
@@ -362,6 +365,7 @@ vec3 Luv2XYZ(vec3 Luv, vec3 whitePointXYZ = whitePoint) {
 
     return vec3(X, Y, Z);
 }
+vec3 Luv2XYZ(vec3 Luv) { return Luv2XYZ(Luv, whitePoint); }
 
 /**
  * \brief Convert from CIE XYZ color space to normalized chromaticity of CIE Luv, i.e. u' and v'
@@ -398,8 +402,7 @@ vec3 XYZ2LuvChromaticity(vec3 XYZ) {
  * @param whitePointXYZ  Normalized white point. Default white point is D65.
  * @return CIE XYZ color (roughly in the [0 1]^3 range)
  */
-vec3 LuvChromaticity2XYZ(vec3 LuvChroma,
-                         vec3 whitePointXYZ = whitePoint) {
+vec3 LuvChromaticity2XYZ(vec3 LuvChroma, vec3 whitePointXYZ) {
     // compute u and v for reference white point
     // u0 <- 4 * X_r / (X_r + 15 * Y_r + 3 * Z_r);
     // v0 <- 9 * Y_r / (X_r + 15 * Y_r + 3 * Z_r);
@@ -417,6 +420,9 @@ vec3 LuvChromaticity2XYZ(vec3 LuvChroma,
     float v = 13.0 * L * (v_prime - v0_prime);
 
     return Luv2XYZ(vec3(L, u, v));
+}
+vec3 LuvChromaticity2XYZ(vec3 LuvChroma) {
+    return LuvChromaticity2XYZ(LuvChroma, whitePoint);
 }
 
 /**
@@ -447,8 +453,7 @@ vec3 rgb2LuvChromaticity(vec3 rgb) {
  * @param whitePointXYZ  Normalized white point. Default white point is D65.
  * @return rgb color, [0, 1]^3 if clamping is enabled
  */
-vec3 LuvChromaticity2rgb(vec3 LuvChroma, bool clamp = false,
-                         vec3 whitePointXYZ = whitePoint) {
+vec3 LuvChromaticity2rgb(vec3 LuvChroma, bool clamp, vec3 whitePointXYZ) {
     vec3 rgb = vec3(XYZ2rgb(LuvChromaticity2XYZ(LuvChroma, whitePointXYZ)));
     if (clamp) {
         // determine largest component
@@ -466,6 +471,15 @@ vec3 LuvChromaticity2rgb(vec3 LuvChroma, bool clamp = false,
         rgb = max(rgb, vec3(0.0f));
     }
     return rgb;
+}
+vec3 LuvChromaticity2rgb(vec3 LuvChroma, bool clamp) {
+    return LuvChromaticity2rgb(LuvChroma, clamp, whitePoint);
+}
+vec3 LuvChromaticity2rgb(vec3 LuvChroma, vec3 whitePointXYZ) {
+    return LuvChromaticity2rgb(LuvChroma, false, whitePointXYZ);
+}
+vec3 LuvChromaticity2rgb(vec3 LuvChroma) {
+    return LuvChromaticity2rgb(LuvChroma, false, whitePoint);
 }
 
 /**
