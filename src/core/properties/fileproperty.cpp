@@ -275,13 +275,13 @@ void FileProperty::serialize(Serializer& s) const {
     std::filesystem::path dataRelativePath;
 
     if (!absolutePath.empty()) {
-        auto workspacePath = s.getFileName().parent_path();
+        const auto& workspacePath = s.getFileDir();
         if (!workspacePath.empty() && workspacePath.root_name() == absolutePath.root_name()) {
-            workspaceRelativePath = std::filesystem::relative(absolutePath, workspacePath);
+            workspaceRelativePath = absolutePath.lexically_relative(workspacePath);
         }
-        auto dataPath = filesystem::getPath(PathType::Data);
+        const auto& dataPath = filesystem::getPath(PathType::Data);
         if (!dataPath.empty() && dataPath.root_name() == absolutePath.root_name()) {
-            dataRelativePath = std::filesystem::relative(absolutePath, dataPath);
+            dataRelativePath = absolutePath.lexically_relative(dataPath);
         }
     }
 
@@ -318,22 +318,27 @@ void FileProperty::deserialize(Deserializer& d) {
         }
     }
 
-    const auto workspacePath = d.getFileName().parent_path();
-    const auto dataPath = filesystem::getPath(PathType::Data);
-
-    const auto workspaceBasedPath =
-        std::filesystem::weakly_canonical(workspacePath / workspaceRelativePath);
-    const auto dataBasedPath = std::filesystem::weakly_canonical(dataPath / dataRelativePath);
-
     bool modified = false;
+    bool found = false;
 
     // Prefer the relative paths to make relocation easier.
-    if (!dataRelativePath.empty() && std::filesystem::is_regular_file(dataBasedPath)) {
-        modified = file_.update(dataBasedPath);
-    } else if (!workspaceRelativePath.empty() &&
-               std::filesystem::is_regular_file(workspaceBasedPath)) {
-        modified |= file_.update(workspaceBasedPath);
-    } else {
+    if (!found && !workspaceRelativePath.empty()) {
+        const auto& workspacePath = d.getFileDir();
+        const auto workspaceBasedPath = (workspacePath / workspaceRelativePath).lexically_normal();
+        if (std::filesystem::is_regular_file(workspaceBasedPath)) {
+            modified |= file_.update(workspaceBasedPath);
+            found = true;
+        }
+    }
+    if (!found && !dataRelativePath.empty()) {
+        const auto& dataPath = filesystem::getPath(PathType::Data);
+        const auto dataBasedPath = (dataPath / dataRelativePath).lexically_normal();
+        if (std::filesystem::is_regular_file(dataBasedPath)) {
+            modified = file_.update(dataBasedPath);
+            found = true;
+        }
+    }
+    if (!found) {
         modified |= file_.update(absolutePath);
     }
 

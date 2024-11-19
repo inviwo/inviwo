@@ -62,23 +62,6 @@ void TiXmlParsingData::Stamp(const char* now) {
                 col = (col / tabsize + 1) * tabsize;
                 break;
 
-            case TIXML_UTF_LEAD_0:
-                if (*(p + 1) && *(p + 2)) {
-                    // In these cases, don't advance the column. These are
-                    // 0-width spaces.
-                    if (*(pU + 1) == TIXML_UTF_LEAD_1 && *(pU + 2) == TIXML_UTF_LEAD_2)
-                        p += 3;
-                    else if (*(pU + 1) == 0xbfU && *(pU + 2) == 0xbeU)
-                        p += 3;
-                    else if (*(pU + 1) == 0xbfU && *(pU + 2) == 0xbfU)
-                        p += 3;
-                    else {
-                        p += 3;
-                        ++col;
-                    }  // A normal character.
-                }
-                break;
-
             default:
                 // Eat the 1 to 4 byte utf8 character.
                 int step = TiXmlBase::utf8ByteTable[*((const unsigned char*)p)];

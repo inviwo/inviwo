@@ -105,6 +105,9 @@ bool ProcessorWidgetMetaData::isOnTop() const { return onTop_; }
 
 void ProcessorWidgetMetaData::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+
+    if (s.getWorkspaceSaveMode() == WorkspaceSaveMode::Undo) return;
+
     s.serialize("position", position_);
     s.serialize("dimensions", dimensions_);
     s.serialize("visibility", visibility_);
@@ -113,23 +116,23 @@ void ProcessorWidgetMetaData::serialize(Serializer& s) const {
 }
 
 void ProcessorWidgetMetaData::deserialize(Deserializer& d) {
-    ivec2 position{0, 0};
+    ivec2 position{position_};
     d.deserialize("position", position);
     setPosition(position);
 
-    size2_t dimensions{0, 0};
+    size2_t dimensions{dimensions_};
     d.deserialize("dimensions", dimensions);
     setDimensions(dimensions);
 
-    bool visibility{true};
+    bool visibility{visibility_};
     d.deserialize("visibility", visibility);
     setVisibile(visibility);
 
-    bool fullScreen{false};
+    bool fullScreen{fullScreen_};
     d.deserialize("fullScreen", fullScreen);
     setFullScreen(fullScreen);
 
-    bool onTop{true};
+    bool onTop{onTop_};
     d.deserialize("onTop", onTop);
     setOnTop(onTop);
 }

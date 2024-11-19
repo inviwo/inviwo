@@ -136,6 +136,8 @@ public:
     // get a list of TF primitives in the order they were created
     std::vector<TFPrimitiveData> getUnsorted() const;
 
+    void set(std::span<const TFPrimitiveData>);
+
     /**
      * Set/update the list of TFPrimitives from given range
      */
@@ -259,6 +261,12 @@ public:
 
     friend IVW_CORE_API bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
     friend IVW_CORE_API bool operator!=(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
+
+    bool operator==(const std::vector<TFPrimitiveData>& rhs) const {
+        return std::ranges::equal(
+            sorted_, rhs, std::ranges::equal_to{},
+            [](const TFPrimitive* p) -> const TFPrimitiveData& { return p->getData(); });
+    }
 
     bool contains(const TFPrimitive* primitive) const;
 

@@ -31,6 +31,8 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
+#include <flags/flags.h>
+
 #include <string>
 #include <string_view>
 #include <filesystem>
@@ -42,6 +44,10 @@ class TiXmlElement;
 class TiXmlDocument;
 
 namespace inviwo {
+
+enum class WorkspaceSaveMode { Disk = 1 << 0, Undo = 1 << 1 };
+ALLOW_FLAGS_FOR_ENUM(WorkspaceSaveMode)
+using WorkspaceSaveModes = flags::flags<WorkspaceSaveMode>;
 
 enum class SerializationTarget { Node, Attribute };
 
@@ -70,9 +76,13 @@ public:
     virtual ~SerializeBase();
 
     /**
-     * \brief gets the xml file name.
+     * \brief Gets the workspace file name.
      */
-    virtual const std::filesystem::path& getFileName() const;
+    const std::filesystem::path& getFileName() const { return fileName_; }
+    /**
+     * \brief Gets the workspace file directory.
+     */
+    const std::filesystem::path& getFileDir() const { return fileDir_; }
 
     /**
      * \brief Checks whether the given type is a primitive type.
@@ -95,12 +105,13 @@ public:
                std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view>;
     }
 
-    static std::string nodeToString(const TiXmlElement& node);
+    allocator_type getAllocator() const;
 
 protected:
     friend class NodeSwitch;
 
     std::filesystem::path fileName_;
+    std::filesystem::path fileDir_;
     std::unique_ptr<TiXmlDocument> doc_;
     TiXmlElement* rootElement_;
     bool retrieveChild_;
@@ -127,20 +138,17 @@ IVW_CORE_API void fromStr(std::string_view value, std::string& dest);
 IVW_CORE_API void fromStr(std::string_view value, std::pmr::string& dest);
 
 template <class T>
-decltype(auto) toStr(const T& value, std::pmr::vector<char>& buffer) {
+void formatTo(const T& value, std::pmr::string& out) {
     if constexpr (std::is_same_v<std::string, T>) {
-        return value;
+        out.append(value);
     } else if constexpr (std::is_same_v<std::string_view, T>) {
-        return value;
+        out.append(value);
     } else if constexpr (std::is_same_v<bool, T>) {
-        static std::string_view trueVal = "1";
-        static std::string_view falseVal = "0";
-        return value ? trueVal : falseVal;
+        constexpr char trueVal = '1';
+        constexpr char falseVal = '0';
+        out.push_back(value ? trueVal : falseVal);
     } else {
-        buffer.clear();
-        auto [it, size] =
-            fmt::format_to_n(std::back_inserter(buffer), buffer.max_size(), "{}", value);
-        return std::string_view{buffer.data(), size};
+        fmt::format_to(std::back_inserter(out), "{}", value);
     }
 }
 

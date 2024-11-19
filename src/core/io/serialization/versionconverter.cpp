@@ -149,30 +149,31 @@ bool xml::findMatchingSubPropertiesForComposites(
 }
 
 TxElement* xml::getElement(TxElement* node, std::string_view path) {
-    const auto parts = util::splitStringView(path, '/');
-    if (parts.size() > 0) {
-        const auto components = util::splitStringView(parts[0], '&');
-        std::string_view name = components[0];
+    if (path.empty()) return nullptr;
 
-        for (TiXmlElement* child = node->FirstChildElement(name); child;
-             child = child->NextSiblingElement(name)) {
-            bool match = true;
+    const auto [first, rest] = util::splitByFirst(path, '/');
+    const auto [name, attrs] = util::splitByFirst(first, '&');
 
-            for (size_t i = 1; i < components.size(); ++i) {
-                const auto [attr, value] = util::splitByFirst(components[i], '=');
-                const auto val = child->Attribute(attr);
-                match = match && val && *val == value;
+    for (TiXmlElement* child = node->FirstChildElement(name); child;
+         child = child->NextSiblingElement(name)) {
+        bool match = true;
+
+        util::forEachStringPart(attrs, "&", [&](std::string_view attrValue) {
+            const auto [attr, value] = util::splitByFirst(attrValue, '=');
+            const auto val = child->Attribute(attr);
+            match = match && val && *val == value;
+        });
+
+        if (match) {
+            if (!rest.empty()) {
+                return getElement(child, rest);
+            } else {
+                return child;
             }
-            if (match) {
-                if (parts.size() > 1) {
-                    return getElement(child, joinString(parts.begin() + 1, parts.end(), "/"));
-                } else {
-                    return child;
-                }
-                break;
-            }
+            break;
         }
     }
+
     return nullptr;
 }
 
@@ -421,11 +422,11 @@ TxElement* xml::createNode(std::string_view desc, TxElement* parent) {
 }
 
 void xml::logNode(TxElement* node) {
-    std::stringstream ss;
-    TiXmlPrinter printer;
+    std::pmr::string xml;
+    xml.reserve(4096);
+    TiXmlPrinter printer{xml, TiXmlStreamPrint::No};
     node->Accept(&printer);
-    ss << printer.Str();
-    LogInfoCustom("xml", ss.str());
+    LogInfoCustom("xml", xml);
 }
 
 bool xml::renamePortIdentifier(TxElement* root, std::string_view processorClassId,

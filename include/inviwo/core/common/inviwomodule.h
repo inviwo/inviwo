@@ -434,7 +434,6 @@ void InviwoModule::registerDefaultsForDataType() {
 
     registerProcessor<SequenceCompositeSource<DataInport<DataSequence<T>>, DataOutport<T>>>();
     registerProcessor<SequenceCompositeSink<DataInport<T>, DataOutport<DataSequence<T>>>>();
-
 }
 
 template <typename T>

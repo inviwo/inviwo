@@ -41,6 +41,7 @@
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/util/statecoordinator.h>
 #include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/transparentmaps.h>
 
 #include <memory>
 
@@ -467,7 +468,7 @@ private:
     std::vector<std::unique_ptr<Outport>> ownedOutports_;
     std::vector<InteractionHandler*> interactionHandlers_;
 
-    std::unordered_map<std::string, std::vector<Port*>> groupPorts_;
+    UnorderedStringMap<std::vector<Port*>> groupPorts_;
     std::unordered_map<Port*, std::string> portGroups_;
 
     ProcessorNetwork* network_;

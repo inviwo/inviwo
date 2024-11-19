@@ -39,6 +39,7 @@
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <inviwo/sys/moduleregistration.h>
 #include <inviwo/sys/moduleloading.h>
@@ -51,6 +52,8 @@
 #include <memory>
 
 #include <benchmark/benchmark.h>
+
+#include <os/signpost.h>
 
 using namespace inviwo;
 
@@ -72,16 +75,20 @@ void* operator new[](std::size_t count) {
     if (main_id == std::this_thread::get_id()) {
         ++allocCount;
         allocSize += count;
-    };
+    }
 
     return malloc(count);
 }
 void operator delete(void* ptr) noexcept {
-    ++deallocCount;
+    if (main_id == std::this_thread::get_id()) {
+        ++deallocCount;
+    }
     free(ptr);
 }
 void operator delete[](void* ptr) noexcept {
-    ++deallocCount;
+    if (main_id == std::this_thread::get_id()) {
+        ++deallocCount;
+    }
     free(ptr);
 }
 #endif
@@ -123,6 +130,8 @@ struct Fixture : ::benchmark::Fixture {
         testAllocSize = allocSize;
 
         if (!app) {
+            //log = os_log_create("org.inviwo", OS_LOG_CATEGORY_POINTS_OF_INTEREST);
+
             app = std::make_unique<App>();
             app->inviwo.getProcessorNetwork()->lock();
         }
@@ -143,28 +152,32 @@ struct Fixture : ::benchmark::Fixture {
     int64_t testAllocCount{0};
     int64_t testDeallocCount{0};
     int64_t testAllocSize{0};
+
+    //os_log_t log;
 };
 
 BENCHMARK_DEFINE_F(Fixture, Loading)(benchmark::State& st) {
-    auto workspace = app->inviwo.getPath(PathType::Workspaces) / "boron.inv";
-
+    auto workspace = filesystem::getPath(PathType::Workspaces) / "boron.inv";
+    //os_signpost_id_t signpost_id = os_signpost_id_generate(log);
+    //assert(signpost_id != OS_SIGNPOST_ID_INVALID);
     for (auto _ : st) {
+        //os_signpost_event_emit(log, signpost_id, "start");
         app->inviwo.getWorkspaceManager()->load(workspace);
-        //app->inviwo.getWorkspaceManager()->clear();
     }
 }
 
 BENCHMARK_DEFINE_F(Fixture, Saving)(benchmark::State& st) {
-    auto workspace = app->inviwo.getPath(PathType::Workspaces) / "boron.inv";
+    auto workspace = filesystem::getPath(PathType::Workspaces) / "boron.inv";
     app->inviwo.getWorkspaceManager()->load(workspace);
     for (auto _ : st) {
-        std::stringstream ss;
-        app->inviwo.getWorkspaceManager()->save(ss, workspace);
-        benchmark::DoNotOptimize(ss);
+        std::pmr::string xml;
+        xml.reserve(1024*32);
+        app->inviwo.getWorkspaceManager()->save(xml, workspace);
+        benchmark::DoNotOptimize(xml);
     }
 }
 
-// BENCHMARK_REGISTER_F(Fixture, Saving)->Unit(benchmark::kMicrosecond)->MinTime(10.0);
-BENCHMARK_REGISTER_F(Fixture, Loading)->Unit(benchmark::kMillisecond)->MinTime(10.0);
+//BENCHMARK_REGISTER_F(Fixture, Saving)->Unit(benchmark::kMicrosecond)->MinTime(10.0);
+BENCHMARK_REGISTER_F(Fixture, Loading)->Unit(benchmark::kMicrosecond)->MinTime(10.0);
 
 BENCHMARK_MAIN();

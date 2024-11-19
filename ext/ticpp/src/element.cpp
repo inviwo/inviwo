@@ -42,6 +42,10 @@ void TiXmlElement::AddAttribute(std::string_view name, std::string_view _value) 
     attributeSet.Add(name, _value);
 }
 
+std::pmr::string& TiXmlElement::AddAttribute(std::string_view name) {
+    return attributeSet.Add(name);
+}
+
 void TiXmlElement::RemoveAttribute(std::string_view name) { attributeSet.Remove(name); }
 
 void TiXmlElement::CopyTo(TiXmlElement* target) const {
@@ -58,15 +62,6 @@ void TiXmlElement::CopyTo(TiXmlElement* target) const {
     for (TiXmlNode* node = firstChild; node; node = node->NextSibling()) {
         target->LinkEndChild(node->Clone(target->Allocator()));
     }
-}
-
-bool TiXmlElement::Accept(TiXmlVisitor* visitor) const {
-    if (visitor->VisitEnter(*this, attributeSet.First())) {
-        for (const TiXmlNode* node = FirstChild(); node; node = node->NextSibling()) {
-            if (!node->Accept(visitor)) break;
-        }
-    }
-    return visitor->VisitExit(*this);
 }
 
 TiXmlNode* TiXmlElement::Clone(allocator_type alloc) const {
@@ -105,10 +100,6 @@ const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data, allocator
         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_FAILED_TO_READ_ELEMENT_NAME, pErr, data);
     }
 
-    std::pmr::string endTag("</", alloc);
-    endTag += value;
-    endTag += ">";
-
     // Check for and read attributes. Also look for an empty
     // tag or an end tag.
     while (p && *p) {
@@ -138,8 +129,8 @@ const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data, allocator
             }
 
             // We should find the end tag now
-            if (StringEqual(p, endTag.c_str(), false)) {
-                p += endTag.length();
+            if (StrEquals(p, std::string_view{"</"}, value, std::string_view{">"})) {
+                p += value.size() + 3;
                 return p;
             } else {
                 throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_READING_END_TAG, p, data);
@@ -159,7 +150,7 @@ const char* TiXmlElement::ReadValue(const char* p, TiXmlParsingData* data, alloc
     while (p && *p) {
         if (*p != '<') {
             // Take what we have, make a text element.
-            auto textNode = std::make_unique<TiXmlText>("", false, alloc);
+            auto textNode = pmr_make_unique<TiXmlText>(alloc, "", false);
 
             if (TiXmlBase::IsWhiteSpaceCondensed()) {
                 p = textNode->Parse(p, data, alloc);
@@ -176,10 +167,10 @@ const char* TiXmlElement::ReadValue(const char* p, TiXmlParsingData* data, alloc
             // We hit a '<'
             // Have we hit a new element or an end tag? This could also be
             // a TiXmlText in the "CDATA" style.
-            if (StringEqual(p, "</", false)) {
+            if (StrEquals(p, std::string_view{"</"})) {
                 return p;
             } else {
-                if (std::unique_ptr<TiXmlNode> node = Identify(p, alloc)) {
+                if (PMRUnique<TiXmlNode> node = Identify(p, alloc)) {
                     p = node->Parse(p, data, alloc);
                     LinkEndChild(node.release());
                 } else {

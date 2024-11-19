@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/typetraits.h>
+#include <inviwo/core/util/transparentmaps.h>
 
 #include <functional>
 #include <sstream>
@@ -66,13 +67,13 @@ public:
 
         Element(ElementType type, std::string_view content);
         Element(std::string_view name, std::string_view content = "",
-                const std::unordered_map<std::string, std::string>& attributes = {});
+                const UnorderedStringMap<std::string>& attributes = {});
 
         const std::string& name() const;
         std::string& name();
 
-        const std::unordered_map<std::string, std::string>& attributes() const;
-        std::unordered_map<std::string, std::string>& attributes();
+        const UnorderedStringMap<std::string>& attributes() const;
+        UnorderedStringMap<std::string>& attributes();
 
         const std::string& content() const;
         std::string& content();
@@ -98,7 +99,7 @@ public:
         ElementType type_;
         std::vector<std::unique_ptr<Element>> children_;
         std::string data_;
-        std::unordered_map<std::string, std::string> attributes_;
+        UnorderedStringMap<std::string> attributes_;
         static const std::vector<std::string> emptyTags_;
         static const std::vector<std::string> noIndentTags_;
     };
@@ -112,10 +113,10 @@ public:
 
         PathComponent(int index);
         PathComponent(std::string_view name);
-        PathComponent(const std::unordered_map<std::string, std::string>& attributes);
+        PathComponent(const UnorderedStringMap<std::string>& attributes);
 
         PathComponent(std::string_view name,
-                      const std::unordered_map<std::string, std::string>& attributes);
+                      const UnorderedStringMap<std::string>& attributes);
 
         static PathComponent first();
 
@@ -145,10 +146,10 @@ public:
         DocumentHandle get(const std::vector<PathComponent>& path);
         DocumentHandle insert(PathComponent pos, std::string_view name,
                               std::string_view content = "",
-                              const std::unordered_map<std::string, std::string>& attributes = {});
+                              const UnorderedStringMap<std::string>& attributes = {});
 
         DocumentHandle append(std::string_view name, std::string_view content = "",
-                              const std::unordered_map<std::string, std::string>& attributes = {});
+                              const UnorderedStringMap<std::string>& attributes = {});
         DocumentHandle insert(PathComponent pos, Document doc);
 
         DocumentHandle insertText(PathComponent pos, std::string_view text);
@@ -183,10 +184,10 @@ public:
 
     DocumentHandle get(const std::vector<PathComponent>& path);
     DocumentHandle insert(PathComponent pos, std::string_view name, std::string_view content = "",
-                          const std::unordered_map<std::string, std::string>& attributes = {});
+                          const UnorderedStringMap<std::string>& attributes = {});
 
     DocumentHandle append(std::string_view name, std::string_view content = "",
-                          const std::unordered_map<std::string, std::string>& attributes = {});
+                          const UnorderedStringMap<std::string>& attributes = {});
 
     DocumentHandle insertText(PathComponent pos, std::string_view text);
     DocumentHandle appendText(std::string_view text);
@@ -262,9 +263,9 @@ public:
 
     struct IVW_CORE_API ArrributeWrapper : Wrapper {
         template <typename T>
-        ArrributeWrapper(const std::unordered_map<std::string, std::string>& attributes, T&& data)
+        ArrributeWrapper(const UnorderedStringMap<std::string>& attributes, T&& data)
             : Wrapper(std::forward<T>(data)), attributes_(attributes) {}
-        std::unordered_map<std::string, std::string> attributes_;
+        UnorderedStringMap<std::string> attributes_;
     };
     struct IVW_CORE_API Header : Wrapper {
         template <typename T>
@@ -274,7 +275,7 @@ public:
     struct Span_t {};
 
     TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
-                 const std::unordered_map<std::string, std::string>& attributes = {});
+                 const UnorderedStringMap<std::string>& attributes = {});
 
     TableBuilder(Document::DocumentHandle table);
 

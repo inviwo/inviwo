@@ -9,6 +9,8 @@
 #include <cassert>
 #include <stdexcept>
 #include <array>
+#include <memory>
+#include <algorithm>
 
 /**	Internal structure for tracking location of items
  * in the XML file.
@@ -77,6 +79,21 @@ private:
 };
 #include <warn/pop>
 
+struct TICPP_API PMRDeleter {
+    template <typename T>
+    void operator()(T* item) {
+        alloc.delete_object(item);
+    }
+    std::pmr::polymorphic_allocator<> alloc;
+};
+template <typename T>
+using PMRUnique = std::unique_ptr<T, PMRDeleter>;
+
+template <class T, class... Args>
+PMRUnique<T> pmr_make_unique(std::pmr::polymorphic_allocator<> alloc, Args&&... args) {
+    return PMRUnique<T>(alloc.new_object<T>(std::forward<Args>(args)...), PMRDeleter{alloc});
+}
+
 /**
  * TiXmlBase is a base class for every class in TinyXml.
  * It does little except to establish that TinyXml classes
@@ -126,7 +143,8 @@ public:
     /** Expands entities in a string. Note this should not contain the tag's '<', '>', etc,
      * or they will be transformed into entities!
      */
-    static void EncodeString(const std::string_view str, std::string* out);
+    static void EncodeString(const std::string_view str, std::pmr::string& out);
+    static void EncodeStringSlowPath(const std::string_view str, std::pmr::string& out);
 
     // Table that returns, for a given lead byte, the total number of bytes
     // in the UTF-8 sequence.
@@ -142,7 +160,7 @@ public:
     //      ef bf bf
 
     // clang-format off
-    static constexpr std::array<int, 256> utf8ByteTable = {
+    static constexpr std::array<char, 256> utf8ByteTable = {
 	//	0	1	2	3	4	5	6	7	8	9	a	b	c	d	e	f
 		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x00
 		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x10
@@ -163,7 +181,38 @@ public:
     };
     // clang-format on
 
-    static const char* SkipWhiteSpace(const char*);
+    inline static const char* SkipByteOrderMark(const char* p) {
+        if (!p || !*p) {
+            return nullptr;
+        }
+
+        constexpr unsigned char BOM_0 = 0xefU;
+        constexpr unsigned char BOM_1 = 0xbbU;
+        constexpr unsigned char BOM_2 = 0xbfU;
+
+        const unsigned char* pU = (const unsigned char*)p;
+
+        if (*(pU + 0) == BOM_0 && *(pU + 1) == BOM_1 && *(pU + 2) == BOM_2) {
+            p += 3;
+        } else if (*(pU + 0) == BOM_0 && *(pU + 1) == 0xbfU && *(pU + 2) == 0xbeU) {
+            p += 3;
+        } else if (*(pU + 0) == BOM_0 && *(pU + 1) == 0xbfU && *(pU + 2) == 0xbfU) {
+            p += 3;
+        }
+
+        return p;
+    }
+
+    inline static const char* SkipWhiteSpace(const char* p) {
+        if (!p || !*p) {
+            return nullptr;
+        }
+        // Still using old rules for white space.
+        while (*p && IsWhiteSpace(*p)) {
+            ++p;
+        }
+        return p;
+    }
     inline static bool IsWhiteSpace(char c) {
         return (isspace((unsigned char)c) || c == '\n' || c == '\r');
     }
@@ -193,27 +242,24 @@ public:
     static const char* ReadNameValue(const char* in, std::pmr::string* name,
                                      std::pmr::string* value, TiXmlParsingData* data);
 
-protected:
     // If an entity has been found, transform it into a character.
     static const char* GetEntity(const char* in, char* value, int* length);
 
     // Get a character, while interpreting entities.
     // The length can be from 0 to 4 bytes.
-    inline static const char* GetChar(const char* p, char* _value, int* length) {
+    inline static const char* GetChar(const char* p, char* value, int* length) {
         assert(p);
-        *length = utf8ByteTable[*((const unsigned char*)p)];
+        if (*p == '&') return GetEntity(p, value, length);
+
+        *length = utf8ByteTable[*p];
         assert(*length >= 0 && *length < 5);
 
         if (*length == 1) {
-            if (*p == '&') return GetEntity(p, _value, length);
-            *_value = *p;
+            *value = *p;
             return p + 1;
         } else if (*length) {
-            // strncpy( _value, p, *length );	// lots of compilers don't like this function
-            // (unsafe),
-            //  and the null terminator isn't needed
             for (int i = 0; p[i] && i < *length; ++i) {
-                _value[i] = p[i];
+                value[i] = p[i];
             }
             return p + (*length);
         } else {
@@ -221,6 +267,22 @@ protected:
             return nullptr;
         }
     }
+
+    // Check that s starts with the same chars as the concatenation of args
+    template <typename... Ts>
+    bool StrEquals(const char* s, const Ts&... args) {
+        const auto fun = [&](auto&& arg) {
+            auto res = std::strncmp(s, arg.data(), arg.size());
+            if (res != 0) {
+                return false;
+            } else {
+                s += arg.size();
+                return true;
+            }
+        };
+
+        return (fun(args) && ...);
+    };
 
     // Return true if the next characters in the stream are any of the endTag sequences.
     // Ignore case only works for english, and should only be relied on when comparing
@@ -249,3 +311,14 @@ private:
         {{"&amp;", '&'}, {"&lt;", '<'}, {"&gt;", '>'}, {"&quot;", '\"'}, {"&apos;", '\''}}};
     static bool condenseWhiteSpace;
 };
+
+inline void TiXmlBase::EncodeString(const std::string_view str, std::pmr::string& out) {
+
+    // Fast path where we don't have any thing to encode
+    // avoid c < 32, " = 34, & = 38, ' = 39, < = 60, > = 62,
+    if (std::all_of(str.begin(), str.end(), [](char c) { return c >= 40 && c != 60 && c != 62; })) {
+        out.append(str);
+    } else {
+        EncodeStringSlowPath(str, out);
+    }
+}
