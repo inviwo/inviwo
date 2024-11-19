@@ -1,3 +1,4 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -38,6 +39,7 @@
 #include <unordered_map>
 #include <string>
 #include <algorithm>
+#include <ranges>
 
 namespace inviwo {
 
@@ -57,6 +59,12 @@ public:
 
     template <typename T>
     std::vector<FileExtension> getExtensionsForType() const;
+
+    template <typename... Ts>
+    std::vector<FileExtension> getExtensionsForTypes() const;
+
+    template <typename... Ts>
+    auto getExtensionsForTypesView() const;
 
     /**
      * \brief Return a reader matching the file extension of DataReader of type T.
@@ -106,14 +114,36 @@ protected:
 
 template <typename T>
 std::vector<FileExtension> DataReaderFactory::getExtensionsForType() const {
-    std::vector<FileExtension> ext;
-
-    for (auto reader : map_) {
-        if (auto r = dynamic_cast<DataReaderType<T>*>(reader.second)) {
-            ext.push_back(reader.first);
+    std::vector<FileExtension> extensions;
+    for (auto&& [ext, reader] : map_) {
+        if (reader->readsType<T>()) {
+            extensions.push_back(ext);
         }
     }
-    return ext;
+    return extensions;
+}
+
+template <typename... Ts>
+std::vector<FileExtension> DataReaderFactory::getExtensionsForTypes() const {
+    std::vector<FileExtension> extensions;
+
+    for (auto&& [ext, reader] : map_) {
+        if ((reader->readsType<Ts>() || ...)) {
+            extensions.push_back(ext);
+        }
+    }
+
+    return extensions;
+}
+
+template <typename... Ts>
+auto DataReaderFactory::getExtensionsForTypesView() const {
+    using Item = std::pair<const FileExtension, DataReader*>;
+    return map_ | std::views::filter([](const Item& item) {
+               return (item.second->readsType<Ts>() || ...);
+           }) |
+           std::views::transform(
+               [](const Item& item) -> const FileExtension& { return item.first; });
 }
 
 template <typename T>

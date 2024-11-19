@@ -38,6 +38,7 @@
 #include <inviwo/core/datastructures/datamapper.h>        // for DataMapper
 #include <inviwo/core/datastructures/tfprimitiveset.h>    // for TFPrimitiveSet
 #include <inviwo/core/datastructures/transferfunction.h>  // for TransferFunction
+#include <inviwo/core/datastructures/isovaluecollection.h>
 #include <inviwo/core/io/datareaderexception.h>           // for DataReaderException
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/datareader.h>

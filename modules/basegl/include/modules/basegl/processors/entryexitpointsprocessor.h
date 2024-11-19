@@ -58,9 +58,6 @@ public:
 
     virtual void process() override;
 
-    // override to do member renaming.
-    virtual void deserialize(Deserializer& d) override;
-
 private:
     MeshInport inport_;
     ImageOutport entryPort_;

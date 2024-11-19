@@ -146,7 +146,7 @@ void exposeProperties(py::module& m) {
             "help", [](const Property& p) { return p.getHelp(); }, &Property::setHelp)
         .def_property_readonly("classIdentifier", &Property::getClassIdentifier)
         .def_property_readonly("classIdentifierForWidget", &Property::getClassIdentifierForWidget)
-        .def_property_readonly("path", &Property::getPath)
+        .def_property_readonly("path", [](const Property& p) { return p.getPath(); })
         .def_property("invalidationLevel", &Property::getInvalidationLevel,
                       &Property::setInvalidationLevel)
         .def_property_readonly("widgets", &Property::getWidgets)

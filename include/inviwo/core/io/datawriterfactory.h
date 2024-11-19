@@ -38,6 +38,8 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <algorithm>
+#include <ranges>
 
 namespace inviwo {
 
@@ -68,6 +70,13 @@ public:
 
     template <typename T>
     std::vector<FileExtension> getExtensionsForType() const;
+
+    template <typename... Ts>
+    std::vector<FileExtension> getExtensionsForTypes() const;
+
+    template <typename... Ts>
+    auto getExtensionsForTypesView() const;
+
     /**
      * \brief Return a writer matching the file extension of DataWriterType of type T.
      * Does case insensitive comparison between the last part of filePathOrExtension and each
@@ -117,14 +126,35 @@ protected:
 
 template <typename T>
 std::vector<FileExtension> DataWriterFactory::getExtensionsForType() const {
-    std::vector<FileExtension> ext;
-
-    for (auto& writer : map_) {
-        if (auto r = dynamic_cast<DataWriterType<T>*>(writer.second)) {
-            ext.push_back(writer.first);
+    std::vector<FileExtension> extensions;
+    for (auto&& [ext, writer] : map_) {
+        if (writer->writesType<T>()) {
+            extensions.push_back(ext);
         }
     }
-    return ext;
+    return extensions;
+}
+
+template <typename... Ts>
+std::vector<FileExtension> DataWriterFactory::getExtensionsForTypes() const {
+    std::vector<FileExtension> extensions;
+
+    for (auto&& [ext, writer] : map_) {
+        if ((writer->writesType<Ts>() || ...)) {
+            extensions.push_back(ext);
+        }
+    }
+
+    return extensions;
+}
+
+template <typename... Ts>
+auto DataWriterFactory::getExtensionsForTypesView() const {
+    using Item = std::pair<const FileExtension, DataWriter*>;
+    return map_ | std::views::filter([](const Item& item) {
+               return (item.second->writesType<Ts>() || ...);
+           }) |
+           std::views::transform([](const Item& item) -> decltype(auto) { return item.first; });
 }
 
 template <typename T>

@@ -36,6 +36,8 @@
 #include <memory>
 #include <any>
 #include <ios>
+#include <typeindex>
+
 
 namespace inviwo {
 
@@ -83,12 +85,19 @@ public:
      */
     virtual std::any getOption([[maybe_unused]] std::string_view key) { return std::any{}; }
 
+    template <typename T>
+    bool readsType() const {
+        return canRead(std::type_index(typeid(T)));
+    }
+
 protected:
     /**
      * Verify that @p path exists, and throw DataReaderException if not.
      * @throws DataReaderException if the file is not found
      */
     void checkExists(const std::filesystem::path& path) const;
+
+    virtual bool canRead(const std::type_index& index) const = 0;
 
     /**
      * Open @p path in @p mode for reading. If the file is not found or the file can't
@@ -128,6 +137,11 @@ public:
     virtual std::shared_ptr<T> readData(const std::filesystem::path& filePath, MetaDataOwner*) {
         return readData(filePath);
     };
+
+protected:
+    virtual bool canRead(const std::type_index& index) const override {
+        return std::type_index(typeid(T)) == index;
+    }
 };
 
 }  // namespace inviwo

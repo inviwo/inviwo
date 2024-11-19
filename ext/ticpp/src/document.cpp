@@ -237,13 +237,14 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData, allo
     TiXmlParsingData data(p, TabSize(), prevData ? prevData->Cursor().row : 0,
                           prevData ? prevData->Cursor().col : 0);
 
+    p = SkipByteOrderMark(p);
     p = SkipWhiteSpace(p);
     if (!p) {
         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
     }
 
     while (p && *p) {
-        if (std::unique_ptr<TiXmlNode> node = Identify(p, alloc)) {
+        if (PMRUnique<TiXmlNode> node = Identify(p, alloc)) {
             p = node->Parse(p, &data, alloc);
             LinkEndChild(node.release());
         } else {

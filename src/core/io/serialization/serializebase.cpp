@@ -35,18 +35,15 @@
 #include <charconv>
 #include <sstream>
 
-namespace inviwo {
-
-namespace config {
-#if defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L
-constexpr bool charconv = true;
-#else
-constexpr bool charconv = false;
+#if !(defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L)
+#include <fast_float/fast_float.h>
 #endif
-}  // namespace config
+
+namespace inviwo {
 
 SerializeBase::SerializeBase(const std::filesystem::path& fileName, allocator_type alloc)
     : fileName_{fileName}
+    , fileDir_{fileName.parent_path()}
     , doc_{std::make_unique<TiXmlDocument>(fileName.string(), alloc)}
     , rootElement_{nullptr}
     , retrieveChild_{true} {}
@@ -55,17 +52,7 @@ SerializeBase::~SerializeBase() = default;
 SerializeBase::SerializeBase(SerializeBase&&) noexcept = default;
 SerializeBase& SerializeBase::operator=(SerializeBase&&) noexcept = default;
 
-const std::filesystem::path& SerializeBase::getFileName() const { return fileName_; }
-
-std::string SerializeBase::nodeToString(const TiXmlElement& node) {
-    try {
-        TiXmlPrinter printer;
-        node.Accept(&printer);
-        return printer.Str();
-    } catch (const TiXmlError&) {
-        return "No valid root node";
-    }
-}
+auto SerializeBase::getAllocator() const -> allocator_type {return doc_->getAllocator();}
 
 NodeSwitch::NodeSwitch(NodeSwitch&& rhs) noexcept
     : serializer_{rhs.serializer_}
@@ -80,7 +67,7 @@ NodeSwitch& NodeSwitch::operator=(NodeSwitch&& rhs) noexcept {
         if (storedNode_) {
             serializer_->rootElement_ = storedNode_;
             serializer_->retrieveChild_ = storedRetrieveChild_;
-        };
+        }
         serializer_ = rhs.serializer_;
         storedNode_ = rhs.storedNode_;
         storedRetrieveChild_ = rhs.storedRetrieveChild_;
@@ -133,11 +120,16 @@ namespace {
 
 template <class T>
 void fromStrInternal(std::string_view value, T& dest) {
-    if constexpr (config::charconv && (std::is_same_v<double, T> || std::is_same_v<float, T> ||
-                                       (!std::is_same_v<bool, T> && std::is_integral_v<T>))) {
+    if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T> ||
+                  (!std::is_same_v<bool, T> && std::is_integral_v<T>)) {
         const auto end = value.data() + value.size();
-        if (auto [p, ec] = std::from_chars(value.data(), end, dest);
-            ec != std::errc() || p != end) {
+
+#if defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L
+        auto [p, ec] = std::from_chars(value.data(), end, dest);
+#else
+        auto [p, ec] = fast_float::from_chars(value.data(), end, dest);
+#endif
+        if (ec != std::errc() || p != end) {
             if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T>) {
                 if (value == "inf") {
                     dest = std::numeric_limits<T>::infinity();

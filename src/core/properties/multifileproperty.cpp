@@ -148,8 +148,9 @@ void MultiFileProperty::serialize(Serializer& s) const {
 
     files_.serialize(s, serializationMode_);
 
-    const auto workspacePath = s.getFileName().parent_path();
-    const auto dataPath = filesystem::getPath(PathType::Data);
+    const auto& workspacePath = s.getFileDir();
+    ;
+    const auto& dataPath = filesystem::getPath(PathType::Data);
 
     // save absolute and relative paths for each file pattern
     std::vector<std::filesystem::path> workspaceRelativePaths;  // relative to workspace directory
@@ -161,13 +162,13 @@ void MultiFileProperty::serialize(Serializer& s) const {
         std::filesystem::path dataRelative;
         if (!basePath.empty()) {
             if (!workspacePath.empty() && workspacePath.root_name() == basePath.root_name()) {
-                workspaceRelative = std::filesystem::relative(basePath, workspacePath);
+                workspaceRelative = basePath.lexically_relative(workspacePath);
                 if (workspaceRelative.empty()) {
                     workspaceRelative = ".";
                 }
             }
             if (!dataPath.empty() && dataPath.root_name() == basePath.root_name()) {
-                dataRelative = std::filesystem::relative(basePath, dataPath);
+                dataRelative = basePath.lexically_relative(dataPath);
                 if (dataRelative.empty()) {
                     dataRelative = ".";
                 }
@@ -200,16 +201,16 @@ void MultiFileProperty::deserialize(Deserializer& d) {
     if ((absolutePaths.size() == workspaceRelativePaths.size()) &&
         (absolutePaths.size() == dataRelativePaths.size())) {
 
-        const auto workspacePath = d.getFileName().parent_path();
-        const auto dataPath = filesystem::getPath(PathType::Data);
+        const auto& workspacePath = d.getFileDir();
+        const auto& dataPath = filesystem::getPath(PathType::Data);
 
         for (std::size_t i = 0; i < absolutePaths.size(); ++i) {
             const auto basePath = absolutePaths[i].parent_path();
             const auto pattern = absolutePaths[i].filename();
 
             const auto workspaceBasedPath =
-                fs::weakly_canonical(workspacePath / workspaceRelativePaths[i]);
-            const auto dataBasedPath = fs::weakly_canonical(dataPath / dataRelativePaths[i]);
+                (workspacePath / workspaceRelativePaths[i]).lexically_normal();
+            const auto dataBasedPath = (dataPath / dataRelativePaths[i]).lexically_normal();
 
             if (!basePath.empty() && fs::is_directory(basePath)) {
                 continue;

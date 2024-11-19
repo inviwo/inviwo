@@ -79,7 +79,7 @@ public:
     bool eventFilter(QObject* watched, QEvent* event) override;
 
 private:
-    using DiffType = std::vector<std::string>::iterator::difference_type;
+    using DiffType = std::vector<std::pmr::string>::iterator::difference_type;
 
     void updateActions();
 
@@ -91,7 +91,7 @@ private:
     size_t triggerId_ = 0;
     bool isRestoring = false;
     DiffType head_ = -1;
-    std::vector<std::shared_ptr<const std::string>> undoBuffer_;
+    std::vector<std::shared_ptr<const std::pmr::string>> undoBuffer_;
 
     QAction* undoAction_;
     QAction* redoAction_;

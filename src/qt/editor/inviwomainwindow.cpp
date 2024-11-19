@@ -810,10 +810,10 @@ void InviwoMainWindow::addActions() {
     {
         fileMenuItem->addSeparator();
         auto reloadStyle = fileMenuItem->addAction("Reload Style sheet");
-        connect(reloadStyle, &QAction::triggered, [this](bool /*state*/) {
+        connect(reloadStyle, &QAction::triggered, [](bool /*state*/) {
             // The following code snippet allows to reload the Qt style sheets during
             // runtime, which is handy while we change them.
-            utilqt::setStyleSheetFile(app_->getPath(PathType::Resources) /
+            utilqt::setStyleSheetFile(filesystem::getPath(PathType::Resources) /
                                       "stylesheets/inviwo.qss");
         });
     }

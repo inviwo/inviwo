@@ -32,14 +32,12 @@ enum class TiXmlStreamPrint { No, Yes };
 */
 class TICPP_API TiXmlPrinter final : public TiXmlVisitor {
 public:
-    TiXmlPrinter(TiXmlStreamPrint streamPrint = TiXmlStreamPrint::No)
-        : buffer{}
+    TiXmlPrinter(std::pmr::string& aBuffer, TiXmlStreamPrint streamPrint = TiXmlStreamPrint::No)
+        : buffer{aBuffer}
         , depth{0}
         , simpleTextPrint{false}
         , indent{streamPrint == TiXmlStreamPrint::No ? 4 : 0}
-        , lineBreak{streamPrint == TiXmlStreamPrint::No} {
-        buffer.reserve(4096);
-    }
+        , lineBreak{streamPrint == TiXmlStreamPrint::No} {}
 
     virtual bool VisitEnter(const TiXmlDocument&) override { return true; }
     virtual bool VisitExit(const TiXmlDocument&) override { return true; }
@@ -68,16 +66,15 @@ public:
         lineBreak = false;
     }
 
-    /// Return the result.
-    const std::string& Str() { return buffer; }
-
 private:
-    void DoIndent() { buffer.append(indent * depth, ' '); }
+    void DoIndent() {
+        if (indent != 0) buffer.append(indent * depth, ' ');
+    }
     void DoLineBreak() {
         if (lineBreak) buffer.push_back('\n');
     }
 
-    std::string buffer;
+    std::pmr::string& buffer;
 
     int depth;
     bool simpleTextPrint;

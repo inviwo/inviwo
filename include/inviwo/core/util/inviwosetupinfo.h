@@ -44,12 +44,19 @@ struct IVW_CORE_API InviwoSetupInfo {
     using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
 
     struct ModuleSetupInfo {
-        explicit ModuleSetupInfo(allocator_type alloc = {}) : name{alloc}, processors{alloc} {}
+        using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
+        ModuleSetupInfo(allocator_type alloc = {});
 
         ModuleSetupInfo(std::string_view aName, int aVersion,
                         std::pmr::vector<std::pmr::string> someProcessors,
-                        allocator_type alloc = {})
-            : name{aName, alloc}, version{aVersion}, processors{std::move(someProcessors)} {}
+                        allocator_type alloc = {});
+
+        ModuleSetupInfo(const ModuleSetupInfo&, allocator_type alloc = {});
+        ModuleSetupInfo(ModuleSetupInfo&&);
+        ModuleSetupInfo(ModuleSetupInfo&&, allocator_type alloc);
+
+        ModuleSetupInfo& operator=(const ModuleSetupInfo&) = default;
+        ModuleSetupInfo& operator=(ModuleSetupInfo&&) = default;
 
         void serialize(Serializer& s) const;
         void deserialize(Deserializer& d);

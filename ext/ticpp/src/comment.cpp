@@ -29,13 +29,13 @@ const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, allocator
 
     p = SkipWhiteSpace(p);
 
-    const char* startTag = "<!--";
-    const char* endTag = "-->";
+    constexpr std::string_view startTag = "<!--";
+    constexpr std::string_view endTag = "-->";
 
-    if (!StringEqual(p, startTag, false)) {
+    if (!StrEquals(p, startTag)) {
         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_COMMENT, p, data);
     }
-    p += strlen(startTag);
+    p += startTag.size();
 
     // [ 1475201 ] TinyXML parses entities in comments
     // Oops - ReadText doesn't work, because we don't want to parse the entities.
@@ -54,11 +54,11 @@ const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, allocator
 
     value = "";
     // Keep all the white space.
-    while (p && *p && !StringEqual(p, endTag, false)) {
+    while (p && *p && !StrEquals(p, endTag)) {
         value.append(p, 1);
         ++p;
     }
-    if (p) p += strlen(endTag);
+    if (p) p += endTag.size();
 
     return p;
 }

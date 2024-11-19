@@ -34,7 +34,7 @@ public:
     std::string_view Href() const { return href; }
 
     // Print this declaration to a std::string
-    void Print(std::string* str) const;
+    void Print(std::pmr::string& out) const;
 
     // Print this declaration to a FILE stream.
     virtual void Print(FILE* file) const;

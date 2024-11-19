@@ -17,7 +17,9 @@ public:
 private:
     // Only used by the document!
     TiXmlParsingData(const char* start, int _tabsize, int row, int col)
-        : cursor{.row = row, .col = col}, stamp{start}, tabsize{_tabsize} {
+        : cursor{.row = row, .col = col}
+        , stamp{TiXmlBase::SkipByteOrderMark(start)}
+        , tabsize{_tabsize} {
         assert(start);
     }
 

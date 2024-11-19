@@ -33,6 +33,7 @@
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/transparentmaps.h>
 
 #include <map>
 #include <memory>
@@ -93,7 +94,7 @@ private:
     PortInspectorMap portInspectors_;
     std::vector<std::unique_ptr<PortInspector>> unUsedInspectors_;
 
-    std::unordered_map<std::string, std::vector<std::string>> embeddedProcessors_;
+    UnorderedStringMap<std::vector<std::string>> embeddedProcessors_;
 
     InviwoApplication* app_;
 };

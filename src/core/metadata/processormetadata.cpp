@@ -69,19 +69,21 @@ void ProcessorMetaData::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("position", position_);
     s.serialize("visibility", visibility_);
-    s.serialize("selection", selection_);
+    if (s.getWorkspaceSaveMode() != WorkspaceSaveMode::Undo) {
+        s.serialize("selection", selection_);
+    }
 }
 
 void ProcessorMetaData::deserialize(Deserializer& d) {
-    ivec2 position{0, 0};
+    ivec2 position{position_};
     d.deserialize("position", position);
     setPosition(position);
 
-    bool visibility{true};
+    bool visibility{visibility_};
     d.deserialize("visibility", visibility);
     setVisible(visibility);
 
-    bool selection{false};
+    bool selection{selection_};
     d.deserialize("selection", selection);
     setSelected(selection);
 }

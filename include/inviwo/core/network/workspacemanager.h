@@ -34,8 +34,7 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/io/serialization/serializable.h>
-
-#include <flags/flags.h>
+#include <inviwo/core/util/inviwosetupinfo.h>
 
 #include <iostream>
 #include <string_view>
@@ -48,10 +47,6 @@ namespace inviwo {
 class FactoryBase;
 class InviwoApplication;
 class NetworkModified;
-
-enum class WorkspaceSaveMode { Disk = 1 << 0, Undo = 1 << 1 };
-ALLOW_FLAGS_FOR_ENUM(WorkspaceSaveMode)
-using WorkspaceSaveModes = flags::flags<WorkspaceSaveMode>;
 
 /**
  * The WorkspaceManager is responsible for clearing, loading, and saving a workspace. Different
@@ -115,6 +110,19 @@ public:
               WorkspaceSaveMode mode = WorkspaceSaveMode::Disk);
 
     /**
+     * Save the current workspace to a stream
+     * \param xml the string to write to.
+     * \param refPath a reference that can be use by the serializer to store relative paths.
+     *      The same refPath should be given when loading. Most often this should be the path to the
+     *      saved file.
+     * \param exceptionHandler A callback for handling errors.
+     * \param mode to indicate if we are saving to disk or undo-stack
+     */
+    void save(std::pmr::string& xml, const std::filesystem::path& refPath,
+              const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
+              WorkspaceSaveMode mode = WorkspaceSaveMode::Disk);
+
+    /**
      * Save the current workspace to a file
      * \param path the file to save into.
      * \param exceptionHandler A callback for handling errors.
@@ -133,6 +141,18 @@ public:
      * \param exceptionHandler A callback for handling errors.
      */
     void load(std::istream& stream, const std::filesystem::path& refPath,
+              const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
+              WorkspaceSaveMode mode = WorkspaceSaveMode::Disk);
+
+    /**
+     * Load a workspace from a string
+     * \param xml the string to read from.
+     * \param refPath a reference that can be use by the deserializer to calculate relative
+     *      paths. The same refPath should be given when loading. Most often this should be the
+     *      path to the saved file.
+     * \param exceptionHandler A callback for handling errors.
+     */
+    void load(const std::pmr::string& xml, const std::filesystem::path& refPath,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
               WorkspaceSaveMode mode = WorkspaceSaveMode::Disk);
 
@@ -181,9 +201,28 @@ public:
         Logger* logger = LogCentral::getPtr(),
         std::pmr::polymorphic_allocator<std::byte> alloc = {}) const;
 
+    /**
+     *	Create a deserializer for a workspace stream, and apply all needed version updates.
+     */
+    std::pair<Deserializer, InviwoSetupInfo> createWorkspaceDeserializerAndInfo(
+        std::istream& stream, const std::filesystem::path& refPath,
+        Logger* logger = LogCentral::getPtr(),
+        std::pmr::polymorphic_allocator<std::byte> alloc = {}) const;
+
+    /**
+     *	Create a deserializer for a workspace string, and apply all needed version updates.
+     */
+    std::pair<Deserializer, InviwoSetupInfo> createWorkspaceDeserializerAndInfo(
+        const std::pmr::string& xml, const std::filesystem::path& refPath,
+        Logger* logger = LogCentral::getPtr(),
+        std::pmr::polymorphic_allocator<std::byte> alloc = {}) const;
+
     using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
 
 private:
+    void configureWorkspaceDeserializerAndInfo(Deserializer& deserializer, InviwoSetupInfo& info,
+                                               Logger* logger) const;
+
     void setModified(bool modified);
     InviwoApplication* app_;
     std::vector<FactoryBase*> registeredFactories_;

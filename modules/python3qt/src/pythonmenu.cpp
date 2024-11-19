@@ -94,13 +94,13 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
         menu_->addAction(QIcon(":/svgicons/processor-new.svg"), "&New Python Processor");
     toolbar_->addAction(newPythonProcessor);
 
-    QObject::connect(newPythonProcessor, &QAction::triggered, [modulePath, app]() {
+    QObject::connect(newPythonProcessor, &QAction::triggered, [modulePath]() {
         InviwoFileDialog saveFileDialog(nullptr, "Create Python Processor", "PythonProcessor");
         saveFileDialog.setFileMode(FileMode::AnyFile);
         saveFileDialog.setAcceptMode(AcceptMode::Save);
         saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
         saveFileDialog.addExtension("py", "Python file");
-        const auto dir = app->getPath(PathType::Settings) / "python_processors";
+        const auto dir = filesystem::getPath(PathType::Settings) / "python_processors";
         std::filesystem::create_directories(dir);
         saveFileDialog.setCurrentDirectory(dir);
 
