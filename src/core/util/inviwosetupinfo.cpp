@@ -47,6 +47,23 @@ void InviwoSetupInfo::ModuleSetupInfo::deserialize(Deserializer& d) {
     d.deserialize("Processors", processors, "Processor");
 }
 
+InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(allocator_type alloc)
+    : name{alloc}, version{0}, processors(alloc) {}
+
+InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(std::string_view aName, int aVersion,
+                                                  std::pmr::vector<std::pmr::string> someProcessors,
+                                                  allocator_type alloc)
+    : name{aName, alloc}, version{aVersion}, processors{std::move(someProcessors)} {}
+
+InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(const ModuleSetupInfo& rhs, allocator_type alloc)
+    : name{rhs.name, alloc}, version{rhs.version}, processors(rhs.processors, alloc) {}
+
+InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(ModuleSetupInfo&& rhs)
+    : name{std::move(rhs.name)}, version{rhs.version}, processors(std::move(rhs.processors)) {}
+
+InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(ModuleSetupInfo&& rhs, allocator_type alloc)
+    : name{rhs.name, alloc}, version{rhs.version}, processors(rhs.processors, alloc) {}
+
 // Must use  modules_(alloc) here, using {} will call the wrong constructor
 InviwoSetupInfo::InviwoSetupInfo(allocator_type alloc) : modules_(alloc) {}
 

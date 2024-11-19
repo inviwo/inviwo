@@ -133,7 +133,7 @@ void SequenceProcessor::deserialize(Deserializer& d) {
 }
 
 void SequenceProcessor::saveSubNetwork(const std::filesystem::path& file) {
-    Serializer s(app_->getPath(PathType::Workspaces));
+    Serializer s(filesystem::getPath(PathType::Workspaces) / "dummy.inv");
 
     Tags tags;
     subNetwork_->forEachProcessor([&](auto p) { tags.addTags(p->getTags()); });
@@ -157,7 +157,7 @@ void SequenceProcessor::loadSubNetwork(const std::filesystem::path& file) {
         subNetwork_->clear();
         auto wm = app_->getWorkspaceManager();
         auto ifs = std::ifstream(file);
-        auto d = wm->createWorkspaceDeserializer(ifs, app_->getPath(PathType::Workspaces));
+        auto d = wm->createWorkspaceDeserializer(ifs, filesystem::getPath(PathType::Workspaces) / "dummy.inv");
         auto name = getDisplayName();
         d.deserialize("DisplayName", name);
         setDisplayName(name);

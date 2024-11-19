@@ -406,6 +406,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/threadutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/transparentmaps.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/typetraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/unindent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
@@ -765,6 +766,7 @@ set(SOURCE_FILES
     util/threadpool.cpp
     util/threadutil.cpp
     util/timer.cpp
+    util/transparentmaps.cpp
     util/typetraits.cpp
     util/unindent.cpp
     util/utilities.cpp
@@ -816,6 +818,7 @@ set(TEST_FILES
     tests/unittests/inviwo-core-unittest-main.cpp
     tests/unittests/metadata-test.cpp
     tests/unittests/network-evaluator-test.cpp
+    tests/unittests/optionproperty-test.cpp
     tests/unittests/ordinalproperty-test.cpp
     tests/unittests/permutations-test.cpp
     tests/unittests/picking-test.cpp

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,56 +27,8 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>  // for IVW_MODULE_BRUSHI...
-
-#include <inviwo/core/datastructures/bitset.h>          // for BitSet
-#include <inviwo/core/io/serialization/serializable.h>  // for Serializable
-#include <inviwo/core/util/stringconversion.h>
-
-#include <cstddef>        // for size_t
-#include <cstdint>        // for uint32_t
-#include <string>         // for string, hash, ope...
-#include <string_view>    // for string_view
-#include <unordered_map>  // for unordered_map
-#include <vector>         // for vector
+#include <inviwo/core/util/transparentmaps.h>
 
 namespace inviwo {
-class Deserializer;
-class Serializer;
-
-class IVW_MODULE_BRUSHINGANDLINKING_API IndexList : public Serializable {
-public:
-    IndexList() = default;
-    virtual ~IndexList() = default;
-
-    bool empty() const;
-    size_t size() const;
-    void clear();
-
-    /**
-     * Update the indexlist with source \p src and \p indices, if \p indices are different
-     *
-     * @return true if the indexlist was modified that is \p this and \p indices were different
-     */
-    bool set(std::string_view src, const BitSet& indices);
-    bool contains(uint32_t idx) const;
-
-    const BitSet& getIndices() const;
-
-    bool removeSources(const std::vector<std::string>& sources);
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
-private:
-    void update() const;
-
-    mutable UnorderedStringMap<BitSet> indicesBySource_;
-    mutable BitSet indices_;
-
-    mutable bool indicesDirty_ = false;
-};
 
 }  // namespace inviwo

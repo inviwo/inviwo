@@ -47,6 +47,7 @@
 #include <inviwo/core/util/networkdebugobserver.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <modules/qtwidgets/propertylistwidget.h>  // for PropertyListWidget
 
@@ -115,7 +116,7 @@ int main(int argc, char** argv) {
         &snapshotArg,
         [&]() {
             auto path = cmdParser.getOutputPath();
-            if (path.empty()) path = inviwoApp.getPath(inviwo::PathType::Images);
+            if (path.empty()) path = inviwo::filesystem::getPath(inviwo::PathType::Images);
             inviwo::util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path,
                                           snapshotArg.getValue());
         },

@@ -149,7 +149,7 @@ StreamParticles::StreamParticles(InviwoApplication* app)
                 .set(PropertySemantics::Text)}
     , tf_{"tf", "Velocity mapping", "Transferfunction to map a velocity to color"_help,
           TransferFunction::load(
-              app->getPath(PathType::TransferFunctions, "/matplotlib/plasma.itf"))}
+              filesystem::getPath(PathType::TransferFunctions, "/matplotlib/plasma.itf"))}
     , reseedInterval_{"reseedsInterval", "Reseed interval",
                       util::ordinalLength(1.0f, 10.f)
                           .set("Seconds between reseeding. When reseeding particles whose "

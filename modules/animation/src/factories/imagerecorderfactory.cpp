@@ -159,7 +159,7 @@ BoolCompositeProperty* ImageRecorderFactory::options() {
         const auto exts = writerFactory->getExtensionsForType<Layer>();
         std::vector<OptionPropertyOption<FileExtension>> opts;
         std::transform(exts.begin(), exts.end(), std::back_inserter(opts),
-                       [](const auto& ext) -> OptionPropertyOption<FileExtension> { return ext; });
+                       [](const auto& ext) { return OptionPropertyOption<FileExtension>{ext}; });
 
         writer_.replaceOptions(std::move(opts));
         writer_.setCurrentStateAsDefault();

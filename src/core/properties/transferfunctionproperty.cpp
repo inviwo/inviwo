@@ -145,7 +145,7 @@ TransferFunctionProperty& TransferFunctionProperty::resetToDefaultState() {
     const NetworkLock lock(this);
 
     bool modified = false;
-    modified |= tf_.reset();
+    tf_.reset();
     modified |= zoomH_.reset();
     modified |= zoomV_.reset();
     modified |= histogramMode_.reset();
@@ -165,7 +165,8 @@ TransferFunctionProperty& TransferFunctionProperty::setCurrentStateAsDefault() {
 }
 
 TransferFunctionProperty& TransferFunctionProperty::setDefault(const TransferFunction& tf) {
-    tf_.defaultValue = tf;
+    tf_.defaultPoints = tf.get();
+    tf_.defaultMask = tf.getMask();
     return *this;
 }
 
@@ -183,7 +184,7 @@ void TransferFunctionProperty::deserialize(Deserializer& d) {
     Property::deserialize(d);
 
     bool modified = false;
-    modified |= tf_.deserialize(d, this->serializationMode_);
+    tf_.deserialize(d, this->serializationMode_);
     modified |= zoomH_.deserialize(d, this->serializationMode_);
     modified |= zoomV_.deserialize(d, this->serializationMode_);
     modified |= histogramMode_.deserialize(d, this->serializationMode_);

@@ -37,7 +37,7 @@ public:
     /// Is this a standalone document?
     std::string_view Standalone() const { return standalone; }
 
-    void Print(std::string* str) const;
+    void Print(std::pmr::string& out) const;
     void Print(FILE* file) const;
 
     virtual const char* Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) override;

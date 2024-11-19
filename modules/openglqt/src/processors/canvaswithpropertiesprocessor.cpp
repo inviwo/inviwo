@@ -175,6 +175,13 @@ CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
     fullScreen_.onChange([this, wmd]() { wmd->setFullScreen(fullScreen_.get()); });
     onTop_.onChange([this, wmd]() { wmd->setOnTop(onTop_.get()); });
 
+    // this is serialized in the widget metadata
+    dimensions_.setSerializationMode(PropertySerializationMode::None);
+    position_.setSerializationMode(PropertySerializationMode::None);
+    visible_.setSerializationMode(PropertySerializationMode::None);
+    fullScreen_.setSerializationMode(PropertySerializationMode::None);
+    onTop_.setSerializationMode(PropertySerializationMode::None);
+
     addPort(inport_);
 
     addProperties(dimensions_, position_, visible_, fullScreen_, onTop_, layerType_, layerIndex_,

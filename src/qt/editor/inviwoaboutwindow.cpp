@@ -111,7 +111,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         buffer.open(QIODevice::WriteOnly);
         const auto scaledImg = img.scaledToHeight(size, Qt::SmoothTransformation);
         scaledImg.save(&buffer, "PNG");
-        return std::unordered_map<std::string, std::string>{
+        return UnorderedStringMap<std::string>{
             {"width", std::to_string(scaledImg.size().width())},
             {"height", std::to_string(scaledImg.size().height())},
             {"src", "data:image/png;base64," + std::string(imgData.toBase64().data())}};

@@ -229,18 +229,17 @@ InviwoCore::InviwoCore(InviwoApplication* app)
         registerDefaultsForScalarDataType<std::vector<T>>();
     });
 
-
-
-
     // Register PortInspectors
     registerPortInspector(PortTraits<ImageOutport>::classIdentifier(),
-                          app->getPath(PathType::PortInspectors, "/imageportinspector.inv"));
+                          filesystem::getPath(PathType::PortInspectors, "/imageportinspector.inv"));
     registerPortInspector(PortTraits<LayerOutport>::classIdentifier(),
-                          app->getPath(PathType::PortInspectors, "/layerportinspector.inv"));
-    registerPortInspector(PortTraits<VolumeOutport>::classIdentifier(),
-                          app->getPath(PathType::PortInspectors, "/volumeportinspector.inv"));
-    registerPortInspector(PortTraits<MeshOutport>::classIdentifier(),
-                          app->getPath(PathType::PortInspectors, "/geometryportinspector.inv"));
+                          filesystem::getPath(PathType::PortInspectors, "/layerportinspector.inv"));
+    registerPortInspector(
+        PortTraits<VolumeOutport>::classIdentifier(),
+        filesystem::getPath(PathType::PortInspectors, "/volumeportinspector.inv"));
+    registerPortInspector(
+        PortTraits<MeshOutport>::classIdentifier(),
+        filesystem::getPath(PathType::PortInspectors, "/geometryportinspector.inv"));
 
     registerProperty<CompositeProperty>();
     registerProperty<BoolCompositeProperty>();

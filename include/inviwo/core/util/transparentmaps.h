@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,57 +26,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>  // for IVW_MODULE_BRUSHI...
+#include <inviwo/core/common/inviwocoredefine.h>
 
-#include <inviwo/core/datastructures/bitset.h>          // for BitSet
-#include <inviwo/core/io/serialization/serializable.h>  // for Serializable
-#include <inviwo/core/util/stringconversion.h>
-
-#include <cstddef>        // for size_t
-#include <cstdint>        // for uint32_t
-#include <string>         // for string, hash, ope...
-#include <string_view>    // for string_view
-#include <unordered_map>  // for unordered_map
-#include <vector>         // for vector
+#include <string>
+#include <string_view>
+#include <map>
+#include <unordered_map>
 
 namespace inviwo {
-class Deserializer;
-class Serializer;
 
-class IVW_MODULE_BRUSHINGANDLINKING_API IndexList : public Serializable {
-public:
-    IndexList() = default;
-    virtual ~IndexList() = default;
+/**
+ * \brief Transparent string hashing for use in unordered containers with string keys
+ * for example: std::unordered_map<std::string, V, StringHash, std::equal_to<>>;
+ */
+struct IVW_CORE_API StringHash {
+    using hash_type = std::hash<std::string_view>;
+    using is_transparent = void;
 
-    bool empty() const;
-    size_t size() const;
-    void clear();
-
-    /**
-     * Update the indexlist with source \p src and \p indices, if \p indices are different
-     *
-     * @return true if the indexlist was modified that is \p this and \p indices were different
-     */
-    bool set(std::string_view src, const BitSet& indices);
-    bool contains(uint32_t idx) const;
-
-    const BitSet& getIndices() const;
-
-    bool removeSources(const std::vector<std::string>& sources);
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
-private:
-    void update() const;
-
-    mutable UnorderedStringMap<BitSet> indicesBySource_;
-    mutable BitSet indices_;
-
-    mutable bool indicesDirty_ = false;
+    std::size_t operator()(const char* str) const { return hash_type{}(str); }
+    std::size_t operator()(std::string_view str) const { return hash_type{}(str); }
+    std::size_t operator()(std::string const& str) const { return hash_type{}(str); }
 };
+
+
+template <typename V>
+using StringMap = std::map<std::string, V, std::less<>>;
+
+template <typename V>
+using UnorderedStringMap = std::unordered_map<std::string, V, StringHash, std::equal_to<>>;
+
 
 }  // namespace inviwo
