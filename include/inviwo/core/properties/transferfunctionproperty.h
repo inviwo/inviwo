@@ -60,6 +60,108 @@ protected:
     void notifyHistogramSelectionChange(HistogramSelection selection);
 };
 
+template <>
+struct ValueWrapper<TransferFunction> {
+    ValueWrapper<TransferFunction>(std::string_view name, const TransferFunction& transferFunction)
+        : value{transferFunction}
+        , defaultPoints{value.get()}
+        , defaultMask{value.getMask()}
+        , name{name} {}
+
+    ValueWrapper(const ValueWrapper& rhs) = default;
+    ValueWrapper(ValueWrapper&& rhs) = default;
+    ValueWrapper& operator=(const ValueWrapper& that) = default;
+    ValueWrapper& operator=(ValueWrapper&& that) = default;
+    ~ValueWrapper() = default;
+
+    ValueWrapper& operator=(const TransferFunction& val) {
+        value = val;
+        return *this;
+    }
+
+    operator const TransferFunction&() const { return value; }
+
+    const TransferFunction& operator*() const { return value; }
+    const TransferFunction* operator->() const { return &value; }
+
+    bool isDefault() const { return value == defaultPoints && value.getMask() == defaultMask; }
+
+    void reset() {
+        value.set(defaultPoints);
+        value.setMask(defaultMask);
+    }
+    void setAsDefault() {
+        defaultPoints = value.get();
+        defaultMask = value.getMask();
+    }
+
+    void serialize(Serializer& s,
+                   PropertySerializationMode mode = PropertySerializationMode::Default) const {
+        switch (mode) {
+            case PropertySerializationMode::Default:
+                if (!isDefault()) s.serialize(name, value);
+                break;
+            case PropertySerializationMode::All:
+                s.serialize(name, value);
+                break;
+            case PropertySerializationMode::None:
+                break;
+        }
+    }
+
+    // observers will track if we change the tf
+    void deserialize(Deserializer& d,
+                     PropertySerializationMode mode = PropertySerializationMode::Default) {
+        switch (mode) {
+            case PropertySerializationMode::Default: {
+                if (d.hasElement(name)) {
+                    d.deserialize(name, value);
+                } else {
+                    // Need to call reset here since we might not deserialize if default. I.e.
+                    // the lack of a serialized element means we should set the state to the
+                    // default.
+                    reset();
+                }
+                break;
+            }
+            case PropertySerializationMode::All: {
+                d.deserialize(name, value);
+                break;
+            }
+            case PropertySerializationMode::None:
+                break;
+            default:
+                break;
+        }
+    }
+
+    bool update(const ValueWrapper& src) {
+        if (value != src.value) {
+            value = src.value;
+            return true;
+        } else {
+            return false;
+        }
+    }
+    bool update(const TransferFunction& src) {
+        if (value != src) {
+            value = src;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    bool operator==(const ValueWrapper& rhs) const { return value == rhs.value; }
+    bool operator==(const TransferFunction& rhs) const { return value == rhs; }
+
+    TransferFunction value;
+
+    std::vector<TFPrimitiveData> defaultPoints;
+    dvec2 defaultMask;
+    std::string name;
+};
+
 /**
  * \ingroup properties
  * A property holding a TransferFunction data structure
@@ -165,6 +267,7 @@ public:
 
 private:
     ValueWrapper<TransferFunction> tf_;
+
     ValueWrapper<dvec2> zoomH_;
     ValueWrapper<dvec2> zoomV_;
     ValueWrapper<HistogramMode> histogramMode_;

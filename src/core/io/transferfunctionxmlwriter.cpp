@@ -46,7 +46,7 @@ TransferFunctionXMLWriter* TransferFunctionXMLWriter::clone() const {
     return new TransferFunctionXMLWriter(*this);
 };
 
-std::string TransferFunctionXMLWriter::toXML(const TransferFunction& tf) {
+std::pmr::string TransferFunctionXMLWriter::toXML(const TransferFunction& tf) {
     try {
         TxElement colormap("ColorMap");
         colormap.SetAttribute("space", "rgb");
@@ -66,10 +66,11 @@ std::string TransferFunctionXMLWriter::toXML(const TransferFunction& tf) {
         TxDocument doc;
         doc.InsertEndChild(TxElement("ColorMaps"))->InsertEndChild(colormap);
 
-        TiXmlPrinter printer;
+        std::pmr::string xml;
+        xml.reserve(4096);
+        TiXmlPrinter printer{xml, TiXmlStreamPrint::Yes};
         doc.Accept(&printer);
-
-        return printer.Str();
+        return xml;
 
     } catch (const TiXmlError& e) {
         throw DataWriterException(e.what(), IVW_CONTEXT_CUSTOM("TransferFunctionXMLWriter"));
@@ -89,7 +90,7 @@ void TransferFunctionXMLWriter::writeData(const TransferFunction* data,
 
 std::unique_ptr<std::vector<unsigned char>> TransferFunctionXMLWriter::writeDataToBuffer(
     const TransferFunction* data, std::string_view) const {
-    std::string xml = toXML(*data);
+    const auto xml = toXML(*data);
 
     auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());
     std::copy(xml.begin(), xml.end(), buffer->begin());

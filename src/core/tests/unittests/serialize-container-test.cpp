@@ -273,11 +273,11 @@ TEST(SerializationContainerTest, ContainerTest4) {
 
     Deserializer deserializer(ss, "");
     auto des =
-        util::IdentifiedDeserializer<std::string, Item*>("Vector", "Item")
-            .setGetId([](Item* const& i) -> const std::string& { return i->id_; })
+        util::IdentifiedDeserializer<Item*>("Vector", "Item")
+            .setGetId([](Item* const& i) -> std::string_view { return i->id_; })
             .setMakeNew([]() { return new Item(); })
             .onNew([&](Item*& i) { vector.push_back(i); })
-            .onRemove([&](const std::string& id) {
+            .onRemove([&](std::string_view id) {
                 std::erase_if(vector, [&](Item* i) {
                     if (id == i->id_) {
                         delete i;

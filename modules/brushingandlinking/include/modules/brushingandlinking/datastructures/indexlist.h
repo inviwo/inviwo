@@ -33,6 +33,7 @@
 
 #include <inviwo/core/datastructures/bitset.h>          // for BitSet
 #include <inviwo/core/io/serialization/serializable.h>  // for Serializable
+#include <inviwo/core/util/stringconversion.h>
 
 #include <cstddef>        // for size_t
 #include <cstdint>        // for uint32_t
@@ -72,7 +73,7 @@ public:
 private:
     void update() const;
 
-    mutable std::unordered_map<std::string, BitSet> indicesBySource_;
+    mutable UnorderedStringMap<BitSet> indicesBySource_;
     mutable BitSet indices_;
 
     mutable bool indicesDirty_ = false;

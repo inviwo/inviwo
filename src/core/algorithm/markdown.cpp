@@ -190,7 +190,7 @@ Document util::md2doc(std::string_view markdown) {
 
                 StrBuffer buff;
                 renderAttribute(blockDetail->href, buff, util::urlEncodeTo);
-                std::unordered_map<std::string, std::string> attr = {
+                UnorderedStringMap<std::string> attr = {
                     {"href", std::string{buff.view()}}};
                 if (blockDetail->title.text) {
                     buff.clear();
@@ -206,7 +206,7 @@ Document util::md2doc(std::string_view markdown) {
 
                 StrBuffer buff;
                 renderAttribute(blockDetail->src, buff, util::urlEncodeTo);
-                std::unordered_map<std::string, std::string> attr = {
+                UnorderedStringMap<std::string> attr = {
                     {"src", std::string{buff.view()}}};
                 if (blockDetail->title.text) {
                     buff.clear();

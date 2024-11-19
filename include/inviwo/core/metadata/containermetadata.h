@@ -101,11 +101,11 @@ public:
         }
     }
 
-    std::map<K, T>& getMap() { return map_; }
-    const std::map<K, T>& getMap() const { return map_; }
+    std::map<K, T, std::less<>>& getMap() { return map_; }
+    const std::map<K, T, std::less<>>& getMap() const { return map_; }
 
 private:
-    std::map<K, T> map_;
+    std::map<K, T, std::less<>> map_;
 };
 
 }  // namespace inviwo

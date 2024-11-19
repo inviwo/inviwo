@@ -175,7 +175,10 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
 
     setEvaluateWhenHidden(false);
 
+    // this is serialized in the widget metadata
     dimensions_.setSerializationMode(PropertySerializationMode::None);
+    position_.setSerializationMode(PropertySerializationMode::None);
+    fullScreen_.setSerializationMode(PropertySerializationMode::None);
 
     dimensions_.onChange([this]() { widgetMetaData_->setDimensions(dimensions_.get()); });
     position_.onChange([this]() { widgetMetaData_->setPosition(position_.get()); });

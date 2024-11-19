@@ -26,26 +26,24 @@ void TiXmlDeclaration::operator=(const TiXmlDeclaration& copy) {
     copy.CopyTo(this);
 }
 
-void TiXmlDeclaration::Print(std::string* str) const {
-    if (!str) return;
-
-    *str += "<?xml ";
+void TiXmlDeclaration::Print(std::pmr::string& out) const {
+    out += "<?xml ";
     if (!version.empty()) {
-        *str += "version=\"";
-        *str += version;
-        *str += "\" ";
+        out += "version=\"";
+        out += version;
+        out += "\" ";
     }
     if (!encoding.empty()) {
-        *str += "encoding=\"";
-        *str += encoding;
-        *str += "\" ";
+        out += "encoding=\"";
+        out += encoding;
+        out += "\" ";
     }
     if (!standalone.empty()) {
-        *str += "standalone=\"";
-        *str += standalone;
-        *str += "\" ";
+        out += "standalone=\"";
+        out += standalone;
+        out += "\" ";
     }
-    *str += "?>";
+    out += "?>";
 }
 
 void TiXmlDeclaration::Print(FILE* file) const {

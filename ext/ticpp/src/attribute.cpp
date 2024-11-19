@@ -16,59 +16,19 @@ TiXmlAttribute::TiXmlAttribute(std::string_view _name, std::string_view _value,
 
 TiXmlAttribute::~TiXmlAttribute() = default;
 
-const TiXmlAttribute* TiXmlAttribute::Next() const {
-    // We are using knowledge of the sentinel. The sentinel must have a value or name.
-    if (next->value.empty() && next->name.empty()) return nullptr;
-    return next;
-}
-
-const TiXmlAttribute* TiXmlAttribute::Previous() const {
-    // We are using knowledge of the sentinel. The sentinel must have a value or name.
-    if (prev->value.empty() && prev->name.empty()) return nullptr;
-    return prev;
-}
-
-TiXmlAttribute* TiXmlAttribute::Next() {
-    // We are using knowledge of the sentinel. The sentinel have a value or name.
-    if (next->value.empty() && next->name.empty()) return nullptr;
-    return next;
-}
-
-TiXmlAttribute* TiXmlAttribute::Previous() {
-    // We are using knowledge of the sentinel. The sentinel have a value or name.
-    if (prev->value.empty() && prev->name.empty()) return nullptr;
-    return prev;
-}
 
 void TiXmlAttribute::Print(FILE* file) const {
     if (!file) return;
-    std::string n;
-    std::string v;
+    std::pmr::string n{value.get_allocator()};
+    std::pmr::string v{value.get_allocator()};
 
-    TiXmlBase::EncodeString(name, &n);
-    TiXmlBase::EncodeString(value, &v);
+    TiXmlBase::EncodeString(name, n);
+    TiXmlBase::EncodeString(value, v);
 
-    if (value.find('\"') == std::string::npos) {
+    if (value.find('\"') == std::pmr::string::npos) {
         fmt::fprintf(file, "%s=\"%s\"", n, v);
     } else {
         fmt::fprintf(file, "%s='%s'", n, v);
-    }
-}
-
-void TiXmlAttribute::Print(std::string* str) const {
-    if (!str) return;
-
-    TiXmlBase::EncodeString(name, str);
-    str->push_back('=');
-
-    if (value.find('\"') == std::string::npos) {
-        str->push_back('\"');
-        TiXmlBase::EncodeString(value, str);
-        str->push_back('\"');
-    } else {
-        str->push_back('\'');
-        TiXmlBase::EncodeString(value, str);
-        str->push_back('\'');
     }
 }
 
@@ -78,6 +38,23 @@ TiXmlAttributeSet::TiXmlAttributeSet(allocator_type alloc) : sentinel{alloc} {
 }
 
 TiXmlAttributeSet::~TiXmlAttributeSet() { Clear(); }
+
+std::pmr::string& TiXmlAttributeSet::Add(std::string_view name) {
+    if (Find(name)) {
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DUPLICATE_ATTRIBUTE, nullptr, nullptr);
+    }
+
+    auto alloc = sentinel.value.get_allocator();
+    auto* attribute = alloc.new_object<TiXmlAttribute>(name, "");
+
+    attribute->next = &sentinel;
+    attribute->prev = sentinel.prev;
+
+    sentinel.prev->next = attribute;
+    sentinel.prev = attribute;
+
+    return attribute->ValueRef();
+}
 
 void TiXmlAttributeSet::Add(std::string_view name, std::string_view value) {
     if (Find(name)) {
@@ -120,26 +97,7 @@ void TiXmlAttributeSet::Clear() {
     sentinel.prev = &sentinel;
 }
 
-const TiXmlAttribute* TiXmlAttributeSet::Find(std::string_view name) const {
-    for (const TiXmlAttribute* attribute = sentinel.next; attribute != &sentinel;
-         attribute = attribute->next) {
-        if (attribute->name == name) return attribute;
-    }
-    return nullptr;
-}
 
-template <typename T>
-struct PMRDeleter {
-    void operator()(T* item) { alloc.delete_object(item); }
-    std::pmr::polymorphic_allocator<> alloc;
-};
-
-template <class T, class... Args>
-std::unique_ptr<T, PMRDeleter<T>> pmr_make_unique(std::pmr::polymorphic_allocator<> alloc,
-                                                  Args&&... args) {
-    return std::unique_ptr<T, PMRDeleter<T>>(alloc.new_object<T>(std::forward<Args>(args)...),
-                                             PMRDeleter<T>{alloc});
-}
 
 const char* TiXmlAttributeSet::Parse(const char* p, TiXmlParsingData* data) {
     p = TiXmlBase::SkipWhiteSpace(p);

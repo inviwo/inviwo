@@ -22,21 +22,19 @@ void TiXmlStylesheetReference::operator=(const TiXmlStylesheetReference& copy) {
     copy.CopyTo(this);
 }
 
-void TiXmlStylesheetReference::Print(std::string* str) const {
-    if (!str) return;
-
-    *str += "<?xml-stylesheet ";
+void TiXmlStylesheetReference::Print(std::pmr::string& out) const {
+    out += "<?xml-stylesheet ";
     if (!type.empty()) {
-        *str += "type=\"";
-        *str += type;
-        *str += "\" ";
+        out += "type=\"";
+        out += type;
+        out += "\" ";
     }
     if (!href.empty()) {
-        *str += "href=\"";
-        *str += href;
-        *str += "\" ";
+        out += "href=\"";
+        out += href;
+        out += "\" ";
     }
-    *str += "?>";
+    out += "?>";
 }
 
 void TiXmlStylesheetReference::Print(FILE* file) const {

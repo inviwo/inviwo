@@ -45,6 +45,17 @@ std::string Port::getPath() const {
     return fmt::format("{}.{}", processor_->getIdentifier(), identifier_);
 }
 
+void Port::getPath(std::pmr::string& out) const {
+    if (!processor_) {
+        out.append("<not in any processor>.");
+        out.append(identifier_);
+    } else {
+        out.append(processor_->getIdentifier());
+        out.push_back('.');
+        out.append(identifier_);
+    }
+}
+
 const std::string& Port::getIdentifier() const { return identifier_; }
 
 void Port::setIdentifier(const std::string& name) { identifier_ = name; }

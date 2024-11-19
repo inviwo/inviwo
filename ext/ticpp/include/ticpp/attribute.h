@@ -33,6 +33,8 @@ public:
     std::string_view Name() const { return name; }    ///< Return the name of this attribute.
     std::string_view Value() const { return value; }  ///< Return the value of this attribute.
 
+    std::pmr::string& ValueRef() { return value; }
+
     void SetName(std::string_view _name) { name = _name; }
     void SetValue(std::string_view _value) { value = _value; }
 
@@ -50,7 +52,7 @@ public:
 
     // Prints this Attribute to a FILE stream.
     void Print(FILE* file) const;
-    void Print(std::string* str) const;
+    void Print(std::pmr::string& out) const;
 
 private:
     std::pmr::string name;
@@ -80,6 +82,7 @@ public:
     TiXmlAttributeSet(const TiXmlAttributeSet&) = delete;
     TiXmlAttributeSet& operator=(const TiXmlAttributeSet&) = delete;
 
+    std::pmr::string& Add(std::string_view name);
     void Add(std::string_view name, std::string_view value);
     void Remove(std::string_view name);
     void Clear();
@@ -107,3 +110,50 @@ public:
 private:
     TiXmlAttribute sentinel;
 };
+
+inline const TiXmlAttribute* TiXmlAttributeSet::Find(std::string_view name) const {
+    for (const TiXmlAttribute* attribute = sentinel.next; attribute != &sentinel;
+         attribute = attribute->next) {
+        if (attribute->name == name) return attribute;
+    }
+    return nullptr;
+}
+
+inline const TiXmlAttribute* TiXmlAttribute::Next() const {
+    // We are using knowledge of the sentinel. The sentinel have a value or name.
+    if (next->value.empty() && next->name.empty()) return nullptr;
+    return next;
+}
+
+inline const TiXmlAttribute* TiXmlAttribute::Previous() const {
+    // We are using knowledge of the sentinel. The sentinel have a value or name.
+    if (prev->value.empty() && prev->name.empty()) return nullptr;
+    return prev;
+}
+
+inline TiXmlAttribute* TiXmlAttribute::Next() {
+    // We are using knowledge of the sentinel. The sentinel have a value or name.
+    if (next->value.empty() && next->name.empty()) return nullptr;
+    return next;
+}
+
+inline TiXmlAttribute* TiXmlAttribute::Previous() {
+    // We are using knowledge of the sentinel. The sentinel have a value or name.
+    if (prev->value.empty() && prev->name.empty()) return nullptr;
+    return prev;
+}
+
+inline void TiXmlAttribute::Print(std::pmr::string& out) const {
+    TiXmlBase::EncodeString(name, out);
+    out.push_back('=');
+
+    if (value.find('\"') == std::pmr::string::npos) {
+        out.push_back('\"');
+        TiXmlBase::EncodeString(value, out);
+        out.push_back('\"');
+    } else {
+        out.push_back('\'');
+        TiXmlBase::EncodeString(value, out);
+        out.push_back('\'');
+    }
+}

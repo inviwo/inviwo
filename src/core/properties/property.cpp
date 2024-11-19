@@ -117,6 +117,18 @@ const std::string& Property::getPath() const {
     return path_;
 }
 
+void Property::getPath(std::pmr::string& out) const {
+    const auto traverse = [&](auto& self, PropertyOwner* owner) -> void {
+        if (owner) {
+            self(self, owner->getOwner());
+            out.append(owner->getIdentifier());
+            out.push_back('.');
+        }
+    };
+    traverse(traverse, owner_);
+    out.append(identifier_);
+}
+
 const std::string& Property::getDisplayName() const { return displayName_; }
 
 Property& Property::setDisplayName(std::string_view displayName) {
@@ -227,20 +239,16 @@ void Property::serialize(Serializer& s) const {
 }
 
 void Property::deserialize(Deserializer& d) {
-    std::string className;
-    d.deserialize("type", className, SerializationTarget::Attribute);
-    if (className != getClassIdentifier()) {
+    if (auto className = d.attribute("type"); !className || *className != getClassIdentifier()) {
         LogWarn("Deserialized property: "
                 << getPath() << " with class identifier: " << getClassIdentifier()
-                << " from a serialized property with a different class identifier: " << className);
+                << " from a serialized property with a different class identifier: "
+                << className.value_or("<missing>"));
     }
 
-    {
-        auto old = identifier_;
-        d.deserialize("identifier", identifier_, SerializationTarget::Attribute);
-        if (old != identifier_) {
-            notifyObserversOnSetIdentifier(this, identifier_);
-        }
+    if (auto id = d.attribute("identifier"); id && *id != identifier_) {
+        identifier_ = *id;
+        notifyObserversOnSetIdentifier(this, identifier_);
     }
 
     if (displayName_.deserialize(d, serializationMode_)) {

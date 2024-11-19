@@ -224,7 +224,7 @@ const TiXmlNode* TiXmlNode::PreviousSibling(std::string_view _value) const {
     return nullptr;
 }
 
-std::unique_ptr<TiXmlNode> TiXmlNode::Identify(const char* p, allocator_type alloc) {
+PMRUnique<TiXmlNode> TiXmlNode::Identify(const char* p, allocator_type alloc) {
     p = SkipWhiteSpace(p);
     if (!p || !*p || *p != '<') {
         return nullptr;
@@ -243,21 +243,21 @@ std::unique_ptr<TiXmlNode> TiXmlNode::Identify(const char* p, allocator_type all
     const char* dtdHeader = {"<!"};
     const char* cdataHeader = {"<![CDATA["};
 
-    std::unique_ptr<TiXmlNode> returnNode = [&]() -> std::unique_ptr<TiXmlNode> {
-        if (StringEqual(p, xmlSSHeader, true)) {
-            return std::make_unique<TiXmlStylesheetReference>(alloc);
+    auto returnNode = [&]() -> PMRUnique<TiXmlNode> {
+        if (IsAlpha(*(p + 1)) || *(p + 1) == '_') {
+            return pmr_make_unique<TiXmlElement>(alloc, "");
+        } else if (StringEqual(p, xmlSSHeader, true)) {
+            return pmr_make_unique<TiXmlStylesheetReference>(alloc);
         } else if (StringEqual(p, xmlHeader, true)) {
-            return std::make_unique<TiXmlDeclaration>(alloc);
+            return pmr_make_unique<TiXmlDeclaration>(alloc);
         } else if (StringEqual(p, commentHeader, false)) {
-            return std::make_unique<TiXmlComment>(alloc);
+            return pmr_make_unique<TiXmlComment>(alloc);
         } else if (StringEqual(p, cdataHeader, false)) {
-            return std::make_unique<TiXmlText>("", true, alloc);
+            return pmr_make_unique<TiXmlText>(alloc, "", true);
         } else if (StringEqual(p, dtdHeader, false)) {
-            return std::make_unique<TiXmlUnknown>(alloc);
-        } else if (IsAlpha(*(p + 1)) || *(p + 1) == '_') {
-            return std::make_unique<TiXmlElement>("", alloc);
+            return pmr_make_unique<TiXmlUnknown>(alloc);
         } else {
-            return std::make_unique<TiXmlUnknown>(alloc);
+            return pmr_make_unique<TiXmlUnknown>(alloc);
         }
     }();
 

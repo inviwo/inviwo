@@ -64,12 +64,24 @@ public:
         std::function<int()> restoreFrequency = []() -> int { return 1440; })
         : path_{filesystem::getPath(PathType::Settings)}
         , sessionStart_{clock_t::now()}
-        , restored_{[this]() -> std::optional<std::string> {
+        , restored_{[this]() -> std::optional<std::pmr::string> {
             if (std::filesystem::is_regular_file(path_ / "autosave.inv")) {
-                auto ifstream = std::ifstream(path_ / "autosave.inv");
-                std::stringstream buffer;
-                buffer << ifstream.rdbuf();
-                return std::move(buffer).str();
+                FILE* file = filesystem::fopen(path_ / "autosave.inv", "rb");
+                if (!file) return std::nullopt;
+                util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
+
+                const long length = [&]() {
+                    std::fseek(file, 0, SEEK_END);
+                    const auto len = std::ftell(file);
+                    std::fseek(file, 0, SEEK_SET);
+                    return len;
+                }();
+
+                std::pmr::string data(length, '0');
+                if (std::fread(data.data(), length, 1, file) != 1) {
+                    return std::nullopt;
+                }
+                return data;
             }
 
             return std::nullopt;
@@ -79,7 +91,7 @@ public:
             util::setThreadDescription("Inviwo AutoSave");
             for (;;) {
 
-                std::shared_ptr<const std::string> str;
+                std::shared_ptr<const std::pmr::string> str;
                 {
                     std::unique_lock<std::mutex> lock(mutex_);
                     while (!quit_ && toSave_.empty()) {
@@ -128,9 +140,9 @@ public:
         saver_.join();
     }
 
-    const std::optional<std::string>& getRestored() const { return restored_; }
+    const std::optional<std::pmr::string>& getRestored() const { return restored_; }
 
-    void save(std::shared_ptr<const std::string> str) {
+    void save(std::shared_ptr<const std::pmr::string> str) {
         {
             std::unique_lock<std::mutex> lock(mutex_);
             toSave_.push_back(str);
@@ -161,11 +173,11 @@ private:
     std::filesystem::path path_;
     clock_t::time_point sessionStart_;
 
-    std::optional<std::string> restored_;
+    std::optional<std::pmr::string> restored_;
     std::atomic<bool> quit_;
     std::condition_variable condition_;
     std::mutex mutex_;
-    std::vector<std::shared_ptr<const std::string>> toSave_;
+    std::vector<std::shared_ptr<const std::pmr::string>> toSave_;
 
     std::thread saver_;
 };
@@ -218,15 +230,16 @@ void UndoManager::markDirty() { dirty_ = true; }
 void UndoManager::pushState() {
     if (isRestoring) return;
 
-    std::stringstream stream;
+    auto str = std::make_shared<std::pmr::string>();
+    str->reserve(8 * 1024);
+
     try {
         manager_->save(
-            stream, refPath_, [](ExceptionContext context) -> void { throw; },
+            *str, refPath_, [](ExceptionContext context) -> void { throw; },
             WorkspaceSaveMode::Undo);
     } catch (...) {
         return;
     }
-    auto str = std::make_shared<const std::string>(std::move(stream).str());
 
     dirty_ = false;
     if (head_ >= 0 && *str == *undoBuffer_[head_]) return;  // No Change
@@ -247,9 +260,8 @@ void UndoManager::undoState() {
         util::KeepTrueWhileInScope restore(&isRestoring);
         --head_;
 
-        std::stringstream stream;
-        stream << *undoBuffer_[head_];
-        manager_->load(stream, refPath_, StandardExceptionHandler{}, WorkspaceSaveMode::Undo);
+        manager_->load(*undoBuffer_[head_], refPath_, StandardExceptionHandler{},
+                       WorkspaceSaveMode::Undo);
 
         dirty_ = false;
         updateActions();
@@ -261,9 +273,8 @@ void UndoManager::redoState() {
         util::KeepTrueWhileInScope restore(&isRestoring);
         ++head_;
 
-        std::stringstream stream;
-        stream << *undoBuffer_[head_];
-        manager_->load(stream, refPath_, StandardExceptionHandler{}, WorkspaceSaveMode::Undo);
+        manager_->load(*undoBuffer_[head_], refPath_, StandardExceptionHandler{},
+                       WorkspaceSaveMode::Undo);
 
         dirty_ = false;
         updateActions();
@@ -288,10 +299,8 @@ bool UndoManager::hasRestore() const {
 
 void UndoManager::restore() {
     if (const auto& str = autoSaver_->getRestored()) {
-        std::stringstream stream;
         if (!str->empty()) {
-            stream << *str;
-            manager_->load(stream, refPath_);
+            manager_->load(*str, refPath_);
         }
     }
 }

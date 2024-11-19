@@ -112,6 +112,23 @@ TFPrimitiveSet& TFPrimitiveSet::operator=(TFPrimitiveSet&& rhs) noexcept {
     }
     return *this;
 }
+void TFPrimitiveSet::set(std::span<const TFPrimitiveData> points) {
+    auto sbegin = points.begin();
+    auto send = points.end();
+
+    auto dbegin = values_.begin();
+    auto dend = values_.end();
+
+    while (dbegin != dend && sbegin != send) {
+        **dbegin++ = *sbegin++;
+    }
+    while (sbegin != send) {
+        add(*sbegin++);
+    }
+    while (dbegin != dend) {
+        remove(--dend);
+    }
+}
 
 void TFPrimitiveSet::set(const_iterator sbegin, const_iterator send) {
     auto dbegin = values_.begin();

@@ -18,7 +18,7 @@ bool TiXmlPrinter::VisitEnter(const TiXmlElement& element, const TiXmlAttribute*
     for (const TiXmlAttribute* attribute = firstAttribute; attribute;
          attribute = attribute->Next()) {
         buffer.push_back(' ');
-        attribute->Print(&buffer);
+        attribute->Print(buffer);
     }
 
     if (!element.FirstChild()) {
@@ -66,10 +66,10 @@ bool TiXmlPrinter::Visit(const TiXmlText& text) {
         buffer += "]]>";
         DoLineBreak();
     } else if (simpleTextPrint) {
-        TiXmlBase::EncodeString(text.Value(), &buffer);
+        TiXmlBase::EncodeString(text.Value(), buffer);
     } else {
         DoIndent();
-        TiXmlBase::EncodeString(text.Value(), &buffer);
+        TiXmlBase::EncodeString(text.Value(), buffer);
         DoLineBreak();
     }
     return true;
@@ -77,7 +77,7 @@ bool TiXmlPrinter::Visit(const TiXmlText& text) {
 
 bool TiXmlPrinter::Visit(const TiXmlDeclaration& declaration) {
     DoIndent();
-    declaration.Print(&buffer);
+    declaration.Print(buffer);
     DoLineBreak();
     return true;
 }
@@ -102,7 +102,7 @@ bool TiXmlPrinter::Visit(const TiXmlUnknown& unknown) {
 
 bool TiXmlPrinter::Visit(const TiXmlStylesheetReference& stylesheet) {
     DoIndent();
-    stylesheet.Print(&buffer);
+    stylesheet.Print(buffer);
     DoLineBreak();
     return true;
 }
@@ -159,13 +159,13 @@ bool TiXmlFilePrinter::Visit(const TiXmlText& text) {
         fmt::fprintf(file, "<![CDATA[%s]]>\n", text.Value());
         DoLineBreak();
     } else if (simpleTextPrint) {
-        std::string buffer;
-        TiXmlBase::EncodeString(text.Value(), &buffer);
+        std::pmr::string buffer{};
+        TiXmlBase::EncodeString(text.Value(), buffer);
         fmt::fprintf(file, "%s", buffer);
     } else {
         DoIndent();
-        std::string buffer;
-        TiXmlBase::EncodeString(text.Value(), &buffer);
+        std::pmr::string buffer{};
+        TiXmlBase::EncodeString(text.Value(), buffer);
         fmt::fprintf(file, "%s", buffer);
         DoLineBreak();
     }
