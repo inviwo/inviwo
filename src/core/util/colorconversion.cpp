@@ -57,8 +57,8 @@ vec4 hex2rgba(std::string_view str) {
             str = buf.view();
         }
 
-        unsigned long v{};
-        const auto end = str.data() + str.size();
+        std::uint64_t v{};
+        const auto* const end = str.data() + str.size();
         if (auto [p, ec] = std::from_chars(str.data(), str.data() + str.size(), v, 16);
             ec != std::errc() || p != end) {
             throw Exception(IVW_CONTEXT_CUSTOM("color::hex2rgba"), "Invalid hex code \"{}\".", str);
@@ -84,22 +84,12 @@ vec4 hex2rgba(std::string_view str) {
 
 std::string rgba2hex(const vec4& rgba) {
     glm::u8vec4 color(rgba * 255.0f);
-    // change byte order
-    std::swap(color.r, color.a);
-    std::swap(color.g, color.b);
-    return fmt::format("#{:08x}", *reinterpret_cast<unsigned int*>(&color));
+    return fmt::format("#{:02x}{:02x}{:02x}{:02x}", color.r, color.g, color.b, color.a);
 }
 
 std::string rgb2hex(const vec3& rgb) {
     glm::u8vec4 color(rgb * 255.0f, 0);
-    // change byte order
-    std::swap(color.r, color.b);
-    return fmt::format("#{:06x}", *reinterpret_cast<unsigned int*>(&color));
-}
-
-vec3 getD65WhitePoint() {
-    // whiteD65 = rgb2XYZ(vec3(1.0f, 1.0f, 1.0f);
-    return {0.95047f, 1.0f, 1.08883f};
+    return fmt::format("#{:02x}{:02x}{:02x}", color.r, color.g, color.b);
 }
 
 vec3 hsv2rgb(vec3 hsv) {
@@ -311,7 +301,7 @@ vec3 XYZ2rgb(const vec3 xyz) {
 vec3 XYZ2xyY(vec3 xyz) {
     // if X, Y, and Z are 0, set xy to chromaticity (xy) of ref. white D65.
     if (glm::all(glm::lessThan(xyz, util::epsilon<vec3>()))) {
-        // This xy value is obtained by calling XYZ2xyY(getD65WhitePoint())
+        // This xy value is obtained by calling XYZ2xyY(D65WhitePoint)
         return vec3(0.3127266147f, 0.3290231303f, 0.0f);  // brucelindbloom.com D65
     } else {
         float& X = xyz.x;
