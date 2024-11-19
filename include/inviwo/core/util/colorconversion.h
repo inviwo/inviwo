@@ -38,6 +38,17 @@
 namespace inviwo::color {
 
 /**
+ * \brief reference white point D65 in CIE XYZ color space
+ *
+ * The values are obtained by converting sRGB(1, 1, 1) to XYZ using rgb2XYZ() since sRGB assumes D65
+ * as reference white.
+ * See rgb2XYZ, http://www.brucelindbloom.com
+ *
+ * @return white D65 in XYZ coordinates
+ */
+constexpr vec3 D65WhitePoint{0.95047f, 1.0f, 1.08883f};
+
+/**
  * \brief convert from hexadecimal html color code to RGBA
  *
  * A hexadecimal html color code is converted to RGBA. Supports both 3 and 6 digit
@@ -71,17 +82,6 @@ IVW_CORE_API std::string rgba2hex(const vec4& rgba);
  * @return html color code in the form of "#RRGGBB"
  */
 IVW_CORE_API std::string rgb2hex(const vec3& rgb);
-
-/**
- * \brief reference white point D65 in CIE XYZ color space
- *
- * The values are obtained by converting sRGB(1, 1, 1) to XYZ using rgb2XYZ() since sRGB assumes D65
- * as reference white.
- * See rgb2XYZ, http://www.brucelindbloom.com
- *
- * @return white D65 in XYZ coordinates
- */
-IVW_CORE_API vec3 getD65WhitePoint();
 
 /**
  * \brief Convert from HSV to RGB color.
@@ -138,7 +138,7 @@ IVW_CORE_API vec3 rgb2hsl(vec3 rgb);
  * @param whitePoint Normalized white point. Default white point is D65.
  * @return Lab color
  */
-IVW_CORE_API vec3 XYZ2lab(vec3 xyz, vec3 whitePoint = getD65WhitePoint());
+IVW_CORE_API vec3 XYZ2lab(vec3 xyz, vec3 whitePoint = D65WhitePoint);
 
 /**
  * \brief Convert from Lab to CIE XYZ color space
@@ -148,7 +148,7 @@ IVW_CORE_API vec3 XYZ2lab(vec3 xyz, vec3 whitePoint = getD65WhitePoint());
  * @param whitePoint Normalized white point. Default white point is D65.
  * @return CIE XYZ color (roughly in the [0 1]^3 range)
  */
-IVW_CORE_API vec3 lab2XYZ(vec3 lab, const vec3 whitePoint = getD65WhitePoint());
+IVW_CORE_API vec3 lab2XYZ(vec3 lab, const vec3 whitePoint = D65WhitePoint);
 
 /**
  * \brief Convert from sRGB color to XYZ using D65 white point
@@ -254,7 +254,7 @@ IVW_CORE_API vec3 ycbcr2rgb(const vec3& ycbcr);
  * @return rgb color, [0, 1]^3 if clamping is enabled
  */
 IVW_CORE_API vec3 LuvChromaticity2rgb(const vec3& LuvChroma, bool clamp = false,
-                                      vec3 whitePointXYZ = getD65WhitePoint());
+                                      vec3 whitePointXYZ = D65WhitePoint);
 
 /**
  * \brief Convert from sRGB to normalized chromaticity of CIE Luv, i.e. u' and v'
@@ -268,7 +268,7 @@ IVW_CORE_API vec3 LuvChromaticity2rgb(const vec3& LuvChroma, bool clamp = false,
  * @param whitePointXYZ  Normalized white point. Default white point is D65.
  * @return LuvChroma chromaticity, L in [0, 100], u' in [0.0, 1.0], v' in [0.0, 1.0]
  */
-IVW_CORE_API vec3 rgb2LuvChromaticity(const vec3& rgb, vec3 whitePointXYZ = getD65WhitePoint());
+IVW_CORE_API vec3 rgb2LuvChromaticity(const vec3& rgb, vec3 whitePointXYZ = D65WhitePoint);
 
 /**
  * \brief Convert from normalized chromaticity of CIE Luv, i.e. u' and v', to XYZ
@@ -279,8 +279,7 @@ IVW_CORE_API vec3 rgb2LuvChromaticity(const vec3& rgb, vec3 whitePointXYZ = getD
  * @param whitePointXYZ  Normalized white point. Default white point is D65.
  * @return CIE XYZ color (roughly in the [0 1]^3 range)
  */
-IVW_CORE_API vec3 LuvChromaticity2XYZ(const vec3& LuvChroma,
-                                      vec3 whitePointXYZ = getD65WhitePoint());
+IVW_CORE_API vec3 LuvChromaticity2XYZ(const vec3& LuvChroma, vec3 whitePointXYZ = D65WhitePoint);
 
 /**
  * \brief Convert from CIE XYZ color space to normalized chromaticity of CIE Luv, i.e. u' and v'
@@ -291,7 +290,7 @@ IVW_CORE_API vec3 LuvChromaticity2XYZ(const vec3& LuvChroma,
  * @param whitePointXYZ  Normalized white point. Default white point is D65.
  * @return CIE XYZ color (roughly in the [0 1]^3 range)
  */
-IVW_CORE_API vec3 XYZ2LuvChromaticity(const vec3& XYZ, vec3 whitePointXYZ = getD65WhitePoint());
+IVW_CORE_API vec3 XYZ2LuvChromaticity(const vec3& XYZ, vec3 whitePointXYZ = D65WhitePoint);
 
 /**
  * \brief Convert from CIE XYZ to CIE Luv
@@ -305,7 +304,7 @@ IVW_CORE_API vec3 XYZ2LuvChromaticity(const vec3& XYZ, vec3 whitePointXYZ = getD
  * @param whitePointXYZ  Normalized white point. Default white point is D65.
  * @return CIE Luv color value, L in [0, 100], u and v in [-100, +100] (for typical images)
  */
-IVW_CORE_API vec3 XYZ2Luv(const vec3& XYZ, vec3 whitePointXYZ = getD65WhitePoint());
+IVW_CORE_API vec3 XYZ2Luv(const vec3& XYZ, vec3 whitePointXYZ = D65WhitePoint);
 
 /**
  * \brief Convert from CIE Luv to CIE XYZ
@@ -320,7 +319,7 @@ IVW_CORE_API vec3 XYZ2Luv(const vec3& XYZ, vec3 whitePointXYZ = getD65WhitePoint
  * @param whitePointXYZ  Normalized white point. Default white point is D65.
  * @return CIE XYZ color (roughly in the [0 1]^3 range)
  */
-IVW_CORE_API vec3 Luv2XYZ(const vec3& Luv, vec3 whitePointXYZ = getD65WhitePoint());
+IVW_CORE_API vec3 Luv2XYZ(const vec3& Luv, vec3 whitePointXYZ = D65WhitePoint);
 
 /**
  * \brief Return a lighter color by adjusting the brightness
