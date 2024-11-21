@@ -40,7 +40,6 @@
 
 namespace inviwo {
 
-const std::string SplitterProperty::classIdentifier = "org.inviwo.SplitterProperty";
 std::string_view SplitterProperty::getClassIdentifier() const { return classIdentifier; }
 
 SplitterProperty::SplitterProperty(std::string_view identifier, std::string_view displayName,

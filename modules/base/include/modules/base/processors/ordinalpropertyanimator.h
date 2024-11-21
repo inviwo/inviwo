@@ -128,8 +128,8 @@ OrdinalAnimationProperty<T>* OrdinalAnimationProperty<T>::clone() const {
 
 template <typename T>
 struct PropertyTraits<OrdinalAnimationProperty<T>> {
-    static std::string_view classIdentifier() {
-        static const std::string cid =
+    static constexpr std::string_view classIdentifier() {
+        static const auto cid =
             "org.inviwo.OrdinalAnimationProperty." + Defaultvalues<T>::getName();
         return cid;
     }

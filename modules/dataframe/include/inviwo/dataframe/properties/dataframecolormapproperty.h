@@ -59,7 +59,7 @@ class DataFrame;
 class IVW_MODULE_DATAFRAME_API DataFrameColormapProperty : public CompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.DataFrameColormapProperty"};
 
     DataFrameColormapProperty(
         std::string identifier, std::string displayName, DataInport<DataFrame>& port,

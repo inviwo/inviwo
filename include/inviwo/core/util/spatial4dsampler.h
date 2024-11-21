@@ -81,13 +81,22 @@ extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<vec4>;
 
 template <typename ReturnType>
 struct DataTraits<Spatial4DSampler<ReturnType>> {
-    static std::string classIdentifier() {
-        return fmt::format("org.inviwo.Spatial4DSampler.{}", DataFormat<ReturnType>::str());
+    static constexpr std::string_view classIdentifier() {
+        static constexpr auto cid = []() {
+            constexpr auto tName = DataFormat<ReturnType>::str();
+            return "org.inviwo.Spatial4DSampler." + StaticString<tName.size()>(tName);
+        }();
+
+        return cid;
     }
-    static std::string dataName() {
-        return fmt::format("Spatial4DSampler<{}>", DataFormat<ReturnType>::str());
+    static constexpr std::string_view dataName() {
+        static constexpr auto name = []() {
+            constexpr auto tName = DataFormat<ReturnType>::str();
+            return "Spatial4DSampler<" + StaticString<tName.size()>(tName) + ">";
+        }();
+        return name;
     }
-    static uvec3 colorCode() { return uvec3(153, 0, 76); }
+    static constexpr uvec3 colorCode() { return uvec3(153, 0, 76); }
     static Document info(const Spatial4DSampler<ReturnType>&) {
         Document doc;
         doc.append("p", dataName());

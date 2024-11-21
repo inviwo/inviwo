@@ -48,8 +48,6 @@ class Property;
 namespace glui {
 class Renderer;
 
-const std::string FloatMinMaxPropertyWidget::classIdentifier =
-    "org.inviwo.glui.FloatMinMaxPropertyWidget";
 std::string_view FloatMinMaxPropertyWidget::getClassIdentifier() const { return classIdentifier; }
 
 FloatMinMaxPropertyWidget::FloatMinMaxPropertyWidget(FloatMinMaxProperty& property,

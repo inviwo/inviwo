@@ -47,7 +47,6 @@ class Property;
 namespace glui {
 class Renderer;
 
-const std::string IntPropertyWidget::classIdentifier = "org.inviwo.glui.IntPropertyWidget";
 std::string_view IntPropertyWidget::getClassIdentifier() const { return classIdentifier; }
 
 IntPropertyWidget::IntPropertyWidget(IntProperty& property, Processor& processor,

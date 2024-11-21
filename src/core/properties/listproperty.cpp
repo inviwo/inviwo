@@ -41,7 +41,6 @@
 
 namespace inviwo {
 
-const std::string ListProperty::classIdentifier = "org.inviwo.ListProperty";
 std::string_view ListProperty::getClassIdentifier() const { return classIdentifier; }
 
 ListProperty::ListProperty(std::string_view identifier, std::string_view displayName, Document help,

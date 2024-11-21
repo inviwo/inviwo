@@ -32,7 +32,6 @@
 
 namespace inviwo {
 
-const std::string DirectoryProperty::classIdentifier = "org.inviwo.DirectoryProperty";
 std::string_view DirectoryProperty::getClassIdentifier() const { return classIdentifier; }
 
 DirectoryProperty::DirectoryProperty(std::string_view identifier, std::string_view displayName,

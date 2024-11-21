@@ -30,7 +30,6 @@
 
 namespace inviwo {
 
-const std::string PlaneProperty::classIdentifier = "org.inviwo.PlaneProperty";
 std::string_view PlaneProperty::getClassIdentifier() const { return classIdentifier; }
 
 PlaneProperty::PlaneProperty(std::string_view identifier, std::string_view displayName,

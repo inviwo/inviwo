@@ -73,7 +73,7 @@ PortInspector::PortInspector(std::string_view portClassIdentifier,
                          [](const auto& inport) { return !inport->isConnected(); });
 
             auto meta =
-                processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+                processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
             meta->setVisible(false);
             meta->setSelected(false);
 

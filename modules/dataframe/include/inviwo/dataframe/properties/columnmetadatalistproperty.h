@@ -52,7 +52,7 @@ class ColumnMetaDataProperty;
 class IVW_MODULE_DATAFRAME_API ColumnMetaDataListProperty : public ListProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.ColumnMetaDataListProperty"};
 
     ColumnMetaDataListProperty(
         std::string_view identifier, std::string_view displayName,

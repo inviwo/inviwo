@@ -56,7 +56,6 @@ class Processor;
 
 namespace glui {
 
-const std::string RangeSlider::classIdentifier = "org.inviwo.glui.RangeSlider";
 std::string_view RangeSlider::getClassIdentifier() const { return classIdentifier; }
 
 RangeSlider::RangeSlider(const std::string& label, const ivec2& value, int minValue, int maxValue,

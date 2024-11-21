@@ -47,7 +47,6 @@
 namespace inviwo {
 class Volume;
 
-const std::string DataRangeProperty::classIdentifier = "org.inviwo.DataRangeProperty";
 std::string_view DataRangeProperty::getClassIdentifier() const { return classIdentifier; }
 
 DataRangeProperty::DataRangeProperty(std::string_view identifier, std::string_view displayName,

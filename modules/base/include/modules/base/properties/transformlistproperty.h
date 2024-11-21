@@ -63,7 +63,7 @@ public:
     ~TransformationList() = default;
 
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.TransformationList"};
 
     virtual TransformationList* clone() const override;
 
@@ -83,7 +83,7 @@ public:
     ~TransformListProperty() = default;
 
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.TransformListProperty"};
 
     virtual TransformListProperty* clone() const override;
 
@@ -108,7 +108,7 @@ public:
 class IVW_MODULE_BASE_API TranslateProperty : public TransformProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.trafo.TranslateProperty"};
 
     TranslateProperty(std::string_view identifier, std::string_view displayName,
                       const vec3& value = vec3{0.0f}, const vec3& minValue = vec3{-1.e6f},
@@ -130,7 +130,7 @@ public:
     enum class AngleMeasure { Radians, Degrees };
 
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.trafo.RotateProperty"};
 
     RotateProperty(std::string_view identifier, std::string_view displayName,
                    const vec3& axis = vec3{1.0f, 0.0f, 0.0f}, const float angle = 0.0f,
@@ -154,7 +154,7 @@ public:
 class IVW_MODULE_BASE_API ScaleProperty : public TransformProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.trafo.ScaleProperty"};
 
     ScaleProperty(std::string_view identifier, std::string_view displayName,
                   const vec3& value = vec3{1.0f}, const vec3& minValue = vec3{-1.e3f},
@@ -174,7 +174,7 @@ public:
 class IVW_MODULE_BASE_API CustomTransformProperty : public TransformProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.trafo.CustomTransformProperty"};
 
     CustomTransformProperty(
         std::string_view identifier, std::string_view displayName, const mat4& value = mat4{1.0f},

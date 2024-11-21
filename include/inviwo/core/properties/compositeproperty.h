@@ -51,7 +51,7 @@ class IVW_CORE_API CompositeProperty : public Property,
                                        public CompositePropertyObservable {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.CompositeProperty"};
 
     enum class CollapseAction { Collapse, Expand };
     enum class CollapseTarget { Current, Recursive, Children, Siblings };

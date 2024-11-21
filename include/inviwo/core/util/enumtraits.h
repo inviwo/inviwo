@@ -40,27 +40,17 @@ template <typename T>
 struct EnumTraits {};
 
 namespace util {
-// type trait to check if T has an enum name
-namespace detail {
-
-template <typename T, class Enable = void>
-struct HasEnumName : std::false_type {};
 
 template <typename T>
-struct HasEnumName<T, std::void_t<decltype(EnumTraits<T>::name())>> : std::true_type {};
-
-}  // namespace detail
-
-template <typename T>
-struct HasEnumName : detail::HasEnumName<T> {};
-
-template <typename T, typename std::enable_if<HasEnumName<T>::value, std::size_t>::type = 0>
-std::string enumName() {
-    return EnumTraits<T>::name();
-}
-template <typename T, typename std::enable_if<!HasEnumName<T>::value, std::size_t>::type = 0>
-std::string enumName() {
-    return "Enum" + Defaultvalues<std::underlying_type_t<T>>::getName();
+constexpr std::string_view enumName() {
+    if constexpr (requires {
+                      { EnumTraits<T>::name() } -> std::convertible_to<std::string_view>;
+                  }) {
+        return EnumTraits<T>::name();
+    } else {
+        static constexpr auto name = "Enum" + Defaultvalues<std::underlying_type_t<T>>::getName();
+        return name;
+    }
 }
 
 }  // namespace util

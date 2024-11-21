@@ -31,7 +31,6 @@
 
 namespace inviwo {
 
-const std::string EventProperty::classIdentifier = "org.inviwo.EventProperty";
 std::string_view EventProperty::getClassIdentifier() const { return classIdentifier; }
 
 EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,

@@ -106,9 +106,9 @@ public:
 
     virtual Document getInfo() const;
 
-    static uvec3 colorCode;
-    static const std::string classIdentifier;
-    static const std::string dataName;
+    static constexpr uvec3 colorCode{128, 64, 196};
+    static constexpr std::string_view classIdentifier{"org.inviwo.LightSource"};
+    static constexpr std::string_view dataName{"LightSource"};
 
 protected:
     vec3 intensity_;     // Color of light source, flux density per solid angle (given in watt per

@@ -87,13 +87,6 @@ private:
 };
 
 template <typename Inport, typename Outport>
-const ProcessorInfo& InputSelector<Inport, Outport>::getProcessorInfo() const {
-    static const ProcessorInfo info{
-        ProcessorTraits<InputSelector<Inport, Outport>>::getProcessorInfo()};
-    return info;
-}
-
-template <typename Inport, typename Outport>
 InputSelector<Inport, Outport>::InputSelector()
     : Processor()
     , inport_("inport")
@@ -164,13 +157,21 @@ struct ProcessorTraits<InputSelector<Inport, Outport>> {
     static ProcessorInfo getProcessorInfo() {
         using DataType = typename Inport::type;
         return {
-            DataTraits<DataType>::classIdentifier() + ".InputSelector",  // Class identifier
-            DataTraits<DataType>::dataName() + " Input Selector",        // Display name
-            "Data Selector",                                             // Category
-            CodeState::Stable,                                           // Code state
-            Tags::CPU,                                                   // Tags
+            fmt::format("{}.InputSelector",
+                        DataTraits<DataType>::classIdentifier()),                // Class identifier
+            fmt::format("{} Input Selector", DataTraits<DataType>::dataName()),  // Display name
+            "Data Selector",                                                     // Category
+            CodeState::Stable,                                                   // Code state
+            Tags::CPU,                                                           // Tags
         };
     }
 };
+
+template <typename Inport, typename Outport>
+const ProcessorInfo& InputSelector<Inport, Outport>::getProcessorInfo() const {
+    static const ProcessorInfo info =
+        ProcessorTraits<InputSelector<Inport, Outport>>::getProcessorInfo();
+    return info;
+}
 
 }  // namespace inviwo

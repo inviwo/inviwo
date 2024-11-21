@@ -38,10 +38,11 @@ template <typename T>
 struct OptionPropertyTraits {
     static std::string_view classIdentifier() {
         if constexpr (std::is_enum_v<T>) {
-            static const std::string identifier = "org.inviwo.OptionProperty" + util::enumName<T>();
+            static const std::string identifier =
+                fmt::format("org.inviwo.OptionProperty{}", util::enumName<T>());
             return identifier;
         } else {
-            static const std::string identifier =
+            static const auto identifier =
                 "org.inviwo.OptionProperty" + Defaultvalues<T>::getName();
             return identifier;
         }

@@ -266,7 +266,7 @@ std::string_view enumToStr(ColumnType type) {
         case ColumnType::Categorical:
             return "Categorical";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid ColumnType enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid ColumnType enum value '{}'",
                     static_cast<int>(type));
 }
 std::ostream& operator<<(std::ostream& ss, ColumnType type) { return ss << enumToStr(type); }

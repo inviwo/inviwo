@@ -50,8 +50,6 @@ OrthographicCamera* OrthographicCamera::clone() const { return new OrthographicC
 
 std::string_view OrthographicCamera::getClassIdentifier() const { return classIdentifier; }
 
-const std::string OrthographicCamera::classIdentifier = "OrthographicCamera";
-
 void OrthographicCamera::setWidth(float width) {
     if (width_ != width) {
         width_ = width;

@@ -141,7 +141,7 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
             CanvasProcessor* canvasProcessor = portInspector->getCanvasProcessor();
             canvasProcessor->createMetaData<BoolMetaData>("PortInspector")->set(true);
             auto widgetMeta = canvasProcessor->getMetaData<ProcessorWidgetMetaData>(
-                ProcessorWidgetMetaData::CLASS_IDENTIFIER);
+                ProcessorWidgetMetaData::classIdentifier);
             auto size = app_->getSettingsByType<SystemSettings>()->portInspectorSize_.get();
             widgetMeta->setDimensions(ivec2(size, size));
             widgetMeta->setPosition(pos);
@@ -219,7 +219,7 @@ std::shared_ptr<const Image> PortInspectorManager::renderPortInspectorImage(Outp
                 canvasProcessor->setEvaluateWhenHidden(true);
                 canvasProcessor->createMetaData<BoolMetaData>("PortInspector")->set(false);
                 auto widgetMeta = canvasProcessor->getMetaData<ProcessorWidgetMetaData>(
-                    ProcessorWidgetMetaData::CLASS_IDENTIFIER);
+                    ProcessorWidgetMetaData::classIdentifier);
                 auto size = app_->getSystemSettings().portInspectorSize_.get();
                 widgetMeta->setDimensions(ivec2(size, size));
                 widgetMeta->setVisibile(false);

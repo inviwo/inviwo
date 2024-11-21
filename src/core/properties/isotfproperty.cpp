@@ -31,7 +31,6 @@
 
 namespace inviwo {
 
-const std::string IsoTFProperty::classIdentifier = "org.inviwo.IsoTFProperty";
 std::string_view IsoTFProperty::getClassIdentifier() const { return classIdentifier; }
 
 IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName,

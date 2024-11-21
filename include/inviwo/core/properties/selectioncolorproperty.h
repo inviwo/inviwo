@@ -48,7 +48,7 @@ struct IVW_CORE_API SelectionColorState {
 class IVW_CORE_API SelectionColorProperty : public BoolCompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.ColorSelectionProperty"};
 
     SelectionColorProperty(
         std::string_view identifier, std::string_view displayName, bool checked = false,

@@ -45,7 +45,6 @@ namespace inviwo {
 
 namespace plot {
 
-const std::string MarginProperty::classIdentifier = "org.inviwo.MarginProperty";
 std::string_view MarginProperty::getClassIdentifier() const { return classIdentifier; }
 
 MarginProperty::MarginProperty(

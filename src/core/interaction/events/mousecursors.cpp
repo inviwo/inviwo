@@ -75,7 +75,7 @@ std::string_view enumToStr(MouseCursor b) {
         case MouseCursor::Busy:
             return "Busy";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid MouseCursor enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid MouseCursor enum value '{}'",
                     static_cast<int>(b));
 }
 

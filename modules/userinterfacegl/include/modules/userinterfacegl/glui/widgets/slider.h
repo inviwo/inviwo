@@ -53,7 +53,7 @@ class Renderer;
 class IVW_MODULE_USERINTERFACEGL_API Slider : public Element {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.glui.Slider"};
 
     Slider(const std::string& label, int value, int minValue, int maxValue, Processor& processor,
            Renderer& uiRenderer, const ivec2& extent = ivec2(100, 24),

@@ -36,7 +36,6 @@
 
 namespace inviwo {
 
-const std::string PositionProperty::classIdentifier = "org.inviwo.PositionProperty";
 std::string_view PositionProperty::getClassIdentifier() const { return classIdentifier; }
 
 PositionProperty::PositionProperty(std::string_view identifier, std::string_view displayName,

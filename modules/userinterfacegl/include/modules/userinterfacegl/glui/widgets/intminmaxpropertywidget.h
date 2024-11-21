@@ -56,7 +56,7 @@ class IVW_MODULE_USERINTERFACEGL_API IntMinMaxPropertyWidget : public RangeSlide
                                                                public PropertyObserver {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.glui.IntMinMaxPropertyWidget"};
 
     IntMinMaxPropertyWidget(IntMinMaxProperty& property, Processor& processor, Renderer& uiRenderer,
                             const ivec2& extent = ivec2(100, 24),

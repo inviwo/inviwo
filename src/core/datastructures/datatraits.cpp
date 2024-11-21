@@ -31,63 +31,6 @@
 
 namespace inviwo {
 
-uvec3 util::getDataFormatColor(NumericType t, size_t comp, size_t size) {
-    uvec3 color{};
-    switch (t) {
-        case NumericType::Float:
-            color.r = 30;
-            break;
-        case NumericType::SignedInteger:
-            color.r = 60;
-            break;
-        case NumericType::UnsignedInteger:
-            color.r = 90;
-            break;
-        default:
-            color.r = 0;
-            break;
-    }
-
-    switch (comp) {
-        case 1:
-            color.g = 30;
-            break;
-        case 2:
-            color.g = 60;
-            break;
-        case 3:
-            color.g = 90;
-            break;
-        case 4:
-            color.g = 120;
-            break;
-        default:
-            color.g = 0;
-            break;
-    }
-    switch (size) {
-        case 1:
-            color.b = 30;
-            break;
-        case 2:
-            color.b = 60;
-            break;
-        case 3:
-            color.b = 90;
-            break;
-        case 4:
-            color.b = 120;
-            break;
-        case 8:
-            color.b = 150;
-            break;
-        default:
-            color.b = 0;
-            break;
-    }
-    return color;
-}
-
 std::string util::appendIfNotEmpty(std::string_view a, std::string_view b) {
     if (a.empty() || b.empty()) {
         return std::string{a};
