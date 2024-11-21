@@ -70,6 +70,11 @@ template <typename... Types>
 void updateFilenameFilters(const DataReaderFactory& rf, FileProperty& filePath,
                            OptionProperty<FileExtension>& optionProperty) {
 
+    if (std::ranges::equal(optionProperty.getOptions(), rf.getExtensionsForTypesView<Types...>(),
+                           std::ranges::equal_to{}, &OptionPropertyOption<FileExtension>::value_)) {
+        return;
+    }
+
     optionProperty.updateOptions(
         [&](std::vector<OptionPropertyOption<FileExtension>>& opts) -> bool {
             auto extensions = rf.getExtensionsForTypesView<Types...>();

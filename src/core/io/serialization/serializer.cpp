@@ -139,7 +139,7 @@ void Serializer::writeFile(std::ostream& stream, bool format) {
 
 void Serializer::write(std::pmr::string& xml, bool format) {
     try {
-        TiXmlPrinter printer{xml, format ? TiXmlStreamPrint::Yes : TiXmlStreamPrint::No};
+        TiXmlPrinter printer{xml, format ? TiXmlStreamPrint::No : TiXmlStreamPrint::Yes};
         doc_->Accept(&printer);
     } catch (const TiXmlError& e) {
         throw SerializationException(e.what(), IVW_CONTEXT);
