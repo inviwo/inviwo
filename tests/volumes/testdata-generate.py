@@ -27,12 +27,14 @@
 #
 # ********************************************************************************
 
-import numpy as np  # requiers version 1.12+
+import numpy as np  # requires version 1.12+
 
 dat = """RawFile: {file}
 Resolution: {x} {y} {z}
 Format: {format}
 ByteOrder:  {byteorder}
+DataRange:  {datarangemin} {datarangemax}
+ValueRange: {datarangemin} {datarangemax}
 """
 
 ivf = """<?xml version="1.0" ?>
@@ -40,6 +42,8 @@ ivf = """<?xml version="1.0" ?>
     <RawFile content="{file}" />
     <Format content="{format}" />
     <Dimension x="{x}" y="{y}" z="{z}" />
+    <DataRange x="{datarangemin}" y="{datarangemax}" />
+    <ValueRange x="{datarangemin}" y="{datarangemax}" />
     <MetaDataMap>
         <MetaDataItem type="org.inviwo.BoolMetaData" key="LittleEndian">
             <MetaData content="{byteorder}" />
@@ -55,12 +59,14 @@ types = [np.dtype(t + str(1)) for t in ('i', 'u')] + \
 # x+y+z
 
 for t in types:
-    # use column major as Inviwo instead of numpys defult Row Major
+    # use column major as Inviwo instead of numpy's default Row Major
     dims = (3, 7, 13)
     arr = np.zeros(dims, dtype=t)
 
     for x, y, z in np.ndindex(arr.shape):
         arr[x, y, z] = x + y + z
+
+    datarange = (np.min(arr), np.max(arr),)
 
     if t.byteorder == '|':
         order = ""
@@ -87,7 +93,9 @@ for t in types:
             byteorder="LittleEndian" if not t.byteorder == '>' else "BigEndian",
             x=dims[2],
             y=dims[1],
-            z=dims[0]
+            z=dims[0],
+            datarangemin=datarange[0],
+            datarangemax=datarange[1]
         ))
 
     with open(filename + ".ivf", 'w') as f:
@@ -97,11 +105,13 @@ for t in types:
             byteorder="1" if not t.byteorder == '>' else "0",
             x=dims[2],
             y=dims[1],
-            z=dims[0]
+            z=dims[0],
+            datarangemin=datarange[0],
+            datarangemax=datarange[1]
         ))
 
     print(filename)
     f = "  {:>12s}: {: 6.8e}" if t.kind == 'f' else "  {:>12s}: {: f}"
-    print(f.format("Data Min", arr.min()))
-    print(f.format("Data Max", arr.max()))
+    print(f.format("Data Min", datarange[0]))
+    print(f.format("Data Max", datarange[1]))
     print()
