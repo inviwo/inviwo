@@ -215,7 +215,8 @@ void WorkspaceManager::save(std::pmr::string& xml, const std::filesystem::path& 
     }
 
     serializers_.invoke(serializer, exceptionHandler, mode);
-    serializer.write(xml, true);
+    const bool indentXml = mode != WorkspaceSaveMode::Undo;
+    serializer.write(xml, indentXml);
 
     if (mode != WorkspaceSaveMode::Undo) {
         setModified(false);
