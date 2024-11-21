@@ -212,7 +212,7 @@ std::string_view enumToStr(LogLevel ll) {
         case LogLevel::Error:
             return "Error";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid LogLevel enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid LogLevel enum value '{}'",
                     static_cast<int>(ll));
 }
 
@@ -223,7 +223,7 @@ std::string_view enumToStr(LogAudience la) {
         case LogAudience::Developer:
             return "Developer";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid LogAudience enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid LogAudience enum value '{}'",
                     static_cast<int>(la));
 }
 
@@ -238,7 +238,7 @@ std::string_view enumToStr(MessageBreakLevel ll) {
         case MessageBreakLevel::Off:
             return "Off";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
                     "Found invalid MessageBreakLevel enum value '{}'", static_cast<int>(ll));
 }
 

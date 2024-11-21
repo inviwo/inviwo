@@ -97,12 +97,14 @@ protected:
 
 template <typename T>
 struct PortTraits<DataOutport<T>> {
-    static std::string_view classIdentifier() {
-        static const std::string cid{[]() -> std::string {
-            auto&& classId = DataTraits<T>::classIdentifier();
-            if (classId.empty()) return {};
-            return fmt::format("{}.outport", classId);
-        }()};
+    static constexpr std::string_view classIdentifier() {
+        static constexpr auto cid = []() {
+            constexpr auto tCid = DataTraits<T>::classIdentifier();
+            if constexpr (tCid.empty()) {
+                return StaticString{};
+            }
+            return StaticString<tCid.size()>(tCid) + ".outport";
+        }();
         return cid;
     }
 };

@@ -82,7 +82,6 @@ void addOptionProperty(PropertyOwner& owner, std::string_view identifier,
 
 }  // namespace detail
 
-const std::string FilterListProperty::classIdentifier = "org.inviwo.FilterListProperty";
 std::string_view FilterListProperty::getClassIdentifier() const { return classIdentifier; }
 
 FilterListProperty::FilterListProperty(std::string_view identifier, std::string_view displayName,

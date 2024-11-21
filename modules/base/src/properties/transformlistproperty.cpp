@@ -71,7 +71,6 @@ TransformationList::TransformationList(std::string_view identifier, std::string_
           0, ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove, invalidationLevel, semantics) {}
 
 std::string_view TransformationList::getClassIdentifier() const { return classIdentifier; }
-const std::string TransformationList::classIdentifier = "org.inviwo.TransformationList";
 TransformationList* TransformationList::clone() const { return new TransformationList(*this); }
 
 mat4 TransformationList::getMatrix() const {
@@ -112,7 +111,6 @@ TransformListProperty::TransformListProperty(const TransformListProperty& other)
     transforms_.onChange([this]() { result_.set(transforms_.getMatrix()); });
 }
 
-const std::string TransformListProperty::classIdentifier = "org.inviwo.TransformListProperty";
 std::string_view TransformListProperty::getClassIdentifier() const { return classIdentifier; }
 
 TransformListProperty* TransformListProperty::clone() const {
@@ -128,7 +126,6 @@ TransformProperty::TransformProperty(std::string_view identifier, std::string_vi
                                      PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics) {}
 
-const std::string TranslateProperty::classIdentifier = "org.inviwo.trafo.TranslateProperty";
 std::string_view TranslateProperty::getClassIdentifier() const { return classIdentifier; }
 
 TranslateProperty::TranslateProperty(std::string_view identifier, std::string_view displayName,
@@ -151,7 +148,6 @@ TranslateProperty* TranslateProperty::clone() const { return new TranslateProper
 
 mat4 TranslateProperty::getMatrix() const { return glm::translate(*translate); }
 
-const std::string RotateProperty::classIdentifier = "org.inviwo.trafo.RotateProperty";
 std::string_view RotateProperty::getClassIdentifier() const { return classIdentifier; }
 
 RotateProperty::RotateProperty(std::string_view identifier, std::string_view displayName,
@@ -202,7 +198,6 @@ mat4 RotateProperty::getMatrix() const {
     return glm::rotate(angleRad, *axis);
 }
 
-const std::string ScaleProperty::classIdentifier = "org.inviwo.trafo.ScaleProperty";
 std::string_view ScaleProperty::getClassIdentifier() const { return classIdentifier; }
 
 ScaleProperty::ScaleProperty(std::string_view identifier, std::string_view displayName,
@@ -224,8 +219,6 @@ ScaleProperty* ScaleProperty::clone() const { return new ScaleProperty(*this); }
 
 mat4 ScaleProperty::getMatrix() const { return glm::scale(*scale); }
 
-const std::string CustomTransformProperty::classIdentifier =
-    "org.inviwo.trafo.CustomTransformProperty";
 std::string_view CustomTransformProperty::getClassIdentifier() const { return classIdentifier; }
 
 CustomTransformProperty::CustomTransformProperty(std::string_view identifier,

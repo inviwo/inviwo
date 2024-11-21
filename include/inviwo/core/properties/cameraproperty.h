@@ -59,7 +59,7 @@ class IVW_CORE_API CameraProperty : public CompositeProperty, public TrackballOb
 public:
     using value_type = Camera;
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.CameraProperty"};
 
     CameraProperty(std::string_view identifier, std::string_view displayName, Document help,
                    std::function<std::optional<mat4>()> getBoundingBox,
@@ -92,7 +92,7 @@ public:
     virtual const Camera& get() const;
     virtual void set(const Property* srcProperty) override;
 
-    CameraProperty& setCamera(const std::string& cameraIdentifier);
+    CameraProperty& setCamera(std::string_view cameraIdentifier);
     CameraProperty& setCamera(std::unique_ptr<Camera> camera);
 
     virtual vec3 getLookFrom() const override;

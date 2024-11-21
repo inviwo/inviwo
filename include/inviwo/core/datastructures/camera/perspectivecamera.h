@@ -50,7 +50,7 @@ public:
     PerspectiveCamera& operator=(const PerspectiveCamera& other);
     virtual PerspectiveCamera* clone() const override;
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"PerspectiveCamera"};
 
     virtual void updateFrom(const Camera& source) override;
     virtual void configureProperties(CameraProperty& cameraProperty, bool attach) override;

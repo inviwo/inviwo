@@ -82,12 +82,12 @@ protected:
 
     virtual void setReadOnly(bool readonly);
 
-    static const std::string visibleKey;
-    static const std::string floatingKey;
-    static const std::string stickyKey;
-    static const std::string sizeKey;
-    static const std::string positionKey;
-    static const std::string dockareaKey;
+    static constexpr std::string_view visibleKey{"PropertyEditorWidgetVisible"};
+    static constexpr std::string_view floatingKey{"PropertyEditorWidgetFloating"};
+    static constexpr std::string_view stickyKey{"PropertyEditorWidgetSticky"};
+    static constexpr std::string_view sizeKey{"PropertyEditorWidgetSize"};
+    static constexpr std::string_view positionKey{"PropertyEditorWidgetPosition"};
+    static constexpr std::string_view dockareaKey{"PropertyEditorWidgetDockStatus"};
 };
 
 }  // namespace inviwo

@@ -117,8 +117,9 @@ public:
 
     std::string getDataInfo() const;
 
-    static uvec3 COLOR_CODE;
-    static const std::string CLASS_IDENTIFIER;
+    static constexpr uvec3 colorCode{225, 174, 225};
+    static constexpr std::string_view classIdentifier{"org.inviwo.Plane"};
+    static constexpr std::string_view dataName{"Plane"};
 
 private:
     vec3 point_{0.0f, 0.0f, 0.0f};

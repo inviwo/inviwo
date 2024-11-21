@@ -33,7 +33,6 @@
 
 namespace inviwo {
 
-const std::string IsoValueProperty::classIdentifier = "org.inviwo.IsoValueProperty";
 std::string_view IsoValueProperty::getClassIdentifier() const { return classIdentifier; }
 
 IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,

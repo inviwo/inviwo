@@ -56,7 +56,7 @@ public:
     };
 
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.ButtonGroupProperty"};
 
     ButtonGroupProperty(std::string_view identifier, std::string_view displayName,
                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,

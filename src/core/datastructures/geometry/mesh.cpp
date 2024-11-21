@@ -377,10 +377,6 @@ const Axis* Mesh::getAxis(size_t index) const {
     return &axes[index];
 }
 
-uvec3 Mesh::colorCode = uvec3(188, 188, 101);
-const std::string Mesh::classIdentifier = "org.inviwo.Mesh";
-const std::string Mesh::dataName = "Mesh";
-
 Document Mesh::getInfo() const {
     const int maxLines = 20;
 

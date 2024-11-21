@@ -47,7 +47,7 @@ public:
     enum class AddNoneOption { No, Yes };
 
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{ "org.inviwo.DataFrameColumnProperty"};
 
     /**
      * Constructor, no options will be created unless \p noneOption is set to AddNoneOption::Yes

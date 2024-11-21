@@ -167,9 +167,9 @@ public:
     DataMapper dataMap;
     std::array<Axis, 3> axes;
 
-    static const uvec3 colorCode;
-    static const std::string classIdentifier;
-    static const std::string dataName;
+    static constexpr uvec3 colorCode{188, 101, 101};
+    static constexpr std::string_view classIdentifier{"org.inviwo.Volume"};
+    static constexpr std::string_view dataName{"Volume"};
 
     template <typename Kind>
     const typename representation_traits<Volume, Kind>::type* getRep() const;

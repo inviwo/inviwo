@@ -42,7 +42,6 @@
 
 namespace inviwo {
 
-const std::string ColumnOptionProperty::classIdentifier = "org.inviwo.DataFrameColumnProperty";
 std::string_view ColumnOptionProperty::getClassIdentifier() const { return classIdentifier; }
 
 ColumnOptionProperty::ColumnOptionProperty(std::string_view identifier,

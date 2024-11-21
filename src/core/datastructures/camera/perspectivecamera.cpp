@@ -53,8 +53,6 @@ PerspectiveCamera* PerspectiveCamera::clone() const { return new PerspectiveCame
 
 std::string_view PerspectiveCamera::getClassIdentifier() const { return classIdentifier; }
 
-const std::string PerspectiveCamera::classIdentifier = "PerspectiveCamera";
-
 void PerspectiveCamera::updateFrom(const Camera& source) {
     Camera::updateFrom(source);
     if (auto pc = dynamic_cast<const PerspectiveCamera*>(&source)) {

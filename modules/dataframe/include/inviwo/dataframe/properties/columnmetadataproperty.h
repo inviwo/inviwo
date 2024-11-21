@@ -53,7 +53,7 @@ class Column;
 class IVW_MODULE_DATAFRAME_API ColumnMetaDataProperty : public BoolCompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.ColumnMetaDataProperty"};
 
     ColumnMetaDataProperty(
         std::string_view identifier, std::string_view displayName, dvec2 range = {0.0, 1.0},

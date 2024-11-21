@@ -63,8 +63,6 @@
 
 namespace inviwo {
 
-const std::string VolumeInformationProperty::classIdentifier =
-    "org.inviwo.VolumeInformationProperty";
 std::string_view VolumeInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
 namespace {

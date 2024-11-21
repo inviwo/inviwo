@@ -92,7 +92,8 @@ public:
     class Properties : public CompositeProperty {
     public:
         virtual std::string_view getClassIdentifier() const override;
-        static const std::string classIdentifier;
+        static constexpr std::string_view classIdentifier{
+            "org.inviwo.PersistenceDiagramPlotGL.Properties"};
 
         Properties(std::string identifier, std::string displayName,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,

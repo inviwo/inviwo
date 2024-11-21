@@ -45,7 +45,6 @@
 namespace inviwo {
 class Event;
 
-const std::string SequenceTimerProperty::classIdentifier = "org.inviwo.SequenceTimerProperty";
 std::string_view SequenceTimerProperty::getClassIdentifier() const { return classIdentifier; }
 
 SequenceTimerProperty::SequenceTimerProperty(std::string_view identifier,

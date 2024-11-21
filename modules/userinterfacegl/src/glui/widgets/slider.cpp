@@ -54,7 +54,6 @@ class Processor;
 
 namespace glui {
 
-const std::string Slider::classIdentifier = "org.inviwo.glui.Slider";
 std::string_view Slider::getClassIdentifier() const { return classIdentifier; }
 
 Slider::Slider(const std::string& label, int value, int minValue, int maxValue,

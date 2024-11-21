@@ -80,10 +80,7 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    static const std::string& getName() {
-        static std::string name{"Camera"};
-        return name;
-    }
+    static constexpr std::string_view getName() { return "Camera"; }
 
 private:
     vec3 lookFrom_{cameradefaults::lookFrom};

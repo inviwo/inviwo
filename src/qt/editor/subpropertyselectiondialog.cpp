@@ -82,9 +82,8 @@ SuperPropertyMimeData::SuperPropertyMimeData(std::vector<Property*> someProperti
     setText(str);
 }
 
-const std::string& SuperPropertyMimeData::getMimeTag() {
-    static std::string tag{"application/x.vnd.inviwo.superproperties+txt"};
-    return tag;
+std::string_view SuperPropertyMimeData::getMimeTag() {
+    return "application/x.vnd.inviwo.superproperties+txt";
 }
 
 const SuperPropertyMimeData* SuperPropertyMimeData::toSuperPropertyMimeData(const QMimeData* data) {

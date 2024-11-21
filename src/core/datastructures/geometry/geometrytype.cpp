@@ -43,7 +43,7 @@ std::string_view enumToStr(DrawType dt) {
         case DrawType::NotSpecified:
             return "Not specified";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid DrawType enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid DrawType enum value '{}'",
                     static_cast<int>(dt));
 }
 std::string_view enumToStr(ConnectivityType ct) {
@@ -61,7 +61,7 @@ std::string_view enumToStr(ConnectivityType ct) {
         case ConnectivityType::StripAdjacency:
             return "Strip adjacency";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
                     "Found invalid ConnectivityType enum value '{}'", static_cast<int>(ct));
 }
 std::string_view enumToStr(BufferType bt) {
@@ -87,7 +87,7 @@ std::string_view enumToStr(BufferType bt) {
         case BufferType::Unknown:
             return "Unknown";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid BufferType enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid BufferType enum value '{}'",
                     static_cast<int>(bt));
 }
 std::string_view enumToStr(BufferUsage bu) {
@@ -97,7 +97,7 @@ std::string_view enumToStr(BufferUsage bu) {
         case BufferUsage::Dynamic:
             return "Dynamic";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid BufferUsage enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid BufferUsage enum value '{}'",
                     static_cast<int>(bu));
 }
 std::string_view enumToStr(BufferTarget bt) {
@@ -107,7 +107,7 @@ std::string_view enumToStr(BufferTarget bt) {
         case BufferTarget::Index:
             return "Index";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid BufferTarget enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid BufferTarget enum value '{}'",
                     static_cast<int>(bt));
 }
 

@@ -54,7 +54,6 @@
 
 namespace inviwo {
 
-const std::string LayerInformationProperty::classIdentifier = "org.inviwo.LayerInformationProperty";
 std::string_view LayerInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
 namespace {

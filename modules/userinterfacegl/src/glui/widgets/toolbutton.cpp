@@ -67,7 +67,6 @@ class Processor;
 
 namespace glui {
 
-const std::string ToolButton::classIdentifier = "org.inviwo.glui.ToolButton";
 std::string_view ToolButton::getClassIdentifier() const { return classIdentifier; }
 
 ToolButton::ToolButton(const std::string& filename, Processor& processor, Renderer& uiRenderer,

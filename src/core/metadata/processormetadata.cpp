@@ -95,6 +95,4 @@ bool ProcessorMetaData::equal(const MetaData& rhs) const {
     }
 }
 
-const std::string ProcessorMetaData::CLASS_IDENTIFIER = "org.inviwo.ProcessorMetaData";
-
 }  // namespace inviwo

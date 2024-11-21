@@ -73,7 +73,7 @@ IVW_MODULE_DATAFRAME_API std::ostream& operator<<(std::ostream& os, ColormapType
 class IVW_MODULE_DATAFRAME_API ColormapProperty : public CompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.ColormapProperty"};
 
     ColormapProperty(std::string_view identifier, std::string_view displayName,
                      ColormapType type = ColormapType::Continuous,

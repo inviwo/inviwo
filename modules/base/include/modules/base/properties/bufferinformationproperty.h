@@ -52,7 +52,7 @@ class BufferBase;
 class IVW_MODULE_BASE_API BufferInformationProperty : public CompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.BufferInformationProperty"};
 
     BufferInformationProperty(
         std::string_view identifier, std::string_view displayName,
@@ -77,7 +77,7 @@ private:
 class IVW_MODULE_BASE_API MeshBufferInformationProperty : public BufferInformationProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.MeshBufferInformationProperty"};
 
     MeshBufferInformationProperty(
         std::string_view identifier, std::string_view displayName,
@@ -100,7 +100,7 @@ private:
 class IVW_MODULE_BASE_API IndexBufferInformationProperty : public BufferInformationProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.IndexBufferInformationProperty"};
 
     IndexBufferInformationProperty(
         std::string_view identifier, std::string_view displayName,

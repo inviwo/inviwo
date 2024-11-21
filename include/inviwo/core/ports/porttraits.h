@@ -45,7 +45,7 @@ namespace inviwo {
  * \code{.cpp}
  *     template <typename T>
  *     struct PortTraits<MyPort<T>> {
- *        static std::string classIdentifier() {
+ *        static constexpr std::string_view classIdentifier() {
  *           return generateMyPortClassIdentifier<T>();
  *        }
  *     };
@@ -61,7 +61,7 @@ struct PortTraits {
      * In case it is not found an empty string will be returned. An empty class identifier will be
      * considered an error in various factories.
      */
-    static const std::string& classIdentifier() { return util::classIdentifier<T>(); }
+    static constexpr std::string_view classIdentifier() { return util::classIdentifier<T>(); }
 };
 
 }  // namespace inviwo

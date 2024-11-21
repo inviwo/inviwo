@@ -32,7 +32,6 @@
 
 namespace inviwo {
 
-const std::string SimpleLightingProperty::classIdentifier = "org.inviwo.SimpleLightingProperty";
 std::string_view SimpleLightingProperty::getClassIdentifier() const { return classIdentifier; }
 
 SimpleLightingProperty::SimpleLightingProperty(std::string_view identifier,

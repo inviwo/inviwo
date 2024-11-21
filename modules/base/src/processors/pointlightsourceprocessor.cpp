@@ -78,7 +78,6 @@ namespace inviwo {
 class Deserializer;
 class Serializer;
 
-const std::string PointLightTrackball::classIdentifier = "org.inviwo.PointLightTrackball";
 std::string_view PointLightTrackball::getClassIdentifier() const { return classIdentifier; }
 
 const ProcessorInfo PointLightSourceProcessor::processorInfo_{

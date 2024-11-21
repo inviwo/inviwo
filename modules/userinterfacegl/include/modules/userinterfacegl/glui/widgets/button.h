@@ -50,7 +50,7 @@ class Renderer;
 class IVW_MODULE_USERINTERFACEGL_API Button : public AbstractButton {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.glui.Button"};
 
     Button(const std::string& label, Processor& processor, Renderer& uiRenderer,
            const ivec2& extent = ivec2(100, 24));

@@ -42,7 +42,6 @@ class FontSettings;
 
 namespace plot {
 
-const std::string PlotTextProperty::classIdentifier = "org.inviwo.PlotTextProperty";
 std::string_view PlotTextProperty::getClassIdentifier() const { return classIdentifier; }
 
 PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view displayName,

@@ -70,7 +70,6 @@
 
 namespace inviwo {
 
-const std::string TextOverlayProperty::classIdentifier = "org.inviwo.TextOverlayProperty";
 std::string_view TextOverlayProperty::getClassIdentifier() const { return classIdentifier; }
 
 TextOverlayProperty::TextOverlayProperty(std::string_view identifier, std::string_view displayName,

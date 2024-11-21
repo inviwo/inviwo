@@ -44,7 +44,7 @@ std::string_view enumToStr(ConstraintBehavior cb) {
         case ConstraintBehavior::Ignore:
             return "Ignore";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
                     "Found invalid ConstraintBehavior enum value '{}'", static_cast<int>(cb));
 }
 

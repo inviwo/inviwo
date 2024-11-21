@@ -52,7 +52,7 @@ public:
     std::shared_ptr<Processor> get() const;
     Processor* processor() const;
 
-    static const std::string& getMimeTag();
+    static std::string_view getMimeTag();
 
     static const ProcessorMimeData* toProcessorMimeData(const QMimeData* data);
 

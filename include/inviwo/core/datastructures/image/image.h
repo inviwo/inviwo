@@ -170,9 +170,9 @@ public:
 
     void updateResource(const ResourceMeta& meta) const;
 
-    static const uvec3 colorCode;
-    static const std::string classIdentifier;
-    static const std::string dataName;
+    static constexpr uvec3 colorCode{90, 127, 183};
+    static constexpr std::string_view classIdentifier{"org.inviwo.Image"};
+    static constexpr std::string_view dataName{"Image"};
 
 protected:
     static std::shared_ptr<Layer> createColorLayer(

@@ -48,16 +48,10 @@
 
 namespace inviwo {
 
-const std::string BufferInformationProperty::classIdentifier =
-    "org.inviwo.BufferInformationProperty";
 std::string_view BufferInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
-const std::string MeshBufferInformationProperty::classIdentifier =
-    "org.inviwo.MeshBufferInformationProperty";
 std::string_view MeshBufferInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
-const std::string IndexBufferInformationProperty::classIdentifier =
-    "org.inviwo.IndexBufferInformationProperty";
 std::string_view IndexBufferInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
 BufferInformationProperty::BufferInformationProperty(std::string_view identifier,

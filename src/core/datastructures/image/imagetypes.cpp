@@ -43,7 +43,7 @@ std::string_view enumToStr(ImageType type) {
         case ImageType::ColorDepthPicking:
             return "Color + Depth + Picking";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid ImageType enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid ImageType enum value '{}'",
                     static_cast<int>(type));
 }
 std::string_view enumToStr(LayerType type) {
@@ -55,7 +55,7 @@ std::string_view enumToStr(LayerType type) {
         case LayerType::Picking:
             return "Picking";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid LayerType enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid LayerType enum value '{}'",
                     static_cast<int>(type));
 }
 std::string_view enumToStr(ImageChannel channel) {
@@ -73,7 +73,7 @@ std::string_view enumToStr(ImageChannel channel) {
         case ImageChannel::One:
             return "1";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid ImageChannel enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid ImageChannel enum value '{}'",
                     static_cast<int>(channel));
 }
 
@@ -84,7 +84,7 @@ std::string_view enumToStr(InterpolationType type) {
         case InterpolationType::Linear:
             return "Linear";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
                     "Found invalid InterpolationType enum value '{}'", static_cast<int>(type));
 }
 std::string_view enumToStr(Wrapping type) {
@@ -96,7 +96,7 @@ std::string_view enumToStr(Wrapping type) {
         case Wrapping::Clamp:
             return "Clamp";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid Wrapping enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid Wrapping enum value '{}'",
                     static_cast<int>(type));
 }
 

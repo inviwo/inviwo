@@ -295,7 +295,7 @@ std::string_view enumToStr(PropertyPresetType p) {
         case PropertyPresetType::Application:
             return "Application";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
                     "Found invalid PropertyPresetType enum value '{}'", static_cast<int>(p));
 }
 

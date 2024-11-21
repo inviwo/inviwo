@@ -49,7 +49,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
         std::vector<Processor*> selected;
         util::copy_if(
             network.getProcessors(), std::back_inserter(selected), [](const Processor* p) {
-                auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+                auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
                 return m->isSelected();
             });
 
@@ -58,7 +58,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
 
         auto app = network.getApplication();
         auto comp = std::make_shared<CompositeProcessor>("composite", "Composite", app);
-        auto meta = comp->createMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+        auto meta = comp->createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
         auto center = util::getCenterPosition(selected);
         meta->setPosition(center);
 
@@ -255,7 +255,7 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
             }
         }
         auto meta =
-            composite.createMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+            composite.createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
         util::offsetPosition(subProcessors, meta->getPosition());
         util::setSelected(subProcessors, true);
 
