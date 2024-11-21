@@ -168,7 +168,7 @@ struct OptionPropertyState {
  *
  * template <>
  * struct EnumTraits<MyEnum> {
- *     static std::string name() { return "MyEnum"; }
+ *     static std::string_view name() { return "MyEnum"; }
  * };
  *
  * registerProperty<OptionProperty<MyEnum>>();
@@ -178,9 +178,8 @@ struct OptionPropertyState {
  * @code
  * template <>
  * struct PropertyTraits<OptionProperty<MyType>>
- *     static const std::string& classIdentifier() {
- *         static const std::string identifier = "org.inviwo.OptionPropertyMyType";
- *         return identifier;
+ *     static constexpr std::string_view classIdentifier() {
+ *         return "org.inviwo.OptionPropertyMyType";
  *     }
  * };
  * @endcode

@@ -93,7 +93,63 @@ IVW_CORE_API std::string rgb2hex(const vec3& rgb);
  * @param hsv Color in the [0 1]^3 range
  * @return RGB color in [0 1]^3 range
  */
-IVW_CORE_API vec3 hsv2rgb(const vec3& hsv);
+constexpr vec3 hsv2rgb(const vec3& hsv) {
+    double hue = hsv.x;
+    double sat = hsv.y;
+    double val = hsv.z;
+    double r = 0.0;
+    double g = 0.0;
+    double b = 0.0;
+
+    if (sat < 1.0e-8) {  // only value, no saturation
+        r = val;
+        g = val;
+        b = val;
+        return vec3(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));
+    }
+
+    hue *= 360.0;
+    // divide hue into six segments, 60 degree each
+    int h_i = static_cast<int>(std::floor(hue / 60.0)) % 6;
+    double f = hue / 60.0 - std::floor(hue / 60.0);
+    double p = val * (1.0 - sat);
+    double q = val * (1.0 - f * sat);
+    double t = val * (1.0 - (1.0 - f) * sat);
+
+    switch (h_i) {
+        case 0:
+            r = val;
+            g = t;
+            b = p;
+            break;
+        case 1:
+            r = q;
+            g = val;
+            b = p;
+            break;
+        case 2:
+            r = p;
+            g = val;
+            b = t;
+            break;
+        case 3:
+            r = p;
+            g = q;
+            b = val;
+            break;
+        case 4:
+            r = t;
+            g = p;
+            b = val;
+            break;
+        case 5:
+            r = val;
+            g = p;
+            b = q;
+            break;
+    }
+    return vec3(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));
+}
 
 /**
  * \brief Convert from RGB to HSV color.
@@ -105,7 +161,39 @@ IVW_CORE_API vec3 hsv2rgb(const vec3& hsv);
  * @param rgb Color in the [0 1]^3 range
  * @return HSV color in the [0 1]^3 range
  */
-IVW_CORE_API vec3 rgb2hsv(const vec3& rgb);
+constexpr vec3 rgb2hsv(const vec3& rgb) {
+    double r = rgb.x;
+    double g = rgb.y;
+    double b = rgb.z;
+    double val = std::max(std::max(r, g), b);
+    double sat = std::min(std::min(r, g), b);
+    double range = val - sat;
+
+    // set hue to zero for undefined values
+    const bool notGray = (val - sat > 1.0e-8 || val - sat < -1.0e-8);
+    double hue = 0.0;
+
+    // blue hue
+    if (notGray) {
+        if (b == val)
+            hue = 2.0 / 3.0 + 1.0 / 6.0 * (r - g) / range;
+        else if (g == val)
+            hue = 1.0 / 3.0 + 1.0 / 6.0 * (b - r) / range;
+        else if (r == val)
+            hue = 1.0 / 6.0 * (g - b) / range;
+    }
+
+    if (hue < 0.0) {
+        hue += 1.0;
+    }
+    if (notGray) {
+        sat = 1.0 - sat / val;
+    } else {
+        sat = 0.0;
+    }
+    return vec3(static_cast<float>(hue), static_cast<float>(sat), static_cast<float>(val));
+}
+
 /**
  * \brief Convert from HSV to RGB color.
  *
@@ -113,6 +201,7 @@ IVW_CORE_API vec3 rgb2hsv(const vec3& rgb);
  * http://en.wikipedia.org/wiki/RGB_color_model
  * for a detailed explanation of the color spaces.
  *
+ * @param hsv Color in the [0 1]^3 range
  * @param hsl Color in the [0 1]^3 range, where [0 1] corresponds to [0 360) degrees for h
  * @return RGB color in [0 1]^3 range
  */
@@ -126,6 +215,7 @@ IVW_CORE_API vec3 hsl2rgb(const vec3& hsl);
  * for a detailed explanation of the color spaces.
  *
  * @param rgb Color in the [0 1]^3 range
+ * @return HSV color in the [0 1]^3 range
  * @return HSL color in the [0 1]^3 range
  */
 IVW_CORE_API vec3 rgb2hsl(const vec3& rgb);
@@ -335,16 +425,25 @@ IVW_CORE_API vec3 Luv2XYZ(const vec3& Luv, const vec3& whitePointXYZ = D65WhiteP
  *
  * See https://doc.qt.io/qt-5/qcolor.html#lighter
  */
-IVW_CORE_API vec3 lighter(const vec3& rgb, float factor = 1.5f);
+constexpr vec3 lighter(const vec3& rgb, float factor = 1.5f) {
+    vec3 hsv = rgb2hsv(rgb);
+    hsv.z = std::min(hsv.z * factor, 1.0f);
+    return hsv2rgb(hsv);
+}
 /**
  * \overload vec4 lighter(const vec4&, float)
  */
-IVW_CORE_API vec4 lighter(const vec4& rgba, float factor = 1.5f);
+constexpr vec4 lighter(const vec4& rgba, float factor = 1.5f) {
+    vec3 hsv = rgb2hsv(rgba);
+    hsv.z = std::min(hsv.z * factor, 1.0f);
+    return vec4(hsv2rgb(hsv), rgba.a);
+}
 /**
  * \overload uvec3 lighter(const uvec3&, float)
  */
-IVW_CORE_API uvec3 lighter(const uvec3& rgb, float factor = 1.5f);
-
+constexpr uvec3 lighter(const uvec3& rgb, float factor = 1.5f) {
+    return uvec3{lighter(vec3{rgb} / 255.0f, factor) * 255.0f};
+}
 /**
  * \brief Return a darker color by adjusting the brightness
  *
@@ -359,14 +458,24 @@ IVW_CORE_API uvec3 lighter(const uvec3& rgb, float factor = 1.5f);
  *
  * See https://doc.qt.io/qt-5/qcolor.html#lighter
  */
-IVW_CORE_API vec3 darker(const vec3& rgb, float factor = 2.0f);
+constexpr vec3 darker(const vec3& rgb, float factor = 2.0f) {
+    vec3 hsv = rgb2hsv(rgb);
+    hsv.z = std::min(hsv.z / factor, 1.0f);
+    return hsv2rgb(hsv);
+}
 /**
  * \overload vec4 darker(const vec4&, float)
  */
-IVW_CORE_API vec4 darker(const vec4& rgba, float factor = 2.0f);
+constexpr vec4 darker(const vec4& rgba, float factor = 2.0f) {
+    vec3 hsv = rgb2hsv(rgba);
+    hsv.z = std::min(hsv.z / factor, 1.0f);
+    return vec4(hsv2rgb(hsv), rgba.a);
+}
 /**
  * \overload uvec3 darker(const uvec3&, float)
  */
-IVW_CORE_API uvec3 darker(const uvec3& rgb, float factor = 2.0f);
+constexpr uvec3 darker(const uvec3& rgb, float factor = 2.0f) {
+    return uvec3{darker(vec3{rgb} / 255.0f, factor) * 255.0f};
+}
 
 }  // namespace inviwo::color

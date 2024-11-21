@@ -144,7 +144,7 @@ struct InviwoDefaults<double> {
 
 template <>
 struct InviwoDefaults<std::string> {
-    static auto get() {
+    static constexpr auto get() {
         return InviwoDefaultData{StaticString{"String"}, uvec2(1, 1),   std::string{},
                                  std::string{},          std::string{}, std::string{}};
     }
@@ -161,14 +161,14 @@ struct InviwoDefaults<std::filesystem::path> {
 
 template <>
 struct InviwoDefaults<bool> {
-    static auto get() {
+    static constexpr auto get() {
         return InviwoDefaultData{StaticString{"Bool"}, uvec2(1, 1), false, false, true, true};
     }
 };
 
 template <>
 struct InviwoDefaults<glm::dquat> {
-    static auto get() {
+    static constexpr auto get() {
         return InviwoDefaultData{
             StaticString{"DoubleQuaternion"}, uvec2(4, 1),
             glm::dquat(0., 0., 0., 0.),       glm::dquat(-1., -1., -1., -1.),
@@ -177,7 +177,7 @@ struct InviwoDefaults<glm::dquat> {
 };
 template <>
 struct InviwoDefaults<glm::fquat> {
-    static auto get() {
+    static constexpr auto get() {
         return InviwoDefaultData{
             StaticString{"FloatQuaternion"}, uvec2(4, 1),
             glm::fquat(0.f, 0.f, 0.f, 0.f),  glm::fquat(-1.f, -1.f, -1.f, -1.f),
@@ -230,7 +230,7 @@ struct InviwoDefaults<glm::vec<L, size_t, Q>> {
     static constexpr auto get() {
         constexpr auto t = InviwoDefaults<size_t>::get();
         constexpr std::array<StaticString<1>, 4> num = {"1", "2", "3", "4"};
-        return InviwoDefaultData{"IntSize" + num[L - 1],
+        return InviwoDefaultData{StaticString{"IntSize"} + num[L - 1],
                                  uvec2(L, 1),
                                  type{t.val},
                                  type{t.min},
@@ -243,12 +243,12 @@ template <typename T>
 struct Defaultvalues {
 public:
     static constexpr auto data() { return InviwoDefaults<T>::get(); };
-    static auto getName() { return data().name; }
-    static uvec2 getDim() { return data().dim; }
-    static T getVal() { return data().val; }
-    static T getMin() { return data().min; }
-    static T getMax() { return data().max; }
-    static T getInc() { return data().inc; }
+    static constexpr auto getName() { return data().name; }
+    static constexpr uvec2 getDim() { return data().dim; }
+    static constexpr T getVal() { return data().val; }
+    static constexpr T getMin() { return data().min; }
+    static constexpr T getMax() { return data().max; }
+    static constexpr T getInc() { return data().inc; }
 };
 
 }  // namespace inviwo

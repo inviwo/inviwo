@@ -53,17 +53,17 @@ enum class MyEnumUShort : unsigned short { a, b };
 
 template <>
 struct EnumTraits<MyEnumB> {
-    static std::string name() { return "MyEnumB"; }
+    static constexpr std::string_view name() { return "MyEnumB"; }
 };
 
 template <>
 struct EnumTraits<MyEnumShort> {
-    static std::string name() { return "MyEnumShort"; }
+    static constexpr std::string_view name() { return "MyEnumShort"; }
 };
 
 template <>
 struct EnumTraits<MyEnumUShort> {
-    static std::string name() { return "MyEnumUShort"; }
+    static constexpr std::string_view name() { return "MyEnumUShort"; }
 };
 
 TEST(EnumOptionProperty, ClassIdentifier) {

@@ -83,7 +83,7 @@ DataFrameTable::DataFrameTable()
     , showCategoryIndices_("showCategoryIndices", "Show Category Indices", false)
     , showFilteredRowCols_("showFilteredItems", "Show Filtered Items", true)
     , widgetMetaData_{
-          createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::CLASS_IDENTIFIER)} {
+          createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::classIdentifier)} {
     widgetMetaData_->addObserver(this);
 
     addPort(inport_);

@@ -173,7 +173,7 @@ void exposeProcessors(pybind11::module& m) {
                  if (!p) {
                      throw py::key_error("failed to create processor of type '" + key + "'");
                  }
-                 p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
+                 p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier)
                      ->setPosition(pos);
 
                  return p;
@@ -294,7 +294,7 @@ void exposeProcessors(pybind11::module& m) {
         .def_property_readonly(
             "meta",
             [](Processor* p) {
-                return p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+                return p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
             },
             py::return_value_policy::reference);
 

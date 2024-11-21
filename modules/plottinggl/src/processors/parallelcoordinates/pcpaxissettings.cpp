@@ -95,8 +95,6 @@ FilterResult filterValue(const double& value, const dvec2& range) {
 
 }  // namespace detail
 
-const std::string PCPAxisSettings::classIdentifier =
-    "org.inviwo.parallelcoordinates.axissettingsproperty";
 std::string_view PCPAxisSettings::getClassIdentifier() const { return classIdentifier; }
 
 PCPAxisSettings::PCPAxisSettings(std::string_view identifier, std::string_view displayName,

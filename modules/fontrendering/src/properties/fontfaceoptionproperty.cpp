@@ -40,7 +40,6 @@
 
 namespace inviwo {
 
-const std::string FontFaceOptionProperty::classIdentifier = "org.inviwo.FontFaceOptionProperty";
 std::string_view FontFaceOptionProperty::getClassIdentifier() const { return classIdentifier; }
 
 FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,

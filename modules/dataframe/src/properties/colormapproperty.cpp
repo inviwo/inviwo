@@ -59,7 +59,6 @@
 
 namespace inviwo {
 
-const std::string ColormapProperty::classIdentifier = "org.inviwo.ColormapProperty";
 std::string_view ColormapProperty::getClassIdentifier() const { return classIdentifier; }
 
 ColormapProperty::ColormapProperty(std::string_view identifier, std::string_view displayName,

@@ -42,6 +42,7 @@
 
 #include <memory>
 #include <vector>
+#include <fmt/compile.h>
 
 namespace inviwo {
 
@@ -89,24 +90,32 @@ using FlatMultiDataInport = DataInport<T, 0, true>;
 
 template <typename T, size_t N, bool Flat>
 struct PortTraits<DataInport<T, N, Flat>> {
-    static std::string_view classIdentifier() {
-        static const std::string cld{[]() -> std::string {
-            auto&& classId = DataTraits<T>::classIdentifier();
-            if (classId.empty()) return {};
+    static constexpr std::string_view classIdentifier() {
+        static constexpr auto cld = []() {
+            constexpr auto tCid = DataTraits<T>::classIdentifier();
+            if constexpr (tCid.empty()) {
+                return StaticString{};
+            }
 
-            StrBuffer name;
-            name.append("{}", classId);
-            if constexpr (Flat) {
-                name.append(".flat");
-            }
-            if constexpr (N == 0) {
-                name.append(".multi");
-            } else if constexpr (N != 1) {
-                name.append(".{}", N);
-            }
-            name.append(".inport");
-            return std::string{name.view()};
-        }()};
+            constexpr auto flat = []() {
+                if constexpr (Flat) {
+                    return StaticString{".flat"};
+                } else {
+                    return StaticString{};
+                }
+            }();
+            constexpr auto multi = []() {
+                if constexpr (N == 0) {
+                    return StaticString{".multi"};
+                } else if constexpr (N != 1) {
+                    return util::toStaticString<N>(FMT_COMPILE("{.}"));
+                } else {
+                    return StaticString{};
+                }
+            }();
+
+            return StaticString<tCid.size()>(tCid) + flat + multi + ".inport";
+        }();
 
         return cld;
     }

@@ -32,7 +32,6 @@
 
 namespace inviwo {
 
-const std::string ButtonProperty::classIdentifier = "org.inviwo.ButtonProperty";
 std::string_view ButtonProperty::getClassIdentifier() const { return classIdentifier; }
 
 ButtonProperty::ButtonProperty(std::string_view identifier, std::string_view displayName,

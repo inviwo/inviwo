@@ -38,7 +38,7 @@ namespace inviwo {
 class IVW_CORE_API CameraTrackball : public Trackball {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.CameraTrackball"};
 
     /**
      * Convenience class for trackball using camera properties. Calls propertyModified() on camera

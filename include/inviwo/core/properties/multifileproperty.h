@@ -47,7 +47,7 @@ namespace inviwo {
 class IVW_CORE_API MultiFileProperty : public Property, public FileBase {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.MultiFileProperty"};
     using value_type = std::vector<std::filesystem::path>;
 
     /**

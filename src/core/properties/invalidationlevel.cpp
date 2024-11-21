@@ -42,7 +42,7 @@ std::string_view enumToStr(InvalidationLevel level) {
         case InvalidationLevel::InvalidResources:
             return "Invalid resources";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
                     "Found invalid InvalidationLevel enum value '{}'", static_cast<int>(level));
 }
 

@@ -78,8 +78,9 @@ inline bool RasterizationInport::canConnectTo(const Port* port) const {
 template <>
 struct PortTraits<RasterizationInport> {
     static std::string_view classIdentifier() {
-        static const std::string classId =
-            fmt::format("{}.multi.inport", DataTraits<Rasterization>::classIdentifier());
+        static constexpr auto name = DataTraits<Rasterization>::classIdentifier();
+        static constexpr auto classId =
+            StaticString<name.size()>(name) + StaticString{".multi.inport"};
         return classId;
     }
 };
@@ -87,8 +88,8 @@ struct PortTraits<RasterizationInport> {
 template <>
 struct PortTraits<RasterizationOutport> {
     static std::string_view classIdentifier() {
-        static const std::string classId =
-            fmt::format("{}outport", DataTraits<Rasterization>::classIdentifier());
+        static constexpr auto name = DataTraits<Rasterization>::classIdentifier();
+        static constexpr auto classId = StaticString<name.size()>(name) + StaticString{"outport"};
         return classId;
     }
 };

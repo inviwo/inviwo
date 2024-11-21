@@ -230,7 +230,7 @@ bool CanvasWithPropertiesProcessorWidgetQt::contextMenu(QMenu& menu) {
     connect(menu.addAction(QIcon(":svgicons/edit-selectall.svg"), "&Select Processor"),
             &QAction::triggered, this, [this]() {
                 getProcessor()
-                    ->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
+                    ->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier)
                     ->setSelected(true);
             });
     connect(menu.addAction(QIcon(":svgicons/canvas-hide.svg"), "&Hide Canvas"), &QAction::triggered,

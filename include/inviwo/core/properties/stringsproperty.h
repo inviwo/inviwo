@@ -37,6 +37,7 @@
 #include <array>
 #include <span>
 #include <fmt/format.h>
+#include <fmt/compile.h>
 
 namespace inviwo {
 
@@ -81,8 +82,14 @@ public:
 template <size_t N>
 struct PropertyTraits<StringsProperty<N>> {
     static std::string_view classIdentifier() {
-        static const std::string identifier = fmt::format("org.inviwo.StringsProperty{}", N);
-        return identifier;
+        static constexpr auto cid = []() {
+            constexpr auto format = FMT_COMPILE("org.inviwo.StringsProperty{}");
+            constexpr size_t size = fmt::formatted_size(format, N);
+            StaticString<size> res;
+            fmt::format_to(res.data(), format, N);
+            return res;
+        }();
+        return cid;
     }
 };
 

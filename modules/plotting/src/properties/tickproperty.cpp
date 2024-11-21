@@ -43,10 +43,8 @@ namespace inviwo {
 
 namespace plot {
 
-const std::string MajorTickProperty::classIdentifier = "org.inviwo.MajorTickProperty";
 std::string_view MajorTickProperty::getClassIdentifier() const { return classIdentifier; }
 
-const std::string MinorTickProperty::classIdentifier = "org.inviwo.MinorTickProperty";
 std::string_view MinorTickProperty::getClassIdentifier() const { return classIdentifier; }
 
 MajorTickProperty::MajorTickProperty(std::string_view identifier, std::string_view displayName,

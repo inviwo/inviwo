@@ -428,9 +428,8 @@ using FloatQuaternionProperty = OrdinalProperty<glm::fquat>;
 
 template <typename T>
 struct PropertyTraits<OrdinalProperty<T>> {
-    static std::string_view classIdentifier() {
-        static const std::string identifier =
-            "org.inviwo." + Defaultvalues<T>::getName() + "Property";
+    static constexpr std::string_view classIdentifier() {
+        static const auto identifier = "org.inviwo." + Defaultvalues<T>::getName() + "Property";
         return identifier;
     }
 };
@@ -474,8 +473,8 @@ OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_vie
                                     const std::pair<T, ConstraintBehavior>& maxValue,
                                     const T& increment, InvalidationLevel invalidationLevel,
                                     PropertySemantics semantics)
-    : OrdinalProperty{identifier, displayName,       {},       value, minValue, maxValue,
-                      increment,  invalidationLevel, semantics} {}
+    : OrdinalProperty{identifier, displayName, Document{},        value,    minValue,
+                      maxValue,   increment,   invalidationLevel, semantics} {}
 
 template <typename T>
 OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_view displayName,

@@ -35,7 +35,7 @@ namespace inviwo {
 ProcessorWidget::ProcessorWidget(Processor* p)
     : processor_(p)
     , metaData_(processor_->createMetaData<ProcessorWidgetMetaData>(
-          ProcessorWidgetMetaData::CLASS_IDENTIFIER)) {
+          ProcessorWidgetMetaData::classIdentifier)) {
 
     metaData_->addObserver(this);
 }

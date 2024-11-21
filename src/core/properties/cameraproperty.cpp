@@ -46,7 +46,6 @@
 
 namespace inviwo {
 
-const std::string CameraProperty::classIdentifier = "org.inviwo.CameraProperty";
 std::string_view CameraProperty::getClassIdentifier() const { return classIdentifier; }
 
 CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName,
@@ -245,7 +244,7 @@ void CameraProperty::hideConfiguredProperties() {
     for (auto& p : ownedCameraProperties_) p->setVisible(false);
 }
 
-CameraProperty& CameraProperty::setCamera(const std::string& cameraIdentifier) {
+CameraProperty& CameraProperty::setCamera(std::string_view cameraIdentifier) {
     cameraType_.setSelectedIdentifier(cameraIdentifier);
     return *this;
 }

@@ -64,7 +64,7 @@ class IVW_MODULE_PLOTTING_API CategoricalAxisProperty : public AxisSettings,
                                                         public CompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.CategoricalAxisProperty"};
 
     CategoricalAxisProperty(std::string_view identifier, std::string_view displayName,
                             std::vector<std::string> categories = {"Category"},

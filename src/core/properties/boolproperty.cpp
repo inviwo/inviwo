@@ -32,7 +32,6 @@
 
 namespace inviwo {
 
-const std::string BoolProperty::classIdentifier = "org.inviwo.BoolProperty";
 std::string_view BoolProperty::getClassIdentifier() const { return classIdentifier; }
 
 BoolProperty::BoolProperty(std::string_view identifier, std::string_view displayName, Document help,

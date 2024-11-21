@@ -55,7 +55,7 @@ class IVW_MODULE_PLOTTING_API BoxSelectionProperty : public BoxSelectionSettings
                                                      public CompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.BoxSelectionProperty"};
 
     BoxSelectionProperty(const std::string& identifier, const std::string& displayName,
                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,

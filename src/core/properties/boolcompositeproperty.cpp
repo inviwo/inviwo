@@ -33,7 +33,6 @@
 
 namespace inviwo {
 
-const std::string BoolCompositeProperty::classIdentifier = "org.inviwo.BoolCompositeProperty";
 std::string_view BoolCompositeProperty::getClassIdentifier() const { return classIdentifier; }
 
 BoolCompositeProperty::BoolCompositeProperty(std::string_view identifier,

@@ -214,7 +214,7 @@ public:
 
     virtual PropertyTrack* clone() const override;
 
-    static std::string_view classIdentifier();
+    static constexpr std::string_view classIdentifier();
     virtual std::string_view getClassIdentifier() const override;
 
     virtual AnimationTimeState operator()(Seconds from, Seconds to,
@@ -367,7 +367,7 @@ template <typename Prop, typename Key, typename Seq>
 PropertyTrack<Prop, Key, Seq>::~PropertyTrack() = default;
 
 template <typename Prop, typename Key, typename Seq>
-std::string_view PropertyTrack<Prop, Key, Seq>::classIdentifier() {
+constexpr std::string_view PropertyTrack<Prop, Key, Seq>::classIdentifier() {
     // Use property class identifier since multiple properties
     // may have the same key (data type)
     static const std::string id = fmt::format("org.inviwo.animation.PropertyTrack.for.{}",

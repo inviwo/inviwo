@@ -46,7 +46,6 @@
 
 namespace inviwo {
 
-const std::string Trackball::classIdentifier = "org.inviwo.Trackball";
 std::string_view Trackball::getClassIdentifier() const { return classIdentifier; }
 
 Trackball::Trackball(TrackballObject* object) : Trackball{"trackball", "Trackball", object} {}

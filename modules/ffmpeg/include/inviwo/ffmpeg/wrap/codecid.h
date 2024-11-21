@@ -80,8 +80,7 @@ public:
 template <>
 struct inviwo::OptionPropertyTraits<inviwo::ffmpeg::CodecID> {
     static std::string_view classIdentifier() {
-        static const std::string identifier = "org.inviwo.OptionProperty.ffmpeg.CodecID";
-        return identifier;
+        return "org.inviwo.OptionProperty.ffmpeg.CodecID";
     }
 };
 

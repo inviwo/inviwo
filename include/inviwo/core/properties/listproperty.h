@@ -99,7 +99,7 @@ public:
     using const_iterator = std::vector<std::unique_ptr<Property>>::const_iterator;
 
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.ListProperty"};
 
     ListProperty(std::string_view identifier, std::string_view displayName, Document help = {},
                  std::vector<std::unique_ptr<Property>> prefabs = {},

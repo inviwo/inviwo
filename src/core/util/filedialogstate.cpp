@@ -41,7 +41,7 @@ std::string_view enumToStr(AcceptMode mode) {
         case AcceptMode::Save:
             return "Save";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid AcceptMode enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid AcceptMode enum value '{}'",
                     static_cast<int>(mode));
 }
 std::string_view enumToStr(FileMode mode) {
@@ -55,7 +55,7 @@ std::string_view enumToStr(FileMode mode) {
         case FileMode::ExistingFiles:
             return "Existing Files";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid FileMode enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid FileMode enum value '{}'",
                     static_cast<int>(mode));
 }
 

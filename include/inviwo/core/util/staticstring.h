@@ -32,9 +32,11 @@
 #include <string_view>
 #include <type_traits>
 #include <string>
+#include <algorithm>
 
 #include <fmt/format.h>
 #include <fmt/ranges.h>
+#include <fmt/compile.h>
 
 namespace inviwo {
 
@@ -42,29 +44,6 @@ template <size_t N>
 struct StaticString;
 
 namespace detail {
-
-// Not constexpr in 17
-template <class InputIt, class Size, class OutputIt>
-constexpr OutputIt copy_n(InputIt first, Size count, OutputIt result) {
-    if (count > 0) {
-        *result++ = *first;
-        for (Size i = 1; i < count; ++i) {
-            *result++ = *++first;
-        }
-    }
-    return result;
-}
-
-// Not constexpr in 17
-template <class InputIt1, class InputIt2>
-constexpr bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2) {
-    for (; first1 != last1; ++first1, ++first2) {
-        if (!(*first1 == *first2)) {
-            return false;
-        }
-    }
-    return true;
-}
 
 template <typename T>
 struct static_size_t;
@@ -94,7 +73,7 @@ template <size_t N>
 struct StaticString {
     constexpr StaticString() noexcept = default;
     constexpr StaticString(std::string_view sv) noexcept {
-        ::inviwo::detail::copy_n(sv.begin(), std::min(N, sv.size()), str.begin());
+        std::copy_n(sv.begin(), std::min(N, sv.size()), str.begin());
         str[N] = 0;
     }
     template <typename... Ts>
@@ -102,15 +81,16 @@ struct StaticString {
         size_t offset = 0;
         (
             [&]() {
-                ::inviwo::detail::copy_n(std::begin(strs), ::inviwo::detail::static_size<Ts>,
-                                         str.data() + offset);
-                offset += ::inviwo::detail::static_size<Ts>;
+                std::copy_n(std::begin(strs), detail::static_size<Ts>, str.data() + offset);
+                offset += detail::static_size<Ts>;
             }(),
             ...);
         str[N] = 0;
     }
 
     constexpr size_t size() const noexcept { return N; }
+    constexpr char* data() noexcept { return str.data(); }
+    constexpr const char* data() const noexcept { return str.data(); }
     constexpr auto begin() const noexcept { return str.begin(); }
     constexpr auto begin() noexcept { return str.begin(); }
     constexpr auto end() const noexcept { return str.begin() + N; }
@@ -128,10 +108,31 @@ struct StaticString {
     std::array<char, N + 1> str{0};
 };
 
+namespace util {
+
+template <auto t>
+static constexpr auto toStaticString() {
+    constexpr auto format = FMT_COMPILE("{}");
+    constexpr size_t size = fmt::formatted_size(format, t);
+    StaticString<size> res;
+    fmt::format_to(res.data(), format, t);
+    return res;
+}
+
+template <auto t, typename Format>
+static constexpr auto toStaticString(Format format) {
+    constexpr size_t size = fmt::formatted_size(format, t);
+    StaticString<size> res;
+    fmt::format_to(res.data(), format, t);
+    return res;
+}
+
+}  // namespace util
+
 template <size_t N1, size_t N2>
 constexpr bool operator==(const StaticString<N1>& a, const StaticString<N2>& b) noexcept {
     if constexpr (N1 == N2) {
-        return detail::equal(a.begin(), a.end(), b.begin());
+        return std::equal(a.begin(), a.end(), b.begin());
     } else {
         return false;
     }
@@ -190,9 +191,9 @@ constexpr auto operator+(const StaticString<N1>& a, const char (&b)[N2]) {
     return StaticString{a, b};
 }
 
-StaticString() -> StaticString<0>;
+StaticString()->StaticString<0>;
 template <typename... Ts>
-StaticString(Ts&&... strs) -> StaticString<(::inviwo::detail::static_size<Ts> + ...)>;
+StaticString(Ts&&... strs) -> StaticString<(detail::static_size<Ts> + ...)>;
 
 // Enable the use of StaticStrings as formats strings in fmt
 template <size_t N>

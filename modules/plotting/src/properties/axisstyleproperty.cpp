@@ -48,7 +48,6 @@ namespace inviwo {
 
 namespace plot {
 
-const std::string AxisStyleProperty::classIdentifier = "org.inviwo.AxisStyleProperty";
 std::string_view AxisStyleProperty::getClassIdentifier() const { return classIdentifier; }
 
 AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_view displayName,

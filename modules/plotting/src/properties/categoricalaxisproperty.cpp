@@ -56,7 +56,6 @@ namespace plot {
 class MinorTickSettings;
 class PlotTextSettings;
 
-const std::string CategoricalAxisProperty::classIdentifier = "org.inviwo.CategoricalAxisProperty";
 std::string_view CategoricalAxisProperty::getClassIdentifier() const { return classIdentifier; }
 
 CategoricalAxisProperty::CategoricalAxisProperty(

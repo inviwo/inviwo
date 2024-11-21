@@ -48,10 +48,9 @@ concept JSONConvertable = requires(T& t, json& j) {
 
 template <>
 struct DataTraits<json> {
-    static std::string_view classIdentifier() { return "org.inviwo.json"; }
-    static std::string_view dataName() { return "json"; }
-
-    static uvec3 colorCode() { return uvec3{230, 200, 20}; }
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.json"; }
+    static constexpr std::string_view dataName() { return "json"; }
+    static constexpr uvec3 colorCode() { return uvec3{230, 200, 20}; }
 
     static Document info(const json& data) {
         Document doc;

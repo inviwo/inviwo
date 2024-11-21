@@ -42,7 +42,7 @@ namespace inviwo {
 class IVW_CORE_API SimpleRaycastingProperty : public CompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.SimpleRaycastingProperty"};
 
     SimpleRaycastingProperty(std::string_view identifier, std::string_view displayName,
                              InvalidationLevel = InvalidationLevel::InvalidResources,

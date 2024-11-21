@@ -51,7 +51,7 @@ public:
     using Action = std::function<void(Event*)>;
 
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    static constexpr std::string_view classIdentifier{"org.inviwo.EventProperty"};
 
     /**
      * \brief Constructor used to create a new action-key binding.

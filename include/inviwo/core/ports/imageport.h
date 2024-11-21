@@ -37,6 +37,7 @@
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/util/imagecache.h>
 #include <inviwo/core/util/fmtutils.h>
+#include <inviwo/core/util/staticstring.h>
 
 #include <unordered_map>
 
@@ -141,14 +142,16 @@ using ImageMultiInport = BaseImageInport<0>;
 template <>
 struct PortTraits<BaseImageInport<1>> {
     static std::string_view classIdentifier() {
-        static const std::string cid = DataTraits<Image>::classIdentifier() + ".inport";
+        constexpr auto name = DataTraits<Image>::classIdentifier();
+        static constexpr auto cid = StaticString<name.size()>{name} + ".inport";
         return cid;
     }
 };
 template <>
 struct PortTraits<BaseImageInport<0>> {
     static std::string_view classIdentifier() {
-        static const std::string cid = DataTraits<Image>::classIdentifier() + ".multi.inport";
+        constexpr auto name = DataTraits<Image>::classIdentifier();
+        static const auto cid = StaticString<name.size()>{name} + ".multi.inport";
         return cid;
     }
 };
@@ -285,7 +288,8 @@ private:
 template <>
 struct PortTraits<ImageOutport> {
     static std::string_view classIdentifier() {
-        static const std::string cid = DataTraits<Image>::classIdentifier() + ".outport";
+        constexpr auto name = DataTraits<Image>::classIdentifier();
+        static const auto cid = StaticString<name.size()>{name} + ".outport";
         return cid;
     }
 };

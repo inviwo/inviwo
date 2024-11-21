@@ -53,7 +53,6 @@
 
 namespace inviwo {
 
-const std::string ColumnMetaDataProperty::classIdentifier = "org.inviwo.ColumnMetaDataProperty";
 std::string_view ColumnMetaDataProperty::getClassIdentifier() const { return classIdentifier; }
 
 ColumnMetaDataProperty::ColumnMetaDataProperty(std::string_view identifier,

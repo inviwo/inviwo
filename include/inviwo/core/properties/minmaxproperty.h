@@ -50,7 +50,6 @@ class MinMaxProperty : public Property {
 public:
     using value_type = glm::tvec2<T, glm::defaultp>;
     virtual std::string_view getClassIdentifier() const override;
-    static const std::string classIdentifier;
 
     MinMaxProperty(std::string_view identifier, std::string_view displayName, Document help,
                    T valueMin = Defaultvalues<T>::getMin(), T valueMax = Defaultvalues<T>::getMax(),
@@ -161,7 +160,7 @@ using IntMinMaxProperty = MinMaxProperty<int>;
 template <typename T>
 struct PropertyTraits<MinMaxProperty<T>> {
     static std::string_view classIdentifier() {
-        static const std::string identifier =
+        static const auto identifier =
             "org.inviwo." + Defaultvalues<T>::getName() + "MinMaxProperty";
         return identifier;
     }
