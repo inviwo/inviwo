@@ -2,3 +2,5 @@ RawFile: testdata.UINT64.LittleEndian.raw
 Resolution: 13 7 3
 Format: UINT64
 ByteOrder:  LittleEndian
+DataRange:  0 20
+ValueRange: 0 20

@@ -2,3 +2,5 @@ RawFile: testdata.INT16.BigEndian.raw
 Resolution: 13 7 3
 Format: INT16
 ByteOrder:  BigEndian
+DataRange:  0 20
+ValueRange: 0 20

@@ -2,3 +2,5 @@ RawFile: testdata.INT16.LittleEndian.raw
 Resolution: 13 7 3
 Format: INT16
 ByteOrder:  LittleEndian
+DataRange:  0 20
+ValueRange: 0 20
