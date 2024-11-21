@@ -41,7 +41,7 @@ runs:
       shell: bash
       if: runner.os == 'macOS'
       run: |
-        brew install ninja pkg-config nasm
+        brew install ninja nasm
 
     - name: "Apt Install"
       shell: bash
