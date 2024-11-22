@@ -24,7 +24,7 @@ var searchData=
   ['marchingcubesopt_21',['marchingCubesOpt',['../namespaceinviwo_1_1util.html#a264903a207983c82b75a97aaa2a69545',1,'inviwo::util']]],
   ['marchingtetrahedron_22',['MarchingTetrahedron',['../classinviwo_1_1MarchingTetrahedron.html',1,'inviwo']]],
   ['marchingtetrahedron_23',['marchingtetrahedron',['../namespaceinviwo_1_1util.html#ad05c658162fd0c9fb67eb70cfd537e52',1,'inviwo::util']]],
-  ['marginproperty_24',['MarginProperty',['../classinviwo_1_1plot_1_1MarginProperty.html',1,'inviwo::plot']]],
+  ['marginproperty_24',['MarginProperty',['../classinviwo_1_1MarginProperty.html',1,'inviwo']]],
   ['margins_5f_25',['margins_',['../classinviwo_1_1plot_1_1ScatterPlotGL_1_1Properties.html#a8781e20af96105d4ece14fa45ced3d50',1,'inviwo::plot::ScatterPlotGL::Properties::margins_'],['../classinviwo_1_1glui_1_1Layout.html#a797d85869ac8bbb03f8c9a266c1129d3',1,'inviwo::glui::Layout::margins_']]],
   ['markasunused_26',['markAsUnused',['../classinviwo_1_1Event.html#a11edb90998a3e60d07cf2efb95b1732b',1,'inviwo::Event']]],
   ['markasvisited_27',['markAsVisited',['../classinviwo_1_1Event.html#af996a1173c55a70bf1d9f0bd8cbd1d14',1,'inviwo::Event']]],

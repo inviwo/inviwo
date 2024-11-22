@@ -22,7 +22,6 @@ var namespaceinviwo_1_1plot =
     [ "MajorTickData", "classinviwo_1_1plot_1_1MajorTickData.html", null ],
     [ "MajorTickProperty", "classinviwo_1_1plot_1_1MajorTickProperty.html", "classinviwo_1_1plot_1_1MajorTickProperty" ],
     [ "MajorTickSettings", "classinviwo_1_1plot_1_1MajorTickSettings.html", null ],
-    [ "MarginProperty", "classinviwo_1_1plot_1_1MarginProperty.html", "classinviwo_1_1plot_1_1MarginProperty" ],
     [ "MeshAxis", "classinviwo_1_1plot_1_1MeshAxis.html", "classinviwo_1_1plot_1_1MeshAxis" ],
     [ "MinorTickData", "classinviwo_1_1plot_1_1MinorTickData.html", null ],
     [ "MinorTickProperty", "classinviwo_1_1plot_1_1MinorTickProperty.html", "classinviwo_1_1plot_1_1MinorTickProperty" ],

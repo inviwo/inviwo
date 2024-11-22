@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['lab2rgb_0',['lab2rgb',['../namespaceinviwo_1_1color.html#a061872c662e809c04691440094f36d41',1,'inviwo::color']]],
-  ['lab2xyz_1',['lab2XYZ',['../namespaceinviwo_1_1color.html#a0c0970d51fdfcc64cc988718f4ebe8c3',1,'inviwo::color']]],
+  ['lab2rgb_0',['lab2rgb',['../namespaceinviwo_1_1color.html#a792eb3d0cd474c7d6532b2674d792652',1,'inviwo::color']]],
+  ['lab2xyz_1',['lab2XYZ',['../namespaceinviwo_1_1color.html#a440bdb9f80645ceeca69c0bd5496fbe0',1,'inviwo::color']]],
   ['labelgraphicsitem_2',['LabelGraphicsItem',['../classinviwo_1_1LabelGraphicsItem.html',1,'inviwo']]],
   ['labelgraphicsitemobservable_3',['LabelGraphicsItemObservable',['../classinviwo_1_1LabelGraphicsItemObservable.html',1,'inviwo']]],
   ['labelgraphicsitemobserver_4',['LabelGraphicsItemObserver',['../classinviwo_1_1LabelGraphicsItemObserver.html',1,'inviwo']]],
@@ -116,7 +116,7 @@ var searchData=
   ['logtablemodelentry_113',['LogTableModelEntry',['../classinviwo_1_1LogTableModelEntry.html',1,'inviwo']]],
   ['lorenzsystem_114',['LorenzSystem',['../classinviwo_1_1LorenzSystem.html',1,'inviwo']]],
   ['ltrim_115',['ltrim',['../namespaceinviwo_1_1util.html#ab6bf0cc28f51cabb7d36e15c61129f7c',1,'inviwo::util']]],
-  ['luv2xyz_116',['Luv2XYZ',['../namespaceinviwo_1_1color.html#a80a146c3f4bf132eceef7126bff75763',1,'inviwo::color']]],
-  ['luvchromaticity2rgb_117',['LuvChromaticity2rgb',['../namespaceinviwo_1_1color.html#a2b91a9e0ddae11ee98c3e8d648b053aa',1,'inviwo::color']]],
-  ['luvchromaticity2xyz_118',['LuvChromaticity2XYZ',['../namespaceinviwo_1_1color.html#aaa5ea7e6aa7dd69353bef207abcc6a29',1,'inviwo::color']]]
+  ['luv2xyz_116',['Luv2XYZ',['../namespaceinviwo_1_1color.html#a611818a5e16441ce7bccc19f4cd7c291',1,'inviwo::color']]],
+  ['luvchromaticity2rgb_117',['LuvChromaticity2rgb',['../namespaceinviwo_1_1color.html#a756c889dc0ed0a92b19bc2c63dca0848',1,'inviwo::color']]],
+  ['luvchromaticity2xyz_118',['LuvChromaticity2XYZ',['../namespaceinviwo_1_1color.html#a8e227f0a071986b04d5d71cda9a342f9',1,'inviwo::color']]]
 ];

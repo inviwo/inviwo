@@ -941,6 +941,7 @@ var hierarchy =
             [ "inviwo::FilterListProperty", "classinviwo_1_1FilterListProperty.html", null ],
             [ "inviwo::TransformationList", "classinviwo_1_1TransformationList.html", null ]
           ] ],
+          [ "inviwo::MarginProperty", "classinviwo_1_1MarginProperty.html", null ],
           [ "inviwo::MeshInformationProperty", "classinviwo_1_1MeshInformationProperty.html", null ],
           [ "inviwo::MeshRasterizer::AlphaSettings", "structinviwo_1_1MeshRasterizer_1_1AlphaSettings.html", null ],
           [ "inviwo::MeshRasterizer::EdgeSettings", "structinviwo_1_1MeshRasterizer_1_1EdgeSettings.html", null ],
@@ -962,7 +963,6 @@ var hierarchy =
           [ "inviwo::plot::BoxSelectionProperty", "classinviwo_1_1plot_1_1BoxSelectionProperty.html", null ],
           [ "inviwo::plot::CategoricalAxisProperty", "classinviwo_1_1plot_1_1CategoricalAxisProperty.html", null ],
           [ "inviwo::plot::MajorTickProperty", "classinviwo_1_1plot_1_1MajorTickProperty.html", null ],
-          [ "inviwo::plot::MarginProperty", "classinviwo_1_1plot_1_1MarginProperty.html", null ],
           [ "inviwo::plot::MinorTickProperty", "classinviwo_1_1plot_1_1MinorTickProperty.html", null ],
           [ "inviwo::plot::PersistenceDiagramPlotGL::Properties", "classinviwo_1_1plot_1_1PersistenceDiagramPlotGL_1_1Properties.html", null ],
           [ "inviwo::plot::ScatterPlotGL::Properties", "classinviwo_1_1plot_1_1ScatterPlotGL_1_1Properties.html", null ],

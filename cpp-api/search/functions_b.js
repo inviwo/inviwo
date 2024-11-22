@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['lab2rgb_0',['lab2rgb',['../namespaceinviwo_1_1color.html#a061872c662e809c04691440094f36d41',1,'inviwo::color']]],
-  ['lab2xyz_1',['lab2XYZ',['../namespaceinviwo_1_1color.html#a0c0970d51fdfcc64cc988718f4ebe8c3',1,'inviwo::color']]],
+  ['lab2rgb_0',['lab2rgb',['../namespaceinviwo_1_1color.html#a792eb3d0cd474c7d6532b2674d792652',1,'inviwo::color']]],
+  ['lab2xyz_1',['lab2XYZ',['../namespaceinviwo_1_1color.html#a440bdb9f80645ceeca69c0bd5496fbe0',1,'inviwo::color']]],
   ['layer_2',['Layer',['../classinviwo_1_1Layer.html#ad5ee1f525279756f20d93d14f5ff45f1',1,'inviwo::Layer']]],
   ['layerramdistancetransform_3',['layerRAMDistanceTransform',['../namespaceinviwo_1_1util.html#a90dfea83005204a1c4beaa3714c38e74',1,'inviwo::util']]],
   ['layersubset_4',['layerSubSet',['../namespaceinviwo_1_1util.html#ab36aead3fc89df1f8274c4a4ad543f2b',1,'inviwo::util']]],
@@ -18,7 +18,7 @@ var searchData=
   ['logglerror_15',['LogGLError',['../namespaceinviwo.html#af3b7871810923d49b7a0af31e6888993',1,'inviwo::LogGLError(std::string_view fileName, std::string_view functionName, int lineNumber)'],['../namespaceinviwo.html#a5042483609bd48307453304227395005',1,'inviwo::LogGLError(std::string_view source, std::string_view fileName, std::string_view functionName, int lineNumber)']]],
   ['logqtmessages_16',['logQtMessages',['../namespaceinviwo_1_1utilqt.html#a7467b0293750542c0be5375676d2aa47',1,'inviwo::utilqt']]],
   ['ltrim_17',['ltrim',['../namespaceinviwo_1_1util.html#ab6bf0cc28f51cabb7d36e15c61129f7c',1,'inviwo::util']]],
-  ['luv2xyz_18',['Luv2XYZ',['../namespaceinviwo_1_1color.html#a80a146c3f4bf132eceef7126bff75763',1,'inviwo::color']]],
-  ['luvchromaticity2rgb_19',['LuvChromaticity2rgb',['../namespaceinviwo_1_1color.html#a2b91a9e0ddae11ee98c3e8d648b053aa',1,'inviwo::color']]],
-  ['luvchromaticity2xyz_20',['LuvChromaticity2XYZ',['../namespaceinviwo_1_1color.html#aaa5ea7e6aa7dd69353bef207abcc6a29',1,'inviwo::color']]]
+  ['luv2xyz_18',['Luv2XYZ',['../namespaceinviwo_1_1color.html#a611818a5e16441ce7bccc19f4cd7c291',1,'inviwo::color']]],
+  ['luvchromaticity2rgb_19',['LuvChromaticity2rgb',['../namespaceinviwo_1_1color.html#a756c889dc0ed0a92b19bc2c63dca0848',1,'inviwo::color']]],
+  ['luvchromaticity2xyz_20',['LuvChromaticity2XYZ',['../namespaceinviwo_1_1color.html#a8e227f0a071986b04d5d71cda9a342f9',1,'inviwo::color']]]
 ];

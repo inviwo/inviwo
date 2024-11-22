@@ -53,7 +53,7 @@ var searchData=
   ['helpprocessor_50',['HelpProcessor',['../structinviwo_1_1help_1_1HelpProcessor.html',1,'inviwo::help']]],
   ['helpproperty_51',['HelpProperty',['../structinviwo_1_1help_1_1HelpProperty.html',1,'inviwo::help']]],
   ['helpwidget_52',['HelpWidget',['../classinviwo_1_1HelpWidget.html',1,'inviwo']]],
-  ['hex2rgba_53',['hex2rgba',['../namespaceinviwo_1_1color.html#aef5194e9c867787c5a912b266b8292fe',1,'inviwo::color']]],
+  ['hex2rgba_53',['hex2rgba',['../namespaceinviwo_1_1color.html#a144c484386c0ac08a2c1e12d763c3057',1,'inviwo::color']]],
   ['hiddencanvasqt_54',['HiddenCanvasQt',['../classinviwo_1_1HiddenCanvasQt.html',1,'inviwo']]],
   ['hideer_55',['Hideer',['../structinviwo_1_1util_1_1detail_1_1Hideer.html',1,'inviwo::util::detail']]],
   ['hidewidget_56',['hideWidget',['../classinviwo_1_1OrdinalLikePropertySettingsWidgetQt.html#ac3b807a9c7d955c98394fffcf586e75a',1,'inviwo::OrdinalLikePropertySettingsWidgetQt::hideWidget()'],['../classinviwo_1_1MinMaxPropertySettingsWidgetQt.html#a792a4b0ee350abd1a3c94b0d34427698',1,'inviwo::MinMaxPropertySettingsWidgetQt::hideWidget()']]],
@@ -62,5 +62,6 @@ var searchData=
   ['histogram1d_59',['Histogram1D',['../structinviwo_1_1Histogram1D.html',1,'inviwo']]],
   ['histogramcache_60',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]],
   ['histogramtodataframe_61',['HistogramToDataFrame',['../classinviwo_1_1HistogramToDataFrame.html',1,'inviwo']]],
-  ['hsv2rgb_62',['hsv2rgb',['../namespaceinviwo_1_1color.html#a9690d1d32e192933bee1ea70e06256b6',1,'inviwo::color']]]
+  ['hsl2rgb_62',['hsl2rgb',['../namespaceinviwo_1_1color.html#a8d0e0863995cedb80bc5799c3f149048',1,'inviwo::color']]],
+  ['hsv2rgb_63',['hsv2rgb',['../namespaceinviwo_1_1color.html#a6a3b611cb8748b20a86f4df1b3bd5e9f',1,'inviwo::color']]]
 ];

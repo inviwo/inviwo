@@ -1,7 +1,5 @@
 var NAVTREEINDEX28 =
 {
-"namespaceinviwo_1_1util.html#aae046e2b3232a4ce60452ccc5853efb9":[2,0,0,18,126],
-"namespaceinviwo_1_1util.html#aaebb0173adbe89836698e846ded2bc33":[2,0,0,18,160],
 "namespaceinviwo_1_1util.html#ab09c288eeb600394bd546b3def257fb3":[2,0,0,18,83],
 "namespaceinviwo_1_1util.html#ab1e4eff95e999c0f37072af916d5d93b":[2,0,0,18,63],
 "namespaceinviwo_1_1util.html#ab279fda2d5e97b698c1c269a30ea6314":[2,0,0,18,75],
@@ -134,7 +132,7 @@ var NAVTREEINDEX28 =
 "namespacemembers_c.html":[2,1,0,2],
 "namespacemembers_d.html":[2,1,0,3],
 "namespacemembers_e.html":[2,1,0,4],
-"namespacemembers_enum.html":[2,1,3],
+"namespacemembers_enum.html":[2,1,4],
 "namespacemembers_f.html":[2,1,0,5],
 "namespacemembers_func.html":[2,1,1],
 "namespacemembers_func.html":[2,1,1,0],
@@ -169,9 +167,10 @@ var NAVTREEINDEX28 =
 "namespacemembers_r.html":[2,1,0,13],
 "namespacemembers_s.html":[2,1,0,14],
 "namespacemembers_t.html":[2,1,0,15],
-"namespacemembers_type.html":[2,1,2],
+"namespacemembers_type.html":[2,1,3],
 "namespacemembers_u.html":[2,1,0,16],
 "namespacemembers_v.html":[2,1,0,17],
+"namespacemembers_vars.html":[2,1,2],
 "namespacemembers_w.html":[2,1,0,18],
 "namespacemembers_x.html":[2,1,0,19],
 "namespacemembers_y.html":[2,1,0,20],
@@ -249,5 +248,6 @@ var NAVTREEINDEX28 =
 "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01const_01T_00_01D_01_4_00_01A_01_4_01_4.html":[4,0,1,232],
 "structinviwo_1_1Defaultvalues.html":[2,0,0,242],
 "structinviwo_1_1Defaultvalues.html":[4,0,1,248],
-"structinviwo_1_1ElementIdentifier.html":[2,0,0,278]
+"structinviwo_1_1ElementIdentifier.html":[2,0,0,278],
+"structinviwo_1_1ElementIdentifier.html":[4,0,1,284]
 };

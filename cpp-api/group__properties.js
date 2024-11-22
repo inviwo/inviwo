@@ -83,6 +83,11 @@ var group__properties =
     [ "inviwo::ImageEditorProperty", "classinviwo_1_1ImageEditorProperty.html", [
       [ "clone", "classinviwo_1_1ImageEditorProperty.html#ae7d25c4b0d7b2ffcf6a0a70d8977f3b1", null ]
     ] ],
+    [ "inviwo::MarginProperty", "classinviwo_1_1MarginProperty.html", [
+      [ "clone", "classinviwo_1_1MarginProperty.html#a9c3f3b635d74ad47b1edd8170477cc13", null ],
+      [ "getRect", "classinviwo_1_1MarginProperty.html#a500f96ad052ba3b74073c36ecdb7801a", null ],
+      [ "getSize", "classinviwo_1_1MarginProperty.html#a3c3bebc58a242ef17f668864048ebb30", null ]
+    ] ],
     [ "inviwo::MinMaxProperty< T >", "classinviwo_1_1MinMaxProperty.html", [
       [ "clamp", "classinviwo_1_1MinMaxProperty.html#ac85c324e213f12ec51adbaab241d1ab6", null ],
       [ "clone", "classinviwo_1_1MinMaxProperty.html#a70f9e8f339a39957629d0b98fe7be7e5", null ],
