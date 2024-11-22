@@ -36,7 +36,6 @@
 #include <modules/plotting/properties/axisproperty.h>                  // for AxisProperty
 #include <modules/plotting/properties/axisstyleproperty.h>             // for AxisStyleProperty
 #include <modules/plotting/properties/categoricalaxisproperty.h>       // for CategoricalAxisPro...
-#include <modules/plotting/properties/marginproperty.h>                // for MarginProperty
 #include <modules/plotting/properties/plottextproperty.h>              // for PlotTextProperty
 #include <modules/plotting/properties/tickproperty.h>                  // for MajorTickProperty
 
@@ -53,7 +52,6 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
     registerProperty<plot::AxisStyleProperty>();
     registerProperty<plot::CategoricalAxisProperty>();
     registerProperty<plot::MajorTickProperty>();
-    registerProperty<plot::MarginProperty>();
     registerProperty<plot::MinorTickProperty>();
     registerProperty<plot::PlotTextProperty>();
 }

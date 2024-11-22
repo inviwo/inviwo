@@ -36,9 +36,9 @@
 #include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
 #include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
 #include <inviwo/core/properties/ordinalproperty.h>         // for FloatProperty
+#include <inviwo/core/properties/marginproperty.h>          // for MarginProperty
 #include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
 #include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
-#include <modules/plotting/properties/marginproperty.h>     // for MarginProperty
 #include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
 
 #include <array>

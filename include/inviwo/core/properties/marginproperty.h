@@ -26,33 +26,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>  // for IVW_MODULE_PLOTTING_API
+#include <inviwo/core/common/inviwocoredefine.h>
 
-#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
-#include <inviwo/core/properties/ordinalproperty.h>    // for FloatProperty
-#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
-#include <inviwo/core/util/glmvec.h>                   // for vec2, vec4
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <utility>      // for pair
+#include <string>
+#include <string_view>
+#include <utility>
 
 namespace inviwo {
 
-namespace plot {
-
 /**
- * \class MarginProperty
+ * \ingroup properties
  * \brief Property for keeping track of margins
  *
- * For set functions, uses the same ordering as is common in CSS, clockwise starting from top eg
- * top, right, bottom, left
+ * Set functions use the same ordering as is common in CSS, that is clockwise direction starting
+ * from top (top, right, bottom, left).
  */
-class IVW_MODULE_PLOTTING_API MarginProperty : public CompositeProperty {
+class IVW_CORE_API MarginProperty : public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -104,7 +101,5 @@ public:
     FloatProperty bottom_;
     FloatProperty left_;
 };
-
-}  // namespace plot
 
 }  // namespace inviwo

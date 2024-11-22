@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-TEST(SerialitionContainerTest, Minimal) {
+TEST(SerializationContainerTest, Minimal) {
     std::stringstream ss;
     Serializer serializer("");
 
@@ -61,7 +61,7 @@ TEST(SerialitionContainerTest, Minimal) {
     ASSERT_EQ(5, vector[4]);
 }
 
-TEST(SerialitionContainerTest, ContainerTest1) {
+TEST(SerializationContainerTest, ContainerTest1) {
     std::stringstream ss;
     Serializer serializer("");
 
@@ -103,7 +103,7 @@ TEST(SerialitionContainerTest, ContainerTest1) {
     ASSERT_EQ(5, vector[4]);
 }
 
-TEST(SerialitionContainerTest, ContainerTest2) {
+TEST(SerializationContainerTest, ContainerTest2) {
     struct Item : Serializable {
         Item() = default;
         Item(std::string id, int value) : id_(id), value_(value) {}
@@ -162,7 +162,7 @@ TEST(SerialitionContainerTest, ContainerTest2) {
     ASSERT_EQ(3, vector[0].value_);
 }
 
-TEST(SerialitionContainerTest, ContainerTest3) {
+TEST(SerializationContainerTest, ContainerTest3) {
     struct Item : Serializable {
         Item() = default;
         Item(std::string id, int value) : id_(id), value_(value) {}
@@ -236,7 +236,7 @@ TEST(SerialitionContainerTest, ContainerTest3) {
     for (auto& item : vector) delete item;
 }
 
-TEST(SerialitionContainerTest, ContainerTest4) {
+TEST(SerializationContainerTest, ContainerTest4) {
     struct Item : Serializable {
         Item() = default;
         Item(std::string id, int value) : id_(id), value_(value) {}
@@ -310,7 +310,7 @@ TEST(SerialitionContainerTest, ContainerTest4) {
     for (auto& item : vector) delete item;
 }
 
-TEST(SerialitionContainerTest, ContainerTest5) {
+TEST(SerializationContainerTest, ContainerTest5) {
     std::stringstream ss;
     Serializer serializer("");
 
@@ -338,7 +338,7 @@ TEST(SerialitionContainerTest, ContainerTest5) {
     ASSERT_EQ(5, vector[4]);
 }
 
-TEST(SerialitionContainerTest, ContainerTest6) {
+TEST(SerializationContainerTest, ContainerTest6) {
     std::stringstream ss;
     Serializer serializer("");
 
@@ -367,7 +367,7 @@ TEST(SerialitionContainerTest, ContainerTest6) {
     ASSERT_EQ(map["c"], 3);
 }
 
-TEST(SerialitionContainerTest, ContainerTest7) {
+TEST(SerializationContainerTest, ContainerTest7) {
     std::stringstream ss;
     Serializer serializer("");
 

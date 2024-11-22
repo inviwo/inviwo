@@ -33,41 +33,39 @@
 #include <inviwo/core/util/glm.h>
 
 #include <algorithm>
-#include <sstream>
+#include <fmt/format.h>
+#include <charconv>
 
-namespace inviwo {
+namespace inviwo::color {
 
-namespace color {
-
-vec4 hex2rgba(std::string str) {
+vec4 hex2rgba(std::string_view str) {
     vec4 result;
-    str = trim(str);
+
+    str = util::trim(str);
     if (!str.empty() && (str[0] == '#') && (str.length() <= 9)) {
         // extract rgba values from HTML color code
 
-        const auto numStr = [str]() {
-            if ((str.length() == 4) || (str.length() == 5)) {
-                // duplicate each character for hexcodes #RGB and #RGBA
-                std::string result;
-                for (auto c : str.substr(1)) {
-                    result.append(std::string(2, c));
-                }
-                return result;
-            }
-            return str.substr(1);
-        }();
+        // remove '#'
+        str = str.substr(1);
 
-        const unsigned long v = [numStr]() {
-            unsigned long v = 0;
-            std::istringstream stream("0x" + numStr);
-            if (!(stream >> std::hex >> v)) {
-                throw Exception("Invalid hex code \"#" + numStr + "\".",
-                                IVW_CONTEXT_CUSTOM("color::hex2rgba"));
+        StrBuffer buf;
+        if ((str.length() == 3) || (str.length() == 4)) {
+            // duplicate each character for hexcodes #RGB and #RGBA
+            for (const auto& c : str) {
+                buf.append("{0}{0}", c);
             }
-            return v;
-        }();
-        auto* c = reinterpret_cast<const unsigned char*>(&v);
-        switch (numStr.size()) {
+            str = buf.view();
+        }
+
+        std::uint64_t v{};
+        const auto* const end = str.data() + str.size();
+        if (auto [p, ec] = std::from_chars(str.data(), str.data() + str.size(), v, 16);
+            ec != std::errc() || p != end) {
+            throw Exception(IVW_CONTEXT_CUSTOM("color::hex2rgba"), "Invalid hex code \"{}\".", str);
+        }
+
+        const auto* c = reinterpret_cast<const unsigned char*>(&v);
+        switch (str.length()) {
             case 6:
                 result = vec4(c[2], c[1], c[0], 255) / 255.0f;
                 break;
@@ -75,45 +73,26 @@ vec4 hex2rgba(std::string str) {
                 result = vec4(c[3], c[2], c[1], c[0]) / 255.0f;
                 break;
             default:
-                throw Exception("Invalid hex code \"" + str + "\".",
-                                IVW_CONTEXT_CUSTOM("color::hex2rgba"));
+                throw Exception(IVW_CONTEXT_CUSTOM("color::hex2rgba"), "Invalid hex code \"{}\".",
+                                str);
         }
-
     } else {
-        throw Exception("Invalid hex code \"" + str + "\".", IVW_CONTEXT_CUSTOM("color::hex2rgba"));
+        throw Exception(IVW_CONTEXT_CUSTOM("color::hex2rgba"), "Invalid hex code \"{}\".", str);
     }
     return result;
 }
 
 std::string rgba2hex(const vec4& rgba) {
     glm::u8vec4 color(rgba * 255.0f);
-    // change byte order
-    std::swap(color.r, color.a);
-    std::swap(color.g, color.b);
-
-    std::ostringstream ss;
-    ss << "#" << std::setw(8) << std::setfill('0') << std::hex
-       << *reinterpret_cast<unsigned int*>(&color);
-    return ss.str();
+    return fmt::format("#{:02x}{:02x}{:02x}{:02x}", color.r, color.g, color.b, color.a);
 }
 
 std::string rgb2hex(const vec3& rgb) {
     glm::u8vec4 color(rgb * 255.0f, 0);
-    // change byte order
-    std::swap(color.r, color.b);
-
-    std::ostringstream ss;
-    ss << "#" << std::setw(6) << std::setfill('0') << std::hex
-       << *reinterpret_cast<unsigned int*>(&color);
-    return ss.str();
+    return fmt::format("#{:02x}{:02x}{:02x}", color.r, color.g, color.b);
 }
 
-vec3 getD65WhitePoint() {
-    // whiteD65 = rgb2XYZ(vec3(1.0f, 1.0f, 1.0f);
-    return vec3(0.95047f, 1.0f, 1.08883f);
-}
-
-vec3 hsv2rgb(vec3 hsv) {
+vec3 hsv2rgb(const vec3& hsv) {
     double hue = hsv.x;
     double sat = hsv.y;
     double val = hsv.z;
@@ -169,10 +148,10 @@ vec3 hsv2rgb(vec3 hsv) {
             b = q;
             break;
     }
-    return vec3(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));
+    return {static_cast<float>(r), static_cast<float>(g), static_cast<float>(b)};
 }
 
-vec3 rgb2hsv(vec3 rgb) {
+vec3 rgb2hsv(const vec3& rgb) {
     double r = rgb.x;
     double g = rgb.y;
     double b = rgb.z;
@@ -184,7 +163,6 @@ vec3 rgb2hsv(vec3 rgb) {
     bool notGray = (std::abs(val - sat) > 1.0e-8);
     double hue = 0.0;
 
-    // blue hue
     if (notGray) {
         if (b == val)
             hue = 2.0 / 3.0 + 1.0 / 6.0 * (r - g) / range;
@@ -202,10 +180,51 @@ vec3 rgb2hsv(vec3 rgb) {
     } else {
         sat = 0.0;
     }
-    return vec3(static_cast<float>(hue), static_cast<float>(sat), static_cast<float>(val));
+    return {static_cast<float>(hue), static_cast<float>(sat), static_cast<float>(val)};
 }
 
-vec3 XYZ2lab(vec3 xyz, vec3 whitePoint) {
+vec3 hsl2rgb(const vec3& hsl) {
+    const double hue = hsl.x;
+    const double sat = hsl.y;
+    const double lum = hsl.z;
+
+    auto f = [lum, a = sat * std::min(lum, 1.0 - lum), h = hue * 360.0 / 30.0](double n) {
+        const double k = std::fmod(n + h, 12.0);
+        return lum - a * std::max(-1.0, std::min(k - 3.0, std::min(9.0 - k, 1.0)));
+    };
+    return vec3{f(0.0), f(8.0), f(4.0)};
+}
+
+vec3 rgb2hsl(const vec3& rgb) {
+    const double max = glm::compMax(rgb);
+    const double min = glm::compMin(rgb);
+    const double range = max - min;
+    const double lum = (max + min) * 0.5;
+
+    const bool notGray = (std::abs(range) > 1.0e-8);
+    double hue = 0.0;
+    double sat = 0.0;
+
+    if (notGray) {
+        if (rgb.b == max) {
+            hue = 2.0 / 3.0 + 1.0 / 6.0 * (rgb.r - rgb.g) / range;
+        } else if (rgb.g == max) {
+            hue = 1.0 / 3.0 + 1.0 / 6.0 * (rgb.b - rgb.r) / range;
+        } else if (rgb.r == max) {
+            hue = 1.0 / 6.0 * (rgb.g - rgb.b) / range;
+        }
+    }
+
+    if (hue < 0.0) {
+        hue += 1.0;
+    }
+    if (lum > util::epsilon<double>() && lum < 1.0 - util::epsilon<float>()) {
+        sat = range / (1.0 - std::abs(2.0 * lum - 1.0));
+    }
+    return {static_cast<float>(hue), static_cast<float>(sat), static_cast<float>(lum)};
+}
+
+vec3 XYZ2lab(const vec3& xyz, const vec3& whitePoint) {
     static const float epsilon = 0.008856f;
     static const float kappa = 903.3f;
     vec3 lab;
@@ -224,7 +243,7 @@ vec3 XYZ2lab(vec3 xyz, vec3 whitePoint) {
     return lab;
 }
 
-vec3 lab2XYZ(const vec3 lab, const vec3 whitePoint) {
+vec3 lab2XYZ(const vec3& lab, const vec3& whitePoint) {
 
     vec3 t((1.f / 116.f) * (lab.x + 16.f));
     t.y += (1.f / 500.f) * lab.y;
@@ -246,7 +265,7 @@ vec3 lab2XYZ(const vec3 lab, const vec3 whitePoint) {
     return xyz;
 }
 
-vec3 rgb2XYZ(const vec3 rgb) {
+vec3 rgb2XYZ(const vec3& rgb) {
     // Conversion matrix for sRGB, D65 white point
     static const mat3 rgb2XYZD65Mat(0.4124564f, 0.2126729f, 0.0193339f, 0.3575761f, 0.7151522f,
                                     0.1191920f, 0.1804375f, 0.0721750f, 0.9503041f);
@@ -262,7 +281,7 @@ vec3 rgb2XYZ(const vec3 rgb) {
     return rgb2XYZD65Mat * v;
 }
 
-vec3 XYZ2rgb(const vec3 xyz) {
+vec3 XYZ2rgb(const vec3& xyz) {
     // Conversion matrix for sRGB, D65 white point
     static const mat3 XYZ2rgbD65Mat(3.2404542f, -0.9692660f, 0.0556434, -1.5371385f, 1.8760108f,
                                     -0.2040259f, -0.4985314f, 0.0415560f, 1.0572252f);
@@ -279,21 +298,21 @@ vec3 XYZ2rgb(const vec3 xyz) {
     return rgb;
 }
 
-vec3 XYZ2xyY(vec3 xyz) {
+vec3 XYZ2xyY(const vec3& xyz) {
     // if X, Y, and Z are 0, set xy to chromaticity (xy) of ref. white D65.
     if (glm::all(glm::lessThan(xyz, util::epsilon<vec3>()))) {
-        // This xy value is obtained by calling XYZ2xyY(getD65WhitePoint())
+        // This xy value is obtained by calling XYZ2xyY(D65WhitePoint)
         return vec3(0.3127266147f, 0.3290231303f, 0.0f);  // brucelindbloom.com D65
     } else {
-        float& X = xyz.x;
-        float& Y = xyz.y;
-        float& Z = xyz.z;
+        auto& X = xyz.x;
+        auto& Y = xyz.y;
+        auto& Z = xyz.z;
         float sum = X + Y + Z;
         return vec3(X / sum, Y / sum, Y);
     }
 }
 
-vec3 xyY2XYZ(vec3 xyY) {
+vec3 xyY2XYZ(const vec3& xyY) {
     // if y is 0, set X, Y, Z to 0
     if (xyY.y < glm::epsilon<float>()) {
         return vec3(0.0f);
@@ -306,13 +325,13 @@ vec3 xyY2XYZ(vec3 xyY) {
     }
 }
 
-vec3 rgb2lab(const vec3 rgb) {
+vec3 rgb2lab(const vec3& rgb) {
     vec3 xyz = rgb2XYZ(rgb);
 
     return XYZ2lab(xyz);
 }
 
-vec3 lab2rgb(const vec3 lab) {
+vec3 lab2rgb(const vec3& lab) {
     vec3 xyz = lab2XYZ(lab);
 
     return XYZ2rgb(xyz);
@@ -342,7 +361,7 @@ vec3 ycbcr2rgb(const vec3& ycbcr) {
     return vec3(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));
 }
 
-vec3 LuvChromaticity2rgb(const vec3& LuvChroma, bool clamp, vec3 whitePointXYZ) {
+vec3 LuvChromaticity2rgb(const vec3& LuvChroma, bool clamp, const vec3& whitePointXYZ) {
     vec3 rgb(XYZ2rgb(LuvChromaticity2XYZ(LuvChroma, whitePointXYZ)));
     if (clamp) {
         // determine largest component
@@ -362,7 +381,7 @@ vec3 LuvChromaticity2rgb(const vec3& LuvChroma, bool clamp, vec3 whitePointXYZ) 
     return rgb;
 }
 
-vec3 XYZ2LuvChromaticity(const vec3& XYZ, vec3 whitePointXYZ) {
+vec3 XYZ2LuvChromaticity(const vec3& XYZ, const vec3& whitePointXYZ) {
     // see http://www.brucelindbloom.com/index.html?Eqn_XYZ_to_Luv.html
 
     const double epsilon = 216.0 / 24389.0;
@@ -379,7 +398,7 @@ vec3 XYZ2LuvChromaticity(const vec3& XYZ, vec3 whitePointXYZ) {
     return vec3(L, u_prime, v_prime);
 }
 
-vec3 XYZ2Luv(const vec3& XYZ, vec3 whitePointXYZ) {
+vec3 XYZ2Luv(const vec3& XYZ, const vec3& whitePointXYZ) {
     // see http://www.brucelindbloom.com/index.html?Eqn_XYZ_to_Luv.html
 
     const double epsilon = 216.0 / 24389.0;
@@ -408,7 +427,7 @@ vec3 XYZ2Luv(const vec3& XYZ, vec3 whitePointXYZ) {
     return vec3(L, u, v);
 }
 
-vec3 Luv2XYZ(const vec3& Luv, vec3 whitePointXYZ) {
+vec3 Luv2XYZ(const vec3& Luv, const vec3& whitePointXYZ) {
     // see http://www.brucelindbloom.com/index.html?Eqn_Luv_to_XYZ.html
 
     const double epsilon = 216.0 / 24389.0;
@@ -446,11 +465,11 @@ vec3 Luv2XYZ(const vec3& Luv, vec3 whitePointXYZ) {
     return vec3(X, Y, Z);
 }
 
-vec3 rgb2LuvChromaticity(const vec3& rgb, vec3 whitePointXYZ) {
+vec3 rgb2LuvChromaticity(const vec3& rgb, const vec3& whitePointXYZ) {
     return XYZ2LuvChromaticity(rgb2XYZ(rgb), whitePointXYZ);
 }
 
-vec3 LuvChromaticity2XYZ(const vec3& LuvChroma, vec3 whitePointXYZ) {
+vec3 LuvChromaticity2XYZ(const vec3& LuvChroma, const vec3& whitePointXYZ) {
     // compute u and v for reference white point
     // u0 <- 4 * X_r / (X_r + 15 * Y_r + 3 * Z_r);
     // v0 <- 9 * Y_r / (X_r + 15 * Y_r + 3 * Z_r);
@@ -502,6 +521,4 @@ vec4 darker(const vec4& rgba, float factor) {
     return vec4(hsv2rgb(hsv), rgba.a);
 }
 
-}  // namespace color
-
-}  // namespace inviwo
+}  // namespace inviwo::color
