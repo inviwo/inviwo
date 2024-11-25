@@ -17,6 +17,6 @@ var classinviwo_1_1BufferObject =
     [ "getSizeInBytes", "classinviwo_1_1BufferObject.html#a7e70fb5ad7b36452ae62a6fb2cd9e26e", null ],
     [ "setSizeInBytes", "classinviwo_1_1BufferObject.html#a215972e5eb0855e9c970b1636b5b5884", null ],
     [ "unbind", "classinviwo_1_1BufferObject.html#afa8e63c12530ac1730cbc42735d8cfff", null ],
-    [ "upload", "classinviwo_1_1BufferObject.html#ab3c45ae040c692707f6b04a8b5a48a72", null ],
+    [ "upload", "classinviwo_1_1BufferObject.html#a8ec2fdbfbb74bc6506e56fcd55b67af6", null ],
     [ "upload", "classinviwo_1_1BufferObject.html#a2815e0c0b1cb95b06f10de6ad2ee0226", null ]
 ];

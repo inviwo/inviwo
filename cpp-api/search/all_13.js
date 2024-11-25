@@ -186,7 +186,7 @@ var searchData=
   ['type_5f_183',['type_',['../classinviwo_1_1NoiseGenerator2D.html#ab74fa4a5f9386a8755d8d217f151fb3d',1,'inviwo::NoiseGenerator2D']]],
   ['typedlayersubset_184',['typedLayerSubSet',['../namespaceinviwo_1_1util.html#a11440c1b6dc927f82d4ff5fd673d2ea9',1,'inviwo::util']]],
   ['typedmesh_185',['TypedMesh',['../classinviwo_1_1TypedMesh.html',1,'inviwo::TypedMesh&lt; BufferTraits &gt;'],['../group__typedmesh.html',1,'TypedMesh']]],
-  ['typedmesh_3c_20buffertraits_3a_3apositionsbuffer_2c_20buffertraits_3a_3acolorsbuffer_20_3e_186',['TypedMesh&lt; buffertraits::PositionsBuffer, buffertraits::ColorsBuffer &gt;',['../classinviwo_1_1TypedMesh.html',1,'inviwo']]],
+  ['typedmesh_3c_20buffertraits_3a_3apositionsbuffer2d_20_3e_186',['TypedMesh&lt; buffertraits::PositionsBuffer2D &gt;',['../classinviwo_1_1TypedMesh.html',1,'inviwo']]],
   ['typedmesh_3c_20buffertraits_3a_3apositionsbuffer2d_2c_20buffertraits_3a_3acolorsbuffer_20_3e_187',['TypedMesh&lt; buffertraits::PositionsBuffer2D, buffertraits::ColorsBuffer &gt;',['../classinviwo_1_1TypedMesh.html',1,'inviwo']]],
   ['typedmesh_3c_20inviwo_3a_3abuffertraits_3a_3apositionsbufferbase_20_3e_188',['TypedMesh&lt; inviwo::buffertraits::PositionsBufferBase &gt;',['../classinviwo_1_1TypedMesh.html',1,'inviwo']]],
   ['typedmesh_3c_20inviwo_3a_3abuffertraits_3a_3apositionsbufferbase_2c_20inviwo_3a_3abuffertraits_3a_3apickingbuffer_2c_20inviwo_3a_3abuffertraits_3a_3ascalarmetabuffer_20_3e_189',['TypedMesh&lt; inviwo::buffertraits::PositionsBufferBase, inviwo::buffertraits::PickingBuffer, inviwo::buffertraits::ScalarMetaBuffer &gt;',['../classinviwo_1_1TypedMesh.html',1,'inviwo']]],

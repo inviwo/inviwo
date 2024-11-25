@@ -1167,7 +1167,7 @@ var namespaceinviwo =
     [ "StdVectorMetaData", "classinviwo_1_1StdVectorMetaData.html", null ],
     [ "StereoCameraSyncer", "classinviwo_1_1StereoCameraSyncer.html", "classinviwo_1_1StereoCameraSyncer" ],
     [ "StipplingProperty", "classinviwo_1_1StipplingProperty.html", "classinviwo_1_1StipplingProperty" ],
-    [ "StipplingSettings", "classinviwo_1_1StipplingSettings.html", null ],
+    [ "StipplingSettings", "classinviwo_1_1StipplingSettings.html", "classinviwo_1_1StipplingSettings" ],
     [ "StipplingSettingsInterface", "classinviwo_1_1StipplingSettingsInterface.html", null ],
     [ "StlWriter", "classinviwo_1_1StlWriter.html", null ],
     [ "StrBuffer", "structinviwo_1_1StrBuffer.html", "structinviwo_1_1StrBuffer" ],

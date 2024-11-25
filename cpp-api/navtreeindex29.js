@@ -1,5 +1,11 @@
 var NAVTREEINDEX29 =
 {
+"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01const_01T_00_01D_01_4_00_01A_01_4_01_4.html":[2,0,0,226],
+"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01const_01T_00_01D_01_4_00_01A_01_4_01_4.html":[4,0,1,232],
+"structinviwo_1_1Defaultvalues.html":[2,0,0,242],
+"structinviwo_1_1Defaultvalues.html":[4,0,1,248],
+"structinviwo_1_1ElementIdentifier.html":[2,0,0,278],
+"structinviwo_1_1ElementIdentifier.html":[4,0,1,284],
 "structinviwo_1_1EnumTraits.html":[2,0,0,282],
 "structinviwo_1_1EnumTraits.html":[4,0,1,288],
 "structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html":[2,0,0,283],
@@ -243,11 +249,5 @@ var NAVTREEINDEX29 =
 "structinviwo_1_1PropertyTraits.html":[4,0,1,885],
 "structinviwo_1_1PropertyTraits_3_01Gaussian1DProperty_01_4.html":[2,0,0,880],
 "structinviwo_1_1PropertyTraits_3_01Gaussian1DProperty_01_4.html":[4,0,1,886],
-"structinviwo_1_1PropertyTraits_3_01Gaussian2DProperty_01_4.html":[2,0,0,881],
-"structinviwo_1_1PropertyTraits_3_01Gaussian2DProperty_01_4.html":[4,0,1,887],
-"structinviwo_1_1PropertyTraits_3_01Gaussian3DProperty_01_4.html":[2,0,0,882],
-"structinviwo_1_1PropertyTraits_3_01Gaussian3DProperty_01_4.html":[4,0,1,888],
-"structinviwo_1_1PropertyTraits_3_01MinMaxProperty_3_01T_01_4_01_4.html":[2,0,0,883],
-"structinviwo_1_1PropertyTraits_3_01MinMaxProperty_3_01T_01_4_01_4.html":[4,0,1,889],
-"structinviwo_1_1PropertyTraits_3_01OptionProperty_3_01T_01_4_01_4.html":[2,0,0,884]
+"structinviwo_1_1PropertyTraits_3_01Gaussian2DProperty_01_4.html":[2,0,0,881]
 };

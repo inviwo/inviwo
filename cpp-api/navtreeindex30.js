@@ -1,5 +1,11 @@
 var NAVTREEINDEX30 =
 {
+"structinviwo_1_1PropertyTraits_3_01Gaussian2DProperty_01_4.html":[4,0,1,887],
+"structinviwo_1_1PropertyTraits_3_01Gaussian3DProperty_01_4.html":[2,0,0,882],
+"structinviwo_1_1PropertyTraits_3_01Gaussian3DProperty_01_4.html":[4,0,1,888],
+"structinviwo_1_1PropertyTraits_3_01MinMaxProperty_3_01T_01_4_01_4.html":[2,0,0,883],
+"structinviwo_1_1PropertyTraits_3_01MinMaxProperty_3_01T_01_4_01_4.html":[4,0,1,889],
+"structinviwo_1_1PropertyTraits_3_01OptionProperty_3_01T_01_4_01_4.html":[2,0,0,884],
 "structinviwo_1_1PropertyTraits_3_01OptionProperty_3_01T_01_4_01_4.html":[4,0,1,890],
 "structinviwo_1_1PropertyTraits_3_01OrdinalAnimationProperty_3_01T_01_4_01_4.html":[2,0,0,885],
 "structinviwo_1_1PropertyTraits_3_01OrdinalAnimationProperty_3_01T_01_4_01_4.html":[4,0,1,891],
@@ -243,11 +249,5 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1dispatching_1_1filter_1_1Integers.html":[4,0,1,9,1,8],
 "structinviwo_1_1dispatching_1_1filter_1_1Scalars.html":[2,0,0,8,0,11],
 "structinviwo_1_1dispatching_1_1filter_1_1Scalars.html":[4,0,1,9,1,11],
-"structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerScalars.html":[2,0,0,8,0,12],
-"structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerScalars.html":[4,0,1,9,1,12],
-"structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerVecs.html":[2,0,0,8,0,13],
-"structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerVecs.html":[4,0,1,9,1,13],
-"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerScalars.html":[2,0,0,8,0,14],
-"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerScalars.html":[4,0,1,9,1,14],
-"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerVecs.html":[2,0,0,8,0,15]
+"structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerScalars.html":[2,0,0,8,0,12]
 };

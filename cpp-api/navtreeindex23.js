@@ -1,5 +1,13 @@
 var NAVTREEINDEX23 =
 {
+"classinviwo_1_1WebBrowserClient.html#ac37863757398d63326767ae92901906f":[4,0,1,1313,5],
+"classinviwo_1_1WebBrowserClient.html#add5a6004e61028b685691e7e317d2f42":[2,0,0,1307,6],
+"classinviwo_1_1WebBrowserClient.html#add5a6004e61028b685691e7e317d2f42":[4,0,1,1313,6],
+"classinviwo_1_1WebBrowserModule.html":[2,0,0,1308],
+"classinviwo_1_1WebBrowserModule.html":[4,0,1,1314],
+"classinviwo_1_1WebBrowserProcessor.html":[1,3,82],
+"classinviwo_1_1WebBrowserProcessor.html#a5e35b2e6683ba0d959273b4c03d9738e":[1,3,82,0],
+"classinviwo_1_1WebBrowserSettings.html":[2,0,0,1310],
 "classinviwo_1_1WebBrowserSettings.html":[4,0,1,1316],
 "classinviwo_1_1WelcomeWidget.html":[2,0,0,1311],
 "classinviwo_1_1WelcomeWidget.html":[4,0,1,1317],
@@ -241,13 +249,5 @@ var NAVTREEINDEX23 =
 "classinviwo_1_1animation_1_1DemoControllerObserver.html":[4,0,1,1,36],
 "classinviwo_1_1animation_1_1DemoNavigatorDockWidgetQt.html":[2,0,0,0,36],
 "classinviwo_1_1animation_1_1DemoNavigatorDockWidgetQt.html":[4,0,1,1,37],
-"classinviwo_1_1animation_1_1ImageRecorderFactory.html":[2,0,0,0,38],
-"classinviwo_1_1animation_1_1ImageRecorderFactory.html":[4,0,1,1,39],
-"classinviwo_1_1animation_1_1Interpolation.html":[2,0,0,0,39],
-"classinviwo_1_1animation_1_1Interpolation.html":[4,0,1,1,40],
-"classinviwo_1_1animation_1_1InterpolationFactory.html":[2,0,0,0,40],
-"classinviwo_1_1animation_1_1InterpolationFactory.html":[4,0,1,1,41],
-"classinviwo_1_1animation_1_1InterpolationFactoryObject.html":[2,0,0,0,41],
-"classinviwo_1_1animation_1_1InterpolationFactoryObject.html":[4,0,1,1,42],
-"classinviwo_1_1animation_1_1InterpolationFactoryObjectKeyframe.html":[2,0,0,0,42]
+"classinviwo_1_1animation_1_1ImageRecorderFactory.html":[2,0,0,0,38]
 };

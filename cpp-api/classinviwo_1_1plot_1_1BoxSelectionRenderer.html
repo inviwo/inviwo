@@ -100,6 +100,7 @@ $(function(){initNavTree('classinviwo_1_1plot_1_1BoxSelectionRenderer.html','');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classinviwo_1_1plot_1_1BoxSelectionRenderer-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::plot::BoxSelectionRenderer Class Reference</div></div>
@@ -120,6 +121,12 @@ Public Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>render</b> (std::optional&lt; std::array&lt; dvec2, 2 &gt; &gt; dragRect, size2_t screenDim)</td></tr>
 <tr class="separator:afd0efb0a2de0665bf6349b537474d28b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-types" name="pro-types"></a>
+Protected Types</h2></td></tr>
+<tr class="memitem:aa7be49f62651c2590caf4e1789bcbac0" id="r_aa7be49f62651c2590caf4e1789bcbac0"><td class="memItemLeft" align="right" valign="top"><a id="aa7be49f62651c2590caf4e1789bcbac0" name="aa7be49f62651c2590caf4e1789bcbac0"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>PositionMesh</b> = <a class="el" href="classinviwo_1_1TypedMesh.html">TypedMesh</a>&lt;<a class="el" href="classinviwo_1_1buffertraits_1_1PositionsBufferBase.html">buffertraits::PositionsBuffer2D</a>&gt;</td></tr>
+<tr class="separator:aa7be49f62651c2590caf4e1789bcbac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:af64d6302fa23fb208f6a07da2257da73" id="r_af64d6302fa23fb208f6a07da2257da73"><td class="memItemLeft" align="right" valign="top"><a id="af64d6302fa23fb208f6a07da2257da73" name="af64d6302fa23fb208f6a07da2257da73"></a>
@@ -131,19 +138,15 @@ const <a class="el" href="classinviwo_1_1plot_1_1BoxSelectionProperty.html">BoxS
 <tr class="memitem:a2195540bdedf6178fdcdb0035e36bbee" id="r_a2195540bdedf6178fdcdb0035e36bbee"><td class="memItemLeft" align="right" valign="top"><a id="a2195540bdedf6178fdcdb0035e36bbee" name="a2195540bdedf6178fdcdb0035e36bbee"></a>
 <a class="el" href="classinviwo_1_1algorithm_1_1LineRenderer.html">algorithm::LineRenderer</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lineRenderer_</b></td></tr>
 <tr class="separator:a2195540bdedf6178fdcdb0035e36bbee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b356c21c31d7cba547f62abdc5b4be1" id="r_a2b356c21c31d7cba547f62abdc5b4be1"><td class="memItemLeft" align="right" valign="top"><a id="a2b356c21c31d7cba547f62abdc5b4be1" name="a2b356c21c31d7cba547f62abdc5b4be1"></a>
-vec4&#160;</td><td class="memItemRight" valign="bottom"><b>color_</b></td></tr>
-<tr class="memdesc:a2b356c21c31d7cba547f62abdc5b4be1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dummy color until line color can be set using uniform. <br /></td></tr>
-<tr class="separator:a2b356c21c31d7cba547f62abdc5b4be1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a2b16405048e7d578088887ff704af0" id="r_a9a2b16405048e7d578088887ff704af0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__typedmesh.html#ga49f50f4760a5c42168792e6fb1232ea7">ColoredMesh</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a2b16405048e7d578088887ff704af0">dragRectMesh_</a></td></tr>
-<tr class="separator:a9a2b16405048e7d578088887ff704af0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24f8499f83548c83212e9e60784ba61b" id="r_a24f8499f83548c83212e9e60784ba61b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1TypedMesh.html">PositionMesh</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a24f8499f83548c83212e9e60784ba61b">dragRectMesh_</a></td></tr>
+<tr class="separator:a24f8499f83548c83212e9e60784ba61b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Renders a 2D rectangle in screen space. Use in combination with <a class="el" href="classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html" title="Handles interaction for 2D rectangle selection/filtering Selection/Filtering callbacks are called whe...">BoxSelectionInteractionHandler</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html" title="Handles interaction for 2D rectangle selection/filtering Selection/Filtering callbacks are called whe...">BoxSelectionInteractionHandler</a> </dd></dl>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="a9a2b16405048e7d578088887ff704af0" name="a9a2b16405048e7d578088887ff704af0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9a2b16405048e7d578088887ff704af0">&#9670;&#160;</a></span>dragRectMesh_</h2>
+<a id="a24f8499f83548c83212e9e60784ba61b" name="a24f8499f83548c83212e9e60784ba61b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24f8499f83548c83212e9e60784ba61b">&#9670;&#160;</a></span>dragRectMesh_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -152,7 +155,7 @@ vec4&#160;</td><td class="memItemRight" valign="bottom"><b>color_</b></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group__typedmesh.html#ga49f50f4760a5c42168792e6fb1232ea7">ColoredMesh</a> inviwo::plot::BoxSelectionRenderer::dragRectMesh_</td>
+          <td class="memname"><a class="el" href="classinviwo_1_1TypedMesh.html">PositionMesh</a> inviwo::plot::BoxSelectionRenderer::dragRectMesh_</td>
         </tr>
       </table>
   </td>
@@ -161,13 +164,15 @@ vec4&#160;</td><td class="memItemRight" valign="bottom"><b>color_</b></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code hl_typedef" href="group__typedmesh.html#ga49f50f4760a5c42168792e6fb1232ea7">ColoredMesh</a>(DrawType::Lines, ConnectivityType::Strip,</div>
-<div class="line">                                            {{vec3{0.f, 0.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},</div>
-<div class="line">                                             {vec3{1.f, 0.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},</div>
-<div class="line">                                             {vec3{1.f, 1.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},</div>
-<div class="line">                                             {vec3{0.f, 1.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}}},</div>
-<div class="line">                                            {0, 1, 2, 3, 0})</div>
-<div class="ttc" id="agroup__typedmesh_html_ga49f50f4760a5c42168792e6fb1232ea7"><div class="ttname"><a href="group__typedmesh.html#ga49f50f4760a5c42168792e6fb1232ea7">inviwo::ColoredMesh</a></div><div class="ttdeci">TypedMesh&lt; buffertraits::PositionsBuffer, buffertraits::ColorsBuffer &gt; ColoredMesh</div><div class="ttdef"><b>Definition</b> typedmesh.h:611</div></div>
+<b>Initial value:</b><div class="fragment"><div class="line">{DrawType::Lines,</div>
+<div class="line">                               ConnectivityType::Loop,</div>
+<div class="line">                               {</div>
+<div class="line">                                   {vec2{0.f, 0.f}},</div>
+<div class="line">                                   {vec2{1.f, 0.f}},</div>
+<div class="line">                                   {vec2{1.f, 1.f}},</div>
+<div class="line">                                   {vec2{0.f, 1.f}},</div>
+<div class="line">                               },</div>
+<div class="line">                               {0, 1, 2, 3}}</div>
 </div><!-- fragment -->
 </div>
 </div>

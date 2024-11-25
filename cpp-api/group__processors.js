@@ -269,10 +269,6 @@ var group__processors =
       [ "initializeResources", "classinviwo_1_1CropWidget.html#abcef806e6a44b7074bcdd8603f2b09c3", null ],
       [ "process", "classinviwo_1_1CropWidget.html#acf21cd0bb8358d847fb0cb346529f184", null ]
     ] ],
-    [ "inviwo::glui::GLUIProcessor", "classinviwo_1_1glui_1_1GLUIProcessor.html", [
-      [ "onWillAddProperty", "classinviwo_1_1glui_1_1GLUIProcessor.html#a10a5d025635e1e05954b06587898d4c3", null ],
-      [ "process", "classinviwo_1_1glui_1_1GLUIProcessor.html#ac4825a452a6e617fd920e31b37b0cc21", null ]
-    ] ],
     [ "inviwo::VolumeRegionMapper", "classinviwo_1_1VolumeRegionMapper.html", [
       [ "process", "classinviwo_1_1VolumeRegionMapper.html#aa913cf2bed3a44b617930b3e907e70bd", null ]
     ] ],
@@ -351,9 +347,6 @@ var group__processors =
     ] ],
     [ "inviwo::VolumeMerger", "classinviwo_1_1VolumeMerger.html", [
       [ "preProcess", "classinviwo_1_1VolumeMerger.html#a272f96fe0a39be8c7999739db69479c0", null ]
-    ] ],
-    [ "inviwo::VolumeNormalizationProcessor", "classinviwo_1_1VolumeNormalizationProcessor.html", [
-      [ "process", "classinviwo_1_1VolumeNormalizationProcessor.html#a613fcd6aea49ba69f0d5902303b219cf", null ]
     ] ],
     [ "inviwo::EigenMix", "classinviwo_1_1EigenMix.html", [
       [ "process", "classinviwo_1_1EigenMix.html#a588c580167f850cf33c02085c581f0f9", null ]

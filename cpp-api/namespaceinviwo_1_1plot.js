@@ -12,7 +12,7 @@ var namespaceinviwo_1_1plot =
     [ "AxisStyleProperty", "classinviwo_1_1plot_1_1AxisStyleProperty.html", "classinviwo_1_1plot_1_1AxisStyleProperty" ],
     [ "BoxSelectionInteractionHandler", "classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html", "classinviwo_1_1plot_1_1BoxSelectionInteractionHandler" ],
     [ "BoxSelectionProperty", "classinviwo_1_1plot_1_1BoxSelectionProperty.html", "classinviwo_1_1plot_1_1BoxSelectionProperty" ],
-    [ "BoxSelectionRenderer", "classinviwo_1_1plot_1_1BoxSelectionRenderer.html", "classinviwo_1_1plot_1_1BoxSelectionRenderer" ],
+    [ "BoxSelectionRenderer", "classinviwo_1_1plot_1_1BoxSelectionRenderer.html", null ],
     [ "BoxSelectionSettingsInterface", "classinviwo_1_1plot_1_1BoxSelectionSettingsInterface.html", null ],
     [ "CategoricalAxisProperty", "classinviwo_1_1plot_1_1CategoricalAxisProperty.html", "classinviwo_1_1plot_1_1CategoricalAxisProperty" ],
     [ "ColorScaleLegend", "classinviwo_1_1plot_1_1ColorScaleLegend.html", "classinviwo_1_1plot_1_1ColorScaleLegend" ],

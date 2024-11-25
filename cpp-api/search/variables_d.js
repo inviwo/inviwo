@@ -8,6 +8,7 @@ var searchData=
   ['shadingfactor_5',['shadingFactor',['../classinviwo_1_1GlyphClipping.html#a9b226752ebf4a0159fceb92bf7d7fe9f',1,'inviwo::GlyphClipping']]],
   ['size_5f_6',['size_',['../classinviwo_1_1NoiseGenerator2D.html#a85db999629e4dbfb4520dae6ecef8adb',1,'inviwo::NoiseGenerator2D']]],
   ['snippet_7',['snippet',['../structinviwo_1_1ShaderComponent_1_1Segment.html#ac3189a604789226d2a842af5840ff149',1,'inviwo::ShaderComponent::Segment::snippet'],['../structinviwo_1_1ShaderSegment.html#a82147fea140d5ac41e14e396093b60c6',1,'inviwo::ShaderSegment::snippet']]],
-  ['squaregl_5f_8',['squareGL_',['../classinviwo_1_1CanvasGL.html#a437a2f4ff36685129ccfcaac704fb277',1,'inviwo::CanvasGL']]],
-  ['state_5f_9',['state_',['../classinviwo_1_1animation_1_1AnimationController.html#a75346c1ad06be1cf2912efeb43ab635d',1,'inviwo::animation::AnimationController']]]
+  ['spacing_8',['spacing',['../classinviwo_1_1StipplingSettings.html#a14082e3ef471f985ef94eaf5f85c7fd8',1,'inviwo::StipplingSettings']]],
+  ['squaregl_5f_9',['squareGL_',['../classinviwo_1_1CanvasGL.html#a437a2f4ff36685129ccfcaac704fb277',1,'inviwo::CanvasGL']]],
+  ['state_5f_10',['state_',['../classinviwo_1_1animation_1_1AnimationController.html#a75346c1ad06be1cf2912efeb43ab635d',1,'inviwo::animation::AnimationController']]]
 ];

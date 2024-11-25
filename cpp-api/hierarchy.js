@@ -146,7 +146,7 @@ var hierarchy =
       [ "inviwo::TypedMesh< inviwo::buffertraits::PositionsBufferBase >", "classinviwo_1_1TypedMesh.html", null ],
       [ "inviwo::TypedMesh< inviwo::buffertraits::PositionsBufferBase, inviwo::buffertraits::TexCoordBuffer< 2 > >", "classinviwo_1_1TypedMesh.html", null ],
       [ "inviwo::TypedMesh< buffertraits::PositionsBuffer2D, buffertraits::ColorsBuffer >", "classinviwo_1_1TypedMesh.html", null ],
-      [ "inviwo::TypedMesh< buffertraits::PositionsBuffer, buffertraits::ColorsBuffer >", "classinviwo_1_1TypedMesh.html", null ],
+      [ "inviwo::TypedMesh< buffertraits::PositionsBuffer2D >", "classinviwo_1_1TypedMesh.html", null ],
       [ "inviwo::TypedMesh< inviwo::buffertraits::PositionsBufferBase, inviwo::buffertraits::PickingBuffer, inviwo::buffertraits::ScalarMetaBuffer >", "classinviwo_1_1TypedMesh.html", null ],
       [ "inviwo::TypedMesh< BufferTraits >", "classinviwo_1_1TypedMesh.html", null ]
     ] ],
@@ -287,7 +287,7 @@ var hierarchy =
         [ "inviwo::TypedMesh< inviwo::buffertraits::PositionsBufferBase >", "classinviwo_1_1TypedMesh.html", null ],
         [ "inviwo::TypedMesh< inviwo::buffertraits::PositionsBufferBase, inviwo::buffertraits::TexCoordBuffer< 2 > >", "classinviwo_1_1TypedMesh.html", null ],
         [ "inviwo::TypedMesh< buffertraits::PositionsBuffer2D, buffertraits::ColorsBuffer >", "classinviwo_1_1TypedMesh.html", null ],
-        [ "inviwo::TypedMesh< buffertraits::PositionsBuffer, buffertraits::ColorsBuffer >", "classinviwo_1_1TypedMesh.html", null ],
+        [ "inviwo::TypedMesh< buffertraits::PositionsBuffer2D >", "classinviwo_1_1TypedMesh.html", null ],
         [ "inviwo::TypedMesh< inviwo::buffertraits::PositionsBufferBase, inviwo::buffertraits::PickingBuffer, inviwo::buffertraits::ScalarMetaBuffer >", "classinviwo_1_1TypedMesh.html", null ],
         [ "inviwo::SimpleMesh", "classinviwo_1_1SimpleMesh.html", null ],
         [ "inviwo::TypedMesh< BufferTraits >", "classinviwo_1_1TypedMesh.html", null ]
