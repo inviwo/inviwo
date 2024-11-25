@@ -175,7 +175,7 @@ bool TiXmlNode::RemoveChild(TiXmlNode* removeThis) {
         return false;
     }
 
-    if (removeThis->next) {
+    if (removeThis->next) {
             removeThis->next->prev = removeThis->prev;
         }
     else {
