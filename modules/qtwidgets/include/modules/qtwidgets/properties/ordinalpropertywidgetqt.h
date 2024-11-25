@@ -260,7 +260,7 @@ void OrdinalLikePropertyWidgetQt<Prop, Sem>::updateFromProperty() {
         val = util::spherical(val);
         min = T{std::numeric_limits<BT>::epsilon(), 0, -std::numbers::pi};
         max = T{3 * glm::length(max), std::numbers::pi, std::numbers::pi};
-        inc = T{glm::length(inc), std::numbers::pi / 100.0, 2 * std::numbers::pi / 100.0};
+        inc = T{inc.x, std::numbers::pi / 360.0, std::numbers::pi / 360.0};
 
         mincb[1] = ConstraintBehavior::Immutable;
         mincb[2] = ConstraintBehavior::Immutable;

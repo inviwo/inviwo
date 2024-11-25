@@ -60,10 +60,6 @@ BaseOrdinalSpinBoxWidget::BaseOrdinalSpinBoxWidget()
     setLayout(hLayout);
     connect(editor_, &DoubleValueDragSpinBox::editingFinished, this,
             &BaseOrdinalSpinBoxWidget::updateFromEditor);
-    connect(editor_,
-            static_cast<void (DoubleValueDragSpinBox::*)(double)>(
-                &DoubleValueDragSpinBox::valueChanged),
-            this, [&](double) { updateFromEditor(); });
 }
 
 BaseOrdinalSpinBoxWidget::~BaseOrdinalSpinBoxWidget() = default;

@@ -38,7 +38,6 @@
 namespace inviwo {
 
 class NumberLineEdit;
-template <typename T>
 class ValueDragger;
 
 class IVW_MODULE_QTWIDGETS_API ValueDragSpinBox : public QWidget {
@@ -92,7 +91,7 @@ public slots:
 
 private:
     NumberLineEdit* spinBox_;
-    ValueDragger<int>* valueDragger_;
+    ValueDragger* valueDragger_;
 };
 
 }  // namespace inviwo

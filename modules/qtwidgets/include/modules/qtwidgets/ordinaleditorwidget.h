@@ -129,7 +129,7 @@ double OrdinalEditorWidget<T>::transformIncrementToEditor() {
 }
 template <typename T>
 int OrdinalEditorWidget<T>::transformIncrementToEditorDecimals() {
-    return utilqt::decimals<T>(static_cast<double>(increment_));
+    return utilqt::decimals(increment_);
 }
 template <typename T>
 void OrdinalEditorWidget<T>::newEditorValue(double val) {

@@ -43,7 +43,7 @@ namespace inviwo {
 ValueDragSpinBox::ValueDragSpinBox(QWidget* parent)
     : QWidget(parent)
     , spinBox_(new NumberLineEdit())
-    , valueDragger_(new ValueDragger<int>(spinBox_)) {
+    , valueDragger_(new ValueDragger(spinBox_)) {
     setObjectName("valueDragSpinBox");
     spinBox_->setButtonSymbols(QAbstractSpinBox::NoButtons);
 

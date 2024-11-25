@@ -307,19 +307,10 @@ struct IVW_MODULE_QTWIDGETS_API WidgetCloseEventFilter : QObject {
 IVW_MODULE_QTWIDGETS_API void setFullScreenAndOnTop(QWidget* widget, bool fullScreen, bool onTop);
 
 template <typename T>
-int decimals([[maybe_unused]] double inc) {
+int decimals([[maybe_unused]] T inc) {
     if constexpr (std::is_floating_point_v<T>) {
-        const static QLocale locale;
-        std::ostringstream buff;
-        utilqt::localizeStream(buff);
-        buff << inc;
-        const std::string str(buff.str());
-        auto periodPosition = str.find(locale.decimalPoint().toLatin1());
-        if (periodPosition == std::string::npos) {
-            return 0;
-        } else {
-            return static_cast<int>(str.length() - periodPosition) - 1;
-        }
+        if (inc == T{0.0} || inc >= T{1.0}) return 0;
+        return static_cast<int>(-std::log10(inc));
     } else {
         return 0;
     }
