@@ -37,7 +37,8 @@ if(MSVC)
                 "The latest Visual Studio version is available at "
                 "https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx")
     endif()
-    CHECK_CXX_COMPILER_FLAG("/std:c++23" compiler_supports_cxx23)
+    # msvs has not added a c++23 flag yet. No compiler sopports all of c++23 yet, but we don't care.
+    CHECK_CXX_COMPILER_FLAG("/std:c++latest" compiler_supports_cxx23)
 else()
     CHECK_CXX_COMPILER_FLAG("-std=c++23" compiler_supports_cxx23)
 endif()
