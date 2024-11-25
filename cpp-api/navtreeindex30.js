@@ -1,5 +1,13 @@
 var NAVTREEINDEX30 =
 {
+"structinviwo_1_1ProcessorTraits_3_01WorldTransformDeprecated_3_01Volume_01_4_01_4.html":[4,0,1,840],
+"structinviwo_1_1PropertyObserverDelegate.html":[2,0,0,870],
+"structinviwo_1_1PropertyObserverDelegate.html":[4,0,1,876],
+"structinviwo_1_1PropertyTraits.html":[2,0,0,879],
+"structinviwo_1_1PropertyTraits.html":[4,0,1,885],
+"structinviwo_1_1PropertyTraits_3_01Gaussian1DProperty_01_4.html":[2,0,0,880],
+"structinviwo_1_1PropertyTraits_3_01Gaussian1DProperty_01_4.html":[4,0,1,886],
+"structinviwo_1_1PropertyTraits_3_01Gaussian2DProperty_01_4.html":[2,0,0,881],
 "structinviwo_1_1PropertyTraits_3_01Gaussian2DProperty_01_4.html":[4,0,1,887],
 "structinviwo_1_1PropertyTraits_3_01Gaussian3DProperty_01_4.html":[2,0,0,882],
 "structinviwo_1_1PropertyTraits_3_01Gaussian3DProperty_01_4.html":[4,0,1,888],
@@ -241,13 +249,5 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1dispatching_1_1filter_1_1FloatVecs.html":[4,0,1,9,1,7],
 "structinviwo_1_1dispatching_1_1filter_1_1Floats.html":[2,0,0,8,0,5],
 "structinviwo_1_1dispatching_1_1filter_1_1Floats.html":[4,0,1,9,1,5],
-"structinviwo_1_1dispatching_1_1filter_1_1IntegerScalars.html":[2,0,0,8,0,9],
-"structinviwo_1_1dispatching_1_1filter_1_1IntegerScalars.html":[4,0,1,9,1,9],
-"structinviwo_1_1dispatching_1_1filter_1_1IntegerVecs.html":[2,0,0,8,0,10],
-"structinviwo_1_1dispatching_1_1filter_1_1IntegerVecs.html":[4,0,1,9,1,10],
-"structinviwo_1_1dispatching_1_1filter_1_1Integers.html":[2,0,0,8,0,8],
-"structinviwo_1_1dispatching_1_1filter_1_1Integers.html":[4,0,1,9,1,8],
-"structinviwo_1_1dispatching_1_1filter_1_1Scalars.html":[2,0,0,8,0,11],
-"structinviwo_1_1dispatching_1_1filter_1_1Scalars.html":[4,0,1,9,1,11],
-"structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerScalars.html":[2,0,0,8,0,12]
+"structinviwo_1_1dispatching_1_1filter_1_1IntegerScalars.html":[2,0,0,8,0,9]
 };

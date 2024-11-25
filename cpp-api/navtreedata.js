@@ -79,15 +79,15 @@ var NAVTREEINDEX =
 "classinviwo_1_1TransferFunctionLayerReaderWrapper.html",
 "classinviwo_1_1VolumeGL2RAMConverter.html",
 "classinviwo_1_1WebBrowserClient.html#ac37863757398d63326767ae92901906f",
-"classinviwo_1_1animation_1_1ImageRecorderFactory.html",
-"classinviwo_1_1glui_1_1VBoxLayout.html",
-"classinviwo_1_1util_1_1IdentifiedDeserializer.html",
-"namespaceinviwo_1_1colorbrewer.html#ac8a9bdc97c766b69210ce5f8593b7d8d",
-"namespaceinviwo_1_1util.html#aa7a49c8d7b70aa04748e46e77aaa4bf3",
-"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01const_01T_00_01D_01_4_00_01A_01_4_01_4.html",
-"structinviwo_1_1PropertyTraits_3_01Gaussian2DProperty_01_4.html",
-"structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerScalars.html",
-"structinviwo_1_1utilgl_1_1ClearDepth.html"
+"classinviwo_1_1animation_1_1DemoController.html",
+"classinviwo_1_1glui_1_1RangeSlider.html#a01056bc77ef9d13b6e8ec8d4a828ed08",
+"classinviwo_1_1transform_1_1TranslateProperty.html#a04a6fbf259f546e4585ce0055338e548",
+"namespaceinviwo_1_1colorbrewer.html#a1f898b879b266998202e04b7b28937d0",
+"namespaceinviwo_1_1util.html#aa048b0cf2e27625499d9ac8e03af03d6",
+"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_01_5_00_01A_01_4_01_4.html",
+"structinviwo_1_1ProcessorTraits_3_01WorldTransformDeprecated_3_01Volume_01_4_01_4.html",
+"structinviwo_1_1dispatching_1_1filter_1_1IntegerScalars.html",
+"structinviwo_1_1utilgl_1_1BlendModeState.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

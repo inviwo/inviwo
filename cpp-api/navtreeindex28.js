@@ -1,5 +1,13 @@
 var NAVTREEINDEX28 =
 {
+"namespaceinviwo_1_1util.html#aa048b0cf2e27625499d9ac8e03af03d6":[2,0,0,18,230],
+"namespaceinviwo_1_1util.html#aa0b234248fa0f75afa5d053118ec319a":[2,0,0,18,106],
+"namespaceinviwo_1_1util.html#aa15da526769c7e6cfac443da69fbeb01":[2,0,0,18,130],
+"namespaceinviwo_1_1util.html#aa18a8d1ff055cdc4871caaf9105fb714":[2,0,0,18,189],
+"namespaceinviwo_1_1util.html#aa25faca6335f85635cde61c0986c2343":[2,0,0,18,289],
+"namespaceinviwo_1_1util.html#aa4d38c8a311e159b1bdb778697984dbe":[2,0,0,18,288],
+"namespaceinviwo_1_1util.html#aa566d97b543e2bdded79bb2a50c33bb0":[2,0,0,18,237],
+"namespaceinviwo_1_1util.html#aa58b65316e88fa13b51e3f2a3093b066":[2,0,0,18,256],
 "namespaceinviwo_1_1util.html#aa7a49c8d7b70aa04748e46e77aaa4bf3":[2,0,0,18,88],
 "namespaceinviwo_1_1util.html#aa9402f8b933d12f71410d3cc938691e9":[2,0,0,18,293],
 "namespaceinviwo_1_1util.html#aa9840b2cdf93710505c943c60aebde12":[2,0,0,18,197],
@@ -241,13 +249,5 @@ var NAVTREEINDEX28 =
 "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01T_01_5_00_01A_01_4_01_4.html":[2,0,0,228],
 "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01T_01_5_00_01A_01_4_01_4.html":[4,0,1,234],
 "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_00_01A_01_4_01_4.html":[2,0,0,223],
-"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_00_01A_01_4_01_4.html":[4,0,1,229],
-"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_01_5_00_01A_01_4_01_4.html":[2,0,0,222],
-"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_01_5_00_01A_01_4_01_4.html":[4,0,1,228],
-"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01A_01_4_01_4.html":[2,0,0,225],
-"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01A_01_4_01_4.html":[4,0,1,231],
-"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01const_01T_01_4_00_01A_01_4_01_4.html":[2,0,0,224],
-"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01const_01T_01_4_00_01A_01_4_01_4.html":[4,0,1,230],
-"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_00_01D_01_4_00_01A_01_4_01_4.html":[2,0,0,227],
-"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_00_01D_01_4_00_01A_01_4_01_4.html":[4,0,1,233]
+"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_00_01A_01_4_01_4.html":[4,0,1,229]
 };

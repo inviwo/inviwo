@@ -1,5 +1,13 @@
 var NAVTREEINDEX27 =
 {
+"namespaceinviwo_1_1colorbrewer.html#a1f898b879b266998202e04b7b28937d0":[2,0,0,4,5],
+"namespaceinviwo_1_1colorbrewer.html#a52a53d907120c5bf19d4c4feedc92141":[2,0,0,4,6],
+"namespaceinviwo_1_1colorbrewer.html#a5cdbb888d09bb277866d63b96eaf831c":[2,0,0,4,10],
+"namespaceinviwo_1_1colorbrewer.html#a6767f4a4c5656063e2c9cf227da9f46d":[2,0,0,4,4],
+"namespaceinviwo_1_1colorbrewer.html#a7f6a7b3c8ed8655aa2418c95b8e3bb34":[2,0,0,4,7],
+"namespaceinviwo_1_1colorbrewer.html#a81425a791cee8e6d7c8e5bc8b3193cbb":[2,0,0,4,11],
+"namespaceinviwo_1_1colorbrewer.html#a873e687819a228bb55a936bb9e81670b":[2,0,0,4,3],
+"namespaceinviwo_1_1colorbrewer.html#aa3072fc0a884eb2320fa28e8ca1f35e5":[2,0,0,4,8],
 "namespaceinviwo_1_1colorbrewer.html#ac8a9bdc97c766b69210ce5f8593b7d8d":[2,0,0,4,9],
 "namespaceinviwo_1_1csvfilters.html":[2,0,0,5],
 "namespaceinviwo_1_1csvfilters.html#a37a5bc0c53de736dc67eb05ab8e8cc89":[2,0,0,5,4],
@@ -241,13 +249,5 @@ var NAVTREEINDEX27 =
 "namespaceinviwo_1_1util.html#a970a97747e74096b1d8edbeb3a04b24c":[2,0,0,18,129],
 "namespaceinviwo_1_1util.html#a9814ba491ab54162a61144582fff0dbd":[2,0,0,18,133],
 "namespaceinviwo_1_1util.html#a985c8457f309f6939b350d0877a688ea":[2,0,0,18,172],
-"namespaceinviwo_1_1util.html#a9bb4e1d0a952f2a8216385f68ac32178":[2,0,0,18,284],
-"namespaceinviwo_1_1util.html#aa048b0cf2e27625499d9ac8e03af03d6":[2,0,0,18,230],
-"namespaceinviwo_1_1util.html#aa0b234248fa0f75afa5d053118ec319a":[2,0,0,18,106],
-"namespaceinviwo_1_1util.html#aa15da526769c7e6cfac443da69fbeb01":[2,0,0,18,130],
-"namespaceinviwo_1_1util.html#aa18a8d1ff055cdc4871caaf9105fb714":[2,0,0,18,189],
-"namespaceinviwo_1_1util.html#aa25faca6335f85635cde61c0986c2343":[2,0,0,18,289],
-"namespaceinviwo_1_1util.html#aa4d38c8a311e159b1bdb778697984dbe":[2,0,0,18,288],
-"namespaceinviwo_1_1util.html#aa566d97b543e2bdded79bb2a50c33bb0":[2,0,0,18,237],
-"namespaceinviwo_1_1util.html#aa58b65316e88fa13b51e3f2a3093b066":[2,0,0,18,256]
+"namespaceinviwo_1_1util.html#a9bb4e1d0a952f2a8216385f68ac32178":[2,0,0,18,284]
 };

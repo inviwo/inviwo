@@ -1,5 +1,13 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1glui_1_1RangeSlider.html#a01056bc77ef9d13b6e8ec8d4a828ed08":[4,0,1,12,15,0],
+"classinviwo_1_1glui_1_1Renderer.html":[4,0,1,12,16],
+"classinviwo_1_1glui_1_1Renderer.html#ac4850b648f6eca7a2a3c9427224a88f2":[4,0,1,12,16,0],
+"classinviwo_1_1glui_1_1Slider.html":[4,0,1,12,17],
+"classinviwo_1_1glui_1_1Slider.html#ab52b5cd4b771ba20174a243e0d3a3a98":[4,0,1,12,17,0],
+"classinviwo_1_1glui_1_1ToolButton.html":[4,0,1,12,18],
+"classinviwo_1_1glui_1_1ToolButtonPropertyWidget.html":[4,0,1,12,19],
+"classinviwo_1_1glui_1_1ToolButtonPropertyWidget.html#aa23242c2dba03aaf374900bc1bcbf8ed":[4,0,1,12,19,0],
 "classinviwo_1_1glui_1_1VBoxLayout.html":[4,0,1,12,20],
 "classinviwo_1_1glui_1_1WidgetFactory.html":[4,0,1,12,21],
 "classinviwo_1_1glui_1_1WidgetFactoryObject.html":[4,0,1,12,22],
@@ -241,13 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1transform_1_1ScaleProperty.html":[4,0,1,23,2],
 "classinviwo_1_1transform_1_1ScaleProperty.html#a4c26d8ed0c33c459438185f59e041099":[4,0,1,23,2,0],
 "classinviwo_1_1transform_1_1TransformProperty.html":[4,0,1,23,3],
-"classinviwo_1_1transform_1_1TranslateProperty.html":[4,0,1,23,4],
-"classinviwo_1_1transform_1_1TranslateProperty.html#a04a6fbf259f546e4585ce0055338e548":[4,0,1,23,4,0],
-"classinviwo_1_1util_1_1BrickIterator.html":[2,0,0,18,1],
-"classinviwo_1_1util_1_1BrickIterator.html":[4,0,1,25,5],
-"classinviwo_1_1util_1_1BrickIterator.html#a81cc9a7a966bc6df19124398af2b026c":[2,0,0,18,1,0],
-"classinviwo_1_1util_1_1BrickIterator.html#a81cc9a7a966bc6df19124398af2b026c":[4,0,1,25,5,0],
-"classinviwo_1_1util_1_1Combinations.html":[2,0,0,18,5],
-"classinviwo_1_1util_1_1Combinations.html":[4,0,1,25,9],
-"classinviwo_1_1util_1_1IdentifiedDeserializer.html":[2,0,0,18,24]
+"classinviwo_1_1transform_1_1TranslateProperty.html":[4,0,1,23,4]
 };
