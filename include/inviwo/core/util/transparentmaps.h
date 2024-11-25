@@ -47,15 +47,46 @@ struct IVW_CORE_API StringHash {
 
     std::size_t operator()(const char* str) const { return hash_type{}(str); }
     std::size_t operator()(std::string_view str) const { return hash_type{}(str); }
-    std::size_t operator()(std::string const& str) const { return hash_type{}(str); }
+    std::size_t operator()(const std::string& str) const { return hash_type{}(str); }
+    std::size_t operator()(const std::pmr::string& str) const { return hash_type{}(str); }
 };
 
+// For unknown reasons std::string == std::pmr::string does not compile.
+struct IVW_CORE_API StringComparePMR {
+    using is_transparent = void;
+
+    template <typename T1, typename T2>
+    constexpr bool operator()(const T1& a, const T2& b) const
+        requires std::constructible_from<std::string_view, const T1&> &&
+                 std::constructible_from<std::string_view, const T2&>
+    {
+        return std::string_view{a} == std::string_view{b};
+    }
+};
+
+struct IVW_CORE_API StringLessPMR {
+    using is_transparent = void;
+
+    template <typename T1, typename T2>
+    constexpr bool operator()(const T1& a, const T2& b) const
+        requires std::constructible_from<std::string_view, const T1&> &&
+                 std::constructible_from<std::string_view, const T2&>
+    {
+        return std::string_view{a} < std::string_view{b};
+    }
+};
 
 template <typename V>
-using StringMap = std::map<std::string, V, std::less<>>;
+using StringMap = std::map<std::string, V, StringLessPMR>;
 
 template <typename V>
-using UnorderedStringMap = std::unordered_map<std::string, V, StringHash, std::equal_to<>>;
+using StringMapPMR = std::pmr::map<std::pmr::string, V, StringLessPMR>;
 
+template <typename V>
+using UnorderedStringMap = std::unordered_map<std::string, V, StringHash, StringComparePMR>;
+
+template <typename V>
+using UnorderedStringMapPMR =
+    std::pmr::unordered_map<std::pmr::string, V, StringHash, StringComparePMR>;
 
 }  // namespace inviwo

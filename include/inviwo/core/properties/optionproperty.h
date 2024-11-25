@@ -268,6 +268,9 @@ public:
                               std::string_view value)
         requires std::is_same_v<T, std::string>;
 
+    OptionProperty& addOption(T value)
+        requires(fmt::is_formattable<T>::value || util::is_stream_insertable<T>::value);
+
     virtual OptionProperty& removeOption(std::string_view identifier);
     virtual OptionProperty& removeOption(size_t index);
     virtual OptionProperty& clearOptions() override;
@@ -654,6 +657,22 @@ OptionProperty<T>& OptionProperty<T>::addOption(std::string_view identifier,
 {
     auto& options = optsMut();
     options.emplace_back(identifier, displayName, std::string{value});
+
+    // in case we add the first option, we also select it
+    if (options.size() == 1) {
+        selectedIndex_ = 0;
+    }
+
+    propertyModified();
+    return *this;
+}
+
+template <typename T>
+OptionProperty<T>& OptionProperty<T>::addOption(T value)
+    requires(fmt::is_formattable<T>::value || util::is_stream_insertable<T>::value)
+{
+    auto& options = optsMut();
+    options.emplace_back(value);
 
     // in case we add the first option, we also select it
     if (options.size() == 1) {
