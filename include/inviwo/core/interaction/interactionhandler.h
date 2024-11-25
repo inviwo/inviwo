@@ -31,20 +31,14 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/interaction/events/eventlistener.h>
-#include <inviwo/core/io/serialization/serialization.h>
 
 namespace inviwo {
 
-class IVW_CORE_API InteractionHandler : public EventListener, public Serializable {
+class IVW_CORE_API InteractionHandler : public EventListener{
 
 public:
     InteractionHandler() = default;
     virtual ~InteractionHandler() = default;
-
-    virtual std::string_view getClassIdentifier() const = 0;
-
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
 };
 
 }  // namespace inviwo

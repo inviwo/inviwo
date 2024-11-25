@@ -29,8 +29,6 @@
 
 #include <modules/animation/datastructures/buttonkeyframesequence.h>
 
-#include <inviwo/core/io/serialization/deserializer.h>              // for ContainerWrapper<>::Item
-#include <inviwo/core/util/exception.h>                             // for Exception
 #include <modules/animation/datastructures/animationtime.h>         // for Seconds
 #include <modules/animation/datastructures/basekeyframesequence.h>  // for BaseKeyframeSequence
 #include <modules/animation/datastructures/buttonkeyframe.h>        // for ButtonKeyframe
@@ -38,7 +36,6 @@
 
 #include <algorithm>  // for upper_bound
 #include <chrono>     // for operator<, duration
-#include <utility>    // for move
 
 namespace inviwo {
 

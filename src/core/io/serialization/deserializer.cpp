@@ -162,7 +162,7 @@ void Deserializer::handleError(const ExceptionContext& context) {
     }
 }
 
-TiXmlElement* Deserializer::retrieveChild(std::string_view key) {
+TiXmlElement* Deserializer::retrieveChild(std::string_view key) const {
     return retrieveChild_ ? rootElement_->FirstChildElement(key) : rootElement_;
 }
 
@@ -192,7 +192,7 @@ std::optional<std::string_view> Deserializer::attribute(std::string_view key) co
 
 std::optional<std::string_view> Deserializer::attribute(std::string_view child,
                                                         std::string_view key) const {
-    if (auto childNode = rootElement_->FirstChildElement(child)) {
+    if (auto childNode = retrieveChild(child)) {
         return detail::attribute(childNode, key);
     } else {
         return std::nullopt;

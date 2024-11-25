@@ -379,18 +379,22 @@ void TFPrimitiveSet::deserialize(Deserializer& d) {
         notifyTFTypeChanged(*this, type_);
     }
 
-    util::IndexedDeserializer<std::unique_ptr<TFPrimitive>>(serializationKey(),
-                                                            serializationItemKey())
-        .onNew([&](std::unique_ptr<TFPrimitive>& p) {
-            p->addObserver(this);
-            auto it = std::upper_bound(sorted_.begin(), sorted_.end(), p.get(), comparePtr{});
-            sorted_.insert(it, p.get());
-            notifyTFPrimitiveAdded(*this, *p);
-        })
-        .onRemove([&](std::unique_ptr<TFPrimitive>& p) {
-            std::erase(sorted_, p.get());
-            notifyTFPrimitiveRemoved(*this, *p);
-        })(d, values_);
+    d.deserialize(serializationKey(), values_, serializationItemKey(),
+                  deserializer::IndexFunctions{
+                      .makeNew = []() { return std::unique_ptr<TFPrimitive>{}; },
+                      .onNew =
+                          [&](std::unique_ptr<TFPrimitive>& p, size_t) {
+                              p->addObserver(this);
+                              auto it = std::upper_bound(sorted_.begin(), sorted_.end(), p.get(),
+                                                         comparePtr{});
+                              sorted_.insert(it, p.get());
+                              notifyTFPrimitiveAdded(*this, *p);
+                          },
+                      .onRemove =
+                          [&](std::unique_ptr<TFPrimitive>& p) {
+                              std::erase(sorted_, p.get());
+                              notifyTFPrimitiveRemoved(*this, *p);
+                          }});
 }
 
 void TFPrimitiveSet::sort() { std::stable_sort(sorted_.begin(), sorted_.end(), comparePtr{}); }

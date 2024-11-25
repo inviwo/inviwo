@@ -519,19 +519,20 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
     try {
         rendercontext::activateDefault();
 
-        auto des = util::MapDeserializer<std::string, std::shared_ptr<Processor>>(
-                       "Processors", "Processor", "identifier")
-                       .setIdentifierTransform(
-                           [](std::string_view id) { return util::stripIdentifier(id); })
-                       .setMakeNew([]() {
-                           rendercontext::activateDefault();
-                           return nullptr;
-                       })
-                       .onNew([&](const std::string& /*id*/, std::shared_ptr<Processor>& p) {
-                           addProcessor(p);
-                       })
-                       .onRemove([&](const std::string& id) { removeProcessor(id); });
-        des(d, processors_);
+        d.deserialize(
+            "Processors", processors_, "Processor",
+            deserializer::MapFunctions{
+                .attributeKey = "identifier",
+                .idTransform = [](std::string_view id) { return util::stripIdentifier(id); },
+                .makeNew =
+                    []() {
+                        rendercontext::activateDefault();
+                        return std::shared_ptr<Processor>{};
+                    },
+                .onNew = [&](const std::string&,
+                             std::shared_ptr<Processor>& p) { addProcessor(p); },
+                .onRemove = [&](const std::string& id) { removeProcessor(id); },
+            });
 
     } catch (const Exception& exception) {
         clear();

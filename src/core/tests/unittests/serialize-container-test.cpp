@@ -61,182 +61,7 @@ TEST(SerializationContainerTest, Minimal) {
     ASSERT_EQ(5, vector[4]);
 }
 
-TEST(SerializationContainerTest, ContainerTest1) {
-    std::stringstream ss;
-    Serializer serializer("");
-
-    std::vector<int> vector{1, 2, 3, 4, 5};
-
-    serializer.serialize("Vector", vector, "Item");
-    serializer.writeFile(ss);
-
-    vector[2] = 10;
-    vector.push_back(12);
-
-    int tmp = 0;
-    std::vector<bool> visited(vector.size(), false);
-    auto cont = util::makeContainerWrapper<int>(
-        "Item", [&](std::string_view /* id */, size_t ind) -> ContainerWrapperItem<int> {
-            if (ind < vector.size()) {
-                return {true, vector[ind], [&visited, ind](int&) { visited[ind] = true; }};
-            } else {
-                return {true, tmp, [&visited, &vector](int& val) {
-                            visited.push_back(true);
-                            vector.push_back(val);
-                        }};
-            }
-        });
-
-    ASSERT_EQ(vector.size(), visited.size());
-
-    Deserializer deserializer(ss, "");
-    deserializer.deserialize("Vector", cont);
-
-    size_t ind = 0;
-    std::erase_if(vector, [&](const int&) { return !visited[ind++]; });
-
-    ASSERT_EQ(5, vector.size());
-    ASSERT_EQ(1, vector[0]);
-    ASSERT_EQ(2, vector[1]);
-    ASSERT_EQ(3, vector[2]);
-    ASSERT_EQ(4, vector[3]);
-    ASSERT_EQ(5, vector[4]);
-}
-
-TEST(SerializationContainerTest, ContainerTest2) {
-    struct Item : Serializable {
-        Item() = default;
-        Item(std::string id, int value) : id_(id), value_(value) {}
-
-        virtual void serialize(Serializer& s) const override {
-            s.serialize("identifier", id_, SerializationTarget::Attribute);
-            s.serialize("value", value_);
-        }
-        virtual void deserialize(Deserializer& d) override {
-            d.deserialize("identifier", id_, SerializationTarget::Attribute);
-            d.deserialize("value", value_);
-        }
-
-        std::string id_;
-        int value_;
-    };
-
-    std::stringstream ss;
-    Serializer serializer("");
-
-    std::vector<Item> vector{{"a", 1}, {"b", 2}, {"c", 3}};
-
-    serializer.serialize("Vector", vector, "Item");
-    serializer.writeFile(ss);
-
-    vector[0].id_ = "c";
-    vector.pop_back();
-    vector.insert(vector.begin(), Item("d", 4));
-
-    Item tmp;
-    std::vector<std::string> visited;
-    auto cont = util::makeContainerWrapper<Item>(
-        "Item", [&](std::string_view id, size_t) -> ContainerWrapperItem<Item> {
-            visited.emplace_back(id);
-            auto it = util::find_if(vector, [&](const Item& i) { return i.id_ == id; });
-            if (it != vector.end()) {
-                return {true, *it, [&](Item&) {}};
-            } else {
-                return {true, tmp, [&](Item& val) { vector.push_back(val); }};
-            }
-        });
-
-    Deserializer deserializer(ss, "");
-    deserializer.deserialize("Vector", cont);
-
-    std::erase_if(vector, [&](const Item& i) { return !util::contains(visited, i.id_); });
-
-    ASSERT_EQ(3, vector.size());
-
-    ASSERT_EQ("a", vector[2].id_);
-    ASSERT_EQ("b", vector[1].id_);
-    ASSERT_EQ("c", vector[0].id_);
-
-    ASSERT_EQ(1, vector[2].value_);
-    ASSERT_EQ(2, vector[1].value_);
-    ASSERT_EQ(3, vector[0].value_);
-}
-
-TEST(SerializationContainerTest, ContainerTest3) {
-    struct Item : Serializable {
-        Item() = default;
-        Item(std::string id, int value) : id_(id), value_(value) {}
-
-        virtual void serialize(Serializer& s) const override {
-            s.serialize("identifier", id_, SerializationTarget::Attribute);
-            s.serialize("value", value_);
-        }
-        virtual void deserialize(Deserializer& d) override {
-            d.deserialize("identifier", id_, SerializationTarget::Attribute);
-            d.deserialize("value", value_);
-        }
-
-        std::string id_;
-        int value_;
-    };
-
-    std::stringstream ss;
-    Serializer serializer("");
-
-    std::vector<Item*> vector;
-
-    vector.push_back(new Item("a", 1));
-    vector.push_back(new Item("b", 2));
-    vector.push_back(new Item("c", 3));
-
-    serializer.serialize("Vector", vector, "Item");
-    serializer.writeFile(ss);
-
-    vector[0]->id_ = "c";
-    delete vector.back();
-    vector.pop_back();
-    vector.insert(vector.begin(), new Item("d", 1));
-
-    Item* tmp = nullptr;
-    std::vector<std::string> visited;
-    auto cont = util::makeContainerWrapper<Item*>(
-        "Item", [&](std::string_view id, size_t) -> ContainerWrapperItem<Item*> {
-            visited.emplace_back(id);
-            auto it = util::find_if(vector, [&](Item*& i) { return i->id_ == id; });
-            if (it != vector.end()) {
-                return {true, *it, [&](Item*&) {}};
-            } else {
-                tmp = new Item();
-                return {true, tmp, [&](Item*& val) { vector.push_back(val); }};
-            }
-        });
-
-    Deserializer deserializer(ss, "");
-    deserializer.deserialize("Vector", cont);
-
-    std::erase_if(vector, [&](Item* i) {
-        if (!util::contains(visited, i->id_)) {
-            delete i;
-            return true;
-        } else {
-            return false;
-        }
-    });
-
-    ASSERT_EQ(3, vector.size());
-
-    ASSERT_EQ("a", vector[2]->id_);
-    ASSERT_EQ("b", vector[1]->id_);
-    ASSERT_EQ("c", vector[0]->id_);
-
-    ASSERT_EQ(1, vector[2]->value_);
-    ASSERT_EQ(2, vector[1]->value_);
-    ASSERT_EQ(3, vector[0]->value_);
-
-    for (auto& item : vector) delete item;
-}
-
-TEST(SerializationContainerTest, ContainerTest4) {
+TEST(SerialitionContainerTest, IdentifierFunctions) {
     struct Item : Serializable {
         Item() = default;
         Item(std::string id, int value) : id_(id), value_(value) {}
@@ -272,30 +97,31 @@ TEST(SerializationContainerTest, ContainerTest4) {
     vector.insert(vector.begin(), new Item("d", 1));
 
     Deserializer deserializer(ss, "");
-    auto des =
-        util::IdentifiedDeserializer<Item*>("Vector", "Item")
-            .setGetId([](Item* const& i) -> std::string_view { return i->id_; })
-            .setMakeNew([]() { return new Item(); })
-            .onNew([&](Item*& i) { vector.push_back(i); })
-            .onRemove([&](std::string_view id) {
-                std::erase_if(vector, [&](Item* i) {
-                    if (id == i->id_) {
-                        delete i;
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
-            })
-            .onMove([&](Item*& i, size_t newIndex) {
-                if (auto it = std::find(vector.begin(), vector.end(), i); it != vector.end()) {
-                    Item* item = i;
-                    vector.erase(it);
-                    vector.insert(vector.begin() + newIndex, item);
-                }
-            });
-
-    des(deserializer, vector);
+    deserializer.deserialize("Vector", vector, "Item",
+                             deserializer::IdentifierFunctions{
+                                 .getID = [](Item* const& i) -> std::string_view { return i->id_; },
+                                 .makeNew = []() { return new Item(); },
+                                 .onNew = [&](Item*& i, size_t) { vector.push_back(i); },
+                                 .onRemove =
+                                     [&](std::string_view id) {
+                                         std::erase_if(vector, [&](Item* i) {
+                                             if (id == i->id_) {
+                                                 delete i;
+                                                 return true;
+                                             } else {
+                                                 return false;
+                                             }
+                                         });
+                                     },
+                                 .onMove =
+                                     [&](Item*& i, size_t newIndex) {
+                                         if (auto it = std::find(vector.begin(), vector.end(), i);
+                                             it != vector.end()) {
+                                             Item* item = i;
+                                             vector.erase(it);
+                                             vector.insert(vector.begin() + newIndex, item);
+                                         }
+                                     }});
 
     ASSERT_EQ(3, vector.size());
 
@@ -310,7 +136,7 @@ TEST(SerializationContainerTest, ContainerTest4) {
     for (auto& item : vector) delete item;
 }
 
-TEST(SerializationContainerTest, ContainerTest5) {
+TEST(SerialitionContainerTest, IndexFunctions) {
     std::stringstream ss;
     Serializer serializer("");
 
@@ -323,12 +149,12 @@ TEST(SerializationContainerTest, ContainerTest5) {
     vector.push_back(12);
 
     Deserializer deserializer(ss, "");
-    auto des = util::IndexedDeserializer<int>("Vector", "Item")
-                   .setMakeNew([]() { return 0; })
-                   .onNew([&](int& i) { vector.push_back(i); })
-                   .onRemove([](int&) { return true; });
-
-    des(deserializer, vector);
+    deserializer.deserialize("Vector", vector, "Item",
+                             deserializer::IndexFunctions{
+                                 .makeNew = []() { return 0; },
+                                 .onNew = [&](int& i, size_t) {},
+                                 .onRemove = [](int&) {},
+                             });
 
     ASSERT_EQ(5, vector.size());
     ASSERT_EQ(1, vector[0]);
@@ -338,7 +164,7 @@ TEST(SerializationContainerTest, ContainerTest5) {
     ASSERT_EQ(5, vector[4]);
 }
 
-TEST(SerializationContainerTest, ContainerTest6) {
+TEST(SerialitionContainerTest, MapFunctions1) {
     std::stringstream ss;
     Serializer serializer("");
 
@@ -354,13 +180,15 @@ TEST(SerializationContainerTest, ContainerTest6) {
     map["d"] = 20;
 
     Deserializer deserializer(ss, "");
-    auto des = util::MapDeserializer<std::string, int>("Map", "Item")
-                   .setIdentifierTransform([](std::string_view s) { return std::string{s}; })
-                   .setMakeNew([]() { return 0; })
-                   .onNew([&](const std::string& k, int& v) { map[k] = v; })
-                   .onRemove([&](const std::string& k) { map.erase(k); });
 
-    des(deserializer, map);
+    deserializer.deserialize(
+        "Map", map, "Item",
+        deserializer::MapFunctions{.idTransform = [](std::string_view s) { return std::string{s}; },
+                                   .makeNew = []() { return 0; },
+                                   .onNew = [&](const std::string& k, int& v) { map[k] = v; },
+                                   .onRemove = [&](const std::string& k) { map.erase(k); }
+
+        });
 
     ASSERT_EQ(map.size(), 3);
     ASSERT_EQ(map["a"], 1);
@@ -368,7 +196,7 @@ TEST(SerializationContainerTest, ContainerTest6) {
     ASSERT_EQ(map["c"], 3);
 }
 
-TEST(SerializationContainerTest, ContainerTest7) {
+TEST(SerialitionContainerTest, MapFunctions2) {
     std::stringstream ss;
     Serializer serializer("");
 
@@ -384,17 +212,18 @@ TEST(SerializationContainerTest, ContainerTest7) {
     map[4] = "h";
 
     Deserializer deserializer(ss, "");
-    auto des = util::MapDeserializer<int, std::string>("Map", "Item")
-                   .setMakeNew([]() { return ""; })
-                   .onNew([&](const int& k, std::string& v) { map[k] = v; })
-                   .onRemove([&](const int& k) { map.erase(k); })
-                   .setIdentifierTransform([](std::string_view s) -> int {
-                       int val{};
-                       std::from_chars(s.data(), s.data() + s.size(), val);
-                       return val;
-                   });
+    deserializer.deserialize(
+        "Map", map, "Item",
+        deserializer::MapFunctions{.idTransform = [](std::string_view s) -> int {
+                                       int val{};
+                                       std::from_chars(s.data(), s.data() + s.size(), val);
+                                       return val;
+                                   },
+                                   .makeNew = []() { return std::string{}; },
+                                   .onNew = [&](const int& k, std::string& v ) { map[k] = v; },
+                                   .onRemove = [&](const int& k) { map.erase(k); }
 
-    des(deserializer, map);
+        });
 
     ASSERT_EQ(map.size(), 3);
     ASSERT_EQ(map[1], "a");
