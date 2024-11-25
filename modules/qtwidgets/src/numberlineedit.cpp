@@ -313,4 +313,9 @@ void NumberLineEdit::wheelEvent(QWheelEvent* e) {
     if (hasFocus() && !invalid_) QDoubleSpinBox::wheelEvent(e);
 }
 
+void NumberLineEdit::stepBy(int step) {
+    QDoubleSpinBox::stepBy(step);
+    emit editingFinished();
+}
+
 }  // namespace inviwo

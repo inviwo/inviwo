@@ -150,7 +150,7 @@ double OrdinalSpinBoxWidget<T>::increment() {
 }
 template <typename T>
 int OrdinalSpinBoxWidget<T>::spinnerDecimals() {
-    return utilqt::decimals<T>(increment());
+    return utilqt::decimals(increment_);
 }
 template <typename T>
 T OrdinalSpinBoxWidget<T>::getValue() const {

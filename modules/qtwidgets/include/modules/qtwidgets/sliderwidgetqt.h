@@ -233,7 +233,7 @@ int SliderWidgetQt<T>::transformIncrementToSlider() {
 
 template <typename T>
 int SliderWidgetQt<T>::transformIncrementToSpinnerDecimals() {
-    return utilqt::decimals<T>(reprToSpinner(increment_));
+    return utilqt::decimals(increment_);
 }
 
 template <typename T>

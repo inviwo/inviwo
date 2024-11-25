@@ -103,6 +103,8 @@ protected:
     virtual void changeEvent(QEvent* e) override;
     virtual void wheelEvent(QWheelEvent* e) override;
 
+    virtual void stepBy(int steps) override;
+
 private:
     bool integerMode_;
     int minimumWidth_;

@@ -29,37 +29,9 @@
 
 #pragma once
 
-#include <modules/qtwidgets/inviwoqtutils.h>               // for emToPx
-#include <modules/qtwidgets/numberlineedit.h>              // for NumberLineEdit
-#include <modules/qtwidgets/properties/indicatorwidget.h>  // for IndicatorWidget
-
-#include <cstdlib>  // for abs
-
-#include <QColor>        // for QColor
-#include <QFlags>        // for QFlags
-#include <QMouseEvent>   // for QMouseEvent
-#include <QPainter>      // for QPainter, QPainter::Antialiasing
-#include <QPalette>      // for QPalette, QPalette::Active
-#include <QPen>          // for QPen
+#include <QWidget>
 #include <QPoint>        // for QPoint
-#include <QPointF>       // for QPointF
 #include <QSize>         // for QSize
-#include <QSizeF>        // for QSizeF
-#include <QSizePolicy>   // for QSizePolicy, QSizePolicy::Fixed
-#include <QString>       // for QString
-#include <QStyle>        // for QStyle, QStyle::State_Enabled
-#include <QStyleOption>  // for QStyleOption
-#include <QTimerEvent>   // for QTimerEvent
-#include <QToolTip>      // for QToolTip
-#include <QTransform>    // for QTransform
-#include <QWidget>       // for QWidget
-#include <Qt>            // for LeftButton, NoBrush, FlatCap
-#include <QPainterPath>  // for QPainterPath
-
-#include <algorithm>    // for max, min
-#include <cmath>        // for pow, remainder, abs
-#include <memory>       // for unique_ptr, make_unique
-#include <type_traits>  // for enable_if_t, is_integral
 
 class QMouseEvent;
 class QPaintEvent;
@@ -67,17 +39,15 @@ class QTimerEvent;
 
 namespace inviwo {
 
-template <typename T>
+class NumberLineEdit;
+class IndicatorWidget;
+
 class ValueDragger : public QWidget {
 public:
     explicit ValueDragger(NumberLineEdit* spinBox, QWidget* parent = nullptr);
-    virtual ~ValueDragger() = default;
-
+    virtual ~ValueDragger();
     virtual QSize sizeHint() const override;
 
-    T value() const;
-
-    void setValue(T i);
     void setIncrement(int t);     //!< in percent [0,100]
     void setIncrement(double t);  //!< percentage [0,1]
     void setExponent(double e);
@@ -93,7 +63,6 @@ protected:
 private:
     void reset();
 
-    template <typename U = T, typename = std::enable_if_t<std::is_integral<U>::value>>
     void setValue(double val);
 
     const int timerInterval_ = 100;
@@ -110,181 +79,5 @@ private:
 
     double increment_;
 };
-
-template <typename T>
-ValueDragger<T>::ValueDragger(NumberLineEdit* spinBox, QWidget* parent)
-    : QWidget(parent), spinBox_(spinBox), indicator_(std::make_unique<IndicatorWidget>()) {
-    indicator_->setVisible(false);
-    setObjectName("valueDragger");
-    setAttribute(Qt::WA_TranslucentBackground);
-
-    QSizePolicy policy(QSizePolicy::Maximum, QSizePolicy::Fixed);
-    policy.setHorizontalStretch(0);
-    policy.setVerticalStretch(0);
-    setSizePolicy(policy);
-}
-
-template <typename T>
-QSize ValueDragger<T>::sizeHint() const {
-    return utilqt::emToPx(this, QSizeF(0.8, 2));
-}
-
-template <typename T>
-void ValueDragger<T>::setValue(T i) {
-    spinBox_->setValue(i);
-}
-
-template <typename T>
-T ValueDragger<T>::value() const {
-    return static_cast<T>(spinBox_->value());
-}
-
-template <typename T>
-void ValueDragger<T>::setIncrement(int t) {
-    defaultIncrement_ = t / 100.0;
-}
-
-template <typename T>
-void ValueDragger<T>::setIncrement(double t) {
-    defaultIncrement_ = t;
-}
-
-template <typename T>
-void ValueDragger<T>::setExponent(double e) {
-    exponent_ = e;
-}
-
-template <typename T>
-void ValueDragger<T>::paintEvent(QPaintEvent*) {
-    QPainter painter(this);
-    painter.setRenderHints(QPainter::Antialiasing);
-
-    painter.setTransform(QTransform::fromTranslate(width() / 2, height() / 2));
-
-    QStyleOption option;
-    option.initFrom(this);
-
-    QPen pen(Qt::NoBrush, 2.0, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin);
-    if (!(option.state & QStyle::State_Enabled)) {
-        pen.setColor(option.palette.color(QPalette::Disabled, QPalette::WindowText).darker());
-    } else if (option.state & QStyle::State_MouseOver) {
-        pen.setColor(option.palette.color(QPalette::Active, QPalette::Highlight));
-    } else {
-        pen.setColor(option.palette.color(QPalette::Active, QPalette::Text));
-    }
-
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(pen.color());
-    painter.drawEllipse(QPointF(0, 0), height() / 8.0, height() / 8.0);
-
-    // draw arrow tips
-    auto arrowTop = (height() / 2.0) * 0.8 - 2.0;
-    auto arrowBase = 1.5 + (height() / 6.0) * 0.8;
-    auto arrowHalfWidth = height() / 4.0 - 2.0;
-
-    QPainterPath path;
-    path.moveTo(-arrowHalfWidth, arrowBase);
-    path.lineTo(0, arrowTop);
-    path.lineTo(arrowHalfWidth, arrowBase);
-    path.moveTo(-arrowHalfWidth, -arrowBase);
-    path.lineTo(0, -arrowTop);
-    path.lineTo(arrowHalfWidth, -arrowBase);
-    painter.setPen(pen);
-    painter.setBrush(Qt::NoBrush);
-    painter.drawPath(path);
-}
-
-template <typename T>
-void ValueDragger<T>::mousePressEvent(QMouseEvent* e) {
-    if ((e->button() == Qt::LeftButton) && !dragging_) {
-        reset();
-
-        dragging_ = true;
-        clickPos_ = e->pos();
-        currentValue_ = value();
-
-        increment_ =
-            (defaultIncrement_ * ((value() == 0) ? spinBox_->singleStep() : std::abs(value())));
-
-        // reposition indicator widget at the center of this widget
-        indicator_->setBasePoint(mapToGlobal(QPoint(width() / 2, height() / 2)));
-        indicator_->show();
-    }
-    e->accept();
-    QWidget::mousePressEvent(e);
-}
-
-template <typename T>
-void ValueDragger<T>::mouseReleaseEvent(QMouseEvent* e) {
-    if (dragging_ && (e->button() == Qt::LeftButton)) {
-        reset();
-        indicator_->hide();
-        QToolTip::hideText();
-        e->accept();
-    }
-    QWidget::mouseReleaseEvent(e);
-}
-
-template <typename T>
-void ValueDragger<T>::mouseMoveEvent(QMouseEvent* e) {
-    if (dragging_) {
-        int mousePosDelta = clickPos_.y() - e->pos().y();
-        int sign = (mousePosDelta > 0) ? 1 : (mousePosDelta < 0) ? -1 : 0;
-
-        delta_ = (std::pow(std::abs(mousePosDelta + 1), exponent_) - 1.0) * sign * increment_;
-
-        indicator_->setLength(mousePosDelta);
-        if (spinDeltaTimerId_ == -1) {
-            spinDeltaTimerId_ = startTimer(timerInterval_);
-        }
-        e->accept();
-    } else {
-        QWidget::mouseMoveEvent(e);
-    }
-}
-
-template <typename T>
-void ValueDragger<T>::timerEvent(QTimerEvent* e) {
-    bool doStep = false;
-    if (e->timerId() == spinDeltaTimerId_) {
-        QToolTip::showText(mapToGlobal(clickPos_), QString("Δ = %1 / s").arg(delta_));
-        doStep = ((delta_ != 0.0) && (currentValue_ >= spinBox_->minimum()) &&
-                  (currentValue_ <= spinBox_->maximum()));
-    }
-
-    if (doStep) {
-        currentValue_ += delta_ * timerInterval_ / 1000;
-        if (spinBox_->wrapping()) {
-            auto remainder = std::remainder(currentValue_ - spinBox_->minimum(),
-                                            spinBox_->maximum() - spinBox_->minimum());
-            if (remainder < 0.0) {
-                remainder += spinBox_->maximum() - spinBox_->minimum();
-            }
-            currentValue_ = remainder + spinBox_->minimum();
-        }
-
-        currentValue_ = std::max<double>(std::min<double>(currentValue_, spinBox_->maximum()),
-                                         spinBox_->minimum());
-
-        setValue(currentValue_);
-    }
-    QWidget::timerEvent(e);
-}
-
-template <typename T>
-void ValueDragger<T>::reset() {
-    if (spinDeltaTimerId_ != -1) {
-        killTimer(spinDeltaTimerId_);
-    }
-    spinDeltaTimerId_ = -1;
-    delta_ = 0.0;
-    dragging_ = false;
-}
-
-template <typename T>
-template <typename U, typename>
-void ValueDragger<T>::setValue(double val) {
-    spinBox_->setValue(static_cast<int>(val + 0.5));
-}
 
 }  // namespace inviwo
