@@ -59,6 +59,14 @@ const ProcessorInfo VolumeNormalizationProcessor::processorInfo_{
     "Volume Operation",                         // Category
     CodeState::Stable,                          // Code state
     Tags::GL,                                   // Tags
+    R"(Normalizes the selected channels of the input volume based on its data range to range [0, 1].
+The format of the resulting volume is 32bit floating point matching the number of channels in the input volume.
+The data range and value range are set to [0, 1]. If no channel is selected for normalization, the input volume
+will be forwarded unchanged.
+
+Note that this algorithm normalizes channels independently, it does not normalize a multi-channel
+volume in terms of vector norms.
+)"_unindentHelp,
 };
 const ProcessorInfo VolumeNormalizationProcessor::getProcessorInfo() const {
     return processorInfo_;
@@ -66,12 +74,13 @@ const ProcessorInfo VolumeNormalizationProcessor::getProcessorInfo() const {
 
 VolumeNormalizationProcessor::VolumeNormalizationProcessor()
     : Processor()
-    , volumeInport_("volumeInport")
-    , volumeOutport_("volumeOutport")
+    , volumeInport_("volumeInport", "Input Volume"_help)
+    , volumeOutport_("volumeOutport",
+                     "Resulting, normalized Volume with floating point precision"_help)
     , inputChannels_(
           "inputChannels", "Input Channels",
           util::ordinalCount(4).set(PropertySemantics::Text).set(InvalidationLevel::Valid))
-    , channels_("channels", "Channels")
+    , channels_("channels", "Channels", "Toggles the normalization of individual channels"_help)
     , normalizeChannels_{{{"normalizeChannel0", "Channel 1", true},
                           {"normalizeChannel1", "Channel 2", true},
                           {"normalizeChannel2", "Channel 3", true},
@@ -98,10 +107,6 @@ VolumeNormalizationProcessor::VolumeNormalizationProcessor()
 
 void VolumeNormalizationProcessor::process() {
     auto inputVolume = volumeInport_.getData();
-
-    if (inputVolume->getDataFormat()->getNumericType() != NumericType::Float) {
-        throw Exception("Input volume is not in a floating point format", IVW_CONTEXT);
-    }
 
     const bvec4 normalize{normalizeChannels_[0], normalizeChannels_[1], normalizeChannels_[2],
                           normalizeChannels_[3]};

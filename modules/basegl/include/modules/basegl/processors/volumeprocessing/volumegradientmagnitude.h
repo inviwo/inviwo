@@ -31,6 +31,7 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
 namespace inviwo {
@@ -81,6 +82,7 @@ private:
     virtual void afterInportChanged() override;
 
     OptionPropertyInt channel_;
+    FloatProperty gradientScaling_;
 };
 
 }  // namespace inviwo

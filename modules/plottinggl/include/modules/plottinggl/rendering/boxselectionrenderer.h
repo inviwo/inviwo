@@ -39,9 +39,7 @@
 #include <array>     // for array
 #include <optional>  // for optional
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 class BoxSelectionProperty;
 
 /**
@@ -51,7 +49,7 @@ class BoxSelectionProperty;
  */
 class IVW_MODULE_PLOTTINGGL_API BoxSelectionRenderer {
 public:
-    BoxSelectionRenderer(const BoxSelectionProperty& settings);
+    explicit BoxSelectionRenderer(const BoxSelectionProperty& settings);
     virtual ~BoxSelectionRenderer() = default;
     /*
      * \brief Draw rectangle if dragRect exists.
@@ -65,15 +63,17 @@ protected:
     const BoxSelectionProperty& settings_;
     LineSettings lineSettings_;
     algorithm::LineRenderer lineRenderer_;
-    vec4 color_;  //!< Dummy color until line color can be set using uniform
-    ColoredMesh dragRectMesh_ = ColoredMesh(DrawType::Lines, ConnectivityType::Strip,
-                                            {{vec3{0.f, 0.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},
-                                             {vec3{1.f, 0.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},
-                                             {vec3{1.f, 1.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},
-                                             {vec3{0.f, 1.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}}},
-                                            {0, 1, 2, 3, 0});
+
+    using PositionMesh = TypedMesh<buffertraits::PositionsBuffer2D>;
+    PositionMesh dragRectMesh_{DrawType::Lines,
+                               ConnectivityType::Loop,
+                               {
+                                   {vec2{0.f, 0.f}},
+                                   {vec2{1.f, 0.f}},
+                                   {vec2{1.f, 1.f}},
+                                   {vec2{0.f, 1.f}},
+                               },
+                               {0, 1, 2, 3}};
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

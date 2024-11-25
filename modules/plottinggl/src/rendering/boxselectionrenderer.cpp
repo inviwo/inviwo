@@ -44,30 +44,19 @@
 #include <glm/vec2.hpp>  // for vec<>::(anonymous)
 #include <glm/vec4.hpp>  // for operator!=, vec
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 BoxSelectionRenderer::BoxSelectionRenderer(const BoxSelectionProperty& settings)
     : settings_(settings), lineRenderer_(&lineSettings_) {
     lineSettings_.stippling.mode = StipplingSettingsInterface::Mode::ScreenSpace;
     lineSettings_.stippling.length = 5.f;
+    lineSettings_.overrideColor = true;
 }
 
 void BoxSelectionRenderer::render(std::optional<std::array<dvec2, 2>> dragRect, size2_t screenDim) {
     if (dragRect && settings_.getMode() != BoxSelectionSettingsInterface::Mode::None) {
         lineSettings_.lineWidth = settings_.getLineWidth();
-
-        // Hack until we can use a uniform to change line color
-        if (color_ != settings_.getLineColor()) {
-            color_ = settings_.getLineColor();
-            dragRectMesh_ = ColoredMesh(DrawType::Lines, ConnectivityType::Strip,
-                                        {{vec3{0.f, 0.f, 0.f}, settings_.lineColor_},
-                                         {vec3{1.f, 0.f, 0.f}, settings_.lineColor_},
-                                         {vec3{1.f, 1.f, 0.f}, settings_.lineColor_},
-                                         {vec3{0.f, 1.f, 0.f}, settings_.lineColor_}},
-                                        {0, 1, 2, 3, 0});
-        }
+        lineSettings_.overrideColorValue = settings_.getLineColor();
 
         const auto start = vec2((*dragRect)[0]);
         const auto scale = vec2((*dragRect)[1] - (*dragRect)[0]);
@@ -88,6 +77,4 @@ void BoxSelectionRenderer::render(std::optional<std::array<dvec2, 2>> dragRect, 
     }
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

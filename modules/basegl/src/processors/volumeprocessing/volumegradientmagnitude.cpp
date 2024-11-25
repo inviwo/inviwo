@@ -27,15 +27,16 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/datamapper.h>                               // for DataMapper
-#include <inviwo/core/datastructures/unitsystem.h>                               // for Axis, Unit
-#include <inviwo/core/ports/volumeport.h>                                        // for VolumeIn...
-#include <inviwo/core/processors/processorinfo.h>                                // for Processo...
-#include <inviwo/core/processors/processorstate.h>                               // for CodeState
-#include <inviwo/core/processors/processortags.h>                                // for Tags
-#include <inviwo/core/properties/optionproperty.h>                               // for OptionPr...
-#include <inviwo/core/util/formats.h>                                            // for DataFloat32
-#include <inviwo/core/util/glmvec.h>                                             // for dvec2
+#include <inviwo/core/datastructures/datamapper.h>  // for DataMapper
+#include <inviwo/core/datastructures/unitsystem.h>  // for Axis, Unit
+#include <inviwo/core/ports/volumeport.h>           // for VolumeIn...
+#include <inviwo/core/processors/processorinfo.h>   // for Processo...
+#include <inviwo/core/processors/processorstate.h>  // for CodeState
+#include <inviwo/core/processors/processortags.h>   // for Tags
+#include <inviwo/core/properties/optionproperty.h>  // for OptionPr...
+#include <inviwo/core/util/formats.h>               // for DataFloat32
+#include <inviwo/core/util/glmvec.h>                // for dvec2
+#include <inviwo/core/util/exception.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>        // for VolumeGL...
 #include <modules/basegl/processors/volumeprocessing/volumegradientmagnitude.h>  // for VolumeGr...
 #include <modules/opengl/shader/shader.h>                                        // for Shader
@@ -60,27 +61,36 @@ const ProcessorInfo VolumeGradientMagnitude::processorInfo_{
 const ProcessorInfo VolumeGradientMagnitude::getProcessorInfo() const { return processorInfo_; }
 
 VolumeGradientMagnitude::VolumeGradientMagnitude()
-    : VolumeGLProcessor("volumegradientmagnitude.frag"), channel_("channel", "Render Channel") {
+    : VolumeGLProcessor{"volumegradientmagnitude.frag"}
+    , channel_{"channel", "Channel", util::enumeratedOptions("Channel", 4), 0}
+    , gradientScaling_{"gradientScaling", "Gradient Scaling", util::ordinalScale(1.0f)} {
     this->dataFormat_ = DataFloat32::get();
 
     channel_.addOption("Channel 1", "Channel 1", 0);
     channel_.setCurrentStateAsDefault();
 
-    addProperty(channel_);
+    addProperties(channel_, gradientScaling_);
 }
 
 VolumeGradientMagnitude::~VolumeGradientMagnitude() {}
 
 void VolumeGradientMagnitude::preProcess(TextureUnitContainer&) {
-    shader_.setUniform("channel", channel_.getSelectedValue());
+    auto volume = inport_.getData();
+    if (channel_.getSelectedIndex() >= volume->getDataFormat()->getComponents()) {
+        throw Exception(IVW_CONTEXT, "Channel is greater than the available channels {} >= {}",
+                        channel_.getSelectedValue(), volume->getDataFormat()->getComponents());
+    }
+
+    shader_.setUniform("channel", static_cast<int>(channel_.getSelectedIndex()));
+    shader_.setUniform("gradientScaling", gradientScaling_);
 }
 
 void VolumeGradientMagnitude::postProcess() {
     volume_->dataMap.valueAxis.name = "gradient magnitude";
     volume_->dataMap.valueAxis.unit =
         inport_.getData()->dataMap.valueAxis.unit / inport_.getData()->axes[0].unit;
-    volume_->dataMap.dataRange = dvec2(0.0, 1.0);
-    volume_->dataMap.valueRange = dvec2(0.0, 1.0);
+    volume_->dataMap.dataRange = dvec2{0.0, 1.0};
+    volume_->dataMap.valueRange = dvec2{0.0, 1.0};
 }
 
 void VolumeGradientMagnitude::afterInportChanged() {

@@ -44,9 +44,9 @@ public:
     virtual ~StipplingSettings() = default;
 
     Mode mode = Mode::None;
-    float length = 30.f;
-    float spacing = 10.f;
-    float offset = 0.f;
+    float length = 20.f;   //!< refers to the length of one dash
+    float spacing = 10.f;  //!< spacing between two dashes
+    float offset = 0.f;    //!< offset for shifting the stipple pattern
     float worldScale = 4.f;
     /*
      * @copydoc StipplingSettingsInterface::getMode

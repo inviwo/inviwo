@@ -124,6 +124,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/texturedgeometryrendering.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/texturedgeometryrendering.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/classification.glsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/colorconversion.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/compositing.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/depth.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/glyphs.glsl

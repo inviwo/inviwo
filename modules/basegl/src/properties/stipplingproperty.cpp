@@ -47,21 +47,31 @@ std::string StipplingProperty::getClassIdentifier() const { return classIdentifi
 StipplingProperty::StipplingProperty(std::string_view identifier, std::string_view displayName,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , mode_("stippleMode", "Stipple Mode",
+    : CompositeProperty{identifier, displayName, invalidationLevel, std::move(semantics)}
+    , mode_{"stippleMode",
+            "Stipple Mode",
             {{"none", "None", Mode::None},
              {"screenspace", "Screen Space", Mode::ScreenSpace},
              {"worldspace", "World Space", Mode::WorldSpace}},
-            0, InvalidationLevel::InvalidResources)
-    , length_("stippleLen", "Length", 30.0f, 0.0f, 100.0f)
-    , spacing_("stippleSpacing", "Spacing", 10.0f, 0.0f, 100.0f)
-    , offset_("stippleOffset", "Offset", 0.0f, 0.0f, 100.0f)
-    , worldScale_("stippleWorldScale", "World Scale", 4.0f, 1.0f, 20.0f) {
-    addProperty(mode_);
-    addProperty(length_);
-    addProperty(spacing_);
-    addProperty(offset_);
-    addProperty(worldScale_);
+            0,
+            InvalidationLevel::InvalidResources}
+    , length_{"stippleLen", "Length",
+              util::ordinalLength(20.0f, 100.0f)
+                  .set("Length of a dash, in pixels if Stippling Mode is ScreenSpace"_help)}
+    , spacing_{"stippleSpacing", "Spacing",
+               util::ordinalLength(10.0f, 100.0f)
+                   .set(
+                       "Distance between two dashes, in pixels if Stippling Mode is ScreenSpace"_help)}
+    , offset_{"stippleOffset", "Offset",
+              util::ordinalLength(0.0f, 100.0f)
+                  .set("Offset of first dash, in pixels if Stippling Mode is ScreenSpace"_help)}
+    , worldScale_{
+          "stippleWorldScale", "World Scale",
+          util::ordinalScale(4.0f, 20.0f)
+              .set(
+                  "Scaling of parameters. Only applicable if Stippling Mode is WorldSpace."_help)} {
+
+    addProperties(mode_, length_, spacing_, offset_, worldScale_);
 
     mode_.onChange([this]() { worldScale_.setVisible(mode_.get() == Mode::WorldSpace); });
     worldScale_.setVisible(mode_.get() == Mode::WorldSpace);
@@ -75,11 +85,7 @@ StipplingProperty::StipplingProperty(const StipplingProperty& rhs)
     , offset_(rhs.offset_)
     , worldScale_(rhs.worldScale_) {
 
-    addProperty(mode_);
-    addProperty(length_);
-    addProperty(spacing_);
-    addProperty(offset_);
-    addProperty(worldScale_);
+    addProperties(mode_, length_, spacing_, offset_, worldScale_);
 
     mode_.onChange([this]() { worldScale_.setVisible(mode_.get() == Mode::WorldSpace); });
     worldScale_.setVisible(mode_.get() == Mode::WorldSpace);

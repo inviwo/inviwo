@@ -52,7 +52,7 @@ public:
      */
     virtual float getLength() const = 0;
     /*
-     * Return distance between dashes, in pixels if Mode is ScreenSpace.
+     * Return distance between two dashes, in pixels if Mode is ScreenSpace.
      */
     virtual float getSpacing() const = 0;
     /*
