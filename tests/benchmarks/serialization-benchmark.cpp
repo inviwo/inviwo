@@ -133,7 +133,7 @@ struct Fixture : ::benchmark::Fixture {
             //log = os_log_create("org.inviwo", OS_LOG_CATEGORY_POINTS_OF_INTEREST);
 
             app = std::make_unique<App>();
-            app->inviwo.getProcessorNetwork()->lock();
+            //app->inviwo.getProcessorNetwork()->lock();
         }
     }
     void TearDown(::benchmark::State& state) {

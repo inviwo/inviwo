@@ -102,7 +102,8 @@ public:
                std::is_same_v<T, size_t> || std::is_same_v<T, long long> ||
                std::is_same_v<T, unsigned long long> || std::is_same_v<T, float> ||
                std::is_same_v<T, double> || std::is_same_v<T, long double> ||
-               std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view>;
+               std::is_same_v<T, std::string> || std::is_same_v<T, std::pmr::string> ||
+               std::is_same_v<T, std::string_view>;
     }
 
     allocator_type getAllocator() const;

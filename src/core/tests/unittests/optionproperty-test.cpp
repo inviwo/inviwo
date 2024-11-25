@@ -252,7 +252,7 @@ TEST(OptionProperty, SerializeClear) {
     EXPECT_THAT(prop.getDisplayNames(), ElementsAre("1", "2", "3", "4", "5"));
 }
 
-TEST(OptionProperty, SerializeChanges) {
+TEST(OptionProperty, SerializeSelectedIndex) {
     OptionProperty<int> prop{"test", "test", {1, 2, 3, 4, 5}, 1};
 
     prop.setSelectedIndex(4);
@@ -279,6 +279,31 @@ TEST(OptionProperty, SerializeChanges) {
     EXPECT_THAT(prop.getValues(), ElementsAre(1, 2, 3, 4, 5));
     EXPECT_THAT(prop.getIdentifiers(), ElementsAre("1", "2", "3", "4", "5"));
     EXPECT_THAT(prop.getDisplayNames(), ElementsAre("1", "2", "3", "4", "5"));
+}
+
+TEST(OptionProperty, SerializeOptions) {
+    OptionProperty<int> prop{"test", "test", {1, 2, 3, 4, 5}, 1};
+
+    prop.addOption(6);
+    EXPECT_EQ(prop.size(), 6);
+    EXPECT_THAT(prop.getValues(), ElementsAre(1, 2, 3, 4, 5, 6));
+
+    Serializer s{"dummy.inv"};
+    s.serialize("Property", prop);
+    std::pmr::string xml;
+    s.write(xml);
+
+    EXPECT_FALSE(prop.isDefaultState());
+    prop.resetToDefaultState();
+    EXPECT_TRUE(prop.isDefaultState());
+
+    Deserializer d{xml, "dummy.inv"};
+    d.deserialize("Property", prop);
+
+    EXPECT_FALSE(prop.isDefaultState());
+
+    EXPECT_EQ(prop.size(), 5);
+    EXPECT_THAT(prop.getValues(), ElementsAre(1, 2, 3, 4, 5));
 }
 
 }  // namespace inviwo
