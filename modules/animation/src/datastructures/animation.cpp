@@ -266,6 +266,34 @@ Seconds Animation::getLastTime() const {
     return time;
 }
 
+std::optional<Seconds> Animation::getPrevTime(Seconds at) const {
+    std::optional<Seconds> prevKeyframeTime = std::nullopt;
+    for (const auto& track : tracks_) {
+        if (auto t = track->getPrevTime(at)) {
+            if (!prevKeyframeTime) {
+                prevKeyframeTime = t;
+            } else {
+                *prevKeyframeTime = std::max(*prevKeyframeTime, *t);
+            }
+        }
+    }
+    return prevKeyframeTime;
+}
+
+std::optional<Seconds> Animation::getNextTime(Seconds at) const {
+    std::optional<Seconds> nextKeyframeTime = std::nullopt;
+    for (const auto& track : tracks_) {
+        if (auto t = track->getNextTime(at)) {
+            if (!nextKeyframeTime) {
+                nextKeyframeTime = t;
+            } else {
+                *nextKeyframeTime = std::min(*nextKeyframeTime, *t);
+            }
+        }
+    }
+    return nextKeyframeTime;
+}
+
 const std::string& Animation::getName() const { return name_; }
 
 void inviwo::animation::Animation::setName(std::string_view name) {

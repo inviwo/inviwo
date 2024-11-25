@@ -161,20 +161,9 @@ void AnimationEditorQt::keyPressEvent(QKeyEvent* keyEvent) {
                 animation.remove(&(seqqt->getKeyframeSequence()));
             }
         }
-    } else if (k == Qt::Key_Space) {
-        switch (controller_.getState()) {
-            case AnimationState::Paused:
-                controller_.play();
-                break;
-            case AnimationState::Playing:
-                controller_.pause();
-                break;
-            case AnimationState::Rendering:
-                break;
-            default:
-                break;
-        }
+        keyEvent->accept();
     }
+    QGraphicsScene::keyPressEvent(keyEvent);
 }
 
 void AnimationEditorQt::dragEnterEvent(QGraphicsSceneDragDropEvent* event) {

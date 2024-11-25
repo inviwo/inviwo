@@ -99,6 +99,14 @@ public:
 
     virtual Seconds getFirstTime() const = 0;
     virtual Seconds getLastTime() const = 0;
+    /*
+     * Return time of previous keyframe if found.
+     */
+    virtual std::optional<Seconds> getPrevTime(Seconds at) const = 0;
+    /*
+     * Return time of next keyframe if found.
+     */
+    virtual std::optional<Seconds> getNextTime(Seconds at) const = 0;
     virtual std::vector<Seconds> getAllTimes() const = 0;
 
     /**

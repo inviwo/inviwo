@@ -43,6 +43,7 @@
 #include <modules/animation/datastructures/animation.h>              // for Animation
 #include <modules/animation/datastructures/animationstate.h>         // for AnimationState, Anim...
 #include <modules/animation/datastructures/animationtime.h>          // for Seconds
+#include <modules/animation/datastructures/controltrack.h>           // for ControlTrack
 #include <modules/animation/mainanimation.h>                         // for MainAnimation
 #include <modules/animation/workspaceanimations.h>                   // for WorkspaceAnimations
 #include <modules/animationqt/animationeditorqt.h>                   // for AnimationEditorQt
@@ -133,7 +134,7 @@ QAction* createPlayPause(AnimationController& controller) {
     icon.addFile(":/animation/icons/film_movie_pause_player_sound_icon_128.svg", QSize(),
                  QIcon::Normal, QIcon::On);
     auto action = new QAction(icon, "Play/Pause");
-    action->setShortcut(Qt::Key_P);
+    action->setShortcuts({Qt::Key_P, Qt::Key_Space});
     action->setCheckable(true);
     action->setChecked(controller.getState() == AnimationState::Playing);
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -170,7 +171,6 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     , sequenceEditorView_{new SequenceEditorPanel(controller_, manager, editorFactory, this)}
     , mainWindow_{new QMainWindow()} {
 
-    resize(utilqt::emToPx(this, QSizeF(100, 40)));  // default size
     setAllowedAreas(Qt::BottomDockWidgetArea);
 
     setFloating(true);
@@ -301,6 +301,16 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
 
     toolBar->addSeparator();
 
+    // Double click if less than 0.5 seconds since last press
+    auto isKeyDoublePressed = [lastKeyEventTimestamp =
+                                   std::chrono::system_clock::now()]() mutable -> bool {
+        auto timestamp = std::chrono::system_clock::now();
+        const std::chrono::duration<double> doublePressThreshold(0.500);
+        const bool isDoublePress = (timestamp - lastKeyEventTimestamp) < doublePressThreshold;
+        lastKeyEventTimestamp = timestamp;
+        return isDoublePress;
+    };
+
     {
         auto* begin = toolBar->addAction(
             QIcon(":/animation/icons/arrow_media_next_player_previous_song_icon_128.svg"),
@@ -313,18 +323,44 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     }
 
     {
+        // For presentation, e.g, a clicker (Key_PageUp)
+        auto* prevControlKeyframe = mainWindow_->addAction("Prev Control Keyframe");
+        prevControlKeyframe->setShortcut(Qt::Key_PageUp);
+        prevControlKeyframe->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        prevControlKeyframe->setToolTip("Previous Control Keyframe");
+        connect(prevControlKeyframe, &QAction::triggered, [&]() {
+            if (isKeyDoublePressed()) {
+                if (controller_.getAnimation().hasTrackType<ControlTrack>()) {
+                    controller_.jumpToPrevKeyframe();
+                } else {
+                    controller_.jumpToPrevControlKeyframe();
+                }
+                controller_.pause();
+            } else {
+                switch (controller_.getState()) {
+                    case AnimationState::Paused:
+                        controller_.setPlaybackDirection(PlaybackDirection::Backward);
+                        controller_.play();
+                        break;
+                    case AnimationState::Playing:
+                        controller_.pause();
+                        break;
+                    case AnimationState::Rendering:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+
+    {
         auto* prev = toolBar->addAction(
             QIcon(":/animation/icons/arrow_arrows_direction_previous_icon_128.svg"), "Prev Key");
         prev->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         prev->setToolTip("Prev Key");
         mainWindow_->addAction(prev);
-        connect(prev, &QAction::triggered, [&]() {
-            auto times = controller_.getAnimation().getAllTimes();
-            auto it = std::lower_bound(times.begin(), times.end(), controller_.getCurrentTime());
-            if (it != times.begin()) {
-                controller_.eval(controller_.getCurrentTime(), *std::prev(it));
-            }
-        });
+        connect(prev, &QAction::triggered, [&]() { controller_.jumpToPrevKeyframe(); });
     }
 
     toolBar->addAction(playPause_);
@@ -337,11 +373,38 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
         next->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         next->setToolTip("Next Key");
         mainWindow_->addAction(next);
-        connect(next, &QAction::triggered, [&]() {
-            auto times = controller_.getAnimation().getAllTimes();
-            auto it = std::upper_bound(times.begin(), times.end(), controller_.getCurrentTime());
-            if (it != times.end()) {
-                controller_.eval(controller_.getCurrentTime(), *it);
+        connect(next, &QAction::triggered, [&]() { controller_.jumpToNextKeyframe(); });
+    }
+
+    {
+        // For presentation, e.g, clicker (Key_PageDown)
+        auto* nextControlKeyframe = mainWindow_->addAction("Next Control Keyframe");
+        nextControlKeyframe->setShortcut(Qt::Key_PageDown);
+        nextControlKeyframe->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        nextControlKeyframe->setToolTip("Next Control Keyframe");
+        connect(nextControlKeyframe, &QAction::triggered, [&]() {
+            if (isKeyDoublePressed()) {
+                // Jump to next keyframe
+                if (controller_.getAnimation().getTracksOfType<ControlTrack>().empty()) {
+                    controller_.jumpToNextKeyframe();
+                } else {
+                    controller_.jumpToNextControlKeyframe();
+                }
+                controller_.pause();
+            } else {
+                switch (controller_.getState()) {
+                    case AnimationState::Paused:
+                        controller_.setPlaybackDirection(PlaybackDirection::Forward);
+                        controller_.play();
+                        break;
+                    case AnimationState::Playing:
+                        controller_.pause();
+                        break;
+                    case AnimationState::Rendering:
+                        break;
+                    default:
+                        break;
+                }
             }
         });
     }
@@ -395,6 +458,10 @@ void AnimationEditorDockWidgetQt::importAnimation() {
 }
 
 void AnimationEditorDockWidgetQt::closeEvent(QCloseEvent*) { controller_.pause(); }
+
+QSize AnimationEditorDockWidgetQt::sizeHint() const {
+    return utilqt::emToPx(this, QSizeF(100, 40));  // Default size
+}
 
 void AnimationEditorDockWidgetQt::onStateChanged(AnimationController*, AnimationState,
                                                  AnimationState newState) {

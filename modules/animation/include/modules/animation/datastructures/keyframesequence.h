@@ -74,6 +74,14 @@ public:
 
     Seconds getFirstTime() const;
     Seconds getLastTime() const;
+    /*
+     * Return time of previous keyframe, or false if not found.
+     */
+    virtual std::optional<Seconds> getPrevTime(Seconds at) const = 0;
+    /*
+     * Return time of next keyframe, or false if not found.
+     */
+    virtual std::optional<Seconds> getNextTime(Seconds at) const = 0;
     std::pair<Seconds, Seconds> getTimeSpan() const;
 
     /**

@@ -77,6 +77,8 @@ public:
 
     virtual void closeEvent(QCloseEvent* event) override;
 
+    virtual QSize sizeHint() const override;
+
 protected:
     virtual void onStateChanged(AnimationController* controller, AnimationState prevState,
                                 AnimationState newState) override;

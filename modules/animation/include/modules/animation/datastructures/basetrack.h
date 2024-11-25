@@ -102,6 +102,9 @@ public:
 
     virtual Seconds getFirstTime() const override;
     virtual Seconds getLastTime() const override;
+
+    virtual std::optional<Seconds> getPrevTime(Seconds at) const final;
+    virtual std::optional<Seconds> getNextTime(Seconds at) const final;
     virtual std::vector<Seconds> getAllTimes() const override;
 
     virtual size_t size() const override;
@@ -264,6 +267,36 @@ Seconds BaseTrack<Seq>::getLastTime() const {
         return sequences_.back()->getLastTime();
     }
 }
+template <typename Seq>
+std::optional<Seconds> BaseTrack<Seq>::getPrevTime(Seconds at) const {
+    std::optional<Seconds> prevKeyframeTime = std::nullopt;
+    for (auto& sequence : sequences_) {
+        if (auto t = sequence->getPrevTime(at)) {
+            if (!prevKeyframeTime) {
+                prevKeyframeTime = t;
+            } else {
+                prevKeyframeTime = std::max(prevKeyframeTime, t);
+            }
+        }
+    }
+    return prevKeyframeTime;
+}
+
+template <typename Seq>
+std::optional<Seconds> BaseTrack<Seq>::getNextTime(Seconds at) const {
+    std::optional<Seconds> nextKeyframeTime = std::nullopt;
+    for (auto& sequence : sequences_) {
+        if (auto t = sequence->getNextTime(at)) {
+            if (!nextKeyframeTime) {
+                nextKeyframeTime = t;
+            } else {
+                nextKeyframeTime = std::min(nextKeyframeTime, t);
+            }
+        }
+    }
+    return nextKeyframeTime;
+}
+
 template <typename Seq>
 std::vector<Seconds> BaseTrack<Seq>::getAllTimes() const {
     std::vector<Seconds> result;

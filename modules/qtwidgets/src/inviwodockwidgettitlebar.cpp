@@ -76,6 +76,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget* parent)
         stickyBtn_->setCheckable(true);
         stickyBtn_->setChecked(true);
         stickyBtn_->setIconSize(iconsize);
+        stickyBtn_->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     }
     {
         floatBtn_ = new QToolButton();
@@ -86,6 +87,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget* parent)
         floatBtn_->setCheckable(true);
         floatBtn_->setChecked(parent_->isFloating());
         floatBtn_->setIconSize(iconsize);
+        floatBtn_->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     }
 
     {
@@ -94,6 +96,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget* parent)
         icon.addFile(":/svgicons/close.svg", iconsize);
         closeBtn_->setIcon(icon);
         closeBtn_->setIconSize(iconsize);
+        closeBtn_->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     }
 
     QHBoxLayout* layout = new QHBoxLayout(this);

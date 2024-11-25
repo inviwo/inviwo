@@ -258,6 +258,50 @@ void AnimationController::stop() {
     eval(currentTime_, Seconds(0));
 }
 
+void AnimationController::jumpToPrevKeyframe() {
+    if (auto prevKeyframeTime = animation_->getPrevTime(getCurrentTime())) {
+        eval(getCurrentTime(), *prevKeyframeTime);
+    }
+}
+
+void AnimationController::jumpToNextKeyframe() {
+    if (auto nextKeyframeTime = animation_->getNextTime(getCurrentTime())) {
+        eval(getCurrentTime(), *nextKeyframeTime);
+    }
+}
+
+void AnimationController::jumpToPrevControlKeyframe() {
+    std::optional<Seconds> prevKeyframeTime = std::nullopt;
+    for (auto& track : animation_->getTracksOfType<ControlTrack>()) {
+        if (auto t = track.getPrevTime(getCurrentTime())) {
+            if (!prevKeyframeTime) {
+                prevKeyframeTime = t;
+            } else {
+                *prevKeyframeTime = std::max(*prevKeyframeTime, *t);
+            }
+        }
+    }
+    if (prevKeyframeTime) {
+        eval(getCurrentTime(), *prevKeyframeTime);
+    }
+}
+
+void AnimationController::jumpToNextControlKeyframe() {
+    std::optional<Seconds> nextKeyframeTime = std::nullopt;
+    for (auto& track : animation_->getTracksOfType<ControlTrack>()) {
+        if (auto t = track.getNextTime(getCurrentTime())) {
+            if (!nextKeyframeTime) {
+                nextKeyframeTime = t;
+            } else {
+                *nextKeyframeTime = std::min(*nextKeyframeTime, *t);
+            }
+        }
+    }
+    if (nextKeyframeTime) {
+        eval(getCurrentTime(), *nextKeyframeTime);
+    }
+}
+
 void AnimationController::tick() {
     if (state_ != AnimationState::Playing) {
         setState(AnimationState::Paused);
