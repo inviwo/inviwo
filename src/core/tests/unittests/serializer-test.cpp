@@ -41,20 +41,20 @@ namespace inviwo {
 
 TEST(SerializationTest, initTest) {
     auto refpath = filesystem::findBasePath();
-    std::stringstream ss;
+    std::pmr::string xml;
     Serializer serializer(refpath);
-    serializer.writeFile(ss);
+    serializer.write(xml);
     EXPECT_TRUE(true);
 }
 
 template <typename T>
 T serializationOfType(T inValue) {
     auto refpath = filesystem::findBasePath();
-    std::stringstream ss;
+    std::pmr::string xml;
     Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);
-    serializer.writeFile(ss);
-    Deserializer deserializer(ss, refpath);
+    serializer.write(xml);
+    Deserializer deserializer(xml, refpath);
     T outValue;
     deserializer.deserialize("serializedValue", outValue);
     return outValue;
@@ -133,28 +133,28 @@ NUMERIC_TESTS(longSerializationTest, long, 650004)
 NUMERIC_TESTS(longLongSerializationTest, long long, 6700089)
 NUMERIC_TESTS(unsignedLongLongSerializationTest, unsigned long long, 99996789)
 
-class MinimumSerilizableClass : public Serializable {
+class MinimumSerializableClass : public Serializable {
 public:
-    MinimumSerilizableClass(float v = 0) : value_(v) {}
+    MinimumSerializableClass(float v = 0) : value_(v) {}
 
     virtual void serialize(Serializer& s) const { s.serialize("classVariable", value_); }
 
     virtual void deserialize(Deserializer& d) { d.deserialize("classVariable", value_); }
 
-    bool operator==(const MinimumSerilizableClass& v) const { return value_ == v.value_; }
+    bool operator==(const MinimumSerializableClass& v) const { return value_ == v.value_; }
 
 public:
     float value_;
 };
 
 TEST(SerializationTest, IvwSerializableClassTest) {
-    MinimumSerilizableClass inValue(12), outValue;
+    MinimumSerializableClass inValue(12), outValue;
     auto refpath = filesystem::findBasePath();
-    std::stringstream ss;
+    std::pmr::string xml;
     Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);
-    serializer.writeFile(ss);
-    Deserializer deserializer(ss, refpath);
+    serializer.write(xml);
+    Deserializer deserializer(xml, refpath);
     deserializer.deserialize("serializedValue", outValue);
     EXPECT_EQ(inValue.value_, 12);
     EXPECT_NE(outValue.value_, 0);
@@ -162,19 +162,18 @@ TEST(SerializationTest, IvwSerializableClassTest) {
 }
 
 TEST(SerializationTest, IvwSerializableClassAsPointerTest) {
-    MinimumSerilizableClass *inValue = new MinimumSerilizableClass(12), *outValue = 0;
+    auto inValue = std::make_unique<MinimumSerializableClass>(12);
+    std::unique_ptr<MinimumSerializableClass> outValue;
     auto refpath = filesystem::findBasePath();
-    std::stringstream ss;
+    std::pmr::string xml;
     Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);
-    serializer.writeFile(ss);
-    Deserializer deserializer(ss, refpath);
+    serializer.write(xml);
+    Deserializer deserializer(xml, refpath);
     deserializer.deserialize("serializedValue", outValue);
     EXPECT_EQ(inValue->value_, 12);
     EXPECT_NE(outValue->value_, 0);
     EXPECT_EQ(inValue->value_, outValue->value_);
-    delete inValue;
-    delete outValue;
 }
 
 TEST(SerializationTest, floatVectorTest) {
@@ -183,11 +182,11 @@ TEST(SerializationTest, floatVectorTest) {
     inVector.push_back(0.2f);
     inVector.push_back(0.3f);
     auto refpath = filesystem::findBasePath();
-    std::stringstream ss;
+    std::pmr::string xml;
     Serializer serializer(refpath);
     serializer.serialize("serializedVector", inVector, "value");
-    serializer.writeFile(ss);
-    Deserializer deserializer(ss, refpath);
+    serializer.write(xml);
+    Deserializer deserializer(xml, refpath);
     deserializer.deserialize("serializedVector", outVector, "value");
     ASSERT_EQ(inVector.size(), outVector.size());
 
@@ -195,16 +194,16 @@ TEST(SerializationTest, floatVectorTest) {
 }
 
 TEST(SerializationTest, vectorOfNonPointersTest) {
-    std::vector<MinimumSerilizableClass> inVector, outVector;
-    inVector.push_back(MinimumSerilizableClass(0.1f));
-    inVector.push_back(MinimumSerilizableClass(0.2f));
-    inVector.push_back(MinimumSerilizableClass(0.3f));
+    std::vector<MinimumSerializableClass> inVector, outVector;
+    inVector.push_back(MinimumSerializableClass(0.1f));
+    inVector.push_back(MinimumSerializableClass(0.2f));
+    inVector.push_back(MinimumSerializableClass(0.3f));
     auto refpath = filesystem::findBasePath();
-    std::stringstream ss;
+    std::pmr::string xml;
     Serializer serializer(refpath);
     serializer.serialize("serializedVector", inVector, "value");
-    serializer.writeFile(ss);
-    Deserializer deserializer(ss, refpath);
+    serializer.write(xml);
+    Deserializer deserializer(xml, refpath);
     deserializer.deserialize("serializedVector", outVector, "value");
     ASSERT_EQ(inVector.size(), outVector.size());
 
@@ -212,28 +211,23 @@ TEST(SerializationTest, vectorOfNonPointersTest) {
 }
 
 TEST(SerializationTest, vectorOfPointersTest) {
-    std::vector<MinimumSerilizableClass*> inVector, outVector;
-    inVector.push_back(new MinimumSerilizableClass(0.1f));
-    inVector.push_back(new MinimumSerilizableClass(0.2f));
-    inVector.push_back(new MinimumSerilizableClass(0.3f));
+    std::vector<std::unique_ptr<MinimumSerializableClass>> inVector;
+    inVector.push_back(std::make_unique<MinimumSerializableClass>(0.1f));
+    inVector.push_back(std::make_unique<MinimumSerializableClass>(0.2f));
+    inVector.push_back(std::make_unique<MinimumSerializableClass>(0.3f));
     auto refpath = filesystem::findBasePath();
-    std::stringstream ss;
+    std::pmr::string xml;
     Serializer serializer(refpath);
     serializer.serialize("serializedVector", inVector, "value");
-    serializer.writeFile(ss);
-    Deserializer deserializer(ss, refpath);
+    serializer.write(xml);
+
+    Deserializer deserializer(xml, refpath);
+    std::vector<std::unique_ptr<MinimumSerializableClass>> outVector;
     deserializer.deserialize("serializedVector", outVector, "value");
     ASSERT_EQ(inVector.size(), outVector.size());
 
     for (size_t i = 0; i < inVector.size(); i++)
         EXPECT_EQ(inVector[i]->value_, outVector[i]->value_);
-
-    delete inVector[0];
-    delete inVector[1];
-    delete inVector[2];
-    delete outVector[0];
-    delete outVector[1];
-    delete outVector[2];
 }
 
 TEST(SerializationTest, vec2Tests) {

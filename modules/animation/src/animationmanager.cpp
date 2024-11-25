@@ -29,8 +29,8 @@
 
 #include <modules/animation/animationmanager.h>
 
-#include <inviwo/core/common/inviwoapplication.h>              // for InviwoApplication
-#include <inviwo/core/io/serialization/deserializer.h>         // for IndexedDeserializer, Conta...
+#include <inviwo/core/common/inviwoapplication.h>  // for InviwoApplication
+#include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/network/workspacemanager.h>              // for WorkspaceManager
 #include <modules/animation/datastructures/animation.h>        // for Animation
 #include <modules/animation/factories/interpolationfactory.h>  // for InterpolationFactory
@@ -72,9 +72,9 @@ void AnimationManager::registerPropertyTrackConnection(std::string_view property
 std::vector<Animation> AnimationManager::import(Deserializer& d) {
     std::vector<Animation> animations;
     // Must pass AnimationManager to Animation constructor
-    util::IndexedDeserializer<Animation>("Animations", "Animation").setMakeNew([&]() {
-        return Animation(this);
-    })(d, animations);
+    d.deserialize("Animations", animations, "Animation",
+                  deserializer::IndexFunctions{.makeNew = [&]() { return Animation(this); }});
+
     return animations;
 }
 

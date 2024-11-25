@@ -113,10 +113,6 @@ void BoxSelectionInteractionHandler::invokeEvent(Event* event) {
     }
 }
 
-std::string_view BoxSelectionInteractionHandler::getClassIdentifier() const {
-    return "org.inviwo.BoxSelectInteractionHandler";
-}
-
 auto BoxSelectionInteractionHandler::addSelectionChangedCallback(
     std::function<SelectionFunc> callback) -> SelectionCallbackHandle {
     return selectionChangedCallback_.add(callback);

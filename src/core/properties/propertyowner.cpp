@@ -325,20 +325,21 @@ void PropertyOwner::deserialize(Deserializer& d) {
     std::vector<std::string> ownedIdentifiers;
     d.deserialize("OwnedPropertyIdentifiers", ownedIdentifiers, "PropertyIdentifier");
 
-    util::identified_deserializer::deserialize(
-        d, "Properties", "Property", properties_,
-        util::identified_deserializer::Functions{
+    d.deserialize(
+        "Properties", properties_, "Property",
+        deserializer::IdentifierFunctions{
             .getID = [](Property* const& p) -> std::string_view { return p->getIdentifier(); },
             .makeNew = []() -> Property* { return nullptr; },
-            .filter = [&](std::string_view id,
-                          size_t) -> bool { return util::contains(ownedIdentifiers, id); },
+            .filter = [&](std::string_view id, size_t) -> bool {
+                return util::contains(ownedIdentifiers, id);
+            },
             .onNew = [&](Property*& p, size_t i) { insertProperty(i, p, true); },
             .onRemove =
                 [&](std::string_view id) {
                     if (util::contains_if(ownedProperties_, [&](std::unique_ptr<Property>& op) {
                             return op->getIdentifier() == id;
                         })) {
-                        delete removeProperty(id);
+                        removeProperty(id);
                     } else {
                         // The property was not serialized since it was in it's
                         // default state. Make sure we reset it to that state again.
