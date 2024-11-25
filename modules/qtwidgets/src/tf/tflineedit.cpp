@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/glmvec.h>                              // for dvec2
 #include <modules/qtwidgets/properties/doublevaluedragspinbox.h>  // for DoubleValueDragSpinBox
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <QSignalBlocker>  // for QSignalBlocker
 #include <QSizePolicy>     // for QSizePolicy, QSizePolic...
@@ -64,7 +65,7 @@ void TFLineEdit::setValidRange(const dvec2& range, double inc) {
     spinbox_.setMaximum(range.y);
 
     spinbox_.setSingleStep(inc);
-    spinbox_.setDecimals(spinbox_.spinnerDecimals(inc));
+    spinbox_.setDecimals(utilqt::decimals(inc));
 }
 
 dvec2 TFLineEdit::getValidRange() const { return dvec2{spinbox_.minimum(), spinbox_.maximum()}; }

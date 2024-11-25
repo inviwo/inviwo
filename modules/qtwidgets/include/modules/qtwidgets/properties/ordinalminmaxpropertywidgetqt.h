@@ -304,8 +304,7 @@ std::unique_ptr<QMenu> OrdinalMinMaxPropertyWidgetQt<T>::getContextMenu() {
 
 template <typename T>
 int OrdinalMinMaxPropertyWidgetQt<T>::transformIncrementToSpinnerDecimals() {
-    return utilqt::decimals<T>(
-        Transformer<T>::valueToSpinbox(minMaxProperty_, minMaxProperty_->getIncrement()));
+    return utilqt::decimals(minMaxProperty_->getIncrement());
 }
 
 template <typename T>

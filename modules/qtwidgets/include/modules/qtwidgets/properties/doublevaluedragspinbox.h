@@ -38,7 +38,6 @@
 namespace inviwo {
 
 class NumberLineEdit;
-template <typename T>
 class ValueDragger;
 
 class IVW_MODULE_QTWIDGETS_API DoubleValueDragSpinBox : public QWidget {
@@ -81,14 +80,6 @@ public:
     QString suffix() const;
     double value() const;
 
-    /**
-     * \brief determine the number of required decimals for the given \p value
-     * This function can be used, e.g., to fit the precision of the spinbox to the increment.
-     *
-     * @param value   number used to determine the number of digits after the decimal point
-     */
-    int spinnerDecimals(double value) const;
-
 signals:
     void valueChanged(double d);
     void valueChanged(const QString& text);
@@ -105,7 +96,7 @@ private:
     void updateState();
 
     NumberLineEdit* spinBox_;
-    ValueDragger<double>* valueDragger_;
+    ValueDragger* valueDragger_;
 
     bool invalid_;
 };
