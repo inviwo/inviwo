@@ -112,7 +112,7 @@ def main(args):
     headers = {
         'Accept': 'application/vnd.github+json',
         'Content-type': 'application/json',
-        'X-GitHub-Api-Version': "22022-11-28" 
+        'X-GitHub-Api-Version': "2022-11-28" 
     }
 
     if 'GITHUB_TOKEN' in os.environ:
