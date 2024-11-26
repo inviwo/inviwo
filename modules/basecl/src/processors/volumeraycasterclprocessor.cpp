@@ -49,7 +49,7 @@ const ProcessorInfo VolumeRaycasterCLProcessor::processorInfo_{
     CodeState::Experimental,         // Code state
     Tags::CL,                        // Tags
 };
-const ProcessorInfo VolumeRaycasterCLProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeRaycasterCLProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeRaycasterCLProcessor::VolumeRaycasterCLProcessor()
     : Processor()

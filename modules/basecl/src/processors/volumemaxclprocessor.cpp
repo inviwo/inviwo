@@ -44,7 +44,7 @@ const ProcessorInfo VolumeMaxCLProcessor::processorInfo_{
     CodeState::Experimental,   // Code state
     Tags::CL,                  // Tags
 };
-const ProcessorInfo VolumeMaxCLProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeMaxCLProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeMaxCLProcessor::VolumeMaxCLProcessor()
     : Processor()

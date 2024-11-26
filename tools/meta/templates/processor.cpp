@@ -41,7 +41,7 @@ const ProcessorInfo {{ file/name }}::processorInfo_{
     R"(<Explanation of how to use the processor.>)"_unindentHelp,
 };
 
-const ProcessorInfo {{ file/name }}::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& {{ file/name }}::getProcessorInfo() const { return processorInfo_; }
 
 {{ file/name }}::{{ file/name }}()
     : Processor{}

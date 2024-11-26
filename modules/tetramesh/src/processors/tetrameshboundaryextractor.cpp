@@ -44,7 +44,7 @@ const ProcessorInfo TetraMeshBoundaryExtractor::processorInfo_{
     Tags::CPU | Tag{"Unstructured"},          // Tags
     R"(Extracts the boundary faces of a tetrahedral mesh)"_unindentHelp};
 
-const ProcessorInfo TetraMeshBoundaryExtractor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TetraMeshBoundaryExtractor::getProcessorInfo() const { return processorInfo_; }
 
 TetraMeshBoundaryExtractor::TetraMeshBoundaryExtractor()
     : Processor{}

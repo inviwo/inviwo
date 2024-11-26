@@ -44,7 +44,7 @@ const ProcessorInfo EntryExitPointsCLProcessor::processorInfo_{
     CodeState::Stable,               // Code state
     Tags::CL,                        // Tags
 };
-const ProcessorInfo EntryExitPointsCLProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& EntryExitPointsCLProcessor::getProcessorInfo() const { return processorInfo_; }
 
 EntryExitPointsCLProcessor::EntryExitPointsCLProcessor()
     : Processor()
