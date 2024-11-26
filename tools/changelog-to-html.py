@@ -110,9 +110,14 @@ def main(args):
 
     url = "https://api.github.com/markdown"
     headers = {
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-type': 'application/json'
+        'Accept': 'application/vnd.github+json',
+        'Content-type': 'application/json',
+        'X-GitHub-Api-Version': "2022-11-28" 
     }
+
+    if 'GITHUB_TOKEN' in os.environ:
+        headers['Authorization'] = f"Bearer {os.environ['GITHUB_TOKEN']}"
+
     data = json.dumps({'text': text, 'mode': 'gfm'}).encode("utf-8")
     req = urllib.request.Request(url, data, headers)
     try:
