@@ -245,15 +245,15 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a19d752467207412a8d3240de788c77b1" id="r_a19d752467207412a8d3240de788c77b1"><td class="memItemLeft" align="right" valign="top"><a id="a19d752467207412a8d3240de788c77b1" name="a19d752467207412a8d3240de788c77b1"></a>
 <a class="el" href="classinviwo_1_1NodeSwitch.html">NodeSwitch</a>&#160;</td><td class="memItemRight" valign="bottom"><b>switchToNewNode</b> (std::string_view key)</td></tr>
 <tr class="separator:a19d752467207412a8d3240de788c77b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a254ac26505c7362a153f9c43df5cfd13" id="r_a254ac26505c7362a153f9c43df5cfd13"><td class="memItemLeft" align="right" valign="top"><a id="a254ac26505c7362a153f9c43df5cfd13" name="a254ac26505c7362a153f9c43df5cfd13"></a>
-TxElement *&#160;</td><td class="memItemRight" valign="bottom"><b>getLastChild</b> () const</td></tr>
-<tr class="separator:a254ac26505c7362a153f9c43df5cfd13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad962ca75112afb57a3a7b8ab4f277a37" id="r_ad962ca75112afb57a3a7b8ab4f277a37"><td class="memItemLeft" align="right" valign="top"><a id="ad962ca75112afb57a3a7b8ab4f277a37" name="ad962ca75112afb57a3a7b8ab4f277a37"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>linkEndChild</b> (TxElement *child)</td></tr>
-<tr class="separator:ad962ca75112afb57a3a7b8ab4f277a37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6205410cf68cfce748b6b8e051312c19" id="r_a6205410cf68cfce748b6b8e051312c19"><td class="memItemLeft" align="right" valign="top"><a id="a6205410cf68cfce748b6b8e051312c19" name="a6205410cf68cfce748b6b8e051312c19"></a>
+TiXmlElement *&#160;</td><td class="memItemRight" valign="bottom"><b>getLastChild</b> () const</td></tr>
+<tr class="separator:a6205410cf68cfce748b6b8e051312c19"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-static-methods" name="pro-static-methods"></a>
 Static Protected Member Functions</h2></td></tr>
+<tr class="memitem:a15714fa8d452dc386bd19d60e72324e9" id="r_a15714fa8d452dc386bd19d60e72324e9"><td class="memItemLeft" align="right" valign="top"><a id="a15714fa8d452dc386bd19d60e72324e9" name="a15714fa8d452dc386bd19d60e72324e9"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>setAttribute</b> (TiXmlElement *node, std::string_view key, std::string_view val)</td></tr>
+<tr class="separator:a15714fa8d452dc386bd19d60e72324e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a784f3a14b6ad8358de30ee12b457c696" id="r_a784f3a14b6ad8358de30ee12b457c696"><td class="memItemLeft" align="right" valign="top"><a id="a784f3a14b6ad8358de30ee12b457c696" name="a784f3a14b6ad8358de30ee12b457c696"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>setAttribute</b> (TxElement *node, std::string_view key, std::string_view val)</td></tr>
 <tr class="separator:a784f3a14b6ad8358de30ee12b457c696"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -281,12 +281,12 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>nodeToS
 <tr class="memitem:ad394379046894405947dde748910aade inherit pro_attribs_classinviwo_1_1SerializeBase" id="r_ad394379046894405947dde748910aade"><td class="memItemLeft" align="right" valign="top">
 std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>fileName_</b></td></tr>
 <tr class="separator:ad394379046894405947dde748910aade inherit pro_attribs_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd89c76a64f0d9a203b54470165ae76a inherit pro_attribs_classinviwo_1_1SerializeBase" id="r_afd89c76a64f0d9a203b54470165ae76a"><td class="memItemLeft" align="right" valign="top">
-std::unique_ptr&lt; TxDocument &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>doc_</b></td></tr>
-<tr class="separator:afd89c76a64f0d9a203b54470165ae76a inherit pro_attribs_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2512a4b043905ebae5c4b33596cbf3b inherit pro_attribs_classinviwo_1_1SerializeBase" id="r_ab2512a4b043905ebae5c4b33596cbf3b"><td class="memItemLeft" align="right" valign="top">
-TxElement *&#160;</td><td class="memItemRight" valign="bottom"><b>rootElement_</b></td></tr>
-<tr class="separator:ab2512a4b043905ebae5c4b33596cbf3b inherit pro_attribs_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d57cd783b62751e43768ba42ba5de9a inherit pro_attribs_classinviwo_1_1SerializeBase" id="r_a8d57cd783b62751e43768ba42ba5de9a"><td class="memItemLeft" align="right" valign="top">
+std::unique_ptr&lt; TiXmlDocument &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>doc_</b></td></tr>
+<tr class="separator:a8d57cd783b62751e43768ba42ba5de9a inherit pro_attribs_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99c6516e62730ea05e8cf16736da04c2 inherit pro_attribs_classinviwo_1_1SerializeBase" id="r_a99c6516e62730ea05e8cf16736da04c2"><td class="memItemLeft" align="right" valign="top">
+TiXmlElement *&#160;</td><td class="memItemRight" valign="bottom"><b>rootElement_</b></td></tr>
+<tr class="separator:a99c6516e62730ea05e8cf16736da04c2 inherit pro_attribs_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2740287cd504cbc7ddcc3db11486bf76 inherit pro_attribs_classinviwo_1_1SerializeBase" id="r_a2740287cd504cbc7ddcc3db11486bf76"><td class="memItemLeft" align="right" valign="top">
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>retrieveChild_</b></td></tr>
 <tr class="separator:a2740287cd504cbc7ddcc3db11486bf76 inherit pro_attribs_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
