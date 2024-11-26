@@ -71,7 +71,7 @@ const ProcessorInfo TetraMeshVolumeRaycaster::processorInfo_{
 Creates an OpenGL representation of a tetrahedral grid and renders it using volume rendering. This 
 processor requires OpenGL 4.3 since it relies on Shader Storage Buffer Objects.)"_unindentHelp};
 
-const ProcessorInfo TetraMeshVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TetraMeshVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 TetraMeshVolumeRaycaster::TetraMeshVolumeRaycaster()
     : Processor{}

@@ -43,7 +43,7 @@ const ProcessorInfo VolumeToTetraMesh::processorInfo_{
     Tags::CPU | Tag{"Volume"} | Tag{"Unstructured"},  // Tags
     R"(Use an Inviwo Volume as input for an Inviwo TetraMesh)"_unindentHelp};
 
-const ProcessorInfo VolumeToTetraMesh::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeToTetraMesh::getProcessorInfo() const { return processorInfo_; }
 
 namespace {
 

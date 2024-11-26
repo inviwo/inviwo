@@ -46,7 +46,7 @@ const ProcessorInfo GrayscaleCLProcessor::processorInfo_{
     CodeState::Stable,         // Code state
     Tags::CL,                  // Tags
 };
-const ProcessorInfo GrayscaleCLProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& GrayscaleCLProcessor::getProcessorInfo() const { return processorInfo_; }
 
 GrayscaleCLProcessor::GrayscaleCLProcessor()
     : Processor()
