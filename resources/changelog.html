@@ -33,6 +33,12 @@
 </style>
 </head>
 <body>
+<h2>2024-11-26 <strong>Breaking</strong> change to Processor::getProcessorInfo()</h2>
+<p>The <code class="notranslate">Processor::getProcessorInfo()</code> method now returns a <code class="notranslate">const ProcessorInfo&amp;</code> instead of a <code class="notranslate">const ProcessorInfo</code>. This change is to prevent copying the <code class="notranslate">ProcessorInfo</code> object when it is not necessary. The method signature has been updated in all processors in the Inviwo repo. But if you have your own processors, you need to update the method signature manually.  Your need to change</p>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">virtual</span> <span class="pl-k">const</span> ProcessorInfo <span class="pl-en">getProcessorInfo</span>() <span class="pl-k">const</span> <span class="pl-k">override</span>;</pre></div>
+<p>to</p>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">virtual</span> <span class="pl-k">const</span> ProcessorInfo&amp; <span class="pl-en">getProcessorInfo</span>() <span class="pl-k">const</span> <span class="pl-k">override</span>;</pre></div>
+<p>and the corresponding implementation.</p>
 <h2>2024-09-10 LineRenderer brushing &amp; linking</h2>
 <p>The 2D <code class="notranslate">LineRenderer</code> processor now supports brushing and linking similar to the <code class="notranslate">SphereRenderer</code> including selection, highlighting, and filtering.</p>
 <h2>2024-05-13 Two-sided lighting</h2>

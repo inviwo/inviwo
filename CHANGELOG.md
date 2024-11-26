@@ -1,5 +1,17 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2024-11-26 __Breaking__ change to Processor::getProcessorInfo()
+The `Processor::getProcessorInfo()` method now returns a `const ProcessorInfo&` instead of a `const ProcessorInfo`. This change is to prevent copying the `ProcessorInfo` object when it is not necessary. The method signature has been updated in all processors in the Inviwo repo. But if you have your own processors, you need to update the method signature manually.  Your need to change
+```cpp
+virtual const ProcessorInfo getProcessorInfo() const override;
+```
+to 
+```cpp
+virtual const ProcessorInfo& getProcessorInfo() const override;
+```
+and the corresponding implementation. 
+
+
 ## 2024-09-10 LineRenderer brushing & linking
 The 2D `LineRenderer` processor now supports brushing and linking similar to the `SphereRenderer` including selection, highlighting, and filtering.
 
