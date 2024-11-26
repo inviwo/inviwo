@@ -24,19 +24,16 @@ public:
     virtual void Print(FILE* cfile, int depth) const;
 
     /*	Attribtue parsing starts: at the ! of the !--
-                                             returns: next char past '>'
+        returns: next char past '>'
     */
-    virtual const char* Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data);
 
-    virtual const TiXmlComment* ToComment() const {
-        return this;
-    }  ///< Cast to a more defined type. Will return null not of the requested type.
-    virtual TiXmlComment* ToComment() {
-        return this;
-    }  ///< Cast to a more defined type. Will return null not of the requested type.
+    /// Cast to a more defined type. Will return null not of the requested type.
+    virtual const TiXmlComment* ToComment() const { return this; }
+    /// Cast to a more defined type. Will return null not of the requested type.
+    virtual TiXmlComment* ToComment() { return this; }
 
-    /** Walk the XML tree visiting this node and all of its children.
-     */
+    /// Walk the XML tree visiting this node and all of its children.
     virtual bool Accept(TiXmlVisitor* visitor) const;
 
 protected:
@@ -44,7 +41,4 @@ protected:
 
     // used to be public
     virtual void StreamIn(std::istream* in, std::string* tag);
-    //	virtual void StreamOut( TIXML_OSTREAM * out ) const;
-
-private:
 };

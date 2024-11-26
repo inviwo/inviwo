@@ -8,22 +8,22 @@
 
 /** Print to memory functionality. The TiXmlPrinter is useful when you need to:
 
-        -# Print to memory (especially in non-STL mode)
-        -# Control formatting (line endings, etc.)
+    -# Print to memory (especially in non-STL mode)
+    -# Control formatting (line endings, etc.)
 
-        When constructed, the TiXmlPrinter is in its default "pretty printing" mode.
-        Before calling Accept() you can call methods to control the printing
-        of the XML document. After TiXmlNode::Accept() is called, the printed document can
-        be accessed via the CStr(), Str(), and Size() methods.
+    When constructed, the TiXmlPrinter is in its default "pretty printing" mode.
+    Before calling Accept() you can call methods to control the printing
+    of the XML document. After TiXmlNode::Accept() is called, the printed document can
+    be accessed via the CStr(), Str(), and Size() methods.
 
-        TiXmlPrinter uses the Visitor API.
-        @verbatim
-        TiXmlPrinter printer;
-        printer.SetIndent( "\t" );
+    TiXmlPrinter uses the Visitor API.
+    @verbatim
+    TiXmlPrinter printer;
+    printer.SetIndent( "\t" );
 
-        doc.Accept( &printer );
-        fprintf( stdout, "%s", printer.CStr() );
-        @endverbatim
+    doc.Accept( &printer );
+    fprintf( stdout, "%s", printer.CStr() );
+    @endverbatim
 */
 class TICPP_API TiXmlPrinter : public TiXmlVisitor {
 public:

@@ -97,7 +97,7 @@ void TiXmlDeclaration::StreamIn(std::istream* in, std::string* tag) {
         if (c <= 0) {
             TiXmlDocument* document = GetDocument();
             if (document)
-                document->SetError(TIXML_ERROR_EMBEDDED_NULL, 0, 0, TIXML_ENCODING_UNKNOWN);
+                document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
             return;
         }
         (*tag) += (char)c;
@@ -109,18 +109,17 @@ void TiXmlDeclaration::StreamIn(std::istream* in, std::string* tag) {
     }
 }
 
-const char* TiXmlDeclaration::Parse(const char* p, TiXmlParsingData* data,
-                                    TiXmlEncoding _encoding) {
-    p = SkipWhiteSpace(p, _encoding);
+const char* TiXmlDeclaration::Parse(const char* p, TiXmlParsingData* data) {
+    p = SkipWhiteSpace(p);
     // Find the beginning, find the end, and look for
     // the stuff in-between.
     TiXmlDocument* document = GetDocument();
-    if (!p || !*p || !StringEqual(p, "<?xml", true, _encoding)) {
-        if (document) document->SetError(TIXML_ERROR_PARSING_DECLARATION, 0, 0, _encoding);
+    if (!p || !*p || !StringEqual(p, "<?xml", true)) {
+        if (document) document->SetError(TIXML_ERROR_PARSING_DECLARATION, nullptr, nullptr);
         return 0;
     }
     if (data) {
-        data->Stamp(p, _encoding);
+        data->Stamp(p);
         location = data->Cursor();
     }
     p += 5;
@@ -135,18 +134,18 @@ const char* TiXmlDeclaration::Parse(const char* p, TiXmlParsingData* data,
             return p;
         }
 
-        p = SkipWhiteSpace(p, _encoding);
-        if (StringEqual(p, "version", true, _encoding)) {
+        p = SkipWhiteSpace(p);
+        if (StringEqual(p, "version", true)) {
             TiXmlAttribute attrib;
-            p = attrib.Parse(p, data, _encoding);
+            p = attrib.Parse(p, data);
             version = attrib.Value();
-        } else if (StringEqual(p, "encoding", true, _encoding)) {
+        } else if (StringEqual(p, "encoding", true)) {
             TiXmlAttribute attrib;
-            p = attrib.Parse(p, data, _encoding);
+            p = attrib.Parse(p, data);
             encoding = attrib.Value();
-        } else if (StringEqual(p, "standalone", true, _encoding)) {
+        } else if (StringEqual(p, "standalone", true)) {
             TiXmlAttribute attrib;
-            p = attrib.Parse(p, data, _encoding);
+            p = attrib.Parse(p, data);
             standalone = attrib.Value();
         } else {
             // Read over whatever it is.

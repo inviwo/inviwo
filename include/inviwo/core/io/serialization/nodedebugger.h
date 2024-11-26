@@ -34,6 +34,8 @@
 #include <string>
 #include <vector>
 
+class TiXmlElement;
+
 namespace ticpp {
 class Element;
 }
@@ -51,6 +53,7 @@ struct IVW_CORE_API NodeDebugger {
     };
 
     NodeDebugger(TxElement* node);
+    NodeDebugger(TiXmlElement* node);
 
     const Node& operator[](std::size_t idx) const;
     std::string toString(std::size_t idx) const;

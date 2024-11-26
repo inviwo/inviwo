@@ -888,6 +888,7 @@ find_package(ticpp CONFIG REQUIRED)
 find_package(sml CONFIG REQUIRED)
 find_package(flags CONFIG REQUIRED)
 find_package(tracywrap CONFIG REQUIRED)
+find_package(FastFloat CONFIG REQUIRED)
 
 if(APPLE)
     find_library(CORESERVICES_LIBRARY CoreServices)
@@ -921,6 +922,7 @@ target_link_libraries(inviwo-core
         $<$<BOOL:${WIN32}>:unofficial::stackwalker::StackWalker>
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
         llnl-units::units
+        FastFloat::fast_float
     PRIVATE
         roaring::roaring
         md4c::md4c
@@ -994,7 +996,7 @@ install(DIRECTORY ${IVW_ROOT_DIR}/cmake/templates
 )
 
 
-set(packages fmt glm tclap roaring llnl-units utf8cpp warn ticpp md4c sml flags tracywrap)
+set(packages fmt glm tclap roaring llnl-units utf8cpp warn ticpp md4c sml flags tracywrap FastFloat)
 if(WIN32)
     list(APPEND packages stackwalker)
 endif()

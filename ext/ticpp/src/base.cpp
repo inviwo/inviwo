@@ -3,6 +3,7 @@
 #include <istream>
 #include <cstring>
 
+#include <fmt/format.h>
 
 bool TiXmlBase::condenseWhiteSpace = true;
 
@@ -28,40 +29,28 @@ void TiXmlBase::EncodeString(const std::string& str, std::string* outString) {
                 ++i;
                 if (str[i] == ';') break;
             }
-        } else if (c == '&') {
-            outString->append(entity[0].str, entity[0].strLength);
+        } else if (c == entity[0].chr) {
+            outString->append(entity[0].str);
             ++i;
-        } else if (c == '<') {
-            outString->append(entity[1].str, entity[1].strLength);
+        } else if (c == entity[1].chr) {
+            outString->append(entity[1].str);
             ++i;
-        } else if (c == '>') {
-            outString->append(entity[2].str, entity[2].strLength);
+        } else if (c == entity[2].chr) {
+            outString->append(entity[2].str);
             ++i;
-        } else if (c == '\"') {
-            outString->append(entity[3].str, entity[3].strLength);
+        } else if (c == entity[3].chr) {
+            outString->append(entity[3].str);
             ++i;
-        } else if (c == '\'') {
-            outString->append(entity[4].str, entity[4].strLength);
+        } else if (c == entity[4].chr) {
+            outString->append(entity[4].str);
             ++i;
         } else if (c < 32) {
             // Easy pass at non-alpha/numeric/symbol
             // Below 32 is symbolic.
-            char buf[32];
-
-#if defined(TIXML_SNPRINTF)
-            TIXML_SNPRINTF(buf, sizeof(buf), "&#x%02X;", (unsigned)(c & 0xff));
-#else
-            sprintf(buf, "&#x%02X;", (unsigned)(c & 0xff));
-#endif
-
-            //*ME:	warning C4267: convert 'size_t' to 'int'
-            //*ME:	Int-Cast to make compiler happy ...
-            outString->append(buf, (int)strlen(buf));
+            outString->append(fmt::format("&#x{:02X};", c));
             ++i;
         } else {
-            // char realc = (char) c;
-            // outString->append( &realc, 1 );
-            *outString += (char)c;  // somewhat more efficient function call.
+            *outString += static_cast<char>(c);
             ++i;
         }
     }
@@ -87,17 +76,6 @@ const char* TiXmlBase::errorString[TIXML_ERROR_STRING_COUNT] = {
     "Error when TiXmlDocument added to document, because TiXmlDocument can only be at the root.",
 };
 
-
-
-// Note tha "PutString" hardcodes the same list. This
-// is less flexible than it appears. Changing the entries
-// or order will break putstring.
-TiXmlBase::Entity TiXmlBase::entity[NUM_ENTITY] = {{"&amp;", 5, '&'},
-                                                   {"&lt;", 4, '<'},
-                                                   {"&gt;", 4, '>'},
-                                                   {"&quot;", 6, '\"'},
-                                                   {"&apos;", 6, '\''}};
-
 // Bunch of unicode info at:
 //		http://www.unicode.org/faq/utf_bom.html
 // Including the basic of this table, which determines the #bytes in the
@@ -107,8 +85,6 @@ TiXmlBase::Entity TiXmlBase::entity[NUM_ENTITY] = {{"&amp;", 5, '&'},
 //				ef bb bf (Microsoft "lead bytes")
 //				ef bf be
 //				ef bf bf
-
-
 
 // clang-format off
 const int TiXmlBase::utf8ByteTable[256] = {
@@ -131,7 +107,6 @@ const int TiXmlBase::utf8ByteTable[256] = {
 		4,	4,	4,	4,	4,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1	// 0xf0 0xf0 to 0xf4 4 byte, 0xf5 and higher invalid
 };
 // clang-format on
-
 
 void TiXmlBase::ConvertUTF32ToUTF8(unsigned long input, char* output, int* length) {
     const unsigned long BYTE_MASK = 0xBF;
@@ -173,73 +148,57 @@ void TiXmlBase::ConvertUTF32ToUTF8(unsigned long input, char* output, int* lengt
     }
 }
 
-int TiXmlBase::IsAlpha(unsigned char anyByte, TiXmlEncoding /*encoding*/) {
+bool TiXmlBase::IsAlpha(int anyByte) {
+    // This will only work for low-ascii, everything else is assumed to be a valid
+    // letter. I'm not sure this is the best approach, but it is quite tricky trying
+    // to figure out alphabetical vs. not across encoding. So take a very
+    // conservative approach.
+
+    if (anyByte < 127)
+        return std::isalpha(anyByte);
+    else
+        return true;  // What else to do? The unicode set is huge...get the english ones right.
+}
+
+bool TiXmlBase::IsAlphaNum(int anyByte) {
     // This will only work for low-ascii, everything else is assumed to be a valid
     // letter. I'm not sure this is the best approach, but it is quite tricky trying
     // to figure out alhabetical vs. not across encoding. So take a very
     // conservative approach.
 
-    //	if ( encoding == TIXML_ENCODING_UTF8 )
-    //	{
     if (anyByte < 127)
-        return isalpha(anyByte);
+        return std::isalnum(anyByte);
     else
-        return 1;  // What else to do? The unicode set is huge...get the english ones right.
-    //	}
-    //	else
-    //	{
-    //		return isalpha( anyByte );
-    //	}
+        return true;  // What else to do? The unicode set is huge...get the english ones right.
 }
 
-int TiXmlBase::IsAlphaNum(unsigned char anyByte, TiXmlEncoding /*encoding*/) {
-    // This will only work for low-ascii, everything else is assumed to be a valid
-    // letter. I'm not sure this is the best approach, but it is quite tricky trying
-    // to figure out alhabetical vs. not across encoding. So take a very
-    // conservative approach.
-
-    //	if ( encoding == TIXML_ENCODING_UTF8 )
-    //	{
-    if (anyByte < 127)
-        return isalnum(anyByte);
-    else
-        return 1;  // What else to do? The unicode set is huge...get the english ones right.
-    //	}
-    //	else
-    //	{
-    //		return isalnum( anyByte );
-    //	}
-}
-
-const char* TiXmlBase::SkipWhiteSpace(const char* p, TiXmlEncoding encoding) {
+const char* TiXmlBase::SkipWhiteSpace(const char* p) {
     if (!p || !*p) {
-        return 0;
+        return nullptr;
     }
-    if (encoding == TIXML_ENCODING_UTF8) {
-        while (*p) {
-            const unsigned char* pU = (const unsigned char*)p;
 
-            // Skip the stupid Microsoft UTF-8 Byte order marks
-            if (*(pU + 0) == TIXML_UTF_LEAD_0 && *(pU + 1) == TIXML_UTF_LEAD_1 &&
-                *(pU + 2) == TIXML_UTF_LEAD_2) {
-                p += 3;
-                continue;
-            } else if (*(pU + 0) == TIXML_UTF_LEAD_0 && *(pU + 1) == 0xbfU && *(pU + 2) == 0xbeU) {
-                p += 3;
-                continue;
-            } else if (*(pU + 0) == TIXML_UTF_LEAD_0 && *(pU + 1) == 0xbfU && *(pU + 2) == 0xbfU) {
-                p += 3;
-                continue;
-            }
+    while (*p) {
+        const unsigned char* pU = (const unsigned char*)p;
 
-            if (IsWhiteSpace(*p) || *p == '\n' ||
-                *p == '\r')  // Still using old rules for white space.
-                ++p;
-            else
-                break;
+        // Skip the UTF-8 Byte order marks
+        if (*(pU + 0) == TIXML_UTF_LEAD_0 && *(pU + 1) == TIXML_UTF_LEAD_1 &&
+            *(pU + 2) == TIXML_UTF_LEAD_2) {
+            p += 3;
+            continue;
+        } else if (*(pU + 0) == TIXML_UTF_LEAD_0 && *(pU + 1) == 0xbfU && *(pU + 2) == 0xbeU) {
+            p += 3;
+            continue;
+        } else if (*(pU + 0) == TIXML_UTF_LEAD_0 && *(pU + 1) == 0xbfU && *(pU + 2) == 0xbfU) {
+            p += 3;
+            continue;
         }
-    } else {
-        while ((*p && IsWhiteSpace(*p)) || *p == '\n' || *p == '\r') ++p;
+
+        // Still using old rules for white space.
+        if (IsWhiteSpace(*p) || *p == '\n' || *p == '\r') {
+            ++p;
+        } else {
+            break;
+        }
     }
 
     return p;
@@ -273,9 +232,8 @@ const char* TiXmlBase::SkipWhiteSpace(const char* p, TiXmlEncoding encoding) {
 
 // One of TinyXML's more performance demanding functions. Try to keep the memory overhead down. The
 // "assign" optimization removes over 10% of the execution time.
-//
-const char* TiXmlBase::ReadName(const char* p, std::string* name, TiXmlEncoding encoding) {
-    // Oddly, not supported on some comilers,
+const char* TiXmlBase::ReadName(const char* p, std::string* name) {
+    // Oddly, not supported on some compilers,
     // name->clear();
     // So use this:
     *name = "";
@@ -286,13 +244,11 @@ const char* TiXmlBase::ReadName(const char* p, std::string* name, TiXmlEncoding 
     // algorithm is generous.
     //
     // After that, they can be letters, underscores, numbers,
-    // hyphens, or colons. (Colons are valid ony for namespaces,
+    // hyphens, or colons. (Colons are valid only for namespaces,
     // but tinyxml can't tell namespaces from names.)
-    if (p && *p && (IsAlpha((unsigned char)*p, encoding) || *p == '_')) {
+    if (p && *p && (IsAlpha(*p) || *p == '_')) {
         const char* start = p;
-        while (p && *p &&
-               (IsAlphaNum((unsigned char)*p, encoding) || *p == '_' || *p == '-' || *p == '.' ||
-                *p == ':')) {
+        while (p && *p && (IsAlphaNum(*p) || *p == '_' || *p == '-' || *p == '.' || *p == ':')) {
             //(*name) += *p; // expensive
             ++p;
         }
@@ -301,10 +257,10 @@ const char* TiXmlBase::ReadName(const char* p, std::string* name, TiXmlEncoding 
         }
         return p;
     }
-    return 0;
+    return nullptr;
 }
 
-const char* TiXmlBase::GetEntity(const char* p, char* value, int* length, TiXmlEncoding encoding) {
+const char* TiXmlBase::GetEntity(const char* p, char* value, int* length) {
     // Presume an entity, and pull it out.
     std::string ent;
     int i;
@@ -360,23 +316,19 @@ const char* TiXmlBase::GetEntity(const char* p, char* value, int* length, TiXmlE
                 --q;
             }
         }
-        if (encoding == TIXML_ENCODING_UTF8) {
-            // convert the UCS to UTF-8
-            ConvertUTF32ToUTF8(ucs, value, length);
-        } else {
-            *value = (char)ucs;
-            *length = 1;
-        }
+
+        // convert the UCS to UTF-8
+        ConvertUTF32ToUTF8(ucs, value, length);
+
         return p + delta + 1;
     }
 
     // Now try to match it.
-    for (i = 0; i < NUM_ENTITY; ++i) {
-        if (strncmp(entity[i].str, p, entity[i].strLength) == 0) {
-            assert(strlen(entity[i].str) == entity[i].strLength);
+    for (i = 0; i < entity.size(); ++i) {
+        if (strncmp(entity[i].str.data(), p, entity[i].str.size()) == 0) {
             *value = entity[i].chr;
             *length = 1;
-            return (p + entity[i].strLength);
+            return (p + entity[i].str.size());
         }
     }
 
@@ -387,8 +339,7 @@ const char* TiXmlBase::GetEntity(const char* p, char* value, int* length, TiXmlE
     return p + 1;
 }
 
-bool TiXmlBase::StringEqual(const char* p, const char* tag, bool ignoreCase,
-                            TiXmlEncoding encoding) {
+bool TiXmlBase::StringEqual(const char* p, const char* tag, bool ignoreCase) {
     assert(p);
     assert(tag);
     if (!p || !*p) {
@@ -399,7 +350,7 @@ bool TiXmlBase::StringEqual(const char* p, const char* tag, bool ignoreCase,
     const char* q = p;
 
     if (ignoreCase) {
-        while (*q && *tag && ToLower(*q, encoding) == ToLower(*tag, encoding)) {
+        while (*q && *tag && ToLower(*q) == ToLower(*tag)) {
             ++q;
             ++tag;
         }
@@ -418,24 +369,24 @@ bool TiXmlBase::StringEqual(const char* p, const char* tag, bool ignoreCase,
 }
 
 const char* TiXmlBase::ReadText(const char* p, std::string* text, bool trimWhiteSpace,
-                                const char* endTag, bool caseInsensitive, TiXmlEncoding encoding) {
+                                const char* endTag, bool caseInsensitive) {
     *text = "";
     if (!trimWhiteSpace          // certain tags always keep whitespace
         || !condenseWhiteSpace)  // if true, whitespace is always kept
     {
         // Keep all the white space.
-        while (p && *p && !StringEqual(p, endTag, caseInsensitive, encoding)) {
+        while (p && *p && !StringEqual(p, endTag, caseInsensitive)) {
             int len;
             char cArr[4] = {0, 0, 0, 0};
-            p = GetChar(p, cArr, &len, encoding);
+            p = GetChar(p, cArr, &len);
             text->append(cArr, len);
         }
     } else {
         bool whitespace = false;
 
         // Remove leading white space:
-        p = SkipWhiteSpace(p, encoding);
-        while (p && *p && !StringEqual(p, endTag, caseInsensitive, encoding)) {
+        p = SkipWhiteSpace(p);
+        while (p && *p && !StringEqual(p, endTag, caseInsensitive)) {
             if (*p == '\r' || *p == '\n') {
                 whitespace = true;
                 ++p;
@@ -451,7 +402,7 @@ const char* TiXmlBase::ReadText(const char* p, std::string* text, bool trimWhite
                 }
                 int len;
                 char cArr[4] = {0, 0, 0, 0};
-                p = GetChar(p, cArr, &len, encoding);
+                p = GetChar(p, cArr, &len);
                 if (len == 1)
                     (*text) += cArr[0];  // more efficient
                 else

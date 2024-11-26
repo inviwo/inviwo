@@ -72,12 +72,12 @@ bool TiXmlPrinter::Visit(const TiXmlText& text) {
         DoLineBreak();
     } else if (simpleTextPrint) {
         std::string str;
-        TiXmlBase::EncodeString(text.ValueTStr(), &str);
+        TiXmlBase::EncodeString(text.Value(), &str);
         buffer += str;
     } else {
         DoIndent();
         std::string str;
-        TiXmlBase::EncodeString(text.ValueTStr(), &str);
+        TiXmlBase::EncodeString(text.Value(), &str);
         buffer += str;
         DoLineBreak();
     }

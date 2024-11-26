@@ -25,9 +25,9 @@ void TiXmlUnknown::StreamIn(std::istream* in, std::string* tag) {
     while (in->good()) {
         int c = in->get();
         if (c <= 0) {
-            TiXmlDocument* document = GetDocument();
-            if (document)
-                document->SetError(TIXML_ERROR_EMBEDDED_NULL, 0, 0, TIXML_ENCODING_UNKNOWN);
+            if (TiXmlDocument* document = GetDocument()) {
+                document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
+            }
             return;
         }
         (*tag) += (char)c;
@@ -39,16 +39,16 @@ void TiXmlUnknown::StreamIn(std::istream* in, std::string* tag) {
     }
 }
 
-const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding) {
+const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data) {
     TiXmlDocument* document = GetDocument();
-    p = SkipWhiteSpace(p, encoding);
+    p = SkipWhiteSpace(p);
 
     if (data) {
-        data->Stamp(p, encoding);
+        data->Stamp(p);
         location = data->Cursor();
     }
     if (!p || !*p || *p != '<') {
-        if (document) document->SetError(TIXML_ERROR_PARSING_UNKNOWN, p, data, encoding);
+        if (document) document->SetError(TIXML_ERROR_PARSING_UNKNOWN, p, data);
         return 0;
     }
     ++p;
@@ -60,7 +60,7 @@ const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data, TiXmlEnco
     }
 
     if (!p) {
-        if (document) document->SetError(TIXML_ERROR_PARSING_UNKNOWN, 0, 0, encoding);
+        if (document) document->SetError(TIXML_ERROR_PARSING_UNKNOWN, nullptr, nullptr);
     }
     if (*p == '>') return p + 1;
     return p;

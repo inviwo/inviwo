@@ -35,6 +35,16 @@
 
 namespace inviwo {
 
+NodeDebugger::NodeDebugger(TiXmlElement* elem) {
+    while (elem) {
+        const auto* id = elem->Attribute("identifier");
+        const auto* type = elem->Attribute("type");
+        nodes_.push_back(Node(elem->Value(), id ? *id : std::string{},
+                              type ? *type : std::string{}, elem->Row()));
+        elem = elem->Parent()->ToElement();
+    }
+}
+
 NodeDebugger::NodeDebugger(TxElement* elem) {
     while (elem) {
         nodes_.push_back(Node(elem->Value(), elem->GetAttribute("identifier"),

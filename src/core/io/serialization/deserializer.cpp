@@ -39,10 +39,10 @@ namespace inviwo {
 
 Deserializer::Deserializer(const std::filesystem::path& fileName) : SerializeBase(fileName) {
     try {
-        doc_->LoadFile(TIXML_ENCODING_UTF8);
+        doc_->LoadFile();
         rootElement_ = doc_->FirstChildElement();
-        rootElement_->GetAttribute(std::string{SerializeConstants::VersionAttribute},
-                                   &inviwoWorkspaceVersion_, false);
+        rootElement_->QueryIntAttribute(SerializeConstants::VersionAttribute,
+                                        &inviwoWorkspaceVersion_);
     } catch (TxException& e) {
         throw AbortException(e.what(), IVW_CONTEXT);
     }
@@ -63,22 +63,21 @@ void Deserializer::deserialize(std::string_view key, std::filesystem::path& path
 
     try {
         if (target == SerializationTarget::Attribute) {
-            const auto& val = rootElement_->GetAttribute(key);
-            if (!val.empty()) {
-                path = val;
+            if (const auto* val = rootElement_->Attribute(key)) {
+                path = *val;
             }
         } else {
             if (NodeSwitch ns{*this, key}) {
-                const auto& val = rootElement_->GetAttribute(SerializeConstants::ContentAttribute);
-                if (!val.empty()) {
-                    path = val;
+                if (const auto* val =
+                        rootElement_->Attribute(SerializeConstants::ContentAttribute)) {
+                    path = *val;
                 }
                 return;
             }
             if (NodeSwitch ns{*this, key, true}) {
-                const auto& val = rootElement_->GetAttribute(SerializeConstants::ContentAttribute);
-                if (!val.empty()) {
-                    path = val;
+                if (const auto* val =
+                        rootElement_->Attribute(SerializeConstants::ContentAttribute)) {
+                    path = *val;
                 }
                 return;
             }
@@ -113,7 +112,10 @@ void Deserializer::deserialize(std::string_view key, unsigned char& data,
 
 void Deserializer::setExceptionHandler(ExceptionHandler handler) { exceptionHandler_ = handler; }
 
-void Deserializer::convertVersion(VersionConverter* converter) { converter->convert(rootElement_); }
+void Deserializer::convertVersion(VersionConverter* converter) {
+    TxElement elem(rootElement_);
+    converter->convert(&elem);
+}
 
 void Deserializer::handleError(const ExceptionContext& context) {
     if (exceptionHandler_) {
@@ -127,8 +129,8 @@ void Deserializer::handleError(const ExceptionContext& context) {
     }
 }
 
-TxElement* Deserializer::retrieveChild(std::string_view key) {
-    return retrieveChild_ ? rootElement_->FirstChildElement(key, false) : rootElement_;
+TiXmlElement* Deserializer::retrieveChild(std::string_view key) {
+    return retrieveChild_ ? rootElement_->FirstChildElement(key) : rootElement_;
 }
 
 void Deserializer::registerFactory(FactoryBase* factory) {
@@ -137,17 +139,37 @@ void Deserializer::registerFactory(FactoryBase* factory) {
 
 int Deserializer::getInviwoWorkspaceVersion() const { return inviwoWorkspaceVersion_; }
 
+const std::string* detail::attribute(TiXmlElement* node, std::string_view key) {
+    return node->Attribute(key);
+}
+
+const std::string& detail::getAttribute(TiXmlElement* node, std::string_view key) {
+    static const std::string empty;
+
+    if (auto* str = node->Attribute(key)) {
+        return *str;
+    } else {
+        return empty;
+    }
+}
+
 const std::string& detail::getAttribute(TxElement* node, std::string_view key) {
-    return node->GetAttribute(key);
+    return getAttribute(node->GetXmlPointer(), key);
 }
 
 void detail::forEachChild(TxElement* node, std::string_view key,
-                          std::function<void(TxElement*)> func) {
+                          const std::function<void(TxElement*)>& func) {
+    detail::forEachChild(node->GetXmlPointer(), key, func);
+}
 
-    TxEIt child{key};
+void detail::forEachChild(TiXmlElement* parent, std::string_view key,
+                          const std::function<void(TxElement*)>& func) {
 
-    for (child = child.begin(node); child != child.end(); ++child) {
-        func(&(*child));
+    for (auto* child = parent->FirstChild(); child; child = child->NextSibling()) {
+        if (child->Type() == TiXmlNode::ELEMENT && child->Value() == key) {
+            TxElement childElement{static_cast<TiXmlElement*>(child)};
+            func(&childElement);
+        }
     }
 }
 

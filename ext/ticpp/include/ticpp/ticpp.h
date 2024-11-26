@@ -70,38 +70,28 @@ improved THROW() macro.
 #include <string_view>
 #include <cstring>
 
+#include <fmt/format.h>
+#include <fast_float/fast_float.h>
+#include <source_location>
+
 /**
 @subpage ticpp is a TinyXML wrapper that uses a lot more C++ ideals.
 It throws exceptions, uses templates, is in its own name space, and
 <b>requires</b> STL (Standard Template Library). This is done to ease the use
 of getting values in and out of the xml.
 
-If you don't perfer to use some of the concepts just don't use it.
+If you don't prefer to use some of the concepts just don't use it.
 It is just a wrapper that extends TinyXML. It doesn't actually change
 any of TinyXML.
 */
 namespace ticpp {
 /**
-    This is a ticpp exception class
-    */
+ * This is a ticpp exception class
+ */
 class TICPP_API Exception : public std::runtime_error {
 public:
     using std::runtime_error::runtime_error;
 };
-
-/**
-This allows you to stream your exceptions in.
-It will take care of the conversion	and throwing the exception.
-*/
-#define TICPPTHROW(message)                                                \
-    {                                                                      \
-        std::ostringstream full_message;                                   \
-        std::string file(__FILE__);                                        \
-        file = file.substr(file.find_last_of("\\/") + 1);                  \
-        full_message << message << " <" << file << "@" << __LINE__ << ">"; \
-        full_message << BuildDetailedErrorString();                        \
-        throw Exception(full_message.str());                               \
-    }
 
 // Forward Declarations for Visitor, and others.
 class TICPP_API Document;
@@ -157,41 +147,31 @@ public:
 /** Wrapper around TiXmlBase */
 class TICPP_API Base {
 public:
+    [[noreturn]] void error(std::string_view message,
+                            std::source_location loc = std::source_location::current()) const {
+        throw Exception(fmt::format("{} <{}@{}>{}", message, loc.file_name(), loc.line(),
+                                    BuildDetailedErrorString()));
+    }
+
     /**
     Converts any class with a proper overload of the << opertor to a std::string
     @param value The value to be converted
     @throws Exception When value cannot be converted to a std::string
     */
     template <class T>
-    std::string ToString(const T& value) const {
-        std::stringstream convert;
-        convert << value;
-        if (convert.fail()) {
-            TICPPTHROW("Could not convert value to text");
+    decltype(auto) ToString(const T& value) const {
+        if constexpr (std::is_same_v<T, std::string>) {
+            return value;
+        } else if constexpr (std::is_arithmetic_v<T>) {
+            return fmt::to_string(value);
+        } else {
+            std::stringstream convert;
+            convert << value;
+            if (convert.fail()) {
+                error("Could not convert value to text");
+            }
+            return std::move(convert).str();
         }
-        return convert.str();
-    }
-
-    std::string ToString(const std::string& value) const { return value; }
-
-    std::string ToString(const float& value) const {
-        std::stringstream convert;
-        convert.precision(8);
-        convert << value;
-        if (convert.fail()) {
-            TICPPTHROW("Could not convert value to text");
-        }
-        return convert.str();
-    }
-
-    std::string ToString(const double& value) const {
-        std::stringstream convert;
-        convert.precision(17);
-        convert << value;
-        if (convert.fail()) {
-            TICPPTHROW("Could not convert value to text");
-        }
-        return convert.str();
     }
 
     /**
@@ -202,46 +182,20 @@ public:
     */
     template <class T>
     void FromString(const std::string& temp, T* out) const {
-        std::istringstream val(temp);
-        val >> *out;
-
-        if (val.fail()) {
-            TICPPTHROW("Could not convert \"" << temp << "\" to target type");
-        }
-    }
-
-    /**
-    Specialization for std::string
-    */
-    void FromString(const std::string& temp, std::string* out) const { *out = temp; }
-
-    /**
-    Specialization for signed char
-    */
-    void FromString(const std::string& temp, signed char* out) const {
-        std::istringstream val(temp);
-        short tmp;
-        val >> tmp;
-
-        *out = static_cast<signed char>(tmp);
-
-        if (val.fail()) {
-            TICPPTHROW("Could not convert \"" << temp << "\" to target type");
-        }
-    }
-
-    /**
-    Specialization for unsigned char
-    */
-    void FromString(const std::string& temp, unsigned char* out) const {
-        std::istringstream val(temp);
-        unsigned short tmp;
-        val >> tmp;
-
-        *out = static_cast<unsigned char>(tmp);
-
-        if (val.fail()) {
-            TICPPTHROW("Could not convert \"" << temp << "\" to target type");
+        if constexpr (std::is_same_v<T, std::string>) {
+            *out = temp;
+        } else if constexpr (std::is_arithmetic_v<T>) {
+            const auto answer =
+                fast_float::from_chars(temp.data(), temp.data() + temp.size(), *out);
+            if (answer.ec != std::errc()) {
+                error(fmt::format("Could not convert \"{}\" to target type", temp));
+            }
+        } else {
+            std::istringstream val(temp);
+            val >> *out;
+            if (val.fail()) {
+                error(fmt::format("Could not convert \"{}\" to target type", temp));
+            }
         }
     }
 
@@ -271,21 +225,17 @@ public:
     Builds detailed error string using TiXmlDocument::Error() and others
     */
     std::string BuildDetailedErrorString() const {
-        std::ostringstream full_message;
-
-        TiXmlNode* node = dynamic_cast<TiXmlNode*>(GetBasePointer());
-        if (node != 0) {
-            TiXmlDocument* doc = node->GetDocument();
-            if (doc != 0) {
+        if (auto* node = dynamic_cast<TiXmlNode*>(GetBasePointer())) {
+            if (auto* doc = node->GetDocument()) {
                 if (doc->Error()) {
-                    full_message << "\nDescription: " << doc->ErrorDesc() << "\nFile: "
-                                 << (strlen(doc->Value()) > 0 ? doc->Value() : "<unnamed-file>")
-                                 << "\nLine: " << doc->ErrorRow()
-                                 << "\nColumn: " << doc->ErrorCol();
+                    return fmt::format("\nDescription: {}\nFile: {} \nLine: {}\nColumn: {}",
+                                       doc->ErrorDesc(),
+                                       (!doc->Value().empty() ? doc->Value() : "<unnamed-file>"),
+                                       doc->ErrorRow(), doc->ErrorCol());
                 }
             }
         }
-        return full_message.str();
+        return {};
     }
 
     /**
@@ -307,7 +257,7 @@ protected:
 
     void ValidatePointer() const {
         if (m_impRC->IsNull()) {
-            TICPPTHROW("Internal TiXml Pointer is NULL");
+            error("Internal TiXml Pointer is NULL");
         }
     }
 
@@ -366,8 +316,7 @@ public:
     /*
     Decrements reference count.
     */
-    ~Attribute();
-
+    virtual ~Attribute();
 
     /**
     Get the value of this attribute
@@ -379,7 +328,7 @@ public:
     template <class T>
     void GetValue(T* value) const {
         ValidatePointer();
-        FromString(m_tiXmlPointer->ValueStr(), value);
+        FromString(m_tiXmlPointer->Value(), value);
     }
 
     /**
@@ -493,7 +442,7 @@ public:
     */
     template <class T>
     void GetValue(T* value) const {
-        FromString(GetTiXmlPointer()->ValueStr(), value);
+        FromString(GetTiXmlPointer()->Value(), value);
     }
 
     /**
@@ -772,7 +721,7 @@ public:
     T* IterateFirst(const std::string& value) const;
 
     virtual void IterateFirst(const std::string&, Attribute**) const {
-        TICPPTHROW("Attributes can only be iterated with Elements.")
+        error("Attributes can only be iterated with Elements.");
     }
 
     /**
@@ -964,7 +913,7 @@ public:
     std::unique_ptr<Node> Clone() const;
 
     /**
-    Accept a hierchical visit the nodes in the TinyXML DOM.
+    Accept a hierarchical visit the nodes in the TinyXML DOM.
     @return The boolean returned by the visitor.
     */
     bool Accept(TiXmlVisitor* visitor) const;
@@ -985,14 +934,14 @@ public:
         return out;
     }
 
+    TiXmlBase* GetBasePointer() const { return GetTiXmlPointer(); }
+
 protected:
     /**
     @internal
     Allows NodeImp to use Node*'s.
     */
     virtual TiXmlNode* GetTiXmlPointer() const = 0;
-
-    TiXmlBase* GetBasePointer() const { return GetTiXmlPointer(); }
 
     /**
     @internal
@@ -1044,9 +993,7 @@ public:
     for ( child = child.begin( parent ); child != child.end(); child++ )
     @endcode
     */
-    T* begin(const Node* parent) const {
-        return parent->IterateFirst<T>(m_value);
-    }
+    T* begin(const Node* parent) const { return parent->IterateFirst<T>(m_value); }
 
     /**
     For for loop comparisons.
@@ -1066,7 +1013,7 @@ public:
     for ( child = child.begin( parent ); child != child.end(); child++ )
     @endcode
     */
-    Iterator(std::string_view value = "") : m_p(0), m_value(value) {}
+    Iterator(std::string_view value = "") : m_p(nullptr), m_value(value) {}
 
     /// Constructor
     Iterator(T* node, std::string_view value = "") : m_p(node), m_value(value) {}
@@ -1193,8 +1140,8 @@ protected:
     */
     NodeImp(T* tiXmlPointer) {
         // Check for NULL pointers
-        if (0 == tiXmlPointer) {
-            TICPPTHROW("Can not create a " << typeid(T).name());
+        if (!tiXmlPointer) {
+            error(fmt::format("Can not create a {}", typeid(T).name()));
         }
         SetTiXmlPointer(tiXmlPointer);
         m_impRC->IncRef();
@@ -1232,6 +1179,11 @@ protected:
     }
 
 public:
+    T* GetXmlPointer() const {
+        ValidatePointer();
+        return m_tiXmlPointer;
+    }
+
     /*
     Deletes the spawned wrapper objects.
     Decrements reference count.
@@ -1330,11 +1282,10 @@ public:
     /**
     Load a file using the current document value. Throws if load is unsuccessful.
 
-    @param encoding Sets the documents encoding.
     @see TiXmlEncoding
     @throws Exception
     */
-    void LoadFile(TiXmlEncoding encoding = TIXML_DEFAULT_ENCODING);
+    void LoadFile();
 
     /**
     Save a file using the current document value. Throws if it can't save the file.
@@ -1347,16 +1298,15 @@ public:
     Load a file using the given filename. Throws if load is unsuccessful.
 
     @param filename File to load.
-    @param encoding Sets the documents encoding.
     @see TiXmlEncoding
     @throws Exception
     */
-    void LoadFile(const std::string& filename, TiXmlEncoding encoding = TIXML_DEFAULT_ENCODING);
+    void LoadFile(const std::string& filename);
 
     /**
     @copydoc Document::LoadFile( const std::string&, TiXmlEncoding )
     */
-    void LoadFile(const char* filename, TiXmlEncoding encoding = TIXML_DEFAULT_ENCODING);
+    void LoadFile(const char* filename);
 
     /**
     Save a file using the given filename. Throws if it can't save the file.
@@ -1371,11 +1321,9 @@ public:
 
     @param xml Xml to parse.
     @param throwIfParseError [DEF] If true, throws when there is a parse error.
-    @param encoding Sets the documents encoding.
     @throws Exception
     */
-    void Parse(const std::string& xml, bool throwIfParseError = true,
-               TiXmlEncoding encoding = TIXML_DEFAULT_ENCODING);
+    void Parse(const std::string& xml, bool throwIfParseError = true);
 };
 
 /** Wrapper around TiXmlElement */
@@ -1493,11 +1441,10 @@ public:
     */
     const std::string& GetText(bool throwIfNotFound = true) const {
         // Get the element's text value as a std::string
-
         if (auto* str = GetTextImp()) {
             return *str;
         } else if (throwIfNotFound) {
-            TICPPTHROW("Text does not exists in the current element");
+            error("Text does not exists in the current element");
         }
 
         static std::string empty;
@@ -1570,7 +1517,7 @@ public:
         if (auto* str = GetTextImp()) {
             FromString(*str, value);
         } else if (throwIfNotFound) {
-            TICPPTHROW("Text does not exists in the current element");
+            error("Text does not exists in the current element");
         }
     }
 
@@ -1652,9 +1599,7 @@ public:
         if (auto* str = GetAttributePtr(name)) {
             FromString(*str, &value);
         } else if (throwIfNotFound) {
-            const std::string error(std::string("Attribute '") + std::string{name} +
-                                    std::string("' does not exist"));
-            TICPPTHROW(error);
+            error(fmt::format("Attribute '{}' does not exist", name));
         }
         return value;
     }
@@ -1676,9 +1621,7 @@ public:
         if (auto* str = GetAttributePtr(name)) {
             FromString(*str, value);
         } else if (throwIfNotFound) {
-            const std::string error(std::string("Attribute '") + std::string{name} +
-                                    std::string("' does not exist"));
-            TICPPTHROW(error);
+            error(fmt::format("Attribute '{}' does not exist", name));
         }
     }
 
@@ -1740,17 +1683,17 @@ public:
     /**
     Version. Will return an empty string if none was found.
     */
-    std::string Version() const;
+    const std::string& Version() const;
 
     /**
     Encoding. Will return an empty string if none was found.
     */
-    std::string Encoding() const;
+    const std::string& Encoding() const;
 
     /**
     StandAlone. Is this a standalone document?
     */
-    std::string Standalone() const;
+    const std::string& Standalone() const;
 };
 
 /** Wrapper around TiXmlStylesheetReference */
@@ -1764,14 +1707,13 @@ public:
     /**
     Type. Will return an empty string if none was found.
     */
-    std::string Type() const;
+    const std::string& Type() const;
 
     /**
     Href. Will return an empty string if none was found.
     */
-    std::string Href() const;
+    const std::string& Href() const;
 };
-
 
 template <class T>
 T* Node::IterateFirst(const std::string& value) const {
@@ -1787,7 +1729,7 @@ template <class T>
 void Node::IterateNext(const std::string& value, T** next) const {
     Node* sibling = NextSibling(value, false);
     *next = dynamic_cast<T*>(sibling);
-    while ((0 != sibling) && (0 == *next)) {
+    while ((nullptr != sibling) && (nullptr == *next)) {
         sibling = sibling->NextSibling(value, false);
         *next = dynamic_cast<T*>(sibling);
     }
@@ -1797,7 +1739,7 @@ template <class T>
 void Node::IteratePrevious(const std::string& value, T** previous) const {
     Node* sibling = PreviousSibling(value, false);
     *previous = dynamic_cast<T*>(sibling);
-    while ((0 != sibling) && (0 == *previous)) {
+    while ((nullptr != sibling) && (nullptr == *previous)) {
         sibling = sibling->PreviousSibling(value, false);
         *previous = dynamic_cast<T*>(sibling);
     }
@@ -1805,17 +1747,19 @@ void Node::IteratePrevious(const std::string& value, T** previous) const {
 
 template <class T>
 T* Node::To() const {
-    T* pointer = dynamic_cast<T*>(this);
-    if (0 == pointer) {
-        std::string thisType = typeid(this).name();
-        std::string targetType = typeid(T).name();
-        std::string thatType = typeid(*this).name();
-        TICPPTHROW("The " << thisType.substr(6) << " could not be casted to a "
-                          << targetType.substr(6) << " *, because the target object is not a "
-                          << targetType.substr(6) << ". (It is a " << thatType.substr(6)
-                          << ")");
+    if (auto* pointer = dynamic_cast<T*>(this)) {
+        return pointer;
+    } else {
+        const std::string_view thisType = typeid(this).name();
+        const std::string_view targetType = typeid(T).name();
+        const std::string_view thatType = typeid(*this).name();
+
+        error(fmt::format(
+            "The {} could not be casted to a {}*, because the target object is not a "
+            "{} . (It is a {})",
+            thisType.substr(6), targetType.substr(6), targetType.substr(6), thatType.substr(6)));
+        return nullptr;
     }
-    return pointer;
 }
 
 }  // namespace ticpp

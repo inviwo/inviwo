@@ -6,17 +6,17 @@
 #include <ticpp/node.h>
 
 /** In correct XML the declaration is the first entry in the file.
-        @verbatim
-                <?xml version="1.0" standalone="yes"?>
-        @endverbatim
+    @verbatim
+        <?xml version="1.0" standalone="yes"?>
+    @endverbatim
 
-        TinyXml will happily read or write files without a declaration,
-        however. There are 3 possible attributes to the declaration:
-        version, encoding, and standalone.
+    TinyXml will happily read or write files without a declaration,
+    however. There are 3 possible attributes to the declaration:
+    version, encoding, and standalone.
 
-        Note: In this version of the code, the attributes are
-        handled as special cases, not generic attributes, simply
-        because there can only be at most 3 and they are always the same.
+    Note: In this version of the code, the attributes are
+    handled as special cases, not generic attributes, simply
+    because there can only be at most 3 and they are always the same.
 */
 class TICPP_API TiXmlDeclaration : public TiXmlNode {
 public:
@@ -39,11 +39,11 @@ public:
     virtual ~TiXmlDeclaration() {}
 
     /// Version. Will return an empty string if none was found.
-    const char* Version() const { return version.c_str(); }
+    const std::string& Version() const { return version; }
     /// Encoding. Will return an empty string if none was found.
-    const char* Encoding() const { return encoding.c_str(); }
+    const std::string& Encoding() const { return encoding; }
     /// Is this a standalone document?
-    const char* Standalone() const { return standalone.c_str(); }
+    const std::string& Standalone() const { return standalone; }
 
     /// Creates a copy of this Declaration and returns it.
     virtual TiXmlNode* Clone() const;
@@ -51,17 +51,15 @@ public:
     virtual void Print(FILE* cfile, int depth, std::string* str) const;
     virtual void Print(FILE* cfile, int depth) const { Print(cfile, depth, 0); }
 
-    virtual const char* Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data);
 
-    virtual const TiXmlDeclaration* ToDeclaration() const {
-        return this;
-    }  ///< Cast to a more defined type. Will return null not of the requested type.
-    virtual TiXmlDeclaration* ToDeclaration() {
-        return this;
-    }  ///< Cast to a more defined type. Will return null not of the requested type.
+    /// Cast to a more defined type. Will return null not of the requested type.
+    virtual const TiXmlDeclaration* ToDeclaration() const { return this; }
 
-    /** Walk the XML tree visiting this node and all of its children.
-     */
+    /// Cast to a more defined type. Will return null not of the requested type.
+    virtual TiXmlDeclaration* ToDeclaration() { return this; }
+
+    /// Walk the XML tree visiting this node and all of its children.
     virtual bool Accept(TiXmlVisitor* visitor) const;
 
 protected:

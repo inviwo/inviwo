@@ -48,7 +48,7 @@ void TiXmlText::StreamIn(std::istream* in, std::string* tag) {
         if (c <= 0) {
             TiXmlDocument* document = GetDocument();
             if (document)
-                document->SetError(TIXML_ERROR_EMBEDDED_NULL, 0, 0, TIXML_ENCODING_UNKNOWN);
+                document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
             return;
         }
 
@@ -65,41 +65,41 @@ void TiXmlText::StreamIn(std::istream* in, std::string* tag) {
     }
 }
 
-const char* TiXmlText::Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding) {
+const char* TiXmlText::Parse(const char* p, TiXmlParsingData* data) {
     value = "";
     TiXmlDocument* document = GetDocument();
 
     if (data) {
-        data->Stamp(p, encoding);
+        data->Stamp(p);
         location = data->Cursor();
     }
 
     const char* const startTag = "<![CDATA[";
     const char* const endTag = "]]>";
 
-    if (cdata || StringEqual(p, startTag, false, encoding)) {
+    if (cdata || StringEqual(p, startTag, false)) {
         cdata = true;
 
-        if (!StringEqual(p, startTag, false, encoding)) {
-            document->SetError(TIXML_ERROR_PARSING_CDATA, p, data, encoding);
-            return 0;
+        if (!StringEqual(p, startTag, false)) {
+            document->SetError(TIXML_ERROR_PARSING_CDATA, p, data);
+            return nullptr;
         }
         p += strlen(startTag);
 
         // Keep all the white space, ignore the encoding, etc.
-        while (p && *p && !StringEqual(p, endTag, false, encoding)) {
+        while (p && *p && !StringEqual(p, endTag, false)) {
             value += *p;
             ++p;
         }
 
         std::string dummy;
-        p = ReadText(p, &dummy, false, endTag, false, encoding);
+        p = ReadText(p, &dummy, false, endTag, false);
         return p;
     } else {
         bool ignoreWhite = true;
 
         const char* end = "<";
-        p = ReadText(p, &value, ignoreWhite, end, false, encoding);
+        p = ReadText(p, &value, ignoreWhite, end, false);
         if (p) return p - 1;  // don't truncate the '<'
         return 0;
     }

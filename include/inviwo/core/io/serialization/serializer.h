@@ -173,8 +173,9 @@ protected:
     friend class NodeSwitch;
 
     NodeSwitch switchToNewNode(std::string_view key);
-    TxElement* getLastChild() const;
-    void linkEndChild(TxElement* child);
+    TiXmlElement* getLastChild() const;
+    // void linkEndChild(TxElement* child);
+    static void setAttribute(TiXmlElement* node, std::string_view key, std::string_view val);
     static void setAttribute(TxElement* node, std::string_view key, std::string_view val);
     static void setValue(TxElement* node, std::string_view val);
 };

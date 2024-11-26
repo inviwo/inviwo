@@ -60,6 +60,10 @@ target_sources(ticpp
         src/visitor.cpp
 )
 
+find_package(FastFloat CONFIG REQUIRED)
+find_package(fmt REQUIRED)
+target_link_libraries(ticpp PUBLIC fmt::fmt FastFloat::fast_float)
+
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC" AND IVW_CFG_MSVC_ADDRESS_SANITIZER)
     target_compile_options(ticpp PRIVATE "/fsanitize=address")
 endif()

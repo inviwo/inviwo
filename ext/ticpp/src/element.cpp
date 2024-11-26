@@ -8,88 +8,6 @@
 #include <sstream>
 #include <cstring>
 
-void TiXmlElement::RemoveAttribute(const char* name) {
-    TiXmlAttribute* node = attributeSet.Find(name);
-
-    if (node) {
-        attributeSet.Remove(node);
-        delete node;
-    }
-}
-
-void TiXmlElement::RemoveAttribute(std::string_view name) {
-    TiXmlAttribute* node = attributeSet.Find(name);
-
-    if (node) {
-        attributeSet.Remove(node);
-        delete node;
-    }
-}
-
-const TiXmlElement* TiXmlNode::FirstChildElement() const {
-    const TiXmlNode* node;
-
-    for (node = FirstChild(); node; node = node->NextSibling()) {
-        if (node->ToElement()) return node->ToElement();
-    }
-    return 0;
-}
-
-const TiXmlElement* TiXmlNode::FirstChildElement(const char* _value) const {
-    const TiXmlNode* node;
-
-    for (node = FirstChild(_value); node; node = node->NextSibling(_value)) {
-        if (node->ToElement()) return node->ToElement();
-    }
-    return 0;
-}
-
-const TiXmlElement* TiXmlNode::FirstChildElement(std::string_view _value) const {
-    const TiXmlNode* node;
-
-    for (node = FirstChild(_value); node; node = node->NextSibling(_value)) {
-        if (node->ToElement()) return node->ToElement();
-    }
-    return 0;
-}
-
-const TiXmlElement* TiXmlNode::NextSiblingElement() const {
-    const TiXmlNode* node;
-
-    for (node = NextSibling(); node; node = node->NextSibling()) {
-        if (node->ToElement()) return node->ToElement();
-    }
-    return 0;
-}
-
-const TiXmlElement* TiXmlNode::NextSiblingElement(const char* _value) const {
-    const TiXmlNode* node;
-
-    for (node = NextSibling(_value); node; node = node->NextSibling(_value)) {
-        if (node->ToElement()) return node->ToElement();
-    }
-    return 0;
-}
-
-const TiXmlDocument* TiXmlNode::GetDocument() const {
-    const TiXmlNode* node;
-
-    for (node = this; node; node = node->parent) {
-        if (node->ToDocument()) return node->ToDocument();
-    }
-    return 0;
-}
-
-TiXmlElement::TiXmlElement(const char* _value) : TiXmlNode(TiXmlNode::ELEMENT) {
-    firstChild = lastChild = 0;
-    value = _value;
-}
-
-TiXmlElement::TiXmlElement(const std::string& _value) : TiXmlNode(TiXmlNode::ELEMENT) {
-    firstChild = lastChild = 0;
-    value = _value;
-}
-
 TiXmlElement::TiXmlElement(std::string_view _value) : TiXmlNode(TiXmlNode::ELEMENT) {
     firstChild = lastChild = 0;
     value = _value;
@@ -116,43 +34,15 @@ void TiXmlElement::ClearThis() {
     }
 }
 
-const char* TiXmlElement::Attribute(const char* name) const {
-    const TiXmlAttribute* node = attributeSet.Find(name);
-    if (node) return node->Value();
-    return nullptr;
-}
-const std::string* TiXmlElement::AttributeStr(const char* name) const {
-    const TiXmlAttribute* node = attributeSet.Find(name);
-    if (node) return &node->ValueStr();
-    return nullptr;
-}
-
-const std::string* TiXmlElement::Attribute(const std::string& name) const {
-    const TiXmlAttribute* node = attributeSet.Find(name);
-    if (node) return &node->ValueStr();
-    return nullptr;
-}
-
 const std::string* TiXmlElement::Attribute(std::string_view name) const {
-    const TiXmlAttribute* node = attributeSet.Find(name);
-    if (node) return &node->ValueStr();
+
+    if (const TiXmlAttribute* node = attributeSet.Find(name)) {
+        return &node->Value();
+    }
     return nullptr;
 }
 
-
-const char* TiXmlElement::Attribute(const char* name, int* i) const {
-    const char* s = Attribute(name);
-    if (i) {
-        if (s) {
-            *i = atoi(s);
-        } else {
-            *i = 0;
-        }
-    }
-    return s;
-}
-
-const std::string* TiXmlElement::Attribute(const std::string& name, int* i) const {
+const std::string* TiXmlElement::Attribute(std::string_view name, int* i) const {
     const std::string* s = Attribute(name);
     if (i) {
         if (s) {
@@ -164,19 +54,7 @@ const std::string* TiXmlElement::Attribute(const std::string& name, int* i) cons
     return s;
 }
 
-const char* TiXmlElement::Attribute(const char* name, double* d) const {
-    const char* s = Attribute(name);
-    if (d) {
-        if (s) {
-            *d = atof(s);
-        } else {
-            *d = 0;
-        }
-    }
-    return s;
-}
-
-const std::string* TiXmlElement::Attribute(const std::string& name, double* d) const {
+const std::string* TiXmlElement::Attribute(std::string_view name, double* d) const {
     const std::string* s = Attribute(name);
     if (d) {
         if (s) {
@@ -188,101 +66,47 @@ const std::string* TiXmlElement::Attribute(const std::string& name, double* d) c
     return s;
 }
 
-int TiXmlElement::QueryIntAttribute(const char* name, int* ival) const {
+int TiXmlElement::QueryIntAttribute(std::string_view name, int* ival) const {
     const TiXmlAttribute* node = attributeSet.Find(name);
     if (!node) return TIXML_NO_ATTRIBUTE;
     return node->QueryIntValue(ival);
 }
-
-int TiXmlElement::QueryIntAttribute(const std::string& name, int* ival) const {
-    const TiXmlAttribute* node = attributeSet.Find(name);
-    if (!node) return TIXML_NO_ATTRIBUTE;
-    return node->QueryIntValue(ival);
-}
-
-int TiXmlElement::QueryDoubleAttribute(const char* name, double* dval) const {
+int TiXmlElement::QueryDoubleAttribute(std::string_view name, double* dval) const {
     const TiXmlAttribute* node = attributeSet.Find(name);
     if (!node) return TIXML_NO_ATTRIBUTE;
     return node->QueryDoubleValue(dval);
 }
 
-int TiXmlElement::QueryDoubleAttribute(const std::string& name, double* dval) const {
-    const TiXmlAttribute* node = attributeSet.Find(name);
-    if (!node) return TIXML_NO_ATTRIBUTE;
-    return node->QueryDoubleValue(dval);
-}
-
-void TiXmlElement::SetAttribute(const char* name, int val) {
-    char buf[64];
-#if defined(TIXML_SNPRINTF)
-    TIXML_SNPRINTF(buf, sizeof(buf), "%d", val);
-#else
-    sprintf(buf, "%d", val);
-#endif
-    SetAttribute(name, buf);
-}
-
-void TiXmlElement::SetAttribute(const std::string& name, int val) {
+void TiXmlElement::SetAttribute(std::string_view name, int val) {
     std::ostringstream oss;
     oss << val;
     SetAttribute(name, oss.str());
 }
 
-void TiXmlElement::SetDoubleAttribute(const char* name, double val) {
-    char buf[256];
-#if defined(TIXML_SNPRINTF)
-    TIXML_SNPRINTF(buf, sizeof(buf), "%f", val);
-#else
-    sprintf(buf, "%f", val);
-#endif
-    SetAttribute(name, buf);
-}
-
-void TiXmlElement::SetAttribute(const char* cname, const char* cvalue) {
-    TiXmlAttribute* node = attributeSet.Find(cname);
-    if (node) {
-        node->SetValue(cvalue);
-        return;
-    }
-
-    TiXmlAttribute* attrib = new TiXmlAttribute(cname, cvalue);
-    if (attrib) {
-        attributeSet.Add(attrib);
-    } else {
-        TiXmlDocument* document = GetDocument();
-        if (document) document->SetError(TIXML_ERROR_OUT_OF_MEMORY, 0, 0, TIXML_ENCODING_UNKNOWN);
-    }
-}
-
-void TiXmlElement::SetAttribute(const std::string& name, const std::string& _value) {
-    TiXmlAttribute* node = attributeSet.Find(name);
-    if (node) {
-        node->SetValue(_value);
-        return;
-    }
-
-    TiXmlAttribute* attrib = new TiXmlAttribute(name, _value);
-    if (attrib) {
-        attributeSet.Add(attrib);
-    } else {
-        TiXmlDocument* document = GetDocument();
-        if (document) document->SetError(TIXML_ERROR_OUT_OF_MEMORY, 0, 0, TIXML_ENCODING_UNKNOWN);
-    }
+void TiXmlElement::SetDoubleAttribute(std::string_view name, double val) {
+    std::ostringstream oss;
+    oss << val;
+    SetAttribute(name, oss.str());
 }
 
 void TiXmlElement::SetAttribute(std::string_view name, std::string_view _value) {
-    TiXmlAttribute* node = attributeSet.Find(name);
-    if (node) {
+    if (TiXmlAttribute* node = attributeSet.Find(name)) {
         node->SetValue(_value);
         return;
     }
 
-    TiXmlAttribute* attrib = new TiXmlAttribute(name, _value);
-    if (attrib) {
+    if (TiXmlAttribute* attrib = new TiXmlAttribute(name, _value)) {
         attributeSet.Add(attrib);
     } else {
         TiXmlDocument* document = GetDocument();
-        if (document) document->SetError(TIXML_ERROR_OUT_OF_MEMORY, 0, 0, TIXML_ENCODING_UNKNOWN);
+        if (document) document->SetError(TIXML_ERROR_OUT_OF_MEMORY, nullptr, nullptr);
+    }
+}
+
+void TiXmlElement::RemoveAttribute(std::string_view name) {
+    if (auto* node = attributeSet.Find(name)) {
+        attributeSet.Remove(node);
+        delete node;
     }
 }
 
@@ -335,13 +159,12 @@ void TiXmlElement::CopyTo(TiXmlElement* target) const {
 
     // Element class:
     // Clone the attributes, then clone the children.
-    const TiXmlAttribute* attribute = 0;
-    for (attribute = attributeSet.First(); attribute; attribute = attribute->Next()) {
+    for (const TiXmlAttribute* attribute = attributeSet.First(); attribute;
+         attribute = attribute->Next()) {
         target->SetAttribute(attribute->Name(), attribute->Value());
     }
 
-    TiXmlNode* node = 0;
-    for (node = firstChild; node; node = node->NextSibling()) {
+    for (TiXmlNode* node = firstChild; node; node = node->NextSibling()) {
         target->LinkEndChild(node->Clone());
     }
 }
@@ -357,30 +180,24 @@ bool TiXmlElement::Accept(TiXmlVisitor* visitor) const {
 
 TiXmlNode* TiXmlElement::Clone() const {
     TiXmlElement* clone = new TiXmlElement(Value());
-    if (!clone) return 0;
+    if (!clone) return nullptr;
 
     CopyTo(clone);
     return clone;
 }
 
-const char* TiXmlElement::GetText() const {
-    if (const auto* child = this->FirstChild()) {
-        if (const auto childText = child->ToText()) {
-            return childText->Value();
-        }
-    }
-    return nullptr;
+const std::string* TiXmlElement::GetText() const {
+    return GetTextStr();
 }
 
 const std::string* TiXmlElement::GetTextStr() const {
     if (const auto* child = this->FirstChild()) {
         if (const auto childText = child->ToText()) {
-            return &childText->ValueTStr();
+            return &childText->Value();
         }
     }
     return nullptr;
 }
-
 
 void TiXmlElement::StreamIn(std::istream* in, std::string* tag) {
     // We're called with some amount of pre-parsing. That is, some of "this"
@@ -390,7 +207,7 @@ void TiXmlElement::StreamIn(std::istream* in, std::string* tag) {
         if (c <= 0) {
             TiXmlDocument* document = GetDocument();
             if (document)
-                document->SetError(TIXML_ERROR_EMBEDDED_NULL, 0, 0, TIXML_ENCODING_UNKNOWN);
+                document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
             return;
         }
         (*tag) += (char)c;
@@ -442,7 +259,7 @@ void TiXmlElement::StreamIn(std::istream* in, std::string* tag) {
                 if (c <= 0) {
                     TiXmlDocument* document = GetDocument();
                     if (document)
-                        document->SetError(TIXML_ERROR_EMBEDDED_NULL, 0, 0, TIXML_ENCODING_UNKNOWN);
+                        document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
                     return;
                 }
 
@@ -475,7 +292,7 @@ void TiXmlElement::StreamIn(std::istream* in, std::string* tag) {
                 if (c <= 0) {
                     TiXmlDocument* document = GetDocument();
                     if (document)
-                        document->SetError(TIXML_ERROR_EMBEDDED_NULL, 0, 0, TIXML_ENCODING_UNKNOWN);
+                        document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
                     return;
                 }
                 assert(c == '>');
@@ -486,7 +303,7 @@ void TiXmlElement::StreamIn(std::istream* in, std::string* tag) {
             } else {
                 // If not a closing tag, id it, and stream.
                 const char* tagloc = tag->c_str() + tagIndex;
-                TiXmlNode* node = Identify(tagloc, TIXML_DEFAULT_ENCODING);
+                TiXmlNode* node = Identify(tagloc);
                 if (!node) return;
                 node->StreamIn(in, tag);
                 delete node;
@@ -498,34 +315,34 @@ void TiXmlElement::StreamIn(std::istream* in, std::string* tag) {
     }
 }
 
-const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding) {
-    p = SkipWhiteSpace(p, encoding);
+const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data) {
+    p = SkipWhiteSpace(p);
     TiXmlDocument* document = GetDocument();
 
     if (!p || !*p) {
-        if (document) document->SetError(TIXML_ERROR_PARSING_ELEMENT, 0, 0, encoding);
+        if (document) document->SetError(TIXML_ERROR_PARSING_ELEMENT, nullptr, nullptr);
         return 0;
     }
 
     if (data) {
-        data->Stamp(p, encoding);
+        data->Stamp(p);
         location = data->Cursor();
     }
 
     if (*p != '<') {
-        if (document) document->SetError(TIXML_ERROR_PARSING_ELEMENT, p, data, encoding);
+        if (document) document->SetError(TIXML_ERROR_PARSING_ELEMENT, p, data);
         return 0;
     }
 
-    p = SkipWhiteSpace(p + 1, encoding);
+    p = SkipWhiteSpace(p + 1);
 
     // Read the name.
     const char* pErr = p;
 
-    p = ReadName(p, &value, encoding);
+    p = ReadName(p, &value);
     if (!p || !*p) {
         if (document)
-            document->SetError(TIXML_ERROR_FAILED_TO_READ_ELEMENT_NAME, pErr, data, encoding);
+            document->SetError(TIXML_ERROR_FAILED_TO_READ_ELEMENT_NAME, pErr, data);
         return 0;
     }
 
@@ -537,16 +354,16 @@ const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data, TiXmlEnco
     // tag or an end tag.
     while (p && *p) {
         pErr = p;
-        p = SkipWhiteSpace(p, encoding);
+        p = SkipWhiteSpace(p);
         if (!p || !*p) {
-            if (document) document->SetError(TIXML_ERROR_READING_ATTRIBUTES, pErr, data, encoding);
+            if (document) document->SetError(TIXML_ERROR_READING_ATTRIBUTES, pErr, data);
             return 0;
         }
         if (*p == '/') {
             ++p;
             // Empty tag.
             if (*p != '>') {
-                if (document) document->SetError(TIXML_ERROR_PARSING_EMPTY, p, data, encoding);
+                if (document) document->SetError(TIXML_ERROR_PARSING_EMPTY, p, data);
                 return 0;
             }
             return (p + 1);
@@ -555,43 +372,43 @@ const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data, TiXmlEnco
             // Read the value -- which can include other
             // elements -- read the end tag, and return.
             ++p;
-            p = ReadValue(p, data, encoding);  // Note this is an Element method, and will set the
+            p = ReadValue(p, data);  // Note this is an Element method, and will set the
                                                // error if one happens.
             if (!p || !*p) {
                 // We were looking for the end tag, but found nothing.
                 // Fix for [ 1663758 ] Failure to report error on bad XML
-                if (document) document->SetError(TIXML_ERROR_READING_END_TAG, p, data, encoding);
+                if (document) document->SetError(TIXML_ERROR_READING_END_TAG, p, data);
                 return 0;
             }
 
             // We should find the end tag now
-            if (StringEqual(p, endTag.c_str(), false, encoding)) {
+            if (StringEqual(p, endTag.c_str(), false)) {
                 p += endTag.length();
                 return p;
             } else {
-                if (document) document->SetError(TIXML_ERROR_READING_END_TAG, p, data, encoding);
+                if (document) document->SetError(TIXML_ERROR_READING_END_TAG, p, data);
                 return 0;
             }
         } else {
             // Try to read an attribute:
             TiXmlAttribute* attrib = new TiXmlAttribute();
             if (!attrib) {
-                if (document) document->SetError(TIXML_ERROR_OUT_OF_MEMORY, pErr, data, encoding);
+                if (document) document->SetError(TIXML_ERROR_OUT_OF_MEMORY, pErr, data);
                 return 0;
             }
 
             attrib->SetDocument(document);
             pErr = p;
-            p = attrib->Parse(p, data, encoding);
+            p = attrib->Parse(p, data);
 
             if (!p || !*p) {
-                if (document) document->SetError(TIXML_ERROR_PARSING_ELEMENT, pErr, data, encoding);
+                if (document) document->SetError(TIXML_ERROR_PARSING_ELEMENT, pErr, data);
                 delete attrib;
                 return 0;
             }
 
             // Handle the strange case of double attributes:
-            TiXmlAttribute* node = attributeSet.Find(attrib->NameTStr());
+            TiXmlAttribute* node = attributeSet.Find(attrib->Name());
 
             if (node) {
                 node->SetValue(attrib->Value());
@@ -605,12 +422,12 @@ const char* TiXmlElement::Parse(const char* p, TiXmlParsingData* data, TiXmlEnco
     return p;
 }
 
-const char* TiXmlElement::ReadValue(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding) {
+const char* TiXmlElement::ReadValue(const char* p, TiXmlParsingData* data) {
     TiXmlDocument* document = GetDocument();
 
     // Read in text and elements in any order.
     const char* pWithWhiteSpace = p;
-    p = SkipWhiteSpace(p, encoding);
+    p = SkipWhiteSpace(p);
 
     while (p && *p) {
         if (*p != '<') {
@@ -618,16 +435,16 @@ const char* TiXmlElement::ReadValue(const char* p, TiXmlParsingData* data, TiXml
             TiXmlText* textNode = new TiXmlText("");
 
             if (!textNode) {
-                if (document) document->SetError(TIXML_ERROR_OUT_OF_MEMORY, 0, 0, encoding);
+                if (document) document->SetError(TIXML_ERROR_OUT_OF_MEMORY, 0, 0);
                 return 0;
             }
 
             if (TiXmlBase::IsWhiteSpaceCondensed()) {
-                p = textNode->Parse(p, data, encoding);
+                p = textNode->Parse(p, data);
             } else {
                 // Special case: we want to keep the white space
                 // so that leading spaces aren't removed.
-                p = textNode->Parse(pWithWhiteSpace, data, encoding);
+                p = textNode->Parse(pWithWhiteSpace, data);
             }
 
             if (!textNode->Blank())
@@ -638,12 +455,12 @@ const char* TiXmlElement::ReadValue(const char* p, TiXmlParsingData* data, TiXml
             // We hit a '<'
             // Have we hit a new element or an end tag? This could also be
             // a TiXmlText in the "CDATA" style.
-            if (StringEqual(p, "</", false, encoding)) {
+            if (StringEqual(p, "</", false)) {
                 return p;
             } else {
-                TiXmlNode* node = Identify(p, encoding);
+                TiXmlNode* node = Identify(p);
                 if (node) {
-                    p = node->Parse(p, data, encoding);
+                    p = node->Parse(p, data);
                     LinkEndChild(node);
                 } else {
                     return 0;
@@ -651,11 +468,11 @@ const char* TiXmlElement::ReadValue(const char* p, TiXmlParsingData* data, TiXml
             }
         }
         pWithWhiteSpace = p;
-        p = SkipWhiteSpace(p, encoding);
+        p = SkipWhiteSpace(p);
     }
 
     if (!p) {
-        if (document) document->SetError(TIXML_ERROR_READING_ELEMENT_VALUE, 0, 0, encoding);
+        if (document) document->SetError(TIXML_ERROR_READING_ELEMENT_VALUE, nullptr, nullptr);
     }
     return p;
 }

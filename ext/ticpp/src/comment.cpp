@@ -40,8 +40,7 @@ void TiXmlComment::StreamIn(std::istream* in, std::string* tag) {
         int c = in->get();
         if (c <= 0) {
             TiXmlDocument* document = GetDocument();
-            if (document)
-                document->SetError(TIXML_ERROR_EMBEDDED_NULL, 0, 0, TIXML_ENCODING_UNKNOWN);
+            if (document) document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
             return;
         }
 
@@ -54,21 +53,21 @@ void TiXmlComment::StreamIn(std::istream* in, std::string* tag) {
     }
 }
 
-const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, TiXmlEncoding encoding) {
+const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data) {
     TiXmlDocument* document = GetDocument();
     value = "";
 
-    p = SkipWhiteSpace(p, encoding);
+    p = SkipWhiteSpace(p);
 
     if (data) {
-        data->Stamp(p, encoding);
+        data->Stamp(p);
         location = data->Cursor();
     }
     const char* startTag = "<!--";
     const char* endTag = "-->";
 
-    if (!StringEqual(p, startTag, false, encoding)) {
-        document->SetError(TIXML_ERROR_PARSING_COMMENT, p, data, encoding);
+    if (!StringEqual(p, startTag, false)) {
+        document->SetError(TIXML_ERROR_PARSING_COMMENT, p, data);
         return 0;
     }
     p += strlen(startTag);
@@ -93,7 +92,7 @@ const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, TiXmlEnco
 
     value = "";
     // Keep all the white space.
-    while (p && *p && !StringEqual(p, endTag, false, encoding)) {
+    while (p && *p && !StringEqual(p, endTag, false)) {
         value.append(p, 1);
         ++p;
     }

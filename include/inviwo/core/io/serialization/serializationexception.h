@@ -35,6 +35,8 @@
 
 #include <string>
 
+class TiXmlElement;
+
 namespace ticpp {
 class Element;
 }
@@ -48,6 +50,10 @@ public:
         SerializationExceptionData(std::string_view k = "", std::string_view t = "",
                                    std::string_view i = "", TxElement* n = nullptr)
             : key(k), type(t), id(i), nd(n) {}
+
+        SerializationExceptionData(std::string_view k, std::string_view t, std::string_view i,
+                                   TiXmlElement* n)
+            : key(k), type(t), id(i), nd(n) {}
         std::string key;
         std::string type;
         std::string id;
@@ -58,6 +64,8 @@ public:
                            ExceptionContext context = ExceptionContext(), std::string_view key = "",
                            std::string_view type = "", std::string_view id = "",
                            TxElement* n = nullptr);
+    SerializationException(std::string_view message, ExceptionContext context, std::string_view key,
+                           std::string_view type, std::string_view id, TiXmlElement* n);
     SerializationException(std::string_view format, fmt::format_args&& args,
                            ExceptionContext context);
     template <typename... Args>
