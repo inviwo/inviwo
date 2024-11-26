@@ -3037,8 +3037,6 @@ var hierarchy =
     [ "inviwo::ClockGL::Query", "structinviwo_1_1ClockGL_1_1Query.html", null ],
     [ "inviwo::InviwoApplication::Queue", "structinviwo_1_1InviwoApplication_1_1Queue.html", null ],
     [ "QWidget", null, [
-      [ "inviwo::ValueDragger< double >", "classinviwo_1_1ValueDragger.html", null ],
-      [ "inviwo::ValueDragger< int >", "classinviwo_1_1ValueDragger.html", null ],
       [ "inviwo::AngleRadiusWidget", "classinviwo_1_1AngleRadiusWidget.html", null ],
       [ "inviwo::BaseOrdinalEditorWidget", "classinviwo_1_1BaseOrdinalEditorWidget.html", [
         [ "inviwo::OrdinalEditorWidget< T >", "classinviwo_1_1OrdinalEditorWidget.html", null ]
@@ -3065,7 +3063,7 @@ var hierarchy =
       [ "inviwo::PropertyWidgetQt", "classinviwo_1_1PropertyWidgetQt.html", null ],
       [ "inviwo::TFLineEdit", "classinviwo_1_1TFLineEdit.html", null ],
       [ "inviwo::ValueDragSpinBox", "classinviwo_1_1ValueDragSpinBox.html", null ],
-      [ "inviwo::ValueDragger< T >", "classinviwo_1_1ValueDragger.html", null ],
+      [ "inviwo::ValueDragger", "classinviwo_1_1ValueDragger.html", null ],
       [ "inviwo::animation::KeyframeEditorWidget", "classinviwo_1_1animation_1_1KeyframeEditorWidget.html", null ],
       [ "inviwo::animation::SequenceEditorWidget", "classinviwo_1_1animation_1_1SequenceEditorWidget.html", null ],
       [ "inviwo::animation::TrackControlsWidgetQt", "classinviwo_1_1animation_1_1TrackControlsWidgetQt.html", null ]

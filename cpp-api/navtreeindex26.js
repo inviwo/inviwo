@@ -1,7 +1,5 @@
 var NAVTREEINDEX26 =
 {
-"classinviwo_1_1transform_1_1TranslateProperty.html#a04a6fbf259f546e4585ce0055338e548":[4,0,1,23,4,0],
-"classinviwo_1_1util_1_1BrickIterator.html":[2,0,0,18,1],
 "classinviwo_1_1util_1_1BrickIterator.html":[4,0,1,25,5],
 "classinviwo_1_1util_1_1BrickIterator.html#a81cc9a7a966bc6df19124398af2b026c":[2,0,0,18,1,0],
 "classinviwo_1_1util_1_1BrickIterator.html#a81cc9a7a966bc6df19124398af2b026c":[4,0,1,25,5,0],
@@ -249,5 +247,7 @@ var NAVTREEINDEX26 =
 "namespaceinviwo_1_1color.html#ad69620b3fe019d7bfa21052aa0f28dd6":[2,0,0,3,2],
 "namespaceinviwo_1_1color.html#af65dcd8fe65b6d31940243a5ecf57c6d":[2,0,0,3,26],
 "namespaceinviwo_1_1colorbrewer.html":[2,0,0,4],
-"namespaceinviwo_1_1colorbrewer.html#a0f95ade6b1144a9f4c178872ff1b95e3":[2,0,0,4,2]
+"namespaceinviwo_1_1colorbrewer.html#a0f95ade6b1144a9f4c178872ff1b95e3":[2,0,0,4,2],
+"namespaceinviwo_1_1colorbrewer.html#a1f898b879b266998202e04b7b28937d0":[2,0,0,4,5],
+"namespaceinviwo_1_1colorbrewer.html#a52a53d907120c5bf19d4c4feedc92141":[2,0,0,4,6]
 };

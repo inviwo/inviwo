@@ -1,7 +1,5 @@
 var NAVTREEINDEX8 =
 {
-"classinviwo_1_1InviwoFileDialog.html#a23e46b1c32312d4f20129458d1efe45e":[4,0,1,479,1],
-"classinviwo_1_1InviwoFileDialog.html#ad28edb665b5fb2ee948cc1903eced783":[2,0,0,473,0],
 "classinviwo_1_1InviwoFileDialog.html#ad28edb665b5fb2ee948cc1903eced783":[4,0,1,479,0],
 "classinviwo_1_1InviwoMainWindow.html":[2,0,0,474],
 "classinviwo_1_1InviwoMainWindow.html":[4,0,1,480],
@@ -249,5 +247,7 @@ var NAVTREEINDEX8 =
 "classinviwo_1_1LayerInformationVisualizer.html":[2,0,0,532],
 "classinviwo_1_1LayerInformationVisualizer.html":[4,0,1,538],
 "classinviwo_1_1LayerInformationVisualizer.html#a08732f3eaecbccf5042296b4afb682a6":[2,0,0,532,8],
-"classinviwo_1_1LayerInformationVisualizer.html#a08732f3eaecbccf5042296b4afb682a6":[4,0,1,538,8]
+"classinviwo_1_1LayerInformationVisualizer.html#a08732f3eaecbccf5042296b4afb682a6":[4,0,1,538,8],
+"classinviwo_1_1LayerInformationVisualizer.html#a39e3044c21f7c8ae389b41547abb186d":[2,0,0,532,1],
+"classinviwo_1_1LayerInformationVisualizer.html#a39e3044c21f7c8ae389b41547abb186d":[4,0,1,538,1]
 };

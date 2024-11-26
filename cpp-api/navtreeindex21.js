@@ -1,7 +1,5 @@
 var NAVTREEINDEX21 =
 {
-"classinviwo_1_1TransferFunctionLayerReaderWrapper.html":[2,0,0,1185],
-"classinviwo_1_1TransferFunctionLayerReaderWrapper.html":[4,0,1,1191],
 "classinviwo_1_1TransferFunctionLayerWriter.html":[2,0,0,1186],
 "classinviwo_1_1TransferFunctionLayerWriter.html":[4,0,1,1192],
 "classinviwo_1_1TransferFunctionLayerWriterWrapper.html":[2,0,0,1187],
@@ -87,10 +85,10 @@ var NAVTREEINDEX21 =
 "classinviwo_1_1ValueDragSpinBox.html#a27ddf163c051d7e425d9d989c46cc293":[4,0,1,1214,0],
 "classinviwo_1_1ValueDragger.html":[2,0,0,1207],
 "classinviwo_1_1ValueDragger.html":[4,0,1,1213],
-"classinviwo_1_1ValueDragger.html#a4f9dc1da8d7564ad251b4aa3fd576828":[2,0,0,1207,0],
-"classinviwo_1_1ValueDragger.html#a4f9dc1da8d7564ad251b4aa3fd576828":[4,0,1,1213,0],
-"classinviwo_1_1ValueDragger.html#adb06acd4648f81c4381fd5c725d1833d":[2,0,0,1207,1],
-"classinviwo_1_1ValueDragger.html#adb06acd4648f81c4381fd5c725d1833d":[4,0,1,1213,1],
+"classinviwo_1_1ValueDragger.html#ac581cbb306b2ab392ac708bf0e75c117":[2,0,0,1207,1],
+"classinviwo_1_1ValueDragger.html#ac581cbb306b2ab392ac708bf0e75c117":[4,0,1,1213,1],
+"classinviwo_1_1ValueDragger.html#ae624ba4d65a856bd0126c41b9abbce0d":[2,0,0,1207,0],
+"classinviwo_1_1ValueDragger.html#ae624ba4d65a856bd0126c41b9abbce0d":[4,0,1,1213,0],
 "classinviwo_1_1Vector2DCurl.html":[2,0,0,1210],
 "classinviwo_1_1Vector2DCurl.html":[4,0,1,1216],
 "classinviwo_1_1Vector2DDivergence.html":[2,0,0,1211],
@@ -249,5 +247,7 @@ var NAVTREEINDEX21 =
 "classinviwo_1_1VolumeGL.html":[1,1,34],
 "classinviwo_1_1VolumeGL.html#abb500fe800856982c8a2bc64d9608af4":[1,1,34,0],
 "classinviwo_1_1VolumeGL2PyConverter.html":[2,0,0,1250],
-"classinviwo_1_1VolumeGL2PyConverter.html":[4,0,1,1256]
+"classinviwo_1_1VolumeGL2PyConverter.html":[4,0,1,1256],
+"classinviwo_1_1VolumeGL2RAMConverter.html":[2,0,0,1251],
+"classinviwo_1_1VolumeGL2RAMConverter.html":[4,0,1,1257]
 };

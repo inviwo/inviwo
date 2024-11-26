@@ -1,7 +1,5 @@
 var NAVTREEINDEX24 =
 {
-"classinviwo_1_1animation_1_1DemoController.html":[4,0,1,1,34],
-"classinviwo_1_1animation_1_1DemoControllerObservable.html":[2,0,0,0,34],
 "classinviwo_1_1animation_1_1DemoControllerObservable.html":[4,0,1,1,35],
 "classinviwo_1_1animation_1_1DemoControllerObserver.html":[2,0,0,0,35],
 "classinviwo_1_1animation_1_1DemoControllerObserver.html":[4,0,1,1,36],
@@ -249,5 +247,7 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1glui_1_1Layout.html#a797d85869ac8bbb03f8c9a266c1129d3":[4,0,1,12,14,5],
 "classinviwo_1_1glui_1_1Layout.html#aba597b5896147291e10869ee7e3fa7eb":[4,0,1,12,14,3],
 "classinviwo_1_1glui_1_1Layout.html#af58aa1a0447a712864d76f692b6c381f":[4,0,1,12,14,1],
-"classinviwo_1_1glui_1_1RangeSlider.html":[4,0,1,12,15]
+"classinviwo_1_1glui_1_1RangeSlider.html":[4,0,1,12,15],
+"classinviwo_1_1glui_1_1RangeSlider.html#a01056bc77ef9d13b6e8ec8d4a828ed08":[4,0,1,12,15,0],
+"classinviwo_1_1glui_1_1Renderer.html":[4,0,1,12,16]
 };

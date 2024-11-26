@@ -1,7 +1,5 @@
 var NAVTREEINDEX11 =
 {
-"classinviwo_1_1MeshVisualizer.html#a88eba06dad9fd8f677b59c4fc5cfc9cc":[2,0,0,630,8],
-"classinviwo_1_1MeshVisualizer.html#a88eba06dad9fd8f677b59c4fc5cfc9cc":[4,0,1,636,8],
 "classinviwo_1_1MeshVisualizer.html#a98d6a95b22f279e7d16b3e719de6f4e1":[2,0,0,630,4],
 "classinviwo_1_1MeshVisualizer.html#a98d6a95b22f279e7d16b3e719de6f4e1":[4,0,1,636,4],
 "classinviwo_1_1MeshVisualizer.html#a9a622d08f5d3724b684185d67b49e92e":[2,0,0,630,6],
@@ -249,5 +247,7 @@ var NAVTREEINDEX11 =
 "classinviwo_1_1Observer.html":[4,0,1,690],
 "classinviwo_1_1Observer.html#a89a511d1efc3db5e2ce1fe8fd53043a4":[2,0,0,684,2],
 "classinviwo_1_1Observer.html#a89a511d1efc3db5e2ce1fe8fd53043a4":[4,0,1,690,2],
-"classinviwo_1_1Observer.html#aa62add49e9cc4b358f61aa9d38aee991":[2,0,0,684,1]
+"classinviwo_1_1Observer.html#aa62add49e9cc4b358f61aa9d38aee991":[2,0,0,684,1],
+"classinviwo_1_1Observer.html#aa62add49e9cc4b358f61aa9d38aee991":[4,0,1,690,1],
+"classinviwo_1_1Observer.html#af03fb7de020a1084d2aa064206315a9d":[2,0,0,684,0]
 };

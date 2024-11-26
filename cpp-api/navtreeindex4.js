@@ -150,8 +150,6 @@ var NAVTREEINDEX4 =
 "classinviwo_1_1Document_1_1PathComponent.html":[4,0,1,272,2],
 "classinviwo_1_1DoubleValueDragSpinBox.html":[2,0,0,267],
 "classinviwo_1_1DoubleValueDragSpinBox.html":[4,0,1,273],
-"classinviwo_1_1DoubleValueDragSpinBox.html#a35d0d05f2bb87717ef97e807b2829981":[2,0,0,267,1],
-"classinviwo_1_1DoubleValueDragSpinBox.html#a35d0d05f2bb87717ef97e807b2829981":[4,0,1,273,1],
 "classinviwo_1_1DoubleValueDragSpinBox.html#af65b953fcc2d65071fe87d09f90b8be5":[2,0,0,267,0],
 "classinviwo_1_1DoubleValueDragSpinBox.html#af65b953fcc2d65071fe87d09f90b8be5":[4,0,1,273,0],
 "classinviwo_1_1DrawLines.html":[1,3,30],
@@ -249,5 +247,7 @@ var NAVTREEINDEX4 =
 "classinviwo_1_1FactoryRegister.html":[4,0,1,308],
 "classinviwo_1_1FactoryRegister.html#a0b244528108edd1f87507df782b7bf4e":[2,0,0,302,0],
 "classinviwo_1_1FactoryRegister.html#a0b244528108edd1f87507df782b7bf4e":[4,0,1,308,0],
-"classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4.html":[2,0,0,296]
+"classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4.html":[2,0,0,296],
+"classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4.html":[4,0,1,302],
+"classinviwo_1_1FileAssociations.html":[2,0,0,306]
 };

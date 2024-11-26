@@ -1,7 +1,5 @@
 var NAVTREEINDEX16 =
 {
-"classinviwo_1_1Rasterizer.html#a399df0dd8879cb9180c9099be363359b":[2,0,0,944,2],
-"classinviwo_1_1Rasterizer.html#a399df0dd8879cb9180c9099be363359b":[4,0,1,950,2],
 "classinviwo_1_1Rasterizer.html#a4af2ba8298a68a76229f26f8d0faac6f":[2,0,0,944,1],
 "classinviwo_1_1Rasterizer.html#a4af2ba8298a68a76229f26f8d0faac6f":[4,0,1,950,1],
 "classinviwo_1_1Rasterizer.html#a736905e639988b999f764f0e5bf7b98a":[2,0,0,944,4],
@@ -249,5 +247,7 @@ var NAVTREEINDEX16 =
 "classinviwo_1_1ShaderObject.html#a3bb2e3169259b8a94486d0398934bbaa":[4,0,1,1016,11],
 "classinviwo_1_1ShaderObject.html#a4f94c9ce50110d5282db09796bcc369a":[2,0,0,1010,4],
 "classinviwo_1_1ShaderObject.html#a4f94c9ce50110d5282db09796bcc369a":[4,0,1,1016,4],
-"classinviwo_1_1ShaderObject.html#a5724f286db8f5a666f41f4f179185b3b":[2,0,0,1010,3]
+"classinviwo_1_1ShaderObject.html#a5724f286db8f5a666f41f4f179185b3b":[2,0,0,1010,3],
+"classinviwo_1_1ShaderObject.html#a5724f286db8f5a666f41f4f179185b3b":[4,0,1,1016,3],
+"classinviwo_1_1ShaderObject.html#a6f4ea27eba2786a424a607f2c0fe0554":[2,0,0,1010,8]
 };

@@ -1,7 +1,5 @@
 var NAVTREEINDEX10 =
 {
-"classinviwo_1_1LineSettingsProperty.html#a33066d52bf199c084b20c6a5e526c3d3":[4,0,1,583,5],
-"classinviwo_1_1LineSettingsProperty.html#a41ff05d275720c12b67b98e8c16006cb":[2,0,0,577,7],
 "classinviwo_1_1LineSettingsProperty.html#a41ff05d275720c12b67b98e8c16006cb":[4,0,1,583,7],
 "classinviwo_1_1LineSettingsProperty.html#a52cbbe63f4f8c90473d70b0b8ae1b30c":[2,0,0,577,3],
 "classinviwo_1_1LineSettingsProperty.html#a52cbbe63f4f8c90473d70b0b8ae1b30c":[4,0,1,583,3],
@@ -249,5 +247,7 @@ var NAVTREEINDEX10 =
 "classinviwo_1_1MeshVisualizer.html#a0ee6a0ca1af2ce1384ac208163c44a6c":[2,0,0,630,1],
 "classinviwo_1_1MeshVisualizer.html#a0ee6a0ca1af2ce1384ac208163c44a6c":[4,0,1,636,1],
 "classinviwo_1_1MeshVisualizer.html#a391db561537b1e795dc807f90bfbcdd1":[2,0,0,630,5],
-"classinviwo_1_1MeshVisualizer.html#a391db561537b1e795dc807f90bfbcdd1":[4,0,1,636,5]
+"classinviwo_1_1MeshVisualizer.html#a391db561537b1e795dc807f90bfbcdd1":[4,0,1,636,5],
+"classinviwo_1_1MeshVisualizer.html#a88eba06dad9fd8f677b59c4fc5cfc9cc":[2,0,0,630,8],
+"classinviwo_1_1MeshVisualizer.html#a88eba06dad9fd8f677b59c4fc5cfc9cc":[4,0,1,636,8]
 };

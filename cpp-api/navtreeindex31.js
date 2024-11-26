@@ -1,7 +1,5 @@
 var NAVTREEINDEX31 =
 {
-"structinviwo_1_1dispatching_1_1filter_1_1IntegerScalars.html":[4,0,1,9,1,9],
-"structinviwo_1_1dispatching_1_1filter_1_1IntegerVecs.html":[2,0,0,8,0,10],
 "structinviwo_1_1dispatching_1_1filter_1_1IntegerVecs.html":[4,0,1,9,1,10],
 "structinviwo_1_1dispatching_1_1filter_1_1Integers.html":[2,0,0,8,0,8],
 "structinviwo_1_1dispatching_1_1filter_1_1Integers.html":[4,0,1,9,1,8],
@@ -249,5 +247,7 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1utilgl_1_1BlendModeEquationState.html":[4,0,1,27,2],
 "structinviwo_1_1utilgl_1_1BlendModeEquationState_1_1Equation.html":[2,0,0,21,2,0],
 "structinviwo_1_1utilgl_1_1BlendModeEquationState_1_1Equation.html":[4,0,1,27,2,0],
-"structinviwo_1_1utilgl_1_1BlendModeState.html":[2,0,0,21,3]
+"structinviwo_1_1utilgl_1_1BlendModeState.html":[2,0,0,21,3],
+"structinviwo_1_1utilgl_1_1BlendModeState.html":[4,0,1,27,3],
+"structinviwo_1_1utilgl_1_1BlendModeState_1_1Config.html":[2,0,0,21,3,0]
 };

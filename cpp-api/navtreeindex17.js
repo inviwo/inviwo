@@ -1,7 +1,5 @@
 var NAVTREEINDEX17 =
 {
-"classinviwo_1_1ShaderObject.html#a5724f286db8f5a666f41f4f179185b3b":[4,0,1,1016,3],
-"classinviwo_1_1ShaderObject.html#a6f4ea27eba2786a424a607f2c0fe0554":[2,0,0,1010,8],
 "classinviwo_1_1ShaderObject.html#a6f4ea27eba2786a424a607f2c0fe0554":[4,0,1,1016,8],
 "classinviwo_1_1ShaderObject.html#aa6fceb7de9928852e6bdd3bda404581c":[2,0,0,1010,2],
 "classinviwo_1_1ShaderObject.html#aa6fceb7de9928852e6bdd3bda404581c":[4,0,1,1016,2],
@@ -249,5 +247,7 @@ var NAVTREEINDEX17 =
 "classinviwo_1_1SplitterProperty.html":[1,4,35],
 "classinviwo_1_1SplitterProperty.html#a82441a3819e8497587a45a2e9f0dddcf":[1,4,35,0],
 "classinviwo_1_1SplitterRenderer.html":[2,0,0,1049],
-"classinviwo_1_1SplitterRenderer.html":[4,0,1,1055]
+"classinviwo_1_1SplitterRenderer.html":[4,0,1,1055],
+"classinviwo_1_1SplitterRenderer.html#a0163005e341ac81f18f64358337cdb38":[2,0,0,1049,1],
+"classinviwo_1_1SplitterRenderer.html#a0163005e341ac81f18f64358337cdb38":[4,0,1,1055,1]
 };

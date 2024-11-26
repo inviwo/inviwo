@@ -1,7 +1,5 @@
 var NAVTREEINDEX32 =
 {
-"structinviwo_1_1utilgl_1_1BlendModeState.html":[4,0,1,27,3],
-"structinviwo_1_1utilgl_1_1BlendModeState_1_1Config.html":[2,0,0,21,3,0],
 "structinviwo_1_1utilgl_1_1BlendModeState_1_1Config.html":[4,0,1,27,3,0],
 "structinviwo_1_1utilgl_1_1BlendModeState_1_1Mode.html":[2,0,0,21,3,1],
 "structinviwo_1_1utilgl_1_1BlendModeState_1_1Mode.html":[4,0,1,27,3,1],

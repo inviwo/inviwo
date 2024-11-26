@@ -1,7 +1,5 @@
 var NAVTREEINDEX20 =
 {
-"classinviwo_1_1TetraMeshBoundaryExtractor.html":[4,0,1,1112],
-"classinviwo_1_1TetraMeshBoundaryExtractor.html#a17737aff252bb97567caad5badac8bf3":[2,0,0,1106,0],
 "classinviwo_1_1TetraMeshBoundaryExtractor.html#a17737aff252bb97567caad5badac8bf3":[4,0,1,1112,0],
 "classinviwo_1_1TetraMeshBoundingBox.html":[2,0,0,1107],
 "classinviwo_1_1TetraMeshBoundingBox.html":[4,0,1,1113],
@@ -249,5 +247,7 @@ var NAVTREEINDEX20 =
 "classinviwo_1_1TransferFunctionITFWriter.html":[2,0,0,1183],
 "classinviwo_1_1TransferFunctionITFWriter.html":[4,0,1,1189],
 "classinviwo_1_1TransferFunctionLayerReader.html":[2,0,0,1184],
-"classinviwo_1_1TransferFunctionLayerReader.html":[4,0,1,1190]
+"classinviwo_1_1TransferFunctionLayerReader.html":[4,0,1,1190],
+"classinviwo_1_1TransferFunctionLayerReaderWrapper.html":[2,0,0,1185],
+"classinviwo_1_1TransferFunctionLayerReaderWrapper.html":[4,0,1,1191]
 };

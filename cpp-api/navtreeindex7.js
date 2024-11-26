@@ -1,7 +1,5 @@
 var NAVTREEINDEX7 =
 {
-"classinviwo_1_1ImageSnapshot.html":[2,0,0,418],
-"classinviwo_1_1ImageSnapshot.html":[4,0,1,424],
 "classinviwo_1_1ImageSnapshot.html#a362fc8431640f6b8a8e6d9f9d1337af5":[2,0,0,418,0],
 "classinviwo_1_1ImageSnapshot.html#a362fc8431640f6b8a8e6d9f9d1337af5":[4,0,1,424,0],
 "classinviwo_1_1ImageSource.html":[2,0,0,419],
@@ -249,5 +247,7 @@ var NAVTREEINDEX7 =
 "classinviwo_1_1InviwoEditMenu.html":[4,0,1,478],
 "classinviwo_1_1InviwoFileDialog.html":[2,0,0,473],
 "classinviwo_1_1InviwoFileDialog.html":[4,0,1,479],
-"classinviwo_1_1InviwoFileDialog.html#a23e46b1c32312d4f20129458d1efe45e":[2,0,0,473,1]
+"classinviwo_1_1InviwoFileDialog.html#a23e46b1c32312d4f20129458d1efe45e":[2,0,0,473,1],
+"classinviwo_1_1InviwoFileDialog.html#a23e46b1c32312d4f20129458d1efe45e":[4,0,1,479,1],
+"classinviwo_1_1InviwoFileDialog.html#ad28edb665b5fb2ee948cc1903eced783":[2,0,0,473,0]
 };

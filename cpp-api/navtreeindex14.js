@@ -1,7 +1,5 @@
 var NAVTREEINDEX14 =
 {
-"classinviwo_1_1ProcessorGraphicsItem.html":[4,0,1,800],
-"classinviwo_1_1ProcessorGraphicsItem.html#a19b5d20319b47d2e5a571252350d0a43":[2,0,0,794,1],
 "classinviwo_1_1ProcessorGraphicsItem.html#a19b5d20319b47d2e5a571252350d0a43":[4,0,1,800,1],
 "classinviwo_1_1ProcessorGraphicsItem.html#a1a13e333d30ab210390c198c2f03994c":[2,0,0,794,0],
 "classinviwo_1_1ProcessorGraphicsItem.html#a1a13e333d30ab210390c198c2f03994c":[4,0,1,800,0],
@@ -249,5 +247,7 @@ var NAVTREEINDEX14 =
 "classinviwo_1_1PropertyConverterManager.html":[4,0,1,860],
 "classinviwo_1_1PropertyEditorWidget.html":[2,0,0,855],
 "classinviwo_1_1PropertyEditorWidget.html":[4,0,1,861],
-"classinviwo_1_1PropertyEditorWidgetQt.html":[2,0,0,856]
+"classinviwo_1_1PropertyEditorWidgetQt.html":[2,0,0,856],
+"classinviwo_1_1PropertyEditorWidgetQt.html":[4,0,1,862],
+"classinviwo_1_1PropertyEditorWidgetQt.html#a7b7ec72e66d511473380f8af86f3af04":[2,0,0,856,1]
 };
