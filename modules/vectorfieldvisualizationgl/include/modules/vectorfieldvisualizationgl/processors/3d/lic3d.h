@@ -49,7 +49,7 @@ public:
     LIC3D();
     virtual ~LIC3D() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     virtual void preProcess(TextureUnitContainer& cont) override;

@@ -45,7 +45,7 @@ const ProcessorInfo LayerResampling::processorInfo_{
        affects the resolution of the layer. The basis and offset will remain unchanged.)"_unindentHelp,
 };
 
-const ProcessorInfo LayerResampling::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerResampling::getProcessorInfo() const { return processorInfo_; }
 
 LayerResampling::LayerResampling()
     : Processor{}

@@ -41,7 +41,7 @@ const ProcessorInfo LayerToSpatialSampler::processorInfo_{
     Tags::CPU,                           // Tags
     R"(Generates a spatial sampler for the given input layer.)"_unindentHelp};
 
-const ProcessorInfo LayerToSpatialSampler::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerToSpatialSampler::getProcessorInfo() const { return processorInfo_; }
 
 LayerToSpatialSampler::LayerToSpatialSampler()
     : Processor{}

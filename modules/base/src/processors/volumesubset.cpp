@@ -71,7 +71,7 @@ const ProcessorInfo VolumeSubset::processorInfo_{
     R"(Extract an axis-aligned subset of a Volume and adjusts the basis of the resulting volume
        so that it is aligned with the input volume.)"_unindentHelp};
 
-const ProcessorInfo VolumeSubset::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeSubset::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSubset::VolumeSubset()
     : Processor()

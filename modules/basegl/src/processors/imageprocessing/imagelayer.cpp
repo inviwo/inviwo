@@ -63,7 +63,7 @@ const ProcessorInfo ImageLayer::processorInfo_{
     CodeState::Stable,        // Code state
     "GL, Image, Layer",       // Tags
 };
-const ProcessorInfo ImageLayer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageLayer::getProcessorInfo() const { return processorInfo_; }
 
 ImageLayer::ImageLayer()
     : Processor()

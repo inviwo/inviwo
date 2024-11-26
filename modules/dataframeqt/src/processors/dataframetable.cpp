@@ -67,7 +67,7 @@ const ProcessorInfo DataFrameTable::processorInfo_{
     CodeState::Stable,             // Code state
     Tags::CPU | Tag{"DataFrame"},  // Tags
 };
-const ProcessorInfo DataFrameTable::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& DataFrameTable::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameTable::DataFrameTable()
     : Processor()

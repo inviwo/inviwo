@@ -46,7 +46,7 @@ const ProcessorInfo MeshAxis::processorInfo_{
     Tags::GL | Tag{"Plotting"},  // Tags
     "Renders x, y, and z axes next to the input mesh."_help};
 
-const ProcessorInfo MeshAxis::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshAxis::getProcessorInfo() const { return processorInfo_; }
 
 MeshAxis::MeshAxis()
     : Processor()

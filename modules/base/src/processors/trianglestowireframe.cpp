@@ -57,7 +57,7 @@ const ProcessorInfo TrianglesToWireframe::processorInfo_{
     CodeState::Stable,                  // Code state
     Tags::CPU,                          // Tags
 };
-const ProcessorInfo TrianglesToWireframe::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TrianglesToWireframe::getProcessorInfo() const { return processorInfo_; }
 
 TrianglesToWireframe::TrianglesToWireframe() : Processor() {
     addPort(mesh_);

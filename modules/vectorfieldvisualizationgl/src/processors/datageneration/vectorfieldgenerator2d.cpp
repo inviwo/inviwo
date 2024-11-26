@@ -51,7 +51,7 @@ const ProcessorInfo VectorFieldGenerator2D::processorInfo_{
     "Generate a 2D vector field by using separate functions in u and v direction."_unindentHelp,
 };
 
-const ProcessorInfo VectorFieldGenerator2D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VectorFieldGenerator2D::getProcessorInfo() const { return processorInfo_; }
 
 VectorFieldGenerator2D::VectorFieldGenerator2D()
     : Processor()

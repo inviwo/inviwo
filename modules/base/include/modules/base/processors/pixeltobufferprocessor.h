@@ -74,7 +74,7 @@ public:
     PixelToBufferProcessor();
     virtual ~PixelToBufferProcessor() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     void setPixelToCollectFrom(const ivec2& xy);
     void clearOutput();

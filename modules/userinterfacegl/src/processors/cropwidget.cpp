@@ -114,7 +114,7 @@ const ProcessorInfo CropWidget::processorInfo_{
     CodeState::Stable,        // Code state
     "GL, UI, Clipping",       // Tags
 };
-const ProcessorInfo CropWidget::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& CropWidget::getProcessorInfo() const { return processorInfo_; }
 
 CropWidget::CropWidget()
     : Processor()

@@ -77,8 +77,7 @@ const ProcessorInfo GLUIProcessor::processorInfo_{
     R"(Provides a simple, adpative OpenGL user interface based on GLUI. Properties can be
        added to and removed from a list property.)"_unindentHelp,
 };
-
-const ProcessorInfo GLUIProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& GLUIProcessor::getProcessorInfo() const { return processorInfo_; }
 
 GLUIProcessor::GLUIProcessor(InviwoApplication* app)
     : Processor()

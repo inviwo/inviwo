@@ -63,7 +63,7 @@ const ProcessorInfo ImageMixer::processorInfo_{
     CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
 };
-const ProcessorInfo ImageMixer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageMixer::getProcessorInfo() const { return processorInfo_; }
 
 ImageMixer::ImageMixer()
     : Processor()

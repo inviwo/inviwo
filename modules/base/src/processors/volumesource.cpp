@@ -80,7 +80,7 @@ const ProcessorInfo VolumeSource::processorInfo_{
     "loaded a slider to select a volume is shown. "
     "The current filename is stored in the loaded volume as 'filename' MetaData."_help};
 
-const ProcessorInfo VolumeSource::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeSource::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& filePath)
     : Processor()

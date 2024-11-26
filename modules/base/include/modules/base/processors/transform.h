@@ -56,7 +56,7 @@ public:
 
     virtual void process() override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
 
 protected:
     enum class Mode {
@@ -76,8 +76,9 @@ protected:
 };
 
 template <typename T>
-const ProcessorInfo Transform<T>::getProcessorInfo() const {
-    return ProcessorTraits<Transform<T>>::getProcessorInfo();
+const ProcessorInfo& Transform<T>::getProcessorInfo() const {
+    static const ProcessorInfo info{ProcessorTraits<Transform<T>>::getProcessorInfo()};
+    return info;
 }
 
 class Layer;

@@ -76,7 +76,7 @@ const ProcessorInfo MeshRenderProcessorGL::processorInfo_{
     "Renders a set of meshes using OpenGL on top of an image. "
     "Different rendering modes can be selected."_help};
 
-const ProcessorInfo MeshRenderProcessorGL::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshRenderProcessorGL::getProcessorInfo() const { return processorInfo_; }
 
 MeshRenderProcessorGL::MeshRenderProcessorGL()
     : Processor()

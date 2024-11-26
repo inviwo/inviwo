@@ -173,7 +173,7 @@ void IntegralLineVectorToMesh::ColorByProperty::addProperties() {
     tf_.setCurrentStateAsDefault();
 }
 
-const ProcessorInfo IntegralLineVectorToMesh::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& IntegralLineVectorToMesh::getProcessorInfo() const { return processorInfo_; }
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo IntegralLineVectorToMesh::processorInfo_{

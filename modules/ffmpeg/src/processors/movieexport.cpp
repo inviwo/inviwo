@@ -65,7 +65,7 @@ const ProcessorInfo MovieExport::processorInfo_{"org.inviwo.MovieExport",  // Cl
                                                 Tags::CPU | Tag("Export") | Tag("FFmpeg"),  // Tags
                                                 R"(Export image data to a movie)"_unindentHelp};
 
-const ProcessorInfo MovieExport::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MovieExport::getProcessorInfo() const { return processorInfo_; }
 
 MovieExport::MovieExport()
     : Processor{}

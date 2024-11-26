@@ -80,7 +80,7 @@ const ProcessorInfo GLUITestProcessor::processorInfo_{
     CodeState::Experimental,         // Code state
     "GL, UI",                        // Tags
 };
-const ProcessorInfo GLUITestProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& GLUITestProcessor::getProcessorInfo() const { return processorInfo_; }
 
 GLUITestProcessor::GLUITestProcessor()
     : Processor()

@@ -43,7 +43,7 @@ const ProcessorInfo TetraMeshBoundingBox::processorInfo_{
     R"(Creates a mesh containing the bounding box of the tetra mesh, that is lines with adjacency "
     "information.)"_unindentHelp};
 
-const ProcessorInfo TetraMeshBoundingBox::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TetraMeshBoundingBox::getProcessorInfo() const { return processorInfo_; }
 
 TetraMeshBoundingBox::TetraMeshBoundingBox()
     : Processor{}

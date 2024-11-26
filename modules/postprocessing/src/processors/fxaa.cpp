@@ -95,7 +95,7 @@ const ProcessorInfo FXAA::processorInfo_{
     Tags::GL,           // Tags
 };
 
-const ProcessorInfo FXAA::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& FXAA::getProcessorInfo() const { return processorInfo_; }
 
 FXAA::FXAA()
     : Processor()

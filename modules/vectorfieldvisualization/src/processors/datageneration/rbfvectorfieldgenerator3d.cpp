@@ -83,7 +83,7 @@ const ProcessorInfo RBFVectorFieldGenerator3D::processorInfo_{
     CodeState::Stable,                            // Code state
     "CPU, Generator",                             // Tags
 };
-const ProcessorInfo RBFVectorFieldGenerator3D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& RBFVectorFieldGenerator3D::getProcessorInfo() const { return processorInfo_; }
 RBFVectorFieldGenerator3D::RBFVectorFieldGenerator3D()
     : Processor()
     , volume_("volume")

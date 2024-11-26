@@ -82,7 +82,7 @@ const ProcessorInfo RasterizationRenderer::processorInfo_{
        Fragment lists are used to render the transparent pixels with correct alpha blending.
        Illustration effects can be applied as a post-process.)"_unindentHelp};
 
-const ProcessorInfo RasterizationRenderer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& RasterizationRenderer::getProcessorInfo() const { return processorInfo_; }
 
 void RasterizationRenderer::initializeResources() { initializeShader_.invoke(); }
 

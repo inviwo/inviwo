@@ -72,7 +72,7 @@ const ProcessorInfo ISORaycaster::processorInfo_{
     CodeState::Stable,          // Code state
     Tags::GL,                   // Tags
 };
-const ProcessorInfo ISORaycaster::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ISORaycaster::getProcessorInfo() const { return processorInfo_; }
 
 ISORaycaster::ISORaycaster()
     : Processor()

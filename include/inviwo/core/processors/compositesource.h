@@ -77,7 +77,7 @@ public:
 
     virtual void process() override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
 
     /**
      * Inport to be used by the CompositeProcessor to put data into its sub network.
@@ -115,8 +115,10 @@ struct ProcessorTraits<CompositeSource<InportType, OutportType>> {
 };
 
 template <typename InportType, typename OutportType>
-const ProcessorInfo CompositeSource<InportType, OutportType>::getProcessorInfo() const {
-    return ProcessorTraits<CompositeSource<InportType, OutportType>>::getProcessorInfo();
+const ProcessorInfo& CompositeSource<InportType, OutportType>::getProcessorInfo() const {
+    static const ProcessorInfo info{
+        ProcessorTraits<CompositeSource<InportType, OutportType>>::getProcessorInfo()};
+    return info;
 }
 
 template <typename InportType, typename OutportType>

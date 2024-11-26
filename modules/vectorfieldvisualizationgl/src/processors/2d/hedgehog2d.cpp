@@ -70,7 +70,7 @@ const ProcessorInfo HedgeHog2D::processorInfo_{
     R"(Creates a mesh for a hedgehog plot of a 2D vector field using arrow and
     quiver glyphs.)"_unindentHelp,
 };
-const ProcessorInfo HedgeHog2D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& HedgeHog2D::getProcessorInfo() const { return processorInfo_; }
 
 HedgeHog2D::HedgeHog2D()
     : Processor()

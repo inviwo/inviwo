@@ -64,7 +64,7 @@ const ProcessorInfo ImageContourProcessor::processorInfo_{
     R"(Extracts a contour line for a specific value in the image using marching squares.
     The output contour is provided as a line mesh.)"_unindentHelp};
 
-const ProcessorInfo ImageContourProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageContourProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ImageContourProcessor::ImageContourProcessor()
     : Processor()

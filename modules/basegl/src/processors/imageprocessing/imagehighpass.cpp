@@ -51,7 +51,7 @@ const ProcessorInfo ImageHighPass::processorInfo_{
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
 };
-const ProcessorInfo ImageHighPass::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageHighPass::getProcessorInfo() const { return processorInfo_; }
 
 ImageHighPass::ImageHighPass()
     : ImageGLProcessor("img_highpass.frag")

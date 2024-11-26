@@ -45,7 +45,7 @@ class TextureUnitContainer;
 class IVW_MODULE_BASEGL_API ImageColorMapping : public ImageGLProcessor {
 public:
     ImageColorMapping();
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 protected:

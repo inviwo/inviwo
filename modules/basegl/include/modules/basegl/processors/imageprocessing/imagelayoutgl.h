@@ -91,7 +91,7 @@ class Outport;
 // clang-format on
 class IVW_MODULE_BASEGL_API ImageLayoutGL : public Processor {
 public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     enum class Layout {

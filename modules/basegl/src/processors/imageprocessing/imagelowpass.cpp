@@ -54,7 +54,7 @@ const ProcessorInfo ImageLowPass::processorInfo_{
     CodeState::Stable,          // Code state
     Tags::GL,                   // Tags
 };
-const ProcessorInfo ImageLowPass::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageLowPass::getProcessorInfo() const { return processorInfo_; }
 
 ImageLowPass::ImageLowPass()
     : Processor()

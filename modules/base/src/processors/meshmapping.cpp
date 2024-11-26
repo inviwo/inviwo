@@ -84,7 +84,7 @@ const ProcessorInfo MeshMapping::processorInfo_{
     CodeState::Stable,           // Code state
     "CPU, Mesh, Color Mapping",  // Tags
 };
-const ProcessorInfo MeshMapping::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshMapping::getProcessorInfo() const { return processorInfo_; }
 
 MeshMapping::MeshMapping()
     : Processor()

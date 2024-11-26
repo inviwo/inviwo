@@ -91,7 +91,7 @@ public:
     virtual void doIfNotReady() override;
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     virtual void propagateEvent(Event* event, Outport* source) override;

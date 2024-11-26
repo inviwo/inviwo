@@ -63,7 +63,7 @@ const ProcessorInfo OrdinalPropertyAnimator::processorInfo_{
     CodeState::Experimental,               // Code state
     Tags::CPU,                             // Tags
 };
-const ProcessorInfo OrdinalPropertyAnimator::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& OrdinalPropertyAnimator::getProcessorInfo() const { return processorInfo_; }
 
 OrdinalPropertyAnimator::OrdinalPropertyAnimator()
     : Processor()

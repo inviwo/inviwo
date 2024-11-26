@@ -88,7 +88,7 @@ const ProcessorInfo PointLightSourceProcessor::processorInfo_{
     CodeState::Experimental,        // Code state
     Tags::CPU,                      // Tags
 };
-const ProcessorInfo PointLightSourceProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& PointLightSourceProcessor::getProcessorInfo() const { return processorInfo_; }
 
 PointLightSourceProcessor::PointLightSourceProcessor()
     : Processor()

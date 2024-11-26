@@ -50,7 +50,7 @@ const ProcessorInfo VolumeDiff::processorInfo_{
     CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
 };
-const ProcessorInfo VolumeDiff::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeDiff::getProcessorInfo() const { return processorInfo_; }
 
 VolumeDiff::VolumeDiff() : VolumeGLProcessor("volume_difference.frag"), vol2_("volume2") {
     addPort(vol2_);

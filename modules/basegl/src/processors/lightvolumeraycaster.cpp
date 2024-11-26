@@ -48,7 +48,7 @@ created with the `EntryExitPoints` processor and the `Light Volume` processor. T
 properties between these this processor and the `EntryExitPoints` processor need to be linked.
 )"_unindentHelp,
 };
-const ProcessorInfo LightVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LightVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 LightVolumeRaycaster::LightVolumeRaycaster(std::string_view identifier,
                                            std::string_view displayName)

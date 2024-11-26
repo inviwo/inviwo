@@ -88,7 +88,7 @@ const ProcessorInfo VolumeConverter::processorInfo_{
     R"(Converts the data type of a volume to a given output data format.
     The number of channels remains unchanged.)"_unindentHelp};
 
-const ProcessorInfo VolumeConverter::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeConverter::getProcessorInfo() const { return processorInfo_; }
 
 VolumeConverter::VolumeConverter()
     : Processor{}

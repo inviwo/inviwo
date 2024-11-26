@@ -51,7 +51,7 @@ const ProcessorInfo LayerGrayscale::processorInfo_{
      * _green_ l.rgb = vec3(0, 1, 0)
      * _blue_ l.rgb = vec3(0, 0, 1))"_unindentHelp};
 
-const ProcessorInfo LayerGrayscale::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerGrayscale::getProcessorInfo() const { return processorInfo_; }
 
 LayerGrayscale::LayerGrayscale()
     : LayerGLProcessor(utilgl::findShaderResource("img_graysc.frag"))

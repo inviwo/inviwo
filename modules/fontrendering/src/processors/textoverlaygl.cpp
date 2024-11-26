@@ -96,7 +96,7 @@ const ProcessorInfo TextOverlayGL::processorInfo_{
     CodeState::Stable,           // Code state
     "GL, Font, Text",            // Tags
 };
-const ProcessorInfo TextOverlayGL::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TextOverlayGL::getProcessorInfo() const { return processorInfo_; }
 
 TextOverlayGL::TextOverlayGL()
     : Processor()

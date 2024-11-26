@@ -67,7 +67,7 @@ const ProcessorInfo MeshColorFromNormals::processorInfo_{
     CodeState::Experimental,            // Code state
     Tags::None,                         // Tags
 };
-const ProcessorInfo MeshColorFromNormals::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshColorFromNormals::getProcessorInfo() const { return processorInfo_; }
 
 MeshColorFromNormals::MeshColorFromNormals()
     : Processor()

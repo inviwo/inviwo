@@ -44,7 +44,7 @@ const ProcessorInfo VolumeFirstHitCLProcessor::processorInfo_{
     CodeState::Experimental,        // Code state
     Tags::CL,                       // Tags
 };
-const ProcessorInfo VolumeFirstHitCLProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeFirstHitCLProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeFirstHitCLProcessor::VolumeFirstHitCLProcessor()
     : Processor()

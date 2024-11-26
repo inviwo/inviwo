@@ -46,7 +46,7 @@ const ProcessorInfo VolumeVoronoiSegmentation::processorInfo_{
     R"(Processor which calculates the voronoi segmentation of a volume,
        given the volume together with seed points (and optional weights) as input.
     )"_unindentHelp};
-const ProcessorInfo VolumeVoronoiSegmentation::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeVoronoiSegmentation::getProcessorInfo() const { return processorInfo_; }
 
 VolumeVoronoiSegmentation::VolumeVoronoiSegmentation()
     : PoolProcessor(pool::Option::DelayDispatch)

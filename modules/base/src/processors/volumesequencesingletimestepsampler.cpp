@@ -90,7 +90,7 @@ const ProcessorInfo VolumeSequenceSingleTimestepSamplerProcessor::processorInfo_
     R"(Creates a spatial sampler for a given timestamp from a VolumeSequence. Will use linear
     interpolation to sample between two adjacent volumes in the sequence.
     Useful for streamline visualization of a specific time step.)"_unindentHelp};
-const ProcessorInfo VolumeSequenceSingleTimestepSamplerProcessor::getProcessorInfo() const {
+const ProcessorInfo& VolumeSequenceSingleTimestepSamplerProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 

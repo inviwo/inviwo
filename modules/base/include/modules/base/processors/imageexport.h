@@ -54,7 +54,7 @@ public:
     ImageExport(InviwoApplication* app);
     virtual ~ImageExport() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     BoolProperty outportDeterminesSize_;

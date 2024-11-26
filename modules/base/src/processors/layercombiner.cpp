@@ -48,7 +48,7 @@ and precision of the inputs.
 )"_unindentHelp,
 };
 
-const ProcessorInfo LayerCombiner::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayerCombiner::getProcessorInfo() const { return processorInfo_; }
 
 LayerCombiner::LayerCombiner()
     : Processor{}

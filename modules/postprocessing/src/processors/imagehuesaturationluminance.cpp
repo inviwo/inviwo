@@ -50,7 +50,7 @@ const ProcessorInfo ImageHueSaturationLuminance::processorInfo_{
     CodeState::Stable,                         // Code state
     Tags::None,                                // Tags
 };
-const ProcessorInfo ImageHueSaturationLuminance::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageHueSaturationLuminance::getProcessorInfo() const { return processorInfo_; }
 
 ImageHueSaturationLuminance::ImageHueSaturationLuminance()
     : ImageGLProcessor("huesaturationluminance.frag")

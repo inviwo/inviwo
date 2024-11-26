@@ -83,7 +83,7 @@ const ProcessorInfo ImageToDataFrame::processorInfo_{
     CodeState::Stable,              // Code state
     "CPU, DataFrame, Image",        // Tags
 };
-const ProcessorInfo ImageToDataFrame::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 ImageToDataFrame::ImageToDataFrame()
     : Processor()

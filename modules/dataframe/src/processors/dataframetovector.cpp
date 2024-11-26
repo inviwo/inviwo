@@ -42,7 +42,7 @@ const ProcessorInfo DataFrameToVector::processorInfo_{
     Tags::CPU,                       // Tags
     R"(Extract a column from a dataframe)"_unindentHelp};
 
-const ProcessorInfo DataFrameToVector::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& DataFrameToVector::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameToVector::DataFrameToVector()
     : Processor{}

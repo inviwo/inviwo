@@ -82,7 +82,7 @@ const ProcessorInfo VectorFieldGenerator4D::processorInfo_{
     CodeState::Stable,                    // Code state
     "GL, Generator",                      // Tags
 };
-const ProcessorInfo VectorFieldGenerator4D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VectorFieldGenerator4D::getProcessorInfo() const { return processorInfo_; }
 
 VectorFieldGenerator4D::VectorFieldGenerator4D()
     : Processor()

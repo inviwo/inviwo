@@ -85,7 +85,7 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
 
 private:
     InportType inport_;
@@ -113,8 +113,11 @@ struct ProcessorTraits<CompositeSink<InportType, OutportType>> {
 };
 
 template <typename InportType, typename OutportType>
-const ProcessorInfo CompositeSink<InportType, OutportType>::getProcessorInfo() const {
-    return ProcessorTraits<CompositeSink<InportType, OutportType>>::getProcessorInfo();
+const ProcessorInfo& CompositeSink<InportType, OutportType>::getProcessorInfo() const {
+    static const ProcessorInfo info{
+        ProcessorTraits<CompositeSink<InportType, OutportType>>::getProcessorInfo()};
+
+    return info;
 }
 
 template <typename InportType, typename OutportType>

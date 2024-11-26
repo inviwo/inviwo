@@ -88,7 +88,7 @@ const ProcessorInfo MeshClipping::processorInfo_{"org.inviwo.MeshClipping",  // 
 
     Supports `SimpleMesh` and `BasicMesh`.
 )"_unindentHelp};
-const ProcessorInfo MeshClipping::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshClipping::getProcessorInfo() const { return processorInfo_; }
 
 MeshClipping::MeshClipping()
     : Processor()

@@ -66,7 +66,7 @@ const ProcessorInfo SpotLightSourceProcessor::processorInfo_{
     CodeState::Experimental,       // Code state
     Tags::CPU,                     // Tags
 };
-const ProcessorInfo SpotLightSourceProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SpotLightSourceProcessor::getProcessorInfo() const { return processorInfo_; }
 
 SpotLightSourceProcessor::SpotLightSourceProcessor()
     : Processor()
