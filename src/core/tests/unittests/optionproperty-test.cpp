@@ -181,8 +181,7 @@ TEST(OptionProperty, SerializeCopyAll) {
     Deserializer d{xml, "dummy.inv"};
     d.deserialize("Property", dst);
 
-    EXPECT_EQ(dst.size(), 5);
-    ASSERT_GT(dst.size(), 0);
+    ASSERT_EQ(dst.size(), 5);
     EXPECT_EQ(dst.getSelectedValue(), 2);
     EXPECT_EQ(dst.getSelectedIndex(), 1);
     EXPECT_EQ(dst.getSelectedIdentifier(), "2");
@@ -235,6 +234,7 @@ TEST(OptionProperty, SerializeClear) {
     prop.clearOptions();
 
     EXPECT_FALSE(prop.isDefaultState());
+    EXPECT_EQ(prop.size(), 0);
 
     Deserializer d{xml, "dummy.inv"};
     d.deserialize("Property", prop);
@@ -281,12 +281,14 @@ TEST(OptionProperty, SerializeSelectedIndex) {
     EXPECT_THAT(prop.getDisplayNames(), ElementsAre("1", "2", "3", "4", "5"));
 }
 
-TEST(OptionProperty, SerializeOptions) {
+TEST(OptionProperty, SerializeOptions1) {
     OptionProperty<int> prop{"test", "test", {1, 2, 3, 4, 5}, 1};
 
     prop.addOption(6);
-    EXPECT_EQ(prop.size(), 6);
-    EXPECT_THAT(prop.getValues(), ElementsAre(1, 2, 3, 4, 5, 6));
+    prop.addOption(7);
+    prop.addOption(8);
+    EXPECT_EQ(prop.size(), 8);
+    EXPECT_THAT(prop.getValues(), ElementsAre(1, 2, 3, 4, 5, 6, 7, 8));
 
     Serializer s{"dummy.inv"};
     s.serialize("Property", prop);
@@ -302,8 +304,63 @@ TEST(OptionProperty, SerializeOptions) {
 
     EXPECT_FALSE(prop.isDefaultState());
 
-    EXPECT_EQ(prop.size(), 5);
+    EXPECT_EQ(prop.size(), 8);
+    EXPECT_THAT(prop.getValues(), ElementsAre(1, 2, 3, 4, 5, 6, 7, 8));
+}
+
+TEST(OptionProperty, SerializeOptions2) {
+    OptionProperty<int> prop{"test", "test", {1, 2, 3, 4, 5}, 1};
+
+    Serializer s{"dummy.inv"};
+    s.serialize("Property", prop);
+    std::pmr::string xml;
+    s.write(xml);
+
+    prop.addOption(6);
+    prop.addOption(7);
+    prop.addOption(8);
+    EXPECT_EQ(prop.size(), 8);
+    EXPECT_THAT(prop.getValues(), ElementsAre(1, 2, 3, 4, 5, 6, 7, 8));
+
+    EXPECT_FALSE(prop.isDefaultState());
+
+    Deserializer d{xml, "dummy.inv"};
+    d.deserialize("Property", prop);
+
+    EXPECT_TRUE(prop.isDefaultState());
+
+    ASSERT_EQ(prop.size(), 5);
     EXPECT_THAT(prop.getValues(), ElementsAre(1, 2, 3, 4, 5));
+    EXPECT_EQ(prop.getSelectedValue(), 2);
+}
+
+TEST(OptionProperty, SerializeOptions3) {
+    OptionProperty<int> prop{"test", "test", {1, 2, 3, 4, 5}, 1};
+
+    prop.addOption(6);
+    EXPECT_EQ(prop.size(), 6);
+
+    Serializer s{"dummy.inv"};
+    s.serialize("Property", prop);
+    std::pmr::string xml;
+    s.write(xml);
+
+
+    prop.addOption(7);
+    prop.addOption(8);
+    EXPECT_EQ(prop.size(), 8);
+    EXPECT_THAT(prop.getValues(), ElementsAre(1, 2, 3, 4, 5, 6, 7, 8));
+
+    EXPECT_FALSE(prop.isDefaultState());
+
+    Deserializer d{xml, "dummy.inv"};
+    d.deserialize("Property", prop);
+
+    EXPECT_FALSE(prop.isDefaultState());
+
+    ASSERT_EQ(prop.size(), 6);
+    EXPECT_THAT(prop.getValues(), ElementsAre(1, 2, 3, 4, 5, 6));
+    EXPECT_EQ(prop.getSelectedValue(), 2);
 }
 
 }  // namespace inviwo
