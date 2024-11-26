@@ -6,6 +6,7 @@
 #include <ticpp/base.h>
 #include <ticpp/printer.h>
 
+#include <memory>
 #include <string>
 #include <iostream>
 
