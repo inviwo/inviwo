@@ -62,7 +62,7 @@ Example networks:
 + [webbrowser/browser.inv](file:~modulePath~/data/workspaces/browser.inv)
 )"_unindentHelp,
 };
-const ProcessorInfo WebBrowserProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& WebBrowserProcessor::getProcessorInfo() const { return processorInfo_; }
 
 WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
     : Processor()
