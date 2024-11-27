@@ -147,7 +147,7 @@ public:
      */
     static void EncodeString(const std::string_view str, std::string* out);
 
-    // Table that returs, for a given lead byte, the total number of bytes
+    // Table that returns, for a given lead byte, the total number of bytes
     // in the UTF-8 sequence.
 
     // Bunch of unicode info at:

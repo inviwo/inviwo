@@ -20,13 +20,13 @@ TiXmlAttribute::TiXmlAttribute(std::string_view _name, std::string_view _value,
 TiXmlAttribute::~TiXmlAttribute() = default;
 
 const TiXmlAttribute* TiXmlAttribute::Next() const {
-    // We are using knowledge of the sentinel. The sentinel have a value or name.
+    // We are using knowledge of the sentinel. The sentinel must have a value or name.
     if (next->value.empty() && next->name.empty()) return nullptr;
     return next;
 }
 
 const TiXmlAttribute* TiXmlAttribute::Previous() const {
-    // We are using knowledge of the sentinel. The sentinel have a value or name.
+    // We are using knowledge of the sentinel. The sentinel must have a value or name.
     if (prev->value.empty() && prev->name.empty()) return nullptr;
     return prev;
 }
