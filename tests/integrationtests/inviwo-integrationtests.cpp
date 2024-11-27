@@ -109,7 +109,7 @@ int main(int argc, char** argv) {
         ret = RUN_ALL_TESTS();
 
         if (ret) {
-            LogErrorCustom("UnitTestsModule::runAllTests",
+            LogErrorCustom("IntegrationTests::runAllTests",
                            "Some unit tests did not pass, see console output for details");
         }
 
@@ -117,14 +117,14 @@ int main(int argc, char** argv) {
         size_t errCountAfter = logCounter->getErrorCount();
 
         if (warnCount != warnCountAfter) {
-            LogWarnCustom("UnitTestsModule::runAllTest", "The integration test runs generated "
-                                                             << (warnCountAfter - warnCount)
-                                                             << " warnings");
+            LogWarnCustom("IntegrationTests::runAllTest", "The integration test runs generated "
+                                                              << (warnCountAfter - warnCount)
+                                                              << " warnings");
         }
         if (errCount != errCountAfter) {
-            LogWarnCustom("UnitTestsModule::runAllTest", "The  integration test runs generated "
-                                                             << (errCountAfter - errCount)
-                                                             << " errors");
+            LogWarnCustom("IntegrationTests::runAllTest", "The integration test runs generated "
+                                                              << (errCountAfter - errCount)
+                                                              << " errors");
         }
     }
 
