@@ -88,7 +88,7 @@ public:
         const size_t size = callbacks.size();
         for (size_t i = 0; i < size; ++i) {
             if (auto callback = callbacks.at(i).lock()) {
-                (*callback)(std::forward<A>(args)...);
+                std::invoke(*callback, std::forward<A>(args)...);
             }
         }
     }
