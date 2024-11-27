@@ -263,6 +263,10 @@ bool OpenGLCapabilities::isShaderStorageBuffersSupported() {
            isExtensionSupported("ARB_shader_storage_buffer_object");
 }
 
+bool OpenGLCapabilities::isSignedIntNormalizationSymmetric() {
+    return OpenGLCapabilities::getOpenGLVersion() >= 420;
+}
+
 int OpenGLCapabilities::getMaxProgramLoopCount() const { return maxProgramLoopCount_; }
 int OpenGLCapabilities::getNumTexUnits() const { return numTexUnits_; }
 int OpenGLCapabilities::getMaxTexSize() const { return maxTexSize_; }
