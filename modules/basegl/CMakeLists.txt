@@ -3,6 +3,7 @@ ivw_module(BaseGL)
 
 # Add header files
 set(HEADER_FILES
+    include/modules/basegl/algorithm/dataminmaxgl.h
     include/modules/basegl/algorithm/entryexitpoints.h
     include/modules/basegl/algorithm/imageconvolution.h
     include/modules/basegl/algorithm/volumenormalization.h
@@ -133,6 +134,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 
 # Add source files
 set(SOURCE_FILES
+    src/algorithm/dataminmaxgl.cpp
     src/algorithm/entryexitpoints.cpp
     src/algorithm/imageconvolution.cpp
     src/algorithm/volumenormalization.cpp
@@ -267,6 +269,10 @@ set(SHADER_FILES
     glsl/axisalignedcutplaneslice.frag
     glsl/axisalignedcutplaneslice.vert
     glsl/background.frag
+    glsl/compute/bufferminmax.comp
+    glsl/compute/layerminmax.comp
+    glsl/compute/linearminmax.comp
+    glsl/compute/volumeminmax.comp
     glsl/cubeglyph.frag
     glsl/cubeglyph.geom
     glsl/cubeglyph.vert

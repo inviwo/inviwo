@@ -1,0 +1,72 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2024 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+layout (std430, binding=1) buffer BufferObject {
+    vec4 minmax[];
+};
+
+uniform uint arrayLength;
+
+shared vec4 workgroup_min[256 / 32];
+shared vec4 workgroup_max[256 / 32];
+
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
+
+void main(){
+    uint threadId = gl_LocalInvocationIndex;
+    uint gridSize = gl_WorkGroupSize.x * gl_NumWorkGroups.x;
+    uint i = gl_WorkGroupID.x * gl_WorkGroupSize.x + threadId; 
+
+    vec4 minVal = vec4(1.0 / 0.0);
+    vec4 maxVal = vec4(-1.0 / 0.0);
+
+    while (i < arrayLength) {
+        minVal = min(minVal, minmax[2 * i]);
+        maxVal = max(maxVal, minmax[2 * i + 1]);
+        i += gridSize;
+    }
+
+    minVal = subgroupMin(minVal);
+    maxVal = subgroupMax(maxVal);
+    if (subgroupElect()) {
+        workgroup_min[gl_SubgroupID] = minVal;
+        workgroup_max[gl_SubgroupID] = maxVal;
+    }
+    barrier();
+
+    if (gl_LocalInvocationIndex == 0) {
+        for (uint i = 0; i < gl_NumSubgroups; ++i) {
+            minVal = min(minVal, workgroup_min[i]);
+            maxVal = max(maxVal, workgroup_max[i]);
+        }
+        uint index = gl_WorkGroupID.x;
+        minmax[2 * index] = minVal;
+        minmax[2 * index + 1] = maxVal;
+    }
+}
