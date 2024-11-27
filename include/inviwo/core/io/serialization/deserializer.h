@@ -531,7 +531,7 @@ void Deserializer::deserialize(std::string_view key, T& data, const Serializatio
     try {
         if (target == SerializationTarget::Attribute) {
             detail::getNodeAttribute(rootElement_, key, data);
-        } else if (NodeSwitch ns{*this, key}) {
+        } else if (const NodeSwitch ns{*this, key}) {
             detail::getNodeAttribute(rootElement_, SerializeConstants::ContentAttribute, data);
         }
     } catch (...) {
@@ -561,7 +561,7 @@ void Deserializer::deserialize(std::string_view key, flags::flags<T>& data,
 // glm vector types
 template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type>
 void Deserializer::deserialize(std::string_view key, Vec& data) {
-    if (NodeSwitch ns{*this, key}) {
+    if (const NodeSwitch ns{*this, key}) {
         for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
             try {
                 detail::getNodeAttribute(rootElement_, SerializeConstants::VectorAttributes[i],
@@ -579,7 +579,7 @@ void Deserializer::deserialize(std::string_view key, Mat& data) {
     constexpr std::array<std::string_view, 4> rows{"row0", "row1", "row2", "row3"};
     constexpr std::array<std::string_view, 4> cols{"col0", "col1", "col2", "col3"};
 
-    if (NodeSwitch ns{*this, key}) {
+    if (const NodeSwitch ns{*this, key}) {
         for (size_t i = 0; i < util::extent<Mat, 0>::value; ++i) {
             // Deserialization of row needs to be here for backwards compatibility,
             // we used to incorrectly serialize columns as row
@@ -601,14 +601,14 @@ void Deserializer::deserialize(std::string_view key, std::vector<T, A>& vector,
                                std::string_view itemKey) {
     static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 
-    NodeSwitch vectorNodeSwitch(*this, key);
+    const NodeSwitch vectorNodeSwitch{*this, key};
     if (!vectorNodeSwitch) return;
 
     size_t i = 0;
     detail::forEachChild(rootElement_, itemKey, [&](TiXmlElement& child) {
         // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
-        NodeSwitch elementNodeSwitch(*this, child, false);
+        const NodeSwitch elementNodeSwitch{*this, child, false};
 
         if (vector.size() <= i) {
             vector.emplace_back();
@@ -639,7 +639,7 @@ Deserializer::Result Deserializer::deserializeTrackChanges(std::string_view key,
 
     using enum Result;
 
-    NodeSwitch vectorNodeSwitch(*this, key);
+    const NodeSwitch vectorNodeSwitch{*this, key};
     if (!vectorNodeSwitch) return NotFound;
 
     Result result = NoChange;
@@ -648,7 +648,7 @@ Deserializer::Result Deserializer::deserializeTrackChanges(std::string_view key,
     detail::forEachChild(rootElement_, itemKey, [&](TiXmlElement& child) {
         // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
-        NodeSwitch elementNodeSwitch(*this, child, false);
+        const NodeSwitch elementNodeSwitch{*this, child, false};
 
         if (vector.size() <= i) {
             result = Modified;
@@ -685,12 +685,12 @@ void Deserializer::deserializeRange(std::string_view key, std::string_view itemK
                                     DeserializeFunction deserializeFunction) {
     using enum Result;
 
-    NodeSwitch vectorNodeSwitch(*this, key);
+    const NodeSwitch vectorNodeSwitch{*this, key};
     if (!vectorNodeSwitch) return;
 
     size_t i = 0;
     detail::forEachChild(rootElement_, itemKey, [&](TiXmlElement& child) {
-        NodeSwitch elementNodeSwitch(*this, child, false);
+        const NodeSwitch elementNodeSwitch{*this, child, false};
         try {
             deserializeFunction(*this, i);
         } catch (...) {
@@ -1158,9 +1158,9 @@ void Deserializer::deserialize(std::string_view key, T& sObj)
                  { t.deserialize(d) };
              }
 {
-    NodeSwitch nodeSwitch(*this, key);
-    if (!nodeSwitch) return;
-    sObj.deserialize(*this);
+    if (const NodeSwitch nodeSwitch{*this, key}) {
+        sObj.deserialize(*this);
+    }
 }
 
 }  // namespace inviwo

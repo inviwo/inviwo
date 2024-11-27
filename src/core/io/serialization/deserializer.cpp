@@ -103,14 +103,14 @@ void Deserializer::deserialize(std::string_view key, std::filesystem::path& path
                 path = *val;
             }
         } else {
-            if (NodeSwitch ns{*this, key}) {
+            if (const NodeSwitch ns{*this, key}) {
                 if (const auto val =
                         rootElement_->Attribute(SerializeConstants::ContentAttribute)) {
                     path = *val;
                 }
                 return;
             }
-            if (NodeSwitch ns{*this, key, true}) {
+            if (const NodeSwitch ns{*this, key, true}) {
                 if (const auto val =
                         rootElement_->Attribute(SerializeConstants::ContentAttribute)) {
                     path = *val;
@@ -124,7 +124,9 @@ void Deserializer::deserialize(std::string_view key, std::filesystem::path& path
 }
 
 void Deserializer::deserialize(std::string_view key, Serializable& sObj) {
-    if (NodeSwitch ns{*this, key}) sObj.deserialize(*this);
+    if (const NodeSwitch ns{*this, key}) {
+        sObj.deserialize(*this);
+    }
 }
 
 void Deserializer::deserialize(std::string_view key, signed char& data,

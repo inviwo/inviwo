@@ -167,7 +167,7 @@ public:
      * \brief NodeSwitch helps track parent node during recursive/nested function calls.
      *
      * @param serializer reference to serializer or deserializer
-     * @param node // the node to switch to
+     * @param node the node to switch to
      * @param retrieveChild whether to retrieve child node or not.
      */
     NodeSwitch(SerializeBase& serializer, TiXmlElement* node, bool retrieveChild = true);
