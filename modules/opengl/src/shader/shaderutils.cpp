@@ -53,6 +53,7 @@
 #include <inviwo/core/util/stringconversion.h>                // for StrBuffer, splitStringView
 #include <modules/opengl/inviwoopengl.h>                      // for LGL_ERROR
 #include <modules/opengl/glformats.h>
+#include <modules/opengl/openglcapabilities.h>
 #include <modules/opengl/openglexception.h>       // for OpenGLException
 #include <modules/opengl/shader/shader.h>         // for Shader
 #include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
@@ -75,8 +76,11 @@ namespace utilgl {
 
 void setShaderUniforms(Shader& shader, const DataMapper& dataMapper, const DataFormatBase* format,
                        std::string_view name) {
+    using enum DataMapper::SignedNormalization;
+
     const dvec2 dataRange = dataMapper.dataRange;
-    const DataMapper defaultRange(format);
+    const DataMapper defaultRange(
+        format, OpenGLCapabilities::isSignedIntNormalizationSymmetric() ? Symmetric : Asymmetric);
 
     const double invRange = 1.0 / (dataRange.y - dataRange.x);
     const double defaultToDataRange =
