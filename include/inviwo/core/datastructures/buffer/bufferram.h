@@ -450,8 +450,7 @@ IVW_CORE_API std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataF
 template <BufferUsage U = BufferUsage::Static, typename T = vec3,
           BufferTarget Target = BufferTarget::Data>
 std::shared_ptr<BufferRAMPrecision<T, Target>> createBufferRAM(std::vector<T> data) {
-    return std::make_shared<BufferRAMPrecision<T, Target>>(std::move(data), DataFormat<T>::get(),
-                                                           U);
+    return std::make_shared<BufferRAMPrecision<T, Target>>(std::move(data), U);
 }
 
 /**
