@@ -49,7 +49,7 @@ const ProcessorInfo SimpleRaycaster::processorInfo_{
     CodeState::Stable,               // Code state
     "GL, DVR, Raycasting, Example",  // Tags
 };
-const ProcessorInfo SimpleRaycaster::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SimpleRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 SimpleRaycaster::SimpleRaycaster()
     : Processor()
