@@ -101,6 +101,7 @@ std::pair<size_t, double> optimalBinCount(DataMapper dataMap, size_t bins) {
                                                     std::round(dataMap.dataRange.x) + 1.0);
             return intRangeBins(irange);
         }
+        return {bins, range};
     } else {
         // check whether number of bins exceeds the data range only if it is an integral type
         const auto irange = static_cast<std::size_t>(range + 1);
@@ -109,7 +110,6 @@ std::pair<size_t, double> optimalBinCount(DataMapper dataMap, size_t bins) {
         }
         return intRangeBins(irange);  // case 2.b
     }
-    return {bins, range};
 }
 
 }  // namespace detail
