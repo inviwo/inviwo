@@ -41,8 +41,8 @@ public:
         buffer.reserve(4096);
     }
 
-    virtual bool VisitEnter(const TiXmlDocument& doc) { return true; }
-    virtual bool VisitExit(const TiXmlDocument& doc) { return true; }
+    virtual bool VisitEnter(const TiXmlDocument& doc) override { return true; }
+    virtual bool VisitExit(const TiXmlDocument& doc) override { return true; }
 
     virtual bool VisitEnter(const TiXmlElement& element, const TiXmlAttribute* firstAttribute);
     virtual bool VisitExit(const TiXmlElement& element);
