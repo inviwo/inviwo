@@ -72,11 +72,11 @@ public:
     // asymetric
 
     DataMapper();
-    DataMapper(const DataFormatBase* format,
-               SignedNormalization normalization = SignedNormalization::Asymmetric,
-               Axis valueAxis = {});
-    explicit DataMapper(dvec2 dataRange, Axis valueAxis = {});
-    DataMapper(dvec2 dataRange, dvec2 valueRange, Axis valueAxis = {});
+    explicit DataMapper(const DataFormatBase* format,
+                        SignedNormalization normalization = SignedNormalization::Asymmetric,
+                        const Axis& valueAxis = {});
+    explicit DataMapper(dvec2 dataRange, const Axis& valueAxis = {});
+    DataMapper(dvec2 dataRange, dvec2 valueRange, const Axis& valueAxis = {});
     DataMapper(const DataMapper& rhs);
     DataMapper& operator=(const DataMapper& that);
 

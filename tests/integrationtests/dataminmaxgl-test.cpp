@@ -65,9 +65,9 @@ protected:
     }
     void testVolume(std::string_view filename);
     // void testVolume(std::string_view filename);
-    void test(std::shared_ptr<Volume> volume);
-    void test(std::shared_ptr<Layer> layer);
-    void test(std::shared_ptr<BufferBase> buffer);
+    void test(const std::shared_ptr<Volume>& volume);
+    void test(const std::shared_ptr<Layer>& layer);
+    void test(const std::shared_ptr<BufferBase>& buffer);
 
 private:
     std::unique_ptr<utilgl::DataMinMaxGL> minmaxGL_;
@@ -85,7 +85,7 @@ void DataMinMaxGLTest::testVolume(std::string_view filename) {
     test(volumeSeq->front());
 }
 
-void DataMinMaxGLTest::test(std::shared_ptr<Volume> volume) {
+void DataMinMaxGLTest::test(const std::shared_ptr<Volume>& volume) {
     auto [refMin, refMax] = util::volumeMinMax(volume.get(), IgnoreSpecialValues::No);
     auto [glMin, glMax] = minmaxGL_->minMax(volume.get());
 
@@ -93,7 +93,7 @@ void DataMinMaxGLTest::test(std::shared_ptr<Volume> volume) {
     EXPECT_EQ(refMax, glMax) << "Maximum values differ";
 }
 
-void DataMinMaxGLTest::test(std::shared_ptr<Layer> layer) {
+void DataMinMaxGLTest::test(const std::shared_ptr<Layer>& layer) {
     auto [refMin, refMax] = util::layerMinMax(layer.get(), IgnoreSpecialValues::No);
     auto [glMin, glMax] = minmaxGL_->minMax(layer.get());
 
@@ -101,7 +101,7 @@ void DataMinMaxGLTest::test(std::shared_ptr<Layer> layer) {
     EXPECT_EQ(refMax, glMax) << "Maximum values differ";
 }
 
-void DataMinMaxGLTest::test(std::shared_ptr<BufferBase> buffer) {
+void DataMinMaxGLTest::test(const std::shared_ptr<BufferBase>& buffer) {
     auto [refMin, refMax] = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::No);
     auto [glMin, glMax] = minmaxGL_->minMax(buffer.get());
 
@@ -118,7 +118,7 @@ template <typename T>
         .format = T::get(),
     });
     auto data = volumeRam->getView();
-    util::IndexMapper3D im{dims};
+    const util::IndexMapper3D im{dims};
     for (auto i : std::views::iota(0u, data.size())) {
         data[i] = Type{static_cast<ValueType>(1 + glm::compAdd(im(i)))};
     }
@@ -135,7 +135,7 @@ template <typename T>
         .format = T::get(),
     });
     auto data = layerRam->getView();
-    util::IndexMapper2D im{dims};
+    const util::IndexMapper2D im{dims};
     for (auto i : std::views::iota(0u, data.size())) {
         data[i] = Type{static_cast<ValueType>(1 + glm::compAdd(im(i)))};
     }
