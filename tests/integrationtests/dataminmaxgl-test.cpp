@@ -87,7 +87,7 @@ void DataMinMaxGLTest::testVolume(std::string_view filename) {
 
 void DataMinMaxGLTest::test(const std::shared_ptr<Volume>& volume) {
     auto [refMin, refMax] = util::volumeMinMax(volume.get(), IgnoreSpecialValues::No);
-    auto [glMin, glMax] = minmaxGL_->minMax(volume.get());
+    auto [glMin, glMax] = minmaxGL_->minMax(*volume);
 
     EXPECT_EQ(refMin, glMin) << "Minimum values differ";
     EXPECT_EQ(refMax, glMax) << "Maximum values differ";
@@ -95,7 +95,7 @@ void DataMinMaxGLTest::test(const std::shared_ptr<Volume>& volume) {
 
 void DataMinMaxGLTest::test(const std::shared_ptr<Layer>& layer) {
     auto [refMin, refMax] = util::layerMinMax(layer.get(), IgnoreSpecialValues::No);
-    auto [glMin, glMax] = minmaxGL_->minMax(layer.get());
+    auto [glMin, glMax] = minmaxGL_->minMax(*layer);
 
     EXPECT_EQ(refMin, glMin) << "Minimum values differ";
     EXPECT_EQ(refMax, glMax) << "Maximum values differ";
@@ -103,7 +103,7 @@ void DataMinMaxGLTest::test(const std::shared_ptr<Layer>& layer) {
 
 void DataMinMaxGLTest::test(const std::shared_ptr<BufferBase>& buffer) {
     auto [refMin, refMax] = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::No);
-    auto [glMin, glMax] = minmaxGL_->minMax(buffer.get());
+    auto [glMin, glMax] = minmaxGL_->minMax(*buffer);
 
     EXPECT_EQ(refMin, glMin) << "Minimum values differ";
     EXPECT_EQ(refMax, glMax) << "Maximum values differ";

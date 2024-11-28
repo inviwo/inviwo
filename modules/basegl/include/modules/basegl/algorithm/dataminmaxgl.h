@@ -80,18 +80,18 @@ public:
      *      - NVIDIA: `GL_NV_gpu_shader5`
      *      - AMD: `GL_EXT_shader_explicit_arithmetic_types`
      *
-     * @return true if the GPU fullfills all requirements
+     * @return true if the GPU fulfills all requirements
      */
     static bool isSuppportedByGPU();
 
-    std::pair<dvec4, dvec4> minMax(const Volume* volume);
-    std::pair<dvec4, dvec4> minMax(const VolumeGL* volumeGL);
+    std::pair<dvec4, dvec4> minMax(const Volume& volume);
+    std::pair<dvec4, dvec4> minMax(const VolumeGL& volumeGL);
 
-    std::pair<dvec4, dvec4> minMax(const Layer* layer);
-    std::pair<dvec4, dvec4> minMax(const LayerGL* layerGL);
+    std::pair<dvec4, dvec4> minMax(const Layer& layer);
+    std::pair<dvec4, dvec4> minMax(const LayerGL& layerGL);
 
-    std::pair<dvec4, dvec4> minMax(const BufferBase* buffer);
-    std::pair<dvec4, dvec4> minMax(const BufferGL* bufferGL);
+    std::pair<dvec4, dvec4> minMax(const BufferBase& buffer);
+    std::pair<dvec4, dvec4> minMax(const BufferGL& bufferGL);
 
 private:
     Shader& getNdShader(Shader& shader, const GLFormat& glFormat, int nd);

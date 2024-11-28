@@ -53,11 +53,12 @@ uniform IMAGE_SOURCE sourceImage;
 uniform layout(binding=0, IMAGE_FORMAT) readonly IMAGE_SOURCE sourceImage;
 #endif  // USE_IMAGE_SAMPLER
 
-layout (std430, binding=1) buffer BufferObject {
+layout (std430, binding=1) restrict writeonly buffer BufferObject {
     vec4 minmax[];
 };
 
-// 32x32 per workgroup
+// Shared memory to store min/max values of each subgroup. That is 32x32 (local_size_x * local_size_y)
+// divided by 32 threads per subgroup (NVIDIA), or 64 threads on AMD hardware.
 shared vec4 workgroup_min[1024 / 32];
 shared vec4 workgroup_max[1024 / 32];
 

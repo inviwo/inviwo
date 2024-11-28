@@ -44,12 +44,14 @@ layout (std430, binding=0) readonly buffer SourceBufferObject {
     BUFFER_DATATYPE sourceBuffer[];
 };
 
-layout (std430, binding=1) buffer BufferObject {
+layout (std430, binding=1) restrict writeonly buffer BufferObject {
     vec4 minmax[];
 };
 
 uniform uint arrayLength;
 
+// Shared memory to store min/max values of each subgroup. That is 256 (local_size_x)
+// divided by 32 threads per subgroup (NVIDIA), or 64 threads on AMD hardware.
 shared vec4 workgroup_min[256 / 32];
 shared vec4 workgroup_max[256 / 32];
 
@@ -70,6 +72,7 @@ void main(){
         i += gridSize;
     }
 
+    // determine min/max values within the active threads, i.e. current subgroup
     minVal = subgroupMin(minVal);
     maxVal = subgroupMax(maxVal);
     if (subgroupElect()) {
@@ -78,6 +81,7 @@ void main(){
     }
     barrier();
 
+    // write back min/max of current work group into global buffer
     if (gl_LocalInvocationIndex == 0) {
         for (uint i = 0; i < gl_NumSubgroups; ++i) {
             minVal = min(minVal, workgroup_min[i]);
