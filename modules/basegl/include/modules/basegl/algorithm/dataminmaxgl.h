@@ -67,7 +67,11 @@ namespace utilgl {
 class IVW_MODULE_BASEGL_API DataMinMaxGL {
 public:
     DataMinMaxGL();
+    DataMinMaxGL(const DataMinMaxGL&) = default;
+    DataMinMaxGL(DataMinMaxGL&&) noexcept = default;
     ~DataMinMaxGL() = default;
+    DataMinMaxGL& operator=(const DataMinMaxGL&) = default;
+    DataMinMaxGL& operator=(DataMinMaxGL&&) noexcept = default;
 
     /**
      * Check whether the GPU supports compute shaders and the necessary OpenGL extensions.

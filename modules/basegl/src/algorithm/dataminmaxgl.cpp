@@ -92,13 +92,13 @@ std::string_view getImagePrefix(const GLFormat& glFormat) {
 
     // undo GL format normalization
     if (glFormat.normalization == utilgl::Normalization::Normalized) {
-        DataMapper dataMapper{DataFormatBase::get(GLFormats::get(glFormat))};
+        const DataMapper dataMapper{DataFormatBase::get(GLFormats::get(glFormat))};
 
         minmaxGL[0] = dataMapper.mapFromNormalizedToData(minmaxGL[0]);
         minmaxGL[1] = dataMapper.mapFromNormalizedToData(minmaxGL[1]);
     } else if (glFormat.normalization == utilgl::Normalization::SignNormalized) {
         using enum DataMapper::SignedNormalization;
-        DataMapper dataMapper{
+        const DataMapper dataMapper{
             DataFormatBase::get(GLFormats::get(glFormat)),
             OpenGLCapabilities::isSignedIntNormalizationSymmetric() ? Symmetric : Asymmetric};
 
@@ -124,15 +124,15 @@ std::string_view getImagePrefix(const GLFormat& glFormat) {
 
     // global buffer for min/max values for all work groups
     const size_t bufSize = 2 * glm::compMul(numGroups);
-    BufferObject buf(bufSize * sizeof(vec4), GLFormats::get(DataFormatId::Vec4Float32),
-                     GL_DYNAMIC_READ, GL_SHADER_STORAGE_BUFFER);
+    const BufferObject buf(bufSize * sizeof(vec4), GLFormats::get(DataFormatId::Vec4Float32),
+                           GL_DYNAMIC_READ, GL_SHADER_STORAGE_BUFFER);
     buf.bindBase(1);
 
     {
-        utilgl::Activate activateShader{&shader};
+        const utilgl::Activate activateShader{&shader};
 
         if (!useImageLoadStore) {
-            TextureUnit texUnit;
+            const TextureUnit texUnit;
             texUnit.activate();
             texture.bind();
             shader.setUniform("sourceImage", texUnit.getUnitNumber());
@@ -144,7 +144,7 @@ std::string_view getImagePrefix(const GLFormat& glFormat) {
     const std::uint32_t arrayLen = glm::compMul(numGroups);
     {
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-        utilgl::Activate activateShader{&linearReduce};
+        const utilgl::Activate activateShader{&linearReduce};
         linearReduce.setUniform("arrayLength", arrayLen);
         glDispatchCompute(1, 1, 1);
     }
@@ -310,14 +310,14 @@ std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const BufferGL* bufferGL) {
     LGL_ERROR;
     // global buffer for min/max values
     const size_t resultSize = 2;
-    BufferObject buf(resultSize * sizeof(vec4), GLFormats::get(DataFormatId::Vec4Float32),
+    const BufferObject buf(resultSize * sizeof(vec4), GLFormats::get(DataFormatId::Vec4Float32),
                      GL_DYNAMIC_READ, GL_SHADER_STORAGE_BUFFER);
     LGL_ERROR;
     buf.bindBase(1);
     LGL_ERROR;
 
     {
-        utilgl::Activate activateShade{&bufferMinMax};
+        const utilgl::Activate activateShade{&bufferMinMax};
         bufferMinMax.setUniform("arrayLength", bufferSize);
         glDispatchCompute(1, 1, 1);
     }
