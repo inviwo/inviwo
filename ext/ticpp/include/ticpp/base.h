@@ -3,22 +3,75 @@
 #include <ticpp/ticppapi.h>
 #include <ticpp/fwd.h>
 
-#include <ticpp/ticpprc.h>
-
 #include <string>
 #include <string_view>
 #include <array>
 #include <cassert>
+#include <stdexcept>
+#include <array>
 
 /**	Internal structure for tracking location of items
  * in the XML file.
  */
 struct TICPP_API TiXmlCursor {
-    TiXmlCursor() { Clear(); }
-    void Clear() { row = col = -1; }
+    void Clear() {
+        row = -1;
+        col = -1;
+    }
 
-    int row;  // 0 based.
-    int col;  // 0 based.
+    int row = -1;  // 0 based.
+    int col = -1;  // 0 based.
+};
+
+enum class TiXmlErrorCode {
+    TIXML_NO_ERROR = 0,
+    TIXML_ERROR,
+    TIXML_ERROR_OPENING_FILE,
+    TIXML_ERROR_PARSING_ELEMENT,
+    TIXML_ERROR_FAILED_TO_READ_ELEMENT_NAME,
+    TIXML_ERROR_READING_ELEMENT_VALUE,
+    TIXML_ERROR_READING_ATTRIBUTES,
+    TIXML_ERROR_PARSING_EMPTY,
+    TIXML_ERROR_READING_END_TAG,
+    TIXML_ERROR_PARSING_UNKNOWN,
+    TIXML_ERROR_PARSING_COMMENT,
+    TIXML_ERROR_PARSING_DECLARATION,
+    TIXML_ERROR_DOCUMENT_EMPTY,
+    TIXML_ERROR_EMBEDDED_NULL,
+    TIXML_ERROR_PARSING_CDATA,
+    TIXML_ERROR_DOCUMENT_TOP_ONLY,
+
+    TIXML_ERROR_DUPLICATE_ATTRIBUTE,
+
+    TIXML_ERROR_STRING_COUNT
+};
+
+class TiXmlParsingData;
+
+class TICPP_API TiXmlError : public std::runtime_error {
+public:
+    TiXmlError(TiXmlErrorCode err, const char* errorLocation, TiXmlParsingData* parseData);
+
+    /** Generally, you probably want the error string ( ErrorDesc() ). But if you
+        prefer the ErrorId, this function will fetch it.
+    */
+    TiXmlErrorCode ErrorCode() const { return errorCode; }
+
+    /** Returns the location (if known) of the error. The first column is column 1,
+        and the first row is row 1. A value of 0 means the row and column wasn't applicable
+        (memory errors, for example, have no row/column) or the parser lost the error. (An
+        error in the error reporting, in that case.)
+
+        @sa SetTabSize, Row, Column
+    */
+    int ErrorRow() const { return location.row + 1; }
+
+    /// The column where the error occurred. See ErrorRow()
+    int ErrorCol() const { return location.col + 1; }
+
+private:
+    TiXmlErrorCode errorCode;
+    TiXmlCursor location;
 };
 
 /**
@@ -45,29 +98,16 @@ struct TICPP_API TiXmlCursor {
  * @endverbatim
  */
 
-class TICPP_API TiXmlBase : public TiCppRC {
-    friend class TiXmlNode;
-    friend class TiXmlElement;
-    friend class TiXmlDocument;
-
+class TICPP_API TiXmlBase {
 public:
-    TiXmlBase() : userData(0) {}
+    using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
+
+    TiXmlBase() {}
     TiXmlBase(const TiXmlBase&) = delete;
     TiXmlBase& operator=(const TiXmlBase& base) = delete;
     virtual ~TiXmlBase() {}
 
-    /**	All TinyXml classes can print themselves to a filestream
-     * or the string class (TiXmlString in non-STL mode, std::string
-     * in STL mode.) Either or both cfile and str can be null.
-     *
-     * This is a formatted print, and will insert
-     * tabs and newlines.
-     *
-     * (For an unformatted stream, use the << operator.)
-     */
-    virtual void Print(FILE* cfile, int depth) const = 0;
-
-    /**	The world does not agree on whether white space should be kept or
+    /** The world does not agree on whether white space should be kept or
      * not. In order to make everyone happy, these global, static functions
      * are provided to set whether or not TinyXml will condense all white space
      * into a single space or not. The default is to condense. Note changing this
@@ -99,44 +139,49 @@ public:
     int Row() const { return location.row + 1; }
     int Column() const { return location.col + 1; }  ///< See Row()
 
-    void SetUserData(void* user) { userData = user; }     ///< Set a pointer to arbitrary user data.
-    void* GetUserData() { return userData; }              ///< Get a pointer to arbitrary user data.
-    const void* GetUserData() const { return userData; }  ///< Get a pointer to arbitrary user data.
-
-    // Table that returs, for a given lead byte, the total number of bytes
-    // in the UTF-8 sequence.
-    static const int utf8ByteTable[256];
-
-    virtual const char* Parse(const char* p, TiXmlParsingData* data) = 0;
+    virtual const char* Parse(const char* p, TiXmlParsingData* data,
+                              const allocator_type& alloc) = 0;
 
     /** Expands entities in a string. Note this should not contain the tag's '<', '>', etc,
      * or they will be transformed into entities!
      */
-    static void EncodeString(const std::string& str, std::string* out);
+    static void EncodeString(const std::string_view str, std::string* out);
 
-    enum {
-        TIXML_NO_ERROR = 0,
-        TIXML_ERROR,
-        TIXML_ERROR_OPENING_FILE,
-        TIXML_ERROR_OUT_OF_MEMORY,
-        TIXML_ERROR_PARSING_ELEMENT,
-        TIXML_ERROR_FAILED_TO_READ_ELEMENT_NAME,
-        TIXML_ERROR_READING_ELEMENT_VALUE,
-        TIXML_ERROR_READING_ATTRIBUTES,
-        TIXML_ERROR_PARSING_EMPTY,
-        TIXML_ERROR_READING_END_TAG,
-        TIXML_ERROR_PARSING_UNKNOWN,
-        TIXML_ERROR_PARSING_COMMENT,
-        TIXML_ERROR_PARSING_DECLARATION,
-        TIXML_ERROR_DOCUMENT_EMPTY,
-        TIXML_ERROR_EMBEDDED_NULL,
-        TIXML_ERROR_PARSING_CDATA,
-        TIXML_ERROR_DOCUMENT_TOP_ONLY,
+    // Table that returns, for a given lead byte, the total number of bytes
+    // in the UTF-8 sequence.
 
-        TIXML_ERROR_STRING_COUNT
+    // Bunch of unicode info at:
+    //      http://www.unicode.org/faq/utf_bom.html
+    // Including the basic of this table, which determines the #bytes in the
+    // sequence from the lead byte. 1 placed for invalid sequences --
+    // although the result will be junk, pass it through as much as possible.
+    // Beware of the non-characters in UTF-8:
+    //      ef bb bf (Microsoft "lead bytes")
+    //      ef bf be
+    //      ef bf bf
+
+    // clang-format off
+    static constexpr std::array<int, 256> utf8ByteTable = {
+	//	0	1	2	3	4	5	6	7	8	9	a	b	c	d	e	f
+		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x00
+		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x10
+		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x20
+		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x30
+		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x40
+		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x50
+		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x60
+		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x70	End of ASCII range
+		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x80 0x80 to 0xc1 invalid
+		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x90
+		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0xa0
+		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0xb0
+		1,	1,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	// 0xc0 0xc2 to 0xdf 2 byte
+		2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	// 0xd0
+		3,	3,	3,	3,	3,	3,	3,	3,	3,	3,	3,	3,	3,	3,	3,	3,	// 0xe0 0xe0 to 0xef 3 byte
+		4,	4,	4,	4,	4,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1	// 0xf0 0xf0 to 0xf4 4 byte, 0xf5 and higher invalid
     };
+    // clang-format on
 
-protected:
     static const char* SkipWhiteSpace(const char*);
     inline static bool IsWhiteSpace(char c) {
         return (isspace((unsigned char)c) || c == '\n' || c == '\r');
@@ -146,24 +191,27 @@ protected:
         return false;  // Again, only truly correct for English/Latin...but usually works.
     }
 
-    static bool StreamWhiteSpace(std::istream* in, std::string* tag);
-    static bool StreamTo(std::istream* in, int character, std::string* tag);
-
     /*	Reads an XML name into the string provided. Returns
      * a pointer just past the last character of the name,
      * or 0 if the function has an error.
      */
-    static const char* ReadName(const char* p, std::string* name);
+    static const char* ReadName(const char* p, std::pmr::string* name);
 
     /*	Reads text. Returns a pointer past the given end tag.
      * Wickedly complex options, but it keeps the (sensitive) code in one place.
      */
-    static const char* ReadText(const char* in,           // where to start
-                                std::string* text,        // the string read
-                                bool ignoreWhiteSpace,    // whether to keep the white space
-                                const char* endTag,       // what ends this text
-                                bool ignoreCase);         // whether to ignore case in the end tag
+    static const char* ReadText(const char* in,          // where to start
+                                std::pmr::string* text,  // the string read
+                                bool ignoreWhiteSpace,   // whether to keep the white space
+                                const char* endTag,      // what ends this text
+                                bool ignoreCase);        // whether to ignore case in the end tag
 
+    static const char* ReadQuotedText(const char* in, std::pmr::string* text, TiXmlParsingData* data);
+
+    static const char* ReadNameValue(const char* in, std::pmr::string* name,
+                                     std::pmr::string* value, TiXmlParsingData* data);
+
+protected:
     // If an entity has been found, transform it into a character.
     static const char* GetEntity(const char* in, char* value, int* length);
 
@@ -173,7 +221,6 @@ protected:
         assert(p);
         *length = utf8ByteTable[*((const unsigned char*)p)];
         assert(*length >= 0 && *length < 5);
-
 
         if (*length == 1) {
             if (*p == '&') return GetEntity(p, _value, length);
@@ -198,12 +245,7 @@ protected:
     // to English words: StringEqual( p, "version", true ) is fine.
     static bool StringEqual(const char* p, const char* endTag, bool ignoreCase);
 
-    static const char* errorString[TIXML_ERROR_STRING_COUNT];
-
     TiXmlCursor location;
-
-    /// Field containing a generic user pointer
-    void* userData;
 
     // None of these methods are reliable for any language except English.
     // Good for approximation, not great for accuracy.

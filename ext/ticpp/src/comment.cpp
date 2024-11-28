@@ -14,14 +14,6 @@ void TiXmlComment::operator=(const TiXmlComment& base) {
     base.CopyTo(this);
 }
 
-void TiXmlComment::Print(FILE* cfile, int depth) const {
-    assert(cfile);
-    for (int i = 0; i < depth; i++) {
-        fprintf(cfile, "    ");
-    }
-    fprintf(cfile, "<!--%s-->", value.c_str());
-}
-
 void TiXmlComment::CopyTo(TiXmlComment* target) const { TiXmlNode::CopyTo(target); }
 
 bool TiXmlComment::Accept(TiXmlVisitor* visitor) const { return visitor->Visit(*this); }
@@ -35,26 +27,7 @@ TiXmlNode* TiXmlComment::Clone() const {
     return clone;
 }
 
-void TiXmlComment::StreamIn(std::istream* in, std::string* tag) {
-    while (in->good()) {
-        int c = in->get();
-        if (c <= 0) {
-            TiXmlDocument* document = GetDocument();
-            if (document) document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
-            return;
-        }
-
-        (*tag) += (char)c;
-
-        if (c == '>' && tag->at(tag->length() - 2) == '-' && tag->at(tag->length() - 3) == '-') {
-            // All is well.
-            return;
-        }
-    }
-}
-
-const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data) {
-    TiXmlDocument* document = GetDocument();
+const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc) {
     value = "";
 
     p = SkipWhiteSpace(p);
@@ -67,8 +40,7 @@ const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data) {
     const char* endTag = "-->";
 
     if (!StringEqual(p, startTag, false)) {
-        document->SetError(TIXML_ERROR_PARSING_COMMENT, p, data);
-        return 0;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_COMMENT, p, data);
     }
     p += strlen(startTag);
 

@@ -76,7 +76,7 @@ TEST(SerializationContainerTest, ContainerTest1) {
     int tmp = 0;
     std::vector<bool> visited(vector.size(), false);
     auto cont = util::makeContainerWrapper<int>(
-        "Item", [&](std::string id, size_t ind) -> ContainerWrapperItem<int> {
+        "Item", [&](std::string_view id, size_t ind) -> ContainerWrapperItem<int> {
             if (ind < vector.size()) {
                 return {true, vector[ind], [&visited, ind](int&) { visited[ind] = true; }};
             } else {
@@ -136,8 +136,8 @@ TEST(SerializationContainerTest, ContainerTest2) {
     Item tmp;
     std::vector<std::string> visited;
     auto cont = util::makeContainerWrapper<Item>(
-        "Item", [&](std::string id, size_t) -> ContainerWrapperItem<Item> {
-            visited.push_back(id);
+        "Item", [&](std::string_view id, size_t) -> ContainerWrapperItem<Item> {
+            visited.emplace_back(id);
             auto it = util::find_if(vector, [&](const Item& i) { return i.id_ == id; });
             if (it != vector.end()) {
                 return {true, *it, [&](Item&) {}};
@@ -200,8 +200,8 @@ TEST(SerializationContainerTest, ContainerTest3) {
     Item* tmp = nullptr;
     std::vector<std::string> visited;
     auto cont = util::makeContainerWrapper<Item*>(
-        "Item", [&](std::string id, size_t) -> ContainerWrapperItem<Item*> {
-            visited.push_back(id);
+        "Item", [&](std::string_view id, size_t) -> ContainerWrapperItem<Item*> {
+            visited.emplace_back(id);
             auto it = util::find_if(vector, [&](Item*& i) { return i->id_ == id; });
             if (it != vector.end()) {
                 return {true, *it, [&](Item*&) {}};
@@ -355,6 +355,7 @@ TEST(SerializationContainerTest, ContainerTest6) {
 
     Deserializer deserializer(ss, "");
     auto des = util::MapDeserializer<std::string, int>("Map", "Item")
+                   .setIdentifierTransform([](std::string_view s) { return std::string{s}; })
                    .setMakeNew([]() { return 0; })
                    .onNew([&](const std::string& k, int& v) { map[k] = v; })
                    .onRemove([&](const std::string& k) { map.erase(k); });
@@ -387,7 +388,7 @@ TEST(SerializationContainerTest, ContainerTest7) {
                    .setMakeNew([]() { return ""; })
                    .onNew([&](const int& k, std::string& v) { map[k] = v; })
                    .onRemove([&](const int& k) { map.erase(k); })
-                   .setIdentifierTransform([](const std::string& s) -> int {
+                   .setIdentifierTransform([](std::string_view s) -> int {
                        int val{};
                        std::from_chars(s.data(), s.data() + s.size(), val);
                        return val;

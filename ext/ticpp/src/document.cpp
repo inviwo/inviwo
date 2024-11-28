@@ -14,7 +14,7 @@
 namespace {
 
 #if defined(_WIN32)
-std::wstring toWstring(const std::string& str) {
+std::wstring toWstring(std::string_view str) {
     int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), NULL, 0);
     std::wstring result(size_needed, 0);
     MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), &result[0], size_needed);
@@ -25,7 +25,7 @@ std::wstring toWstring(const std::string& str) {
 }  // namespace
 
 // Microsoft compiler security
-FILE* TiXmlFOpen(const char* filename, const char* mode) {
+FILE* TiXmlFOpen(std::string_view filename, const char* mode) {
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)
     FILE* fp = 0;
     // errno_t err = fopen_s( &fp, filename, mode );
@@ -36,29 +36,16 @@ FILE* TiXmlFOpen(const char* filename, const char* mode) {
     if (!err && fp) return fp;
     return 0;
 #else
-    return fopen(filename, mode);
+    std::string tmp{filename};
+    return fopen(tmp.c_str(), mode);
 #endif
 }
 
-TiXmlDocument::TiXmlDocument() : TiXmlNode(TiXmlNode::DOCUMENT) {
-    tabsize = 4;
-    useMicrosoftBOM = false;
-    ClearError();
-}
+TiXmlDocument::TiXmlDocument(const allocator_type& alloc)
+    : TiXmlNode(TiXmlNode::DOCUMENT, "", alloc), allocator{alloc}, tabsize{4} {}
 
-TiXmlDocument::TiXmlDocument(const char* documentName) : TiXmlNode(TiXmlNode::DOCUMENT) {
-    tabsize = 4;
-    useMicrosoftBOM = false;
-    value = documentName;
-    ClearError();
-}
-
-TiXmlDocument::TiXmlDocument(const std::string& documentName) : TiXmlNode(TiXmlNode::DOCUMENT) {
-    tabsize = 4;
-    useMicrosoftBOM = false;
-    value = documentName;
-    ClearError();
-}
+TiXmlDocument::TiXmlDocument(std::string_view documentName, const allocator_type& alloc)
+    : TiXmlNode(TiXmlNode::DOCUMENT, documentName, alloc), allocator{alloc}, tabsize{4} {}
 
 TiXmlDocument::TiXmlDocument(const TiXmlDocument& copy) : TiXmlNode(TiXmlNode::DOCUMENT) {
     copy.CopyTo(this);
@@ -69,51 +56,32 @@ void TiXmlDocument::operator=(const TiXmlDocument& copy) {
     copy.CopyTo(this);
 }
 
-bool TiXmlDocument::LoadFile() {
-    // See STL_STRING_BUG below.
-    // StringToBuffer buf( value );
-    return LoadFile(Value());
-}
+void TiXmlDocument::LoadFile() { LoadFile(Value()); }
 
-bool TiXmlDocument::SaveFile() const {
-    // See STL_STRING_BUG below.
-    //	StringToBuffer buf( value );
-    //
-    //	if ( buf.buffer && SaveFile( buf.buffer ) )
-    //		return true;
-    //
-    //	return false;
-    return SaveFile(Value());
-}
+bool TiXmlDocument::SaveFile() const { return SaveFile(Value()); }
 
-bool TiXmlDocument::LoadFile(const char* _filename) {
-    // There was a really terrifying little bug here. The code:
-    //		value = filename
-    // in the STL case, cause the assignment method of the std::string to
-    // be called. What is strange, is that the std::string had the same
-    // address as it's c_str() method, and so bad things happen. Looks
-    // like a bug in the Microsoft STL implementation.
-    // Add an extra string to avoid the crash.
-    std::string filename(_filename);
+void TiXmlDocument::LoadFile(std::string_view filename) {
     value = filename;
 
     // reading in binary mode so that tinyxml can normalize the EOL
-    FILE* file = TiXmlFOpen(value.c_str(), "rb");
+    FILE* file = TiXmlFOpen(value, "rb");
 
     if (file) {
-        bool result = LoadFile(file);
+        try {
+            LoadFile(file);
+        } catch (...) {
+            fclose(file);
+            throw;
+        }
         fclose(file);
-        return result;
     } else {
-        SetError(TIXML_ERROR_OPENING_FILE, nullptr, nullptr);
-        return false;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_OPENING_FILE, nullptr, nullptr);
     }
 }
 
-bool TiXmlDocument::LoadFile(FILE* file) {
+void TiXmlDocument::LoadFile(FILE* file) {
     if (!file) {
-        SetError(TIXML_ERROR_OPENING_FILE, nullptr, nullptr);
-        return false;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_OPENING_FILE, nullptr, nullptr);
     }
 
     // Delete the existing data:
@@ -128,13 +96,12 @@ bool TiXmlDocument::LoadFile(FILE* file) {
 
     // Strange case, but good to handle up front.
     if (length <= 0) {
-        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
-        return false;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
     }
 
     // If we have a file, assume it is all one big XML file, and read it in.
     // The document parser may decide the document ends sooner than the entire file, however.
-    std::string data;
+    std::pmr::string data{allocator};
     data.reserve(length);
 
     // Subtle bug here. TinyXml did use fgets. But from the XML spec:
@@ -163,8 +130,7 @@ bool TiXmlDocument::LoadFile(FILE* file) {
 
     if (fread(buf, length, 1, file) != 1) {
         delete[] buf;
-        SetError(TIXML_ERROR_OPENING_FILE, nullptr, nullptr);
-        return false;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_OPENING_FILE, nullptr, nullptr);
     }
 
     const char* lastPos = buf;
@@ -208,20 +174,14 @@ bool TiXmlDocument::LoadFile(FILE* file) {
         data.append(lastPos, p - lastPos);
     }
     delete[] buf;
-    buf = 0;
+    buf = nullptr;
 
-    Parse(data.c_str(), 0);
-
-    if (Error())
-        return false;
-    else
-        return true;
+    Parse(data.c_str(), nullptr, allocator);
 }
 
-bool TiXmlDocument::SaveFile(const char* filename) const {
+bool TiXmlDocument::SaveFile(std::string_view filename) const {
     // The old c stuff lives on...
-    FILE* fp = TiXmlFOpen(filename, "w");
-    if (fp) {
+    if (FILE* fp = TiXmlFOpen(filename, "w")) {
         bool result = SaveFile(fp);
         fclose(fp);
         return result;
@@ -229,50 +189,28 @@ bool TiXmlDocument::SaveFile(const char* filename) const {
     return false;
 }
 
-bool TiXmlDocument::SaveFile(FILE* fp) const {
-    if (useMicrosoftBOM) {
-        const unsigned char TIXML_UTF_LEAD_0 = 0xefU;
-        const unsigned char TIXML_UTF_LEAD_1 = 0xbbU;
-        const unsigned char TIXML_UTF_LEAD_2 = 0xbfU;
-
-        fputc(TIXML_UTF_LEAD_0, fp);
-        fputc(TIXML_UTF_LEAD_1, fp);
-        fputc(TIXML_UTF_LEAD_2, fp);
-    }
-    Print(fp, 0);
-    return (ferror(fp) == 0);
+bool TiXmlDocument::SaveFile(FILE* file) const {
+    TiXmlFilePrinter printer{file, TiXmlStreamPrint::Yes};
+    Accept(&printer);
+    return (ferror(file) == 0);
 }
 
 void TiXmlDocument::CopyTo(TiXmlDocument* target) const {
     TiXmlNode::CopyTo(target);
 
-    target->error = error;
-    target->errorId = errorId;
-    target->errorDesc = errorDesc;
     target->tabsize = tabsize;
-    target->errorLocation = errorLocation;
-    target->useMicrosoftBOM = useMicrosoftBOM;
 
-    TiXmlNode* node = 0;
-    for (node = firstChild; node; node = node->NextSibling()) {
+    for (TiXmlNode* node = firstChild; node; node = node->NextSibling()) {
         target->LinkEndChild(node->Clone());
     }
 }
 
 TiXmlNode* TiXmlDocument::Clone() const {
     TiXmlDocument* clone = new TiXmlDocument();
-    if (!clone) return 0;
+    if (!clone) return nullptr;
 
     CopyTo(clone);
     return clone;
-}
-
-void TiXmlDocument::Print(FILE* cfile, int depth) const {
-    assert(cfile);
-    for (const TiXmlNode* node = FirstChild(); node; node = node->NextSibling()) {
-        node->Print(cfile, depth);
-        fprintf(cfile, "\n");
-    }
 }
 
 bool TiXmlDocument::Accept(TiXmlVisitor* visitor) const {
@@ -284,66 +222,23 @@ bool TiXmlDocument::Accept(TiXmlVisitor* visitor) const {
     return visitor->VisitExit(*this);
 }
 
-void TiXmlDocument::StreamIn(std::istream* in, std::string* tag) {
-    // The basic issue with a document is that we don't know what we're
-    // streaming. Read something presumed to be a tag (and hope), then
-    // identify it, and call the appropriate stream method on the tag.
-    //
-    // This "pre-streaming" will never read the closing ">" so the
-    // sub-tag can orient itself.
-
-    if (!StreamTo(in, '<', tag)) {
-        SetError(TIXML_ERROR_PARSING_EMPTY, nullptr, nullptr);
-        return;
-    }
-
-    while (in->good()) {
-        int tagIndex = (int)tag->length();
-        while (in->good() && in->peek() != '>') {
-            int c = in->get();
-            if (c <= 0) {
-                SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
-                break;
-            }
-            (*tag) += (char)c;
-        }
-
-        if (in->good()) {
-            // We now have something we presume to be a node of
-            // some sort. Identify it, and call the node to
-            // continue streaming.
-            TiXmlNode* node = Identify(tag->c_str() + tagIndex);
-
-            if (node) {
-                node->StreamIn(in, tag);
-                bool isElement = node->ToElement() != 0;
-                delete node;
-                node = 0;
-
-                // If this is the root element, we're done. Parsing will be
-                // done by the >> operator.
-                if (isElement) {
-                    return;
-                }
-            } else {
-                SetError(TIXML_ERROR, nullptr, nullptr);
-                return;
-            }
-        }
-    }
-    // We should have returned sooner.
-    SetError(TIXML_ERROR, nullptr, nullptr);
+const char* TiXmlDocument::Parse(const char* p) {
+    return Parse(p, nullptr, allocator);
 }
 
+
 const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData) {
-    ClearError();
+    return Parse(p, prevData, allocator);
+}
+
+const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData,
+                                 const allocator_type& alloc) {
 
     // Parse away, at the document level. Since a document
     // contains nothing but other tags, most of what happens
     // here is skipping white space.
     if (!p || !*p) {
-        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
-        return 0;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
     }
 
     // Note that, for a document, this needs to come
@@ -351,8 +246,8 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData) {
     // starts from the pointer we are given.
     location.Clear();
     if (prevData) {
-        location.row = prevData->cursor.row;
-        location.col = prevData->cursor.col;
+        location.row = prevData->Cursor().row;
+        location.col = prevData->Cursor().col;
     } else {
         location.row = 0;
         location.col = 0;
@@ -360,22 +255,15 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData) {
     TiXmlParsingData data(p, TabSize(), location.row, location.col);
     location = data.Cursor();
 
-    const unsigned char* pU = (const unsigned char*)p;
-    if (*(pU + 0) && *(pU + 0) == TIXML_UTF_LEAD_0 && *(pU + 1) && *(pU + 1) == TIXML_UTF_LEAD_1 &&
-        *(pU + 2) && *(pU + 2) == TIXML_UTF_LEAD_2) {
-        useMicrosoftBOM = true;
-    }
-
     p = SkipWhiteSpace(p);
     if (!p) {
-        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
-        return 0;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
     }
 
     while (p && *p) {
-        if (TiXmlNode* node = Identify(p)) {
-            p = node->Parse(p, &data);
-            LinkEndChild(node);
+        if (std::unique_ptr<TiXmlNode> node = Identify(p, alloc)) {
+            p = node->Parse(p, &data, alloc);
+            LinkEndChild(node.release());
         } else {
             break;
         }
@@ -385,26 +273,9 @@ const char* TiXmlDocument::Parse(const char* p, TiXmlParsingData* prevData) {
 
     // Was this empty?
     if (!firstChild) {
-        SetError(TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
-        return 0;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_EMPTY, nullptr, nullptr);
     }
 
     // All is well.
     return p;
-}
-
-void TiXmlDocument::SetError(int err, const char* pError, TiXmlParsingData* data) {
-    // The first error in a chain is more accurate - don't set again!
-    if (error) return;
-
-    assert(err > 0 && err < TIXML_ERROR_STRING_COUNT);
-    error = true;
-    errorId = err;
-    errorDesc = errorString[errorId];
-
-    errorLocation.Clear();
-    if (pError && data) {
-        data->Stamp(pError);
-        errorLocation = data->Cursor();
-    }
 }

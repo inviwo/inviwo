@@ -33,27 +33,45 @@
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/exception.h>
 
+#include <iostream>
+
 #include <inviwo/core/io/serialization/ticpp.h>
 
 namespace inviwo {
 
-Deserializer::Deserializer(const std::filesystem::path& fileName) : SerializeBase(fileName) {
+Deserializer::Deserializer(const std::filesystem::path& fileName, const allocator_type& alloc)
+    : SerializeBase(fileName, alloc) {
     try {
         doc_->LoadFile();
         rootElement_ = doc_->FirstChildElement();
-        rootElement_->QueryIntAttribute(SerializeConstants::VersionAttribute,
-                                        &inviwoWorkspaceVersion_);
-    } catch (TxException& e) {
+        if (const auto ver = rootElement_->Attribute(SerializeConstants::VersionAttribute)) {
+            detail::fromStr(*ver, inviwoWorkspaceVersion_);
+        } else {
+            throw AbortException("Missing inviwo workspace version", IVW_CONTEXT);
+        }
+    } catch (const TiXmlError& e) {
         throw AbortException(e.what(), IVW_CONTEXT);
     }
 }
 
-Deserializer::Deserializer(std::istream& stream, const std::filesystem::path& path)
-    : SerializeBase(stream, path) {
+Deserializer::Deserializer(std::istream& stream, const std::filesystem::path& path,
+                           const allocator_type& alloc)
+    : SerializeBase(path, alloc) {
     try {
-        // Base streamed in the xml data. Get the first node.
+
+        const std::string data(std::istreambuf_iterator<char>{stream},
+                               std::istreambuf_iterator<char>{});
+        doc_->Parse(data.c_str(), nullptr, TiXmlDocument::allocator_type{});
+
         rootElement_ = doc_->FirstChildElement();
-    } catch (TxException& e) {
+
+        if (const auto ver = rootElement_->Attribute(SerializeConstants::VersionAttribute)) {
+            detail::fromStr(*ver, inviwoWorkspaceVersion_);
+        } else {
+            throw AbortException("Missing inviwo workspace version", IVW_CONTEXT);
+        }
+
+    } catch (const TiXmlError& e) {
         throw AbortException(e.what(), IVW_CONTEXT);
     }
 }
@@ -63,19 +81,19 @@ void Deserializer::deserialize(std::string_view key, std::filesystem::path& path
 
     try {
         if (target == SerializationTarget::Attribute) {
-            if (const auto* val = rootElement_->Attribute(key)) {
+            if (const auto val = rootElement_->Attribute(key)) {
                 path = *val;
             }
         } else {
             if (NodeSwitch ns{*this, key}) {
-                if (const auto* val =
+                if (const auto val =
                         rootElement_->Attribute(SerializeConstants::ContentAttribute)) {
                     path = *val;
                 }
                 return;
             }
             if (NodeSwitch ns{*this, key, true}) {
-                if (const auto* val =
+                if (const auto val =
                         rootElement_->Attribute(SerializeConstants::ContentAttribute)) {
                     path = *val;
                 }
@@ -113,8 +131,7 @@ void Deserializer::deserialize(std::string_view key, unsigned char& data,
 void Deserializer::setExceptionHandler(ExceptionHandler handler) { exceptionHandler_ = handler; }
 
 void Deserializer::convertVersion(VersionConverter* converter) {
-    TxElement elem(rootElement_);
-    converter->convert(&elem);
+    converter->convert(rootElement_);
 }
 
 void Deserializer::handleError(const ExceptionContext& context) {
@@ -139,36 +156,24 @@ void Deserializer::registerFactory(FactoryBase* factory) {
 
 int Deserializer::getInviwoWorkspaceVersion() const { return inviwoWorkspaceVersion_; }
 
-const std::string* detail::attribute(TiXmlElement* node, std::string_view key) {
+std::optional<std::string_view> detail::attribute(TiXmlElement* node, std::string_view key) {
     return node->Attribute(key);
 }
-
-const std::string& detail::getAttribute(TiXmlElement* node, std::string_view key) {
+std::string_view detail::getAttribute(TiXmlElement& node, std::string_view key) {
     static const std::string empty;
 
-    if (auto* str = node->Attribute(key)) {
+    if (auto str = node.Attribute(key)) {
         return *str;
     } else {
         return empty;
     }
 }
 
-const std::string& detail::getAttribute(TxElement* node, std::string_view key) {
-    return getAttribute(node->GetXmlPointer(), key);
-}
-
-void detail::forEachChild(TxElement* node, std::string_view key,
-                          const std::function<void(TxElement*)>& func) {
-    detail::forEachChild(node->GetXmlPointer(), key, func);
-}
-
 void detail::forEachChild(TiXmlElement* parent, std::string_view key,
-                          const std::function<void(TxElement*)>& func) {
-
+                          const std::function<void(TiXmlElement&)>& func) {
     for (auto* child = parent->FirstChild(); child; child = child->NextSibling()) {
-        if (child->Type() == TiXmlNode::ELEMENT && child->Value() == key) {
-            TxElement childElement{static_cast<TiXmlElement*>(child)};
-            func(&childElement);
+        if (auto* element = child->ToElement(); element && element->Value() == key) {
+            func(*element);
         }
     }
 }

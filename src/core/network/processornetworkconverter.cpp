@@ -115,9 +115,9 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
 
 void ProcessorNetworkConverter::traverseNodes(TxElement* node, updateType update) {
     (this->*update)(node);
-    ticpp::Iterator<ticpp::Element> child;
-    for (child = child.begin(node); child != child.end(); child++) {
-        traverseNodes(child.Get(), update);
+    for (TiXmlElement* child = node->FirstChildElement(); child;
+         child = child->NextSiblingElement()) {
+        traverseNodes(child, update);
     }
 }
 
@@ -298,24 +298,21 @@ void ProcessorNetworkConverter::updateCameraToComposite(TxElement* node) {
         const auto& type = node->GetAttribute("type");
         if (type == "org.inviwo.CameraProperty") {
             // create
-            TxElement newNode;
-            newNode.SetValue("Properties");
+            TxElement newNode("Properties");
 
             // temp list
             std::vector<TxElement*> toBeDeleted;
 
             // copy and remove children
-            ticpp::Iterator<TxElement> child;
-            for (child = child.begin(node); child != child.end(); child++) {
-                std::string propKey;
-                TxElement* subNode = child.Get();
-                subNode->GetValue(&propKey);
+            for (TiXmlElement* child = node->FirstChildElement(); child;
+                 child = child->NextSiblingElement()) {
+                const auto propKey = child->Value();
                 if (propKey == "lookFrom" || propKey == "lookTo" || propKey == "lookUp" ||
                     propKey == "fovy" || propKey == "aspectRatio" || propKey == "nearPlane" ||
                     propKey == "farPlane") {
-                    subNode->SetValue("Property");
-                    newNode.InsertEndChild(*subNode->Clone());
-                    toBeDeleted.push_back(subNode);
+                    child->SetValue("Property");
+                    child->InsertEndChild(*child);
+                    toBeDeleted.push_back(child);
                 }
             }
 
@@ -359,7 +356,7 @@ void ProcessorNetworkConverter::updatePropertyLinks(TxElement* node) {
     const auto& key = node->Value();
 
     if (key == "PropertyLink") {
-        TxElement* properties = node->FirstChildElement(false);
+        TxElement* properties = node->FirstChildElement();
         if (properties) {
             TxElement* src = properties->FirstChild()->ToElement();
             TxElement* dest = properties->LastChild()->ToElement();
@@ -375,18 +372,15 @@ void ProcessorNetworkConverter::updatePropertyLinks(TxElement* node) {
 }
 
 void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
-    struct RefManager : public ticpp::Visitor {
-        virtual bool VisitEnter(const TxElement& node, const TxAttribute*) override {
-            const auto& id = node.GetAttribute("id");
-            if (!id.empty()) {
-                ids_.push_back(id);
+    struct RefManager : public TiXmlVisitor {
+        virtual bool VisitEnter(const TiXmlElement& node, const TiXmlAttribute*) override {
+            if (const auto id = node.Attribute("id")) {
+                ids_.emplace_back(*id);
                 std::sort(ids_.begin(), ids_.end());
             }
             return true;
         };
-        virtual bool VisitEnter(const TxDocument& doc) override {
-            return ticpp::Visitor::VisitEnter(doc);
-        }
+        virtual bool VisitEnter(const TiXmlDocument& doc) override { return true; }
         std::string getNewRef() {
             std::string ref("ref0");
             for (int i = 1; std::find(ids_.begin(), ids_.end(), ref) != ids_.end(); ++i) {
@@ -400,15 +394,14 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
     };
 
     RefManager refs;
-
     root->Accept(&refs);
 
     TxNode* processorlist = root->FirstChild("Processors");
     std::map<std::string, TxElement*> processorsOutports;
     std::map<std::string, TxElement*> processorsInports;
 
-    ticpp::Iterator<TxElement> child;
-    for (child = child.begin(processorlist); child != child.end(); child++) {
+    for (TiXmlElement* child = processorlist->FirstChildElement(); child;
+         child = child->NextSiblingElement()) {
         // create
 
         auto* outports = new TxElement("OutPorts");
@@ -421,7 +414,8 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
     }
 
     TxNode* connectionlist = root->FirstChild("Connections");
-    for (child = child.begin(connectionlist); child != child.end(); child++) {
+    for (TiXmlElement* child = connectionlist->FirstChildElement(); child;
+         child = child->NextSiblingElement()) {
         TxElement* outport = child->FirstChild("OutPort")->ToElement();
         if (outport->GetAttribute("reference").empty()) {
             const auto& pid =
@@ -515,12 +509,9 @@ void ProcessorNetworkConverter::updateDisplayName(TxElement* node) {
     const auto& key = node->Value();
 
     if (key == "Property") {
-        if (node->HasAttribute("displayName")) {
-            const auto& displayName = node->GetAttribute("displayName");
-
-            TxElement newNode;
-            newNode.SetValue("displayName");
-            newNode.SetAttribute("content", displayName);
+        if (auto displayName = node->Attribute("displayName")) {
+            TxElement newNode("displayName");
+            newNode.SetAttribute("content", *displayName);
             node->InsertEndChild(newNode);
         }
     }
@@ -530,17 +521,18 @@ void ProcessorNetworkConverter::updateProcessorIdentifiers(TxElement* node) {
     const auto& key = node->Value();
 
     if (key == "Processor") {
-        auto identifier = node->GetAttribute("identifier");
-        if (!identifier.empty()) {
-            std::transform(identifier.begin(), identifier.end(), identifier.begin(), [](char c) {
-                if (!(util::contains(std::string_view{" ()=&"}, c) || std::isalnum(c) ||
-                      c == '_')) {
-                    return ' ';
-                }
-                return c;
-            });
+        if (auto identifier = node->Attribute("identifier")) {
+            std::string newIdentifier(*identifier);
+            std::transform(newIdentifier.begin(), newIdentifier.end(), newIdentifier.begin(),
+                           [](char c) {
+                               if (!(util::contains(std::string_view{" ()=&"}, c) ||
+                                     std::isalnum(c) || c == '_')) {
+                                   return ' ';
+                               }
+                               return c;
+                           });
 
-            node->SetAttribute("identifier", identifier);
+            node->SetAttribute("identifier", newIdentifier);
         }
     }
 }
@@ -559,8 +551,7 @@ void ProcessorNetworkConverter::updateTransferfunctions(TxElement* node) {
 
         xml::visitMatchingNodes(
             node, {{"Points", {}}, {"Point", {}}, {"pos", {}}}, [](TxElement* posNode) {
-                const std::string defaultVal = "0.0";
-                const auto& pos = posNode->GetAttributeOrDefault("x", defaultVal);
+                const auto pos = posNode->Attribute("x").value_or(std::string_view{"0.0"});
                 posNode->SetAttribute("content", pos);
             });
     }
@@ -638,33 +629,25 @@ void ProcessorNetworkConverter::updatePropertyEditorMetadata(TxElement* parent) 
         R{"visibility", "org.inviwo.BoolMetaData", "PropertyEditorWidgetVisible"},
         R{"stickyflag", "org.inviwo.BoolMetaData", "PropertyEditorWidgetSticky"}};
 
-    std::string key;
-    parent->GetValue(&key);
-
-    if (key == "MetaDataMap") {
+    if (parent->Value() == "MetaDataMap") {
         std::vector<TxElement*> toRemove;
-        ticpp::Iterator<TxElement> child;
-        for (child = child.begin(parent); child != child.end(); child++) {
-            std::string childKey;
-            TxElement* node = child.Get();
-            node->GetValue(&childKey);
-            if (childKey == "MetaDataItem") {
-                const auto& nodeKey = node->GetAttribute("key");
-                if (nodeKey == "org.inviwo.PropertyEditorWidgetMetaData") {
-                    for (const auto& item : replacements) {
-                        if (auto* n = node->FirstChild(std::get<0>(item), false)) {
-                            TxElement newNode;
-                            newNode.SetValue("MetaDataItem");
-                            newNode.SetAttribute("type", std::get<1>(item));
-                            newNode.SetAttribute("key", std::get<2>(item));
-                            auto data = n->Clone();
-                            data->SetValue("MetaData");
-                            newNode.InsertEndChild(*data);
-                            parent->InsertEndChild(newNode);
-                        }
+        for (TiXmlElement* child = parent->FirstChildElement("MetaDataItem"); child;
+             child = child->NextSiblingElement("MetaDataItem")) {
+
+            const auto nodeKey = child->Attribute("key");
+            if (nodeKey && *nodeKey == "org.inviwo.PropertyEditorWidgetMetaData") {
+                for (const auto& item : replacements) {
+                    if (auto* n = child->FirstChild(std::get<0>(item))) {
+                        TxElement newNode("MetaDataItem");
+                        newNode.SetAttribute("type", std::get<1>(item));
+                        newNode.SetAttribute("key", std::get<2>(item));
+                        auto data = n->Clone();
+                        data->SetValue("MetaData");
+                        newNode.LinkEndChild(data);
+                        parent->InsertEndChild(newNode);
                     }
-                    toRemove.push_back(node);
                 }
+                toRemove.push_back(child);
             }
         }
         for (auto* item : toRemove) {
@@ -685,8 +668,7 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
             if (type == "org.inviwo.CameraProperty") {
 
                 // create
-                TxElement cam;
-                cam.SetValue("Camera");
+                TxElement cam("Camera");
 
                 xml::visitMatchingNodes(
                     node, {{"Properties", {}}, {"Property", {}}}, [&](TxElement* subNode) {
@@ -694,26 +676,26 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
 
                         if (name == "lookFrom" || name == "lookTo" || name == "lookUp") {
                             subNode->SetAttribute("type", "org.inviwo.FloatVec3RefProperty");
-                            if (auto* value = subNode->FirstChild("value", false)) {
-                                auto val = value->Clone();
+                            if (auto* value = subNode->FirstChild("value")) {
+                                auto* val = value->Clone();
                                 val->SetValue(name);
-                                cam.InsertEndChild(*val);
+                                cam.LinkEndChild(val);
                             }
 
                         } else if (name == "fov" || name == "aspectRatio" || name == "near" ||
                                    name == "far" || name == "width") {
                             subNode->SetAttribute("type", "org.inviwo.FloatRefProperty");
-                            if (auto* value = subNode->FirstChild("value", false)) {
-                                auto val = value->Clone();
+                            if (auto* value = subNode->FirstChild("value")) {
+                                auto* val = value->Clone();
                                 val->SetValue(name);
-                                cam.InsertEndChild(*val);
+                                cam.LinkEndChild(val);
                             }
                         } else if (name == "offset") {
                             subNode->SetAttribute("type", "org.inviwo.FloatVec2RefProperty");
-                            if (auto* value = subNode->FirstChild("value", false)) {
-                                auto val = value->Clone();
+                            if (auto* value = subNode->FirstChild("value")) {
+                                auto* val = value->Clone();
                                 val->SetValue(name);
-                                cam.InsertEndChild(*val);
+                                cam.LinkEndChild(val);
                             }
                         }
 
@@ -724,12 +706,12 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
                         // Fix min and max of aspectRatio. some networks have a max of 1 which
                         // breaks a lot of stuff
                         if (name == "aspectRatio") {
-                            if (auto* max = subNode->FirstChild("maxvalue", false)) {
-                                max->ToElement()->SetAttribute(
-                                    "content", detail::toStr(std::numeric_limits<float>::max()));
+                            if (auto* max = subNode->FirstChildElement("maxvalue")) {
+                                max->SetAttribute("content",
+                                                  detail::toStr(std::numeric_limits<float>::max()));
                             }
-                            if (auto* min = subNode->FirstChild("minvalue", false)) {
-                                min->ToElement()->SetAttribute("content", detail::toStr(0.0f));
+                            if (auto* min = subNode->FirstChildElement("minvalue")) {
+                                min->SetAttribute("content", detail::toStr(0.0f));
                             }
                         }
                     });
@@ -737,7 +719,7 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
                 // insert new node
                 node->InsertEndChild(cam);
 
-                if (auto* owned = node->FirstChild("OwnedPropertyIdentifiers", false)) {
+                if (auto* owned = node->FirstChild("OwnedPropertyIdentifiers")) {
                     node->RemoveChild(owned);
                 }
             }
@@ -747,9 +729,9 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
     std::function<void(TxElement*, const std::function<void(TxElement*)>&)> visit =
         [&](TxElement* node, const std::function<void(TxElement*)>& func) {
             func(node);
-            ticpp::Iterator<ticpp::Element> child;
-            for (child = child.begin(node); child != child.end(); child++) {
-                visit(child.Get(), func);
+            for (TiXmlElement* child = node->FirstChildElement(); child;
+                 child = child->NextSiblingElement()) {
+                visit(child, func);
             }
         };
 
@@ -772,9 +754,9 @@ void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
             if (node->Value() == name) {
                 func(node);
             }
-            ticpp::Iterator<ticpp::Element> child;
-            for (child = child.begin(node); child != child.end(); child++) {
-                impl(child.Get(), name, func, impl);
+            for (TiXmlElement* child = node->FirstChildElement(); child;
+                 child = child->NextSiblingElement()) {
+                impl(child, name, func, impl);
             }
         };
         impl(node, name, func, impl);
@@ -841,10 +823,10 @@ void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
 
     if (auto* connectionsNode = xml::getElement(root, "Connections")) {
 
-        ticpp::Iterator<ticpp::Element> child;
-        for (child = child.begin(connectionsNode); child != child.end(); child++) {
-            const auto src = xml::getElement(child.Get(), "OutPort")->GetAttribute("reference");
-            const auto dst = xml::getElement(child.Get(), "InPort")->GetAttribute("reference");
+        for (TiXmlElement* child = connectionsNode->FirstChildElement(); child;
+             child = child->NextSiblingElement()) {
+            const auto src = xml::getElement(child, "OutPort")->GetAttribute("reference");
+            const auto dst = xml::getElement(child, "InPort")->GetAttribute("reference");
 
             child->SetAttribute("src", ports[src]);
             child->SetAttribute("dst", ports[dst]);
@@ -852,12 +834,11 @@ void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
     }
     if (auto* propertyLinksNode = xml::getElement(root, "PropertyLinks")) {
 
-        ticpp::Iterator<ticpp::Element> child;
-        for (child = child.begin(propertyLinksNode); child != child.end(); child++) {
-            const auto src =
-                xml::getElement(child.Get(), "SourceProperty")->GetAttribute("reference");
+        for (TiXmlElement* child = propertyLinksNode->FirstChildElement(); child;
+             child = child->NextSiblingElement()) {
+            const auto src = xml::getElement(child, "SourceProperty")->GetAttribute("reference");
             const auto dst =
-                xml::getElement(child.Get(), "DestinationProperty")->GetAttribute("reference");
+                xml::getElement(child, "DestinationProperty")->GetAttribute("reference");
 
             child->SetAttribute("src", properties[src]);
             child->SetAttribute("dst", properties[dst]);

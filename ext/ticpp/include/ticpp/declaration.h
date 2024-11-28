@@ -18,20 +18,12 @@
     handled as special cases, not generic attributes, simply
     because there can only be at most 3 and they are always the same.
 */
-class TICPP_API TiXmlDeclaration : public TiXmlNode {
+class TICPP_API TiXmlDeclaration final : public TiXmlNode {
 public:
     /// Construct an empty declaration.
-    TiXmlDeclaration() : TiXmlNode(TiXmlNode::DECLARATION) {}
-
-    /// Constructor.
-    TiXmlDeclaration(const std::string& _version, const std::string& _encoding,
-                     const std::string& _standalone);
-
+    TiXmlDeclaration(const allocator_type& alloc = {});
     TiXmlDeclaration(std::string_view _version, std::string_view _encoding,
-                     std::string_view _standalone);
-
-    /// Construct.
-    TiXmlDeclaration(const char* _version, const char* _encoding, const char* _standalone);
+                     std::string_view _standalone, const allocator_type& alloc = {});
 
     TiXmlDeclaration(const TiXmlDeclaration& copy);
     void operator=(const TiXmlDeclaration& copy);
@@ -39,36 +31,35 @@ public:
     virtual ~TiXmlDeclaration() {}
 
     /// Version. Will return an empty string if none was found.
-    const std::string& Version() const { return version; }
+    std::string_view Version() const { return version; }
     /// Encoding. Will return an empty string if none was found.
-    const std::string& Encoding() const { return encoding; }
+    std::string_view Encoding() const { return encoding; }
     /// Is this a standalone document?
-    const std::string& Standalone() const { return standalone; }
+    std::string_view Standalone() const { return standalone; }
 
     /// Creates a copy of this Declaration and returns it.
-    virtual TiXmlNode* Clone() const;
-    // Print this declaration to a FILE stream.
-    virtual void Print(FILE* cfile, int depth, std::string* str) const;
-    virtual void Print(FILE* cfile, int depth) const { Print(cfile, depth, 0); }
+    virtual TiXmlNode* Clone() const override;
 
-    virtual const char* Parse(const char* p, TiXmlParsingData* data);
+    void Print(std::string* str) const;
+    void Print(FILE* file) const;
 
-    /// Cast to a more defined type. Will return null not of the requested type.
-    virtual const TiXmlDeclaration* ToDeclaration() const { return this; }
+    virtual const char* Parse(const char* p, TiXmlParsingData* data,
+                              const allocator_type& alloc) override;
 
     /// Cast to a more defined type. Will return null not of the requested type.
-    virtual TiXmlDeclaration* ToDeclaration() { return this; }
+    virtual const TiXmlDeclaration* ToDeclaration() const override { return this; }
+
+    /// Cast to a more defined type. Will return null not of the requested type.
+    virtual TiXmlDeclaration* ToDeclaration() override { return this; }
 
     /// Walk the XML tree visiting this node and all of its children.
-    virtual bool Accept(TiXmlVisitor* visitor) const;
+    virtual bool Accept(TiXmlVisitor* visitor) const override;
 
 protected:
     void CopyTo(TiXmlDeclaration* target) const;
-    // used to be public
-    virtual void StreamIn(std::istream* in, std::string* tag);
 
 private:
-    std::string version;
-    std::string encoding;
-    std::string standalone;
+    std::pmr::string version;
+    std::pmr::string encoding;
+    std::pmr::string standalone;
 };

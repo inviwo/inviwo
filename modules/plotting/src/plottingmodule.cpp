@@ -76,8 +76,7 @@ bool PlottingModule::Converter::convert(TxElement* root) {
         }
         case 1: {
             TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                std::string key;
-                node->GetValue(&key);
+                const auto key = node->Value();
                 if (key != "Property") return true;
                 const auto& type = node->GetAttribute("type");
                 if (type != "org.inviwo.AxisStyleProperty") {

@@ -12,33 +12,28 @@
 
         DTD tags get thrown into TiXmlUnknowns.
 */
-class TICPP_API TiXmlUnknown : public TiXmlNode {
+class TICPP_API TiXmlUnknown final : public TiXmlNode {
 public:
-    TiXmlUnknown() : TiXmlNode(TiXmlNode::UNKNOWN) {}
+    TiXmlUnknown(const allocator_type& alloc = {}) : TiXmlNode(TiXmlNode::UNKNOWN, "", alloc) {}
     virtual ~TiXmlUnknown() {}
 
     TiXmlUnknown(const TiXmlUnknown& copy) : TiXmlNode(TiXmlNode::UNKNOWN) { copy.CopyTo(this); }
     void operator=(const TiXmlUnknown& copy) { copy.CopyTo(this); }
 
     /// Creates a copy of this Unknown and returns it.
-    virtual TiXmlNode* Clone() const;
-    // Print this Unknown to a FILE stream.
-    virtual void Print(FILE* cfile, int depth) const;
+    virtual TiXmlNode* Clone() const override;
 
-    virtual const char* Parse(const char* p, TiXmlParsingData* data);
+    virtual const char* Parse(const char* p, TiXmlParsingData* data,
+                              const allocator_type& alloc) override;
 
     /// Cast to a more defined type. Will return null not of the requested type.
-    virtual const TiXmlUnknown* ToUnknown() const { return this; }
+    virtual const TiXmlUnknown* ToUnknown() const override { return this; }
     /// Cast to a more defined type. Will return null not of the requested type.
-    virtual TiXmlUnknown* ToUnknown() { return this; }
+    virtual TiXmlUnknown* ToUnknown() override { return this; }
 
     /// Walk the XML tree visiting this node and all of its children.
-    virtual bool Accept(TiXmlVisitor* content) const;
+    virtual bool Accept(TiXmlVisitor* content) const override;
 
 protected:
     void CopyTo(TiXmlUnknown* target) const;
-
-    virtual void StreamIn(std::istream* in, std::string* tag);
-
-private:
 };

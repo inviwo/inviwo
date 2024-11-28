@@ -29,7 +29,7 @@
 
 #include <inviwo/core/io/serialization/nodedebugger.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/io/serialization/ticpp.h>
+#include <ticpp/tinyxml.h>
 
 #include <sstream>
 
@@ -37,24 +37,10 @@ namespace inviwo {
 
 NodeDebugger::NodeDebugger(TiXmlElement* elem) {
     while (elem) {
-        const auto* id = elem->Attribute("identifier");
-        const auto* type = elem->Attribute("type");
-        nodes_.push_back(Node(elem->Value(), id ? *id : std::string{},
-                              type ? *type : std::string{}, elem->Row()));
+        const auto id = elem->Attribute("identifier");
+        const auto type = elem->Attribute("type");
+        nodes_.emplace_back(elem->Value(), id.value_or(""), type.value_or(""), elem->Row());
         elem = elem->Parent()->ToElement();
-    }
-}
-
-NodeDebugger::NodeDebugger(TxElement* elem) {
-    while (elem) {
-        nodes_.push_back(Node(elem->Value(), elem->GetAttribute("identifier"),
-                              elem->GetAttribute("type"), elem->Row()));
-        TxNode* node = elem->Parent(false);
-        if (node) {
-            elem = dynamic_cast<TxElement*>(node);
-        } else {
-            elem = nullptr;
-        }
     }
 }
 
@@ -92,8 +78,7 @@ std::string NodeDebugger::getDescription() const {
 
 size_t NodeDebugger::size() const { return nodes_.size(); }
 
-NodeDebugger::Node::Node(std::string k /*= ""*/, std::string i /*= ""*/, std::string t /*= ""*/,
-                         int l /*= 0*/)
+NodeDebugger::Node::Node(std::string_view k, std::string_view i, std::string_view t, int l)
     : key(k), identifier(i), type(t), line(l) {}
 
 }  // namespace inviwo

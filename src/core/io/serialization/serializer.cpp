@@ -36,21 +36,22 @@
 
 namespace inviwo {
 
-Serializer::Serializer(const std::filesystem::path& fileName) : SerializeBase(fileName) {
+Serializer::Serializer(const std::filesystem::path& fileName, const allocator_type& alloc)
+    : SerializeBase(fileName, alloc) {
     try {
-        auto decl = new TiXmlDeclaration(SerializeConstants::XmlVersion, "UTF-8", "");
+        auto decl = new TiXmlDeclaration(SerializeConstants::XmlVersion, "UTF-8", "", alloc);
         doc_->LinkEndChild(decl);
-        rootElement_ = new TiXmlElement(SerializeConstants::InviwoWorkspace);
+        rootElement_ = new TiXmlElement(SerializeConstants::InviwoWorkspace, alloc);
         rootElement_->SetAttribute(SerializeConstants::VersionAttribute,
                                    detail::toStr(SerializeConstants::InviwoWorkspaceVersion));
         doc_->LinkEndChild(rootElement_);
 
-    } catch (TxException& e) {
+    } catch (const TiXmlError& e) {
         throw SerializationException(e.what(), IVW_CONTEXT);
     }
 }
 
-Serializer::~Serializer() { }
+Serializer::~Serializer() {}
 
 void Serializer::serialize(std::string_view key, const std::filesystem::path& path,
                            const SerializationTarget& target) {
@@ -64,25 +65,20 @@ void Serializer::serialize(std::string_view key, const std::filesystem::path& pa
 }
 
 void Serializer::serialize(std::string_view key, const Serializable& sObj) {
-    NodeSwitch nodeSwitch{*this, rootElement_->LinkEndChild(new TiXmlElement(key))->ToElement()};
+    NodeSwitch nodeSwitch{
+        *this,
+        rootElement_->LinkEndChild(new TiXmlElement(key, doc_->getAllocator()))->ToElement()};
     sObj.serialize(*this);
 }
 
 NodeSwitch Serializer::switchToNewNode(std::string_view key) {
-    return {*this, rootElement_->LinkEndChild(new TiXmlElement(key))->ToElement()};
+    return {*this,
+            rootElement_->LinkEndChild(new TiXmlElement(key, doc_->getAllocator()))->ToElement()};
 }
 
 TiXmlElement* Serializer::getLastChild() const { return rootElement_->LastChild()->ToElement(); }
 
-// void Serializer::linkEndChild(TxElement* child) { rootElement_->LinkEndChild(child); }
-
-void Serializer::setValue(TxElement* node, std::string_view val) { node->SetValue(val); }
-
 void Serializer::setAttribute(TiXmlElement* node, std::string_view key, std::string_view val) {
-    node->SetAttribute(key, val);
-}
-
-void Serializer::setAttribute(TxElement* node, std::string_view key, std::string_view val) {
     node->SetAttribute(key, val);
 }
 
@@ -102,7 +98,7 @@ void Serializer::serialize(std::string_view key, const unsigned char& data,
 void Serializer::writeFile() {
     try {
         doc_->SaveFile(getFileName().string());
-    } catch (TxException& e) {
+    } catch (const TiXmlError& e) {
         throw SerializationException(e.what(), IVW_CONTEXT);
     }
 }
@@ -117,7 +113,7 @@ void Serializer::writeFile(std::ostream& stream, bool format) {
         } else {
             stream << *doc_;
         }
-    } catch (TxException& e) {
+    } catch (const TiXmlError& e) {
         throw SerializationException(e.what(), IVW_CONTEXT);
     }
 }

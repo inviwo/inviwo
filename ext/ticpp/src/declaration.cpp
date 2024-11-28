@@ -1,32 +1,20 @@
 #include <ticpp/declaration.h>
-
-#include <ticpp/attribute.h>
-#include <ticpp/document.h>
 #include <ticpp/parsingdata.h>
 
-TiXmlDeclaration::TiXmlDeclaration(const char* _version, const char* _encoding,
-                                   const char* _standalone)
-    : TiXmlNode(TiXmlNode::DECLARATION) {
-    version = _version;
-    encoding = _encoding;
-    standalone = _standalone;
-}
+#include <fmt/printf.h>
 
-TiXmlDeclaration::TiXmlDeclaration(const std::string& _version, const std::string& _encoding,
-                                   const std::string& _standalone)
-    : TiXmlNode(TiXmlNode::DECLARATION) {
-    version = _version;
-    encoding = _encoding;
-    standalone = _standalone;
-}
+TiXmlDeclaration::TiXmlDeclaration(const allocator_type& alloc)
+    : TiXmlNode(TiXmlNode::DECLARATION, "", alloc)
+    , version{alloc}
+    , encoding(alloc)
+    , standalone(alloc) {}
 
 TiXmlDeclaration::TiXmlDeclaration(std::string_view _version, std::string_view _encoding,
-                                   std::string_view _standalone)
-    : TiXmlNode(TiXmlNode::DECLARATION) {
-    version = _version;
-    encoding = _encoding;
-    standalone = _standalone;
-}
+                                   std::string_view _standalone, const allocator_type& alloc)
+    : TiXmlNode(TiXmlNode::DECLARATION, "", alloc)
+    , version{_version, alloc}
+    , encoding(_encoding, alloc)
+    , standalone(_standalone, alloc) {}
 
 TiXmlDeclaration::TiXmlDeclaration(const TiXmlDeclaration& copy)
     : TiXmlNode(TiXmlNode::DECLARATION) {
@@ -38,36 +26,42 @@ void TiXmlDeclaration::operator=(const TiXmlDeclaration& copy) {
     copy.CopyTo(this);
 }
 
-void TiXmlDeclaration::Print(FILE* cfile, int /*depth*/, std::string* str) const {
-    if (cfile) fprintf(cfile, "<?xml ");
-    if (str) (*str) += "<?xml ";
+void TiXmlDeclaration::Print(std::string* str) const {
+    if (!str) return;
 
+    *str += "<?xml ";
     if (!version.empty()) {
-        if (cfile) fprintf(cfile, "version=\"%s\" ", version.c_str());
-        if (str) {
-            (*str) += "version=\"";
-            (*str) += version;
-            (*str) += "\" ";
-        }
+        *str += "version=\"";
+        *str += version;
+        *str += "\" ";
     }
     if (!encoding.empty()) {
-        if (cfile) fprintf(cfile, "encoding=\"%s\" ", encoding.c_str());
-        if (str) {
-            (*str) += "encoding=\"";
-            (*str) += encoding;
-            (*str) += "\" ";
-        }
+        *str += "encoding=\"";
+        *str += encoding;
+        *str += "\" ";
     }
     if (!standalone.empty()) {
-        if (cfile) fprintf(cfile, "standalone=\"%s\" ", standalone.c_str());
-        if (str) {
-            (*str) += "standalone=\"";
-            (*str) += standalone;
-            (*str) += "\" ";
-        }
+        *str += "standalone=\"";
+        *str += standalone;
+        *str += "\" ";
     }
-    if (cfile) fprintf(cfile, "?>");
-    if (str) (*str) += "?>";
+    *str += "?>";
+}
+
+void TiXmlDeclaration::Print(FILE* file) const {
+    if (!file) return;
+
+    fmt::fprintf(file, "<?xml ");
+    if (!version.empty()) {
+        fmt::fprintf(file, "version=\"%s\" ", version);
+    }
+    if (!encoding.empty()) {
+        fmt::fprintf(file, "encoding=\"%s\" ", encoding);
+    }
+    if (!standalone.empty()) {
+        fmt::fprintf(file, "standalone=\"%s\" ", standalone);
+    }
+    fmt::fprintf(file, "?>");
 }
 
 void TiXmlDeclaration::CopyTo(TiXmlDeclaration* target) const {
@@ -89,34 +83,12 @@ TiXmlNode* TiXmlDeclaration::Clone() const {
     return clone;
 }
 
-
-
-void TiXmlDeclaration::StreamIn(std::istream* in, std::string* tag) {
-    while (in->good()) {
-        int c = in->get();
-        if (c <= 0) {
-            TiXmlDocument* document = GetDocument();
-            if (document)
-                document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
-            return;
-        }
-        (*tag) += (char)c;
-
-        if (c == '>') {
-            // All is well.
-            return;
-        }
-    }
-}
-
-const char* TiXmlDeclaration::Parse(const char* p, TiXmlParsingData* data) {
+const char* TiXmlDeclaration::Parse(const char* p, TiXmlParsingData* data,
+                                    const allocator_type& alloc) {
     p = SkipWhiteSpace(p);
-    // Find the beginning, find the end, and look for
-    // the stuff in-between.
-    TiXmlDocument* document = GetDocument();
+    // Find the beginning, find the end, and look for the stuff in-between.
     if (!p || !*p || !StringEqual(p, "<?xml", true)) {
-        if (document) document->SetError(TIXML_ERROR_PARSING_DECLARATION, nullptr, nullptr);
-        return 0;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_DECLARATION, nullptr, nullptr);
     }
     if (data) {
         data->Stamp(p);
@@ -135,22 +107,18 @@ const char* TiXmlDeclaration::Parse(const char* p, TiXmlParsingData* data) {
         }
 
         p = SkipWhiteSpace(p);
+
+        std::pmr::string dummy{alloc};
         if (StringEqual(p, "version", true)) {
-            TiXmlAttribute attrib;
-            p = attrib.Parse(p, data);
-            version = attrib.Value();
+            p = ReadNameValue(p, &dummy, &version, data);
         } else if (StringEqual(p, "encoding", true)) {
-            TiXmlAttribute attrib;
-            p = attrib.Parse(p, data);
-            encoding = attrib.Value();
+            p = ReadNameValue(p, &dummy, &encoding, data);
         } else if (StringEqual(p, "standalone", true)) {
-            TiXmlAttribute attrib;
-            p = attrib.Parse(p, data);
-            standalone = attrib.Value();
+            p = ReadNameValue(p, &dummy, &standalone, data);
         } else {
             // Read over whatever it is.
             while (p && *p && *p != '>' && !IsWhiteSpace(*p)) ++p;
         }
     }
-    return 0;
+    return nullptr;
 }

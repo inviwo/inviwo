@@ -1,19 +1,67 @@
 #include <ticpp/base.h>
+#include <ticpp/parsingdata.h>
 
-#include <istream>
 #include <cstring>
 
 #include <fmt/format.h>
 
+namespace {
+constexpr std::array<std::string_view, static_cast<int>(TiXmlErrorCode::TIXML_ERROR_STRING_COUNT)>
+    TiXmlErrorStrings = {
+        "No error",
+        "Error",
+        "Failed to open file",
+        "Error parsing Element.",
+        "Failed to read Element name",
+        "Error reading Element value.",
+        "Error reading Attributes.",
+        "Error: empty tag.",
+        "Error reading end tag.",
+        "Error parsing Unknown.",
+        "Error parsing Comment.",
+        "Error parsing Declaration.",
+        "Error document empty.",
+        "Error null (0) or unexpected EOF found in input stream.",
+        "Error parsing CDATA.",
+        "Error when TiXmlDocument added to document, because TiXmlDocument can only be at the "
+        "root.",
+        "Error trying to add duplicate attribute to element"};
+
+std::string formatError(TiXmlErrorCode err, const char* errorLocation,
+                        TiXmlParsingData* parseData) {
+    if (errorLocation && parseData) {
+        parseData->Stamp(errorLocation);
+        TiXmlCursor location = parseData->Cursor();
+        return fmt::format("{} Line: {} Column: {}", TiXmlErrorStrings[static_cast<int>(err)],
+                           location.row + 1, location.col + 1);
+    } else {
+        return std::string{TiXmlErrorStrings[static_cast<int>(err)]};
+    }
+}
+
+}  // namespace
+
+TiXmlError::TiXmlError(TiXmlErrorCode err, const char* errorLocation, TiXmlParsingData* parseData)
+    : std::runtime_error{formatError(err, errorLocation, parseData)}
+    , errorCode{err}
+    , location{[&]() {
+        if (errorLocation && parseData) {
+            parseData->Stamp(errorLocation);
+            return parseData->Cursor();
+        } else {
+            return TiXmlCursor{};
+        }
+    }()} {}
+
 bool TiXmlBase::condenseWhiteSpace = true;
 
-void TiXmlBase::EncodeString(const std::string& str, std::string* outString) {
-    int i = 0;
+void TiXmlBase::EncodeString(const std::string_view str, std::string* outString) {
+    size_t i = 0;
 
-    while (i < (int)str.length()) {
-        unsigned char c = (unsigned char)str[i];
+    while (i < str.length()) {
+        const auto c = str[i];
 
-        if (c == '&' && i < ((int)str.length() - 2) && str[i + 1] == '#' && str[i + 2] == 'x') {
+        if (c == '&' && i + 2 < str.length() && str[i + 1] == '#' && str[i + 2] == 'x') {
             // Hexadecimal character reference.
             // Pass through unchanged.
             // &#xA9;	-- copyright symbol, for example.
@@ -24,8 +72,8 @@ void TiXmlBase::EncodeString(const std::string& str, std::string* outString) {
             // while fails (error case) and break (semicolon found).
             // However, there is no mechanism (currently) for
             // this function to return an error.
-            while (i < (int)str.length() - 1) {
-                outString->append(str.c_str() + i, 1);
+            while (i + 1 < str.length()) {
+                outString->push_back(str[i]);
                 ++i;
                 if (str[i] == ';') break;
             }
@@ -50,63 +98,11 @@ void TiXmlBase::EncodeString(const std::string& str, std::string* outString) {
             outString->append(fmt::format("&#x{:02X};", c));
             ++i;
         } else {
-            *outString += static_cast<char>(c);
+            outString->push_back(c);
             ++i;
         }
     }
 }
-
-const char* TiXmlBase::errorString[TIXML_ERROR_STRING_COUNT] = {
-    "No error",
-    "Error",
-    "Failed to open file",
-    "Memory allocation failed.",
-    "Error parsing Element.",
-    "Failed to read Element name",
-    "Error reading Element value.",
-    "Error reading Attributes.",
-    "Error: empty tag.",
-    "Error reading end tag.",
-    "Error parsing Unknown.",
-    "Error parsing Comment.",
-    "Error parsing Declaration.",
-    "Error document empty.",
-    "Error null (0) or unexpected EOF found in input stream.",
-    "Error parsing CDATA.",
-    "Error when TiXmlDocument added to document, because TiXmlDocument can only be at the root.",
-};
-
-// Bunch of unicode info at:
-//		http://www.unicode.org/faq/utf_bom.html
-// Including the basic of this table, which determines the #bytes in the
-// sequence from the lead byte. 1 placed for invalid sequences --
-// although the result will be junk, pass it through as much as possible.
-// Beware of the non-characters in UTF-8:
-//				ef bb bf (Microsoft "lead bytes")
-//				ef bf be
-//				ef bf bf
-
-// clang-format off
-const int TiXmlBase::utf8ByteTable[256] = {
-	//	0	1	2	3	4	5	6	7	8	9	a	b	c	d	e	f
-		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x00
-		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x10
-		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x20
-		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x30
-		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x40
-		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x50
-		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x60
-		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x70	End of ASCII range
-		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x80 0x80 to 0xc1 invalid
-		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0x90
-		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0xa0
-		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	// 0xb0
-		1,	1,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	// 0xc0 0xc2 to 0xdf 2 byte
-		2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	// 0xd0
-		3,	3,	3,	3,	3,	3,	3,	3,	3,	3,	3,	3,	3,	3,	3,	3,	// 0xe0 0xe0 to 0xef 3 byte
-		4,	4,	4,	4,	4,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1	// 0xf0 0xf0 to 0xf4 4 byte, 0xf5 and higher invalid
-};
-// clang-format on
 
 void TiXmlBase::ConvertUTF32ToUTF8(unsigned long input, char* output, int* length) {
     const unsigned long BYTE_MASK = 0xBF;
@@ -134,14 +130,17 @@ void TiXmlBase::ConvertUTF32ToUTF8(unsigned long input, char* output, int* lengt
             --output;
             *output = (char)((input | BYTE_MARK) & BYTE_MASK);
             input >>= 6;
+            [[fallthrough]];
         case 3:
             --output;
             *output = (char)((input | BYTE_MARK) & BYTE_MASK);
             input >>= 6;
+            [[fallthrough]];
         case 2:
             --output;
             *output = (char)((input | BYTE_MARK) & BYTE_MASK);
             input >>= 6;
+            [[fallthrough]];
         case 1:
             --output;
             *output = (char)(input | FIRST_BYTE_MARK[*length]);
@@ -154,10 +153,11 @@ bool TiXmlBase::IsAlpha(int anyByte) {
     // to figure out alphabetical vs. not across encoding. So take a very
     // conservative approach.
 
-    if (anyByte < 127)
+    if (anyByte < 127) {
         return std::isalpha(anyByte);
-    else
+    } else {
         return true;  // What else to do? The unicode set is huge...get the english ones right.
+    }
 }
 
 bool TiXmlBase::IsAlphaNum(int anyByte) {
@@ -166,10 +166,11 @@ bool TiXmlBase::IsAlphaNum(int anyByte) {
     // to figure out alhabetical vs. not across encoding. So take a very
     // conservative approach.
 
-    if (anyByte < 127)
+    if (anyByte < 127) {
         return std::isalnum(anyByte);
-    else
+    } else {
         return true;  // What else to do? The unicode set is huge...get the english ones right.
+    }
 }
 
 const char* TiXmlBase::SkipWhiteSpace(const char* p) {
@@ -204,35 +205,9 @@ const char* TiXmlBase::SkipWhiteSpace(const char* p) {
     return p;
 }
 
-/*static*/ bool TiXmlBase::StreamWhiteSpace(std::istream* in, std::string* tag) {
-    for (;;) {
-        if (!in->good()) return false;
-
-        int c = in->peek();
-        // At this scope, we can't get to a document. So fail silently.
-        if (!IsWhiteSpace(c) || c <= 0) return true;
-
-        *tag += (char)in->get();
-    }
-}
-
-/*static*/ bool TiXmlBase::StreamTo(std::istream* in, int character, std::string* tag) {
-    // assert( character > 0 && character < 128 );	// else it won't work in utf-8
-    while (in->good()) {
-        int c = in->peek();
-        if (c == character) return true;
-        if (c <= 0)  // Silent failure: can't get document at this scope
-            return false;
-
-        in->get();
-        *tag += (char)c;
-    }
-    return false;
-}
-
 // One of TinyXML's more performance demanding functions. Try to keep the memory overhead down. The
 // "assign" optimization removes over 10% of the execution time.
-const char* TiXmlBase::ReadName(const char* p, std::string* name) {
+const char* TiXmlBase::ReadName(const char* p, std::pmr::string* name) {
     // Oddly, not supported on some compilers,
     // name->clear();
     // So use this:
@@ -263,7 +238,6 @@ const char* TiXmlBase::ReadName(const char* p, std::string* name) {
 const char* TiXmlBase::GetEntity(const char* p, char* value, int* length) {
     // Presume an entity, and pull it out.
     std::string ent;
-    int i;
     *length = 0;
 
     if (*(p + 1) && *(p + 1) == '#' && *(p + 2)) {
@@ -324,7 +298,7 @@ const char* TiXmlBase::GetEntity(const char* p, char* value, int* length) {
     }
 
     // Now try to match it.
-    for (i = 0; i < entity.size(); ++i) {
+    for (size_t i = 0; i < entity.size(); ++i) {
         if (strncmp(entity[i].str.data(), p, entity[i].str.size()) == 0) {
             *value = entity[i].chr;
             *length = 1;
@@ -368,7 +342,7 @@ bool TiXmlBase::StringEqual(const char* p, const char* tag, bool ignoreCase) {
     return false;
 }
 
-const char* TiXmlBase::ReadText(const char* p, std::string* text, bool trimWhiteSpace,
+const char* TiXmlBase::ReadText(const char* p, std::pmr::string* text, bool trimWhiteSpace,
                                 const char* endTag, bool caseInsensitive) {
     *text = "";
     if (!trimWhiteSpace          // certain tags always keep whitespace
@@ -411,5 +385,74 @@ const char* TiXmlBase::ReadText(const char* p, std::string* text, bool trimWhite
         }
     }
     if (p) p += strlen(endTag);
+    return p;
+}
+
+const char* TiXmlBase::ReadQuotedText(const char* p, std::pmr::string* text,
+                                      TiXmlParsingData* data) {
+
+    constexpr char singleQuote = '\'';
+    constexpr char doubleQuote = '\"';
+
+    const char* pErr = p;
+
+    if (*p == singleQuote) {
+        ++p;
+        const char* end = "\'";  // single quote in string
+        p = ReadText(p, text, false, end, false);
+    } else if (*p == doubleQuote) {
+        ++p;
+        const char* end = "\"";  // double quote in string
+        p = ReadText(p, text, false, end, false);
+    } else {
+        // All attribute values should be in single or double quotes.
+        // But this is such a common error that the parser will try
+        // its best, even without them.
+        *text = "";
+        while (p && *p                                                      // existence
+               && !TiXmlBase::IsWhiteSpace(*p) && *p != '\n' && *p != '\r'  // whitespace
+               && *p != '/' && *p != '>')                                   // tag end
+        {
+            if (*p == singleQuote || *p == doubleQuote) {
+                // [ 1451649 ] Attribute values with trailing quotes not handled correctly
+                // We did not have an opening quote but seem to have a
+                // closing one. Give up and throw an error.
+                throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_READING_ATTRIBUTES, p, data);
+            }
+            *text += *p;
+            ++p;
+        }
+    }
+
+    if (!p || !*p) {
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_READING_ATTRIBUTES, pErr, data);
+    }
+
+    return p;
+}
+
+const char* TiXmlBase::ReadNameValue(const char* p, std::pmr::string* name, std::pmr::string* value,
+                                     TiXmlParsingData* data) {
+    // Read the name, the '=' and the value.
+
+    const char* pErr = p;
+    p = TiXmlBase::ReadName(p, name);
+    if (!p || !*p) {
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_READING_ATTRIBUTES, pErr, data);
+    }
+
+    p = TiXmlBase::SkipWhiteSpace(p);
+    if (!p || !*p || *p != '=') {
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_READING_ATTRIBUTES, p, data);
+    }
+
+    ++p;  // skip '='
+    p = TiXmlBase::SkipWhiteSpace(p);
+    if (!p || !*p) {
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_READING_ATTRIBUTES, p, data);
+    }
+
+    p = TiXmlBase::ReadQuotedText(p, value, data);
+
     return p;
 }

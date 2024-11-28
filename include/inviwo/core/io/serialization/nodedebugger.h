@@ -36,23 +36,17 @@
 
 class TiXmlElement;
 
-namespace ticpp {
-class Element;
-}
-using TxElement = ticpp::Element;
-
 namespace inviwo {
 
 struct IVW_CORE_API NodeDebugger {
     struct Node {
-        Node(std::string k = "", std::string i = "", std::string t = "", int l = 0);
+        Node(std::string_view k = "", std::string_view i = "", std::string_view t = "", int l = 0);
         std::string key;
         std::string identifier;
         std::string type;
         int line;
     };
 
-    NodeDebugger(TxElement* node);
     NodeDebugger(TiXmlElement* node);
 
     const Node& operator[](std::size_t idx) const;

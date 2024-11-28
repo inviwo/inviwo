@@ -1,21 +1,16 @@
 #include <ticpp/stylesheet.h>
-
-#include <ticpp/attribute.h>
-#include <ticpp/document.h>
 #include <ticpp/parsingdata.h>
 
-TiXmlStylesheetReference::TiXmlStylesheetReference(const char* _type, const char* _href)
-    : TiXmlNode(TiXmlNode::STYLESHEETREFERENCE) {
-    type = _type;
-    href = _href;
-}
+#include <fmt/printf.h>
 
-TiXmlStylesheetReference::TiXmlStylesheetReference(const std::string& _type,
-                                                   const std::string& _href)
-    : TiXmlNode(TiXmlNode::STYLESHEETREFERENCE) {
-    type = _type;
-    href = _href;
-}
+TiXmlStylesheetReference::TiXmlStylesheetReference(const allocator_type& alloc)
+    : TiXmlNode(TiXmlNode::STYLESHEETREFERENCE, "", alloc), type{alloc}, href{alloc} {}
+
+TiXmlStylesheetReference::TiXmlStylesheetReference(std::string_view _type, std::string_view _href,
+                                                   const allocator_type& alloc)
+    : TiXmlNode(TiXmlNode::STYLESHEETREFERENCE, "", alloc)
+    , type{_type, alloc}
+    , href{_href, alloc} {}
 
 TiXmlStylesheetReference::TiXmlStylesheetReference(const TiXmlStylesheetReference& copy)
     : TiXmlNode(TiXmlNode::STYLESHEETREFERENCE) {
@@ -27,28 +22,34 @@ void TiXmlStylesheetReference::operator=(const TiXmlStylesheetReference& copy) {
     copy.CopyTo(this);
 }
 
-void TiXmlStylesheetReference::Print(FILE* cfile, int /*depth*/, std::string* str) const {
-    if (cfile) fprintf(cfile, "<?xml-stylesheet ");
-    if (str) (*str) += "<?xml-stylesheet ";
+void TiXmlStylesheetReference::Print(std::string* str) const {
+    if (!str) return;
 
+    *str += "<?xml-stylesheet ";
     if (!type.empty()) {
-        if (cfile) fprintf(cfile, "type=\"%s\" ", type.c_str());
-        if (str) {
-            (*str) += "type=\"";
-            (*str) += type;
-            (*str) += "\" ";
-        }
+        *str += "type=\"";
+        *str += type;
+        *str += "\" ";
     }
     if (!href.empty()) {
-        if (cfile) fprintf(cfile, "href=\"%s\" ", href.c_str());
-        if (str) {
-            (*str) += "href=\"";
-            (*str) += href;
-            (*str) += "\" ";
-        }
+        *str += "href=\"";
+        *str += href;
+        *str += "\" ";
     }
-    if (cfile) fprintf(cfile, "?>");
-    if (str) (*str) += "?>";
+    *str += "?>";
+}
+
+void TiXmlStylesheetReference::Print(FILE* file) const {
+    if (!file) return;
+
+    fmt::fprintf(file, "<?xml-stylesheet ");
+    if (!type.empty()) {
+        fmt::fprintf(file, "type=\"%s\" ", type);
+    }
+    if (!href.empty()) {
+        fmt::fprintf(file, "href=\"%s\" ", href);
+    }
+    fmt::fprintf(file, "?>");
 }
 
 void TiXmlStylesheetReference::CopyTo(TiXmlStylesheetReference* target) const {
@@ -69,32 +70,13 @@ TiXmlNode* TiXmlStylesheetReference::Clone() const {
     return clone;
 }
 
-void TiXmlStylesheetReference::StreamIn(std::istream* in, std::string* tag) {
-    while (in->good()) {
-        int c = in->get();
-        if (c <= 0) {
-            TiXmlDocument* document = GetDocument();
-            if (document)
-                document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
-            return;
-        }
-        (*tag) += (char)c;
-
-        if (c == '>') {
-            // All is well.
-            return;
-        }
-    }
-}
-
-const char* TiXmlStylesheetReference::Parse(const char* p, TiXmlParsingData* data) {
+const char* TiXmlStylesheetReference::Parse(const char* p, TiXmlParsingData* data,
+                                            const allocator_type& alloc) {
     p = SkipWhiteSpace(p);
     // Find the beginning, find the end, and look for
     // the stuff in-between.
-    TiXmlDocument* document = GetDocument();
     if (!p || !*p || !StringEqual(p, "<?xml-stylesheet", true)) {
-        if (document) document->SetError(TIXML_ERROR_PARSING_DECLARATION, nullptr, nullptr);
-        return 0;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_DECLARATION, nullptr, nullptr);
     }
     if (data) {
         data->Stamp(p);
@@ -112,18 +94,16 @@ const char* TiXmlStylesheetReference::Parse(const char* p, TiXmlParsingData* dat
         }
 
         p = SkipWhiteSpace(p);
+
+        std::pmr::string dummy{alloc};
         if (StringEqual(p, "type", true)) {
-            TiXmlAttribute attrib;
-            p = attrib.Parse(p, data);
-            type = attrib.Value();
+            p = ReadNameValue(p, &dummy, &type, data);
         } else if (StringEqual(p, "href", true)) {
-            TiXmlAttribute attrib;
-            p = attrib.Parse(p, data);
-            href = attrib.Value();
+            p = ReadNameValue(p, &dummy, &href, data);
         } else {
             // Read over whatever it is.
             while (p && *p && *p != '>' && !IsWhiteSpace(*p)) ++p;
         }
     }
-    return 0;
+    return nullptr;
 }

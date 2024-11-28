@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<InviwoWorkspace version="2">
+<InviwoWorkspace version="1">
     <ProcessorNetworkVersion content="19" />
     <Processors>
         <Processor type="org.inviwo.DataFrameTable" identifier="DataFrameTable" displayName="DataFrame Table">

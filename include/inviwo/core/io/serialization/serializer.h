@@ -62,7 +62,7 @@ public:
      * @param fileName full path to xml file.
      * @throws SerializationException
      */
-    Serializer(const std::filesystem::path& fileName);
+    Serializer(const std::filesystem::path& fileName, const allocator_type& alloc = {});
 
     virtual ~Serializer();
 
@@ -174,10 +174,8 @@ protected:
 
     NodeSwitch switchToNewNode(std::string_view key);
     TiXmlElement* getLastChild() const;
-    // void linkEndChild(TxElement* child);
+
     static void setAttribute(TiXmlElement* node, std::string_view key, std::string_view val);
-    static void setAttribute(TxElement* node, std::string_view key, std::string_view val);
-    static void setValue(TxElement* node, std::string_view val);
 };
 
 template <typename T, typename Pred, typename Proj>

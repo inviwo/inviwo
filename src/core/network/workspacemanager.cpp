@@ -43,6 +43,8 @@
 #include <fmt/ostream.h>
 #include <fmt/std.h>
 
+#include <memory_resource>
+
 namespace inviwo {
 
 class NetworkModified final : public ProcessorNetworkObserver {
@@ -93,8 +95,7 @@ private:
     bool bundleProcessorNetwork(TxElement* root) {
 
         // create
-        TxElement newNode;
-        newNode.SetValue("ProcessorNetwork");
+        TxElement newNode("ProcessorNetwork");
 
         // temp list
         std::vector<TxElement*> toBeDeleted;
@@ -102,11 +103,11 @@ private:
         std::vector<std::string> toMove = {"ProcessorNetworkVersion", "Processors", "Connections",
                                            "PropertyLinks"};
 
-        ticpp::Iterator<TxElement> child;
-        for (child = child.begin(root); child != child.end(); child++) {
-            if (std::find(toMove.begin(), toMove.end(), child.Get()->Value()) != toMove.end()) {
-                newNode.InsertEndChild(*(child.Get()->Clone()));
-                toBeDeleted.push_back(child.Get());
+        for (TiXmlElement* child = root->FirstChildElement(); child;
+             child = child->NextSiblingElement()) {
+            if (std::find(toMove.begin(), toMove.end(), child->Value()) != toMove.end()) {
+                newNode.LinkEndChild(child->Clone());
+                toBeDeleted.push_back(child);
             }
         }
 
@@ -181,7 +182,10 @@ void WorkspaceManager::clear() {
 
 void WorkspaceManager::save(std::ostream& stream, const std::filesystem::path& refPath,
                             const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
-    Serializer serializer(refPath);
+
+    std::pmr::monotonic_buffer_resource mbr{1024 * 32};
+
+    Serializer serializer(refPath, &mbr);
 
     if (mode != WorkspaceSaveMode::Undo) {
         InviwoSetupInfo info(*app_, *app_->getProcessorNetwork());

@@ -3,11 +3,6 @@
 #include <ticpp/document.h>
 #include <ticpp/parsingdata.h>
 
-void TiXmlUnknown::Print(FILE* cfile, int depth) const {
-    for (int i = 0; i < depth; i++) fprintf(cfile, "    ");
-    fprintf(cfile, "<%s>", value.c_str());
-}
-
 void TiXmlUnknown::CopyTo(TiXmlUnknown* target) const { TiXmlNode::CopyTo(target); }
 
 bool TiXmlUnknown::Accept(TiXmlVisitor* visitor) const { return visitor->Visit(*this); }
@@ -21,26 +16,8 @@ TiXmlNode* TiXmlUnknown::Clone() const {
     return clone;
 }
 
-void TiXmlUnknown::StreamIn(std::istream* in, std::string* tag) {
-    while (in->good()) {
-        int c = in->get();
-        if (c <= 0) {
-            if (TiXmlDocument* document = GetDocument()) {
-                document->SetError(TIXML_ERROR_EMBEDDED_NULL, nullptr, nullptr);
-            }
-            return;
-        }
-        (*tag) += (char)c;
-
-        if (c == '>') {
-            // All is well.
-            return;
-        }
-    }
-}
-
-const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data) {
-    TiXmlDocument* document = GetDocument();
+const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data,
+                                const allocator_type& alloc) {
     p = SkipWhiteSpace(p);
 
     if (data) {
@@ -48,8 +25,7 @@ const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data) {
         location = data->Cursor();
     }
     if (!p || !*p || *p != '<') {
-        if (document) document->SetError(TIXML_ERROR_PARSING_UNKNOWN, p, data);
-        return 0;
+        throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_UNKNOWN, p, data);
     }
     ++p;
     value = "";
@@ -60,7 +36,7 @@ const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data) {
     }
 
     if (!p) {
-        if (document) document->SetError(TIXML_ERROR_PARSING_UNKNOWN, nullptr, nullptr);
+         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_UNKNOWN, nullptr, nullptr);
     }
     if (*p == '>') return p + 1;
     return p;
