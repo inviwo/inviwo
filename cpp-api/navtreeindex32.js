@@ -1,17 +1,5 @@
 var NAVTREEINDEX32 =
 {
-"structinviwo_1_1utilgl_1_1BlendModeState_1_1Config.html":[4,0,1,27,3,0],
-"structinviwo_1_1utilgl_1_1BlendModeState_1_1Mode.html":[2,0,0,21,3,1],
-"structinviwo_1_1utilgl_1_1BlendModeState_1_1Mode.html":[4,0,1,27,3,1],
-"structinviwo_1_1utilgl_1_1ClearColor.html":[2,0,0,21,4],
-"structinviwo_1_1utilgl_1_1ClearColor.html":[4,0,1,27,4],
-"structinviwo_1_1utilgl_1_1ClearDepth.html":[2,0,0,21,5],
-"structinviwo_1_1utilgl_1_1ClearDepth.html":[4,0,1,27,5],
-"structinviwo_1_1utilgl_1_1ColorMask.html":[2,0,0,21,6],
-"structinviwo_1_1utilgl_1_1ColorMask.html":[4,0,1,27,6],
-"structinviwo_1_1utilgl_1_1ColorMaskState.html":[2,0,0,21,9],
-"structinviwo_1_1utilgl_1_1ColorMaskState.html":[4,0,1,27,9],
-"structinviwo_1_1utilgl_1_1ColorMaski.html":[2,0,0,21,7],
 "structinviwo_1_1utilgl_1_1ColorMaski.html":[4,0,1,27,7],
 "structinviwo_1_1utilgl_1_1ColorMaskiState.html":[2,0,0,21,8],
 "structinviwo_1_1utilgl_1_1ColorMaskiState.html":[4,0,1,27,8],

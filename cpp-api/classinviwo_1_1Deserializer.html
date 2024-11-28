@@ -129,15 +129,19 @@ template&lt;typename T &gt; </td></tr>
 <tr class="memitem:afb50c06669b02e227a4dd278e5ceec19" id="r_afb50c06669b02e227a4dd278e5ceec19"><td class="memItemLeft" align="right" valign="top"><a id="afb50c06669b02e227a4dd278e5ceec19" name="afb50c06669b02e227a4dd278e5ceec19"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>ExceptionHandler</b> = std::function&lt;void(<a class="el" href="classinviwo_1_1SourceContext.html">ExceptionContext</a>)&gt;</td></tr>
 <tr class="separator:afb50c06669b02e227a4dd278e5ceec19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_types_classinviwo_1_1SerializeBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classinviwo_1_1SerializeBase')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classinviwo_1_1SerializeBase.html">inviwo::SerializeBase</a></td></tr>
+<tr class="memitem:a87903e135451ec7948c72b69b00b066f inherit pub_types_classinviwo_1_1SerializeBase" id="r_a87903e135451ec7948c72b69b00b066f"><td class="memItemLeft" align="right" valign="top">
+using&#160;</td><td class="memItemRight" valign="bottom"><b>allocator_type</b> = std::pmr::polymorphic_allocator&lt;std::byte&gt;</td></tr>
+<tr class="separator:a87903e135451ec7948c72b69b00b066f inherit pub_types_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a94e8e60854a63a132a93c4f84e5fa500" id="r_a94e8e60854a63a132a93c4f84e5fa500"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a94e8e60854a63a132a93c4f84e5fa500">Deserializer</a> (const std::filesystem::path &amp;fileName)</td></tr>
-<tr class="memdesc:a94e8e60854a63a132a93c4f84e5fa500"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserialize content from a file.  <br /></td></tr>
-<tr class="separator:a94e8e60854a63a132a93c4f84e5fa500"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a03de6377240421d374fe8534634892" id="r_a9a03de6377240421d374fe8534634892"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a03de6377240421d374fe8534634892">Deserializer</a> (std::istream &amp;stream, const std::filesystem::path &amp;refPath)</td></tr>
-<tr class="memdesc:a9a03de6377240421d374fe8534634892"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserialize content from a stream.  <br /></td></tr>
-<tr class="separator:a9a03de6377240421d374fe8534634892"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0f801d50b98122c656bc1ca2de74a26" id="r_ad0f801d50b98122c656bc1ca2de74a26"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0f801d50b98122c656bc1ca2de74a26">Deserializer</a> (const std::filesystem::path &amp;fileName, const allocator_type &amp;alloc={})</td></tr>
+<tr class="memdesc:ad0f801d50b98122c656bc1ca2de74a26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserialize content from a file.  <br /></td></tr>
+<tr class="separator:ad0f801d50b98122c656bc1ca2de74a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b8d260dbfadbd6214fe584ce3bf8a53" id="r_a1b8d260dbfadbd6214fe584ce3bf8a53"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b8d260dbfadbd6214fe584ce3bf8a53">Deserializer</a> (std::istream &amp;stream, const std::filesystem::path &amp;refPath, const allocator_type &amp;alloc={})</td></tr>
+<tr class="memdesc:a1b8d260dbfadbd6214fe584ce3bf8a53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserialize content from a stream.  <br /></td></tr>
+<tr class="separator:a1b8d260dbfadbd6214fe584ce3bf8a53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aceffe5a1ff620974454b8b7433894229" id="r_aceffe5a1ff620974454b8b7433894229"><td class="memItemLeft" align="right" valign="top"><a id="aceffe5a1ff620974454b8b7433894229" name="aceffe5a1ff620974454b8b7433894229"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Deserializer</b> (const <a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;)=delete</td></tr>
 <tr class="separator:aceffe5a1ff620974454b8b7433894229"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -287,15 +291,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>registerFactory</b> (
 int&#160;</td><td class="memItemRight" valign="bottom"><b>getInviwoWorkspaceVersion</b> () const</td></tr>
 <tr class="separator:ab689bdb44bc14764e1316701a8c40b37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1SerializeBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1SerializeBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1SerializeBase.html">inviwo::SerializeBase</a></td></tr>
-<tr class="memitem:a932757e45dfb34fe04c64bcb8cdb0a0d inherit pub_methods_classinviwo_1_1SerializeBase" id="r_a932757e45dfb34fe04c64bcb8cdb0a0d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1SerializeBase.html#a932757e45dfb34fe04c64bcb8cdb0a0d">SerializeBase</a> ()</td></tr>
-<tr class="memdesc:a932757e45dfb34fe04c64bcb8cdb0a0d inherit pub_methods_classinviwo_1_1SerializeBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for <a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> and <a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a>.  <br /></td></tr>
-<tr class="separator:a932757e45dfb34fe04c64bcb8cdb0a0d inherit pub_methods_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb3a5015f575ab19ed159d3a9ef669e8 inherit pub_methods_classinviwo_1_1SerializeBase" id="r_acb3a5015f575ab19ed159d3a9ef669e8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1SerializeBase.html#acb3a5015f575ab19ed159d3a9ef669e8">SerializeBase</a> (const std::filesystem::path &amp;fileName)</td></tr>
-<tr class="memdesc:acb3a5015f575ab19ed159d3a9ef669e8 inherit pub_methods_classinviwo_1_1SerializeBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for <a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> and <a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a>.  <br /></td></tr>
-<tr class="separator:acb3a5015f575ab19ed159d3a9ef669e8 inherit pub_methods_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af01faaa0d03ae48c3990feeb23bce00f inherit pub_methods_classinviwo_1_1SerializeBase" id="r_af01faaa0d03ae48c3990feeb23bce00f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1SerializeBase.html#af01faaa0d03ae48c3990feeb23bce00f">SerializeBase</a> (std::istream &amp;stream, const std::filesystem::path &amp;path)</td></tr>
-<tr class="memdesc:af01faaa0d03ae48c3990feeb23bce00f inherit pub_methods_classinviwo_1_1SerializeBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for <a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> and <a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a>.  <br /></td></tr>
-<tr class="separator:af01faaa0d03ae48c3990feeb23bce00f inherit pub_methods_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a730c746d70a50b67e140745e41768a6c inherit pub_methods_classinviwo_1_1SerializeBase" id="r_a730c746d70a50b67e140745e41768a6c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1SerializeBase.html#a730c746d70a50b67e140745e41768a6c">SerializeBase</a> (const std::filesystem::path &amp;fileName, const allocator_type &amp;alloc={})</td></tr>
+<tr class="memdesc:a730c746d70a50b67e140745e41768a6c inherit pub_methods_classinviwo_1_1SerializeBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for <a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> and <a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a>.  <br /></td></tr>
+<tr class="separator:a730c746d70a50b67e140745e41768a6c inherit pub_methods_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fae766ef5dd554372b7a680951ef942 inherit pub_methods_classinviwo_1_1SerializeBase" id="r_a1fae766ef5dd554372b7a680951ef942"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>SerializeBase</b> (const <a class="el" href="classinviwo_1_1SerializeBase.html">SerializeBase</a> &amp;rhs)=delete</td></tr>
 <tr class="separator:a1fae766ef5dd554372b7a680951ef942 inherit pub_methods_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -371,9 +369,9 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a8ee53edcdef92f24be55966f5218994b inherit pub_static_methods_classinviwo_1_1SerializeBase"><td class="memTemplItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classinviwo_1_1SerializeBase.html#a8ee53edcdef92f24be55966f5218994b">isPrimitiveType</a> ()</td></tr>
 <tr class="memdesc:a8ee53edcdef92f24be55966f5218994b inherit pub_static_methods_classinviwo_1_1SerializeBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the given type is a primitive type.  <br /></td></tr>
 <tr class="separator:a8ee53edcdef92f24be55966f5218994b inherit pub_static_methods_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ed22e5552f2c30ee85ec5a33487cf57 inherit pub_static_methods_classinviwo_1_1SerializeBase" id="r_a0ed22e5552f2c30ee85ec5a33487cf57"><td class="memItemLeft" align="right" valign="top">
-static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>nodeToString</b> (const TxElement &amp;node)</td></tr>
-<tr class="separator:a0ed22e5552f2c30ee85ec5a33487cf57 inherit pub_static_methods_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a766910219f6d936d556d762e1b890e51 inherit pub_static_methods_classinviwo_1_1SerializeBase" id="r_a766910219f6d936d556d762e1b890e51"><td class="memItemLeft" align="right" valign="top">
+static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>nodeToString</b> (const TiXmlElement &amp;node)</td></tr>
+<tr class="separator:a766910219f6d936d556d762e1b890e51 inherit pub_static_methods_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1SerializeBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1SerializeBase')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1SerializeBase.html">inviwo::SerializeBase</a></td></tr>
 <tr class="memitem:ad394379046894405947dde748910aade inherit pro_attribs_classinviwo_1_1SerializeBase" id="r_ad394379046894405947dde748910aade"><td class="memItemLeft" align="right" valign="top">
 std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>fileName_</b></td></tr>
@@ -389,8 +387,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>retrieveChild_</b></t
 <tr class="separator:a2740287cd504cbc7ddcc3db11486bf76 inherit pro_attribs_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a94e8e60854a63a132a93c4f84e5fa500" name="a94e8e60854a63a132a93c4f84e5fa500"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a94e8e60854a63a132a93c4f84e5fa500">&#9670;&#160;</a></span>Deserializer() <span class="overload">[1/2]</span></h2>
+<a id="ad0f801d50b98122c656bc1ca2de74a26" name="ad0f801d50b98122c656bc1ca2de74a26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0f801d50b98122c656bc1ca2de74a26">&#9670;&#160;</a></span>Deserializer() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -398,8 +396,12 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>retrieveChild_</b></t
         <tr>
           <td class="memname">inviwo::Deserializer::Deserializer </td>
           <td>(</td>
-          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>fileName</em></span></td><td>)</td>
+          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>fileName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const allocator_type &amp;</td>          <td class="paramname"><span class="paramname"><em>alloc</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{}</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -414,8 +416,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>retrieveChild_</b></t
 
 </div>
 </div>
-<a id="a9a03de6377240421d374fe8534634892" name="a9a03de6377240421d374fe8534634892"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9a03de6377240421d374fe8534634892">&#9670;&#160;</a></span>Deserializer() <span class="overload">[2/2]</span></h2>
+<a id="a1b8d260dbfadbd6214fe584ce3bf8a53" name="a1b8d260dbfadbd6214fe584ce3bf8a53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b8d260dbfadbd6214fe584ce3bf8a53">&#9670;&#160;</a></span>Deserializer() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -428,7 +430,12 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>retrieveChild_</b></t
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>refPath</em></span>&#160;)</td>
+          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>refPath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const allocator_type &amp;</td>          <td class="paramname"><span class="paramname"><em>alloc</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{}</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">

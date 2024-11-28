@@ -535,9 +535,6 @@ var hierarchy =
         [ "inviwo::glui::IntPropertyWidget", "classinviwo_1_1glui_1_1IntPropertyWidget.html", null ]
       ] ]
     ] ],
-    [ "inviwo::ElementIdentifier< T >", "structinviwo_1_1ElementIdentifier.html", [
-      [ "inviwo::StandardIdentifier< T >", "structinviwo_1_1StandardIdentifier.html", null ]
-    ] ],
     [ "inviwo::xml::ElementMatcher", "structinviwo_1_1xml_1_1ElementMatcher.html", null ],
     [ "inviwo::utilgl::Enable< T >", "structinviwo_1_1utilgl_1_1Enable.html", null ],
     [ "inviwo::utilgl::Enable< inviwo::MeshGL >", "structinviwo_1_1utilgl_1_1Enable.html", null ],

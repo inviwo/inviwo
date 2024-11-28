@@ -641,10 +641,11 @@ IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>saveLaye
 <tr class="memitem:adf2a60a6f5a408eb8a05f86cc2ddfef8" id="r_adf2a60a6f5a408eb8a05f86cc2ddfef8"><td class="memItemLeft" align="right" valign="top"><a id="adf2a60a6f5a408eb8a05f86cc2ddfef8" name="adf2a60a6f5a408eb8a05f86cc2ddfef8"></a>
 IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>saveLayer</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer)</td></tr>
 <tr class="separator:adf2a60a6f5a408eb8a05f86cc2ddfef8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae932354be8c75c369167164e2a241e4c" id="r_ae932354be8c75c369167164e2a241e4c"><td class="memTemplParams" colspan="2"><a id="ae932354be8c75c369167164e2a241e4c" name="ae932354be8c75c369167164e2a241e4c"></a>
-template&lt;typename T , typename ValueGetter , typename IdGetter  = decltype(defaultIdGetter)&gt; </td></tr>
-<tr class="memitem:ae932354be8c75c369167164e2a241e4c"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>makeContainerWrapper</b> (std::string_view key, ValueGetter valueGetter, IdGetter idGetter=defaultIdGetter)</td></tr>
-<tr class="separator:ae932354be8c75c369167164e2a241e4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6be2dd9f271c18de77f003431e947087" id="r_a6be2dd9f271c18de77f003431e947087"><td class="memTemplParams" colspan="2"><a id="a6be2dd9f271c18de77f003431e947087" name="a6be2dd9f271c18de77f003431e947087"></a>
+template&lt;typename T , typename ValueGetter , typename IdGetter  = decltype(defaultIdGetter)&gt; <br />
+requires std::is_invocable_v&lt;IdGetter, TiXmlElement&amp;&gt; &amp;&amp; std::is_invocable_r_v&lt;<a class="el" href="structinviwo_1_1ContainerWrapperItem.html">ContainerWrapperItem</a>&lt;T&gt;, ValueGetter, std::invoke_result_t&lt;IdGetter, TiXmlElement&amp;&gt;, size_t&gt;</td></tr>
+<tr class="memitem:a6be2dd9f271c18de77f003431e947087"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>makeContainerWrapper</b> (std::string_view key, ValueGetter valueGetter, IdGetter idGetter=defaultIdGetter)</td></tr>
+<tr class="separator:a6be2dd9f271c18de77f003431e947087"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81d242ceccd576433a16ba3fb49b9015" id="r_a81d242ceccd576433a16ba3fb49b9015"><td class="memItemLeft" align="right" valign="top"><a id="a81d242ceccd576433a16ba3fb49b9015" name="a81d242ceccd576433a16ba3fb49b9015"></a>
 IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>renamePort</b> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d, std::vector&lt; std::pair&lt; const <a class="el" href="classinviwo_1_1Port.html">Port</a> *, std::string &gt; &gt; rules)</td></tr>
 <tr class="separator:a81d242ceccd576433a16ba3fb49b9015"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -8205,7 +8206,7 @@ template&lt;typename... T&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= [](TxElement* node) -&gt; <span class="keyword">decltype</span>(<span class="keyword">auto</span>) {</div>
+<b>Initial value:</b><div class="fragment"><div class="line">= [](TiXmlElement&amp; node) -&gt; std::string_view {</div>
 <div class="line">    <span class="keywordflow">return</span> inviwo::detail::getAttribute(node, <span class="stringliteral">&quot;identifier&quot;</span>);</div>
 <div class="line">}</div>
 </div><!-- fragment -->
