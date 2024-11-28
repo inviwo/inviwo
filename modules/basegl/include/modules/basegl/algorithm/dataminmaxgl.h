@@ -67,10 +67,10 @@ namespace utilgl {
 class IVW_MODULE_BASEGL_API DataMinMaxGL {
 public:
     DataMinMaxGL();
-    DataMinMaxGL(const DataMinMaxGL&) = default;
+    DataMinMaxGL(const DataMinMaxGL&) = delete;
     DataMinMaxGL(DataMinMaxGL&&) noexcept = default;
     ~DataMinMaxGL() = default;
-    DataMinMaxGL& operator=(const DataMinMaxGL&) = default;
+    DataMinMaxGL& operator=(const DataMinMaxGL&) = delete;
     DataMinMaxGL& operator=(DataMinMaxGL&&) noexcept = default;
 
     /**
@@ -100,7 +100,7 @@ private:
     Shader& getBufferMinMaxShader(const DataFormatBase* format);
     Shader& getLinearReduceShader();
 
-    const bool gpuSupport_;
+    bool gpuSupport_;
 
     Shader volumeMinMax_;
     Shader layerMinMax_;
