@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/util/exception.h>
 #include <modules/opengl/openglcapabilities.h>
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/image/layergl.h>
@@ -51,7 +52,7 @@
 
 namespace inviwo::utilgl {
 
-namespace detail {
+namespace {
 
 std::string_view getSamplerPrefix(const GLFormat& glFormat) {
     if (glFormat.normalization != utilgl::Normalization::None) {
@@ -110,17 +111,17 @@ std::string_view getImagePrefix(const GLFormat& glFormat) {
 
 [[nodiscard]] std::pair<dvec4, dvec4> reduce2D(Shader& shader, Shader& linearReduce, uvec2 dims,
                                                const GLFormat& glFormat, const Texture& texture) {
+    // group size needs to match local_size_x, _y, and _z in compute shader layout since each thread
+    // only processes one texel (2D texture) or one z-column of voxels (3D texture).
     const uvec3 groupSize{32, 32, 1};
     const uvec3 numGroups{(uvec3{dims.x, dims.y, 1} + groupSize - uvec3{1}) / groupSize};
 
     const bool useImageLoadStore = (glFormat.channels != 3);
 
-    LGL_ERROR;
     if (useImageLoadStore) {
         glBindImageTexture(0, texture.getID(), 0, GL_TRUE, 0, GL_READ_ONLY,
                            glFormat.internalFormat);
     }
-    LGL_ERROR;
 
     // global buffer for min/max values for all work groups
     const size_t bufSize = 2 * glm::compMul(numGroups);
@@ -236,7 +237,7 @@ std::string_view glslDataConversion(size_t numComponents) {
     return conversion[std::min(numComponents - 1, conversion.size())];
 }
 
-}  // namespace detail
+}  // namespace
 
 DataMinMaxGL::DataMinMaxGL()
     : gpuSupport_{isSuppportedByGPU()}
@@ -245,83 +246,80 @@ DataMinMaxGL::DataMinMaxGL()
     , linearMinMax_{{{ShaderType::Compute, "compute/linearminmax.comp"}}, Shader::Build::No}
     , bufferMinMax_{{{ShaderType::Compute, "compute/bufferminmax.comp"}}, Shader::Build::No} {}
 
-std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const Volume* volume) {
+std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const Volume& volume) {
     if (!gpuSupport_) {
-        return util::volumeMinMax(volume);
+        return util::volumeMinMax(&volume);
     }
-    return minMax(volume->getRepresentation<VolumeGL>());
+    return minMax(*volume.getRepresentation<VolumeGL>());
 }
 
-std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const VolumeGL* volumeGL) {
+std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const VolumeGL& volumeGL) {
     if (!gpuSupport_) {
-        return util::volumeMinMax(volumeGL->getOwner());
+        throw Exception(IVW_CONTEXT,
+                        "Cannot compute min/max values of GL representation. Missing GPU support.");
     }
 
-    const auto& glFormat = GLFormats::get(volumeGL->getDataFormatId());
+    const auto& glFormat = GLFormats::get(volumeGL.getDataFormatId());
 
     Shader& volumeMinMax = getVolumeMinMaxShader(glFormat);
     Shader& linearReduce = getLinearReduceShader();
 
-    const uvec3 dims{volumeGL->getDimensions()};
+    const uvec3 dims{volumeGL.getDimensions()};
     // ignore z dimension since the compute shader iterates over all voxels in z direction
-    return detail::reduce2D(volumeMinMax, linearReduce, uvec2{dims}, glFormat,
-                            *volumeGL->getTexture());
+    return reduce2D(volumeMinMax, linearReduce, uvec2{dims}, glFormat, *volumeGL.getTexture());
 }
 
-std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const Layer* layer) {
+std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const Layer& layer) {
     if (!gpuSupport_) {
-        return util::layerMinMax(layer);
+        return util::layerMinMax(&layer);
     }
-    return minMax(layer->getRepresentation<LayerGL>());
+    return minMax(*layer.getRepresentation<LayerGL>());
 }
 
-std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const LayerGL* layerGL) {
+std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const LayerGL& layerGL) {
     if (!gpuSupport_) {
-        return util::layerMinMax(layerGL->getOwner());
+        throw Exception(IVW_CONTEXT,
+                        "Cannot compute min/max values of GL representation. Missing GPU support.");
     }
 
-    const auto& glFormat = GLFormats::get(layerGL->getDataFormatId());
+    const auto& glFormat = GLFormats::get(layerGL.getDataFormatId());
 
     Shader& layerMinMax = getLayerMinMaxShader(glFormat);
     Shader& linearReduce = getLinearReduceShader();
 
-    return detail::reduce2D(layerMinMax, linearReduce, layerGL->getDimensions(), glFormat,
-                            *layerGL->getTexture());
+    return reduce2D(layerMinMax, linearReduce, layerGL.getDimensions(), glFormat,
+                    *layerGL.getTexture());
 }
 
-std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const BufferBase* buffer) {
+std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const BufferBase& buffer) {
     if (!gpuSupport_) {
-        return util::bufferMinMax(buffer);
+        return util::bufferMinMax(&buffer);
     }
-    return minMax(buffer->getRepresentation<BufferGL>());
+    return minMax(*buffer.getRepresentation<BufferGL>());
 }
 
-std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const BufferGL* bufferGL) {
+std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const BufferGL& bufferGL) {
     if (!gpuSupport_) {
-        return util::bufferMinMax(bufferGL->getOwner());
+        throw Exception(IVW_CONTEXT,
+                        "Cannot compute min/max values of GL representation. Missing GPU support.");
     }
 
-    Shader& bufferMinMax = getBufferMinMaxShader(bufferGL->getDataFormat());
+    Shader& bufferMinMax = getBufferMinMaxShader(bufferGL.getDataFormat());
 
-    LGL_ERROR;
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, bufferGL->getId());
-    const auto bufferSize = static_cast<std::uint32_t>(bufferGL->getSize());
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, bufferGL.getId());
+    const auto bufferSize = static_cast<std::uint32_t>(bufferGL.getSize());
 
-    LGL_ERROR;
     // global buffer for min/max values
     const size_t resultSize = 2;
     const BufferObject buf(resultSize * sizeof(vec4), GLFormats::get(DataFormatId::Vec4Float32),
-                     GL_DYNAMIC_READ, GL_SHADER_STORAGE_BUFFER);
-    LGL_ERROR;
+                           GL_DYNAMIC_READ, GL_SHADER_STORAGE_BUFFER);
     buf.bindBase(1);
-    LGL_ERROR;
 
     {
         const utilgl::Activate activateShade{&bufferMinMax};
         bufferMinMax.setUniform("arrayLength", bufferSize);
         glDispatchCompute(1, 1, 1);
     }
-    LGL_ERROR;
 
     // download result
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
@@ -329,7 +327,7 @@ std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const BufferGL* bufferGL) {
     std::array minmaxGL{vec4{0}, vec4{0}};
     glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, 2 * sizeof(glm::vec4), minmaxGL.data());
 
-    if (bufferGL->getDataFormat()->getComponents() < 4) {
+    if (bufferGL.getDataFormat()->getComponents() < 4) {
         // reset alpha channel since imageLoad in the shader returns a = 1.0 for non-rgba formats
         minmaxGL[0].a = 0.0;
         minmaxGL[1].a = 0.0;
@@ -358,11 +356,11 @@ Shader& DataMinMaxGL::getNdShader(Shader& shader, const GLFormat& glFormat, int 
             // use image and imageLoad()
             computeShader->addShaderDefine("IMAGE_FORMAT", glFormat.layoutQualifier);
             computeShader->removeShaderDefine("USE_IMAGE_SAMPLER");
-            buf.append("{}image{}D", detail::getImagePrefix(glFormat), nd);
+            buf.append("{}image{}D", getImagePrefix(glFormat), nd);
         } else {
             // use regular texture sampler since imageLoad() does not support RGB formats
             computeShader->addShaderDefine("USE_IMAGE_SAMPLER");
-            buf.append("{}sampler{}D", detail::getSamplerPrefix(glFormat), nd);
+            buf.append("{}sampler{}D", getSamplerPrefix(glFormat), nd);
         }
         computeShader->addShaderDefine("IMAGE_SOURCE", buf);
 
@@ -413,9 +411,9 @@ Shader& DataMinMaxGL::getBufferMinMaxShader(const DataFormatBase* format) {
 
     if (!bufferMinMax_.isReady() || bufferFormat_ != format) {
         bufferFormat_ = format;
-        computeShader->addShaderDefine("BUFFER_DATATYPE", detail::glslDataType(format->getId()));
+        computeShader->addShaderDefine("BUFFER_DATATYPE", glslDataType(format->getId()));
         computeShader->addShaderDefine("GetValue(value, index)",
-                                       detail::glslDataConversion(format->getComponents()));
+                                       glslDataConversion(format->getComponents()));
         bufferMinMax_.build();
     }
     return bufferMinMax_;

@@ -34,14 +34,14 @@ namespace inviwo {
 
 DataMapper::DataMapper() : DataMapper(DataUInt8::get(), SignedNormalization::Asymmetric) {}
 DataMapper::DataMapper(const DataFormatBase* format, SignedNormalization normalization,
-                       const Axis& aValueAxis)
+                       Axis aValueAxis)
     : dataRange{defaultDataRangeFor(format, normalization)}
     , valueRange{dataRange}
-    , valueAxis{aValueAxis} {}
-DataMapper::DataMapper(dvec2 aDataRange, const Axis& aValueAxis)
-    : dataRange{aDataRange}, valueRange{dataRange}, valueAxis{aValueAxis} {}
-DataMapper::DataMapper(dvec2 aDataRange, dvec2 aValueRange, const Axis& aValueAxis)
-    : dataRange{aDataRange}, valueRange{aValueRange}, valueAxis{aValueAxis} {}
+    , valueAxis{std::move(aValueAxis)} {}
+DataMapper::DataMapper(dvec2 aDataRange, Axis aValueAxis)
+    : dataRange{aDataRange}, valueRange{dataRange}, valueAxis{std::move(aValueAxis)} {}
+DataMapper::DataMapper(dvec2 aDataRange, dvec2 aValueRange, Axis aValueAxis)
+    : dataRange{aDataRange}, valueRange{aValueRange}, valueAxis{std::move(aValueAxis)} {}
 
 DataMapper::DataMapper(const DataMapper& rhs) = default;
 
