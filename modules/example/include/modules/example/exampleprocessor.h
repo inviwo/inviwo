@@ -55,7 +55,7 @@ public:
     ExampleProcessor();
     ~ExampleProcessor();
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 protected:

@@ -2,3 +2,5 @@ RawFile: testdata.UINT8.raw
 Resolution: 13 7 3
 Format: UINT8
 ByteOrder:  LittleEndian
+DataRange:  0 20
+ValueRange: 0 20

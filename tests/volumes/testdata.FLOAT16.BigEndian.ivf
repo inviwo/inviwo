@@ -3,6 +3,8 @@
     <RawFile content="testdata.FLOAT16.BigEndian.raw" />
     <Format content="FLOAT16" />
     <Dimension x="13" y="7" z="3" />
+    <DataRange x="0.0" y="20.0" />
+    <ValueRange x="0.0" y="20.0" />
     <MetaDataMap>
         <MetaDataItem type="org.inviwo.BoolMetaData" key="LittleEndian">
             <MetaData content="0" />

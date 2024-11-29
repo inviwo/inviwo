@@ -2,3 +2,5 @@ RawFile: testdata.UINT64.BigEndian.raw
 Resolution: 13 7 3
 Format: UINT64
 ByteOrder:  BigEndian
+DataRange:  0 20
+ValueRange: 0 20

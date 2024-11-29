@@ -39,7 +39,7 @@ const ProcessorInfo ExampleProgressBar::processorInfo_{
     CodeState::Stable,                // Code state
     Tags::CPU,                        // Tags
 };
-const ProcessorInfo ExampleProgressBar::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ExampleProgressBar::getProcessorInfo() const { return processorInfo_; }
 
 ExampleProgressBar::ExampleProgressBar()
     : PoolProcessor(pool::Option::DelayDispatch)

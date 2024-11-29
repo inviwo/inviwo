@@ -1,5 +1,20 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2024-11-27 `DataMinMaxGL` of GL representations with Compute Shaders
+The class `DataMinMaxGL`  provides functionality to determine min/max values of Buffers, Layers, and Volumes on the GPU. The implementation utilizes compute shaders directly accessing the corresponding GL representations. Since there is some overhead regarding managing shaders, an instantiation of `utilgl::DataMinMaxGL` should be kept around for subsequent calls of `DataMinMaxGL::minMax()`.
+
+Check with `utilgl::DataMinMaxGL::isSuppportedByGPU()` whether the graphics hardware and driver support compute shaders and necessary OpenGL extensions. If there is no GPU support available, `DataMinMaxGL` will fall back on determining min/max values with `util::*MinMax()` using RAM representations (`<modules/base/algorithm/dataminmax.h>`).
+
+## 2024-11-27 DataMapper: symmetric signed fixed-point normalization
+The `DataMapper` was extended to use either asymmetric or symmetric ranges to be consistent with the OpenGL  implementation. From version 4.2 and above, OpenGL uses a symmetric range to convert between normalized
+fixed-point integers and floating point values. For example, the range [-127, 127] is used
+for the normalization of 8bit signed integers instead of [-128, 127].
+
+In order to match the normalization of signed integer formats on the GPU, the symmetric
+normalization has to be used in the DataMapper for OpenGL >= 4.2. Use the utility function `OpenGLCapabilities::isSignedIntNormalizationSymmetric()` to determine whether symmetric or asymmetric ranges are used by OpenGL.
+ 
+See OpenGL 4.6 specification, Section 2.3.5 Fixed-Point Data Conversion.
+
 ## 2024-11-26 __Breaking__ change to Processor::getProcessorInfo()
 The `Processor::getProcessorInfo()` method now returns a `const ProcessorInfo&` instead of a `const ProcessorInfo`. This change is to prevent copying the `ProcessorInfo` object when it is not necessary. The method signature has been updated in all processors in the Inviwo repo. But if you have your own processors, you need to update the method signature manually.  Your need to change
 ```cpp

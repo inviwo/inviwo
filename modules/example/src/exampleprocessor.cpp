@@ -38,7 +38,7 @@ const ProcessorInfo ExampleProcessor::processorInfo_{
     CodeState::Experimental,        // Code state
     Tags::None,                     // Tags
 };
-const ProcessorInfo ExampleProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ExampleProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ExampleProcessor::ExampleProcessor() : Processor(), inport_("inputVolume"), outport_("outputMesh") {
 
