@@ -1,5 +1,15 @@
 var NAVTREEINDEX7 =
 {
+"classinviwo_1_1ImageSampler.html#ac44624f5962e6f90c6f7b49193d7ba67":[2,0,0,414,3],
+"classinviwo_1_1ImageSampler.html#ac44624f5962e6f90c6f7b49193d7ba67":[4,0,1,420,3],
+"classinviwo_1_1ImageSampler.html#afcd8b1cd094431e4d2a0dbcb3235f97d":[2,0,0,414,1],
+"classinviwo_1_1ImageSampler.html#afcd8b1cd094431e4d2a0dbcb3235f97d":[4,0,1,420,1],
+"classinviwo_1_1ImageScaling.html":[1,3,94],
+"classinviwo_1_1ImageScaling.html#ab51b63b6269d1f22351cfd032b1e7079":[1,3,94,0],
+"classinviwo_1_1ImageSequenceElementSelectorProcessor.html":[2,0,0,416],
+"classinviwo_1_1ImageSequenceElementSelectorProcessor.html":[4,0,1,422],
+"classinviwo_1_1ImageSnapshot.html":[2,0,0,417],
+"classinviwo_1_1ImageSnapshot.html":[4,0,1,423],
 "classinviwo_1_1ImageSnapshot.html#a362fc8431640f6b8a8e6d9f9d1337af5":[2,0,0,417,0],
 "classinviwo_1_1ImageSnapshot.html#a362fc8431640f6b8a8e6d9f9d1337af5":[4,0,1,423,0],
 "classinviwo_1_1ImageSource.html":[2,0,0,418],
@@ -239,15 +249,5 @@ var NAVTREEINDEX7 =
 "classinviwo_1_1InviwoDockWidget.html":[4,0,1,475],
 "classinviwo_1_1InviwoDockWidget.html#a1fdfd845cc0c62166a36ebac987d6e8e":[2,0,0,469,0],
 "classinviwo_1_1InviwoDockWidget.html#a1fdfd845cc0c62166a36ebac987d6e8e":[4,0,1,475,0],
-"classinviwo_1_1InviwoDockWidget.html#af17dbdcabc4ba18dffc0e4119349cd2f":[2,0,0,469,1],
-"classinviwo_1_1InviwoDockWidget.html#af17dbdcabc4ba18dffc0e4119349cd2f":[4,0,1,475,1],
-"classinviwo_1_1InviwoDockWidgetTitleBar.html":[2,0,0,470],
-"classinviwo_1_1InviwoDockWidgetTitleBar.html":[4,0,1,476],
-"classinviwo_1_1InviwoEditMenu.html":[2,0,0,471],
-"classinviwo_1_1InviwoEditMenu.html":[4,0,1,477],
-"classinviwo_1_1InviwoFileDialog.html":[2,0,0,472],
-"classinviwo_1_1InviwoFileDialog.html":[4,0,1,478],
-"classinviwo_1_1InviwoFileDialog.html#a23e46b1c32312d4f20129458d1efe45e":[2,0,0,472,1],
-"classinviwo_1_1InviwoFileDialog.html#a23e46b1c32312d4f20129458d1efe45e":[4,0,1,478,1],
-"classinviwo_1_1InviwoFileDialog.html#ad28edb665b5fb2ee948cc1903eced783":[2,0,0,472,0]
+"classinviwo_1_1InviwoDockWidget.html#af17dbdcabc4ba18dffc0e4119349cd2f":[2,0,0,469,1]
 };

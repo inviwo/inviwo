@@ -1,5 +1,17 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1dispatching_1_1filter_1_1IntegerVecs.html":[4,0,1,9,1,10],
+"structinviwo_1_1dispatching_1_1filter_1_1Integers.html":[2,0,0,8,0,8],
+"structinviwo_1_1dispatching_1_1filter_1_1Integers.html":[4,0,1,9,1,8],
+"structinviwo_1_1dispatching_1_1filter_1_1Scalars.html":[2,0,0,8,0,11],
+"structinviwo_1_1dispatching_1_1filter_1_1Scalars.html":[4,0,1,9,1,11],
+"structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerScalars.html":[2,0,0,8,0,12],
+"structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerScalars.html":[4,0,1,9,1,12],
+"structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerVecs.html":[2,0,0,8,0,13],
+"structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerVecs.html":[4,0,1,9,1,13],
+"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerScalars.html":[2,0,0,8,0,14],
+"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerScalars.html":[4,0,1,9,1,14],
+"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerVecs.html":[2,0,0,8,0,15],
 "structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerVecs.html":[4,0,1,9,1,15],
 "structinviwo_1_1dispatching_1_1filter_1_1Vec2s.html":[2,0,0,8,0,16],
 "structinviwo_1_1dispatching_1_1filter_1_1Vec2s.html":[4,0,1,9,1,16],
@@ -237,17 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1utilgl_1_1BlendModeEquationState_1_1Equation.html":[4,0,1,27,2,0],
 "structinviwo_1_1utilgl_1_1BlendModeState.html":[2,0,0,21,3],
 "structinviwo_1_1utilgl_1_1BlendModeState.html":[4,0,1,27,3],
-"structinviwo_1_1utilgl_1_1BlendModeState_1_1Config.html":[2,0,0,21,3,0],
-"structinviwo_1_1utilgl_1_1BlendModeState_1_1Config.html":[4,0,1,27,3,0],
-"structinviwo_1_1utilgl_1_1BlendModeState_1_1Mode.html":[2,0,0,21,3,1],
-"structinviwo_1_1utilgl_1_1BlendModeState_1_1Mode.html":[4,0,1,27,3,1],
-"structinviwo_1_1utilgl_1_1ClearColor.html":[2,0,0,21,4],
-"structinviwo_1_1utilgl_1_1ClearColor.html":[4,0,1,27,4],
-"structinviwo_1_1utilgl_1_1ClearDepth.html":[2,0,0,21,5],
-"structinviwo_1_1utilgl_1_1ClearDepth.html":[4,0,1,27,5],
-"structinviwo_1_1utilgl_1_1ColorMask.html":[2,0,0,21,6],
-"structinviwo_1_1utilgl_1_1ColorMask.html":[4,0,1,27,6],
-"structinviwo_1_1utilgl_1_1ColorMaskState.html":[2,0,0,21,9],
-"structinviwo_1_1utilgl_1_1ColorMaskState.html":[4,0,1,27,9],
-"structinviwo_1_1utilgl_1_1ColorMaski.html":[2,0,0,21,7]
+"structinviwo_1_1utilgl_1_1BlendModeState_1_1Config.html":[2,0,0,21,3,0]
 };

@@ -99,6 +99,7 @@ $(function(){initNavTree('classinviwo_1_1DataMapper.html',''); initResizable(tru
 
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
@@ -112,11 +113,18 @@ $(function(){initNavTree('classinviwo_1_1DataMapper.html',''); initResizable(tru
 
 <p><code>#include &lt;datamapper.h&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a66564110d98821113d007cae18bd2387" id="r_a66564110d98821113d007cae18bd2387"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66564110d98821113d007cae18bd2387">SignedNormalization</a> { <a class="el" href="#a66564110d98821113d007cae18bd2387a314084a577b998d8089dff72c98c58b0">Asymmetric</a>
+, <a class="el" href="#a66564110d98821113d007cae18bd2387af334649ef5e5d0ffe200751d07012626">Symmetric</a>
+ }</td></tr>
+<tr class="separator:a66564110d98821113d007cae18bd2387"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ade30031e6d37ab1dd1869cbffe06c910" id="r_ade30031e6d37ab1dd1869cbffe06c910"><td class="memItemLeft" align="right" valign="top"><a id="ade30031e6d37ab1dd1869cbffe06c910" name="ade30031e6d37ab1dd1869cbffe06c910"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DataMapper</b> (const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format, <a class="el" href="structinviwo_1_1Axis.html">Axis</a> <a class="el" href="#a28fe98d1a4bc03db93227f42e4189d89">valueAxis</a>={})</td></tr>
-<tr class="separator:ade30031e6d37ab1dd1869cbffe06c910"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54a94db141313525d72036e98d6bfd56" id="r_a54a94db141313525d72036e98d6bfd56"><td class="memItemLeft" align="right" valign="top"><a id="a54a94db141313525d72036e98d6bfd56" name="a54a94db141313525d72036e98d6bfd56"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>DataMapper</b> (const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format, <a class="el" href="#a66564110d98821113d007cae18bd2387">SignedNormalization</a> normalization=<a class="el" href="#a66564110d98821113d007cae18bd2387a314084a577b998d8089dff72c98c58b0">SignedNormalization::Asymmetric</a>, <a class="el" href="structinviwo_1_1Axis.html">Axis</a> <a class="el" href="#a28fe98d1a4bc03db93227f42e4189d89">valueAxis</a>={})</td></tr>
+<tr class="separator:a54a94db141313525d72036e98d6bfd56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57444a78d0d0e150585ff6d1c853efa2" id="r_a57444a78d0d0e150585ff6d1c853efa2"><td class="memItemLeft" align="right" valign="top"><a id="a57444a78d0d0e150585ff6d1c853efa2" name="a57444a78d0d0e150585ff6d1c853efa2"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DataMapper</b> (dvec2 <a class="el" href="#ace2bd755e9c66a1075c0215966cc4bd0">dataRange</a>, <a class="el" href="structinviwo_1_1Axis.html">Axis</a> <a class="el" href="#a28fe98d1a4bc03db93227f42e4189d89">valueAxis</a>={})</td></tr>
 <tr class="separator:a57444a78d0d0e150585ff6d1c853efa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -129,9 +137,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a63e437f1ba2c4f5e3d0dbd42c36d0230" id="r_a63e437f1ba2c4f5e3d0dbd42c36d0230"><td class="memItemLeft" align="right" valign="top"><a id="a63e437f1ba2c4f5e3d0dbd42c36d0230" name="a63e437f1ba2c4f5e3d0dbd42c36d0230"></a>
 <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;that)</td></tr>
 <tr class="separator:a63e437f1ba2c4f5e3d0dbd42c36d0230"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2949876ae1eec3638cad55bf0744a889" id="r_a2949876ae1eec3638cad55bf0744a889"><td class="memItemLeft" align="right" valign="top"><a id="a2949876ae1eec3638cad55bf0744a889" name="a2949876ae1eec3638cad55bf0744a889"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>initWithFormat</b> (const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format)</td></tr>
-<tr class="separator:a2949876ae1eec3638cad55bf0744a889"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebeefeac789266413c4cca951599dc52" id="r_aebeefeac789266413c4cca951599dc52"><td class="memItemLeft" align="right" valign="top"><a id="aebeefeac789266413c4cca951599dc52" name="aebeefeac789266413c4cca951599dc52"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>initWithFormat</b> (const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format, <a class="el" href="#a66564110d98821113d007cae18bd2387">SignedNormalization</a> normalization=<a class="el" href="#a66564110d98821113d007cae18bd2387a314084a577b998d8089dff72c98c58b0">SignedNormalization::Asymmetric</a>)</td></tr>
+<tr class="separator:aebeefeac789266413c4cca951599dc52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa19794edd95ad5e37ae539fa523e0c2" id="r_afa19794edd95ad5e37ae539fa523e0c2"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:afa19794edd95ad5e37ae539fa523e0c2"><td class="memTemplItemLeft" align="right" valign="top">util::same_extent_t&lt; T, double &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#afa19794edd95ad5e37ae539fa523e0c2">mapFromDataToValue</a> (T val) const</td></tr>
 <tr class="separator:afa19794edd95ad5e37ae539fa523e0c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,9 +149,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initWithFormat</b> (c
 <tr class="memitem:abfca23a4c6c956367356d7e7b6dbda99" id="r_abfca23a4c6c956367356d7e7b6dbda99"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:abfca23a4c6c956367356d7e7b6dbda99"><td class="memTemplItemLeft" align="right" valign="top">util::same_extent_t&lt; T, double &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#abfca23a4c6c956367356d7e7b6dbda99">mapFromDataToNormalized</a> (T val) const</td></tr>
 <tr class="separator:abfca23a4c6c956367356d7e7b6dbda99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd16a476f51c4273a78f22736e17cf3d" id="r_afd16a476f51c4273a78f22736e17cf3d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:afd16a476f51c4273a78f22736e17cf3d"><td class="memTemplItemLeft" align="right" valign="top">util::same_extent_t&lt; T, double &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#afd16a476f51c4273a78f22736e17cf3d">mapFromDataToSignNormalized</a> (T val) const</td></tr>
+<tr class="separator:afd16a476f51c4273a78f22736e17cf3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8cce7989100d8517862ff7eff4c36a8d" id="r_a8cce7989100d8517862ff7eff4c36a8d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a8cce7989100d8517862ff7eff4c36a8d"><td class="memTemplItemLeft" align="right" valign="top">util::same_extent_t&lt; T, double &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a8cce7989100d8517862ff7eff4c36a8d">mapFromNormalizedToData</a> (T val) const</td></tr>
 <tr class="separator:a8cce7989100d8517862ff7eff4c36a8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12200eaf1ccb02da54b60c8321150201" id="r_a12200eaf1ccb02da54b60c8321150201"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a12200eaf1ccb02da54b60c8321150201"><td class="memTemplItemLeft" align="right" valign="top">util::same_extent_t&lt; T, double &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a12200eaf1ccb02da54b60c8321150201">mapFromSignNormalizedToData</a> (T val) const</td></tr>
+<tr class="separator:a12200eaf1ccb02da54b60c8321150201"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8878192a26497418c729382b88ece29e" id="r_a8878192a26497418c729382b88ece29e"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a8878192a26497418c729382b88ece29e"><td class="memTemplItemLeft" align="right" valign="top">util::same_extent_t&lt; T, double &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a8878192a26497418c729382b88ece29e">mapFromValueToNormalized</a> (T val) const</td></tr>
 <tr class="separator:a8878192a26497418c729382b88ece29e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -153,9 +167,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initWithFormat</b> (c
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:abd86f7fc7d84a088fc125759a6e6a840" id="r_abd86f7fc7d84a088fc125759a6e6a840"><td class="memItemLeft" align="right" valign="top"><a id="abd86f7fc7d84a088fc125759a6e6a840" name="abd86f7fc7d84a088fc125759a6e6a840"></a>
-static dvec2&#160;</td><td class="memItemRight" valign="bottom"><b>defaultDataRangeFor</b> (const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format)</td></tr>
-<tr class="separator:abd86f7fc7d84a088fc125759a6e6a840"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0da544ef3cf0a3f0b03d1ad278eeb7d2" id="r_a0da544ef3cf0a3f0b03d1ad278eeb7d2"><td class="memItemLeft" align="right" valign="top"><a id="a0da544ef3cf0a3f0b03d1ad278eeb7d2" name="a0da544ef3cf0a3f0b03d1ad278eeb7d2"></a>
+static dvec2&#160;</td><td class="memItemRight" valign="bottom"><b>defaultDataRangeFor</b> (const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format, <a class="el" href="#a66564110d98821113d007cae18bd2387">SignedNormalization</a> normalization=<a class="el" href="#a66564110d98821113d007cae18bd2387a314084a577b998d8089dff72c98c58b0">SignedNormalization::Asymmetric</a>)</td></tr>
+<tr class="separator:a0da544ef3cf0a3f0b03d1ad278eeb7d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -169,7 +183,39 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Map values into data or value ranges. <a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> range refers to the range of the data type, i.e. [0 4095] for 12-bit unsigned integer data. Value range refers to the physical meaning of the value, i.e. Hounsfield value range is from [-1000 3000]. It is important that the data range is specified for data types with a large range (for example 32/64-bit float and integer) since the data is often normalized to [0 1], when for example performing color mapping, i.e. applying a transfer function. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a66564110d98821113d007cae18bd2387" name="a66564110d98821113d007cae18bd2387"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66564110d98821113d007cae18bd2387">&#9670;&#160;</a></span>SignedNormalization</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="#a66564110d98821113d007cae18bd2387">inviwo::DataMapper::SignedNormalization</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Signed fixed-point integers are normalized using either an asymmetric range [-2^(b-1), 2^(b-1) - 1] or a symmetric range [-2^(b-1) + 1, 2^(b-1) - 1], where b corresponds to the bit depth of the fixed-point integer.</p>
+<p>From version 4.2 and above, OpenGL uses a symmetric range to convert between normalized fixed-point integers and floating point values. For example, the range [-127, 127] is used for the normalization of 8bit signed integers instead of [-128, 127]. In order to match the normalization of signed integer formats on the GPU, the symmetric normalization has to be used in the <a class="el" href="classinviwo_1_1DataMapper.html" title="Map values into data or value ranges. Data range refers to the range of the data type,...">DataMapper</a> for OpenGL &gt;= 4.2.</p>
+<dl class="section see"><dt>See also</dt><dd>OpenGL 4.6 specification, Section 2.3.5 Fixed-Point <a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> Conversion </dd></dl>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a66564110d98821113d007cae18bd2387a314084a577b998d8089dff72c98c58b0" name="a66564110d98821113d007cae18bd2387a314084a577b998d8089dff72c98c58b0"></a>Asymmetric&#160;</td><td class="fielddoc"><p>uses an asymmetric range, i.e. [-2^(b-1), 2^(b-1) - 1] </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a66564110d98821113d007cae18bd2387af334649ef5e5d0ffe200751d07012626" name="a66564110d98821113d007cae18bd2387af334649ef5e5d0ffe200751d07012626"></a>Symmetric&#160;</td><td class="fielddoc"><p>uses a symmetric range, i.e. [-2^(b-1) + 1, 2^(b-1) - 1] </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="abfca23a4c6c956367356d7e7b6dbda99" name="abfca23a4c6c956367356d7e7b6dbda99"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abfca23a4c6c956367356d7e7b6dbda99">&#9670;&#160;</a></span>mapFromDataToNormalized()</h2>
 
@@ -195,6 +241,34 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Map from <code>dataRange</code> to the Normalized range [0,1] </p>
+
+</div>
+</div>
+<a id="afd16a476f51c4273a78f22736e17cf3d" name="afd16a476f51c4273a78f22736e17cf3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd16a476f51c4273a78f22736e17cf3d">&#9670;&#160;</a></span>mapFromDataToSignNormalized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">util::same_extent_t&lt; T, double &gt; inviwo::DataMapper::mapFromDataToSignNormalized </td>
+          <td>(</td>
+          <td class="paramtype">T</td>          <td class="paramname"><span class="paramname"><em>val</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Map from <code>dataRange</code> to the Sign Normalized range [-1,1] </p>
 
 </div>
 </div>
@@ -282,6 +356,34 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="a12200eaf1ccb02da54b60c8321150201" name="a12200eaf1ccb02da54b60c8321150201"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12200eaf1ccb02da54b60c8321150201">&#9670;&#160;</a></span>mapFromSignNormalizedToData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">util::same_extent_t&lt; T, double &gt; inviwo::DataMapper::mapFromSignNormalizedToData </td>
+          <td>(</td>
+          <td class="paramtype">T</td>          <td class="paramname"><span class="paramname"><em>val</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Map from Sign Normalized range [-1,1] to the <code>dataRange</code> </p>
+
+</div>
+</div>
 <a id="a8c264401aaf9ed0abaa4a18bfe258ba4" name="a8c264401aaf9ed0abaa4a18bfe258ba4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8c264401aaf9ed0abaa4a18bfe258ba4">&#9670;&#160;</a></span>mapFromValueToData()</h2>
 
@@ -350,7 +452,7 @@ template&lt;typename T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The ´dataRange´ is used to normalize the "raw" values to [0,1] Typically the minimum and maximum of the "raw" data is used. For 8 and 16 integer data that is often the same or close to the same as the minimum and maximum of the data type. For data where the minimum and maximum is far from the minimum and maximum of the data type, the minimum and maximum has to either be calculated from the data, read from the input, or entered by the user. </p>
+<p>The <code>dataRange</code> is used to normalize the "raw" values to [0,1] Typically the minimum and maximum of the "raw" data is used. For 8 and 16 integer data that is often the same or close to the same as the minimum and maximum of the data type. For data where the minimum and maximum is far from the minimum and maximum of the data type, the minimum and maximum has to either be calculated from the data, read from the input, or entered by the user. </p>
 
 </div>
 </div>

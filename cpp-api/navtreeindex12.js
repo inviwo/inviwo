@@ -1,5 +1,15 @@
 var NAVTREEINDEX12 =
 {
+"classinviwo_1_1Observer.html":[4,0,1,689],
+"classinviwo_1_1Observer.html#a89a511d1efc3db5e2ce1fe8fd53043a4":[2,0,0,683,2],
+"classinviwo_1_1Observer.html#a89a511d1efc3db5e2ce1fe8fd53043a4":[4,0,1,689,2],
+"classinviwo_1_1Observer.html#aa62add49e9cc4b358f61aa9d38aee991":[2,0,0,683,1],
+"classinviwo_1_1Observer.html#aa62add49e9cc4b358f61aa9d38aee991":[4,0,1,689,1],
+"classinviwo_1_1Observer.html#af03fb7de020a1084d2aa064206315a9d":[2,0,0,683,0],
+"classinviwo_1_1Observer.html#af03fb7de020a1084d2aa064206315a9d":[4,0,1,689,0],
+"classinviwo_1_1OpenGLCapabilities.html":[2,0,0,685],
+"classinviwo_1_1OpenGLCapabilities.html":[4,0,1,691],
+"classinviwo_1_1OpenGLCapabilities_1_1GLSLShaderVersion.html":[2,0,0,685,0],
 "classinviwo_1_1OpenGLCapabilities_1_1GLSLShaderVersion.html":[4,0,1,691,0],
 "classinviwo_1_1OpenGLException.html":[2,0,0,686],
 "classinviwo_1_1OpenGLException.html":[4,0,1,692],
@@ -239,15 +249,5 @@ var NAVTREEINDEX12 =
 "classinviwo_1_1PickingEvent.html#a006dd2bfed8c38cabcc952ad5f902092":[2,0,0,741,3],
 "classinviwo_1_1PickingEvent.html#a006dd2bfed8c38cabcc952ad5f902092":[4,0,1,747,3],
 "classinviwo_1_1PickingEvent.html#a08eb834e18bac176bad6deef9672b5a3":[2,0,0,741,9],
-"classinviwo_1_1PickingEvent.html#a08eb834e18bac176bad6deef9672b5a3":[4,0,1,747,9],
-"classinviwo_1_1PickingEvent.html#a1161a7de7c3ba4bf6b6c3518f8c0bd0f":[2,0,0,741,7],
-"classinviwo_1_1PickingEvent.html#a1161a7de7c3ba4bf6b6c3518f8c0bd0f":[4,0,1,747,7],
-"classinviwo_1_1PickingEvent.html#a1581a23f28a1b0b0fbb39b0bf79b4679":[2,0,0,741,6],
-"classinviwo_1_1PickingEvent.html#a1581a23f28a1b0b0fbb39b0bf79b4679":[4,0,1,747,6],
-"classinviwo_1_1PickingEvent.html#a1f96bd4d952aad6286f6547edeade9a5":[2,0,0,741,1],
-"classinviwo_1_1PickingEvent.html#a1f96bd4d952aad6286f6547edeade9a5":[4,0,1,747,1],
-"classinviwo_1_1PickingEvent.html#a38584d63b8f36b9a7944bf05b4bb52b6":[2,0,0,741,19],
-"classinviwo_1_1PickingEvent.html#a38584d63b8f36b9a7944bf05b4bb52b6":[4,0,1,747,19],
-"classinviwo_1_1PickingEvent.html#a3a9ab841e440bfa51846941ebc7e345b":[2,0,0,741,15],
-"classinviwo_1_1PickingEvent.html#a3a9ab841e440bfa51846941ebc7e345b":[4,0,1,747,15]
+"classinviwo_1_1PickingEvent.html#a08eb834e18bac176bad6deef9672b5a3":[4,0,1,747,9]
 };

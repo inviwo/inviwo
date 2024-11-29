@@ -1,5 +1,15 @@
 var NAVTREEINDEX10 =
 {
+"classinviwo_1_1LineSettingsInterface.html#acd0646dfa5b0b99701147bc83d4d7148":[4,0,1,581,1],
+"classinviwo_1_1LineSettingsInterface.html#ae93777d37e65ca0666c134e93273a325":[2,0,0,575,6],
+"classinviwo_1_1LineSettingsInterface.html#ae93777d37e65ca0666c134e93273a325":[4,0,1,581,6],
+"classinviwo_1_1LineSettingsProperty.html":[2,0,0,576],
+"classinviwo_1_1LineSettingsProperty.html":[4,0,1,582],
+"classinviwo_1_1LineSettingsProperty.html#a2c11ade79e170d902cb67e7287e34ffe":[2,0,0,576,8],
+"classinviwo_1_1LineSettingsProperty.html#a2c11ade79e170d902cb67e7287e34ffe":[4,0,1,582,8],
+"classinviwo_1_1LineSettingsProperty.html#a33066d52bf199c084b20c6a5e526c3d3":[2,0,0,576,5],
+"classinviwo_1_1LineSettingsProperty.html#a33066d52bf199c084b20c6a5e526c3d3":[4,0,1,582,5],
+"classinviwo_1_1LineSettingsProperty.html#a41ff05d275720c12b67b98e8c16006cb":[2,0,0,576,7],
 "classinviwo_1_1LineSettingsProperty.html#a41ff05d275720c12b67b98e8c16006cb":[4,0,1,582,7],
 "classinviwo_1_1LineSettingsProperty.html#a52cbbe63f4f8c90473d70b0b8ae1b30c":[2,0,0,576,3],
 "classinviwo_1_1LineSettingsProperty.html#a52cbbe63f4f8c90473d70b0b8ae1b30c":[4,0,1,582,3],
@@ -239,15 +249,5 @@ var NAVTREEINDEX10 =
 "classinviwo_1_1MeshSequenceElementSelectorProcessor.html":[1,3,9],
 "classinviwo_1_1MeshShaderCache.html":[2,0,0,626],
 "classinviwo_1_1MeshShaderCache.html":[4,0,1,632],
-"classinviwo_1_1MeshSource.html":[1,3,10],
-"classinviwo_1_1MeshTexturing.html":[2,0,0,628],
-"classinviwo_1_1MeshTexturing.html":[4,0,1,634],
-"classinviwo_1_1MeshVisualizer.html":[2,0,0,629],
-"classinviwo_1_1MeshVisualizer.html":[4,0,1,635],
-"classinviwo_1_1MeshVisualizer.html#a0ee6a0ca1af2ce1384ac208163c44a6c":[2,0,0,629,1],
-"classinviwo_1_1MeshVisualizer.html#a0ee6a0ca1af2ce1384ac208163c44a6c":[4,0,1,635,1],
-"classinviwo_1_1MeshVisualizer.html#a391db561537b1e795dc807f90bfbcdd1":[2,0,0,629,5],
-"classinviwo_1_1MeshVisualizer.html#a391db561537b1e795dc807f90bfbcdd1":[4,0,1,635,5],
-"classinviwo_1_1MeshVisualizer.html#a88eba06dad9fd8f677b59c4fc5cfc9cc":[2,0,0,629,8],
-"classinviwo_1_1MeshVisualizer.html#a88eba06dad9fd8f677b59c4fc5cfc9cc":[4,0,1,635,8]
+"classinviwo_1_1MeshSource.html":[1,3,10]
 };

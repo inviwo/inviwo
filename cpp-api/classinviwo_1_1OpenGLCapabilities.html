@@ -251,6 +251,8 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isComputeShade
 <tr class="memitem:a939ec000f0b0da27c1c5874307674b32" id="r_a939ec000f0b0da27c1c5874307674b32"><td class="memItemLeft" align="right" valign="top"><a id="a939ec000f0b0da27c1c5874307674b32" name="a939ec000f0b0da27c1c5874307674b32"></a>
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isShaderStorageBuffersSupported</b> ()</td></tr>
 <tr class="separator:a939ec000f0b0da27c1c5874307674b32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa56c518feff295a4e5623e3aba966c8b" id="r_aa56c518feff295a4e5623e3aba966c8b"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa56c518feff295a4e5623e3aba966c8b">isSignedIntNormalizationSymmetric</a> ()</td></tr>
+<tr class="separator:aa56c518feff295a4e5623e3aba966c8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -276,6 +278,35 @@ static int&#160;</td><td class="memItemRight" valign="bottom"><b>parseAndRetriev
 <tr class="separator:adc1c908d9d884271c9b95472d935a5fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="aa56c518feff295a4e5623e3aba966c8b" name="aa56c518feff295a4e5623e3aba966c8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa56c518feff295a4e5623e3aba966c8b">&#9670;&#160;</a></span>isSignedIntNormalizationSymmetric()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool inviwo::OpenGLCapabilities::isSignedIntNormalizationSymmetric </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The conversion from normalized fixed-point integers to floating-point values and back was changed to use a symmetric range in OpenGL 4.2. That is the range [-127, 127] is used for the normalization of 8bit signed integers instead of [-128, 127].</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1DataMapper.html#a66564110d98821113d007cae18bd2387">DataMapper::SignedNormalization</a> </dd>
+<dd>
+OpenGL 4.6 specification, Section 2.3.5 Fixed-Point <a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> Conversion </dd></dl>
+
+</div>
+</div>
 <a id="af8c928bcf19ea8f99e798ba69d584ef8" name="af8c928bcf19ea8f99e798ba69d584ef8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af8c928bcf19ea8f99e798ba69d584ef8">&#9670;&#160;</a></span>printInfo()</h2>
 

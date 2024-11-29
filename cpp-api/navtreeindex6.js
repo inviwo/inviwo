@@ -1,5 +1,15 @@
 var NAVTREEINDEX6 =
 {
+"classinviwo_1_1HalfEdges.html":[2,0,0,357],
+"classinviwo_1_1HalfEdges.html":[4,0,1,363],
+"classinviwo_1_1HalfEdges.html#a2019b7c52e9e39f179697986d0180512":[2,0,0,357,4],
+"classinviwo_1_1HalfEdges.html#a2019b7c52e9e39f179697986d0180512":[4,0,1,363,4],
+"classinviwo_1_1HalfEdges.html#a368e3f4e509d45285962659b06211ef9":[2,0,0,357,1],
+"classinviwo_1_1HalfEdges.html#a368e3f4e509d45285962659b06211ef9":[4,0,1,363,1],
+"classinviwo_1_1HalfEdges.html#a8efbf180581da7a17659e1e33e3c8047":[2,0,0,357,2],
+"classinviwo_1_1HalfEdges.html#a8efbf180581da7a17659e1e33e3c8047":[4,0,1,363,2],
+"classinviwo_1_1HalfEdges.html#ad97287d8420799a0baede4469c067bed":[2,0,0,357,3],
+"classinviwo_1_1HalfEdges.html#ad97287d8420799a0baede4469c067bed":[4,0,1,363,3],
 "classinviwo_1_1HalfEdges_1_1EdgeIter.html":[2,0,0,357,0],
 "classinviwo_1_1HalfEdges_1_1EdgeIter.html":[4,0,1,363,0],
 "classinviwo_1_1HdrBloom.html":[1,3,112],
@@ -239,15 +249,5 @@ var NAVTREEINDEX6 =
 "classinviwo_1_1ImageSampler.html#a88ff8a52dd56a2f43b4fc12cee7adf55":[2,0,0,414,0],
 "classinviwo_1_1ImageSampler.html#a88ff8a52dd56a2f43b4fc12cee7adf55":[4,0,1,420,0],
 "classinviwo_1_1ImageSampler.html#ac120fdaac2a9c8ae3a30c36cbe6554a5":[2,0,0,414,2],
-"classinviwo_1_1ImageSampler.html#ac120fdaac2a9c8ae3a30c36cbe6554a5":[4,0,1,420,2],
-"classinviwo_1_1ImageSampler.html#ac44624f5962e6f90c6f7b49193d7ba67":[2,0,0,414,3],
-"classinviwo_1_1ImageSampler.html#ac44624f5962e6f90c6f7b49193d7ba67":[4,0,1,420,3],
-"classinviwo_1_1ImageSampler.html#afcd8b1cd094431e4d2a0dbcb3235f97d":[2,0,0,414,1],
-"classinviwo_1_1ImageSampler.html#afcd8b1cd094431e4d2a0dbcb3235f97d":[4,0,1,420,1],
-"classinviwo_1_1ImageScaling.html":[1,3,94],
-"classinviwo_1_1ImageScaling.html#ab51b63b6269d1f22351cfd032b1e7079":[1,3,94,0],
-"classinviwo_1_1ImageSequenceElementSelectorProcessor.html":[2,0,0,416],
-"classinviwo_1_1ImageSequenceElementSelectorProcessor.html":[4,0,1,422],
-"classinviwo_1_1ImageSnapshot.html":[2,0,0,417],
-"classinviwo_1_1ImageSnapshot.html":[4,0,1,423]
+"classinviwo_1_1ImageSampler.html#ac120fdaac2a9c8ae3a30c36cbe6554a5":[4,0,1,420,2]
 };

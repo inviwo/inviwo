@@ -504,6 +504,7 @@ var annotated_dup =
         [ "ColorMaskiState", "structinviwo_1_1utilgl_1_1ColorMaskiState.html", null ],
         [ "ColorMaskState", "structinviwo_1_1utilgl_1_1ColorMaskState.html", null ],
         [ "CullFaceState", "structinviwo_1_1utilgl_1_1CullFaceState.html", null ],
+        [ "DataMinMaxGL", "classinviwo_1_1utilgl_1_1DataMinMaxGL.html", null ],
         [ "Enable", "structinviwo_1_1utilgl_1_1Enable.html", null ],
         [ "GlBoolState", "structinviwo_1_1utilgl_1_1GlBoolState.html", null ],
         [ "PolygonModeState", "structinviwo_1_1utilgl_1_1PolygonModeState.html", null ],

@@ -55,9 +55,11 @@ var searchData=
   ['isrunning_52',['isRunning',['../classinviwo_1_1Clock.html#af3c31d8885660e05b72bde4aeb02f77a',1,'inviwo::Clock::isRunning()'],['../classinviwo_1_1ClockGL.html#a1b72f5e07f4428f6ef9be01c7258dd21',1,'inviwo::ClockGL::isRunning()']]],
   ['isselected_53',['isSelected',['../classinviwo_1_1BrushingAndLinkingManager.html#a7162265eb0688f286bd921c6fd379a9d',1,'inviwo::BrushingAndLinkingManager::isSelected()'],['../namespaceinviwo_1_1util.html#a33720f81ed26a3562c7447ce9eb89288',1,'inviwo::util::isSelected()']]],
   ['isselectionmodified_54',['isSelectionModified',['../classinviwo_1_1BrushingAndLinkingManager.html#ac64cbae95e5c9b36b0c5ee250e8df319',1,'inviwo::BrushingAndLinkingManager']]],
-  ['issink_55',['isSink',['../classinviwo_1_1Processor.html#ab73a999515a39a1b14a968c4feee93d9',1,'inviwo::Processor']]],
-  ['issource_56',['isSource',['../classinviwo_1_1Processor.html#a55868326c5193cd06ef8848afcf49859',1,'inviwo::Processor']]],
-  ['isstrictsubsetof_57',['isStrictSubsetOf',['../classinviwo_1_1BitSet.html#a38b3031d4861cafaa845893dcc85420a',1,'inviwo::BitSet']]],
-  ['issubsetof_58',['isSubsetOf',['../classinviwo_1_1BitSet.html#a4c33e7ade2d754e25d0c55554076fd26',1,'inviwo::BitSet']]],
-  ['istargetmodified_59',['isTargetModified',['../classinviwo_1_1BrushingAndLinkingManager.html#a387c20ce4f97c239d3d0b2af185185ed',1,'inviwo::BrushingAndLinkingManager::isTargetModified(BrushingTarget target, BrushingModifications modifications=BrushingModifications(flags::any)) const'],['../classinviwo_1_1BrushingAndLinkingManager.html#a9d586d738074f79da8372545f9c8bff8',1,'inviwo::BrushingAndLinkingManager::isTargetModified(BrushingTarget target, BrushingAction action) const']]]
+  ['issignedintnormalizationsymmetric_55',['isSignedIntNormalizationSymmetric',['../classinviwo_1_1OpenGLCapabilities.html#aa56c518feff295a4e5623e3aba966c8b',1,'inviwo::OpenGLCapabilities']]],
+  ['issink_56',['isSink',['../classinviwo_1_1Processor.html#ab73a999515a39a1b14a968c4feee93d9',1,'inviwo::Processor']]],
+  ['issource_57',['isSource',['../classinviwo_1_1Processor.html#a55868326c5193cd06ef8848afcf49859',1,'inviwo::Processor']]],
+  ['isstrictsubsetof_58',['isStrictSubsetOf',['../classinviwo_1_1BitSet.html#a38b3031d4861cafaa845893dcc85420a',1,'inviwo::BitSet']]],
+  ['issubsetof_59',['isSubsetOf',['../classinviwo_1_1BitSet.html#a4c33e7ade2d754e25d0c55554076fd26',1,'inviwo::BitSet']]],
+  ['issuppportedbygpu_60',['isSuppportedByGPU',['../classinviwo_1_1utilgl_1_1DataMinMaxGL.html#a66dd5216bd48074222ca52dfb84f6e8f',1,'inviwo::utilgl::DataMinMaxGL']]],
+  ['istargetmodified_61',['isTargetModified',['../classinviwo_1_1BrushingAndLinkingManager.html#a387c20ce4f97c239d3d0b2af185185ed',1,'inviwo::BrushingAndLinkingManager::isTargetModified(BrushingTarget target, BrushingModifications modifications=BrushingModifications(flags::any)) const'],['../classinviwo_1_1BrushingAndLinkingManager.html#a9d586d738074f79da8372545f9c8bff8',1,'inviwo::BrushingAndLinkingManager::isTargetModified(BrushingTarget target, BrushingAction action) const']]]
 ];

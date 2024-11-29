@@ -1,5 +1,15 @@
 var NAVTREEINDEX5 =
 {
+"classinviwo_1_1FactoryObservable.html":[4,0,1,305],
+"classinviwo_1_1FactoryObserver.html":[2,0,0,300],
+"classinviwo_1_1FactoryObserver.html":[4,0,1,306],
+"classinviwo_1_1FactoryRegister.html":[2,0,0,301],
+"classinviwo_1_1FactoryRegister.html":[4,0,1,307],
+"classinviwo_1_1FactoryRegister.html#a0b244528108edd1f87507df782b7bf4e":[2,0,0,301,0],
+"classinviwo_1_1FactoryRegister.html#a0b244528108edd1f87507df782b7bf4e":[4,0,1,307,0],
+"classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4.html":[2,0,0,295],
+"classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4.html":[4,0,1,301],
+"classinviwo_1_1FileAssociations.html":[2,0,0,305],
 "classinviwo_1_1FileAssociations.html":[4,0,1,311],
 "classinviwo_1_1FileAssociations.html#ae9f421d545820a6629105bf1e92a4779":[2,0,0,305,0],
 "classinviwo_1_1FileAssociations.html#ae9f421d545820a6629105bf1e92a4779":[4,0,1,311,0],
@@ -239,15 +249,5 @@ var NAVTREEINDEX5 =
 "classinviwo_1_1GridPlanes.html#aeb3fe571ba692252c1cbbfb578ca018c":[2,0,0,356,0],
 "classinviwo_1_1GridPlanes.html#aeb3fe571ba692252c1cbbfb578ca018c":[4,0,1,362,0],
 "classinviwo_1_1HDF5Module.html":[2,0,0,358],
-"classinviwo_1_1HDF5Module.html":[4,0,1,364],
-"classinviwo_1_1HalfEdges.html":[2,0,0,357],
-"classinviwo_1_1HalfEdges.html":[4,0,1,363],
-"classinviwo_1_1HalfEdges.html#a2019b7c52e9e39f179697986d0180512":[2,0,0,357,4],
-"classinviwo_1_1HalfEdges.html#a2019b7c52e9e39f179697986d0180512":[4,0,1,363,4],
-"classinviwo_1_1HalfEdges.html#a368e3f4e509d45285962659b06211ef9":[2,0,0,357,1],
-"classinviwo_1_1HalfEdges.html#a368e3f4e509d45285962659b06211ef9":[4,0,1,363,1],
-"classinviwo_1_1HalfEdges.html#a8efbf180581da7a17659e1e33e3c8047":[2,0,0,357,2],
-"classinviwo_1_1HalfEdges.html#a8efbf180581da7a17659e1e33e3c8047":[4,0,1,363,2],
-"classinviwo_1_1HalfEdges.html#ad97287d8420799a0baede4469c067bed":[2,0,0,357,3],
-"classinviwo_1_1HalfEdges.html#ad97287d8420799a0baede4469c067bed":[4,0,1,363,3]
+"classinviwo_1_1HDF5Module.html":[4,0,1,364]
 };

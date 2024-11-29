@@ -1,5 +1,15 @@
 var NAVTREEINDEX24 =
 {
+"classinviwo_1_1animation_1_1DemoController.html":[4,0,1,1,34],
+"classinviwo_1_1animation_1_1DemoControllerObservable.html":[2,0,0,0,34],
+"classinviwo_1_1animation_1_1DemoControllerObservable.html":[4,0,1,1,35],
+"classinviwo_1_1animation_1_1DemoControllerObserver.html":[2,0,0,0,35],
+"classinviwo_1_1animation_1_1DemoControllerObserver.html":[4,0,1,1,36],
+"classinviwo_1_1animation_1_1DemoNavigatorDockWidgetQt.html":[2,0,0,0,36],
+"classinviwo_1_1animation_1_1DemoNavigatorDockWidgetQt.html":[4,0,1,1,37],
+"classinviwo_1_1animation_1_1ImageRecorderFactory.html":[2,0,0,0,38],
+"classinviwo_1_1animation_1_1ImageRecorderFactory.html":[4,0,1,1,39],
+"classinviwo_1_1animation_1_1Interpolation.html":[2,0,0,0,39],
 "classinviwo_1_1animation_1_1Interpolation.html":[4,0,1,1,40],
 "classinviwo_1_1animation_1_1InterpolationFactory.html":[2,0,0,0,40],
 "classinviwo_1_1animation_1_1InterpolationFactory.html":[4,0,1,1,41],
@@ -239,15 +249,5 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1glui_1_1Layout.html#a797d85869ac8bbb03f8c9a266c1129d3":[4,0,1,12,14,5],
 "classinviwo_1_1glui_1_1Layout.html#aba597b5896147291e10869ee7e3fa7eb":[4,0,1,12,14,3],
 "classinviwo_1_1glui_1_1Layout.html#af58aa1a0447a712864d76f692b6c381f":[4,0,1,12,14,1],
-"classinviwo_1_1glui_1_1RangeSlider.html":[4,0,1,12,15],
-"classinviwo_1_1glui_1_1RangeSlider.html#a01056bc77ef9d13b6e8ec8d4a828ed08":[4,0,1,12,15,0],
-"classinviwo_1_1glui_1_1Renderer.html":[4,0,1,12,16],
-"classinviwo_1_1glui_1_1Renderer.html#ac4850b648f6eca7a2a3c9427224a88f2":[4,0,1,12,16,0],
-"classinviwo_1_1glui_1_1Slider.html":[4,0,1,12,17],
-"classinviwo_1_1glui_1_1Slider.html#ab52b5cd4b771ba20174a243e0d3a3a98":[4,0,1,12,17,0],
-"classinviwo_1_1glui_1_1ToolButton.html":[4,0,1,12,18],
-"classinviwo_1_1glui_1_1ToolButtonPropertyWidget.html":[4,0,1,12,19],
-"classinviwo_1_1glui_1_1ToolButtonPropertyWidget.html#aa23242c2dba03aaf374900bc1bcbf8ed":[4,0,1,12,19,0],
-"classinviwo_1_1glui_1_1VBoxLayout.html":[4,0,1,12,20],
-"classinviwo_1_1glui_1_1WidgetFactory.html":[4,0,1,12,21]
+"classinviwo_1_1glui_1_1RangeSlider.html":[4,0,1,12,15]
 };

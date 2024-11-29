@@ -1,5 +1,15 @@
 var NAVTREEINDEX21 =
 {
+"classinviwo_1_1TransferFunctionLayerReaderWrapper.html":[2,0,0,1183],
+"classinviwo_1_1TransferFunctionLayerReaderWrapper.html":[4,0,1,1189],
+"classinviwo_1_1TransferFunctionLayerWriter.html":[2,0,0,1184],
+"classinviwo_1_1TransferFunctionLayerWriter.html":[4,0,1,1190],
+"classinviwo_1_1TransferFunctionLayerWriterWrapper.html":[2,0,0,1185],
+"classinviwo_1_1TransferFunctionLayerWriterWrapper.html":[4,0,1,1191],
+"classinviwo_1_1TransferFunctionProperty.html":[1,4,24],
+"classinviwo_1_1TransferFunctionProperty.html#a197e1364cdb4450c941ad5528cf97d66":[1,4,24,4],
+"classinviwo_1_1TransferFunctionProperty.html#a6a233c127391c410e55b42b6c485ca32":[1,4,24,3],
+"classinviwo_1_1TransferFunctionProperty.html#aaac430d426603c7b939219c2c37ef390":[1,4,24,1],
 "classinviwo_1_1TransferFunctionProperty.html#aacc0d44e59b42492a84d7624ab389c30":[1,4,24,5],
 "classinviwo_1_1TransferFunctionProperty.html#aad039b57388d7b2488f69beca5dca53b":[1,4,24,0],
 "classinviwo_1_1TransferFunctionProperty.html#abc2e3f56a23cd5997c55dbdde70ef059":[1,4,24,2],
@@ -239,15 +249,5 @@ var NAVTREEINDEX21 =
 "classinviwo_1_1VolumeGL.html":[1,1,34],
 "classinviwo_1_1VolumeGL.html#abb500fe800856982c8a2bc64d9608af4":[1,1,34,0],
 "classinviwo_1_1VolumeGL2PyConverter.html":[2,0,0,1248],
-"classinviwo_1_1VolumeGL2PyConverter.html":[4,0,1,1254],
-"classinviwo_1_1VolumeGL2RAMConverter.html":[2,0,0,1249],
-"classinviwo_1_1VolumeGL2RAMConverter.html":[4,0,1,1255],
-"classinviwo_1_1VolumeGLProcessor.html":[2,0,0,1250],
-"classinviwo_1_1VolumeGLProcessor.html":[4,0,1,1256],
-"classinviwo_1_1VolumeGLProcessor.html#a4815204ebf0889ee704c4afef0f107ec":[2,0,0,1250,3],
-"classinviwo_1_1VolumeGLProcessor.html#a4815204ebf0889ee704c4afef0f107ec":[4,0,1,1256,3],
-"classinviwo_1_1VolumeGLProcessor.html#a8a8d1d4e9d8e3745938352795695faff":[2,0,0,1250,0],
-"classinviwo_1_1VolumeGLProcessor.html#a8a8d1d4e9d8e3745938352795695faff":[4,0,1,1256,0],
-"classinviwo_1_1VolumeGLProcessor.html#a9050af730db1484aa1d44228e97a8c78":[2,0,0,1250,2],
-"classinviwo_1_1VolumeGLProcessor.html#a9050af730db1484aa1d44228e97a8c78":[4,0,1,1256,2]
+"classinviwo_1_1VolumeGL2PyConverter.html":[4,0,1,1254]
 };

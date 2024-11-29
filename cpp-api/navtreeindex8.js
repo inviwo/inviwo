@@ -1,5 +1,15 @@
 var NAVTREEINDEX8 =
 {
+"classinviwo_1_1InviwoDockWidget.html#af17dbdcabc4ba18dffc0e4119349cd2f":[4,0,1,475,1],
+"classinviwo_1_1InviwoDockWidgetTitleBar.html":[2,0,0,470],
+"classinviwo_1_1InviwoDockWidgetTitleBar.html":[4,0,1,476],
+"classinviwo_1_1InviwoEditMenu.html":[2,0,0,471],
+"classinviwo_1_1InviwoEditMenu.html":[4,0,1,477],
+"classinviwo_1_1InviwoFileDialog.html":[2,0,0,472],
+"classinviwo_1_1InviwoFileDialog.html":[4,0,1,478],
+"classinviwo_1_1InviwoFileDialog.html#a23e46b1c32312d4f20129458d1efe45e":[2,0,0,472,1],
+"classinviwo_1_1InviwoFileDialog.html#a23e46b1c32312d4f20129458d1efe45e":[4,0,1,478,1],
+"classinviwo_1_1InviwoFileDialog.html#ad28edb665b5fb2ee948cc1903eced783":[2,0,0,472,0],
 "classinviwo_1_1InviwoFileDialog.html#ad28edb665b5fb2ee948cc1903eced783":[4,0,1,478,0],
 "classinviwo_1_1InviwoMainWindow.html":[2,0,0,473],
 "classinviwo_1_1InviwoMainWindow.html":[4,0,1,479],
@@ -239,15 +249,5 @@ var NAVTREEINDEX8 =
 "classinviwo_1_1LayerGrayscale.html#ae15320d86f85d3a1f55988b2edf1e458":[2,0,0,528,0],
 "classinviwo_1_1LayerGrayscale.html#ae15320d86f85d3a1f55988b2edf1e458":[4,0,1,534,0],
 "classinviwo_1_1LayerInformation.html":[2,0,0,529],
-"classinviwo_1_1LayerInformation.html":[4,0,1,535],
-"classinviwo_1_1LayerInformation.html#a0bd481e2e44ac9af1594cb27a7b969b2":[2,0,0,529,0],
-"classinviwo_1_1LayerInformation.html#a0bd481e2e44ac9af1594cb27a7b969b2":[4,0,1,535,0],
-"classinviwo_1_1LayerInformationProperty.html":[1,4,31],
-"classinviwo_1_1LayerInformationProperty.html#a7e6171d0982919311e9d00bf2a2bd662":[1,4,31,0],
-"classinviwo_1_1LayerInformationVisualizer.html":[2,0,0,531],
-"classinviwo_1_1LayerInformationVisualizer.html":[4,0,1,537],
-"classinviwo_1_1LayerInformationVisualizer.html#a08732f3eaecbccf5042296b4afb682a6":[2,0,0,531,8],
-"classinviwo_1_1LayerInformationVisualizer.html#a08732f3eaecbccf5042296b4afb682a6":[4,0,1,537,8],
-"classinviwo_1_1LayerInformationVisualizer.html#a39e3044c21f7c8ae389b41547abb186d":[2,0,0,531,1],
-"classinviwo_1_1LayerInformationVisualizer.html#a39e3044c21f7c8ae389b41547abb186d":[4,0,1,537,1]
+"classinviwo_1_1LayerInformation.html":[4,0,1,535]
 };

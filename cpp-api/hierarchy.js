@@ -307,6 +307,7 @@ var hierarchy =
       ] ]
     ] ],
     [ "inviwo::DataMapper", "classinviwo_1_1DataMapper.html", null ],
+    [ "inviwo::utilgl::DataMinMaxGL", "classinviwo_1_1utilgl_1_1DataMinMaxGL.html", null ],
     [ "inviwo::DataReader", "classinviwo_1_1DataReader.html", [
       [ "inviwo::DataReaderType< Mesh >", "classinviwo_1_1DataReaderType.html", [
         [ "inviwo::AssimpReader", "classinviwo_1_1AssimpReader.html", null ]
