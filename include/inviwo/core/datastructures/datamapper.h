@@ -51,15 +51,37 @@ class DataFormatBase;
  */
 class IVW_CORE_API DataMapper {
 public:
+    /**
+     * Signed fixed-point integers are normalized using either an asymmetric range
+     * [-2^(b-1), 2^(b-1) - 1] or a symmetric range [-2^(b-1) + 1, 2^(b-1) - 1], where b
+     * corresponds to the bit depth of the fixed-point integer.
+     *
+     * From version 4.2 and above, OpenGL uses a symmetric range to convert between normalized
+     * fixed-point integers and floating point values. For example, the range [-127, 127] is used
+     * for the normalization of 8bit signed integers instead of [-128, 127].
+     * In order to match the normalization of signed integer formats on the GPU, the symmetric
+     * normalization has to be used in the DataMapper for OpenGL >= 4.2.
+     *
+     * \see OpenGL 4.6 specification, Section 2.3.5 Fixed-Point Data Conversion
+     */
+    enum class SignedNormalization {
+        Asymmetric,  //!< uses an asymmetric range, i.e. [-2^(b-1), 2^(b-1) - 1]
+        Symmetric,   //!< uses a symmetric range, i.e. [-2^(b-1) + 1, 2^(b-1) - 1]
+    };
+
+    // asymetric
+
     DataMapper();
-    DataMapper(const DataFormatBase* format, Axis valueAxis = {});
+    explicit DataMapper(const DataFormatBase* format,
+                        SignedNormalization normalization = SignedNormalization::Asymmetric,
+                        Axis valueAxis = {});
     explicit DataMapper(dvec2 dataRange, Axis valueAxis = {});
     DataMapper(dvec2 dataRange, dvec2 valueRange, Axis valueAxis = {});
     DataMapper(const DataMapper& rhs);
     DataMapper& operator=(const DataMapper& that);
 
     /**
-     * The ´dataRange´ is used to normalize the "raw" values to [0,1]
+     * The `dataRange` is used to normalize the "raw" values to [0,1]
      * Typically the minimum and maximum of the "raw" data is used. For 8 and 16 integer data that
      * is often the same or close to the same as the minimum and maximum of the data type. For data
      * where the minimum and maximum is far from the minimum and maximum of the data type, the
@@ -85,8 +107,11 @@ public:
      */
     Axis valueAxis;  ///< Name and Unit, i.e. "absorption", "Hounsfield".
 
-    static dvec2 defaultDataRangeFor(const DataFormatBase* format);
-    void initWithFormat(const DataFormatBase* format);
+    static dvec2 defaultDataRangeFor(
+        const DataFormatBase* format,
+        SignedNormalization normalization = SignedNormalization::Asymmetric);
+    void initWithFormat(const DataFormatBase* format,
+                        SignedNormalization normalization = SignedNormalization::Asymmetric);
 
     /**
      * Map from `dataRange` to the `valueRange`
@@ -116,12 +141,32 @@ public:
     }
 
     /**
+     * Map from `dataRange` to the Sign Normalized range [-1,1]
+     */
+    template <typename T>
+    util::same_extent_t<T, double> mapFromDataToSignNormalized(T val) const {
+        return util::linearMapToNormalized(static_cast<util::same_extent_t<T, double>>(val),
+                                           dataRange) *
+                   2.0 -
+               1.0;
+    }
+
+    /**
      * Map from Normalized range [0,1] to the `dataRange`
      */
     template <typename T>
     util::same_extent_t<T, double> mapFromNormalizedToData(T val) const {
         return util::linearMapFromNormalized(static_cast<util::same_extent_t<T, double>>(val),
                                              dataRange);
+    }
+
+    /**
+     * Map from Sign Normalized range [-1,1] to the `dataRange`
+     */
+    template <typename T>
+    util::same_extent_t<T, double> mapFromSignNormalizedToData(T val) const {
+        return util::linearMapFromNormalized(
+            (static_cast<util::same_extent_t<T, double>>(val) + 1.0) * 0.5, dataRange);
     }
 
     /**

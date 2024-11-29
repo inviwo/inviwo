@@ -32,35 +32,43 @@
 
 namespace inviwo {
 
-DataMapper::DataMapper() : DataMapper(DataUInt8::get()) {}
-DataMapper::DataMapper(const DataFormatBase* format, Axis aValueAxis)
-    : dataRange{defaultDataRangeFor(format)}, valueRange{dataRange}, valueAxis{aValueAxis} {}
+DataMapper::DataMapper() : DataMapper(DataUInt8::get(), SignedNormalization::Asymmetric) {}
+DataMapper::DataMapper(const DataFormatBase* format, SignedNormalization normalization,
+                       Axis aValueAxis)
+    : dataRange{defaultDataRangeFor(format, normalization)}
+    , valueRange{dataRange}
+    , valueAxis{std::move(aValueAxis)} {}
 DataMapper::DataMapper(dvec2 aDataRange, Axis aValueAxis)
-    : dataRange{aDataRange}, valueRange{dataRange}, valueAxis{aValueAxis} {}
+    : dataRange{aDataRange}, valueRange{dataRange}, valueAxis{std::move(aValueAxis)} {}
 DataMapper::DataMapper(dvec2 aDataRange, dvec2 aValueRange, Axis aValueAxis)
-    : dataRange{aDataRange}, valueRange{aValueRange}, valueAxis{aValueAxis} {}
+    : dataRange{aDataRange}, valueRange{aValueRange}, valueAxis{std::move(aValueAxis)} {}
 
 DataMapper::DataMapper(const DataMapper& rhs) = default;
 
 DataMapper& DataMapper::operator=(const DataMapper& that) = default;
 
-dvec2 DataMapper::defaultDataRangeFor(const DataFormatBase* format) {
+dvec2 DataMapper::defaultDataRangeFor(const DataFormatBase* format,
+                                      SignedNormalization normalization) {
     switch (format->getNumericType()) {
         case NumericType::Float:
             return {0.0, 1.0};
         case NumericType::UnsignedInteger:
             return {0.0, format->getMax()};
         case NumericType::SignedInteger:
-            return {format->getMin(), format->getMax()};
+            if (normalization == SignedNormalization::Symmetric) {
+                return {-format->getMax(), format->getMax()};
+            } else {
+                return {format->getMin(), format->getMax()};
+            }
         case NumericType::NotSpecialized:
             return {format->getMin(), format->getMax()};
     }
     return {format->getMin(), format->getMax()};
 }
 
-void DataMapper::initWithFormat(const DataFormatBase* format) {
+void DataMapper::initWithFormat(const DataFormatBase* format, SignedNormalization normalization) {
 
-    dataRange = defaultDataRangeFor(format);
+    dataRange = defaultDataRangeFor(format, normalization);
     valueRange = dataRange;
     valueAxis = {"", Unit{}};
 }

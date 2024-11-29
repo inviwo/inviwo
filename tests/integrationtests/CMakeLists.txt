@@ -11,6 +11,7 @@ set(SOURCE_FILES
     propertycreation-test.cpp
     volume-test.cpp
     shader-test.cpp
+    dataminmaxgl-test.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -22,6 +23,7 @@ target_link_libraries(inviwo-integrationtests PRIVATE
     inviwo::core
     inviwo::module-system
     inviwo::module::opengl
+    inviwo::module::basegl
     inviwo::module::glfw
     inviwo::module::base
     inviwo::testutil

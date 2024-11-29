@@ -67,7 +67,7 @@ public:
 
     enum class GlVendor { Nvidia, Amd, Intel, Unknown };
 
-    OpenGLCapabilities(OpenGLSettings* settings);
+    explicit OpenGLCapabilities(OpenGLSettings* settings);
     virtual ~OpenGLCapabilities();
 
     virtual void printInfo() override;
@@ -93,6 +93,15 @@ public:
     bool isGeometryShadersSupported() const;
     static bool isComputeShadersSupported();
     static bool isShaderStorageBuffersSupported();
+    /**
+     * The conversion from normalized fixed-point integers to floating-point values and back was
+     * changed to use a symmetric range in OpenGL 4.2. That is the range [-127, 127] is used
+     * for the normalization of 8bit signed integers instead of [-128, 127].
+     *
+     * \see DataMapper::SignedNormalization
+     * \see OpenGL 4.6 specification, Section 2.3.5 Fixed-Point Data Conversion
+     */
+    static bool isSignedIntNormalizationSymmetric();
 
     GLSLShaderVersion getCurrentShaderVersion();
     size_t getCurrentShaderIndex() const;
