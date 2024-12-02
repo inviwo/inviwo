@@ -405,13 +405,15 @@ xml::IdentifierReplacement& xml::IdentifierReplacement::operator=(
 TxElement* xml::createNode(std::string_view desc, TxElement* parent) {
     util::forEachStringPart(desc, "/", [&](std::string_view part) {
         const auto [name, attrs] = util::splitByFirst(part, "&");
-        auto node = new TxElement(std::string(name));
+
+        TxElement::allocator_type alloc = parent->Allocator();
+        auto node = alloc.new_object<TxElement>(name);
         util::forEachStringPart(attrs, "&", [node](std::string_view attr) {
             const auto [key, value] = util::splitByFirst(attr, "=");
-            node->SetAttribute(std::string(key), std::string(value));
+            node->SetAttribute(key, value);
         });
         if (parent) {
-            parent->LinkEndChild(node);
+           parent->LinkEndChild(node);
         }
         parent = node;
     });
