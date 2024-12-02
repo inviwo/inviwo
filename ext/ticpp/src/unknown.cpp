@@ -13,7 +13,7 @@ TiXmlNode* TiXmlUnknown::Clone(allocator_type alloc) const {
     return clone;
 }
 
-const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) {
+const char* TiXmlUnknown::Parse(const char* p, TiXmlParsingData* data, allocator_type) {
     p = SkipWhiteSpace(p);
 
     if (!p || !*p || *p != '<') {

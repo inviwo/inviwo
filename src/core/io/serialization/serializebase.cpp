@@ -62,7 +62,7 @@ std::string SerializeBase::nodeToString(const TiXmlElement& node) {
         TiXmlPrinter printer;
         node.Accept(&printer);
         return printer.Str();
-    } catch (const TiXmlError& e) {
+    } catch (const TiXmlError&) {
         return "No valid root node";
     }
 }
