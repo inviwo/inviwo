@@ -24,7 +24,7 @@ TiXmlNode* TiXmlComment::Clone(allocator_type alloc) const {
     return clone;
 }
 
-const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) {
+const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, allocator_type) {
     value = "";
 
     p = SkipWhiteSpace(p);

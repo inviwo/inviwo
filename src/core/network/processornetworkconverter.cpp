@@ -380,7 +380,7 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
             }
             return true;
         };
-        virtual bool VisitEnter(const TiXmlDocument& doc) override { return true; }
+        virtual bool VisitEnter(const TiXmlDocument&) override { return true; }
         std::string getNewRef() {
             std::string ref("ref0");
             for (int i = 1; std::find(ids_.begin(), ids_.end(), ref) != ids_.end(); ++i) {
