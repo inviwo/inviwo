@@ -65,13 +65,16 @@ SystemSettings::SystemSettings(InviwoApplication* app)
                       0}
     , breakOnException_{"breakOnException", "Break on Exception", false}
     , stackTraceInException_{"stackTraceInException", "Create Stack Trace for Exceptions", false}
-    , enableResurceTracking_{"enableResurceTracking", "Track creation and destruction of resources",
-                             "Useful for gettting a overview of memory usage, but comes with a small runtime overhead"_help,
-                             false}
+    , enableResourceTracking_{"enableResurceTracking",
+                              "Track creation and destruction of resources",
+                              "Useful for gettting a overview of memory usage, "
+                              "but comes with a small runtime overhead"_help,
+                              false}
     , redirectCout_{"redirectCout", "Redirect cout to LogCentral",
                     "Enabling this means that any std::cout messages will no longer end up in the "
                     "console, which can be confusing. "
-                    "This does not work when console logging is enabled with --logconsole or -c"_help,
+                    "This does not work when console "
+                    "logging is enabled with --logconsole or -c"_help,
                     false}
     , redirectCerr_{
           "redirectCerr", "Redirect cerr to LogCentral",
@@ -84,7 +87,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
                   enableGesturesProperty_, enablePickingProperty_, enableSoundProperty_,
                   logStackTraceProperty_, moduleSearchPaths_, runtimeModuleReloading_,
                   breakOnMessage_, breakOnException_, stackTraceInException_,
-                  enableResurceTracking_, redirectCout_, redirectCerr_);
+                  enableResourceTracking_, redirectCout_, redirectCerr_);
 
     logStackTraceProperty_.onChange(
         [this]() { LogCentral::getPtr()->setLogStacktrace(logStackTraceProperty_.get()); });
@@ -97,12 +100,12 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     breakOnMessage_.onChange(
         [this]() { LogCentral::getPtr()->setMessageBreakLevel(breakOnMessage_.get()); });
 
-    enableResurceTracking_.onChange([this]() {
-        if (enableResurceTracking_) {
+    enableResourceTracking_.onChange([this]() {
+        if (enableResourceTracking_) {
             LogWarn("Resource tracking is enabled, this might slow down Inviwo");
         }
 
-        if (!enableResurceTracking_) {
+        if (!enableResourceTracking_) {
             app_->getResourceManager()->clear();
         }
     });

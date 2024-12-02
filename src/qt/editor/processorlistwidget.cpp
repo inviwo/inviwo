@@ -376,7 +376,7 @@ void ProcessorTreeWidget::addProcessor(QString className) {
         meta->setPosition(ivec2{bb.first.x, bb.second.y} + ivec2(0, 75));
 
         auto p = network->addProcessor(std::move(processor));
-        AutoLinker::addLinks(network, p);
+        AutoLinker::addLinks(*network, *p);
     }
 }
 

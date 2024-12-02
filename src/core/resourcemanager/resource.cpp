@@ -43,7 +43,7 @@ namespace {
 ResourceManager* getResourceManager() {
     if (!InviwoApplication::isInitialized()) return nullptr;
     auto* app = InviwoApplication::getPtr();
-    if (!app->getSystemSettings().enableResurceTracking_) return nullptr;
+    if (!app->getSystemSettings().enableResourceTracking_) return nullptr;
     return util::getResourceManager(app);
 }
 

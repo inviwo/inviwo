@@ -252,10 +252,11 @@ ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget* parent, ResourceMa
     view_->header()->setDefaultAlignment(Qt::AlignLeft);
     view_->header()->setDefaultSectionSize(utilqt::emToPx(this, 10.0));
     view_->expandRecursively({});
+    view_->setUniformRowHeights(true); // This make layout of the tree faster.
 
     auto& settings = InviwoApplication::getPtr()->getSystemSettings();
     auto* enable = new QCheckBox("Enable");
-    enable->setChecked(settings.enableResurceTracking_.get());
+    enable->setChecked(settings.enableResourceTracking_.get());
 
     auto* bottom = new QHBoxLayout();
     bottom->addWidget(enable);
@@ -268,13 +269,13 @@ ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget* parent, ResourceMa
     setContents(layout);
     widget()->setContentsMargins(0, 0, 0, 0);
 
-    callback_ = settings.enableResurceTracking_.onChangeScoped([&settings, enable]() {
+    callback_ = settings.enableResourceTracking_.onChangeScoped([&settings, enable]() {
         const QSignalBlocker block{enable};
-        enable->setChecked(settings.enableResurceTracking_.get());
+        enable->setChecked(settings.enableResourceTracking_.get());
     });
     connect(enable, &QCheckBox::stateChanged, [enable, &settings](int state) {
         const QSignalBlocker block{enable};
-        settings.enableResurceTracking_.set(state == Qt::Checked);
+        settings.enableResourceTracking_.set(state == Qt::Checked);
     });
 }
 

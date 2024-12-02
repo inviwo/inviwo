@@ -107,7 +107,8 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
     , processorDragHelper_{new ProcessorDragHelper(*this)}
     , linkDragHelper_{new LinkDragHelper(*this)}
     , connectionDragHelper_{new ConnectionDragHelper(*this)}
-    , processorItem_(nullptr)
+    , processorItem_{nullptr}
+    , automation_{*this}
     , mainWindow_(mainWindow)
     , network_(mainWindow->getInviwoApplication()->getProcessorNetwork())
     , backgroundVisible_(true)
@@ -399,20 +400,32 @@ LinkConnectionGraphicsItem* NetworkEditor::getLinkGraphicsItemAt(const QPointF p
 void NetworkEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
     if (auto p = getProcessorGraphicsItemAt(e->scenePos())) {
         processorItem_ = p;
+        automation_.enter(processorItem_->pos(), e->modifiers(), *processorItem_->getProcessor());
     }
     QGraphicsScene::mousePressEvent(e);
+}
+
+void NetworkEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
+    if (processorItem_) {
+        automation_.move(processorItem_->pos(), e->modifiers(), *processorItem_->getProcessor());
+    }
+
+    QGraphicsScene::mouseMoveEvent(e);
 }
 
 void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
     for (auto& elem : processorGraphicsItems_) {
         QPointF pos = elem.second->pos();
-        QPointF newpos = snapToGrid(pos);
-        if (pos != newpos) elem.second->setPos(newpos);
+        QPointF newPos = snapToGrid(pos);
+        if (pos != newPos) elem.second->setPos(newPos);
     }
 
     if (processorItem_) {
+        automation_.drop(processorItem_->pos(), e->modifiers(), *processorItem_->getProcessor());
         processorItem_ = nullptr;
         updateSceneSize();
+    } else {
+        automation_.leave();
     }
 
     QGraphicsScene::mouseReleaseEvent(e);
@@ -459,6 +472,11 @@ void NetworkEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
 void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
     QGraphicsScene::keyPressEvent(keyEvent);
 
+    if (processorItem_) {
+        automation_.move(processorItem_->pos(), keyEvent->modifiers(),
+                         *processorItem_->getProcessor());
+    }
+
     if (!keyEvent->isAccepted()) {
         KeyboardEvent pressKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Press,
                                     utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
@@ -469,6 +487,11 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
 
 void NetworkEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
     QGraphicsScene::keyPressEvent(keyEvent);
+
+    if (processorItem_) {
+        automation_.move(processorItem_->pos(), keyEvent->modifiers(),
+                         *processorItem_->getProcessor());
+    }
 
     if (!keyEvent->isAccepted()) {
         KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
@@ -1102,12 +1125,17 @@ void NetworkEditor::drawForeground(QPainter* /*painter*/, const QRectF& /*rect*/
 }
 
 void NetworkEditor::initiateConnection(ProcessorOutportGraphicsItem* item) {
+    processorItem_ = nullptr;
+    automation_.leave();
     const auto pos = item->mapToScene(item->rect().center());
     const auto color = item->getPort()->getColorCode();
     connectionDragHelper_->start(item, pos, color);
 }
 
 void NetworkEditor::releaseConnection(ProcessorInportGraphicsItem* item) {
+    processorItem_ = nullptr;
+    automation_.leave();
+
     // remove the old connection and add a new connection curve to be connected.
     auto oldConnection = item->getConnections()[0];
     auto port = oldConnection->getOutportGraphicsItem();
@@ -1118,6 +1146,9 @@ void NetworkEditor::releaseConnection(ProcessorInportGraphicsItem* item) {
 }
 
 void NetworkEditor::initiateLink(ProcessorLinkGraphicsItem* item, QPointF pos) {
+    processorItem_ = nullptr;
+    automation_.leave();
+
     linkDragHelper_->start(item, pos);
 }
 

@@ -46,6 +46,7 @@ enum InviwoUserGraphicsItemType {
     ProcessorGraphicsType = 1,
     CurveGraphicsType,
     ConnectionDragGraphicsType,
+    ConnectionInportDragGraphicsType,
     ConnectionGraphicsType,
     LinkGraphicsType,
     LinkConnectionDragGraphicsType,

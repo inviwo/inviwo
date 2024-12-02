@@ -207,6 +207,67 @@ void ConnectionDragGraphicsItem::reactToPortHover(ProcessorInportGraphicsItem* i
     }
 }
 
+ConnectionInportDragGraphicsItem::ConnectionInportDragGraphicsItem(
+    QPointF startPoint, ProcessorInportGraphicsItem* inport, QColor color)
+    : CurveGraphicsItem(color), startPoint_{startPoint}, inport_(inport) {}
+
+ConnectionInportDragGraphicsItem::~ConnectionInportDragGraphicsItem() = default;
+
+ProcessorInportGraphicsItem* ConnectionInportDragGraphicsItem::getInportGraphicsItem() const {
+    return inport_;
+}
+
+QPointF ConnectionInportDragGraphicsItem::getStartPoint() const { return startPoint_; }
+
+QPointF ConnectionInportDragGraphicsItem::getEndPoint() const {
+    return inport_->mapToScene(inport_->rect().center());
+}
+void ConnectionInportDragGraphicsItem::setStartPoint(QPointF startPoint) {
+    startPoint_ = startPoint;
+    infoLabel_->setPos(startPoint_);
+    updateShape();
+}
+
+void ConnectionInportDragGraphicsItem::reactToPortHover(ProcessorOutportGraphicsItem* outport) {
+    if (outport != nullptr) {
+        auto* port = outport->getPort();
+
+        Document desc{};
+        auto html = desc.append("html");
+        html.append("head").append("style", R"(
+            body {
+                color: #9d9995;
+                background: #323235;
+            }
+            div.name {
+                font-size: 13pt;
+                color: #c8ccd0;
+                font-weight: bold;
+            }
+            div.help {
+                font-size: 12pt;
+            }
+        )"_unindent);
+
+        auto content = html.append("body");
+        content.append("div", port->getIdentifier(), {{"class", "name"}});
+        if (!port->getHelp().empty()) {
+            content.append("div", "", {{"class", "help"}}).append(port->getHelp());
+        }
+
+        setHoverInfo(utilqt::toQString(desc.str()));
+
+        if (inport_->getPort()->canConnectTo(port)) {
+            setBorderColor(Qt::green);
+        } else {
+            setBorderColor(Qt::red);
+        }
+    } else {
+        resetBorderColors();
+        resetHoverInfo();
+    }
+}
+
 ConnectionGraphicsItem::ConnectionGraphicsItem(ProcessorOutportGraphicsItem* outport,
                                                ProcessorInportGraphicsItem* inport,
                                                const PortConnection& connection)
