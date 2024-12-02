@@ -54,7 +54,7 @@ TiXmlNode* TiXmlNode::LinkEndChild(TiXmlNode* node) {
 
     if (node->Allocator() != Allocator()) {
         auto* tmp = node->Clone(Allocator());
-        delete node;
+        node->Allocator().delete_object(node);
         node = tmp;
     }
 
