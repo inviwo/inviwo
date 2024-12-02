@@ -41,8 +41,8 @@ public:
         buffer.reserve(4096);
     }
 
-    virtual bool VisitEnter(const TiXmlDocument& doc) override { return true; }
-    virtual bool VisitExit(const TiXmlDocument& doc) override { return true; }
+    virtual bool VisitEnter(const TiXmlDocument&) override { return true; }
+    virtual bool VisitExit(const TiXmlDocument&) override { return true; }
 
     virtual bool VisitEnter(const TiXmlElement& element, const TiXmlAttribute* firstAttribute);
     virtual bool VisitExit(const TiXmlElement& element);
@@ -93,8 +93,8 @@ public:
         , indent{streamPrint == TiXmlStreamPrint::No ? 4 : 0}
         , lineBreak{streamPrint == TiXmlStreamPrint::No} {}
 
-    virtual bool VisitEnter(const TiXmlDocument& doc) { return true; }
-    virtual bool VisitExit(const TiXmlDocument& doc) { return true; }
+    virtual bool VisitEnter(const TiXmlDocument&) { return true; }
+    virtual bool VisitExit(const TiXmlDocument&) { return true; }
 
     virtual bool VisitEnter(const TiXmlElement& element, const TiXmlAttribute* firstAttribute);
     virtual bool VisitExit(const TiXmlElement& element);

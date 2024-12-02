@@ -48,6 +48,8 @@ enum class TiXmlErrorCode {
 
 class TiXmlParsingData;
 
+#include <warn/push>
+#include <warn/ignore/dll-interface-base>
 class TICPP_API TiXmlError : public std::runtime_error {
 public:
     TiXmlError(TiXmlErrorCode err, const char* errorLocation, TiXmlParsingData* parseData);
@@ -73,6 +75,7 @@ private:
     TiXmlErrorCode errorCode;
     TiXmlCursor location;
 };
+#include <warn/pop>
 
 /**
  * TiXmlBase is a base class for every class in TinyXml.
