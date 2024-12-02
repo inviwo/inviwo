@@ -39,6 +39,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkgraphicsitem.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkautomation.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditorobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditorview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networksearch.h
@@ -85,6 +86,7 @@ set(SOURCE_FILES
     linkdialog/linkdialogview.cpp
     linkdraghelper.cpp
     linkgraphicsitem.cpp
+    networkautomation.cpp
     networkeditor.cpp
     networkeditorview.cpp
     networksearch.cpp

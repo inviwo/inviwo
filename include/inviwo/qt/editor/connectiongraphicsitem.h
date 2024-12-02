@@ -124,6 +124,29 @@ protected:
     ProcessorOutportGraphicsItem* outport_;
 };
 
+class IVW_QTEDITOR_API ConnectionInportDragGraphicsItem : public CurveGraphicsItem {
+public:
+    ConnectionInportDragGraphicsItem(QPointF startPoint, ProcessorInportGraphicsItem* inport,
+                                     QColor color = QColor(38, 38, 38));
+    virtual ~ConnectionInportDragGraphicsItem();
+
+    // Override
+    virtual QPointF getStartPoint() const override;
+    virtual QPointF getEndPoint() const override;
+    void setStartPoint(QPointF endPoint);
+
+    void reactToPortHover(ProcessorOutportGraphicsItem* inport);
+    ProcessorInportGraphicsItem* getInportGraphicsItem() const;
+
+    // override for qgraphicsitem_cast (refer qt documentation)
+    enum { Type = static_cast<int>(UserType) + static_cast<int>(ConnectionInportDragGraphicsType) };
+    virtual int type() const override { return Type; }
+
+protected:
+    QPointF startPoint_;
+    ProcessorInportGraphicsItem* inport_;
+};
+
 /**
  * Graphical representation of the connection between two ports in the network editor.
  */

@@ -43,29 +43,32 @@ class IVW_CORE_API AutoLinker {
 public:
     /**
      * Construct an auto link helper
+     */
+    AutoLinker();
+
+    /**
      * @param network the processor network in which to add autolinks
      * @param target the processor onto which auto links should be added
      * @param source source of links. If source is not null we consider all predecessors of source
      * as input for linking, if source is null we consider all processor in the network
      * @param ignore don't consider links from these processors
-     */
-    AutoLinker(ProcessorNetwork* network, Processor* target, Processor* source = nullptr,
-               const std::vector<Processor*>& ignore = {});
-    virtual ~AutoLinker() = default;
+     * */
+    void update(ProcessorNetwork& network, Processor& target, Processor* source = nullptr,
+                const std::vector<Processor*>& ignore = {});
+
+    void clear();
 
     const std::unordered_map<Property*, std::vector<Property*>>& getAutoLinkCandidates() const;
 
     void sortAutoLinkCandidates();
     void sortAutoLinkCandidates(dvec2 pos);
 
-    void addLinksToClosestCandidates(bool bidirectional);
+    void addLinksToClosestCandidates(ProcessorNetwork& network, bool bidirectional);
 
-    static void addLinks(ProcessorNetwork* network, Processor* target, Processor* source = nullptr,
+    static void addLinks(ProcessorNetwork& network, Processor& target, Processor* source = nullptr,
                          const std::vector<Processor*>& ignore = {});
 
 private:
-    ProcessorNetwork* network_;
-    Processor* target_;
     std::unordered_map<Property*, std::vector<Property*>> autoLinkCandidates_;
 };
 

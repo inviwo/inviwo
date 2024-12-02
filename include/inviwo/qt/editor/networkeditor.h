@@ -31,6 +31,8 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/networkeditorobserver.h>
+#include <inviwo/qt/editor/networkautomation.h>
+
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/network/portconnection.h>
@@ -144,6 +146,7 @@ public:
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) override;
 
@@ -225,7 +228,9 @@ private:
     ProcessorDragHelper* processorDragHelper_;
     LinkDragHelper* linkDragHelper_;
     ConnectionDragHelper* connectionDragHelper_;
+
     ProcessorGraphicsItem* processorItem_;
+    NetworkAutomation automation_;
 
     ProcessorMap processorGraphicsItems_;
     ConnectionMap connectionGraphicsItems_;
