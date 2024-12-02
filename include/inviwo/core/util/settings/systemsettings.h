@@ -62,7 +62,7 @@ public:
     OptionProperty<MessageBreakLevel> breakOnMessage_;
     BoolProperty breakOnException_;
     BoolProperty stackTraceInException_;
-    BoolProperty enableResurceTracking_;
+    BoolProperty enableResourceTracking_;
 
     BoolProperty redirectCout_;
     BoolProperty redirectCerr_;
