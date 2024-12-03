@@ -210,7 +210,7 @@ void WorkspaceManager::save(std::pmr::string& xml, const std::filesystem::path& 
 
 
     if (mode != WorkspaceSaveMode::Undo) {
-        InviwoSetupInfo info(*app_, *app_->getProcessorNetwork(), &mbr);
+        const InviwoSetupInfo info(*app_, *app_->getProcessorNetwork(), &mbr);
         serializer.serialize("InviwoSetup", info);
     }
 
