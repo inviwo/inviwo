@@ -76,7 +76,7 @@ TEST(SerializationContainerTest, ContainerTest1) {
     int tmp = 0;
     std::vector<bool> visited(vector.size(), false);
     auto cont = util::makeContainerWrapper<int>(
-        "Item", [&](std::string_view id, size_t ind) -> ContainerWrapperItem<int> {
+        "Item", [&](std::string_view /* id */, size_t ind) -> ContainerWrapperItem<int> {
             if (ind < vector.size()) {
                 return {true, vector[ind], [&visited, ind](int&) { visited[ind] = true; }};
             } else {
