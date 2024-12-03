@@ -68,7 +68,7 @@ InviwoSetupInfo::InviwoSetupInfo(const InviwoApplication& app, ProcessorNetwork&
             }
         }
         if (!processors.empty()) {
-            modules_.emplace_back(inviwoModule.getVersion(), inviwoModule.getIdentifier(),
+            modules_.emplace_back(inviwoModule.getIdentifier(), inviwoModule.getVersion(),
                                   std::move(processors));
         }
     }
