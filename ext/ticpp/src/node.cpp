@@ -11,7 +11,7 @@
 #include <ostream>
 #include <cstring>
 
-TiXmlNode::TiXmlNode(NodeType _type, std::string_view _value, const allocator_type& alloc)
+TiXmlNode::TiXmlNode(NodeType _type, std::string_view _value, allocator_type alloc)
     : TiXmlBase()
     , value{_value, alloc}
     , parent{nullptr}
@@ -28,7 +28,7 @@ TiXmlNode::~TiXmlNode() {
     while (node) {
         temp = node;
         node = node->next;
-        delete temp;
+        Allocator().delete_object(temp);
     }
 }
 
@@ -41,7 +41,7 @@ void TiXmlNode::Clear() {
     while (node) {
         temp = node;
         node = node->next;
-        delete temp;
+        Allocator().delete_object(temp);
     }
 
     firstChild = nullptr;
@@ -52,8 +52,14 @@ TiXmlNode* TiXmlNode::LinkEndChild(TiXmlNode* node) {
     assert(node->parent == nullptr || node->parent == this);
     assert(node->GetDocument() == nullptr || node->GetDocument() == this->GetDocument());
 
+    if (node->Allocator() != Allocator()) {
+        auto* tmp = node->Clone(Allocator());
+        node->Allocator().delete_object(node);
+        node = tmp;
+    }
+
     if (node->Type() == TiXmlNode::DOCUMENT) {
-        delete node;
+        Allocator().delete_object(node);
         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
     }
 
@@ -75,9 +81,7 @@ TiXmlNode* TiXmlNode::InsertEndChild(const TiXmlNode& addThis) {
     if (addThis.Type() == TiXmlNode::DOCUMENT) {
         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
     }
-    TiXmlNode* node = addThis.Clone();
-    if (!node) return nullptr;
-
+    TiXmlNode* node = addThis.Clone(Allocator());
     return LinkEndChild(node);
 }
 
@@ -89,8 +93,7 @@ TiXmlNode* TiXmlNode::InsertBeforeChild(TiXmlNode* beforeThis, const TiXmlNode& 
         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
     }
 
-    TiXmlNode* node = addThis.Clone();
-    if (!node) return 0;
+    TiXmlNode* node = addThis.Clone(Allocator());
     node->parent = this;
 
     node->next = beforeThis;
@@ -113,8 +116,7 @@ TiXmlNode* TiXmlNode::InsertAfterChild(TiXmlNode* afterThis, const TiXmlNode& ad
         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_DOCUMENT_TOP_ONLY, nullptr, nullptr);
     }
 
-    TiXmlNode* node = addThis.Clone();
-    if (!node) return nullptr;
+    TiXmlNode* node = addThis.Clone(Allocator());
     node->parent = this;
 
     node->prev = afterThis;
@@ -132,8 +134,7 @@ TiXmlNode* TiXmlNode::InsertAfterChild(TiXmlNode* afterThis, const TiXmlNode& ad
 TiXmlNode* TiXmlNode::ReplaceChild(TiXmlNode* replaceThis, const TiXmlNode& withThis) {
     if (replaceThis->parent != this) return nullptr;
 
-    TiXmlNode* node = withThis.Clone();
-    if (!node) return nullptr;
+    TiXmlNode* node = withThis.Clone(Allocator());
 
     node->next = replaceThis->next;
     node->prev = replaceThis->prev;
@@ -150,7 +151,7 @@ TiXmlNode* TiXmlNode::ReplaceChild(TiXmlNode* replaceThis, const TiXmlNode& with
         firstChild = node;
     }
 
-    delete replaceThis;
+    Allocator().delete_object(replaceThis);
     node->parent = this;
     return node;
 }
@@ -173,7 +174,7 @@ bool TiXmlNode::RemoveChild(TiXmlNode* removeThis) {
         firstChild = removeThis->next;
     }
 
-    delete removeThis;
+    Allocator().delete_object(removeThis);
     return true;
 }
 
@@ -223,7 +224,7 @@ const TiXmlNode* TiXmlNode::PreviousSibling(std::string_view _value) const {
     return nullptr;
 }
 
-std::unique_ptr<TiXmlNode> TiXmlNode::Identify(const char* p, const allocator_type& alloc) {
+std::unique_ptr<TiXmlNode> TiXmlNode::Identify(const char* p, allocator_type alloc) {
     p = SkipWhiteSpace(p);
     if (!p || !*p || *p != '<') {
         return nullptr;

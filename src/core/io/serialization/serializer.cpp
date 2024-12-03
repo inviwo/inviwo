@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/io/serialization/serializer.h>
+
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/io/serialization/ticpp.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
@@ -36,14 +36,15 @@
 
 namespace inviwo {
 
-Serializer::Serializer(const std::filesystem::path& fileName, const allocator_type& alloc)
-    : SerializeBase(fileName, alloc) {
+Serializer::Serializer(const std::filesystem::path& fileName, allocator_type alloc)
+    : SerializeBase(fileName, alloc), buffer{alloc} {
     try {
-        auto decl = new TiXmlDeclaration(SerializeConstants::XmlVersion, "UTF-8", "", alloc);
+        auto decl = alloc.new_object<TiXmlDeclaration>(SerializeConstants::XmlVersion, "UTF-8", "");
         doc_->LinkEndChild(decl);
-        rootElement_ = new TiXmlElement(SerializeConstants::InviwoWorkspace, alloc);
-        rootElement_->SetAttribute(SerializeConstants::VersionAttribute,
-                                   detail::toStr(SerializeConstants::InviwoWorkspaceVersion));
+        rootElement_ = alloc.new_object<TiXmlElement>(SerializeConstants::InviwoWorkspace);
+        rootElement_->SetAttribute(
+            SerializeConstants::VersionAttribute,
+            detail::toStr(SerializeConstants::InviwoWorkspaceVersion, buffer));
         doc_->LinkEndChild(rootElement_);
 
     } catch (const TiXmlError& e) {
@@ -54,7 +55,7 @@ Serializer::Serializer(const std::filesystem::path& fileName, const allocator_ty
 Serializer::~Serializer() {}
 
 void Serializer::serialize(std::string_view key, const std::filesystem::path& path,
-                           const SerializationTarget& target) {
+                           SerializationTarget target) {
 
     if (target == SerializationTarget::Attribute) {
         setAttribute(rootElement_, key, path.generic_string());
@@ -65,34 +66,53 @@ void Serializer::serialize(std::string_view key, const std::filesystem::path& pa
 }
 
 void Serializer::serialize(std::string_view key, const Serializable& sObj) {
+    auto alloc = doc_->getAllocator();
     NodeSwitch nodeSwitch{
-        *this,
-        rootElement_->LinkEndChild(new TiXmlElement(key, doc_->getAllocator()))->ToElement()};
+        *this, rootElement_->LinkEndChild(alloc.new_object<TiXmlElement>(key))->ToElement()};
     sObj.serialize(*this);
 }
 
 NodeSwitch Serializer::switchToNewNode(std::string_view key) {
-    return {*this,
-            rootElement_->LinkEndChild(new TiXmlElement(key, doc_->getAllocator()))->ToElement()};
+    auto alloc = doc_->getAllocator();
+
+    return {*this, rootElement_->LinkEndChild(alloc.new_object<TiXmlElement>(key))->ToElement()};
 }
 
 TiXmlElement* Serializer::getLastChild() const { return rootElement_->LastChild()->ToElement(); }
 
 void Serializer::setAttribute(TiXmlElement* node, std::string_view key, std::string_view val) {
-    node->SetAttribute(key, val);
+    // Use Add here, this will throw if the attribute already exist.
+    node->AddAttribute(key, val);
 }
 
 void Serializer::serialize(std::string_view key, const signed char& data,
-                           const SerializationTarget& target) {
+                           SerializationTarget target) {
     serialize(key, static_cast<int>(data), target);
 }
-void Serializer::serialize(std::string_view key, const char& data,
-                           const SerializationTarget& target) {
+void Serializer::serialize(std::string_view key, const char& data, SerializationTarget target) {
     serialize(key, static_cast<int>(data), target);
 }
 void Serializer::serialize(std::string_view key, const unsigned char& data,
-                           const SerializationTarget& target) {
+                           SerializationTarget target) {
     serialize(key, static_cast<unsigned int>(data), target);
+}
+
+void Serializer::serialize(std::string_view key, std::string_view data,
+                           SerializationTarget target) {
+    if (target == SerializationTarget::Attribute) {
+        setAttribute(rootElement_, key, data);
+    } else {
+        auto nodeSwitch = switchToNewNode(key);
+        setAttribute(rootElement_, SerializeConstants::ContentAttribute, data);
+    }
+}
+void Serializer::serialize(std::string_view key, const std::string& data,
+                           SerializationTarget target) {
+    serialize(key, std::string_view{data}, target);
+}
+void Serializer::serialize(std::string_view key, const std::pmr::string& data,
+                           SerializationTarget target) {
+    serialize(key, std::string_view{data}, target);
 }
 
 void Serializer::writeFile() {
@@ -107,7 +127,6 @@ void Serializer::writeFile(std::ostream& stream, bool format) {
     try {
         if (format) {
             TiXmlPrinter printer;
-            printer.SetIndent("    ");
             doc_->Accept(&printer);
             stream << printer.Str();
         } else {

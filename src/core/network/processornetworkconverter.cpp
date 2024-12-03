@@ -380,7 +380,7 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
             }
             return true;
         };
-        virtual bool VisitEnter(const TiXmlDocument& doc) override { return true; }
+        virtual bool VisitEnter(const TiXmlDocument&) override { return true; }
         std::string getNewRef() {
             std::string ref("ref0");
             for (int i = 1; std::find(ids_.begin(), ids_.end(), ref) != ids_.end(); ++i) {
@@ -708,10 +708,10 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
                         if (name == "aspectRatio") {
                             if (auto* max = subNode->FirstChildElement("maxvalue")) {
                                 max->SetAttribute("content",
-                                                  detail::toStr(std::numeric_limits<float>::max()));
+                                                  fmt::to_string(std::numeric_limits<float>::max()));
                             }
                             if (auto* min = subNode->FirstChildElement("minvalue")) {
-                                min->SetAttribute("content", detail::toStr(0.0f));
+                                min->SetAttribute("content", fmt::to_string(0.0f));
                             }
                         }
                     });

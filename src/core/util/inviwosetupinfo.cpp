@@ -47,21 +47,29 @@ void InviwoSetupInfo::ModuleSetupInfo::deserialize(Deserializer& d) {
     d.deserialize("Processors", processors, "Processor");
 }
 
-InviwoSetupInfo::InviwoSetupInfo(const InviwoApplication& app, ProcessorNetwork& network) {
-    std::unordered_set<std::string> usedProcessorClassIdentifiers;
+// Must use  modules_(alloc) here, using {} will call the wrong constructor
+InviwoSetupInfo::InviwoSetupInfo(allocator_type alloc) : modules_(alloc) {}
+
+InviwoSetupInfo::InviwoSetupInfo(const InviwoApplication& app, ProcessorNetwork& network,
+                                 allocator_type alloc)
+    : modules_(alloc) {
+
+    std::pmr::unordered_set<std::string_view> usedProcessorClassIdentifiers{alloc};
+    usedProcessorClassIdentifiers.reserve(network.size());
     network.forEachProcessor(
         [&](const Processor* p) { usedProcessorClassIdentifiers.insert(p->getClassIdentifier()); });
 
     for (const auto& inviwoModule : app.getModuleManager().getInviwoModules()) {
-        ModuleSetupInfo info{inviwoModule.getIdentifier(), inviwoModule.getVersion(), {}};
-        for (const auto& processor : inviwoModule.getProcessors()) {
-            const auto& id = processor->getClassIdentifier();
-            if (usedProcessorClassIdentifiers.count(id) > 0) {
-                info.processors.push_back(id);
+        std::pmr::vector<std::pmr::string> processors{alloc};
+        for (const auto& processor : inviwoModule.processors()) {
+            const auto& id = processor.getClassIdentifier();
+            if (usedProcessorClassIdentifiers.contains(id)) {
+                processors.emplace_back(id);
             }
         }
-        if (!info.processors.empty()) {
-            modules_.push_back(std::move(info));
+        if (!processors.empty()) {
+            modules_.emplace_back(inviwoModule.getIdentifier(), inviwoModule.getVersion(),
+                                  std::move(processors));
         }
     }
 }
@@ -70,9 +78,9 @@ void InviwoSetupInfo::serialize(Serializer& s) const { s.serialize("Modules", mo
 void InviwoSetupInfo::deserialize(Deserializer& d) { d.deserialize("Modules", modules_, "Module"); }
 
 const InviwoSetupInfo::ModuleSetupInfo* InviwoSetupInfo::getModuleInfo(
-    const std::string& module) const {
-    auto it =
-        util::find_if(modules_, [&](const ModuleSetupInfo& info) { return info.name == module; });
+    std::string_view moduleName) const {
+    auto it = util::find_if(modules_,
+                            [&](const ModuleSetupInfo& info) { return info.name == moduleName; });
     if (it != modules_.end()) {
         return &(*it);
     } else {
@@ -81,7 +89,7 @@ const InviwoSetupInfo::ModuleSetupInfo* InviwoSetupInfo::getModuleInfo(
 }
 
 const InviwoSetupInfo::ModuleSetupInfo* InviwoSetupInfo::getModuleForProcessor(
-    const std::string& processorClassIdentifier) const {
+    std::string_view processorClassIdentifier) const {
     for (const auto& module : modules_) {
         auto it =
             std::find(module.processors.begin(), module.processors.end(), processorClassIdentifier);

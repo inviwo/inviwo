@@ -303,7 +303,10 @@ public:
     /** Create an exact duplicate of this node and return it. The memory must be deleted
         by the caller.
     */
-    virtual TiXmlNode* Clone() const = 0;
+    virtual TiXmlNode* Clone(allocator_type alloc) const = 0;
+    TiXmlNode* Clone() const { return Clone(Allocator()); }
+
+    allocator_type Allocator() const { return value.get_allocator(); }
 
     /** Accept a hierarchical visit the nodes in the TinyXML DOM. Every node in the
         XML tree will be conditionally visited and the host will be called back
@@ -330,14 +333,14 @@ public:
     virtual bool Accept(TiXmlVisitor* visitor) const = 0;
 
 protected:
-    TiXmlNode(NodeType _type, std::string_view _value = "", const allocator_type& alloc = {});
+    explicit TiXmlNode(NodeType _type, std::string_view _value = "", allocator_type alloc = {});
 
     // Copy to the allocated object. Shared functionality between Clone, Copy constructor,
     // and the assignment operator.
     void CopyTo(TiXmlNode* target) const;
 
     // Figure out what is at *p, and parse it. Returns null if it is not an xml node.
-    std::unique_ptr<TiXmlNode> Identify(const char* start, const allocator_type& alloc);
+    std::unique_ptr<TiXmlNode> Identify(const char* start, allocator_type alloc);
 
     std::pmr::string value;
     TiXmlNode* parent;

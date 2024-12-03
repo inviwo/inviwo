@@ -2,6 +2,7 @@
 #include <ticpp/parsingdata.h>
 
 #include <cstring>
+#include <algorithm>
 
 #include <fmt/format.h>
 
@@ -56,8 +57,15 @@ TiXmlError::TiXmlError(TiXmlErrorCode err, const char* errorLocation, TiXmlParsi
 bool TiXmlBase::condenseWhiteSpace = true;
 
 void TiXmlBase::EncodeString(const std::string_view str, std::string* outString) {
-    size_t i = 0;
 
+    // Fast path where we don't have any thing to encode
+    // avoid c < 32, " = 34, & = 38, ' = 39, < = 60, > = 62,
+    if (std::all_of(str.begin(), str.end(), [](char c) { return c >= 40 && c != 60 && c != 62; })) {
+        outString->append(str);
+        return;
+    }
+
+    size_t i = 0;
     while (i < str.length()) {
         const auto c = str[i];
 

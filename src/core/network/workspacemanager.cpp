@@ -188,7 +188,7 @@ void WorkspaceManager::save(std::ostream& stream, const std::filesystem::path& r
     Serializer serializer(refPath, &mbr);
 
     if (mode != WorkspaceSaveMode::Undo) {
-        InviwoSetupInfo info(*app_, *app_->getProcessorNetwork());
+        InviwoSetupInfo info(*app_, *app_->getProcessorNetwork(), &mbr);
         serializer.serialize("InviwoSetup", info);
     }
 
@@ -204,9 +204,11 @@ void WorkspaceManager::load(std::istream& stream, const std::filesystem::path& r
                             const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
     RenderContext::getPtr()->activateDefaultRenderContext();
 
-    auto deserializer = createWorkspaceDeserializer(stream, refPath);
+    std::pmr::monotonic_buffer_resource mbr{1024 * 32};
 
-    InviwoSetupInfo info;
+    auto deserializer = createWorkspaceDeserializer(stream, refPath, LogCentral::getPtr(), &mbr);
+
+    InviwoSetupInfo info{&mbr};
     deserializer.deserialize("InviwoSetup", info);
     DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
 
@@ -241,11 +243,11 @@ void WorkspaceManager::registerFactory(FactoryBase* factory) {
     registeredFactories_.push_back(factory);
 }
 
-Deserializer WorkspaceManager::createWorkspaceDeserializer(std::istream& stream,
-                                                           const std::filesystem::path& refPath,
-                                                           Logger* logger) const {
+Deserializer WorkspaceManager::createWorkspaceDeserializer(
+    std::istream& stream, const std::filesystem::path& refPath, Logger* logger,
+    std::pmr::polymorphic_allocator<std::byte> alloc) const {
 
-    Deserializer deserializer(stream, refPath);
+    Deserializer deserializer(stream, refPath, alloc);
     deserializer.setLogger(logger);
     for (const auto& factory : registeredFactories_) {
         deserializer.registerFactory(factory);
@@ -256,7 +258,7 @@ Deserializer WorkspaceManager::createWorkspaceDeserializer(std::istream& stream,
         deserializer.convertVersion(&converter);
     }
 
-    InviwoSetupInfo info;
+    InviwoSetupInfo info{alloc};
     deserializer.deserialize("InviwoSetup", info);
 
     for (const auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {

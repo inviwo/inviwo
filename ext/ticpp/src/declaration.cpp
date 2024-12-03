@@ -3,14 +3,14 @@
 
 #include <fmt/printf.h>
 
-TiXmlDeclaration::TiXmlDeclaration(const allocator_type& alloc)
+TiXmlDeclaration::TiXmlDeclaration(allocator_type alloc)
     : TiXmlNode(TiXmlNode::DECLARATION, "", alloc)
     , version{alloc}
     , encoding(alloc)
     , standalone(alloc) {}
 
 TiXmlDeclaration::TiXmlDeclaration(std::string_view _version, std::string_view _encoding,
-                                   std::string_view _standalone, const allocator_type& alloc)
+                                   std::string_view _standalone, allocator_type alloc)
     : TiXmlNode(TiXmlNode::DECLARATION, "", alloc)
     , version{_version, alloc}
     , encoding(_encoding, alloc)
@@ -74,31 +74,25 @@ void TiXmlDeclaration::CopyTo(TiXmlDeclaration* target) const {
 
 bool TiXmlDeclaration::Accept(TiXmlVisitor* visitor) const { return visitor->Visit(*this); }
 
-TiXmlNode* TiXmlDeclaration::Clone() const {
-    TiXmlDeclaration* clone = new TiXmlDeclaration();
-
-    if (!clone) return 0;
-
+TiXmlNode* TiXmlDeclaration::Clone(allocator_type alloc) const {
+    auto* clone = alloc.new_object<TiXmlDeclaration>();
     CopyTo(clone);
     return clone;
 }
 
-const char* TiXmlDeclaration::Parse(const char* p, TiXmlParsingData* data,
-                                    const allocator_type& alloc) {
+const char* TiXmlDeclaration::Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) {
     p = SkipWhiteSpace(p);
     // Find the beginning, find the end, and look for the stuff in-between.
     if (!p || !*p || !StringEqual(p, "<?xml", true)) {
         throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_PARSING_DECLARATION, nullptr, nullptr);
     }
-    if (data) {
-        data->Stamp(p);
-        location = data->Cursor();
-    }
-    p += 5;
 
-    version = "";
-    encoding = "";
-    standalone = "";
+    constexpr size_t size = std::string_view{"<?xml"}.size();
+    p += size;
+
+    version.clear();
+    encoding.clear();
+    standalone.clear();
 
     while (p && *p) {
         if (*p == '>') {

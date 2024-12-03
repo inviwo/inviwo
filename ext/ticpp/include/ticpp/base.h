@@ -48,6 +48,8 @@ enum class TiXmlErrorCode {
 
 class TiXmlParsingData;
 
+#include <warn/push>
+#include <warn/ignore/dll-interface-base>
 class TICPP_API TiXmlError : public std::runtime_error {
 public:
     TiXmlError(TiXmlErrorCode err, const char* errorLocation, TiXmlParsingData* parseData);
@@ -73,6 +75,7 @@ private:
     TiXmlErrorCode errorCode;
     TiXmlCursor location;
 };
+#include <warn/pop>
 
 /**
  * TiXmlBase is a base class for every class in TinyXml.
@@ -118,29 +121,7 @@ public:
     /// Return the current white space setting.
     static bool IsWhiteSpaceCondensed() { return condenseWhiteSpace; }
 
-    /** Return the position, in the original source file, of this node or attribute.
-     * The row and column are 1-based. (That is the first row and first column is
-     * 1,1). If the returns values are 0 or less, then the parser does not have
-     * a row and column value.
-     *
-     * Generally, the row and column value will be set when the TiXmlDocument::Load(),
-     * TiXmlDocument::LoadFile(), or any TiXmlNode::Parse() is called. It will NOT be set
-     * when the DOM was created from operator>>.
-     *
-     * The values reflect the initial load. Once the DOM is modified programmatically
-     * (by adding or changing nodes and attributes) the new values will NOT update to
-     * reflect changes in the document.
-     *
-     * There is a minor performance cost to computing the row and column. Computation
-     * can be disabled if TiXmlDocument::SetTabSize() is called with 0 as the value.
-     *
-     * @sa TiXmlDocument::SetTabSize()
-     */
-    int Row() const { return location.row + 1; }
-    int Column() const { return location.col + 1; }  ///< See Row()
-
-    virtual const char* Parse(const char* p, TiXmlParsingData* data,
-                              const allocator_type& alloc) = 0;
+    virtual const char* Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) = 0;
 
     /** Expands entities in a string. Note this should not contain the tag's '<', '>', etc,
      * or they will be transformed into entities!
@@ -206,7 +187,8 @@ public:
                                 const char* endTag,      // what ends this text
                                 bool ignoreCase);        // whether to ignore case in the end tag
 
-    static const char* ReadQuotedText(const char* in, std::pmr::string* text, TiXmlParsingData* data);
+    static const char* ReadQuotedText(const char* in, std::pmr::string* text,
+                                      TiXmlParsingData* data);
 
     static const char* ReadNameValue(const char* in, std::pmr::string* name,
                                      std::pmr::string* value, TiXmlParsingData* data);
@@ -244,8 +226,6 @@ protected:
     // Ignore case only works for english, and should only be relied on when comparing
     // to English words: StringEqual( p, "version", true ) is fine.
     static bool StringEqual(const char* p, const char* endTag, bool ignoreCase);
-
-    TiXmlCursor location;
 
     // None of these methods are reliable for any language except English.
     // Good for approximation, not great for accuracy.

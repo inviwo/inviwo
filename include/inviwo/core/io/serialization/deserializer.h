@@ -97,7 +97,7 @@ public:
      * \brief Deserialize content from a file
      * @param fileName path to file that is to be deserialized.
      */
-    Deserializer(const std::filesystem::path& fileName, const allocator_type& alloc = {});
+    explicit Deserializer(const std::filesystem::path& fileName, allocator_type alloc = {});
 
     /**
      * \brief Deserialize content from a stream.
@@ -105,7 +105,7 @@ public:
      * @param refPath Used to calculate paths relative to the stream source if any.
      */
     Deserializer(std::istream& stream, const std::filesystem::path& refPath,
-                 const allocator_type& alloc = {});
+                 allocator_type alloc = {});
 
     Deserializer(const Deserializer&) = delete;
     Deserializer(Deserializer&&) = default;
@@ -144,8 +144,8 @@ public:
     void deserialize(std::string_view key, std::vector<T*>& sVector, std::string_view itemKey,
                      C identifier);
 
-    template <typename T>
-    void deserialize(std::string_view key, std::vector<T>& sVector,
+    template <typename T, typename Alloc>
+    void deserialize(std::string_view key, std::vector<T, Alloc>& sVector,
                      std::string_view itemKey = "item");
 
     template <typename T>
@@ -902,8 +902,8 @@ void Deserializer::deserialize(std::string_view key, std::vector<T*>& vector,
     });
 }
 
-template <typename T>
-void Deserializer::deserialize(std::string_view key, std::vector<T>& vector,
+template <typename T, typename Alloc>
+void Deserializer::deserialize(std::string_view key, std::vector<T, Alloc>& vector,
                                std::string_view itemKey) {
     static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 

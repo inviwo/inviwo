@@ -60,6 +60,7 @@
 #include <vector>
 #include <memory>
 #include <filesystem>
+#include <ranges>
 
 namespace inviwo {
 
@@ -154,6 +155,28 @@ public:
     const std::vector<BaseRepresentationConverterFactory*> getRepresentationConverterFactories()
         const;
     const std::vector<Settings*>& getSettings() const;
+
+    auto cameras() const { return cameras_ | deref; }
+    auto capabilities() const { return capabilities_ | deref; }
+    auto dataReaders() const { return dataReaders_ | deref; }
+    auto dataWriters() const { return dataWriters_ | deref; }
+    auto dialogs() const { return dialogs_ | deref; }
+    auto drawers() const { return drawers_ | deref; }
+    auto metadata() const { return metadata_ | deref; }
+    auto inports() const { return inports_ | deref; }
+    auto outports() const { return outports_ | deref; }
+    auto portInspectors() const { return portInspectors_ | deref; }
+    auto processors() const { return processors_ | deref; }
+    auto processorWidgets() const { return processorWidgets_ | deref; }
+    auto propertyConverters() const { return propertyConverters_ | deref; }
+    auto properties() const { return properties_ | deref; }
+    auto propertyWidgets() const { return propertyWidgets_ | deref; }
+    auto representationFactoryObjects() const { return representationFactoryObjects_ | deref; }
+    auto representationFactories() const { return representationFactories_ | deref; }
+    auto representationConverters() const { return representationConverters_ | deref; }
+    auto representationConverterFactories() const {
+        return representationConverterFactories_ | deref;
+    }
 
     void registerCapabilities(std::unique_ptr<Capabilities> info);
 
@@ -304,6 +327,9 @@ protected:
     InviwoApplication* app_;  // reference to the app that we belong to
 
 private:
+    static constexpr auto deref =
+        std::views::transform([](const auto& item) -> decltype(auto) { return *item; });
+
     template <typename T>
     std::vector<T*> uniqueToPtr(std::vector<std::unique_ptr<T>>& v) {
         std::vector<T*> res;

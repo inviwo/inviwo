@@ -14,9 +14,9 @@
 class TICPP_API TiXmlDocument final : public TiXmlNode {
 public:
     /// Create an empty document, that has no name.
-    TiXmlDocument(const allocator_type& alloc = {});
+    explicit TiXmlDocument(allocator_type alloc = {});
     /// Create a document with a name. The name of the document is also the filename of the xml.
-    TiXmlDocument(std::string_view documentName, const allocator_type& alloc = {});
+    explicit TiXmlDocument(std::string_view documentName, allocator_type alloc = {});
 
     TiXmlDocument(const TiXmlDocument& copy);
     void operator=(const TiXmlDocument& copy);
@@ -49,8 +49,7 @@ public:
 
     const char* Parse(const char* p, TiXmlParsingData* data);
 
-    virtual const char* Parse(const char* p, TiXmlParsingData* data,
-                              const allocator_type& alloc) override;
+    virtual const char* Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) override;
 
     /** Get the root element -- the only top level element -- of the document.
         In well formed XML, there should only be one. TinyXml is tolerant of
@@ -90,13 +89,13 @@ public:
     virtual const TiXmlDocument* ToDocument() const override { return this; }
     virtual TiXmlDocument* ToDocument() override { return this; }
 
+    allocator_type getAllocator() const { return allocator; }
+
+    virtual TiXmlNode* Clone(allocator_type alloc) const override;
+    using TiXmlNode::Clone;
+
     /// Walk the XML tree visiting this node and all of its children.
     virtual bool Accept(TiXmlVisitor* content) const override;
-
-    const allocator_type& getAllocator() const { return allocator; }
-
-protected:
-    virtual TiXmlNode* Clone() const override;
 
 private:
     void CopyTo(TiXmlDocument* target) const;

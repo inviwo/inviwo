@@ -14,22 +14,22 @@
 */
 class TICPP_API TiXmlUnknown final : public TiXmlNode {
 public:
-    TiXmlUnknown(const allocator_type& alloc = {}) : TiXmlNode(TiXmlNode::UNKNOWN, "", alloc) {}
-    virtual ~TiXmlUnknown() {}
+    explicit TiXmlUnknown(allocator_type alloc = {}) : TiXmlNode(TiXmlNode::UNKNOWN, "", alloc) {}
+    virtual ~TiXmlUnknown() = default;
 
     TiXmlUnknown(const TiXmlUnknown& copy) : TiXmlNode(TiXmlNode::UNKNOWN) { copy.CopyTo(this); }
     void operator=(const TiXmlUnknown& copy) { copy.CopyTo(this); }
 
-    /// Creates a copy of this Unknown and returns it.
-    virtual TiXmlNode* Clone() const override;
-
-    virtual const char* Parse(const char* p, TiXmlParsingData* data,
-                              const allocator_type& alloc) override;
+    virtual const char* Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) override;
 
     /// Cast to a more defined type. Will return null not of the requested type.
     virtual const TiXmlUnknown* ToUnknown() const override { return this; }
     /// Cast to a more defined type. Will return null not of the requested type.
     virtual TiXmlUnknown* ToUnknown() override { return this; }
+
+    /// Creates a copy of this Unknown and returns it.
+    virtual TiXmlNode* Clone(allocator_type alloc) const override;
+    using TiXmlNode::Clone;
 
     /// Walk the XML tree visiting this node and all of its children.
     virtual bool Accept(TiXmlVisitor* content) const override;

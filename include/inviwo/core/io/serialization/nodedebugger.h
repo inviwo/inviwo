@@ -40,14 +40,13 @@ namespace inviwo {
 
 struct IVW_CORE_API NodeDebugger {
     struct Node {
-        Node(std::string_view k = "", std::string_view i = "", std::string_view t = "", int l = 0);
+        explicit Node(std::string_view k = "", std::string_view i = "", std::string_view t = "");
         std::string key;
         std::string identifier;
         std::string type;
-        int line;
     };
 
-    NodeDebugger(TiXmlElement* node);
+    explicit NodeDebugger(TiXmlElement* node);
 
     const Node& operator[](std::size_t idx) const;
     std::string toString(std::size_t idx) const;

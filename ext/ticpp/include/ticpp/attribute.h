@@ -20,10 +20,8 @@ class TICPP_API TiXmlAttribute {
 public:
     using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
 
-    TiXmlAttribute(const allocator_type& alloc = {});
-    TiXmlAttribute(TiXmlCursor _location, const allocator_type& alloc = {});
-    TiXmlAttribute(std::string_view _name, std::string_view _value,
-                   const allocator_type& alloc = {});
+    TiXmlAttribute(allocator_type alloc = {});
+    TiXmlAttribute(std::string_view _name, std::string_view _value, allocator_type alloc = {});
 
     TiXmlAttribute(const TiXmlAttribute&) = delete;
     TiXmlAttribute& operator=(const TiXmlAttribute& base) = delete;
@@ -54,15 +52,11 @@ public:
     void Print(FILE* file) const;
     void Print(std::string* str) const;
 
-    int Row() const { return location.row + 1; }
-    int Column() const { return location.col + 1; }
-
 private:
     std::pmr::string name;
     std::pmr::string value;
     TiXmlAttribute* prev;
     TiXmlAttribute* next;
-    TiXmlCursor location;
 };
 
 /**	A class used to manage a group of attributes.
@@ -81,7 +75,7 @@ class TICPP_API TiXmlAttributeSet {
 public:
     using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
 
-    TiXmlAttributeSet(const allocator_type& alloc = {});
+    explicit TiXmlAttributeSet(allocator_type alloc = {});
     ~TiXmlAttributeSet();
     TiXmlAttributeSet(const TiXmlAttributeSet&) = delete;
     TiXmlAttributeSet& operator=(const TiXmlAttributeSet&) = delete;

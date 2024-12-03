@@ -18,24 +18,17 @@ void TiXmlComment::CopyTo(TiXmlComment* target) const { TiXmlNode::CopyTo(target
 
 bool TiXmlComment::Accept(TiXmlVisitor* visitor) const { return visitor->Visit(*this); }
 
-TiXmlNode* TiXmlComment::Clone() const {
-    TiXmlComment* clone = new TiXmlComment();
-
-    if (!clone) return 0;
-
+TiXmlNode* TiXmlComment::Clone(allocator_type alloc) const {
+    auto* clone = alloc.new_object<TiXmlComment>();
     CopyTo(clone);
     return clone;
 }
 
-const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, const allocator_type& alloc) {
+const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, allocator_type) {
     value = "";
 
     p = SkipWhiteSpace(p);
 
-    if (data) {
-        data->Stamp(p);
-        location = data->Cursor();
-    }
     const char* startTag = "<!--";
     const char* endTag = "-->";
 
@@ -51,15 +44,12 @@ const char* TiXmlComment::Parse(const char* p, TiXmlParsingData* data, const all
     // from the XML spec:
     /*
      [Definition: Comments may appear anywhere in a document outside other markup; in addition,
-                  they may appear within the document type declaration at places allowed by the
-     grammar. They are not part of the document's character data; an XML processor MAY, but need
-     not, make it possible for an application to retrieve the text of comments. For compatibility,
-                              the string "--" (double-hyphen) MUST NOT occur within comments.]
+      they may appear within the document type declaration at places allowed by the grammar.
+      They are not part of the document's character data; an XML processor MAY, but need not,
+      make it possible for an application to retrieve the text of comments. For compatibility,
+      the string "--" (double-hyphen) MUST NOT occur within comments.]
      Parameter entity references MUST NOT be recognized within comments.
-
-                              An example of a comment:
-
-                              <!-- declarations for <head> & <body> -->
+     An example of a comment: <!-- declarations for <head> & <body> -->
     */
 
     value = "";
