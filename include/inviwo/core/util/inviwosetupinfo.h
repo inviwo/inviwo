@@ -45,7 +45,7 @@ struct IVW_CORE_API InviwoSetupInfo {
 
     struct ModuleSetupInfo {
         using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
-        explicit ModuleSetupInfo(allocator_type alloc = {});
+        explicit ModuleSetupInfo(allocator_type alloc = {}) : name{alloc}, processors{alloc} {}
 
         ModuleSetupInfo(std::string_view aName, int aVersion,
                         std::pmr::vector<std::pmr::string> someProcessors,
