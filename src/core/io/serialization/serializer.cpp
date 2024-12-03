@@ -83,7 +83,6 @@ NodeSwitch Serializer::switchToNewNode(std::string_view key) {
 
 TiXmlElement* Serializer::getLastChild() const { return rootElement_->LastChild()->ToElement(); }
 
-
 std::pmr::string& Serializer::addAttribute(TiXmlElement* node, std::string_view key) {
     return node->AddAttribute(key);
 }
