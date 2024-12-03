@@ -75,7 +75,7 @@ class TICPP_API TiXmlAttributeSet {
 public:
     using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
 
-    TiXmlAttributeSet(allocator_type alloc = {});
+    explicit TiXmlAttributeSet(allocator_type alloc = {});
     ~TiXmlAttributeSet();
     TiXmlAttributeSet(const TiXmlAttributeSet&) = delete;
     TiXmlAttributeSet& operator=(const TiXmlAttributeSet&) = delete;

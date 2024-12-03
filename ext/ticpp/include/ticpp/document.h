@@ -14,9 +14,9 @@
 class TICPP_API TiXmlDocument final : public TiXmlNode {
 public:
     /// Create an empty document, that has no name.
-    TiXmlDocument(allocator_type alloc = {});
+    explicit TiXmlDocument(allocator_type alloc = {});
     /// Create a document with a name. The name of the document is also the filename of the xml.
-    TiXmlDocument(std::string_view documentName, allocator_type alloc = {});
+    explicit TiXmlDocument(std::string_view documentName, allocator_type alloc = {});
 
     TiXmlDocument(const TiXmlDocument& copy);
     void operator=(const TiXmlDocument& copy);

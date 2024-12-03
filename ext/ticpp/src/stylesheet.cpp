@@ -62,7 +62,7 @@ void TiXmlStylesheetReference::CopyTo(TiXmlStylesheetReference* target) const {
 bool TiXmlStylesheetReference::Accept(TiXmlVisitor* visitor) const { return visitor->Visit(*this); }
 
 TiXmlNode* TiXmlStylesheetReference::Clone(allocator_type alloc) const {
-    TiXmlStylesheetReference* clone = alloc.new_object<TiXmlStylesheetReference>();
+    auto* clone = alloc.new_object<TiXmlStylesheetReference>();
     CopyTo(clone);
     return clone;
 }

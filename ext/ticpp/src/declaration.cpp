@@ -75,7 +75,7 @@ void TiXmlDeclaration::CopyTo(TiXmlDeclaration* target) const {
 bool TiXmlDeclaration::Accept(TiXmlVisitor* visitor) const { return visitor->Visit(*this); }
 
 TiXmlNode* TiXmlDeclaration::Clone(allocator_type alloc) const {
-    TiXmlDeclaration* clone = alloc.new_object<TiXmlDeclaration>();
+    auto* clone = alloc.new_object<TiXmlDeclaration>();
     CopyTo(clone);
     return clone;
 }

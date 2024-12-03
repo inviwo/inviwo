@@ -21,14 +21,14 @@
 class TICPP_API TiXmlDeclaration final : public TiXmlNode {
 public:
     /// Construct an empty declaration.
-    TiXmlDeclaration(allocator_type alloc = {});
+    explicit TiXmlDeclaration(allocator_type alloc = {});
     TiXmlDeclaration(std::string_view _version, std::string_view _encoding,
                      std::string_view _standalone, allocator_type alloc = {});
 
     TiXmlDeclaration(const TiXmlDeclaration& copy);
     void operator=(const TiXmlDeclaration& copy);
 
-    virtual ~TiXmlDeclaration() {}
+    virtual ~TiXmlDeclaration() = default;
 
     /// Version. Will return an empty string if none was found.
     std::string_view Version() const { return version; }

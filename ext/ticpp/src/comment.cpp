@@ -19,7 +19,7 @@ void TiXmlComment::CopyTo(TiXmlComment* target) const { TiXmlNode::CopyTo(target
 bool TiXmlComment::Accept(TiXmlVisitor* visitor) const { return visitor->Visit(*this); }
 
 TiXmlNode* TiXmlComment::Clone(allocator_type alloc) const {
-    TiXmlComment* clone = alloc.new_object<TiXmlComment>();
+    auto* clone = alloc.new_object<TiXmlComment>();
     CopyTo(clone);
     return clone;
 }
