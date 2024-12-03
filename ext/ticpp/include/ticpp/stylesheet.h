@@ -17,7 +17,7 @@
 class TICPP_API TiXmlStylesheetReference final : public TiXmlNode {
 public:
     /// Construct an empty declaration.
-    TiXmlStylesheetReference(allocator_type alloc = {});
+    explicit TiXmlStylesheetReference(allocator_type alloc = {});
 
     /// Constructor.
     TiXmlStylesheetReference(std::string_view _type, std::string_view _href,
@@ -26,7 +26,7 @@ public:
     TiXmlStylesheetReference(const TiXmlStylesheetReference& copy);
     void operator=(const TiXmlStylesheetReference& copy);
 
-    virtual ~TiXmlStylesheetReference() {}
+    virtual ~TiXmlStylesheetReference() = default;
 
     /// Type. Will return an empty string if none was found.
     std::string_view Type() const { return type; }

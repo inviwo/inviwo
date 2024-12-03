@@ -13,7 +13,7 @@ void TiXmlText::CopyTo(TiXmlText* target) const {
 bool TiXmlText::Accept(TiXmlVisitor* visitor) const { return visitor->Visit(*this); }
 
 TiXmlNode* TiXmlText::Clone(allocator_type alloc) const {
-    TiXmlText* clone = alloc.new_object<TiXmlText>("", false);
+    auto* clone = alloc.new_object<TiXmlText>("", false);
     CopyTo(clone);
     return clone;
 }

@@ -10,15 +10,15 @@
 class TICPP_API TiXmlComment final : public TiXmlNode {
 public:
     /// Constructs an empty comment.
-    TiXmlComment(allocator_type alloc = {}) : TiXmlNode(TiXmlNode::COMMENT, "", alloc) {}
+    explicit TiXmlComment(allocator_type alloc = {}) : TiXmlNode(TiXmlNode::COMMENT, "", alloc) {}
     /// Construct a comment from text.
-    TiXmlComment(std::string_view _value, allocator_type alloc = {})
+    explicit TiXmlComment(std::string_view _value, allocator_type alloc = {})
         : TiXmlNode(TiXmlNode::COMMENT, _value, alloc) {}
 
     TiXmlComment(const TiXmlComment&);
     void operator=(const TiXmlComment& base);
 
-    virtual ~TiXmlComment() {}
+    virtual ~TiXmlComment() = default;
 
     /// Returns a copy of this Comment.
     virtual TiXmlNode* Clone(allocator_type alloc) const override;

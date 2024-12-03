@@ -16,10 +16,10 @@ public:
         normal, encoded text. If you want it be output as a CDATA text
         element, set the parameter _cdata to 'true'
     */
-    TiXmlText(std::string_view initValue, bool _cdata = false, allocator_type alloc = {})
+    explicit TiXmlText(std::string_view initValue, bool _cdata = false, allocator_type alloc = {})
         : TiXmlNode(TiXmlNode::TEXT, initValue, alloc), cdata{_cdata} {}
 
-    virtual ~TiXmlText() {}
+    virtual ~TiXmlText() = default;
 
     TiXmlText(const TiXmlText& copy) : TiXmlNode(TiXmlNode::TEXT) { copy.CopyTo(this); }
     void operator=(const TiXmlText& base) { base.CopyTo(this); }

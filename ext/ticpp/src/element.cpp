@@ -65,7 +65,7 @@ void TiXmlElement::CopyTo(TiXmlElement* target) const {
 }
 
 TiXmlNode* TiXmlElement::Clone(allocator_type alloc) const {
-    TiXmlElement* clone = alloc.new_object<TiXmlElement>(Value());
+    auto* clone = alloc.new_object<TiXmlElement>(Value());
     CopyTo(clone);
     return clone;
 }
