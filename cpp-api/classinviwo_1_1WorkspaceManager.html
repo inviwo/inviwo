@@ -143,6 +143,9 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>ModifiedCallback</b>
 <tr class="memitem:ac7ef41e23e86346cd14cc4984d0c9b84" id="r_ac7ef41e23e86346cd14cc4984d0c9b84"><td class="memItemLeft" align="right" valign="top"><a id="ac7ef41e23e86346cd14cc4984d0c9b84" name="ac7ef41e23e86346cd14cc4984d0c9b84"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>ModifiedHandle</b> = typename ModifiedDispatcher::Handle</td></tr>
 <tr class="separator:ac7ef41e23e86346cd14cc4984d0c9b84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ddafd6a8a40edb3043f50b122f06ef1" id="r_a7ddafd6a8a40edb3043f50b122f06ef1"><td class="memItemLeft" align="right" valign="top"><a id="a7ddafd6a8a40edb3043f50b122f06ef1" name="a7ddafd6a8a40edb3043f50b122f06ef1"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>allocator_type</b> = std::pmr::polymorphic_allocator&lt;std::byte&gt;</td></tr>
+<tr class="separator:a7ddafd6a8a40edb3043f50b122f06ef1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -179,8 +182,8 @@ ModifiedHandle&#160;</td><td class="memItemRight" valign="bottom"><b>onModified<
 <tr class="separator:afb5e8d5791dec6f1d9b90beb8e97fe4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37c01880a5705834847dadb6ef7ab545" id="r_a37c01880a5705834847dadb6ef7ab545"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37c01880a5705834847dadb6ef7ab545">registerFactory</a> (<a class="el" href="classinviwo_1_1FactoryBase.html">FactoryBase</a> *factory)</td></tr>
 <tr class="separator:a37c01880a5705834847dadb6ef7ab545"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add60b03a95b9b5bb52be84c8383a2f2f" id="r_add60b03a95b9b5bb52be84c8383a2f2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#add60b03a95b9b5bb52be84c8383a2f2f">createWorkspaceDeserializer</a> (std::istream &amp;stream, const std::filesystem::path &amp;refPath, <a class="el" href="classinviwo_1_1Logger.html">Logger</a> *logger=LogCentral::getPtr()) const</td></tr>
-<tr class="separator:add60b03a95b9b5bb52be84c8383a2f2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf5769acf7abad75b1b931c16f403394" id="r_abf5769acf7abad75b1b931c16f403394"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf5769acf7abad75b1b931c16f403394">createWorkspaceDeserializer</a> (std::istream &amp;stream, const std::filesystem::path &amp;refPath, <a class="el" href="classinviwo_1_1Logger.html">Logger</a> *logger=LogCentral::getPtr(), std::pmr::polymorphic_allocator&lt; std::byte &gt; alloc={}) const</td></tr>
+<tr class="separator:abf5769acf7abad75b1b931c16f403394"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classinviwo_1_1WorkspaceManager.html">WorkspaceManager</a> is responsible for clearing, loading, and saving a workspace. Different items such as the processor network can register callbacks for clearing, loading, or saving a workspace. Other object can also register callbacks. It also responsible for keeping a list of factories to use while deserializing. Other module can register factories that should be used while deserializing. The user interface should use the Workspace Manager to clear, load, and save workspaces. instead of calling the <a class="el" href="classinviwo_1_1Processor.html" title="A processor generally performs operation on input data and outputs the new result.">Processor</a> Network directly. The workspace manager is owned by the <a class="el" href="classinviwo_1_1InviwoApplication.html" title="The main application which holds the instances of all modules.">InviwoApplication</a>. </p>
@@ -203,8 +206,8 @@ ModifiedHandle&#160;</td><td class="memItemRight" valign="bottom"><b>onModified<
 
 </div>
 </div>
-<a id="add60b03a95b9b5bb52be84c8383a2f2f" name="add60b03a95b9b5bb52be84c8383a2f2f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#add60b03a95b9b5bb52be84c8383a2f2f">&#9670;&#160;</a></span>createWorkspaceDeserializer()</h2>
+<a id="abf5769acf7abad75b1b931c16f403394" name="abf5769acf7abad75b1b931c16f403394"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf5769acf7abad75b1b931c16f403394">&#9670;&#160;</a></span>createWorkspaceDeserializer()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -222,7 +225,12 @@ ModifiedHandle&#160;</td><td class="memItemRight" valign="bottom"><b>onModified<
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1Logger.html">Logger</a> *</td>          <td class="paramname"><span class="paramname"><em>logger</em></span><span class="paramdefsep"> = </span><span class="paramdefval">LogCentral::getPtr()</span>&#160;) const</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Logger.html">Logger</a> *</td>          <td class="paramname"><span class="paramname"><em>logger</em></span><span class="paramdefsep"> = </span><span class="paramdefval">LogCentral::getPtr()</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::pmr::polymorphic_allocator&lt; std::byte &gt;</td>          <td class="paramname"><span class="paramname"><em>alloc</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{}</span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">

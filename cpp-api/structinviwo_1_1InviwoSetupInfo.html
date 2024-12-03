@@ -100,6 +100,7 @@ $(function(){initNavTree('structinviwo_1_1InviwoSetupInfo.html',''); initResizab
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structinviwo_1_1InviwoSetupInfo-members.html">List of all members</a>  </div>
@@ -112,29 +113,38 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html">ModuleSetupInfo</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a95659329a55451fa8c155cda0abfe9b5" id="r_a95659329a55451fa8c155cda0abfe9b5"><td class="memItemLeft" align="right" valign="top"><a id="a95659329a55451fa8c155cda0abfe9b5" name="a95659329a55451fa8c155cda0abfe9b5"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>allocator_type</b> = std::pmr::polymorphic_allocator&lt;std::byte&gt;</td></tr>
+<tr class="separator:a95659329a55451fa8c155cda0abfe9b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:abca2f725696a8062cba936d93c04f8d2" id="r_abca2f725696a8062cba936d93c04f8d2"><td class="memItemLeft" align="right" valign="top"><a id="abca2f725696a8062cba936d93c04f8d2" name="abca2f725696a8062cba936d93c04f8d2"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>InviwoSetupInfo</b> (const <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> &amp;app, <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> &amp;network)</td></tr>
-<tr class="separator:abca2f725696a8062cba936d93c04f8d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8556dfd5360e2d10692d58c210d490f9" id="r_a8556dfd5360e2d10692d58c210d490f9"><td class="memItemLeft" align="right" valign="top"><a id="a8556dfd5360e2d10692d58c210d490f9" name="a8556dfd5360e2d10692d58c210d490f9"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>InviwoSetupInfo</b> (allocator_type alloc={})</td></tr>
+<tr class="separator:a8556dfd5360e2d10692d58c210d490f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30815ae9da2997a587812983741c03a2" id="r_a30815ae9da2997a587812983741c03a2"><td class="memItemLeft" align="right" valign="top"><a id="a30815ae9da2997a587812983741c03a2" name="a30815ae9da2997a587812983741c03a2"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>InviwoSetupInfo</b> (const <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> &amp;app, <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> &amp;network, allocator_type alloc={})</td></tr>
+<tr class="separator:a30815ae9da2997a587812983741c03a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa20886f21b0cd6adaff4fe570eeccf4" id="r_afa20886f21b0cd6adaff4fe570eeccf4"><td class="memItemLeft" align="right" valign="top"><a id="afa20886f21b0cd6adaff4fe570eeccf4" name="afa20886f21b0cd6adaff4fe570eeccf4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>serialize</b> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const</td></tr>
 <tr class="separator:afa20886f21b0cd6adaff4fe570eeccf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e38e4fe9df49a70eae2dec1599cc19f" id="r_a1e38e4fe9df49a70eae2dec1599cc19f"><td class="memItemLeft" align="right" valign="top"><a id="a1e38e4fe9df49a70eae2dec1599cc19f" name="a1e38e4fe9df49a70eae2dec1599cc19f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d)</td></tr>
 <tr class="separator:a1e38e4fe9df49a70eae2dec1599cc19f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37221910654b2e06525e3256a4dd3d01" id="r_a37221910654b2e06525e3256a4dd3d01"><td class="memItemLeft" align="right" valign="top"><a id="a37221910654b2e06525e3256a4dd3d01" name="a37221910654b2e06525e3256a4dd3d01"></a>
-const <a class="el" href="structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html">InviwoSetupInfo::ModuleSetupInfo</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getModuleInfo</b> (const std::string &amp;module) const</td></tr>
-<tr class="separator:a37221910654b2e06525e3256a4dd3d01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7dd0ec1e4d9867834c326fc9f48318a0" id="r_a7dd0ec1e4d9867834c326fc9f48318a0"><td class="memItemLeft" align="right" valign="top"><a id="a7dd0ec1e4d9867834c326fc9f48318a0" name="a7dd0ec1e4d9867834c326fc9f48318a0"></a>
-const <a class="el" href="structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html">InviwoSetupInfo::ModuleSetupInfo</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getModuleForProcessor</b> (const std::string &amp;processorClassIdentifier) const</td></tr>
-<tr class="separator:a7dd0ec1e4d9867834c326fc9f48318a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19ac86f10231f5ff05efb2f23503ba93" id="r_a19ac86f10231f5ff05efb2f23503ba93"><td class="memItemLeft" align="right" valign="top"><a id="a19ac86f10231f5ff05efb2f23503ba93" name="a19ac86f10231f5ff05efb2f23503ba93"></a>
+const <a class="el" href="structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html">InviwoSetupInfo::ModuleSetupInfo</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getModuleInfo</b> (std::string_view moduleName) const</td></tr>
+<tr class="separator:a19ac86f10231f5ff05efb2f23503ba93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a249c7f6203f73fcc8c797b6ef0e47b09" id="r_a249c7f6203f73fcc8c797b6ef0e47b09"><td class="memItemLeft" align="right" valign="top"><a id="a249c7f6203f73fcc8c797b6ef0e47b09" name="a249c7f6203f73fcc8c797b6ef0e47b09"></a>
+const <a class="el" href="structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html">InviwoSetupInfo::ModuleSetupInfo</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getModuleForProcessor</b> (std::string_view processorClassIdentifier) const</td></tr>
+<tr class="separator:a249c7f6203f73fcc8c797b6ef0e47b09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:aa8d5a5c79c81d1a231dcd3a1abd374b2" id="r_aa8d5a5c79c81d1a231dcd3a1abd374b2"><td class="memItemLeft" align="right" valign="top"><a id="aa8d5a5c79c81d1a231dcd3a1abd374b2" name="aa8d5a5c79c81d1a231dcd3a1abd374b2"></a>
-std::vector&lt; <a class="el" href="structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html">ModuleSetupInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>modules_</b></td></tr>
-<tr class="separator:aa8d5a5c79c81d1a231dcd3a1abd374b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af864bfe51a06ef6096c123da0f4977ba" id="r_af864bfe51a06ef6096c123da0f4977ba"><td class="memItemLeft" align="right" valign="top"><a id="af864bfe51a06ef6096c123da0f4977ba" name="af864bfe51a06ef6096c123da0f4977ba"></a>
+std::pmr::vector&lt; <a class="el" href="structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html">ModuleSetupInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>modules_</b></td></tr>
+<tr class="separator:af864bfe51a06ef6096c123da0f4977ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li><b>inviwosetupinfo.h</b></li>

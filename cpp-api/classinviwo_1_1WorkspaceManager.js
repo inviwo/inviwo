@@ -1,7 +1,7 @@
 var classinviwo_1_1WorkspaceManager =
 [
     [ "clear", "classinviwo_1_1WorkspaceManager.html#ac5e78843cabc51f309835afc39277fdf", null ],
-    [ "createWorkspaceDeserializer", "classinviwo_1_1WorkspaceManager.html#add60b03a95b9b5bb52be84c8383a2f2f", null ],
+    [ "createWorkspaceDeserializer", "classinviwo_1_1WorkspaceManager.html#abf5769acf7abad75b1b931c16f403394", null ],
     [ "load", "classinviwo_1_1WorkspaceManager.html#aa05c15b6ce4fcb39833ba7717344d410", null ],
     [ "load", "classinviwo_1_1WorkspaceManager.html#a5ff18a6a4b41fa838f7698d1583dba30", null ],
     [ "onClear", "classinviwo_1_1WorkspaceManager.html#a008234b62dad6d13e0aaaa7adf6a8f77", null ],
