@@ -62,7 +62,7 @@ public:
      * @param fileName full path to xml file.
      * @throws SerializationException
      */
-    Serializer(const std::filesystem::path& fileName, allocator_type alloc = {});
+    explicit Serializer(const std::filesystem::path& fileName, allocator_type alloc = {});
 
     virtual ~Serializer();
 
@@ -127,7 +127,7 @@ public:
 
     // integers, reals
     template <typename T>
-        requires(std::is_integral<T>::value || std::is_floating_point<T>::value)
+        requires(std::is_integral_v<T> || std::is_floating_point_v<T>)
     void serialize(std::string_view key, const T& data,
                    SerializationTarget target = SerializationTarget::Node);
 
@@ -182,7 +182,7 @@ public:
     void serializeRange(std::string_view key, Range&& range,
                         SerializeFunction serializeFunction = {}) {
         auto nodeSwitch = switchToNewNode(key);
-        for (const auto& item : range) {
+        for (const auto& item : std::forward<Range>(range)) {
             serializeFunction(*this, item);
         }
     }
@@ -289,7 +289,7 @@ void Serializer::serialize(std::string_view key, const T* const& data) {
 
 // integers, reals
 template <typename T>
-    requires(std::is_integral<T>::value || std::is_floating_point<T>::value)
+    requires(std::is_integral_v<T> || std::is_floating_point_v<T>)
 void Serializer::serialize(std::string_view key, const T& data, SerializationTarget target) {
     if (target == SerializationTarget::Attribute) {
         setAttribute(rootElement_, key, detail::toStr(data, buffer));
@@ -303,7 +303,7 @@ void Serializer::serialize(std::string_view key, const T& data, SerializationTar
 // enum types
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type>
 void Serializer::serialize(std::string_view key, const T& data, SerializationTarget target) {
-    using ET = typename std::underlying_type<T>::type;
+    using ET = std::underlying_type_t<T>;
     const ET tmpdata{static_cast<const ET>(data)};
     serialize(key, tmpdata, target);
 }

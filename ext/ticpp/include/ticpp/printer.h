@@ -44,20 +44,21 @@ public:
     virtual bool VisitEnter(const TiXmlDocument&) override { return true; }
     virtual bool VisitExit(const TiXmlDocument&) override { return true; }
 
-    virtual bool VisitEnter(const TiXmlElement& element, const TiXmlAttribute* firstAttribute);
-    virtual bool VisitExit(const TiXmlElement& element);
+    virtual bool VisitEnter(const TiXmlElement& element,
+                            const TiXmlAttribute* firstAttribute) override;
+    virtual bool VisitExit(const TiXmlElement& element) override;
 
-    virtual bool Visit(const TiXmlDeclaration& declaration);
-    virtual bool Visit(const TiXmlText& text);
-    virtual bool Visit(const TiXmlComment& comment);
-    virtual bool Visit(const TiXmlUnknown& unknown);
-    virtual bool Visit(const TiXmlStylesheetReference& stylesheet);
+    virtual bool Visit(const TiXmlDeclaration& declaration) override;
+    virtual bool Visit(const TiXmlText& text) override;
+    virtual bool Visit(const TiXmlComment& comment) override;
+    virtual bool Visit(const TiXmlUnknown& unknown) override;
+    virtual bool Visit(const TiXmlStylesheetReference& stylesheet) override;
 
     void SetIndent(int _indent) { indent = _indent; }
-    int Indent() { return indent; }
+    int Indent() const { return indent; }
 
     void SetLineBreak(bool _lineBreak) { lineBreak = _lineBreak; }
-    bool LineBreak() { return lineBreak; }
+    bool LineBreak() const { return lineBreak; }
 
     /** Switch over to "stream printing" which is the most dense formatting without
         line breaks. Common when the XML is needed for network transmission.
@@ -93,23 +94,24 @@ public:
         , indent{streamPrint == TiXmlStreamPrint::No ? 4 : 0}
         , lineBreak{streamPrint == TiXmlStreamPrint::No} {}
 
-    virtual bool VisitEnter(const TiXmlDocument&) { return true; }
-    virtual bool VisitExit(const TiXmlDocument&) { return true; }
+    virtual bool VisitEnter(const TiXmlDocument&) override { return true; }
+    virtual bool VisitExit(const TiXmlDocument&) override { return true; }
 
-    virtual bool VisitEnter(const TiXmlElement& element, const TiXmlAttribute* firstAttribute);
-    virtual bool VisitExit(const TiXmlElement& element);
+    virtual bool VisitEnter(const TiXmlElement& element,
+                            const TiXmlAttribute* firstAttribute) override;
+    virtual bool VisitExit(const TiXmlElement& element) override;
 
-    virtual bool Visit(const TiXmlDeclaration& declaration);
-    virtual bool Visit(const TiXmlText& text);
-    virtual bool Visit(const TiXmlComment& comment);
-    virtual bool Visit(const TiXmlUnknown& unknown);
-    virtual bool Visit(const TiXmlStylesheetReference& stylesheet);
+    virtual bool Visit(const TiXmlDeclaration& declaration) override;
+    virtual bool Visit(const TiXmlText& text) override;
+    virtual bool Visit(const TiXmlComment& comment) override;
+    virtual bool Visit(const TiXmlUnknown& unknown) override;
+    virtual bool Visit(const TiXmlStylesheetReference& stylesheet) override;
 
     void SetIndent(int _indent) { indent = _indent; }
-    int Indent() { return indent; }
+    int Indent() const { return indent; }
 
     void SetLineBreak(bool _lineBreak) { lineBreak = _lineBreak; }
-    bool LineBreak() { return lineBreak; }
+    bool LineBreak() const { return lineBreak; }
 
     /** Switch over to "stream printing" which is the most dense formatting without
         line breaks. Common when the XML is needed for network transmission.

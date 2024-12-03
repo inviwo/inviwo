@@ -97,7 +97,7 @@ public:
      * \brief Deserialize content from a file
      * @param fileName path to file that is to be deserialized.
      */
-    Deserializer(const std::filesystem::path& fileName, allocator_type alloc = {});
+    explicit Deserializer(const std::filesystem::path& fileName, allocator_type alloc = {});
 
     /**
      * \brief Deserialize content from a stream.

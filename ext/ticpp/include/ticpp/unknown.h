@@ -14,8 +14,8 @@
 */
 class TICPP_API TiXmlUnknown final : public TiXmlNode {
 public:
-    TiXmlUnknown(allocator_type alloc = {}) : TiXmlNode(TiXmlNode::UNKNOWN, "", alloc) {}
-    virtual ~TiXmlUnknown() {}
+    explicit TiXmlUnknown(allocator_type alloc = {}) : TiXmlNode(TiXmlNode::UNKNOWN, "", alloc) {}
+    virtual ~TiXmlUnknown() = default;
 
     TiXmlUnknown(const TiXmlUnknown& copy) : TiXmlNode(TiXmlNode::UNKNOWN) { copy.CopyTo(this); }
     void operator=(const TiXmlUnknown& copy) { copy.CopyTo(this); }

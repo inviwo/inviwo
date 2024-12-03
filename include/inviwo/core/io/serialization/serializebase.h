@@ -60,7 +60,7 @@ public:
      *
      * @param fileName full path to xml file (for reading or writing).
      */
-    SerializeBase(const std::filesystem::path& fileName, allocator_type alloc = {});
+    explicit SerializeBase(const std::filesystem::path& fileName, allocator_type alloc = {});
 
     SerializeBase(const SerializeBase& rhs) = delete;
     SerializeBase(SerializeBase&& rhs) noexcept;

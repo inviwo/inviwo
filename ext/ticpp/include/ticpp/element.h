@@ -13,7 +13,7 @@
 */
 class TICPP_API TiXmlElement final : public TiXmlNode {
 public:
-    TiXmlElement(std::string_view _value, allocator_type alloc = {});
+    explicit TiXmlElement(std::string_view _value, allocator_type alloc = {});
 
     TiXmlElement(const TiXmlElement&);
     void operator=(const TiXmlElement& base);
@@ -37,8 +37,8 @@ public:
     */
     void SetAttribute(std::string_view name, std::string_view _value);
 
-    /** Adds an attribute of name to a given value. The attribute
-        will be created; It should not exist.
+    /** Adds an attribute name with the given value. The attribute
+        will be created; If it exists an exception will be thrown.
     */
     void AddAttribute(std::string_view name, std::string_view _value);
 

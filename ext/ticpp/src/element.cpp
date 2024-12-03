@@ -70,7 +70,7 @@ bool TiXmlElement::Accept(TiXmlVisitor* visitor) const {
 }
 
 TiXmlNode* TiXmlElement::Clone(allocator_type alloc) const {
-    TiXmlElement* clone = alloc.new_object<TiXmlElement>(Value());
+    auto* clone = alloc.new_object<TiXmlElement>(Value());
     CopyTo(clone);
     return clone;
 }

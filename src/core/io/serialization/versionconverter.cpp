@@ -407,7 +407,7 @@ TxElement* xml::createNode(std::string_view desc, TxElement* parent) {
         const auto [name, attrs] = util::splitByFirst(part, "&");
 
         TxElement::allocator_type alloc = parent->Allocator();
-        auto node = alloc.new_object<TxElement>(name);
+        auto* node = alloc.new_object<TxElement>(name);
         util::forEachStringPart(attrs, "&", [node](std::string_view attr) {
             const auto [key, value] = util::splitByFirst(attr, "=");
             node->SetAttribute(key, value);

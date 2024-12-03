@@ -205,7 +205,7 @@ void TiXmlDocument::CopyTo(TiXmlDocument* target) const {
 }
 
 TiXmlNode* TiXmlDocument::Clone(allocator_type alloc) const {
-    TiXmlDocument* clone = alloc.new_object<TiXmlDocument>();
+    auto* clone = alloc.new_object<TiXmlDocument>();
     CopyTo(clone);
     return clone;
 }

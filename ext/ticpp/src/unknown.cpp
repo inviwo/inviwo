@@ -8,7 +8,7 @@ void TiXmlUnknown::CopyTo(TiXmlUnknown* target) const { TiXmlNode::CopyTo(target
 bool TiXmlUnknown::Accept(TiXmlVisitor* visitor) const { return visitor->Visit(*this); }
 
 TiXmlNode* TiXmlUnknown::Clone(allocator_type alloc) const {
-    TiXmlUnknown* clone = alloc.new_object<TiXmlUnknown>();
+    auto* clone = alloc.new_object<TiXmlUnknown>();
     CopyTo(clone);
     return clone;
 }

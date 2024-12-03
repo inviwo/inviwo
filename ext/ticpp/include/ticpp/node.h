@@ -333,7 +333,7 @@ public:
     virtual bool Accept(TiXmlVisitor* visitor) const = 0;
 
 protected:
-    TiXmlNode(NodeType _type, std::string_view _value = "", allocator_type alloc = {});
+    explicit TiXmlNode(NodeType _type, std::string_view _value = "", allocator_type alloc = {});
 
     // Copy to the allocated object. Shared functionality between Clone, Copy constructor,
     // and the assignment operator.
