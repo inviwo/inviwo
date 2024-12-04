@@ -204,6 +204,20 @@ jobs:
       with:
         path: inviwo
 
+    - name: "Get Vcpkg SHA"
+      shell: bash
+      run: |
+        SHA=`jq -r '.["vcpkg-configuration"].["default-registry"].baseline' inviwo/vcpkg.json`
+        echo "VCPKG_SHA=${SHA}" >> $GITHUB_ENV
+
+    - name: "VCPKG Update"
+      shell: bash
+      run: |
+        cd $VCPKG_INSTALLATION_ROOT
+        git fetch
+        git chechout $VCPKG_SHA
+        ./bootstrap-vcpkg.sh
+
     - name: "Configure CMake"
       shell: bash
       run: >
