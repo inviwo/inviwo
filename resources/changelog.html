@@ -175,10 +175,10 @@ The functionality earlier found in <code class="notranslate">InviwoApplcationQt<
 <h2>2022-09-29 Pre-compiled headers overhaul</h2>
 <p>The generation of pre-compiled headers (PCH) was changed from Cotire to CMake. This enables using PCH in combination with Qt6.<br>
 A single PCH file is generated for inviwo core including a number of standard includes. In addition, there is a PCH file for the qtwidgets modules with some Qt headers. These PCH files ar reused by all modules by default when depending on qtwidgets or core respectively, and assuming <code class="notranslate">IVW_CFG_PRECOMPILED_HEADERS</code> is checked. Use the <code class="notranslate">NO_PCH</code> option when calling <code class="notranslate">ivw_create_module()</code> to prevent the default PCH from being used in a module.</p>
-<div class="highlight highlight-source-cmake"><pre class="notranslate">ivw_create_module(NO_PCH <span class="pl-smi">${SOURCE_FILES}</span> <span class="pl-smi">${HEADER_FILES}</span>)</pre></div>
+<div class="highlight highlight-source-cmake"><pre class="notranslate">ivw_create_module(NO_PCH <span class="pl-k">${SOURCE_FILES}</span> <span class="pl-k">${HEADER_FILES}</span>)</pre></div>
 <p>It is also possible to instead use a custom PCH by manually calling <code class="notranslate">ivw_compile_optimize_on_target()</code> after <code class="notranslate">ivw_create_module(NO_PCH ...)</code>.</p>
-<div class="highlight highlight-source-cmake"><pre class="notranslate"><span class="pl-c1">set</span>(PCH_HEADERS header_1.h header_2.h ...)
-ivw_compile_optimize_on_target(inviwo-mymodule HEADERS <span class="pl-smi">${PCH_HEADERS}</span>)</pre></div>
+<div class="highlight highlight-source-cmake"><pre class="notranslate"><span class="pl-k">set</span>(PCH_HEADERS header_1.h header_2.h ...)
+ivw_compile_optimize_on_target(inviwo-mymodule HEADERS <span class="pl-k">${PCH_HEADERS}</span>)</pre></div>
 <p>This will include files listed in <code class="notranslate">${PCH_HEADERS}</code> and all headers marked for PCH inclusion of all target dependendencies as listed in the respective <code class="notranslate">IVW_PCH_HEADERS</code> target properties. In contrast,  using<code class="notranslate">target_precompile_headers()</code> instead will only consider the given header files. Note that using <code class="notranslate">PUBLIC</code> or <code class="notranslate">INTERFACE</code> with <code class="notranslate">target_precompile_headers()</code> enforces the usage of PCH ontor all other targets depending on this one.</p>
 <h2>2022-09-14 Include cleanup and refactoring</h2>
 <p>We cleaned up, removed, and broke some include dependencies in inviwo core to reduce the overall compile time.<br>

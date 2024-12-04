@@ -52,6 +52,9 @@
 #include <glm/mat3x3.hpp>                // for mat<>::col_type
 #include <glm/vec3.hpp>                  // for operator+, operator-, operator/, vec
 
+
+
+
 namespace inviwo {
 template <typename T>
 class VolumeRAMPrecision;
@@ -146,39 +149,51 @@ std::unique_ptr<Volume> makeMarchingCubeVolume(const size_t& index) {
     return generateVolume({2, 2, 2}, mat3(1.0), [&](const size3_t& ind) { return map[ind]; });
 }
 
+
+
+
+
 template <typename T = float>
-std::unique_ptr<Volume> makeGaussianVolume(size3_t const& size, float const &sigma_,
+std::unique_ptr<Volume> makeGaussianVolume(size3_t const& size, float sigma_,
                                            std::vector<dvec4> const& points) {
     return generateVolume(size, mat3(1.0), [&](size3_t const& ind) {
+
         
         dvec3 x = dvec3(ind);
-        double normFactor{1.0 / size.x};
+        
         x = x/dvec3(size);
         float s{sigma_};
-        /* double density{std::accumulate(
+
+        
+        double density{std::accumulate(//std::reduce is possible
             std::begin(points), std::end(points), 0.0,
-            [&sigma,&x](double sum, dvec4 const& point) {
-                sigma *= point.w;
-                double A{1.0 / (sigma * sqrt(2 * M_PI))};
-                double B{0.5 / (sigma * sigma)};
+            [&s,sigma_,&x](double sum, dvec4 const& p) {
+                dvec3 point{p.x, p.y, p.z};
+                s = p.w * sigma_;
+                double r2{glm::length2(point - x)};
+                double A{1.0 / (s * sqrt(2 * M_PI))};
+                double B{0.5 * r2 / (s * s)};
 
-                return sum + A * exp(-B * glm::length2(dvec3{point.x, point.y, point.z} - x));
+                
+                return sum + A * exp(-B * r2);
 
-            })};*/
-
-
-        double density{0.0};
+            })};
+        
+        /*
+        int const i{2}, j{2}, k{2};
+        double density{0};
         
         for (auto& p : points) {
             
-            dvec3 point{p.x, p.y, p.z};
+            dvec3 point{p.x - x.x, p.y-x.y, p.z-x.z};
             s = p.w*sigma_;
-            double r2{glm::length2(point - x)};
-            double A{1.0 / (s * sqrt(2 * M_PI))};
-            double B{0.5 * r2 / (s * s)};
+            double r2{glm::length2(point)};
+            
+            double A{pow(point.x, i) * pow(point.y, j) * pow(point.z, k)};
 
-            density += A * exp(-B * r2);
+            density += r2*exp(-s*r2);
         }
+        */
         return glm_convert_normalized<T>(density);
     });
 }

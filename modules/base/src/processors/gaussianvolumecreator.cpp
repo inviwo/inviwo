@@ -95,7 +95,7 @@ GaussianVolumeCreator::GaussianVolumeCreator()
     , index_("index", "Index", 5, 0, 255)
     , information_("Information", "Data information")
     , basis_("Basis", "Basis and offset")
-    , sigma_{"sigma", "Sigma", 0.1,0.0,1.0}
+    , sigma_{"sigma", "Sigma", 0.1,0.0,5.0}
     , nPoints_{"nPoints","Points","Number of points"_help,size_t(256),{size_t(1), ConstraintBehavior::Editable},{size_t(1096), ConstraintBehavior::Editable}}
     , radii_{"radii", "Radii", 1,0.0,100.0} {
     addPort(points_);
