@@ -215,7 +215,7 @@ jobs:
       run: |
         cd $VCPKG_INSTALLATION_ROOT
         git fetch
-        git chechout $VCPKG_SHA
+        git checkout $VCPKG_SHA
         ./bootstrap-vcpkg.sh
 
     - name: "Configure CMake"
