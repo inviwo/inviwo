@@ -47,6 +47,8 @@
 #include <modules/qtwidgets/textlabeloverlay.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <ranges>
+
 #include <fmt/format.h>
 
 #include <QGraphicsView>
@@ -55,7 +57,7 @@ namespace inviwo {
 
 namespace {
 
-void setEditorText(NetworkEditor& editor, Qt::KeyboardModifiers modifiers) {
+void setEditorText(NetworkEditor& editor, Qt::KeyboardModifiers modifiers, bool autoLink) {
     const auto enableInConnections = modifiers.testFlag(NetworkAutomation::autoInport);
     const auto enableOutConnections = modifiers.testFlag(NetworkAutomation::autoOutport);
     const auto disableAutoLinks = modifiers.testFlag(NetworkAutomation::noAutoLink);
@@ -66,7 +68,8 @@ void setEditorText(NetworkEditor& editor, Qt::KeyboardModifiers modifiers) {
                              : "Hold Shift to enable automatic inport connections"),
         (enableOutConnections ? "Automatic outport connections enabled"
                               : "Hold Ctrl to enable automatic outport connections"),
-        (disableAutoLinks ? "Auto Linking disabled" : "Hold Alt to disable auto links"));
+        (autoLink ? (disableAutoLinks ? "Auto Linking disabled" : "Hold Alt to disable auto links")
+                  : ""));
 
     editor.getOverlay().setText(text, std::chrono::milliseconds{3000});
 }
@@ -150,7 +153,8 @@ void NetworkAutomation::AutoIn::update(QPointF scenePos, Qt::KeyboardModifiers m
                zoom * ProcessorGraphicsItem::portOffset(ProcessorGraphicsItem::PortType::In, index);
     };
 
-    std::unordered_map<Inport*, std::unique_ptr<ConnectionDragGraphicsItem>> updatedConnections;
+    std::unordered_map<Inport*, std::unique_ptr<ConnectionOutportDragGraphicsItem>>
+        updatedConnections;
     const auto isPortFree = [&updatedConnections](Outport* p) {
         return std::none_of(updatedConnections.begin(), updatedConnections.end(), [&](auto& item) {
             if (!item.second) return false;
@@ -170,10 +174,10 @@ void NetworkAutomation::AutoIn::update(QPointF scenePos, Qt::KeyboardModifiers m
             if (oldIt == connections.end() ||
                 oldIt->second->getOutportGraphicsItem()->getPort() != *validOutports.first) {
 
-                auto outport = *(validOutports.first);
-                auto pgi = editor.getProcessorGraphicsItem(outport->getProcessor());
-                auto ogi = pgi->getOutportGraphicsItem(outport);
-                auto connection = std::make_unique<ConnectionDragGraphicsItem>(
+                auto* outport = *(validOutports.first);
+                auto* pgi = editor.getProcessorGraphicsItem(outport->getProcessor());
+                auto* ogi = pgi->getOutportGraphicsItem(outport);
+                auto connection = std::make_unique<ConnectionOutportDragGraphicsItem>(
                     ogi, endPos, utilqt::toQColor(outport->getColorCode()));
                 editor.addItem(connection.get());
                 connection->setEndPoint(endPos);
@@ -224,9 +228,9 @@ void NetworkAutomation::AutoOut::update(QPointF scenePos, Qt::KeyboardModifiers 
             if (oldIt == connections.end() ||
                 oldIt->second->getInportGraphicsItem()->getPort() != *validInports.first) {
 
-                auto inport = *(validInports.first);
-                auto pgi = editor.getProcessorGraphicsItem(inport->getProcessor());
-                auto ogi = pgi->getInportGraphicsItem(inport);
+                auto* inport = *(validInports.first);
+                auto* pgi = editor.getProcessorGraphicsItem(inport->getProcessor());
+                auto* ogi = pgi->getInportGraphicsItem(inport);
                 auto connection = std::make_unique<ConnectionInportDragGraphicsItem>(
                     startPos, ogi, utilqt::toQColor(outport->getColorCode()));
                 editor.addItem(connection.get());
@@ -251,7 +255,7 @@ void NetworkAutomation::AutoIn::findCandidates(Processor& processor, ProcessorNe
         std::vector<Outport*> targets;
         if (!inport->isConnected()) {
             network.forEachProcessor([&](Processor* sourceProcessor) {
-                for (auto outport : sourceProcessor->getOutports()) {
+                for (auto* outport : sourceProcessor->getOutports()) {
                     if (inport->canConnectTo(outport)) {
                         targets.push_back(outport);
                     }
@@ -273,7 +277,7 @@ void NetworkAutomation::AutoOut::findCandidates(Processor& processor, ProcessorN
         std::vector<Inport*> targets;
         if (!outport->isConnected()) {
             network.forEachProcessor([&](Processor* sourceProcessor) {
-                for (auto inport : sourceProcessor->getInports()) {
+                for (auto* inport : sourceProcessor->getInports()) {
                     if (inport->canConnectTo(outport)) {
                         targets.push_back(inport);
                     }
@@ -303,7 +307,7 @@ void NetworkAutomation::AutoLink::update(QPointF scenePos, Qt::KeyboardModifiers
     decltype(links) updatedLinks;
 
     linker.sortAutoLinkCandidates();
-    for (auto& item : linker.getAutoLinkCandidates()) {
+    for (const auto& item : linker.getAutoLinkCandidates()) {
         const auto& sourceProperties = item.second;
         if (!sourceProperties.empty()) {
             auto* sourceProperty = sourceProperties.front();
@@ -317,7 +321,7 @@ void NetworkAutomation::AutoLink::update(QPointF scenePos, Qt::KeyboardModifiers
                     updatedLinks[sourceProcessor] = std::move(it->second);
                 }
             } else {
-                auto pgi = editor.getProcessorGraphicsItem(sourceProcessor);
+                auto* pgi = editor.getProcessorGraphicsItem(sourceProcessor);
                 auto lgi = std::make_unique<LinkConnectionDragGraphicsItem>(
                     pgi->getLinkGraphicsItem(), scenePos);
                 editor.addItem(lgi.get());
@@ -340,15 +344,21 @@ NetworkAutomation::NetworkAutomation(NetworkEditor& editor)
 void NetworkAutomation::enter(QPointF scenePos, Qt::KeyboardModifiers modifiers,
                               Processor& processor, double zoom) {
 
+    autoLink_ =
+        std::ranges::empty(editor_.getNetwork()->processorRange() |
+                           std::views::filter([&](const auto& p) { return &p == &processor; }));
+
     inports_.findCandidates(processor, *(editor_.getNetwork()));
     outports_.findCandidates(processor, *(editor_.getNetwork()));
-    links_.findCandidates(processor, *(editor_.getNetwork()));
+    if (autoLink_) {
+        links_.findCandidates(processor, *(editor_.getNetwork()));
+    }
 
     move(scenePos, modifiers, processor, zoom);
 }
 void NetworkAutomation::move(QPointF scenePos, Qt::KeyboardModifiers modifiers,
                              Processor& processor, double zoom) {
-    setEditorText(editor_, modifiers);
+    setEditorText(editor_, modifiers, autoLink_);
 
     updateConnectionTarget(connectionTarget_, editor_.getConnectionGraphicsItemAt(scenePos),
                            &processor);
@@ -363,7 +373,9 @@ void NetworkAutomation::move(QPointF scenePos, Qt::KeyboardModifiers modifiers,
         outports_.connections.clear();
     }
 
-    links_.update(scenePos, modifiers, editor_, zoom);
+    if (autoLink_) {
+        links_.update(scenePos, modifiers, editor_, zoom);
+    }
 }
 void NetworkAutomation::leave() {
 
@@ -376,10 +388,10 @@ void NetworkAutomation::leave() {
     outports_.clear();
     links_.clear();
 }
-auto NetworkAutomation::drop(QPointF scenePos, Qt::KeyboardModifiers modifiers,
-                             Processor& processor) -> Result {
+auto NetworkAutomation::drop(QPointF, Qt::KeyboardModifiers modifiers, Processor& processor)
+    -> Result {
 
-    util::OnScopeExit resetter{[&]() { leave(); }};
+    const util::OnScopeExit resetter{[&]() { leave(); }};
 
     auto result = Result::None;
     if (connectionTarget_) {
@@ -421,7 +433,8 @@ auto NetworkAutomation::drop(QPointF scenePos, Qt::KeyboardModifiers modifiers,
         result = Result::AutoConnect;
     }
 
-    if (result != Result::Replace && !modifiers.testFlag(NetworkAutomation::noAutoLink)) {
+    if (autoLink_ && result != Result::Replace &&
+        !modifiers.testFlag(NetworkAutomation::noAutoLink)) {
         links_.linker.addLinksToClosestCandidates(*(editor_.getNetwork()), true);
     }
 

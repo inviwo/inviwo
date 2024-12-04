@@ -52,9 +52,14 @@ void LinkDragHelper::start(ProcessorLinkGraphicsItem* item, QPointF endPos) {
     editor_.addItem(link_.get());
     link_->setZValue(depth::dragItem);
     link_->show();
+
+    editor_.installEventFilter(this);
 }
 
-void LinkDragHelper::reset() { link_.reset(); }
+void LinkDragHelper::reset() {
+    link_.reset();
+    editor_.removeEventFilter(this);
+}
 
 bool LinkDragHelper::eventFilter(QObject*, QEvent* event) {
     if (link_ && event->type() == QEvent::GraphicsSceneMouseMove) {

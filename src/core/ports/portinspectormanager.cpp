@@ -107,7 +107,7 @@ void PortInspectorManager::insertNetwork(PortInspector* portInspector, Processor
 
     // Do auto-linking.
     AutoLinker al{};
-    for (auto& processor : portInspector->getProcessors()) {
+    for (const auto& processor : portInspector->getProcessors()) {
         al.update(*network, *processor, outport->getProcessor());
         al.addLinksToClosestCandidates(*network, bidirectionalAutoLinks);
     }

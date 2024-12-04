@@ -57,6 +57,10 @@ class IVW_QTEDITOR_API CurveGraphicsItem : public EditorGraphicsItem {
 public:
     CurveGraphicsItem(QColor color = QColor(38, 38, 38), QColor borderColor = Qt::black,
                       QColor selectedBorderColor = Qt::darkRed);
+    CurveGraphicsItem(const CurveGraphicsItem&) = delete;
+    CurveGraphicsItem(CurveGraphicsItem&&) = delete;
+    CurveGraphicsItem& operator=(const CurveGraphicsItem&) = delete;
+    CurveGraphicsItem& operator=(CurveGraphicsItem&&) = delete;
     virtual ~CurveGraphicsItem();
 
     virtual QPointF getStartPoint() const = 0;
@@ -101,11 +105,15 @@ protected:
     QGraphicsTextItem* infoLabel_;
 };
 
-class IVW_QTEDITOR_API ConnectionDragGraphicsItem : public CurveGraphicsItem {
+class IVW_QTEDITOR_API ConnectionOutportDragGraphicsItem : public CurveGraphicsItem {
 public:
-    ConnectionDragGraphicsItem(ProcessorOutportGraphicsItem* outport, QPointF endPoint,
+    ConnectionOutportDragGraphicsItem(ProcessorOutportGraphicsItem* outport, QPointF endPoint,
                                QColor color = QColor(38, 38, 38));
-    virtual ~ConnectionDragGraphicsItem();
+    ConnectionOutportDragGraphicsItem(const ConnectionOutportDragGraphicsItem&) = delete;
+    ConnectionOutportDragGraphicsItem(ConnectionOutportDragGraphicsItem&&) = delete;
+    ConnectionOutportDragGraphicsItem& operator=(const ConnectionOutportDragGraphicsItem&) = delete;
+    ConnectionOutportDragGraphicsItem& operator=(ConnectionOutportDragGraphicsItem&&) = delete;
+    virtual ~ConnectionOutportDragGraphicsItem();
 
     // Override
     virtual QPointF getStartPoint() const override;
@@ -128,6 +136,10 @@ class IVW_QTEDITOR_API ConnectionInportDragGraphicsItem : public CurveGraphicsIt
 public:
     ConnectionInportDragGraphicsItem(QPointF startPoint, ProcessorInportGraphicsItem* inport,
                                      QColor color = QColor(38, 38, 38));
+    ConnectionInportDragGraphicsItem(const ConnectionInportDragGraphicsItem&) = delete;
+    ConnectionInportDragGraphicsItem(ConnectionInportDragGraphicsItem&&) = delete;
+    ConnectionInportDragGraphicsItem& operator=(const ConnectionInportDragGraphicsItem&) = delete;
+    ConnectionInportDragGraphicsItem& operator=(ConnectionInportDragGraphicsItem&&) = delete;
     virtual ~ConnectionInportDragGraphicsItem();
 
     // Override
@@ -162,6 +174,10 @@ public:
      */
     ConnectionGraphicsItem(ProcessorOutportGraphicsItem* outport,
                            ProcessorInportGraphicsItem* inport, const PortConnection& connection);
+    ConnectionGraphicsItem(const ConnectionGraphicsItem&) = delete;
+    ConnectionGraphicsItem(ConnectionGraphicsItem&&) = delete;
+    ConnectionGraphicsItem& operator=(const ConnectionGraphicsItem&) = delete;
+    ConnectionGraphicsItem& operator=(ConnectionGraphicsItem&&) = delete;
 
     ~ConnectionGraphicsItem();
 

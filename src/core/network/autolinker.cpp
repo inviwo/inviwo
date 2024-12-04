@@ -37,8 +37,6 @@
 
 namespace inviwo {
 
-AutoLinker::AutoLinker() {}
-
 void AutoLinker::update(ProcessorNetwork& network, Processor& target, Processor* source,
                         const std::vector<Processor*>& ignore) {
     autoLinkCandidates_.clear();
@@ -110,7 +108,7 @@ void AutoLinker::sortAutoLinkCandidates() {
 }
 
 void AutoLinker::addLinksToClosestCandidates(ProcessorNetwork& network, bool bidirectional) {
-    NetworkLock lock(&network);
+    const NetworkLock lock(&network);
     sortAutoLinkCandidates();
     for (auto& item : getAutoLinkCandidates()) {
         const auto existingSources = network.getPropertiesLinkedTo(item.first);

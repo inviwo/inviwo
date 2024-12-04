@@ -147,7 +147,7 @@ bool ProcessorDragHelper::drop(QGraphicsSceneDragDropEvent* e, const ProcessorMi
         RenderContext::getPtr()->activateDefaultRenderContext();
         util::setPosition(processor.get(), utilqt::toGLM(NetworkEditor::snapToGrid(e->scenePos())));
 
-        auto addedProcessor = network->addProcessor(std::move(processor));
+        auto* addedProcessor = network->addProcessor(std::move(processor));
         automator_.drop(e->scenePos(), e->modifiers(), *addedProcessor);
 
     } catch (Exception& exception) {
