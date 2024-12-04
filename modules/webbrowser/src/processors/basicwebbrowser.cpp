@@ -52,8 +52,100 @@ namespace inviwo {
 
 namespace {
 
-static constexpr std::string_view htmlUrl = "https://inviwo/app/static/page.html";
-static constexpr std::string_view javascriptUrl = "https://inviwo/app/static/code.js";
+constexpr std::string_view htmlUrl = "https://inviwo/app/static/page.html";
+constexpr std::string_view javascriptUrl = "https://inviwo/app/static/code.js";
+
+constexpr std::string_view defaultHtml = R"(<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <!--
+    * "https://inviwo/yourmodulename/" will be rediredcted to the
+        corresponding module directory.
+    * "https://inviwo/app/" will be rediredcted to the application
+        base path (InviwoApplication::getBasePath()) directory
+    * "https://inviwo/app/static/code.js" resolves to the JavaScript 
+        property of this processor
+    -->
+
+    <style>
+      body {
+        background: white;
+      }
+      h1 {
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1> Hello world</h1>
+    <!-- Create a div where to put dynamic content --> 
+    <div id="data"></div>
+  </body>
+
+  <script type="module">
+    // load the javascript code associated with the processor
+    import * as code from "https://inviwo/app/static/code.js"
+  </script>
+</html>
+)";
+
+constexpr std::string_view defaultJS = R"(// Load the inviwo javascript api
+// Load the inviwo javascript api
+import * as inviwo from "https://inviwo/webbrowser/data/js/inviwoapiv2.js"
+
+// Put the inviwo module into global scope so that the api can interact with in from c++
+globalThis.inviwo = inviwo
+
+// Register a function for inviwo to call on processor process
+// The function will be called with an instance of the processor. 
+// The processor has the following properties:
+//  * changedInports: A list of the identifers for all the port that has changed
+//  * changedProperties A list of the identifers for all the identifiers that has changed
+//  * self.changedBrushing A list of the modified brushing targets that has changed
+//  * loaded a boolean specifying if the webpage was just loaded
+// Then there are the standard processor functions
+//  * properties()
+//  * property(identifier)
+//  * inports()
+//  * inport(identifier)
+//  * outports()
+//  * outport(identifier)  
+globalThis.inviwoProcess = async function (self) {
+    console.log("Process")
+    try {
+        const data = globalThis.document.getElementById("data");
+        data.replaceChildren();
+
+        if (self.changedInports.includes("dataframe") || self.loaded) {   
+            const json = await self.inport("dataframe").getData();
+            data.appendChild(globalThis.document.createTextNode(JSON.stringify(json)));
+        }
+        if (self.changedBrushing.map((x) => x[1]).includes("Highlighted") || self.loaded) {
+            const rows = await self.inport("brushing").getHighlightedIndices("row");
+            const cols = await self.inport("brushing").getHighlightedIndices("column");
+
+            data.appendChild(globalThis.document.createTextNode(
+                "rows: " +JSON.stringify(rows)+ " cols: " + JSON.stringify(cols))
+            );
+        }
+
+        // properties can be access through self.properties, for example:
+        // const zoom = await self.property("extra").property("color").get(); 
+        
+    } catch(e) {
+        if (e instanceof Error) {
+            console.error(e.toString())
+        } else {
+            console.error(JSON.stringify(e))
+        }
+    }
+}
+
+)";
 
 template <typename T>
 class RefData : public virtual CefBaseRefCounted {
@@ -79,7 +171,7 @@ OptionPropertyState<std::string> convertableProperties(InviwoApplication* app) {
 
     std::vector<OptionPropertyOption<std::string>> options;
     for (auto key : conv.getKeyView()) {
-        if (key.starts_with("org.inviwo.")){
+        if (key.starts_with("org.inviwo.")) {
             options.emplace_back(key, camelCaseToHeader(key.substr(11)), key);
         } else {
             options.emplace_back(key, camelCaseToHeader(key), key);
@@ -101,7 +193,7 @@ const ProcessorInfo BasicWebBrowser::processorInfo_{
     Tags::CPU | Tag{"Web Browser"},  // Tags
     R"(Simple processor to render a html page given as a string property)"_unindentHelp};
 
-const ProcessorInfo BasicWebBrowser::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& BasicWebBrowser::getProcessorInfo() const { return processorInfo_; }
 
 BasicWebBrowser::BasicWebBrowser(InviwoApplication* app)
     : Processor{}
@@ -113,13 +205,13 @@ BasicWebBrowser::BasicWebBrowser(InviwoApplication* app)
     , html_{"html",
             "HTML",
             "The html to render"_help,
-            "",
+            defaultHtml,
             InvalidationLevel::Valid,
             PropertySemantics{"HtmlEditor"}}
     , code_{"code",
             "Javascript",
             "Javascript code"_help,
-            "",
+            defaultJS,
             InvalidationLevel::Valid,
             PropertySemantics{"JavascriptEditor"}}
     , reload_("reload", "Reload", "Reload the webpage"_help, InvalidationLevel::Valid)
@@ -135,15 +227,11 @@ BasicWebBrowser::BasicWebBrowser(InviwoApplication* app)
                extra_.addProperty(std::move(prop));
            })
     , extra_{"extra", "Extra Properties"}
-    , browser_{new WebBrowserBase{app, this, htmlUrl, [this]() { render(); },
+    , browser_{new WebBrowserBase{app, *this, outport_, &background_, htmlUrl,
+                                  [this]() { render(); },
                                   [this](bool isLoading) {
-                                      if (isLoading) {
-                                          notifyObserversStartBackgroundWork(this, 1);
-                                      } else {
-                                          notifyObserversFinishBackgroundWork(this, 1);
-                                          invalidate(InvalidationLevel::InvalidOutput);
-                                      }
                                       loaded_ = !isLoading;
+                                      if (loaded_) invalidate(InvalidationLevel::InvalidOutput);
                                   }}} {
 
     isReady_.setUpdate(
@@ -254,8 +342,6 @@ void BasicWebBrowser::process() {
 }
 
 void BasicWebBrowser::render() {
-    rendercontext::activateDefault();
-    browser_->render(outport_, &background_);
     notifyObserversInvalidationBegin(this);
     outport_.invalidate(InvalidationLevel::InvalidOutput);
     outport_.setValid();  // Since we don't process this, we need to

@@ -39,32 +39,49 @@
 #include <modules/opengl/texture/texture2d.h>             // for Texture2D
 #include <modules/opengl/texture/textureunit.h>           // for TextureUnit
 #include <modules/opengl/texture/textureutils.h>          // for activateAndClearTarget, activat...
+#include <modules/opengl/image/imagegl.h>
+#include <modules/opengl/image/layergl.h>
 
 namespace inviwo {
 
 CefImageConverter::CefImageConverter(vec3 pickingColor)
-    : shader_{"img_convert_cef.frag", Shader::Build::No} {
+    : shader_{"img_convert_cef.frag", Shader::Build::No}, pickingColor_{pickingColor} {
 
 #if defined(WIN32)
     shader_.getFragmentShaderObject()->addShaderDefine("SwizzleColor");
 #endif
     shader_.build();
-
-    shader_.activate();
-    shader_.setUniform("pickingColor", pickingColor);
-    shader_.deactivate();
 }
 
 void CefImageConverter::convert(const Texture2D& fromCefOutput, ImageOutport& toInviwoOutput,
                                 const ImageInport* background) {
-    if (background && background->isConnected()) {
-        utilgl::activateTargetAndCopySource(toInviwoOutput, *background);
-    } else {
-        utilgl::activateAndClearTarget(toInviwoOutput, ImageType::ColorPicking);
-    }
-    utilgl::BlendModeState blendModeStateGL(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    //if (background && background->isReady()) {
+    //    utilgl::activateTargetAndCopySource(toInviwoOutput, *background);
+    //} else {
+    //    utilgl::activateAndClearTarget(toInviwoOutput, ImageType::ColorPicking);
+    //}
+
+    utilgl::activateTarget(toInviwoOutput, ImageType::ColorDepthPicking);
+
+    //utilgl::BlendModeState blendModeStateGL(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     shader_.activate();
+    
+    TextureUnitContainer units;
+    if (background && background->hasData()) {
+        if (!shader_.getFragmentShaderObject()->hasShaderDefine("BACKGROUND_AVAILABLE")) {
+            shader_.getFragmentShaderObject()->addShaderDefine("BACKGROUND_AVAILABLE");
+            shader_.build();
+        }
+
+        utilgl::bindAndSetUniforms(shader_, units, *background->getData(), "bg", ImageType::ColorDepthPicking);
+
+    } else {
+        if (shader_.getFragmentShaderObject()->hasShaderDefine("BACKGROUND_AVAILABLE")) {
+            shader_.getFragmentShaderObject()->removeShaderDefine("BACKGROUND_AVAILABLE");
+            shader_.build();
+        }
+    }
 
     utilgl::setShaderUniforms(shader_, toInviwoOutput, "outportParameters");
 
@@ -72,6 +89,7 @@ void CefImageConverter::convert(const Texture2D& fromCefOutput, ImageOutport& to
     TextureUnit texUnit;
     utilgl::bindTexture(fromCefOutput, texUnit);
     shader_.setUniform("inport", texUnit);
+    shader_.setUniform("pickingColor", pickingColor_);
 
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();

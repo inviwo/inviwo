@@ -53,6 +53,7 @@ class Processor;
 class InviwoApplication;
 class InteractionHandler;
 class RenderHandlerGL;
+class ImageOutport;
 
 #include <warn/push>
 #include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
@@ -72,7 +73,8 @@ class RenderHandlerGL;
  */
 class IVW_MODULE_WEBBROWSER_API WebBrowserBase : public CefLoadHandler {
 public:
-    WebBrowserBase(InviwoApplication* app, Processor* processor, std::string_view url = "",
+    WebBrowserBase(InviwoApplication* app, Processor& processor, ImageOutport& outport,
+                   ImageInport* background = nullptr, std::string_view url = "",
                    std::function<void()> onNewRender = nullptr,
                    std::function<void(bool)> onLoadingChanged = nullptr);
     WebBrowserBase(const WebBrowserBase& rhs) = delete;
@@ -98,8 +100,6 @@ public:
      * @param zoom   absolute zoom factor, i.e. 1.0 corresponds to a scaling of 100%
      */
     void setZoom(double zoom);
-
-    void render(ImageOutport& outport, ImageInport* background = nullptr);
 
     void executeJavaScript(const std::string& javascript, int startLine = 1);
 
@@ -128,7 +128,9 @@ private:
     virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack,
                                       bool canGoForward) override;
 
-    Processor* parentProcessor_;
+    Processor& parentProcessor_;
+    ImageOutport& outport_;
+    ImageInport* background_;
 
     PickingMapper picking_;
 
