@@ -2,7 +2,7 @@
   "version": 6,
   "cmakeMinimumRequired": { "major": 3, "minor": 23, "patch": 0 },
   "include" : [
-    "${sourceParentDir}/inviwo/.github/presets/common.json"
+    ".github/presets/common.json"
   ],
   "configurePresets": [
     {
