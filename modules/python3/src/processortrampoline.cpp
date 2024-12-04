@@ -57,8 +57,8 @@ const ProcessorInfo& ProcessorTrampoline::getProcessorInfo() const {
     // PYBIND11_OVERLOAD_PURE(const ProcessorInfo&, Processor, getProcessorInfo, );
 
     if (!info_) {
-        pybind11::gil_scoped_acquire gil;
-        pybind11::function f =
+        const pybind11::gil_scoped_acquire gil;
+        const pybind11::function f =
             pybind11::get_override(static_cast<const Processor*>(this), "getProcessorInfo");
         if (f) {
             info_ = f().cast<ProcessorInfo>();
