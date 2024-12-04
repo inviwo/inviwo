@@ -73,7 +73,7 @@ namespace {
 
 using namespace std::literals;
 
-static constexpr std::array javascriptKeywords = {
+constexpr std::array javascriptKeywords = {
     "function"sv,   "var"sv,    "let"sv,       "const"sv,    "if"sv,          "else"sv,
     "for"sv,        "while"sv,  "return"sv,    "try"sv,      "catch"sv,       "finally"sv,
     "throw"sv,      "new"sv,    "delete"sv,    "typeof"sv,   "instanceof"sv,  "do"sv,
@@ -83,9 +83,8 @@ static constexpr std::array javascriptKeywords = {
     "as"sv,         "async"sv,  "await"sv,     "class"sv,    "constructor"sv, "get"sv,
     "set"sv,        "null"sv,   "undefined"sv, "true"sv,     "false"sv};
 
-static constexpr std::array typePatterns = {"string"sv,  "number"sv, "boolean"sv,
-                                            "any"sv,     "void"sv,   "never"sv,
-                                            "unknown"sv, "Object"sv, "Array"sv};
+constexpr std::array typePatterns = {"string"sv, "number"sv,  "boolean"sv, "any"sv,  "void"sv,
+                                     "never"sv,  "unknown"sv, "Object"sv,  "Array"sv};
 
 }  // namespace
 
@@ -135,7 +134,7 @@ std::vector<std::shared_ptr<std::function<void()>>> setJavascriptSyntaxHighlight
 
     sh.addWordBoundaryPattern(typeFormat, typePatterns);
 
-    sh.addPattern(constantsformat, "\\b[0-9]*\\.?[0-9]+\\b");
+    sh.addPattern(constantsformat, R"(\b[0-9]*\.?[0-9]+\b)");
 
     sh.addPattern(functionFormat, R"(\bfunction\s+\w+\b\()");
     sh.addPattern(functionCallFormat, R"(\b\w+\s*(?=\())");

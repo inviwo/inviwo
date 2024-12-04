@@ -51,10 +51,11 @@ public:
      * @brief Create a text editor for @p property
      * @pre Property has to be of type FileProperty or StringProperty
      */
-    HtmlEditorDockWidget(Property* property) : TextEditorDockWidget(property) {
-        auto app = util::getInviwoApplication(property);
-        callbacks_ = utilqt::setHtmlSyntaxHighlight(getSyntaxHighlighter(),
-                                                    *app->getSettingsByType<HtmlSyntaxHighlight>());
+    explicit HtmlEditorDockWidget(Property* property)
+        : TextEditorDockWidget(property)
+        , callbacks_{utilqt::setHtmlSyntaxHighlight(
+              getSyntaxHighlighter(),
+              *util::getInviwoApplication(property)->getSettingsByType<HtmlSyntaxHighlight>())} {
     }
 
 private:

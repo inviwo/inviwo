@@ -50,11 +50,11 @@ public:
      * @brief Create a text editor for @p property
      * @pre Property has to be of type FileProperty or StringProperty
      */
-    JavascriptEditorDockWidget(Property* property) : TextEditorDockWidget(property) {
-        auto app = util::getInviwoApplication(property);
-        callbacks_ = utilqt::setJavascriptSyntaxHighlight(
-            getSyntaxHighlighter(), *app->getSettingsByType<JavascriptSyntaxHighlight>());
-    }
+    explicit JavascriptEditorDockWidget(Property* property)
+        : TextEditorDockWidget(property)
+        , callbacks_{utilqt::setJavascriptSyntaxHighlight(
+              getSyntaxHighlighter(), *util::getInviwoApplication(property)
+                                           ->getSettingsByType<JavascriptSyntaxHighlight>())} {}
 
 private:
     std::vector<std::shared_ptr<std::function<void()>>> callbacks_;

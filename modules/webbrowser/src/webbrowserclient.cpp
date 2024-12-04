@@ -150,13 +150,13 @@ WebBrowserClient::WebBrowserClient(InviwoApplication* app)
     addLoadHandler(networkSync_.get());
 }
 
-WebBrowserClient::~WebBrowserClient() {}
+WebBrowserClient::~WebBrowserClient() = default;
 
 void WebBrowserClient::addStaticHandler(
     int browserId,
     std::function<bool(const std::string&, scoped_refptr<CefResourceManager::Request>)> handler) {
 
-    stringResourceProvider_->addHandler(browserId, handler);
+    stringResourceProvider_->addHandler(browserId, std::move(handler));
 }
 void WebBrowserClient::removeStaticHandler(int browserId) {
     stringResourceProvider_->removeHandler(browserId);
