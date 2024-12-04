@@ -36,6 +36,8 @@
 #include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
 #include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel
 
+#include <optional>
+
 namespace inviwo {
 
 class Event;
@@ -72,6 +74,9 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     virtual void invokeEvent(Event* event) override;
     virtual void propagateEvent(Event* event, Outport* source) override;
+
+private:
+    mutable std::optional<ProcessorInfo> info_;
 };
 #include <warn/pop>
 
