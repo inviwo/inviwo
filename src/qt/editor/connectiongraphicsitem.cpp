@@ -146,28 +146,28 @@ void CurveGraphicsItem::setSelectedBorderColor(QColor selectedBorderColor) {
 
 QColor CurveGraphicsItem::getColor() const { return color_; }
 
-ConnectionDragGraphicsItem::ConnectionDragGraphicsItem(ProcessorOutportGraphicsItem* outport,
+ConnectionOutportDragGraphicsItem::ConnectionOutportDragGraphicsItem(ProcessorOutportGraphicsItem* outport,
                                                        QPointF endPoint, QColor color)
     : CurveGraphicsItem(color), endPoint_{endPoint}, outport_(outport) {}
 
-ConnectionDragGraphicsItem::~ConnectionDragGraphicsItem() = default;
+ConnectionOutportDragGraphicsItem::~ConnectionOutportDragGraphicsItem() = default;
 
-ProcessorOutportGraphicsItem* ConnectionDragGraphicsItem::getOutportGraphicsItem() const {
+ProcessorOutportGraphicsItem* ConnectionOutportDragGraphicsItem::getOutportGraphicsItem() const {
     return outport_;
 }
 
-QPointF ConnectionDragGraphicsItem::getStartPoint() const {
+QPointF ConnectionOutportDragGraphicsItem::getStartPoint() const {
     return outport_->mapToScene(outport_->rect().center());
 }
 
-QPointF ConnectionDragGraphicsItem::getEndPoint() const { return endPoint_; }
-void ConnectionDragGraphicsItem::setEndPoint(QPointF endPoint) {
+QPointF ConnectionOutportDragGraphicsItem::getEndPoint() const { return endPoint_; }
+void ConnectionOutportDragGraphicsItem::setEndPoint(QPointF endPoint) {
     endPoint_ = endPoint;
     infoLabel_->setPos(endPoint_);
     updateShape();
 }
 
-void ConnectionDragGraphicsItem::reactToPortHover(ProcessorInportGraphicsItem* inport) {
+void ConnectionOutportDragGraphicsItem::reactToPortHover(ProcessorInportGraphicsItem* inport) {
     if (inport != nullptr) {
         auto* port = inport->getPort();
 
@@ -197,6 +197,67 @@ void ConnectionDragGraphicsItem::reactToPortHover(ProcessorInportGraphicsItem* i
         setHoverInfo(utilqt::toQString(desc.str()));
 
         if (port->canConnectTo(outport_->getPort())) {
+            setBorderColor(Qt::green);
+        } else {
+            setBorderColor(Qt::red);
+        }
+    } else {
+        resetBorderColors();
+        resetHoverInfo();
+    }
+}
+
+ConnectionInportDragGraphicsItem::ConnectionInportDragGraphicsItem(
+    QPointF startPoint, ProcessorInportGraphicsItem* inport, QColor color)
+    : CurveGraphicsItem(color), startPoint_{startPoint}, inport_(inport) {}
+
+ConnectionInportDragGraphicsItem::~ConnectionInportDragGraphicsItem() = default;
+
+ProcessorInportGraphicsItem* ConnectionInportDragGraphicsItem::getInportGraphicsItem() const {
+    return inport_;
+}
+
+QPointF ConnectionInportDragGraphicsItem::getStartPoint() const { return startPoint_; }
+
+QPointF ConnectionInportDragGraphicsItem::getEndPoint() const {
+    return inport_->mapToScene(inport_->rect().center());
+}
+void ConnectionInportDragGraphicsItem::setStartPoint(QPointF startPoint) {
+    startPoint_ = startPoint;
+    infoLabel_->setPos(startPoint_);
+    updateShape();
+}
+
+void ConnectionInportDragGraphicsItem::reactToPortHover(ProcessorOutportGraphicsItem* outport) {
+    if (outport != nullptr) {
+        auto* port = outport->getPort();
+
+        Document desc{};
+        auto html = desc.append("html");
+        html.append("head").append("style", R"(
+            body {
+                color: #9d9995;
+                background: #323235;
+            }
+            div.name {
+                font-size: 13pt;
+                color: #c8ccd0;
+                font-weight: bold;
+            }
+            div.help {
+                font-size: 12pt;
+            }
+        )"_unindent);
+
+        auto content = html.append("body");
+        content.append("div", port->getIdentifier(), {{"class", "name"}});
+        if (!port->getHelp().empty()) {
+            content.append("div", "", {{"class", "help"}}).append(port->getHelp());
+        }
+
+        setHoverInfo(utilqt::toQString(desc.str()));
+
+        if (inport_->getPort()->canConnectTo(port)) {
             setBorderColor(Qt::green);
         } else {
             setBorderColor(Qt::red);

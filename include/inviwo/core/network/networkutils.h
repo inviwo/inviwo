@@ -190,12 +190,24 @@ IVW_CORE_API std::vector<Processor*> appendProcessorNetwork(
     ProcessorNetwork* destinationNetwork, const std::filesystem::path& workspaceFile,
     InviwoApplication* app);
 
+IVW_CORE_API bool addProcessorOnConnection(ProcessorNetwork& network,
+                                           Processor& processor,
+                                           PortConnection connection);
+
 IVW_CORE_API bool addProcessorOnConnection(ProcessorNetwork* network,
                                            std::shared_ptr<Processor> processor,
                                            PortConnection connection);
 
+
+IVW_CORE_API std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
+                                                         Processor& newProcessor,
+                                                         Processor* oldProcessor);
+
 IVW_CORE_API std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
                                                          std::shared_ptr<Processor> newProcessor,
                                                          Processor* oldProcessor);
+
+
+IVW_CORE_API bool canSplitConnection(Processor& p, const PortConnection& connection);
 
 }  // namespace inviwo::util

@@ -30,6 +30,8 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 
+#include <inviwo/qt/editor/networkautomation.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QObject>
@@ -49,20 +51,17 @@ class ConnectionGraphicsItem;
 class NetworkEditor;
 class AutoLinker;
 class LinkConnectionDragGraphicsItem;
-class ConnectionDragGraphicsItem;
+class ConnectionOutportDragGraphicsItem;
 class ProcessorGraphicsItem;
 class Property;
 class Inport;
 class Outport;
 
 class IVW_QTEDITOR_API ProcessorDragHelper : public QObject {
-#include <warn/push>
-#include <warn/ignore/all>
     Q_OBJECT
-#include <warn/pop>
 
 public:
-    ProcessorDragHelper(NetworkEditor& editor);
+    explicit ProcessorDragHelper(NetworkEditor& editor);
     virtual ~ProcessorDragHelper();
 
     virtual bool eventFilter(QObject* obj, QEvent* event) override;
@@ -76,27 +75,9 @@ public:
     bool drop(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime);
 
 private:
-    void updateAutoConnections(QGraphicsSceneDragDropEvent* e);
-    void updateAutoLinks(QGraphicsSceneDragDropEvent* e);
-
-    void setText(QGraphicsSceneDragDropEvent* e, const std::string& processor);
-
-    static bool canSplitConnection(Processor* p, ConnectionGraphicsItem* connection);
-
-    void resetConnection();
-    void resetProcessor();
-    void resetAutoConnections();
-    void resetAutoLinks();
-
     NetworkEditor& editor_;
-    ConnectionGraphicsItem* connectionTarget_ = nullptr;
-    ProcessorGraphicsItem* processorTarget_ = nullptr;
 
-    std::vector<std::pair<Inport*, std::vector<Outport*>>> autoConnectCandidates_;
-    std::unordered_map<Inport*, std::unique_ptr<ConnectionDragGraphicsItem>> autoConnections_;
-
-    std::unique_ptr<AutoLinker> autoLinker_;
-    std::unordered_map<Processor*, std::unique_ptr<LinkConnectionDragGraphicsItem>> autoLinks_;
+    NetworkAutomation automator_;
 };
 
 }  // namespace inviwo

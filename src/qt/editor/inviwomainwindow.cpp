@@ -984,6 +984,7 @@ void InviwoMainWindow::addActions() {
         auto resetTimeMeasurementsAction =
             new QAction(QIcon(":/svgicons/timer.svg"), tr("Reset All Time Measurements"), this);
         resetTimeMeasurementsAction->setCheckable(false);
+        resetTimeMeasurementsAction->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_R);
 
         connect(resetTimeMeasurementsAction, &QAction::triggered,
                 [&]() { networkEditor_->resetAllTimeMeasurements(); });

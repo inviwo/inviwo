@@ -31,6 +31,8 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/networkeditorobserver.h>
+#include <inviwo/qt/editor/networkautomation.h>
+
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/network/portconnection.h>
@@ -63,7 +65,7 @@ class ProcessorOutportGraphicsItem;
 class ProcessorInportGraphicsItem;
 class ProcessorLinkGraphicsItem;
 class ConnectionGraphicsItem;
-class ConnectionDragGraphicsItem;
+class ConnectionOutportDragGraphicsItem;
 class LinkConnectionGraphicsItem;
 class LinkConnectionDragGraphicsItem;
 class LinkDialog;
@@ -71,7 +73,8 @@ class InviwoMainWindow;
 class Image;
 class MenuItem;
 class ProcessorDragHelper;
-class ConnectionDragHelper;
+class ConnectionOutDragHelper;
+class ConnectionInDragHelper;
 class LinkDragHelper;
 class TextLabelOverlay;
 
@@ -90,7 +93,7 @@ class IVW_QTEDITOR_API NetworkEditor : public QGraphicsScene,
     Q_OBJECT
 #include <warn/pop>
 public:
-    NetworkEditor(InviwoMainWindow* mainWindow);
+    explicit NetworkEditor(InviwoMainWindow* mainWindow);
     virtual ~NetworkEditor() = default;
 
     std::unique_ptr<QMimeData> copy() const;
@@ -112,7 +115,9 @@ public:
     static QPointF snapToGrid(QPointF pos);
 
     // Called from ProcessorPortGraphicsItems mouse events.
+
     void initiateConnection(ProcessorOutportGraphicsItem* item);
+    void initiateConnection(ProcessorInportGraphicsItem* item);
     void releaseConnection(ProcessorInportGraphicsItem* item);
 
     // Called from ProcessorLinkGraphicsItems mouse event
@@ -128,6 +133,8 @@ public:
                                                     Processor* processor2) const;
     ProcessorGraphicsItem* getProcessorGraphicsItemAt(const QPointF pos) const;
     ProcessorInportGraphicsItem* getProcessorInportGraphicsItemAt(const QPointF pos) const;
+    ProcessorOutportGraphicsItem* getProcessorOutportGraphicsItemAt(const QPointF pos) const;
+
     ConnectionGraphicsItem* getConnectionGraphicsItemAt(const QPointF pos) const;
     LinkConnectionGraphicsItem* getLinkGraphicsItemAt(const QPointF pos) const;
 
@@ -144,6 +151,7 @@ public:
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) override;
 
@@ -224,8 +232,11 @@ private:
     // Drag n drop state
     ProcessorDragHelper* processorDragHelper_;
     LinkDragHelper* linkDragHelper_;
-    ConnectionDragHelper* connectionDragHelper_;
+    ConnectionOutDragHelper* connectionOutDragHelper_;
+    ConnectionInDragHelper* connectionInDragHelper_;
+
     ProcessorGraphicsItem* processorItem_;
+    NetworkAutomation automation_;
 
     ProcessorMap processorGraphicsItems_;
     ConnectionMap connectionGraphicsItems_;

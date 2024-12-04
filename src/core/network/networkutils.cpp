@@ -405,11 +405,36 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
 
         // Add auto-links afterwards to avoid creating redundant links
         for (auto* p : addedProcessors_) {
-            AutoLinker::addLinks(network_, p, nullptr, addedProcessors_);
+            AutoLinker::addLinks(*network_, *p, nullptr, addedProcessors_);
         }
 
     } catch (Exception& e) {
         util::log(IVW_CONTEXT_CUSTOM("Paste"), e.getMessage(), LogLevel::Warn, LogAudience::User);
+    }
+}
+
+bool addProcessorOnConnection(ProcessorNetwork& network, Processor& processor,
+                              PortConnection connection) {
+
+    Inport* connectionInport = connection.getInport();
+    Outport* connectionOutport = connection.getOutport();
+
+    Inport* inport = util::find_if_or_null(
+        processor.getInports(),
+        [connectionOutport](Inport* port) { return port->canConnectTo(connectionOutport); });
+
+    Outport* outport = util::find_if_or_null(
+        processor.getOutports(),
+        [connectionInport](Outport* port) { return connectionInport->canConnectTo(port); });
+
+    if (inport && outport) {
+        const NetworkLock lock(&network);
+        network.removeConnection(connection);
+        network.addConnection(connectionOutport, inport);
+        network.addConnection(outport, connectionInport);
+        return true;
+    } else {
+        return false;
     }
 }
 
@@ -451,12 +476,18 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
 
     network->addProcessor(newProcessor);
 
+    return replaceProcessor(network, *newProcessor, oldProcessor);
+}
+
+std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network, Processor& newProcessor,
+                                            Processor* oldProcessor) {
+
     const NetworkLock lock(network);
 
     std::vector<PortConnection> newConnections;
     {
         std::vector<Inport*> oldInports = oldProcessor->getInports();
-        for (auto* newInport : newProcessor->getInports()) {
+        for (auto* newInport : newProcessor.getInports()) {
             auto it = std::find_if(oldInports.begin(), oldInports.end(), [&](Inport* oldInport) {
                 return std::all_of(oldInport->getConnectedOutports().begin(),
                                    oldInport->getConnectedOutports().end(), [&](Outport* outport) {
@@ -475,7 +506,7 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
 
     {
         std::vector<Outport*> oldOutports = oldProcessor->getOutports();
-        for (auto* newOutport : newProcessor->getOutports()) {
+        for (auto* newOutport : newProcessor.getOutports()) {
             auto it =
                 std::find_if(oldOutports.begin(), oldOutports.end(), [&](Outport* oldOutport) {
                     return std::all_of(
@@ -494,7 +525,7 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
     }
 
     // Copy over the value of old props to new ones if id and class name are equal.
-    auto newProps = newProcessor->getProperties();
+    auto newProps = newProcessor.getProperties();
     auto oldProps = oldProcessor->getProperties();
 
     std::map<Property*, Property*> propertymap;
@@ -592,6 +623,17 @@ std::vector<Processor*> appendProcessorNetwork(ProcessorNetwork* destinationNetw
     }
 
     return processors;
+}
+
+bool canSplitConnection(Processor& p, const PortConnection& connection) {
+    const bool inputMatch = util::any_of(p.getInports(), [&connection](Inport* inport) {
+        return inport->canConnectTo(connection.getOutport());
+    });
+    const bool outputMatch = util::any_of(p.getOutports(), [&connection](Outport* outport) {
+        return connection.getInport()->canConnectTo(outport);
+    });
+
+    return inputMatch && outputMatch;
 }
 
 }  // namespace util
