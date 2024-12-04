@@ -144,7 +144,6 @@ jobs:
       run: >
         cmake -S inviwo -B build --preset gha-${{ matrix.linkage }}
         -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
-        -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
         
     - name: "Build"
       timeout-minutes: 360
