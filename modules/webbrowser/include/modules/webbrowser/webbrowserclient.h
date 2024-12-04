@@ -235,7 +235,8 @@ protected:
 
     CefRefPtr<RenderHandlerGL> renderHandler_;
 
-    std::map<int, std::function<void(cef_log_severity_t, const CefString&, const CefString&, int)>> onNewMessage_;
+    std::map<int, std::function<void(cef_log_severity_t, const CefString&, const CefString&, int)>>
+        onNewMessage_;
 
     // Handles the browser side of query routing.
     CefRefPtr<CefMessageRouterBrowserSide> router_;

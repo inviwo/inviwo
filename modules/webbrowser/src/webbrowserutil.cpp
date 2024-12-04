@@ -46,11 +46,9 @@ std::tuple<CefWindowInfo, CefBrowserSettings> getDefaultBrowserSettings() {
     windowInfo.SetAsWindowless(0);
 #endif
 
-
 #if defined(WIN32)
     windowInfo.shared_texture_enabled = true;
 #endif
-
 
     CefBrowserSettings browserSettings;
 
@@ -191,6 +189,5 @@ std::string getCefErrorString(cef_errorcode_t code) {
             return "UNKNOWN";
     }
 }
-
 
 }  // namespace inviwo::cefutil

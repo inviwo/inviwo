@@ -39,7 +39,6 @@
 #include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 
-
 #include <inviwo/dataframe/datastructures/dataframe.h>
 
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
@@ -73,7 +72,6 @@ private:
     ButtonProperty reload_;
     DoubleProperty zoom_;
 
-    
     OptionPropertyString propertyTypes_;
     StringProperty name_;
     ButtonProperty add_;

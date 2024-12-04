@@ -29,10 +29,10 @@
 
 #include <modules/webbrowser/properties/propertywidgetcef.h>
 
-#include <inviwo/core/properties/property.h>             // for Property
-#include <inviwo/core/properties/propertysemantics.h>    // for PropertySemantics
-#include <inviwo/core/properties/propertywidget.h>       // for PropertyWidget
-#include <inviwo/core/util/logcentral.h>                 // for LogCentral, LogError
+#include <inviwo/core/properties/property.h>           // for Property
+#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics
+#include <inviwo/core/properties/propertywidget.h>     // for PropertyWidget
+#include <inviwo/core/util/logcentral.h>               // for LogCentral, LogError
 
 #include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
 #include <include/cef_base.h>                // for CefRefPtr, CefString

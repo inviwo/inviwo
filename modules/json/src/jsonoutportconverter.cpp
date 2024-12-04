@@ -29,6 +29,4 @@
 
 #include <modules/json/jsonoutportconverter.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo
