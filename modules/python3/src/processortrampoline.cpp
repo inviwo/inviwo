@@ -52,7 +52,21 @@ void ProcessorTrampoline::invalidate(InvalidationLevel invalidationLevel,
     PYBIND11_OVERLOAD(void, Processor, invalidate, invalidationLevel, modifiedProperty);
 }
 const ProcessorInfo& ProcessorTrampoline::getProcessorInfo() const {
-    PYBIND11_OVERLOAD_PURE(const ProcessorInfo&, Processor, getProcessorInfo, );
+    // We use a custom implementation here since PYBIND11_OVERLOAD_PURE struggles with
+    // keeping the processor info object alive.
+    // PYBIND11_OVERLOAD_PURE(const ProcessorInfo&, Processor, getProcessorInfo, );
+
+    if (!info_) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function f =
+            pybind11::get_override(static_cast<const Processor*>(this), "getProcessorInfo");
+        if (f) {
+            info_ = f().cast<ProcessorInfo>();
+        } else {
+            throw Exception("Missing");
+        }
+    }
+    return info_.value();
 }
 
 void ProcessorTrampoline::invokeEvent(Event* event) {
