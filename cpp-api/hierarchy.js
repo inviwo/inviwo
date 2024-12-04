@@ -33,7 +33,10 @@ var hierarchy =
     [ "inviwo::util::detail_indirect::asPointer< false >", "structinviwo_1_1util_1_1detail__indirect_1_1asPointer_3_01false_01_4.html", null ],
     [ "inviwo::util::detail_indirect::asPointer< true >", "structinviwo_1_1util_1_1detail__indirect_1_1asPointer_3_01true_01_4.html", null ],
     [ "inviwo::xml::ElementMatcher::Attribute", "structinviwo_1_1xml_1_1ElementMatcher_1_1Attribute.html", null ],
+    [ "inviwo::NetworkAutomation::AutoIn", "structinviwo_1_1NetworkAutomation_1_1AutoIn.html", null ],
+    [ "inviwo::NetworkAutomation::AutoLink", "structinviwo_1_1NetworkAutomation_1_1AutoLink.html", null ],
     [ "inviwo::AutoLinker", "classinviwo_1_1AutoLinker.html", null ],
+    [ "inviwo::NetworkAutomation::AutoOut", "structinviwo_1_1NetworkAutomation_1_1AutoOut.html", null ],
     [ "inviwo::Axis", "structinviwo_1_1Axis.html", null ],
     [ "inviwo::plot::Axis2DProcessorHelper", "classinviwo_1_1plot_1_1Axis2DProcessorHelper.html", null ],
     [ "inviwo::plot::Axis3DProcessorHelper", "classinviwo_1_1plot_1_1Axis3DProcessorHelper.html", null ],
@@ -1843,6 +1846,7 @@ var hierarchy =
     [ "inviwo::MoveOnlyValue< inviwo::utilgl::ScissorBox >", "classinviwo_1_1MoveOnlyValue.html", null ],
     [ "inviwo::MoveOnlyValue< inviwo::utilgl::Viewport >", "classinviwo_1_1MoveOnlyValue.html", null ],
     [ "inviwo::MoveOnlyValue< vec4 >", "classinviwo_1_1MoveOnlyValue.html", null ],
+    [ "inviwo::NetworkAutomation", "classinviwo_1_1NetworkAutomation.html", null ],
     [ "inviwo::NetworkEdge", "structinviwo_1_1NetworkEdge.html", null ],
     [ "inviwo::NetworkLock", "structinviwo_1_1NetworkLock.html", null ],
     [ "inviwo::NetworkSyncClient", "classinviwo_1_1NetworkSyncClient.html", null ],
@@ -2901,8 +2905,9 @@ var hierarchy =
       [ "inviwo::GraphicsItemData< Property >", "classinviwo_1_1GraphicsItemData.html", null ],
       [ "inviwo::EditorGraphicsItem", "classinviwo_1_1EditorGraphicsItem.html", [
         [ "inviwo::CurveGraphicsItem", "classinviwo_1_1CurveGraphicsItem.html", [
-          [ "inviwo::ConnectionDragGraphicsItem", "classinviwo_1_1ConnectionDragGraphicsItem.html", null ],
           [ "inviwo::ConnectionGraphicsItem", "classinviwo_1_1ConnectionGraphicsItem.html", null ],
+          [ "inviwo::ConnectionInportDragGraphicsItem", "classinviwo_1_1ConnectionInportDragGraphicsItem.html", null ],
+          [ "inviwo::ConnectionOutportDragGraphicsItem", "classinviwo_1_1ConnectionOutportDragGraphicsItem.html", null ],
           [ "inviwo::DialogConnectionGraphicsItem", "classinviwo_1_1DialogConnectionGraphicsItem.html", null ],
           [ "inviwo::DialogCurveGraphicsItem", "classinviwo_1_1DialogCurveGraphicsItem.html", null ]
         ] ],
@@ -2975,7 +2980,8 @@ var hierarchy =
       [ "inviwo::SuperPropertyMimeData", "classinviwo_1_1SuperPropertyMimeData.html", null ]
     ] ],
     [ "QObject", null, [
-      [ "inviwo::ConnectionDragHelper", "classinviwo_1_1ConnectionDragHelper.html", null ],
+      [ "inviwo::ConnectionInDragHelper", "classinviwo_1_1ConnectionInDragHelper.html", null ],
+      [ "inviwo::ConnectionOutDragHelper", "classinviwo_1_1ConnectionOutDragHelper.html", null ],
       [ "inviwo::InteractionEventMapperQt", "classinviwo_1_1InteractionEventMapperQt.html", null ],
       [ "inviwo::LineEditEventFilter", "classinviwo_1_1LineEditEventFilter.html", null ],
       [ "inviwo::LinkDialogProcessorGraphicsItem", "classinviwo_1_1LinkDialogProcessorGraphicsItem.html", null ],

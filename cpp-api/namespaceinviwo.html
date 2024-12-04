@@ -458,11 +458,15 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1CompositeTransform.html">CompositeTransform</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A very simple <a class="el" href="classinviwo_1_1SpatialEntity.html" title="A convenience class to generate transformation matrices between the different coordinate systems in u...">SpatialEntity</a> to handle a world and model transform Used by rasterizations for adding transforms before rendering, without copying the mesh data.  <a href="structinviwo_1_1CompositeTransform.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ConnectionDragGraphicsItem.html">ConnectionDragGraphicsItem</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ConnectionDragHelper.html">ConnectionDragHelper</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ConnectionGraphicsItem.html">ConnectionGraphicsItem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ConnectionInDragHelper.html">ConnectionInDragHelper</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ConnectionInportDragGraphicsItem.html">ConnectionInportDragGraphicsItem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ConnectionOutDragHelper.html">ConnectionOutDragHelper</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ConnectionOutportDragGraphicsItem.html">ConnectionOutportDragGraphicsItem</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ConsoleLogger.html">ConsoleLogger</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A <a class="el" href="classinviwo_1_1Logger.html">Logger</a> class that log to the console using cout.  <a href="classinviwo_1_1ConsoleLogger.html#details">More...</a><br /></td></tr>
@@ -1578,6 +1582,8 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Basic text editor based on QPlainTextEdit for showing strings in multiple lines. The height is automatically adjusted. The editingFinished signal is emitted when the widget looses focus or CTRL + Return or CTRL + Enter is pressed.  <a href="classinviwo_1_1MultilineTextEdit.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1MultiRaycastingComponent.html">MultiRaycastingComponent</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1NetworkAutomation.html">NetworkAutomation</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1NetworkDebugObserver.html">NetworkDebugObserver</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observes the network and logs.  <a href="structinviwo_1_1NetworkDebugObserver.html#details">More...</a><br /></td></tr>
@@ -4608,19 +4614,20 @@ Enumerations</h2></td></tr>
 &#160;&#160;<b>ProcessorGraphicsType</b> = 1
 , <b>CurveGraphicsType</b>
 , <b>ConnectionDragGraphicsType</b>
-, <b>ConnectionGraphicsType</b>
+, <b>ConnectionInportDragGraphicsType</b>
 , <br />
-&#160;&#160;<b>LinkGraphicsType</b>
+&#160;&#160;<b>ConnectionGraphicsType</b>
+, <b>LinkGraphicsType</b>
 , <b>LinkConnectionDragGraphicsType</b>
 , <b>LinkConnectionGraphicsType</b>
-, <b>ProcessorProgressGraphicsType</b>
 , <br />
-&#160;&#160;<b>ProcessorStatusGraphicsType</b>
+&#160;&#160;<b>ProcessorProgressGraphicsType</b>
+, <b>ProcessorStatusGraphicsType</b>
 , <b>ProcessorLinkGraphicsType</b>
 , <b>ProcessorInportGraphicsType</b>
-, <b>ProcessorOutportGraphicsType</b>
 , <br />
-&#160;&#160;<b>ProcessorErrorItemType</b>
+&#160;&#160;<b>ProcessorOutportGraphicsType</b>
+, <b>ProcessorErrorItemType</b>
 <br />
  }</td></tr>
 <tr class="separator:add7c65ae51eb1c14527bad7f6d3e30b5"><td class="memSeparator" colspan="2">&#160;</td></tr>

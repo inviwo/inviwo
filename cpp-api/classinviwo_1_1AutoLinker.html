@@ -113,8 +113,13 @@ $(function(){initNavTree('classinviwo_1_1AutoLinker.html',''); initResizable(tru
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a1d249efc553fd93bcb3974e7088c98f1" id="r_a1d249efc553fd93bcb3974e7088c98f1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d249efc553fd93bcb3974e7088c98f1">AutoLinker</a> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *target, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *source=nullptr, const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;ignore={})</td></tr>
-<tr class="separator:a1d249efc553fd93bcb3974e7088c98f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a7864b3c27f4cfb6742abb20686b76f" id="r_a7a7864b3c27f4cfb6742abb20686b76f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a7864b3c27f4cfb6742abb20686b76f">AutoLinker</a> ()=default</td></tr>
+<tr class="separator:a7a7864b3c27f4cfb6742abb20686b76f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66dc09b5eee2f65914895a626e158fe7" id="r_a66dc09b5eee2f65914895a626e158fe7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66dc09b5eee2f65914895a626e158fe7">update</a> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> &amp;network, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &amp;target, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *source=nullptr, const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;ignore={})</td></tr>
+<tr class="separator:a66dc09b5eee2f65914895a626e158fe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e27a8d81016790f2557ad552ecb2a41" id="r_a5e27a8d81016790f2557ad552ecb2a41"><td class="memItemLeft" align="right" valign="top"><a id="a5e27a8d81016790f2557ad552ecb2a41" name="a5e27a8d81016790f2557ad552ecb2a41"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
+<tr class="separator:a5e27a8d81016790f2557ad552ecb2a41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d053dbb259b471e6c812914baf17e90" id="r_a2d053dbb259b471e6c812914baf17e90"><td class="memItemLeft" align="right" valign="top"><a id="a2d053dbb259b471e6c812914baf17e90" name="a2d053dbb259b471e6c812914baf17e90"></a>
 const std::unordered_map&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> *, std::vector&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> * &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getAutoLinkCandidates</b> () const</td></tr>
 <tr class="separator:a2d053dbb259b471e6c812914baf17e90"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -124,34 +129,61 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>sortAutoLinkCandidate
 <tr class="memitem:a5fcac3383711f4a6be27b38f3f4f8b71" id="r_a5fcac3383711f4a6be27b38f3f4f8b71"><td class="memItemLeft" align="right" valign="top"><a id="a5fcac3383711f4a6be27b38f3f4f8b71" name="a5fcac3383711f4a6be27b38f3f4f8b71"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>sortAutoLinkCandidates</b> (dvec2 pos)</td></tr>
 <tr class="separator:a5fcac3383711f4a6be27b38f3f4f8b71"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb5c8a2414ef894d6f743c5536fe7941" id="r_adb5c8a2414ef894d6f743c5536fe7941"><td class="memItemLeft" align="right" valign="top"><a id="adb5c8a2414ef894d6f743c5536fe7941" name="adb5c8a2414ef894d6f743c5536fe7941"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addLinksToClosestCandidates</b> (bool bidirectional)</td></tr>
-<tr class="separator:adb5c8a2414ef894d6f743c5536fe7941"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e7d63aa0bf015f6c14ec5b2771a204d" id="r_a4e7d63aa0bf015f6c14ec5b2771a204d"><td class="memItemLeft" align="right" valign="top"><a id="a4e7d63aa0bf015f6c14ec5b2771a204d" name="a4e7d63aa0bf015f6c14ec5b2771a204d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>addLinksToClosestCandidates</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> &amp;network, bool bidirectional)</td></tr>
+<tr class="separator:a4e7d63aa0bf015f6c14ec5b2771a204d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a690fbaf71fda878e12284aa2acccfc95" id="r_a690fbaf71fda878e12284aa2acccfc95"><td class="memItemLeft" align="right" valign="top"><a id="a690fbaf71fda878e12284aa2acccfc95" name="a690fbaf71fda878e12284aa2acccfc95"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>addLinks</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *target, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *source=nullptr, const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;ignore={})</td></tr>
-<tr class="separator:a690fbaf71fda878e12284aa2acccfc95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a378612e40801e9cfa7798a97f5bc8932" id="r_a378612e40801e9cfa7798a97f5bc8932"><td class="memItemLeft" align="right" valign="top"><a id="a378612e40801e9cfa7798a97f5bc8932" name="a378612e40801e9cfa7798a97f5bc8932"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>addLinks</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> &amp;network, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &amp;target, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *source=nullptr, const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;ignore={})</td></tr>
+<tr class="separator:a378612e40801e9cfa7798a97f5bc8932"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Utility class to calculate and apply auto linking. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a1d249efc553fd93bcb3974e7088c98f1" name="a1d249efc553fd93bcb3974e7088c98f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d249efc553fd93bcb3974e7088c98f1">&#9670;&#160;</a></span>AutoLinker()</h2>
+<a id="a7a7864b3c27f4cfb6742abb20686b76f" name="a7a7864b3c27f4cfb6742abb20686b76f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a7864b3c27f4cfb6742abb20686b76f">&#9670;&#160;</a></span>AutoLinker()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">inviwo::AutoLinker::AutoLinker </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Construct an auto link helper </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a66dc09b5eee2f65914895a626e158fe7" name="a66dc09b5eee2f65914895a626e158fe7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66dc09b5eee2f65914895a626e158fe7">&#9670;&#160;</a></span>update()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">inviwo::AutoLinker::AutoLinker </td>
+          <td class="memname">void inviwo::AutoLinker::update </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *</td>          <td class="paramname"><span class="paramname"><em>network</em></span>, </td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>network</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1Processor.html">Processor</a> *</td>          <td class="paramname"><span class="paramname"><em>target</em></span>, </td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Processor.html">Processor</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>target</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -165,7 +197,7 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>addLinks</b> (
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Construct an auto link helper </p><dl class="params"><dt>Parameters</dt><dd>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">network</td><td>the processor network in which to add autolinks </td></tr>
     <tr><td class="paramname">target</td><td>the processor onto which auto links should be added </td></tr>

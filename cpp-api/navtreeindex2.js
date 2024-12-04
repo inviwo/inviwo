@@ -1,5 +1,7 @@
 var NAVTREEINDEX2 =
 {
+"classinviwo_1_1CameraProperty.html#a158a7a4eedefb08248a7a76a316e0521":[1,4,5,8],
+"classinviwo_1_1CameraProperty.html#a1ac25d83dfe12aa8e4e23e03c3adda2f":[1,4,5,0],
 "classinviwo_1_1CameraProperty.html#a494852cd33696b1cd0994467e8615368":[1,4,5,14],
 "classinviwo_1_1CameraProperty.html#a57c9e847d1c5b80fc5dfe48d041b8e22":[1,4,5,2],
 "classinviwo_1_1CameraProperty.html#a6c53f7a1e7ec11eff5b65bf951b1213c":[1,4,5,6],
@@ -247,7 +249,5 @@ var NAVTREEINDEX2 =
 "classinviwo_1_1CompositeProperty.html#a1dcf19992aecd328eb5234f90e2623f9":[1,4,6,1],
 "classinviwo_1_1CompositeProperty.html#a2a08ae47c1464cddec0a932ba95da711":[1,4,6,0],
 "classinviwo_1_1CompositeProperty.html#a4f869f44314c28642de84f96c995db6a":[1,4,6,5],
-"classinviwo_1_1CompositeProperty.html#a8c125ccc65d07d1559c59e8e0ebb7f7a":[1,4,6,6],
-"classinviwo_1_1CompositeProperty.html#a969faf3cde079d8ee7d502c40a6385d6":[1,4,6,4],
-"classinviwo_1_1CompositeProperty.html#a9a4ee79afb6f4cdc73b8b4be990e1186":[1,4,6,7]
+"classinviwo_1_1CompositeProperty.html#a8c125ccc65d07d1559c59e8e0ebb7f7a":[1,4,6,6]
 };

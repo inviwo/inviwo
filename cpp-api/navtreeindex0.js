@@ -53,8 +53,10 @@ var NAVTREEINDEX0 =
 "classinviwo_1_1AtlasVolumeRaycaster.html":[1,3,46],
 "classinviwo_1_1AutoLinker.html":[2,0,0,38],
 "classinviwo_1_1AutoLinker.html":[4,0,1,44],
-"classinviwo_1_1AutoLinker.html#a1d249efc553fd93bcb3974e7088c98f1":[2,0,0,38,0],
-"classinviwo_1_1AutoLinker.html#a1d249efc553fd93bcb3974e7088c98f1":[4,0,1,44,0],
+"classinviwo_1_1AutoLinker.html#a66dc09b5eee2f65914895a626e158fe7":[2,0,0,38,1],
+"classinviwo_1_1AutoLinker.html#a66dc09b5eee2f65914895a626e158fe7":[4,0,1,44,1],
+"classinviwo_1_1AutoLinker.html#a7a7864b3c27f4cfb6742abb20686b76f":[2,0,0,38,0],
+"classinviwo_1_1AutoLinker.html#a7a7864b3c27f4cfb6742abb20686b76f":[4,0,1,44,0],
 "classinviwo_1_1AxisAlignedCutPlane.html":[2,0,0,40],
 "classinviwo_1_1AxisAlignedCutPlane.html":[4,0,1,46],
 "classinviwo_1_1AxisAlignedCutPlane.html#ab27b1980ade192293744657f9ddad3a2":[2,0,0,40,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX0 =
 "classinviwo_1_1BrushingAndLinkingManager.html#a6834774b2882b40f2474c66f2b838ba0":[2,0,0,65,22],
 "classinviwo_1_1BrushingAndLinkingManager.html#a6834774b2882b40f2474c66f2b838ba0":[4,0,1,71,22],
 "classinviwo_1_1BrushingAndLinkingManager.html#a683cdc77258c4e5f2eb2c819dbc207f0":[2,0,0,65,30],
-"classinviwo_1_1BrushingAndLinkingManager.html#a683cdc77258c4e5f2eb2c819dbc207f0":[4,0,1,71,30],
-"classinviwo_1_1BrushingAndLinkingManager.html#a6dfc258d62183b1c866da6db276ee401":[2,0,0,65,29],
-"classinviwo_1_1BrushingAndLinkingManager.html#a6dfc258d62183b1c866da6db276ee401":[4,0,1,71,29]
+"classinviwo_1_1BrushingAndLinkingManager.html#a683cdc77258c4e5f2eb2c819dbc207f0":[4,0,1,71,30]
 };

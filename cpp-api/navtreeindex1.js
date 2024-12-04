@@ -1,5 +1,7 @@
 var NAVTREEINDEX1 =
 {
+"classinviwo_1_1BrushingAndLinkingManager.html#a6dfc258d62183b1c866da6db276ee401":[2,0,0,65,29],
+"classinviwo_1_1BrushingAndLinkingManager.html#a6dfc258d62183b1c866da6db276ee401":[4,0,1,71,29],
 "classinviwo_1_1BrushingAndLinkingManager.html#a7162265eb0688f286bd921c6fd379a9d":[2,0,0,65,25],
 "classinviwo_1_1BrushingAndLinkingManager.html#a7162265eb0688f286bd921c6fd379a9d":[4,0,1,71,25],
 "classinviwo_1_1BrushingAndLinkingManager.html#a740c999cb6bcd99eada35131d197e31b":[2,0,0,65,5],
@@ -202,8 +204,8 @@ var NAVTREEINDEX1 =
 "classinviwo_1_1CSVReader.html#aef49d59c00fa1415180e7692e3c9582c":[1,0,16,11],
 "classinviwo_1_1CSVSource.html":[1,3,58],
 "classinviwo_1_1CSVSource.html#aff145a6aa2d0de5bc024ef95499c437b":[1,3,58,0],
-"classinviwo_1_1CSVWriter.html":[2,0,0,171],
-"classinviwo_1_1CSVWriter.html":[4,0,1,177],
+"classinviwo_1_1CSVWriter.html":[2,0,0,173],
+"classinviwo_1_1CSVWriter.html":[4,0,1,179],
 "classinviwo_1_1CalcNormalsProcessor.html":[1,3,74],
 "classinviwo_1_1CalcNormalsProcessor.html#ae0013aab986ed2e2f9e78049371701b5":[1,3,74,0],
 "classinviwo_1_1CallBackList.html":[2,0,0,91],
@@ -247,7 +249,5 @@ var NAVTREEINDEX1 =
 "classinviwo_1_1CameraFrustum.html#a5302ea0ff80d6abc885c1e5babbd7e99":[2,0,0,98,0],
 "classinviwo_1_1CameraFrustum.html#a5302ea0ff80d6abc885c1e5babbd7e99":[4,0,1,104,0],
 "classinviwo_1_1CameraProperty.html":[1,4,5],
-"classinviwo_1_1CameraProperty.html#a13fc101179f0cf1109f898e6d542c352":[1,4,5,3],
-"classinviwo_1_1CameraProperty.html#a158a7a4eedefb08248a7a76a316e0521":[1,4,5,8],
-"classinviwo_1_1CameraProperty.html#a1ac25d83dfe12aa8e4e23e03c3adda2f":[1,4,5,0]
+"classinviwo_1_1CameraProperty.html#a13fc101179f0cf1109f898e6d542c352":[1,4,5,3]
 };
