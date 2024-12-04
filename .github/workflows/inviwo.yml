@@ -232,6 +232,7 @@ jobs:
         -DIVW_MODULE_HDF5=ON
         -DIVW_MODULE_TETRAMESH=OFF
         -DIVW_MODULE_WEBBROWSER=ON
+        -DIVW_MODULE_WEBQT=ON
 
     - name: "Build"
       timeout-minutes: 360
@@ -330,6 +331,7 @@ jobs:
         -DCMAKE_BUILD_TYPE=Release
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DIVW_MODULE_WEBBROWSER=ON
+        -DIVW_MODULE_WEBQT=ON
         -DIVW_MODULE_SGCT=ON
         -DIVW_APP_INVIWO_DOME=ON
         -DVCPKG_MANIFEST_FEATURES="sgct"
