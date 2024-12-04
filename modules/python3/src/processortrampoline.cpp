@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processor.h>          // for Processor
 #include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
 #include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
@@ -63,7 +64,8 @@ const ProcessorInfo& ProcessorTrampoline::getProcessorInfo() const {
         if (f) {
             info_ = f().cast<ProcessorInfo>();
         } else {
-            throw Exception("Missing");
+            throw Exception(IVW_CONTEXT,
+                            "Missing getProcessorInfo member function in python processor");
         }
     }
     return info_.value();
