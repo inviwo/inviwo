@@ -45,7 +45,7 @@
 
 namespace roaring {
 class Roaring;
-class RoaringSetBitForwardIterator;
+class RoaringSetBitBiDirectionalIterator;
 }  // namespace roaring
 
 namespace inviwo {
@@ -84,7 +84,7 @@ public:
         bool operator!=(const BitSetIterator& rhs) const;
 
     private:
-        using RoaringIt = roaring::RoaringSetBitForwardIterator;
+        using RoaringIt = roaring::RoaringSetBitBiDirectionalIterator;
 
         friend BitSet;
         BitSetIterator(const BitSet& b, bool exhausted = false);
