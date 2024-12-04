@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processor.h>          // for Processor
 #include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
 #include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
@@ -52,7 +53,22 @@ void ProcessorTrampoline::invalidate(InvalidationLevel invalidationLevel,
     PYBIND11_OVERLOAD(void, Processor, invalidate, invalidationLevel, modifiedProperty);
 }
 const ProcessorInfo& ProcessorTrampoline::getProcessorInfo() const {
-    PYBIND11_OVERLOAD_PURE(const ProcessorInfo&, Processor, getProcessorInfo, );
+    // We use a custom implementation here since PYBIND11_OVERLOAD_PURE struggles with
+    // keeping the processor info object alive.
+    // PYBIND11_OVERLOAD_PURE(const ProcessorInfo&, Processor, getProcessorInfo, );
+
+    if (!info_) {
+        const pybind11::gil_scoped_acquire gil;
+        const pybind11::function f =
+            pybind11::get_override(static_cast<const Processor*>(this), "getProcessorInfo");
+        if (f) {
+            info_ = f().cast<ProcessorInfo>();
+        } else {
+            throw Exception(IVW_CONTEXT,
+                            "Missing getProcessorInfo member function in python processor");
+        }
+    }
+    return info_.value();
 }
 
 void ProcessorTrampoline::invokeEvent(Event* event) {
