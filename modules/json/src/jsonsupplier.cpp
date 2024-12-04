@@ -29,7 +29,4 @@
 
 #include <modules/json/jsonsupplier.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

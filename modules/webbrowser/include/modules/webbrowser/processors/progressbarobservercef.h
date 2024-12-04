@@ -49,7 +49,7 @@ class IVW_MODULE_WEBBROWSER_API ProgressBarObserverCEF : public ProgressBarObser
 public:
     ProgressBarObserverCEF(CefRefPtr<CefFrame> frame = nullptr, std::string onProgressChange = "",
                            std::string onVisibleChange = "");
-    virtual ~ProgressBarObserverCEF(){};
+    virtual ~ProgressBarObserverCEF() {};
 
     /**
      * Execute currently set onProgressChange javascript function

@@ -30,7 +30,6 @@
 
 #include <modules/json/jsonmoduledefine.h>
 
-
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
@@ -41,10 +40,8 @@
 namespace inviwo {
 using json = ::nlohmann::json;
 
-
 using JSONInport = DataInport<json>;
 using JSONOutport = DataOutport<json>;
-
 
 IVW_MODULE_JSON_API void to_json(json& j, const JSONInport& df);
 IVW_MODULE_JSON_API void from_json(const json& j, JSONInport& df);

@@ -302,7 +302,8 @@ bool NetWorkCefSynchronizer::handleProcessor(const json& j, CefRefPtr<CefBrowser
         }
         reponse->Success(CefString{result.dump()});
     } else {
-        reponse->Failure(0, fmt::format("Trying to invoke an unknow processor command: {}", command));
+        reponse->Failure(0,
+                         fmt::format("Trying to invoke an unknow processor command: {}", command));
     }
     return true;
 }

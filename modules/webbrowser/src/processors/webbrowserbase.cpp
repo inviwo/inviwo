@@ -70,7 +70,7 @@ WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor& processor, Ima
         cefToInviwoImageConverter_.convert(htmlTex, outport_, background_);
         if (onNewRender) {
             onNewRender();
-        }else {
+        } else {
             parentProcessor_.invalidate(InvalidationLevel::InvalidOutput);
         }
     });

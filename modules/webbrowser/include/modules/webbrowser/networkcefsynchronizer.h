@@ -111,7 +111,8 @@ public:
      *  * {command: "property.get", path: "ProcessorIdentifier/PropertyIdentifier"}
      *  * {command: "property.set", path: "ProcessorIdentifier/PropertyIdentifier", "data": 0.5}
      * * Inport commands:
-     *  * {command: "inport.getData", processor: "ProcessorIdentifier", identifier: "InportIdentifier"}
+     *  * {command: "inport.getData", processor: "ProcessorIdentifier", identifier:
+     * "InportIdentifier"}
      * * BrushingAndLinkingInport commands:
      *   * {command: "inport.getFilteredIndices",
      *      processor: "ProcessorIdentifier",

@@ -29,25 +29,25 @@
 
 #include <modules/webbrowser/webbrowsermodule.h>
 
-#include <inviwo/core/common/inviwoapplication.h>       // for InviwoApplication
-#include <inviwo/core/common/inviwomodule.h>            // for ModulePath
-#include <inviwo/core/util/commandlineparser.h>         // for CommandLineParser
-#include <inviwo/core/util/exception.h>                 // for ModuleInitExce...
-#include <inviwo/core/util/filesystem.h>                // for getExecutablePath
-#include <inviwo/core/util/logcentral.h>                // for LogCentral
-#include <inviwo/core/util/settings/settings.h>         // for Settings
-#include <inviwo/core/util/settings/systemsettings.h>   // for SystemSettings
-#include <inviwo/core/util/staticstring.h>              // for operator+
+#include <inviwo/core/common/inviwoapplication.h>      // for InviwoApplication
+#include <inviwo/core/common/inviwomodule.h>           // for ModulePath
+#include <inviwo/core/util/commandlineparser.h>        // for CommandLineParser
+#include <inviwo/core/util/exception.h>                // for ModuleInitExce...
+#include <inviwo/core/util/filesystem.h>               // for getExecutablePath
+#include <inviwo/core/util/logcentral.h>               // for LogCentral
+#include <inviwo/core/util/settings/settings.h>        // for Settings
+#include <inviwo/core/util/settings/systemsettings.h>  // for SystemSettings
+#include <inviwo/core/util/staticstring.h>             // for operator+
 #include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/timer.h>                                        // for Timer, Timer::...
-#include <modules/opengl/shader/shadermanager.h>                           // for ShaderManager
+#include <inviwo/core/util/timer.h>               // for Timer, Timer::...
+#include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
 #include <modules/webbrowser/processors/basicwebbrowser.h>
-#include <modules/webbrowser/processors/webbrowserprocessor.h>             // for WebBrowserProc...
-#include <modules/webbrowser/properties/propertywidgetcef.h>               // for PropertyWidgetCEF
-#include <modules/webbrowser/shader_resources.h>    // for addShaderResou...
-#include <modules/webbrowser/webbrowserapp.h>       // for WebBrowserApp
-#include <modules/webbrowser/webbrowserclient.h>    // for WebBrowserClient
-#include <modules/webbrowser/webbrowsersettings.h>  // for WebBrowserSett...
+#include <modules/webbrowser/processors/webbrowserprocessor.h>  // for WebBrowserProc...
+#include <modules/webbrowser/properties/propertywidgetcef.h>    // for PropertyWidgetCEF
+#include <modules/webbrowser/shader_resources.h>                // for addShaderResou...
+#include <modules/webbrowser/webbrowserapp.h>                   // for WebBrowserApp
+#include <modules/webbrowser/webbrowserclient.h>                // for WebBrowserClient
+#include <modules/webbrowser/webbrowsersettings.h>              // for WebBrowserSett...
 
 #include <cstddef>      // for size_t, NULL
 #include <functional>   // for __base, function
@@ -65,7 +65,6 @@
 
 namespace inviwo {
 
-
 WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     : InviwoModule(app, "WebBrowser")
     , doChromiumWork_(Timer::Milliseconds(16), []() { CefDoMessageLoopWork(); }) {
@@ -78,7 +77,6 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     doChromiumWork_.setInterval(Timer::Milliseconds(1000 / moduleSettings->refreshRate_));
 
     registerSettings(std::move(moduleSettings));
-
 
     if (!app->getSystemSettings().enablePickingProperty_) {
         LogInfo(
@@ -224,6 +222,5 @@ WebBrowserModule::~WebBrowserModule() {
     app_->waitForPool();
     CefShutdown();
 }
-
 
 }  // namespace inviwo

@@ -65,7 +65,7 @@
 
 namespace inviwo {
 
-CEFInteractionHandler::CEFInteractionHandler(CefRefPtr<CefBrowserHost> host) : host_(host){};
+CEFInteractionHandler::CEFInteractionHandler(CefRefPtr<CefBrowserHost> host) : host_(host) {};
 
 void CEFInteractionHandler::invokeEvent(Event* event) {
     switch (event->hash()) {

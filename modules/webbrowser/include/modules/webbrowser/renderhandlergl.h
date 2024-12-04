@@ -109,7 +109,7 @@ public:
 private:
     struct BrowserData {
         BrowserData() { texture2D.initialize(nullptr); }
-        size2_t viewRect{1,1};
+        size2_t viewRect{1, 1};
         Texture2D texture2D{size2_t{1, 1}, GL_BGRA, GL_RGBA, GL_UNSIGNED_BYTE, GL_NEAREST};
         CefRect popupRect;
         CefRect originalPopupRect;

@@ -90,7 +90,7 @@ private:
               typename Keyframe = animation::ValueKeyframe<typename PropertyType::value_type>,
               typename KeyframeSeq = animation::KeyframeSequenceTyped<Keyframe>>
     void propertyHelper() {
-         using namespace animation;
+        using namespace animation;
         // Register PropertyTrack and the KeyFrame it should use
         registerTrack<PropertyTrack<PropertyType, Keyframe, KeyframeSeq>>();
         registerPropertyTrackConnection(

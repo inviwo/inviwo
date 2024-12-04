@@ -55,18 +55,11 @@ CefImageConverter::CefImageConverter(vec3 pickingColor)
 
 void CefImageConverter::convert(const Texture2D& fromCefOutput, ImageOutport& toInviwoOutput,
                                 const ImageInport* background) {
-    //if (background && background->isReady()) {
-    //    utilgl::activateTargetAndCopySource(toInviwoOutput, *background);
-    //} else {
-    //    utilgl::activateAndClearTarget(toInviwoOutput, ImageType::ColorPicking);
-    //}
 
     utilgl::activateTarget(toInviwoOutput, ImageType::ColorDepthPicking);
 
-    //utilgl::BlendModeState blendModeStateGL(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
     shader_.activate();
-    
+
     TextureUnitContainer units;
     if (background && background->hasData()) {
         if (!shader_.getFragmentShaderObject()->hasShaderDefine("BACKGROUND_AVAILABLE")) {
@@ -74,7 +67,8 @@ void CefImageConverter::convert(const Texture2D& fromCefOutput, ImageOutport& to
             shader_.build();
         }
 
-        utilgl::bindAndSetUniforms(shader_, units, *background->getData(), "bg", ImageType::ColorDepthPicking);
+        utilgl::bindAndSetUniforms(shader_, units, *background->getData(), "bg",
+                                   ImageType::ColorDepthPicking);
 
     } else {
         if (shader_.getFragmentShaderObject()->hasShaderDefine("BACKGROUND_AVAILABLE")) {

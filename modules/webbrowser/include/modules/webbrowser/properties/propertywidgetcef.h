@@ -31,9 +31,9 @@
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSER_API
 
-#include <inviwo/core/properties/propertyobserver.h>     // for PropertyObserver
-#include <inviwo/core/properties/propertywidget.h>       // for PropertyWidget
-#include <modules/json/jsonpropertyconverter.h> 
+#include <inviwo/core/properties/propertyobserver.h>  // for PropertyObserver
+#include <inviwo/core/properties/propertywidget.h>    // for PropertyWidget
+#include <modules/json/jsonpropertyconverter.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include "include/wrapper/cef_message_router.h"

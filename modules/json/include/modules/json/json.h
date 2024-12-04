@@ -40,13 +40,11 @@ namespace inviwo {
 
 using json = ::nlohmann::json;
 
-
 template <typename T>
 concept JSONConvertable = requires(T& t, json& j) {
     { to_json(j, std::as_const(t)) } -> std::same_as<void>;
     { from_json(std::as_const(j), t) } -> std::same_as<void>;
 };
-
 
 template <>
 struct DataTraits<json> {
