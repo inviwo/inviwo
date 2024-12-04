@@ -108,20 +108,19 @@ vec4 sumFunction(float sigma, vec3 samplePos, float tIncr, int count){
         
         float s = sigma*centerPoints[i].w;
         vec3 dr = centerPoints[i].xyz - samplePos;
+        
         float r2 = dr.x * dr.x + dr.y * dr.y + dr.z * dr.z;
         float A = 1.0 / (s*sqrt(2*M_PI));
         float B = 0.5*r2/(s*s);
-
+        //float A = pow(10*dr.x,0)*pow(10*dr.y,0)*pow(10*dr.z,1);
+        
+        //float B = s;
         float v = A*exp(-B*r2);
         vec3 grad = -2*B*dr*v;
         
 
         result += vec4(grad, v);
         
-        /*float s = centerPoints[i].w;
-        vec3 dp = (centerPoints[i].xyz - samplePos);
-        float r2 = (dp.x*dp.x + dp.y*dp.y + dp.z*dp.z);
-        sum += 1.0/(s*sqrt(2*M_PI))*exp(-0.5*r2/(s*s))*tIncr*100*/;
 
 
     }
@@ -181,7 +180,10 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
 
         vec3 gradient = normalize(res.xyz);
 
-        color = applyTF(transferFunction, res.w);
+
+        float normalizedValue = (res.w + volumeParameters.formatOffset) * (1.0 - volumeParameters.formatScaling);
+
+        color = applyTF(transferFunction, normalizedValue);
 
         ShadingParameters shadingParams = shading(color.rgb, gradient, 
                                     (volumeParameters.textureToWorld * vec4(samplePos, 1.0)).xyz);
