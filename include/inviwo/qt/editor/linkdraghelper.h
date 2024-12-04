@@ -53,7 +53,7 @@ class IVW_QTEDITOR_API LinkDragHelper : public QObject {
 #include <warn/pop>
 
 public:
-    LinkDragHelper(NetworkEditor& editor);
+    explicit LinkDragHelper(NetworkEditor& editor);
     virtual ~LinkDragHelper();
 
     void start(ProcessorLinkGraphicsItem* outLink, QPointF endPos);

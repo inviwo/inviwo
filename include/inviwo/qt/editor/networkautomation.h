@@ -51,11 +51,12 @@ class ProcessorGraphicsItem;
 
 class IVW_QTEDITOR_API NetworkAutomation {
 public:
-    NetworkAutomation(NetworkEditor& editor);
+    explicit NetworkAutomation(NetworkEditor& editor);
     NetworkAutomation(const NetworkAutomation&) = delete;
     NetworkAutomation(NetworkAutomation&&) = delete;
     NetworkAutomation& operator=(const NetworkAutomation&) = delete;
     NetworkAutomation& operator=(NetworkAutomation&&) = delete;
+    ~NetworkAutomation() = default;
 
     void enter(QPointF scenePos, Qt::KeyboardModifiers modifiers, Processor& processor,
                double zoom = 1.0);
@@ -77,8 +78,10 @@ public:
         AutoIn(AutoIn&&) = delete;
         AutoIn& operator=(const AutoIn&) = delete;
         AutoIn& operator=(AutoIn&&) = delete;
+        ~AutoIn() = default;
+
         std::vector<std::pair<Inport*, std::vector<Outport*>>> candidates;
-        std::unordered_map<Inport*, std::unique_ptr<ConnectionDragGraphicsItem>> connections;
+        std::unordered_map<Inport*, std::unique_ptr<ConnectionOutportDragGraphicsItem>> connections;
 
         void findCandidates(Processor& processor, ProcessorNetwork& network);
 
@@ -92,6 +95,7 @@ public:
         AutoOut(AutoOut&&) = delete;
         AutoOut& operator=(const AutoOut&) = delete;
         AutoOut& operator=(AutoOut&&) = delete;
+        ~AutoOut() = default;
         std::vector<std::pair<Outport*, std::vector<Inport*>>> candidates;
         std::unordered_map<Outport*, std::unique_ptr<ConnectionInportDragGraphicsItem>> connections;
 
@@ -108,6 +112,7 @@ public:
         AutoLink(AutoLink&&) = delete;
         AutoLink& operator=(const AutoLink&) = delete;
         AutoLink& operator=(AutoLink&&) = delete;
+        ~AutoLink() = default;
 
         void findCandidates(Processor& processor, ProcessorNetwork& network);
 
@@ -125,6 +130,8 @@ public:
 
     ConnectionGraphicsItem* connectionTarget_ = nullptr;
     ProcessorGraphicsItem* processorTarget_ = nullptr;
+
+    bool autoLink_ = true;
 
     static constexpr Qt::KeyboardModifier noAutoLink = Qt::AltModifier;
     static constexpr Qt::KeyboardModifier autoInport = Qt::ShiftModifier;

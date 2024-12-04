@@ -106,7 +106,8 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
     : QGraphicsScene()
     , processorDragHelper_{new ProcessorDragHelper(*this)}
     , linkDragHelper_{new LinkDragHelper(*this)}
-    , connectionDragHelper_{new ConnectionDragHelper(*this)}
+    , connectionOutDragHelper_{new ConnectionOutDragHelper(*this)}
+    , connectionInDragHelper_{new ConnectionInDragHelper(*this)}
     , processorItem_{nullptr}
     , automation_{*this}
     , mainWindow_(mainWindow)
@@ -152,11 +153,7 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
     network_->addObserver(this);
 
     installEventFilter(processorDragHelper_);
-    installEventFilter(linkDragHelper_);
-    installEventFilter(connectionDragHelper_);
 
-    // The default BSP tends to crash...
-    setItemIndexMethod(QGraphicsScene::NoIndex);
     setSceneRect(QRectF());
 
     // If selection contains processors don't select any other items
@@ -390,6 +387,12 @@ ProcessorInportGraphicsItem* NetworkEditor::getProcessorInportGraphicsItemAt(
     const QPointF pos) const {
     return getGraphicsItemAt<ProcessorInportGraphicsItem>(pos);
 }
+
+ProcessorOutportGraphicsItem* NetworkEditor::getProcessorOutportGraphicsItemAt(
+    const QPointF pos) const {
+    return getGraphicsItemAt<ProcessorOutportGraphicsItem>(pos);
+}
+
 ConnectionGraphicsItem* NetworkEditor::getConnectionGraphicsItemAt(const QPointF pos) const {
     return getGraphicsItemAt<ConnectionGraphicsItem>(pos);
 }
@@ -415,8 +418,8 @@ void NetworkEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
 
 void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
     for (auto& elem : processorGraphicsItems_) {
-        QPointF pos = elem.second->pos();
-        QPointF newPos = snapToGrid(pos);
+        const QPointF pos = elem.second->pos();
+        const QPointF newPos = snapToGrid(pos);
         if (pos != newPos) elem.second->setPos(newPos);
     }
 
@@ -1129,7 +1132,15 @@ void NetworkEditor::initiateConnection(ProcessorOutportGraphicsItem* item) {
     automation_.leave();
     const auto pos = item->mapToScene(item->rect().center());
     const auto color = item->getPort()->getColorCode();
-    connectionDragHelper_->start(item, pos, color);
+    connectionOutDragHelper_->start(item, pos, color);
+}
+
+void NetworkEditor::initiateConnection(ProcessorInportGraphicsItem* item) {
+    processorItem_ = nullptr;
+    automation_.leave();
+    const auto pos = item->mapToScene(item->rect().center());
+    const auto color = item->getPort()->getColorCode();
+    connectionInDragHelper_->start(item, pos, color);
 }
 
 void NetworkEditor::releaseConnection(ProcessorInportGraphicsItem* item) {
@@ -1142,7 +1153,7 @@ void NetworkEditor::releaseConnection(ProcessorInportGraphicsItem* item) {
     const auto pos = oldConnection->getEndPoint();
     const auto color = oldConnection->getOutport()->getColorCode();
     removeConnection(oldConnection);
-    connectionDragHelper_->start(port, pos, color);
+    connectionOutDragHelper_->start(port, pos, color);
 }
 
 void NetworkEditor::initiateLink(ProcessorLinkGraphicsItem* item, QPointF pos) {

@@ -428,7 +428,7 @@ bool addProcessorOnConnection(ProcessorNetwork& network, Processor& processor,
         [connectionInport](Outport* port) { return connectionInport->canConnectTo(port); });
 
     if (inport && outport) {
-        NetworkLock lock(&network);
+        const NetworkLock lock(&network);
         network.removeConnection(connection);
         network.addConnection(connectionOutport, inport);
         network.addConnection(outport, connectionInport);
@@ -626,10 +626,10 @@ std::vector<Processor*> appendProcessorNetwork(ProcessorNetwork* destinationNetw
 }
 
 bool canSplitConnection(Processor& p, const PortConnection& connection) {
-    bool inputMatch = util::any_of(p.getInports(), [&connection](Inport* inport) {
+    const bool inputMatch = util::any_of(p.getInports(), [&connection](Inport* inport) {
         return inport->canConnectTo(connection.getOutport());
     });
-    bool outputMatch = util::any_of(p.getOutports(), [&connection](Outport* outport) {
+    const bool outputMatch = util::any_of(p.getOutports(), [&connection](Outport* outport) {
         return connection.getInport()->canConnectTo(outport);
     });
 

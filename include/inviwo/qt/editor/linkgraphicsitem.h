@@ -49,7 +49,7 @@ class ProcessorLink;
 
 class IVW_QTEDITOR_API LinkGraphicsItem : public EditorGraphicsItem {
 public:
-    LinkGraphicsItem(ivec3 color = ivec3(0xbd, 0xcd, 0xd5));
+    explicit LinkGraphicsItem(ivec3 color = ivec3(0xbd, 0xcd, 0xd5));
     ~LinkGraphicsItem();
 
     virtual QPointF getStartPoint() const = 0;

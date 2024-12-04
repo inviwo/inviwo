@@ -101,8 +101,12 @@ ProcessorInportGraphicsItem::ProcessorInportGraphicsItem(ProcessorGraphicsItem* 
 Inport* ProcessorInportGraphicsItem::getPort() { return inport_; }
 
 void ProcessorInportGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent* e) {
-    if (e->buttons() == Qt::LeftButton && inport_->isConnected()) {
-        getNetworkEditor()->releaseConnection(this);
+    if (e->buttons() == Qt::LeftButton) {
+        if (inport_->isConnected()) {
+            getNetworkEditor()->releaseConnection(this);
+        } else {
+            getNetworkEditor()->initiateConnection(this);
+        }
     }
     e->accept();
 }

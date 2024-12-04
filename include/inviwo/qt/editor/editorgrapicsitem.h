@@ -75,7 +75,12 @@ class IVW_QTEDITOR_API EditorGraphicsItem : public QGraphicsRectItem {
 public:
     EditorGraphicsItem();
     EditorGraphicsItem(QGraphicsItem* parent);
+    EditorGraphicsItem(const EditorGraphicsItem&) = delete;
+    EditorGraphicsItem(EditorGraphicsItem&&) = delete;
+    EditorGraphicsItem& operator=(const EditorGraphicsItem&) = delete;
+    EditorGraphicsItem& operator=(EditorGraphicsItem&&) = delete;
     virtual ~EditorGraphicsItem();
+
     QPoint mapPosToSceen(QPointF pos) const;
 
     virtual void showToolTip(QGraphicsSceneHelpEvent* event);

@@ -51,7 +51,7 @@ class ConnectionGraphicsItem;
 class NetworkEditor;
 class AutoLinker;
 class LinkConnectionDragGraphicsItem;
-class ConnectionDragGraphicsItem;
+class ConnectionOutportDragGraphicsItem;
 class ProcessorGraphicsItem;
 class Property;
 class Inport;
@@ -61,7 +61,7 @@ class IVW_QTEDITOR_API ProcessorDragHelper : public QObject {
     Q_OBJECT
 
 public:
-    ProcessorDragHelper(NetworkEditor& editor);
+    explicit ProcessorDragHelper(NetworkEditor& editor);
     virtual ~ProcessorDragHelper();
 
     virtual bool eventFilter(QObject* obj, QEvent* event) override;
