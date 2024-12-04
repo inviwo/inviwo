@@ -325,7 +325,6 @@ jobs:
       run: >
         cmake -S inviwo -B build --preset gha-dynamic
         -DCMAKE_CXX_FLAGS='-stdlib=libc++'
-        -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
         -DCMAKE_BUILD_TYPE=Release
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DIVW_MODULE_WEBBROWSER=ON
