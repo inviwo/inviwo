@@ -83,7 +83,7 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
     , zoom_{"zoom", "Zoom Factor", 1.0, 0.2, 5.0}
     , runJS_{"runJS", "Run JS"}
     , js_{"js", "JavaScript", "", InvalidationLevel::Valid}
-    , browser_{new WebBrowserBase(app, this)} {
+    , browser_{new WebBrowserBase(app, *this, outport_, &background_)} {
 
     addPorts(background_, outport_);
     background_.setOptional(true);
@@ -133,8 +133,6 @@ void WebBrowserProcessor::process() {
     if (zoom_.isModified()) {
         browser_->setZoom(zoom_);
     }
-
-    browser_->render(outport_, &background_);
 }
 
 void WebBrowserProcessor::deserialize(Deserializer& d) {

@@ -224,9 +224,6 @@ public:
         CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
         CefRefPtr<CefRequest> request) override;
 
-    void onNewRender(CefRefPtr<CefBrowser> browser, std::function<void()> func) {
-        onNewRender_[browser->GetIdentifier()] = func;
-    }
     void onNewMessage(
         CefRefPtr<CefBrowser> browser,
         std::function<void(cef_log_severity_t, const CefString&, const CefString&, int)> func) {
@@ -234,13 +231,10 @@ public:
     }
 
 protected:
-    void notifyOnNewRender(CefRefPtr<CefBrowser> browser);
-
     const PropertyWidgetCEFFactory* widgetFactory_;  /// Non-owning reference
 
     CefRefPtr<RenderHandlerGL> renderHandler_;
 
-    std::map<int, std::function<void()>> onNewRender_;
     std::map<int, std::function<void(cef_log_severity_t, const CefString&, const CefString&, int)>> onNewMessage_;
 
     // Handles the browser side of query routing.

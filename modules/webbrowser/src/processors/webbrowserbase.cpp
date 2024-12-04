@@ -43,11 +43,14 @@
 
 namespace inviwo {
 
-WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor* processor, std::string_view url,
+WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor& processor, ImageOutport& outport,
+                               ImageInport* background, std::string_view url,
                                std::function<void()> onNewRender,
                                std::function<void(bool)> onLoadingChanged)
     : parentProcessor_{processor}
-    , picking_{processor, 1,
+    , outport_{outport}
+    , background_{background}
+    , picking_{&processor, 1,
                [this](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); }}
     , cefToInviwoImageConverter_{picking_.getColor()}
     , renderHandler_{dynamic_cast<RenderHandlerGL*>(
@@ -63,12 +66,15 @@ WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor* processor, std
     browser_ = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient, url_, browserSettings,
                                                  nullptr, nullptr);
 
-    if (onNewRender) {
-        browserClient->onNewRender(browser_, onNewRender);
-    } else {
-        browserClient->onNewRender(
-            browser_, [this]() { parentProcessor_->invalidate(InvalidationLevel::InvalidOutput); });
-    }
+    renderHandler_->onRender(browser_, [this, onNewRender](Texture2D& htmlTex) {
+        cefToInviwoImageConverter_.convert(htmlTex, outport_, background_);
+        if (onNewRender) {
+            onNewRender();
+        }else {
+            parentProcessor_.invalidate(InvalidationLevel::InvalidOutput);
+        }
+    });
+
     // Observe when page has loaded
     browserClient->addLoadHandler(this);
 
@@ -112,15 +118,6 @@ std::shared_ptr<std::function<std::string(const std::string&)>> WebBrowserBase::
     } else {
         return {};
     }
-}
-
-void WebBrowserBase::render(ImageOutport& outport, ImageInport* background) {
-    if (isLoading_) {
-        return;
-    }
-
-    // Vertical flip of CEF output image
-    cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(browser_), outport, background);
 }
 
 void WebBrowserBase::executeJavaScript(const std::string& javascript, int startLine) {
@@ -176,9 +173,9 @@ void WebBrowserBase::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool is
             onLoadingChanged_(isLoading);
         } else {
             // Render new page (content may have been rendered before the state changed)
-            if (!isLoading && parentProcessor_) {
+            if (!isLoading) {
                 loadingDone_.invoke();
-                parentProcessor_->invalidate(InvalidationLevel::InvalidOutput);
+                parentProcessor_.invalidate(InvalidationLevel::InvalidOutput);
             }
         }
     }

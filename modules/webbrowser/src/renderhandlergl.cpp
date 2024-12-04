@@ -29,8 +29,9 @@
 
 #include <modules/webbrowser/renderhandlergl.h>
 
-#include <inviwo/core/util/glmvec.h>           // for size2_t
-#include <inviwo/core/util/rendercontext.h>    // for RenderContext
+#include <inviwo/core/util/glm.h>            // for size2_t
+#include <inviwo/core/util/rendercontext.h>  // for RenderContext
+#include <inviwo/core/util/logcentral.h>
 #include <modules/opengl/texture/texture2d.h>  // for Texture2D
 
 #include <vector>  // for vector<>::value_type
@@ -41,20 +42,36 @@
 #include <include/cef_browser.h>             // for CefBrowser, CefBrowserHost
 #include <include/cef_render_handler.h>      // for CefRenderHandler::RectList, CefRenderHandl...
 
+#pragma optimize("", off)
+
 namespace inviwo {
 
-RenderHandlerGL::RenderHandlerGL(OnWebPageCopiedCallback cb) : onWebPageCopiedCallback{cb} {}
+RenderHandlerGL::RenderHandlerGL() = default;
 
 void RenderHandlerGL::updateCanvasSize(CefRefPtr<CefBrowser> browser, size2_t newSize) {
     rendercontext::activateDefault();
     // Prevent crash when newSize = 0
-    browserData_[browser->GetIdentifier()].texture2D.resize(glm::max(size2_t{1, 1}, newSize));
+    const auto id = browser->GetIdentifier();
+    auto it = browserData_.find(id);
+    if (it == browserData_.end()) {
+        throw Exception(IVW_CONTEXT, "Unexpected browser id {}", id);
+    }
+
+    it->second.viewRect = newSize;
+
+    // we want to trigger a render here, to ensure that the resized outport in the processor is
+    // updated with relevant data.
+    auto& browserData = browserData_[browser->GetIdentifier()];
+    try {
+        browserData.onRender(browserData.texture2D);
+    } catch (const std::exception& e) {
+        LogErrorCustom("RenderHandlerGL", e.what());
+    }
 }
 
 void RenderHandlerGL::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
-    auto& texture2D = browserData_[browser->GetIdentifier()].texture2D;
-    rect = CefRect{0, 0, static_cast<int>(texture2D.getWidth()),
-                   static_cast<int>(texture2D.getHeight())};
+    const auto& viewRect = browserData_[browser->GetIdentifier()].viewRect;
+    rect = CefRect{0, 0, static_cast<int>(viewRect.x), static_cast<int>(viewRect.y)};
 }
 
 void RenderHandlerGL::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {
@@ -182,15 +199,18 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
     if (type == PET_VIEW && !popupRect.IsEmpty()) {
         browser->GetHost()->Invalidate(PET_POPUP);
     }
+
     // Notify that we are done copying
-    onWebPageCopiedCallback(browser);
+    try {
+        browserData.onRender(browserData.texture2D);
+    } catch (const std::exception& e) {
+        LogErrorCustom("RenderHandlerGL", e.what());
+    }
 }
 
 void RenderHandlerGL::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
                                          const RectList& dirtyRects,
                                          const CefAcceleratedPaintInfo& info) {
-
-    rendercontext::activateDefault();
 
 #if defined(WIN32)
 
@@ -206,21 +226,16 @@ void RenderHandlerGL::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintEle
         return;
     }
 
-    auto& orgTexture = getTexture2D(browser);
-
-    // This function is called asynchronously after a reshape which means we have to check
-    // for what we request. Validate the size. This prevents rendering a texture with the
-    // wrong size (the look will be deformed)
-    int newWidth = dirtyRects[0].width;
-    int newHeight = dirtyRects[0].height;
-    if (newWidth != orgTexture.getDimensions().x || newHeight != orgTexture.getDimensions().y) {
-        return;
-    }
+    rendercontext::activateDefault();
 
     // Create new texture that we can copy the shared texture into. Unfortunately
     // textures are immutable so we have to create a new one
-    Texture2D newTexture(orgTexture.getDimensions(), GL_RGBA, GL_RGBA8, GL_UNSIGNED_BYTE,
-                         GL_NEAREST);
+
+    const int newWidth = dirtyRects[0].width;
+    const int newHeight = dirtyRects[0].height;
+    const size2_t dims{newWidth, newHeight};
+
+    Texture2D newTexture(dims, GL_RGBA, GL_RGBA8, GL_UNSIGNED_BYTE, GL_NEAREST);
 
     // Create the memory object handle
     GLuint memObj;
@@ -240,11 +255,19 @@ void RenderHandlerGL::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintEle
     glTextureStorageMem2DEXT(newTexture.getID(), 1, GL_RGBA8, newWidth, newHeight, memObj, 0);
 
     glDeleteMemoryObjectsEXT(1, &memObj);
+
     // Set the updated texture
-    browserData_[browser->GetIdentifier()].texture2D = std::move(newTexture);
+    auto& browserData = browserData_[browser->GetIdentifier()];
+    browserData.texture2D = std::move(newTexture);
 
     // Notify that we are done copying
-    onWebPageCopiedCallback(browser);
+    if (browserData.onRender) {
+        try {
+            browserData.onRender(browserData.texture2D);
+        } catch (const std::exception& e) {
+            LogErrorCustom("RenderHandlerGL", e.what());
+        }
+    }
 
 #endif
 }

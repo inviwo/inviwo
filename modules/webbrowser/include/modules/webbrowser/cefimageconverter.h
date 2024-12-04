@@ -57,8 +57,8 @@ public:
                  const ImageInport* optionalBackground = nullptr);
 
 protected:
-     ///< Flip image y compoenent
-    Shader shader_;
+    Shader shader_;  ///< Flip image y compoenent
+    vec3 pickingColor_;
 };
 
 }  // namespace inviwo

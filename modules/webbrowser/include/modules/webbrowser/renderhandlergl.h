@@ -58,9 +58,7 @@ namespace inviwo {
 #include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
 class IVW_MODULE_WEBBROWSER_API RenderHandlerGL : public CefRenderHandler {
 public:
-    typedef std::function<void(CefRefPtr<CefBrowser>)> OnWebPageCopiedCallback;
-
-    RenderHandlerGL(OnWebPageCopiedCallback onWebPageCopiedCallback);
+    RenderHandlerGL();
     void updateCanvasSize(CefRefPtr<CefBrowser> browser, size2_t newSize);
 
     ///
@@ -104,20 +102,22 @@ public:
 
     void ClearPopupRects(CefRefPtr<CefBrowser> browser);
 
+    void onRender(CefRefPtr<CefBrowser> browser, std::function<void(Texture2D&)> onRender) {
+        browserData_[browser->GetIdentifier()].onRender = onRender;
+    }
+
 private:
     struct BrowserData {
         BrowserData() { texture2D.initialize(nullptr); }
-
+        size2_t viewRect{1,1};
         Texture2D texture2D{size2_t{1, 1}, GL_BGRA, GL_RGBA, GL_UNSIGNED_BYTE, GL_NEAREST};
         CefRect popupRect;
         CefRect originalPopupRect;
+        std::function<void(Texture2D&)> onRender;
     };
     CefRect GetPopupRectInWebView(CefRefPtr<CefBrowser> browser, const CefRect& original_rect);
 
     std::map<int, BrowserData> browserData_;  /// Per browser data
-
-    OnWebPageCopiedCallback
-        onWebPageCopiedCallback;  /// Called after web page has been copied in OnPaint
 
     IMPLEMENT_REFCOUNTING(RenderHandlerGL);
 };

@@ -131,8 +131,7 @@ void setupResourceManager(CefRefPtr<CefResourceManager> resourceManager, InviwoA
 }  // namespace detail
 
 WebBrowserClient::WebBrowserClient(InviwoApplication* app)
-    : renderHandler_{new RenderHandlerGL{
-          [this](CefRefPtr<CefBrowser> browser) { notifyOnNewRender(browser); }}}
+    : renderHandler_{new RenderHandlerGL{}}
     , router_{CefMessageRouterBrowserSide::Create(CefMessageRouterConfig{})}
     , networkSync_{new NetWorkCefSynchronizer{app}}
     , resourceManager_{new CefResourceManager{}}
@@ -149,12 +148,6 @@ WebBrowserClient::WebBrowserClient(InviwoApplication* app)
     router_->AddHandler(networkSync_.get(), false);
 
     addLoadHandler(networkSync_.get());
-}
-
-void WebBrowserClient::notifyOnNewRender(CefRefPtr<CefBrowser> browser) {
-    if (auto& func = onNewRender_[browser->GetIdentifier()]) {
-        func();
-    }
 }
 
 WebBrowserClient::~WebBrowserClient() {}
