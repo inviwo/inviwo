@@ -44,18 +44,17 @@ class QEvent;
 namespace inviwo {
 
 class NetworkEditor;
-class ConnectionDragGraphicsItem;
+class ConnectionOutportDragGraphicsItem;
+class ConnectionInportDragGraphicsItem;
 class ProcessorOutportGraphicsItem;
+class ProcessorInportGraphicsItem;
 
-class IVW_QTEDITOR_API ConnectionDragHelper : public QObject {
-#include <warn/push>
-#include <warn/ignore/all>
+class IVW_QTEDITOR_API ConnectionOutDragHelper : public QObject {
     Q_OBJECT
-#include <warn/pop>
 
 public:
-    ConnectionDragHelper(NetworkEditor& editor);
-    virtual ~ConnectionDragHelper();
+    explicit ConnectionOutDragHelper(NetworkEditor& editor);
+    virtual ~ConnectionOutDragHelper();
 
     void start(ProcessorOutportGraphicsItem* outport, QPointF endPoint, uvec3 color);
     void reset();
@@ -64,7 +63,24 @@ public:
 
 private:
     NetworkEditor& editor_;
-    std::unique_ptr<ConnectionDragGraphicsItem> connection_;
+    std::unique_ptr<ConnectionOutportDragGraphicsItem> outConnection_;
+};
+
+class IVW_QTEDITOR_API ConnectionInDragHelper : public QObject {
+    Q_OBJECT
+
+public:
+    explicit ConnectionInDragHelper(NetworkEditor& editor);
+    virtual ~ConnectionInDragHelper();
+
+    void start(ProcessorInportGraphicsItem* inport, QPointF endPoint, uvec3 color);
+    void reset();
+
+    virtual bool eventFilter(QObject* obj, QEvent* event) override;
+
+private:
+    NetworkEditor& editor_;
+    std::unique_ptr<ConnectionInportDragGraphicsItem> inConnection_;
 };
 
 }  // namespace inviwo

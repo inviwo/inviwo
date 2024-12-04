@@ -47,21 +47,22 @@
 
 namespace inviwo {
 
-ConnectionDragHelper::ConnectionDragHelper(NetworkEditor& editor)
+ConnectionOutDragHelper::ConnectionOutDragHelper(NetworkEditor& editor)
     : QObject(&editor), editor_{editor} {}
 
-ConnectionDragHelper::~ConnectionDragHelper() = default;
+ConnectionOutDragHelper::~ConnectionOutDragHelper() = default;
 
-bool ConnectionDragHelper::eventFilter(QObject*, QEvent* event) {
-    if (connection_ && event->type() == QEvent::GraphicsSceneMouseMove) {
+bool ConnectionOutDragHelper::eventFilter(QObject*, QEvent* event) {
+    if (outConnection_ && event->type() == QEvent::GraphicsSceneMouseMove) {
+
         auto e = static_cast<QGraphicsSceneMouseEvent*>(event);
-        connection_->setEndPoint(e->scenePos());
-        connection_->reactToPortHover(editor_.getProcessorInportGraphicsItemAt(e->scenePos()));
+        outConnection_->setEndPoint(e->scenePos());
+        outConnection_->reactToPortHover(editor_.getProcessorInportGraphicsItemAt(e->scenePos()));
         e->accept();
-    } else if (connection_ && event->type() == QEvent::GraphicsSceneMouseRelease) {
+    } else if (outConnection_ && event->type() == QEvent::GraphicsSceneMouseRelease) {
         auto e = static_cast<QGraphicsSceneMouseEvent*>(event);
 
-        auto startPort = connection_->getOutportGraphicsItem()->getPort();
+        auto startPort = outConnection_->getOutportGraphicsItem()->getPort();
         reset();
 
         RenderContext::getPtr()->activateDefaultRenderContext();
@@ -79,14 +80,66 @@ bool ConnectionDragHelper::eventFilter(QObject*, QEvent* event) {
     return false;
 }
 
-void ConnectionDragHelper::start(ProcessorOutportGraphicsItem* outport, QPointF endPoint,
-                                 uvec3 color) {
-    connection_ =
-        std::make_unique<ConnectionDragGraphicsItem>(outport, endPoint, utilqt::toQColor(color));
-    editor_.addItem(connection_.get());
-    connection_->show();
+void ConnectionOutDragHelper::start(ProcessorOutportGraphicsItem* outport, QPointF endPoint,
+                                    uvec3 color) {
+    outConnection_ = std::make_unique<ConnectionOutportDragGraphicsItem>(outport, endPoint,
+                                                                         utilqt::toQColor(color));
+    editor_.addItem(outConnection_.get());
+    outConnection_->show();
+
+    editor_.installEventFilter(this);
 }
 
-void ConnectionDragHelper::reset() { connection_.reset(); }
+void ConnectionOutDragHelper::reset() {
+    outConnection_.reset();
+    editor_.removeEventFilter(this);
+}
+
+ConnectionInDragHelper::ConnectionInDragHelper(NetworkEditor& editor)
+    : QObject(&editor), editor_{editor} {}
+
+ConnectionInDragHelper::~ConnectionInDragHelper() = default;
+
+bool ConnectionInDragHelper::eventFilter(QObject*, QEvent* event) {
+    if (inConnection_ && event->type() == QEvent::GraphicsSceneMouseMove) {
+        auto e = static_cast<QGraphicsSceneMouseEvent*>(event);
+        inConnection_->setStartPoint(e->scenePos());
+        inConnection_->reactToPortHover(editor_.getProcessorOutportGraphicsItemAt(e->scenePos()));
+        e->accept();
+    } else if (inConnection_ && event->type() == QEvent::GraphicsSceneMouseRelease) {
+        auto e = static_cast<QGraphicsSceneMouseEvent*>(event);
+
+        auto endPort = inConnection_->getInportGraphicsItem()->getPort();
+        reset();
+
+        RenderContext::getPtr()->activateDefaultRenderContext();
+        auto startItem = editor_.getProcessorOutportGraphicsItemAt(e->scenePos());
+        if (startItem && endPort->canConnectTo(startItem->getPort())) {
+            Outport* startPort = startItem->getPort();
+
+            if (endPort->getNumberOfConnections() >= endPort->getMaxNumberOfConnections()) {
+                editor_.getNetwork()->removeConnection(endPort->getConnectedOutport(), endPort);
+            }
+            editor_.getNetwork()->addConnection(startPort, endPort);
+        }
+        e->accept();
+    }
+    return false;
+}
+
+void ConnectionInDragHelper::start(ProcessorInportGraphicsItem* inport, QPointF startPoint,
+                                   uvec3 color) {
+    inConnection_ = std::make_unique<ConnectionInportDragGraphicsItem>(startPoint, inport,
+                                                                       utilqt::toQColor(color));
+    editor_.addItem(inConnection_.get());
+    inConnection_->show();
+
+    editor_.installEventFilter(this);
+}
+
+void ConnectionInDragHelper::reset() {
+    inConnection_.reset();
+    editor_.removeEventFilter(this);
+}
 
 }  // namespace inviwo

@@ -44,8 +44,7 @@ public:
     /**
      * Construct an auto link helper
      */
-    AutoLinker();
-
+    AutoLinker() = default;
     /**
      * @param network the processor network in which to add autolinks
      * @param target the processor onto which auto links should be added
