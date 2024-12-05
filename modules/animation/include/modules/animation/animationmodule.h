@@ -90,11 +90,12 @@ private:
               typename Keyframe = animation::ValueKeyframe<typename PropertyType::value_type>,
               typename KeyframeSeq = animation::KeyframeSequenceTyped<Keyframe>>
     void propertyHelper() {
+        using animation::PropertyTrack;
         // Register PropertyTrack and the KeyFrame it should use
         registerTrack<PropertyTrack<PropertyType, Keyframe, KeyframeSeq>>();
         registerPropertyTrackConnection(
-            animation::PropertyTraits<PropertyType>::classIdentifier(),
-            animation::PropertyTrack<PropertyType, Keyframe, KeyframeSeq>::classIdentifier());
+            PropertyTraits<PropertyType>::classIdentifier(),
+            PropertyTrack<PropertyType, Keyframe, KeyframeSeq>::classIdentifier());
     }
 
     class Converter : public VersionConverter {
