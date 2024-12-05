@@ -42,11 +42,11 @@ uniform sampler2D bgDepth;
 uniform sampler2D inport;
 
 void main() {
-    const vec2 textureSize = textureSize(inport, 0);
+    vec2 srcSize = textureSize(inport, 0);
 
     vec2 texCoords = gl_FragCoord.xy;
     texCoords.y = outportParameters.dimensions.y - texCoords.y;
-    texCoords = texCoords / textureSize;
+    texCoords = texCoords / srcSize;
 
     vec4 color = texture(inport, texCoords);
     #ifdef SwizzleColor
@@ -56,7 +56,7 @@ void main() {
 
 
     #ifdef BACKGROUND_AVAILABLE
-    const vec2 bgTexCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+    vec2 bgTexCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
     vec4 bg = texture(bgColor, bgTexCoords);
 
     if (color.a > 0) {

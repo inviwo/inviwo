@@ -42,8 +42,6 @@
 #include <include/cef_browser.h>             // for CefBrowser, CefBrowserHost
 #include <include/cef_render_handler.h>      // for CefRenderHandler::RectList, CefRenderHandl...
 
-#pragma optimize("", off)
-
 namespace inviwo {
 
 RenderHandlerGL::RenderHandlerGL() = default;
