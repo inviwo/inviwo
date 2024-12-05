@@ -121,28 +121,15 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
     auto& browserData = browserData_[browser->GetIdentifier()];
     auto& texture2D = browserData.texture2D;
     auto& popupRect = browserData.popupRect;
-    if (type == PET_VIEW && width == static_cast<int>(texture2D.getWidth()) &&
-        height == static_cast<int>(texture2D.getHeight())) {
-        // CPU implementation using LayerRAM
 
-        // Flipping image and swizzling using CPU code was too slow.
-        // Instead send to GPU and do it there.
+    if (width <= 0 || height <= 0) return;
 
-        // auto indata = static_cast<const unsigned char*>(buffer);
-        // auto outdata = static_cast<unsigned char*>(layer->getData());
-        // auto indataV = static_cast<const glm::tvec4<unsigned char>*>(buffer);
-        // auto outdataV = static_cast<glm::tvec4<unsigned char>*>(layer->getData());
-        // auto rowSize = width * 4;
-        // auto size = width * height * 4;
-        // for (auto row = 0; row < height; ++row) {
-        //    for (auto col = 0; col < width; ++col) {
-        //        auto index = row * width + col;
-        //        auto outIndex = width * (height - row - 1) + col;
-        //        const auto& pixel = indataV[index];
-        //        // Swizzle, bgra -> rgba
-        //        outdataV[outIndex] = {pixel[2], pixel[1], pixel[0], pixel[3]};
-        //    }
-        //}
+    const size2_t bufferDims{static_cast<size_t>(width), static_cast<size_t>(height)};
+
+    if (type == PET_VIEW) {
+        if (texture2D.getDimensions() != bufferDims) {
+            texture2D.resize(bufferDims);
+        }
         if ((dirtyRects.size() == 1 && dirtyRects[0] == CefRect(0, 0, width, height))) {
             // Upload all data
             texture2D.upload(buffer);
@@ -152,7 +139,6 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
             glPixelStorei(GL_UNPACK_ALIGNMENT, 4);  // RGBA 8-bit are always aligned
             glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
             for (const auto& rect : dirtyRects) {
-                // const CefRect& rect = *i;
                 glPixelStorei(GL_UNPACK_SKIP_PIXELS, rect.x);
                 glPixelStorei(GL_UNPACK_SKIP_ROWS, rect.y);
                 glTexSubImage2D(GL_TEXTURE_2D, 0, rect.x, rect.y, rect.width, rect.height,
