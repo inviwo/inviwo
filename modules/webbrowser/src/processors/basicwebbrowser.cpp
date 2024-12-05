@@ -62,9 +62,9 @@ constexpr std::string_view defaultHtml = R"(<!DOCTYPE html>
     <meta charset="utf-8">
     
     <!--
-    * "https://inviwo/yourmodulename/" will be rediredcted to the
+    * "https://inviwo/yourmodulename/" will be redirected to the
         corresponding module directory.
-    * "https://inviwo/app/" will be rediredcted to the application
+    * "https://inviwo/app/" will be redirected to the application
         base path (InviwoApplication::getBasePath()) directory
     * "https://inviwo/app/static/code.js" resolves to the JavaScript 
         property of this processor
@@ -94,7 +94,6 @@ constexpr std::string_view defaultHtml = R"(<!DOCTYPE html>
 )";
 
 constexpr std::string_view defaultJS = R"(// Load the inviwo javascript api
-// Load the inviwo javascript api
 import * as inviwo from "https://inviwo/webbrowser/data/js/inviwoapiv2.js"
 
 // Put the inviwo module into global scope so that the api can interact with in from c++
@@ -103,8 +102,8 @@ globalThis.inviwo = inviwo
 // Register a function for inviwo to call on processor process
 // The function will be called with an instance of the processor. 
 // The processor has the following properties:
-//  * changedInports: A list of the identifers for all the port that has changed
-//  * changedProperties A list of the identifers for all the identifiers that has changed
+//  * changedInports: A list of the identifiers for all the port that has changed
+//  * changedProperties A list of the identifiers for all the identifiers that has changed
 //  * self.changedBrushing A list of the modified brushing targets that has changed
 //  * loaded a boolean specifying if the webpage was just loaded
 // Then there are the standard processor functions

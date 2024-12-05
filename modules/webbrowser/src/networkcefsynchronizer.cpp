@@ -97,7 +97,7 @@ bool NetWorkCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
         } else if (command.starts_with(propertyCommand)) {
             return propertyAction(j, browser, frame, query_id, request, persistent, reponse);
         } else if (command == subscribeProgress) {
-            return processorSubsrcibeProgress(j, frame, reponse);
+            return processorSubscribeProgress(j, frame, reponse);
         } else if (command == unsubscribeProgress) {
             return processorUnsubscribeProgress(j, reponse);
         } else if (command == callbackCommand) {
@@ -356,7 +356,7 @@ bool NetWorkCefSynchronizer::processorUnsubscribeProgress(
     return true;
 }
 
-bool NetWorkCefSynchronizer::processorSubsrcibeProgress(
+bool NetWorkCefSynchronizer::processorSubscribeProgress(
     const json& j, CefRefPtr<CefFrame>& frame,
     CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback>& callback) {
 
@@ -380,29 +380,6 @@ bool NetWorkCefSynchronizer::processorSubsrcibeProgress(
     return true;
 }
 
-/*
- * Handles "property.set", "property.get" and "property.subscribe" commands sent
- * from the Inviwo javascript API (see webbrowser/data/js/inviwoapi.js).
- *
- * The path can be to a Processor (myprocessor.myproperty) or
- * system/module Settings (mysetting.myproperty) properties.
- *
- * Flow of information between PropertyWidgetCEF and browser.
- * Changes can start from Inviwo (left) or browser (right).
- * Information is encoded in JSON format, e.g.
- * ```
- * {"command":"subscribe", "path": "myprocessor.myproperty", "onChange":
- * "onChangeCallbackJS", "propertyObserver": "observerName"}
- * ```
- *     Inviwo           Browser (JavaScript)
- * Property change
- *        |
- * updateFromProperty() --> onChangeCallbackJS(property)
- *                             |
- *                             |
- *     OnQuery  <---------  inviwo.setProperty("myprocessor.myproperty", {value: 2.0});
- *  from_json(json, property);
- */
 bool NetWorkCefSynchronizer::propertySubscribe(const json& j, CefRefPtr<CefBrowser>& browser,
                                                CefRefPtr<CefFrame>& frame,
                                                CefRefPtr<Callback>& callback) {
@@ -472,7 +449,6 @@ NetWorkCefSynchronizer::CallbackHandle NetWorkCefSynchronizer::registerCallback(
 }
 
 // Searches first for the property in Processors and then in Settings
-
 Property* NetWorkCefSynchronizer::findProperty(std::string_view path) {
     Property* prop = app_->getProcessorNetwork()->getProperty(path);
     if (!prop) {
@@ -490,14 +466,6 @@ Property* NetWorkCefSynchronizer::findProperty(std::string_view path) {
     return prop;
 }
 
-/**
- * Add property to synchronize.
- * Stops synchronizing property when this object
- * is destroyed, property is removed, or when stopSynchronize is called.
- * @param property Property to synchronize
- * @param onChange Callback to execute when the property changes.
- * @param propertyObserverCallback Callback to execute when on PropertyObserver notifications.
- */
 std::unique_ptr<PropertyWidgetCEF> NetWorkCefSynchronizer::createWidget(
     Property* property, CefRefPtr<CefFrame>& frame, std::string_view onChangeJS,
     std::string_view propertyObserverCallbackJS) {

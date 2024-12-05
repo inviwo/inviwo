@@ -165,6 +165,29 @@ public:
 private:
     using Callback = CefMessageRouterBrowserSide::Handler::Callback;
 
+    /**
+     * Handles "property.set", "property.get" and "property.subscribe" commands sent
+     * from the Inviwo javascript API (see webbrowser/data/js/inviwoapi.js).
+     *
+     * The path can be to a Processor (myprocessor.myproperty) or
+     * system/module Settings (mysetting.myproperty) properties.
+     *
+     * Flow of information between PropertyWidgetCEF and browser.
+     * Changes can start from Inviwo (left) or browser (right).
+     * Information is encoded in JSON format, e.g.
+     * ```
+     * {"command":"subscribe", "path": "myprocessor.myproperty", "onChange":
+     * "onChangeCallbackJS", "propertyObserver": "observerName"}
+     * ```
+     *     Inviwo           Browser (JavaScript)
+     * Property change
+     *        |
+     * updateFromProperty() --> onChangeCallbackJS(property)
+     *                             |
+     *                             |
+     *     OnQuery  <---------  inviwo.setProperty("myprocessor.myproperty", {value: 2.0});
+     *  from_json(json, property);
+     */
     bool propertySubscribe(const json& j, CefRefPtr<CefBrowser>& browser,
                            CefRefPtr<CefFrame>& frame, CefRefPtr<Callback>& callback);
 
@@ -184,7 +207,7 @@ private:
 
     bool processorUnsubscribeProgress(const json& j, CefRefPtr<Callback>& callback);
 
-    bool processorSubsrcibeProgress(const json& j, CefRefPtr<CefFrame>& frame,
+    bool processorSubscribeProgress(const json& j, CefRefPtr<CefFrame>& frame,
                                     CefRefPtr<Callback>& callback);
 
     // Searches first for the property in Processors and then in Settings
