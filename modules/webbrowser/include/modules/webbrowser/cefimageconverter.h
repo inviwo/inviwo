@@ -57,7 +57,8 @@ public:
                  const ImageInport* optionalBackground = nullptr);
 
 protected:
-    Shader shader_{"img_convert_cef.frag", Shader::Build::Yes};  ///< Flip image y compoenent
+    Shader shader_;  ///< Flip image y compoenent
+    vec3 pickingColor_;
 };
 
 }  // namespace inviwo

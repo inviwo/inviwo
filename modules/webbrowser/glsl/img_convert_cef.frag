@@ -32,18 +32,56 @@
 uniform vec3 pickingColor;
 uniform ImageParameters outportParameters;
 
+#ifdef BACKGROUND_AVAILABLE
+uniform ImageParameters bgParameters;
+uniform sampler2D bgColor;
+uniform sampler2D bgPicking;
+uniform sampler2D bgDepth;
+#endif
+
 uniform sampler2D inport;
 
 void main() {
-	// Flip y-coord
-    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
-	texCoords.y = 1.0 - texCoords.y;
+    vec2 srcSize = textureSize(inport, 0);
+
+    vec2 texCoords = gl_FragCoord.xy;
+    texCoords.y = outportParameters.dimensions.y - texCoords.y;
+    texCoords = texCoords / srcSize;
+
     vec4 color = texture(inport, texCoords);
-    if (color.w > 0) {
-        FragData0 = texture(inport, texCoords);
+    #ifdef SwizzleColor
+    color = color.bgra;
+    #endif
+
+
+
+    #ifdef BACKGROUND_AVAILABLE
+    vec2 bgTexCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+    vec4 bg = texture(bgColor, bgTexCoords);
+
+    if (color.a > 0) {
+        color.rgb *= color.a;
+        color += (1.0 - color.a) * bg;
+
+        FragData0 = color;
         PickingData = vec4(pickingColor, 1.0);
     } else {
-        discard;
+        PickingData = texture(bgPicking, bgTexCoords);
+        FragData0 = bg;
     }
+    gl_FragDepth = texture(bgDepth, bgTexCoords).r;
+
+
+    #else
     
+
+    if (color.a > 0) {
+        FragData0 = color;
+        PickingData = vec4(pickingColor, 1.0);
+    } else {
+        FragData0 = vec4(0.0, 0.0, 0.0, 0.0);
+        PickingData = vec4(0.0, 0.0, 0.0, 0.0);
+    }
+    gl_FragDepth = 0.0;
+    #endif
 }

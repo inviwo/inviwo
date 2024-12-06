@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,45 +27,30 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSER_API
-
-#include <inviwo/core/properties/property.h>                    // for Property (ptr only), Prop...
-#include <modules/json/io/json/propertyjsonconverterfactory.h>  // for PropertyJSONConverterFactory
-
-#include <memory>  // for unique_ptr, make_unique
-#include <string>  // for string
+#include <modules/json/jsonport.h>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
-class PropertyWidgetCEF;
 
-class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEFFactoryObject {
-public:
-    PropertyWidgetCEFFactoryObject(const PropertyJSONConverterFactory* converterFactory);
-    virtual ~PropertyWidgetCEFFactoryObject();
-
-    virtual std::unique_ptr<PropertyWidgetCEF> create(Property*) = 0;
-
-    virtual std::string getClassIdentifier() const = 0;
-
-protected:
-    const PropertyJSONConverterFactory* converterFactory_;
-};
-
-template <typename T, typename P>
-class PropertyWidgetCEFFactoryObjectTemplate : public PropertyWidgetCEFFactoryObject {
-public:
-    PropertyWidgetCEFFactoryObjectTemplate(const PropertyJSONConverterFactory* converterFactory)
-        : PropertyWidgetCEFFactoryObject(converterFactory) {}
-
-    virtual ~PropertyWidgetCEFFactoryObjectTemplate() {}
-
-    virtual std::unique_ptr<PropertyWidgetCEF> create(Property* prop) {
-        return std::make_unique<T>(prop, converterFactory_->create(getClassIdentifier(), prop));
+void to_json(json& j, const JSONInport& port) {
+    if (auto data = port.getData()) {
+        j = *data;
+    } else {
+        j.clear();
     }
+}
+void from_json(const json&, JSONInport&) {
+    throw Exception(IVW_CONTEXT_CUSTOM("from_json"),
+                    "It is not possible to assign a json object to an Inport");
+}
 
-    virtual std::string getClassIdentifier() const { return PropertyTraits<P>::classIdentifier(); };
-};
+void to_json(json& j, const JSONOutport& port) {
+    if (auto data = port.getData()) {
+        j = *data;
+    } else {
+        j.clear();
+    }
+}
+void from_json(const json& j, JSONOutport& port) { port.setData(std::make_shared<json>(j)); }
 
 }  // namespace inviwo

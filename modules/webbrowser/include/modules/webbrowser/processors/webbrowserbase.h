@@ -35,7 +35,6 @@
 #include <inviwo/core/util/dispatcher.h>
 #include <modules/webbrowser/cefimageconverter.h>
 #include <modules/webbrowser/interaction/cefinteractionhandler.h>
-
 #include <filesystem>
 #include <string_view>
 
@@ -43,6 +42,7 @@
 #include <warn/ignore/all>
 #include <include/cef_base.h>
 #include <include/cef_load_handler.h>
+#include <include/wrapper/cef_resource_manager.h>
 #include <warn/pop>
 
 class CefBrowser;
@@ -53,6 +53,7 @@ class Processor;
 class InviwoApplication;
 class InteractionHandler;
 class RenderHandlerGL;
+class ImageOutport;
 
 #include <warn/push>
 #include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
@@ -72,7 +73,10 @@ class RenderHandlerGL;
  */
 class IVW_MODULE_WEBBROWSER_API WebBrowserBase : public CefLoadHandler {
 public:
-    WebBrowserBase(InviwoApplication* app, Processor* processor, std::string url = "");
+    WebBrowserBase(InviwoApplication* app, Processor& processor, ImageOutport& outport,
+                   ImageInport* background = nullptr, std::string_view url = "",
+                   std::function<void()> onNewRender = nullptr,
+                   std::function<void(bool)> onLoadingChanged = nullptr);
     WebBrowserBase(const WebBrowserBase& rhs) = delete;
     WebBrowserBase(WebBrowserBase&& rhs) = delete;
     WebBrowserBase& operator=(const WebBrowserBase& rhs) = delete;
@@ -97,8 +101,6 @@ public:
      */
     void setZoom(double zoom);
 
-    void render(ImageOutport& outport, ImageInport* background = nullptr);
-
     void executeJavaScript(const std::string& javascript, int startLine = 1);
 
     InteractionHandler* getInteractionHandler();
@@ -111,11 +113,24 @@ public:
      */
     [[nodiscard]] std::shared_ptr<BaseCallBack> addLoadingDoneCallback(std::function<void()> f);
 
+    void addMessageHandler(
+        std::function<void(cef_log_severity_t, const CefString&, const CefString&, int)> func);
+
+    void addStaticHandler(
+        std::function<bool(const std::string&, scoped_refptr<CefResourceManager::Request>)>
+            handler);
+    void removeStaticHandler();
+
+    std::shared_ptr<std::function<std::string(const std::string&)>> registerCallback(
+        const std::string& name, std::function<std::string(const std::string&)> callback);
+
 private:
     virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack,
                                       bool canGoForward) override;
 
-    Processor* parentProcessor_;
+    Processor& parentProcessor_;
+    ImageOutport& outport_;
+    ImageInport* background_;
 
     PickingMapper picking_;
 
@@ -127,8 +142,8 @@ private:
 
     bool isLoading_ = true;
     std::string url_;
-    double zoom_ = 1.0;
 
+    std::function<void(bool)> onLoadingChanged_;
     Dispatcher<void()> loadingDone_;
 
     IMPLEMENT_REFCOUNTING(WebBrowserBase);

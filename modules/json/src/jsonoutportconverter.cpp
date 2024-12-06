@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/json/jsonoutportconverter.h>
 
-#include <modules/json/jsonmoduledefine.h>  // for IVW_MODULE_JSON_API
-
-#include <inviwo/core/properties/property.h>  // for PropertyTraits
-
-#include <memory>  // for unique_ptr, make_unique
-#include <string>  // for string
-
-namespace inviwo {
-class PropertyJSONConverter;
-template <typename SrcProperty>
-class TemplatePropertyJSONConverter;
-
-class IVW_MODULE_JSON_API PropertyJSONConverterFactoryObject {
-public:
-    PropertyJSONConverterFactoryObject();
-    virtual ~PropertyJSONConverterFactoryObject();
-
-    virtual std::unique_ptr<PropertyJSONConverter> create(Property*) = 0;
-    /**
-     * Property class identifier.
-     */
-    virtual std::string getClassIdentifier() const = 0;
-
-private:
-};
-
-template <typename P>
-class PropertyJSONConverterFactoryObjectTemplate : public PropertyJSONConverterFactoryObject {
-public:
-    PropertyJSONConverterFactoryObjectTemplate() : PropertyJSONConverterFactoryObject() {}
-
-    virtual ~PropertyJSONConverterFactoryObjectTemplate() {}
-
-    virtual std::unique_ptr<PropertyJSONConverter> create(Property*) {
-        return std::make_unique<TemplatePropertyJSONConverter<P>>();
-    }
-
-    virtual std::string getClassIdentifier() const { return PropertyTraits<P>::classIdentifier(); };
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

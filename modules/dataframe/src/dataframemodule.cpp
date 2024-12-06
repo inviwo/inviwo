@@ -86,21 +86,11 @@ namespace inviwo {
 enum class OptionRegEnumInt : int {};
 enum class OptionRegEnumUInt : unsigned int {};
 
-struct ColumnOptionConverterRegFunctor {
-    template <typename T>
-    auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
-        reg(std::make_unique<ColumnOptionToOptionConverter<OptionProperty<T>>>());
-    }
-};
-
-struct OptionColumnConverterRegFunctor {
-    template <typename T>
-    auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
-        reg(std::make_unique<OptionToColumnOptionConverter<OptionProperty<T>>>());
-    }
-};
-
-DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "DataFrame") {
+DataFrameModule::DataFrameModule(InviwoApplication* app)
+    : InviwoModule(app, "DataFrame")
+    , JSONSupplier<Inport, PortTraits>{app->getModuleByType<JSONModule>()->getRegistry<Inport>()}
+    , JSONSupplier<Property, PropertyTraits>{
+          app->getModuleByType<JSONModule>()->getRegistry<Property>()} {
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
@@ -136,22 +126,26 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
 
     // Data converters
     registerPropertyConverter(std::make_unique<OptionToStringConverter<ColumnOptionProperty>>());
-    app->getModuleByType<JSONModule>()->registerPropertyJSONConverter<ColumnOptionProperty>();
 
-    // We create a std::function to register the created converter since the registration function
-    // is protected in the inviwo module
-    std::function<void(std::unique_ptr<PropertyConverter>)> registerPC =
-        [this](std::unique_ptr<PropertyConverter> propertyConverter) {
-            InviwoModule::registerPropertyConverter(std::move(propertyConverter));
-        };
+    registerJSONConverter<ColumnOptionProperty>();
+
+    registerJSONConverter<DataFrameInport>();
 
     using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
-    util::for_each_type<OptionTypes>{}(ColumnOptionConverterRegFunctor{}, registerPC);
-    util::for_each_type<OptionTypes>{}(OptionColumnConverterRegFunctor{}, registerPC);
+    util::for_each_type<OptionTypes>{}([&]<typename T>() {
+        registerPropertyConverter(
+            std::make_unique<ColumnOptionToOptionConverter<OptionProperty<T>>>());
+        registerPropertyConverter(
+            std::make_unique<OptionToColumnOptionConverter<OptionProperty<T>>>());
+    });
 
     using OptionEnumTypes = std::tuple<OptionRegEnumInt, OptionRegEnumUInt>;
-    util::for_each_type<OptionEnumTypes>{}(ColumnOptionConverterRegFunctor{}, registerPC);
-    util::for_each_type<OptionEnumTypes>{}(OptionColumnConverterRegFunctor{}, registerPC);
+    util::for_each_type<OptionEnumTypes>{}([&]<typename T>() {
+        registerPropertyConverter(
+            std::make_unique<ColumnOptionToOptionConverter<OptionProperty<T>>>());
+        registerPropertyConverter(
+            std::make_unique<OptionToColumnOptionConverter<OptionProperty<T>>>());
+    });
 }
 
 }  // namespace inviwo

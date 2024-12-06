@@ -43,7 +43,12 @@ namespace inviwo {
 GLSLPropertyWidgetQt::GLSLPropertyWidgetQt(StringProperty* property)
     : StringPropertyWidgetQt(property) {
 
-    IVW_ASSERT(property->getSemantics() == PropertySemantics::ShaderEditor, "Wrong semantics");
+    if (property->getSemantics() != PropertySemantics::ShaderEditor) {
+        throw Exception(IVW_CONTEXT,
+                        "Invalid semantics for HtmlPropertyWidgetQt, expected ShaderEditor, got {}",
+                        property->getSemantics().getString());
+    }
+
     addEditor();
 }
 

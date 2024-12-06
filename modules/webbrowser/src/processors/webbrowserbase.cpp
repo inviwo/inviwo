@@ -43,20 +43,20 @@
 
 namespace inviwo {
 
-WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor* processor, std::string url)
+WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor& processor, ImageOutport& outport,
+                               ImageInport* background, std::string_view url,
+                               std::function<void()> onNewRender,
+                               std::function<void(bool)> onLoadingChanged)
     : parentProcessor_{processor}
-    , picking_{processor, 1,
+    , outport_{outport}
+    , background_{background}
+    , picking_{&processor, 1,
                [this](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); }}
     , cefToInviwoImageConverter_{picking_.getColor()}
     , renderHandler_{dynamic_cast<RenderHandlerGL*>(
           app->getModuleByType<WebBrowserModule>()->getBrowserClient()->GetRenderHandler().get())}
-    , url_{std::move(url)} {
-
-    if (url_.empty()) {
-        url_ = fmt::format(
-            "file://{}",
-            (util::getModulePath("WebBrowser", ModulePath::Data) / "html/empty.html").string());
-    }
+    , url_{url}
+    , onLoadingChanged_{onLoadingChanged} {
 
     // Setup CEF browser
     auto [windowInfo, browserSettings] = cefutil::getDefaultBrowserSettings();
@@ -65,9 +65,19 @@ WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor* processor, std
     // this CefLoadHandler in destructor
     browser_ = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient, url_, browserSettings,
                                                  nullptr, nullptr);
-    browserClient->setBrowserParent(browser_, parentProcessor_);
+
+    renderHandler_->onRender(browser_, [this, onNewRender](Texture2D& htmlTex) {
+        cefToInviwoImageConverter_.convert(htmlTex, outport_, background_);
+        if (onNewRender) {
+            onNewRender();
+        } else {
+            parentProcessor_.invalidate(InvalidationLevel::InvalidOutput);
+        }
+    });
+
     // Observe when page has loaded
     browserClient->addLoadHandler(this);
+
     // Inject events into CEF browser
     cefInteractionHandler_.setHost(browser_->GetHost());
     cefInteractionHandler_.setRenderHandler(renderHandler_.get());
@@ -76,21 +86,38 @@ WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor* processor, std
 WebBrowserBase::~WebBrowserBase() {
     if (auto* client = dynamic_cast<WebBrowserClient*>(browser_->GetHost()->GetClient().get())) {
         client->removeLoadHandler(this);
-        // Explicitly remove parent because CloseBrowser may result in
-        // WebBrowserClient::OnBeforeClose after this processor has been destroyed.
-        client->removeBrowserParent(browser_);
+        client->removeStaticHandler(browser_->GetIdentifier());
     }
     // Force close browser
     browser_->GetHost()->CloseBrowser(true);
 }
 
-void WebBrowserBase::render(ImageOutport& outport, ImageInport* background) {
-    if (isLoading_) {
-        return;
+void WebBrowserBase::addMessageHandler(
+    std::function<void(cef_log_severity_t, const CefString&, const CefString&, int)> func) {
+    if (auto* client = dynamic_cast<WebBrowserClient*>(browser_->GetHost()->GetClient().get())) {
+        client->onNewMessage(browser_, func);
     }
+}
 
-    // Vertical flip of CEF output image
-    cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(browser_), outport, background);
+void WebBrowserBase::addStaticHandler(
+    std::function<bool(const std::string&, scoped_refptr<CefResourceManager::Request>)> handler) {
+    if (auto* client = dynamic_cast<WebBrowserClient*>(browser_->GetHost()->GetClient().get())) {
+        client->addStaticHandler(browser_->GetIdentifier(), std::move(handler));
+    }
+}
+void WebBrowserBase::removeStaticHandler() {
+    if (auto* client = dynamic_cast<WebBrowserClient*>(browser_->GetHost()->GetClient().get())) {
+        client->removeStaticHandler(browser_->GetIdentifier());
+    }
+}
+
+std::shared_ptr<std::function<std::string(const std::string&)>> WebBrowserBase::registerCallback(
+    const std::string& name, std::function<std::string(const std::string&)> callback) {
+    if (auto* client = dynamic_cast<WebBrowserClient*>(browser_->GetHost()->GetClient().get())) {
+        return client->registerCallback(browser_, name, std::move(callback));
+    } else {
+        return {};
+    }
 }
 
 void WebBrowserBase::executeJavaScript(const std::string& javascript, int startLine) {
@@ -99,18 +126,9 @@ void WebBrowserBase::executeJavaScript(const std::string& javascript, int startL
 
 void WebBrowserBase::reload() {
     isLoading_ = true;
-
-#ifndef NDEBUG
     // CEF does not allow empty urls in debug mode
-    if (url_.empty()) {
-        browser_->GetMainFrame()->LoadURL(fmt::format(
-            "file://{}",
-            (util::getModulePath("WebBrowser", ModulePath::Data) / "html/empty.html").string()));
-        return;
-    }
-#endif
-
-    browser_->GetMainFrame()->LoadURL(url_);
+    browser_->GetMainFrame()->LoadURL(
+        url_.empty() ? "https://inviwo/webbbowser/data/html/empty.html" : url_);
 }
 
 bool WebBrowserBase::isLoading() const { return isLoading_; }
@@ -119,9 +137,8 @@ void WebBrowserBase::load(const std::filesystem::path& filename) {
     if (!filename.empty()) {
         url_ = fmt::format("file://{}", filename.string());
         reload();
-    } else if (!url_.empty()) {
-        url_.clear();
-        reload();
+    } else {
+        clear();
     }
 }
 
@@ -133,9 +150,7 @@ void WebBrowserBase::load(std::string_view url) {
 }
 
 void WebBrowserBase::clear() {
-    url_ = fmt::format(
-        "file://{}",
-        (util::getModulePath("WebBrowser", ModulePath::Data) / "html/empty.html").string());
+    url_.clear();
     reload();
 }
 
@@ -153,10 +168,15 @@ void WebBrowserBase::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool is
                                           bool /*canGoBack*/, bool /*canGoForward*/) {
     if (browser_ && browser->GetIdentifier() == browser_->GetIdentifier()) {
         isLoading_ = isLoading;
-        // Render new page (content may have been rendered before the state changed)
-        if (!isLoading && parentProcessor_) {
-            loadingDone_.invoke();
-            parentProcessor_->invalidate(InvalidationLevel::InvalidOutput);
+
+        if (onLoadingChanged_) {
+            onLoadingChanged_(isLoading);
+        } else {
+            // Render new page (content may have been rendered before the state changed)
+            if (!isLoading) {
+                loadingDone_.invoke();
+                parentProcessor_.invalidate(InvalidationLevel::InvalidOutput);
+            }
         }
     }
 }

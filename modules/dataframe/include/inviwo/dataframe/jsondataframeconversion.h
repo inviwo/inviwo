@@ -38,9 +38,9 @@
 
 #include <nlohmann/json.hpp>  // for json
 
-using json = nlohmann::json;
-
 namespace inviwo {
+
+using json = nlohmann::json;
 
 /**
  * \class JSONConversionException
@@ -89,5 +89,9 @@ IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrame& df);
  * \endcode
  */
 IVW_MODULE_DATAFRAME_API void from_json(const json& j, DataFrame& df);
+
+
+IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrameInport& port);
+IVW_MODULE_DATAFRAME_API void from_json(const json& j, DataFrameInport& port);
 
 }  // namespace inviwo
