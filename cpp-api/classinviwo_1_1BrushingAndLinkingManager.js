@@ -12,6 +12,7 @@ var classinviwo_1_1BrushingAndLinkingManager =
     [ "getIndices", "classinviwo_1_1BrushingAndLinkingManager.html#adf2f01cddf2b180d8eff8a020c31d82c", null ],
     [ "getInvalidationLevel", "classinviwo_1_1BrushingAndLinkingManager.html#addf16e27b77a1c56c009ef6ce1004121", null ],
     [ "getInvalidationLevels", "classinviwo_1_1BrushingAndLinkingManager.html#a9a0ce47bdb89cc4155e470c41fb515da", null ],
+    [ "getModified", "classinviwo_1_1BrushingAndLinkingManager.html#a734da706a54f8373a0550ae97de5f9dc", null ],
     [ "getModifiedActions", "classinviwo_1_1BrushingAndLinkingManager.html#a27f1b0ea17252df4a786609e5ebaf936", null ],
     [ "getModifiedTargets", "classinviwo_1_1BrushingAndLinkingManager.html#a28e0a6add2b92fc4c825894de13291c3", null ],
     [ "getNumber", "classinviwo_1_1BrushingAndLinkingManager.html#ad9495986454776f78f72b9e7f5100ee5", null ],

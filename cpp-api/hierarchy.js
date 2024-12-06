@@ -138,7 +138,6 @@ var hierarchy =
       [ "inviwo::plot::BoxSelectionProperty", "classinviwo_1_1plot_1_1BoxSelectionProperty.html", null ]
     ] ],
     [ "inviwo::util::BrickIterator< Iter >", "classinviwo_1_1util_1_1BrickIterator.html", null ],
-    [ "inviwo::WebBrowserClient::BrowserData", "structinviwo_1_1WebBrowserClient_1_1BrowserData.html", null ],
     [ "inviwo::BrushingTarget", "structinviwo_1_1BrushingTarget.html", null ],
     [ "inviwo::BrushingTargetsInvalidationLevel", "structinviwo_1_1BrushingTargetsInvalidationLevel.html", null ],
     [ "inviwo::util::BufferDispatcher", "structinviwo_1_1util_1_1BufferDispatcher.html", null ],
@@ -195,8 +194,7 @@ var hierarchy =
       [ "inviwo::WebBrowserClient", "classinviwo_1_1WebBrowserClient.html", null ]
     ] ],
     [ "CefLoadHandler", null, [
-      [ "inviwo::ProcessorCefSynchronizer", "classinviwo_1_1ProcessorCefSynchronizer.html", null ],
-      [ "inviwo::PropertyCefSynchronizer", "classinviwo_1_1PropertyCefSynchronizer.html", null ],
+      [ "inviwo::NetWorkCefSynchronizer", "classinviwo_1_1NetWorkCefSynchronizer.html", null ],
       [ "inviwo::WebBrowserBase", "classinviwo_1_1WebBrowserBase.html", null ],
       [ "inviwo::WebBrowserClient", "classinviwo_1_1WebBrowserClient.html", null ]
     ] ],
@@ -385,6 +383,7 @@ var hierarchy =
     [ "inviwo::DataTraits< DataSequence< Data > >", "structinviwo_1_1DataTraits_3_01DataSequence_3_01Data_01_4_01_4.html", null ],
     [ "inviwo::DataTraits< Eigen::MatrixXf >", "structinviwo_1_1DataTraits_3_01Eigen_1_1MatrixXf_01_4.html", null ],
     [ "inviwo::DataTraits< IntegralLineSet >", "structinviwo_1_1DataTraits_3_01IntegralLineSet_01_4.html", null ],
+    [ "inviwo::DataTraits< json >", "structinviwo_1_1DataTraits_3_01json_01_4.html", null ],
     [ "inviwo::DataTraits< Layer >", "structinviwo_1_1DataTraits_3_01Layer_01_4.html", null ],
     [ "inviwo::DataTraits< Rasterization >", "structinviwo_1_1DataTraits_3_01Rasterization_01_4.html", null ],
     [ "inviwo::DataTraits< Spatial4DSampler< ReturnType > >", "structinviwo_1_1DataTraits_3_01Spatial4DSampler_3_01ReturnType_01_4_01_4.html", null ],
@@ -494,7 +493,6 @@ var hierarchy =
     ] ],
     [ "inviwo::Dispatcher< C >", "classinviwo_1_1Dispatcher.html", null ],
     [ "inviwo::Dispatcher< Callback >", "classinviwo_1_1Dispatcher.html", null ],
-    [ "inviwo::Dispatcher< CallbackFunc >", "classinviwo_1_1Dispatcher.html", null ],
     [ "inviwo::Dispatcher< HighlightFunc >", "classinviwo_1_1Dispatcher.html", null ],
     [ "inviwo::Dispatcher< HistogramCallback >", "classinviwo_1_1Dispatcher.html", null ],
     [ "inviwo::Dispatcher< SelectionFunc >", "classinviwo_1_1Dispatcher.html", null ],
@@ -584,6 +582,7 @@ var hierarchy =
         ] ],
         [ "inviwo::AxisAlignedCutPlane", "classinviwo_1_1AxisAlignedCutPlane.html", null ],
         [ "inviwo::Background", "classinviwo_1_1Background.html", null ],
+        [ "inviwo::BasicWebBrowser", "classinviwo_1_1BasicWebBrowser.html", null ],
         [ "inviwo::BasisTransform< T >", "classinviwo_1_1BasisTransform.html", null ],
         [ "inviwo::BrushingAndLinkingProcessor", "classinviwo_1_1BrushingAndLinkingProcessor.html", null ],
         [ "inviwo::BufferToMeshProcessor", "classinviwo_1_1BufferToMeshProcessor.html", null ],
@@ -1124,18 +1123,8 @@ var hierarchy =
         [ "inviwo::PropertyFactory", "classinviwo_1_1PropertyFactory.html", null ]
       ] ]
     ] ],
-    [ "inviwo::Factory< PropertyJSONConverter, const std::string &, Args... >", "classinviwo_1_1Factory.html", [
-      [ "inviwo::StandardFactory< PropertyJSONConverter, PropertyJSONConverterFactoryObject, const std::string &, Property * >", "classinviwo_1_1StandardFactory.html", [
-        [ "inviwo::PropertyJSONConverterFactory", "classinviwo_1_1PropertyJSONConverterFactory.html", null ]
-      ] ]
-    ] ],
     [ "inviwo::Factory< PropertyWidget, Property * >", "classinviwo_1_1Factory.html", [
       [ "inviwo::PropertyWidgetFactory", "classinviwo_1_1PropertyWidgetFactory.html", null ]
-    ] ],
-    [ "inviwo::Factory< PropertyWidgetCEF, const std::string &, Args... >", "classinviwo_1_1Factory.html", [
-      [ "inviwo::StandardFactory< PropertyWidgetCEF, PropertyWidgetCEFFactoryObject, const std::string &, Property * >", "classinviwo_1_1StandardFactory.html", [
-        [ "inviwo::PropertyWidgetCEFFactory", "classinviwo_1_1PropertyWidgetCEFFactory.html", null ]
-      ] ]
     ] ],
     [ "inviwo::Factory< Recorder, std::string_view, Args... >", "classinviwo_1_1Factory.html", [
       [ "inviwo::StandardFactory< Recorder, RecorderFactory, std::string_view, const RecorderOptions & >", "classinviwo_1_1StandardFactory.html", [
@@ -1293,8 +1282,7 @@ var hierarchy =
     [ "inviwo::HalfEdges", "classinviwo_1_1HalfEdges.html", null ],
     [ "inviwo::hdf5::Handle", "classinviwo_1_1hdf5_1_1Handle.html", null ],
     [ "CefMessageRouterBrowserSide::Handler", null, [
-      [ "inviwo::ProcessorCefSynchronizer", "classinviwo_1_1ProcessorCefSynchronizer.html", null ],
-      [ "inviwo::PropertyCefSynchronizer", "classinviwo_1_1PropertyCefSynchronizer.html", null ]
+      [ "inviwo::NetWorkCefSynchronizer", "classinviwo_1_1NetWorkCefSynchronizer.html", null ]
     ] ],
     [ "std::hash< inviwo::FileExtension >", "structstd_1_1hash_3_01inviwo_1_1FileExtension_01_4.html", null ],
     [ "std::hash< inviwo::PortConnection >", "structstd_1_1hash_3_01inviwo_1_1PortConnection_01_4.html", null ],
@@ -1416,6 +1404,9 @@ var hierarchy =
     ] ],
     [ "inviwo::InportIterable< DataInport< inviwo::Volume, N, Flat >, inviwo::Volume, Flat >", "classinviwo_1_1InportIterable.html", [
       [ "inviwo::DataInport< inviwo::Volume, 0, true >", "classinviwo_1_1DataInport.html", null ]
+    ] ],
+    [ "inviwo::InportIterable< DataInport< json, 1, false >, json, false >", "classinviwo_1_1InportIterable.html", [
+      [ "inviwo::DataInport< json >", "classinviwo_1_1DataInport.html", null ]
     ] ],
     [ "inviwo::InportIterable< DataInport< Layer, 1, false >, Layer, false >", "classinviwo_1_1InportIterable.html", [
       [ "inviwo::DataInport< Layer >", "classinviwo_1_1DataInport.html", null ]
@@ -1592,6 +1583,24 @@ var hierarchy =
     [ "inviwo::util::detailzip::iterator_tools< T >", "structinviwo_1_1util_1_1detailzip_1_1iterator__tools.html", null ],
     [ "inviwo::util::detailzip::iterator_tools< std::tuple< Ts... > >", "structinviwo_1_1util_1_1detailzip_1_1iterator__tools_3_01std_1_1tuple_3_01Ts_8_8_8_01_4_01_4.html", null ],
     [ "inviwo::pool::detail::JobTraits< Job >", "structinviwo_1_1pool_1_1detail_1_1JobTraits.html", null ],
+    [ "inviwo::JSONConverter< Base >", "classinviwo_1_1JSONConverter.html", [
+      [ "inviwo::TemplateJSONConverter< Base, Derived, Traits >", "classinviwo_1_1TemplateJSONConverter.html", null ]
+    ] ],
+    [ "inviwo::JSONConverter< Inport >", "classinviwo_1_1JSONConverter.html", null ],
+    [ "inviwo::JSONConverter< Outport >", "classinviwo_1_1JSONConverter.html", null ],
+    [ "inviwo::JSONConverter< Property >", "classinviwo_1_1JSONConverter.html", null ],
+    [ "inviwo::JSONSupplier< Base, Traits >", "classinviwo_1_1JSONSupplier.html", null ],
+    [ "inviwo::JSONSupplier< Inport, PortTraits >", "classinviwo_1_1JSONSupplier.html", [
+      [ "inviwo::DataFrameModule", "classinviwo_1_1DataFrameModule.html", null ],
+      [ "inviwo::JSONModule", "classinviwo_1_1JSONModule.html", null ]
+    ] ],
+    [ "inviwo::JSONSupplier< Outport, PortTraits >", "classinviwo_1_1JSONSupplier.html", [
+      [ "inviwo::JSONModule", "classinviwo_1_1JSONModule.html", null ]
+    ] ],
+    [ "inviwo::JSONSupplier< Property, PropertyTraits >", "classinviwo_1_1JSONSupplier.html", [
+      [ "inviwo::DataFrameModule", "classinviwo_1_1DataFrameModule.html", null ],
+      [ "inviwo::JSONModule", "classinviwo_1_1JSONModule.html", null ]
+    ] ],
     [ "inviwo::KDNode< N, T, P >", "classinviwo_1_1KDNode.html", null ],
     [ "inviwo::KDNode< N, T, P >", "classinviwo_1_1KDNode.html", null ],
     [ "inviwo::KDNodeDistWrapper< N, T, P >", "structinviwo_1_1KDNodeDistWrapper.html", null ],
@@ -1890,6 +1899,20 @@ var hierarchy =
           [ "inviwo::CompositeProperty", "classinviwo_1_1CompositeProperty.html", null ]
         ] ]
       ] ],
+      [ "inviwo::Observable< FactoryObserver< JSONConverter< Inport > > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< JSONConverter< Inport > >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< JSONConverter< Inport >, std::string, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::JSONConverterRegistry< Inport >", "classinviwo_1_1JSONConverterRegistry.html", null ]
+          ] ]
+        ] ]
+      ] ],
+      [ "inviwo::Observable< FactoryObserver< JSONConverter< Property > > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< JSONConverter< Property > >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< JSONConverter< Property >, std::string, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::JSONConverterRegistry< Property >", "classinviwo_1_1JSONConverterRegistry.html", null ]
+          ] ]
+        ] ]
+      ] ],
       [ "inviwo::Observable< FactoryObserver< DataReader > >", "classinviwo_1_1Observable.html", [
         [ "inviwo::FactoryObservable< DataReader >", "classinviwo_1_1FactoryObservable.html", [
           [ "inviwo::DataReaderFactory", "classinviwo_1_1DataReaderFactory.html", null ]
@@ -1926,6 +1949,20 @@ var hierarchy =
         [ "inviwo::FactoryObservable< InportFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
           [ "inviwo::FactoryRegister< InportFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
             [ "inviwo::StandardFactory< Inport, InportFactoryObject >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ]
+        ] ]
+      ] ],
+      [ "inviwo::Observable< FactoryObserver< JSONConverter< Base > > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< JSONConverter< Base > >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< JSONConverter< Base >, std::string, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::JSONConverterRegistry< Base >", "classinviwo_1_1JSONConverterRegistry.html", null ]
+          ] ]
+        ] ]
+      ] ],
+      [ "inviwo::Observable< FactoryObserver< JSONConverter< Outport > > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< JSONConverter< Outport > >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< JSONConverter< Outport >, std::string, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::JSONConverterRegistry< Outport >", "classinviwo_1_1JSONConverterRegistry.html", null ]
           ] ]
         ] ]
       ] ],
@@ -2005,13 +2042,6 @@ var hierarchy =
           ] ]
         ] ]
       ] ],
-      [ "inviwo::Observable< FactoryObserver< PropertyJSONConverterFactoryObject > >", "classinviwo_1_1Observable.html", [
-        [ "inviwo::FactoryObservable< PropertyJSONConverterFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
-          [ "inviwo::FactoryRegister< PropertyJSONConverterFactoryObject, factoryKeyType< const std::string & >, const std::string & >", "classinviwo_1_1FactoryRegister.html", [
-            [ "inviwo::StandardFactory< PropertyJSONConverter, PropertyJSONConverterFactoryObject, const std::string &, Property * >", "classinviwo_1_1StandardFactory.html", null ]
-          ] ]
-        ] ]
-      ] ],
       [ "inviwo::Observable< PropertyObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::PropertyObservable", "classinviwo_1_1PropertyObservable.html", [
           [ "inviwo::Property", "classinviwo_1_1Property.html", null ]
@@ -2020,13 +2050,6 @@ var hierarchy =
       [ "inviwo::Observable< PropertyOwnerObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::PropertyOwnerObservable", "classinviwo_1_1PropertyOwnerObservable.html", [
           [ "inviwo::PropertyOwner", "classinviwo_1_1PropertyOwner.html", null ]
-        ] ]
-      ] ],
-      [ "inviwo::Observable< FactoryObserver< PropertyWidgetCEFFactoryObject > >", "classinviwo_1_1Observable.html", [
-        [ "inviwo::FactoryObservable< PropertyWidgetCEFFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
-          [ "inviwo::FactoryRegister< PropertyWidgetCEFFactoryObject, factoryKeyType< const std::string & >, const std::string & >", "classinviwo_1_1FactoryRegister.html", [
-            [ "inviwo::StandardFactory< PropertyWidgetCEF, PropertyWidgetCEFFactoryObject, const std::string &, Property * >", "classinviwo_1_1StandardFactory.html", null ]
-          ] ]
         ] ]
       ] ],
       [ "inviwo::Observable< PythonExecutionOutputObserver >", "classinviwo_1_1Observable.html", [
@@ -2197,6 +2220,8 @@ var hierarchy =
     ] ],
     [ "inviwo::Observer", "classinviwo_1_1Observer.html", [
       [ "inviwo::FactoryObserver< CameraFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
+      [ "inviwo::FactoryObserver< JSONConverter< Inport > >", "classinviwo_1_1FactoryObserver.html", null ],
+      [ "inviwo::FactoryObserver< JSONConverter< Property > >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< DataReader >", "classinviwo_1_1FactoryObserver.html", [
         [ "inviwo::TransferFunctionLayerReaderWrapper", "classinviwo_1_1TransferFunctionLayerReaderWrapper.html", null ]
       ] ],
@@ -2206,6 +2231,8 @@ var hierarchy =
       [ "inviwo::FactoryObserver< DialogFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< FactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< InportFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
+      [ "inviwo::FactoryObserver< JSONConverter< Base > >", "classinviwo_1_1FactoryObserver.html", null ],
+      [ "inviwo::FactoryObserver< JSONConverter< Outport > >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< PropertyFactoryObject >", "classinviwo_1_1FactoryObserver.html", [
         [ "inviwo::LinkSettings", "classinviwo_1_1LinkSettings.html", null ]
       ] ],
@@ -2216,8 +2243,6 @@ var hierarchy =
         [ "inviwo::ProcessorTreeWidget", "classinviwo_1_1ProcessorTreeWidget.html", null ]
       ] ],
       [ "inviwo::FactoryObserver< ProcessorWidgetFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
-      [ "inviwo::FactoryObserver< PropertyJSONConverterFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
-      [ "inviwo::FactoryObserver< PropertyWidgetCEFFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< RepresentationFactoryObject< Representation > >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< InterpolationFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< RecorderFactory >", "classinviwo_1_1FactoryObserver.html", null ],
@@ -2261,11 +2286,11 @@ var hierarchy =
         [ "inviwo::CompositeProcessor", "classinviwo_1_1CompositeProcessor.html", null ],
         [ "inviwo::ImageExport", "classinviwo_1_1ImageExport.html", null ],
         [ "inviwo::LinkDialogGraphicsScene", "classinviwo_1_1LinkDialogGraphicsScene.html", null ],
+        [ "inviwo::NetWorkCefSynchronizer", "classinviwo_1_1NetWorkCefSynchronizer.html", null ],
         [ "inviwo::NetworkDebugObserver", "structinviwo_1_1NetworkDebugObserver.html", null ],
         [ "inviwo::NetworkEditor", "classinviwo_1_1NetworkEditor.html", null ],
         [ "inviwo::NetworkSyncServer", "classinviwo_1_1NetworkSyncServer.html", null ],
         [ "inviwo::PortInspectorManager", "classinviwo_1_1PortInspectorManager.html", null ],
-        [ "inviwo::ProcessorCefSynchronizer", "classinviwo_1_1ProcessorCefSynchronizer.html", null ],
         [ "inviwo::ProcessorNetworkEvaluator", "classinviwo_1_1ProcessorNetworkEvaluator.html", null ],
         [ "inviwo::PropertyListFrame", "classinviwo_1_1PropertyListFrame.html", null ],
         [ "inviwo::SubPropertySelectionDialog", "classinviwo_1_1SubPropertySelectionDialog.html", null ]
@@ -2334,6 +2359,8 @@ var hierarchy =
           [ "inviwo::StringMultilinePropertyWidgetQt", "classinviwo_1_1StringMultilinePropertyWidgetQt.html", null ],
           [ "inviwo::StringPropertyWidgetQt", "classinviwo_1_1StringPropertyWidgetQt.html", [
             [ "inviwo::GLSLPropertyWidgetQt", "classinviwo_1_1GLSLPropertyWidgetQt.html", null ],
+            [ "inviwo::HTMLPropertyWidgetQt", "classinviwo_1_1HTMLPropertyWidgetQt.html", null ],
+            [ "inviwo::JavascriptPropertyWidgetQt", "classinviwo_1_1JavascriptPropertyWidgetQt.html", null ],
             [ "inviwo::PythonPropertyWidgetQt", "classinviwo_1_1PythonPropertyWidgetQt.html", null ]
           ] ],
           [ "inviwo::StringsPropertyWidgetQt< N >", "classinviwo_1_1StringsPropertyWidgetQt.html", null ],
@@ -2355,8 +2382,8 @@ var hierarchy =
         [ "inviwo::CompositeProcessor", "classinviwo_1_1CompositeProcessor.html", null ],
         [ "inviwo::DataFrameJoin", "classinviwo_1_1DataFrameJoin.html", null ],
         [ "inviwo::InstanceRenderer", "classinviwo_1_1InstanceRenderer.html", null ],
+        [ "inviwo::NetWorkCefSynchronizer", "classinviwo_1_1NetWorkCefSynchronizer.html", null ],
         [ "inviwo::ProcessorNetwork", "classinviwo_1_1ProcessorNetwork.html", null ],
-        [ "inviwo::PropertyCefSynchronizer", "classinviwo_1_1PropertyCefSynchronizer.html", null ],
         [ "inviwo::PropertyListFrame", "classinviwo_1_1PropertyListFrame.html", null ],
         [ "inviwo::TFSelector", "classinviwo_1_1TFSelector.html", null ],
         [ "inviwo::animation::Animation", "classinviwo_1_1animation_1_1Animation.html", null ],
@@ -2784,12 +2811,6 @@ var hierarchy =
     [ "inviwo::PropertyFactoryObject", "classinviwo_1_1PropertyFactoryObject.html", [
       [ "inviwo::PropertyFactoryObjectTemplate< T >", "classinviwo_1_1PropertyFactoryObjectTemplate.html", null ]
     ] ],
-    [ "inviwo::PropertyJSONConverter", "classinviwo_1_1PropertyJSONConverter.html", [
-      [ "inviwo::TemplatePropertyJSONConverter< SrcProperty >", "classinviwo_1_1TemplatePropertyJSONConverter.html", null ]
-    ] ],
-    [ "inviwo::PropertyJSONConverterFactoryObject", "classinviwo_1_1PropertyJSONConverterFactoryObject.html", [
-      [ "inviwo::PropertyJSONConverterFactoryObjectTemplate< P >", "classinviwo_1_1PropertyJSONConverterFactoryObjectTemplate.html", null ]
-    ] ],
     [ "inviwo::PropertyLink", "classinviwo_1_1PropertyLink.html", null ],
     [ "inviwo::PropertyPresetManager", "classinviwo_1_1PropertyPresetManager.html", null ],
     [ "inviwo::PropertySemantics", "classinviwo_1_1PropertySemantics.html", null ],
@@ -2819,9 +2840,6 @@ var hierarchy =
       [ "inviwo::glui::IntMinMaxPropertyWidget", "classinviwo_1_1glui_1_1IntMinMaxPropertyWidget.html", null ],
       [ "inviwo::glui::IntPropertyWidget", "classinviwo_1_1glui_1_1IntPropertyWidget.html", null ],
       [ "inviwo::glui::ToolButtonPropertyWidget", "classinviwo_1_1glui_1_1ToolButtonPropertyWidget.html", null ]
-    ] ],
-    [ "inviwo::PropertyWidgetCEFFactoryObject", "classinviwo_1_1PropertyWidgetCEFFactoryObject.html", [
-      [ "inviwo::PropertyWidgetCEFFactoryObjectTemplate< T, P >", "classinviwo_1_1PropertyWidgetCEFFactoryObjectTemplate.html", null ]
     ] ],
     [ "inviwo::PropertyWidgetFactoryObject", "classinviwo_1_1PropertyWidgetFactoryObject.html", [
       [ "inviwo::PropertyWidgetFactoryObjectTemplate< T, P >", "classinviwo_1_1PropertyWidgetFactoryObjectTemplate.html", null ]
@@ -3270,12 +3288,13 @@ var hierarchy =
           [ "inviwo::DataInport< Rasterization, 0 >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::DataSequence< Volume > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< Volume >", "classinviwo_1_1DataInport.html", null ],
+          [ "inviwo::DataInport< DataFrame >", "classinviwo_1_1DataInport.html", null ],
+          [ "inviwo::DataInport< json >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< BufferBase >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< Mesh >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< Mesh, 0, true >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< DataType >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::DataFrame >", "classinviwo_1_1DataInport.html", null ],
-          [ "inviwo::DataInport< DataFrame >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< IntegralLineSet >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< Eigen::MatrixXf >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< Layer >", "classinviwo_1_1DataInport.html", null ],

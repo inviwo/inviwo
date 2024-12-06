@@ -99,7 +99,6 @@ $(function(){initNavTree('classinviwo_1_1RenderHandlerGL.html',''); initResizabl
 
 <div class="header">
   <div class="summary">
-<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classinviwo_1_1RenderHandlerGL-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::RenderHandlerGL Class Reference</div></div>
@@ -116,17 +115,8 @@ $(function(){initNavTree('classinviwo_1_1RenderHandlerGL.html',''); initResizabl
   <img src="classinviwo_1_1RenderHandlerGL.png" alt=""/>
  </div></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:a6aa74726cdbfe38b24ccf57e65196046" id="r_a6aa74726cdbfe38b24ccf57e65196046"><td class="memItemLeft" align="right" valign="top"><a id="a6aa74726cdbfe38b24ccf57e65196046" name="a6aa74726cdbfe38b24ccf57e65196046"></a>
-typedef std::function&lt; void(CefRefPtr&lt; CefBrowser &gt;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>OnWebPageCopiedCallback</b></td></tr>
-<tr class="separator:a6aa74726cdbfe38b24ccf57e65196046"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a10c214750b98619f8a25f8bc04e886cf" id="r_a10c214750b98619f8a25f8bc04e886cf"><td class="memItemLeft" align="right" valign="top"><a id="a10c214750b98619f8a25f8bc04e886cf" name="a10c214750b98619f8a25f8bc04e886cf"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>RenderHandlerGL</b> (OnWebPageCopiedCallback onWebPageCopiedCallback)</td></tr>
-<tr class="separator:a10c214750b98619f8a25f8bc04e886cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20b5a2a2445f1390b7b1fa1a831392fa" id="r_a20b5a2a2445f1390b7b1fa1a831392fa"><td class="memItemLeft" align="right" valign="top"><a id="a20b5a2a2445f1390b7b1fa1a831392fa" name="a20b5a2a2445f1390b7b1fa1a831392fa"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>updateCanvasSize</b> (CefRefPtr&lt; CefBrowser &gt; browser, size2_t newSize)</td></tr>
 <tr class="separator:a20b5a2a2445f1390b7b1fa1a831392fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -142,12 +132,18 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnPopupSize</
 <tr class="memitem:a75849e4d7e61ee2dbc2eebc5b9abbc61" id="r_a75849e4d7e61ee2dbc2eebc5b9abbc61"><td class="memItemLeft" align="right" valign="top"><a id="a75849e4d7e61ee2dbc2eebc5b9abbc61" name="a75849e4d7e61ee2dbc2eebc5b9abbc61"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnPaint</b> (CefRefPtr&lt; CefBrowser &gt; browser, PaintElementType type, const RectList &amp;dirtyRects, const void *buffer, int width, int height) override</td></tr>
 <tr class="separator:a75849e4d7e61ee2dbc2eebc5b9abbc61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acae4fa60cd25de7fac0ce2540150096e" id="r_acae4fa60cd25de7fac0ce2540150096e"><td class="memItemLeft" align="right" valign="top"><a id="acae4fa60cd25de7fac0ce2540150096e" name="acae4fa60cd25de7fac0ce2540150096e"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnAcceleratedPaint</b> (CefRefPtr&lt; CefBrowser &gt; browser, PaintElementType type, const RectList &amp;dirtyRects, const CefAcceleratedPaintInfo &amp;info) override</td></tr>
+<tr class="separator:acae4fa60cd25de7fac0ce2540150096e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa47e0227791f3c6037455ad2d65456e1" id="r_aa47e0227791f3c6037455ad2d65456e1"><td class="memItemLeft" align="right" valign="top"><a id="aa47e0227791f3c6037455ad2d65456e1" name="aa47e0227791f3c6037455ad2d65456e1"></a>
 <a class="el" href="classinviwo_1_1Texture2D.html">Texture2D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getTexture2D</b> (CefRefPtr&lt; CefBrowser &gt; browser)</td></tr>
 <tr class="separator:aa47e0227791f3c6037455ad2d65456e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae055bc553922fc3105e676db94b1a1bf" id="r_ae055bc553922fc3105e676db94b1a1bf"><td class="memItemLeft" align="right" valign="top"><a id="ae055bc553922fc3105e676db94b1a1bf" name="ae055bc553922fc3105e676db94b1a1bf"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ClearPopupRects</b> (CefRefPtr&lt; CefBrowser &gt; browser)</td></tr>
 <tr class="separator:ae055bc553922fc3105e676db94b1a1bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a915a8b40fc389f331a0e32bba423ed6f" id="r_a915a8b40fc389f331a0e32bba423ed6f"><td class="memItemLeft" align="right" valign="top"><a id="a915a8b40fc389f331a0e32bba423ed6f" name="a915a8b40fc389f331a0e32bba423ed6f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>onRender</b> (CefRefPtr&lt; CefBrowser &gt; browser, std::function&lt; void(<a class="el" href="classinviwo_1_1Texture2D.html">Texture2D</a> &amp;)&gt; onRender)</td></tr>
+<tr class="separator:a915a8b40fc389f331a0e32bba423ed6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Copies web page into a <a class="el" href="classinviwo_1_1Texture2D.html">Texture2D</a> each time it has been painted by the browser and calls onWebPageCopiedCallback afterwards. </p>

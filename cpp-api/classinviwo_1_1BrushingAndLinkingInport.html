@@ -594,6 +594,11 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>identifier_</b
 <div class="line"><span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classinviwo_1_1Inport.html#a916e2696adc8e4a8dd5f6751602d2554">isChanged</a>() <span class="keyword">const override</span>;</div>
 <div class="line"> </div>
 <div class="line">BrushingModifications getModifiedActions() <span class="keyword">const</span>;</div>
+<div class="line"> </div>
+<div class="line">std::vector&lt;BrushingTarget&gt; getModifiedTargets() <span class="keyword">const</span>;</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">const</span> std::unordered_map&lt;BrushingTarget, BrushingModifications&gt;&amp; getModified() <span class="keyword">const</span>;</div>
+<div class="line"> </div>
 <div class="line"><span class="keywordtype">bool</span> isFilteringModified() <span class="keyword">const</span>;</div>
 <div class="line"><span class="keywordtype">bool</span> isSelectionModified() <span class="keyword">const</span>;</div>
 <div class="line"><span class="keywordtype">bool</span> isHighlightModified() <span class="keyword">const</span>;</div>

@@ -39,5 +39,6 @@ var searchData=
   ['hideer_36',['Hideer',['../structinviwo_1_1util_1_1detail_1_1Hideer.html',1,'inviwo::util::detail']]],
   ['histogram1d_37',['Histogram1D',['../structinviwo_1_1Histogram1D.html',1,'inviwo']]],
   ['histogramcache_38',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]],
-  ['histogramtodataframe_39',['HistogramToDataFrame',['../classinviwo_1_1HistogramToDataFrame.html',1,'inviwo']]]
+  ['histogramtodataframe_39',['HistogramToDataFrame',['../classinviwo_1_1HistogramToDataFrame.html',1,'inviwo']]],
+  ['htmlpropertywidgetqt_40',['HTMLPropertyWidgetQt',['../classinviwo_1_1HTMLPropertyWidgetQt.html',1,'inviwo']]]
 ];

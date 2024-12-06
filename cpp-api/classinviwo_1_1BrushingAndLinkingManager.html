@@ -151,6 +151,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>highlight</b> (const 
 <tr class="separator:ada5eae22df903de6d4a7ce3cb6cded28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28e0a6add2b92fc4c825894de13291c3" id="r_a28e0a6add2b92fc4c825894de13291c3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structinviwo_1_1BrushingTarget.html">BrushingTarget</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a28e0a6add2b92fc4c825894de13291c3">getModifiedTargets</a> () const</td></tr>
 <tr class="separator:a28e0a6add2b92fc4c825894de13291c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a734da706a54f8373a0550ae97de5f9dc" id="r_a734da706a54f8373a0550ae97de5f9dc"><td class="memItemLeft" align="right" valign="top">const std::unordered_map&lt; <a class="el" href="structinviwo_1_1BrushingTarget.html">BrushingTarget</a>, BrushingModifications &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a734da706a54f8373a0550ae97de5f9dc">getModified</a> () const</td></tr>
+<tr class="separator:a734da706a54f8373a0550ae97de5f9dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a387c20ce4f97c239d3d0b2af185185ed" id="r_a387c20ce4f97c239d3d0b2af185185ed"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a387c20ce4f97c239d3d0b2af185185ed">isTargetModified</a> (<a class="el" href="structinviwo_1_1BrushingTarget.html">BrushingTarget</a> target, BrushingModifications modifications=BrushingModifications(flags::any)) const</td></tr>
 <tr class="separator:a387c20ce4f97c239d3d0b2af185185ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d586d738074f79da8372545f9c8bff8" id="r_a9d586d738074f79da8372545f9c8bff8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9d586d738074f79da8372545f9c8bff8">isTargetModified</a> (<a class="el" href="structinviwo_1_1BrushingTarget.html">BrushingTarget</a> target, <a class="el" href="namespaceinviwo.html#a0780518930e4f82763044068321c57f4">BrushingAction</a> action) const</td></tr>
@@ -559,6 +561,24 @@ Static Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Returns the targets and their actions causing the owner (BrusingAndLinking port) to invalidate. </p>
+
+</div>
+</div>
+<a id="a734da706a54f8373a0550ae97de5f9dc" name="a734da706a54f8373a0550ae97de5f9dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a734da706a54f8373a0550ae97de5f9dc">&#9670;&#160;</a></span>getModified()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::unordered_map&lt; <a class="el" href="structinviwo_1_1BrushingTarget.html">BrushingTarget</a>, BrushingModifications &gt; &amp; inviwo::BrushingAndLinkingManager::getModified </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>return which targets were changed by action since the last network evaluation </p>
 
 </div>
 </div>

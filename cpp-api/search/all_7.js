@@ -64,5 +64,6 @@ var searchData=
   ['histogramcache_61',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]],
   ['histogramtodataframe_62',['HistogramToDataFrame',['../classinviwo_1_1HistogramToDataFrame.html',1,'inviwo']]],
   ['hsl2rgb_63',['hsl2rgb',['../namespaceinviwo_1_1color.html#a8d0e0863995cedb80bc5799c3f149048',1,'inviwo::color']]],
-  ['hsv2rgb_64',['hsv2rgb',['../namespaceinviwo_1_1color.html#a6a3b611cb8748b20a86f4df1b3bd5e9f',1,'inviwo::color']]]
+  ['hsv2rgb_64',['hsv2rgb',['../namespaceinviwo_1_1color.html#a6a3b611cb8748b20a86f4df1b3bd5e9f',1,'inviwo::color']]],
+  ['htmlpropertywidgetqt_65',['HTMLPropertyWidgetQt',['../classinviwo_1_1HTMLPropertyWidgetQt.html',1,'inviwo']]]
 ];
