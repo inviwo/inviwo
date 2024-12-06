@@ -34,6 +34,7 @@
 
 #include <string>
 #include <string_view>
+#include <cmath>
 
 namespace inviwo::color {
 

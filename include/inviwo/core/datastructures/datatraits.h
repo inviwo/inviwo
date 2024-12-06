@@ -177,10 +177,8 @@ IVW_CORE_API std::string appendIfNotEmpty(std::string_view a, std::string_view b
 template <typename T>
 struct DataTraits<T,
                   std::enable_if_t<DataFormatBase::typeToId<T>() != DataFormatId::NotSpecialized>> {
-    static constexpr std::string_view classIdentifier() {
-        static constexpr auto classId{"org.inviwo." + DataFormat<T>::staticStr()};
-        return classId;
-    }
+    static constexpr auto classId{"org.inviwo." + DataFormat<T>::staticStr()};
+    static constexpr std::string_view classIdentifier() { return classId; }
     static constexpr std::string_view dataName() { return DataFormat<T>::str(); }
     static constexpr uvec3 colorCode() {
         return util::getDataFormatColor(DataFormat<T>::numtype, DataFormat<T>::comp,
@@ -199,15 +197,9 @@ template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 struct DataTraits<glm::mat<C, R, T, Q>,
                   std::enable_if_t<DataFormatBase::typeToId<glm::mat<C, R, T, Q>>() ==
                                    DataFormatId::NotSpecialized>> {
-    static constexpr std::string_view classIdentifier() {
-        static constexpr auto classId{"org.inviwo." +
-                                      Defaultvalues<glm::mat<C, R, T, Q>>::getName()};
-        return classId;
-    }
-    static constexpr std::string_view dataName() {
-        static constexpr auto name = Defaultvalues<glm::mat<C, R, T, Q>>::getName();
-        return name;
-    }
+    static constexpr auto classId{"org.inviwo." + Defaultvalues<glm::mat<C, R, T, Q>>::getName()};
+    static constexpr std::string_view classIdentifier() { return classId; }
+    static constexpr std::string_view dataName() { return Defaultvalues<glm::mat<C, R, T, Q>>::getName(); }
     static constexpr uvec3 colorCode() {
         uvec3 color{};
 
@@ -284,28 +276,24 @@ struct DataTraits<std::string> {
 
 template <typename T, typename A>
 struct DataTraits<std::vector<T, A>> {
-    static constexpr std::string_view classIdentifier() {
-        static constexpr auto cid = []() {
-            constexpr auto name = DataTraits<T>::classIdentifier();
-            if constexpr (!name.empty()) {
-                return StaticString<name.size()>(name) + ".vector";
-            } else {
-                return StaticString<0>{};
-            }
-        }();
-        return cid;
-    }
-    static constexpr std::string_view dataName() {
-        static constexpr auto name = []() {
-            constexpr auto tName = DataTraits<T>::dataName();
-            if constexpr (!tName.empty()) {
-                return "vector<" + StaticString<tName.size()>(tName) + ">";
-            } else {
-                return StaticString{"vector<?>"};
-            }
-        }();
-        return name;
-    }
+    static constexpr auto cid = []() {
+        constexpr auto name = DataTraits<T>::classIdentifier();
+        if constexpr (!name.empty()) {
+            return StaticString<name.size()>(name) + ".vector";
+        } else {
+            return StaticString<0>{};
+        }
+    }();
+    static constexpr auto name = []() {
+        constexpr auto tName = DataTraits<T>::dataName();
+        if constexpr (!tName.empty()) {
+            return "vector<" + StaticString<tName.size()>(tName) + ">";
+        } else {
+            return StaticString{"vector<?>"};
+        }
+    }();
+    static constexpr std::string_view classIdentifier() { return cid; }
+    static constexpr std::string_view dataName() { return name; }
     static constexpr uvec3 colorCode() { return color::lighter(DataTraits<T>::colorCode(), 1.12f); }
     static Document info(const std::vector<T, A>& data) {
         return detail::vectorInfo<T>(data.size(), data.empty() ? nullptr : &data.front(),
@@ -314,28 +302,24 @@ struct DataTraits<std::vector<T, A>> {
 };
 template <typename T, typename A>
 struct DataTraits<std::vector<const T, A>> {
-    static constexpr std::string_view classIdentifier() {
-        static constexpr auto cid = []() {
-            constexpr auto name = DataTraits<T>::classIdentifier();
-            if constexpr (!name.empty()) {
-                return StaticString<name.size()>(name) + ".const_vector";
-            } else {
-                return StaticString<0>{};
-            }
-        }();
-        return cid;
-    }
-    static constexpr std::string_view dataName() {
-        static constexpr auto name = []() {
-            constexpr auto tName = DataTraits<T>::dataName();
-            if constexpr (!tName.empty()) {
-                return "vector<const " + StaticString<tName.size()>(tName) + ">";
-            } else {
-                return StaticString{"vector<const ?>"};
-            }
-        }();
-        return name;
-    }
+    static constexpr auto cid = []() {
+        constexpr auto name = DataTraits<T>::classIdentifier();
+        if constexpr (!name.empty()) {
+            return StaticString<name.size()>(name) + ".const_vector";
+        } else {
+            return StaticString<0>{};
+        }
+    }();
+    static constexpr auto name = []() {
+        constexpr auto tName = DataTraits<T>::dataName();
+        if constexpr (!tName.empty()) {
+            return "vector<const " + StaticString<tName.size()>(tName) + ">";
+        } else {
+            return StaticString{"vector<const ?>"};
+        }
+    }();
+    static constexpr std::string_view classIdentifier() { return cid; }
+    static constexpr std::string_view dataName() { return name; }
     static constexpr uvec3 colorCode() { return color::lighter(DataTraits<T>::colorCode(), 1.12f); }
     static Document info(const std::vector<const T, A>& data) {
         return detail::vectorInfo<T>(data.size(), data.empty() ? nullptr : &data.front(),
@@ -345,29 +329,24 @@ struct DataTraits<std::vector<const T, A>> {
 
 template <typename T, typename A>
 struct DataTraits<std::vector<T*, A>> {
-    static constexpr std::string_view classIdentifier() {
-        static constexpr auto cid = []() {
-            constexpr auto name = DataTraits<T>::classIdentifier();
-            if constexpr (!name.empty()) {
-                return StaticString<name.size()>(name) + ".ptr.vector";
-            } else {
-                return StaticString<0>{};
-            }
-        }();
-
-        return cid;
-    }
-    static constexpr std::string_view dataName() {
-        static constexpr auto name = []() {
-            constexpr auto tName = DataTraits<T>::dataName();
-            if constexpr (!tName.empty()) {
-                return "vector<" + StaticString<tName.size()>(tName) + "*>";
-            } else {
-                return StaticString{"vector<?*>"};
-            }
-        }();
-        return name;
-    }
+    static constexpr auto cid = []() {
+        constexpr auto name = DataTraits<T>::classIdentifier();
+        if constexpr (!name.empty()) {
+            return StaticString<name.size()>(name) + ".ptr.vector";
+        } else {
+            return StaticString<0>{};
+        }
+    }();
+    static constexpr auto name = []() {
+        constexpr auto tName = DataTraits<T>::dataName();
+        if constexpr (!tName.empty()) {
+            return "vector<" + StaticString<tName.size()>(tName) + "*>";
+        } else {
+            return StaticString{"vector<?*>"};
+        }
+    }();
+    static constexpr std::string_view classIdentifier() { return cid; }
+    static constexpr std::string_view dataName() { return name; }
     static constexpr uvec3 colorCode() {
         return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
     }
@@ -379,28 +358,24 @@ struct DataTraits<std::vector<T*, A>> {
 
 template <typename T, typename A>
 struct DataTraits<std::vector<const T*, A>> {
-    static constexpr std::string_view classIdentifier() {
-        static constexpr auto cid = []() {
-            constexpr auto name = DataTraits<T>::classIdentifier();
-            if constexpr (!name.empty()) {
-                return StaticString<name.size()>(name) + ".const_ptr.vector";
-            } else {
-                return StaticString<0>{};
-            }
-        }();
-        return cid;
-    }
-    static constexpr std::string_view dataName() {
-        static constexpr auto name = []() {
-            constexpr auto tName = DataTraits<T>::dataName();
-            if constexpr (!tName.empty()) {
-                return "vector<const " + StaticString<tName.size()>(tName) + "*>";
-            } else {
-                return StaticString{"vector<const ?*>"};
-            }
-        }();
-        return name;
-    }
+    static constexpr auto cid = []() {
+        constexpr auto name = DataTraits<T>::classIdentifier();
+        if constexpr (!name.empty()) {
+            return StaticString<name.size()>(name) + ".const_ptr.vector";
+        } else {
+            return StaticString<0>{};
+        }
+    }();
+    static constexpr auto name = []() {
+        constexpr auto tName = DataTraits<T>::dataName();
+        if constexpr (!tName.empty()) {
+            return "vector<const " + StaticString<tName.size()>(tName) + "*>";
+        } else {
+            return StaticString{"vector<const ?*>"};
+        }
+    }();
+    static constexpr std::string_view classIdentifier() { return cid; }
+    static constexpr std::string_view dataName() { return name; }
     static constexpr uvec3 colorCode() {
         return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
     }
@@ -412,28 +387,24 @@ struct DataTraits<std::vector<const T*, A>> {
 
 template <typename T, typename D, typename A>
 struct DataTraits<std::vector<std::unique_ptr<T, D>, A>> {
-    static constexpr std::string_view classIdentifier() {
-        static constexpr auto cid = []() {
-            constexpr auto name = DataTraits<T>::classIdentifier();
-            if constexpr (!name.empty()) {
-                return StaticString<name.size()>(name) + ".unique_ptr.vector";
-            } else {
-                return StaticString<0>{};
-            }
-        }();
-        return cid;
-    }
-    static constexpr std::string_view dataName() {
-        static constexpr auto name = []() {
-            constexpr auto tName = DataTraits<T>::dataName();
-            if constexpr (!tName.empty()) {
-                return "vector<unique_ptr<" + StaticString<tName.size()>(tName) + ">>";
-            } else {
-                return StaticString{"vector<unique_ptr<?>>"};
-            }
-        }();
-        return name;
-    }
+    static constexpr auto cid = []() {
+        constexpr auto name = DataTraits<T>::classIdentifier();
+        if constexpr (!name.empty()) {
+            return StaticString<name.size()>(name) + ".unique_ptr.vector";
+        } else {
+            return StaticString<0>{};
+        }
+    }();
+    static constexpr auto name = []() {
+        constexpr auto tName = DataTraits<T>::dataName();
+        if constexpr (!tName.empty()) {
+            return "vector<unique_ptr<" + StaticString<tName.size()>(tName) + ">>";
+        } else {
+            return StaticString{"vector<unique_ptr<?>>"};
+        }
+    }();
+    static constexpr std::string_view classIdentifier() { return cid; }
+    static constexpr std::string_view dataName() { return name; }
     static constexpr uvec3 colorCode() {
         return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
     }
@@ -445,28 +416,24 @@ struct DataTraits<std::vector<std::unique_ptr<T, D>, A>> {
 
 template <typename T, typename D, typename A>
 struct DataTraits<std::vector<std::unique_ptr<const T, D>, A>> {
-    static constexpr std::string_view classIdentifier() {
-        static constexpr auto cid = []() {
-            constexpr auto name = DataTraits<T>::classIdentifier();
-            if constexpr (!name.empty()) {
-                return StaticString<name.size()>(name) + ".const_unique_ptr.vector";
-            } else {
-                return StaticString<0>{};
-            }
-        }();
-        return cid;
-    }
-    static constexpr std::string_view dataName() {
-        static constexpr auto name = []() {
-            constexpr auto tName = DataTraits<T>::dataName();
-            if constexpr (!tName.empty()) {
-                return "vector<unique_ptr<const " + StaticString<tName.size()>(tName) + ">>";
-            } else {
-                return StaticString{"vector<unique_ptr<const ?>>"};
-            }
-        }();
-        return name;
-    }
+    static constexpr auto cid = []() {
+        constexpr auto name = DataTraits<T>::classIdentifier();
+        if constexpr (!name.empty()) {
+            return StaticString<name.size()>(name) + ".const_unique_ptr.vector";
+        } else {
+            return StaticString<0>{};
+        }
+    }();
+    static constexpr auto name = []() {
+        constexpr auto tName = DataTraits<T>::dataName();
+        if constexpr (!tName.empty()) {
+            return "vector<unique_ptr<const " + StaticString<tName.size()>(tName) + ">>";
+        } else {
+            return StaticString{"vector<unique_ptr<const ?>>"};
+        }
+    }();
+    static constexpr std::string_view classIdentifier() { return cid; }
+    static constexpr std::string_view dataName() { return name; }
     static constexpr uvec3 colorCode() {
         return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
     }
@@ -478,28 +445,24 @@ struct DataTraits<std::vector<std::unique_ptr<const T, D>, A>> {
 
 template <typename T, typename A>
 struct DataTraits<std::vector<std::shared_ptr<T>, A>> {
-    static constexpr std::string_view classIdentifier() {
-        static constexpr auto cid = []() {
-            constexpr auto name = DataTraits<T>::classIdentifier();
-            if constexpr (!name.empty()) {
-                return StaticString<name.size()>(name) + ".shared_ptr.vector";
-            } else {
-                return StaticString<0>{};
-            }
-        }();
-        return cid;
-    }
-    static constexpr std::string_view dataName() {
-        static constexpr auto name = []() {
-            constexpr auto tName = DataTraits<T>::dataName();
-            if constexpr (!tName.empty()) {
-                return "vector<shared_ptr<" + StaticString<tName.size()>(tName) + ">>";
-            } else {
-                return StaticString{"vector<shared_ptr<?>>"};
-            }
-        }();
-        return name;
-    }
+    static constexpr auto cid = []() {
+        constexpr auto name = DataTraits<T>::classIdentifier();
+        if constexpr (!name.empty()) {
+            return StaticString<name.size()>(name) + ".shared_ptr.vector";
+        } else {
+            return StaticString<0>{};
+        }
+    }();
+    static constexpr auto name = []() {
+        constexpr auto tName = DataTraits<T>::dataName();
+        if constexpr (!tName.empty()) {
+            return "vector<shared_ptr<" + StaticString<tName.size()>(tName) + ">>";
+        } else {
+            return StaticString{"vector<shared_ptr<?>>"};
+        }
+    }();
+    static constexpr std::string_view classIdentifier() { return cid; }
+    static constexpr std::string_view dataName() { return name; }
     static constexpr uvec3 colorCode() {
         return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
     }
@@ -511,28 +474,24 @@ struct DataTraits<std::vector<std::shared_ptr<T>, A>> {
 
 template <typename T, typename A>
 struct DataTraits<std::vector<std::shared_ptr<const T>, A>> {
-    static constexpr std::string_view classIdentifier() {
-        static constexpr auto cid = []() {
-            constexpr auto name = DataTraits<T>::classIdentifier();
-            if constexpr (!name.empty()) {
-                return StaticString<name.size()>(name) + ".const_shared_ptr.vector";
-            } else {
-                return StaticString<0>{};
-            }
-        }();
-        return cid;
-    }
-    static constexpr std::string_view dataName() {
-        static constexpr auto name = []() {
-            constexpr auto tName = DataTraits<T>::dataName();
-            if constexpr (!tName.empty()) {
-                return "vector<shared_ptr<const " + StaticString<tName.size()>(tName) + ">>";
-            } else {
-                return StaticString{"vector<shared_ptr<const ?>>"};
-            }
-        }();
-        return name;
-    }
+    static constexpr auto cid = []() {
+        constexpr auto name = DataTraits<T>::classIdentifier();
+        if constexpr (!name.empty()) {
+            return StaticString<name.size()>(name) + ".const_shared_ptr.vector";
+        } else {
+            return StaticString<0>{};
+        }
+    }();
+    static constexpr auto name = []() {
+        constexpr auto tName = DataTraits<T>::dataName();
+        if constexpr (!tName.empty()) {
+            return "vector<shared_ptr<const " + StaticString<tName.size()>(tName) + ">>";
+        } else {
+            return StaticString{"vector<shared_ptr<const ?>>"};
+        }
+    }();
+    static constexpr std::string_view classIdentifier() { return cid; }
+    static constexpr std::string_view dataName() { return name; }
     static constexpr uvec3 colorCode() {
         return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
     }

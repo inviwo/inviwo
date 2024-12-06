@@ -81,21 +81,16 @@ extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<vec4>;
 
 template <typename ReturnType>
 struct DataTraits<Spatial4DSampler<ReturnType>> {
-    static constexpr std::string_view classIdentifier() {
-        static constexpr auto cid = []() {
-            constexpr auto tName = DataFormat<ReturnType>::str();
-            return "org.inviwo.Spatial4DSampler." + StaticString<tName.size()>(tName);
-        }();
-
-        return cid;
-    }
-    static constexpr std::string_view dataName() {
-        static constexpr auto name = []() {
-            constexpr auto tName = DataFormat<ReturnType>::str();
-            return "Spatial4DSampler<" + StaticString<tName.size()>(tName) + ">";
-        }();
-        return name;
-    }
+    static constexpr auto cid = []() {
+        constexpr auto tName = DataFormat<ReturnType>::str();
+        return "org.inviwo.Spatial4DSampler." + StaticString<tName.size()>(tName);
+    }();
+    static constexpr auto name = []() {
+        constexpr auto tName = DataFormat<ReturnType>::str();
+        return "Spatial4DSampler<" + StaticString<tName.size()>(tName) + ">";
+    }();
+    static constexpr std::string_view classIdentifier() { return cid; }
+    static constexpr std::string_view dataName() { return name; }
     static constexpr uvec3 colorCode() { return uvec3(153, 0, 76); }
     static Document info(const Spatial4DSampler<ReturnType>&) {
         Document doc;

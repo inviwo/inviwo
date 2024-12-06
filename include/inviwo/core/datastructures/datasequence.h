@@ -170,30 +170,24 @@ public:
 };
 template <typename Data>
 struct DataTraits<DataSequence<Data>> {
-    static constexpr std::string_view classIdentifier() {
-        static constexpr auto cid = []() {
-            constexpr auto name = DataTraits<Data>::classIdentifier();
-            if constexpr (!name.empty()) {
-                return StaticString<name.size()>(name) + ".sequence";
-            } else {
-                return StaticString<0>{};
-            }
-        }();
-
-        return cid;
-    }
-    static constexpr std::string_view dataName() {
-        static constexpr auto name = []() {
-            constexpr auto tName = DataTraits<Data>::dataName();
-            if constexpr (!tName.empty()) {
-                return "DataSequence<" + StaticString<tName.size()>(tName) + ">";
-            } else {
-                return StaticString{"DataSequence<?>"};
-            }
-        }();
-
-        return name;
-    }
+    static constexpr auto cid = []() {
+        constexpr auto name = DataTraits<Data>::classIdentifier();
+        if constexpr (!name.empty()) {
+            return StaticString<name.size()>(name) + ".sequence";
+        } else {
+            return StaticString<0>{};
+        }
+    }();
+    static constexpr auto name = []() {
+        constexpr auto tName = DataTraits<Data>::dataName();
+        if constexpr (!tName.empty()) {
+            return "DataSequence<" + StaticString<tName.size()>(tName) + ">";
+        } else {
+            return StaticString{"DataSequence<?>"};
+        }
+    }();
+    static constexpr std::string_view classIdentifier() { return cid; }
+    static constexpr std::string_view dataName() { return name; }
     static constexpr uvec3 colorCode() {
         return color::lighter(DataTraits<Data>::colorCode(), 1.12f);
     }

@@ -234,6 +234,7 @@ public:
     static constexpr auto staticStr();
 
 private:
+    static constexpr auto string = staticStr();
     friend DataFormatBase;
     DataFormat();
 };
@@ -344,7 +345,6 @@ constexpr auto DataFormat<T>::staticStr() {
 
 template <typename T>
 constexpr std::string_view DataFormat<T>::str() {
-    static constexpr auto string = staticStr();
     return string.view();
 }
 
