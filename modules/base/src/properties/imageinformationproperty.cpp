@@ -55,8 +55,7 @@
 namespace inviwo {
 class Layer;
 
-const std::string ImageInformationProperty::classIdentifier = "org.inviwo.ImageInformationProperty";
-std::string ImageInformationProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view ImageInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
 ImageInformationProperty::ImageInformationProperty(std::string_view identifier,
                                                    std::string_view displayName,

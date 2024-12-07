@@ -53,8 +53,8 @@ namespace inviwo {
 
 class IVW_MODULE_FONTRENDERING_API TextOverlayProperty : public CompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.TextOverlayProperty"};
 
     TextOverlayProperty(std::string_view identifier, std::string_view displayName,
                         InvalidationLevel = InvalidationLevel::InvalidResources,

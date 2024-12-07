@@ -152,7 +152,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
 
     processor_->ProcessorObservable::addObserver(this);
 
-    processorMeta_ = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+    processorMeta_ = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
     processorMeta_->addObserver(this);
 
     linkItem_ = new ProcessorLinkGraphicsItem(this);

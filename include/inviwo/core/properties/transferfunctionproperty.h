@@ -69,8 +69,8 @@ class IVW_CORE_API TransferFunctionProperty : public Property,
                                               public TFPropertyObservable {
 
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.TransferFunctionProperty"};
 
     TransferFunctionProperty(
         std::string_view identifier, std::string_view displayName, Document help,
@@ -129,9 +129,9 @@ public:
     HistogramMode getHistogramMode() const;
 
     /**
-     * Set the HistogramSelection. The selection determine which of the histograms from the volume
-     * in the optional volume port to show. The selection is a bitset, up to 32 histograms are
-     * supported. By default all available histograms will be shown.
+     * Set the HistogramSelection. The selection determine which of the histograms from the
+     * volume in the optional volume port to show. The selection is a bitset, up to 32
+     * histograms are supported. By default all available histograms will be shown.
      */
     TransferFunctionProperty& setHistogramSelection(HistogramSelection selection);
     HistogramSelection getHistogramSelection() const;

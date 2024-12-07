@@ -45,7 +45,7 @@ public:
     PythonOutport(std::string_view identifier, Document help = {});
     virtual ~PythonOutport() = default;
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     virtual glm::uvec3 getColorCode() const override { return uvec3{12, 240, 153}; }
     virtual Document getInfo() const override;
 
@@ -64,13 +64,13 @@ private:
 
 template <>
 struct PortTraits<PythonOutport> {
-    static const std::string& classIdentifier() {
+    static std::string_view classIdentifier() {
         static std::string id{"org.inviwo.pythonoutport"};
         return id;
     }
 };
 
-inline std::string PythonOutport::getClassIdentifier() const {
+inline std::string_view PythonOutport::getClassIdentifier() const {
     return PortTraits<PythonOutport>::classIdentifier();
 }
 

@@ -44,8 +44,8 @@ namespace inviwo {
 
 class IVW_CORE_API BoolProperty : public TemplateProperty<bool> {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.BoolProperty"};
 
     BoolProperty(std::string_view identifier, std::string_view displayName, Document help,
                  bool value = false,

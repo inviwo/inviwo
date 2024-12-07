@@ -113,7 +113,7 @@ void BoxSelectionInteractionHandler::invokeEvent(Event* event) {
     }
 }
 
-std::string BoxSelectionInteractionHandler::getClassIdentifier() const {
+std::string_view BoxSelectionInteractionHandler::getClassIdentifier() const {
     return "org.inviwo.BoxSelectInteractionHandler";
 }
 

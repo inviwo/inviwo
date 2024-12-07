@@ -54,7 +54,7 @@ std::string_view enumToStr(CoordinateSpace s) {
         case CoordinateSpace::View:
             return "View";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid CoordinateSpace enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid CoordinateSpace enum value '{}'",
                     static_cast<int>(s));
 }
 

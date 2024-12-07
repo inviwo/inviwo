@@ -52,8 +52,8 @@ namespace plot {
 class IVW_MODULE_PLOTTING_API PlotTextProperty : public PlotTextSettings,
                                                  public BoolCompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.PlotTextProperty"};
 
     PlotTextProperty(std::string_view identifier, std::string_view displayName, Document help,
                      bool checked = false,

@@ -44,12 +44,12 @@ class Renderer;
 
 class IVW_MODULE_USERINTERFACEGL_API WidgetFactoryObject {
 public:
-    WidgetFactoryObject(const std::string& className);
+    WidgetFactoryObject(std::string_view className);
     virtual ~WidgetFactoryObject();
 
     virtual std::unique_ptr<Element> create(Property&, Processor&, Renderer&) = 0;
 
-    std::string getClassIdentifier() const;
+    std::string_view getClassIdentifier() const;
 
 private:
     std::string className_;

@@ -78,8 +78,7 @@ namespace inviwo {
 class Deserializer;
 class Serializer;
 
-const std::string PointLightTrackball::classIdentifier = "org.inviwo.PointLightTrackball";
-std::string PointLightTrackball::getClassIdentifier() const { return classIdentifier; }
+std::string_view PointLightTrackball::getClassIdentifier() const { return classIdentifier; }
 
 const ProcessorInfo PointLightSourceProcessor::processorInfo_{
     "org.inviwo.Pointlightsource",  // Class identifier
@@ -246,7 +245,7 @@ vec3 PointLightInteractionHandler::getNormalizedDeviceFromNormalizedScreenAtFocu
     return camera_->getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(normalizedScreenCoord);
 }
 
-std::string PointLightInteractionHandler::getClassIdentifier() const {
+std::string_view PointLightInteractionHandler::getClassIdentifier() const {
     return "org.inviwo.PointLightInteractionHandler";
 }
 

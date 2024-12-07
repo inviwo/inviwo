@@ -47,7 +47,7 @@ public:
 
     std::unique_ptr<PortInspector> create();
 
-    std::string getClassIdentifier() const;
+    std::string_view getClassIdentifier() const;
 
 private:
     std::string portClassIdentifier_;

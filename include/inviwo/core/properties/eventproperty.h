@@ -50,8 +50,8 @@ class IVW_CORE_API EventProperty : public Property {
 public:
     using Action = std::function<void(Event*)>;
 
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.EventProperty"};
 
     /**
      * \brief Constructor used to create a new action-key binding.

@@ -93,9 +93,7 @@ namespace inviwo {
 
 namespace plot {
 
-const std::string PersistenceDiagramPlotGL::Properties::classIdentifier =
-    "org.inviwo.PersistenceDiagramPlotGL.Properties";
-std::string PersistenceDiagramPlotGL::Properties::getClassIdentifier() const {
+std::string_view PersistenceDiagramPlotGL::Properties::getClassIdentifier() const {
     return classIdentifier;
 }
 

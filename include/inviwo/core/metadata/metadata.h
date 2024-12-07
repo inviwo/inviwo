@@ -42,7 +42,7 @@ namespace inviwo {
 class IVW_CORE_API MetaData : public Serializable {
 public:
     virtual ~MetaData() = default;
-    virtual const std::string& getClassIdentifier() const = 0;
+    virtual std::string_view getClassIdentifier() const = 0;
     virtual MetaData* clone() const = 0;
     virtual void serialize(Serializer& s) const = 0;
     virtual void deserialize(Deserializer& d) = 0;
@@ -68,7 +68,7 @@ public:
     MetaDataType& operator=(const MetaDataType& that) = default;
     MetaDataType& operator=(MetaDataType&& that) = default;
     virtual ~MetaDataType() = default;
-    virtual const std::string& getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     virtual MetaDataType<T>* clone() const override;
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -104,8 +104,8 @@ bool operator==(const MetaDataType<T>& lhs, const MetaDataType<T>& rhs) {
 }
 
 template <typename T>
-const std::string& MetaDataType<T>::getClassIdentifier() const {
-    static const std::string identifier = "org.inviwo." + Defaultvalues<T>::getName() + "MetaData";
+std::string_view MetaDataType<T>::getClassIdentifier() const {
+    static constexpr auto identifier = "org.inviwo." + Defaultvalues<T>::getName() + "MetaData";
     return identifier;
 }
 
