@@ -198,8 +198,9 @@ struct DataTraits<glm::mat<C, R, T, Q>,
                   std::enable_if_t<DataFormatBase::typeToId<glm::mat<C, R, T, Q>>() ==
                                    DataFormatId::NotSpecialized>> {
     static constexpr auto classId{"org.inviwo." + Defaultvalues<glm::mat<C, R, T, Q>>::getName()};
+    static constexpr auto name{Defaultvalues<glm::mat<C, R, T, Q>>::getName()}; 
     static constexpr std::string_view classIdentifier() { return classId; }
-    static constexpr std::string_view dataName() { return Defaultvalues<glm::mat<C, R, T, Q>>::getName(); }
+    static constexpr std::string_view dataName() { return name; }
     static constexpr uvec3 colorCode() {
         uvec3 color{};
 
