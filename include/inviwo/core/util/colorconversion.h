@@ -197,13 +197,13 @@ constexpr vec3 rgb2hsv(const vec3& rgb) {
 }
 
 /**
- * \brief Convert from HSV to RGB color.
+ * \brief Convert from HSL to RGB color.
  *
  * See http://en.wikipedia.org/wiki/HSL_and_HSV and
  * http://en.wikipedia.org/wiki/RGB_color_model
  * for a detailed explanation of the color spaces.
  *
- * @param hsv Color in the [0 1]^3 range
+
  * @param hsl Color in the [0 1]^3 range, where [0 1] corresponds to [0 360) degrees for h
  * @return RGB color in [0 1]^3 range
  */
@@ -217,7 +217,7 @@ IVW_CORE_API vec3 hsl2rgb(const vec3& hsl);
  * for a detailed explanation of the color spaces.
  *
  * @param rgb Color in the [0 1]^3 range
- * @return HSV color in the [0 1]^3 range
+
  * @return HSL color in the [0 1]^3 range
  */
 IVW_CORE_API vec3 rgb2hsl(const vec3& rgb);

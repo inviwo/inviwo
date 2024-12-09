@@ -87,10 +87,10 @@ MetaDataToProperty::MetaDataToProperty() {
 
     factory_.emplace(MetaDataType<bool>{}.getClassIdentifier(),
                      [](std::string_view key, const MetaData* meta, CompositeProperty& container) {
-                         auto m = static_cast<const MetaDataType<bool>*>(meta);
+                         const auto* m = static_cast<const MetaDataType<bool>*>(meta);
 
-                         if (auto existingProperty = container.getPropertyByIdentifier(key)) {
-                             if (auto p = dynamic_cast<BoolProperty*>(existingProperty)) {
+                         if (auto* existingProperty = container.getPropertyByIdentifier(key)) {
+                             if (auto* p = dynamic_cast<BoolProperty*>(existingProperty)) {
                                  p->set(m->get());
                                  p->setVisible(true);
                                  return;
@@ -109,10 +109,10 @@ MetaDataToProperty::MetaDataToProperty() {
 
     factory_.emplace(MetaDataType<std::string>{}.getClassIdentifier(),
                      [](std::string_view key, const MetaData* meta, CompositeProperty& container) {
-                         auto m = static_cast<const MetaDataType<std::string>*>(meta);
+                         const auto* m = static_cast<const MetaDataType<std::string>*>(meta);
 
-                         if (auto existingProperty = container.getPropertyByIdentifier(key)) {
-                             if (auto p = dynamic_cast<StringProperty*>(existingProperty)) {
+                         if (auto* existingProperty = container.getPropertyByIdentifier(key)) {
+                             if (auto* p = dynamic_cast<StringProperty*>(existingProperty)) {
                                  p->set(m->get());
                                  p->setVisible(true);
                                  return;

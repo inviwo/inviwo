@@ -1,10 +1,32 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
-## 2024-12-09 string_view class identifiers
-All base classes that has a `virtual std::string getClassIdentifier() const` are refactored into 
-`virtual std::string_view getClassIdentifier() const`. This affects all classes derived from `Inport`, `Outport`, `Property`, `Metadata`, `Camera`,`animation::Track`, `animation::Interpolation`. This is done to avoid string allocations. 
-The trait classes `DataTraits` and `PortTraits` now uses `static constexpr std::string_view classIdentifier()` by default. 
+## 2024-12-09 __Breaking__ change: string_view class identifiers
+All base classes that have a `virtual std::string getClassIdentifier() const` were refactored into `virtual std::string_view getClassIdentifier() const`. This is done to avoid string allocations. 
+If you have a class that derives from `Inport`, `Outport`, `Property`, `Metadata`, `Camera`, `animation::Track` or `animation::Interpolation` and with a override of 
+```cpp
+virtual const std::string getClassIdentifier() const override;
+```
+you need to change that to 
+```cpp
+virtual const std::string_view getClassIdentifier() const override;
+```
+In most cases the corresponding implementation can just return a string literal:
+```cpp
+const std::string_view MyClass::getClassIdentifier() const { return "org.something.myclass" };
+```
+If the the return value depends on a template parameter, consider doing something similar to `include/inviwo/core/properties/ordinalproperty.h`
+
+The trait classes `DataTraits` and `PortTraits` now use `static constexpr std::string_view classIdentifier()` by default. 
 Look at `inviwo/core/datastructures/data/datatraits.h` for more information.
+
+If you have custom "Data" type that you use with `DataInport` or `DataOutport` you will need to make sure that your class have a `static constexpr std::string_view classIdentifier`, `static constexpr std::string_view dataName`, and `static constexpr constexpr uvec3 colorCode`. For example see `include/inviwo/core/datastructures/geometry/plane.h`
+```cpp
+    static constexpr std::string_view classIdentifier{"org.inviwo.Plane"};
+    static constexpr std::string_view dataName{"Plane"};
+    static constexpr uvec3 colorCode{225, 174, 225};
+```
+If you don't want to or can not add any member to the class you can specialize `DataTraits`. See `include/inviwo/core/datastructures/datatraits.h` for details. 
+
 
 ## 2024-11-27 `DataMinMaxGL` of GL representations with Compute Shaders
 The class `DataMinMaxGL`  provides functionality to determine min/max values of Buffers, Layers, and Volumes on the GPU. The implementation utilizes compute shaders directly accessing the corresponding GL representations. Since there is some overhead regarding managing shaders, an instantiation of `utilgl::DataMinMaxGL` should be kept around for subsequent calls of `DataMinMaxGL::minMax()`.
