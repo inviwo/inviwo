@@ -394,7 +394,7 @@ private:
     static auto getNonRegisteredType();
 
     template <bool Shared, typename Ptr>
-    void deserializeStartPtr(std::string_view key, Ptr& data);
+    void deserializeSmartPtr(std::string_view key, Ptr& data);
 
     template <class T>
     void deserialize(std::string_view key, T*& data);
@@ -479,16 +479,6 @@ void forEachChild(TiXmlElement* node, std::string_view key, F&& fun) {
 }
 
 }  // namespace detail
-
-namespace util {
-
-template <typename T>
-using classIdentifierType = decltype(std::declval<T>().getClassIdentifier());
-
-template <class T>
-using HasGetClassIdentifier = is_detected_exact<std::string_view, classIdentifierType, T>;
-
-}  // namespace util
 
 template <typename T>
 class DeserializationErrorHandle {
@@ -1040,7 +1030,7 @@ auto Deserializer::getNonRegisteredType() {
 }
 
 template <bool Shared, typename Ptr>
-void Deserializer::deserializeStartPtr(std::string_view key, Ptr& data) {
+void Deserializer::deserializeSmartPtr(std::string_view key, Ptr& data) {
     auto keyNode = retrieveChild(key);
     if (!keyNode) return;
 
@@ -1048,7 +1038,11 @@ void Deserializer::deserializeStartPtr(std::string_view key, Ptr& data) {
 
     const auto typeAttr = detail::attribute(keyNode, SerializeConstants::TypeAttribute);
 
-    if constexpr (util::HasGetClassIdentifier<T>::value) {
+    if constexpr (requires(T t) {
+                               {
+                                   t.getClassIdentifier()
+                                   } -> std::equality_comparable_with<std::string_view>;
+                           }) {
         if (data && typeAttr && *typeAttr != data->getClassIdentifier()) {
             // object has wrong type, delete it and let the deserialization create a new object
             // with the correct type
@@ -1096,13 +1090,13 @@ void Deserializer::deserializeStartPtr(std::string_view key, Ptr& data) {
 template <class T>
 void Deserializer::deserialize(std::string_view key, std::unique_ptr<T>& data) {
     static_assert(detail::canDeserialize<T>(), "Type is not serializable");
-    deserializeStartPtr<false>(key, data);
+    deserializeSmartPtr<false>(key, data);
 }
 
 template <class T>
 void Deserializer::deserialize(std::string_view key, std::shared_ptr<T>& data) {
     static_assert(detail::canDeserialize<T>(), "Type is not serializable");
-    deserializeStartPtr<true>(key, data);
+    deserializeSmartPtr<true>(key, data);
 }
 
 template <class T>
